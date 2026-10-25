@@ -1,0 +1,360 @@
+{
+  "causal_and_statistical_limitations": [
+    "Correction is determined from source packaging and original annotations, before model or offset outcomes",
+    "Evaluation remains 16 independent speaker/source groups; no extra units from metadata, replays or proof records",
+    "All 31 initially hash-selected video members remain fixed; this amendment changes annotation addressing only",
+    "Matched acoustic word boundaries are not lip-motion ground truth",
+    "Clock-repair substrate does not establish native speech/video joint training or the scientific C claim"
+  ],
+  "clock_correction_evidence": {
+    "lhotse_divide_by_1000_not_used": true,
+    "original_and_zenodo_exact_sha256": "3400a9647797b5622d0724c5712ad35b99eda9a7f2295cb173344bee664ce8d0",
+    "raw_end": 74500,
+    "source_attribution_gate_independent_of_clock_scale": true,
+    "source_id": "grid:s17:pgwqzp"
+  },
+  "created_before_selected_payload_or_task_outcome": true,
+  "id": "source-amendment-002",
+  "independent_author_source_gate": {
+    "failure": "Retain failure and stop before any video payload; no attribution from basename agreement alone",
+    "gate_1": "All 1000 own-speaker original .align basenames must equal all 1000 video basenames and the mapped Zenodo directory basenames",
+    "gate_2": "Selected original own-speaker annotation and mapped Zenodo member must have identical complete bytes and SHA256; no clock or whitespace transformation is allowed",
+    "maximum_tar_bytes": 2000000,
+    "original_own_speaker_url": "https://spandh.dcs.shef.ac.uk/gridcorpus/s{speaker}/align/s{speaker}.tar",
+    "require_exact_original_bytes": true,
+    "retain_original_tar_and_http_receipt": true,
+    "retain_raw_ticks_as_authority": true,
+    "source_original_ticks_per_second": 25000,
+    "whole_zenodo_archive_hash_verified_by_partial_download": false,
+    "word_timebase_status": "candidate inference from original 25 kHz audio, paper and excluded 3-second examples; not an explicit author format specification or independent lip-motion truth",
+    "zenodo_ticks_per_second": 25000
+  },
+  "maintenance_evidence": {
+    "api_receipt_sha256": "491d287da4ed40990555fe741d333326125c3f37aeaccf0550c2a082e89a7ab9",
+    "commit": "aea7705d6886572b7fac0f5407da7ca1e96a31a2",
+    "project": "lhotse-speech/lhotse",
+    "scope": "Published implementation evidence of directory correction; not sufficient alone to establish annotation attribution",
+    "source_sha256": "88f4b5c019d53dfe13bc4fc0c63508a2f8f7577c24c9018336cd558396703ce5",
+    "source_url": "https://raw.githubusercontent.com/lhotse-speech/lhotse/aea7705d6886572b7fac0f5407da7ca1e96a31a2/lhotse/recipes/grid.py"
+  },
+  "original_same_folder_coverage": {
+    "complete_1000_of_1000_speakers": 13,
+    "empty_0_of_1000_speakers": 18,
+    "no_speaker_or_clip_substitution": true
+  },
+  "original_source_registration_and_failure_retained": {
+    "directory": "/workspace/scratch/2b3c256bef7d/abc2-assets/grid-grouped-001",
+    "failure_sha256": "a8077031ea4c5276a7069423886973734abdc6520d13332dd7f960d3ea28336d",
+    "metadata_diagnostic_sha256": "00a89fd216301793df8d5e9fd6ee53a8c7356229d79a1ea94760bdf32231b1ed",
+    "range_requests_sha256": "095fd999da4edbb2eb69df2ef0b56fc89692fb126329a23e5899ae45d906504d"
+  },
+  "previous_amendment_sha256": "18d30a8738663026188fc8fdbdefb3010cd266a718bca034c326f0dfc0662212",
+  "previous_attempt_retained": {
+    "failure_sha256": "759cde6ccc6d038bbdfd722c3c302dc0c6ea95c5c18c6187fc90573fab4daede",
+    "path": "/workspace/scratch/2b3c256bef7d/abc2-assets/grid-grouped-002",
+    "selection_sha256": "7110c3f63f76dba1c20d4e7f884381e1c91aef1b63fad612b9f093bce0f7ec1b"
+  },
+  "prospective_execution_order": [
+    "retain old protocol and failed source run",
+    "freeze new amendment and complete 31-source selection with raw and corrected labels",
+    "validate every original author attribution gate before any selected video payload",
+    "retrieve fixed AV payloads and perform format/PTS inventory only"
+  ],
+  "reason": "Retain the fixed folder repair, replace unsupported maintainer clock interpretation with stricter exact byte identity to the original author annotation; no video source change or task outcome",
+  "schema": "hepta.ndu-abc.grid-source-amendment.v1",
+  "selected_sources": [
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 17,
+      "original_same_folder_matches": 1000,
+      "raw_zenodo_alignment_member": "alignments/s17/pgwqzp.align",
+      "role": "fit",
+      "unchanged_video_member": "s17/pgwqzp.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 15,
+      "original_same_folder_matches": 0,
+      "raw_zenodo_alignment_member": "alignments/s14/prwv2n.align",
+      "role": "fit",
+      "unchanged_video_member": "s15/prwv2n.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 22,
+      "original_same_folder_matches": 0,
+      "raw_zenodo_alignment_member": "alignments/s23/pgai2s.align",
+      "role": "fit",
+      "unchanged_video_member": "s22/pgai2s.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 3,
+      "original_same_folder_matches": 1000,
+      "raw_zenodo_alignment_member": "alignments/s3/brwg4n.align",
+      "role": "fit",
+      "unchanged_video_member": "s3/brwg4n.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 27,
+      "original_same_folder_matches": 0,
+      "raw_zenodo_alignment_member": "alignments/s26/lwbj1s.align",
+      "role": "fit",
+      "unchanged_video_member": "s27/lwbj1s.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 30,
+      "original_same_folder_matches": 1000,
+      "raw_zenodo_alignment_member": "alignments/s30/lgic2s.align",
+      "role": "fit",
+      "unchanged_video_member": "s30/lgic2s.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 26,
+      "original_same_folder_matches": 0,
+      "raw_zenodo_alignment_member": "alignments/s27/pwan7p.align",
+      "role": "fit",
+      "unchanged_video_member": "s26/pwan7p.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 7,
+      "original_same_folder_matches": 1000,
+      "raw_zenodo_alignment_member": "alignments/s7/swwo7s.align",
+      "role": "fit",
+      "unchanged_video_member": "s7/swwo7s.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 13,
+      "original_same_folder_matches": 0,
+      "raw_zenodo_alignment_member": "alignments/s12/pwbjzp.align",
+      "role": "fit",
+      "unchanged_video_member": "s13/pwbjzp.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 25,
+      "original_same_folder_matches": 1000,
+      "raw_zenodo_alignment_member": "alignments/s25/lbbizn.align",
+      "role": "fit",
+      "unchanged_video_member": "s25/lbbizn.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 20,
+      "original_same_folder_matches": 0,
+      "raw_zenodo_alignment_member": "alignments/s21/sram1p.align",
+      "role": "calibration",
+      "unchanged_video_member": "s20/sram1p.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 5,
+      "original_same_folder_matches": 0,
+      "raw_zenodo_alignment_member": "alignments/s6/braf6p.align",
+      "role": "calibration",
+      "unchanged_video_member": "s5/braf6p.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 1,
+      "original_same_folder_matches": 1000,
+      "raw_zenodo_alignment_member": "alignments/s1/bgauzp.align",
+      "role": "calibration",
+      "unchanged_video_member": "s1/bgauzp.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 19,
+      "original_same_folder_matches": 0,
+      "raw_zenodo_alignment_member": "alignments/s18/lbwc9a.align",
+      "role": "calibration",
+      "unchanged_video_member": "s19/lbwc9a.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 6,
+      "original_same_folder_matches": 0,
+      "raw_zenodo_alignment_member": "alignments/s5/pbib1n.align",
+      "role": "calibration",
+      "unchanged_video_member": "s6/pbib1n.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 34,
+      "original_same_folder_matches": 1000,
+      "raw_zenodo_alignment_member": "alignments/s34/lwau7n.align",
+      "role": "evaluation",
+      "unchanged_video_member": "s34/lwau7n.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 9,
+      "original_same_folder_matches": 1000,
+      "raw_zenodo_alignment_member": "alignments/s9/pwbd1a.align",
+      "role": "evaluation",
+      "unchanged_video_member": "s9/pwbd1a.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 24,
+      "original_same_folder_matches": 1000,
+      "raw_zenodo_alignment_member": "alignments/s24/bbbd5p.align",
+      "role": "evaluation",
+      "unchanged_video_member": "s24/bbbd5p.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 31,
+      "original_same_folder_matches": 1000,
+      "raw_zenodo_alignment_member": "alignments/s31/bbwx4p.align",
+      "role": "evaluation",
+      "unchanged_video_member": "s31/bbwx4p.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 18,
+      "original_same_folder_matches": 0,
+      "raw_zenodo_alignment_member": "alignments/s19/bwwf5n.align",
+      "role": "evaluation",
+      "unchanged_video_member": "s18/bwwf5n.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 4,
+      "original_same_folder_matches": 1000,
+      "raw_zenodo_alignment_member": "alignments/s4/lwik6s.align",
+      "role": "evaluation",
+      "unchanged_video_member": "s4/lwik6s.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 12,
+      "original_same_folder_matches": 0,
+      "raw_zenodo_alignment_member": "alignments/s11/pwbj2a.align",
+      "role": "evaluation",
+      "unchanged_video_member": "s12/pwbj2a.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 29,
+      "original_same_folder_matches": 0,
+      "raw_zenodo_alignment_member": "alignments/s28/bbiczn.align",
+      "role": "evaluation",
+      "unchanged_video_member": "s29/bbiczn.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 10,
+      "original_same_folder_matches": 0,
+      "raw_zenodo_alignment_member": "alignments/s13/pbwm5a.align",
+      "role": "evaluation",
+      "unchanged_video_member": "s10/pbwm5a.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 8,
+      "original_same_folder_matches": 1000,
+      "raw_zenodo_alignment_member": "alignments/s8/pgwezs.align",
+      "role": "evaluation",
+      "unchanged_video_member": "s8/pgwezs.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 16,
+      "original_same_folder_matches": 1000,
+      "raw_zenodo_alignment_member": "alignments/s16/sbws9n.align",
+      "role": "evaluation",
+      "unchanged_video_member": "s16/sbws9n.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 32,
+      "original_same_folder_matches": 0,
+      "raw_zenodo_alignment_member": "alignments/s33/sgbm4s.align",
+      "role": "evaluation",
+      "unchanged_video_member": "s32/sgbm4s.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 11,
+      "original_same_folder_matches": 0,
+      "raw_zenodo_alignment_member": "alignments/s10/prwi9s.align",
+      "role": "evaluation",
+      "unchanged_video_member": "s11/prwi9s.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 33,
+      "original_same_folder_matches": 0,
+      "raw_zenodo_alignment_member": "alignments/s32/lgiv3a.align",
+      "role": "evaluation",
+      "unchanged_video_member": "s33/lgiv3a.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 28,
+      "original_same_folder_matches": 0,
+      "raw_zenodo_alignment_member": "alignments/s29/bwwe7p.align",
+      "role": "evaluation",
+      "unchanged_video_member": "s28/bwwe7p.mpg"
+    },
+    {
+      "expected_corrected_directory_matches": 1000,
+      "logical_speaker": 14,
+      "original_same_folder_matches": 0,
+      "raw_zenodo_alignment_member": "alignments/s15/lgbr6a.align",
+      "role": "evaluation",
+      "unchanged_video_member": "s14/lgbr6a.mpg"
+    }
+  ],
+  "superseded_protocol_sha256": "b4e26e842e487454046b0fa0dba3a53cbac09f306d9089f74eb69346dd04468a",
+  "unchanged_clip_ranking": "ascending SHA256 UTF8(hepta-temporal-clip-v1|s{integer}|{exact_zip_member_path}); member path breaks hash ties",
+  "unchanged_role_counts": {
+    "calibration": 5,
+    "evaluation": 16,
+    "fit": 10
+  },
+  "unchanged_speaker_exclusions": [
+    2,
+    21,
+    23
+  ],
+  "video_logical_speaker_to_raw_zenodo_alignment_folder": {
+    "1": 1,
+    "10": 13,
+    "11": 10,
+    "12": 11,
+    "13": 12,
+    "14": 15,
+    "15": 14,
+    "16": 16,
+    "17": 17,
+    "18": 19,
+    "19": 18,
+    "20": 21,
+    "22": 23,
+    "24": 24,
+    "25": 25,
+    "26": 27,
+    "27": 26,
+    "28": 29,
+    "29": 28,
+    "3": 3,
+    "30": 30,
+    "31": 31,
+    "32": 33,
+    "33": 32,
+    "34": 34,
+    "4": 4,
+    "5": 6,
+    "6": 5,
+    "7": 7,
+    "8": 8,
+    "9": 9
+  }
+}
