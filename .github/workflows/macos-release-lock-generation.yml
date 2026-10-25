@@ -1,0 +1,108 @@
+name: macOS release manifest lock generation (review only)
+
+on:
+  push:
+    branches:
+      - research/dot-macos-release-lock-generation-61ea-20261025
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Start fixed shared 45-minute budget before checkout
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYCODE'
+          import hashlib, json, os, sys, time
+          from pathlib import Path
+          if sys.platform != 'linux':
+              raise SystemExit('linux_required')
+          start = time.monotonic()
+          record = dict(start=start, deadline=start+2700, seconds=2700,
+                        head=os.environ['GITHUB_SHA'], platform=sys.platform)
+          budget = Path(os.environ['RUNNER_TEMP']) / 'macos-release-lock-budget.json'
+          budget.write_text(json.dumps(record))
+          with open(os.environ['GITHUB_ENV'], 'a') as handle:
+              handle.write('LOCK_GENERATION_BUDGET=' + str(budget) + '\n')
+              handle.write('LOCK_GENERATION_BUDGET_SHA256=' + hashlib.sha256(budget.read_bytes()).hexdigest() + '\n')
+          public = Path(os.environ['RUNNER_TEMP']) / 'macos-release-lock-generation' / 'public'
+          public.mkdir(parents=True)
+          (public / 'report.json').write_text(json.dumps(dict(qualified=False, phase='setup', raw_stream_policy='never_publish')))
+          PYCODE
+
+      - name: Checkout isolated control branch
+        timeout-minutes: 5
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          path: control
+          persist-credentials: false
+
+      - name: Checkout exact immutable source (not PR merge)
+        timeout-minutes: 5
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 61ea91b7544b5147a5f825a62e569c8ca5a32fd5
+          path: source
+          persist-credentials: false
+
+      - name: Set up pinned TOML-capable Python
+        timeout-minutes: 5
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+
+      - name: Offline adversarial validator tests
+        timeout-minutes: 3
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s control/.github/scripts -p 'test_macos_release_lock_generator.py' -v
+          python3 -O -m unittest discover -s control/.github/scripts -p 'test_macos_release_lock_generator.py' -v
+
+      - name: Source, legal/configuration, and 20 GiB resource gate before tool downloads
+        timeout-minutes: 3
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 control/.github/scripts/macos_release_lock_generator.py --preflight \
+            "$GITHUB_WORKSPACE/source" "$RUNNER_TEMP/macos-release-lock-generation" "$GITHUB_WORKSPACE/control"
+
+      - name: Set up existing pinned official Rust 1.95.0
+        timeout-minutes: 5
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+
+      - name: Bootstrap publisher-API-bound official Bazel 9.0.0 without credentials
+        timeout-minutes: 5
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 control/.github/scripts/macos_release_lock_generator.py --bootstrap-bazel \
+            "$GITHUB_WORKSPACE/source" "$RUNNER_TEMP/macos-release-lock-generation" "$GITHUB_WORKSPACE/control"
+
+      - name: Generate both locks and qualify locked cross-platform metadata
+        timeout-minutes: 47
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 control/.github/scripts/macos_release_lock_generator.py \
+            "$GITHUB_WORKSPACE/source" "$RUNNER_TEMP/macos-release-lock-generation" "$GITHUB_WORKSPACE/control"
+
+      - name: Upload only gated artifacts even on failure
+        timeout-minutes: 5
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: macos-release-lock-review-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/macos-release-lock-generation/public/
+          if-no-files-found: error
+          retention-days: 7
