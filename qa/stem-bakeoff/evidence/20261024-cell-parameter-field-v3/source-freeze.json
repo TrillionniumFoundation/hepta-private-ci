@@ -1,0 +1,565 @@
+{
+  "schema": "hepta.cell-action-source-freeze.v3",
+  "recorded_at_utc": "2026-10-25 00:34:34 UTC",
+  "source_commit": "c69e4e7ab55456e75476be4ca9a3bcaeaea1934c",
+  "source_tree": "67a83f5bace75465fd1dc775292b70cf491f2c6b",
+  "base_commit": "3372a726affb287b97e531645ccbcc3afc91013f",
+  "protocol_commit": "1f982fa986b3afac83e3ee29e402b9008119ecc3",
+  "protocol_sha256": "b24f22c9f4bd4a106ee4311d6a47cc31781de808f01fd6fa9e4a60853cf4afb3",
+  "sourcecode_hashes": {
+    "cell_field_action_audit.py": "1c339bdd02192823129532654b06f71850dc1934fd40699863dbd5304fa51a3b",
+    "cell_field_action_control.py": "f41522e59da1fda4a875d4aee79a7a1cbd1f67b5f9698e246876f08ae9dba7ca",
+    "cell_field_action_data.py": "ab67094ab5b036dc4f38c18986bcf4aaf1f3275abdb8b90c7602cfbd7e9b1599",
+    "cell_field_action_evaluate.py": "4d6ed184604755d7fefe4bc9255e936e789c305da018e66c85ea27cf426c1c89",
+    "cell_field_action_input_audit.py": "b31734b5a510a6e61fb765f4fa2f10029b05d9668dc8bc2205635e6241b8a7b5",
+    "cell_field_action_io.py": "6e05fefd6de60681e4ff575db06b1adce5d323228a5ce2d8e5d4fcd01ea8b14b",
+    "cell_field_action_math_audit.py": "3056585f5bb7e978b05588eb7ad3737c3698b297f3c4bdc20de33c4d82bd83fb",
+    "cell_field_action_metrics.py": "f8dce1d96c0dfa9fc230442b6b3489fe733bdfaac837948b46de4c49bdbc9ec0",
+    "cell_field_action_replay.py": "752438ed7ddcee7a3d1775b9ffcd489973ecc35222bb382be143cf851f4b3360",
+    "cell_field_action_replay_audit.py": "af3f08d1f7cd247e6a2e51be2549c1871317275ac94bb855b4280b16aabc0337",
+    "cell_field_action_run.py": "dc1d36377cf1fd0549ac8f1009fc1b5e55d9ccd7cfecab9518d21edd45d095fe",
+    "cell_field_action_score_audit.py": "d56578fa7eb2ed99fe4afbb4564bb57afb314ec94c93315e25f86195272174e3",
+    "cell_field_audit.py": "8483782ae2441ed85d213619a0e55db4fed34a21044f0e8e37dd4f1baa2c106c",
+    "cell_field_control.py": "b91260462b26492e29d17da4daaa7f16be429e3b6f33e4af587bf0471e15780b",
+    "cell_field_data.py": "4cb83eb855c1ab1e322d6ac24857fbd9322c7fe4ff37e589cedf5c11f8e22f62",
+    "cell_field_evaluate.py": "bdf4d4bd3b753a062194309c9480b64408656565a00bb439f790b81c3584bf0c",
+    "cell_field_features.py": "e0ed725bcceac72c7c72eff680fb60cc7e117c989f6f7841ef9a6b27e1f24eb9",
+    "cell_field_replay.py": "321b5e5c1768d85a1c908b330d317b37013d32bf971dbd7ed78b49fe8319e795",
+    "cell_field_retention_audit.py": "81ff12bcd3e6bbf4f01ccebf1ef1fb8b36597ae09d14b814810d5f50bde702bf",
+    "cell_field_retention_control.py": "149c70769c8e867ac1cadb25c9f217bb04babeb2469351fbcd99afb3483b7091",
+    "cell_field_retention_data.py": "ddee094161773c30cac95eee50cfb4da884b390232ae302b404f1dad58906f68",
+    "cell_field_retention_evaluate.py": "1307483ba6d2f8a3cae55db5f0a7fe9a8ff365f42478097acfc5e62dfd941df2",
+    "cell_field_retention_input_audit.py": "1111b49961c27b4883b9e12fb701f4169f4fa41b793e2ecf351616a8b9a96612",
+    "cell_field_retention_replay.py": "e52e3b34d3e9ca7d5a44bfb745c5916a012e7143baf24fe72b89663ca614a8d5",
+    "cell_field_retention_run.py": "8cbc35ddb0592617ed717035390a650056a0a157090fe04c3089eb0c590658e0",
+    "cell_field_retention_score_audit.py": "e36dca63342b3758a4f66969226cf2132cdb5d3b0ed07eef9785f942abf3297b",
+    "cell_field_run.py": "ad69aad9fd309c3e260a029eebbcb29fa65504e07b98d0c010ccd15aa5e32004",
+    "cell_field_source_recovery.py": "69039ed175915e3eb13bc5f892a92ead7532894dff9c03ad0f61636d7b099a09",
+    "cell_field_state.py": "1e30b346070056123cd198413c8d82b24040179f5aa732f25dadf506e795805f",
+    "cell_learning_metrics.py": "8c20c79dff3cf0e7cbee08648e2409ddb065438a72fcf9c2be56c0646a9aaf16",
+    "cell_learning_models.py": "5b6babba7e036be6273d96455db4cf0c93699a9e6a705805f4caf6ba66f45005",
+    "feature_bundle.py": "0a40f17c0383d8289a9f66da871c81347ac2896f60d8bdacedcfbba503899fea",
+    "prepare_news_cohorts.py": "33fa46322d4e9ee341b1f5ea80f37b79713a7f9420f14df9204766f38b6b45b1",
+    "real_cell_features.py": "9e9ba37bffc729a1a8e4063e4f18f1144f4cc159de7174b22d46dff0ca78345d",
+    "real_encoder.py": "c0255c26dd9c73cfb737f6acec48f8ae1fdd07a7e7477e98691603e724fba2af",
+    "real_encoder_candidates.json": "b3ca0936519a2c5f0bd6fcfe997f8e61c953db37aaa2cdc43b641ccdce956cd6",
+    "shared_feature_contract.py": "af8558f06ffcb07565d58db240b1d827b438d3a97e79a73cbf25a8dabd8c078a",
+    "shared_feature_extract.py": "7338e9eb36f8909828b528ff926e9d3412ffa1c653d141dcea39af3cb2b0fa73",
+    "teacher_snapshot.py": "51fe50c86b107bf5deb85145d22d49be0a622bc0204c219c3bd45bcae86977a1"
+  },
+  "files": [
+    {
+      "path": "qa/stem-bakeoff/cell_field_action_audit.py",
+      "sha256": "1c339bdd02192823129532654b06f71850dc1934fd40699863dbd5304fa51a3b",
+      "git_blob_sha1": "7459a7c26fa874a3dcab024018012913193604d3",
+      "bytes": 20738
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_action_control.py",
+      "sha256": "f41522e59da1fda4a875d4aee79a7a1cbd1f67b5f9698e246876f08ae9dba7ca",
+      "git_blob_sha1": "270c3444854785560a043a78714eaf5a274b1f73",
+      "bytes": 16911
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_action_data.py",
+      "sha256": "ab67094ab5b036dc4f38c18986bcf4aaf1f3275abdb8b90c7602cfbd7e9b1599",
+      "git_blob_sha1": "672d66840ecb5e5b426f03466624a16c5967a39e",
+      "bytes": 16120
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_action_evaluate.py",
+      "sha256": "4d6ed184604755d7fefe4bc9255e936e789c305da018e66c85ea27cf426c1c89",
+      "git_blob_sha1": "34d614f5337ac99c0ac68e66b265631e30207c5c",
+      "bytes": 24198
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_action_input_audit.py",
+      "sha256": "b31734b5a510a6e61fb765f4fa2f10029b05d9668dc8bc2205635e6241b8a7b5",
+      "git_blob_sha1": "ffdacb76b7c95d79c1f8337fd671d7c87c2472df",
+      "bytes": 16060
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_action_io.py",
+      "sha256": "6e05fefd6de60681e4ff575db06b1adce5d323228a5ce2d8e5d4fcd01ea8b14b",
+      "git_blob_sha1": "808a789b9ba5d9f8335e08af19825a2ee242186d",
+      "bytes": 10580
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_action_math_audit.py",
+      "sha256": "3056585f5bb7e978b05588eb7ad3737c3698b297f3c4bdc20de33c4d82bd83fb",
+      "git_blob_sha1": "628d972b2aa578e50cd5b6319a67b25fe61f81ee",
+      "bytes": 10123
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_action_metrics.py",
+      "sha256": "f8dce1d96c0dfa9fc230442b6b3489fe733bdfaac837948b46de4c49bdbc9ec0",
+      "git_blob_sha1": "397192245f48e2fe752c4780d4701e66bb2d1efb",
+      "bytes": 4515
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_action_protocol.json",
+      "sha256": "b24f22c9f4bd4a106ee4311d6a47cc31781de808f01fd6fa9e4a60853cf4afb3",
+      "git_blob_sha1": "4c994f5e6a67b534e47645629a63bfb2ab77d99a",
+      "bytes": 11123
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_action_replay.py",
+      "sha256": "752438ed7ddcee7a3d1775b9ffcd489973ecc35222bb382be143cf851f4b3360",
+      "git_blob_sha1": "df7fa687640244c4bb7b94ece5bf6d061a1e077e",
+      "bytes": 13033
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_action_replay_audit.py",
+      "sha256": "af3f08d1f7cd247e6a2e51be2549c1871317275ac94bb855b4280b16aabc0337",
+      "git_blob_sha1": "388c7eae84122d4de42b5386e029e428741a0972",
+      "bytes": 12595
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_action_run.py",
+      "sha256": "dc1d36377cf1fd0549ac8f1009fc1b5e55d9ccd7cfecab9518d21edd45d095fe",
+      "git_blob_sha1": "efcf6b05325146c8b66a6dd7fac97a230b09318a",
+      "bytes": 25433
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_action_score_audit.py",
+      "sha256": "d56578fa7eb2ed99fe4afbb4564bb57afb314ec94c93315e25f86195272174e3",
+      "git_blob_sha1": "8a2292ff1590d817e2ba09d84a333a8c786166f0",
+      "bytes": 18817
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_audit.py",
+      "sha256": "8483782ae2441ed85d213619a0e55db4fed34a21044f0e8e37dd4f1baa2c106c",
+      "git_blob_sha1": "b5c9aafd1405db9ca49047888f6abd13a7fc7320",
+      "bytes": 31582
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_control.py",
+      "sha256": "b91260462b26492e29d17da4daaa7f16be429e3b6f33e4af587bf0471e15780b",
+      "git_blob_sha1": "0e7f810a2395ffb349dc41825ea7cf90bf6debec",
+      "bytes": 18941
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_data.py",
+      "sha256": "4cb83eb855c1ab1e322d6ac24857fbd9322c7fe4ff37e589cedf5c11f8e22f62",
+      "git_blob_sha1": "d0a4293dc4dbedf4dc69a2991c37f3c664abd8fe",
+      "bytes": 11252
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_evaluate.py",
+      "sha256": "bdf4d4bd3b753a062194309c9480b64408656565a00bb439f790b81c3584bf0c",
+      "git_blob_sha1": "0e091cc1b4ce034bb449bbf8ea262fe62dafbc5a",
+      "bytes": 13594
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_features.py",
+      "sha256": "e0ed725bcceac72c7c72eff680fb60cc7e117c989f6f7841ef9a6b27e1f24eb9",
+      "git_blob_sha1": "8d9405e9208a65cf97bb2a3e765366bd38760a5f",
+      "bytes": 6058
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_replay.py",
+      "sha256": "321b5e5c1768d85a1c908b330d317b37013d32bf971dbd7ed78b49fe8319e795",
+      "git_blob_sha1": "e3edd69c269aa043382eb9b623a4eb07df4662cd",
+      "bytes": 7168
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_retention_audit.py",
+      "sha256": "81ff12bcd3e6bbf4f01ccebf1ef1fb8b36597ae09d14b814810d5f50bde702bf",
+      "git_blob_sha1": "da228529871d515d3ce0e0d8c5bbb769e4a62d13",
+      "bytes": 17463
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_retention_control.py",
+      "sha256": "149c70769c8e867ac1cadb25c9f217bb04babeb2469351fbcd99afb3483b7091",
+      "git_blob_sha1": "8efae32e0f65278ef32170cb064c5b498e31ecf8",
+      "bytes": 19634
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_retention_data.py",
+      "sha256": "ddee094161773c30cac95eee50cfb4da884b390232ae302b404f1dad58906f68",
+      "git_blob_sha1": "0febb347935bfea5c8e3a14018375770e5254a7c",
+      "bytes": 16284
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_retention_evaluate.py",
+      "sha256": "1307483ba6d2f8a3cae55db5f0a7fe9a8ff365f42478097acfc5e62dfd941df2",
+      "git_blob_sha1": "c9f2890470e449fafaabb526622b1df9d7af2fcf",
+      "bytes": 13336
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_retention_input_audit.py",
+      "sha256": "1111b49961c27b4883b9e12fb701f4169f4fa41b793e2ecf351616a8b9a96612",
+      "git_blob_sha1": "62d610ca0fc212098d0460b4def0932ca21f618f",
+      "bytes": 12922
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_retention_replay.py",
+      "sha256": "e52e3b34d3e9ca7d5a44bfb745c5916a012e7143baf24fe72b89663ca614a8d5",
+      "git_blob_sha1": "f1bfc6a26782d1d8022b5868df3d94d1d3ef7195",
+      "bytes": 7927
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_retention_run.py",
+      "sha256": "8cbc35ddb0592617ed717035390a650056a0a157090fe04c3089eb0c590658e0",
+      "git_blob_sha1": "7b8f38eb08e808bbe44ec8510f9ff23aa3d0239a",
+      "bytes": 23055
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_retention_score_audit.py",
+      "sha256": "e36dca63342b3758a4f66969226cf2132cdb5d3b0ed07eef9785f942abf3297b",
+      "git_blob_sha1": "9c19da4a47266a9266732f42bb80aea9520b2386",
+      "bytes": 12500
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_run.py",
+      "sha256": "ad69aad9fd309c3e260a029eebbcb29fa65504e07b98d0c010ccd15aa5e32004",
+      "git_blob_sha1": "834f5dc67a371a9faff595220269f2dce48fa2c2",
+      "bytes": 20579
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_source_recovery.py",
+      "sha256": "69039ed175915e3eb13bc5f892a92ead7532894dff9c03ad0f61636d7b099a09",
+      "git_blob_sha1": "e137b14046c4ce471bfce9b5b2f35b63b5f34fdb",
+      "bytes": 4264
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_field_state.py",
+      "sha256": "1e30b346070056123cd198413c8d82b24040179f5aa732f25dadf506e795805f",
+      "git_blob_sha1": "136798e0e77d35ec820ca87c403c3e134587e8e9",
+      "bytes": 17653
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_learning_metrics.py",
+      "sha256": "8c20c79dff3cf0e7cbee08648e2409ddb065438a72fcf9c2be56c0646a9aaf16",
+      "git_blob_sha1": "c8509065ddc931cc0b722b2db53009c49c182af1",
+      "bytes": 5148
+    },
+    {
+      "path": "qa/stem-bakeoff/cell_learning_models.py",
+      "sha256": "5b6babba7e036be6273d96455db4cf0c93699a9e6a705805f4caf6ba66f45005",
+      "git_blob_sha1": "b5b260196395f1bcbd89546edca7b3b331dbd859",
+      "bytes": 11338
+    },
+    {
+      "path": "qa/stem-bakeoff/feature_bundle.py",
+      "sha256": "0a40f17c0383d8289a9f66da871c81347ac2896f60d8bdacedcfbba503899fea",
+      "git_blob_sha1": "7fecc5df60fd662793e5e8c98b532074f566504c",
+      "bytes": 12217
+    },
+    {
+      "path": "qa/stem-bakeoff/prepare_news_cohorts.py",
+      "sha256": "33fa46322d4e9ee341b1f5ea80f37b79713a7f9420f14df9204766f38b6b45b1",
+      "git_blob_sha1": "24bb5a090d4ca0c812405dbd3de590592a4f2611",
+      "bytes": 14283
+    },
+    {
+      "path": "qa/stem-bakeoff/real_cell_features.py",
+      "sha256": "9e9ba37bffc729a1a8e4063e4f18f1144f4cc159de7174b22d46dff0ca78345d",
+      "git_blob_sha1": "200f7d330f1be22b3233db5135eee6ffa16a590b",
+      "bytes": 9636
+    },
+    {
+      "path": "qa/stem-bakeoff/real_encoder.py",
+      "sha256": "c0255c26dd9c73cfb737f6acec48f8ae1fdd07a7e7477e98691603e724fba2af",
+      "git_blob_sha1": "fa51e7531ed2531df83a6b199a80268422c3a50f",
+      "bytes": 21592
+    },
+    {
+      "path": "qa/stem-bakeoff/real_encoder_candidates.json",
+      "sha256": "b3ca0936519a2c5f0bd6fcfe997f8e61c953db37aaa2cdc43b641ccdce956cd6",
+      "git_blob_sha1": "7014cc221baeb51a6bcea09795df0d08015f7198",
+      "bytes": 1361
+    },
+    {
+      "path": "qa/stem-bakeoff/shared_feature_contract.py",
+      "sha256": "af8558f06ffcb07565d58db240b1d827b438d3a97e79a73cbf25a8dabd8c078a",
+      "git_blob_sha1": "f6ebffdc196d059f9025e1d05e8b7c5e8883f874",
+      "bytes": 8869
+    },
+    {
+      "path": "qa/stem-bakeoff/shared_feature_extract.py",
+      "sha256": "7338e9eb36f8909828b528ff926e9d3412ffa1c653d141dcea39af3cb2b0fa73",
+      "git_blob_sha1": "732c00044355842c079cd044cf804527f22c67d3",
+      "bytes": 13253
+    },
+    {
+      "path": "qa/stem-bakeoff/teacher_snapshot.py",
+      "sha256": "51fe50c86b107bf5deb85145d22d49be0a622bc0204c219c3bd45bcae86977a1",
+      "git_blob_sha1": "c19217169f7ac216a4bfd2df0cabf8a6e0d2a2ae",
+      "bytes": 7784
+    },
+    {
+      "path": "qa/stem-bakeoff/test_cell_field_action_audit.py",
+      "sha256": "ac07b8dd4e9781458df06e3ff443d3a0c306d8d5d3949e15787a858efd7352ae",
+      "git_blob_sha1": "7e1829cae04dae6b5f5d72b73416fdcedd5aace7",
+      "bytes": 5282
+    },
+    {
+      "path": "qa/stem-bakeoff/test_cell_field_action_control.py",
+      "sha256": "853075e1361d32cf0037e73aa4cbaab9842e4ebba03173aa2555b67a18acb098",
+      "git_blob_sha1": "dde0a851c81bee3f8a86b41cbe83cad7bc75cc2e",
+      "bytes": 11842
+    },
+    {
+      "path": "qa/stem-bakeoff/test_cell_field_action_data.py",
+      "sha256": "863ec840b2df5f52b7f14a3cfa5a15a6dd685f011a86f0887167a5611c4cd20c",
+      "git_blob_sha1": "565b27ad9be66f48b124f918ae7d41a549812791",
+      "bytes": 10847
+    },
+    {
+      "path": "qa/stem-bakeoff/test_cell_field_action_evaluate.py",
+      "sha256": "cab24e73caeaa6fc401b8d4e7c096896c758870a7678f89006bbb0f4746ae2d0",
+      "git_blob_sha1": "692392c7c4e45157697a0528d63359987ba80099",
+      "bytes": 5094
+    },
+    {
+      "path": "qa/stem-bakeoff/test_cell_field_action_input_audit.py",
+      "sha256": "ffc59d17e45e635ebffb30be634b020963657ce7f149f31df8c9289d6700a8f8",
+      "git_blob_sha1": "58f83692b0356ef2b7cf8eebf791c92e8f3b4cc8",
+      "bytes": 7297
+    },
+    {
+      "path": "qa/stem-bakeoff/test_cell_field_action_io.py",
+      "sha256": "4ff76b7d82c560a67ff77447bbc1a91093c7c0713eefa7ef74516c84a4c2ff89",
+      "git_blob_sha1": "3ede6b289a7897b774eba7cd833fe2f5e221ec05",
+      "bytes": 10018
+    },
+    {
+      "path": "qa/stem-bakeoff/test_cell_field_action_metrics.py",
+      "sha256": "544dda68d202fda59981d34f8c8cfc5fa3270b2bd436d3acb55f665f323d2ea6",
+      "git_blob_sha1": "e14fc55517e5f418110b61fdb6aeb3a6b016b1cf",
+      "bytes": 2698
+    },
+    {
+      "path": "qa/stem-bakeoff/test_cell_field_action_replay.py",
+      "sha256": "1779e585e9568dcfcd0a3da27c0721ff98ead3ef21fd5ff634db74e93c8503f3",
+      "git_blob_sha1": "f90279b6c190869ddc9b1d623e750adee3b420c8",
+      "bytes": 8358
+    },
+    {
+      "path": "qa/stem-bakeoff/test_cell_field_action_replay_audit.py",
+      "sha256": "7800e58209e62fb5dfb87ae3d3a29f5e7a0cf33caefc31a3fd85d988c0392cfd",
+      "git_blob_sha1": "8e1c23159a87b28ba7e71a489a293fe8618592e5",
+      "bytes": 4131
+    },
+    {
+      "path": "qa/stem-bakeoff/test_cell_field_action_run.py",
+      "sha256": "0c319fb35d61811cbc71a44f536a97b23574fc266a6fa7d751af274e7a81ce2a",
+      "git_blob_sha1": "532ba668345aa1576b33c9f00bff1b8c16f867d6",
+      "bytes": 6651
+    },
+    {
+      "path": "qa/stem-bakeoff/test_cell_field_action_score_audit.py",
+      "sha256": "f064586bf660ab88e0b23720fc99de244948d241a97e95e8cccf9ebccfb9e0b0",
+      "git_blob_sha1": "c7f5978fc59141443dac90cfd23db1308254b9f1",
+      "bytes": 9065
+    }
+  ],
+  "stages": [
+    {
+      "stage": "p1",
+      "branch": "research/cell-field-v3-p1-protocol-20261024",
+      "commit": "1f982fa986b3afac83e3ee29e402b9008119ecc3",
+      "tree": "3e2dd7a69e6ccdeaa8eeea18b3e58dd38878d0fb"
+    },
+    {
+      "stage": "p2",
+      "branch": "research/cell-field-v3-p2-data-20261024",
+      "commit": "925e063c04f14c44822d0d731e9a26e1ba92773b",
+      "tree": "c8ba4b241ec3a54d56f72d20a394df4312754083",
+      "files": [
+        {
+          "name": "cell_field_action_data.py",
+          "sha256": "ab67094ab5b036dc4f38c18986bcf4aaf1f3275abdb8b90c7602cfbd7e9b1599",
+          "lines": 266
+        },
+        {
+          "name": "test_cell_field_action_data.py",
+          "sha256": "863ec840b2df5f52b7f14a3cfa5a15a6dd685f011a86f0887167a5611c4cd20c",
+          "lines": 172
+        }
+      ]
+    },
+    {
+      "stage": "p3",
+      "branch": "research/cell-field-v3-p3-input-audit-20261024",
+      "commit": "82566999770b85f78a44712723a2ce238e967639",
+      "tree": "b4aa58314524d804f22abcfa94efa506a45c0d3b",
+      "files": [
+        {
+          "name": "cell_field_action_input_audit.py",
+          "sha256": "b31734b5a510a6e61fb765f4fa2f10029b05d9668dc8bc2205635e6241b8a7b5",
+          "lines": 266
+        },
+        {
+          "name": "test_cell_field_action_input_audit.py",
+          "sha256": "ffc59d17e45e635ebffb30be634b020963657ce7f149f31df8c9289d6700a8f8",
+          "lines": 130
+        }
+      ]
+    },
+    {
+      "stage": "p4",
+      "branch": "research/cell-field-v3-p4-control-20261024",
+      "commit": "5d8c6d3424f1eb0eb6dde5421bc4f641a7e2fa85",
+      "tree": "9268a7e132cd89ffb5f14d9c06f0b0cba2d6e6ce",
+      "files": [
+        {
+          "name": "cell_field_action_control.py",
+          "sha256": "f41522e59da1fda4a875d4aee79a7a1cbd1f67b5f9698e246876f08ae9dba7ca",
+          "lines": 282
+        },
+        {
+          "name": "test_cell_field_action_control.py",
+          "sha256": "853075e1361d32cf0037e73aa4cbaab9842e4ebba03173aa2555b67a18acb098",
+          "lines": 209
+        }
+      ]
+    },
+    {
+      "stage": "p5",
+      "branch": "research/cell-field-v3-p5-inputs-replay-20261024",
+      "commit": "94df9d199611fbc4dc7d23b4b5b6cf609420e84d",
+      "tree": "532c770a3cf4ff67eac1c90774bdf4f48ab37dd3",
+      "files": [
+        {
+          "name": "cell_field_action_io.py",
+          "sha256": "6e05fefd6de60681e4ff575db06b1adce5d323228a5ce2d8e5d4fcd01ea8b14b",
+          "lines": 192
+        },
+        {
+          "name": "test_cell_field_action_io.py",
+          "sha256": "4ff76b7d82c560a67ff77447bbc1a91093c7c0713eefa7ef74516c84a4c2ff89",
+          "lines": 157
+        },
+        {
+          "name": "cell_field_action_replay.py",
+          "sha256": "752438ed7ddcee7a3d1775b9ffcd489973ecc35222bb382be143cf851f4b3360",
+          "lines": 218
+        },
+        {
+          "name": "test_cell_field_action_replay.py",
+          "sha256": "1779e585e9568dcfcd0a3da27c0721ff98ead3ef21fd5ff634db74e93c8503f3",
+          "lines": 141
+        }
+      ]
+    },
+    {
+      "stage": "p6",
+      "branch": "research/cell-field-v3-p6-runner-20261024",
+      "commit": "01f94a15b0bb48384c771d7304ff14daeb2f6a37",
+      "tree": "993034f7af4b74f552952b5b37728bb9624436fb",
+      "files": [
+        {
+          "name": "cell_field_action_run.py",
+          "sha256": "dc1d36377cf1fd0549ac8f1009fc1b5e55d9ccd7cfecab9518d21edd45d095fe",
+          "lines": 381
+        },
+        {
+          "name": "test_cell_field_action_run.py",
+          "sha256": "0c319fb35d61811cbc71a44f536a97b23574fc266a6fa7d751af274e7a81ce2a",
+          "lines": 116
+        }
+      ]
+    },
+    {
+      "stage": "p7",
+      "branch": "research/cell-field-v3-p7-evaluation-20261024",
+      "commit": "dee62ceefe23d2d60098b625c1204409dbc8756e",
+      "tree": "0bed1425b8b1b3ebbc4f58ba9e08d3c86affff47",
+      "files": [
+        {
+          "name": "cell_field_action_metrics.py",
+          "sha256": "f8dce1d96c0dfa9fc230442b6b3489fe733bdfaac837948b46de4c49bdbc9ec0",
+          "lines": 76
+        },
+        {
+          "name": "test_cell_field_action_metrics.py",
+          "sha256": "544dda68d202fda59981d34f8c8cfc5fa3270b2bd436d3acb55f665f323d2ea6",
+          "lines": 53
+        },
+        {
+          "name": "cell_field_action_evaluate.py",
+          "sha256": "4d6ed184604755d7fefe4bc9255e936e789c305da018e66c85ea27cf426c1c89",
+          "lines": 351
+        },
+        {
+          "name": "test_cell_field_action_evaluate.py",
+          "sha256": "cab24e73caeaa6fc401b8d4e7c096896c758870a7678f89006bbb0f4746ae2d0",
+          "lines": 90
+        }
+      ]
+    },
+    {
+      "stage": "p8",
+      "branch": "research/cell-field-v3-p8-math-score-audit-20261024",
+      "commit": "dd177ab84c73ea6c66238857db6991367f43cfe6",
+      "tree": "82d34fb278dceb32c1946775eef6db1ccb2ef7a6",
+      "files": [
+        {
+          "name": "cell_field_action_math_audit.py",
+          "sha256": "3056585f5bb7e978b05588eb7ad3737c3698b297f3c4bdc20de33c4d82bd83fb",
+          "lines": 144
+        },
+        {
+          "name": "cell_field_action_score_audit.py",
+          "sha256": "d56578fa7eb2ed99fe4afbb4564bb57afb314ec94c93315e25f86195272174e3",
+          "lines": 257
+        },
+        {
+          "name": "test_cell_field_action_score_audit.py",
+          "sha256": "f064586bf660ab88e0b23720fc99de244948d241a97e95e8cccf9ebccfb9e0b0",
+          "lines": 163
+        }
+      ]
+    },
+    {
+      "stage": "p9",
+      "branch": "research/cell-field-v3-p9-state-replay-audit-20261024",
+      "commit": "c69e4e7ab55456e75476be4ca9a3bcaeaea1934c",
+      "tree": "67a83f5bace75465fd1dc775292b70cf491f2c6b",
+      "files": [
+        {
+          "name": "cell_field_action_audit.py",
+          "sha256": "1c339bdd02192823129532654b06f71850dc1934fd40699863dbd5304fa51a3b",
+          "lines": 287
+        },
+        {
+          "name": "test_cell_field_action_audit.py",
+          "sha256": "ac07b8dd4e9781458df06e3ff443d3a0c306d8d5d3949e15787a858efd7352ae",
+          "lines": 102
+        },
+        {
+          "name": "cell_field_action_replay_audit.py",
+          "sha256": "af3f08d1f7cd247e6a2e51be2549c1871317275ac94bb855b4280b16aabc0337",
+          "lines": 209
+        },
+        {
+          "name": "test_cell_field_action_replay_audit.py",
+          "sha256": "7800e58209e62fb5dfb87ae3d3a29f5e7a0cf33caefc31a3fd85d988c0392cfd",
+          "lines": 76
+        }
+      ]
+    }
+  ],
+  "remote_blobs_all_equal": true,
+  "modified_existing_files": 0,
+  "added_files": 24,
+  "real_v3_classifier_run_started": false,
+  "validation_labels_opened": false,
+  "final_labels_opened": false,
+  "tests": {
+    "count": 53,
+    "passed": 53,
+    "wall_seconds": 8.501,
+    "log": "cell-action-v3-final-tests.log"
+  },
+  "format": {
+    "exit_code": 0,
+    "log": "cell-action-v3-final-format.log",
+    "output": "No changed files need formatting. Use --all for a full repository check.\n"
+  },
+  "scope": "local freeze with source committed before real V3 classifier outcomes; synthetic-only tests; no independent third-party registration",
+  "authority": "DENY_ALL",
+  "production_authority": false
+}

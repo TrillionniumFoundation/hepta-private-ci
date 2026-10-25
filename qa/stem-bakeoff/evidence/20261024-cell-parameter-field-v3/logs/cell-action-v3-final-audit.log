@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.cell-action-independent-score-audit.v3",
+  "stages": {
+    "validation": {
+      "condition_roles": 684,
+      "warmup_roles": 12,
+      "initial_roles": 36,
+      "retention_paths": 342
+    },
+    "final": {
+      "condition_roles": 1368,
+      "warmup_roles": 24,
+      "initial_roles": 72,
+      "retention_paths": 342
+    }
+  },
+  "ranking": {
+    "registered_ranking_rows": 72,
+    "completed_ranking_rows": 72,
+    "scope": "fixed finite candidate pools; no independent-anchor inference"
+  },
+  "primary_comparisons_checked": 8,
+  "secondary_comparisons_checked": 96,
+  "primary_intervals_recomputed": 8,
+  "secondary_intervals_recomputed": 96,
+  "scalar_equalities_checked": 26408,
+  "maximum_absolute_error": 9.71445146547012e-17,
+  "minimum_gold_probability": 0.002714073389031316,
+  "decisions": [
+    {
+      "head": "linear",
+      "registered_diagnostics": 4,
+      "completed_diagnostics": 4,
+      "met_diagnostics": 1,
+      "all_registered_diagnostics_met": false
+    },
+    {
+      "head": "gated",
+      "registered_diagnostics": 4,
+      "completed_diagnostics": 4,
+      "met_diagnostics": 1,
+      "all_registered_diagnostics_met": false
+    }
+  ],
+  "evaluation_sha256": "979083102199737b8392b7190d14becdb78a6404d092a23a71b7ae92f76398a5",
+  "validation_sha256": "efec00ea4f92b650a3d84305e347552a7d063285ff9b96a663c726c2e2b190f1",
+  "validation_seal_sha256": "ee2dc34704db662f16b59293c9c1a1ef12899f103962a4b500b903498c008cca",
+  "auditor_sha256": "d56578fa7eb2ed99fe4afbb4564bb57afb314ec94c93315e25f86195272174e3",
+  "evaluator_imported": false,
+  "metric_helper_imported": false,
+  "scope": "source-conditional approximate intervals; distinct diagnostics, no unified policy utility guarantee"
+}
