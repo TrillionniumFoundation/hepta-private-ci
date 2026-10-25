@@ -1,0 +1,118 @@
+{
+  "schema": "hepta.memory-current-process.raw-packet.v1",
+  "packaged_utc": "2026-10-25T15:14:43.565072+00:00",
+  "artifact": "raw-receipts.jsonl.gz",
+  "records": 548,
+  "content_records": 547,
+  "categories": {
+    "actual-process-wire-or-lifecycle-receipt": 168,
+    "cache-control-method": 2,
+    "cache-resource-and-refusal-receipt": 18,
+    "executed-source-original": 20,
+    "executed-source-original-hash-reconstructed": 1,
+    "executed-source-session-lease": 23,
+    "final-tool-or-source-bridge": 28,
+    "model-registration-or-worker-receipt": 31,
+    "offline-artifact-restore-command": 4,
+    "offline-artifact-restore-receipt": 11,
+    "packaging-method": 2,
+    "packaging-provenance": 3,
+    "packet-manifest": 1,
+    "plan-or-control": 17,
+    "previously-trained-input-metadata": 5,
+    "public-test-trust-and-source-descriptor": 72,
+    "qualification-command": 95,
+    "session-cycle-control": 25,
+    "session-operation-receipt": 18,
+    "summary-provenance": 4
+  },
+  "gzip_bytes": 2076050,
+  "gzip_sha256": "ebdfa2f275b431110cf2b27975ce5e7ec8be4a6719c15d71577dba5de0a68456",
+  "uncompressed_bytes": 9141126,
+  "uncompressed_sha256": "42ae199f205d1ae8e74e1c3e44d080ef1505b4a7cbfd9747f700b70ed6eef05b",
+  "public_manifest_sha256": "ddd10a39ec4da887d448a951bb656a3c7024c9ceb959ea22ebb2465cbe23e055",
+  "full_control_manifest_sha256": "a507ced535abf67a32052192bb87c47b5faaf6cac518a716e76af6206d8c02e3",
+  "encoding": "One UTF-8 JSON object per line; content restores exact original bytes with UTF-8 encoding. First record is the complete path/category/size/SHA manifest.",
+  "integrity": {
+    "round_trip_records_verified": 548,
+    "duplicate_paths": 0,
+    "selected_source_drift": 0,
+    "session_lease_source_files": 23,
+    "original_cycle_source_files": 21,
+    "original_source_retained": 20,
+    "original_workflow_hash_reconstructed": 1
+  },
+  "qualification": {
+    "original_cycle_and_session_cycle_included": true,
+    "command_attempt_directories": 19,
+    "original_positive": "process-positive-001",
+    "session_positive": "process-positive-002",
+    "current_registration": "positive-prepared-004",
+    "session_tests": 6,
+    "actual_session_negative_tests": 1,
+    "actual_session_positive_tests": 1,
+    "session_new_decoder_queries": 1,
+    "session_new_feature_forwards": 1,
+    "session_new_training_updates": 0,
+    "independent_future_tasks": 0,
+    "production_qualified": false,
+    "independent_hosted_process_run_in_this_packet": false
+  },
+  "preserved_failures": "All selected command attempts, their source inventories/stdout/stderr, native capacity/admission refusals, prior fix001/002 failures, cache-holder setup failures, and successful fix003/format001 are retained separately.",
+  "finalization": "Executed-source bytes remain exact. Fix003 changes a test closure into a block; its patch and independent static review are retained. Publication formatting has a separate source bridge. Packaging performs no tests, model calls, training, build, fix or format.",
+  "credential_scope": "Only allowlisted top-level process wires and public test trust/source descriptors are included. No runtime private-key/credential file or unrestricted issuer/home/cache tree is selected. Exact executed Rust source retains intentionally public deterministic non-production test signing-key construction.",
+  "exclusions": [
+    "Binary weights, adapters, ELF executables, Cargo payloads and cache archives.",
+    "Issuer/private-key files, unrestricted process homes, SQLite databases and private journals.",
+    "All H1/H2 private oracle materials, future tasks and unrelated agent evidence.",
+    "Remote baseline API payload and unexecuted candidate source copies."
+  ],
+  "limitations": [
+    "Absolute paths require relocation; hashes alone do not restore excluded weights or databases.",
+    "Frozen local working-tree qualification is distinct from an independent committed-source hosted run.",
+    "The first failed fixture root has no top-level process receipts; its command failure is retained.",
+    "Production authority, protected clock, rollback resistance and future-task quality remain open."
+  ],
+  "raw_anchors": {
+    "control/native/session-lease-cycle-001/positive-result-002.json": {
+      "bytes": 10484,
+      "sha256": "5566948c97a1036b162be7f4797ee7b6dfd964c596a45992dc04ecc0da335365"
+    },
+    "control/native/positive-prepared-004/report.json": {
+      "bytes": 1453613,
+      "sha256": "5e792c4568b7f24b4159426b25451289d8bf6b11a92b9eb7d2eeb32439bf55aa"
+    },
+    "control/native/session-lease-cycle-001/executed-source-sha256.json": {
+      "bytes": 3813,
+      "sha256": "9e080f239e8d931a312ea8e65e572466a99691a4d0c5db135d74d7989c1189f4"
+    },
+    "control/finalization/rust-fix-001.json": {
+      "bytes": 317,
+      "sha256": "6e8107f99c8f3e34ee480a462ce60ef892a8bd89dc771e85525c408078cfce99"
+    },
+    "control/finalization/rust-fix-002.json": {
+      "bytes": 308,
+      "sha256": "e5c56e8d9e48cf6cd164fcff095628483b7393f303d77831a72385b22a99146a"
+    },
+    "control/finalization/rust-fix-003.json": {
+      "bytes": 1317,
+      "sha256": "d17acd5747ef7130fa005937c92a2b8cf0a373966075e5b65c984daf62bb0b37"
+    },
+    "control/finalization/native-final-format-001.json": {
+      "bytes": 1782,
+      "sha256": "00665fc3edec5ab09d017b6c3248356b8175ed14f597e76ffb7d2ba434e90bae"
+    },
+    "control/finalization/native-publication-source-bridge.json": {
+      "bytes": 7053,
+      "sha256": "f07f54f1f88debefded9df024a6fe24badd9af3cea0f0de704d47a5e7191957a"
+    },
+    "control/build-cache-restore-012.json": {
+      "bytes": 197756,
+      "sha256": "d2cd335a8c8e99e6fea7c893ed8469b4f4645646f2c7848407354f67cd1962b6"
+    },
+    "control/check-cache-ram-hold-003.json": {
+      "bytes": 825,
+      "sha256": "faa45c8c259284406e4359aac42603cfc0140434a7cb40161da100c6cd0fa8bc"
+    }
+  }
+}
