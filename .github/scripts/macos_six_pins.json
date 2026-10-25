@@ -1,12 +1,12 @@
 {
-  "base_tree": "1370b500afd30d73ab4b762ddad6a6457590bb12",
+  "base_tree": "954880e8692bbfe9b3c113b9a897de4e03fc337b",
   "lock_blob": "8a9eab30d8957daab7dd027e86e88ca792e04a1c",
   "source_sha256": {
     ".github/scripts/macos_six_cases.json": "2dfee2e4b333cac550ae34c1b8bf76c3814cf50f4ddd411efacda658bd8c72b5",
-    ".github/scripts/macos_six_evidence.py": "ecaff8f5d275a0806bea78f019d89609c70f0cffa22d8706dce466ee6e9f036f",
+    ".github/scripts/macos_six_evidence.py": "ead9dfe5dc23de596f4d2059e372c1e2a23351779d141c94f7d7c9ce242f01ac",
     ".github/scripts/macos_six_nextest.toml": "57e6d6cce89e170f34b77abf0f25d07d4398b387617f0ea42f2d92170207e113",
     ".github/scripts/macos_six_stages.json": "51a32c9446c1ef30119f43e70e1fd5f38ef3b790804a994f7b8dfb704b4be9d4",
-    ".github/scripts/test_macos_six_evidence.py": "ba301f1d1c36b70bf742653a59e1c5b880993585849e7973428864f6bc9651bb",
+    ".github/scripts/test_macos_six_evidence.py": "1676816a9c30d5229c10cbefbb89a9b94227756a93069e008fca72106a9ffd23",
     ".github/workflows/hepta-macos-six-fixtures.yml": "b0806ad5e43a8a18a1d056f0c0b2a6052a47f07772a9dbe928843e92052cdb83",
     "codex-rs/hepta-automation/src/migration_convergence_tests.rs": "27385a89421193c215e5d6f5f530755f316c0029ac3e5023c4aa65ca519e3351",
     "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs": "7a61d40f74da627f584bd74cb76584d458c11787f469c6a7db54227bc0ae2c8b",
@@ -16,19 +16,9 @@
     "codex-rs/state/src/sqlite_recovery_image_tests.rs": "66c4357281ab623ddb5deb3dae1add55c72b1415845041841ed3b4af9bbc235e"
   },
   "changed_paths": [
-    ".github/scripts/macos_six_cases.json",
     ".github/scripts/macos_six_evidence.py",
-    ".github/scripts/macos_six_nextest.toml",
     ".github/scripts/macos_six_pins.json",
-    ".github/scripts/macos_six_stages.json",
-    ".github/scripts/test_macos_six_evidence.py",
-    ".github/workflows/hepta-macos-six-fixtures.yml",
-    "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
-    "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
-    "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
-    "codex-rs/rollout/src/recorder_tests.rs",
-    "codex-rs/sandboxing/src/seatbelt_tests.rs",
-    "codex-rs/state/src/sqlite_recovery_image_tests.rs"
+    ".github/scripts/test_macos_six_evidence.py"
   ],
   "support_paths": [
     ".github/scripts/macos_six_cases.json",

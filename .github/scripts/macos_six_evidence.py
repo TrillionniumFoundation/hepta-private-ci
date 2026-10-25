@@ -21,7 +21,7 @@ import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
 PROFILE = "macos-six"
-BASE = "e4ee552d37040a62e8cee6ef4172aae8b6680204"
+BASE = "75873a87df1c9012d0011b07fb4f1af5cb93c28e"
 MANIFEST = json.loads((HERE / "macos_six_cases.json").read_text())
 PHASES = tuple(MANIFEST["phases"])
 PROFILE_APPENDIX = '\n# Diagnostic profile only; all original defaults and overrides remain above.\n[profile.macos-six]\nretries = 0\n\n[profile.macos-six.junit]\npath = "junit.xml"\nreport-name = "macos-six"\n'
@@ -61,6 +61,8 @@ def selection(phase):
     if phase == "evidence-outbox":
         expression += " & !test(=authbus_outbox_tests::crash_delivery_child)"
     return [
+        "--color",
+        "never",
         "--locked",
         "-p",
         record["package"],

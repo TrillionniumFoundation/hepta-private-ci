@@ -1280,7 +1280,11 @@ class EvidenceTests(unittest.TestCase):
                 "--no-tests",
                 "fail",
             ]
-            env = dict(os.environ, PATH=str(fakebin) + os.pathsep + os.environ["PATH"])
+            env = dict(
+                os.environ,
+                PATH=str(fakebin) + os.pathsep + os.environ["PATH"],
+                CARGO_TERM_COLOR="always",
+            )
             result = subprocess.run(
                 [sys.executable, str(wrapper), *args],
                 cwd=self.root,
@@ -1291,6 +1295,13 @@ class EvidenceTests(unittest.TestCase):
             command = json.loads(calls.read_text().splitlines()[-1])
             self.assertEqual(command, ["nextest", "run", "--no-fail-fast", *args])
         self.assertEqual(len(calls.read_text().splitlines()), len(evidence.PHASES))
+
+    def test_every_nextest_selection_explicitly_disables_color(self):
+        for phase in evidence.PHASES:
+            args = evidence.selection(phase)
+            self.assertEqual(args[:2], ["--color", "never"])
+            self.assertEqual(args.count("--color"), 1)
+            self.assertFalse(any(arg.startswith("--color=") for arg in args))
 
     def test_exact_just_version_rejects_suffix(self):
         evidence.validate_version("just", b"just 1.59.0\n", "just 1.59.0")
@@ -1442,6 +1453,11 @@ class StageEvidenceTests(unittest.TestCase):
         ]:
             with self.subTest(value=value), self.assertRaises(ValueError):
                 self.check(value)
+
+    def test_real_nextest_sgr_reset_suffix_is_rejected(self):
+        # Batch94 raw nextest stderr ended the complete receipt with ESC[0m.
+        with self.assertRaisesRegex(ValueError, "missing/duplicate/unknown"):
+            self.check(self.token + "\x1b[0m\n")
 
     def test_not_exercised_is_rejected_even_with_complete(self):
         with self.assertRaisesRegex(ValueError, "not exercised"):
