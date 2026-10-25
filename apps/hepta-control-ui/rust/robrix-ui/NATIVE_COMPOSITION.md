@@ -62,6 +62,18 @@ history as one transaction. A checkpoint is never retained across a room or
 principal epoch; it is never taken from active IME preedit. The original focus,
 composition and adaptive-layout router remains the sole event path.
 
+`ComposerTransaction::edit` ignores a `Changed` action while the actual SDK
+editor is composing. The preview stays in the editor and does not publish an
+`Edit` command, change the workspace draft/title, replace its saved editor
+checkpoint, or trigger rejection rollback. After the SDK ends composition,
+commit and cancellation use the ordinary room-fenced edit transaction. A
+cancelled preview leaves the committed workspace draft intact; the completed
+editor state can then become the next checkpoint. The composer transaction
+tests draw a real SDK editor, establish its focus, and dispatch actual SDK
+preview/commit/cancel events. They verify this publication boundary and editor
+state preservation; physical IME and platform focus acceptance remain separate
+window tests.
+
 The host's advertised chat availability is bound to the exact rendered room.
 Original Send/Stop widgets emit typed intents after IME dispatch; the receiver
 revalidates the room and capability before queuing host work. The host must still

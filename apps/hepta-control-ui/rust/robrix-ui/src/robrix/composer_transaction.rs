@@ -45,6 +45,12 @@ impl ComposerTransaction {
         source: RoomKey,
         text: String,
     ) -> ActionResult {
+        // The SDK owns active preedit, including its selection and undo state.
+        // Publish only the later committed/cancelled edit; do not checkpoint or
+        // roll back a preview while the original input method is composing.
+        if input.is_composing() {
+            return ActionResult::Ignored;
+        }
         let result = apply_action(
             workspace,
             PresentationAction {
