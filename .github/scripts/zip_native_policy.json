@@ -1,0 +1,60 @@
+{
+  "base": "c01cc098e2ba9a8eb6acd132a4dcbb3bbebc536f",
+  "base_tree": "81198b9ca66ec85e02a4e623ed4eaa96ca6e7bc7",
+  "source_files": [
+    {
+      "path": "codex-rs/core-plugins/src/startup_sync.rs",
+      "base_blob": "19234e6a5fdbe3c34ee9ad1f0d56a128f96455a1",
+      "candidate_blob": "8c9c56cc4e8636847c55a0937f063f0f54783e72",
+      "sha256": "6c74246884e5da8d7572df4308a486b32f01005430a086370bbbfc97a44c4011"
+    },
+    {
+      "path": "codex-rs/core-plugins/src/startup_sync_tests.rs",
+      "base_blob": "8d272c95a0986e53094a6b2cf8ce8c0ba06b9960",
+      "candidate_blob": "5a4ecb40283c9f602f6c010c182e64be93d9bde2",
+      "sha256": "40cf70cd461a6f1e75fdfc0814bd393aa7fdd4515a54bee394f7e351c733b700"
+    }
+  ],
+  "locks": {
+    "codex-rs/Cargo.lock": "cce00c581bed8f27508db1769be6c4f0bd4f05fd",
+    "MODULE.bazel.lock": "42c81bc19e21627d642c88fa753d530aa27eab4b"
+  },
+  "tests": [
+    "startup_sync::tests::apple_git_without_developer_tools_is_unavailable",
+    "startup_sync::tests::archive_absolute_and_parent_paths_are_rejected",
+    "startup_sync::tests::archive_ancestor_and_leaf_links_do_not_touch_harmless_sentinel",
+    "startup_sync::tests::archive_central_guard_accepts_library_selected_absolute_prefix",
+    "startup_sync::tests::archive_central_guard_rejects_bounds_truncation_and_immediate_tail",
+    "startup_sync::tests::archive_central_guard_skips_declared_zip64_extra_and_embedded_magic",
+    "startup_sync::tests::archive_curated_and_backup_fixtures_still_stage_without_executing_payloads",
+    "startup_sync::tests::archive_mode_rejects_links_special_files_and_type_mismatch",
+    "startup_sync::tests::archive_normal_file_directory_and_executable_are_preserved",
+    "startup_sync::tests::archive_permission_bits_are_ordinary_only",
+    "startup_sync::tests::archive_preexisting_leaf_and_directory_collision_leave_sentinels_unchanged",
+    "startup_sync::tests::archive_privileged_metadata_is_parsed_and_sanitized_in_memory_only",
+    "startup_sync::tests::archive_same_zip_duplicate_records_are_rejected_before_payload_write",
+    "startup_sync::tests::archive_symlink_special_and_type_mismatch_never_create_output",
+    "startup_sync::tests::backup_archive_routes_metadata_and_backend_supplied_download_urls",
+    "startup_sync::tests::concurrent_syncs_serialize_fetches_without_skipping_remote_checks",
+    "startup_sync::tests::curated_plugins_repo_path_uses_codex_home_tmp_dir",
+    "startup_sync::tests::git_command_sanitizes_ambient_repository_environment",
+    "startup_sync::tests::github_http_routes_repository_ref_and_zipball_urls",
+    "startup_sync::tests::ordinary_clone_rejects_tracked_embedded_bare_repository",
+    "startup_sync::tests::pretrust_git_sync_ignores_repository_local_transport_config",
+    "startup_sync::tests::read_curated_plugins_sha_reads_trimmed_sha_file",
+    "startup_sync::tests::read_extracted_backup_archive_git_sha_reads_head_ref_from_extracted_repo",
+    "startup_sync::tests::read_extracted_backup_archive_git_sha_rejects_non_refs_head_target",
+    "startup_sync::tests::read_extracted_backup_archive_git_sha_rejects_path_traversal_ref",
+    "startup_sync::tests::remove_stale_curated_repo_temp_dirs_removes_only_matching_directories",
+    "startup_sync::tests::sync_openai_plugins_repo_falls_back_to_export_archive_when_no_snapshot_exists",
+    "startup_sync::tests::sync_openai_plugins_repo_falls_back_to_http_when_git_is_unavailable",
+    "startup_sync::tests::sync_openai_plugins_repo_falls_back_to_http_when_git_sync_fails",
+    "startup_sync::tests::sync_openai_plugins_repo_skips_archive_download_when_sha_matches",
+    "startup_sync::tests::sync_openai_plugins_repo_skips_export_archive_when_snapshot_exists",
+    "startup_sync::tests::sync_openai_plugins_repo_uses_http_without_git_transport",
+    "startup_sync::tests::sync_openai_plugins_repo_via_git_cleans_up_staged_dir_on_fetch_failure",
+    "startup_sync::tests::sync_openai_plugins_repo_via_git_preserves_existing_snapshot_on_validation_failure",
+    "startup_sync::tests::sync_openai_plugins_repo_via_git_succeeds_with_local_rewritten_remote",
+    "startup_sync::tests::sync_openai_plugins_repo_via_http_cleans_up_staged_dir_on_extract_failure"
+  ]
+}

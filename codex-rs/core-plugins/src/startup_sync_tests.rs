@@ -1382,3 +1382,324 @@ fn curated_repo_backup_archive_zip_bytes(sha: &str) -> Vec<u8> {
 
     writer.finish().expect("finish zip writer").into_inner()
 }
+
+#[test]
+fn archive_permission_bits_are_ordinary_only() {
+    for (raw, expected) in [
+        (0o100644, 0o644),
+        (0o100755, 0o755),
+        (0o104755, 0o755),
+        (0o102755, 0o755),
+        (0o101755, 0o755),
+        (0o107777, 0o777),
+        (0, 0),
+    ] {
+        assert_eq!(ordinary_zip_permissions(raw), expected);
+    }
+    // Integers only: never create a privileged file or apply these raw modes.
+    for raw in 0..=0o177777 {
+        assert_eq!(ordinary_zip_permissions(raw) & !0o777, 0);
+    }
+}
+
+#[test]
+fn archive_mode_rejects_links_special_files_and_type_mismatch() {
+    assert!(validate_zip_entry_mode(None, false).is_ok());
+    assert!(validate_zip_entry_mode(Some(0o100755), false).is_ok());
+    assert!(validate_zip_entry_mode(Some(0o040755), true).is_ok());
+    for mode in [0o120777, 0o010600, 0o020600, 0o060600, 0o140600] {
+        assert!(validate_zip_entry_mode(Some(mode), false).is_err());
+        assert!(validate_zip_entry_mode(Some(mode), true).is_err());
+    }
+    assert!(validate_zip_entry_mode(Some(0o040755), false).is_err());
+    assert!(validate_zip_entry_mode(Some(0o100755), true).is_err());
+}
+
+// All payloads are harmless bytes and are never executed. Raw special/privileged
+// modes are patched into an in-memory central header, never chmod'ed onto files.
+fn archive_policy_fixture(name: &str, raw_mode: u32) -> Vec<u8> {
+    let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    writer
+        .start_file(name, SimpleFileOptions::default().unix_permissions(0o600))
+        .expect("start harmless entry");
+    writer
+        .write_all(b"harmless test bytes")
+        .expect("write bytes");
+    let mut bytes = writer.finish().expect("finish fixture").into_inner();
+    let central = bytes
+        .windows(4)
+        .position(|part| part == b"PK\x01\x02")
+        .expect("single central header");
+    bytes[central + 5] = 3; // Unix creator: external high word is a Unix mode.
+    bytes[central + 38..central + 42].copy_from_slice(&(raw_mode << 16).to_le_bytes());
+    bytes
+}
+
+#[test]
+fn archive_privileged_metadata_is_parsed_and_sanitized_in_memory_only() {
+    for raw in [0o104755, 0o102755, 0o101755, 0o107777] {
+        let bytes = archive_policy_fixture("root/never-written", raw);
+        let mut archive = zip::ZipArchive::new(std::io::Cursor::new(bytes)).expect("parse");
+        let entry = archive.by_index(0).expect("entry");
+        assert_eq!(entry.unix_mode(), Some(raw));
+        let safe = ordinary_zip_permissions(entry.unix_mode().expect("mode"));
+        assert_eq!(safe & !0o777, 0);
+        assert_eq!(safe, raw & 0o777);
+        // Intentionally do NOT call extract_zipball_to_dir or set_permissions.
+    }
+}
+
+#[test]
+fn archive_normal_file_directory_and_executable_are_preserved() {
+    let stage = tempdir().expect("private staging");
+    extract_zipball_to_dir(&archive_policy_fixture("root/sub/", 0o040755), stage.path())
+        .expect("plain directory");
+    extract_zipball_to_dir(
+        &archive_policy_fixture("root/sub/data", 0o100644),
+        stage.path(),
+    )
+    .expect("plain file");
+    extract_zipball_to_dir(
+        &archive_policy_fixture("root/sub/run", 0o100755),
+        stage.path(),
+    )
+    .expect("ordinary executable permissions; never execute it");
+    assert!(stage.path().join("sub").is_dir());
+    assert_eq!(
+        std::fs::read(stage.path().join("sub/data")).expect("read"),
+        b"harmless test bytes"
+    );
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        assert_eq!(
+            std::fs::metadata(stage.path().join("sub/data"))
+                .expect("metadata")
+                .permissions()
+                .mode()
+                & 0o7777,
+            0o644
+        );
+        assert_eq!(
+            std::fs::metadata(stage.path().join("sub/run"))
+                .expect("metadata")
+                .permissions()
+                .mode()
+                & 0o7777,
+            0o755
+        );
+    }
+}
+
+#[test]
+fn archive_symlink_special_and_type_mismatch_never_create_output() {
+    for (name, raw) in [
+        ("root/link", 0o120777),
+        ("root/fifo", 0o010600),
+        ("root/device", 0o020600),
+        ("root/socket", 0o140600),
+        ("root/mismatch", 0o040755),
+        ("root/mismatch/", 0o100644),
+    ] {
+        let stage = tempdir().expect("private staging");
+        assert!(extract_zipball_to_dir(&archive_policy_fixture(name, raw), stage.path()).is_err());
+        assert_eq!(std::fs::read_dir(stage.path()).expect("entries").count(), 0);
+    }
+}
+
+#[test]
+fn archive_preexisting_leaf_and_directory_collision_leave_sentinels_unchanged() {
+    let stage = tempdir().expect("private staging");
+    let sentinel = stage.path().join("sentinel");
+    std::fs::write(&sentinel, b"unchanged").expect("create harmless sentinel");
+    assert!(
+        extract_zipball_to_dir(
+            &archive_policy_fixture("root/sentinel", 0o100600),
+            stage.path()
+        )
+        .is_err()
+    );
+    assert_eq!(
+        std::fs::read(&sentinel).expect("read sentinel"),
+        b"unchanged"
+    );
+    assert!(
+        extract_zipball_to_dir(
+            &archive_policy_fixture("root/sentinel/child", 0o100600),
+            stage.path()
+        )
+        .is_err()
+    );
+    assert_eq!(
+        std::fs::read(&sentinel).expect("read sentinel"),
+        b"unchanged"
+    );
+    let bytes = archive_policy_fixture("root/one", 0o100600);
+    extract_zipball_to_dir(&bytes, stage.path()).expect("first entry");
+    assert!(extract_zipball_to_dir(&bytes, stage.path()).is_err());
+    assert_eq!(
+        std::fs::read(stage.path().join("one")).expect("read original"),
+        b"harmless test bytes"
+    );
+}
+
+#[test]
+fn archive_absolute_and_parent_paths_are_rejected() {
+    for name in ["/absolute", "root/../../escape", "../escape"] {
+        let stage = tempdir().expect("private staging");
+        assert!(
+            extract_zipball_to_dir(&archive_policy_fixture(name, 0o100600), stage.path()).is_err()
+        );
+        assert_eq!(std::fs::read_dir(stage.path()).expect("entries").count(), 0);
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn archive_ancestor_and_leaf_links_do_not_touch_harmless_sentinel() {
+    use std::os::unix::fs::symlink;
+    let stage = tempdir().expect("private staging");
+    let outside = tempdir().expect("owned harmless sentinel directory");
+    let sentinel = outside.path().join("sentinel");
+    std::fs::write(&sentinel, b"unchanged").expect("sentinel");
+    symlink(outside.path(), stage.path().join("ancestor")).expect("owned directory link");
+    symlink(&sentinel, stage.path().join("leaf")).expect("owned leaf link");
+    for name in ["root/ancestor/sentinel", "root/leaf"] {
+        assert!(
+            extract_zipball_to_dir(&archive_policy_fixture(name, 0o100600), stage.path()).is_err()
+        );
+        assert_eq!(
+            std::fs::read(&sentinel).expect("read sentinel"),
+            b"unchanged"
+        );
+    }
+}
+
+#[test]
+fn archive_curated_and_backup_fixtures_still_stage_without_executing_payloads() {
+    let sha = "0123456789abcdef0123456789abcdef01234567";
+    let curated = tempdir().expect("curated private staging");
+    extract_zipball_to_dir(&curated_repo_zipball_bytes(sha), curated.path())
+        .expect("curated extract");
+    ensure_marketplace_manifest_exists(curated.path()).expect("curated manifest");
+    let backup = tempdir().expect("backup private staging");
+    extract_zipball_to_dir(&curated_repo_backup_archive_zip_bytes(sha), backup.path())
+        .expect("backup extract");
+    ensure_marketplace_manifest_exists(backup.path()).expect("backup manifest");
+    assert_eq!(
+        read_extracted_backup_archive_git_sha(backup.path()).expect("backup sha"),
+        Some(sha.to_string())
+    );
+}
+
+// These fixtures stay in memory; only an accepted ordinary archive can reach
+// extraction. No fixture payload is executed and no special modes are set.
+fn archive_two_central_records_fixture() -> Vec<u8> {
+    let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    for name in ["root/one", "root/two"] {
+        writer
+            .start_file(name, SimpleFileOptions::default().unix_permissions(0o600))
+            .expect("ordinary entry");
+        writer
+            .write_all(b"harmless bytes")
+            .expect("ordinary payload");
+    }
+    writer.finish().expect("finish").into_inner()
+}
+
+#[test]
+fn archive_same_zip_duplicate_records_are_rejected_before_payload_write() {
+    let mut bytes = archive_two_central_records_fixture();
+    let positions: Vec<_> = bytes
+        .windows(8)
+        .enumerate()
+        .filter_map(|(i, part)| (part == b"root/two").then_some(i))
+        .collect();
+    assert_eq!(positions.len(), 2); // One local and one central filename.
+    for position in positions {
+        bytes[position..position + 8].copy_from_slice(b"root/one");
+    }
+    let archive = ZipArchive::new(std::io::Cursor::new(bytes.as_slice()))
+        .expect("ZIP2 accepts duplicate records");
+    assert_eq!(archive.len(), 1); // Demonstrate the exact parser's cardinality loss.
+    assert!(
+        validate_selected_zip_central_directory(
+            &bytes,
+            archive.central_directory_start(),
+            archive.len()
+        )
+        .is_err()
+    );
+    let stage = tempfile::tempdir().expect("stage");
+    assert!(extract_zipball_to_dir(&bytes, stage.path()).is_err());
+    assert_eq!(
+        std::fs::read_dir(stage.path())
+            .expect("stage entries")
+            .count(),
+        0
+    );
+}
+
+#[test]
+fn archive_central_guard_accepts_library_selected_absolute_prefix() {
+    let ordinary = archive_two_central_records_fixture();
+    let mut bytes = b"harmless prefix PK\x01\x02".to_vec();
+    bytes.extend_from_slice(&ordinary);
+    let archive = ZipArchive::new(std::io::Cursor::new(bytes.as_slice())).expect("prefixed ZIP");
+    assert_eq!(archive.len(), 2);
+    assert!(archive.central_directory_start() >= 22);
+    assert!(
+        validate_selected_zip_central_directory(
+            &bytes,
+            archive.central_directory_start(),
+            archive.len()
+        )
+        .is_ok()
+    );
+}
+
+fn archive_central_framing_fixture(name: &[u8], extra: &[u8], comment: &[u8]) -> Vec<u8> {
+    let mut bytes = vec![0; 46];
+    bytes[..4].copy_from_slice(b"PK\x01\x02");
+    for (offset, data) in [(28, name), (30, extra), (32, comment)] {
+        bytes[offset..offset + 2]
+            .copy_from_slice(&u16::try_from(data.len()).expect("u16 field").to_le_bytes());
+    }
+    bytes.extend_from_slice(name);
+    bytes.extend_from_slice(extra);
+    bytes.extend_from_slice(comment);
+    bytes
+}
+
+#[test]
+fn archive_central_guard_skips_declared_zip64_extra_and_embedded_magic() {
+    // ZIP64 tag with a 16-byte payload; framing does not interpret expanded sizes.
+    let extra = [
+        1, 0, 16, 0, 80, 75, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    ];
+    let mut bytes =
+        archive_central_framing_fixture(b"namePK\x01\x02", &extra, b"commentPK\x01\x02");
+    assert!(validate_selected_zip_central_directory(&bytes, 0, 1).is_ok());
+    bytes.extend_from_slice(b"PK\x06\x06"); // ZIP64 end framing is not a central entry.
+    assert!(validate_selected_zip_central_directory(&bytes, 0, 1).is_ok());
+}
+
+#[test]
+fn archive_central_guard_rejects_bounds_truncation_and_immediate_tail() {
+    let bytes = archive_central_framing_fixture(b"name", b"extra", b"comment");
+    for end in 0..bytes.len() {
+        assert!(validate_selected_zip_central_directory(&bytes[..end], 0, 1).is_err());
+    }
+    for start in [u64::MAX, bytes.len() as u64 + 1] {
+        assert!(validate_selected_zip_central_directory(&bytes, start, 1).is_err());
+    }
+    assert!(validate_selected_zip_central_directory(&bytes, 0, usize::MAX).is_err());
+    assert!(validate_selected_zip_central_directory(&[], 0, 0).is_ok());
+    assert!(validate_selected_zip_central_directory(b"PK\x01\x02", 0, 0).is_err());
+    let mut tail = bytes.clone();
+    tail.extend_from_slice(b"PK\x01\x02");
+    assert!(validate_selected_zip_central_directory(&tail, 0, 1).is_err());
+    let mut other_tail = bytes;
+    other_tail.extend_from_slice(b"PK\x05\x05PK\x01\x02");
+    assert!(validate_selected_zip_central_directory(&other_tail, 0, 1).is_ok());
+}

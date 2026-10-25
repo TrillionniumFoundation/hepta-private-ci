@@ -1,0 +1,60 @@
+name: ZIP2 source-only Linux native qualification
+on:
+  push:
+    branches: [research/dot-zip-owner-native-c01cc-20261025]
+permissions:
+  contents: read
+jobs:
+  linux:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Start shared budget before checkout
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os,time
+          with open(os.environ['GITHUB_ENV'],'a') as f:
+              f.write('ZIP_STARTED_MONOTONIC_NS='+str(time.monotonic_ns())+'\n')
+          PY
+      - name: Checkout reviewed control and source overlay
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          path: control
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Checkout unchanged exact baseline
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          path: source
+          ref: c01cc098e2ba9a8eb6acd132a4dcbb3bbebc536f
+          persist-credentials: false
+      - name: Set up pinned Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Install pinned native test runner
+        timeout-minutes: 5
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest@0.9.103
+      - name: Test control only, no Cargo
+        shell: bash
+        run: |
+          python3 -m unittest discover -s control/.github/scripts -p test_zip_native_qualification.py -v
+          python3 -O -m unittest discover -s control/.github/scripts -p test_zip_native_qualification.py -v
+      - name: Source-bound supervised native owner tests
+        shell: bash
+        run: |
+          python3 control/.github/scripts/zip_native_qualification.py \
+            "$GITHUB_WORKSPACE/control" "$GITHUB_WORKSPACE/source" "$RUNNER_TEMP/zip-native"
+      - name: Upload safe receipt only
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: zip-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/zip-native/public/receipt.json
+          if-no-files-found: error
+          retention-days: 7

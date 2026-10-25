@@ -1035,22 +1035,62 @@ fn read_sha_file(sha_path: &Path) -> Option<String> {
         .filter(|sha| !sha.is_empty())
 }
 
+// Bound to ZIP 2.4.2: its selected central records are parsed sequentially before
+// insertion into an IndexMap can discard colliding decoded names. Walk exactly
+// the visible count; another central record proves a lost entry (or an ignored
+// immediate central-looking tail, which we conservatively reject). This is NOT
+// a whole-input/tail validator and does not select EOCDs or decode filenames.
+fn validate_selected_zip_central_directory(
+    bytes: &[u8],
+    directory_start: u64,
+    visible_count: usize,
+) -> Result<(), String> {
+    let invalid = || "invalid or colliding curated plugins zip central directory".to_string();
+    let mut position = usize::try_from(directory_start).map_err(|_| invalid())?;
+    if position > bytes.len() || visible_count > (bytes.len() - position) / 46 {
+        return Err(invalid());
+    }
+    for _ in 0..visible_count {
+        let fixed_end = position.checked_add(46).ok_or_else(invalid)?;
+        let fixed = bytes.get(position..fixed_end).ok_or_else(invalid)?;
+        if !fixed.starts_with(b"PK\x01\x02") {
+            return Err(invalid());
+        }
+        let mut end = fixed_end;
+        for offset in [28, 30, 32] {
+            let length = usize::from(u16::from_le_bytes([fixed[offset], fixed[offset + 1]]));
+            end = end.checked_add(length).ok_or_else(invalid)?;
+        }
+        if end > bytes.len() || end <= position {
+            return Err(invalid());
+        }
+        position = end;
+    }
+    if bytes[position..].starts_with(b"PK\x01\x02") {
+        return Err(invalid());
+    }
+    Ok(())
+}
+
 fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String> {
-    std::fs::create_dir_all(destination).map_err(|err| {
-        format!(
-            "failed to create curated plugins extraction directory {}: {err}",
-            destination.display()
-        )
-    })?;
+    // Callers supply a fresh private TempDir. Do not traverse an existing link.
+    ensure_zip_directory(destination)?;
 
     let cursor = std::io::Cursor::new(bytes);
     let mut archive = ZipArchive::new(cursor)
         .map_err(|err| format!("failed to open curated plugins zip archive: {err}"))?;
 
+    validate_selected_zip_central_directory(
+        bytes,
+        archive.central_directory_start(),
+        archive.len(),
+    )?;
+
     for index in 0..archive.len() {
         let mut entry = archive
             .by_index(index)
             .map_err(|err| format!("failed to read curated plugins zip entry: {err}"))?;
+        validate_zip_entry_mode(entry.unix_mode(), entry.is_dir())?;
         let Some(relative_path) = entry.enclosed_name() else {
             return Err(format!(
                 "curated plugins zip entry `{}` escapes extraction root",
@@ -1075,61 +1115,114 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
 
         let output_path = destination.join(&output_relative);
         if entry.is_dir() {
-            std::fs::create_dir_all(&output_path).map_err(|err| {
+            ensure_zip_subdirectories(destination, &output_relative)?;
+            continue;
+        }
+        if let Some(parent) = output_relative.parent() {
+            ensure_zip_subdirectories(destination, parent)?;
+        }
+        // Atomic exclusive creation rejects parser-visible path collisions and pre-existing
+        // leaf symlinks/files. Never overwrite an existing extraction target.
+        let mut output = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&output_path)
+            .map_err(|err| {
                 format!(
-                    "failed to create curated plugins directory {}: {err}",
+                    "failed to create curated plugins file {}: {err}",
                     output_path.display()
                 )
             })?;
-            continue;
-        }
-
-        if let Some(parent) = output_path.parent() {
-            std::fs::create_dir_all(parent).map_err(|err| {
-                format!(
-                    "failed to create curated plugins directory {}: {err}",
-                    parent.display()
-                )
-            })?;
-        }
-        let mut output = std::fs::File::create(&output_path).map_err(|err| {
-            format!(
-                "failed to create curated plugins file {}: {err}",
-                output_path.display()
-            )
-        })?;
         std::io::copy(&mut entry, &mut output).map_err(|err| {
             format!(
                 "failed to write curated plugins file {}: {err}",
                 output_path.display()
             )
         })?;
-        apply_zip_permissions(&entry, &output_path)?;
+        apply_zip_permissions(entry.unix_mode(), &output)?;
     }
 
     Ok(())
 }
 
+// Only ordinary rwx bits may be applied; never SUID, SGID, sticky, or type bits.
+#[cfg(any(unix, test))]
+fn ordinary_zip_permissions(mode: u32) -> u32 {
+    mode & 0o777
+}
+
+fn validate_zip_entry_mode(mode: Option<u32>, directory: bool) -> Result<(), String> {
+    let file_type = mode.unwrap_or(0) & 0o170000;
+    let expected_type = if directory { 0o040000 } else { 0o100000 };
+    if file_type != 0 && file_type != expected_type {
+        return Err("curated plugins zip entry is a symlink or unsupported file type".to_string());
+    }
+    Ok(())
+}
+
+fn ensure_zip_directory(path: &Path) -> Result<(), String> {
+    let metadata = match std::fs::symlink_metadata(path) {
+        Ok(metadata) => metadata,
+        Err(err) if err.kind() == std::io::ErrorKind::NotFound => {
+            std::fs::create_dir(path).map_err(|err| {
+                format!(
+                    "failed to create curated plugins directory {}: {err}",
+                    path.display()
+                )
+            })?;
+            std::fs::symlink_metadata(path).map_err(|err| {
+                format!(
+                    "failed to inspect curated plugins directory {}: {err}",
+                    path.display()
+                )
+            })?
+        }
+        Err(err) => {
+            return Err(format!(
+                "failed to inspect curated plugins directory {}: {err}",
+                path.display()
+            ));
+        }
+    };
+    if metadata.file_type().is_symlink() || !metadata.is_dir() {
+        return Err("curated plugins extraction directory is not a plain directory".to_string());
+    }
+    Ok(())
+}
+
+fn ensure_zip_subdirectories(root: &Path, relative: &Path) -> Result<(), String> {
+    let mut current = root.to_path_buf();
+    for component in relative.components() {
+        let std::path::Component::Normal(component) = component else {
+            return Err("curated plugins directory escapes extraction root".to_string());
+        };
+        current.push(component);
+        ensure_zip_directory(&current)?;
+    }
+    Ok(())
+}
+
 #[cfg(unix)]
-fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> Result<(), String> {
+fn apply_zip_permissions(mode: Option<u32>, output: &std::fs::File) -> Result<(), String> {
     use std::os::unix::fs::PermissionsExt;
 
-    let Some(mode) = entry.unix_mode() else {
+    let Some(mode) = mode else {
         return Ok(());
     };
-    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode)).map_err(|err| {
-        format!(
-            "failed to set permissions on curated plugins file {}: {err}",
-            output_path.display()
-        )
-    })
+    let safe_mode = ordinary_zip_permissions(mode);
+    // Explicit OS boundary guard: even a future sanitizer regression must not
+    // apply privileged or file-type bits. Tests never apply raw privileged modes.
+    if safe_mode & !0o777 != 0 {
+        return Err("curated plugins permission sanitizer rejected unsafe bits".to_string());
+    }
+    // Apply to the already-open file, not a re-resolved pathname.
+    output
+        .set_permissions(std::fs::Permissions::from_mode(safe_mode))
+        .map_err(|err| format!("failed to set ordinary curated plugins file permissions: {err}"))
 }
 
 #[cfg(not(unix))]
-fn apply_zip_permissions(
-    _entry: &zip::read::ZipFile<'_>,
-    _output_path: &Path,
-) -> Result<(), String> {
+fn apply_zip_permissions(_mode: Option<u32>, _output: &std::fs::File) -> Result<(), String> {
     Ok(())
 }
 
