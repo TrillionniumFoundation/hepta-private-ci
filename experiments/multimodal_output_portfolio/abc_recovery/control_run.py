@@ -2,6 +2,7 @@
 
 import argparse
 import gzip
+import hashlib
 import json
 from pathlib import Path
 import resource
@@ -30,6 +31,9 @@ def pins():
 def freeze(args):
     protocol = json.loads(args.protocol.read_text())
     training = json.loads((args.training / "result.json").read_text())
+    training_registration = json.loads((args.training / "registration.json").read_text())
+    if json.loads((args.training / "whole-process-cost.json").read_text())["exit_code"] != 0:
+        raise ValueError("Training process did not finish successfully")
     qualification = json.loads((args.qualification / "result.json").read_text())
     expected = {(seed, arm) for seed in protocol["training_seeds"] for arm in protocol["training"]["arms"]}
     models = {(row["seed"], row["arm"]): row for row in training["models"]}
@@ -43,14 +47,27 @@ def freeze(args):
     if (file_sha(primary) != qualification["primary_file_sha256"]
             or file_sha(secondary) != qualification["secondary_file_sha256"]):
         raise ValueError("Qualified observer files changed")
+    for name, path in (("protocol", args.protocol), ("manifest", args.manifest), ("primary", primary),
+                       ("qualification", args.qualification / "result.json")):
+        if training_registration["files_sha256"][name] != file_sha(path):
+            raise ValueError("Generator training used different frozen " + name)
+    if training_registration["amendment_sha256"] != file_sha(args.protocol.with_name("protocol-amendment-001.json")):
+        raise ValueError("Generator training used a different prospective amendment")
+    current_pins = pins()
+    for name in ("abc_recovery/runtime.py", "abc_recovery/emission.py", "abc_recovery/media.py",
+                 "v7/model.py", "v7/data.py", "v6/observer.py"):
+        if training_registration["source_sha256"][name] != current_pins[name]:
+            raise ValueError("Training and deployment implementation differ: " + name)
     for row in models.values():
-        if file_sha(row["model_path"]) != row["model_file_sha256"]:
-            raise ValueError("Trained generator file changed")
+        if (file_sha(row["model_path"]) != row["model_file_sha256"]
+                or file_sha(Path(row["model_path"]).with_name("summary.json")) != row["summary_file_sha256"]):
+            raise ValueError("Trained generator or its producer summary changed")
     args.output.mkdir(parents=True, exist_ok=False)
     registration = {"schema": "hepta.abc.control-census-registration.v1", "registered_unix_ns": time.time_ns(),
         "source_sha256": pins(), "protocol_sha256": file_sha(args.protocol),
         "amendment_sha256": file_sha(args.protocol.with_name("protocol-amendment-001.json")),
         "manifest_sha256": file_sha(args.manifest), "training_result_sha256": file_sha(args.training / "result.json"),
+        "training_registration_sha256": file_sha(args.training / "registration.json"),
         "qualification_result_sha256": file_sha(args.qualification / "result.json"),
         "paths": {name: str(getattr(args, name).resolve()) for name in
                   ("cache", "manifest", "protocol", "training", "qualification", "primary", "output")},
@@ -61,6 +78,22 @@ def freeze(args):
         "dynamic_risk_global_optimality_claim": False}
     write_json(args.output / "registration.json", registration)
     return args.output / "registration.json"
+
+
+def validate_snapshot(snapshot, row, protocol, manifest_sha, primary_sha):
+    """Bind an arm label to the actual frozen training recipe and snapshot."""
+    effective = dict(protocol, primary_observer_parameter_sha256=primary_sha)
+    canonical = json.dumps(effective, sort_keys=True, separators=(",", ":")).encode()
+    arm = row["arm"]
+    expected = {"profile": arm, "seed": row["seed"], "source_manifest_sha256": manifest_sha,
+                "protocol_canonical_sha256": hashlib.sha256(canonical).hexdigest(),
+                "actual_output_score_used_in_optimizer": arm != "sft_continuation",
+                "risk_aversion": protocol["utility"]["risk_aversion"] if arm == "output_ndu" else 0.,
+                "native_auxiliary_weight": protocol["training"]["sft_continuation_supervised_weight"
+                    if arm == "sft_continuation" else "output_RL_auxiliary_supervised_weight"]}
+    if (snapshot.fingerprint != row["snapshot_sha256"]
+            or any(snapshot.metadata.get(key) != value for key, value in expected.items())):
+        raise ValueError("Snapshot is mislabeled or belongs to a different training objective/census")
 
 
 def load_bundle(directory):
@@ -164,7 +197,11 @@ def execute(registration_path):
     fitted, evaluated = [], []
     try:
         if (pins() != registration["source_sha256"] or file_sha(paths["protocol"]) != registration["protocol_sha256"]
-                or file_sha(paths["manifest"]) != registration["manifest_sha256"]):
+                or file_sha(paths["manifest"]) != registration["manifest_sha256"]
+                or file_sha(paths["training"] / "registration.json") != registration["training_registration_sha256"]
+                or file_sha(paths["training"] / "result.json") != registration["training_result_sha256"]
+                or file_sha(paths["qualification"] / "result.json") != registration["qualification_result_sha256"]
+                or file_sha(paths["protocol"].with_name("protocol-amendment-001.json")) != registration["amendment_sha256"]):
             raise ValueError("Frozen control execution inputs changed")
         import torch
         from ..v7.evaluation import load_reward
@@ -175,10 +212,13 @@ def execute(registration_path):
         corpus = load_roles(paths["cache"], paths["manifest"], roles=tuple(registration["source_roles_read"]))
         observers = {name: load_reward(path, registration["observer_file_sha256"][name])[0]
                      for name, path in (("primary", paths["primary"]), ("secondary", registration["secondary"]))}
+        qualified = json.loads((paths["qualification"] / "result.json").read_text())
+        primary_sha = qualified["observers"]["primary"]["parameter_sha256"]
         for model in registration["generators"]:
             seed, arm = model["seed"], model["arm"]
             print(json.dumps({"phase": "fit_start", "seed": seed, "arm": arm}), flush=True)
             snapshot = Snapshot.load(model["model_path"], expected_file_sha256=model["model_file_sha256"])
+            validate_snapshot(snapshot, model, protocol, corpus.manifest["manifest_sha256"], primary_sha)
             destination = output / f"seed-{seed}" / arm
             fitted.append(fit_model(snapshot, corpus, observers["primary"], destination, protocol, seed, arm))
             print(json.dumps({"phase": "fit_complete", "seed": seed, "arm": arm}), flush=True)
@@ -189,7 +229,10 @@ def execute(registration_path):
                 seed, arm = model["seed"], model["arm"]
                 print(json.dumps({"phase": "evaluation_start", "seed": seed, "arm": arm}), flush=True)
                 snapshot = Snapshot.load(model["model_path"], expected_file_sha256=model["model_file_sha256"])
+                validate_snapshot(snapshot, model, protocol, corpus.manifest["manifest_sha256"], primary_sha)
                 destination = Path(fitted_row["directory"])
+                if file_sha(destination / "policies/policy-freeze.json") != fitted_row["policy_freeze_sha256"]:
+                    raise ValueError("Policy freeze record changed after the pre-evaluation barrier")
                 bundle = load_bundle(destination / "policies")
                 evaluated.append(evaluate_model(snapshot, corpus, observers, destination, bundle, protocol, seed, arm, rows))
                 print(json.dumps({"phase": "evaluation_complete", "seed": seed, "arm": arm}), flush=True)

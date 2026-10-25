@@ -1,6 +1,7 @@
 """Integrated finite actual-output training, freeze, deployment and dual scoring."""
 
 import io
+import hashlib
 import json
 from pathlib import Path
 import tempfile
@@ -12,10 +13,28 @@ from ..v6.data import SourceCorpus, SourceSplit
 from ..v6.observer import Recognizer
 from ..v7.model import SlotPortfolio
 from ..v7.snapshot import Snapshot
-from .control_run import evaluate_model, fit_model, load_bundle
+from .control_run import evaluate_model, fit_model, load_bundle, validate_snapshot
 
 
 class ControlRunTests(unittest.TestCase):
+    def test_parameter_identity_does_not_substitute_for_training_recipe_identity(self):
+        protocol = json.loads(Path(__file__).with_name("protocol.json").read_text())
+        canonical = json.dumps(dict(protocol, primary_observer_parameter_sha256="primary"),
+                               sort_keys=True, separators=(",", ":")).encode()
+        metadata = {"profile": "output_ndu", "seed": 17, "source_manifest_sha256": "sources",
+                    "protocol_canonical_sha256": hashlib.sha256(canonical).hexdigest(),
+                    "actual_output_score_used_in_optimizer": True, "risk_aversion": 2.,
+                    "native_auxiliary_weight": .05}
+        snapshot = Snapshot(SlotPortfolio(), metadata)
+        row = {"arm": "output_ndu", "seed": 17, "snapshot_sha256": snapshot.fingerprint}
+        validate_snapshot(snapshot, row, protocol, "sources", "primary")
+        for key, wrong in (("profile", "output_mean"), ("seed", 29), ("risk_aversion", 0.),
+                           ("native_auxiliary_weight", 1.), ("source_manifest_sha256", "other")):
+            changed = Snapshot(snapshot._model, dict(metadata, **{key: wrong}))
+            self.assertEqual(changed.fingerprint, snapshot.fingerprint)
+            with self.assertRaises(ValueError):
+                validate_snapshot(changed, row, protocol, "sources", "primary")
+
     def test_complete_small_synthetic_pipeline_never_uses_evaluation_for_fit(self):
         torch.set_num_threads(2)
         with torch.random.fork_rng():
