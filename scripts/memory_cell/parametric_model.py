@@ -24,6 +24,13 @@ from native import digest
 from pretrained import LoRAReader, frozen_digest
 from source_binding_margin import binding_margin_loss
 from source_completion_loss import completion_loss
+from source_value_margin_v2 import (
+    check_value_receipt_size,
+    distinct_value_negatives,
+    summarize_value_charges,
+    value_margin_loss,
+)
+from tensor_contract import tensor_layout
 
 SYSTEM = (
     "Answer using stored memory in the specified scope. Return only the value. "
@@ -119,7 +126,8 @@ class SourceMemoryCell:
                 or type(learning_rate) not in (int, float)
                 or not math.isfinite(learning_rate)
                 or not 0 < learning_rate <= 0.1
-                or objective not in ("completion_ce", "source_margin")
+                or objective
+                not in ("completion_ce", "source_margin", "source_value_margin_v2")
                 or type(facts) is not list
                 or not 1 <= len(facts) <= 128
                 or type(templates) is not list
@@ -167,6 +175,11 @@ class SourceMemoryCell:
                 ):
                     raise ValueError("value plus EOS must fit the generation budget")
                 value_tokens.append(tokens)
+            value_candidates = (
+                distinct_value_negatives(facts, value_tokens)
+                if objective == "source_value_margin_v2"
+                else []
+            )
             prepared, negatives = [], []
             maximum = min(256, self.reader.model.config.max_position_embeddings)
             for i, fact in enumerate(facts):
@@ -230,11 +243,30 @@ class SourceMemoryCell:
                 schedule.extend(order[: steps - len(schedule)])
             losses, input_tokens, supervised_tokens, forwards = [], 0, 0, 0
             accessed = set()
+            value_charges, negative_schedule = [], []
             self.reader.model.train()
             for index in schedule:
                 i, prompt, ids, labels = prepared[index]
                 optimizer.zero_grad(set_to_none=True)
-                if objective == "source_margin":
+                if objective == "source_value_margin_v2":
+                    candidates = value_candidates[i]
+                    negative = candidates[fact_visits[i] % len(candidates)]
+                    loss, charge = value_margin_loss(
+                        self.reader.model,
+                        self.reader.tokenizer,
+                        prompt,
+                        facts[i]["value"],
+                        facts[negative]["value"],
+                        maximum=maximum,
+                    )
+                    used_tokens, supervised, used_forwards = (
+                        charge["actual_input_tokens"],
+                        charge["actual_supervised_tokens"],
+                        charge["actual_model_forwards"],
+                    )
+                    value_charges.append(charge)
+                    negative_schedule.append(negative)
+                elif objective == "source_margin":
                     negative = negatives[index]
                     loss, charge = binding_margin_loss(
                         self.reader.model,
@@ -272,6 +304,9 @@ class SourceMemoryCell:
                 if objective == "source_margin":
                     accessed.add(facts[negatives[index]]["source_digest"])
                     negative_visits[negatives[index]] += 1
+                elif objective == "source_value_margin_v2":
+                    accessed.add(facts[negative]["source_digest"])
+                    negative_visits[negative] += 1
                 input_tokens += used_tokens
                 supervised_tokens += supervised
                 forwards += used_forwards
@@ -336,6 +371,14 @@ class SourceMemoryCell:
                 evaluation_targets_used=False,
                 production_accepted=False,
             )
+            if objective == "source_value_margin_v2":
+                receipt.update(
+                    negative_sampling="distinct_value_cycle_by_positive_source_v1",
+                    negative_schedule_indices=negative_schedule,
+                    negative_schedule_sha256=digest(negative_schedule),
+                    value_margin=summarize_value_charges(value_charges),
+                )
+                check_value_receipt_size(receipt, tensor_layout(before))
             self._receipt = json.loads(json.dumps(receipt, allow_nan=False))
             self._expected_adapter = receipt["adapter_state_sha256"]
             return receipt
