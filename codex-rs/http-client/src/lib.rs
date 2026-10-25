@@ -8,6 +8,8 @@ mod outbound_proxy;
 mod request;
 mod route_aware_client_pool;
 mod route_aware_redirect;
+#[cfg(test)]
+mod route_aware_tls_fixture;
 mod tls_backend_fallback;
 mod transport;
 

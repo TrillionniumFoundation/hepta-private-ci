@@ -15,6 +15,27 @@ use crate::OutboundProxyRoute;
 const MAX_CACHED_RUSTLS_DESTINATIONS: usize = 16;
 // Schannel maps TLS alert 70 (protocol_version) to SEC_E_UNSUPPORTED_FUNCTION.
 const SCHANNEL_PROTOCOL_VERSION_ERROR: i32 = 0x8009_0302_u32 as i32;
+// Observed from the real Windows native backend while our server sends alert70.
+// This also covers other malformed/unsupported handshakes, not protocol_version alone.
+const SCHANNEL_HANDSHAKE_MESSAGE_ERROR: i32 = 0x8009_0326_u32 as i32;
+// Explicit certificate/trust/revocation states dominate every negotiation hint,
+// including when the OS message is localized and has no English certificate marker.
+const WINDOWS_CERTIFICATE_ERRORS: [u32; 14] = [
+    0x8009_0322,
+    0x8009_0325,
+    0x8009_0327,
+    0x8009_0328,
+    0x8009_2010,
+    0x8009_2012,
+    0x8009_2013,
+    0x800B_0101,
+    0x800B_0109,
+    0x800B_010A,
+    0x800B_010C,
+    0x800B_010E,
+    0x800B_010F,
+    0x800B_0110,
+];
 
 #[derive(Clone, Default)]
 pub(crate) struct RustlsClientCache {
@@ -145,6 +166,9 @@ fn has_retryable_tls_error(error: &(dyn Error + 'static)) -> bool {
         {
             certificate_failure = true;
         }
+        certificate_failure |= WINDOWS_CERTIFICATE_ERRORS
+            .iter()
+            .any(|code| has_windows_status(error, &message, /*code*/ *code as i32));
 
         // macOS Secure Transport reports the protocol alert as "bad protocol version".
         let is_macos_protocol_version_error = message.contains("bad protocol version");
@@ -161,16 +185,40 @@ fn has_retryable_tls_error(error: &(dyn Error + 'static)) -> bool {
             == Some(SCHANNEL_PROTOCOL_VERSION_ERROR)
             || message.contains("(os error -2146893054)")
             || message.contains("0x80090302");
+        // Do not accept generic io/message 0x80090326: native-tls must own this
+        // exact failure. The outer reqwest gate still requires non-timeout connect.
+        let is_native_schannel_handshake_error = cfg!(windows)
+            && error.is::<native_tls::Error>()
+            && has_windows_status(error, &message, SCHANNEL_HANDSHAKE_MESSAGE_ERROR);
         if is_macos_protocol_version_error
             || is_linux_protocol_version_error
             || is_rustls_protocol_version_error
             || is_schannel_protocol_version_error
+            || is_native_schannel_handshake_error
         {
             recognized_negotiation_failure = true;
         }
     });
 
     recognized_negotiation_failure && !certificate_failure
+}
+
+fn has_windows_status(error: &(dyn Error + 'static), message: &str, code: i32) -> bool {
+    if error
+        .downcast_ref::<std::io::Error>()
+        .and_then(std::io::Error::raw_os_error)
+        == Some(code)
+        || message.contains(&format!("(os error {code})"))
+    {
+        return true;
+    }
+    let hex = format!("0x{:08x}", code as u32);
+    message.match_indices(&hex).any(|(offset, _)| {
+        message
+            .as_bytes()
+            .get(offset + hex.len())
+            .is_none_or(|next| !next.is_ascii_hexdigit())
+    })
 }
 
 fn walk_error_chain(
