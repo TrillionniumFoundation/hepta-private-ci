@@ -28,6 +28,7 @@ mod storage;
 mod storage_hygiene;
 #[cfg(test)]
 mod test_support;
+mod typed_candidate_v5;
 
 pub use admin::ArtifactOwnerStatusV1;
 pub use admin::inspect_artifact_owner_status_v1;
@@ -162,3 +163,8 @@ pub use storage::write_registry_snapshot;
 pub use storage::write_registry_snapshot_beneath;
 pub use storage_hygiene::OrphanCleanupDispositionV1;
 pub use storage_hygiene::cleanup_zero_length_orphan_beneath;
+pub use typed_candidate_v5::OwnerCandidateContextV5;
+pub use typed_candidate_v5::OwnerTypedCandidateErrorV5;
+pub use typed_candidate_v5::OwnerTypedSelectedCandidateV5;
+pub use typed_candidate_v5::TypedCandidateErrorV5;
+pub use typed_candidate_v5::TypedSelectedCandidateV5;

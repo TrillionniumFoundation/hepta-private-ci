@@ -1,0 +1,21 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+     Locking 3 packages to latest Rust 1.95.0 compatible versions
+      Adding diff v0.1.13
+      Adding pretty_assertions v1.4.1
+      Adding yansi v1.0.1
+   Compiling codex-hepta-neuron v0.0.0 (/workspace/scratch/60f94d809f44/native-qualification-v5/codex-rs/hepta-neuron)
+   Compiling codex-hepta-learning-artifacts v0.0.0 (/workspace/scratch/60f94d809f44/native-qualification-v5/codex-rs/hepta-learning-artifacts)
+   Compiling hepta-real-typed-review-rejection-v5 v0.0.0 (/workspace/scratch/60f94d809f44/native-qualification-v5/qualification/trained-cell-v5/actual-review-driver)
+    Finished `test` profile [unoptimized] target(s) in 4.60s
+────────────
+ Nextest run ID 887913c9-c10a-4079-a461-78f6889e8ddb with nextest profile: local
+    Starting 7 tests across 1 binary
+        PASS [   0.013s] (1/7) hepta-real-typed-review-rejection-v5::bin/hepta-real-typed-review-rejection-v5 census::tests::aggregate_cpu_ratio_must_equal_raw_paired_timings
+        PASS [   0.025s] (2/7) hepta-real-typed-review-rejection-v5::bin/hepta-real-typed-review-rejection-v5 census::tests::missing_or_duplicated_fixed_family_members_cannot_pass
+        PASS [   0.025s] (3/7) hepta-real-typed-review-rejection-v5::bin/hepta-real-typed-review-rejection-v5 positive::tests::failed_actual_gate_cannot_prepare_even_with_present_audit_envelopes
+        PASS [   0.028s] (4/7) hepta-real-typed-review-rejection-v5::bin/hepta-real-typed-review-rejection-v5 census::tests::candidate_stopping_at24_is_unavailable_and_forged_completion_flags_reject
+        PASS [   0.030s] (5/7) hepta-real-typed-review-rejection-v5::bin/hepta-real-typed-review-rejection-v5 census::tests::complete_fixed_census_and_stopped_nonrequired_diagnostic_remain_distinct
+        PASS [   0.414s] (6/7) hepta-real-typed-review-rejection-v5::bin/hepta-real-typed-review-rejection-v5 positive::tests::wrong_external_key_or_changed_independent_evidence_cannot_publish
+        PASS [   1.054s] (7/7) hepta-real-typed-review-rejection-v5::bin/hepta-real-typed-review-rejection-v5 positive::tests::external_signature_synthetic_fixture_publishes_reopens_serves_and_rolls_back
+────────────
+     Summary [   1.055s] 7 tests run: 7 passed, 0 skipped

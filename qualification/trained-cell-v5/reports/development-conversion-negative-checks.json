@@ -1,0 +1,54 @@
+{
+  "negative_cases": [
+    {
+      "case": "tensor_bytes_without_updated_commitment",
+      "reason": "tensor shape, precision or checksum mismatch",
+      "rejected": true
+    },
+    {
+      "case": "tensor_rehashed_without_complete_state_commitment",
+      "reason": "complete optimizer-state commitment differs",
+      "rejected": true
+    },
+    {
+      "case": "rng_state_drift",
+      "reason": "complete optimizer-state commitment differs",
+      "rejected": true
+    },
+    {
+      "case": "optimizer_clock_drift",
+      "reason": "complete optimizer-state commitment differs",
+      "rejected": true
+    },
+    {
+      "case": "executed_reference_source_mismatch",
+      "reason": "reference source differs from executed checkpoint source",
+      "rejected": true
+    },
+    {
+      "case": "duplicate_fit_and_missing_fit",
+      "reason": "all 12 registered fits required",
+      "rejected": true
+    },
+    {
+      "case": "missing_registered_fit",
+      "reason": "all 12 registered fits required",
+      "rejected": true
+    },
+    {
+      "case": "nonfinite_projection",
+      "reason": "bounded 384x8 projection required",
+      "rejected": true
+    },
+    {
+      "case": "unsupported_head_semantics",
+      "reason": "unsupported native head schema",
+      "rejected": true
+    }
+  ],
+  "production_authority": false,
+  "protocol_sha256": "30880ddaae978f622cf6a99cf3888771daa954777e6f9ce2a75c25f01f166280",
+  "schema": "hepta.typed-conversion-negative-qualification.v5",
+  "source_bundle_sha256": "3b88671eb6d88abaa3717c2252e4d80092e09931c5e0c0a85d338aa0fcfdaf52",
+  "valid_all12_conversion_passed": true
+}

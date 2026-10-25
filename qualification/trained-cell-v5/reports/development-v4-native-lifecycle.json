@@ -1,0 +1,68 @@
+{
+  "authority": "DENY_ALL",
+  "checks": {
+    "all12_explicit_predecessor_rollback": true,
+    "all12_native_candidate_serving": true,
+    "eligible_predecessor_reload_after_candidate_withdrawal": true,
+    "exact_retry_idempotent": true,
+    "failed_measured_task_rejected": true,
+    "missing_review_rejected": true,
+    "mixed_stale_registry_does_not_forget_new_withdrawals": true,
+    "positive_synthetic_lifecycle_only": true,
+    "reject_owner_bytes_unchanged": true,
+    "required_current_reopen": true,
+    "rollback_owner_bytes_unchanged": true,
+    "source_withdrawal_closes_cached_serving": true,
+    "stale_withdrawal_feed_cannot_revive": true,
+    "tampered_payload_rejected": true,
+    "withdrawn_predecessor_rejected": true
+  },
+  "input_manifest_sha256": "e7f7385fb6f7624e9743e73a28b83954b69b4373f3be521be63f582af57e027a",
+  "limits": [
+    "No actual scientific review passes here.",
+    "No product activation or Encoder execution.",
+    "Serving rollback restores theta only; complete Adam/RNG/clock restoration is a separate research checkpoint path.",
+    "Host must authenticate and install the latest withdrawal feed and serialize view/use.",
+    "Float64 parity is bounded fixture coverage at fixed 1e-12 tolerance, not cross-platform bitwise identity."
+  ],
+  "parity": [
+    {
+      "absolute_tolerance": 1e-12,
+      "all_heads": 12,
+      "maximum_absolute_logit_error": 3.1086244689504383e-15,
+      "maximum_absolute_probability_error": 7.771561172376096e-16,
+      "passed": true,
+      "predictions": 5184,
+      "version": "predecessor"
+    },
+    {
+      "absolute_tolerance": 1e-12,
+      "all_heads": 12,
+      "maximum_absolute_logit_error": 3.1086244689504383e-15,
+      "maximum_absolute_probability_error": 7.771561172376096e-16,
+      "passed": true,
+      "predictions": 5184,
+      "version": "candidate"
+    }
+  ],
+  "payloads": [
+    {
+      "artifact_id": "all12-typed-warmup-v5",
+      "payload_sha256": "12390a274a502da20027769d3aded963dbab66ed31d0891ffd687023ffce1375",
+      "source_bundle_sha256": "9737384bb5fef3a684709e8da06216b56fe22e8a122febd063eca935a830725a"
+    },
+    {
+      "artifact_id": "all12-typed-candidate-v5",
+      "payload_sha256": "573a9abe84ad70928a842104cd3af82d1e41b29c85ac5588a40c84e42b7e0533",
+      "source_bundle_sha256": "3b88671eb6d88abaa3717c2252e4d80092e09931c5e0c0a85d338aa0fcfdaf52"
+    }
+  ],
+  "production_authority": false,
+  "registry_head_sha256": "a360202ff3d058a4ffe83696f19e1d0dfb06942e45c92be850c75bc6625146dc",
+  "schema": "hepta.typed-native-development-qualification.v5",
+  "scientific_acceptance": false,
+  "scope": "development V4 actual weights and features; synthetic review metrics, synthetic dataset notices, public ephemeral host keys",
+  "status": "completed",
+  "synthetic_policy_sha256": "e0677b3283e1431a00daeb4fb567b51fce254628b6706e759a7497c9c57d24a0",
+  "synthetic_review_sha256": "9444171f55c9004d4e2391ac324ae98beffac5c793cd5bb0f95bfa0a16e0a1cc"
+}

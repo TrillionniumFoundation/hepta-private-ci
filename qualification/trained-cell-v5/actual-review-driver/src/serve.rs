@@ -1,0 +1,157 @@
+//! Read-only actual typed serving after externally signed research admission.
+//! A distinct local selector exercises current-view selection and rollback;
+//! no production selector or dispatch authority is installed.
+
+use crate::*;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
+
+fn selection(
+    owner: &LearningArtifactOwnerService,
+    trust: &ArtifactOwnerTrustV1,
+    manifest: &LearningArtifactManifestV2,
+    now: u64,
+) -> Result<VerifiedArtifactSelectionV1> {
+    let key = SigningKey::from_bytes(&[35; 32]);
+    let current = owner.current_registry_view(now)?;
+    let compact = owner
+        .registry()
+        .manifest(&manifest.artifact_id)
+        .ok_or("published compact manifest missing")?;
+    let mut signed = SignedArtifactSelectionV1 {
+        selection_id: owner::id(&format!("research-select:{}", manifest.artifact_id))?,
+        artifact_id: manifest.artifact_id.clone(),
+        registry_id: trust.registry_id.clone(),
+        withdrawal_scope_digest: trust.withdrawal_scope_digest,
+        registry_head_digest: current.receipt().head_digest,
+        current_witness_digest: current.witness_digest(),
+        current_trust_digest: current.trust_digest(),
+        artifact_kind: compact.kind,
+        artifact_generation: compact.generation,
+        predecessor_id: compact.predecessor_id.clone(),
+        content_digest: compact.content_digest,
+        objective_digest: compact.objective_digest,
+        support_digest: compact.support_digest,
+        compatibility_digest: compact.compatibility_digest,
+        encoded_size_bytes: compact.encoded_size_bytes,
+        selector_id: owner::id("local-research-selector")?,
+        selector_credential_digest: owner::digest(
+            "local read-only research selector; no production authority",
+        ),
+        signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
+        authority_epoch: 1,
+        issued_at: now,
+        expires_at: now + 300,
+        signature: [0; 64],
+    };
+    signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
+    let verifier = ArtifactSelectionVerifierV1::new(
+        ArtifactSelectionTrustV1 {
+            registry_id: trust.registry_id.clone(),
+            withdrawal_scope_digest: trust.withdrawal_scope_digest,
+            minimum_authority_epoch: 1,
+            selectors: vec![TrustedArtifactSelectorV1 {
+                selector_id: owner::id("local-research-selector")?,
+                verifying_key: key.verifying_key().to_bytes(),
+                minimum_authority_epoch: 1,
+                maximum_authority_epoch: 1,
+                valid_from: now,
+                expires_at: now + 300,
+                revoked_at: None,
+            }],
+        },
+        trust,
+    )?;
+    Ok(verifier.verify(&signed, &current, now)?)
+}
+
+fn files(
+    root: &Path,
+    owner: &LearningArtifactOwnerService,
+    manifest: &LearningArtifactManifestV2,
+    now: u64,
+) -> Result<(std::fs::File, std::fs::File)> {
+    let receipt = owner.current_registry_view(now)?.receipt();
+    Ok((
+        std::fs::File::open(root.join("registries").join(format!(
+            "{}-{}.snapshot",
+            receipt.head_digest, receipt.file_digest
+        )))?,
+        std::fs::File::open(root.join("payloads").join(format!(
+            "{}-{}.bin",
+            manifest.artifact_id, manifest.bytes_digest
+        )))?,
+    ))
+}
+
+fn decode(
+    bytes: &[u8],
+    manifest: &ArtifactManifest,
+) -> std::result::Result<TrainedCellBundleV5, TrainedCellErrorV5> {
+    let bundle = TrainedCellBundleV5::decode(bytes, manifest.content_digest)?;
+    if bundle.artifact_id() != &manifest.artifact_id
+        || bundle.generation() != manifest.generation
+        || bundle.content_digest() != manifest.content_digest
+        || bytes.len() as u64 != manifest.encoded_size_bytes
+        || manifest.compatibility_digest != trained_cell_compatibility_digest_v5()
+    {
+        return Err(TrainedCellErrorV5::Binding);
+    }
+    Ok(bundle)
+}
+
+pub fn roundtrip(
+    mut config: LearningArtifactOwnerServiceConfigV1,
+    required: SignedCurrentArtifactHeadV1,
+    baseline: LearningArtifactManifestV2,
+    candidate: LearningArtifactManifestV2,
+    inputs: &parity::Inputs,
+    now: u64,
+) -> Result<Value> {
+    config.required_current_head = Some(required);
+    config.now = now;
+    let owner = LearningArtifactOwnerService::open(config.clone())?;
+    ensure(
+        owner.recovery_required().is_none() && owner.registry().records().len() == 2,
+        "published owner did not reopen completely",
+    )?;
+    let before = owner::inventory(&config.root)?;
+    let head = owner.current_registry_view(now)?.receipt().head_digest;
+    let (snapshot, payload) = files(&config.root, &owner, &candidate, now)?;
+    let mut typed = OwnerTypedSelectedCandidateV5::load(
+        snapshot,
+        payload,
+        selection(&owner, &config.trust, &candidate, now)?,
+        OwnerCandidateContextV5 {
+            owner: &owner,
+            manifest: &candidate,
+            now,
+        },
+        trained_cell_compatibility_digest_v5(),
+        decode,
+    )?;
+    let candidate_parity = parity::compare(inputs, 1, &mut typed, &owner, now)?;
+    let (snapshot, payload) = files(&config.root, &owner, &baseline, now)?;
+    typed.rollback_to_predecessor(
+        snapshot,
+        payload,
+        selection(&owner, &config.trust, &baseline, now)?,
+        OwnerCandidateContextV5 {
+            owner: &owner,
+            manifest: &baseline,
+            now,
+        },
+        decode,
+    )?;
+    let predecessor_parity = parity::compare(inputs, 0, &mut typed, &owner, now)?;
+    ensure(
+        owner::inventory(&config.root)? == before
+            && owner.current_registry_view(now)?.receipt().head_digest == head,
+        "read-only serving/rollback changed owner history",
+    )?;
+    Ok(
+        json!({"required_current_reopen":true,"candidate":candidate_parity,"predecessor_after_explicit_rollback":predecessor_parity,
+        "owner_bytes_unchanged_during_serving_and_rollback":true,"registry_history_unchanged":true,
+        "rollback_scope":"theta/serving parameters only; not optimizer/RNG/clock state","production_activation":false}),
+    )
+}
