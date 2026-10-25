@@ -11,6 +11,8 @@ mod driver_tests;
 mod durable;
 #[cfg(test)]
 mod durable_tests;
+#[cfg(windows)]
+mod durable_windows;
 mod importer;
 #[cfg(test)]
 mod importer_tests;
