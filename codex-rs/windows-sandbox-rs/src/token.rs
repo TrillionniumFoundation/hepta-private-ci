@@ -3,6 +3,8 @@ use crate::winutil::to_wide;
 pub(crate) mod fresh_managed_base;
 #[path = "token_full_restriction.rs"]
 mod full_restriction;
+#[path = "token_prepared_filesystem.rs"]
+mod prepared_filesystem;
 #[path = "token_query.rs"]
 mod token_query;
 use anyhow::Result;
