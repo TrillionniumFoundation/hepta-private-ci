@@ -112,6 +112,14 @@ renew its expiry. CURRENT acquisition/distribution and the trusted clock remain
 host responsibilities. The wrapper supplies no installation, evaluation, reward,
 FinalUse, resource grant, main-weight measurement or neural route authority.
 
+The next host composition prerequisite separates the private physical SmolLM
+identity (selected parameter digest/generation and executable family/profile)
+from Agentd's evaluated pin. `smollm_runtime_identity.rs` in the existing worker
+host derives that identity only from the read port's unchanged complete pin. The
+original qualified constructor, compatibility domain and FinalUse scope remain
+unchanged. This factoring supplies no initial constructor, invented dataset or
+objective, selected-material conversion, new profile or additional authority.
+
 This check observes the selected adapter bytes, not the main upstream weight
 bytes. The expected backbone/tokenizer identities are commitments rather than
 actual-load observations. It grants no efficacy, installation, route, FinalUse,

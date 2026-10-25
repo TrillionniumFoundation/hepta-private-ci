@@ -12,7 +12,6 @@ use std::sync::Mutex;
 use std::time::Duration;
 use std::time::Instant;
 
-use codex_hepta_agentd::NeuralCognitivePinV1;
 use codex_hepta_agentd::NeuralCognitiveRequestV1;
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
@@ -37,6 +36,7 @@ mod measurement;
 mod profile;
 #[path = "smollm_neural_session.rs"]
 mod session;
+use super::SmolLmRuntimeIdentityV1;
 use measurement::MailboxState;
 pub use measurement::SmolLmFixedInitialBackboneProofV1;
 pub use measurement::SmolLmMeasuredForwardV1;
@@ -79,7 +79,7 @@ pub(super) type Mailbox = Arc<Mutex<MailboxState>>;
 
 pub(super) struct SmolLmDriver {
     pub(super) config: SmolLmNeuralReadConfigV1,
-    pub(super) pin: NeuralCognitivePinV1,
+    pub(super) pin: SmolLmRuntimeIdentityV1,
     pub(super) parameters: Vec<u8>,
     pub(super) mailbox: Mailbox,
     runtime: tokio::runtime::Handle,
@@ -91,7 +91,7 @@ pub(super) struct SmolLmDriver {
 impl SmolLmDriver {
     pub(super) fn new(
         config: SmolLmNeuralReadConfigV1,
-        pin: NeuralCognitivePinV1,
+        pin: SmolLmRuntimeIdentityV1,
         parameters: Vec<u8>,
         mailbox: Mailbox,
         runtime: tokio::runtime::Handle,

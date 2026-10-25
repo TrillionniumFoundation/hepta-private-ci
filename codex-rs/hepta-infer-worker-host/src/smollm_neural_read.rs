@@ -45,6 +45,10 @@ pub use driver::SmolLmMeasuredForwardV1;
 pub use driver::SmolLmMeasuredLoadV1;
 pub use driver::SmolLmNeuralReadConfigV1;
 
+#[path = "smollm_runtime_identity.rs"]
+mod runtime_identity;
+use runtime_identity::SmolLmRuntimeIdentityV1;
+
 static REQUEST_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 struct ControlContext {
@@ -376,7 +380,7 @@ impl SmolLmNeuralReadPortV1 {
         let mailbox = Arc::new(Mutex::new(Default::default()));
         let driver = SmolLmDriver::new(
             config,
-            pin.clone(),
+            SmolLmRuntimeIdentityV1::from(&pin),
             parameter_bytes,
             mailbox.clone(),
             context.runtime.clone(),
