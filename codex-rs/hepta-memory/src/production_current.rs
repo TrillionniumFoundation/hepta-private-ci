@@ -7,6 +7,43 @@ use sqlx::Sqlite;
 use sqlx::Transaction;
 
 impl ProductionDurableWriter {
+    /// Confirm this live owner's complete SQLite cut with its already-bound
+    /// protected Current publisher. The original write barrier remains held
+    /// through acknowledgement; an uncertain reply permanently fences this
+    /// generation. A local hash, an unprotected writer, or an expired/replaced
+    /// authority cannot supply the missing protected acknowledgement.
+    ///
+    /// Stop and join background owner mutations before using the returned cut
+    /// as a shutdown/crash boundary. This method does not stop other clones,
+    /// close SQLite, adopt an old publisher, or authorize another delivery.
+    pub async fn checkpoint_current(
+        &self,
+    ) -> Result<crate::CognitiveRecoveryAnchor, ProductionWriterError> {
+        if self.store.current_publisher.is_none() {
+            return Err(ProductionWriterError::AuthorityRejected(
+                "protected Current publisher is required".into(),
+            ));
+        }
+        self.verify_current_authority().await?;
+        let mut transaction = self
+            .store
+            .observation_pool()
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+        let cut = capture_recovery_anchor(&mut transaction, self.owner_agent_id())
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+        self.acknowledge_external_current_transaction(&mut transaction)
+            .await?;
+        transaction
+            .rollback()
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+        self.sender_live_check()?;
+        Ok(cut)
+    }
+
     pub(crate) async fn current_writer_fence(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,

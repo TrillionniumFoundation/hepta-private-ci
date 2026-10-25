@@ -9,6 +9,16 @@ Dirty, Publishing, Fenced, revoked, or unknown publication acknowledgement must
 not be relabeled as `ExactCurrentCut` using a remembered last-good cut. This
 storage API performs no Root administrative transition or acknowledgement repair.
 
+An existing live `ProductionDurableWriter::checkpoint_current().await` can
+confirm its complete cut with its already-bound protected publisher before a
+shutdown boundary. It holds the original SQLite write barrier through the
+original Current protocol, requires the original live authority, and rejects
+an unprotected writer. Legal Dirty publication uses the existing state machine;
+an unknown acknowledgement permanently fences the generation. Stop and join
+other owner mutations first: this method does not stop clones or close SQLite.
+It cannot recover an old publisher or turn a post-crash local hash into Current.
+The trusted host must independently retain/verify the protected acknowledgement.
+
 ## Developer entry points
 
 - `CognitiveStore::open_read_only_recovery` retains the original fixed-file cold

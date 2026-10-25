@@ -269,3 +269,76 @@ async fn uncertain_terminal_current_retains_sqlite_result_but_never_retires_rece
 async fn exact_final_use_rejection_publishes_original_terminal_without_entering_effect() {
     exercise(Failure::ClaimRejection).await;
 }
+
+#[tokio::test]
+async fn explicit_current_checkpoint_publishes_dirty_owner_and_confirms_same_cut() {
+    let fixture = ManagedFixture::new().await;
+    fixture
+        .writer
+        .admit("shutdown-current", "test", "{}")
+        .await
+        .unwrap();
+    assert_eq!(
+        fixture.peer.receipt.lock().unwrap().head.phase,
+        CognitiveCheckpointPhase::Dirty
+    );
+    let observed = fixture.writer.checkpoint_current().await.unwrap();
+    assert_eq!(observed, fixture.store.recovery_anchor().await.unwrap());
+    let current = fixture.peer.receipt.lock().unwrap().clone();
+    assert_eq!(current.head.phase, CognitiveCheckpointPhase::Current);
+    assert_eq!(current.head.last_current, observed);
+    assert_eq!(fixture.writer.checkpoint_current().await.unwrap(), observed);
+    assert_eq!(*fixture.peer.receipt.lock().unwrap(), current);
+    assert!(!fixture.writer.checkpoint_fenced());
+}
+
+#[tokio::test]
+async fn explicit_current_checkpoint_unknown_ack_never_reopens_writer() {
+    let fixture = ManagedFixture::new().await;
+    fixture
+        .writer
+        .admit("shutdown-uncertain", "test", "{}")
+        .await
+        .unwrap();
+    fixture
+        .peer
+        .hold_current_reply
+        .store(true, Ordering::SeqCst);
+    assert!(fixture.writer.checkpoint_current().await.is_err());
+    assert!(fixture.writer.checkpoint_fenced());
+    fixture
+        .peer
+        .hold_current_reply
+        .store(false, Ordering::SeqCst);
+    assert!(fixture.writer.checkpoint_current().await.is_err());
+    assert!(
+        fixture
+            .writer
+            .admit("after-unknown-current", "test", "{}")
+            .await
+            .is_err()
+    );
+}
+
+#[tokio::test]
+async fn explicit_current_checkpoint_refuses_unprotected_local_writer() {
+    let temp = tempfile::TempDir::new().unwrap();
+    let owner = crate::cognitive_test_support::agent_id(OWNER);
+    let layout = crate::cognitive_test_support::layout(&temp, &owner);
+    let store = CognitiveStore::open(&layout).await.unwrap();
+    let writer = ProductionDurableWriter::open_with_live_verifier(
+        store.clone(),
+        authority(&owner, 87),
+        Arc::new(TestVerifier::new()),
+        LEASE,
+        1,
+    )
+    .await
+    .unwrap();
+    let previous = store.recovery_anchor().await.unwrap();
+    assert!(matches!(
+        writer.checkpoint_current().await,
+        Err(ProductionWriterError::AuthorityRejected(_))
+    ));
+    assert_eq!(store.recovery_anchor().await.unwrap(), previous);
+}
