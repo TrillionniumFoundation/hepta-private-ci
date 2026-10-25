@@ -11,6 +11,10 @@ mod checkpoint;
 mod consumers;
 
 #[cfg(target_os = "linux")]
+#[path = "authority_host_peer_qualification/original_owner.rs"]
+mod original_owner;
+
+#[cfg(target_os = "linux")]
 mod qualification {
     use codex_hepta_agentd::AgentdFinalUseIssuerError;
     use codex_hepta_agentd::AgentdFinalUseIssuerPeer;
@@ -165,6 +169,21 @@ mod qualification {
         } else {
             None
         };
+        if std::env::var_os("HEPTA_SERVICE_ORIGINAL_OWNER").is_some() {
+            let (device, notes) = consumer_streams
+                .take()
+                .ok_or("missing original consumer lanes")?;
+            return super::original_owner::qualify(
+                observation,
+                issuer,
+                checkpoint,
+                device,
+                notes,
+                trusted_bootstrap
+                    .take()
+                    .ok_or("missing original trusted bootstrap")?,
+            );
+        }
         let writer_proof = std::env::var_os("HEPTA_SERVICE_WRITER_PROOF").is_some();
         if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_CONSUMER").is_some() {
             std::thread::sleep(Duration::from_secs(3));

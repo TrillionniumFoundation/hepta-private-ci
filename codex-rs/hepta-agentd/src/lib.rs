@@ -161,6 +161,8 @@ mod plasticity_runtime;
 mod production_authority;
 #[cfg(target_os = "linux")]
 mod production_composition;
+#[cfg(target_os = "linux")]
+mod production_root_composition;
 mod production_writer_host;
 mod prompt_runtime;
 mod qualification_writer;
@@ -373,6 +375,16 @@ pub use production_composition::AgentdProductionNotesInputs;
 pub use production_composition::attach_production_notes_host;
 #[cfg(target_os = "linux")]
 pub use production_composition::attach_production_operation_host;
+#[cfg(target_os = "linux")]
+pub use production_root_composition::AgentdRootAuthorityLanes;
+#[cfg(target_os = "linux")]
+pub use production_root_composition::AgentdRootPrimaryTarget;
+#[cfg(target_os = "linux")]
+pub use production_root_composition::AgentdRootProductionAttachment;
+#[cfg(target_os = "linux")]
+pub use production_root_composition::AgentdRootProductionInputs;
+#[cfg(target_os = "linux")]
+pub use production_root_composition::attach_root_production_host;
 pub use production_writer_host::AgentdFinalUseGrantProvider;
 pub use production_writer_host::AgentdProductionOperationRuntimeConfig;
 pub use production_writer_host::AgentdProductionWriterHost;

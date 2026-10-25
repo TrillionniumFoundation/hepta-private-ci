@@ -31,6 +31,8 @@ use std::time::Instant;
 
 #[path = "authority_host_service_consumers_root.rs"]
 mod consumer_fixture;
+#[path = "authority_host_original_owner_root.rs"]
+mod original_owner;
 
 fn expiry_qualification() -> bool {
     [
@@ -249,6 +251,22 @@ fn protected_service_client() {
 #[test]
 #[ignore = "explicit root/data-bind canonical three-lane service qualification"]
 fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
+    root_service_qualification(Qualification::Wire);
+}
+
+#[test]
+#[ignore = "explicit isolated Root plus original SQLite writer qualification"]
+fn root_five_lanes_compose_original_writer_and_publish_current_before_receipt_retirement() {
+    root_service_qualification(Qualification::OriginalOwner);
+}
+
+enum Qualification {
+    Wire,
+    OriginalOwner,
+}
+
+fn root_service_qualification(mode: Qualification) {
+    let original_owner = matches!(mode, Qualification::OriginalOwner);
     // SAFETY: geteuid has no borrowed memory or pointer arguments.
     assert_eq!(unsafe { libc::geteuid() }, 0);
     if std::env::var_os("HEPTA_SERVICE_CONSUMERS").is_some() {
@@ -266,9 +284,18 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
         .unwrap();
     std::fs::set_permissions(fixture.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
     let root = fixture.path();
-    let workspace = root.join("workspace");
+    let owner_directory = original_owner.then(|| {
+        tempfile::Builder::new()
+            .prefix("root-original-owner-qualification-")
+            .tempdir_in("/data")
+            .unwrap()
+    });
+    let data = owner_directory
+        .as_ref()
+        .map_or(root, |directory| directory.path());
+    let workspace = data.join("workspace");
     std::fs::create_dir(&workspace).unwrap();
-    let fleet = HeptaFleetRoot::parse(root.join("fleet")).unwrap();
+    let fleet = HeptaFleetRoot::parse(data.join("fleet")).unwrap();
     let registry = FleetRegistry::initialize(fleet.clone()).unwrap();
     let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").unwrap();
     registry
@@ -287,7 +314,7 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     let identity = HostAuthorityRegisteredIdentity {
         agent_id: owner.clone(),
         spawn_generation: 1,
-        fleet_root: root.join("fleet"),
+        fleet_root: data.join("fleet"),
         workspace,
         resources: ResourceBudget::local_default(),
     };
@@ -309,6 +336,9 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
                 cut
             })
     });
+    if original_owner {
+        original_owner::handoff_fresh_tree(data);
+    }
     let metadata = std::fs::metadata(&parent).unwrap();
     let required_bind = HostAuthorityBindIdentity {
         mountpoint: parent,
@@ -316,7 +346,11 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
         device: metadata.dev(),
         inode: metadata.ino(),
     };
-    let b = binding(owner.as_str());
+    let b = if original_owner {
+        original_owner::binding(&owner)
+    } else {
+        binding(owner.as_str())
+    };
     let bootstrap = root.join("bootstrap.json");
     write_json(
         &bootstrap,
@@ -374,6 +408,11 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
         )
         .env("HEPTA_SERVICE_PID", std::process::id().to_string());
     command.env("HEPTA_SERVICE_SIGNER_ID", &initialized.signer_id);
+    if original_owner {
+        command
+            .env("HEPTA_SERVICE_ORIGINAL_OWNER", "1")
+            .env("HEPTA_SERVICE_OWNER_REPORT", data.join("owner-report.json"));
+    }
     let _root_peer_fd = std::env::var_os("HEPTA_SERVICE_CONSUMERS")
         .map(|_| consumer_fixture::root_peer_fd(&mut command));
     let mut child = command.spawn().unwrap();
@@ -628,6 +667,10 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
         status.success(),
         "dedicated original-wire client failed: {status}; service={result:?}"
     );
+    if original_owner {
+        original_owner::verify_final(&config, &data.join("owner-report.json"));
+        return;
+    }
     // An absent head or the final closed-DTO negative closes its lane without ACK.
     assert!(result.is_err());
     if let Some(directory) = &config.checkpoint_state_dir {
