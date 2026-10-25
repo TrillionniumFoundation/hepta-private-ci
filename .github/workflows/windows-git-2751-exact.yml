@@ -16,7 +16,8 @@ jobs:
       github.event_name == 'pull_request' &&
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
-      github.event.pull_request.head.ref == 'codex/2751-windows-git-native-child-file-20261025-watch11'
+      (github.event.pull_request.head.ref == 'codex/2751-windows-git-native-child-file-20261025-watch11' ||
+       github.event.pull_request.head.ref == 'automation/2751-git-workflow-jobenv-20261025-w11')
     runs-on: windows-latest
     timeout-minutes: 120
     env:
@@ -25,7 +26,6 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: '0'
       CARGO_PROFILE_DEV_DEBUG: '0'
       CARGO_TERM_COLOR: never
-      CARGO_TARGET_DIR: ${{ runner.temp }}/git-descendant-2751-target
       EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
       BASE_SHA: 5fd8ee8b6a333b6385733b9ff8ebe1d076177766
       TEST_PATH: codex-rs/git-utils/src/git_process_tests.rs
@@ -44,6 +44,7 @@ jobs:
           @'
           import os
           import subprocess
+          from pathlib import Path
           def git(*args):
               return subprocess.check_output(["git", *args], text=True).strip()
           base = os.environ["BASE_SHA"]
@@ -55,6 +56,11 @@ jobs:
           assert git("rev-parse", "HEAD:" + path) == os.environ["TEST_BLOB"]
           changed = set(git("diff", "--name-only", base, "HEAD").splitlines())
           assert changed == {path, ".github/workflows/windows-git-2751-exact.yml"}, changed
+          # Regression: runner context is not available in job-level env.
+          source = Path(".github/workflows/windows-git-2751-exact.yml").read_text(encoding="utf-8")
+          job_env = source.split("    env:\n", 1)[1].split("    steps:\n", 1)[0]
+          assert "runner." not in job_env, "runner context in jobs.*.env invalidates workflow"
+          assert "CARGO_TARGET_DIR:" not in job_env, "bind target only after runner starts"
           for locked in ("codex-rs/Cargo.lock", "MODULE.bazel", "MODULE.bazel.lock",
                          "codex-rs/git-utils/Cargo.toml", "codex-rs/git-utils/src/git_process.rs"):
               assert git("rev-parse", "HEAD:" + locked) == git("rev-parse", base + ":" + locked), locked
@@ -63,6 +69,14 @@ jobs:
           print("Exact #2751 source and unchanged Cargo/Bazel/production inputs verified:", expected)
           '@ | python -
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Bind isolated Cargo target on the Windows runner
+        shell: pwsh
+        run: |
+          if (-not $env:RUNNER_TEMP) { throw 'RUNNER_TEMP unavailable' }
+          $target = Join-Path $env:RUNNER_TEMP 'git-descendant-2751-target'
+          if (-not [System.IO.Path]::IsPathRooted($target)) { throw 'Cargo target must be absolute' }
+          Add-Content -LiteralPath $env:GITHUB_ENV -Value "CARGO_TARGET_DIR=$target" -Encoding utf8
 
       - name: Install the repository's pinned native test runners
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
