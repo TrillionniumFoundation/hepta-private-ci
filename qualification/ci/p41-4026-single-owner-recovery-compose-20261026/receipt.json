@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.qualification.4026-single-owner-cognitive-recovery-composition.v1",
+  "observation_date_utc": "2026-10-26",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "base_pr": 4026,
+  "base_sha": "2b8b062c2a5cb743aafe2960415175ea42454153",
+  "donor_pr": 4013,
+  "donor_sha": "21a40fbc4078c00fa2b84e85612d30b99b69f595",
+  "donor_parent_sha": "aed1803088c26053f3dcf6ec7f4aae3938c862ca",
+  "source_failure": {
+    "run": 40279360967,
+    "job": 121457550610,
+    "step": "Verify Hepta privileged caller closed set",
+    "diagnostic": "FAIL_HEPTA_CALLER_PROOF: cognitive_store_recovery_open: caller set mismatch; unexpected=['codex-rs/hepta-agentd/src/production_protected_host.rs']"
+  },
+  "patches": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_protected_host.rs",
+      "base_blob": "0567ebc381de042ad00e46276bbc72141218c7dc",
+      "donor_parent_blob": "0567ebc381de042ad00e46276bbc72141218c7dc",
+      "patched_blob": "28c523e17ae801e8dc1b08483141ac1a8d9e2b0c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "base_blob": "4f53901bbcd3ec44cbdd015080ed2851108f8c50",
+      "donor_parent_blob": "4f53901bbcd3ec44cbdd015080ed2851108f8c50",
+      "patched_blob": "e924001f67589a928278ef47c0f9e68dd8a9ad7d"
+    }
+  ],
+  "scope": "Re-use exactly matching donor refactor to keep privileged CognitiveStore::open_with_recovery in the originally closed-set production_writer_host.rs, with both paths retaining sender-process binding verification, ExactCurrentCut requirement, lease, checkpoint binding and their distinct error contexts. No CALLERS.toml or verifier change.",
+  "validation": {
+    "source_blob_provenance": "VERIFIED_EXACT",
+    "native_current_head": "NOT_YET_VERIFIED",
+    "original_hosted_gates": "NOT_YET_VERIFIED",
+    "new_blockers_closed": [],
+    "authority": "DENY_ALL",
+    "mode": "SHADOW_ONLY",
+    "deployment": "HOLD_NO_GO"
+  },
+  "limitations": [
+    "Exact donor blob and caller-only source structural evidence are not original owning runtime tests or current-head CI.",
+    "Independently existing Windows DELETE, Memory recovery, AppServer, cargo-deny/RustSec, full policy episodes and target-device qualification remain open.",
+    "No new authority, check relaxations, test removal, ignore rules or frozen cohort changes."
+  ]
+}
