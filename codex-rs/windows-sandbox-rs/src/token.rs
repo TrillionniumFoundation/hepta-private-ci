@@ -358,8 +358,9 @@ pub unsafe fn create_readonly_token_with_cap(
     res
 }
 
-/// # Safety
-/// Caller must close the returned token handle; base_token must be a valid primary token.
+/// Refuse the legacy ambient-user readonly role whose identity restrictors
+/// admit writes under broad ambient ACLs.
+///
 /// # Safety
 /// Caller must close the returned token handle; base_token must be a valid primary token.
 pub unsafe fn create_readonly_token_with_cap_from(
@@ -370,12 +371,13 @@ pub unsafe fn create_readonly_token_with_cap_from(
         base_token,
         &[psid_capability],
         &[],
-        RestrictingIdentity::Include,
+        RestrictingIdentity::AmbientReadonly,
     )?;
     Ok((new_token, psid_capability))
 }
 
-/// Restrict legacy workspace writes to the provided capability SIDs alone.
+/// Refuse legacy ambient-user workspace tokens: native parent-directory
+/// delete-child access is not confined by `WRITE_RESTRICTED` capability SIDs.
 ///
 /// # Safety
 /// Caller must close the returned token handle; base_token must be a valid primary token.
@@ -411,7 +413,8 @@ pub unsafe fn create_workspace_write_token_with_caps_and_user_from(
     )
 }
 
-/// Create a restricted token that includes all provided capability SIDs.
+/// Refuse legacy ambient-user readonly tokens. Dedicated-account callers use
+/// the separate explicit-user factory with its existing backend constraints.
 ///
 /// # Safety
 /// Caller must close the returned token handle; base_token must be a valid primary token.
@@ -423,7 +426,7 @@ pub unsafe fn create_readonly_token_with_caps_from(
         base_token,
         psid_capabilities,
         &[],
-        RestrictingIdentity::Include,
+        RestrictingIdentity::AmbientReadonly,
     )
 }
 
@@ -466,8 +469,27 @@ unsafe fn create_token_with_caps_user_and_additional_restrictions_from(
 }
 
 enum RestrictingIdentity {
+    // Reserved for the existing dedicated-account factory with its original
+    // explicit token-user and additional restrictions. This is not a new grant.
     Include,
+    AmbientReadonly,
     Exclude,
+}
+
+pub(crate) fn legacy_workspace_write_unavailable() -> anyhow::Error {
+    std::io::Error::new(
+        std::io::ErrorKind::Unsupported,
+        "legacy Windows workspace isolation cannot restrict parent-directory deletion; use the elevated Windows sandbox backend",
+    )
+    .into()
+}
+
+pub(crate) fn legacy_readonly_unavailable() -> anyhow::Error {
+    std::io::Error::new(
+        std::io::ErrorKind::Unsupported,
+        "legacy Windows readonly isolation cannot restrict ambient identity writes; use the elevated Windows sandbox backend",
+    )
+    .into()
 }
 
 unsafe fn create_token_with_caps_from(
@@ -478,6 +500,12 @@ unsafe fn create_token_with_caps_from(
 ) -> Result<HANDLE> {
     if psid_capabilities.is_empty() {
         return Err(anyhow!("no capability SIDs provided"));
+    }
+    if matches!(restricting_identity, RestrictingIdentity::Exclude) {
+        return Err(legacy_workspace_write_unavailable());
+    }
+    if matches!(restricting_identity, RestrictingIdentity::AmbientReadonly) {
+        return Err(legacy_readonly_unavailable());
     }
     let mut logon_sid_bytes = get_logon_sid_bytes(base_token)?;
     let psid_logon = logon_sid_bytes.as_mut_ptr() as *mut c_void;
@@ -493,8 +521,8 @@ unsafe fn create_token_with_caps_from(
         })
         .collect();
     // A restricting SID is an alternative ACE match, not an additional requirement.
-    // Legacy workspace writes must not pass via a broad parent Logon/Everyone ACE.
-    // Readonly and dedicated elevated-account tokens retain their existing policy.
+    // Both legacy ambient roles have already refused. Only the existing
+    // dedicated-account factory retains its original Logon/Everyone policy.
     if matches!(restricting_identity, RestrictingIdentity::Include) {
         entries.push(SID_AND_ATTRIBUTES {
             Sid: psid_logon,
