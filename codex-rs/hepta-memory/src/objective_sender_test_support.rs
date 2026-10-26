@@ -127,6 +127,7 @@ pub(super) struct Fixture {
     pub temp: TempDir,
 }
 
+#[cfg(test)]
 impl Fixture {
     pub async fn new() -> Self {
         let temp = TempDir::new().expect("test root");
