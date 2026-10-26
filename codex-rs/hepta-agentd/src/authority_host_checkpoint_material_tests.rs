@@ -141,9 +141,11 @@ async fn adopted_current_before_uid_release_cannot_be_adopted_again_or_reinitial
     drop(installed); // Controlled boundary: Root has not released the data UID.
     let profile = f.material_profile();
     assert_eq!(profile.layout.cognitive_root().metadata().unwrap().uid(), 0);
+    // The actual protected head now names the still-live successor. Its real
+    // pidfd retirement gate refuses before any generation/adoption validation.
     assert_eq!(
         f.observe_recovery().err(),
-        Some(AuthorityTrustError::Invalid)
+        Some(AuthorityTrustError::Conflict)
     );
     assert!(
         HostCognitiveCheckpoint::initialize_fresh(
