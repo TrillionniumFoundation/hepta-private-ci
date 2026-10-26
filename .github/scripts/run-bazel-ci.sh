@@ -69,7 +69,8 @@ run_bazel() (
     return
   fi
 
-  "$(dirname "${BASH_SOURCE[0]}")/run_bazel_with_buildbuddy.py" "$@"
+  # Bazel labels are opaque arguments even when RUNNER_OS selects another config.
+  MSYS2_ARG_CONV_EXCL='*' "$(dirname "${BASH_SOURCE[0]}")/run_bazel_with_buildbuddy.py" "$@"
 )
 
 run_bazel_with_startup_args() {
