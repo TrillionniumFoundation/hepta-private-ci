@@ -9,6 +9,9 @@ use windows_sys::Win32::Security::*;
 #[path = "sqlite_recovery_windows_namespace_tests.rs"]
 mod namespace;
 
+#[path = "sqlite_recovery_windows_directory_probe_tests.rs"]
+mod directory_probe;
+
 struct Fixture {
     root: std::path::PathBuf,
     home: std::path::PathBuf,
