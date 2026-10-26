@@ -20,6 +20,26 @@ trusted route. A resumed thread must already retain this catalog; resume does
 not add it. Select `thread_notes_admission_profile_json_v1` for the retained
 principal/issuer, then use:
 
+For first deployment, `seed_original_notes_thread` accepts a real connected
+original App Server client and the exact expected Core home. It calls actual
+`ThreadStart` with this fixed catalog, persistence and no model fallback, then
+immediately rejoins that same running thread using `ThreadResume` with no
+overrides. The original store writer thereby materializes the otherwise lazy
+rollout even without a user/model turn. The helper reads the actual bounded first
+`SessionMeta` line and compares exact thread/session IDs, provider and catalog;
+its receipt records real responses, catalog hash and metadata hash. It submits no
+user message, starts no turn, stops no process and creates no human authorization.
+A lost Start acknowledgement is unknown and is never retried automatically.
+
+The trusted launcher can then gracefully stop the seed owner and launch the
+final Agentd with that same Core home. `verify_original_notes_thread_seed` must
+resume the original thread on the final actual App Server and compare the real
+home, thread/session, model/provider, rollout path and original metadata/catalog
+hashes. It neither supplies overrides nor repairs a missing catalog. SessionMeta
+persists the catalog and provider; it does not by itself prove that an unused
+thread's model setting survived. Final response equality is mandatory. Provider
+availability is established only by the subsequent real model turn.
+
 ```rust,ignore
 config.with_root_notes_thread_tools(
     &original_attachment,
