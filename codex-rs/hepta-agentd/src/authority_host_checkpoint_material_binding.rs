@@ -62,7 +62,10 @@ impl HostCognitiveCheckpoint {
         Ok(self)
     }
 
-    fn prepare_material(&self, head: &CognitiveCheckpointHead) -> Result<(), AuthorityTrustError> {
+    pub(super) fn prepare_material(
+        &self,
+        head: &CognitiveCheckpointHead,
+    ) -> Result<(), AuthorityTrustError> {
         if head.phase == CognitiveCheckpointPhase::Current
             && let Some(material) = &self.material
         {
@@ -71,7 +74,10 @@ impl HostCognitiveCheckpoint {
         Ok(())
     }
 
-    fn verify_material(&self, head: &CognitiveCheckpointHead) -> Result<(), AuthorityTrustError> {
+    pub(super) fn verify_material(
+        &self,
+        head: &CognitiveCheckpointHead,
+    ) -> Result<(), AuthorityTrustError> {
         if head.phase == CognitiveCheckpointPhase::Current
             && let Some(material) = &self.material
         {
