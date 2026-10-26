@@ -28,9 +28,17 @@ class CallerProofTests(unittest.TestCase):
         (root / "codex-rs/owner/src/lib.rs").write_text(
             "pub struct Gate; impl Gate { pub fn enter(&self) {} }\n", encoding="utf-8"
         )
-        caller = "fn use_gate(gate: &Gate) { gate.enter(); }\n" if method_pattern else "fn use_gate() { Gate::enter(); }\n"
+        caller = (
+            "fn use_gate(gate: &Gate) { gate.enter(); }\n"
+            if method_pattern
+            else "fn use_gate() { Gate::enter(); }\n"
+        )
         (root / "codex-rs/caller/src/lib.rs").write_text(caller, encoding="utf-8")
-        pattern = 'call_pattern = "gate\\\\s*\\\\.\\\\s*enter\\\\s*\\\\("\n' if method_pattern else ""
+        pattern = (
+            'call_pattern = "gate\\\\s*\\\\.\\\\s*enter\\\\s*\\\\("\n'
+            if method_pattern
+            else ""
+        )
         caller_marker = "gate.enter" if method_pattern else "Gate::enter"
         (root / "CALLERS.toml").write_text(
             textwrap.dedent(
@@ -69,40 +77,76 @@ class CallerProofTests(unittest.TestCase):
     def test_method_call_pattern_passes(self) -> None:
         root = self.make_fixture(method_pattern=True)
         receipt = MODULE.verify(root, root / "CALLERS.toml")
-        self.assertEqual(receipt["boundaries"][0]["productCallers"], ["codex-rs/caller/src/lib.rs"])
+        self.assertEqual(
+            receipt["boundaries"][0]["productCallers"], ["codex-rs/caller/src/lib.rs"]
+        )
 
     def test_typed_receiver_rejects_arbitrary_unregistered_parameter(self) -> None:
         root = self.make_fixture(method_pattern=True)
         manifest = root / "CALLERS.toml"
         text = manifest.read_text()
-        text = "\n".join(line for line in text.splitlines() if not line.startswith("call_pattern ="))
-        manifest.write_text(text.replace('symbol = "Gate::enter"', 'symbol = "Gate::enter"\nreceiver_type = "Gate"') + "\n")
+        text = "\n".join(
+            line for line in text.splitlines() if not line.startswith("call_pattern =")
+        )
+        manifest.write_text(
+            text.replace(
+                'symbol = "Gate::enter"',
+                'symbol = "Gate::enter"\nreceiver_type = "Gate"',
+            )
+            + "\n"
+        )
         extra = root / "codex-rs/extra/src"
         extra.mkdir(parents=True)
-        (extra / "lib.rs").write_text("fn bypass(completely_different: &Gate) { completely_different.enter(); }\n")
+        (extra / "lib.rs").write_text(
+            "fn bypass(completely_different: &Gate) { completely_different.enter(); }\n"
+        )
         with self.assertRaisesRegex(MODULE.VerificationFailure, "unexpected"):
             MODULE.verify(root, manifest)
 
     def test_typed_receiver_rejects_arbitrary_field_alias_in_split_impl(self) -> None:
         root = self.make_fixture(method_pattern=True)
         manifest = root / "CALLERS.toml"
-        text = "\n".join(line for line in manifest.read_text().splitlines() if not line.startswith("call_pattern ="))
-        manifest.write_text(text.replace('symbol = "Gate::enter"', 'symbol = "Gate::enter"\nreceiver_type = "Gate"') + "\n")
+        text = "\n".join(
+            line
+            for line in manifest.read_text().splitlines()
+            if not line.startswith("call_pattern =")
+        )
+        manifest.write_text(
+            text.replace(
+                'symbol = "Gate::enter"',
+                'symbol = "Gate::enter"\nreceiver_type = "Gate"',
+            )
+            + "\n"
+        )
         extra = root / "codex-rs/extra/src"
         extra.mkdir(parents=True)
         (extra / "lib.rs").write_text("struct Owner { anything: Gate }\n")
-        (extra / "child.rs").write_text("impl Owner { fn bypass(&self) { self.anything.enter(); } }\n")
+        (extra / "child.rs").write_text(
+            "impl Owner { fn bypass(&self) { self.anything.enter(); } }\n"
+        )
         with self.assertRaisesRegex(MODULE.VerificationFailure, "unexpected"):
             MODULE.verify(root, manifest)
 
     def test_typed_related_method_cannot_bypass_closed_set(self) -> None:
         root = self.make_fixture(method_pattern=True)
         manifest = root / "CALLERS.toml"
-        text = "\n".join(line for line in manifest.read_text().splitlines() if not line.startswith("call_pattern ="))
-        manifest.write_text(text.replace('symbol = "Gate::enter"', 'symbol = "Gate::enter"\nreceiver_type = "Gate"\nreceiver_methods = ["enter", "enter_next"]') + "\n")
+        text = "\n".join(
+            line
+            for line in manifest.read_text().splitlines()
+            if not line.startswith("call_pattern =")
+        )
+        manifest.write_text(
+            text.replace(
+                'symbol = "Gate::enter"',
+                'symbol = "Gate::enter"\nreceiver_type = "Gate"\nreceiver_methods = ["enter", "enter_next"]',
+            )
+            + "\n"
+        )
         extra = root / "codex-rs/extra/src"
         extra.mkdir(parents=True)
-        (extra / "lib.rs").write_text("fn bypass(unexpected: &Gate) { unexpected.enter_next(); }\n")
+        (extra / "lib.rs").write_text(
+            "fn bypass(unexpected: &Gate) { unexpected.enter_next(); }\n"
+        )
         with self.assertRaisesRegex(MODULE.VerificationFailure, "unexpected"):
             MODULE.verify(root, manifest)
 
@@ -115,7 +159,9 @@ class CallerProofTests(unittest.TestCase):
             encoding="utf-8",
         )
         receipt = MODULE.verify(root, root / "CALLERS.toml")
-        self.assertEqual(receipt["boundaries"][0]["productCallers"], ["codex-rs/caller/src/lib.rs"])
+        self.assertEqual(
+            receipt["boundaries"][0]["productCallers"], ["codex-rs/caller/src/lib.rs"]
+        )
 
     def test_cfg_test_fields_preserve_the_production_suffix(self) -> None:
         root = self.make_fixture()
@@ -145,9 +191,12 @@ class CallerProofTests(unittest.TestCase):
             with self.subTest(condition=condition):
                 source = f"#[cfg({condition})] fn bypass() {{ Gate::enter(); }}"
                 self.assertIn("Gate::enter", MODULE._strip_cfg_test_items(source))
-        self.assertNotIn("Gate::enter", MODULE._strip_cfg_test_items(
-            "#[cfg(all(test, unix))] fn only_test() { Gate::enter(); }"
-        ))
+        self.assertNotIn(
+            "Gate::enter",
+            MODULE._strip_cfg_test_items(
+                "#[cfg(all(test, unix))] fn only_test() { Gate::enter(); }"
+            ),
+        )
 
     def test_inventory_omission_fails(self) -> None:
         root = self.make_fixture()
@@ -166,7 +215,9 @@ class CallerProofTests(unittest.TestCase):
         root = self.make_fixture()
         extra = root / "codex-rs/extra/src"
         extra.mkdir(parents=True)
-        (extra / "lib.rs").write_text("fn bypass() { Gate::enter(); }\n", encoding="utf-8")
+        (extra / "lib.rs").write_text(
+            "fn bypass() { Gate::enter(); }\n", encoding="utf-8"
+        )
         with self.assertRaises(MODULE.VerificationFailure):
             MODULE.verify(root, root / "CALLERS.toml")
 
@@ -178,7 +229,9 @@ class CallerProofTests(unittest.TestCase):
             '// Gate::enter()\nconst TEXT: &str = "Gate::enter()";\n', encoding="utf-8"
         )
         receipt = MODULE.verify(root, root / "CALLERS.toml")
-        self.assertEqual(receipt["boundaries"][0]["productCallers"], ["codex-rs/caller/src/lib.rs"])
+        self.assertEqual(
+            receipt["boundaries"][0]["productCallers"], ["codex-rs/caller/src/lib.rs"]
+        )
 
     def test_positive_authority_fails(self) -> None:
         root = self.make_fixture()
@@ -191,6 +244,68 @@ class CallerProofTests(unittest.TestCase):
         )
         with self.assertRaises(MODULE.VerificationFailure):
             MODULE.verify(root, manifest)
+
+
+class RequiredCodeOrderTests(unittest.TestCase):
+    def check(self, source: str, order=None) -> list[str]:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "rotation.rs").write_text(source)
+            row = {
+                "path": "rotation.rs",
+                "required": [],
+                "forbidden": [],
+                "required_order": order
+                if order is not None
+                else [
+                    [
+                        "predecessor.validate_successor(successor)?",
+                        ".put_lease(",
+                    ]
+                ],
+            }
+            return MODULE._verify_protected_files(root, {"protected_file": [row]})
+
+    def test_original_pre_cas_shape_order_passes(self):
+        self.assertEqual(
+            self.check(
+                "fn rotate() { predecessor.validate_successor(successor)?; leases.put_lease(next); }"
+            ),
+            ["rotation.rs"],
+        )
+
+    def test_late_validation_keeps_both_markers_but_is_rejected(self):
+        with self.assertRaisesRegex(MODULE.VerificationFailure, "required code order"):
+            self.check(
+                "fn rotate() { leases.put_lease(next); predecessor.validate_successor(successor)?; }"
+            )
+
+    def test_comment_or_string_cannot_supply_pre_cas_validation(self):
+        for fake in (
+            "// predecessor.validate_successor(successor)?\n",
+            'let fake = "predecessor.validate_successor(successor)?"; ',
+        ):
+            with self.subTest(fake=fake), self.assertRaises(MODULE.VerificationFailure):
+                self.check(
+                    fake
+                    + "fn rotate() { leases.put_lease(next); predecessor.validate_successor(successor)?; }"
+                )
+
+    def test_malformed_or_missing_code_order_is_rejected(self):
+        for order in (
+            "invalid",
+            ["invalid"],
+            [["only-one"]],
+            [[1, 2]],
+            [["", "second"]],
+        ):
+            with (
+                self.subTest(order=order),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check("fn rotate() {}", order)
+        with self.assertRaises(MODULE.VerificationFailure):
+            self.check("fn rotate() { predecessor.validate_successor(successor)?; }")
 
 
 if __name__ == "__main__":

@@ -71,7 +71,45 @@ required_boundary_ids = [
   "notes_original_human_text_verification",
   "root_prepared_fresh_session",
   "root_retained_native_ui_launch",
-  "root_prepared_native_ui_execution"
+  "root_prepared_native_ui_execution",
+  "root_material_capture_original_image",
+  "root_material_verify_retained_image",
+  "root_material_install_original_generation",
+  "root_material_reopen_original_installation",
+  "root_material_release_registered_custody",
+  "root_material_fresh_registered_session",
+  "root_material_recover_registered_session",
+  "root_material_existing_session_open",
+  "root_material_resume_registered_handoff",
+  "root_material_current_observation_chain",
+  "root_original_writer_descriptor_chain",
+  "root_same_retained_service_serve",
+  "root_registered_material_recovery",
+  "root_registered_material_handoff_resume",
+  "root_original_writer_purpose_send",
+  "root_original_writer_purpose_receive",
+  "agentd_original_root_writer_consume",
+  "root_registered_writer_rotation",
+  "native_original_operation_host_attach",
+  "native_original_owner_current_ack",
+  "native_original_terminal_history_observation",
+  "root_original_authority_initialize",
+  "root_original_writer_authorize",
+  "root_same_registered_bootstrap_seal",
+  "root_same_registered_bootstrap_capture",
+  "root_original_physical_login_install",
+  "root_original_writer_successor_shape",
+  "root_original_issuer_writer_rotation",
+  "root_physical_current_retired_adoption",
+  "root_physical_recovery_retirement_admission",
+  "root_physical_fresh_service_genesis",
+  "root_physical_registered_checkpoint_genesis",
+  "root_physical_current_backend_genesis",
+  "root_registered_physical_current_observation",
+  "root_original_two_descriptor_send",
+  "root_original_two_descriptor_receive",
+  "native_original_writer_terminal_observation",
+  "native_original_writer_next_delivery_observation"
 ]
 
 [[boundary]]
@@ -365,8 +403,8 @@ symbol = "AuthorityLeaseRegistry::put_lease"
 call_pattern = '(?:\.\s*|AuthorityLeaseRegistry\s*::\s*)put_lease\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub struct AuthorityLeaseRegistry", "pub fn put_lease(", "expected_revision"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_runtime.rs", "codex-rs/hepta-agentd/src/deployment_notes.rs"]
-caller_markers = ["AuthorityLeaseRegistry", "put_lease"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_runtime.rs", "codex-rs/hepta-agentd/src/deployment_notes.rs", "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs"]
+caller_markers = ["put_lease"]
 
 [[boundary]]
 id = "authority_lease_revoke"
@@ -579,7 +617,8 @@ forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs"
-required = ["rotate_writer_authorization", "predecessor.validate()?", "successor.validate()?", ".verify_use(", ".with_retired_predecessor_boundary("]
+required_order = [["predecessor.validate_successor(successor)?", ".with_retired_predecessor_boundary("]]
+required = ["rotate_writer_authorization", "predecessor.validate()?", "successor.validate()?", ".verify_use(", ".with_retired_predecessor_boundary(", "predecessor.validate_successor(successor)?", "self.authority_lease.lease_id == successor.authority_lease.lease_id", "self.local_lease_id != successor.local_lease_id", "self.local_lease_generation.checked_add(1) != Some(successor.local_lease_generation)", "self.spawn_generation >= successor.spawn_generation", "self.owner_epoch >= successor.owner_epoch", "self.validate_writer_proof_identity(&state, predecessor, predecessor_proof)?", "self.validate_writer_proof(&state, successor, retained)?"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
@@ -614,12 +653,12 @@ forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
-required = ["initialize_host_authority", "open_state_dir_with_trust", "HostAuthorityClock", "HostAuthorityFrontierStore", "put_lease"]
+required = ["initialize_host_authority", "open_state_dir_with_trust", "HostAuthorityClock", "HostAuthorityFrontierStore", "put_lease", "AuthorityLeaseRegistry"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/deployment_notes.rs"
-required = ["writer_token", "effect_token", "writer.validate()?", "RevisionMismatch", "retired Notes lease cannot be recreated"]
+required = ["writer_token", "effect_token", "writer.validate()?", "RevisionMismatch", "retired Notes lease cannot be recreated", "AuthorityLeaseRegistry", "put_lease"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
@@ -836,12 +875,12 @@ forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_human_text.rs"
-required = ["registration.validate(&self)?", "anon_inode:[pidfd]", "owner_alive(pidfd, end)", "self.text_ui_owner(registration)?", "&registration.human_binding()", "&registration.namespace()"]
+required = ["registration.validate(&self)?", "anon_inode:[pidfd]", "owner_alive(pidfd, end)", "self.text_ui_owner(registration)?", "&registration.human_binding()", "&registration.namespace()", "self.check_logind_binding(&registration.human_binding())?", "self.check_logind_lifetime().map_err(unavailable)?"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_service.rs"
-required = ["IssuerRequest::VerifyHumanText", "self.verify_original_human_text(&ingress)?", "ingress_sha256", "owner"]
+required = ["IssuerRequest::VerifyHumanText", "self.verify_original_human_text(&ingress)?", "ingress_sha256", "owner", "self.check_logind_lifetime().map_err(unavailable)?"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
@@ -915,4 +954,402 @@ forbidden = ["AllowVerifier", "permit_all", "ClientRequest::TurnStart", "ClientR
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/notes_thread_tool.rs"
 required = ["pub(crate) fn install_seed(", "self.seed.is_some()", "seed.codex_home != self.route.codex_home", "seed.thread_id != self.route.thread_id", "seed.app_server_session_id != self.route.app_server_session_id", "seed.model_tuple_digest()? != self.adapter.bindings.model_tuple_digest", "seed.verify_persisted()?", "self.seed = Some(seed)"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[boundary]]
+id = "root_material_capture_original_image"
+symbol = "CognitiveStore::capture_live_checkpoint_image"
+definition_path = "codex-rs/hepta-memory/src/cognitive_checkpoint_image.rs"
+definition_markers = ["pub async fn capture_live_checkpoint_image(", "CognitiveRecoveryRequirement::ExactCurrentCut(expected)", "destination.starts_with(root)", "private_file(&source, source_uid)?", ".open_read_only_pool(&source)", "sqlx::query(\"VACUUM INTO ?\")", "validate_image(destination, expected).await?", "image.sync_all()", "directory.sync_all()"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_checkpoint_material.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_material_verify_retained_image"
+symbol = "CognitiveStore::verify_retained_checkpoint_image"
+definition_path = "codex-rs/hepta-memory/src/cognitive_checkpoint_image.rs"
+definition_markers = ["pub async fn verify_retained_checkpoint_image(", "private_file(path, owner)?", "digest != *expected_sha256", "validate_image(path, expected).await?", "digest_image(&file)?.0 != digest"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_checkpoint_material.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_material_install_original_generation"
+symbol = "CognitiveStore::install_root_checkpoint_image"
+definition_path = "codex-rs/hepta-memory/src/cognitive_checkpoint_install.rs"
+definition_markers = ["pub async fn install_root_checkpoint_image(", "require_root()?", "CognitiveRecoveryRequirement::ExactCurrentCut(&image.cut)", "CognitiveStoreOpenGuard::acquire_exclusive(root)", "digest_image(&image.file)?", ".create_new(true)", "publish_active_database"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_checkpoint_material.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_material_reopen_original_installation"
+symbol = "CognitiveStore::reopen_root_checkpoint_installation"
+definition_path = "codex-rs/hepta-memory/src/cognitive_checkpoint_install.rs"
+definition_markers = ["pub async fn reopen_root_checkpoint_installation(", "require_root()?", "CognitiveStoreOpenGuard::acquire_exclusive(root)", "digest_image(&database)? != (image.sha256.clone(), image.bytes)", "digest_image(&image.file)? != (image.sha256.clone(), image.bytes)", "resolve_active_database_path(root).map_err(unavailable)? != path"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_checkpoint_material.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_material_release_registered_custody"
+symbol = "InstalledRootCheckpointImage::release_to_registered_owner"
+definition_path = "codex-rs/hepta-memory/src/cognitive_checkpoint_install.rs"
+definition_markers = ["pub fn release_to_registered_owner(", "require_root()?", "matches!(uid, 0 | u32::MAX)", "matches!(gid, 0 | u32::MAX)", "(path.dev(), path.ino()) != (held.dev(), held.ino())", "file.sync_all()", "change_owner(&self.directory, uid, gid)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_material_recovery.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)release_to_registered_owner\\s*\\("
+
+[[boundary]]
+id = "root_material_fresh_registered_session"
+symbol = "PreparedHostAuthoritySession::prepare_fresh_with_physical_material"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_session_material.rs"
+definition_markers = ["pub async fn prepare_fresh_with_physical_material(", "open_registered_writer(&config, &registration, &owner_pidfd)?", "FreshHostCognitiveState::prepare(&registration.registered_identity)", "service.initialize_fresh_heads_with_material("]
+product_callers = ["codex-rs/hepta-agentd/src/native_g2_entry/activation.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_material_recover_registered_session"
+symbol = "PreparedHostAuthoritySession::recover_with_physical_material"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_session_material.rs"
+definition_markers = ["pub fn recover_with_physical_material(", "open_registered_writer(&config, &registration, &owner_pidfd)?", ".recover_material_from_registered(&config, &registration, &owner_pidfd)?"]
+product_callers = ["codex-rs/hepta-agentd/src/native_g2_entry/recovery.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_material_existing_session_open"
+symbol = "PreparedHostAuthoritySession::open_with_physical_material"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_session_material.rs"
+definition_markers = ["pub fn open_with_physical_material(", "open_registered_service(&config, &registration, &owner_pidfd)?", "service.require_existing_physical_material(RootMaterialProfile", "config.state_dir.join(\"cognitive-material-v1\")"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "root_material_resume_registered_handoff"
+symbol = "PreparedHostAuthoritySession::resume_physical_material_handoff"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_session_material.rs"
+definition_markers = ["pub fn resume_physical_material_handoff(self)", "self.service.resume_registered_material_handoff(", "&self.owner_pidfd"]
+product_callers = []
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)resume_physical_material_handoff\\s*\\("
+
+[[boundary]]
+id = "root_material_current_observation_chain"
+symbol = "PreparedHostAuthoritySession/HostCognitiveCheckpoint::observe_physical_current"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_session_material.rs"
+definition_markers = ["pub fn observe_physical_current(", "verify_pinned_process(", "self.service.observe_registered_physical_current()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_material_recovery.rs", "codex-rs/hepta-agentd/src/native_g2_entry/cycle.rs", "codex-rs/hepta-agentd/src/native_g2_entry/recovery.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)observe_physical_current\\s*\\("
+
+[[boundary]]
+id = "root_original_writer_descriptor_chain"
+symbol = "PreparedHostAuthoritySession/HostAuthorityService::original_root_writer_descriptor"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_material_recovery.rs"
+definition_markers = ["pub(crate) fn original_root_writer_descriptor(", "libc::getuid()", "libc::geteuid()", "writer.registration.with_live(&writer.leases", "retained_writer_authorization(&writer.registration)?", "verify_original_starting_record(&self.identity)?", "metadata.uid() != 0", "metadata.mode() & 0o022 != 0", "(held.dev(), held.ino()) != (named.dev(), named.ino())"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_session_material.rs", "codex-rs/hepta-agentd/src/native_g2_entry/activation.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)original_root_writer_descriptor\\s*\\("
+
+[[boundary]]
+id = "root_same_retained_service_serve"
+symbol = "PreparedHostAuthoritySession::serve_retained"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_session_material.rs"
+definition_markers = ["pub fn serve_retained(&self)", "serve_lanes(", "&self.service", "&self.owner_pidfd"]
+product_callers = ["codex-rs/hepta-agentd/src/native_g2_entry/root.rs", "codex-rs/hepta-agentd/src/native_g2_entry/recovery.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)serve_retained\\s*\\("
+
+[[boundary]]
+id = "root_registered_material_recovery"
+symbol = "HostAuthorityService::recover_material_from_registered"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_material_recovery.rs"
+definition_markers = ["pub(crate) fn recover_material_from_registered(", "verify_pinned_process(", "validate_runtime_lanes(config)?", "self.checkpoint.is_some() || self.consumers.is_some()", "writer.registration.with_live(&writer.leases", "retain_original_writer_lock(&self.identity)?", "verify_original_starting_record(&self.identity)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_session_material.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)recover_material_from_registered\\s*\\("
+
+[[boundary]]
+id = "root_registered_material_handoff_resume"
+symbol = "HostAuthorityService::resume_registered_material_handoff"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_material_recovery.rs"
+definition_markers = ["pub(crate) fn resume_registered_material_handoff(", "verify_pinned_process(", "writer.registration.with_live(&writer.leases", "retain_original_writer_lock(&self.identity)?", ".reopen_material_installation()", ".release_to_registered_owner(config.peer_uid, config.peer_gid)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_session_material.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)resume_registered_material_handoff\\s*\\("
+
+[[boundary]]
+id = "root_original_writer_purpose_send"
+symbol = "send_root_production_writer_handoff"
+definition_path = "codex-rs/hepta-agentd/src/root_production_writer_handoff.rs"
+definition_markers = ["pub fn send_root_production_writer_handoff(", "writer: File,", "libc::getuid()", "libc::geteuid()", "peer.pid as u32 != std::process::id()", "require_root_pin(root_pidfd, std::process::id())?", "validate_writer(&writer)?", "WRITER_FRAME"]
+product_callers = ["codex-rs/hepta-agentd/src/native_g2_entry/activation.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_original_writer_purpose_receive"
+symbol = "receive_root_production_writer_handoff"
+definition_path = "codex-rs/hepta-agentd/src/root_production_writer_handoff.rs"
+definition_markers = ["pub fn receive_root_production_writer_handoff(", "libc::MSG_CMSG_CLOEXEC", "libc::MSG_TRUNC | libc::MSG_CTRUNC", "descriptors.len() != 3", "&bytes[..WRITER_FRAME.len()] != WRITER_FRAME", "require_root_pin(&root, peer.pid as u32)?", "RootProductionWriterDescriptor(writer)"]
+product_callers = ["codex-rs/hepta-agentd/src/native_g2_entry/owner.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "agentd_original_root_writer_consume"
+symbol = "AgentdConfig::from_root_writer_handoff"
+definition_path = "codex-rs/hepta-agentd/src/config_root_late_writer.rs"
+definition_markers = ["pub fn from_root_writer_handoff(", "writer: crate::RootProductionWriterDescriptor", "writer.into_file()", "bundle.consumer.pid != std::process::id()", "verify_sender_process_binding(", "(descriptor.dev(), descriptor.ino()) != (named.dev(), named.ino())", "WriterSource::RootDescriptor(writer)", "verify()?"]
+product_callers = ["codex-rs/hepta-agentd/src/native_g2_entry/owner.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_registered_writer_rotation"
+symbol = "rotate_host_writer_authorization"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs"
+definition_markers = ["pub fn rotate_host_writer_authorization(", "libc::getuid()", "libc::geteuid()", "open_registered_issuer(&config)?", "predecessor.authority_lease.expires_at_unix_ms", "successor.authority_lease.expires_at_unix_ms", ".put_lease(", "issuer.rotate_writer_authorization(predecessor, predecessor_proof, successor)"]
+product_callers = ["codex-rs/hepta-agentd/src/native_g2_entry/recovery_registration.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "native_original_operation_host_attach"
+symbol = "attach_g2_native_operation_host"
+definition_path = "codex-rs/hepta-agentd/src/native_hos2_owner.rs"
+definition_markers = ["pub async fn attach_g2_native_operation_host(", "config.require_unconfigured_production_hosts()?", "AgentdHos2Device::from_g2_initial_bootstrap", "AgentdHos2Device::from_g2_successor_bootstrap", "crate::attach_root_production_operation_host(", "config", "target.clone()"]
+product_callers = ["codex-rs/hepta-agentd/src/native_g2_entry/owner.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "native_original_owner_current_ack"
+symbol = "AgentdG2NativeOperationHost::acknowledge_current_receipt"
+definition_path = "codex-rs/hepta-agentd/src/native_hos2_owner.rs"
+definition_markers = ["pub async fn acknowledge_current_receipt(", ".acknowledge_current()", ".observed_current_receipt()"]
+product_callers = ["codex-rs/hepta-agentd/src/native_g2_entry/owner.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)acknowledge_current_receipt\\s*\\("
+
+[[boundary]]
+id = "native_original_terminal_history_observation"
+symbol = "AgentdG2NativeOperationHost::observe_retained_native_delivery"
+definition_path = "codex-rs/hepta-agentd/src/native_hos2_owner.rs"
+definition_markers = ["pub async fn observe_retained_native_delivery(", "self.host.writer().verify_current_authority().await?", ".observe(request)", "Hos2InstallOutcome::Contradiction(_)"]
+product_callers = ["codex-rs/hepta-agentd/src/native_g2_entry/owner.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)observe_retained_native_delivery\\s*\\("
+
+[[boundary]]
+id = "root_original_authority_initialize"
+symbol = "initialize_host_authority"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+definition_markers = ["pub fn initialize_host_authority(", "read_root_json(bootstrap_file)?", "bootstrap.required_bind.verify()?", "RootAuthorityDirectory::open(", "std::fs::DirBuilder::new().mode(0o700).create(state)?", "HostAuthorityClock::initialize"]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs", "codex-rs/hepta-agentd/src/native_g2_entry/provision.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_original_writer_authorize"
+symbol = "register_host_writer_authorization"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+definition_markers = ["pub fn register_host_writer_authorization(", "read_root_json(config_file)?", "writer.validate()?", "open_registered_issuer(&config)?", "Some(current) if current.lease != writer.authority_lease", "issuer.register_writer_authorization(writer, &leases.verifier())"]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs", "codex-rs/hepta-agentd/src/native_g2_entry/provision.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_registered_bootstrap_seal"
+symbol = "PreparedHostAuthoritySession::seal_bootstrap"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_session.rs"
+definition_markers = ["pub fn seal_bootstrap(&self", "self.service.seal_registered_bootstrap(", "&self.config", "&self.registration", "&self.owner_pidfd"]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs", "codex-rs/hepta-agentd/src/native_g2_entry/activation.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)seal_bootstrap\\s*\\("
+
+[[boundary]]
+id = "root_same_registered_bootstrap_capture"
+symbol = "HostAuthorityService::seal_registered_bootstrap"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_bootstrap_capture.rs"
+definition_markers = ["pub(crate) fn seal_registered_bootstrap(", "libc::geteuid()", "verify_pinned_process(", "validate_runtime_lanes(config)?", "writer.registration.with_live(&writer.leases", "if proof != writer.proof", ".current_for_handoff()", "crate::seal_host_authority_bootstrap(&bundle)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_session.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)seal_registered_bootstrap\\s*\\("
+
+[[boundary]]
+id = "root_original_physical_login_install"
+symbol = "HostAuthorityService::with_original_logind_session"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_logind.rs"
+definition_markers = ["pub(crate) fn with_original_logind_session(", "self.logind_session.is_some()", "verify_original_login(profile, uid, &held)?", "binding: profile.original_human_binding()"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_session.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)with_original_logind_session\\s*\\("
+
+[[boundary]]
+id = "root_original_writer_successor_shape"
+symbol = "HostAuthorityWriterRegistration::validate_successor"
+definition_path = "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs"
+definition_markers = ["pub(crate) fn validate_successor(", "self.validate()?", "successor.validate()?", "self.authority_lease.lease_id == successor.authority_lease.lease_id", "self.local_lease_id != successor.local_lease_id", "self.local_lease_generation.checked_add(1) != Some(successor.local_lease_generation)", "self.spawn_generation >= successor.spawn_generation", "self.owner_epoch >= successor.owner_epoch", "self.authority_lease.authority_epoch != successor.authority_lease.authority_epoch"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)validate_successor\\s*\\("
+
+[[boundary]]
+id = "root_original_issuer_writer_rotation"
+symbol = "DeploymentFinalUseIssuer::rotate_writer_authorization"
+definition_path = "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs"
+definition_markers = ["pub fn rotate_writer_authorization(", "predecessor.validate_successor(successor)?", ".with_retired_predecessor_boundary(", "self.validate_writer_proof_identity(&state, predecessor, predecessor_proof)?", "self.validate_writer_proof(&state, successor, retained)?", "self.retain_writer_authorization(&state, successor, now)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)rotate_writer_authorization\\s*\\("
+
+[[boundary]]
+id = "root_physical_current_retired_adoption"
+symbol = "HostCognitiveCheckpoint::adopt_current_after_root_restart_with_material"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption.rs"
+definition_markers = ["pub(crate) fn adopt_current_after_root_restart_with_material(", "Predecessor::Retired(predecessor)", "AdoptMaterial::Physical(profile)", "validate_adoption(previous, &predecessor, &registration, successor)?", "material.prepare(previous, &next)?", ".compare_and_set(STORE_OWNER, old, &next)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_checkpoint_material_recovery.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_physical_recovery_retirement_admission"
+symbol = "PreparedMaterialRecovery::observe"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_recovery.rs"
+definition_markers = ["pub(crate) fn observe(", "head.phase != CognitiveCheckpointPhase::Current || head.proposal.is_some()", "RetiredCheckpointPublisher::observe(previous.head.peer_lifetime.clone())?", "RetainedCheckpointPublisher::capture(registration.peer_lifetime.clone())?", "adoption::validate_adoption(", "result.require_retirement_window()?", "result.material.verify(result.previous.clone())?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_material_recovery.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_physical_fresh_service_genesis"
+symbol = "HostAuthorityService::initialize_fresh_heads_with_material"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_fresh_publish.rs"
+definition_markers = ["pub(crate) fn initialize_fresh_heads_with_material(", "FreshHeadMaterial::Physical", "fresh.current_cut(&self.identity)?", "writer.registration.with_live(&writer.leases", "retained_writer_authorization(&writer.registration)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_session_material.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)initialize_fresh_heads_with_material\\s*\\("
+
+[[boundary]]
+id = "root_physical_registered_checkpoint_genesis"
+symbol = "RegisteredCheckpoint::initialize_fresh_with_material"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_checkpoint_lane.rs"
+definition_markers = ["pub(super) fn initialize_fresh_with_material(", "HostCognitiveCheckpoint::initialize_fresh_with_material("]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_fresh_publish.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_physical_current_backend_genesis"
+symbol = "HostCognitiveCheckpoint::initialize_fresh_with_material"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_binding.rs"
+definition_markers = ["pub(crate) fn initialize_fresh_with_material(", "Self::initialize_fresh_inner(", "FreshMaterial::Physical(profile)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_checkpoint_lane.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_registered_physical_current_observation"
+symbol = "HostAuthorityService::observe_registered_physical_current"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_material_recovery.rs"
+definition_markers = ["pub(crate) fn observe_registered_physical_current(", "writer.registration.with_live(&writer.leases", "retained_writer_authorization(&writer.registration)?", ".observe_physical_current()"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_session_material.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)observe_registered_physical_current\\s*\\("
+
+[[boundary]]
+id = "root_original_two_descriptor_send"
+symbol = "send_root_production_handoff"
+definition_path = "codex-rs/hepta-agentd/src/root_production_handoff.rs"
+definition_markers = ["pub fn send_root_production_handoff(", "libc::geteuid()", "peer.pid as u32 != std::process::id()", "validate_bootstrap(bootstrap)?", "require_root_pin(root_pidfd, std::process::id())?", "&[bootstrap.as_raw_fd(), root_pidfd.as_raw_fd()]"]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_original_two_descriptor_receive"
+symbol = "receive_root_production_handoff"
+definition_path = "codex-rs/hepta-agentd/src/root_production_handoff.rs"
+definition_markers = ["pub fn receive_root_production_handoff(", "let peer = root_pair(&socket, timeout)?", "receive_packet(&socket, timeout)?", "require_root_pin(&root, peer.pid as u32)?", "descriptors.len() != 2"]
+product_callers = ["codex-rs/hepta-agentd/src/production_launcher.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "native_original_writer_terminal_observation"
+symbol = "ProductionDurableWriter/LocalLeaseOutbox::retained_hos2_terminal"
+definition_path = "codex-rs/hepta-memory/src/production_hos2_owner.rs"
+definition_markers = ["pub async fn retained_hos2_terminal(", "self.verify_authority().await?", ".begin_checkpoint_barrier()", ".retained_hos2_terminal(&mut transaction, operation_id)", "self.retirement_live_check()?", ".rollback()"]
+product_callers = ["codex-rs/hepta-agentd/src/native_g2_entry/owner.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)retained_hos2_terminal\\s*\\("
+
+[[boundary]]
+id = "native_original_writer_next_delivery_observation"
+symbol = "ProductionDurableWriter/LocalLeaseOutbox::next_hos2_delivery_sequence"
+definition_path = "codex-rs/hepta-memory/src/production_hos2_owner.rs"
+definition_markers = ["pub async fn next_hos2_delivery_sequence(", "self.verify_authority().await?", ".begin_checkpoint_barrier()", ".next_hos2_delivery_sequence(&mut transaction, &probe)", "self.retirement_live_check()?", ".rollback()"]
+product_callers = ["codex-rs/hepta-agentd/src/native_g2_entry/owner.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)next_hos2_delivery_sequence\\s*\\("
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_production_writer_handoff.rs"
+required = ["pub struct RootProductionWriterDescriptor(File)", "pub(crate) fn into_file(self)", "const WRITER_FRAME:", "descriptors.len() != 3", "libc::MSG_CMSG_CLOEXEC", "validate_bootstrap(&bootstrap)?", "require_root_pin(&root, peer.pid as u32)?", "validate_writer(&writer)?", "metadata.uid() != 0", "metadata.nlink() != 1", "metadata.mode() & 0o7777 != 0o600"]
+forbidden = ["AllowVerifier", "permit_all", "impl Clone for RootProductionWriterDescriptor", "impl Deserialize for RootProductionWriterDescriptor"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/config_root_late_writer.rs"
+required = ["writer: crate::RootProductionWriterDescriptor", "writer.into_file()", "pin_control_directory(identity.layout.agent_root(), gid)?", "pin_control_directory(identity.layout.run_root(), gid)?", "descriptor.uid() != 0", "named.uid() != 0", "descriptor.nlink() != 1", "named.nlink() != 1", "descriptor.mode() & 0o7777 != 0o600", "named.mode() & 0o7777 != 0o600", "(descriptor.dev(), descriptor.ino()) != (named.dev(), named.ino())", "flags & libc::O_ACCMODE != libc::O_RDWR", "WriterSource::RootDescriptor(writer)"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_worker.rs"
+required = ["SourceCustody::FreshRoot => 0", "SourceCustody::RegisteredPublisher => peer_uid", "RetainedCheckpointPublisher::capture(self.peer.clone())?", "publisher.require_alive()?", "mpsc::sync_channel::<Job>(1)", "compare_exchange(false, true", "worker_occupied.store(false, Ordering::Release)", ".recv_timeout(self.deadline)"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_binding.rs"
+required = ["let _guard = self", "exchange_lock", "head.phase != CognitiveCheckpointPhase::Current || head.proposal.is_some()", "self.load()? != head || !self.within_expiry()?", "FreshMaterial::Physical(profile)", "material.verify(receipt(&head)?)?"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_checkpoint_material.rs"
+required = ["struct MaterialArea", "directory: File", "_custody: Arc<RootAuthorityDirectory>", "RootAuthorityDirectory::open(&profile.root)?", "candidate.head.phase != CognitiveCheckpointPhase::Current", "candidate.token != token_for(&candidate.head)?", "self.check_custody()?", "self.validate_candidate(candidate)?", "CognitiveStore::verify_retained_checkpoint_image", "CognitiveStore::capture_live_checkpoint_image", "CognitiveStore::install_root_checkpoint_image"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_material_recovery.rs"
+required = ["writer.registration.with_live(&writer.leases", "retained_writer_authorization(&writer.registration)?", "retain_original_writer_lock(&self.identity)?", "verify_original_starting_record(&self.identity)?", "verify_pinned_process(", ".release_to_registered_owner(config.peer_uid, config.peer_gid)", "PreparedMaterialRecovery::observe(", "seize_registered_cognitive_root(&self.identity, config.peer_uid)?", ".install()", ".adopt()"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs"
+required_order = [["predecessor.validate_successor(successor)?", ".put_lease("]]
+required = ["libc::getuid()", "libc::geteuid()", "open_registered_issuer(&config)?", "predecessor.authority_lease.expires_at_unix_ms", "successor.authority_lease.expires_at_unix_ms", ".put_lease(", "issuer.rotate_writer_authorization(predecessor, predecessor_proof, successor)", "predecessor.validate_successor(successor)?", "old.lease != predecessor.authority_lease", "Some(existing) if existing.lease == successor.authority_lease", "/*expected_revision*/ 0"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-memory/src/local_hos2_ordering.rs"
+required = ["pub(crate) async fn retained_hos2_terminal(", "ensure_current_active(&lease, self)?", "verified_terminal(", "latest_occurrence_event(", "pub(crate) async fn next_hos2_delivery_sequence(", "self.hos2_durable_prefix(transaction, &through).await?", ".checked_add(1)"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/native_g2_entry/owner.rs"
+required = ["receive_root_production_writer_handoff(handoff", "receive_root_production_inputs(", "AgentdConfig::from_root_writer_handoff(&inputs, writer", "attach_g2_native_operation_host(", "owner.host().dispatch_with_grant_provider(queued)", "retained_hos2_terminal(&occurrence_key)", "original[\"observation\"] != serde_json::to_value(&observed)?", "owner.acknowledge_current_receipt().await?"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_bootstrap_capture.rs"
+required = ["libc::geteuid()", "verify_pinned_process(", "validate_runtime_lanes(config)?", "writer.registration.with_live(&writer.leases", "if proof != writer.proof", ".current_for_handoff()", "local.uid() != config.peer_uid", "local.gid() != config.peer_gid", "local.mode() & 0o7777 != 0o700", "crate::seal_host_authority_bootstrap(&bundle)?", "service.issuer.revocations()? != revocations"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_logind.rs"
+required = ["pub(super) struct OriginalLogindSession", "held: OwnedFd", "binding: TextHumanBinding", "verify_original_login(profile, uid, &held)?", "libc::getuid()", "libc::geteuid()", "Path::new(\"anon_inode:[pidfd]\")", "crate::authority_host_runtime::owner_alive(", "self.check_logind_lifetime()", "login.binding != binding"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_recovery.rs"
+required = ["pub(crate) struct PreparedMaterialRecovery", "pub(crate) struct InstalledMaterialRecovery", "pub(crate) fn adopt(", "self,", "recovery.require_retirement_window()?", "HostCognitiveCheckpoint::adopt_current_after_root_restart_with_material(", "RetiredCheckpointPublisher::observe(previous.head.peer_lifetime.clone())?", "RetainedCheckpointPublisher::capture(registration.peer_lifetime.clone())?", "adoption::validate_adoption(", "pub(crate) fn install(self)", "self.material.install(self.previous.clone())?", "self.predecessor.require_retired()?", "self.successor.require_alive()?", "if now < old_expiry || now >= new_expiry", "result.material.verify(result.previous.clone())?"]
+forbidden = ["AllowVerifier", "permit_all", "impl Clone for PreparedMaterialRecovery", "impl Clone for InstalledMaterialRecovery"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption.rs"
+required = ["validate_adoption(previous, &predecessor, &registration, successor)?", "AdoptMaterial::Physical(profile)", "material.prepare(previous, &next)?", ".compare_and_set(STORE_OWNER, old, &next)", "predecessor.require_retired()?", "successor.require_alive()?"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_fresh_publish.rs"
+required = ["fresh.current_cut(&self.identity)?", "fresh publication refuses existing or partial protected state", "writer.registration.with_live(&writer.leases", "retained_writer_authorization(&writer.registration)?", "FreshHeadMaterial::Physical =>", "RegisteredCheckpoint::initialize_fresh_with_material(", "layout: self.identity.layout.clone()", "root: material_directory.clone()", "path.parent() != Some(config.state_dir.as_path())"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_production_handoff.rs"
+required = ["const FRAME: &[u8] = b\"HEPTA_ROOT_PRODUCTION_INPUTS_V1\"", "descriptors.len() != 2", "libc::MSG_TRUNC | libc::MSG_CTRUNC", "libc::MSG_CMSG_CLOEXEC", "&bytes[..FRAME.len()] != FRAME", "peer.uid != 0", "inherited unnamed Root datagram pair required", "crate::authority_host_bootstrap_seal::validate_sealed(file, size)?", "crate::root_observation_stream::check_lifetime(root)"]
 forbidden = ["AllowVerifier", "permit_all"]
