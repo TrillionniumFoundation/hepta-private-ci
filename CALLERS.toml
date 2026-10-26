@@ -715,7 +715,7 @@ call_pattern = '(?:\.\s*|ProductionDurableWriter\s*::\s*)retained_notes_terminal
 definition_path = "codex-rs/hepta-memory/src/production_notes_owner.rs"
 definition_markers = ["pub async fn retained_notes_terminal_receipt(", "self.verify_authority().await?", "NotesTerminalReceipt::from_json(&retained.payload_json, &receipt)", "Sha256Digest::for_bytes(receipt.as_bytes()).as_str() != digest"]
 product_callers = ["codex-rs/hepta-agentd/src/notes_thread_tool.rs"]
-caller_markers = ["async fn observe_retained(", "async fn observe_operation(", ".retained_notes_terminal_receipt(&run_id)", "retained_thread_request_sha256(&request_id, &original_call_id)"]
+caller_markers = ["async fn observe_retained(", "async fn observe_operation(", ".retained_notes_terminal_receipt(&run_id)", "retained_thread_request_sha256(request_id, original_call_id)", "async fn observe_original_reference(", "request_id: &str", "original_call_id: &str"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/notes_thread_proof.rs"
@@ -739,7 +739,7 @@ required_function_order = [{function = "fn validate(", sequence = ["if let Self:
 path = "codex-rs/hepta-agentd/src/notes_thread_tool.rs"
 required = ["#[serde(deny_unknown_fields)]", "route.app_server_session_id.is_empty()", "Arc::ptr_eq(&self.adapter.writer, &writer.writer())", "self.observe_operation(original.original_item(), None).await", "ready.submit_once(remaining).await?", "retained_notes_terminal_receipt(&run_id)"]
 forbidden = ["AllowVerifier", "permit_all"]
-required_function_order = [{function = "fn execute(", sequence = ["call: &VerifiedNotesThreadCall", ".prepare_thread(", "call.recorded_reference(&self.route)", "human,", "Some(ready.submit_once(remaining).await?)"]}, {function = "fn latest_recovery_operation(", sequence = ["self.seed", ".verify_persisted()?", "self.session", ".check_alive()?", ".latest_recorded_recovery_operation(&self.route, previous)"]}, {function = "fn observe_recorded(", sequence = ["original: &RecordedNotesThreadOperation", ".observe_original_reference(", "original.turn_intent_id()", "original.call_intent_id()", "self.recorded_provenance(original)", "None,"]}, {function = "fn observe_original_reference(", sequence = ["self.adapter.run_id(&request_id)?", ".retained_operation(&run_id)", ".retained_notes_terminal_receipt(&run_id)", ".retained_thread_request_sha256(&request_id, &original_call_id)", "original_target", ".validate()", "original.operation.destination_id().as_str()"]}]
+required_function_order = [{function = "fn execute(", sequence = ["call: &VerifiedNotesThreadCall", ".prepare_thread(", "call.recorded_reference(&self.route)", "human,", "Some(ready.submit_once(remaining).await?)"]}, {function = "fn latest_recovery_operation(", sequence = ["self.seed", ".verify_persisted()?", "self.session", ".check_alive()?", ".latest_recorded_recovery_operation(&self.route, previous)"]}, {function = "fn observe_recorded(", sequence = ["original: &RecordedNotesThreadOperation", ".observe_original_reference(", "original.turn_intent_id()", "original.call_intent_id()", "self.recorded_provenance(original)", "None,"]}, {function = "fn observe_original_reference(", sequence = ["request_id: &str", "original_call_id: &str", "self.adapter.run_id(request_id)?", ".retained_operation(&run_id)", ".retained_notes_terminal_receipt(&run_id)", ".retained_thread_request_sha256(request_id, original_call_id)", "original_target", ".validate()", "original.operation.destination_id().as_str()"]}]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/notes_literal_adapter.rs"
