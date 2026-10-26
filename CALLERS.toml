@@ -151,10 +151,12 @@ caller_markers = ["HttpProviderEffectAdapter::new", "HttpProviderEffectContractA
 [[boundary]]
 id = "final_use_open_state"
 symbol = "FinalUseAuthority::open_state_dir"
+receiver_type = "FinalUseAuthority"
+receiver_methods = ["open_state_dir", "open_state_dir_with_clock", "open_state_dir_with_trust", "open_state_dir_with_issuer_keys"]
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_issuer_keys(", "InvalidTrust", "Store::open"]
-product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
-caller_markers = ["FinalUseAuthority", "verifying_key"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-agentd/src/production_authority.rs", "codex-rs/hepta-agentd/src/root_production_inputs.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
+caller_markers = ["FinalUseAuthority"]
 
 [[boundary]]
 id = "final_use_claim"
@@ -227,10 +229,10 @@ caller_markers = []
 [[boundary]]
 id = "final_use_revocation_update"
 symbol = "FinalUseAuthority::update_revocations"
-call_pattern = "authority\\s*\\.\\s*update_revocations\\s*\\("
+call_pattern = '(?:\.\s*|FinalUseAuthority\s*::\s*)update_revocations\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn update_revocations", "StaleRevocationHead", "store.persist"]
-product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-contracts/src/final_use_control.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/root_authority_session.rs", "codex-rs/hepta-contracts/src/final_use_control.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
 caller_markers = ["update_revocations"]
 
 [[boundary]]
@@ -330,18 +332,21 @@ caller_markers = []
 [[boundary]]
 id = "authority_lease_open_state"
 symbol = "AuthorityLeaseRegistry::open_state_dir"
+receiver_type = "AuthorityLeaseRegistry"
+receiver_methods = ["open_state_dir", "open_state_dir_with_frontier_store", "open_state_dir_with_clock", "open_state_dir_with_trust"]
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn open_state_dir(", "trusted_frontier", "Store::open"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_runtime.rs"]
+caller_markers = ["AuthorityLeaseRegistry", "HostAuthorityClock", "HostAuthorityFrontierStore"]
 
 [[boundary]]
 id = "authority_lease_put"
 symbol = "AuthorityLeaseRegistry::put_lease"
+call_pattern = '(?:\.\s*|AuthorityLeaseRegistry\s*::\s*)put_lease\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub struct AuthorityLeaseRegistry", "pub fn put_lease(", "expected_revision"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_runtime.rs", "codex-rs/hepta-agentd/src/deployment_notes.rs"]
+caller_markers = ["AuthorityLeaseRegistry", "put_lease"]
 
 [[boundary]]
 id = "authority_lease_revoke"
@@ -370,15 +375,10 @@ caller_markers = []
 [[boundary]]
 id = "authority_lease_verify_use"
 symbol = "AuthorityLeaseVerifier::verify_use"
-call_pattern = '\bverifier\s*\.\s*verify_use\s*\('
+call_pattern = '(?:\.\s*|AuthorityLeaseVerifier\s*::\s*)verify_use\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub struct AuthorityLeaseVerifier", "pub fn verify_use(", "LeaseVerifiedUseToken"]
-product_callers = [
-  "codex-rs/hepta-fleet/src/authority_port.rs",
-  "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
-  "codex-rs/hepta-agentd/src/deployment_writer.rs",
-  "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs",
-]
+product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs", "codex-rs/hepta-agentd/src/deployment_issuer_root.rs", "codex-rs/hepta-agentd/src/deployment_notes.rs", "codex-rs/hepta-agentd/src/deployment_writer.rs", "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs", "codex-rs/hepta-contracts/src/authority_host_issuer.rs"]
 caller_markers = [".verify_use("]
 
 [[boundary]]
@@ -400,10 +400,11 @@ caller_markers = []
 [[boundary]]
 id = "authority_lease_dispatch_raw"
 symbol = "AuthorityLeaseVerifier::with_dispatch_boundary"
+receiver_type = "AuthorityLeaseVerifier"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn with_dispatch_boundary", "with_dispatch_boundary_witness", "dispatch_boundary"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-agentd/src/deployment_issuer_root.rs", "codex-rs/hepta-contracts/src/authority_host_issuer.rs"]
+caller_markers = ["AuthorityLeaseVerifier", ".with_dispatch_boundary("]
 
 [[boundary]]
 id = "authority_lease_dispatch_witness"
@@ -559,4 +560,49 @@ forbidden = ["AllowVerifier", "permit_all"]
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs"
 required = ["rotate_writer_authorization", "predecessor.validate()?", "successor.validate()?", ".verify_use(", ".with_retired_predecessor_boundary("]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/automation_effect_host.rs"
+required = ["FinalUseAuthority", "verifying_key"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs"
+required = ["FinalUseAuthority", "verifying_key"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+required = ["FinalUseAuthority", "verifying_key"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_production_inputs.rs"
+required = ["receive_root_production_inputs", "root_pidfd", "read_bootstrap(bootstrap, expected)", "VerifiedRootWriterProof::verify", "open_state_dir_with_issuer_keys"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/production_authority.rs"
+required = ["pub struct AgentdFinalUseHostInputs", "issuer_keys", "revocations", "frontier_store", "clock", "open_state_dir_with_issuer_keys"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_authority_session.rs"
+required = ["synchronize_consumers", "live.cache.begin_update()", "live.cache.end_update()", "update_revocations(head.clone())"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+required = ["initialize_host_authority", "open_state_dir_with_trust", "HostAuthorityClock", "HostAuthorityFrontierStore", "put_lease"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_notes.rs"
+required = ["writer_token", "effect_token", "writer.validate()?", "RevisionMismatch", "retired Notes lease cannot be recreated"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/authority_host_issuer.rs"
+required = ["lease.revision != lease_revision", "with_dispatch_boundary", "lease.authority_epoch != self.authority_epoch", "min(lease.expires_at_unix_ms)"]
 forbidden = ["AllowVerifier", "permit_all"]
