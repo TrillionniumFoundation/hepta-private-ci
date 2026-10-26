@@ -1,0 +1,68 @@
+name: Observe original Windows restricted-token delete access
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-windows-delete-facts.yml"
+      - ".github/scripts/prepare_windows_delete_probe.py"
+      - ".github/scripts/windows_token_delete_probe.rs"
+      - ".github/scripts/test_windows_delete_probe.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-windows-delete-facts-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  RUSTUP_TOOLCHAIN: 1.96.0
+  CARGO_BUILD_JOBS: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_TERM_COLOR: never
+  PYTHONUTF8: "1"
+
+jobs:
+  original-delete-observation:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout the exact observation head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install the pinned compiler
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+      - name: Install repository test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Record original source and add only observation
+        shell: pwsh
+        run: |
+          python -m unittest discover -s .github/scripts -p test_windows_delete_probe.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          New-Item -ItemType Directory -Force "$env:RUNNER_TEMP/delete-facts" | Out-Null
+          python .github/scripts/prepare_windows_delete_probe.py prepare --output "$env:RUNNER_TEMP/delete-facts"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Execute the unchanged original outside-delete assertions
+        shell: pwsh
+        run: |
+          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "original-delete-facts-target"
+          python .github/scripts/prepare_windows_delete_probe.py run --output "$env:RUNNER_TEMP/delete-facts"
+          exit $LASTEXITCODE
+      - name: Extract native facts and restore the original test bytes
+        if: always()
+        shell: pwsh
+        run: |
+          python .github/scripts/prepare_windows_delete_probe.py collect --output "$env:RUNNER_TEMP/delete-facts"
+          exit $LASTEXITCODE
+      - name: Retain exact observations and original failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: original-delete-facts-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/delete-facts/
+          retention-days: 14
