@@ -1,0 +1,11 @@
+[profile.default]
+slow-timeout = { period = "30s", terminate-after = 2 }
+retries = 0
+
+[profile.local]
+inherits = "default"
+
+[[profile.local.overrides]]
+filter = "test(complete_stream_exceeds_both_old_limits_and_checks_every_numeric_tail_row)"
+slow-timeout = { period = "60s", terminate-after = 5 }
+retries = 0
