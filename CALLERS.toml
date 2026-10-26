@@ -56,7 +56,8 @@ required_boundary_ids = [
   "notes_original_operation_observation_proof",
   "notes_original_thread_prepare",
   "notes_original_writer_terminal_receipt",
-  "memory_original_owner_current_publication"
+  "memory_original_owner_current_publication",
+  "memory_original_protected_current_readback"
 ]
 
 [[boundary]]
@@ -676,17 +677,36 @@ path = "codex-rs/hepta-objective/src/notes_thread_source.rs"
 required = ["organ.notes.thread-tool.v1", "notes.original-thread.profile", "decode_admission_profile_json_v1", "literal_notes_admission_profile_json_v1"]
 forbidden = ["AllowVerifier", "permit_all"]
 
-# Source API only: no product caller is wired until a separately reviewed entry exists.
+# Source attachment only: the retained native API is wired; no running entry is asserted.
 [[boundary]]
 id = "memory_original_owner_current_publication"
 symbol = "ProductionDurableWriter::acknowledge_current"
 call_pattern = '(?:\.\s*acknowledge_current\s*\(\s*\)|ProductionDurableWriter\s*::\s*acknowledge_current\s*\()'
 definition_path = "codex-rs/hepta-memory/src/production_owner_publication.rs"
 definition_markers = ["pub async fn acknowledge_current(&self)", "self.verify_authority().await?", "if !self.store.commit_gate.is_managed()", "begin_checkpoint_barrier()", "self.acknowledge_bound_owner_transaction(&mut transaction)"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-agentd/src/native_hos2_owner.rs"]
+caller_markers = ["acknowledge_current_receipt", ".acknowledge_current()", ".observed_current_receipt()"]
 
 [[protected_file]]
 path = "codex-rs/hepta-memory/src/production_owner_publication.rs"
 required = ["pub async fn acknowledge_current(&self)", "self.verify_authority().await?", "if !self.store.commit_gate.is_managed()", "begin_checkpoint_barrier()", "require_current_transaction(transaction)", "bound_owner_publication()", "if acknowledged != cut", "attempt.acknowledge()", "self.retirement_live_check()?"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[boundary]]
+id = "memory_original_protected_current_readback"
+symbol = "ProtectedCognitiveCheckpoint::observed_current_receipt"
+call_pattern = '(?:\.\s*observed_current_receipt\s*\(\s*\)|ProtectedCognitiveCheckpoint\s*::\s*observed_current_receipt\s*\()'
+definition_path = "codex-rs/hepta-memory/src/cognitive_checkpoint.rs"
+definition_markers = ["pub async fn observed_current_receipt(", "self.receipt_transaction()", "let observed = self.owner.read_head(&self.receipt).await?", "if observed != *self.receipt", "observed.head.phase != CognitiveCheckpointPhase::Current", "observed.head.proposal.is_some()"]
+product_callers = ["codex-rs/hepta-agentd/src/native_hos2_owner.rs"]
+caller_markers = ["acknowledge_current_receipt", "self.root", ".checkpoint", ".observed_current_receipt()"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/native_hos2_owner.rs"
+required = ["pub async fn acknowledge_current_receipt(", "self.host", ".writer()", ".acknowledge_current()", "self.root", ".checkpoint", ".observed_current_receipt()", "require_unconfigured_production_hosts", "attach_root_production_operation_host"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-memory/src/cognitive_checkpoint.rs"
+required = ["pub async fn observed_current_receipt(", "ProtectedReceiptTransaction", "receipt: self.receipt.lock().await", "let observed = self.owner.read_head(&self.receipt).await?", "if observed != *self.receipt", "observed.head.phase != CognitiveCheckpointPhase::Current", "observed.head.proposal.is_some()"]
 forbidden = ["AllowVerifier", "permit_all"]
