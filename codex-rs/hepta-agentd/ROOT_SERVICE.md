@@ -49,6 +49,24 @@ An expired feed, lease, pidfd or epoch permanently fences the session. Clock and
 live-verifier callbacks do no blocking channel I/O. Original consumer persistence
 and typed issuance use their own bounded lanes and cannot bypass final entry.
 
+The v2 observation publisher reloads the original protected clock record and
+samples time after that read. It reuses the same durable projection only when
+its exact projectable remainder covers the fixed 500ms request-start freshness
+lifetime. A shorter window causes one original durable renewal; the post-I/O
+sample must still have 500ms remaining or the response is refused without a
+retry. The integer-ms ceiling's sub-ms phase is accounted for conservatively.
+This avoids renewing the protected clock on every poll while preserving the
+one-second durable ceiling, 10ms sample-span bound, original lease/proof and
+complete revocation checks. The existing current-time API and forced-refresh
+API keep their original behavior. Runtime peers cannot choose this horizon.
+
+Validate this path in `codex-hepta-contracts` and `codex-hepta-agentd` using
+`just test`, including exact remainder boundaries and a slow renewal that burns
+its remaining horizon. Controlled unit stores do not establish Root filesystem
+or native performance. Preserve the separate root-only slow-I/O qualifications;
+if privileges are unavailable, report them as unrun. A new static artifact must
+also pass the original one-vCPU native profile and unchanged authority gates.
+
 ## Whole-owner SQLite and Objective sender
 
 `AgentdProductionWriterHost::open_with_protected_recovery` verifies the root's

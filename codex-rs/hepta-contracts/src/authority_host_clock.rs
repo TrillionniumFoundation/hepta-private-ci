@@ -16,6 +16,7 @@ use std::fs::File;
 use std::io::Read;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::time::Duration;
 
 const HORIZON_NS: u64 = 1_000_000_000;
 const MAX_SAMPLE_SPAN_NS: u64 = 10_000_000;
@@ -118,14 +119,69 @@ impl HostAuthorityClock {
         self.renew_after_load(&previous)
     }
 
+    /// Observe the existing protected window without republishing it when it
+    /// covers `minimum_remaining` after the actual load completes. The minimum
+    /// is a trusted publisher requirement, never a peer-supplied clock bound.
+    ///
+    /// Every call reloads and validates the complete protected record. A valid
+    /// but short window or the original renewable Unavailable condition causes
+    /// one original durable renewal. Errors and a renewal whose post-I/O window
+    /// is still too short are returned without retry. No future ceiling is now.
+    /// A zero minimum preserves the original floor-valued actual time, including
+    /// the final fractional-ms tail; it promises no positive forward window.
+    pub fn observe_projection(
+        &self,
+        minimum_remaining: Duration,
+    ) -> Result<HostAuthorityClockObservation, AuthorityTrustError> {
+        let minimum_ns = u64::try_from(minimum_remaining.as_nanos())
+            .map_err(|_| AuthorityTrustError::Invalid)?;
+        self.observe_projection_with_clock(minimum_ns, sample_os_clock)
+    }
+
+    fn observe_projection_with_clock(
+        &self,
+        minimum_ns: u64,
+        mut sample: impl FnMut() -> Result<ClockSample, AuthorityTrustError>,
+    ) -> Result<HostAuthorityClockObservation, AuthorityTrustError> {
+        if minimum_ns > HORIZON_NS {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        let _serial = self
+            .serial
+            .lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
+        let previous = self.store.load(&self.owner_id)?;
+        match observation_window(&previous, sample()?) {
+            Ok((observation, remaining)) if remaining >= minimum_ns => Ok(observation),
+            Ok(_) | Err(AuthorityTrustError::Unavailable) => {
+                let (observation, remaining) =
+                    self.renew_after_load_with_clock(&previous, &mut sample)?;
+                if remaining < minimum_ns {
+                    return Err(AuthorityTrustError::Unavailable);
+                }
+                Ok(observation)
+            }
+            Err(error) => Err(error),
+        }
+    }
+
     fn renew_after_load(
         &self,
         previous: &ClockRecord,
     ) -> Result<HostAuthorityClockObservation, AuthorityTrustError> {
-        let next = project(previous, sample_os_clock()?)?;
+        self.renew_after_load_with_clock(previous, &mut sample_os_clock)
+            .map(|(observation, _)| observation)
+    }
+
+    fn renew_after_load_with_clock(
+        &self,
+        previous: &ClockRecord,
+        sample: &mut impl FnMut() -> Result<ClockSample, AuthorityTrustError>,
+    ) -> Result<(HostAuthorityClockObservation, u64), AuthorityTrustError> {
+        let next = project(previous, sample()?)?;
         self.store
             .compare_and_set(&self.owner_id, previous, &next)?;
-        observe_after_io(&next, sample_os_clock()?)
+        observation_window(&next, sample()?)
     }
 }
 
@@ -209,6 +265,31 @@ fn observe_after_io(
         },
         observed_unix_ms: actual / 1_000_000,
     })
+}
+
+// Use the exact post-I/O endpoint and the published integer-ms ceiling. The
+// projection consumer rounds its current time up; flooring the ceiling can
+// remove a sub-ms phase from the original durable window. Never overstate it.
+fn observation_window(
+    durable: &ClockRecord,
+    sample: ClockSample,
+) -> Result<(HostAuthorityClockObservation, u64), AuthorityTrustError> {
+    let after_ns = sample.after_ns;
+    let observation = observe_after_io(durable, sample)?;
+    let actual_ns = durable
+        .unix_ns
+        .checked_add(
+            after_ns
+                .checked_sub(durable.boottime_ns)
+                .ok_or(AuthorityTrustError::Invalid)?,
+        )
+        .ok_or(AuthorityTrustError::Invalid)?;
+    let published_ceiling_ns = observation
+        .projection
+        .ceiling_unix_ms
+        .checked_mul(1_000_000)
+        .ok_or(AuthorityTrustError::Invalid)?;
+    Ok((observation, published_ceiling_ns.saturating_sub(actual_ns)))
 }
 
 fn project(
@@ -306,6 +387,10 @@ fn to_ns(value: Timespec) -> Result<u64, AuthorityTrustError> {
 #[cfg(test)]
 #[path = "authority_host_clock_slow_tests.rs"]
 mod slow_tests;
+
+#[cfg(test)]
+#[path = "authority_host_clock_observation_tests.rs"]
+mod observation_tests;
 
 #[cfg(test)]
 mod tests {

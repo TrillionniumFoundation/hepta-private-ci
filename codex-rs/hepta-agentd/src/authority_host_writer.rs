@@ -126,7 +126,17 @@ impl RegisteredWriter {
                 let revocations = issuer.revocations()?;
                 // All blocking reads precede this final projection. Nothing after
                 // it writes a clock or substitutes a durable future ceiling for now.
-                let observation = clock.refresh_projection().map_err(io::Error::other)?;
+                let observation = if request.operation == HOST_AUTHORITY_OBSERVATION_V2 {
+                    // Cover the complete request-start freshness lifetime with
+                    // the already durable projection. This is a fixed producer
+                    // requirement, not a request-selected time allowance.
+                    clock.observe_projection(std::time::Duration::from_nanos(
+                        crate::root_observation_cache::MAX_AGE_NS,
+                    ))
+                } else {
+                    clock.refresh_projection()
+                }
+                .map_err(io::Error::other)?;
                 validate_observation_lease(
                     &self.registration.authority_lease,
                     &revocations,
