@@ -518,6 +518,19 @@ V2 evaluation/readback remain closed. Matched evaluation, owner-approved
 selection, I10 installation and ordinary next-task/three-round composition
 still require the existing owners; all qualification flags remain false.
 
+A separate [candidate-only V2 observation](../../qualification/learning-generations/real-model-owner-controlled-20261025/initial-v2-candidate-observation-20261026.json)
+on isolated Chain `0dcf8001` then loads that actual `a23b5f2d` trained 135M
+candidate, reads back the original parent and all 120 candidate factors, and
+executes eight tasks / sixty-four real forwards. The actual derived contract
+`c9b06f9a` stays distinct from parent `2bb480a2`; no parent or task registration
+is silently rewritten. Its original 600-second / eight-GiB supervisor reports
+success and exact wait4 in 8.854378 seconds, with all seven stages and the
+original missing-RSS reconciliation retained. This unsigned observer is a
+separate explicit route: the parent-step V2 evaluate/readback dispatcher stays
+closed. Outputs are engineering observations, not quality gain, FinalUse,
+selection, I10 installation, CURRENT, ordinary next-task or three-round success.
+The fixed V1 zero-parent profile and prior strict same-plan refusals remain.
+
 The separate fresh native host raw-U observation still fails its original
 eight-second cutoff; its post-deadline 4,096-byte kernel charge is diagnostic,
 with the same original owner retained. Funded resource return remains open.

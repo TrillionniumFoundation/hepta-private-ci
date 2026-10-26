@@ -1,0 +1,349 @@
+{
+  "schema": "trnm.controlled-initial-v2-135m-candidate-observation.v1",
+  "scope": "Unsigned single candidate-only engineering observation over the previously trained a23 candidate. No quality/gain, selected installation, CURRENT, ordinary use, reward or three-round acceptance.",
+  "actual_source": {
+    "chain_head": "0dcf8001c857f1dcb16769fb5d2253936b1c65e6",
+    "chain_tree": "510c772c2e96b48611b2b6304dabac60669ed1a4",
+    "training_producer": "a23b5f2d3ffc1e3de921921cbe197a07ecbd2f86",
+    "clean_before_and_after": true,
+    "exact_export_files": 360,
+    "source_pack": {
+      "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-preparation-20261026-001/source-0dcf8001-complete.tar",
+      "bytes": 6062080,
+      "sha256": "deaac46f6fb65ebd73cce82c63534a0951f26595b4201b7e0be93605ae4c8b11"
+    },
+    "source_export_inventory": {
+      "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-preparation-20261026-001/01-source-export-inventory.json",
+      "bytes": 97149,
+      "sha256": "7f7a81200dbdfb87d14e43b6ceeba02ce42e63ddddc64a404fb81dcb89a1d5f5"
+    },
+    "source_pins": {
+      "observer": "2e961474b237a708dd02b418c473d402dca399afae5ff78e5d50cd8cded48f9f",
+      "producer": {
+        "contract": "e46311a08584ad7becfc56cd0b699d9bc6921adcfe39319e50aa14faa984ced5",
+        "family": "0837bbfb31f3f2b9a8731545c9f742aee1ebd32daed392a936a3ec9719537e52",
+        "inherited": "1c356c4e8e9a114ac7b6348cac4bed9a6fc72d53ce71ce00139c3deed8733596",
+        "initial_setup": "247c5055da04dab4a30dd59f58dcdb3ec616e149bb900575aaf6615e8c677ef5",
+        "parent_step": "d8d7bb008380cbf5a96929f54baae378b8832b032b78a46a224c6c84af9644f8",
+        "parent_step_v2": "05e6ec9b133b58856ddfe16c317c1bdcab13df7c5663b954a1c095c5cbab36af",
+        "preflight": "5396d72c4730aea2d271b55a8404f6eaba64dc57f91343537710c28f7686b43c",
+        "runtime": "65ccc6454befd96fa5ce1f5bdde2c56cb6cbb741cf495b8d24a758039f99f755",
+        "task_link": "cd0d1a2c65fd3d95c78ea9db2522e7a30dbf2b30d8c1e241faa93a932bd41f76"
+      }
+    },
+    "source_scope_note": "The unchanged original training producer is a23; observer0dc is the actual inference source. Current primary6a1/b221 is only the proposed documentation integration basis. The explicit export now covers all formal files: original350 was complete for its declared narrower prefixes, not an incomplete historical export.",
+    "pathspec_erratum": {
+      "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-preparation-20261026-001/00c-pathspec-erratum-original-350-is-complete.json",
+      "bytes": 1789,
+      "sha256": "47653e558f88858f71bfc1a624011a1a8b7b26e872c737b1172a8f614eac8f6e"
+    },
+    "Hepta_model_or_ordinary_execution": false
+  },
+  "input_binding": {
+    "observation_input_identity": "08f78896b2e7d88907dd81fe5d1710fdff658bfc9ce8ff60b9ffc6e826073635",
+    "training_input_identity": "e62584bdfc7ea748216e1636e72bef85af6b76e1d0787c4752ca2596950027f7",
+    "original_parent": {
+      "adapter": "c28daec2ff15a5f512f4406ece7c4440fee991e30abc2d1f9c8480c936864f5f",
+      "contract": "2bb480a2becd44b7f4e4b03e557e270ed92a4bb952e0a634562d23d7f0f97e46",
+      "file_sha256": "1c5af7b5a7144a619dfac83b14bd83ae77f1e2227b18a6a9c5dcb214889a0cba"
+    },
+    "candidate": {
+      "adapter": "d04043e3520141f5bf1bf4f10b0984f5bc4bac91e83cfd8c917db165e3983b43",
+      "file_sha256": "2a1c51e820c6f3d93477e11d3d91317a2aa0addcc08696e841d5d7d120c516c4"
+    },
+    "actual_loaded_execution_contract": "c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f",
+    "task_link": {
+      "derived_contract": "c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f",
+      "parent_admission": "d7caa8c3569c133afe07d5a7299dee397df369fcad04636f12d15e37cd34baf1",
+      "training_plan": "4eb748aee63bb946b93c5df6780833691dc3a90e91dd1d8e6d29d1c93b9c7420"
+    },
+    "parent_contract_equals_actual_loaded_contract": false,
+    "contract_difference": "Explicit new-task profile permits only registration.target_admission; original parent contract/raw/bytes remain unchanged. The actual derivedc9b contract is never relabelled as parent2bb.",
+    "seed_scope": "Inherited setup seed7 is caller-declared, not measured authority or initialization provenance."
+  },
+  "observed": {
+    "launches": 1,
+    "retries": 0,
+    "extra_forward_or_warmup_or_training": false,
+    "requests": 8,
+    "real_forward_calls": 64,
+    "generated_tokens_per_request": [
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8
+    ],
+    "original_observation_budget": {
+      "rss_bytes": 8589934592,
+      "wall_seconds": 600
+    },
+    "actual_cli_exit": 0,
+    "supervisor_wall_ns": 8854377557,
+    "child_observed_wall_ns": 7672976479,
+    "exact_child_cpu_ns": 24188645000,
+    "actual_cli_wall_ns": 9878493448,
+    "actual_cpu_threads": 4,
+    "backend": "cpu",
+    "device": "cpu",
+    "environment": {
+      "accelerate": "1.15.0",
+      "numpy": "1.26.4",
+      "peft": "0.18.0",
+      "safetensors": "0.7.0",
+      "tokenizers": "0.22.2",
+      "torch": "2.9.1+cpu",
+      "transformers": "4.57.3"
+    },
+    "selected_dependency_files_bound": 27,
+    "stages": [
+      {
+        "bytes_read": 376832,
+        "bytes_written": 0,
+        "cpu_ns": 4069389752,
+        "error_type": null,
+        "gpu_ns": 0,
+        "memory_peak_bytes": 314851328,
+        "outcome": "success",
+        "stage": "runtime-import",
+        "wall_ns": 1622091069
+      },
+      {
+        "bytes_read": 151552,
+        "bytes_written": 0,
+        "cpu_ns": 410848907,
+        "error_type": null,
+        "gpu_ns": 0,
+        "memory_peak_bytes": 1150054400,
+        "outcome": "success",
+        "stage": "model-load",
+        "wall_ns": 178656095
+      },
+      {
+        "bytes_read": 0,
+        "bytes_written": 0,
+        "cpu_ns": 404540383,
+        "error_type": null,
+        "gpu_ns": 0,
+        "memory_peak_bytes": 1150054400,
+        "outcome": "success",
+        "stage": "derived-material-check",
+        "wall_ns": 404543407
+      },
+      {
+        "bytes_read": 0,
+        "bytes_written": 0,
+        "cpu_ns": 73641928,
+        "error_type": null,
+        "gpu_ns": 0,
+        "memory_peak_bytes": 1150054400,
+        "outcome": "success",
+        "stage": "adapter-insertion",
+        "wall_ns": 73646167
+      },
+      {
+        "bytes_read": 0,
+        "bytes_written": 0,
+        "cpu_ns": 40465219,
+        "error_type": null,
+        "gpu_ns": 0,
+        "memory_peak_bytes": 1150054400,
+        "outcome": "success",
+        "stage": "parent-byte-readback",
+        "wall_ns": 40468636
+      },
+      {
+        "bytes_read": 0,
+        "bytes_written": 0,
+        "cpu_ns": 44575458,
+        "error_type": null,
+        "gpu_ns": 0,
+        "memory_peak_bytes": 1150054400,
+        "outcome": "success",
+        "stage": "candidate-byte-readback",
+        "wall_ns": 44578713
+      },
+      {
+        "bytes_read": 12288,
+        "bytes_written": 0,
+        "cpu_ns": 17193164533,
+        "error_type": null,
+        "gpu_ns": 0,
+        "memory_peak_bytes": 1150054400,
+        "outcome": "success",
+        "stage": "real-forward-greedy-decode",
+        "wall_ns": 4542171712
+      }
+    ],
+    "predictions_sha256": "8107e2230e039fb72366cf306b53699a905ab18790d100493337bc8e43bac41e",
+    "observation_sha256": "6f0c5a2366ca43f7fb713549c316ffe1a003a8b2c94db01f6f24f9f0874cb7ec",
+    "original_decode_and_completion_readback": "PASS; exact pinned original validators replayed as metadata only, no second model instance or extra forward.",
+    "all_qualification_flags": {
+      "adoption": false,
+      "all_required_controls_executed": false,
+      "authenticated_inference_accepted": false,
+      "independent_accepted": false,
+      "installation_accepted": false,
+      "prospective_accepted": false,
+      "public_network_ready": false,
+      "public_reward_eligible": false,
+      "reward": false
+    }
+  },
+  "factor_readback": {
+    "modules": 60,
+    "factor_tensors": 120,
+    "factor_bytes": 921600,
+    "original_parent_adapter_readback": "c28daec2ff15a5f512f4406ece7c4440fee991e30abc2d1f9c8480c936864f5f",
+    "trained_candidate_adapter_readback": "d04043e3520141f5bf1bf4f10b0984f5bc4bac91e83cfd8c917db165e3983b43",
+    "trained_candidate_file_sha256": "2a1c51e820c6f3d93477e11d3d91317a2aa0addcc08696e841d5d7d120c516c4",
+    "wrapped_factor_manifest": {
+      "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-20261026-001/execution/wrapped-adapter.json",
+      "bytes": 20962,
+      "sha256": "3211affde7a2395d812a4d2654fcb694b5a75c29a93110a7460712579a2790b1"
+    },
+    "same_real_child_parent_then_candidate_copy": true,
+    "post_forward_backbone_index_and_all_factor_root_match": true,
+    "evidence_scope": "Original pinned child performs complete parent and candidate copy/readback and rewraps all60 A/B modules; its post-forward backbone-index and candidate adapter-root predicates succeed. The later metadata replay does not load another model. This is not all-input functional equivalence, a cryptographic model-execution proof, or a second120-factor standalone inference run.",
+    "setup_vs_training": "The original train descriptor retains60 setup-A changes with positive-zeroB and all120 subsequent optimizer-factor changes separately. Neither setup changes, optimizer bytes nor these generated outputs prove quality gain."
+  },
+  "terminal": {
+    "outcome": "success",
+    "exit_code": 0,
+    "stop_reason": null,
+    "cleanup_method": "wait4",
+    "waited_child_reaped": true,
+    "owned_child_exit_observed": true,
+    "owned_child_reap_resolved": true,
+    "owned_child_echild_observed": false,
+    "waited_child_observation_error": null,
+    "no_signal_sent": true,
+    "recorded_RSS_gaps_preserved": 1,
+    "RSS_gaps_counted_as_zero": false,
+    "sampled_peak_rss_bytes": 1154621440,
+    "wait4_peak_rss_bytes": 1150054400,
+    "memory_scope": "sampled_peak_rss_bytes is direct-child 50ms RSS; waited_child_peak_rss_bytes is exact owned-child Linux wait4 ru_maxrss in KiB times 1024, a maximum single-process high-water with inherited waited-descendant accounting; neither is simultaneous process-tree RSS",
+    "RSS_gap_scope": "Original held-pidfd irreversible-exit evidence followed by exact wait4 within the same declared600s deadline; original missing sample remains null/gap, never zero."
+  },
+  "raw_evidence": {
+    "result_subtree_regular_files": 7,
+    "launcher_stream_files": 1,
+    "total_regular_files": 8,
+    "total_bytes": 25252,
+    "all_raw_retained_in_workspace": true,
+    "all_raw_files_and_directories_fsynced": true,
+    "pins": [
+      {
+        "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-20261026-001/candidate-observation-input.json",
+        "bytes": 2550,
+        "sha256": "824517eb2259f41e1114c802fbe8c850675003d19e212d5fa75f5a0391bd97ae"
+      },
+      {
+        "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-20261026-001/candidate-observation-result.json",
+        "bytes": 3466,
+        "sha256": "3e6fbb44cda68036e3c23d705e2c9b120a0c56099c1a17c49873dd59050dc4b8"
+      },
+      {
+        "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-20261026-001/execution/actual-observation.json",
+        "bytes": 2844,
+        "sha256": "6f0c5a2366ca43f7fb713549c316ffe1a003a8b2c94db01f6f24f9f0874cb7ec"
+      },
+      {
+        "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-20261026-001/execution/cost-events.jsonl",
+        "bytes": 1418,
+        "sha256": "2dfba786dbea5f5e4c90ab437fc048d1f4077a4acf09499096bea241a2ea004b"
+      },
+      {
+        "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-20261026-001/execution/predictions.json",
+        "bytes": 12154,
+        "sha256": "8107e2230e039fb72366cf306b53699a905ab18790d100493337bc8e43bac41e"
+      },
+      {
+        "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-20261026-001/execution/process.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-20261026-001/execution/supervisor.json",
+        "bytes": 2820,
+        "sha256": "9b78089e58204a9b13e0fee5529bc4164308f50745cad63667ddef88d4389155"
+      },
+      {
+        "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-20261026-001.launcher.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "raw_archive": {
+      "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-preparation-20261026-001/25-actual-raw-eight-files.tar",
+      "bytes": 40960,
+      "sha256": "b9cb62fb363a3a2c365823a7f002fcbc1a049d20dd1c31252b037a926a8973ca"
+    },
+    "terminal_freeze": {
+      "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-preparation-20261026-001/29-actual-final-freeze.json",
+      "bytes": 2335,
+      "sha256": "2f0e1fed32458edac34f15143feb7b918799292ab38826f726a2ba328dc9e410"
+    },
+    "terminal_report": {
+      "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-preparation-20261026-001/27-actual-terminal-report.json",
+      "bytes": 18657,
+      "sha256": "d3dac3d5366a237bafe5330d95cb20a27d80154724d3db6ca9537a44a10263d9"
+    },
+    "material_manifest": {
+      "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-preparation-20261026-001/28-actual-material-manifest.json",
+      "bytes": 162484,
+      "sha256": "c3ad6f4070e7d88b68889fa3e17856a6fbe7a36ea4cdc019d0059505202a7cec"
+    },
+    "manifest_count": 472,
+    "metadata_postreadback": {
+      "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-preparation-20261026-001/23-postrun-metadata.stdout.json",
+      "bytes": 13109,
+      "sha256": "ecc26a22f6efed0237525415731a4c14c21543f5d7c64a8f649508a340189656"
+    },
+    "final_immutable_readback": {
+      "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-preparation-20261026-001/26-final-source-material-raw-readback.json",
+      "bytes": 25579,
+      "sha256": "3c9b4e4b3f3110bd5f6d14f7694e35d7bcb5d1675faddffa7715380631407e6b"
+    },
+    "source_input_freeze": {
+      "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-preparation-20261026-001/15-final-freeze.json",
+      "bytes": 1735,
+      "sha256": "5f633c217a0b1786c1577c81b1d231220f903835d9a95e6e35af58df4bd76bbe"
+    },
+    "launch_proposal": {
+      "workspace_path": "work/chain-v2-candidate-observer-actual-evaluate-preparation-20261026-001/12-launch-proposal.json",
+      "bytes": 14387,
+      "sha256": "e60112675a5efa41c68448ade6cc755669d31ac615acc9ece1a38fbdf24d33f9"
+    },
+    "projection_readback_scope": "This documentation proposal rehashes its direct references and eight raw files and checks their recorded joins; it is not a new model run or a new independent472-material source/host qualification."
+  },
+  "preserved_boundaries": {
+    "old_seven_compact_records": "unchanged",
+    "original_I09_run001": "915f/da4 original source tuple remains unchanged",
+    "separate_I09_run002": "4c8/8d25 original source tuple and overall I10 unavailable exit1 remain unchanged",
+    "original_strict_same_plan_profile": "40/42 PARENT_STEP_CURRENT_CONTRACT refusals remain unchanged",
+    "fixed_V1_zero_parent": "Original1c5af bytes and V1 tests/assertions remain unchanged",
+    "original_parent_step_V2_evaluate_readback": "still closed; this distinct explicit candidate observer does not enable that dispatcher",
+    "original_train_descriptor": "a23 train-only receipt and all fourteen raw pins remain unchanged; later observer0dc is separate evidence"
+  },
+  "qualification": {
+    "full_loop": false,
+    "quality_gain": false,
+    "statistical_gain": false,
+    "selected": false,
+    "CURRENT": false,
+    "installed": false,
+    "ordinary": false,
+    "authenticated_FinalUse": false,
+    "reward": false,
+    "funded_WholeU": false,
+    "three_rounds": false,
+    "Windows": false,
+    "WAN": false,
+    "all_required_controls_executed": false
+  },
+  "remaining": "Matched parent/strong-control efficacy evidence, lawful evaluation/selection, I10 compatible installation and ordinary next-task/three-round composition remain under their original owners. No release or authority is minted by this observer."
+}
