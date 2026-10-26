@@ -40,6 +40,30 @@ pub struct ObjectiveSenderRetainedPage {
 }
 
 impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
+    /// Complete original-owner request cut in one physical read-only snapshot.
+    /// The existing store limits this domain to 1024 requests / 32 MiB. Full
+    /// bytes stay inside trusted host code; this creates no ticket, send right,
+    /// observation, acknowledgement or replacement history.
+    pub async fn retained_owner_requests(
+        &self,
+    ) -> Result<Vec<ObjectiveSenderRequest>, ObjectiveSenderError> {
+        self.writer.sender_live_check()?;
+        self.writer.verify_authority().await?;
+        let mut transaction = self
+            .writer
+            .store
+            .observation_pool()
+            .begin()
+            .await
+            .map_err(unavailable)?;
+        let requests =
+            store::retained_owner_requests(&mut transaction, self.writer.owner_agent_id()).await?;
+        transaction.rollback().await.map_err(unavailable)?;
+        self.writer.sender_live_check()?;
+        self.writer.verify_authority().await?;
+        Ok(requests)
+    }
+
     /// Verify exact original bytes and origin against the existing row. No
     /// missing row is created and no recovered handle receives a send permit.
     pub async fn recover_pending(

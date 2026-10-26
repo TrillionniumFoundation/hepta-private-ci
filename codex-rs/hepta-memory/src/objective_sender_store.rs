@@ -168,6 +168,26 @@ pub(super) async fn retained_page(
     owner: &AgentId,
     after: &str,
 ) -> Result<Vec<ObjectiveSenderRequest>, ObjectiveSenderError> {
+    retained_range(tx, owner, after, 17).await
+}
+
+pub(super) async fn retained_owner_requests(
+    tx: &mut Transaction<'_, Sqlite>,
+    owner: &AgentId,
+) -> Result<Vec<ObjectiveSenderRequest>, ObjectiveSenderError> {
+    let requests = retained_range(tx, owner, "", MAX_REQUESTS + 1).await?;
+    if requests.len() > MAX_REQUESTS as usize {
+        return Err(corrupt());
+    }
+    Ok(requests)
+}
+
+async fn retained_range(
+    tx: &mut Transaction<'_, Sqlite>,
+    owner: &AgentId,
+    after: &str,
+    limit: i64,
+) -> Result<Vec<ObjectiveSenderRequest>, ObjectiveSenderError> {
     reserve(tx, /*requests*/ 0, /*events*/ 0, /*bytes*/ 0).await?;
     let foreign: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM cognitive_objective_sender_requests WHERE owner_agent_id <> ?",
@@ -179,8 +199,8 @@ pub(super) async fn retained_page(
     if foreign != 0 {
         return Err(corrupt());
     }
-    let rows = sqlx::query("SELECT * FROM cognitive_objective_sender_requests WHERE owner_agent_id = ? AND request_sha256 > ? ORDER BY request_sha256 LIMIT 17")
-        .bind(owner.as_str()).bind(after).fetch_all(&mut **tx).await.map_err(unavailable)?;
+    let rows = sqlx::query("SELECT * FROM cognitive_objective_sender_requests WHERE owner_agent_id = ? AND request_sha256 > ? ORDER BY request_sha256 LIMIT ?")
+        .bind(owner.as_str()).bind(after).bind(limit).fetch_all(&mut **tx).await.map_err(unavailable)?;
     let mut requests = Vec::with_capacity(rows.len());
     for row in rows {
         let request = decode_request(tx, &row).await?;

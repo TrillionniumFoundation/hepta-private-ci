@@ -78,6 +78,7 @@ pub use objective_sender::ObjectiveSenderRetainedPosition;
 pub use objective_sender::ObjectiveSenderSnapshot;
 pub use objective_sender::ObjectiveSenderTicket;
 pub use objective_sender::ObjectiveSenderWriterFence;
+pub use objective_sender::OriginalNotesThreadReference;
 pub use objective_sender::ProductionObjectiveSender;
 pub(crate) use objective_sender::verify_sender_store;
 

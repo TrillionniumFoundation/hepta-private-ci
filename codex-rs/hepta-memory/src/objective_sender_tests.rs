@@ -759,6 +759,7 @@ async fn bounded_pages_recover_exact_owner_bytes_without_caller_memory_or_send_r
         .await
         .unwrap();
     assert_eq!(second.requests.len(), 1);
+    assert_eq!(sender.retained_owner_requests().await.unwrap().len(), 17);
     assert!(second.next.is_none());
     assert!(sender.retained_page_after_token("../owner").await.is_err());
     assert!(

@@ -3,6 +3,19 @@ use super::*;
 use pretty_assertions::assert_eq;
 
 #[test]
+fn absent_notes_reference_preserves_original_origin_bytes_and_hash_input() {
+    let origin = request().origin;
+    let legacy = format!(
+        "{{\"agent_id\":\"{}\",\"spawn_generation\":1,\"request_id\":19,\"expected_peer_uid\":1000,\"expected_peer_pid\":4321,\"endpoint_identity\":\"/test/original-agentd.sock\"}}",
+        origin.agent_id
+    );
+    assert_eq!(serde_json::to_string(&origin).unwrap(), legacy);
+    let decoded: ObjectiveSenderOrigin = serde_json::from_str(&legacy).unwrap();
+    assert!(decoded.original_notes_thread.is_none());
+    assert_eq!(serde_json::to_string(&decoded).unwrap(), legacy);
+}
+
+#[test]
 fn exact_original_utf8_and_whitespace_survive_structural_projection() {
     let original = request();
     let padded = format!(" {} ", original.original);

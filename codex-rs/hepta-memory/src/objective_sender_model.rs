@@ -42,6 +42,45 @@ pub struct ObjectiveSenderOrigin {
     pub expected_peer_uid: u32,
     pub expected_peer_pid: u32,
     pub endpoint_identity: String,
+    /// Audit data supplied by the verified original Notes callback, never a
+    /// grant or permission. None preserves legacy binding bytes and hashes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_notes_thread: Option<OriginalNotesThreadReference>,
+}
+
+/// Raw navigation identity in the existing protected sender binding. This DTO
+/// cannot prove a Core item or authorize a write; readers must verify its
+/// commitments against the exact retained signed source and operation.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct OriginalNotesThreadReference {
+    pub app_server_session_id: String,
+    pub thread_id: String,
+    pub turn_id: String,
+    pub call_id: String,
+    pub callback_sha256: String,
+}
+
+impl OriginalNotesThreadReference {
+    pub fn validate_shape(&self) -> Result<(), ObjectiveSenderInputError> {
+        for (value, limit) in [
+            (&self.app_server_session_id, 256),
+            (&self.thread_id, 128),
+            (&self.turn_id, 128),
+            (&self.call_id, 128),
+        ] {
+            if value.is_empty() || value.len() > limit || value.contains('\0') {
+                return Err(ObjectiveSenderInputError::Identity);
+            }
+        }
+        if Digest32::from_str(&self.callback_sha256)
+            .map_err(|_| ObjectiveSenderInputError::Identity)?
+            .is_zero()
+        {
+            return Err(ObjectiveSenderInputError::Identity);
+        }
+        Ok(())
+    }
 }
 
 /// Complete original identity projection. Full source/signature bytes remain
@@ -118,6 +157,9 @@ impl ObjectiveSenderRequest {
             return Err(Error::Malformed);
         }
         let envelope: Envelope = serde_json::from_str(&original).map_err(|_| Error::Malformed)?;
+        if let Some(reference) = &origin.original_notes_thread {
+            reference.validate_shape()?;
+        }
         let body = &envelope.body;
         for value in [&envelope.issuer_id, &envelope.message_id, &body.run_id] {
             StableId::new(value).map_err(|_| Error::Identity)?;

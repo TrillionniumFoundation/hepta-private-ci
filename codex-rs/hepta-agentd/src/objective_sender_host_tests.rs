@@ -92,6 +92,7 @@ async fn installed_original_objective_sender_reuses_same_writer_and_live_verifie
             expected_peer_uid: 1_000,
             expected_peer_pid: 4_321,
             endpoint_identity: "/composition-fixture/original-agentd.sock".to_string(),
+            original_notes_thread: None,
         },
     )?;
     let ticket = sender.retain_before_send(request).await?;
@@ -132,6 +133,7 @@ async fn retained_signed_body_hash_matches_original_agentd_wire_projection()
         expected_peer_uid: 1_000,
         expected_peer_pid: 4_321,
         endpoint_identity: "/composition-fixture/original-agentd.sock".to_string(),
+        original_notes_thread: None,
     };
     // The actual original body has no optional fields. Exercise all of them,
     // preserving Unicode and digest spelling rather than inventing defaults.

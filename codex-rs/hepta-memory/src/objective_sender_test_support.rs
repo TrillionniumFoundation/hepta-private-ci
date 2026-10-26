@@ -186,6 +186,7 @@ pub(super) fn request() -> ObjectiveSenderRequest {
             expected_peer_uid: 1000,
             expected_peer_pid: 4321,
             endpoint_identity: "/test/original-agentd.sock".to_string(),
+            original_notes_thread: None,
         },
     )
     .expect("structural fixture request")
@@ -196,4 +197,17 @@ pub(super) fn observation(
     json: &str,
 ) -> ObjectiveSenderObservation {
     ObjectiveSenderObservation::from_original(kind, json.to_string()).expect("fixture observation")
+}
+
+pub(super) fn recorded_request() -> ObjectiveSenderRequest {
+    let mut original = request();
+    original.origin.original_notes_thread = Some(OriginalNotesThreadReference {
+        app_server_session_id: "original-core-session".into(),
+        thread_id: "original-thread".into(),
+        turn_id: "original-turn".into(),
+        call_id: "original-call".into(),
+        callback_sha256: codex_hepta_types::Digest32::of_bytes(b"storage-only callback fixture")
+            .to_string(),
+    });
+    ObjectiveSenderRequest::from_original(original.original, original.origin).unwrap()
 }

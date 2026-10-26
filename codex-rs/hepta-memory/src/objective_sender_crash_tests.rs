@@ -129,13 +129,22 @@ fn objective_sender_subprocess_fixture() {
         }
         let checkpoint = Arc::new(CrashCheckpoint {
             host_root: root,
-            crash_after: if phase == "retain" { 1 } else { 2 },
+            crash_after: if matches!(phase.as_str(), "retain" | "recorded_reference") {
+                1
+            } else {
+                2
+            },
             calls: AtomicUsize::new(0),
         });
         let sender = writer
             .objective_sender(checkpoint, Duration::from_secs(2))
             .unwrap();
-        let ticket = sender.retain_before_send(request()).await.unwrap();
+        let original = if phase == "recorded_reference" {
+            recorded_request()
+        } else {
+            request()
+        };
+        let ticket = sender.retain_before_send(original).await.unwrap();
         match phase.as_str() {
             "observation" => {
                 sender.mark_send_started(&ticket).await.unwrap();
@@ -167,7 +176,7 @@ fn child(root: &std::path::Path, phase: &str) -> std::io::Result<std::process::O
 
 #[tokio::test]
 async fn process_death_after_each_committed_cut_recovers_without_new_send_permission() {
-    for phase in ["retain", "observation", "cancel"] {
+    for phase in ["retain", "recorded_reference", "observation", "cancel"] {
         let temp = TempDir::new().unwrap();
         let output = child(temp.path(), phase).expect("start original package test subprocess");
         assert_eq!(
@@ -176,7 +185,11 @@ async fn process_death_after_each_committed_cut_recovers_without_new_send_permis
             "{}",
             String::from_utf8_lossy(&output.stderr)
         );
-        let index = if phase == "retain" { 1 } else { 2 };
+        let index = if matches!(phase, "retain" | "recorded_reference") {
+            1
+        } else {
+            2
+        };
         let (current, fence): (CognitiveRecoveryAnchor, ObjectiveSenderWriterFence) =
             serde_json::from_slice(
                 &std::fs::read(
@@ -244,6 +257,25 @@ async fn process_death_after_each_committed_cut_recovers_without_new_send_permis
         assert_eq!(page.requests.len(), 1);
         let original = page.requests.pop().unwrap();
         assert_eq!(original.exact_original(), request().exact_original());
+        if phase == "recorded_reference" {
+            // No Core process or in-memory callback exists in this fixture.
+            // Raw identity must come from the same protected acknowledged cut.
+            let complete = sender.retained_owner_requests().await.unwrap();
+            assert_eq!(complete.len(), 1);
+            assert_eq!(
+                complete[0].origin().original_notes_thread,
+                recorded_request().origin.original_notes_thread
+            );
+            let mut changed = original.clone();
+            changed
+                .origin
+                .original_notes_thread
+                .as_mut()
+                .unwrap()
+                .call_id
+                .push_str("-forged");
+            assert!(sender.recover_pending(changed).await.is_err());
+        }
         let ticket = sender.recover_pending(original).await.unwrap();
         assert!(matches!(
             sender.mark_send_started(&ticket).await,

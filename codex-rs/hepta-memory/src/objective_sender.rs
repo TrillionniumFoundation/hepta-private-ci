@@ -29,6 +29,7 @@ pub use model::ObjectiveSenderObservationKind;
 pub use model::ObjectiveSenderOrigin;
 pub use model::ObjectiveSenderRequest;
 pub use model::ObjectiveSenderWriterFence;
+pub use model::OriginalNotesThreadReference;
 pub use read::ObjectiveSenderRetainedCursor;
 pub use read::ObjectiveSenderRetainedPage;
 pub use read::ObjectiveSenderRetainedPosition;
