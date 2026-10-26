@@ -24,6 +24,7 @@ use std::time::Duration;
 mod worker;
 
 /// Root-only constructor input, never a peer-deserializable deployment profile.
+#[derive(Clone)]
 pub(crate) struct RootMaterialProfile {
     pub(crate) layout: HeptaAgentLayout,
     pub(crate) root: PathBuf,
@@ -150,6 +151,11 @@ impl MaterialArea {
             image_sha256: image.sha256().clone(),
             image_bytes: image.bytes(),
         };
+        self.retain_record(&record)?;
+        self.verify(candidate).await
+    }
+
+    fn retain_record(&self, record: &MaterialRecord) -> Result<(), AuthorityTrustError> {
         let bytes = serde_json::to_vec(&record).map_err(|_| AuthorityTrustError::Unavailable)?;
         if bytes.len() > 32_768 {
             return Err(AuthorityTrustError::Invalid);
@@ -159,7 +165,7 @@ impl MaterialArea {
             .create_new(true)
             .mode(0o600)
             .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)
-            .open(self.record_path(candidate))
+            .open(self.record_path(&record.candidate))
             .map_err(|_| AuthorityTrustError::Unavailable)?;
         file.write_all(&bytes)
             .map_err(|_| AuthorityTrustError::Unavailable)?;
@@ -168,7 +174,39 @@ impl MaterialArea {
         self.directory
             .sync_all()
             .map_err(|_| AuthorityTrustError::Unavailable)?;
+        Ok(())
+    }
+
+    async fn rebind(
+        &self,
+        previous: &CognitiveCheckpointReceipt,
+        candidate: &CognitiveCheckpointReceipt,
+    ) -> Result<MaterialRecord, AuthorityTrustError> {
+        self.validate_candidate(candidate)?;
+        let mut retained = self.verify(previous).await?;
+        if candidate.head.last_current != previous.head.last_current {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        retained.candidate = candidate.clone();
+        self.retain_record(&retained)?;
         self.verify(candidate).await
+    }
+
+    async fn install(
+        &self,
+        candidate: &CognitiveCheckpointReceipt,
+    ) -> Result<codex_hepta_memory::InstalledRootCheckpointImage, AuthorityTrustError> {
+        let retained = self.verify(candidate).await?;
+        let image = CognitiveStore::verify_retained_checkpoint_image(
+            &self.image_path(&retained.image_sha256),
+            &candidate.head.last_current,
+            &retained.image_sha256,
+        )
+        .await
+        .map_err(|_| AuthorityTrustError::Unavailable)?;
+        CognitiveStore::install_root_checkpoint_image(&self.layout, image)
+            .await
+            .map_err(|_| AuthorityTrustError::Unavailable)
     }
 
     async fn verify(

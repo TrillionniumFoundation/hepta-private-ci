@@ -60,6 +60,10 @@ use material::SourceCustody;
 mod material_binding;
 use material_binding::FreshMaterial;
 
+#[path = "authority_host_checkpoint_material_recovery.rs"]
+mod material_recovery;
+pub(crate) use material_recovery::PreparedMaterialRecovery;
+
 /// Actual trusted launcher registration. The peer cannot replace these fields.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct HostCognitiveCheckpointRegistration {

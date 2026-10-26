@@ -15,12 +15,19 @@ enum Command {
         publisher: RetainedCheckpointPublisher,
     },
     Verify,
+    Rebind(CognitiveCheckpointReceipt),
+    Install,
 }
 
 struct Job {
     candidate: CognitiveCheckpointReceipt,
     command: Command,
-    response: mpsc::SyncSender<Result<MaterialRecord, AuthorityTrustError>>,
+    response: mpsc::SyncSender<Result<Outcome, AuthorityTrustError>>,
+}
+
+enum Outcome {
+    Verified,
+    Installed(codex_hepta_memory::InstalledRootCheckpointImage),
 }
 
 pub(crate) struct RootCheckpointMaterial {
@@ -64,9 +71,19 @@ impl RootCheckpointMaterial {
                                 };
                                 let captured = area.prepare(&job.candidate, uid).await?;
                                 publisher.require_alive()?;
-                                Ok(captured)
+                                let _ = captured;
+                                Ok(Outcome::Verified)
                             }
-                            Command::Verify => area.verify(&job.candidate).await,
+                            Command::Verify => {
+                                area.verify(&job.candidate).await.map(|_| Outcome::Verified)
+                            }
+                            Command::Rebind(previous) => area
+                                .rebind(&previous, &job.candidate)
+                                .await
+                                .map(|_| Outcome::Verified),
+                            Command::Install => {
+                                area.install(&job.candidate).await.map(Outcome::Installed)
+                            }
                         }
                     });
                     worker_occupied.store(false, Ordering::Release);
@@ -99,11 +116,29 @@ impl RootCheckpointMaterial {
         self.call(candidate, Command::Verify).map(|_| ())
     }
 
+    pub(crate) fn rebind(
+        &self,
+        previous: CognitiveCheckpointReceipt,
+        candidate: CognitiveCheckpointReceipt,
+    ) -> Result<(), AuthorityTrustError> {
+        self.call(candidate, Command::Rebind(previous)).map(|_| ())
+    }
+
+    pub(crate) fn install(
+        &self,
+        previous: CognitiveCheckpointReceipt,
+    ) -> Result<codex_hepta_memory::InstalledRootCheckpointImage, AuthorityTrustError> {
+        match self.call(previous, Command::Install)? {
+            Outcome::Installed(image) => Ok(image),
+            Outcome::Verified => Err(AuthorityTrustError::Invalid),
+        }
+    }
+
     fn call(
         &self,
         candidate: CognitiveCheckpointReceipt,
         command: Command,
-    ) -> Result<MaterialRecord, AuthorityTrustError> {
+    ) -> Result<Outcome, AuthorityTrustError> {
         let (response, receiver) = mpsc::sync_channel(1);
         if self
             .occupied

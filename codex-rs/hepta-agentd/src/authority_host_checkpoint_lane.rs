@@ -15,6 +15,13 @@ pub(super) struct RegisteredCheckpoint {
 }
 
 impl RegisteredCheckpoint {
+    pub(super) fn adopted_material(
+        backend: HostCognitiveCheckpoint,
+        peer: CognitiveCheckpointPeerLifetime,
+    ) -> Self {
+        Self { backend, peer }
+    }
+
     pub(super) fn initialize_fresh_with_material(
         directory: Arc<RootAuthorityDirectory>,
         registration: HostCognitiveCheckpointRegistration,
