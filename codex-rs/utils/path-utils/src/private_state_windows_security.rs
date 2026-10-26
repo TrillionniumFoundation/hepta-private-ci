@@ -23,7 +23,7 @@ use windows_sys::Win32::Storage::FileSystem::FILE_ALL_ACCESS;
 // The owner SID and ACL storage stay alive through the creation call. An
 // explicit owner avoids elevated tokens' Administrators default owner, while
 // the protected DACL avoids any initially inherited public-access window.
-pub(super) fn with_private_security<T>(
+pub(crate) fn with_private_security<T>(
     create: impl FnOnce(&SECURITY_ATTRIBUTES) -> io::Result<T>,
 ) -> io::Result<T> {
     let current_user = CurrentUser::read()?;

@@ -18,6 +18,12 @@ pub use private_file_identity_windows::WindowsFileId;
 mod private_child_name_windows;
 #[cfg(windows)]
 pub use private_child_name_windows::validate_private_windows_child_name;
+#[cfg(windows)]
+mod private_artifacts_windows;
+#[cfg(windows)]
+pub use private_artifacts_windows::PrivateFile;
+#[cfg(windows)]
+pub use private_artifacts_windows::RetainedPrivateDirectory;
 
 #[cfg(windows)]
 mod private_state_windows;
