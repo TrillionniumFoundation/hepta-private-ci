@@ -95,6 +95,12 @@ pub(crate) enum NotesAdapterProfile {
     OriginalThread,
 }
 
+struct ThreadPreparation<'a> {
+    expected_revision: u64,
+    original_call_id: &'a str,
+    human: &'a crate::notes_thread_tool::human::VerifiedHumanTurn,
+}
+
 pub struct AgentdNotesLiteralAdapter {
     pub(crate) identity: AgentdIdentity,
     pub(crate) writer: Arc<ProductionDurableWriter>,
@@ -266,6 +272,46 @@ impl AgentdNotesLiteralAdapter {
         Ok(request.map(|request| request.identity().original_sha256.as_str().to_owned()))
     }
 
+    pub(crate) async fn verify_original_human_text(
+        &self,
+        ingress: &crate::AuthBusTextIngress,
+        route: &crate::text_session::AgentdTextSessionConfig,
+    ) -> Result<crate::text_session::TextOwnerReceipt, AgentdError> {
+        self.check_available()?;
+        let permit = Arc::clone(&self.blocking)
+            .try_acquire_owned()
+            .map_err(|_| invalid("original human verification worker is occupied"))?;
+        let grants = Arc::clone(&self.grants);
+        let root = Arc::clone(&self.root);
+        let ingress = ingress.clone();
+        let expected = route.clone();
+        let receipt = tokio::time::timeout(
+            self.deadline,
+            tokio::task::spawn_blocking(move || {
+                let _permit = permit;
+                let receipt = grants
+                    .verify_original_human_text(&ingress)
+                    .map_err(|_| invalid("Root did not verify this original human input"))?;
+                let now = root
+                    .clock()
+                    .now_unix_ms()
+                    .map_err(|_| invalid("protected Root clock unavailable"))?;
+                if !receipt.validate() || receipt.route != expected || receipt.expires_at_ms <= now
+                {
+                    return Err(invalid(
+                        "Root human input proof differs from current fixed route or lifetime",
+                    ));
+                }
+                Ok(receipt)
+            }),
+        )
+        .await
+        .map_err(|_| invalid("Root human input verification timed out"))?
+        .map_err(|_| invalid("Root human verification worker failed"))??;
+        self.check_available()?;
+        Ok(receipt)
+    }
+
     pub fn check_available(&self) -> Result<(), AgentdError> {
         if self.writer.checkpoint_fenced() {
             return Err(invalid(
@@ -307,7 +353,7 @@ impl AgentdNotesLiteralAdapter {
         if self.profile != NotesAdapterProfile::Literal {
             return Err(invalid("literal UI cannot prepare a model tool operation"));
         }
-        self.prepare_bound(client_intent_id, text, None, None, end, phase)
+        self.prepare_bound(client_intent_id, text, None, end, phase)
             .await
     }
 
@@ -317,10 +363,19 @@ impl AgentdNotesLiteralAdapter {
         original_call_id: &str,
         text: &str,
         expected_revision: u64,
+        human: &crate::notes_thread_tool::human::VerifiedHumanTurn,
     ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
         if self.profile != NotesAdapterProfile::OriginalThread {
             return Err(invalid(
                 "model tool cannot use the no-model literal profile",
+            ));
+        }
+        let current_human = self
+            .verify_original_human_text(human.ingress(), human.route())
+            .await?;
+        if !human.owner().same_authorization(&current_human) {
+            return Err(invalid(
+                "original human authorization changed before Notes preparation",
             ));
         }
         let end = Instant::now() + self.deadline;
@@ -330,8 +385,11 @@ impl AgentdNotesLiteralAdapter {
             self.prepare_bound(
                 client_intent_id,
                 text,
-                Some(expected_revision),
-                Some(original_call_id),
+                Some(ThreadPreparation {
+                    expected_revision,
+                    original_call_id,
+                    human,
+                }),
                 end,
                 &mut phase,
             ),
@@ -344,11 +402,17 @@ impl AgentdNotesLiteralAdapter {
         &mut self,
         client_intent_id: &str,
         text: &str,
-        expected_revision: Option<u64>,
-        original_call_id: Option<&str>,
+        thread: Option<ThreadPreparation<'_>>,
         end: Instant,
         phase: &mut NotesUiCallPhase,
     ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
+        if self.profile == NotesAdapterProfile::OriginalThread && thread.is_none() {
+            return Err(invalid(
+                "original Notes thread preparation requires verified human input",
+            ));
+        }
+        let expected_revision = thread.as_ref().map(|binding| binding.expected_revision);
+        let original_call_id = thread.as_ref().map(|binding| binding.original_call_id);
         let run_id = self.run_id(client_intent_id)?;
         if let Some(retained) = self
             .sender
@@ -419,7 +483,15 @@ impl AgentdNotesLiteralAdapter {
             .map_err(|_| invalid("protected Root clock unavailable"))?;
         let source_deadline = now_ms
             .checked_add(5_000)
-            .ok_or_else(|| invalid("Notes source deadline overflow"))?;
+            .ok_or_else(|| invalid("Notes source deadline overflow"))?
+            .min(
+                thread
+                    .as_ref()
+                    .map_or(u64::MAX, |binding| binding.human.owner().expires_at_ms),
+            );
+        if source_deadline <= now_ms {
+            return Err(invalid("original human Notes window expired"));
+        }
         if Instant::now() >= end {
             return Err(invalid(
                 "Notes deadline elapsed before original preparation",
@@ -470,6 +542,13 @@ impl AgentdNotesLiteralAdapter {
             .map_err(|_| invalid("Notes signer slot is occupied"))?;
         let grants = Arc::clone(&self.grants);
         let root = Arc::clone(&self.root);
+        let human_check = thread.as_ref().map(|binding| {
+            (
+                binding.human.ingress().clone(),
+                binding.human.owner().clone(),
+                binding.human.route().clone(),
+            )
+        });
         let signed = tokio::task::spawn_blocking(move || {
             let _permit = permit;
             if Instant::now() >= end
@@ -480,6 +559,24 @@ impl AgentdNotesLiteralAdapter {
                     >= source_deadline
             {
                 return Err(invalid("Notes source expired before Root signing"));
+            }
+            if let Some((ingress, original, route)) = human_check {
+                let current = grants.verify_original_human_text(&ingress).map_err(|_| {
+                    invalid("original human session is unavailable before Notes signing")
+                })?;
+                if !current.validate()
+                    || current.route != route
+                    || !original.same_authorization(&current)
+                    || root
+                        .clock()
+                        .now_unix_ms()
+                        .map_err(|_| invalid("Root clock unavailable"))?
+                        >= current.expires_at_ms
+                {
+                    return Err(invalid(
+                        "original human session changed or expired before Notes signing",
+                    ));
+                }
             }
             grants
                 .sign_objective(&body)

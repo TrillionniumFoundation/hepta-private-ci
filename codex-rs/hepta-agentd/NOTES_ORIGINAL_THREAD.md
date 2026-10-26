@@ -66,6 +66,32 @@ ID, fixed thread/session and exact in-progress original item through
 `VerifiedNotesThreadCall` exist. Extra arguments such as principal, target,
 authority, policy, operation ID or thread ID are rejected.
 
+A model callback is not by itself a human authorization. Before **any** Notes
+tool, the worker reads the original turn's first UserMessage. Its exact
+`hepta.authbus:<delivery-id>` client identity must resolve to an original retained
+AuthBus outbox message with the same Agentd subject/scope, canonical text input,
+delivery digest and retained Core acknowledgement. A direct `turn/start` without
+that original delivery is refused. `thread/queue/reconcile` is then called only
+with `ReconcileOnly`; it must return the same client/payload and `Persisted` for
+that exact turn. It can never admit a missing user input as a new message.
+
+The original held Root channel must independently verify the exact
+`AuthBusTextIngress` against its original issuer record. Root's real human UI
+lane atomically retains a human binding with the original text signature; a
+generic signature, matching request namespace, legacy unstamped record, provider
+login or OS username cannot supply it. Root checks its current human
+principal/session, permission revision, expiration and held UI lifetime, then
+returns only an observed `TextOwnerReceipt`. The worker checks the exact frozen
+route and protected-clock expiry. A private `VerifiedHumanTurn` carries this
+comparison data through preparation; it grants no authority and is never read
+from renderer JSON.
+
+The same Root verification is repeated before preparation and immediately
+before Objective signing. Its human authorization must remain identical and the
+finite Objective deadline cannot exceed that human session's expiration. These
+checks add neither an issuer record format owned by Desktop nor a second
+AuthBus, admission or conversation ledger.
+
 Each original turn permits at most one Notes write attempt. The original
 ordered thread items designate its first `hepta_notes_replace` call. Later
 replace calls can only read that original result, even if they change call ID,

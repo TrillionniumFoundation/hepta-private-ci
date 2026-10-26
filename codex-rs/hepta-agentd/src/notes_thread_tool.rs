@@ -21,10 +21,13 @@ use crate::notes_literal_adapter::NotesAdapterProfile;
 use crate::notes_literal_adapter::invalid;
 use crate::text_session::AgentdTextSessionConfig;
 
+#[path = "notes_thread_human.rs"]
+pub(crate) mod human;
 #[path = "notes_thread_proof.rs"]
 mod proof;
 #[path = "notes_thread_runtime.rs"]
 mod runtime;
+use human::VerifiedHumanTurn;
 use proof::OriginalNotesThreadItem;
 use proof::VerifiedNotesThreadCall;
 use proof::VerifiedNotesThreadOperation;
@@ -187,7 +190,11 @@ impl AgentdNotesThreadToolRuntime {
         })
     }
 
-    async fn execute(&mut self, call: &VerifiedNotesThreadCall) -> Result<Value, AgentdError> {
+    async fn execute(
+        &mut self,
+        call: &VerifiedNotesThreadCall,
+        human: &VerifiedHumanTurn,
+    ) -> Result<Value, AgentdError> {
         if call.tool() == READ_TOOL {
             return Ok(
                 json!({"provenance":self.provenance(call),"document":self.observe_document().await?}),
@@ -210,6 +217,7 @@ impl AgentdNotesThreadToolRuntime {
                 &original_call_id,
                 &arguments.text,
                 arguments.expected_revision,
+                human,
             )
             .await?;
         let submission = match prepared {

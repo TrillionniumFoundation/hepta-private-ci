@@ -20,6 +20,13 @@ use tokio_util::sync::CancellationToken;
 
 use super::*;
 
+#[derive(Clone, Copy)]
+enum OriginalItemSelection<'a> {
+    Call(&'a str),
+    FirstReplace,
+    UserInput,
+}
+
 struct OriginalConnection {
     client: RemoteAppServerClient,
     route: AgentdTextSessionConfig,
@@ -116,25 +123,92 @@ impl OriginalConnection {
         original_turn_id: &str,
         original_call_id: &str,
     ) -> Result<codex_app_server_protocol::ThreadItem, AgentdError> {
-        self.find_original_item(original_turn_id, Some(original_call_id))
-            .await
+        self.find_original_item(
+            original_turn_id,
+            OriginalItemSelection::Call(original_call_id),
+        )
+        .await
     }
 
     async fn first_original_replace(
         &mut self,
         turn_id: &str,
     ) -> Result<VerifiedNotesThreadOperation, AgentdError> {
-        let item = self.find_original_item(turn_id, None).await?;
+        let item = self
+            .find_original_item(turn_id, OriginalItemSelection::FirstReplace)
+            .await?;
         let codex_app_server_protocol::ThreadItem::DynamicToolCall { id, .. } = &item else {
             return Err(invalid("original Notes turn item changed kind"));
         };
         VerifiedNotesThreadOperation::from_original_item(&self.route, turn_id, id, &item)
     }
 
+    async fn verify_human_turn(
+        &mut self,
+        state: &crate::AgentdState,
+        adapter: &AgentdNotesLiteralAdapter,
+        turn_id: &str,
+    ) -> Result<VerifiedHumanTurn, AgentdError> {
+        let user = self
+            .find_original_item(turn_id, OriginalItemSelection::UserInput)
+            .await?;
+        let client_id = human::original_client_id(&user)?.to_owned();
+        let delivery_id = client_id
+            .strip_prefix("hepta.authbus:")
+            .ok_or_else(|| invalid("missing original human delivery"))?
+            .parse()
+            .map_err(|_| invalid("invalid original human delivery"))?;
+        crate::authbus_ingress::require_ready(state)?;
+        let host = crate::authbus_ingress::attached(state)?;
+        host.sync_replay_checkpoint().await?;
+        let retained = host
+            .evidence
+            .retained_authbus_delivery(delivery_id)
+            .await
+            .map_err(|_| invalid("original admitted human input is absent"))?;
+        if retained.status.subject_id != host.subject || retained.status.scope_digest != host.scope
+        {
+            return Err(invalid(
+                "original human delivery belongs to another Agentd scope",
+            ));
+        }
+        let human =
+            VerifiedHumanTurn::from_original_input(adapter, &self.route, &user, retained).await?;
+        let input = vec![codex_app_server_protocol::UserInput::Text {
+            text: human.ingress().body.text.clone(),
+            text_elements: vec![],
+        }];
+        let expected = codex_protocol::user_input::user_input_payload_sha256(
+            &input
+                .iter()
+                .cloned()
+                .map(codex_app_server_protocol::UserInput::into_core)
+                .collect::<Vec<_>>(),
+        )
+        .map_err(|_| invalid("original human input cannot be canonically hashed"))?;
+        let thread_id = self.route.thread_id.clone();
+        let response: codex_app_server_protocol::ThreadQueueReconcileResponse = self
+            .call(|request_id| ClientRequest::ThreadQueueReconcile {
+                request_id,
+                params: codex_app_server_protocol::ThreadQueueReconcileParams {
+                    thread_id,
+                    input,
+                    client_user_message_id: client_id.clone(),
+                    expected_payload_sha256: expected.clone(),
+                    mode: codex_app_server_protocol::ThreadQueueReconcileMode::ReconcileOnly,
+                },
+            })
+            .await?;
+        human::confirm_original_queue(&response, &client_id, &expected, turn_id)?;
+        host.sync_replay_checkpoint().await?;
+        crate::authbus_ingress::require_ready(state)?;
+        Ok(human)
+    }
+
     async fn find_original_item(
         &mut self,
         original_turn_id: &str,
-        original_call_id: Option<&str>,
+        selection: OriginalItemSelection<'_>,
     ) -> Result<codex_app_server_protocol::ThreadItem, AgentdError> {
         let end = tokio::time::Instant::now() + Duration::from_secs(5);
         let mut cursor = None;
@@ -165,6 +239,14 @@ impl OriginalConnection {
                 return Err(invalid("original callback page escaped its turn"));
             }
             for item in page.data {
+                if matches!(selection, OriginalItemSelection::UserInput)
+                    && matches!(
+                        &item.item,
+                        codex_app_server_protocol::ThreadItem::UserMessage { .. }
+                    )
+                {
+                    return Ok(item.item);
+                }
                 if let codex_app_server_protocol::ThreadItem::DynamicToolCall {
                     id,
                     namespace,
@@ -172,9 +254,12 @@ impl OriginalConnection {
                     ..
                 } = &item.item
                 {
-                    let selected = match original_call_id {
-                        Some(call_id) => id == call_id,
-                        None => namespace.is_none() && tool == REPLACE_TOOL,
+                    let selected = match selection {
+                        OriginalItemSelection::Call(call_id) => id == call_id,
+                        OriginalItemSelection::FirstReplace => {
+                            namespace.is_none() && tool == REPLACE_TOOL
+                        }
+                        OriginalItemSelection::UserInput => false,
                     };
                     if selected {
                         return Ok(item.item);
@@ -254,8 +339,13 @@ impl AgentdNotesThreadToolRuntime {
                 _ => continue,
             };
             let mut operation_id = None;
+            let mut human_observation = None;
             let result = async {
                 let call = connection.verify(&params).await?;
+                let human = connection.verify_human_turn(&state, &self.adapter, call.turn_id()).await?;
+                human_observation = Some(json!({"authbus_client_id":human.delivery_id(), "principal_id":human.owner().principal_id,
+                    "session_id":human.owner().session_id,"permission_revision":human.owner().permission_revision,
+                    "expires_at_ms":human.owner().expires_at_ms}));
                 if call.tool() == STATUS_TOOL {
                     let navigation: StatusArguments =
                         serde_json::from_value(call.arguments().clone())?;
@@ -290,11 +380,12 @@ impl AgentdNotesThreadToolRuntime {
                         return Ok(value);
                     }
                 }
-                self.execute(&call).await
+                self.execute(&call, &human).await
             }
             .await;
             let (value, success) = match result {
-                Ok(value) => {
+                Ok(mut value) => {
+                    value["human_input"] = json!(human_observation);
                     let success = value["write_admission"]
                         != "refused_later_replace_in_original_turn"
                         && (params.tool == READ_TOOL
@@ -302,10 +393,15 @@ impl AgentdNotesThreadToolRuntime {
                                 && value["receipt_utf8"].is_string()));
                     (value, success)
                 }
-                Err(_) => (
-                    json!({"status":"unavailable_or_unknown", "operation_id":operation_id, "thread_id":self.route.thread_id,"turn_id":params.turn_id,"call_id":params.call_id,"instruction":"Reconcile the original call and retained operation. Do not repeat this as a new effect."}),
-                    false,
-                ),
+                Err(error) => {
+                    // Original operator diagnostics retain the refusal cause;
+                    // renderer/model output remains a bounded observation.
+                    eprintln!("original Notes tool refused or uncertain: {error}");
+                    (
+                        json!({"status":"unavailable_or_unknown", "operation_id":operation_id, "thread_id":self.route.thread_id,"turn_id":params.turn_id,"call_id":params.call_id,"instruction":"Reconcile the original call and retained operation. Do not repeat this as a new effect."}),
+                        false,
+                    )
+                }
             };
             let response = DynamicToolCallResponse {
                 content_items: vec![DynamicToolCallOutputContentItem::InputText {
