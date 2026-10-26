@@ -1,0 +1,106 @@
+{
+  "schema": "hepta.next.media.development-decisions.v1",
+  "recorded_unix_ns": 1792978102957207291,
+  "completed": {
+    "waveform-student-001": {
+      "ASR_loaded_during_training": false,
+      "checkpoint": "/workspace/scratch/87e43aa872f5/ndu-next-runs/media/waveform-student-001/waveform-student.pt",
+      "checkpoint_sha256": "5dc512d4b8d1c9a91a4660cd7383fd2db136df72bc84054d98c4d99f6afc9756",
+      "confirmation_opened": false,
+      "cpu_ns": 34748495630,
+      "gradient_abs_sum_max": 2.4802480041980743,
+      "initial_parameters_sha256": "2143a66de2d4d27d89dec84090347e09ad91671c573abb3fae87e9913eb41a71",
+      "parameter_count": 1040704,
+      "parameters_sha256": "b8ba753358e1b5c208d91a93280c3e4f1a9500b0e177fceb340b659e4229e5ab",
+      "status": "completed",
+      "teacher_retrieval_at_inference": false,
+      "teacher_snr_db_by_digit": [
+        100.63434600830078,
+        100.73039245605469,
+        99.39537048339844,
+        99.27040100097656,
+        101.63346099853516,
+        99.95857238769531,
+        96.30546569824219,
+        99.30428314208984,
+        99.39547729492188,
+        100.66624450683594
+      ],
+      "wall_ns": 35978491358,
+      "summary_sha256": "8a4dc7efbc050f06bc9f24b9b073b9437ede7626b2410f53f6e45b1f724cfc0c"
+    },
+    "audio-ingress-001": {
+      "checkpoint": "/workspace/scratch/87e43aa872f5/ndu-next-runs/media/audio-ingress-001/audio-input.pt",
+      "checkpoint_sha256": "174dddad0db36ac09cc768a1a488401aa073499d407bfa97b1e5da7a3ae888e4",
+      "confirmation_opened": false,
+      "cpu_ns": 91590780077,
+      "gradient_abs_sum_max": 2262.526970088482,
+      "initial_parameters_sha256": "3d6a999ea1c39da3b65ea3faa3644c0dc3b01398e74aedf26f37248d0969b62e",
+      "parameters_sha256": "657eb28fd4514462f120366d01ee3a0446a2fecf5e12bd98ecba9ee8247572f7",
+      "qualification_accuracy": 0.9233333333333333,
+      "qualification_gate_min": 0.85,
+      "qualification_pass": true,
+      "status": "completed",
+      "wall_ns": 94260824244,
+      "summary_sha256": "9e6c05d9d88a60229ee1f19dc16debbb1ba4f49699af191c3c166167f5a8baa8"
+    },
+    "event-observer-development-001": {
+      "accuracy": {
+        "base.en": 0.8333333333333334,
+        "small.en": 0.7666666666666667
+      },
+      "confirmation_opened": false,
+      "cpu_ns": 368015759736,
+      "phase": "development",
+      "primary_eligible": false,
+      "secondary_eligible": false,
+      "source_recordings": 60,
+      "source_speakers": 50,
+      "statistical_unit": "Speech Commands speaker; recordings within one speaker are dependent",
+      "status": "completed",
+      "wall_ns": 288407398111,
+      "summary_sha256": "3c7a7e51a060aded8816894939ba1e935bb3f0e1c5e6ea4047d2fea6faad6132"
+    }
+  },
+  "interrupted": {
+    "observer-qualification-001": {
+      "status": "interrupted",
+      "observed_exit_code": 137,
+      "completed_saved_rows": 100,
+      "finished_summary_present": false,
+      "observation_unix_ns": 1792977631782387534,
+      "interpretation": "Whole planned trial did not complete; partial rows are development only, no qualification pass inferred"
+    },
+    "candidate-qualification-001": {
+      "status": "interrupted",
+      "observed_exit_code": 137,
+      "completed_saved_rows": 23,
+      "finished_summary_present": false,
+      "observation_unix_ns": 1792977631782680859,
+      "interpretation": "Whole planned trial did not complete; partial rows are development only, no qualification pass inferred"
+    },
+    "conditional-probe-001": {
+      "status": "interrupted",
+      "observed_exit_code": 137,
+      "completed_saved_rows": 3,
+      "finished_summary_present": false,
+      "observation_unix_ns": 1792977631783379816,
+      "interpretation": "Whole planned trial did not complete; partial rows are development only, no qualification pass inferred"
+    }
+  },
+  "decision": "Freeze base.en primary and small.en secondary for the one remaining independent 300-recording event qualification; unchanged 0.85 gate; no new source scoring or final source opening yet",
+  "new_qualification_source_sha256": "2c9aa271394402a21dea81a34f6df4fd3afb9e86bd213f9b2dbd1de1ddabba75",
+  "selection_sha256": "37c0f7599c2bd7cf3d6648281801aadc541fd102f546b8f4ea658119a9b13db3",
+  "resource_observations": {
+    "memory_limit_bytes": 8589934592,
+    "three_asr_process_exit_codes": [
+      137,
+      137,
+      137
+    ],
+    "cgroup_observed_oom_kill_count": 3,
+    "partial_results_preserved": true,
+    "future_ASR_execution": "single process, int8, cpu_threads1, num_workers1",
+    "large_file_reappearance_cause_confirmed": false
+  }
+}
