@@ -13,7 +13,7 @@ from cell_field_controller_v8 import (POLICIES, commit_cursor, digest_json,
     initial_snapshot, install_plan, load_snapshot, make_contract)
 from cell_field_proposal_v8 import make_proposal
 from cell_field_repair_v7 import panel_losses
-from cell_field_safety_v8 import repair_sequence
+from cell_field_safety_portfolio_v8 import repair_sequence
 from cell_field_state import dataset_digest
 
 

@@ -58,7 +58,7 @@ def make_contract(warmup, train, current_panels, old_panels, anchors, policy, co
         "old_panel_sha256": [dataset_digest(*panel) for panel in old_panels],
         "original_old_anchors": values.tolist(), "independent_online_certificate": False,
         "checkpoint_boundary": "committed step inside certified prefix; forecast tail is discarded at next plan",
-        "forecast_tail_safety_claimed": False, "safety_filter": "joint_actual_old_v8",
+        "forecast_tail_safety_claimed": False, "safety_filter": "single_ray_then_joint_v8",
         "proposal_rule": "risk_effort_box_v8"}
 
 
