@@ -49,3 +49,18 @@
 在上述两个明确版本中，未发现此次 V3.1 schema/PRIMARY 适配或 codec 身份增补的阻断性错误。该结论是实现与证据绑定的静态复核，不授予观察器统计资格，也不宣称 joint 模型获得质量、成本或四模态成功率收益。
 
 原有范围保持：固定三 seed 面板、24 个 writer/speaker connected cluster、构造数字任务和有限语音 decoder、采样训练与 greedy 执行之间的策略差异，以及固定 arm 顺序下成本只能作描述性比较。新的正式来源仍须在候选与协议冻结后按原门槛执行。
+
+## 正式冻结前的递归依赖补充复核
+
+第三个复核版本的 `joint/evaluate.py` SHA256 为 `e75196951774f5c4ccb9384c70a7f3869ef2be08676c6747ec1d3e622cab31c9`。逐字比较 Git `0f59070` 中的上一 codec 版本，唯一差异是向冻结清单增加以下四个既有文件；没有更改训练、模型、资格、来源、执行顺序、计分或统计代码。
+
+| 新增冻结依赖 | SHA256 |
+| --- | --- |
+| `abc_recovery/base_recovery.py` | `bfe7f2f635db74075decb0e20dcb1d73d203d1d0445d902e8c4254fca46d80fb` |
+| `abc_next/__init__.py` | `7403e696dc0a60cc7a5a5640ce06060318986f6e6cfac288eff1fa1b7751981c` |
+| `closure_20261025/__init__.py` | `f14cccc8c69bd5912570e3caaab286f5dbb7809e433f85fa32d392fe67f97003` |
+| `next_20261025/__init__.py` | `fa2e47c8f850bbf6763fd402bc979056157151e056d30ff89368a25926fe7a5d` |
+
+以 `evaluate.py`、`model.py`、`analyze.py` 和 `process.py` 为入口，递归解析实际本地 Python 导入及父包初始化文件，得到 37 个文件，未发现动态导入调用。原 glob 清单覆盖其中 33 个；新增四项后，计划冻结的 151 个 Python 文件覆盖全部 37 个。尤其 `base_recovery.py` 的文件散列和 JSON 写入函数实际参与身份记录，应与调用方一并绑定。其余三个文件当前只含包说明，但仍是实际导入链的一部分。
+
+逐项文件身份及覆盖结果保存于 [递归导入复核记录](CONTROL_IMPORT_CLOSURE_REVIEW.json)。本次仅解析源码、比较 Git 差异并复核字节，没有导入模型或开放新来源。结论限于已审查的本地静态依赖；不扩大为整个 Python 环境或操作系统的可复现性证明。该修复发生在 joint 正式 protocol 生成前，不回写任何已执行的训练或历史资格协议。

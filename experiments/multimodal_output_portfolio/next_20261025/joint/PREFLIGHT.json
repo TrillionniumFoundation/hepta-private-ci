@@ -38,6 +38,19 @@
     "source_sha256": "249c009240a0929dd01ce0e0af07eb5fd8cd842d1925460516059d85e6d75a94",
     "training_models_unchanged": true
   },
+  "prospective_import_closure_binding": {
+    "added_source_paths": [
+      "abc_recovery/base_recovery.py",
+      "abc_next/__init__.py",
+      "closure_20261025/__init__.py",
+      "next_20261025/__init__.py"
+    ],
+    "change": "Add all four import dependencies missing from the existing source glob, including the actual identity/write helper and parent package initializers",
+    "evaluation_outcomes_observed_before_change": false,
+    "prior_codec_adapter_sha256": "249c009240a0929dd01ce0e0af07eb5fd8cd842d1925460516059d85e6d75a94",
+    "source_sha256": "e75196951774f5c4ccb9384c70a7f3869ef2be08676c6747ec1d3e622cab31c9",
+    "training_models_unchanged": true
+  },
   "schema": "hepta.next.joint-preflight-and-gate.v1",
   "v2_qualification_rejection": {
     "executed_source_sha256": "bf2992eae62232946f37f96e1cc4381720523973b2ea45e98fca9a5e279d6256",

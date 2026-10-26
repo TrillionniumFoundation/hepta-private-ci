@@ -100,6 +100,8 @@ def freeze(args):
     for group in ("next_20261025/joint", "next_20261025/media", "closure_20261025/media", "v6", "v7", "v7_media", "abc_next/temporal"):
         paths.extend((area / group).glob("*.py"))
     paths.append(area / "next_20261025/sources.py")
+    paths += [area / name for name in ("abc_recovery/base_recovery.py", "abc_next/__init__.py",
+                                      "closure_20261025/__init__.py", "next_20261025/__init__.py")]
     codecs = codec_executables()
     paths.extend(Path(path) for path in codecs.values())
     paths += [Path(row["checkpoint"]) for row in training["arms"].values()]
