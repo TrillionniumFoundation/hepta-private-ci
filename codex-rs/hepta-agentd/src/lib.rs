@@ -208,6 +208,8 @@ mod notes_channel;
 #[cfg(target_os = "linux")]
 mod notes_document_observer;
 #[cfg(target_os = "linux")]
+mod notes_launch_mode;
+#[cfg(target_os = "linux")]
 mod notes_literal_adapter;
 #[cfg(target_os = "linux")]
 mod notes_literal_control;

@@ -22,6 +22,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use super::PreparedHostAuthoritySession;
+use crate::notes_launch_mode::NotesLaunchMode;
 
 #[path = "root_notes_reservation.rs"]
 mod reservation;
@@ -35,6 +36,8 @@ struct Profile {
     schema: String,
     grant_lifetime_ms: u64,
     bindings: Bindings,
+    #[serde(default)]
+    interaction: NotesLaunchMode,
     #[serde(default)]
     previous_recovery: Option<PreviousRecovery>,
 }
@@ -73,6 +76,7 @@ struct Deployment {
     bindings: Bindings,
     previous_recovery: Option<PreviousRecovery>,
     startup_release: reservation::StartupRelease,
+    interaction: NotesLaunchMode,
 }
 
 impl PreparedHostAuthoritySession {
@@ -93,6 +97,10 @@ impl PreparedHostAuthoritySession {
         let end = std::time::Instant::now() + std::time::Duration::from_secs(30);
         let profile: Profile = crate::authority_host_config::read_root_json(profile_file)?;
         validate_profile(&profile, &self.config.signer_id)?;
+        profile
+            .interaction
+            .validate_for(&self.registration.registered_identity.identity()?)
+            .map_err(io::Error::other)?;
         validate_empty_deployment(&deployment)?;
         let (startup_release, session) = reservation::receive(
             bootstrap,
@@ -133,6 +141,7 @@ impl PreparedHostAuthoritySession {
             bindings: profile.bindings,
             previous_recovery: profile.previous_recovery,
             startup_release,
+            interaction: profile.interaction,
         };
         let bytes = serde_json::to_vec(&value).map_err(io::Error::other)?;
         seal_deployment(deployment, &bytes)?;

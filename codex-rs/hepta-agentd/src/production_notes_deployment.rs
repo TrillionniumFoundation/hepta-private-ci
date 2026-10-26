@@ -18,12 +18,14 @@ use crate::AgentdIdentity;
 use crate::AgentdNotesLiteralBindings;
 use crate::AgentdNotesPreviousRecoveryLaunch;
 use crate::AgentdNotesStartupRelease;
+use crate::notes_launch_mode::NotesLaunchMode;
 
 pub(super) struct NotesDeployment {
     pub(super) bindings: AgentdNotesLiteralBindings,
     pub(super) peer: NotesUiPeer,
     pub(super) previous_recovery: Option<AgentdNotesPreviousRecoveryLaunch>,
     pub(super) startup_release: Option<AgentdNotesStartupRelease>,
+    pub(super) interaction: NotesLaunchMode,
 }
 
 #[derive(Deserialize)]
@@ -43,6 +45,8 @@ struct Deployment {
     spawn_generation: u64,
     session: NotesUiPeer,
     bindings: Bindings,
+    #[serde(default)]
+    interaction: NotesLaunchMode,
     #[serde(default)]
     previous_recovery: Option<PreviousRecovery>,
     #[serde(default)]
@@ -114,6 +118,7 @@ pub(super) fn read(
         ));
     }
     let bindings = value.bindings;
+    value.interaction.validate_for(identity)?;
     let frozen = AgentdNotesLiteralBindings {
         principal_scope: bindings.principal_scope,
         principal_scope_digest: digest(&bindings.principal_scope_digest)?,
@@ -151,6 +156,7 @@ pub(super) fn read(
         peer: value.session,
         previous_recovery,
         startup_release,
+        interaction: value.interaction,
     })
 }
 

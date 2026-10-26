@@ -268,30 +268,53 @@ impl AgentdProductionLaunch {
                     peer,
                     previous_recovery,
                     startup_release: _,
+                    interaction,
                 } = deployment;
                 if let Some(previous) = previous_recovery {
                     config = config.with_original_notes_previous_recovery(previous)?;
                 }
-                let (configured, adapter) = config.with_root_notes_literal_adapter(
-                    &attachment,
-                    bindings,
-                    Duration::from_secs(10),
-                )?;
-                config = configured;
-                let expected_path = config.identity().run_root.join("notes-objective.sock");
-                let listener = crate::listen_root_bound_socket(listener, &expected_path)?;
-                let runtime = crate::AgentdNotesUiRuntime::from_inherited(
-                    listener,
-                    session_pidfd,
-                    crate::AgentdNotesUiPeer {
-                        uid: peer.uid,
-                        pid: peer.pid,
-                        boot_id: peer.boot_id,
-                        process_start_ticks: peer.process_start_ticks,
-                    },
-                    adapter,
-                )?;
-                config = config.with_original_notes_ui(runtime)?;
+                let peer = crate::AgentdNotesUiPeer {
+                    uid: peer.uid,
+                    pid: peer.pid,
+                    boot_id: peer.boot_id,
+                    process_start_ticks: peer.process_start_ticks,
+                };
+                match interaction {
+                    crate::notes_launch_mode::NotesLaunchMode::LiteralUiV1 => {
+                        let (configured, adapter) = config.with_root_notes_literal_adapter(
+                            &attachment,
+                            bindings,
+                            Duration::from_secs(10),
+                        )?;
+                        config = configured;
+                        let expected_path = config.identity().run_root.join("notes-objective.sock");
+                        let listener = crate::listen_root_bound_socket(listener, &expected_path)?;
+                        let runtime = crate::AgentdNotesUiRuntime::from_inherited(
+                            listener,
+                            session_pidfd,
+                            peer,
+                            adapter,
+                        )?;
+                        config = config.with_original_notes_ui(runtime)?;
+                    }
+                    crate::notes_launch_mode::NotesLaunchMode::OriginalThreadToolV1 { route } => {
+                        let lifetime = crate::AgentdNotesSessionLifetime::from_inherited(
+                            session_pidfd,
+                            &peer,
+                        )?;
+                        config = config
+                            .with_root_notes_thread_tools(
+                                &attachment,
+                                bindings,
+                                route,
+                                Duration::from_secs(10),
+                            )?
+                            .with_original_notes_thread_session(lifetime)?;
+                        // The explicit model profile admits no literal UI
+                        // endpoint. Root retains pathname cleanup custody.
+                        drop(listener);
+                    }
+                }
             }
             if let Some(deadline) = android_deadline {
                 remaining(deadline)?;
