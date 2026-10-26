@@ -73,6 +73,8 @@ def seal(definition, archive, receipt, workspace, repository):
             if child.is_file() and "__pycache__" not in child.parts:
                 add(child, root["prefix"].rstrip("/") + "/" + child.relative_to(path).as_posix())
     for entry in spec.get("files", []):
+        if "sha256" in entry and file_sha(Path(entry["path"])) != entry["sha256"]:
+            raise ValueError("Explicit evidence input identity changed: " + entry["path"])
         add(entry["path"], entry["name"])
     for path in (definition, Path(__file__).resolve(),
                  Path(__file__).resolve().parents[1] / "closure_20261025/package_evidence.py"):
@@ -109,6 +111,10 @@ def seal(definition, archive, receipt, workspace, repository):
         path = Path(entry["path"])
         if file_sha(path) != entry["sha256"]:
             raise ValueError("Linked complete archive changed")
+        for key in ("manifest", "receipt"):
+            if key in entry and key + "_sha256" in entry:
+                if file_sha(Path(entry[key])) != entry[key + "_sha256"]:
+                    raise ValueError("Linked archive custody changed: " + entry[key])
         custody.append({**entry, "bytes": path.stat().st_size, "verified": True})
     expanded = {"study": spec["study"], "description": spec["description"],
                 "definition_sha256": file_sha(definition),

@@ -207,6 +207,51 @@ receipts record wall time, CPU, peak RSS and shared cgroup observations. Runtime
 economic sensitivity is secondary and keeps the registered efficacy criterion
 unchanged.
 
+### Resource-gate scope
+
+The original resource envelope applies to native candidate ticks, not the full
+four-modality request. The retained profile has a 3,000 microsecond p95 and
+8,000 microsecond p99 ceiling for native resource samples, a 512 KiB transient
+allocation ceiling, a 1 MiB checkpoint ceiling and a 4x journal write-amplification
+ceiling. In the original `NeuronRuntime::tick`, `execution_micros` times the
+in-process inference-control call, sparse state/journal work and calibration.
+The runtime sets abstention when this measured interval exceeds 8,000
+microseconds or its other checked limits fail. This is a check after work was
+performed, not a preemptive 8 ms cancellation of the request. The p95 condition
+belongs to the supplied-sample resource summary; it is not a separate 3 ms
+deadline imposed on every request.
+
+The experimental `online.rs::tick` also measures the complete `owner.tick` call
+as `owner_us`, and uses its observed Rust allocator peak for the additional
+transient-allocation admission check. `owner_us` and `native_execution_us` are
+different timing boundaries. The allocator values and `whole_owner_peak_bytes`
+are native allocation measurements, not Python/Torch or whole-process RSS.
+The separate preliminary forecast in `online.rs::command`, iteration over
+candidate ticks, process startup, IPC and later outcome handling do not become
+one aggregate 8 ms request budget. The first actual tick recomputes the frozen
+model/kernel after the preliminary forecast cache is cleared, but that does
+not make the preliminary work free or include the whole decision in one tick's
+gate.
+
+As shown by `episode.py` and `host.py`, initial Python encoding happens before
+the native decision; external waveform loading/CNN execution and selected
+output rendering happen after an admitted action. Python model memory,
+renderer work, ffmpeg encode/decode, ASR or exact-PCM cache access, observation
+and end-to-end wall time are measured in the recorded host/process costs.
+They are not submitted to the original native envelope as a combined request
+budget. Outcome timestamp checks establish ordering, and the four-second
+presentation clock establishes media alignment; neither is an enforced
+end-to-end compute deadline. The bounded action horizon is also a logical
+decision limit, not such a deadline.
+
+Consequently, a native resource-gate pass, or a completed policy-specific
+qualification, does **not** establish a four-modality end-to-end latency,
+memory, throughput or resource SLA. That would require a separately specified
+host-wide budget, admission/cancellation behavior and representative workload
+evaluation. This phase reports the actual host costs and their registered
+sensitivity while retaining this scope limit. The read-only boundary check
+changed no owner, resource threshold, policy, frozen analysis or launch plan.
+
 ## Evidence entry points
 
 `FROZEN_QUALIFICATION.json` locates the exact prospective specification and its

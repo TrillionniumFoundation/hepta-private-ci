@@ -164,3 +164,35 @@ acquire 分支枚举观测后 posterior，并包含未来内容拒绝；但其�
 结构性拒绝可以检查；名义二项上界另有 IID 假设，不能冒充自然 OOD 保证。
 所有研究保持完整拒绝、失败、处理异常和资源尾部。得到正面主要效益，不会
 自动关闭概率模型错误、选后校准、动作 regret、生产资格或一般模型规模问题。
+
+## 7. 什么误差保证才足以支持“接近最优选择”
+
+下面是条件推导，不是本阶段已经取得的统计证书。固定当前公共状态、非空的
+实际可行动作集合和同一个后续策略。令真实条件指数矩为 \(M_a\)，预测为
+\(\widehat M_a\)。若能保证所有可行动作同时满足
+\(|\widehat M_a-M_a|\le\varepsilon\)，预测最小的动作 \(\hat a\) 与真实最小
+动作 \(a^*\) 满足
+
+\[
+M_{\hat a}\le\widehat M_{\hat a}+\varepsilon
+\le\widehat M_{a^*}+\varepsilon
+\le M_{a^*}+2\varepsilon.
+\]
+
+因此在 \(M_{a^*}>0\) 时，条件 CE 的损失至多
+
+\[
+\operatorname{CE}(a^*)-\operatorname{CE}(\hat a)
+\le\gamma^{-1}\log\!\left(1+\frac{2\varepsilon}{M_{a^*}}\right).
+\]
+
+同样，在 stop 确实可行时，若一个动作相对真实 stop 的矩差存在有效同时上界
+\(\Delta_a\le\widehat\Delta_a+u_a<0\)，则该动作在这些条件下确实优于 stop。
+这里的 \(u_a\) 必须来自有依据的误差控制；不能把经验分箱或平均残差直接当作
+每个被选状态的上界。选择过程、来源分组和多动作比较必须计入其覆盖条件。
+
+这也指出当前证据的缺口。平均 MSE、pooled ECE、只对已交付请求计算的 ECE，
+都不提供上述逐状态、跨可行动作的同时误差界。H2 的训练 continuation 若与
+部署 continuation 不同，连误差所针对的 \(M_a\) 都需要重新对齐。要进一步
+支持整个 horizon 的最优策略结论，还需控制真实转移律、未来可行集合及最优
+continuation 的误差，或明确只与固定 continuation 作策略改进比较。
