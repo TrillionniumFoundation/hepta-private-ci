@@ -85,3 +85,30 @@ the original c37 manifest; do not restore the SDK vulnerabilities to make the
 old example fail. The package audit still has other findings, so this candidate
 does not close the repository dependency gate or provide Asterinas native or
 production qualification.
+
+## Local SDK 1.32 reference-client compatibility
+
+`mcp-conformance-patches/sdk-1.32-reference-clients.patch` records the exact
+changes relative to c37. The immutable upstream manifest remains unchanged.
+The verifier permits only the two pinned source hashes in this patch, the
+previous npm proxy lock fix, and the pinned local raw producer. It also refuses
+this compatibility patch unless the root SDK resolution is exactly 1.32.0.
+Changing a rule, adding a skip or changing a timeout still fails provenance.
+
+The positive `auth/metadata-var2` example now has no known-failure exemption:
+SDK 1.32 sends the PRM resource verbatim. The original resource-slash negative
+case, all its expected slugs and its detector remain unchanged. For SEP-2352,
+the original negative case and all three expected failure slugs remain unchanged.
+Its local producer performs real OAuth HTTP requests and deliberately keeps the
+first issuer's client credentials at the second issuer. It never calls the
+SDK's fixed OAuth implementation to emulate that bug. Both the initial server
+and every discovered endpoint must be explicit HTTP loopback URLs, and the
+resource transport stays on the initial fixture origin. The positive SDK client
+continues to use the fixed implementation and correctly re-registers at AS2.
+
+This is a local compatibility patch to reference clients, not an upstream fix or
+a change to the MCP rules. The original 639/2 failed run and its wire capture
+remain evidence. The initial standalone npm graph still uses the original SDK
+1.29 lock and retains its separately reported advisories; the shared pnpm graph
+uses 1.32 and has no reported MCP SDK advisory. Never install an unreviewed
+second npm graph as a substitute for the frozen pnpm consumer qualification.

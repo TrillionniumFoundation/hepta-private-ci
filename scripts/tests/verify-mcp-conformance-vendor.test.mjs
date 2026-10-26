@@ -16,6 +16,14 @@ beforeEach(() => {
   root = fs.mkdtempSync(path.join(temporary, "case-"));
   fs.mkdirSync(path.join(root, "third_party"));
   for (const name of [
+    "package.json",
+    "scripts/mcp_conformance/sdk132_negative_oauth_reuse.ts",
+    "third_party/mcp-conformance-patches/sdk-1.32-reference-clients.patch",
+  ]) {
+    fs.mkdirSync(path.dirname(path.join(root, name)), { recursive: true });
+    fs.copyFileSync(path.join(source, name), path.join(root, name));
+  }
+  for (const name of [
     "mcp-conformance-upstream.json",
     "mcp-conformance-upstream-package-lock.json",
   ]) {
@@ -36,7 +44,7 @@ beforeEach(() => {
 });
 after(() => fs.rmSync(temporary, { recursive: true, force: true }));
 
-test("accepts the complete original oracle with only the reviewed lock patch", () => {
+test("accepts the original rule set with the exact reviewed SDK reference-client patch", () => {
   assert.deepEqual(verifyVendor(root), {
     commit: "c37eec888e1c6ff140af79987a40008548b7cc5f",
     files: 291,
@@ -80,4 +88,26 @@ test("rejects added source even in a directory named node_modules", () => {
 test("rejects missing oracle files", () => {
   fs.unlinkSync(path.join(root, "third_party/mcp-conformance/src/index.ts"));
   assert.throws(() => verifyVendor(root), /upstream file set changed/);
+});
+
+test("rejects a changed raw negative producer", () => {
+  fs.appendFileSync(
+    path.join(root, "scripts/mcp_conformance/sdk132_negative_oauth_reuse.ts"),
+    "\n// changed\n",
+  );
+  assert.throws(
+    () => verifyVendor(root),
+    /local compatibility artifact changed/,
+  );
+});
+
+test("rejects applying the local client patch to an unreviewed SDK version", () => {
+  const file = path.join(root, "package.json");
+  const pkg = JSON.parse(fs.readFileSync(file));
+  pkg.resolutions["@modelcontextprotocol/sdk"] = "1.29.0";
+  fs.writeFileSync(file, JSON.stringify(pkg));
+  assert.throws(
+    () => verifyVendor(root),
+    /requires the reviewed SDK 1.32.0 pin/,
+  );
 });

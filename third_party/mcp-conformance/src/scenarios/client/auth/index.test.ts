@@ -69,19 +69,11 @@ const allowClientErrorScenarios = new Set<string>([
 ]);
 
 /**
- * Checks the everything-client is known to fail because of a bug in the SDK
- * release it depends on. Each entry is asserted to still fail, so the entry
- * must be removed as soon as the pinned SDK passes.
- *
- * - `resource-parameter-matches-prm` on the root-PRM scenario:
- *   @modelcontextprotocol/sdk 1.x re-serializes a pathless PRM `resource`
- *   through `URL.href`, adding a trailing slash (typescript-sdk#1968, fixed
- *   on 2.x by #2581; 1.x backport #1972). Remove once the example's SDK
- *   dependency includes the backport.
+ * Local SDK 1.32 compatibility: the pathless-resource backport now sends the
+ * exact PRM identifier. Positive clients must have no known auth failures.
+ * The original raw resource-slash negative case below remains unchanged.
  */
-const knownExampleClientFailures: Record<string, string[]> = {
-  'auth/metadata-var2': ['resource-parameter-matches-prm']
-};
+const knownExampleClientFailures: Record<string, string[]> = {};
 
 describe('Client Auth Scenarios', () => {
   // Generate individual test for each auth scenario

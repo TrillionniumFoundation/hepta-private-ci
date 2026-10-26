@@ -8,6 +8,19 @@ const MANIFEST_SHA256 =
   "12f2449790c63fb674c27c2fd58cbbfc87dea10be963aa8908aa9f351e7e49e4";
 const PATCHED_LOCK_SHA256 =
   "fb9c17db4a77fa3a487ff83f1e767cdeea91b1feddc3250424e53f34c2889b6c";
+// Local compatibility changes are separate from the immutable upstream manifest.
+const LOCAL_SOURCE_PATCHES = {
+  "examples/clients/typescript/auth-test-reuse-credentials.ts":
+    "23ad442ced4e7eb8e70781f6732f0f58982632a5feea2b17e8baeddb31a3977a",
+  "src/scenarios/client/auth/index.test.ts":
+    "0c34a0fa7e22719b1d627cbde35feddd820b17e9320605a44511839a3765762d",
+};
+const LOCAL_ARTIFACT_HASHES = {
+  "third_party/mcp-conformance-patches/sdk-1.32-reference-clients.patch":
+    "da28bd53e955eb7a5efb3826a8395c12603bc41e04e773176f3e3ac7ff30ebc3",
+  "scripts/mcp_conformance/sdk132_negative_oauth_reuse.ts":
+    "af46e13d70e2dd3eb0008df1d8e343925ee7438860b34489728fc2cbab162ad3",
+};
 const UPSTREAM_COMMIT = "c37eec888e1c6ff140af79987a40008548b7cc5f";
 const UPSTREAM_TREE = "22eb98b99b522401dd1911dc2c2a55bee3547b50";
 const REPO_ROOT = path.resolve(
@@ -43,6 +56,18 @@ export function verifyVendor(repoRoot = REPO_ROOT) {
     manifest.commit === UPSTREAM_COMMIT && manifest.tree === UPSTREAM_TREE,
     "unexpected upstream revision",
   );
+  const sdkVersion = JSON.parse(readFile(path.join(repoRoot, "package.json")))
+    .resolutions?.["@modelcontextprotocol/sdk"];
+  requireCondition(
+    sdkVersion === "1.32.0",
+    "local reference-client patch requires the reviewed SDK 1.32.0 pin",
+  );
+  for (const [name, expectedHash] of Object.entries(LOCAL_ARTIFACT_HASHES)) {
+    requireCondition(
+      sha256(readFile(path.join(repoRoot, name))) === expectedHash,
+      `local compatibility artifact changed: ${name}`,
+    );
+  }
   const expected = manifest.upstream_files;
   const packageDirs = new Set(
     Object.keys(expected)
@@ -83,7 +108,9 @@ export function verifyVendor(repoRoot = REPO_ROOT) {
     const file = path.join(vendor, name);
     const bytes = readFile(file);
     const expectedHash =
-      name === "package-lock.json" ? PATCHED_LOCK_SHA256 : entry.sha256;
+      name === "package-lock.json"
+        ? PATCHED_LOCK_SHA256
+        : (LOCAL_SOURCE_PATCHES[name] ?? entry.sha256);
     requireCondition(sha256(bytes) === expectedHash, `file changed: ${name}`);
     if (process.platform !== "win32") {
       requireCondition(
