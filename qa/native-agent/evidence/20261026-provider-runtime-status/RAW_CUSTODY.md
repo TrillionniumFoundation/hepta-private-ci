@@ -12,3 +12,12 @@ The first archive contains 95 original files totaling 838,857 bytes and `manifes
 **Remote archive publication/readback has not been attested by this initial record.** This file intentionally contains no future commit ID or guessed URL. After the archive commit is pushed, the publisher must independently read both full archives from that exact remote commit without local alternates, verify these byte counts and SHA-256 values, retain the readback receipt, and append a separate custody commit with immutable archive links. Preserve this initial record in Git history; exclude any generated file manifest from its own hash set.
 
 This custody record is about byte preservation. It does not rerun a test, establish the availability of the executables, qualify a model route, or replace any failed gate.
+
+## Independent remote readback completed
+
+The two full archives were independently fetched from archive-bearing commit `9d2e428184193469162b4374eafa3274db5dca04` into a fresh bare Git clone with no local alternates or shared local object store. Both complete byte counts and SHA-256 values matched in 14.745277837 seconds. The receipt is [remote-readback.json](remote-readback.json), SHA-256 `957192a2e7f6d250d3289b252469ec1aff89c4a57f536389bc5f65dc27395ae3`.
+
+- [Original validation receipts](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d2e428184193469162b4374eafa3274db5dca04/qa/native-agent/evidence/20261026-provider-runtime-status/archives/original-receipts.tar.gz)
+- [Independent review and raw bundles](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d2e428184193469162b4374eafa3274db5dca04/qa/native-agent/evidence/20261026-provider-runtime-status/archives/independent-reviews.tar.gz)
+
+The first readback launcher failed before any clone or network call because its helper was not materialized at the referenced path. That original failure remains retained; the successful second launcher verified the helper's exact source hash before use. No test, model request or runtime canary was repeated by either readback step. The initial custody text is retained in Git history and [this exact copy](provenance/history/initial-RAW_CUSTODY.md).
