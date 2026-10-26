@@ -91,6 +91,12 @@ jobs:
           Set-Location codex-rs
           just test --locked -p codex-hepta-agentd --lib -E 'test(prompt_runtime::tests::)' --test-threads 1 --no-tests fail --retries 0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify Windows Notes recovery API remains independent of Linux observer
+        shell: pwsh
+        run: |
+          Set-Location codex-rs
+          just test --locked -p codex-hepta-agentd --lib -E 'test(production_writer_host::windows_notes_api_regression::)' --test-threads 1 --no-tests fail --retries 0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Enforce source-level Rust formatting for durable owners
         shell: pwsh
         run: |
