@@ -267,7 +267,7 @@ def _read_attribute_scope(code: str) -> tuple[str, list[tuple[int, int]]]:
         body = end + declaration.end() - 1
         close = _closing(code, body, "{", "}")
         type_regions.append((match.start(), close))
-        inspected[match.start():end] = " " * (end - match.start())
+        inspected[match.start() : end] = " " * (end - match.start())
     return "".join(inspected), type_regions
 
 

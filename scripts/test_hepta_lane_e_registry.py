@@ -223,10 +223,12 @@ fn read(event: &LedgerEvent) {
 """
         self.assertEqual(self.verify(source), [])
         # Only patterns disappear. A constructor in the same arm still blocks.
-        findings = self.verify(source.replace(
-            'return Err("authenticated records required");',
-            'journal.append(head, LedgerEvent::Outcome(value));',
-        ))
+        findings = self.verify(
+            source.replace(
+                'return Err("authenticated records required");',
+                "journal.append(head, LedgerEvent::Outcome(value));",
+            )
+        )
         self.assertTrue(any("Outcome" in finding.message for finding in findings))
 
     def test_wildcard_match_exemption_cannot_cross_macro_or_unknown_attribute(self):
