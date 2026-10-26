@@ -172,16 +172,25 @@ def audit_arm(name: str, result: Any, spec: dict) -> list[str]:
                          "original_rope_cache_valid", "max_position_embeddings",
                          "rope_dim", "rope_theta", "production_qualified", "loaded_parameter_identity", "attention_mask_compat"}
         if (not isinstance(rope, dict) or set(rope) != expected_keys
+                or type(rope["method"]) is not str
                 or rope["method"] != "pinned_gte_runtime_buffers_v1"
                 or type(rope["original_position_buffer_valid"]) is not bool
                 or type(rope["original_rope_cache_valid"]) is not bool
+                or any(type(rope[key]) is not int for key in
+                       ("max_position_embeddings", "rope_dim", "rope_theta"))
                 or rope["max_position_embeddings"] != 8192
                 or rope["rope_dim"] != 64 or rope["rope_theta"] != 160000
                 or rope["production_qualified"] is not False
                 or not validate_identity_receipt(rope["loaded_parameter_identity"])
-                or rope["attention_mask_compat"] != {
-                    "method": ARCTIC_MASK_METHOD, "scope": ARCTIC_MASK_SCOPE,
-                    "transformers_version": "5.20.2", "production_qualified": False}):
+                or not isinstance(rope["attention_mask_compat"], dict)
+                or set(rope["attention_mask_compat"]) != {
+                    "method", "scope", "transformers_version", "production_qualified"}
+                or any(type(rope["attention_mask_compat"][key]) is not str for key in
+                       ("method", "scope", "transformers_version"))
+                or rope["attention_mask_compat"]["method"] != ARCTIC_MASK_METHOD
+                or rope["attention_mask_compat"]["scope"] != ARCTIC_MASK_SCOPE
+                or rope["attention_mask_compat"]["transformers_version"] != "5.20.2"
+                or rope["attention_mask_compat"]["production_qualified"] is not False):
             errors.append(f"{name}: missing or unqualified pinned Arctic RoPE receipt")
     elif rope is not None:
         errors.append(f"{name}: unrelated model must not claim Arctic RoPE reconstruction")
