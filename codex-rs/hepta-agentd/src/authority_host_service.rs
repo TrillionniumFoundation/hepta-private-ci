@@ -37,6 +37,8 @@ mod text_ui;
 pub use text_ui::HostAuthorityTextUiRegistration;
 #[path = "authority_host_human_text.rs"]
 mod human_text;
+#[path = "authority_host_logind.rs"]
+mod logind;
 
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
@@ -63,6 +65,7 @@ pub struct HostAuthorityService {
     checkpoint: Option<RegisteredCheckpoint>,
     consumers: Option<RegisteredConsumers>,
     human_text: Option<(HostAuthorityTextUiRegistration, OwnedFd)>,
+    logind_session: Option<logind::OriginalLogindSession>,
 }
 
 impl HostAuthorityService {
@@ -84,6 +87,7 @@ impl HostAuthorityService {
             checkpoint: None,
             consumers: None,
             human_text: None,
+            logind_session: None,
         })
     }
 
@@ -231,7 +235,8 @@ impl HostAuthorityService {
         lane: HostAuthorityLane,
         bytes: &[u8],
     ) -> Result<Vec<u8>, HostIssuerTransportError> {
-        match lane {
+        self.check_logind_lifetime().map_err(unavailable)?;
+        let result = match lane {
             HostAuthorityLane::Observation => self.observe(bytes),
             HostAuthorityLane::Issuer => self.issue(bytes),
             HostAuthorityLane::Checkpoint => self
@@ -264,7 +269,9 @@ impl HostAuthorityService {
                     .ok_or(HostIssuerTransportError::Unavailable)?
                     .exchange_consumer(&self.issuer, &self.clock, backend, bytes)
             }
-        }
+        };
+        self.check_logind_lifetime().map_err(unavailable)?;
+        result
     }
 
     fn observe(&self, bytes: &[u8]) -> Result<Vec<u8>, HostIssuerTransportError> {

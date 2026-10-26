@@ -32,6 +32,7 @@ impl HostAuthorityService {
             ));
         }
         registration.validate(&self)?;
+        self.check_logind_binding(&registration.human_binding())?;
         let fd = ui_pidfd.as_raw_fd();
         let info = std::fs::read_to_string(format!("/proc/self/fdinfo/{fd}"))?;
         if std::fs::read_link(format!("/proc/self/fd/{fd}"))? != Path::new("anon_inode:[pidfd]")
@@ -54,6 +55,12 @@ impl HostAuthorityService {
         &self,
         ingress: &crate::AuthBusTextIngress,
     ) -> Result<TextOwnerReceipt, HostIssuerTransportError> {
+        // A protected profile string alone cannot establish a physical login.
+        // The explicit original provider must also hand over its live handle.
+        if self.logind_session.is_none() {
+            return Err(HostIssuerTransportError::Unavailable);
+        }
+        self.check_logind_lifetime().map_err(unavailable)?;
         let (registration, pidfd) = self
             .human_text
             .as_ref()

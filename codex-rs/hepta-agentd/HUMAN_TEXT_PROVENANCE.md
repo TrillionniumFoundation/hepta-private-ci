@@ -30,6 +30,16 @@ the original lanes. No RPC supplies a human registration. Original Root,
 human login, UI, Session, Agentd and model lifetimes still require real product
 acceptance; local persistence/protocol fixtures do not establish those gates.
 
+For the local physical-login product, the provider transfers its already-held
+logind leader descriptor. `with_original_logind_session` independently queries
+the Root-owned system bus through the checked loginctl inode, compares actual
+UID/local/active/seat/type/leader and boot/start identity to the protected
+profile, then retains that same descriptor and exact human binding. A changed
+profile or current UI registration cannot reuse it. Every original Root lane
+checks the retained login lifetime around each exchange; the human text proof
+also requires this capture to exist. A profile string alone cannot qualify the
+model Notes human gate. Legacy UI-only launch remains structurally compatible.
+
 The protected Notes launch profile and sealed deployment select an explicit
 `interaction`: `{"kind":"literal_ui_v1"}` for the original no-model UI, or
 `{"kind":"original_thread_tool_v1","route":{...}}` for a previously created

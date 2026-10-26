@@ -155,6 +155,7 @@ impl HostAuthorityService {
         &self,
         registration: &HostAuthorityTextUiRegistration,
     ) -> Result<TextOwnerReceipt, HostIssuerTransportError> {
+        self.check_logind_lifetime().map_err(unavailable)?;
         self.issuer
             .text_route_available(&self.identity, &registration.route.thread_id)
             .map_err(unavailable)?;

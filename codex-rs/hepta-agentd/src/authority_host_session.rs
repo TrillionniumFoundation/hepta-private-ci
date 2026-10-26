@@ -182,6 +182,23 @@ impl PreparedHostAuthoritySession {
         self.serve_selected(Some((text_file, ui_pidfd)))
     }
 
+    /// Retain the original provider's held login leader, independently verify
+    /// that exact physical logind session, and fence every Root lane on logout.
+    /// This neither initializes authority nor accepts a numeric PID substitute.
+    pub fn with_original_logind_session(
+        mut self,
+        profile_file: &Path,
+        original_login: OwnedFd,
+    ) -> io::Result<Self> {
+        let profile: crate::HostAuthorityNativeProfile = read_root_json(profile_file)?;
+        self.service = self.service.with_original_logind_session(
+            &profile,
+            self.config.peer_uid,
+            original_login,
+        )?;
+        Ok(self)
+    }
+
     /// Launch the native UI from this SAME already prepared Root session.
     /// Fresh publication/handoff and native serving cannot reopen the exclusive
     /// clock/issuer/checkpoint owners. The original protected launch checks
@@ -199,6 +216,8 @@ impl PreparedHostAuthoritySession {
             &self.owner_pidfd,
         )?;
         let registration: HostAuthorityRegistration = read_root_json(registration_file)?;
+        self.service
+            .check_logind_binding(&profile.original_human_binding())?;
         if serde_json::to_vec(&config).map_err(io::Error::other)?
             != serde_json::to_vec(&self.config).map_err(io::Error::other)?
             || serde_json::to_vec(&registration).map_err(io::Error::other)?
