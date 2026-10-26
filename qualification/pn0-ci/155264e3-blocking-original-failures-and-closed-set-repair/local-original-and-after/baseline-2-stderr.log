@@ -1,0 +1,25 @@
+..FF.............
+======================================================================
+FAIL: test_every_public_authority_method_is_explicitly_classified (test_kernel_authority_closed_world.KernelAuthorityClosedWorldTests.test_every_public_authority_method_is_explicitly_classified)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/root-hepta-integration-20261026/qa/b4-no-bypass/test_kernel_authority_closed_world.py", line 155, in test_every_public_authority_method_is_explicitly_classified
+    self.assertEqual(
+AssertionError: Items in the first set but not the second:
+'check_unclaimed_grant'
+'shares_owner' : FinalUseAuthority: public method classification drifted
+
+======================================================================
+FAIL: test_type_anchored_callers_match_independent_closed_set (test_kernel_authority_closed_world.KernelAuthorityClosedWorldTests.test_type_anchored_callers_match_independent_closed_set) (boundary='final_use_dispatch_raw')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/root-hepta-integration-20261026/qa/b4-no-bypass/test_kernel_authority_closed_world.py", line 211, in test_type_anchored_callers_match_independent_closed_set
+    self.assertEqual(
+AssertionError: Items in the first set but not the second:
+'codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target.rs'
+'codex-rs/hepta-memory/src/production_verified_dispatch.rs' : final_use_dispatch_raw: independent kernel.authority caller set drifted
+
+----------------------------------------------------------------------
+Ran 17 tests in 2.017s
+
+FAILED (failures=2)

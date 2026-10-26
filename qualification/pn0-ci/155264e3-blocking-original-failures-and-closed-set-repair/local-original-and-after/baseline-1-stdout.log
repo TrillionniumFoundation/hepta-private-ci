@@ -1,0 +1,502 @@
+{
+  "authorityGranted": false,
+  "boundaries": [
+    {
+      "callPattern": null,
+      "id": "supervisor_authorized_boot",
+      "productCallers": [
+        "codex-rs/hepta-supervisor/src/main.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "run_supervisord_with_grant_verifier"
+    },
+    {
+      "callPattern": null,
+      "id": "memory_production_writer_open",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/production_writer_host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProductionDurableWriter::open_with_live_verifier"
+    },
+    {
+      "callPattern": null,
+      "id": "cognitive_store_recovery_open",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/production_writer_host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "CognitiveStore::open_with_recovery"
+    },
+    {
+      "callPattern": "\\bcognitive_mutation_capability\\s*\\(",
+      "id": "cognitive_production_mutation_capability",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/production_writer_host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProductionDurableWriter::cognitive_mutation_capability"
+    },
+    {
+      "callPattern": null,
+      "id": "agentd_production_writer_host",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdProductionWriterHost::open"
+    },
+    {
+      "callPattern": "\\boperations\\s*\\.\\s*attach\\s*\\(",
+      "id": "agentd_production_operation_runtime",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/runtime.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AgentdProductionOperationRuntimeConfig::attach"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_artifact_owner_bootstrap",
+      "productCallers": [
+        "codex-rs/hepta-learning-artifacts/src/owner_service.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "LearningArtifactOwnerHost::open"
+    },
+    {
+      "callPattern": null,
+      "id": "learning_artifact_owner_restart",
+      "productCallers": [
+        "codex-rs/hepta-learning-artifacts/src/owner_service.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "LearningArtifactOwnerHost::open_with_required_current_head"
+    },
+    {
+      "callPattern": "\\bcandidate\\s*\\.\\s*with_current\\s*\\(",
+      "id": "learning_artifact_verified_current_view",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+        "codex-rs/hepta-agentd/src/neural_cognitive_ranker.rs",
+        "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+        "codex-rs/hepta-learning-artifacts/src/selected_initial_smollm.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "RevalidatingCandidate::with_current"
+    },
+    {
+      "callPattern": null,
+      "id": "provider_effect_coordinator",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProviderEffectCoordinator::new"
+    },
+    {
+      "callPattern": null,
+      "id": "http_provider_effect_adapter",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/automation_effect_host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "HttpProviderEffectAdapter::new"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_open_state",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseAuthority::open_state_dir"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_claim",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/browser_servo.rs",
+        "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "claim_final_use"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_claim_raw",
+      "productCallers": [
+        "codex-rs/hepta-automation/src/authorized_effect.rs",
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+        "codex-rs/hepta-memory/src/production_writer.rs",
+        "codex-rs/hepta-ndu/src/owner.rs",
+        "codex-rs/hepta-operations/src/durable_store.rs",
+        "codex-rs/hepta-prompt-registry/src/admission.rs",
+        "codex-rs/hepta-prompt-registry/src/durable.rs",
+        "codex-rs/hepta-runtime/src/organs.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "FinalUseAuthority",
+      "symbol": "FinalUseAuthority::claim"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_delivery",
+      "productCallers": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "deliver_final_use"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_delivery_witness",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "deliver_final_use_with_witness"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_delivery_raw",
+      "productCallers": [
+        "codex-rs/hepta-memory/src/production_writer.rs",
+        "codex-rs/hepta-ndu/src/owner.rs",
+        "codex-rs/hepta-operations/src/durable_store.rs",
+        "codex-rs/hepta-prompt-registry/src/admission.rs",
+        "codex-rs/hepta-prompt-registry/src/durable.rs",
+        "codex-rs/hepta-runtime/src/organs.rs"
+      ],
+      "receiverMethods": [
+        "with_verified_use",
+        "enter_verified_use"
+      ],
+      "receiverType": "FinalUseAuthority",
+      "symbol": "FinalUseAuthority::with_verified_use"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_dispatch",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/browser_servo.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "dispatch_final_use"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_dispatch_witness",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "dispatch_final_use_with_witness"
+    },
+    {
+      "callPattern": "authority\\s*\\.\\s*with_dispatch_boundary\\s*\\(",
+      "id": "final_use_dispatch_raw",
+      "productCallers": [
+        "codex-rs/hepta-memory/src/production_verified_dispatch.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseAuthority::with_dispatch_boundary"
+    },
+    {
+      "callPattern": "authority\\s*\\.\\s*update_revocations\\s*\\(",
+      "id": "final_use_revocation_update",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "codex-rs/hepta-contracts/src/final_use_control.rs",
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseAuthority::update_revocations"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_approval_trust",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseApprovalVerifier::new"
+    },
+    {
+      "callPattern": "approval_verifier\\s*\\.\\s*verify\\s*\\(",
+      "id": "final_use_approval_verify",
+      "productCallers": [
+        "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseApprovalVerifier::verify"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_revocation_feed_trust",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseRevocationFeedVerifier::new"
+    },
+    {
+      "callPattern": "revocation_verifier\\s*\\.\\s*apply\\s*\\(",
+      "id": "final_use_revocation_feed_apply",
+      "productCallers": [
+        "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseRevocationFeedVerifier::apply"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_revocation_convergence_trust",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseRevocationConvergenceVerifier::new"
+    },
+    {
+      "callPattern": "convergence_verifier\\s*\\.\\s*verify\\s*\\(",
+      "id": "final_use_revocation_convergence_verify",
+      "productCallers": [
+        "codex-rs/hepta-fleet/src/revocation_control.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseRevocationConvergenceVerifier::verify"
+    },
+    {
+      "callPattern": "\\.\\s*consume_kv_v2\\s*\\(",
+      "id": "bao_final_use_consumer",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "BaoClient::consume_kv_v2"
+    },
+    {
+      "callPattern": null,
+      "id": "bao_registered_consumer_new",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "RegisteredBaoConsumer::new"
+    },
+    {
+      "callPattern": null,
+      "id": "bao_final_use_host_new",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "BaoFinalUseHost::new"
+    },
+    {
+      "callPattern": "\\.\\s*apply_revocation_update\\s*\\(",
+      "id": "bao_registered_revocation_update",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "BaoFinalUseHost::apply_revocation_update"
+    },
+    {
+      "callPattern": "(?:bao_host|final_use_host|BaoFinalUseHost)\\s*(?:\\.|::)\\s*consume_kv_v2\\s*\\(",
+      "id": "bao_registered_final_use_host",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "BaoFinalUseHost::consume_kv_v2"
+    },
+    {
+      "callPattern": null,
+      "id": "authority_lease_open_state",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AuthorityLeaseRegistry::open_state_dir"
+    },
+    {
+      "callPattern": null,
+      "id": "authority_lease_put",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AuthorityLeaseRegistry::put_lease"
+    },
+    {
+      "callPattern": null,
+      "id": "authority_lease_revoke",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AuthorityLeaseRegistry::revoke"
+    },
+    {
+      "callPattern": null,
+      "id": "authority_lease_prune",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AuthorityLeaseRegistry::prune_expired_leases"
+    },
+    {
+      "callPattern": null,
+      "id": "authority_lease_epoch_advance",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AuthorityLeaseRegistry::advance_epoch"
+    },
+    {
+      "callPattern": "\\bverifier\\s*\\.\\s*verify_use\\s*\\(",
+      "id": "authority_lease_verify_use",
+      "productCallers": [
+        "codex-rs/hepta-fleet/src/authority_port.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AuthorityLeaseVerifier::verify_use"
+    },
+    {
+      "callPattern": null,
+      "id": "authority_lease_delivery",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AuthorityLeaseVerifier::with_verified_use"
+    },
+    {
+      "callPattern": null,
+      "id": "authority_lease_delivery_witness",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "deliver_authority_lease_with_witness"
+    },
+    {
+      "callPattern": null,
+      "id": "authority_lease_dispatch_raw",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "AuthorityLeaseVerifier::with_dispatch_boundary"
+    },
+    {
+      "callPattern": null,
+      "id": "authority_lease_dispatch_witness",
+      "productCallers": [
+        "codex-rs/hepta-fleet/src/authority_port.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "dispatch_authority_lease_with_witness"
+    },
+    {
+      "callPattern": null,
+      "id": "final_use_async_dispatch_fence",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseAuthority::with_verified_use_async"
+    },
+    {
+      "callPattern": null,
+      "id": "automation_taskflow_provider_effect_bridge",
+      "productCallers": [],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "ProviderEffectTaskFlowDriver::new"
+    },
+    {
+      "callPattern": "\\bauthority\\s*\\.\\s*with_verified_effect\\s*\\(",
+      "id": "final_use_guarded_effect",
+      "productCallers": [
+        "codex-rs/hepta-automation/src/authorized_effect.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": null,
+      "symbol": "FinalUseAuthority::with_verified_effect"
+    }
+  ],
+  "privilegedInventory": [
+    "agentd_production_operation_runtime",
+    "agentd_production_writer_host",
+    "authority_lease_delivery",
+    "authority_lease_delivery_witness",
+    "authority_lease_dispatch_raw",
+    "authority_lease_dispatch_witness",
+    "authority_lease_epoch_advance",
+    "authority_lease_open_state",
+    "authority_lease_prune",
+    "authority_lease_put",
+    "authority_lease_revoke",
+    "authority_lease_verify_use",
+    "automation_taskflow_provider_effect_bridge",
+    "bao_final_use_consumer",
+    "bao_final_use_host_new",
+    "bao_registered_consumer_new",
+    "bao_registered_final_use_host",
+    "bao_registered_revocation_update",
+    "cognitive_production_mutation_capability",
+    "cognitive_store_recovery_open",
+    "final_use_approval_trust",
+    "final_use_approval_verify",
+    "final_use_async_dispatch_fence",
+    "final_use_claim",
+    "final_use_claim_raw",
+    "final_use_delivery",
+    "final_use_delivery_raw",
+    "final_use_delivery_witness",
+    "final_use_dispatch",
+    "final_use_dispatch_raw",
+    "final_use_dispatch_witness",
+    "final_use_guarded_effect",
+    "final_use_open_state",
+    "final_use_revocation_convergence_trust",
+    "final_use_revocation_convergence_verify",
+    "final_use_revocation_feed_apply",
+    "final_use_revocation_feed_trust",
+    "final_use_revocation_update",
+    "http_provider_effect_adapter",
+    "learning_artifact_owner_bootstrap",
+    "learning_artifact_owner_restart",
+    "learning_artifact_verified_current_view",
+    "memory_production_writer_open",
+    "provider_effect_coordinator",
+    "supervisor_authorized_boot"
+  ],
+  "protectedFiles": [
+    "codex-rs/hepta-supervisor/src/main.rs",
+    "codex-rs/hepta-agentd/src/production_writer_host.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-agentd/src/app_runtime.rs",
+    "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+    "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+    "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+    "codex-rs/hepta-learning-artifacts/src/selection.rs",
+    "codex-rs/model-provider/src/provider_effect.rs",
+    "codex-rs/hepta-contracts/src/final_use.rs",
+    "codex-rs/hepta-contracts/src/final_use_control.rs",
+    "codex-rs/hepta-contracts/src/authority_lease.rs",
+    "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+    "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+  ],
+  "rustFilesScanned": 5396,
+  "schema": "hepta.caller-proof-receipt.v2",
+  "status": "PASS_HEPTA_CALLER_CLOSED_SET"
+}

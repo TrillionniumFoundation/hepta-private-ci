@@ -1,0 +1,1750 @@
+﻿2026-10-26T13:56:37.8782403Z Current runner version: '2.338.0'
+2026-10-26T13:56:37.8817271Z ##[group]Runner Image Provisioner
+2026-10-26T13:56:37.8818679Z Hosted Compute Agent
+2026-10-26T13:56:37.8819610Z Version: 20261021.618
+2026-10-26T13:56:37.8820781Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-26T13:56:37.8821807Z Build Date: 2026-10-21T00:45:21Z
+2026-10-26T13:56:37.8822789Z Worker ID: {d0a3433b-9625-4ba7-bb2f-720583f2b0b0}
+2026-10-26T13:56:37.8823820Z Region: northcentralus
+2026-10-26T13:56:37.8824628Z Cloud: Azure
+2026-10-26T13:56:37.8825392Z ##[endgroup]
+2026-10-26T13:56:37.8827553Z ##[group]Operating System
+2026-10-26T13:56:37.8828409Z Ubuntu
+2026-10-26T13:56:37.8829145Z 24.04.5
+2026-10-26T13:56:37.8829890Z LTS
+2026-10-26T13:56:37.8830774Z ##[endgroup]
+2026-10-26T13:56:37.8831574Z ##[group]Runner Image
+2026-10-26T13:56:37.8832512Z Image: ubuntu-24.04
+2026-10-26T13:56:37.8833325Z Version: 20261012.334.1
+2026-10-26T13:56:37.8835143Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-26T13:56:37.8837258Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+2026-10-26T13:56:37.8838554Z ##[endgroup]
+2026-10-26T13:56:37.8840332Z ##[group]GITHUB_TOKEN Permissions
+2026-10-26T13:56:37.8843512Z Contents: read
+2026-10-26T13:56:37.8844569Z Metadata: read
+2026-10-26T13:56:37.8845457Z ##[endgroup]
+2026-10-26T13:56:37.8848451Z Secret source: Actions
+2026-10-26T13:56:37.8849871Z Cache mode: write
+2026-10-26T13:56:37.8851459Z Prepare workflow directory
+2026-10-26T13:56:37.9321968Z Prepare all required actions
+2026-10-26T13:56:37.9394643Z Getting action download info
+2026-10-26T13:56:38.1678194Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-10-26T13:56:38.2864101Z Download action repository 'dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58' (SHA:3db9de313aa3e84732d075f6fd8938cc0d6d4b58)
+2026-10-26T13:56:38.4599113Z Download action repository 'EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246' (SHA:82eb9f621fbc699dd0918f3ea06864c14cc84246)
+2026-10-26T13:56:38.7495464Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/cargo-deny.yml@refs/pull/3219/merge (5c78e40b510c35cbeaa4849790516997c976f1b4)
+2026-10-26T13:56:38.7500049Z Complete job name: cargo-deny / cargo-deny
+2026-10-26T13:56:38.8010794Z ##[group]Build container for action use: '/home/runner/work/_actions/EmbarkStudios/cargo-deny-action/82eb9f621fbc699dd0918f3ea06864c14cc84246/Dockerfile'.
+2026-10-26T13:56:38.8094880Z ##[command]/usr/bin/docker build -t 1eaf06:8f8125a6018b452095e282f068f021c7 -f "/home/runner/work/_actions/EmbarkStudios/cargo-deny-action/82eb9f621fbc699dd0918f3ea06864c14cc84246/Dockerfile" "/home/runner/work/_actions/EmbarkStudios/cargo-deny-action/82eb9f621fbc699dd0918f3ea06864c14cc84246"
+2026-10-26T13:56:39.4605482Z #0 building with "default" instance using docker driver
+2026-10-26T13:56:39.4606686Z 
+2026-10-26T13:56:39.4607421Z #1 [internal] load build definition from Dockerfile
+2026-10-26T13:56:39.4608422Z #1 transferring dockerfile: 508B 0.0s done
+2026-10-26T13:56:39.4609525Z #1 DONE 0.1s
+2026-10-26T13:56:39.4609866Z 
+2026-10-26T13:56:39.4610539Z #2 [auth] library/rust:pull token for registry-1.docker.io
+2026-10-26T13:56:39.6101702Z #2 DONE 0.0s
+2026-10-26T13:56:39.6102146Z 
+2026-10-26T13:56:39.6103420Z #3 [internal] load metadata for docker.io/library/rust:1.85.0-alpine3.20@sha256:f0cef6c65992995b1c7816cb667de95799852e3fbed9d06f95855cbc512a0fd0
+2026-10-26T13:56:39.8564993Z #3 DONE 0.5s
+2026-10-26T13:56:39.9615363Z 
+2026-10-26T13:56:39.9618498Z #4 [internal] load .dockerignore
+2026-10-26T13:56:39.9621254Z #4 transferring context: 2B done
+2026-10-26T13:56:39.9622919Z #4 DONE 0.0s
+2026-10-26T13:56:39.9623815Z 
+2026-10-26T13:56:39.9624303Z #5 [internal] load build context
+2026-10-26T13:56:39.9625907Z #5 transferring context: 1.19kB done
+2026-10-26T13:56:39.9627318Z #5 DONE 0.0s
+2026-10-26T13:56:39.9628048Z 
+2026-10-26T13:56:39.9630660Z #6 [1/3] FROM docker.io/library/rust:1.85.0-alpine3.20@sha256:f0cef6c65992995b1c7816cb667de95799852e3fbed9d06f95855cbc512a0fd0
+2026-10-26T13:56:39.9634864Z #6 resolve docker.io/library/rust:1.85.0-alpine3.20@sha256:f0cef6c65992995b1c7816cb667de95799852e3fbed9d06f95855cbc512a0fd0 done
+2026-10-26T13:56:39.9638867Z #6 extracting sha256:0a9a5dfd008f05ebc27e4790db0709a29e527690c21bcbcd01481eaeb6bb49dc
+2026-10-26T13:56:40.0843348Z #6 extracting sha256:0a9a5dfd008f05ebc27e4790db0709a29e527690c21bcbcd01481eaeb6bb49dc 0.1s done
+2026-10-26T13:56:40.0848233Z #6 sha256:f0cef6c65992995b1c7816cb667de95799852e3fbed9d06f95855cbc512a0fd0 2.63kB / 2.63kB done
+2026-10-26T13:56:40.0871529Z #6 sha256:6d824fef86a8532aecead5889d49d432d19e0dd58b958266c994cca9eb7a3357 1.54kB / 1.54kB done
+2026-10-26T13:56:40.0877099Z #6 sha256:7c38e59fb99c1014ea6d250d396bb9bf55981f1d69fe17ed05047b90cd119ca9 2.53kB / 2.53kB done
+2026-10-26T13:56:40.0881814Z #6 sha256:0a9a5dfd008f05ebc27e4790db0709a29e527690c21bcbcd01481eaeb6bb49dc 3.63MB / 3.63MB 0.1s done
+2026-10-26T13:56:40.0886422Z #6 sha256:d0430b4a2b30329b0c06034d1df61c2f3533c436834a54b76def8756d804d888 54.53MB / 55.32MB 0.2s
+2026-10-26T13:56:40.0891640Z #6 sha256:8fda7dd06f6e434e3727cd86155430a51568846533e3824548334e20f1078e28 7.34MB / 239.16MB 0.2s
+2026-10-26T13:56:40.2818773Z #6 sha256:8fda7dd06f6e434e3727cd86155430a51568846533e3824548334e20f1078e28 45.09MB / 239.16MB 0.4s
+2026-10-26T13:56:40.3823122Z #6 sha256:8fda7dd06f6e434e3727cd86155430a51568846533e3824548334e20f1078e28 73.40MB / 239.16MB 0.5s
+2026-10-26T13:56:40.4859685Z #6 sha256:d0430b4a2b30329b0c06034d1df61c2f3533c436834a54b76def8756d804d888 55.32MB / 55.32MB 0.5s done
+2026-10-26T13:56:40.4866542Z #6 sha256:8fda7dd06f6e434e3727cd86155430a51568846533e3824548334e20f1078e28 109.05MB / 239.16MB 0.6s
+2026-10-26T13:56:40.4867752Z #6 extracting sha256:d0430b4a2b30329b0c06034d1df61c2f3533c436834a54b76def8756d804d888
+2026-10-26T13:56:40.5858947Z #6 sha256:8fda7dd06f6e434e3727cd86155430a51568846533e3824548334e20f1078e28 157.29MB / 239.16MB 0.7s
+2026-10-26T13:56:40.6959837Z #6 sha256:8fda7dd06f6e434e3727cd86155430a51568846533e3824548334e20f1078e28 205.52MB / 239.16MB 0.8s
+2026-10-26T13:56:40.7985777Z #6 sha256:8fda7dd06f6e434e3727cd86155430a51568846533e3824548334e20f1078e28 235.93MB / 239.16MB 0.9s
+2026-10-26T13:56:41.7422324Z #6 extracting sha256:d0430b4a2b30329b0c06034d1df61c2f3533c436834a54b76def8756d804d888 1.3s done
+2026-10-26T13:56:43.0820584Z #6 sha256:8fda7dd06f6e434e3727cd86155430a51568846533e3824548334e20f1078e28 239.16MB / 239.16MB 3.0s done
+2026-10-26T13:56:50.0436019Z #6 extracting sha256:8fda7dd06f6e434e3727cd86155430a51568846533e3824548334e20f1078e28
+2026-10-26T13:56:53.4701529Z #6 extracting sha256:8fda7dd06f6e434e3727cd86155430a51568846533e3824548334e20f1078e28 3.3s done
+2026-10-26T13:56:57.4740396Z #6 DONE 17.6s
+2026-10-26T13:56:57.6268399Z 
+2026-10-26T13:56:57.6270948Z #7 [2/3] RUN set -eux;     apk update;     apk add bash curl git tar openssh;     curl --silent -L https://github.com/EmbarkStudios/cargo-deny/releases/download/0.19.0/cargo-deny-0.19.0-x86_64-unknown-linux-musl.tar.gz | tar -xzv -C /usr/bin --strip-components=1;
+2026-10-26T13:56:57.6277736Z #7 0.153 + apk update
+2026-10-26T13:56:57.8770791Z #7 0.159 fetch https://dl-cdn.alpinelinux.org/alpine/v3.20/main/x86_64/APKINDEX.tar.gz
+2026-10-26T13:56:57.8772070Z #7 0.251 fetch https://dl-cdn.alpinelinux.org/alpine/v3.20/community/x86_64/APKINDEX.tar.gz
+2026-10-26T13:56:58.0127440Z #7 0.538 v3.20.10-118-gcb3382a0eb8 [https://dl-cdn.alpinelinux.org/alpine/v3.20/main]
+2026-10-26T13:56:58.0128757Z #7 0.538 v3.20.10-106-gcfb1a4769c3 [https://dl-cdn.alpinelinux.org/alpine/v3.20/community]
+2026-10-26T13:56:58.0130701Z #7 0.538 OK: 24182 distinct packages available
+2026-10-26T13:56:58.2196853Z #7 0.594 + apk add bash curl git tar openssh
+2026-10-26T13:56:58.3427445Z #7 0.868 (1/26) Installing ncurses-terminfo-base (6.4_p20240420-r2)
+2026-10-26T13:56:58.4480305Z #7 0.918 (2/26) Installing libncursesw (6.4_p20240420-r2)
+2026-10-26T13:56:58.4481158Z #7 0.928 (3/26) Installing readline (8.2.10-r0)
+2026-10-26T13:56:58.4482185Z #7 0.932 (4/26) Installing bash (5.2.26-r0)
+2026-10-26T13:56:58.4482794Z #7 0.945 Executing bash-5.2.26-r0.post-install
+2026-10-26T13:56:58.4483379Z #7 0.948 (5/26) Installing brotli-libs (1.1.0-r2)
+2026-10-26T13:56:58.4483936Z #7 0.957 (6/26) Installing c-ares (1.33.1-r0)
+2026-10-26T13:56:58.4484841Z #7 0.961 (7/26) Installing libunistring (1.2-r0)
+2026-10-26T13:56:58.4485383Z #7 0.973 (8/26) Installing libidn2 (2.3.7-r0)
+2026-10-26T13:56:58.5621700Z #7 0.977 (9/26) Installing nghttp2-libs (1.62.1-r0)
+2026-10-26T13:56:58.5622724Z #7 0.980 (10/26) Installing libpsl (0.21.5-r1)
+2026-10-26T13:56:58.5624169Z #7 0.983 (11/26) Installing libcurl (8.14.1-r2)
+2026-10-26T13:56:58.5624880Z #7 0.990 (12/26) Installing curl (8.14.1-r2)
+2026-10-26T13:56:58.5625529Z #7 0.995 (13/26) Installing libexpat (2.8.1-r0)
+2026-10-26T13:56:58.5626358Z #7 0.998 (14/26) Installing pcre2 (10.43-r0)
+2026-10-26T13:56:58.5627078Z #7 1.005 (15/26) Installing git (2.45.4-r0)
+2026-10-26T13:56:58.5627962Z #7 1.087 (16/26) Installing git-init-template (2.45.4-r0)
+2026-10-26T13:56:58.7007349Z #7 1.090 (17/26) Installing openssh-keygen (9.7_p1-r5)
+2026-10-26T13:56:58.7023195Z #7 1.097 (18/26) Installing libedit (20240517.3.1-r0)
+2026-10-26T13:56:58.7024064Z #7 1.100 (19/26) Installing openssh-client-common (9.7_p1-r5)
+2026-10-26T13:56:58.7025580Z #7 1.118 (20/26) Installing openssh-client-default (9.7_p1-r5)
+2026-10-26T13:56:58.7026625Z #7 1.127 (21/26) Installing openssh-sftp-server (9.7_p1-r5)
+2026-10-26T13:56:58.7027501Z #7 1.131 (22/26) Installing openssh-server-common (9.7_p1-r5)
+2026-10-26T13:56:58.7028739Z #7 1.133 (23/26) Installing openssh-server (9.7_p1-r5)
+2026-10-26T13:56:58.7030288Z #7 1.144 (24/26) Installing openssh (9.7_p1-r5)
+2026-10-26T13:56:58.7031195Z #7 1.147 (25/26) Installing libacl (2.3.2-r0)
+2026-10-26T13:56:58.7031918Z #7 1.150 (26/26) Installing tar (1.35-r2)
+2026-10-26T13:56:58.7032438Z #7 1.157 Executing busybox-1.36.1-r29.trigger
+2026-10-26T13:56:58.7033192Z #7 1.161 OK: 167 MiB in 53 packages
+2026-10-26T13:56:58.7034451Z #7 1.226 + curl --silent -L https://github.com/EmbarkStudios/cargo-deny/releases/download/0.19.0/cargo-deny-0.19.0-x86_64-unknown-linux-musl.tar.gz
+2026-10-26T13:56:58.7035960Z #7 1.226 + tar -xzv -C /usr/bin '--strip-components=1'
+2026-10-26T13:56:58.9100452Z #7 1.435 cargo-deny-0.19.0-x86_64-unknown-linux-musl/LICENSE-APACHE
+2026-10-26T13:56:59.0605756Z #7 1.435 cargo-deny-0.19.0-x86_64-unknown-linux-musl/README.md
+2026-10-26T13:56:59.0606663Z #7 1.435 cargo-deny-0.19.0-x86_64-unknown-linux-musl/LICENSE-MIT
+2026-10-26T13:56:59.0607440Z #7 1.435 cargo-deny-0.19.0-x86_64-unknown-linux-musl/cargo-deny
+2026-10-26T13:56:59.3788958Z #7 DONE 1.9s
+2026-10-26T13:56:59.5658216Z 
+2026-10-26T13:56:59.5659158Z #8 [3/3] COPY entrypoint.sh /entrypoint.sh
+2026-10-26T13:56:59.5659648Z #8 DONE 0.0s
+2026-10-26T13:56:59.5659841Z 
+2026-10-26T13:56:59.5659955Z #9 exporting to image
+2026-10-26T13:56:59.5660547Z #9 exporting layers
+2026-10-26T13:57:00.0084222Z #9 exporting layers 0.6s done
+2026-10-26T13:57:00.0341662Z #9 writing image sha256:1ef1eeebfee8a78abec7792dc8c38789082437cf1b5d8da1f591fd9f50094a66 done
+2026-10-26T13:57:00.0342592Z #9 naming to docker.io/library/1eaf06:8f8125a6018b452095e282f068f021c7 done
+2026-10-26T13:57:00.0343361Z #9 DONE 0.6s
+2026-10-26T13:57:00.0387570Z ##[endgroup]
+2026-10-26T13:57:00.0707424Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-10-26T13:57:00.0708103Z with:
+2026-10-26T13:57:00.0708457Z   persist-credentials: false
+2026-10-26T13:57:00.0708868Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-10-26T13:57:00.0712051Z   token: ***
+2026-10-26T13:57:00.0712364Z   ssh-strict: true
+2026-10-26T13:57:00.0712683Z   ssh-user: git
+2026-10-26T13:57:00.0712987Z   clean: true
+2026-10-26T13:57:00.0713310Z   sparse-checkout-cone-mode: true
+2026-10-26T13:57:00.0713705Z   fetch-depth: 1
+2026-10-26T13:57:00.0714008Z   fetch-tags: false
+2026-10-26T13:57:00.0714348Z   show-progress: true
+2026-10-26T13:57:00.0714832Z   lfs: false
+2026-10-26T13:57:00.0715127Z   submodules: false
+2026-10-26T13:57:00.0715483Z   set-safe-directory: true
+2026-10-26T13:57:00.0715979Z ##[endgroup]
+2026-10-26T13:57:00.1725751Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-10-26T13:57:00.1727603Z ##[group]Getting Git version info
+2026-10-26T13:57:00.1728242Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-10-26T13:57:00.1729145Z [command]/usr/bin/git version
+2026-10-26T13:57:00.1729499Z git version 2.55.0
+2026-10-26T13:57:00.1753477Z ##[endgroup]
+2026-10-26T13:57:00.1769121Z Temporarily overriding HOME='/home/runner/work/_temp/140a4742-e52f-470e-98df-08246205571b' before making global git config changes
+2026-10-26T13:57:00.1770275Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-26T13:57:00.1775766Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:57:00.1823022Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-10-26T13:57:00.1827399Z ##[group]Initializing the repository
+2026-10-26T13:57:00.1833050Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:57:00.1938122Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-26T13:57:00.1939682Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-26T13:57:00.1940896Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-26T13:57:00.1941598Z hint: call:
+2026-10-26T13:57:00.1942191Z hint:
+2026-10-26T13:57:00.1942862Z hint: 	git config --global init.defaultBranch <name>
+2026-10-26T13:57:00.1943641Z hint:
+2026-10-26T13:57:00.1944376Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-26T13:57:00.1945301Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-26T13:57:00.1945980Z hint:
+2026-10-26T13:57:00.1946512Z hint: 	git branch -m <name>
+2026-10-26T13:57:00.1946947Z hint:
+2026-10-26T13:57:00.1947462Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-26T13:57:00.1948445Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-10-26T13:57:00.1951809Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-10-26T13:57:00.2005868Z ##[endgroup]
+2026-10-26T13:57:00.2006413Z ##[group]Disabling automatic garbage collection
+2026-10-26T13:57:00.2010907Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-26T13:57:00.2045356Z ##[endgroup]
+2026-10-26T13:57:00.2046195Z ##[group]Setting up auth
+2026-10-26T13:57:00.2046768Z Removing SSH command configuration
+2026-10-26T13:57:00.2064548Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-26T13:57:00.2089508Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-26T13:57:00.2397397Z Removing HTTP extra header
+2026-10-26T13:57:00.2406930Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-26T13:57:00.2440102Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-26T13:57:00.2643645Z Removing includeIf entries pointing to credentials config files
+2026-10-26T13:57:00.2651388Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-26T13:57:00.2684123Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-26T13:57:00.2881455Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-3d0ba18a-8f9f-4237-8fdb-2944348ba4c1.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-26T13:57:00.2920908Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-3d0ba18a-8f9f-4237-8fdb-2944348ba4c1.config
+2026-10-26T13:57:00.2954669Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-3d0ba18a-8f9f-4237-8fdb-2944348ba4c1.config
+2026-10-26T13:57:00.2988726Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-3d0ba18a-8f9f-4237-8fdb-2944348ba4c1.config
+2026-10-26T13:57:00.3024087Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-3d0ba18a-8f9f-4237-8fdb-2944348ba4c1.config
+2026-10-26T13:57:00.3050857Z ##[endgroup]
+2026-10-26T13:57:00.3051441Z ##[group]Fetching the repository
+2026-10-26T13:57:00.3058555Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +5c78e40b510c35cbeaa4849790516997c976f1b4:refs/remotes/pull/3219/merge
+2026-10-26T13:57:04.7668547Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-10-26T13:57:04.7669516Z  * [new ref]         5c78e40b510c35cbeaa4849790516997c976f1b4 -> pull/3219/merge
+2026-10-26T13:57:04.7676008Z ##[endgroup]
+2026-10-26T13:57:04.7676772Z ##[group]Determining the checkout info
+2026-10-26T13:57:04.7677561Z ##[endgroup]
+2026-10-26T13:57:04.7683391Z [command]/usr/bin/git sparse-checkout disable
+2026-10-26T13:57:04.7734012Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-26T13:57:04.7767347Z ##[group]Checking out the ref
+2026-10-26T13:57:04.7791769Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/3219/merge
+2026-10-26T13:57:05.4014698Z Note: switching to 'refs/remotes/pull/3219/merge'.
+2026-10-26T13:57:05.4021177Z 
+2026-10-26T13:57:05.4022071Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-26T13:57:05.4022939Z changes and commit them, and you can discard any commits you make in this
+2026-10-26T13:57:05.4023719Z state without impacting any branches by switching back to a branch.
+2026-10-26T13:57:05.4024370Z 
+2026-10-26T13:57:05.4024801Z If you want to create a new branch to retain commits you create, you may
+2026-10-26T13:57:05.4025494Z do so (now or later) by using -c with the switch command. Example:
+2026-10-26T13:57:05.4025796Z 
+2026-10-26T13:57:05.4026021Z   git switch -c <new-branch-name>
+2026-10-26T13:57:05.4026227Z 
+2026-10-26T13:57:05.4026401Z Or undo this operation with:
+2026-10-26T13:57:05.4026592Z 
+2026-10-26T13:57:05.4026733Z   git switch -
+2026-10-26T13:57:05.4026935Z 
+2026-10-26T13:57:05.4027257Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-26T13:57:05.4027602Z 
+2026-10-26T13:57:05.4027949Z HEAD is now at 5c78e40 Merge 155264e3b5d3dcdafa244cd0c31c336ab25a207f into c38e7727220f32c7410f59083c5ea7878bbae078
+2026-10-26T13:57:05.4037468Z ##[endgroup]
+2026-10-26T13:57:05.4082484Z [command]/usr/bin/git log -1 --format=%H
+2026-10-26T13:57:05.4108392Z 5c78e40b510c35cbeaa4849790516997c976f1b4
+2026-10-26T13:57:05.4118047Z ##[group]Removing auth
+2026-10-26T13:57:05.4119322Z Removing SSH command configuration
+2026-10-26T13:57:05.4123143Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-26T13:57:05.4153852Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-26T13:57:05.4398635Z Removing HTTP extra header
+2026-10-26T13:57:05.4403208Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-26T13:57:05.4453801Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-26T13:57:05.4661583Z Removing includeIf entries pointing to credentials config files
+2026-10-26T13:57:05.4662637Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-26T13:57:05.4682026Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-10-26T13:57:05.4682857Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-10-26T13:57:05.4683559Z includeif.gitdir:/github/workspace/.git.path
+2026-10-26T13:57:05.4684181Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-26T13:57:05.4692284Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-10-26T13:57:05.4713796Z /home/runner/work/_temp/git-credentials-3d0ba18a-8f9f-4237-8fdb-2944348ba4c1.config
+2026-10-26T13:57:05.4725311Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-3d0ba18a-8f9f-4237-8fdb-2944348ba4c1.config
+2026-10-26T13:57:05.4764053Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-10-26T13:57:05.4785090Z /home/runner/work/_temp/git-credentials-3d0ba18a-8f9f-4237-8fdb-2944348ba4c1.config
+2026-10-26T13:57:05.4793190Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-3d0ba18a-8f9f-4237-8fdb-2944348ba4c1.config
+2026-10-26T13:57:05.4827868Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-10-26T13:57:05.4848664Z /github/runner_temp/git-credentials-3d0ba18a-8f9f-4237-8fdb-2944348ba4c1.config
+2026-10-26T13:57:05.4857071Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-3d0ba18a-8f9f-4237-8fdb-2944348ba4c1.config
+2026-10-26T13:57:05.4904362Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-26T13:57:05.4925532Z /github/runner_temp/git-credentials-3d0ba18a-8f9f-4237-8fdb-2944348ba4c1.config
+2026-10-26T13:57:05.4932741Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-3d0ba18a-8f9f-4237-8fdb-2944348ba4c1.config
+2026-10-26T13:57:05.5151868Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-26T13:57:05.5361732Z Removing credentials config '/home/runner/work/_temp/git-credentials-3d0ba18a-8f9f-4237-8fdb-2944348ba4c1.config'
+2026-10-26T13:57:05.5373129Z ##[endgroup]
+2026-10-26T13:57:05.5581402Z Prepare all required actions
+2026-10-26T13:57:05.5677661Z ##[group]Run ./.github/actions/setup-ci-build
+2026-10-26T13:57:05.5678117Z ##[endgroup]
+2026-10-26T13:57:05.5739897Z ##[start-action display=Configure Dev Drive (Windows);id=__self.__run]
+2026-10-26T13:57:05.5759284Z ##[end-action id=__self.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-26T13:57:05.5762381Z ##[start-action display=Configure CI build root (Unix);id=__self.__run_2]
+2026-10-26T13:57:05.5822350Z ##[group]Run echo "CI_BUILD_ROOT=$HOME/.cache/codex-ci" >> "$GITHUB_ENV"
+2026-10-26T13:57:05.5823051Z [36;1mecho "CI_BUILD_ROOT=$HOME/.cache/codex-ci" >> "$GITHUB_ENV"[0m
+2026-10-26T13:57:05.5961030Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-26T13:57:05.5961519Z ##[endgroup]
+2026-10-26T13:57:05.6081305Z ##[end-action id=__self.__run_2;outcome=success;conclusion=success;duration_ms=31]
+2026-10-26T13:57:05.6085796Z ##[start-action display=Enable unprivileged user namespaces (Linux);id=__self.__run_3]
+2026-10-26T13:57:05.6127347Z ##[group]Run sudo sysctl -w kernel.unprivileged_userns_clone=1
+2026-10-26T13:57:05.6128024Z [36;1msudo sysctl -w kernel.unprivileged_userns_clone=1[0m
+2026-10-26T13:57:05.6128688Z [36;1mif sudo sysctl -a 2>/dev/null | grep -q '^kernel.apparmor_restrict_unprivileged_userns'; then[0m
+2026-10-26T13:57:05.6129352Z [36;1m  sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0[0m
+2026-10-26T13:57:05.6129795Z [36;1mfi[0m
+2026-10-26T13:57:05.6171385Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-26T13:57:05.6171892Z env:
+2026-10-26T13:57:05.6172356Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-10-26T13:57:05.6172747Z ##[endgroup]
+2026-10-26T13:57:05.6293457Z kernel.unprivileged_userns_clone = 1
+2026-10-26T13:57:05.6602895Z kernel.apparmor_restrict_unprivileged_userns = 0
+2026-10-26T13:57:05.6618136Z ##[end-action id=__self.__run_3;outcome=success;conclusion=success;duration_ms=53]
+2026-10-26T13:57:05.6621755Z ##[start-action display=Configure CI build paths;id=__self.configure_ci_build_paths]
+2026-10-26T13:57:05.6655456Z ##[group]Run set -euo pipefail
+2026-10-26T13:57:05.6655929Z [36;1mset -euo pipefail[0m
+2026-10-26T13:57:05.6656401Z [36;1m# setup-bazel passes output_base explicitly, so keep both it and the[0m
+2026-10-26T13:57:05.6656997Z [36;1m# user root under the shared build root. Keep these directory names tiny[0m
+2026-10-26T13:57:05.6657539Z [36;1m# on every platform so Windows Bazel paths do not overflow argv or[0m
+2026-10-26T13:57:05.6658042Z [36;1m# confuse test MANIFEST handling.[0m
+2026-10-26T13:57:05.6658428Z [36;1mbazel_output_base="$CI_BUILD_ROOT/o"[0m
+2026-10-26T13:57:05.6658884Z [36;1mbazel_output_user_root="$CI_BUILD_ROOT/b"[0m
+2026-10-26T13:57:05.6659379Z [36;1mbazel_repository_cache="$CI_BUILD_ROOT/bazel-repository-cache"[0m
+2026-10-26T13:57:05.6660003Z [36;1mbazel_repo_contents_cache="$CI_BUILD_ROOT/bazel-repo-contents-cache-$GITHUB_RUN_ID-$GITHUB_JOB"[0m
+2026-10-26T13:57:05.6660859Z [36;1mcargo_target_dir="$CI_BUILD_ROOT/cargo-target"[0m
+2026-10-26T13:57:05.6661273Z [36;1mtmp="$CI_BUILD_ROOT/tmp"[0m
+2026-10-26T13:57:05.6661623Z [36;1m[0m
+2026-10-26T13:57:05.6661950Z [36;1mbuild_dirs=([0m
+2026-10-26T13:57:05.6662577Z [36;1m  "$bazel_output_base"[0m
+2026-10-26T13:57:05.6662953Z [36;1m  "$bazel_output_user_root"[0m
+2026-10-26T13:57:05.6663353Z [36;1m  "$bazel_repository_cache"[0m
+2026-10-26T13:57:05.6663717Z [36;1m  "$bazel_repo_contents_cache"[0m
+2026-10-26T13:57:05.6664115Z [36;1m  "$cargo_target_dir"[0m
+2026-10-26T13:57:05.6664440Z [36;1m  "$tmp"[0m
+2026-10-26T13:57:05.6664776Z [36;1m)[0m
+2026-10-26T13:57:05.6665662Z [36;1mmkdir -p "${build_dirs[@]}"[0m
+2026-10-26T13:57:05.6666132Z [36;1mecho "bazel-output-base=$bazel_output_base" >> "$GITHUB_OUTPUT"[0m
+2026-10-26T13:57:05.6666697Z [36;1mecho "cargo-target-dir=$cargo_target_dir" >> "$GITHUB_OUTPUT"[0m
+2026-10-26T13:57:05.6667121Z [36;1m[0m
+2026-10-26T13:57:05.6667426Z [36;1m{[0m
+2026-10-26T13:57:05.6668132Z [36;1m  echo "CODEX_REPO_ROOT=$GITHUB_WORKSPACE"[0m
+2026-10-26T13:57:05.6668549Z [36;1m  echo "BAZEL_OUTPUT_BASE=$bazel_output_base"[0m
+2026-10-26T13:57:05.6669062Z [36;1m  echo "BAZEL_OUTPUT_USER_ROOT=$bazel_output_user_root"[0m
+2026-10-26T13:57:05.6669570Z [36;1m  echo "BAZEL_REPOSITORY_CACHE=$bazel_repository_cache"[0m
+2026-10-26T13:57:05.6670071Z [36;1m  echo "BAZEL_REPO_CONTENTS_CACHE=$bazel_repo_contents_cache"[0m
+2026-10-26T13:57:05.6670695Z [36;1m  echo "CARGO_TARGET_DIR=$cargo_target_dir"[0m
+2026-10-26T13:57:05.6671089Z [36;1m  echo "TEMP=$tmp"[0m
+2026-10-26T13:57:05.6671455Z [36;1m  echo "TMP=$tmp"[0m
+2026-10-26T13:57:05.6671933Z [36;1m} >> "$GITHUB_ENV"[0m
+2026-10-26T13:57:05.6714548Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-26T13:57:05.6715014Z env:
+2026-10-26T13:57:05.6715436Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-10-26T13:57:05.6715813Z ##[endgroup]
+2026-10-26T13:57:05.6819566Z ##[end-action id=__self.configure_ci_build_paths;outcome=success;conclusion=success;duration_ms=19]
+2026-10-26T13:57:05.7021934Z ##[group]Run dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+2026-10-26T13:57:05.7022564Z with:
+2026-10-26T13:57:05.7022852Z env:
+2026-10-26T13:57:05.7023219Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-10-26T13:57:05.7023752Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:57:05.7024323Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-10-26T13:57:05.7024843Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-10-26T13:57:05.7025361Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-10-26T13:57:05.7026106Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-40312011219-cargo-deny
+2026-10-26T13:57:05.7026780Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-10-26T13:57:05.7027239Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:05.7027648Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:05.7028153Z ##[endgroup]
+2026-10-26T13:57:05.7044385Z ##[start-action display=Parse toolchain version;id=__dtolnay_rust-toolchain.parse]
+2026-10-26T13:57:05.7095403Z ##[group]Run if [[ -z $toolchain ]]; then
+2026-10-26T13:57:05.7095858Z [36;1mif [[ -z $toolchain ]]; then[0m
+2026-10-26T13:57:05.7096478Z [36;1m  # GitHub does not enforce `required: true` inputs itself. https://github.com/actions/runner/issues/1070[0m
+2026-10-26T13:57:05.7097092Z [36;1m  echo "'toolchain' is a required input" >&2[0m
+2026-10-26T13:57:05.7097525Z [36;1m  exit 1[0m
+2026-10-26T13:57:05.7097951Z [36;1melif [[ $toolchain =~ ^stable' '[0-9]+' '(year|month|week|day)s?' 'ago$ ]]; then[0m
+2026-10-26T13:57:05.7098459Z [36;1m  if [[ Linux == macOS ]]; then[0m
+2026-10-26T13:57:05.7099046Z [36;1m    echo "toolchain=1.$((($(date -v-$(sed 's/stable \([0-9]*\) \(.\).*/\1\2/' <<< $toolchain) +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-10-26T13:57:05.7099645Z [36;1m  else[0m
+2026-10-26T13:57:05.7100313Z [36;1m    echo "toolchain=1.$((($(date --date "${toolchain#stable }" +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-10-26T13:57:05.7100850Z [36;1m  fi[0m
+2026-10-26T13:57:05.7101254Z [36;1melif [[ $toolchain =~ ^stable' 'minus' '[0-9]+' 'releases?$ ]]; then[0m
+2026-10-26T13:57:05.7101848Z [36;1m  echo "toolchain=1.$((($(date +%s)/60/60/24-16569)/7/6-${toolchain//[^0-9]/}))" >> $GITHUB_OUTPUT[0m
+2026-10-26T13:57:05.7102374Z [36;1melif [[ $toolchain =~ ^1\.[0-9]+$ ]]; then[0m
+2026-10-26T13:57:05.7103012Z [36;1m  echo "toolchain=1.$((i=${toolchain#1.}, c=($(date +%s)/60/60/24-16569)/7/6, i+9*i*(10*i<=c)+90*i*(100*i<=c)))" >> $GITHUB_OUTPUT[0m
+2026-10-26T13:57:05.7103609Z [36;1melse[0m
+2026-10-26T13:57:05.7103962Z [36;1m  echo "toolchain=$toolchain" >> $GITHUB_OUTPUT[0m
+2026-10-26T13:57:05.7104345Z [36;1mfi[0m
+2026-10-26T13:57:05.7145401Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-26T13:57:05.7145845Z env:
+2026-10-26T13:57:05.7146247Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-10-26T13:57:05.7146774Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:57:05.7147271Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-10-26T13:57:05.7147742Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-10-26T13:57:05.7148286Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-10-26T13:57:05.7148970Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-40312011219-cargo-deny
+2026-10-26T13:57:05.7149623Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-10-26T13:57:05.7150038Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:05.7150537Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:05.7150888Z   toolchain: 1.96.0
+2026-10-26T13:57:05.7151196Z ##[endgroup]
+2026-10-26T13:57:05.7223319Z ##[end-action id=__dtolnay_rust-toolchain.parse;outcome=success;conclusion=success;duration_ms=17]
+2026-10-26T13:57:05.7235913Z ##[start-action display=Construct rustup command line;id=__dtolnay_rust-toolchain.flags]
+2026-10-26T13:57:05.7268166Z ##[group]Run echo "targets=$(for t in ${targets//,/ }; do echo -n ' --target' $t; done)" >> $GITHUB_OUTPUT
+2026-10-26T13:57:05.7269061Z [36;1mecho "targets=$(for t in ${targets//,/ }; do echo -n ' --target' $t; done)" >> $GITHUB_OUTPUT[0m
+2026-10-26T13:57:05.7269774Z [36;1mecho "components=$(for c in ${components//,/ }; do echo -n ' --component' $c; done)" >> $GITHUB_OUTPUT[0m
+2026-10-26T13:57:05.7270525Z [36;1mecho "downgrade=" >> $GITHUB_OUTPUT[0m
+2026-10-26T13:57:05.7308538Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-26T13:57:05.7309026Z env:
+2026-10-26T13:57:05.7309360Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-10-26T13:57:05.7309873Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:57:05.7310654Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-10-26T13:57:05.7311078Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-10-26T13:57:05.7311666Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-10-26T13:57:05.7312379Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-40312011219-cargo-deny
+2026-10-26T13:57:05.7313012Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-10-26T13:57:05.7313438Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:05.7313798Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:05.7314197Z   targets: 
+2026-10-26T13:57:05.7314482Z   components: 
+2026-10-26T13:57:05.7314787Z ##[endgroup]
+2026-10-26T13:57:05.7391733Z ##[end-action id=__dtolnay_rust-toolchain.flags;outcome=success;conclusion=success;duration_ms=15]
+2026-10-26T13:57:05.7394669Z ##[start-action display=Set $CARGO_HOME;id=__dtolnay_rust-toolchain.__run]
+2026-10-26T13:57:05.7427647Z ##[group]Run echo CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV
+2026-10-26T13:57:05.7428213Z [36;1mecho CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV[0m
+2026-10-26T13:57:05.7464927Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-26T13:57:05.7465781Z env:
+2026-10-26T13:57:05.7466216Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-10-26T13:57:05.7466727Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:57:05.7467237Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-10-26T13:57:05.7467695Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-10-26T13:57:05.7468203Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-10-26T13:57:05.7468917Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-40312011219-cargo-deny
+2026-10-26T13:57:05.7469608Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-10-26T13:57:05.7470037Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:05.7470729Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:05.7471082Z ##[endgroup]
+2026-10-26T13:57:05.7536433Z ##[end-action id=__dtolnay_rust-toolchain.__run;outcome=success;conclusion=success;duration_ms=14]
+2026-10-26T13:57:05.7539410Z ##[start-action display=Install rustup if needed;id=__dtolnay_rust-toolchain.__run_2]
+2026-10-26T13:57:05.7572718Z ##[group]Run if ! command -v rustup &>/dev/null; then
+2026-10-26T13:57:05.7573200Z [36;1mif ! command -v rustup &>/dev/null; then[0m
+2026-10-26T13:57:05.7573992Z [36;1m  curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://sh.rustup.rs | sh -s -- --default-toolchain none -y[0m
+2026-10-26T13:57:05.7574777Z [36;1m  echo "$CARGO_HOME/bin" >> $GITHUB_PATH[0m
+2026-10-26T13:57:05.7575194Z [36;1mfi[0m
+2026-10-26T13:57:05.7610004Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-26T13:57:05.7610819Z env:
+2026-10-26T13:57:05.7611183Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-10-26T13:57:05.7611659Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:57:05.7612288Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-10-26T13:57:05.7612766Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-10-26T13:57:05.7613413Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-10-26T13:57:05.7614086Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-40312011219-cargo-deny
+2026-10-26T13:57:05.7614743Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-10-26T13:57:05.7615154Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:05.7615553Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:05.7615944Z   CARGO_HOME: /home/runner/.cargo
+2026-10-26T13:57:05.7616279Z ##[endgroup]
+2026-10-26T13:57:05.7679787Z ##[end-action id=__dtolnay_rust-toolchain.__run_2;outcome=success;conclusion=success;duration_ms=13]
+2026-10-26T13:57:05.7683191Z ##[start-action display=Install rustup if needed on windows;id=__dtolnay_rust-toolchain.__run_3]
+2026-10-26T13:57:05.7688784Z ##[end-action id=__dtolnay_rust-toolchain.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-26T13:57:05.7702905Z ##[start-action display=rustup toolchain install 1.96.0;id=__dtolnay_rust-toolchain.__run_4]
+2026-10-26T13:57:05.7737807Z ##[group]Run log=$(mktemp)
+2026-10-26T13:57:05.7738216Z [36;1mlog=$(mktemp)[0m
+2026-10-26T13:57:05.7738909Z [36;1mtrap 'rm -f "$log"' EXIT[0m
+2026-10-26T13:57:05.7739273Z [36;1mfor attempt in 1 2 3 4 5; do[0m
+2026-10-26T13:57:05.7739913Z [36;1m  if rustup toolchain install 1.96.0 --profile minimal --no-self-update --force-non-host 2>&1 | tee "$log"; then[0m
+2026-10-26T13:57:05.7740842Z [36;1m    break[0m
+2026-10-26T13:57:05.7741200Z [36;1m  else[0m
+2026-10-26T13:57:05.7741523Z [36;1m    status=$?[0m
+2026-10-26T13:57:05.7741838Z [36;1m  fi[0m
+2026-10-26T13:57:05.7742286Z [36;1m  if [[ $attempt == 5 ]] || ! grep -Fq 'checksum failed for ' "$log" \[0m
+2026-10-26T13:57:05.7742947Z [36;1m      || ! grep -Fq 'this is likely due to an ongoing update of the official release server' "$log"; then[0m
+2026-10-26T13:57:05.7743515Z [36;1m    exit "$status"[0m
+2026-10-26T13:57:05.7743879Z [36;1m  fi[0m
+2026-10-26T13:57:05.7744364Z [36;1m  echo "Retrying rustup toolchain install in 30 seconds (retry $attempt of 4)" >&2[0m
+2026-10-26T13:57:05.7744904Z [36;1m  sleep 30[0m
+2026-10-26T13:57:05.7745246Z [36;1mdone[0m
+2026-10-26T13:57:05.7780816Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-26T13:57:05.7781230Z env:
+2026-10-26T13:57:05.7781648Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-10-26T13:57:05.7782161Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:57:05.7782682Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-10-26T13:57:05.7783137Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-10-26T13:57:05.7783648Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-10-26T13:57:05.7784432Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-40312011219-cargo-deny
+2026-10-26T13:57:05.7785058Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-10-26T13:57:05.7785503Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:05.7785923Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:05.7786272Z   CARGO_HOME: /home/runner/.cargo
+2026-10-26T13:57:05.7786670Z   RUSTUP_PERMIT_COPY_RENAME: 1
+2026-10-26T13:57:05.7787007Z ##[endgroup]
+2026-10-26T13:57:05.8777319Z info: syncing channel updates for 1.96.0-x86_64-unknown-linux-gnu
+2026-10-26T13:57:06.1865438Z info: latest update on 2026-05-28 for version 1.96.0 (ac68faa20 2026-05-25)
+2026-10-26T13:57:06.1866287Z info: downloading 3 components
+2026-10-26T13:57:14.7086830Z 
+2026-10-26T13:57:14.7162875Z   1.96.0-x86_64-unknown-linux-gnu installed - rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-10-26T13:57:14.7163565Z 
+2026-10-26T13:57:14.7324631Z ##[end-action id=__dtolnay_rust-toolchain.__run_4;outcome=success;conclusion=success;duration_ms=8962]
+2026-10-26T13:57:14.7332173Z ##[start-action display=rustup default 1.96.0;id=__dtolnay_rust-toolchain.__run_5]
+2026-10-26T13:57:14.7362556Z ##[group]Run rustup default 1.96.0 --force-non-host
+2026-10-26T13:57:14.7363042Z [36;1mrustup default 1.96.0 --force-non-host[0m
+2026-10-26T13:57:14.7408356Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-26T13:57:14.7408887Z env:
+2026-10-26T13:57:14.7409274Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-10-26T13:57:14.7409774Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:57:14.7410573Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-10-26T13:57:14.7411019Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-10-26T13:57:14.7411582Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-10-26T13:57:14.7412253Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-40312011219-cargo-deny
+2026-10-26T13:57:14.7412877Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-10-26T13:57:14.7413370Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:14.7413786Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:14.7414254Z   CARGO_HOME: /home/runner/.cargo
+2026-10-26T13:57:14.7414693Z ##[endgroup]
+2026-10-26T13:57:14.7524674Z info: using existing install for 1.96.0-x86_64-unknown-linux-gnu
+2026-10-26T13:57:14.7533227Z info: default toolchain set to 1.96.0-x86_64-unknown-linux-gnu
+2026-10-26T13:57:14.7533710Z 
+2026-10-26T13:57:14.7604431Z   1.96.0-x86_64-unknown-linux-gnu unchanged - rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-10-26T13:57:14.7604781Z 
+2026-10-26T13:57:14.7619437Z ##[end-action id=__dtolnay_rust-toolchain.__run_5;outcome=success;conclusion=success;duration_ms=28]
+2026-10-26T13:57:14.7622730Z ##[start-action display=Create cachekey;id=__dtolnay_rust-toolchain.rustc-version]
+2026-10-26T13:57:14.7650771Z ##[group]Run DATE=$(rustc +1.96.0 --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')
+2026-10-26T13:57:14.7651666Z [36;1mDATE=$(rustc +1.96.0 --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')[0m
+2026-10-26T13:57:14.7652376Z [36;1mHASH=$(rustc +1.96.0 --version --verbose | sed -ne 's/^commit-hash: //p')[0m
+2026-10-26T13:57:14.7652943Z [36;1mecho "cachekey=$(echo $DATE$HASH | head -c12)" >> $GITHUB_OUTPUT[0m
+2026-10-26T13:57:14.7696265Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-26T13:57:14.7696702Z env:
+2026-10-26T13:57:14.7697054Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-10-26T13:57:14.7697554Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:57:14.7698041Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-10-26T13:57:14.7698528Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-10-26T13:57:14.7699073Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-10-26T13:57:14.7699761Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-40312011219-cargo-deny
+2026-10-26T13:57:14.7700694Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-10-26T13:57:14.7701145Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:14.7701572Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:14.7701943Z   CARGO_HOME: /home/runner/.cargo
+2026-10-26T13:57:14.7702264Z ##[endgroup]
+2026-10-26T13:57:14.8026228Z ##[end-action id=__dtolnay_rust-toolchain.rustc-version;outcome=success;conclusion=success;duration_ms=40]
+2026-10-26T13:57:14.8029348Z ##[start-action display=Disable incremental compilation;id=__dtolnay_rust-toolchain.__run_6]
+2026-10-26T13:57:14.8056212Z ##[group]Run if [ -z "${CARGO_INCREMENTAL+set}" ]; then
+2026-10-26T13:57:14.8056732Z [36;1mif [ -z "${CARGO_INCREMENTAL+set}" ]; then[0m
+2026-10-26T13:57:14.8057179Z [36;1m  echo CARGO_INCREMENTAL=0 >> $GITHUB_ENV[0m
+2026-10-26T13:57:14.8057602Z [36;1mfi[0m
+2026-10-26T13:57:14.8104892Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-26T13:57:14.8105608Z env:
+2026-10-26T13:57:14.8105983Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-10-26T13:57:14.8106571Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:57:14.8107105Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-10-26T13:57:14.8107550Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-10-26T13:57:14.8108065Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-10-26T13:57:14.8108780Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-40312011219-cargo-deny
+2026-10-26T13:57:14.8109420Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-10-26T13:57:14.8109887Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:14.8110493Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:14.8110930Z   CARGO_HOME: /home/runner/.cargo
+2026-10-26T13:57:14.8111309Z ##[endgroup]
+2026-10-26T13:57:14.8185622Z ##[end-action id=__dtolnay_rust-toolchain.__run_6;outcome=success;conclusion=success;duration_ms=15]
+2026-10-26T13:57:14.8188495Z ##[start-action display=Enable colors in Cargo output;id=__dtolnay_rust-toolchain.__run_7]
+2026-10-26T13:57:14.8214707Z ##[group]Run if [ -z "${CARGO_TERM_COLOR+set}" ]; then
+2026-10-26T13:57:14.8215218Z [36;1mif [ -z "${CARGO_TERM_COLOR+set}" ]; then[0m
+2026-10-26T13:57:14.8215642Z [36;1m  echo CARGO_TERM_COLOR=always >> $GITHUB_ENV[0m
+2026-10-26T13:57:14.8216087Z [36;1mfi[0m
+2026-10-26T13:57:14.8257207Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-26T13:57:14.8257692Z env:
+2026-10-26T13:57:14.8258027Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-10-26T13:57:14.8258524Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:57:14.8259012Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-10-26T13:57:14.8259447Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-10-26T13:57:14.8260019Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-10-26T13:57:14.8260867Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-40312011219-cargo-deny
+2026-10-26T13:57:14.8261560Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-10-26T13:57:14.8261990Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:14.8262354Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:14.8262854Z   CARGO_HOME: /home/runner/.cargo
+2026-10-26T13:57:14.8263193Z   CARGO_INCREMENTAL: 0
+2026-10-26T13:57:14.8263505Z ##[endgroup]
+2026-10-26T13:57:14.8333414Z ##[end-action id=__dtolnay_rust-toolchain.__run_7;outcome=success;conclusion=success;duration_ms=14]
+2026-10-26T13:57:14.8336662Z ##[start-action display=Enable Cargo sparse registry;id=__dtolnay_rust-toolchain.__run_8]
+2026-10-26T13:57:14.8364935Z ##[group]Run # implemented in 1.66, stabilized in 1.68, made default in 1.70
+2026-10-26T13:57:14.8365573Z [36;1m# implemented in 1.66, stabilized in 1.68, made default in 1.70[0m
+2026-10-26T13:57:14.8366324Z [36;1mif [ -z "${CARGO_REGISTRIES_CRATES_IO_PROTOCOL+set}" -o -f "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol ]; then[0m
+2026-10-26T13:57:14.8367117Z [36;1m  if rustc +1.96.0 --version --verbose | grep -q '^release: 1\.6[89]\.'; then[0m
+2026-10-26T13:57:14.8367738Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-10-26T13:57:14.8368406Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse >> $GITHUB_ENV[0m
+2026-10-26T13:57:14.8368965Z [36;1m  elif rustc +1.96.0 --version --verbose | grep -q '^release: 1\.6[67]\.'; then[0m
+2026-10-26T13:57:14.8369568Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-10-26T13:57:14.8370303Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=git >> $GITHUB_ENV[0m
+2026-10-26T13:57:14.8370761Z [36;1m  fi[0m
+2026-10-26T13:57:14.8371052Z [36;1mfi[0m
+2026-10-26T13:57:14.8411532Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-26T13:57:14.8412052Z env:
+2026-10-26T13:57:14.8412519Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-10-26T13:57:14.8413059Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:57:14.8413544Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-10-26T13:57:14.8413966Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-10-26T13:57:14.8414520Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-10-26T13:57:14.8415188Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-40312011219-cargo-deny
+2026-10-26T13:57:14.8415800Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-10-26T13:57:14.8416253Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:14.8416670Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:14.8417084Z   CARGO_HOME: /home/runner/.cargo
+2026-10-26T13:57:14.8417426Z   CARGO_INCREMENTAL: 0
+2026-10-26T13:57:14.8417746Z   CARGO_TERM_COLOR: always
+2026-10-26T13:57:14.8418087Z ##[endgroup]
+2026-10-26T13:57:14.8720889Z ##[end-action id=__dtolnay_rust-toolchain.__run_8;outcome=success;conclusion=success;duration_ms=38]
+2026-10-26T13:57:14.8724118Z ##[start-action display=Work around spurious network errors in curl 8.0;id=__dtolnay_rust-toolchain.__run_9]
+2026-10-26T13:57:14.8753407Z ##[group]Run # https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation
+2026-10-26T13:57:14.8754221Z [36;1m# https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation[0m
+2026-10-26T13:57:14.8754930Z [36;1mif rustc +1.96.0 --version --verbose | grep -q '^release: 1\.7[01]\.'; then[0m
+2026-10-26T13:57:14.8755458Z [36;1m  echo CARGO_HTTP_MULTIPLEXING=false >> $GITHUB_ENV[0m
+2026-10-26T13:57:14.8755890Z [36;1mfi[0m
+2026-10-26T13:57:14.8802224Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-26T13:57:14.8802790Z env:
+2026-10-26T13:57:14.8803143Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-10-26T13:57:14.8803632Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:57:14.8804152Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-10-26T13:57:14.8804617Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-10-26T13:57:14.8805136Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-10-26T13:57:14.8805804Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-40312011219-cargo-deny
+2026-10-26T13:57:14.8806457Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-10-26T13:57:14.8806892Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:14.8807292Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:14.8807667Z   CARGO_HOME: /home/runner/.cargo
+2026-10-26T13:57:14.8808006Z   CARGO_INCREMENTAL: 0
+2026-10-26T13:57:14.8808312Z   CARGO_TERM_COLOR: always
+2026-10-26T13:57:14.8808652Z ##[endgroup]
+2026-10-26T13:57:14.9001008Z ##[end-action id=__dtolnay_rust-toolchain.__run_9;outcome=success;conclusion=success;duration_ms=27]
+2026-10-26T13:57:14.9005748Z ##[start-action display=rustc +1.96.0 --version --verbose;id=__dtolnay_rust-toolchain.__run_10]
+2026-10-26T13:57:14.9033228Z ##[group]Run rustc +1.96.0 --version --verbose
+2026-10-26T13:57:14.9033689Z [36;1mrustc +1.96.0 --version --verbose[0m
+2026-10-26T13:57:14.9078612Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-26T13:57:14.9079059Z env:
+2026-10-26T13:57:14.9079393Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-10-26T13:57:14.9079965Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:57:14.9080608Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-10-26T13:57:14.9081062Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-10-26T13:57:14.9081586Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-10-26T13:57:14.9082412Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-40312011219-cargo-deny
+2026-10-26T13:57:14.9083077Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-10-26T13:57:14.9083613Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:14.9084035Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:14.9084414Z   CARGO_HOME: /home/runner/.cargo
+2026-10-26T13:57:14.9084760Z   CARGO_INCREMENTAL: 0
+2026-10-26T13:57:14.9085142Z   CARGO_TERM_COLOR: always
+2026-10-26T13:57:14.9085466Z ##[endgroup]
+2026-10-26T13:57:14.9257011Z rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-10-26T13:57:14.9257602Z binary: rustc
+2026-10-26T13:57:14.9258196Z commit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96
+2026-10-26T13:57:14.9258844Z commit-date: 2026-05-25
+2026-10-26T13:57:14.9259315Z host: x86_64-unknown-linux-gnu
+2026-10-26T13:57:14.9259960Z release: 1.96.0
+2026-10-26T13:57:14.9260921Z LLVM version: 22.1.2
+2026-10-26T13:57:14.9273471Z ##[end-action id=__dtolnay_rust-toolchain.__run_10;outcome=success;conclusion=success;duration_ms=26]
+2026-10-26T13:57:14.9529726Z ##[group]Run EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246
+2026-10-26T13:57:14.9530401Z with:
+2026-10-26T13:57:14.9530719Z   rust-version: 1.96.0
+2026-10-26T13:57:14.9530972Z   manifest-path: ./codex-rs/Cargo.toml
+2026-10-26T13:57:14.9531271Z   command-arguments: --hide-inclusion-graph
+2026-10-26T13:57:14.9531550Z   command: check
+2026-10-26T13:57:14.9531766Z   arguments: --all-features
+2026-10-26T13:57:14.9531997Z   log-level: warn
+2026-10-26T13:57:14.9532218Z   use-git-cli: false
+2026-10-26T13:57:14.9532430Z env:
+2026-10-26T13:57:14.9532654Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-10-26T13:57:14.9533031Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:57:14.9533434Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-10-26T13:57:14.9533775Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-10-26T13:57:14.9534229Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-10-26T13:57:14.9534800Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-40312011219-cargo-deny
+2026-10-26T13:57:14.9535318Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-10-26T13:57:14.9535650Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:14.9535930Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:57:14.9536198Z   CARGO_HOME: /home/runner/.cargo
+2026-10-26T13:57:14.9536452Z   CARGO_INCREMENTAL: 0
+2026-10-26T13:57:14.9536684Z   CARGO_TERM_COLOR: always
+2026-10-26T13:57:14.9536911Z ##[endgroup]
+2026-10-26T13:57:14.9661710Z ##[command]/usr/bin/docker run --name eaf068f8125a6018b452095e282f068f021c7_8b5abb --label 1eaf06 --workdir /github/workspace --rm -e "CI_BUILD_ROOT" -e "CODEX_REPO_ROOT" -e "BAZEL_OUTPUT_BASE" -e "BAZEL_OUTPUT_USER_ROOT" -e "BAZEL_REPOSITORY_CACHE" -e "BAZEL_REPO_CONTENTS_CACHE" -e "CARGO_TARGET_DIR" -e "TEMP" -e "TMP" -e "CARGO_HOME" -e "CARGO_INCREMENTAL" -e "CARGO_TERM_COLOR" -e "INPUT_RUST-VERSION" -e "INPUT_MANIFEST-PATH" -e "INPUT_COMMAND-ARGUMENTS" -e "INPUT_COMMAND" -e "INPUT_ARGUMENTS" -e "INPUT_LOG-LEVEL" -e "INPUT_CREDENTIALS" -e "INPUT_SSH-KEY" -e "INPUT_SSH-KNOWN-HOSTS" -e "INPUT_USE-GIT-CLI" -e "HOME" -e "GITHUB_JOB" -e "GITHUB_REF" -e "GITHUB_SHA" -e "GITHUB_REPOSITORY" -e "GITHUB_REPOSITORY_OWNER" -e "GITHUB_REPOSITORY_OWNER_ID" -e "GITHUB_RUN_ID" -e "GITHUB_RUN_NUMBER" -e "GITHUB_RETENTION_DAYS" -e "GITHUB_RUN_ATTEMPT" -e "GITHUB_ACTOR_ID" -e "GITHUB_ACTOR" -e "GITHUB_WORKFLOW" -e "GITHUB_HEAD_REF" -e "GITHUB_BASE_REF" -e "GITHUB_EVENT_NAME" -e "GITHUB_SERVER_URL" -e "GITHUB_API_URL" -e "GITHUB_GRAPHQL_URL" -e "GITHUB_REF_NAME" -e "GITHUB_REF_PROTECTED" -e "GITHUB_REF_TYPE" -e "GITHUB_WORKFLOW_REF" -e "GITHUB_WORKFLOW_SHA" -e "GITHUB_REPOSITORY_ID" -e "GITHUB_TRIGGERING_ACTOR" -e "GITHUB_WORKSPACE" -e "GITHUB_ACTION" -e "GITHUB_EVENT_PATH" -e "GITHUB_ACTION_REPOSITORY" -e "GITHUB_ACTION_REF" -e "GITHUB_PATH" -e "GITHUB_ENV" -e "GITHUB_STEP_SUMMARY" -e "GITHUB_STATE" -e "GITHUB_OUTPUT" -e "GITHUB_ARTIFACTS" -e "GITHUB_ARTIFACTS_LIST" -e "RUNNER_OS" -e "RUNNER_ARCH" -e "RUNNER_NAME" -e "RUNNER_ENVIRONMENT" -e "RUNNER_TOOL_CACHE" -e "RUNNER_TEMP" -e "RUNNER_WORKSPACE" -e "ACTIONS_RUNTIME_URL" -e "ACTIONS_RUNTIME_TOKEN" -e "ACTIONS_CACHE_URL" -e "ACTIONS_RESULTS_URL" -e "ACTIONS_CACHE_MODE" -e "ACTIONS_ORCHESTRATION_ID" -e GITHUB_ACTIONS=true -e CI=true -v "/var/run/docker.sock":"/var/run/docker.sock" -v "/home/runner/work/_temp":"/github/runner_temp" -v "/home/runner/work/_temp/_github_home":"/github/home" -v "/home/runner/work/_temp/_github_workflow":"/github/workflow" -v "/home/runner/work/_temp/_runner_file_commands":"/github/file_commands" -v "/home/runner/work/hepta-private-ci/hepta-private-ci":"/github/workspace" 1eaf06:8f8125a6018b452095e282f068f021c7  "1.96.0" "" "" "" "false" "--log-level" "warn" "--manifest-path" "./codex-rs/Cargo.toml" "--all-features" "check" "--hide-inclusion-graph"
+2026-10-26T13:57:19.3244179Z info: profile set to 'minimal'
+2026-10-26T13:57:19.3323328Z info: syncing channel updates for '1.96.0-x86_64-unknown-linux-musl'
+2026-10-26T13:57:19.4367620Z info: latest update on 2026-05-28, rust version 1.96.0 (ac68faa20 2026-05-25)
+2026-10-26T13:57:19.4368224Z info: downloading component 'cargo'
+2026-10-26T13:57:19.6023631Z info: downloading component 'rust-std'
+2026-10-26T13:57:19.9910745Z info: downloading component 'rustc'
+2026-10-26T13:57:21.1832809Z info: installing component 'cargo'
+2026-10-26T13:57:22.2553033Z info: installing component 'rust-std'
+2026-10-26T13:57:25.8132477Z info: installing component 'rustc'
+2026-10-26T13:57:34.7090483Z info: default toolchain set to '1.96.0-x86_64-unknown-linux-musl'
+2026-10-26T13:57:34.7090990Z 
+2026-10-26T13:57:34.7273823Z   1.96.0-x86_64-unknown-linux-musl installed - rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-10-26T13:57:34.7277780Z 
+2026-10-26T13:57:34.7364970Z Default host: x86_64-unknown-linux-musl
+2026-10-26T13:57:34.7365715Z rustup home:  /usr/local/rustup
+2026-10-26T13:57:34.7366022Z 
+2026-10-26T13:57:34.7886149Z installed toolchains
+2026-10-26T13:57:34.7886542Z --------------------
+2026-10-26T13:57:34.7886878Z 1.85.0-x86_64-unknown-linux-musl
+2026-10-26T13:57:34.7887329Z 1.96.0-x86_64-unknown-linux-musl (active, default)
+2026-10-26T13:57:34.7887665Z 
+2026-10-26T13:57:34.7887784Z active toolchain
+2026-10-26T13:57:34.7888074Z ----------------
+2026-10-26T13:57:34.7888389Z name: 1.96.0-x86_64-unknown-linux-musl
+2026-10-26T13:57:34.7888797Z active because: overridden by '/github/workspace/codex-rs/rust-toolchain.toml'
+2026-10-26T13:57:34.7889198Z installed targets:
+2026-10-26T13:57:34.7889430Z   x86_64-unknown-linux-musl
+2026-10-26T13:58:00.3663892Z [0m[1m[38;5;11mwarning[license-not-encountered][0m[1m: license was not encountered[0m
+2026-10-26T13:58:00.3667604Z     [0m[36m┌─[0m ./codex-rs/deny.toml:135:6
+2026-10-26T13:58:00.3682555Z     [0m[36m│[0m
+2026-10-26T13:58:00.3683349Z [0m[36m135[0m [0m[36m│[0m     "[0m[33mOpenSSL[0m",
+2026-10-26T13:58:00.3704886Z     [0m[36m│[0m      [0m[33m━━━━━━━[0m [0m[33munmatched license allowance[0m
+2026-10-26T13:58:00.3705495Z 
+2026-10-26T13:58:00.3706459Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'aead'[0m
+2026-10-26T13:58:00.3708073Z   [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:4:1
+2026-10-26T13:58:00.3708962Z   [0m[36m│[0m  
+2026-10-26T13:58:00.3710248Z [0m[36m4[0m [0m[36m│[0m [0m[33m╭[0m [0m[33maead 0.5.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3711871Z [0m[36m5[0m [0m[36m│[0m [0m[33m│[0m [0m[33maead 0.6.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3713611Z   [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3714615Z 
+2026-10-26T13:58:00.3715316Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'aes'[0m
+2026-10-26T13:58:00.3716493Z   [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:6:1
+2026-10-26T13:58:00.3717284Z   [0m[36m│[0m  
+2026-10-26T13:58:00.3718367Z [0m[36m6[0m [0m[36m│[0m [0m[33m╭[0m [0m[33maes 0.8.4 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3720288Z [0m[36m7[0m [0m[36m│[0m [0m[33m│[0m [0m[33maes 0.9.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3721812Z   [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3722672Z 
+2026-10-26T13:58:00.3723395Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'annotate-snippets'[0m
+2026-10-26T13:58:00.3724430Z    [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:17:1
+2026-10-26T13:58:00.3725109Z    [0m[36m│[0m  
+2026-10-26T13:58:00.3726454Z [0m[36m17[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mannotate-snippets 0.9.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3728446Z [0m[36m18[0m [0m[36m│[0m [0m[33m│[0m [0m[33mannotate-snippets 0.12.5 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3730569Z    [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3731726Z 
+2026-10-26T13:58:00.3732521Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'base16ct'[0m
+2026-10-26T13:58:00.3733659Z    [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:80:1
+2026-10-26T13:58:00.3734499Z    [0m[36m│[0m  
+2026-10-26T13:58:00.3739806Z [0m[36m80[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mbase16ct 0.2.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3765745Z [0m[36m81[0m [0m[36m│[0m [0m[33m│[0m [0m[33mbase16ct 1.0.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3767601Z    [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3768433Z 
+2026-10-26T13:58:00.3768878Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 3 duplicate entries for crate 'base64'[0m
+2026-10-26T13:58:00.3772907Z    [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:82:1
+2026-10-26T13:58:00.3775296Z    [0m[36m│[0m  
+2026-10-26T13:58:00.3776622Z [0m[36m82[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mbase64 0.21.7 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3780895Z [0m[36m83[0m [0m[36m│[0m [0m[33m│[0m [0m[33mbase64 0.22.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3783519Z [0m[36m84[0m [0m[36m│[0m [0m[33m│[0m [0m[33mbase64 0.23.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3789694Z    [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3792871Z 
+2026-10-26T13:58:00.3793628Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'bitflags'[0m
+2026-10-26T13:58:00.3794786Z    [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:93:1
+2026-10-26T13:58:00.3795417Z    [0m[36m│[0m  
+2026-10-26T13:58:00.3796380Z [0m[36m93[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mbitflags 1.3.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3813686Z [0m[36m94[0m [0m[36m│[0m [0m[33m│[0m [0m[33mbitflags 2.13.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3817587Z    [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3818554Z 
+2026-10-26T13:58:00.3819201Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'block-buffer'[0m
+2026-10-26T13:58:00.3820324Z    [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:97:1
+2026-10-26T13:58:00.3820893Z    [0m[36m│[0m  
+2026-10-26T13:58:00.3821950Z [0m[36m97[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mblock-buffer 0.10.4 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3823822Z [0m[36m98[0m [0m[36m│[0m [0m[33m│[0m [0m[33mblock-buffer 0.12.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3825375Z    [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3826236Z 
+2026-10-26T13:58:00.3826832Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'block-padding'[0m
+2026-10-26T13:58:00.3827706Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:99:1
+2026-10-26T13:58:00.3828336Z     [0m[36m│[0m  
+2026-10-26T13:58:00.3829350Z [0m[36m 99[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mblock-padding 0.3.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3830947Z [0m[36m100[0m [0m[36m│[0m [0m[33m│[0m [0m[33mblock-padding 0.4.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3832541Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3833433Z 
+2026-10-26T13:58:00.3833887Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'cbc'[0m
+2026-10-26T13:58:00.3834663Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:122:1
+2026-10-26T13:58:00.3835355Z     [0m[36m│[0m  
+2026-10-26T13:58:00.3836301Z [0m[36m122[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mcbc 0.1.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3837629Z [0m[36m123[0m [0m[36m│[0m [0m[33m│[0m [0m[33mcbc 0.2.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3839202Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3840045Z 
+2026-10-26T13:58:00.3854696Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'cfg_aliases'[0m
+2026-10-26T13:58:00.3857066Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:127:1
+2026-10-26T13:58:00.3858405Z     [0m[36m│[0m  
+2026-10-26T13:58:00.3860332Z [0m[36m127[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mcfg_aliases 0.1.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3862291Z [0m[36m128[0m [0m[36m│[0m [0m[33m│[0m [0m[33mcfg_aliases 0.2.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3864691Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3867313Z 
+2026-10-26T13:58:00.3868609Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'chacha20'[0m
+2026-10-26T13:58:00.3872137Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:129:1
+2026-10-26T13:58:00.3873172Z     [0m[36m│[0m  
+2026-10-26T13:58:00.3875969Z [0m[36m129[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mchacha20 0.9.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3878575Z [0m[36m130[0m [0m[36m│[0m [0m[33m│[0m [0m[33mchacha20 0.10.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3882306Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3886205Z 
+2026-10-26T13:58:00.3887124Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'chacha20poly1305'[0m
+2026-10-26T13:58:00.3888313Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:131:1
+2026-10-26T13:58:00.3890694Z     [0m[36m│[0m  
+2026-10-26T13:58:00.3892041Z [0m[36m131[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mchacha20poly1305 0.10.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3894492Z [0m[36m132[0m [0m[36m│[0m [0m[33m│[0m [0m[33mchacha20poly1305 0.11.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3897071Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3898516Z 
+2026-10-26T13:58:00.3899180Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'cipher'[0m
+2026-10-26T13:58:00.3900329Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:136:1
+2026-10-26T13:58:00.3900893Z     [0m[36m│[0m  
+2026-10-26T13:58:00.3905307Z [0m[36m136[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mcipher 0.4.4 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3907387Z [0m[36m137[0m [0m[36m│[0m [0m[33m│[0m [0m[33mcipher 0.5.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3910069Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3911409Z 
+2026-10-26T13:58:00.3912056Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'const-oid'[0m
+2026-10-26T13:58:00.3913076Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:354:1
+2026-10-26T13:58:00.3913776Z     [0m[36m│[0m  
+2026-10-26T13:58:00.3914810Z [0m[36m354[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mconst-oid 0.9.6 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3917937Z [0m[36m355[0m [0m[36m│[0m [0m[33m│[0m [0m[33mconst-oid 0.10.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3921612Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3922577Z 
+2026-10-26T13:58:00.3923238Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 3 duplicate entries for crate 'constant_time_eq'[0m
+2026-10-26T13:58:00.3924209Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:359:1
+2026-10-26T13:58:00.3924859Z     [0m[36m│[0m  
+2026-10-26T13:58:00.3926095Z [0m[36m359[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mconstant_time_eq 0.3.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3928001Z [0m[36m360[0m [0m[36m│[0m [0m[33m│[0m [0m[33mconstant_time_eq 0.4.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3929660Z [0m[36m361[0m [0m[36m│[0m [0m[33m│[0m [0m[33mconstant_time_eq 0.6.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3932861Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3934582Z 
+2026-10-26T13:58:00.3935545Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'convert_case'[0m
+2026-10-26T13:58:00.3936862Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:362:1
+2026-10-26T13:58:00.3937734Z     [0m[36m│[0m  
+2026-10-26T13:58:00.3940664Z [0m[36m362[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mconvert_case 0.6.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3942061Z [0m[36m363[0m [0m[36m│[0m [0m[33m│[0m [0m[33mconvert_case 0.10.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3943759Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3944735Z 
+2026-10-26T13:58:00.3945236Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'core-foundation'[0m
+2026-10-26T13:58:00.3946199Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:367:1
+2026-10-26T13:58:00.3946728Z     [0m[36m│[0m  
+2026-10-26T13:58:00.3947728Z [0m[36m367[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mcore-foundation 0.9.4 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3949388Z [0m[36m368[0m [0m[36m│[0m [0m[33m│[0m [0m[33mcore-foundation 0.10.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3952154Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3953100Z 
+2026-10-26T13:58:00.3953640Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'cpufeatures'[0m
+2026-10-26T13:58:00.3954578Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:373:1
+2026-10-26T13:58:00.3955286Z     [0m[36m│[0m  
+2026-10-26T13:58:00.3956378Z [0m[36m373[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mcpufeatures 0.2.17 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3958053Z [0m[36m374[0m [0m[36m│[0m [0m[33m│[0m [0m[33mcpufeatures 0.3.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3961236Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3962044Z 
+2026-10-26T13:58:00.3962695Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'crypto-common'[0m
+2026-10-26T13:58:00.3963645Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:388:1
+2026-10-26T13:58:00.3964301Z     [0m[36m│[0m  
+2026-10-26T13:58:00.3965239Z [0m[36m388[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mcrypto-common 0.1.7 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3966859Z [0m[36m389[0m [0m[36m│[0m [0m[33m│[0m [0m[33mcrypto-common 0.2.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3968702Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3969633Z 
+2026-10-26T13:58:00.3970334Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'ctor'[0m
+2026-10-26T13:58:00.3971387Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:394:1
+2026-10-26T13:58:00.3971917Z     [0m[36m│[0m  
+2026-10-26T13:58:00.3972868Z [0m[36m394[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mctor 0.6.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3974433Z [0m[36m395[0m [0m[36m│[0m [0m[33m│[0m [0m[33mctor 1.0.6 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3975981Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3976720Z 
+2026-10-26T13:58:00.3977164Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'ctr'[0m
+2026-10-26T13:58:00.3977952Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:397:1
+2026-10-26T13:58:00.3978576Z     [0m[36m│[0m  
+2026-10-26T13:58:00.3979383Z [0m[36m397[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mctr 0.9.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3982293Z [0m[36m398[0m [0m[36m│[0m [0m[33m│[0m [0m[33mctr 0.10.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3984486Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3985668Z 
+2026-10-26T13:58:00.3986750Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'curve25519-dalek'[0m
+2026-10-26T13:58:00.3988352Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:400:1
+2026-10-26T13:58:00.3989174Z     [0m[36m│[0m  
+2026-10-26T13:58:00.3990809Z [0m[36m400[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mcurve25519-dalek 4.1.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3992663Z [0m[36m401[0m [0m[36m│[0m [0m[33m│[0m [0m[33mcurve25519-dalek 5.0.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.3995186Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.3999006Z 
+2026-10-26T13:58:00.3999491Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 4 duplicate entries for crate 'darling'[0m
+2026-10-26T13:58:00.4000657Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:403:1
+2026-10-26T13:58:00.4001194Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4002058Z [0m[36m403[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mdarling 0.20.11 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4003616Z [0m[36m404[0m [0m[36m│[0m [0m[33m│[0m [0m[33mdarling 0.21.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4005110Z [0m[36m405[0m [0m[36m│[0m [0m[33m│[0m [0m[33mdarling 0.23.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4006575Z [0m[36m406[0m [0m[36m│[0m [0m[33m│[0m [0m[33mdarling 0.24.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4008375Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4009332Z 
+2026-10-26T13:58:00.4010473Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 4 duplicate entries for crate 'darling_core'[0m
+2026-10-26T13:58:00.4011625Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:407:1
+2026-10-26T13:58:00.4012237Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4013501Z [0m[36m407[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mdarling_core 0.20.11 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4014892Z [0m[36m408[0m [0m[36m│[0m [0m[33m│[0m [0m[33mdarling_core 0.21.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4016446Z [0m[36m409[0m [0m[36m│[0m [0m[33m│[0m [0m[33mdarling_core 0.23.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4017975Z [0m[36m410[0m [0m[36m│[0m [0m[33m│[0m [0m[33mdarling_core 0.24.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4019472Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4020342Z 
+2026-10-26T13:58:00.4020849Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 4 duplicate entries for crate 'darling_macro'[0m
+2026-10-26T13:58:00.4021677Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:411:1
+2026-10-26T13:58:00.4022205Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4023077Z [0m[36m411[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mdarling_macro 0.20.11 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4024476Z [0m[36m412[0m [0m[36m│[0m [0m[33m│[0m [0m[33mdarling_macro 0.21.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4025803Z [0m[36m413[0m [0m[36m│[0m [0m[33m│[0m [0m[33mdarling_macro 0.23.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4027123Z [0m[36m414[0m [0m[36m│[0m [0m[33m│[0m [0m[33mdarling_macro 0.24.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4028926Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4029832Z 
+2026-10-26T13:58:00.4030468Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'deadpool'[0m
+2026-10-26T13:58:00.4031535Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:420:1
+2026-10-26T13:58:00.4032212Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4033277Z [0m[36m420[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mdeadpool 0.12.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4034859Z [0m[36m421[0m [0m[36m│[0m [0m[33m│[0m [0m[33mdeadpool 0.13.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4036492Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4037609Z 
+2026-10-26T13:58:00.4038205Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'deadpool-runtime'[0m
+2026-10-26T13:58:00.4039139Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:422:1
+2026-10-26T13:58:00.4040030Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4041354Z [0m[36m422[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mdeadpool-runtime 0.1.4 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4042699Z [0m[36m423[0m [0m[36m│[0m [0m[33m│[0m [0m[33mdeadpool-runtime 0.3.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4043731Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4044227Z 
+2026-10-26T13:58:00.4044700Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'derive_more'[0m
+2026-10-26T13:58:00.4045230Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:434:1
+2026-10-26T13:58:00.4045600Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4046653Z [0m[36m434[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mderive_more 1.0.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4047869Z [0m[36m435[0m [0m[36m│[0m [0m[33m│[0m [0m[33mderive_more 2.1.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4049392Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4050689Z 
+2026-10-26T13:58:00.4062033Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'derive_more-impl'[0m
+2026-10-26T13:58:00.4062938Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:436:1
+2026-10-26T13:58:00.4063464Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4064312Z [0m[36m436[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mderive_more-impl 1.0.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4065421Z [0m[36m437[0m [0m[36m│[0m [0m[33m│[0m [0m[33mderive_more-impl 2.1.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4066900Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4067683Z 
+2026-10-26T13:58:00.4068249Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'digest'[0m
+2026-10-26T13:58:00.4069220Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:442:1
+2026-10-26T13:58:00.4069990Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4071109Z [0m[36m442[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mdigest 0.10.7 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4072731Z [0m[36m443[0m [0m[36m│[0m [0m[33m│[0m [0m[33mdigest 0.11.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4074207Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4075185Z 
+2026-10-26T13:58:00.4075678Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'ed25519'[0m
+2026-10-26T13:58:00.4076656Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:466:1
+2026-10-26T13:58:00.4077359Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4078277Z [0m[36m466[0m [0m[36m│[0m [0m[33m╭[0m [0m[33med25519 2.2.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4079666Z [0m[36m467[0m [0m[36m│[0m [0m[33m│[0m [0m[33med25519 3.0.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4081451Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4082200Z 
+2026-10-26T13:58:00.4082841Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'ed25519-dalek'[0m
+2026-10-26T13:58:00.4084264Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:468:1
+2026-10-26T13:58:00.4084950Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4086058Z [0m[36m468[0m [0m[36m│[0m [0m[33m╭[0m [0m[33med25519-dalek 2.2.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4087392Z [0m[36m469[0m [0m[36m│[0m [0m[33m│[0m [0m[33med25519-dalek 3.0.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4089142Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4090068Z 
+2026-10-26T13:58:00.4090775Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'endian-type'[0m
+2026-10-26T13:58:00.4091707Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:476:1
+2026-10-26T13:58:00.4092346Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4093555Z [0m[36m476[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mendian-type 0.1.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4095973Z [0m[36m477[0m [0m[36m│[0m [0m[33m│[0m [0m[33mendian-type 0.2.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4100031Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4101100Z 
+2026-10-26T13:58:00.4101622Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'erased-serde'[0m
+2026-10-26T13:58:00.4102751Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:484:1
+2026-10-26T13:58:00.4103313Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4104215Z [0m[36m484[0m [0m[36m│[0m [0m[33m╭[0m [0m[33merased-serde 0.3.31 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4105631Z [0m[36m485[0m [0m[36m│[0m [0m[33m│[0m [0m[33merased-serde 0.4.10 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4107182Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4107961Z 
+2026-10-26T13:58:00.4110680Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'fiat-crypto'[0m
+2026-10-26T13:58:00.4112074Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:505:1
+2026-10-26T13:58:00.4112987Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4115214Z [0m[36m505[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mfiat-crypto 0.2.9 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4117382Z [0m[36m506[0m [0m[36m│[0m [0m[33m│[0m [0m[33mfiat-crypto 0.3.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4119132Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4120085Z 
+2026-10-26T13:58:00.4120721Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'foldhash'[0m
+2026-10-26T13:58:00.4121840Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:524:1
+2026-10-26T13:58:00.4122464Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4123617Z [0m[36m524[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mfoldhash 0.1.5 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4125107Z [0m[36m525[0m [0m[36m│[0m [0m[33m│[0m [0m[33mfoldhash 0.2.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4126724Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4127713Z 
+2026-10-26T13:58:00.4128328Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 3 duplicate entries for crate 'getrandom'[0m
+2026-10-26T13:58:00.4129496Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:548:1
+2026-10-26T13:58:00.4130389Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4131350Z [0m[36m548[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mgetrandom 0.2.17 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4132721Z [0m[36m549[0m [0m[36m│[0m [0m[33m│[0m [0m[33mgetrandom 0.3.4 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4134076Z [0m[36m550[0m [0m[36m│[0m [0m[33m│[0m [0m[33mgetrandom 0.4.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4135564Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4136334Z 
+2026-10-26T13:58:00.4136838Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'gloo-timers'[0m
+2026-10-26T13:58:00.4137765Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:593:1
+2026-10-26T13:58:00.4138317Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4139244Z [0m[36m593[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mgloo-timers 0.3.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4140742Z [0m[36m594[0m [0m[36m│[0m [0m[33m│[0m [0m[33mgloo-timers 0.4.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4162570Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4163584Z 
+2026-10-26T13:58:00.4201527Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'hash32'[0m
+2026-10-26T13:58:00.4202817Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:601:1
+2026-10-26T13:58:00.4203860Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4205181Z [0m[36m601[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mhash32 0.2.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4206757Z [0m[36m602[0m [0m[36m│[0m [0m[33m│[0m [0m[33mhash32 0.3.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4208479Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4209662Z 
+2026-10-26T13:58:00.4210349Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 4 duplicate entries for crate 'hashbrown'[0m
+2026-10-26T13:58:00.4211459Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:603:1
+2026-10-26T13:58:00.4212170Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4213246Z [0m[36m603[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mhashbrown 0.14.5 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4214968Z [0m[36m604[0m [0m[36m│[0m [0m[33m│[0m [0m[33mhashbrown 0.15.5 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4216331Z [0m[36m605[0m [0m[36m│[0m [0m[33m│[0m [0m[33mhashbrown 0.16.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4218369Z [0m[36m606[0m [0m[36m│[0m [0m[33m│[0m [0m[33mhashbrown 0.17.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4220309Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4221098Z 
+2026-10-26T13:58:00.4221591Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'hashlink'[0m
+2026-10-26T13:58:00.4222667Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:607:1
+2026-10-26T13:58:00.4223210Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4224055Z [0m[36m607[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mhashlink 0.11.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4225319Z [0m[36m608[0m [0m[36m│[0m [0m[33m│[0m [0m[33mhashlink 0.12.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4227695Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4228687Z 
+2026-10-26T13:58:00.4229677Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'heapless'[0m
+2026-10-26T13:58:00.4230771Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:611:1
+2026-10-26T13:58:00.4231266Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4232408Z [0m[36m611[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mheapless 0.7.17 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4233737Z [0m[36m612[0m [0m[36m│[0m [0m[33m│[0m [0m[33mheapless 0.8.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4235166Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4235866Z 
+2026-10-26T13:58:00.4236319Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'hkdf'[0m
+2026-10-26T13:58:00.4237122Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:619:1
+2026-10-26T13:58:00.4237649Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4238761Z [0m[36m619[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mhkdf 0.12.4 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4240098Z [0m[36m620[0m [0m[36m│[0m [0m[33m│[0m [0m[33mhkdf 0.13.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4241601Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4242292Z 
+2026-10-26T13:58:00.4242747Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'hmac'[0m
+2026-10-26T13:58:00.4243522Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:621:1
+2026-10-26T13:58:00.4244023Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4244901Z [0m[36m621[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mhmac 0.12.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4246404Z [0m[36m622[0m [0m[36m│[0m [0m[33m│[0m [0m[33mhmac 0.13.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4247998Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4248675Z 
+2026-10-26T13:58:00.4249195Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'http'[0m
+2026-10-26T13:58:00.4250247Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:626:1
+2026-10-26T13:58:00.4250769Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4251530Z [0m[36m626[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mhttp 0.2.12 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4253316Z [0m[36m627[0m [0m[36m│[0m [0m[33m│[0m [0m[33mhttp 1.5.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4255581Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4256929Z 
+2026-10-26T13:58:00.4257515Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'http-body'[0m
+2026-10-26T13:58:00.4258581Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:628:1
+2026-10-26T13:58:00.4259279Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4261106Z [0m[36m628[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mhttp-body 0.4.6 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4262781Z [0m[36m629[0m [0m[36m│[0m [0m[33m│[0m [0m[33mhttp-body 1.0.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4265081Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4265976Z 
+2026-10-26T13:58:00.4266585Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'hybrid-array'[0m
+2026-10-26T13:58:00.4267940Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:634:1
+2026-10-26T13:58:00.4268668Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4269792Z [0m[36m634[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mhybrid-array 0.2.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4272012Z [0m[36m635[0m [0m[36m│[0m [0m[33m│[0m [0m[33mhybrid-array 0.4.15 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4273771Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4274683Z 
+2026-10-26T13:58:00.4275155Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'inout'[0m
+2026-10-26T13:58:00.4275947Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:674:1
+2026-10-26T13:58:00.4276540Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4277572Z [0m[36m674[0m [0m[36m│[0m [0m[33m╭[0m [0m[33minout 0.1.4 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4278974Z [0m[36m675[0m [0m[36m│[0m [0m[33m│[0m [0m[33minout 0.2.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4280518Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4281277Z 
+2026-10-26T13:58:00.4281786Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 3 duplicate entries for crate 'itertools'[0m
+2026-10-26T13:58:00.4282814Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:688:1
+2026-10-26T13:58:00.4283323Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4284127Z [0m[36m688[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mitertools 0.13.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4285574Z [0m[36m689[0m [0m[36m│[0m [0m[33m│[0m [0m[33mitertools 0.14.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4286974Z [0m[36m690[0m [0m[36m│[0m [0m[33m│[0m [0m[33mitertools 0.15.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4288270Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4289304Z 
+2026-10-26T13:58:00.4289850Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'linux-raw-sys'[0m
+2026-10-26T13:58:00.4290995Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:728:1
+2026-10-26T13:58:00.4291488Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4292418Z [0m[36m728[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mlinux-raw-sys 0.4.15 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4293946Z [0m[36m729[0m [0m[36m│[0m [0m[33m│[0m [0m[33mlinux-raw-sys 0.12.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4295403Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4296135Z 
+2026-10-26T13:58:00.4296650Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'matchit'[0m
+2026-10-26T13:58:00.4297469Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:744:1
+2026-10-26T13:58:00.4297998Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4298825Z [0m[36m744[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mmatchit 0.8.4 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4300084Z [0m[36m745[0m [0m[36m│[0m [0m[33m│[0m [0m[33mmatchit 0.9.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4301571Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4302256Z 
+2026-10-26T13:58:00.4302697Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 3 duplicate entries for crate 'nix'[0m
+2026-10-26T13:58:00.4303482Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:773:1
+2026-10-26T13:58:00.4304003Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4304820Z [0m[36m773[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mnix 0.28.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4306165Z [0m[36m774[0m [0m[36m│[0m [0m[33m│[0m [0m[33mnix 0.30.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4307359Z [0m[36m775[0m [0m[36m│[0m [0m[33m│[0m [0m[33mnix 0.31.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4308669Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4309333Z 
+2026-10-26T13:58:00.4309879Z [0m[1m[38;5;11mwarning[unmatched-source][0m[1m: allowed source was not encountered[0m
+2026-10-26T13:58:00.4310775Z     [0m[36m┌─[0m ./codex-rs/deny.toml:319:6
+2026-10-26T13:58:00.4311239Z     [0m[36m│[0m
+2026-10-26T13:58:00.4311870Z [0m[36m319[0m [0m[36m│[0m     "[0m[33mhttps://github.com/juberti-oai/rust-sdks.git[0m",
+2026-10-26T13:58:00.4313228Z     [0m[36m│[0m      [0m[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [0m[33mno crate source matched these criteria[0m
+2026-10-26T13:58:00.4313959Z 
+2026-10-26T13:58:00.4314383Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'nom'[0m
+2026-10-26T13:58:00.4315270Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:777:1
+2026-10-26T13:58:00.4315910Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4316865Z [0m[36m777[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mnom 7.1.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4318159Z [0m[36m778[0m [0m[36m│[0m [0m[33m│[0m [0m[33mnom 8.0.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4319427Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4320342Z 
+2026-10-26T13:58:00.4320876Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'openssl-probe'[0m
+2026-10-26T13:58:00.4321686Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:822:1
+2026-10-26T13:58:00.4322205Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4323644Z [0m[36m822[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mopenssl-probe 0.1.6 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4324990Z [0m[36m823[0m [0m[36m│[0m [0m[33m│[0m [0m[33mopenssl-probe 0.2.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4326544Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4327292Z 
+2026-10-26T13:58:00.4351358Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'pbkdf2'[0m
+2026-10-26T13:58:00.4352228Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:847:1
+2026-10-26T13:58:00.4352746Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4353719Z [0m[36m847[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mpbkdf2 0.12.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4355424Z [0m[36m848[0m [0m[36m│[0m [0m[33m│[0m [0m[33mpbkdf2 0.13.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4357052Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4357907Z 
+2026-10-26T13:58:00.4358471Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'poly1305'[0m
+2026-10-26T13:58:00.4359340Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:862:1
+2026-10-26T13:58:00.4360305Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4361220Z [0m[36m862[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mpoly1305 0.8.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4362670Z [0m[36m863[0m [0m[36m│[0m [0m[33m│[0m [0m[33mpoly1305 0.9.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4364108Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4365099Z 
+2026-10-26T13:58:00.4365603Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'quick-xml'[0m
+2026-10-26T13:58:00.4366690Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:905:1
+2026-10-26T13:58:00.4367388Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4368403Z [0m[36m905[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mquick-xml 0.39.4 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4386181Z [0m[36m906[0m [0m[36m│[0m [0m[33m│[0m [0m[33mquick-xml 0.41.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4402678Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4403791Z 
+2026-10-26T13:58:00.4404752Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'r-efi'[0m
+2026-10-26T13:58:00.4405604Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:909:1
+2026-10-26T13:58:00.4406200Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4407033Z [0m[36m909[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mr-efi 5.3.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4408295Z [0m[36m910[0m [0m[36m│[0m [0m[33m│[0m [0m[33mr-efi 6.0.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4409640Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4410445Z 
+2026-10-26T13:58:00.4410964Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'radix_trie'[0m
+2026-10-26T13:58:00.4411757Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:911:1
+2026-10-26T13:58:00.4412267Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4413104Z [0m[36m911[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mradix_trie 0.2.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4414365Z [0m[36m912[0m [0m[36m│[0m [0m[33m│[0m [0m[33mradix_trie 0.3.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4415288Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4415737Z 
+2026-10-26T13:58:00.4416030Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 3 duplicate entries for crate 'rand'[0m
+2026-10-26T13:58:00.4416578Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:929:1
+2026-10-26T13:58:00.4416944Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4417463Z [0m[36m929[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mrand 0.8.6 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4418231Z [0m[36m930[0m [0m[36m│[0m [0m[33m│[0m [0m[33mrand 0.9.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4418981Z [0m[36m931[0m [0m[36m│[0m [0m[33m│[0m [0m[33mrand 0.10.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4419926Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4420595Z 
+2026-10-26T13:58:00.4420931Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'rand_chacha'[0m
+2026-10-26T13:58:00.4421456Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:932:1
+2026-10-26T13:58:00.4421794Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4422369Z [0m[36m932[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mrand_chacha 0.3.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4423176Z [0m[36m933[0m [0m[36m│[0m [0m[33m│[0m [0m[33mrand_chacha 0.9.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4424162Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4424611Z 
+2026-10-26T13:58:00.4424913Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 3 duplicate entries for crate 'rand_core'[0m
+2026-10-26T13:58:00.4425425Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:934:1
+2026-10-26T13:58:00.4425823Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4426414Z [0m[36m934[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mrand_core 0.6.4 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4427258Z [0m[36m935[0m [0m[36m│[0m [0m[33m│[0m [0m[33mrand_core 0.9.5 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4428029Z [0m[36m936[0m [0m[36m│[0m [0m[33m│[0m [0m[33mrand_core 0.10.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4428995Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4429435Z 
+2026-10-26T13:58:00.4429757Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'redox_users'[0m
+2026-10-26T13:58:00.4430695Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:949:1
+2026-10-26T13:58:00.4431068Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4431610Z [0m[36m949[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mredox_users 0.4.6 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4432404Z [0m[36m950[0m [0m[36m│[0m [0m[33m│[0m [0m[33mredox_users 0.5.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4433269Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4433707Z 
+2026-10-26T13:58:00.4434003Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'reqwest'[0m
+2026-10-26T13:58:00.4434525Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:958:1
+2026-10-26T13:58:00.4434863Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4435391Z [0m[36m958[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mreqwest 0.12.28 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4436178Z [0m[36m959[0m [0m[36m│[0m [0m[33m│[0m [0m[33mreqwest 0.13.5 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4437017Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4437451Z 
+2026-10-26T13:58:00.4457189Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'rustc-hash'[0m
+2026-10-26T13:58:00.4483551Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:981:1
+2026-10-26T13:58:00.4484318Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4485515Z [0m[36m981[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mrustc-hash 1.1.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4487221Z [0m[36m982[0m [0m[36m│[0m [0m[33m│[0m [0m[33mrustc-hash 2.1.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4496146Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4497113Z 
+2026-10-26T13:58:00.4497783Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'rustix'[0m
+2026-10-26T13:58:00.4498897Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:985:1
+2026-10-26T13:58:00.4499555Z     [0m[36m│[0m  
+2026-10-26T13:58:00.4525806Z [0m[36m985[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mrustix 0.38.44 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4527458Z [0m[36m986[0m [0m[36m│[0m [0m[33m│[0m [0m[33mrustix 1.1.4 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4529106Z     [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4529978Z 
+2026-10-26T13:58:00.4530733Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'schemars'[0m
+2026-10-26T13:58:00.4531716Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1004:1
+2026-10-26T13:58:00.4532405Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4533384Z [0m[36m1004[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mschemars 0.8.22 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4534858Z [0m[36m1005[0m [0m[36m│[0m [0m[33m│[0m [0m[33mschemars 1.2.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4536362Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4537221Z 
+2026-10-26T13:58:00.4537851Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'schemars_derive'[0m
+2026-10-26T13:58:00.4538852Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1006:1
+2026-10-26T13:58:00.4539606Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4540787Z [0m[36m1006[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mschemars_derive 0.8.22 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4542307Z [0m[36m1007[0m [0m[36m│[0m [0m[33m│[0m [0m[33mschemars_derive 1.2.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4543919Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4544874Z 
+2026-10-26T13:58:00.4545581Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'security-framework'[0m
+2026-10-26T13:58:00.4546568Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1015:1
+2026-10-26T13:58:00.4547225Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4548319Z [0m[36m1015[0m [0m[36m│[0m [0m[33m╭[0m [0m[33msecurity-framework 2.11.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4549983Z [0m[36m1016[0m [0m[36m│[0m [0m[33m│[0m [0m[33msecurity-framework 3.5.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4552148Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4553183Z 
+2026-10-26T13:58:00.4553884Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'serde_html_form'[0m
+2026-10-26T13:58:00.4554876Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1035:1
+2026-10-26T13:58:00.4555535Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4556586Z [0m[36m1035[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mserde_html_form 0.3.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4558189Z [0m[36m1036[0m [0m[36m│[0m [0m[33m│[0m [0m[33mserde_html_form 0.4.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4559802Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4560815Z 
+2026-10-26T13:58:00.4561387Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'sha1'[0m
+2026-10-26T13:58:00.4562322Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1049:1
+2026-10-26T13:58:00.4562978Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4563936Z [0m[36m1049[0m [0m[36m│[0m [0m[33m╭[0m [0m[33msha1 0.10.6 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4565343Z [0m[36m1050[0m [0m[36m│[0m [0m[33m│[0m [0m[33msha1 0.11.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4566808Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4567609Z 
+2026-10-26T13:58:00.4568194Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'sha2'[0m
+2026-10-26T13:58:00.4569290Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1053:1
+2026-10-26T13:58:00.4570053Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4571169Z [0m[36m1053[0m [0m[36m│[0m [0m[33m╭[0m [0m[33msha2 0.10.9 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4572661Z [0m[36m1054[0m [0m[36m│[0m [0m[33m│[0m [0m[33msha2 0.11.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4574184Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4575008Z 
+2026-10-26T13:58:00.4575593Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'signature'[0m
+2026-10-26T13:58:00.4576539Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1063:1
+2026-10-26T13:58:00.4582351Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4603887Z [0m[36m1063[0m [0m[36m│[0m [0m[33m╭[0m [0m[33msignature 2.2.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4605859Z [0m[36m1064[0m [0m[36m│[0m [0m[33m│[0m [0m[33msignature 3.0.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4607451Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4608335Z 
+2026-10-26T13:58:00.4608967Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'socket2'[0m
+2026-10-26T13:58:00.4609926Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1074:1
+2026-10-26T13:58:00.4610752Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4611765Z [0m[36m1074[0m [0m[36m│[0m [0m[33m╭[0m [0m[33msocket2 0.5.10 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4613321Z [0m[36m1075[0m [0m[36m│[0m [0m[33m│[0m [0m[33msocket2 0.6.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4614836Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4615679Z 
+2026-10-26T13:58:00.4616243Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'strsim'[0m
+2026-10-26T13:58:00.4617186Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1097:1
+2026-10-26T13:58:00.4617997Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4618956Z [0m[36m1097[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mstrsim 0.10.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4620490Z [0m[36m1098[0m [0m[36m│[0m [0m[33m│[0m [0m[33mstrsim 0.11.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4622016Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4622855Z 
+2026-10-26T13:58:00.4623482Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'strum'[0m
+2026-10-26T13:58:00.4624403Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1099:1
+2026-10-26T13:58:00.4625040Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4625971Z [0m[36m1099[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mstrum 0.27.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4627357Z [0m[36m1100[0m [0m[36m│[0m [0m[33m│[0m [0m[33mstrum 0.28.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4628804Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4629574Z 
+2026-10-26T13:58:00.4630308Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'strum_macros'[0m
+2026-10-26T13:58:00.4631338Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1101:1
+2026-10-26T13:58:00.4632036Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4632996Z [0m[36m1101[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mstrum_macros 0.27.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4634478Z [0m[36m1102[0m [0m[36m│[0m [0m[33m│[0m [0m[33mstrum_macros 0.28.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4635975Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4636835Z 
+2026-10-26T13:58:00.4637462Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'supports-color'[0m
+2026-10-26T13:58:00.4638451Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1104:1
+2026-10-26T13:58:00.4639091Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4640319Z [0m[36m1104[0m [0m[36m│[0m [0m[33m╭[0m [0m[33msupports-color 2.1.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4642084Z [0m[36m1105[0m [0m[36m│[0m [0m[33m│[0m [0m[33msupports-color 3.0.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4643978Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4644837Z 
+2026-10-26T13:58:00.4645458Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 3 duplicate entries for crate 'syn'[0m
+2026-10-26T13:58:00.4646376Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1115:1
+2026-10-26T13:58:00.4647040Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4647970Z [0m[36m1115[0m [0m[36m│[0m [0m[33m╭[0m [0m[33msyn 1.0.109 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4649289Z [0m[36m1116[0m [0m[36m│[0m [0m[33m│[0m [0m[33msyn 2.0.117 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4650727Z [0m[36m1117[0m [0m[36m│[0m [0m[33m│[0m [0m[33msyn 3.0.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4652227Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4653086Z 
+2026-10-26T13:58:00.4653672Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'textwrap'[0m
+2026-10-26T13:58:00.4654587Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1138:1
+2026-10-26T13:58:00.4655234Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4656188Z [0m[36m1138[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mtextwrap 0.11.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4657614Z [0m[36m1139[0m [0m[36m│[0m [0m[33m│[0m [0m[33mtextwrap 0.16.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4659151Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4659946Z 
+2026-10-26T13:58:00.4660706Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'thiserror'[0m
+2026-10-26T13:58:00.4661673Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1140:1
+2026-10-26T13:58:00.4662361Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4663334Z [0m[36m1140[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mthiserror 1.0.69 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4664728Z [0m[36m1141[0m [0m[36m│[0m [0m[33m│[0m [0m[33mthiserror 2.0.21 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4666277Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4667073Z 
+2026-10-26T13:58:00.4667786Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'thiserror-impl'[0m
+2026-10-26T13:58:00.4668778Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1142:1
+2026-10-26T13:58:00.4669500Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4670630Z [0m[36m1142[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mthiserror-impl 1.0.69 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4672345Z [0m[36m1143[0m [0m[36m│[0m [0m[33m│[0m [0m[33mthiserror-impl 2.0.21 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4673928Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4674911Z 
+2026-10-26T13:58:00.4675509Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 3 duplicate entries for crate 'toml'[0m
+2026-10-26T13:58:00.4676426Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1165:1
+2026-10-26T13:58:00.4677064Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4677977Z [0m[36m1165[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mtoml 0.5.11 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4679498Z [0m[36m1166[0m [0m[36m│[0m [0m[33m│[0m [0m[33mtoml 0.9.11+spec-1.1.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4681086Z [0m[36m1167[0m [0m[36m│[0m [0m[33m│[0m [0m[33mtoml 1.1.4+spec-1.1.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4682674Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4683515Z 
+2026-10-26T13:58:00.4684117Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'toml_datetime'[0m
+2026-10-26T13:58:00.4685064Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1168:1
+2026-10-26T13:58:00.4685700Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4686771Z [0m[36m1168[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mtoml_datetime 0.7.5+spec-1.1.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4688345Z [0m[36m1169[0m [0m[36m│[0m [0m[33m│[0m [0m[33mtoml_datetime 1.1.1+spec-1.1.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4689985Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4691043Z 
+2026-10-26T13:58:00.4691625Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'toml_edit'[0m
+2026-10-26T13:58:00.4692623Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1170:1
+2026-10-26T13:58:00.4693253Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4694307Z [0m[36m1170[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mtoml_edit 0.23.10+spec-1.0.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4695816Z [0m[36m1171[0m [0m[36m│[0m [0m[33m│[0m [0m[33mtoml_edit 0.24.0+spec-1.1.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4697526Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4698435Z 
+2026-10-26T13:58:00.4699030Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'unicode-width'[0m
+2026-10-26T13:58:00.4700414Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1221:1
+2026-10-26T13:58:00.4701105Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4702072Z [0m[36m1221[0m [0m[36m│[0m [0m[33m╭[0m [0m[33municode-width 0.1.14 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4703474Z [0m[36m1222[0m [0m[36m│[0m [0m[33m│[0m [0m[33municode-width 0.2.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4705009Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4705904Z 
+2026-10-26T13:58:00.4706536Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'universal-hash'[0m
+2026-10-26T13:58:00.4707621Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1224:1
+2026-10-26T13:58:00.4708345Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4709485Z [0m[36m1224[0m [0m[36m│[0m [0m[33m╭[0m [0m[33muniversal-hash 0.5.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4711080Z [0m[36m1225[0m [0m[36m│[0m [0m[33m│[0m [0m[33muniversal-hash 0.6.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4712647Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4713520Z 
+2026-10-26T13:58:00.4714099Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'untrusted'[0m
+2026-10-26T13:58:00.4715009Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1226:1
+2026-10-26T13:58:00.4715693Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4716678Z [0m[36m1226[0m [0m[36m│[0m [0m[33m╭[0m [0m[33muntrusted 0.7.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4718079Z [0m[36m1227[0m [0m[36m│[0m [0m[33m│[0m [0m[33muntrusted 0.9.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4719555Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4720561Z 
+2026-10-26T13:58:00.4721179Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'wasm-streams'[0m
+2026-10-26T13:58:00.4722108Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1253:1
+2026-10-26T13:58:00.4722744Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4723716Z [0m[36m1253[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwasm-streams 0.4.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4725132Z [0m[36m1254[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwasm-streams 0.5.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4726698Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4727538Z 
+2026-10-26T13:58:00.4728088Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'which'[0m
+2026-10-26T13:58:00.4728999Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1267:1
+2026-10-26T13:58:00.4729782Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4730845Z [0m[36m1267[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwhich 6.0.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4732222Z [0m[36m1268[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwhich 8.0.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4733681Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4734471Z 
+2026-10-26T13:58:00.4735245Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'windows'[0m
+2026-10-26T13:58:00.4736185Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1278:1
+2026-10-26T13:58:00.4736950Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4737914Z [0m[36m1278[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwindows 0.58.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4739443Z [0m[36m1279[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows 0.62.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4741156Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4741961Z 
+2026-10-26T13:58:00.4742747Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'windows-core'[0m
+2026-10-26T13:58:00.4743802Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1281:1
+2026-10-26T13:58:00.4744438Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4745475Z [0m[36m1281[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwindows-core 0.58.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4752903Z [0m[36m1282[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows-core 0.62.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4754459Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4755352Z 
+2026-10-26T13:58:00.4774942Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'windows-implement'[0m
+2026-10-26T13:58:00.4776036Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1284:1
+2026-10-26T13:58:00.4776706Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4777762Z [0m[36m1284[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwindows-implement 0.58.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4779353Z [0m[36m1285[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows-implement 0.60.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4781228Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4782139Z 
+2026-10-26T13:58:00.4782766Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'windows-interface'[0m
+2026-10-26T13:58:00.4783729Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1286:1
+2026-10-26T13:58:00.4784390Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4785404Z [0m[36m1286[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwindows-interface 0.58.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4786924Z [0m[36m1287[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows-interface 0.59.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4788587Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4789615Z 
+2026-10-26T13:58:00.4790405Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'windows-result'[0m
+2026-10-26T13:58:00.4791636Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1291:1
+2026-10-26T13:58:00.4792289Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4793345Z [0m[36m1291[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwindows-result 0.2.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4794789Z [0m[36m1292[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows-result 0.4.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4796385Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4797254Z 
+2026-10-26T13:58:00.4797892Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'windows-strings'[0m
+2026-10-26T13:58:00.4799056Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1293:1
+2026-10-26T13:58:00.4799710Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4800854Z [0m[36m1293[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwindows-strings 0.1.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4802329Z [0m[36m1294[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows-strings 0.5.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4803991Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4804848Z 
+2026-10-26T13:58:00.4805507Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 5 duplicate entries for crate 'windows-sys'[0m
+2026-10-26T13:58:00.4806443Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1295:1
+2026-10-26T13:58:00.4807084Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4808171Z [0m[36m1295[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwindows-sys 0.48.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4809620Z [0m[36m1296[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows-sys 0.52.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4811235Z [0m[36m1297[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows-sys 0.59.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4812629Z [0m[36m1298[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows-sys 0.60.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4814066Z [0m[36m1299[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows-sys 0.61.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4815584Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4816424Z 
+2026-10-26T13:58:00.4817090Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 3 duplicate entries for crate 'windows-targets'[0m
+2026-10-26T13:58:00.4818048Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1300:1
+2026-10-26T13:58:00.4818894Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4819972Z [0m[36m1300[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwindows-targets 0.48.5 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4821581Z [0m[36m1301[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows-targets 0.52.6 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4823143Z [0m[36m1302[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows-targets 0.53.5 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4824827Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4825744Z 
+2026-10-26T13:58:00.4826427Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 3 duplicate entries for crate 'windows_aarch64_gnullvm'[0m
+2026-10-26T13:58:00.4827586Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1304:1
+2026-10-26T13:58:00.4828250Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4829317Z [0m[36m1304[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwindows_aarch64_gnullvm 0.48.5 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4831003Z [0m[36m1305[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows_aarch64_gnullvm 0.52.6 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4832551Z [0m[36m1306[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows_aarch64_gnullvm 0.53.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4834236Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4835272Z 
+2026-10-26T13:58:00.4835966Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 3 duplicate entries for crate 'windows_aarch64_msvc'[0m
+2026-10-26T13:58:00.4837039Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1307:1
+2026-10-26T13:58:00.4837734Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4838773Z [0m[36m1307[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwindows_aarch64_msvc 0.48.5 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4840419Z [0m[36m1308[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows_aarch64_msvc 0.52.6 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4842079Z [0m[36m1309[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows_aarch64_msvc 0.53.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4843828Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4844905Z 
+2026-10-26T13:58:00.4845650Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 3 duplicate entries for crate 'windows_i686_gnu'[0m
+2026-10-26T13:58:00.4846754Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1310:1
+2026-10-26T13:58:00.4847579Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4848605Z [0m[36m1310[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwindows_i686_gnu 0.48.5 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4849992Z [0m[36m1311[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows_i686_gnu 0.52.6 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4851642Z [0m[36m1312[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows_i686_gnu 0.53.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4853276Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4854170Z 
+2026-10-26T13:58:00.4854829Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'windows_i686_gnullvm'[0m
+2026-10-26T13:58:00.4855819Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1313:1
+2026-10-26T13:58:00.4856712Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4857778Z [0m[36m1313[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwindows_i686_gnullvm 0.52.6 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4859323Z [0m[36m1314[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows_i686_gnullvm 0.53.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4861006Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4861878Z 
+2026-10-26T13:58:00.4862491Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 3 duplicate entries for crate 'windows_i686_msvc'[0m
+2026-10-26T13:58:00.4863505Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1315:1
+2026-10-26T13:58:00.4864174Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4865237Z [0m[36m1315[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwindows_i686_msvc 0.48.5 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4866721Z [0m[36m1316[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows_i686_msvc 0.52.6 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4868191Z [0m[36m1317[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows_i686_msvc 0.53.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4869804Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4872961Z 
+2026-10-26T13:58:00.4873631Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 3 duplicate entries for crate 'windows_x86_64_gnu'[0m
+2026-10-26T13:58:00.4874578Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1318:1
+2026-10-26T13:58:00.4875204Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4876221Z [0m[36m1318[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwindows_x86_64_gnu 0.48.5 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4877817Z [0m[36m1319[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows_x86_64_gnu 0.52.6 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4879334Z [0m[36m1320[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows_x86_64_gnu 0.53.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4881079Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4882000Z 
+2026-10-26T13:58:00.4882657Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 3 duplicate entries for crate 'windows_x86_64_gnullvm'[0m
+2026-10-26T13:58:00.4883607Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1321:1
+2026-10-26T13:58:00.4884302Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4885277Z [0m[36m1321[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwindows_x86_64_gnullvm 0.48.5 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4886784Z [0m[36m1322[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows_x86_64_gnullvm 0.52.6 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4888529Z [0m[36m1323[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows_x86_64_gnullvm 0.53.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4890246Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4891135Z 
+2026-10-26T13:58:00.4891796Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 3 duplicate entries for crate 'windows_x86_64_msvc'[0m
+2026-10-26T13:58:00.4892754Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1324:1
+2026-10-26T13:58:00.4893472Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4894444Z [0m[36m1324[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwindows_x86_64_msvc 0.48.5 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4896007Z [0m[36m1325[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows_x86_64_msvc 0.52.6 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4897420Z [0m[36m1326[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwindows_x86_64_msvc 0.53.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4898979Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4899870Z 
+2026-10-26T13:58:00.4900541Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'winnow'[0m
+2026-10-26T13:58:00.4901472Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1327:1
+2026-10-26T13:58:00.4902137Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4903023Z [0m[36m1327[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwinnow 0.7.14 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4904519Z [0m[36m1328[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4905919Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4906685Z 
+2026-10-26T13:58:00.4907257Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'winreg'[0m
+2026-10-26T13:58:00.4908219Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1329:1
+2026-10-26T13:58:00.4908864Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4909816Z [0m[36m1329[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mwinreg 0.10.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4911271Z [0m[36m1330[0m [0m[36m│[0m [0m[33m│[0m [0m[33mwinreg 0.50.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4912685Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4913452Z 
+2026-10-26T13:58:00.4914056Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'x25519-dalek'[0m
+2026-10-26T13:58:00.4915123Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1339:1
+2026-10-26T13:58:00.4915763Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4916714Z [0m[36m1339[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mx25519-dalek 2.0.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4918192Z [0m[36m1340[0m [0m[36m│[0m [0m[33m│[0m [0m[33mx25519-dalek 3.0.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4919770Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m────────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4920941Z 
+2026-10-26T13:58:00.4921564Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'zlib-rs'[0m
+2026-10-26T13:58:00.4922480Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1359:1
+2026-10-26T13:58:00.4923298Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4924226Z [0m[36m1359[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mzlib-rs 0.5.5 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4925575Z [0m[36m1360[0m [0m[36m│[0m [0m[33m│[0m [0m[33mzlib-rs 0.6.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4927083Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m───────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4927892Z 
+2026-10-26T13:58:00.4928479Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'zstd'[0m
+2026-10-26T13:58:00.4929358Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1364:1
+2026-10-26T13:58:00.4929979Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4930988Z [0m[36m1364[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mzstd 0.13.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4932415Z [0m[36m1365[0m [0m[36m│[0m [0m[33m│[0m [0m[33mzstd 0.14.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4933869Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4934702Z 
+2026-10-26T13:58:00.4935282Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'zstd-safe'[0m
+2026-10-26T13:58:00.4936182Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1366:1
+2026-10-26T13:58:00.4936809Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4937776Z [0m[36m1366[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mzstd-safe 7.2.4 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4939236Z [0m[36m1367[0m [0m[36m│[0m [0m[33m│[0m [0m[33mzstd-safe 8.2.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4940843Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4941756Z 
+2026-10-26T13:58:00.4942310Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'zune-core'[0m
+2026-10-26T13:58:00.4943210Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1369:1
+2026-10-26T13:58:00.4943842Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4944761Z [0m[36m1369[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mzune-core 0.4.12 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4946106Z [0m[36m1370[0m [0m[36m│[0m [0m[33m│[0m [0m[33mzune-core 0.5.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4947702Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m─────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4948553Z 
+2026-10-26T13:58:00.4949164Z [0m[1m[38;5;11mwarning[duplicate][0m[1m: found 2 duplicate entries for crate 'zune-jpeg'[0m
+2026-10-26T13:58:00.4950428Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1371:1
+2026-10-26T13:58:00.4951086Z      [0m[36m│[0m  
+2026-10-26T13:58:00.4952007Z [0m[36m1371[0m [0m[36m│[0m [0m[33m╭[0m [0m[33mzune-jpeg 0.4.21 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4953486Z [0m[36m1372[0m [0m[36m│[0m [0m[33m│[0m [0m[33mzune-jpeg 0.5.12 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:00.4955007Z      [0m[36m│[0m [0m[33m╰[0m[0m[33m──────────────────────────────────────────────────────────────────────┘ lock entries[0m
+2026-10-26T13:58:00.4955785Z 
+2026-10-26T13:58:00.4956356Z [0m[1m[38;5;11mwarning[unused-wrapper][0m[1m: wrapper for banned crate was not encountered[0m
+2026-10-26T13:58:00.4957276Z     [0m[36m┌─[0m ./codex-rs/deny.toml:236:10
+2026-10-26T13:58:00.4957836Z     [0m[36m│[0m
+2026-10-26T13:58:00.4958403Z [0m[36m236[0m [0m[36m│[0m         "[0m[33mzbus[0m",
+2026-10-26T13:58:00.4959243Z     [0m[36m│[0m          [0m[33m━━━━[0m [0m[33munmatched wrapper[0m
+2026-10-26T13:58:00.4960364Z 
+2026-10-26T13:58:01.0991524Z [0m[1m[38;5;9merror[vulnerability][0m[1m: Multiple timing variability issues in operations intended to be constant-time[0m
+2026-10-26T13:58:01.0993347Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:387:1
+2026-10-26T13:58:01.0994102Z     [0m[36m│[0m
+2026-10-26T13:58:01.0995155Z [0m[36m387[0m [0m[36m│[0m [0m[31mcrypto-bigint 0.5.5 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:01.0996672Z     [0m[36m│[0m [0m[31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [0m[31msecurity vulnerability detected[0m
+2026-10-26T13:58:01.0997591Z     [0m[36m│[0m
+2026-10-26T13:58:01.0998273Z     [0m[36m├[0m ID: RUSTSEC-2026-0387
+2026-10-26T13:58:01.0999204Z     [0m[36m├[0m Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0387
+2026-10-26T13:58:01.1000011Z     [0m[36m├[0m ## Summary
+2026-10-26T13:58:01.1000590Z       
+2026-10-26T13:58:01.1001277Z       Several operations intended to be constant-time could execute secret-dependent
+2026-10-26T13:58:01.1002214Z       branches, depending on the compiler and target CPU. These include subtraction,
+2026-10-26T13:58:01.1003059Z       zero counting, division, and Montgomery multiplication.
+2026-10-26T13:58:01.1003610Z       
+2026-10-26T13:58:01.1004161Z       Additionally, `UintRef` equality could terminate at the first unequal limb,
+2026-10-26T13:58:01.1014573Z       and `BoxedMontyForm::invert` branched on whether an inverse exists.
+2026-10-26T13:58:01.1015269Z       
+2026-10-26T13:58:01.1015564Z       ## Impact
+2026-10-26T13:58:01.1015925Z       
+2026-10-26T13:58:01.1016461Z       Applications using affected operations on secret integers may leak information
+2026-10-26T13:58:01.1017391Z       through timing or microarchitectural side channels. This includes information
+2026-10-26T13:58:01.1018413Z       about intermediate arithmetic values, matching limbs, and invertibility.
+2026-10-26T13:58:01.1019146Z       
+2026-10-26T13:58:01.1019834Z       Such leakage could potentially enable recovery of cryptographic secrets.
+2026-10-26T13:58:01.1021763Z       Practical exploitability depends on the downstream algorithm, compiler, target
+2026-10-26T13:58:01.1022998Z       CPU, and an attacker's ability to observe the side channel.
+2026-10-26T13:58:01.1023755Z       
+2026-10-26T13:58:01.1024205Z       ## Resolution
+2026-10-26T13:58:01.1024554Z       
+2026-10-26T13:58:01.1025126Z       Upgrade to v0.7.6, which removes the identified branches, updates `ctutils` to
+2026-10-26T13:58:01.1025782Z       include its constant-time fixes, and adds BINSEC-based regression checks using
+2026-10-26T13:58:01.1026383Z       `cargo checkct` for arithmetic on multiple targets.
+2026-10-26T13:58:01.1027383Z     [0m[36m├[0m Announcement: https://github.com/RustCrypto/crypto-bigint/pull/1365
+2026-10-26T13:58:01.1028249Z     [0m[36m├[0m Solution: Upgrade to >=0.7.6 (try `cargo update -p crypto-bigint`)
+2026-10-26T13:58:01.1028696Z 
+2026-10-26T13:58:01.1029298Z [0m[1m[38;5;9merror[vulnerability][0m[1m: Non-constant-time mask generation and `u128` comparisons[0m
+2026-10-26T13:58:01.1030081Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:399:1
+2026-10-26T13:58:01.1030721Z     [0m[36m│[0m
+2026-10-26T13:58:01.1031314Z [0m[36m399[0m [0m[36m│[0m [0m[31mctutils 0.4.2 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:01.1032292Z     [0m[36m│[0m [0m[31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [0m[31msecurity vulnerability detected[0m
+2026-10-26T13:58:01.1032885Z     [0m[36m│[0m
+2026-10-26T13:58:01.1033250Z     [0m[36m├[0m ID: RUSTSEC-2026-0385
+2026-10-26T13:58:01.1033805Z     [0m[36m├[0m Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0385
+2026-10-26T13:58:01.1034337Z     [0m[36m├[0m ## Summary
+2026-10-26T13:58:01.1034640Z       
+2026-10-26T13:58:01.1035053Z       The `ctutils::Choice` type has mask generation functions for each unsigned
+2026-10-26T13:58:01.1035630Z       integer size (`u8`, `u16`, `u32`, `u64`, `u128`). These are `const fn` and
+2026-10-26T13:58:01.1036120Z       therefore can't reuse the `asm!`-backed mask generation in the `cmov` crate
+2026-10-26T13:58:01.1036614Z       that's otherwise used to ensure constant-time.
+2026-10-26T13:58:01.1036961Z       
+2026-10-26T13:58:01.1037301Z       In releases prior to v0.4.4, the generated code from these functions could
+2026-10-26T13:58:01.1037829Z       include a branch on commonly used platforms. This has been corrected in this
+2026-10-26T13:58:01.1038350Z       release and now verified on several platforms using BINSEC.
+2026-10-26T13:58:01.1038700Z       
+2026-10-26T13:58:01.1039921Z       Additionally, `u128` comparison operations provided via `ctutils::Choice` and
+2026-10-26T13:58:01.1040769Z       intended to work in constant-time were generating branches on 32-bit targets.
+2026-10-26T13:58:01.1041491Z       This has been resolved via a special case implementation of these functions
+2026-10-26T13:58:01.1042045Z       for such targets.
+2026-10-26T13:58:01.1042434Z       
+2026-10-26T13:58:01.1042775Z       ## Impact
+2026-10-26T13:58:01.1043139Z       
+2026-10-26T13:58:01.1043678Z       Branch instructions on secret values can potentially leak such values via
+2026-10-26T13:58:01.1044631Z       covert channels. This can enable attackers to potentially recover such secrets.
+2026-10-26T13:58:01.1045334Z       
+2026-10-26T13:58:01.1045682Z       ## Resolution
+2026-10-26T13:58:01.1046074Z       
+2026-10-26T13:58:01.1046666Z       This has been resolved by calling `Choice::to_u8()` when generating the mask,
+2026-10-26T13:58:01.1047536Z       which in turn uses `black_box` as an optimization barrier. Verification that
+2026-10-26T13:58:01.1048434Z       this resulted in the desired change in the generated assembly across a variety
+2026-10-26T13:58:01.1049374Z       of target CPU architectures was performed by BINSEC, which now runs
+2026-10-26T13:58:01.1050099Z       automatically in CI using `cargo checkct`.
+2026-10-26T13:58:01.1051318Z     [0m[36m├[0m Announcement: https://github.com/RustCrypto/utils/pull/1569
+2026-10-26T13:58:01.1052721Z     [0m[36m├[0m Solution: Upgrade to >=0.4.4 (try `cargo update -p ctutils`)
+2026-10-26T13:58:01.1053203Z 
+2026-10-26T13:58:01.1053964Z [0m[1m[38;5;9merror[vulnerability][0m[1m: Data from an abandoned stream leaks into the next stream on a reused context[0m
+2026-10-26T13:58:01.1055071Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1364:1
+2026-10-26T13:58:01.1055696Z      [0m[36m│[0m
+2026-10-26T13:58:01.1056644Z [0m[36m1364[0m [0m[36m│[0m [0m[31mzstd 0.13.3 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:01.1058071Z      [0m[36m│[0m [0m[31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [0m[31msecurity vulnerability detected[0m
+2026-10-26T13:58:01.1059011Z      [0m[36m│[0m
+2026-10-26T13:58:01.1059747Z      [0m[36m├[0m ID: RUSTSEC-2026-0391
+2026-10-26T13:58:01.1060762Z      [0m[36m├[0m Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0391
+2026-10-26T13:58:01.1061837Z      [0m[36m├[0m The `with_context` constructors of the stream encoders and decoders used the
+2026-10-26T13:58:01.1062850Z        borrowed context as it was. When a stream was abandoned on a context, for
+2026-10-26T13:58:01.1063777Z        example an encoder dropped before `finish()` after an error, whatever it
+2026-10-26T13:58:01.1064657Z        left there was carried into the next stream: the input buffered by the
+2026-10-26T13:58:01.1065497Z        previous encoder (up to 128 KiB, or all of it with `zstdmt`) became the
+2026-10-26T13:58:01.1066305Z        start of the next frame, and a decoder returned undelivered output of the
+2026-10-26T13:58:01.1066835Z        previous stream.
+2026-10-26T13:58:01.1067117Z        
+2026-10-26T13:58:01.1067457Z        An application reusing one context for data that must stay separate, such
+2026-10-26T13:58:01.1068004Z        as different users' requests, could disclose one user's plaintext to
+2026-10-26T13:58:01.1068501Z        another. Whoever supplies the data can cause the abandonment with invalid
+2026-10-26T13:58:01.1068936Z        input.
+2026-10-26T13:58:01.1069192Z        
+2026-10-26T13:58:01.1069514Z        The flaw was corrected by resetting the context's session in
+2026-10-26T13:58:01.1069918Z        `with_context`.
+2026-10-26T13:58:01.1070862Z      [0m[36m├[0m Announcement: https://github.com/gyscos/zstd-rs/commit/74ace2dcdca62a2ce0f034895d6079458311e003
+2026-10-26T13:58:01.1071594Z      [0m[36m├[0m Solution: Upgrade to >=0.14.3 (try `cargo update -p zstd`)
+2026-10-26T13:58:01.1071921Z 
+2026-10-26T13:58:01.1072916Z [0m[1m[38;5;9merror[vulnerability][0m[1m: `Seekable::decompress` sets a `Vec` length beyond its capacity for offsets past the end[0m
+2026-10-26T13:58:01.1073662Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1366:1
+2026-10-26T13:58:01.1074082Z      [0m[36m│[0m
+2026-10-26T13:58:01.1074691Z [0m[36m1366[0m [0m[36m│[0m [0m[31mzstd-safe 7.2.4 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:01.1075637Z      [0m[36m│[0m [0m[31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [0m[31msecurity vulnerability detected[0m
+2026-10-26T13:58:01.1076239Z      [0m[36m│[0m
+2026-10-26T13:58:01.1076558Z      [0m[36m├[0m ID: RUSTSEC-2026-0398
+2026-10-26T13:58:01.1077049Z      [0m[36m├[0m Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0398
+2026-10-26T13:58:01.1077675Z      [0m[36m├[0m `ZSTD_seekable_decompress` shortens the requested length to the end of the
+2026-10-26T13:58:01.1078297Z        data without checking that the offset is before it. For an offset past the
+2026-10-26T13:58:01.1078894Z        end, it returns a wrapped-around length without writing anything, and
+2026-10-26T13:58:01.1079386Z        `Seekable::decompress` passed that length to `Vec::set_len`.
+2026-10-26T13:58:01.1079743Z        
+2026-10-26T13:58:01.1080091Z        With the `seekable` feature, whoever supplies the archive, or chooses the
+2026-10-26T13:58:01.1080771Z        offset, can leave the caller's `Vec<u8>` with a length far beyond its
+2026-10-26T13:58:01.1081551Z        capacity. Reading it then discloses neighbouring heap memory, and appending
+2026-10-26T13:58:01.1082174Z        to it corrupts memory. Offsets near `u64::MAX` can also hang the call.
+2026-10-26T13:58:01.1082601Z        
+2026-10-26T13:58:01.1083005Z        The flaw was corrected by clamping requests to the end of the data, and by
+2026-10-26T13:58:01.1083567Z        checking every count reported by the C library against the buffer capacity.
+2026-10-26T13:58:01.1084405Z      [0m[36m├[0m Announcement: https://github.com/gyscos/zstd-rs/commit/80506be743fae2ed0c2fe8b21c374c6a2eab0be7
+2026-10-26T13:58:01.1085142Z      [0m[36m├[0m Solution: Upgrade to >=8.2.0 (try `cargo update -p zstd-safe`)
+2026-10-26T13:58:01.1085419Z 
+2026-10-26T13:58:01.1086024Z [0m[1m[38;5;9merror[vulnerability][0m[1m: Uninitialized memory exposed when streaming decompression of a legacy frame fails[0m
+2026-10-26T13:58:01.1086799Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1366:1
+2026-10-26T13:58:01.1087214Z      [0m[36m│[0m
+2026-10-26T13:58:01.1087805Z [0m[36m1366[0m [0m[36m│[0m [0m[31mzstd-safe 7.2.4 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:01.1088740Z      [0m[36m│[0m [0m[31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [0m[31msecurity vulnerability detected[0m
+2026-10-26T13:58:01.1089327Z      [0m[36m│[0m
+2026-10-26T13:58:01.1089723Z      [0m[36m├[0m ID: RUSTSEC-2026-0403
+2026-10-26T13:58:01.1090527Z      [0m[36m├[0m Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0403
+2026-10-26T13:58:01.1091348Z      [0m[36m├[0m When decompression fails inside a legacy (zstd v0.4 to v0.7) frame, the
+2026-10-26T13:58:01.1092148Z        bundled zstd library reports the output buffer as fully written although
+2026-10-26T13:58:01.1093059Z        nothing was written. `DCtx::decompress_stream` committed that position even
+2026-10-26T13:58:01.1093869Z        on error, and for a `Vec<u8>` destination this extended the vector's length
+2026-10-26T13:58:01.1094587Z        over uninitialized memory.
+2026-10-26T13:58:01.1095004Z        
+2026-10-26T13:58:01.1095417Z        Legacy support is enabled by default. A 5- or 6-byte corrupt legacy frame is
+2026-10-26T13:58:01.1095961Z        enough: through `zstd::stream::write::Decoder`, up to 32 KiB of stale heap
+2026-10-26T13:58:01.1096487Z        memory is then passed to the wrapped writer on the next `write()` or
+2026-10-26T13:58:01.1097027Z        `flush()`, or when an `auto_flush()`/`on_flush()` decoder is dropped. Whether
+2026-10-26T13:58:01.1097595Z        this reaches an attacker depends on where the application sends the
+2026-10-26T13:58:01.1098173Z        decompressed output. `zstd::stream::read::Decoder`, `zstd::decode_all` and
+2026-10-26T13:58:01.1098598Z        the bulk API are not affected.
+2026-10-26T13:58:01.1098946Z        
+2026-10-26T13:58:01.1099473Z        Before zstd-safe 4.0.0, output buffers could only be initialized slices.
+2026-10-26T13:58:01.1100605Z        The zstd crate's own writer had the same flaw from 0.4.22 to 0.7.x, which is
+2026-10-26T13:58:01.1101241Z        covered by a separate advisory.
+2026-10-26T13:58:01.1101633Z        
+2026-10-26T13:58:01.1102100Z        The flaw was corrected by only committing the buffer positions of a
+2026-10-26T13:58:01.1102608Z        successful call.
+2026-10-26T13:58:01.1103350Z      [0m[36m├[0m Announcement: https://github.com/gyscos/zstd-rs/commit/006e1d1ad1eeaf6b5d4c28329e70217adabcec43
+2026-10-26T13:58:01.1104093Z      [0m[36m├[0m Solution: Upgrade to >=8.2.0 (try `cargo update -p zstd-safe`)
+2026-10-26T13:58:01.1104397Z 
+2026-10-26T13:58:01.1104861Z [0m[1m[38;5;11mwarning[yanked][0m[1m: detected yanked crate (try `cargo update -p chacha20`)[0m
+2026-10-26T13:58:01.1105503Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:130:1
+2026-10-26T13:58:01.1106036Z     [0m[36m│[0m
+2026-10-26T13:58:01.1106681Z [0m[36m130[0m [0m[36m│[0m [0m[33mchacha20 0.10.0 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:01.1107636Z     [0m[36m│[0m [0m[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [0m[33myanked version[0m
+2026-10-26T13:58:01.1108063Z 
+2026-10-26T13:58:01.1108459Z [0m[1m[38;5;11mwarning[yanked][0m[1m: detected yanked crate (try `cargo update -p clipboard-win`)[0m
+2026-10-26T13:58:01.1109108Z     [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:145:1
+2026-10-26T13:58:01.1109489Z     [0m[36m│[0m
+2026-10-26T13:58:01.1110063Z [0m[36m145[0m [0m[36m│[0m [0m[33mclipboard-win 5.4.1 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:01.1111158Z     [0m[36m│[0m [0m[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [0m[33myanked version[0m
+2026-10-26T13:58:01.1111562Z 
+2026-10-26T13:58:01.1111917Z [0m[1m[38;5;11mwarning[yanked][0m[1m: detected yanked crate (try `cargo update -p spin`)[0m
+2026-10-26T13:58:01.1112590Z      [0m[36m┌─[0m /github/workspace/codex-rs/Cargo.lock:1077:1
+2026-10-26T13:58:01.1113028Z      [0m[36m│[0m
+2026-10-26T13:58:01.1113635Z [0m[36m1077[0m [0m[36m│[0m [0m[33mspin 0.9.8 registry+https://github.com/rust-lang/crates.io-index[0m
+2026-10-26T13:58:01.1114455Z      [0m[36m│[0m [0m[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [0m[33myanked version[0m
+2026-10-26T13:58:01.1114789Z 
+2026-10-26T13:58:01.1184429Z advisories [31mFAILED[0m, bans [32mok[0m, licenses [32mok[0m, sources [32mok[0m
+2026-10-26T13:58:23.6935133Z Prepare all required actions
+2026-10-26T13:58:23.6964381Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-10-26T13:58:23.6964720Z env:
+2026-10-26T13:58:23.6964973Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-10-26T13:58:23.6965382Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:58:23.6965806Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-10-26T13:58:23.6966167Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-10-26T13:58:23.6966633Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-10-26T13:58:23.6967248Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-40312011219-cargo-deny
+2026-10-26T13:58:23.6967803Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-10-26T13:58:23.6968170Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:58:23.6968469Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:58:23.6968808Z   CARGO_HOME: /home/runner/.cargo
+2026-10-26T13:58:23.6969079Z   CARGO_INCREMENTAL: 0
+2026-10-26T13:58:23.6969324Z   CARGO_TERM_COLOR: always
+2026-10-26T13:58:23.6969574Z ##[endgroup]
+2026-10-26T13:58:23.6973499Z ##[start-action display=Check for a clean worktree;id=__self_2.__run]
+2026-10-26T13:58:23.6991369Z ##[group]Run set -euo pipefail
+2026-10-26T13:58:23.6991706Z [36;1mset -euo pipefail[0m
+2026-10-26T13:58:23.6991953Z [36;1m[0m
+2026-10-26T13:58:23.6992423Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-10-26T13:58:23.6993075Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-10-26T13:58:23.6993343Z [36;1m  exit 0[0m
+2026-10-26T13:58:23.6993556Z [36;1mfi[0m
+2026-10-26T13:58:23.6993757Z [36;1m[0m
+2026-10-26T13:58:23.6994125Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-10-26T13:58:23.6994590Z [36;1mprintf '%s\n' "${status}"[0m
+2026-10-26T13:58:23.6994865Z [36;1mexit 1[0m
+2026-10-26T13:58:23.7036858Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-26T13:58:23.7037208Z env:
+2026-10-26T13:58:23.7037456Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-10-26T13:58:23.7037842Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:58:23.7038244Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-10-26T13:58:23.7038591Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-10-26T13:58:23.7039023Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-10-26T13:58:23.7039599Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-40312011219-cargo-deny
+2026-10-26T13:58:23.7040207Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-10-26T13:58:23.7040571Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:58:23.7040857Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-10-26T13:58:23.7041136Z   CARGO_HOME: /home/runner/.cargo
+2026-10-26T13:58:23.7041413Z   CARGO_INCREMENTAL: 0
+2026-10-26T13:58:23.7041742Z   CARGO_TERM_COLOR: always
+2026-10-26T13:58:23.7042066Z ##[endgroup]
+2026-10-26T13:58:23.9897922Z ##[end-action id=__self_2.__run;outcome=success;conclusion=success;duration_ms=291]
+2026-10-26T13:58:24.0014819Z Post job cleanup.
+2026-10-26T13:58:24.0911505Z [command]/usr/bin/git version
+2026-10-26T13:58:24.0964174Z git version 2.55.0
+2026-10-26T13:58:24.1008953Z Temporarily overriding HOME='/home/runner/work/_temp/adbba81d-89ca-4da9-a018-07e9e7f40a7f' before making global git config changes
+2026-10-26T13:58:24.1009874Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-26T13:58:24.1015499Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-26T13:58:24.1050754Z Removing SSH command configuration
+2026-10-26T13:58:24.1059045Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-26T13:58:24.1099178Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-26T13:58:24.1324495Z Removing HTTP extra header
+2026-10-26T13:58:24.1333536Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-26T13:58:24.1382385Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-26T13:58:24.1616832Z Removing includeIf entries pointing to credentials config files
+2026-10-26T13:58:24.1625020Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-26T13:58:24.1659793Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-26T13:58:24.2038324Z Cleaning up orphan processes
