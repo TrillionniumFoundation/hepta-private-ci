@@ -8,20 +8,33 @@ use pretty_assertions::assert_eq;
 use super::*;
 
 fn companion(attempts: u32) -> RestartBudgetJournal {
-    RestartBudgetJournal::new(
-        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent"),
-        ReleaseId::parse("release-a").expect("release"),
+    let agent = match AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12") {
+        Ok(agent) => agent,
+        Err(error) => panic!("agent: {error:?}"),
+    };
+    let release = match ReleaseId::parse("release-a") {
+        Ok(release) => release,
+        Err(error) => panic!("release: {error:?}"),
+    };
+    match RestartBudgetJournal::new(
+        agent,
+        release,
         DurableRestartWindow::empty(),
         DurableRestartWindow {
             attempts,
             window_started_unix_millis: (attempts > 0).then_some(2_000),
         },
-    )
-    .expect("journal")
+    ) {
+        Ok(journal) => journal,
+        Err(error) => panic!("journal: {error:?}"),
+    }
 }
 
 fn identity(file: &File) -> (u64, u64, i64, i64, u64) {
-    let metadata = file.metadata().expect("metadata");
+    let metadata = match file.metadata() {
+        Ok(metadata) => metadata,
+        Err(error) => panic!("metadata: {error:?}"),
+    };
     (
         metadata.dev(),
         metadata.ino(),

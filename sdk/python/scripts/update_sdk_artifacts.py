@@ -605,9 +605,10 @@ def generate_v2_all(schema_dir: Path) -> None:
                 "--use-annotated",
                 "--use-union-operator",
                 "--disable-timestamp",
-                # Keep the generated file formatted deterministically so the
-                # checked-in artifact only changes when the schema does.
+                # Sort imports before formatting so the checked-in artifact
+                # does not drift with the generator's import insertion order.
                 "--formatters",
+                "isort",
                 "ruff-format",
             ],
             cwd=sdk_root(),
