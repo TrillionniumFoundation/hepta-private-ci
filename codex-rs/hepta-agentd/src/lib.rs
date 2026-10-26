@@ -6,6 +6,14 @@
 
 mod app_runtime;
 #[cfg(target_os = "linux")]
+mod native_hos2_owner;
+#[cfg(target_os = "linux")]
+pub use native_hos2_owner::AgentdG2NativeImage;
+#[cfg(target_os = "linux")]
+pub use native_hos2_owner::AgentdG2NativeOperationHost;
+#[cfg(target_os = "linux")]
+pub use native_hos2_owner::attach_g2_native_operation_host;
+#[cfg(target_os = "linux")]
 mod root_bound_socket;
 #[cfg(target_os = "linux")]
 pub use root_bound_socket::bind_root_agentd_socket;
