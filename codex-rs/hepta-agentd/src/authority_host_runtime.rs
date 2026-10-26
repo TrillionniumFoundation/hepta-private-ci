@@ -43,6 +43,10 @@ pub(crate) use listeners::validate_runtime_lanes;
 mod session;
 pub use session::PreparedHostAuthoritySession;
 
+#[path = "authority_host_writer_rotate.rs"]
+mod writer_rotation;
+pub use writer_rotation::rotate_host_writer_authorization;
+
 const CLOCK_OWNER: &str = "root-authority-clock-v1";
 const LEASE_OWNER: &str = "root-authority-leases-v1";
 
