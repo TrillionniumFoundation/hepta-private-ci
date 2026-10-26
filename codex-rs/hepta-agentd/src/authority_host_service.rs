@@ -37,6 +37,8 @@ mod text_ui;
 pub use text_ui::HostAuthorityTextUiRegistration;
 #[path = "authority_host_admin_service.rs"]
 mod admin;
+#[path = "authority_host_admin_effect.rs"]
+mod admin_effect;
 #[path = "authority_host_human_text.rs"]
 mod human_text;
 #[path = "authority_host_logind.rs"]

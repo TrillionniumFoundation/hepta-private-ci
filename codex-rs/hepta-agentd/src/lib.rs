@@ -123,6 +123,8 @@ pub use authority_host_admin::RootAdminAction;
 #[cfg(target_os = "linux")]
 pub use authority_host_admin::RootAdminCapability;
 #[cfg(target_os = "linux")]
+pub use authority_host_admin::RootAdminConsumerSynchronization;
+#[cfg(target_os = "linux")]
 pub use authority_host_admin::RootAdminInstance;
 #[cfg(target_os = "linux")]
 pub use authority_host_admin::RootAdminObservation;

@@ -57,9 +57,29 @@ An administrator may export the actual existing artifact; revocation must
 independently verify its signature, own key/epoch/time, exact existing lease
 and fixed Notes policy. It must not sign a replacement or trust this ring.
 
-Precise signed Notes effect/FinalUse revoke and confirmation through the
-original authenticated observation/consumer synchronization are the next
-stage. Writer revoke does not qualify those semantics. Ordinary schema and
+`revoke_original_notes_grant` accepts the actual existing SignedFinalUseGrant,
+the original effect lease revision, the complete issuer-head revision and a
+nonzero reason digest. The same original issuer verifies the strict canonical
+signature with its own key, current epoch, canonical issued sequence and current
+time. The same fixed Notes admission derives the original lease ID from the
+complete binding and retained writer proof; it reads and compares the existing
+lease, policy, epoch, payload, scope, principal, destination and time bounds.
+Missing leases never cause creation, renewal or replacement.
+
+The worker rechecks its full borrowed Root/owner/lifetime context immediately
+before the original effect-lease CAS, then again before the original issuer's
+exact complete-head CAS. The second store can fail after the first succeeds;
+this remains partial/unknown, with no compensation, retry or replacement grant.
+The known receipt is evidence rather than authority. A deadline failure after a
+durable write remains unknown and must be resolved through original observation.
+
+After both original CAS operations return, the worker only reads the two already
+registered protected consumer frontiers. It never applies an unsigned reply head
+to FinalUseAuthority or advances either frontier. Only the existing authenticated
+Root observation and `synchronize_consumers` path can advance them. Both actual
+frontiers must confirm the same original issuer epoch/revision while that issuer
+head remains unchanged; otherwise the response explicitly says Pending within
+the same cumulative deadline. Writer revoke does not qualify those semantics. Ordinary schema and
 weak-lifetime tests do not qualify actual Root, login or installed product
 behavior; those need the explicit same-object privileged qualification.
 

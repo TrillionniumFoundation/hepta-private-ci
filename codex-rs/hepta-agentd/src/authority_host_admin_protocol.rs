@@ -30,6 +30,12 @@ pub enum RootAdminAction {
     ObserveIssuedNotesGrant {
         selection: crate::RootIssuedNotesGrantSelection,
     },
+    RevokeOriginalNotesGrant {
+        signed_grant: Box<codex_hepta_contracts::SignedFinalUseGrant>,
+        expected_effect_lease_revision: u64,
+        expected_issuer_head_revision: u64,
+        reason_sha256: [u8; 32],
+    },
     RevokeWriter {
         expected_revision: u64,
         reason_sha256: [u8; 32],
@@ -49,6 +55,18 @@ pub struct RootAdminObservation {
 }
 
 #[derive(Debug, Serialize)]
+#[serde(tag = "state", rename_all = "snake_case")]
+pub enum RootAdminConsumerSynchronization {
+    Confirmed {
+        device_frontier: codex_hepta_contracts::FinalUseFrontier,
+        notes_frontier: codex_hepta_contracts::FinalUseFrontier,
+    },
+    Pending {
+        reason: &'static str,
+    },
+}
+
+#[derive(Debug, Serialize)]
 #[serde(tag = "status", rename_all = "snake_case")]
 pub enum RootAdminResponse {
     Observed {
@@ -57,6 +75,13 @@ pub enum RootAdminResponse {
     IssuedNotesGrantObserved {
         instance: RootAdminInstance,
         observation: crate::RootIssuedNotesGrantObservation,
+    },
+    OriginalNotesGrantRevocation {
+        instance: RootAdminInstance,
+        original_grant_id: String,
+        effect_lease_receipt: codex_hepta_contracts::authority_lease::RevocationReceipt,
+        final_use_head: Option<codex_hepta_contracts::FinalUseRevocations>,
+        synchronization: RootAdminConsumerSynchronization,
     },
     WriterRevoked {
         instance: RootAdminInstance,

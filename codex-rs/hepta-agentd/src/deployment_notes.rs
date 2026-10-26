@@ -13,6 +13,9 @@ use codex_hepta_memory::NotesTargetIdentity;
 mod observation;
 pub use observation::RootIssuedNotesGrantObservation;
 pub use observation::RootIssuedNotesGrantSelection;
+#[path = "deployment_notes_revoke.rs"]
+mod revoke;
+pub(crate) use revoke::OriginalNotesRevokeInput;
 
 /// Trusted launcher capability, never accepted from a wire request. The Root
 /// launcher must obtain the target from its actual Session Reserved capability
