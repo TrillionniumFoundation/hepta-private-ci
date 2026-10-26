@@ -122,7 +122,10 @@ Brier 候选比较。正确 posterior 支持 Bayes 动作选择，但 proper los
 一致性有条件：函数族足够、无导致偏置的额外约束、确实达到所需总体最优。
 有限样本、残差界、保真正则、有限步数和 greedy 部署不自动满足这些条件。
 而且 NLL 修复包同时改变数据规模、步数与残差界；不能把整包效果单独归因于
-“把 Brier 换成 NLL”。详细固定设计见 [joint/METHOD.md](joint/METHOD.md)。
+“把 Brier 换成 NLL”。原 Brier 设计见 [joint/METHOD.md](joint/METHOD.md)，
+后续 NLL 修复见 [DEVELOPMENT_NOTE.md](joint/DEVELOPMENT_NOTE.md) 与
+[NLL_REPAIR_PROTOCOL_V2.json](joint/NLL_REPAIR_PROTOCOL_V2.json)，正式结果见
+[CONFIRMATION_REPORT.md](joint/CONFIRMATION_REPORT.md)。
 
 一般任务若希望风险偏好改变最优输出，需要真实存在不同失败严重度、尾部损失、
 跨模态冲突或不同累计成本等收益差异；策略间不同的确定成本也可能足够。

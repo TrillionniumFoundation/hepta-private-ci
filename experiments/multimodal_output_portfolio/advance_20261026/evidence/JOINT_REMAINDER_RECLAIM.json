@@ -1,0 +1,72 @@
+{
+  "after": {
+    "actual_free_bytes": 401952768,
+    "cgroup_current_bytes": 8562335744,
+    "cgroup_events": {
+      "high": "0",
+      "low": "0",
+      "max": "4971943",
+      "oom": "12",
+      "oom_group_kill": "0",
+      "oom_kill": "3"
+    },
+    "peak_rss_bytes": 196456448
+  },
+  "archive_members_reverified": 20791,
+  "authoritative_archives_retained": true,
+  "before": {
+    "actual_free_bytes": 252952576,
+    "cgroup_current_bytes": 8526041088,
+    "cgroup_events": {
+      "high": "0",
+      "low": "0",
+      "max": "4970993",
+      "oom": "12",
+      "oom_group_kill": "0",
+      "oom_kill": "3"
+    },
+    "peak_rss_bytes": 196456448
+  },
+  "candidate_groups": {
+    "confirmation_metadata": {
+      "allocated_bytes": 111411200,
+      "files": 16320,
+      "logical_bytes": 70502441
+    },
+    "endpoint_media": {
+      "allocated_bytes": 12697600,
+      "files": 400,
+      "logical_bytes": 11651434
+    },
+    "smoke_media": {
+      "allocated_bytes": 32518144,
+      "files": 1024,
+      "logical_bytes": 29788817
+    }
+  },
+  "concurrent_activity": "Necessary disk recovery after native confirmation attempt exited with ENOSPC; no model restart or result filtering during recovery",
+  "coverage": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/evidence/JOINT_CUSTODY_COVERAGE.json",
+  "coverage_sha256": "d5c3f5a1e43f09e3b0a055a27f58070141eeeee09b701c7e4f81a667483e4337",
+  "cpu_ns": 9767710321,
+  "execute": true,
+  "ledger_sha256": "ebd55e2f75ff02a4b3d657cb6d57c40a4c19bd013fb71a157f09ee7a3459283d",
+  "live_files_verified": 17744,
+  "models_and_inputs_retained": true,
+  "protected_candidates_retained": 0,
+  "receipt": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/evidence/JOINT_REMAINDER_RECEIPT.json",
+  "receipt_sha256": "019f3698eafae3af78b16bffb9f22ae250744aa4ad9987de03d04ca439fac4ae",
+  "removed_allocated_bytes": 156626944,
+  "removed_files": 17744,
+  "removed_logical_bytes": 111942692,
+  "retention_scope": "Original bytes retained in immutable archives; selected expanded copies may be removed.",
+  "schema": "hepta.advance.joint-remainder-copy-reclaim.v1",
+  "scientific_primary_passed_preserved": false,
+  "source_sha256": {
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/reclaim_closed_joint.py": "4490982a2c80d387a1d0dd2dba8c33865200c58deca1c1f09bcbc8a10114da0f",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/reclaim_joint_remainder.py": "e857277d6d60a54cf5687dc02a0f0cc6bb60c8e3ca70c3fdd684408ab201b564",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/reclaim_verified_members.py": "59b10d198922da67ddb862269915caa36a1c205d6a9b0cd6c954f40c5573cbdc"
+  },
+  "started_unix_ns": 1792995505351529150,
+  "status": "completed",
+  "wall_ns": 24891354707
+}
