@@ -40,7 +40,11 @@ def fake(name):
                        original_position_buffer_valid=False,
                        original_rope_cache_valid=False,
                        max_position_embeddings=8192, rope_dim=64, rope_theta=160000,
-                       production_qualified=False, loaded_parameter_identity=receipt())
+                       production_qualified=False, loaded_parameter_identity=receipt(),
+                       attention_mask_compat=dict(
+                           method="arctic_single_unpadded_gte_mask_v1",
+                           scope="single_row_unpadded_cpu_float32_shadow_only",
+                           transformers_version="5.20.2", production_qualified=False))
                    if name == "arctic_305m" else None)
     return dict(schema="hepta.neuron.replacement-physical-shadow.v1",
                 candidate=name, checkpoint=dict(
@@ -88,6 +92,11 @@ class PhysicalAuditTests(unittest.TestCase):
                                       REGISTRY["models"]["arctic_305m"])))
         case = fake("arctic_305m")
         case["performance"]["arctic_rope_compat"]["production_qualified"] = True
+        self.assertTrue(any("Arctic RoPE" in x for x in
+                            audit_arm("arctic_305m", case,
+                                      REGISTRY["models"]["arctic_305m"])))
+        case = fake("arctic_305m")
+        case["performance"]["arctic_rope_compat"]["attention_mask_compat"]["production_qualified"] = True
         self.assertTrue(any("Arctic RoPE" in x for x in
                             audit_arm("arctic_305m", case,
                                       REGISTRY["models"]["arctic_305m"])))

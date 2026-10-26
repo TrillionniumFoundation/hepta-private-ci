@@ -19,6 +19,7 @@ import time
 
 from prepare_news_cohorts import load_cohorts, sha
 from replacement_gate import EXPECTED, SPLITS, score_rows, validate_registry
+from replacement_arctic_unpadded_mask import install_arctic_unpadded_mask
 from replacement_parameter_identity import (parameter_identity, METHOD, SCOPE,
                                             CHUNK_BYTES, MAX_PARAMETER_BYTES)
 from replacement_laya_view import guard_laya_originals, load_laya_cpu_isolated
@@ -329,6 +330,7 @@ def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: P
             raise ValueError("real frozen Encoder has missing or mismatched checkpoint tensors")
         if name == "arctic_305m":
             arctic_rope_compat = restore_arctic_nonpersistent_buffers(encoder)
+            arctic_rope_compat["attention_mask_compat"] = install_arctic_unpadded_mask(encoder)
         encoder.requires_grad_(False).eval()
         handle = encoder.register_forward_hook(lambda *_: counters.__setitem__(0, counters[0] + 1))
         load_ms = (time.perf_counter() - loaded_at) * 1000
