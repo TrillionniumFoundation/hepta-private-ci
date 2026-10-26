@@ -25,6 +25,7 @@ use crate::text_session::AgentdTextSessionConfig;
 mod proof;
 #[path = "notes_thread_runtime.rs"]
 mod runtime;
+use proof::OriginalNotesThreadItem;
 use proof::VerifiedNotesThreadCall;
 use proof::VerifiedNotesThreadOperation;
 
@@ -156,8 +157,8 @@ impl AgentdNotesThreadToolRuntime {
         )
     }
 
-    fn provenance(&self, call: &VerifiedNotesThreadCall) -> Value {
-        let provenance = json!({
+    fn provenance(&self, call: &OriginalNotesThreadItem) -> Value {
+        json!({
             "kind":"original_core_dynamic_tool", "thread_id":self.route.thread_id,
             "app_server_session_id":self.route.app_server_session_id,
             "turn_id":call.turn_id(), "call_id":call.call_id(),
@@ -166,8 +167,7 @@ impl AgentdNotesThreadToolRuntime {
             "runtime_body_sha256":self.adapter.bindings.runtime_body_digest.to_string(),
             "prompt_registry_sha256":self.adapter.bindings.prompt_registry_digest.to_string(),
             "artifact_set_sha256":self.adapter.bindings.artifact_set_digest.to_string(),
-        });
-        provenance
+        })
     }
 
     async fn execute(&mut self, call: &VerifiedNotesThreadCall) -> Result<Value, AgentdError> {
@@ -211,12 +211,12 @@ impl AgentdNotesThreadToolRuntime {
         &mut self,
         original: &VerifiedNotesThreadOperation,
     ) -> Result<Value, AgentdError> {
-        self.observe_operation(original.original_call(), None).await
+        self.observe_operation(original.original_item(), None).await
     }
 
     async fn observe_operation(
         &self,
-        call: &VerifiedNotesThreadCall,
+        call: &OriginalNotesThreadItem,
         sender_observation_retained: Option<bool>,
     ) -> Result<Value, AgentdError> {
         let request_id = call.intent_id(&self.route)?;

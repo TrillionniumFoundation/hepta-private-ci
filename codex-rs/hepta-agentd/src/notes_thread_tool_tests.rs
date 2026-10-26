@@ -147,7 +147,7 @@ fn retained_unknown_item_can_only_be_referenced_for_read_only_status() {
     let pending =
         VerifiedNotesThreadCall::from_original_item(&route, &params, &item(&params)).unwrap();
     assert_eq!(
-        observed.original_call().intent_id(&route).unwrap(),
+        observed.original_item().intent_id(&route).unwrap(),
         pending.intent_id(&route).unwrap()
     );
     assert!(

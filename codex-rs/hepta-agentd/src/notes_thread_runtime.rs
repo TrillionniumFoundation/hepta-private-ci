@@ -224,7 +224,7 @@ impl AgentdNotesThreadToolRuntime {
                     )?;
                     operation_id = Some(
                         self.adapter
-                            .run_id(&original.original_call().intent_id(&self.route)?)?,
+                            .run_id(&original.original_item().intent_id(&self.route)?)?,
                     );
                     return self.observe_retained(&original).await;
                 }

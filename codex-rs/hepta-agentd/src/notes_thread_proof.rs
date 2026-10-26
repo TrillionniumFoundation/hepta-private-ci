@@ -8,9 +8,20 @@ use serde_json::Value;
 
 use super::*;
 
-pub(super) struct VerifiedNotesThreadCall {
+pub(super) struct OriginalNotesThreadItem {
     params: DynamicToolCallParams,
     callback_digest: Digest32,
+}
+
+pub(super) struct VerifiedNotesThreadCall {
+    item: OriginalNotesThreadItem,
+}
+
+impl std::ops::Deref for VerifiedNotesThreadCall {
+    type Target = OriginalNotesThreadItem;
+    fn deref(&self) -> &Self::Target {
+        &self.item
+    }
 }
 
 impl VerifiedNotesThreadCall {
@@ -42,8 +53,10 @@ impl VerifiedNotesThreadCall {
             ));
         }
         Ok(Self {
-            params: params.clone(),
-            callback_digest: Digest32::of_bytes(&serde_json::to_vec(params)?),
+            item: OriginalNotesThreadItem {
+                params: params.clone(),
+                callback_digest: Digest32::of_bytes(&serde_json::to_vec(params)?),
+            },
         })
     }
 
@@ -87,7 +100,9 @@ impl VerifiedNotesThreadCall {
             )),
         }
     }
+}
 
+impl OriginalNotesThreadItem {
     pub(super) fn intent_id(&self, route: &AgentdTextSessionConfig) -> Result<String, AgentdError> {
         // Arguments are deliberately not part of the operation ID: a repeated
         // callback cannot gain a new effect by changing its text/predecessor.
@@ -121,7 +136,7 @@ impl VerifiedNotesThreadCall {
 /// A read-only reference to an actual original replace item, including a
 /// completed unknown response. It is never admitted to `execute` or preparation.
 pub(super) struct VerifiedNotesThreadOperation {
-    original: VerifiedNotesThreadCall,
+    original: OriginalNotesThreadItem,
 }
 impl VerifiedNotesThreadOperation {
     pub(super) fn from_original_item(
@@ -155,13 +170,13 @@ impl VerifiedNotesThreadOperation {
         };
         VerifiedNotesThreadCall::validate_callback(route, &params)?;
         Ok(Self {
-            original: VerifiedNotesThreadCall {
+            original: OriginalNotesThreadItem {
                 callback_digest: Digest32::of_bytes(&serde_json::to_vec(&params)?),
                 params,
             },
         })
     }
-    pub(super) fn original_call(&self) -> &VerifiedNotesThreadCall {
+    pub(super) fn original_item(&self) -> &OriginalNotesThreadItem {
         &self.original
     }
 }
