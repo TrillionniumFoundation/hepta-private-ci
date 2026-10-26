@@ -90,7 +90,7 @@ impl DeploymentFinalUseIssuer {
         &self,
         observe: impl FnOnce(&AuthorityLease) -> io::Result<T>,
     ) -> io::Result<T> {
-        let pinned = self
+        let pinned: &ProtectedLease = self
             .lease
             .as_ref()
             .ok_or_else(|| io::Error::other("no protected lease"))?;
