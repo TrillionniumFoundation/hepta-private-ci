@@ -557,3 +557,18 @@ are separate and cannot replace any of them.
 Reorg, withdrawal, lost acknowledgement, stale generation, restart after route
 publication and unavailable replicas must preserve one logical operation,
 reject revoked bytes and reconcile Unknown effects before any unsafe retry.
+
+The same evaluated physical read now verifies its completed load and forward
+against the original control journal before returning its observation. A private
+single-assignment slot retains the actual successful load-settlement output;
+this is distinct from the Ready JSON digest. The read joins the original
+request, reservation, assignment, terminal digest and actual worker frame under
+the original owner locks. It creates no new journal, grant, nonce or model call.
+The cold-reopen control first requires a second live writer to refuse, releases
+all original journal owners, then opens the same retained records again.
+These source checks and additional controls are not compiled or executed model
+qualification. The original nine model cases remain NOT_RUN; the earlier CLI
+build and host-library compiler failure are retained and their original
+900-second allocation is not restarted. Ordinary Agentd/AppServer provenance
+propagation, selected installation, next-task readback and three rounds remain
+open, with unchanged evaluated-selection gates and original time limits.

@@ -55,6 +55,25 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
             pin.compatibility_digest(),
             execution,
         )?;
+        // Verify the original completed load/forward journal before publishing
+        // this historical observation. A failed join never refunds its nonce.
+        let verified = self
+            .with_measurements(|load, forward| {
+                super::settled::verify(
+                    &self.context,
+                    request,
+                    payload,
+                    execution_receipt_digest,
+                    load,
+                    forward,
+                )
+            })
+            .and_then(std::convert::identity)
+            .and_then(|()| execution.check());
+        if let Err(error) = verified {
+            self.admission_closed.store(true, Ordering::SeqCst);
+            return Err(error);
+        }
         Ok(NeuralCognitiveObservationV1 {
             request: request.clone(),
             scores_q32,

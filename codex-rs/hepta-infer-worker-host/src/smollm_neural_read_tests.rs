@@ -637,3 +637,6 @@ fn passive_failure_snapshot_survives_closed_admission_but_refuses_busy_and_poiso
     assert!(port.first_exchange_failure().is_err());
     assert!(issuer.bindings.lock().unwrap().is_empty());
 }
+
+#[path = "smollm_neural_settled_read_tests.rs"]
+mod settled_read;

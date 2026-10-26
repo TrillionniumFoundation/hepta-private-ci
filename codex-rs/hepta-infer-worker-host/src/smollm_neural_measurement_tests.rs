@@ -223,3 +223,57 @@ fn replacement_and_terminal_clear_keep_one_ready_and_one_forward_only() {
     observations.clear();
     assert!(observations.observe(|_, _| ()).is_err());
 }
+
+#[test]
+fn settled_load_output_is_separate_from_ready_and_cannot_rebind() {
+    let mut observations = Measurements::default();
+    let raw = bytes(&ready());
+    let original = admitted("original-load");
+    let output = Digest32::of_parts(&[
+        b"hepta.smollm-loaded.v1\0",
+        b"explicit fixture handle",
+        &1234_u64.to_be_bytes(),
+    ]);
+    observations.retain_ready(&raw).unwrap();
+    observations.settle_load(&original);
+    assert!(
+        observations
+            .ready
+            .as_ref()
+            .unwrap()
+            .settled_load_output_digest()
+            .is_none()
+    );
+    assert!(
+        observations
+            .settle_load_output(&admitted("other-load"), output)
+            .is_err()
+    );
+    observations.settle_load_output(&original, output).unwrap();
+    observations
+        .observe(|load, _| {
+            assert_eq!(load.ready_digest(), Digest32::of_bytes(&raw));
+            assert_eq!(load.settled_load_output_digest(), Some(output));
+            assert_ne!(load.ready_digest(), output);
+            assert_eq!(
+                load.control_load_ids(),
+                Some(("original-load", "reservation-original-load"))
+            );
+        })
+        .unwrap();
+    assert!(
+        observations
+            .settle_load_output(&original, Digest32::of_bytes(b"other output"))
+            .is_err()
+    );
+    assert_eq!(
+        observations
+            .ready
+            .as_ref()
+            .unwrap()
+            .settled_load_output_digest(),
+        Some(output)
+    );
+    observations.clear();
+    assert!(observations.observe(|_, _| ()).is_err());
+}
