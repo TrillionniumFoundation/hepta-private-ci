@@ -1722,3 +1722,7 @@ mod tests {
 #[cfg(test)]
 #[path = "authority_lease_entry_clock_tests.rs"]
 mod entry_clock_tests;
+
+#[cfg(test)]
+#[path = "authority_lease_shared_fence_tests.rs"]
+mod shared_fence_tests;
