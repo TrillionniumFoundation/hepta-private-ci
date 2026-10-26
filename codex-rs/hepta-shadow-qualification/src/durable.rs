@@ -1,6 +1,10 @@
+#[cfg(not(windows))]
 use std::fs::File;
+#[cfg(not(windows))]
 use std::fs::OpenOptions;
+#[cfg(not(windows))]
 use std::io::Read;
+#[cfg(not(windows))]
 use std::io::Write;
 use std::path::Path;
 use std::time::SystemTime;
@@ -8,50 +12,68 @@ use std::time::UNIX_EPOCH;
 
 use crate::QualificationError;
 
+#[cfg(windows)]
+#[path = "durable_windows.rs"]
+mod windows;
+
 pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), QualificationError> {
-    let mut options = OpenOptions::new();
-    options.create_new(true).write(true);
-    #[cfg(unix)]
+    #[cfg(windows)]
     {
-        use std::os::unix::fs::OpenOptionsExt;
-        options
-            .mode(0o600)
-            .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
+        windows::write_new(path, bytes)
     }
-    let mut file = options.open(path)?;
-    file.write_all(bytes)?;
-    file.sync_all()?;
-    verify_private_regular(path)?;
-    sync_directory(
-        path.parent()
-            .ok_or_else(|| invalid("artifact has no parent"))?,
-    )
+    #[cfg(not(windows))]
+    {
+        let mut options = OpenOptions::new();
+        options.create_new(true).write(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options
+                .mode(0o600)
+                .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
+        }
+        let mut file = options.open(path)?;
+        file.write_all(bytes)?;
+        file.sync_all()?;
+        verify_private_regular(path)?;
+        sync_directory(
+            path.parent()
+                .ok_or_else(|| invalid("artifact has no parent"))?,
+        )
+    }
 }
 
 pub(crate) fn read_private_bounded(
     path: &Path,
     max_bytes: usize,
 ) -> Result<Vec<u8>, QualificationError> {
-    let mut options = OpenOptions::new();
-    options.read(true);
-    #[cfg(unix)]
+    #[cfg(windows)]
     {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
+        windows::read(path, max_bytes)
     }
-    let file = options.open(path)?;
-    let opened = file.metadata()?;
-    if !opened.is_file() {
-        return Err(invalid("private artifact must be a regular file"));
+    #[cfg(not(windows))]
+    {
+        let mut options = OpenOptions::new();
+        options.read(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
+        }
+        let file = options.open(path)?;
+        let opened = file.metadata()?;
+        if !opened.is_file() {
+            return Err(invalid("private artifact must be a regular file"));
+        }
+        verify_private_mode(&opened, "private artifact")?;
+        let mut bytes = Vec::new();
+        file.take(max_bytes.saturating_add(1) as u64)
+            .read_to_end(&mut bytes)?;
+        if bytes.len() > max_bytes {
+            return Err(invalid("private artifact exceeds its read bound"));
+        }
+        Ok(bytes)
     }
-    verify_private_mode(&opened, "private artifact")?;
-    let mut bytes = Vec::new();
-    file.take(max_bytes.saturating_add(1) as u64)
-        .read_to_end(&mut bytes)?;
-    if bytes.len() > max_bytes {
-        return Err(invalid("private artifact exceeds its read bound"));
-    }
-    Ok(bytes)
 }
 
 pub(crate) fn create_or_verify_private_directory(path: &Path) -> Result<(), QualificationError> {
@@ -62,37 +84,60 @@ pub(crate) fn create_or_verify_private_directory(path: &Path) -> Result<(), Qual
 }
 
 pub(crate) fn create_private_directory(path: &Path) -> Result<(), QualificationError> {
-    #[cfg(unix)]
-    let builder = {
-        use std::os::unix::fs::DirBuilderExt;
-        let mut builder = std::fs::DirBuilder::new();
-        builder.mode(0o700);
-        builder
-    };
-    #[cfg(not(unix))]
-    let builder = std::fs::DirBuilder::new();
-    builder.create(path)?;
-    verify_private_directory(path)
+    #[cfg(windows)]
+    {
+        windows::create_directory(path)
+    }
+    #[cfg(not(windows))]
+    {
+        #[cfg(unix)]
+        let builder = {
+            use std::os::unix::fs::DirBuilderExt;
+            let mut builder = std::fs::DirBuilder::new();
+            builder.mode(0o700);
+            builder
+        };
+        #[cfg(not(unix))]
+        let builder = std::fs::DirBuilder::new();
+        builder.create(path)?;
+        verify_private_directory(path)
+    }
 }
 
 pub(crate) fn verify_private_directory(path: &Path) -> Result<(), QualificationError> {
-    let metadata = std::fs::symlink_metadata(path)?;
-    if metadata.file_type().is_symlink() || !metadata.is_dir() {
-        return Err(invalid("private path must be a real directory"));
+    #[cfg(windows)]
+    {
+        windows::verify_directory(path)
     }
-    verify_private_mode(&metadata, "private directory")
+    #[cfg(not(windows))]
+    {
+        let metadata = std::fs::symlink_metadata(path)?;
+        if metadata.file_type().is_symlink() || !metadata.is_dir() {
+            return Err(invalid("private path must be a real directory"));
+        }
+        verify_private_mode(&metadata, "private directory")
+    }
 }
 
 pub(crate) fn verify_private_regular(path: &Path) -> Result<(), QualificationError> {
-    let metadata = std::fs::symlink_metadata(path)?;
-    if metadata.file_type().is_symlink() || !metadata.is_file() {
-        return Err(invalid("private artifact must be a real regular file"));
+    #[cfg(windows)]
+    {
+        windows::verify_file(path)
     }
-    verify_private_mode(&metadata, "private artifact")
+    #[cfg(not(windows))]
+    {
+        let metadata = std::fs::symlink_metadata(path)?;
+        if metadata.file_type().is_symlink() || !metadata.is_file() {
+            return Err(invalid("private artifact must be a real regular file"));
+        }
+        verify_private_mode(&metadata, "private artifact")
+    }
 }
 
 pub(crate) fn verify_private_tree(root: &Path) -> Result<(), QualificationError> {
     verify_private_directory(root)?;
+    #[cfg(windows)]
+    let inspection = codex_utils_path::PrivateFile::open_directory(root)?;
     let mut pending = vec![root.to_path_buf()];
     while let Some(directory) = pending.pop() {
         for entry in std::fs::read_dir(directory)? {
@@ -103,9 +148,15 @@ pub(crate) fn verify_private_tree(root: &Path) -> Result<(), QualificationError>
                 return Err(invalid("private runtime tree must not contain symlinks"));
             }
             if metadata.is_dir() {
+                #[cfg(windows)]
+                verify_private_directory(&path)?;
+                #[cfg(not(windows))]
                 verify_private_mode(&metadata, "private runtime directory")?;
                 pending.push(path);
             } else if metadata.is_file() {
+                #[cfg(windows)]
+                verify_private_regular(&path)?;
+                #[cfg(not(windows))]
                 verify_private_mode(&metadata, "private runtime artifact")?;
             } else {
                 return Err(invalid(
@@ -114,12 +165,21 @@ pub(crate) fn verify_private_tree(root: &Path) -> Result<(), QualificationError>
             }
         }
     }
+    #[cfg(windows)]
+    inspection.verify()?;
     Ok(())
 }
 
 pub(crate) fn sync_directory(path: &Path) -> Result<(), QualificationError> {
-    File::open(path)?.sync_all()?;
-    Ok(())
+    #[cfg(windows)]
+    {
+        windows::sync_directory(path)
+    }
+    #[cfg(not(windows))]
+    {
+        File::open(path)?.sync_all()?;
+        Ok(())
+    }
 }
 
 pub(crate) fn now_millis() -> Result<u128, QualificationError> {
@@ -147,6 +207,7 @@ pub(crate) fn same_file_snapshot(before: &std::fs::Metadata, after: &std::fs::Me
     }
 }
 
+#[cfg(not(windows))]
 fn verify_private_mode(
     _metadata: &std::fs::Metadata,
     _label: &str,

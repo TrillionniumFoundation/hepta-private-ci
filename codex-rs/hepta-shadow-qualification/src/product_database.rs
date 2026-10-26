@@ -44,6 +44,12 @@ async fn snapshot_database(
     let wal = sqlite_root.join(format!("{DATABASE_FILENAME}-wal"));
     verify_private_regular(&source)?;
     verify_private_regular(&wal)?;
+    // Keep complete private identities and read-only custody across the pair,
+    // rather than treating Windows length/mtime as immutable file identity.
+    #[cfg(windows)]
+    let source_guard = codex_utils_path::PrivateFile::open_existing(&source)?;
+    #[cfg(windows)]
+    let wal_guard = codex_utils_path::PrivateFile::open_existing(&wal)?;
     let source_before = std::fs::metadata(&source)?;
     let wal_before = std::fs::metadata(&wal)?;
     let source_bytes = read_private_bounded(&source, MAX_DATABASE_BYTES)?;
@@ -64,6 +70,12 @@ async fn snapshot_database(
             "product evidence database pair changed or has invalid headers",
         ));
     }
+    #[cfg(windows)]
+    {
+        source_guard.verify()?;
+        wal_guard.verify()?;
+        drop((source_guard, wal_guard));
+    }
     let staging = snapshot_root.join(format!(".{}-staging", surface.as_str()));
     create_private_directory(&staging)?;
     let staging_database = staging.join(DATABASE_FILENAME);
@@ -71,6 +83,8 @@ async fn snapshot_database(
     write_private_new(&staging_database, &source_bytes)?;
     write_private_new(&staging_wal, &wal_bytes)?;
     checkpoint_staging(&staging_database).await?;
+    #[cfg(windows)]
+    let snapshot_guard = codex_utils_path::PrivateFile::open_existing(&staging_database)?;
     let before = std::fs::metadata(&staging_database)?;
     let snapshot_bytes = read_private_bounded(&staging_database, MAX_DATABASE_BYTES)?;
     let after = std::fs::metadata(&staging_database)?;
@@ -78,6 +92,11 @@ async fn snapshot_database(
         return Err(invalid(
             "checkpointed product evidence snapshot changed or lacks SQLite header",
         ));
+    }
+    #[cfg(windows)]
+    {
+        snapshot_guard.verify()?;
+        drop(snapshot_guard);
     }
     let database_sha256 = sha256(&snapshot_bytes);
     let destination = snapshot_root.join(format!("{}-{DATABASE_FILENAME}", surface.as_str()));
@@ -120,6 +139,8 @@ async fn checkpoint_staging(path: &Path) -> Result<(), QualificationError> {
     reason = "qualification-only verifier opens an immutable private snapshot and never production state"
 )]
 async fn read_rows(path: &Path) -> Result<Vec<ProductReceiptRow>, QualificationError> {
+    #[cfg(windows)]
+    let inspection = codex_utils_path::PrivateFile::open_existing(path)?;
     let options = SqliteConnectOptions::new()
         .filename(path)
         .read_only(true)
@@ -165,6 +186,8 @@ async fn read_rows(path: &Path) -> Result<Vec<ProductReceiptRow>, QualificationE
     })
     .collect::<Result<Vec<_>, sqlx::Error>>()?;
     connection.close().await?;
+    #[cfg(windows)]
+    inspection.verify()?;
     Ok(rows)
 }
 
