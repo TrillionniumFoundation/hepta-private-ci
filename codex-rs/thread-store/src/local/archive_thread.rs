@@ -156,7 +156,6 @@ mod tests {
     use codex_rollout::ARCHIVED_SESSIONS_SUBDIR;
     use codex_utils_absolute_path::test_support::PathExt;
     use pretty_assertions::assert_eq;
-    use tempfile::TempDir;
     use uuid::Uuid;
 
     use super::*;
@@ -171,7 +170,7 @@ mod tests {
 
     #[tokio::test]
     async fn archive_waits_for_fork_reservation_without_holding_writer_lock() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let uuid = Uuid::from_u128(205);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -205,7 +204,7 @@ mod tests {
 
     #[tokio::test]
     async fn archive_threads_rejects_owned_descendants_before_archiving_anything() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let owner = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         for (parent_uuid, child_uuid, history_mode) in [
@@ -259,7 +258,7 @@ mod tests {
 
     #[tokio::test]
     async fn archive_thread_moves_rollout_to_archived_collection() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let uuid = Uuid::from_u128(201);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -307,7 +306,7 @@ mod tests {
 
     #[tokio::test]
     async fn archive_thread_deduplicates_rollout_paths_and_updates_sqlite_metadata() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(202);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");

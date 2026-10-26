@@ -363,7 +363,6 @@ mod tests {
     use codex_utils_absolute_path::test_support::PathExt;
     use pretty_assertions::assert_eq;
     use std::fs;
-    use tempfile::TempDir;
     use uuid::Uuid;
 
     use super::*;
@@ -377,7 +376,7 @@ mod tests {
 
     #[tokio::test]
     async fn list_threads_uses_default_provider_when_rollout_omits_provider() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         write_session_file_with(
             home.path(),
@@ -415,7 +414,7 @@ mod tests {
 
     #[tokio::test]
     async fn list_threads_preserves_sqlite_title_search_results() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(103);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -485,7 +484,7 @@ mod tests {
 
     #[tokio::test]
     async fn list_paginated_threads_uses_sqlite_name_over_legacy_compatibility() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(104);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -555,7 +554,7 @@ mod tests {
 
     #[tokio::test]
     async fn list_threads_selects_active_or_archived_collection() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let active_uuid = Uuid::from_u128(105);
         let archived_uuid = Uuid::from_u128(106);
@@ -629,7 +628,7 @@ mod tests {
 
     #[tokio::test]
     async fn list_threads_returns_local_rollout_summary() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let store = LocalThreadStore::new(config, /*state_db*/ None);
         let uuid = Uuid::from_u128(101);
@@ -672,7 +671,7 @@ mod tests {
 
     #[tokio::test]
     async fn section_listing_uses_sqlite_metadata_without_reading_rollouts() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let state = codex_state::StateRuntime::init(
             config.sqlite.clone(),
@@ -766,7 +765,7 @@ mod tests {
 
     #[tokio::test]
     async fn list_threads_rejects_invalid_cursor() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
 
         let err = store

@@ -24,7 +24,6 @@ use codex_rollout::CompactedItem;
 use codex_rollout::RolloutItem;
 use codex_rollout::RolloutLine;
 use pretty_assertions::assert_eq;
-use tempfile::TempDir;
 use uuid::Uuid;
 
 use super::*;
@@ -34,7 +33,7 @@ use crate::local::test_support::write_session_file_with_history_mode;
 
 #[tokio::test]
 async fn loads_latest_checkpoint_with_required_turn_metadata() {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let uuid = Uuid::from_u128(/*v*/ 1001);
     let thread_id = codex_protocol::ThreadId::from_string(&uuid.to_string()).expect("thread id");
     write_paginated_rollout(
@@ -83,7 +82,7 @@ async fn loads_latest_checkpoint_with_required_turn_metadata() {
 
 #[tokio::test]
 async fn fork_context_excludes_items_after_frozen_cutoff() {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let uuid = Uuid::from_u128(/*v*/ 1007);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("thread id");
     let path = write_ordinaled_paginated_rollout(
@@ -121,7 +120,7 @@ async fn fork_context_excludes_items_after_frozen_cutoff() {
 
 #[tokio::test]
 async fn loads_turn_metadata_across_an_older_checkpoint() {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let uuid = Uuid::from_u128(/*v*/ 1006);
     let thread_id = codex_protocol::ThreadId::from_string(&uuid.to_string()).expect("thread id");
     write_paginated_rollout(
@@ -168,7 +167,7 @@ async fn loads_turn_metadata_across_an_older_checkpoint() {
 
 #[tokio::test]
 async fn returns_scanned_full_history_for_unsupported_compaction() {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let uuid = Uuid::from_u128(/*v*/ 1002);
     let path = write_paginated_rollout(
         home.path(),
@@ -190,7 +189,7 @@ async fn returns_scanned_full_history_for_unsupported_compaction() {
 
 #[tokio::test]
 async fn returns_scanned_full_history_at_bof_without_checkpoint() {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let uuid = Uuid::from_u128(/*v*/ 1003);
     let path = write_paginated_rollout(
         home.path(),
@@ -210,7 +209,7 @@ async fn returns_scanned_full_history_at_bof_without_checkpoint() {
 
 #[tokio::test]
 async fn uses_agent_message_turn_context_without_scanning_older_turn() {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let uuid = Uuid::from_u128(/*v*/ 1004);
     let thread_id = codex_protocol::ThreadId::from_string(&uuid.to_string()).expect("thread id");
     write_paginated_rollout(
@@ -250,7 +249,7 @@ async fn uses_agent_message_turn_context_without_scanning_older_turn() {
 
 #[tokio::test]
 async fn ignores_contextual_user_messages_when_selecting_turn_context() {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let uuid = Uuid::from_u128(/*v*/ 1005);
     let thread_id = codex_protocol::ThreadId::from_string(&uuid.to_string()).expect("thread id");
     write_paginated_rollout(
@@ -287,7 +286,7 @@ async fn ignores_contextual_user_messages_when_selecting_turn_context() {
 
 #[tokio::test]
 async fn replays_nested_archived_lineage_from_frozen_prefix() {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let root_uuid = Uuid::from_u128(/*v*/ 2001);
     let root_id = ThreadId::from_string(&root_uuid.to_string()).expect("root id");
     let root_path = write_ordinaled_paginated_rollout(

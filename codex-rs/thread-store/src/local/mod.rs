@@ -708,7 +708,6 @@ mod tests {
     use codex_protocol::protocol::TurnStartedEvent;
     use codex_protocol::protocol::UserMessageEvent;
     use codex_rollout::RolloutItem;
-    use tempfile::TempDir;
 
     use super::*;
     use crate::LiveThread;
@@ -720,7 +719,7 @@ mod tests {
 
     #[tokio::test]
     async fn no_state_local_store_explicitly_reports_no_hard_delete_fence() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
 
         assert!(
@@ -733,7 +732,7 @@ mod tests {
 
     #[tokio::test]
     async fn live_writer_lifecycle_writes_and_closes() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let thread_id = ThreadId::default();
 
@@ -784,7 +783,7 @@ mod tests {
     async fn raw_append_items_does_not_update_sqlite_metadata() {
         // This pins the ThreadStore contract: raw appends are history-only. Callers that need
         // metadata updates must use LiveThread or call update_thread_metadata explicitly.
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             config.sqlite.clone(),
@@ -819,7 +818,7 @@ mod tests {
 
     #[tokio::test]
     async fn live_thread_observes_appended_items_into_sqlite_metadata() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             config.sqlite.clone(),
@@ -854,7 +853,7 @@ mod tests {
 
     #[tokio::test]
     async fn paginated_resume_prefers_explicit_rollout_path_over_stale_sqlite_path() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             config.sqlite.clone(),
@@ -937,7 +936,7 @@ mod tests {
 
     #[tokio::test]
     async fn live_thread_does_not_derive_metadata_from_inherited_items() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             config.sqlite.clone(),
@@ -1009,7 +1008,7 @@ mod tests {
 
     #[tokio::test]
     async fn live_thread_output_advances_updated_at_but_not_recency_at() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             config.sqlite.clone(),
@@ -1104,7 +1103,7 @@ mod tests {
 
     #[tokio::test]
     async fn live_thread_shutdown_does_not_materialize_empty_thread_metadata() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             config.sqlite.clone(),
@@ -1140,7 +1139,7 @@ mod tests {
 
     #[tokio::test]
     async fn live_thread_memory_mode_update_before_rollout_materializes_keeps_history_mode() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             config.sqlite.clone(),
@@ -1180,7 +1179,7 @@ mod tests {
 
     #[tokio::test]
     async fn live_thread_shutdown_with_buffered_items_materializes_before_metadata_read() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             config.sqlite.clone(),
@@ -1224,7 +1223,7 @@ mod tests {
 
     #[tokio::test]
     async fn live_thread_resume_loads_history_before_observing_metadata() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             config.sqlite.clone(),
@@ -1278,8 +1277,9 @@ mod tests {
 
     #[tokio::test]
     async fn live_thread_resume_loads_history_from_explicit_external_rollout_path() {
-        let home = TempDir::new().expect("temp dir");
-        let external_home = TempDir::new().expect("external temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
+        let external_home =
+            crate::local::test_support::private_temp_dir().expect("external temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             config.sqlite.clone(),
@@ -1333,7 +1333,7 @@ mod tests {
 
     #[tokio::test]
     async fn create_thread_rejects_missing_cwd() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let competing_store =
             LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
@@ -1365,7 +1365,7 @@ mod tests {
 
     #[tokio::test]
     async fn discard_thread_drops_unmaterialized_live_writer() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         for history_mode in [ThreadHistoryMode::Legacy, ThreadHistoryMode::Paginated] {
             let thread_id = ThreadId::default();
@@ -1409,7 +1409,7 @@ mod tests {
 
     #[tokio::test]
     async fn resume_thread_reopens_live_writer_and_appends() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let thread_id = ThreadId::default();
 
@@ -1471,7 +1471,7 @@ mod tests {
 
     #[tokio::test]
     async fn live_writers_reject_cross_process_create_and_resume() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let primary = LocalThreadStore::new(config.clone(), /*state_db*/ None);
         let secondary = LocalThreadStore::new(config, /*state_db*/ None);
@@ -1526,7 +1526,7 @@ mod tests {
 
     #[tokio::test]
     async fn create_thread_rejects_duplicate_live_writer() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let thread_id = ThreadId::default();
 
@@ -1546,7 +1546,7 @@ mod tests {
 
     #[tokio::test]
     async fn resume_thread_rejects_duplicate_live_writer() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let thread_id = ThreadId::default();
 
@@ -1574,7 +1574,7 @@ mod tests {
 
     #[tokio::test]
     async fn resume_thread_rejects_missing_cwd() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let competing_store =
             LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
@@ -1619,8 +1619,9 @@ mod tests {
 
     #[tokio::test]
     async fn load_history_uses_live_writer_rollout_path() {
-        let home = TempDir::new().expect("temp dir");
-        let external_home = TempDir::new().expect("external temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
+        let external_home =
+            crate::local::test_support::private_temp_dir().expect("external temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let uuid = uuid::Uuid::from_u128(404);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -1667,8 +1668,9 @@ mod tests {
 
     #[tokio::test]
     async fn read_thread_uses_live_writer_rollout_path_for_external_resume() {
-        let home = TempDir::new().expect("temp dir");
-        let external_home = TempDir::new().expect("external temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
+        let external_home =
+            crate::local::test_support::private_temp_dir().expect("external temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let uuid = uuid::Uuid::from_u128(406);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -1715,7 +1717,7 @@ mod tests {
 
     #[tokio::test]
     async fn load_history_uses_live_writer_rollout_path_for_archived_source() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let uuid = uuid::Uuid::from_u128(405);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -1782,7 +1784,7 @@ mod tests {
 
     #[tokio::test]
     async fn read_thread_by_rollout_path_includes_history() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let thread_id = ThreadId::default();
 
@@ -1829,7 +1831,7 @@ mod tests {
 
     #[tokio::test]
     async fn paginated_threads_allow_metadata_reads_and_resume_but_reject_legacy_history_paths() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let uuid = uuid::Uuid::from_u128(408);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -1906,7 +1908,7 @@ mod tests {
 
     #[tokio::test]
     async fn paginated_live_appends_use_paginated_history_mode() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let thread_id = ThreadId::default();
         let mut create_params = create_thread_params(thread_id);

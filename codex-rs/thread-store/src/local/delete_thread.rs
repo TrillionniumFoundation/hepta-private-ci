@@ -273,7 +273,6 @@ mod tests {
     use codex_protocol::protocol::ThreadMemoryMode;
     use codex_utils_absolute_path::test_support::PathExt;
     use pretty_assertions::assert_eq;
-    use tempfile::TempDir;
     use uuid::Uuid;
 
     use super::*;
@@ -289,7 +288,7 @@ mod tests {
 
     #[tokio::test]
     async fn delete_thread_removes_active_and_archived_rollouts() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let active_path =
             write_session_file(home.path(), "2025-01-03T12-00-00", Uuid::from_u128(301))
@@ -323,7 +322,7 @@ mod tests {
 
     #[tokio::test]
     async fn delete_thread_rejects_referenced_paginated_history() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let source_uuid = Uuid::from_u128(303);
         let source_thread_id =
@@ -374,7 +373,7 @@ mod tests {
 
     #[tokio::test]
     async fn delete_thread_rejects_reference_to_reverted_rollout() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let thread_uuid = Uuid::from_u128(320);
         let thread_id = ThreadId::from_string(&thread_uuid.to_string()).expect("thread id");
@@ -441,7 +440,7 @@ mod tests {
 
     #[tokio::test]
     async fn delete_thread_ignores_unreadable_reference_metadata() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let source_uuid = Uuid::from_u128(305);
         let source_thread_id =
@@ -466,7 +465,7 @@ mod tests {
 
     #[tokio::test]
     async fn delete_threads_allows_internal_history_references() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let source_uuid = Uuid::from_u128(307);
         let source_thread_id =
@@ -512,7 +511,7 @@ mod tests {
 
     #[tokio::test]
     async fn delete_threads_rejects_owned_descendants_before_deleting_anything() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let owner = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         for (parent_uuid, child_uuid, history_mode) in [
@@ -565,7 +564,7 @@ mod tests {
 
     #[tokio::test]
     async fn delete_threads_rejects_owned_thread_before_rollout_materializes() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let owner = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let thread_id = ThreadId::default();
@@ -586,7 +585,7 @@ mod tests {
 
     #[tokio::test]
     async fn delete_threads_removes_rollout_with_unreadable_metadata() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let uuid = Uuid::from_u128(311);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -606,7 +605,7 @@ mod tests {
 
     #[tokio::test]
     async fn delete_rollout_file_treats_vanished_path_as_already_deleted() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let uuid = Uuid::from_u128(305);
         let path =
@@ -618,7 +617,7 @@ mod tests {
 
     #[tokio::test]
     async fn delete_thread_without_state_db_preserves_materialized_thread_history() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let store = LocalThreadStore::new(config.clone(), /*state_db*/ None);
         let uuid = Uuid::from_u128(312);
@@ -687,7 +686,7 @@ SELECT
 
     #[tokio::test]
     async fn delete_thread_removes_materialized_thread_history() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let state_db = codex_state::StateRuntime::init(
             config.sqlite.clone(),
@@ -778,7 +777,7 @@ SELECT
 
     #[tokio::test]
     async fn delete_thread_reports_missing_thread() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let thread_id =
             ThreadId::from_string("00000000-0000-0000-0000-000000000304").expect("valid thread id");

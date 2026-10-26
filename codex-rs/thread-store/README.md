@@ -33,3 +33,17 @@ implementations may live outside this repository.
 
 New metadata observation semantics should live above `ThreadStore`. Stores
 persist explicit metadata fields, but raw history appends remain history-only.
+
+## Local test homes
+
+Run the owning suite with `just test -p codex-thread-store` from `codex-rs`.
+Local fixtures use `local::test_support::private_temp_dir`, which requests
+Unix mode `0700` when creating each temporary directory. This keeps fixture
+homes owner controlled even when the invoking process has a group-writable
+umask. It does not change the process umask or repair existing product homes.
+
+SQLite validates existing homes and dispatch lock directories before use.
+Group or world writable product homes still fail that validation. Keep this
+check enabled when adding fixture cases, including history recovery, migration,
+writer lock ownership and externally located rollouts. Test data, expected
+history contents and failure assertions remain part of each existing case.
