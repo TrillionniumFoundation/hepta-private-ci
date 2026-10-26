@@ -182,6 +182,40 @@ impl PreparedHostAuthoritySession {
         self.serve_selected(Some((text_file, ui_pidfd)))
     }
 
+    /// Launch the native UI from this SAME already prepared Root session.
+    /// Fresh publication/handoff and native serving cannot reopen the exclusive
+    /// clock/issuer/checkpoint owners. The original protected launch checks
+    /// still run and both files must equal this retained registration/config.
+    pub fn launch_native(
+        self,
+        config_file: &Path,
+        registration_file: &Path,
+        profile_file: &Path,
+    ) -> io::Result<()> {
+        let (config, profile) = crate::authority_host_native_launch::inputs(
+            config_file,
+            registration_file,
+            profile_file,
+            &self.owner_pidfd,
+        )?;
+        let registration: HostAuthorityRegistration = read_root_json(registration_file)?;
+        if serde_json::to_vec(&config).map_err(io::Error::other)?
+            != serde_json::to_vec(&self.config).map_err(io::Error::other)?
+            || serde_json::to_vec(&registration).map_err(io::Error::other)?
+                != serde_json::to_vec(&self.registration).map_err(io::Error::other)?
+        {
+            return Err(io::Error::other(
+                "native launch changed the retained original Root inputs",
+            ));
+        }
+        crate::authority_host_native_launch::launch_prepared_native(
+            self,
+            config,
+            profile,
+            profile_file,
+        )
+    }
+
     fn serve_selected(self, text_ui: Option<(&Path, OwnedFd)>) -> io::Result<()> {
         let Self {
             config,

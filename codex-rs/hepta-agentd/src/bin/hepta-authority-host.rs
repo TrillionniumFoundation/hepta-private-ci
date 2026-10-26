@@ -100,6 +100,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let text_file = options
             .remove(std::ffi::OsStr::new("--text-ui-registration"))
             .map(PathBuf::from);
+        let native_profile = options
+            .remove(std::ffi::OsStr::new("--native-profile"))
+            .map(PathBuf::from);
         let ui_fd = options.remove(std::ffi::OsStr::new("--text-ui-pidfd"));
         let handoff = options.remove(std::ffi::OsStr::new("--root-handoff-fd"));
         let root_fd = options.remove(std::ffi::OsStr::new("--root-pidfd"));
@@ -139,6 +142,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 return Err("text UI registration and pre-held pidfd are required together".into());
             }
         };
+        if native_profile.is_some() && text.is_some() {
+            return Err("native child launch and an inherited text UI are exclusive".into());
+        }
         let owner = std::io::stdin().as_fd().try_clone_to_owned()?;
         let prepared = if command == "serve-fresh-session" {
             let handoff =
@@ -179,9 +185,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
             codex_hepta_agentd::PreparedHostAuthoritySession::open(&config, &registration, owner)?
         };
-        match text {
-            Some((file, pidfd)) => prepared.serve_with_text(file, pidfd)?,
-            None => prepared.serve()?,
+        match (native_profile, text) {
+            (Some(profile), None) => prepared.launch_native(&config, &registration, &profile)?,
+            (None, Some((file, pidfd))) => prepared.serve_with_text(file, pidfd)?,
+            (None, None) => prepared.serve()?,
+            (Some(_), Some(_)) => return Err("exclusive native/text UI options".into()),
         }
     } else {
         return Err("unknown authority command".into());

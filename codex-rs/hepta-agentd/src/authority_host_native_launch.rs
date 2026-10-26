@@ -55,7 +55,7 @@ pub struct NativeLaunchDiagnostic {
     pub production_ready: bool,
 }
 
-fn inputs(
+pub(super) fn inputs(
     config_file: &Path,
     registration_file: &Path,
     profile_file: &Path,
@@ -317,6 +317,17 @@ pub fn launch_host_authority_native_session(
     owner: OwnedFd,
 ) -> io::Result<()> {
     let (config, profile) = inputs(config_file, registration_file, profile_file, &owner)?;
+    let prepared =
+        crate::PreparedHostAuthoritySession::open(config_file, registration_file, owner)?;
+    launch_prepared_native(prepared, config, profile, profile_file)
+}
+
+pub(super) fn launch_prepared_native(
+    prepared: crate::PreparedHostAuthoritySession,
+    config: HostAuthorityServiceConfig,
+    profile: HostAuthorityNativeProfile,
+    profile_file: &Path,
+) -> io::Result<()> {
     let uid = config.peer_uid;
     let gid = config.peer_gid;
     let program = open_verified_program(&profile, config.peer_gid)?;
@@ -413,12 +424,7 @@ pub fn launch_host_authority_native_session(
     file.flush()?;
     file.sync_all()?;
     std::fs::File::open(parent)?.sync_all()?;
-    let result = crate::serve_host_authority_session_with_text(
-        config_file,
-        registration_file,
-        owner,
-        Some((&guard.path, ui_pidfd)),
-    );
+    let result = prepared.serve_with_text(&guard.path, ui_pidfd);
     // Do not kill a UI which may now contain local drafts. Its authenticated
     // owner expires/fences independently when this bounded Root session ends.
     let _ = child.try_wait();
