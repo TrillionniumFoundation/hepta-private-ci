@@ -46,6 +46,418 @@ mod report;
 const MAXIMUM_VISIBLE_BYTES: usize = 8_192;
 const MAXIMUM_RETAINED_BYTES: usize = 262_144;
 
+pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
+    let config = tokio::time::timeout(Duration::from_secs(20), ConfigBuilder::default().build())
+        .await
+        .map_err(|_| anyhow!("qualification configuration deadline"))?
+        .map_err(|_| anyhow!("qualification installed configuration failed"))?;
+    let model = config
+        .model
+        .as_deref()
+        .ok_or_else(|| anyhow!("qualification requires an explicitly configured model"))?;
+    if model != args.expected_model {
+        return Err(anyhow!(
+            "qualification configured model differs from expected model"
+        ));
+    }
+    if config.model_provider_id != args.expected_provider_id {
+        return Err(anyhow!(
+            "cap-witness provider differs from original successful marker"
+        ));
+    }
+    let auth = tokio::time::timeout(
+        Duration::from_secs(20),
+        AuthManager::shared_from_config(&config, true),
+    )
+    .await
+    .map_err(|_| anyhow!("qualification auth owner deadline"))?
+    .map_err(|_| anyhow!("qualification auth owner unavailable"))?;
+    let provider = create_model_provider(config.model_provider.clone(), Some(auth));
+    let prepared_settings = settings::prepare(&config, &provider, model, &evidence).await?;
+    let request_settings_evidence_digest = prepared_settings.evidence_digest;
+    if request_settings_evidence_digest.to_string() != args.expected_request_settings_sha256 {
+        return Err(anyhow!(
+            "cap-witness original model settings differ from successful marker"
+        ));
+    }
+    let normalized_settings = prepared_settings.settings;
+    let use_agent_identity = config.features.enabled(Feature::UseAgentIdentity);
+    let policy_name = if use_agent_identity {
+        "configured_chatgpt_agent_identity"
+    } else {
+        "configured_jwt_only"
+    };
+    if policy_name != args.expected_auth_policy {
+        return Err(anyhow!(
+            "cap-witness scoped auth policy differs from successful marker"
+        ));
+    }
+    let cancellation = CancellationToken::new();
+    let client = ManagedResponsesClient::from_owner(
+        &provider,
+        ProviderAuthScope {
+            agent_identity_policy: if use_agent_identity {
+                AgentIdentityAuthPolicy::ChatGptAuth
+            } else {
+                AgentIdentityAuthPolicy::JwtOnly
+            },
+            session_source: SessionSource::Exec,
+            agent_identity_session_fallback: AgentIdentitySessionFallback::default(),
+        },
+        &config.http_client_factory(),
+        Duration::from_secs(20),
+        &cancellation,
+    )
+    .await
+    .map_err(|_| anyhow!("qualification managed provider setup failed"))?;
+    let identity = uuid::Uuid::new_v4().to_string();
+    let request_id = StableId::new(format!("qualification-request:{identity}"))?;
+    let run_id = StableId::new(format!("qualification-run:{identity}"))?;
+    let turn_id = StableId::new(format!("qualification-turn:{identity}"))?;
+    // Same original cold bootstrap used by the marker. No generation binding,
+    // provider lease or dispatch exists until the durable ready receipt.
+    let bootstrap = crate::bootstrap::prepare(
+        &config,
+        &evidence,
+        &run_id,
+        &turn_id,
+        args.maximum_bootstrap_seconds,
+    )
+    .await?;
+    let policy = bootstrap.owner;
+    let api_request = request_template::prepare(model, &run_id, normalized_settings)?;
+    let requested_output_limit = RequestedOutputLimit::new(args.requested_wire_output_tokens)
+        .map_err(|_| anyhow!("invalid explicit requested wire cap"))?;
+    let encoded =
+        encode_request_with_requested_output_limit(&api_request, None, requested_output_limit)
+            .map_err(|_| anyhow!("cap-witness request encoding failed"))?;
+    let body_digest = Digest32::of_bytes(encoded.as_bytes());
+    let wire = PreparedOrdinaryWire::new(body_digest, request_settings_evidence_digest)?;
+    let admission = json!({
+        "schema":"hepta-native-cap-witness-admission:v1",
+        "run_id":run_id.as_str(), "request_id":request_id.as_str(),
+        "model":model, "provider":config.model_provider_id,
+        "auth_policy":policy_name, "api_body_sha256":body_digest.to_string(),
+        "wire_semantic_sha256":wire.semantic_digest().to_string(),
+        "request_settings_evidence_sha256":request_settings_evidence_digest.to_string(),
+        "request_normalization":"shared_original_model_settings_ordinary_cap_witness_v1",
+        "ordinary_tool_shape":"shared_core_empty_tools_auto_v1",
+        "catalog_refresh_strategy":"offline", "full_core_request_parity":false,
+        "routing_hint":null, "responses_lite":false,
+        "routing_and_lite_headers_must_be_absent":true,
+        "compiled_context_tokens":0, "compiled_context_bytes":0,
+        "maximum_provider_input_tokens":args.maximum_provider_input_tokens,
+        "maximum_output_tokens":args.requested_wire_output_tokens,
+        "maximum_elapsed_seconds":args.maximum_elapsed_seconds,
+        "policy_bootstrap_sha256":bootstrap.evidence_digest.to_string(),
+        "maximum_policy_bootstrap_seconds":args.maximum_bootstrap_seconds,
+        "maximum_provider_calls":1, "research_only":true,
+        "requested_wire_max_output_tokens":args.requested_wire_output_tokens,
+        "provider_cap_support_before_trial":"not_established",
+        "original_marker_settings_sha256":args.expected_request_settings_sha256,
+        "original_marker_provider_id":args.expected_provider_id,
+        "original_marker_auth_policy":args.expected_auth_policy,
+        "rejected_cap_may_be_removed":false, "automatic_retry":false,
+    });
+    let admission_digest = evidence.record("admission.json", &admission)?;
+    // There is no compiled history in this first connectivity probe. The task
+    // is in the explicitly admitted API template. No tokenizer estimate is
+    // represented as an exact model count; all actual input is reserved below.
+    let request = ModelRequest {
+        request_id,
+        payload: "".into(),
+        context_digest: Digest32::of_bytes(b""),
+        input_tokens: 0,
+        maximum_provider_input_tokens: args.maximum_provider_input_tokens,
+        maximum_output_tokens: args.requested_wire_output_tokens,
+    };
+    let now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
+    let binding = TurnBinding {
+        run_id,
+        turn_id,
+        generation: Generation::new(1)?,
+        admission_digest,
+        deadline_unix_ms: now
+            .checked_add(args.maximum_elapsed_seconds * 1_000)
+            .ok_or_else(|| anyhow!("qualification deadline overflow"))?,
+    };
+    evidence.record(
+        "budget-reservation.json",
+        &json!({
+            "schema":"hepta-native-cap-witness-reservation:v1",
+            "run_id":binding.run_id.as_str(), "request_id":request.request_id.as_str(),
+            "admission_digest":binding.admission_digest.to_string(),
+            "api_body_sha256":body_digest.to_string(),
+            "provider_input_tokens":request.maximum_provider_input_tokens,
+            "output_tokens":request.maximum_output_tokens, "provider_calls":1,
+            "disposition":"held_for_this_single_trial", "automatic_release":false,
+            "production_token_quota_ledger":false,
+        }),
+    )?;
+    let observer = Arc::new(ExactBodyObserver::new(evidence.clone(), body_digest));
+    let dispatch = wire.dispatch_metadata();
+    let retained = Arc::new(Mutex::new(None));
+    let mut owner = ContinuationEvidence {
+        evidence: evidence.clone(),
+        binding: binding.clone(),
+        request: request.clone(),
+        retained: retained.clone(),
+    };
+    let (tx, rx) = mpsc::channel(8);
+    let started = Instant::now();
+    let collector = tokio::spawn(collect(rx, cancellation.clone(), started));
+    // Nothing fallible or awaited may intervene after admission and transfer
+    // of the real consumed lease into the managed cancellation supervisor.
+    let lease = tokio::time::timeout(
+        Duration::from_secs(10),
+        policy.admit(
+            &config,
+            &binding,
+            &request,
+            model,
+            client.endpoint_for_admission(),
+            &wire,
+            policy_name,
+        ),
+    )
+    .await
+    .map_err(|_| anyhow!("qualification policy admission deadline"))??;
+    let result = client
+        .stream_admitted_bounded_opaque(
+            ManagedResponsesAttempt {
+                binding: &binding,
+                request: &request,
+                expected_model: model,
+                api_request,
+                options: ResponsesOptions {
+                    session_id: Some(binding.run_id.to_string()),
+                    thread_id: Some(binding.run_id.to_string()),
+                    session_source: Some(SessionSource::Exec),
+                    encoded_body_observer: Some(observer.clone()),
+                    ..Default::default()
+                },
+                dispatch: dispatch.clone(),
+                lease,
+                maximum_elapsed: Duration::from_secs(args.maximum_elapsed_seconds),
+                terminal_timeout: Duration::from_secs(10),
+                bridge_limits: ResponsesBridgeLimits {
+                    maximum_items: 16,
+                    maximum_retained_bytes: MAXIMUM_RETAINED_BYTES,
+                    maximum_visible_bytes: MAXIMUM_VISIBLE_BYTES,
+                },
+            },
+            None,
+            requested_output_limit,
+            &mut owner,
+            tx,
+            &cancellation,
+        )
+        .await;
+    let elapsed_ms = started.elapsed().as_millis();
+    // A local timeout is not a provider cancellation ACK. Give the retained
+    // supervisor its bounded terminal-write grace before this process exits.
+    let terminal_recorded =
+        tokio::time::timeout(Duration::from_secs(10), observer.terminal_recorded())
+            .await
+            .is_ok();
+    let observed = collector
+        .await
+        .map_err(|_| anyhow!("qualification event collector failed"))?;
+    let continuation = retained
+        .lock()
+        .map_err(|_| anyhow!("qualification observation lock"))?
+        .clone();
+    let usage = continuation.as_ref().and_then(|c| c.get("usage")).cloned();
+    let within_reservations = usage.as_ref().is_some_and(|usage| {
+        usage
+            .get("input_tokens")
+            .and_then(Value::as_u64)
+            .is_some_and(|n| n <= args.maximum_provider_input_tokens)
+            && usage
+                .get("output_tokens")
+                .and_then(Value::as_u64)
+                .is_some_and(|n| n <= args.requested_wire_output_tokens)
+    });
+    let expected_incomplete_failure = matches!(&result,
+        Err(codex_hepta_agent_loop::Error::Responses(failure))
+            if failure.stage == codex_hepta_agent_loop::ResponsesFailureStage::Stream);
+    let decision = report::decide(
+        continuation.as_ref(),
+        args.maximum_provider_input_tokens,
+        args.requested_wire_output_tokens,
+        dispatch.transport_invoked(),
+        terminal_recorded,
+        expected_incomplete_failure,
+        observed.unexpected_tool,
+    );
+    // Serialize fields independently so report growth does not deepen the
+    // json! object parser recursion; keep the original keys and expressions.
+    let report = Value::Object(serde_json::Map::from_iter([
+        (
+            "schema".to_owned(),
+            json!("hepta-native-provider-cap-witness-result:v1"),
+        ),
+        (
+            "policy_bootstrap_sha256".to_owned(),
+            json!(bootstrap.evidence_digest.to_string()),
+        ),
+        (
+            "policy_bootstrap_elapsed_ms".to_owned(),
+            json!(bootstrap.elapsed_ms),
+        ),
+        (
+            "generation_deadline_started_after_policy_bootstrap".to_owned(),
+            json!(true),
+        ),
+        (
+            "cap_witness_qualified".to_owned(),
+            json!(decision.qualified),
+        ),
+        ("status".to_owned(), json!(decision.status)),
+        (
+            "provider_transport_invoked".to_owned(),
+            json!(dispatch.transport_invoked()),
+        ),
+        (
+            "failure_diagnostic".to_owned(),
+            json!(result.as_ref().err().map(failure_diagnostic)),
+        ),
+        (
+            "wire_semantic_sha256".to_owned(),
+            json!(wire.semantic_digest().to_string()),
+        ),
+        (
+            "request_settings_evidence_sha256".to_owned(),
+            json!(request_settings_evidence_digest.to_string()),
+        ),
+        (
+            "request_normalization".to_owned(),
+            json!("shared_original_model_settings_ordinary_cap_witness_v1"),
+        ),
+        (
+            "ordinary_tool_shape".to_owned(),
+            json!("shared_core_empty_tools_auto_v1"),
+        ),
+        ("catalog_refresh_strategy".to_owned(), json!("offline")),
+        ("full_core_request_parity".to_owned(), json!(false)),
+        (
+            "routing_and_lite_headers_must_be_absent".to_owned(),
+            json!(true),
+        ),
+        (
+            "previous_indeterminate_attempt_repaired".to_owned(),
+            json!(false),
+        ),
+        ("maximum_provider_calls".to_owned(), json!(1)),
+        ("automatic_retry".to_owned(), json!(false)),
+        ("requested_model".to_owned(), json!(model)),
+        (
+            "server_model".to_owned(),
+            json!(continuation.as_ref().and_then(|c| c.get("server_model"))),
+        ),
+        (
+            "configured_reasoning_effort".to_owned(),
+            json!(config.model_reasoning_effort),
+        ),
+        ("actual_usage".to_owned(), json!(usage)),
+        (
+            "provider_rollout_budget_units".to_owned(),
+            json!(
+                continuation
+                    .as_ref()
+                    .and_then(|c| c.get("provider_rollout_budget_units"))
+            ),
+        ),
+        (
+            "within_declared_reservations".to_owned(),
+            json!(within_reservations),
+        ),
+        (
+            "requested_wire_max_output_tokens".to_owned(),
+            json!(args.requested_wire_output_tokens),
+        ),
+        (
+            "provider_cap_support".to_owned(),
+            json!(if decision.qualified {
+                "observed_for_this_exact_request_only"
+            } else {
+                "not_established"
+            }),
+        ),
+        ("provider_hard_budget_qualified".to_owned(), json!(false)),
+        ("primary_ab_admission".to_owned(), json!("not_admitted")),
+        ("reservation_release".to_owned(), json!(false)),
+        (
+            "incomplete_reason".to_owned(),
+            json!(continuation.as_ref().and_then(|c| c.get("reason"))),
+        ),
+        (
+            "incomplete_usage_status".to_owned(),
+            json!(continuation.as_ref().and_then(|c| c.get("usage_status"))),
+        ),
+        (
+            "opaque_incomplete_sha256".to_owned(),
+            json!(continuation.as_ref().and_then(|c| c.get("opaque_sha256"))),
+        ),
+        (
+            "reservation_settlement".to_owned(),
+            json!(
+                continuation
+                    .as_ref()
+                    .and_then(|c| c.get("reservation_settlement"))
+            ),
+        ),
+        ("compiled_context_tokens".to_owned(), json!(0)),
+        ("compiled_context_qualified".to_owned(), json!(false)),
+        (
+            "local_reservation_input_tokens".to_owned(),
+            json!(args.maximum_provider_input_tokens),
+        ),
+        (
+            "local_reservation_output_tokens".to_owned(),
+            json!(args.requested_wire_output_tokens),
+        ),
+        ("elapsed_ms".to_owned(), json!(elapsed_ms)),
+        (
+            "first_visible_ms".to_owned(),
+            json!(observed.first_visible_ms),
+        ),
+        ("visible_bytes".to_owned(), json!(observed.text.len())),
+        (
+            "visible_sha256".to_owned(),
+            json!(Digest32::of_bytes(observed.text.as_bytes()).to_string()),
+        ),
+        (
+            "native_completed_event".to_owned(),
+            json!(observed.completed),
+        ),
+        (
+            "encoded_terminal_recorded".to_owned(),
+            json!(terminal_recorded),
+        ),
+        (
+            "private_terminal_retained".to_owned(),
+            json!(continuation.is_some()),
+        ),
+        (
+            "continuation_scope".to_owned(),
+            json!("bounded original raw completed or incomplete terminal under original owner"),
+        ),
+        ("tool_calls_executed".to_owned(), json!(0)),
+        (
+            "unexpected_tool_call".to_owned(),
+            json!(observed.unexpected_tool),
+        ),
+        ("production_native_agent_qualified".to_owned(), json!(false)),
+        ("same_model_codex_ab".to_owned(), json!(false)),
+        ("core_linked_for_config_bootstrap".to_owned(), json!(true)),
+    ]));
+    if terminal_recorded {
+        policy.state.close().await;
+    }
+    Ok(report)
+}
+
 // Error strings can contain provider bodies, URLs or credentials. Only the
 // typed allowlist above the HTTP/stream boundary may enter retained evidence.
 fn failure_diagnostic(error: &codex_hepta_agent_loop::Error) -> Value {
