@@ -608,6 +608,7 @@ def generate_v2_all(schema_dir: Path) -> None:
                 # Keep the generated file formatted deterministically so the
                 # checked-in artifact only changes when the schema does.
                 "--formatters",
+                "ruff-check",
                 "ruff-format",
             ],
             cwd=sdk_root(),
