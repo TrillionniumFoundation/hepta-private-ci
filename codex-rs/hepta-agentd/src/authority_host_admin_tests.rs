@@ -13,8 +13,7 @@ fn capability() -> io::Result<(RootAdminRuntime, RootAdminCapability)> {
     let mut instance = RootAdminInstance::current()?;
     instance.episode_nonce = [17; 32];
     let life = Arc::new(Lifetime {
-        serving: AtomicBool::new(false),
-        closed: AtomicBool::new(false),
+        phase: AtomicU8::new(PREPARED),
         instance: instance.clone(),
     });
     let (sender, receiver) = mpsc::sync_channel(1);
@@ -111,7 +110,7 @@ fn paused_or_ended_route_cannot_be_reactivated_by_capability() -> io::Result<()>
             .request_lifetime(&request(capability.instance.clone()))
             .is_err()
     );
-    assert!(!runtime.life.serving.load(Ordering::Acquire));
+    assert_eq!(runtime.life.phase.load(Ordering::Acquire), CLOSED);
     Ok(())
 }
 

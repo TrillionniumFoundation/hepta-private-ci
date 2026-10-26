@@ -10,6 +10,7 @@ use std::os::fd::OwnedFd;
 use std::sync::Arc;
 use std::sync::Weak;
 use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicU8;
 use std::sync::atomic::Ordering;
 use std::sync::mpsc;
 use std::time::Duration;
@@ -20,12 +21,15 @@ mod protocol;
 pub use protocol::*;
 
 #[path = "authority_host_admin_deadline.rs"]
-mod deadline;
+pub(crate) mod deadline;
 pub(crate) use deadline::checked_step;
 
+const PREPARED: u8 = 0;
+const SERVING: u8 = 1;
+const CLOSED: u8 = 2;
+
 struct Lifetime {
-    serving: AtomicBool,
-    closed: AtomicBool,
+    phase: AtomicU8,
     instance: RootAdminInstance,
 }
 
@@ -73,7 +77,7 @@ impl RootAdminCapability {
         let result = receive.recv_timeout(remaining).map_err(|_| {
             io::Error::other("original Root admin outcome unavailable; never retry a mutation")
         })??;
-        if !life.serving.load(Ordering::Acquire) || Instant::now() >= end {
+        if life.phase.load(Ordering::Acquire) != SERVING || Instant::now() >= end {
             return Err(ended());
         }
         self.instance.verify_current()?;
@@ -82,8 +86,7 @@ impl RootAdminCapability {
 
     fn request_lifetime(&self, request: &RootAdminRequest) -> io::Result<Arc<Lifetime>> {
         let life = self.lifetime.upgrade().ok_or_else(ended)?;
-        if life.closed.load(Ordering::Acquire)
-            || !life.serving.load(Ordering::Acquire)
+        if life.phase.load(Ordering::Acquire) != SERVING
             || request.expected_instance != self.instance
             || life.instance != self.instance
         {
@@ -107,8 +110,7 @@ impl RootAdminRuntime {
             return Err(ended());
         }
         let life = Arc::new(Lifetime {
-            serving: AtomicBool::new(false),
-            closed: AtomicBool::new(false),
+            phase: AtomicU8::new(PREPARED),
             instance: instance.clone(),
         });
         let (sender, receiver) = mpsc::sync_channel(1);
@@ -128,12 +130,9 @@ impl RootAdminRuntime {
     }
 
     pub(crate) fn activate(&self) -> io::Result<()> {
-        if self.life.closed.load(Ordering::Acquire) {
-            return Err(ended());
-        }
         self.life
-            .serving
-            .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+            .phase
+            .compare_exchange(PREPARED, SERVING, Ordering::AcqRel, Ordering::Acquire)
             .map_err(|_| ended())?;
         Ok(())
     }
@@ -148,12 +147,13 @@ impl RootAdminRuntime {
         owner: &OwnedFd,
         serve: impl FnOnce() -> io::Result<()>,
     ) -> io::Result<()> {
-        if self.life.closed.load(Ordering::Acquire) {
+        if self.life.phase.load(Ordering::Acquire) == CLOSED {
             return Err(ended());
         }
         let stopping = AtomicBool::new(false);
         std::thread::scope(|scope| {
             let worker = scope.spawn(|| {
+                let _worker_guard = Stop(&self.life, &stopping);
                 let receiver = self
                     .receiver
                     .lock()
@@ -189,49 +189,84 @@ impl RootAdminRuntime {
         owner: &OwnedFd,
         pending: &Pending,
     ) -> io::Result<Vec<u8>> {
-        let check = || {
-            actual_root()?;
-            self.life.instance.verify_current()?;
-            if !self.life.serving.load(Ordering::Acquire)
-                || pending.request.expected_instance != self.life.instance
-                || Instant::now() >= pending.end
-            {
-                return Err(ended());
-            }
-            verify_pinned_process(
-                registration,
-                config.peer_uid,
-                config.peer_gid,
-                owner,
-                pending.end,
-            )?;
-            service.check_admin_lifetime()
+        let context = LiveRootAdminRequest {
+            life: &self.life,
+            expected: &pending.request.expected_instance,
+            service,
+            config,
+            registration,
+            owner,
+            end: pending.end,
         };
-        let response = checked_step(pending.end, &check, || {
-            service.admin_request(&self.life.instance, &pending.request.action)
-        })?;
-        check()?;
+        let response = checked_step(
+            pending.end,
+            || context.check_for(service),
+            || service.admin_request(&context, &pending.request.action),
+        )?;
+        context.check_for(service)?;
         let raw = serde_json::to_vec(&response).map_err(io::Error::other)?;
         if raw.len() > ROOT_ADMIN_FRAME_BOUND {
             return Err(io::Error::other("original Root admin response bound"));
         }
+        deadline::require_before(pending.end)?;
         Ok(raw)
     }
 }
 
 impl Drop for RootAdminRuntime {
     fn drop(&mut self) {
-        self.life.serving.store(false, Ordering::Release);
-        self.life.closed.store(true, Ordering::Release);
+        self.life.phase.store(CLOSED, Ordering::Release);
     }
 }
 
 struct Stop<'a>(&'a Lifetime, &'a AtomicBool);
 impl Drop for Stop<'_> {
     fn drop(&mut self) {
-        self.0.closed.store(true, Ordering::Release);
-        self.0.serving.store(false, Ordering::Release);
+        self.0.phase.store(CLOSED, Ordering::Release);
         self.1.store(true, Ordering::Release);
+    }
+}
+
+/// Borrowed only inside the original scoped worker. No outside constructor,
+/// object/FD getter, serialization or ownership extension is available.
+pub(crate) struct LiveRootAdminRequest<'a> {
+    life: &'a Lifetime,
+    expected: &'a RootAdminInstance,
+    service: &'a HostAuthorityService,
+    config: &'a HostAuthorityServiceConfig,
+    registration: &'a HostAuthorityRegistration,
+    owner: &'a OwnedFd,
+    end: Instant,
+}
+
+impl LiveRootAdminRequest<'_> {
+    pub(crate) fn before(&self) -> Instant {
+        self.end
+    }
+
+    pub(crate) fn instance(&self) -> &RootAdminInstance {
+        &self.life.instance
+    }
+
+    pub(crate) fn check_for(&self, service: &HostAuthorityService) -> io::Result<()> {
+        actual_root()?;
+        deadline::require_before(self.end)?;
+        if !std::ptr::eq(service, self.service)
+            || self.life.phase.load(Ordering::Acquire) != SERVING
+            || self.expected != &self.life.instance
+        {
+            return Err(ended());
+        }
+        self.life.instance.verify_current()?;
+        verify_pinned_process(
+            self.registration,
+            self.config.peer_uid,
+            self.config.peer_gid,
+            self.owner,
+            self.end,
+        )?;
+        service.check_admin_lifetime(self.end)?;
+        deadline::require_before(self.end)
     }
 }
 

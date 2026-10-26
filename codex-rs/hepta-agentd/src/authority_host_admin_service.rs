@@ -3,7 +3,6 @@ use super::*;
 use crate::authority_host_admin::*;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry;
-use std::time::Duration;
 use std::time::Instant;
 
 impl HostAuthorityService {
@@ -31,7 +30,8 @@ impl HostAuthorityService {
         })
     }
 
-    pub(crate) fn check_admin_lifetime(&self) -> io::Result<()> {
+    pub(crate) fn check_admin_lifetime(&self, end: Instant) -> io::Result<()> {
+        crate::authority_host_admin::deadline::require_before(end)?;
         self.check_logind_lifetime()?;
         let writer = self
             .writer
@@ -41,7 +41,7 @@ impl HostAuthorityService {
             .human_text
             .as_ref()
             .ok_or_else(|| io::Error::other("original live native UI required"))?;
-        crate::authority_host_runtime::owner_alive(ui, Instant::now() + Duration::from_secs(1))?;
+        crate::authority_host_runtime::owner_alive(ui, end)?;
         self.check_logind_binding(&crate::deployment_issuer::TextHumanBinding {
             principal_id: human.principal_id.clone(),
             session_id: human.session_id.clone(),
@@ -63,8 +63,9 @@ impl HostAuthorityService {
                     "original Root admin authority expired or changed",
                 ));
             }
-            Ok(())
-        })
+            crate::authority_host_admin::deadline::require_before(end)
+        })?;
+        crate::authority_host_admin::deadline::require_before(end)
     }
 
     fn admin_registry(&self) -> io::Result<&AuthorityLeaseRegistry> {
@@ -75,9 +76,11 @@ impl HostAuthorityService {
 
     pub(crate) fn admin_request(
         &self,
-        instance: &RootAdminInstance,
+        context: &LiveRootAdminRequest<'_>,
         action: &RootAdminAction,
     ) -> io::Result<RootAdminResponse> {
+        context.check_for(self)?;
+        let instance = context.instance();
         let registry = self.admin_registry()?;
         let writer = self
             .writer
@@ -160,9 +163,15 @@ impl HostAuthorityService {
                 } else {
                     self.validate_admin_registration()?;
                 }
-                let receipt = registry
-                    .revoke(&original.lease_id, *expected_revision, *reason_sha256)
-                    .map_err(io::Error::other)?;
+                let receipt = checked_step(
+                    context.before(),
+                    || context.check_for(self),
+                    || {
+                        registry
+                            .revoke(&original.lease_id, *expected_revision, *reason_sha256)
+                            .map_err(io::Error::other)
+                    },
+                )?;
                 Ok(RootAdminResponse::WriterRevoked {
                     instance: instance.clone(),
                     receipt,

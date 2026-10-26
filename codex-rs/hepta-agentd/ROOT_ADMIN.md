@@ -45,3 +45,17 @@ original authenticated observation/consumer synchronization are the next
 stage. Writer revoke does not qualify those semantics. Ordinary schema and
 weak-lifetime tests do not qualify actual Root, login or installed product
 behavior; those need the explicit same-object privileged qualification.
+
+Each backend mutation also receives an internally constructed borrowed request
+context containing the same service/config/registration/held owner/instance and
+absolute end. It has no outside constructor or object/descriptor getter. Its
+checks are repeated after slow reads and immediately before each original CAS.
+One atomic Prepared/Serving/Closed phase prevents close/reactivate races, and
+worker exit permanently closes the route even if the outer service is unwinding.
+
+The late-owner/lifetime regression uses actual self pidfd/boot/birth reads and
+real isolated original registry/issuer stores with SystemAuthorityClock. On the
+old check-then-operation sequence both late checks entered both original CAS
+methods and advanced the frontier/head; the corrected sequence must make zero
+CAS calls and preserve the actual JSON state bytes. These negative fixtures
+confer no actual-Root qualification.

@@ -10,6 +10,7 @@ pub(crate) fn checked_step<T>(
 ) -> io::Result<T> {
     require_before(end)?;
     check()?;
+    require_before(end)?;
     operation()
 }
 
