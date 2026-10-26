@@ -114,6 +114,13 @@ fn issuer_wire_process_child() {
     assert_eq!(accepted["schema_version"], 1);
     assert_eq!(accepted["denial_reason"], serde_json::Value::Null);
     std::fs::write(response, serde_json::to_vec(&accepted["grant"]).unwrap()).unwrap();
+    if std::env::var_os("HEPTA_HOST_AUTHORITY_TEST_WAIT_FOR_PARENT").is_some() {
+        // The server checks the original pidfd again after writing the reply.
+        // Keep this fixture peer alive until that complete exchange returns.
+        let mut completed = [0];
+        std::io::stdin().read_exact(&mut completed).unwrap();
+        assert_eq!(completed, [b'1']);
+    }
 }
 
 #[test]
@@ -131,6 +138,8 @@ fn actual_process_peer_and_original_wire_produce_a_verifiable_grant_after_denial
         ])
         .env("HEPTA_HOST_AUTHORITY_TEST_SOCKET", &socket)
         .env("HEPTA_HOST_AUTHORITY_TEST_RESPONSE", &response)
+        .env("HEPTA_HOST_AUTHORITY_TEST_WAIT_FOR_PARENT", "1")
+        .stdin(std::process::Stdio::piped())
         .spawn()
         .unwrap();
     let owner = owner_pidfd(child.id());
@@ -146,6 +155,7 @@ fn actual_process_peer_and_original_wire_produce_a_verifiable_grant_after_denial
     .unwrap();
     assert_eq!(session.serve_next(), Ok(true));
     assert_eq!(session.serve_next(), Ok(true));
+    child.stdin.take().unwrap().write_all(b"1").unwrap();
     assert!(child.wait().unwrap().success());
     assert_eq!(
         session.serve_next(),

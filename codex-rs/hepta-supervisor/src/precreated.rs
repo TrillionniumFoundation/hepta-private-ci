@@ -104,9 +104,14 @@ impl PrecreatedChild {
     /// still validate its purpose/provenance; this driver creates no authority.
     /// This lets a native Root pass its real late-handoff pair after the kernel
     /// has already created the child, without changing kernel role grants.
-    pub fn with_startup_descriptor(mut self, descriptor: OwnedFd) -> Result<Self, ProcessDriverError> {
+    pub fn with_startup_descriptor(
+        mut self,
+        descriptor: OwnedFd,
+    ) -> Result<Self, ProcessDriverError> {
         if self.startup_descriptor.is_some() {
-            return Err(ProcessDriverError::new("this original child already holds a startup descriptor"));
+            return Err(ProcessDriverError::new(
+                "this original child already holds a startup descriptor",
+            ));
         }
         self.startup_descriptor = Some(descriptor);
         Ok(self)
@@ -172,8 +177,14 @@ impl ProcessDriver for PrecreatedProcessDriver {
         }
         // Removal precedes the first possible delivery. An ambiguous handoff
         // must never retarget the same role with a new Registry generation.
-        let PrecreatedChild { identity, command, mut channel, startup_descriptor, pin, .. } =
-            self.pending.pop_front().unwrap();
+        let PrecreatedChild {
+            identity,
+            command,
+            mut channel,
+            startup_descriptor,
+            pin,
+            ..
+        } = self.pending.pop_front().unwrap();
         let outcome = (|| {
             verify_command(pin.pid, &command)?;
             let reply = channel
@@ -185,7 +196,8 @@ impl ProcessDriver for PrecreatedProcessDriver {
                 ));
             }
             if let Some(descriptor) = startup_descriptor {
-                channel.send_one_descriptor(descriptor)
+                channel
+                    .send_one_descriptor(descriptor)
                     .map_err(|error| ProcessDriverError::new(error.to_string()))?;
             }
             let agent_control = AgentHealthProbeIdentity::from_spawn(spec, pin.pid);
@@ -244,7 +256,8 @@ pub fn receive_precreated_spawn_with_descriptor(
     command: &AgentCommand,
 ) -> Result<(SpawnSpec, OwnedFd), ProcessDriverError> {
     let (spec, channel) = receive_spawn_channel(stream, parent_pidfd, parent, command)?;
-    let descriptor = channel.receive_one_descriptor()
+    let descriptor = channel
+        .receive_one_descriptor()
         .map_err(|error| ProcessDriverError::new(error.to_string()))?;
     Ok((spec, descriptor))
 }
@@ -294,7 +307,8 @@ fn receive_spawn_channel(
             "original parent closed before SpawnSpec handoff",
         ));
     }
-    received.map(|spec| (spec, channel))
+    received
+        .map(|spec| (spec, channel))
         .ok_or_else(|| ProcessDriverError::new("no complete original SpawnSpec received"))
 }
 

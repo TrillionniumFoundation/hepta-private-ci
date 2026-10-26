@@ -68,8 +68,10 @@ pub async fn initialize_configured_mcp_server(
     timeout: Duration,
 ) -> Result<ConfiguredMcpRuntime> {
     ensure!(
-        !server.is_empty() && !environment_id.is_empty()
-            && !timeout.is_zero() && timeout <= Duration::from_secs(30),
+        !server.is_empty()
+            && !environment_id.is_empty()
+            && !timeout.is_zero()
+            && timeout <= Duration::from_secs(30),
         "original configured MCP bootstrap requires a bounded explicit selection"
     );
     let startup = CancellationToken::new();
@@ -84,45 +86,70 @@ pub async fn initialize_configured_mcp_server(
             arg0_paths.clone(),
             Arc::new(NoopThreadConfigLoader),
         );
-        let config = manager.load_latest_config(Some(workspace.to_path_buf())).await?;
-        let auth_manager = AuthManager::shared_from_config(
-            &config, /*enable_codex_api_key_env*/ false,
-        ).await?;
+        let config = manager
+            .load_latest_config(Some(workspace.to_path_buf()))
+            .await?;
+        let auth_manager =
+            AuthManager::shared_from_config(&config, /*enable_codex_api_key_env*/ false).await?;
         manager.replace_cloud_config_bundle_loader(
             auth_manager,
             config.chatgpt_base_url.clone(),
             config.http_client_factory(),
         );
-        let config = manager.load_latest_config(Some(workspace.to_path_buf())).await?;
-        ensure!(config.codex_home == codex_home, "MCP bootstrap changed the original Agent home");
-        ensure!(config.cwd == workspace, "MCP bootstrap changed the original Agent workspace");
+        let config = manager
+            .load_latest_config(Some(workspace.to_path_buf()))
+            .await?;
+        ensure!(
+            config.codex_home == codex_home,
+            "MCP bootstrap changed the original Agent home"
+        );
+        ensure!(
+            config.cwd == workspace,
+            "MCP bootstrap changed the original Agent workspace"
+        );
         config.auth_config().validate()?;
-        let auth_manager = AuthManager::shared_from_config(
-            &config, /*enable_codex_api_key_env*/ false,
-        ).await?;
+        let auth_manager =
+            AuthManager::shared_from_config(&config, /*enable_codex_api_key_env*/ false).await?;
         let restriction = SessionSource::Custom("hepta-agentd".into()).restriction_product();
         let skills = Arc::new(HostSkillsService::new_with_restriction_product(
-            codex_home.clone(), config.bundled_skills_enabled(), restriction,
+            codex_home.clone(),
+            config.bundled_skills_enabled(),
+            restriction,
         ));
         let plugins = Arc::new(PluginsManager::new_with_options(
-            codex_home.to_path_buf(), restriction, Arc::clone(&auth_manager), skills,
+            codex_home.to_path_buf(),
+            restriction,
+            Arc::clone(&auth_manager),
+            skills,
         ));
         let mcp_manager = McpManager::new(plugins);
         let mcp_config = Arc::new(mcp_manager.runtime_config(&config).await);
         let auth = auth_manager.auth().await;
         let mut servers = codex_mcp::effective_mcp_servers(&mcp_config, auth.as_ref());
-        let selected = servers.get(server)
+        let selected = servers
+            .get(server)
             .ok_or_else(|| anyhow!("selected original Runtime MCP server is not configured"))?;
-        ensure!(selected.enabled(), "selected original Runtime MCP server is disabled");
-        ensure!(selected.config().environment_id == environment_id,
-            "selected original Runtime MCP environment does not match");
+        ensure!(
+            selected.enabled(),
+            "selected original Runtime MCP server is disabled"
+        );
+        ensure!(
+            selected.config().environment_id == environment_id,
+            "selected original Runtime MCP environment does not match"
+        );
         servers.retain(|name, _| name == server);
         let paths = ExecServerRuntimePaths::from_optional_paths(
-            arg0_paths.codex_self_exe.clone(), arg0_paths.codex_linux_sandbox_exe.clone(),
+            arg0_paths.codex_self_exe.clone(),
+            arg0_paths.codex_linux_sandbox_exe.clone(),
         )?;
-        let environments = Arc::new(EnvironmentManager::from_codex_home(
-            codex_home.clone(), Some(paths), config.http_client_factory(),
-        ).await?);
+        let environments = Arc::new(
+            EnvironmentManager::from_codex_home(
+                codex_home.clone(),
+                Some(paths),
+                config.http_client_factory(),
+            )
+            .await?,
+        );
         let context = McpRuntimeContext::new(environments, config.cwd.to_path_buf());
         let runtime = McpRuntime::new(McpRuntimeInput {
             startup_policy: McpStartupPolicy::Eager,
@@ -143,15 +170,24 @@ pub async fn initialize_configured_mcp_server(
             codex_apps_auth_manager: Some(auth_manager),
             elicitation_reviewer: None,
             elicitation_lifecycle: None,
-        }).await;
+        })
+        .await;
         if !runtime.latest_wait_for_server_ready(server, timeout).await {
             runtime.shutdown().await;
             return Err(anyhow!("original Runtime MCP server did not initialize"));
         }
-        let binding = runtime.current_binding().await
+        let binding = runtime
+            .current_binding()
+            .await
             .ok_or_else(|| anyhow!("original Runtime MCP binding is unavailable"))?;
-        Ok(ConfiguredMcpRuntime { runtime, binding, startup: startup.clone() })
-    }).await.context("original Runtime MCP bootstrap deadline expired")??;
+        Ok(ConfiguredMcpRuntime {
+            runtime,
+            binding,
+            startup: startup.clone(),
+        })
+    })
+    .await
+    .context("original Runtime MCP bootstrap deadline expired")??;
     let _ = cancel_on_failure.disarm();
     Ok(result)
 }

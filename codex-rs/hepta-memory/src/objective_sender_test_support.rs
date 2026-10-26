@@ -127,6 +127,9 @@ pub(super) struct Fixture {
     pub temp: TempDir,
 }
 
+// Keep the constructor test-only in this file as well as in its parent module,
+// so the closed product-caller scan cannot mistake this fixture for a host.
+#[cfg(test)]
 impl Fixture {
     pub async fn new() -> Self {
         let temp = TempDir::new().expect("test root");

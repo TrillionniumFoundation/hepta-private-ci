@@ -27,6 +27,10 @@ use crate::HoldoutWriterFenceV1;
 use crate::closure::decode_holdout_plan;
 use crate::closure::encode_holdout_plan;
 
+#[path = "owned_file_lock.rs"]
+mod owned_file_lock;
+use owned_file_lock::OwnedFileLock;
+
 const MAGIC: &[u8; 8] = b"HEPTFC01";
 const HEADER: usize = 72;
 const MAX_BYTES: u64 = 32 * 1024 * 1024;
@@ -57,7 +61,7 @@ impl fmt::Display for LockedFileCasErrorV1 {
 impl StdError for LockedFileCasErrorV1 {}
 
 pub struct LockedFileFinalHoldoutCasStoreV1 {
-    file: File,
+    file: OwnedFileLock,
     binding: Digest32,
     state: Option<FinalHoldoutCasRecordV1>,
     length: u64,
@@ -65,8 +69,8 @@ pub struct LockedFileFinalHoldoutCasStoreV1 {
 }
 
 impl LockedFileFinalHoldoutCasStoreV1 {
-    pub fn create(mut file: File, binding: Digest32) -> Result<Self, LockedFileCasErrorV1> {
-        acquire(&file, binding)?;
+    pub fn create(file: File, binding: Digest32) -> Result<Self, LockedFileCasErrorV1> {
+        let mut file = acquire(file, binding)?;
         if file.metadata().map_err(io_error)?.len() != 0 {
             return Err(LockedFileCasErrorV1::AlreadyInitialized);
         }
@@ -87,18 +91,18 @@ impl LockedFileFinalHoldoutCasStoreV1 {
     }
 
     pub fn recover(
-        mut file: File,
+        file: File,
         binding: Digest32,
         minimum: Option<FinalHoldoutCasAnchorV1>,
     ) -> Result<Self, LockedFileCasErrorV1> {
-        acquire(&file, binding)?;
+        let mut file = acquire(file, binding)?;
         let length = file.metadata().map_err(io_error)?.len();
         if length > MAX_BYTES {
             return Err(LockedFileCasErrorV1::Capacity);
         }
         file.seek(SeekFrom::Start(0)).map_err(io_error)?;
         let mut bytes = Vec::new();
-        (&mut file)
+        (&mut *file)
             .take(MAX_BYTES + 1)
             .read_to_end(&mut bytes)
             .map_err(io_error)?;
@@ -426,14 +430,14 @@ fn record_anchor(record: &FinalHoldoutCasRecordV1) -> FinalHoldoutCasAnchorV1 {
     }
 }
 
-fn acquire(file: &File, binding: Digest32) -> Result<(), LockedFileCasErrorV1> {
+fn acquire(file: File, binding: Digest32) -> Result<OwnedFileLock, LockedFileCasErrorV1> {
     if binding.is_zero() {
         return Err(LockedFileCasErrorV1::Binding);
     }
     if !file.metadata().map_err(io_error)?.is_file() {
         return Err(LockedFileCasErrorV1::NotRegular);
     }
-    file.try_lock().map_err(|error| match error {
+    OwnedFileLock::acquire(file).map_err(|error| match error {
         TryLockError::WouldBlock => LockedFileCasErrorV1::Busy,
         TryLockError::Error(error) => LockedFileCasErrorV1::Io(error.kind()),
     })

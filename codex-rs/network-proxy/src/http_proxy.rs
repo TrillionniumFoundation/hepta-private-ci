@@ -968,20 +968,20 @@ async fn inject_plaintext_credentials_if_enabled(
     Ok(())
 }
 
+#[cfg(any(target_os = "macos", test))]
+fn unix_socket_request_uri(uri: &rama_net::uri::Uri) -> Result<rama_net::uri::Uri> {
+    let path = uri.request_target();
+    path.parse()
+        .with_context(|| format!("invalid unix socket request path: {path}"))
+}
+
 async fn proxy_via_unix_socket(req: Request, socket_path: &str) -> Result<Response> {
     #[cfg(target_os = "macos")]
     {
         let client = UpstreamClient::unix_socket(socket_path);
 
         let (mut parts, body) = req.into_parts();
-        let path = parts
-            .uri
-            .path_and_query()
-            .map(rama_net::uri::PathAndQuery::as_str)
-            .unwrap_or("/");
-        parts.uri = path
-            .parse()
-            .with_context(|| format!("invalid unix socket request path: {path}"))?;
+        parts.uri = unix_socket_request_uri(&parts.uri)?;
         parts.headers.remove("x-unix-socket");
         remove_hop_by_hop_request_headers(&mut parts.headers);
 
@@ -1223,6 +1223,42 @@ mod tests {
     use tokio::net::TcpListener as TokioTcpListener;
     use tokio::time::Duration;
     use tokio::time::timeout;
+
+    #[test]
+    fn unix_socket_request_uri_preserves_encoded_path_and_query() {
+        for (input, expected) in [
+            (
+                "http://example.com/a%2Fb/%25?q=a%2Fb&space=a+b&empty=",
+                "/a%2Fb/%25?q=a%2Fb&space=a+b&empty=",
+            ),
+            ("https://user:pass@example.com/a%2fb?x=%3F", "/a%2fb?x=%3F"),
+            ("http://example.com/path?q=1#fragment", "/path?q=1"),
+            ("/already/origin?x=1&x=2", "/already/origin?x=1&x=2"),
+        ] {
+            let uri = input.parse().expect("original request URI");
+            assert_eq!(unix_socket_request_uri(&uri).unwrap().to_string(), expected);
+        }
+    }
+
+    #[test]
+    fn unix_socket_request_uri_preserves_empty_queries_and_root_paths() {
+        for (input, expected) in [
+            ("http://example.com", "/"),
+            ("http://example.com?", "/?"),
+            ("http://example.com?query=1", "/?query=1"),
+            ("/path?", "/path?"),
+            ("/", "/"),
+        ] {
+            let uri = input.parse().expect("original request URI");
+            assert_eq!(unix_socket_request_uri(&uri).unwrap().to_string(), expected);
+        }
+    }
+
+    #[test]
+    fn unix_socket_request_uri_preserves_asterisk_target() {
+        let uri = "*".parse().expect("original OPTIONS request target");
+        assert_eq!(unix_socket_request_uri(&uri).unwrap().to_string(), "*");
+    }
 
     #[tokio::test]
     async fn http_connect_accept_blocks_in_limited_mode() {

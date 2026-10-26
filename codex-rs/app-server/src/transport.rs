@@ -13,10 +13,10 @@ use tokio_util::sync::CancellationToken;
 use tracing::warn;
 
 pub use codex_app_server_transport::AppServerTransport;
-pub use codex_app_server_transport::InheritedControlSocket;
 pub(crate) use codex_app_server_transport::CHANNEL_CAPACITY;
 pub(crate) use codex_app_server_transport::ConnectionId;
 pub(crate) use codex_app_server_transport::ConnectionOrigin;
+pub use codex_app_server_transport::InheritedControlSocket;
 pub(crate) use codex_app_server_transport::OutgoingMessage;
 pub(crate) use codex_app_server_transport::QueuedOutgoingMessage;
 pub(crate) use codex_app_server_transport::RemoteControlEnableError;

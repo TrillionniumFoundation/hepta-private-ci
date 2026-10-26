@@ -8,6 +8,7 @@ use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
 use codex_hepta_types::FixedQ32;
+use pretty_assertions::assert_eq;
 
 use crate::CrossFoldPartitionV1;
 use crate::CrossFoldPlanV1;
@@ -142,6 +143,60 @@ fn owner(
             Err(error) => panic!("recover owner: {error}"),
         },
     }
+}
+
+#[test]
+fn owning_store_drop_releases_lock_even_while_a_descriptor_alias_remains() {
+    let temp = TempFile::new();
+    let file = temp.create();
+    let alias = file.try_clone().expect("retained descriptor alias");
+    let store = LockedFileFinalHoldoutCasStoreV1::create(file, digest("binding"))
+        .expect("original owning store");
+    let first = owner(store, None);
+    let anchor = first.anchor();
+    assert_eq!(
+        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), Some(anchor))
+            .err(),
+        Some(LockedFileCasErrorV1::Busy),
+        "the still-live owning store must retain its exclusion"
+    );
+    drop(first.into_store());
+    let recovered =
+        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), Some(anchor))
+            .expect("store lock ends with the owning store, not an incidental descriptor");
+    assert_eq!(recovered.anchor(), Some(anchor));
+    assert!(alias.metadata().expect("alias remains open").is_file());
+    drop(recovered);
+    drop(alias);
+}
+
+#[test]
+fn rejected_construction_releases_only_its_own_acquired_lock() {
+    let temp = TempFile::new();
+    let mut file = temp.create();
+    file.write_all(b"invalid header")
+        .expect("controlled invalid file");
+    let alias = file.try_clone().expect("retained descriptor alias");
+    assert_eq!(
+        LockedFileFinalHoldoutCasStoreV1::create(file, digest("binding")).err(),
+        Some(LockedFileCasErrorV1::AlreadyInitialized)
+    );
+    let next = temp.open();
+    next.try_lock().expect("rejected create released its lock");
+    next.unlock().expect("release diagnostic lock");
+    drop(next);
+    let file = temp.open();
+    let recovery_alias = file.try_clone().expect("retained recovery alias");
+    assert_eq!(
+        LockedFileFinalHoldoutCasStoreV1::recover(file, digest("binding"), None).err(),
+        Some(LockedFileCasErrorV1::MissingHeader)
+    );
+    let next = temp.open();
+    next.try_lock()
+        .expect("rejected recovery released its lock");
+    next.unlock().expect("release diagnostic lock");
+    drop(recovery_alias);
+    drop(alias);
 }
 
 #[test]

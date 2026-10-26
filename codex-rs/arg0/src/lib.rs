@@ -158,7 +158,6 @@ fn dispatch_helpers() {
         };
         std::process::exit(exit_code);
     }
-
 }
 
 fn prepare_regular_invocation() -> Option<Arg0PathEntryGuard> {
