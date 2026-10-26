@@ -91,7 +91,7 @@ impl NotesThreadSeedReceipt {
                 .any(|digest| {
                     digest
                         .parse::<Digest32>()
-                        .map_or(true, |digest| digest.is_zero())
+                        .map_or(true, codex_hepta_types::Digest32::is_zero)
                 })
             || self.thread_id.is_empty()
             || self.thread_id.len() > 128

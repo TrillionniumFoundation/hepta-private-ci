@@ -407,11 +407,9 @@ mod tests {
             .enable(Feature::HeptaMemory)
             .enable(Feature::HeptaCognitiveWrite);
         let mut standard_features = features.clone();
-        let standard = super::app_server_runtime_options(
-            &identity,
-            CognitiveRuntime::Available(store.clone()),
-        )
-        .expect("ordinary product runtime options");
+        let standard =
+            super::app_server_runtime_options(&identity, CognitiveRuntime::Available(store))
+                .expect("ordinary product runtime options");
         for (feature, enabled) in standard.required_feature_states {
             standard_features.set_enabled(feature, enabled);
         }

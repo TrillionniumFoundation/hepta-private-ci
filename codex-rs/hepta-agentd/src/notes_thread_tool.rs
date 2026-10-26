@@ -330,7 +330,7 @@ impl AgentdNotesThreadToolRuntime {
         provenance: Value,
         sender_observation_retained: Option<bool>,
     ) -> Result<Value, AgentdError> {
-        let run_id = self.adapter.run_id(&request_id)?;
+        let run_id = self.adapter.run_id(request_id)?;
         let original = self
             .adapter
             .writer
@@ -344,7 +344,7 @@ impl AgentdNotesThreadToolRuntime {
             .await?;
         let request_sha256 = self
             .adapter
-            .retained_thread_request_sha256(&request_id, &original_call_id)
+            .retained_thread_request_sha256(request_id, original_call_id)
             .await?;
         let payload: Value = serde_json::from_str(&original.payload_json)?;
         let original_target: codex_hepta_memory::NotesTargetIdentity =
