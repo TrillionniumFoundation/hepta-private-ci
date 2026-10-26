@@ -338,3 +338,7 @@ fn need(value: bool, message: &str) -> Result<(), String> {
         Err(format!("controlled Cell material: {message}"))
     }
 }
+
+#[cfg(test)]
+#[path = "smollm_cell_material_tests.rs"]
+mod tests;
