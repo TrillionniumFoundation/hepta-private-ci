@@ -127,6 +127,9 @@ pub(super) struct Fixture {
     pub temp: TempDir,
 }
 
+// Keep the external fixture's privileged constructor explicitly test-only even
+// for source checks that inspect this file independently of its parent module.
+#[cfg(test)]
 impl Fixture {
     pub async fn new() -> Self {
         let temp = TempDir::new().expect("test root");
