@@ -159,6 +159,7 @@ impl HostCognitiveCheckpoint {
             clock,
             closed: AtomicBool::new(false),
             exchange_lock: Mutex::new(()),
+            material: None,
         })
     }
 }

@@ -56,6 +56,10 @@ use material::RootCheckpointMaterial;
 pub(crate) use material::RootMaterialProfile;
 use material::SourceCustody;
 
+#[path = "authority_host_checkpoint_material_binding.rs"]
+mod material_binding;
+use material_binding::FreshMaterial;
+
 /// Actual trusted launcher registration. The peer cannot replace these fields.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct HostCognitiveCheckpointRegistration {
@@ -74,6 +78,7 @@ pub struct HostCognitiveCheckpoint {
     clock: Arc<dyn AuthorityClock>,
     closed: AtomicBool,
     exchange_lock: Mutex<()>,
+    material: Option<RootCheckpointMaterial>,
 }
 
 impl HostCognitiveCheckpoint {
@@ -86,6 +91,22 @@ impl HostCognitiveCheckpoint {
         registration: HostCognitiveCheckpointRegistration,
         initial_cut: CognitiveRecoveryAnchor,
         clock: Arc<dyn AuthorityClock>,
+    ) -> Result<Self, AuthorityTrustError> {
+        Self::initialize_fresh_inner(
+            directory,
+            registration,
+            initial_cut,
+            clock,
+            FreshMaterial::LogicalOnly,
+        )
+    }
+
+    fn initialize_fresh_inner(
+        directory: Arc<RootAuthorityDirectory>,
+        registration: HostCognitiveCheckpointRegistration,
+        initial_cut: CognitiveRecoveryAnchor,
+        clock: Arc<dyn AuthorityClock>,
+        material: FreshMaterial,
     ) -> Result<Self, AuthorityTrustError> {
         validate_registration(&registration)?;
         validate_cut(&registration, &initial_cut)?;
@@ -105,6 +126,9 @@ impl HostCognitiveCheckpoint {
             proposal: None,
             last_request: None,
         };
+        // The independently checked image and immutable candidate record are
+        // durable before the ORIGINAL Current owner can publish genesis.
+        let material = material.prepare(&head)?;
         let store = HostAuthorityFrontierStore::initialize(directory, STORE_OWNER.into(), head)?;
         let result = Self {
             registration,
@@ -112,6 +136,7 @@ impl HostCognitiveCheckpoint {
             clock,
             closed: AtomicBool::new(false),
             exchange_lock: Mutex::new(()),
+            material,
         };
         result.load()?;
         if !result.within_expiry()? {
@@ -134,6 +159,7 @@ impl HostCognitiveCheckpoint {
             clock,
             closed: AtomicBool::new(false),
             exchange_lock: Mutex::new(()),
+            material: None,
         };
         result.load()?;
         Ok(result)
@@ -155,6 +181,7 @@ impl HostCognitiveCheckpoint {
         if head.phase != CognitiveCheckpointPhase::Current {
             return Err(AuthorityTrustError::Invalid);
         }
+        self.verify_material(&head).map_err(|_| self.close())?;
         if !self.within_expiry()? {
             return Err(self.close());
         }
@@ -271,6 +298,12 @@ impl HostCognitiveCheckpoint {
             Ok(next) => next,
             Err(reason) => return refused(reason),
         };
+        // Only the original validated next transition may bind a live image.
+        // A record prepared before a failed CAS never becomes a Current head.
+        if self.prepare_material(&next).is_err() {
+            self.close();
+            return unknown();
+        }
         match self.store.compare_and_set(STORE_OWNER, &current, &next) {
             Ok(()) => {}
             Err(AuthorityTrustError::Conflict) => {
@@ -294,13 +327,16 @@ impl HostCognitiveCheckpoint {
         request: &CognitiveCheckpointRequest,
         head: CognitiveCheckpointHead,
     ) -> CognitiveCheckpointResponse {
-        match self.within_expiry().and_then(|valid| {
-            if valid {
-                token_for(&head)
-            } else {
-                Err(AuthorityTrustError::Unavailable)
-            }
-        }) {
+        match self
+            .verify_material(&head)
+            .and_then(|()| self.within_expiry())
+            .and_then(|valid| {
+                if valid {
+                    token_for(&head)
+                } else {
+                    Err(AuthorityTrustError::Unavailable)
+                }
+            }) {
             Ok(token) => CognitiveCheckpointResponse {
                 schema_version: 1,
                 request_id: request.request_id.clone(),

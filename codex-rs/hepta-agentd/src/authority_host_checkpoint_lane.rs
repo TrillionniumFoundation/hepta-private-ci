@@ -15,6 +15,26 @@ pub(super) struct RegisteredCheckpoint {
 }
 
 impl RegisteredCheckpoint {
+    pub(super) fn initialize_fresh_with_material(
+        directory: Arc<RootAuthorityDirectory>,
+        registration: HostCognitiveCheckpointRegistration,
+        cut: codex_hepta_memory::CognitiveRecoveryAnchor,
+        clock: Arc<HostAuthorityClock>,
+        profile: crate::authority_host_checkpoint::RootMaterialProfile,
+    ) -> io::Result<Self> {
+        Ok(Self {
+            peer: registration.peer_lifetime.clone(),
+            backend: HostCognitiveCheckpoint::initialize_fresh_with_material(
+                directory,
+                registration,
+                cut,
+                clock,
+                profile,
+            )
+            .map_err(io::Error::other)?,
+        })
+    }
+
     pub(super) fn initialize_fresh(
         directory: Arc<RootAuthorityDirectory>,
         registration: HostCognitiveCheckpointRegistration,
@@ -97,5 +117,25 @@ impl RegisteredWriter {
             },
             peer_lifetime,
         })
+    }
+}
+
+impl HostAuthorityService {
+    pub(crate) fn require_existing_physical_material(
+        mut self,
+        profile: crate::authority_host_checkpoint::RootMaterialProfile,
+    ) -> io::Result<Self> {
+        let checkpoint = self
+            .checkpoint
+            .take()
+            .ok_or_else(|| io::Error::other("original checkpoint required"))?;
+        self.checkpoint = Some(RegisteredCheckpoint {
+            backend: checkpoint
+                .backend
+                .require_existing_material(profile)
+                .map_err(io::Error::other)?,
+            peer: checkpoint.peer,
+        });
+        Ok(self)
     }
 }

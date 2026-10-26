@@ -8,6 +8,9 @@ mod filesystem;
 #[path = "root_notes_startup.rs"]
 mod notes_startup;
 
+#[path = "authority_host_session_material.rs"]
+mod material;
+
 /// One Root session's immutable registration, retained actual process handle
 /// and original service. This wrapper is not Clone and creates no additional
 /// issuer, clock, checkpoint or consumer owner during bootstrap capture.

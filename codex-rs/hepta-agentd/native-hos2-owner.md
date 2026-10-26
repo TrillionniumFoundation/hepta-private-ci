@@ -69,7 +69,21 @@ The original publisher pidfd is checked before and after live capture. The
 worker runs asynchronous SQLite outside the Root's synchronous publication
 mutex; the original caller retains its publication transaction while waiting.
 
-This stage adds private implementation only. It has not yet been compiled in
-the final combined source or executed with actual Root/Agentd credentials.
-It is not a restore/install permission, a replacement Current owner, a writer
-grant, or evidence of a completed native G2 product.
+`PreparedHostAuthoritySession::prepare_fresh_with_physical_material` is the
+explicit product constructor. It uses the original registered-writer factory
+and opaque fresh-store witness; its original writer lock stays held until the
+material-backed genesis and both original consumer heads are published. The
+fixed material directory is `state_dir/cognitive-material-v1`, with the same
+Root0700 ancestry requirements as the original owners. The original filesystem
+handoff then releases only Agentd data, not this Root material directory.
+
+For this constructor, each original transition to Current captures and verifies
+its image before the original CAS. ReadHead, replay ACK and Root handoff verify
+the retained material of Current before returning it. A material error closes
+the original publisher object. Dirty/Publishing/Fenced are never promoted by
+material lookup. `open_with_physical_material` reopens only the existing live
+registration and verifies existing material; it cannot repair a missing image.
+
+These source changes have not yet been compiled in the final combined source
+or executed with actual Root/Agentd credentials. They do not yet expose a
+restore/install permission and do not establish a completed native G2 product.
