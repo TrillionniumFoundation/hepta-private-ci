@@ -1,0 +1,23 @@
+{
+  "schema": "hepta.p41-probe-request-rustfmt-exact-donor.v1",
+  "date_utc": "2026-10-26",
+  "parent_pr": 4049,
+  "parent_head": "fd2ae0e60797c415cce4887e647264134ec1b306",
+  "failing_run": 40413264366,
+  "failing_job": 121889699791,
+  "preceding_b4_evidence": "CALLERS verifier PASS_HEPTA_CALLER_CLOSED_SET; kernel.authority independently 17/17 PASS; repo-checks build-test subsequently failed at just fmt-check",
+  "native_diagnostic": "cargo fmt -- --config imports_granularity=Item --check reports exactly 2 diffs, both in codex-rs/hepta-agent-qualification/src/probe_request_tests.rs:57 and :68; exit 1",
+  "donor_pr": 4024,
+  "donor_head": "7e158141adf098709137c2c6254e84b456356440",
+  "verified_current_before_blob": "4161806e8c9e529c8a5af00a735fe7dd737b2df0",
+  "verified_donor_postimage_blob": "13a3b5b138d174b20df4ac5cf54fae86ad2b4af2",
+  "donor_base_same_as_current_before_blob": true,
+  "modification": "Exact two rustfmt-only hunks; original assert_eq and PreparedOrdinaryWire invocation preserve equal operands and semantics",
+  "original_tests_preserved": true,
+  "product_code_modified": false,
+  "authorizing_checks_modified": false,
+  "rust_dependencies_modified": false,
+  "other_owning_blockers": "cargo-deny four RustSec advisories and banned async-trait; Windows outside-root/delete, memory, AppServer, combined CI, owner-backed policy, target hardware perf/energy",
+  "no_ci_success_claim": true,
+  "safety_mode": "SHADOW_ONLY / DENY_ALL / HOLD_NO_GO"
+}
