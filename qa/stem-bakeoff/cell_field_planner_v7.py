@@ -70,12 +70,21 @@ def make_plan(state, train, panels, old_anchors, *, method, horizon, dt=.02,
                 row["reason"] = "relinearization unavailable; prior qualified plan retained"
             break
         proposal = planned["actions"]
+        bound = action_bound/np.sqrt(state.parameter_count)
+        if np.any(np.abs(nominal) > bound) or np.any(np.abs(proposal) > bound):
+            raise ValueError("both interpolation endpoints must already satisfy the original box")
         fractions = [1.] if iteration == 0 else [1., .5, .25]
         for fraction in fractions:
-            trial = nominal+fraction*(proposal-nominal)
+            # Subtraction followed by addition can move even fraction=1 one
+            # ulp past its already bounded endpoint. Keep that endpoint exact;
+            # partial convex combinations project only onto the identical box.
+            raw_trial = proposal.copy() if fraction == 1. else (1.-fraction)*nominal+fraction*proposal
+            trial = np.clip(raw_trial, -bound, bound)
+            projection = float(np.max(np.abs(trial-raw_trial)))
             losses = actual_terminal(state, train, panels, trial, dt)
             value, parts = merit(losses, trial)
-            row["trials"].append({"fraction": fraction, "merit": value, **parts})
+            row["trials"].append({"fraction": fraction, "merit": value,
+                "same_box_roundoff_projection_linf": projection, **parts})
             if current_merit is None or value < current_merit-1e-12:
                 nominal, current_merit = trial, value
                 row.update(accepted=True, accepted_fraction=fraction)

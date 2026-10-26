@@ -61,7 +61,8 @@ def save_result(directory, identity, warmup, inputs, anchors, policy, configurat
         "state_sha256": [state.digest() for state in result["states"]],
         "controller_sha256": [hashlib.sha256(canonical(c)).hexdigest() for c in result["controllers"]]}
     trace_file = write_compressed(directory/"trace.json.gz", trace)
-    checkpoints = {str(step): result["controllers"][step] for step in CHECKPOINT_STEPS if step < len(result["controllers"])}
+    retained_steps = sorted(set(CHECKPOINT_STEPS) | {len(result["controllers"])-1})
+    checkpoints = {str(step): result["controllers"][step] for step in retained_steps if step < len(result["controllers"])}
     controller_file = write_compressed(directory/"controller-checkpoints.json.gz", checkpoints)
     errors = [value for value in (record.get("error"), audit.get("error"), audit.get("actual_errors"), evaluation_error) if value]
     row = {**identity, "policy": policy, "status": record["status"], "completed_steps": record["completed_steps"],

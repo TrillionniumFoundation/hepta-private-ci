@@ -19,6 +19,23 @@ def fixture(mode):
 
 
 class ActualPanelPlannerTests(unittest.TestCase):
+    def test_exact_full_step_keeps_both_head_box_endpoints_despite_subtraction_roundoff(self):
+        for mode, value in (("linear", -.26262343090758195), ("gated", -.5390902246634411)):
+            state, train, panels, anchors = fixture(mode)
+            bound = 4/np.sqrt(state.parameter_count)
+            self.assertGreater(value+(bound-value), bound)
+            shape = (8, state.parameter_count)
+            responses = [{"actions": np.full(shape, value), "record": {"status": "qualified"}},
+                {"actions": np.full(shape, bound), "record": {"status": "qualified"}},
+                {"actions": None, "record": {"status": "unresolved"}}]
+            losses = [np.r_[np.full(4, v), anchors-.01] for v in (2., 1.)]
+            with patch("cell_field_planner_v7.solve_terminal", side_effect=responses), \
+                    patch("cell_field_planner_v7.actual_terminal", side_effect=losses):
+                plan = make_plan(state, train, panels, anchors, method="full", horizon=8, relinearizations=2)
+            np.testing.assert_array_equal(plan["actions"], np.full(shape, bound))
+            self.assertTrue(np.all(np.abs(plan["actions"]) <= bound))
+            self.assertEqual(plan["record"]["selected_fraction"], 1.)
+
     def test_actual_terminal_matches_full_state_advance_with_nonzero_nominal(self):
         for mode in ("linear", "gated"):
             state, train, panels, actions = controlled_example(mode)
