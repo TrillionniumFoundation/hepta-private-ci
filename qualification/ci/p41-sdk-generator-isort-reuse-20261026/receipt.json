@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.qualification.native-sdk-generator-exact-blob-reuse.v1",
+  "observed_date_utc": "2026-10-26",
+  "source_repo": "TrillionniumFoundation/hepta-private-ci",
+  "repair_parent_pr": 4005,
+  "repair_parent_head": "71d7da4458ffd4c3a37ee650fe9f00aade927012",
+  "cause_observation": {
+    "workflow_run": 40275160497,
+    "workflow_job": 121436153623,
+    "result": "FAILURE",
+    "test": "tests/test_contract_generation.py::test_generated_files_are_up_to_date",
+    "summary": "1 failed, 130 passed, 38 skipped",
+    "checked_in_artifact": "sdk/python/src/openai_codex/generated/v2_all.py",
+    "observed_problem": "Regeneration changes generated Python artifact import ordering."
+  },
+  "original_generator_blob": "ed9282e5c47bfc78a65c5bbb9c4523c7f8d1a830",
+  "source_fix_reference_pr": 3998,
+  "source_fix_reference_head": "bc85ae402776cb0debe3a47b887f0aa60d361bde",
+  "source_fix_generator_blob": "18004965d8737e2acd9db561e67af9356dd5a90d",
+  "current_repair_code_commit": "eb927aa2301c94c79fa8f467fd058d46b07b59b1",
+  "change_scope": [
+    "sdk/python/scripts/update_sdk_artifacts.py"
+  ],
+  "source_fix_behavior": "Run already-locked isort prior to ruff-format for generated v2 schema classes.",
+  "generated_artifact_blob_same_across_source_and_repair_parent": "bcb8973df10a46ce688a50056aba7cebde7399be",
+  "locked_isort_version": "6.1.0",
+  "reference_native_success": {
+    "run": 40270985944,
+    "job": 121414091034,
+    "result": "SUCCESS",
+    "summary": "131 passed, 38 skipped"
+  },
+  "direct_owner_checks_on_new_composed_head": {
+    "status": "PENDING_NATIVE_EXECUTION",
+    "claimed_success": false
+  },
+  "inherited_blockers": [
+    "Windows outside-root DELETE",
+    "Windows Memory cold-recovery",
+    "AppServer plugin TTL overall gate",
+    "cargo-deny and RustSec",
+    "final composed required CI",
+    "real owner-backed full policy learning",
+    "target hardware p95/p99 and energy"
+  ],
+  "safety": {
+    "mode": "SHADOW_ONLY",
+    "authority": "DENY_ALL",
+    "production": "HOLD_NO_GO",
+    "original_negative_assertions_modified": false,
+    "rust_dependencies_changed": false
+  }
+}
