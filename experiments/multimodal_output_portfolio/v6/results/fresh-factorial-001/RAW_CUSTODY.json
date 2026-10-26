@@ -1,0 +1,30 @@
+{
+  "all_scientific_and_failure_evidence_retained": true,
+  "metadata_archive": {
+    "bytes": 3761485,
+    "name": "reporting-metadata.tar.gz",
+    "regular_members": 74,
+    "sha256": "7a52402940d92489f4625bac035160d0eee3cf51c872422f5184445af6319735",
+    "transfer_receipt": "provenance/verified-transfer.json"
+  },
+  "owner": {
+    "bytes": 96326039,
+    "files": 4409,
+    "manifest": "provenance/owner-manifest.json"
+  },
+  "protocol_sha256": "a3531af321d47e82d98d31d2bb5db0cb9eb87809ac30a470468a7b7cde5c1e46",
+  "publication_status": "original archives retained and byte-verified on main; root must attach originals or lossless verified parts when publishing this report",
+  "raw_archive": {
+    "bytes": 82855926,
+    "main_byte_verification_receipt": "provenance/archive-verification.json",
+    "member_manifest": "provenance/raw-archive-members.json",
+    "name": "raw-evidence.tar.gz",
+    "regular_member_payload_bytes": 96384286,
+    "regular_members": 4417,
+    "sha256": "ce836866d54bf5ea3a6d4d43cbde5f34c31017fcfffcadb60e6068055e23b62c"
+  },
+  "report_package_contains_large_original_archives": false,
+  "schema": "hepta.ndu-fresh.result-archive-custody.v1",
+  "scope": "The metadata archive contains complete JSON/log evidence for analysis reproduction. The raw archive additionally preserves all original model/array/image/text payloads. Neither is a replacement for the missing historical full-002 archive.",
+  "source_commit": "ee7609048da0c12d542765e29422c0d3c647e0a5"
+}
