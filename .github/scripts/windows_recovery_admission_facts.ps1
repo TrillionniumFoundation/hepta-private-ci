@@ -76,6 +76,36 @@ public static class NativeRecoveryFacts {
   bool last=MoveFileExW(path,moved,1);int finalError=last?0:Marshal.GetLastWin32Error();attempts.Add(new {HeldDirectory=false,HeldDatabase=false,Ok=last,Error=finalError});
   return new {Flush=flushFacts,RenameAttempts=attempts,FinalHomePath=last?moved:path};
  }
+ [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool DefineDosDeviceW(uint flags,string name,string target);
+ [DllImport("kernel32.dll",SetLastError=true)] static extern uint GetLogicalDrives();
+ [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)] static extern uint QueryDosDeviceW(string name,char[] buffer,uint length);
+ static string Identity(SafeFileHandle h) {Id id;if(!GetId(h,18,out id,(uint)Marshal.SizeOf<Id>()))throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());return id.Volume.ToString("X16")+":"+id.Low.ToString("X16")+":"+id.High.ToString("X16");}
+ public static object ObserveNamespaceSwap(string first,string second) {
+  string drive=null;uint used=GetLogicalDrives();char[] query=new char[4096];
+  for(char c='Z';c>='F';c--){if((used&(1u<<(c-'A')))!=0)continue;string name=c+":";uint size=QueryDosDeviceW(name,query,(uint)query.Length);int error=size==0?Marshal.GetLastWin32Error():0;if(size==0 && error==2){drive=name;break;}}
+  if(drive==null)throw new Exception("No unused local DOS drive for bounded namespace observation");
+  string a=@"\??\"+System.IO.Path.GetFullPath(first),b=@"\??\"+System.IO.Path.GetFullPath(second);bool definedA=false,definedB=false;
+  try {
+   if(!DefineDosDeviceW(9,drive,a))throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());definedA=true;
+   using(SafeFileHandle old=CreateFileW(@"\\?\"+drive+@"\",0x1200a0,7,IntPtr.Zero,3,0x2200000,IntPtr.Zero)) {
+    if(old.IsInvalid)throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());int status;
+    using(SafeFileHandle home=Relative(old,"same-private-home",true,out status)) {
+     if(home==null)throw new Exception("Alias home NtCreateFile status "+status.ToString("X8"));
+     using(SafeFileHandle db=Relative(home,"original.sqlite3",false,out status)) {
+      if(db==null)throw new Exception("Alias database NtCreateFile status "+status.ToString("X8"));string before=Identity(old),heldDb=Identity(db);uint type=GetDriveTypeW(drive+@"\");
+      if(!DefineDosDeviceW(15,drive,a))throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());definedA=false;
+      if(!DefineDosDeviceW(9,drive,b))throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());definedB=true;
+      using(SafeFileHandle next=CreateFileW(@"\\?\"+drive+@"\",0x1200a0,7,IntPtr.Zero,3,0x2200000,IntPtr.Zero)) {
+       if(next.IsInvalid)throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+       return new {Drive=drive,DriveType=type,HeldDatabaseUnchanged=Identity(db)==heldDb,OldRootIdentity=before,NewRootIdentity=Identity(next),RootIdentityChanged=Identity(next)!=before};
+      }
+     }
+    }
+   }
+  } finally {
+   int error=0;if(definedB && !DefineDosDeviceW(15,drive,b))error=Marshal.GetLastWin32Error();if(definedA && !DefineDosDeviceW(15,drive,a))error=Marshal.GetLastWin32Error();if(error!=0)throw new System.ComponentModel.Win32Exception(error);
+  }
+ }
  public static object Snapshot(SafeFileHandle h) {
   Basic basic; Standard standard; Id id; Tag tag;
   bool b=GetBasic(h,0,out basic,(uint)Marshal.SizeOf<Basic>());int be=Marshal.GetLastWin32Error();
@@ -112,6 +142,15 @@ $created.Dispose()
 $privateSecurityBefore = SecurityFacts $privateRoot
 $privateIo = [NativeRecoveryFacts]::ObservePrivateCopyIo($privateRoot)
 $privateSecurityAfter = SecurityFacts $privateIo.FinalHomePath
+$aliasRoots = @((Join-Path $OutputRoot 'namespace-original'), (Join-Path $OutputRoot 'namespace-replacement'))
+foreach ($aliasRoot in $aliasRoots) {
+    New-Item -ItemType Directory -Path $aliasRoot | Out-Null
+    $aliasHome = Join-Path $aliasRoot 'same-private-home'
+    $directory = [NativeRecoveryFacts]::CreatePrivateDirectory($aliasHome, $identity.User.Value)
+    $directory.Dispose()
+    [System.IO.File]::WriteAllBytes((Join-Path $aliasHome 'original.sqlite3'), [System.Text.Encoding]::UTF8.GetBytes('same original bytes'))
+}
+$namespaceSwap = [NativeRecoveryFacts]::ObserveNamespaceSwap($aliasRoots[0], $aliasRoots[1])
 $caseRoot = Join-Path $OutputRoot 'default-private-home'
 New-Item -ItemType Directory -Path $caseRoot | Out-Null
 [System.IO.File]::WriteAllBytes((Join-Path $caseRoot 'original.sqlite3'), [System.Text.Encoding]::UTF8.GetBytes('original database bytes'))
@@ -142,7 +181,7 @@ try {
         schema='hepta.windows-recovery-admission-facts.v1'; sourceHead=$ExpectedHead; measuredStateBase=$base;
         status='OBSERVATION_ONLY'; currentUserSid=$identity.User.Value; currentOwnerSid=$identity.Owner.Value;
         platform=[Environment]::OSVersion.ToString(); drive=$drive; driveType=[NativeRecoveryFacts]::GetDriveTypeW($drive);
-        components=$components; database=$db; privateCreatedSnapshot=$privateCreatedSnapshot; privateSecurityBefore=$privateSecurityBefore; privateIo=$privateIo; privateSecurityAfter=$privateSecurityAfter; measuredTrees=$pinned; authorityGranted=$false; nativeBackendQualification=$false; finalProductQualification=$false
+        components=$components; database=$db; privateCreatedSnapshot=$privateCreatedSnapshot; privateSecurityBefore=$privateSecurityBefore; privateIo=$privateIo; privateSecurityAfter=$privateSecurityAfter; namespaceSwap=$namespaceSwap; measuredTrees=$pinned; authorityGranted=$false; nativeBackendQualification=$false; finalProductQualification=$false
     }
     $receipt | ConvertTo-Json -Depth 12 | Set-Content -Encoding utf8 (Join-Path $OutputRoot 'facts.json')
     $receipt | ConvertTo-Json -Depth 12
