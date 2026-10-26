@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.p41.cli-doctor-timeout-compose-receipt.v1",
+  "date_utc": "2026-10-26",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "source_parent_sha": "995499fd14038e3858ec0be19085e1eae542007c",
+  "donor_pr": 3396,
+  "donor_commit": "e9e0b3d9978b022c46ab717a07ee76a9f787a735",
+  "original_blob": "3fba0e2fdfe012d86cc9bbd9886261ff7fd7ac1f",
+  "donor_blob": "a0f04fa7f89d12d6a463523db38a35002bf54915",
+  "source_commit": "b63db79c8567c35594ec1356edf69c2295ff7d3b",
+  "source_blob": "a0f04fa7f89d12d6a463523db38a35002bf54915",
+  "owning_failure": {
+    "pr": 4028,
+    "source_sha": "995499fd14038e3858ec0be19085e1eae542007c",
+    "run": 40334000974,
+    "job": 121676985546,
+    "platform": "windows-latest",
+    "test": "doctor::tests::mcp_http_probe_falls_back_to_get_when_head_times_out",
+    "expected": "Ok(HTTP 405)",
+    "actual": "Err(HEAD request timed out; GET request timed out)",
+    "job_terminal": "failure"
+  },
+  "change_scope": {
+    "only_path": "codex-rs/cli/src/doctor.rs",
+    "changed_test": "mcp_http_probe_falls_back_to_get_when_head_times_out",
+    "fixture_head_hold": "50ms -> 3s",
+    "request_timeout": "10ms -> 1s",
+    "original_assertion_preserved": true,
+    "production_logic_changed": false,
+    "deny_policy_changed": false,
+    "dependencies_changed": false,
+    "test_removed": false
+  },
+  "qualification": {
+    "status": "CANDIDATE_NOT_QUALIFIED",
+    "current_source_native_tests": "NOT_RUN",
+    "external_donor_native_scope": "not a substitute",
+    "must_pass": [
+      "original owning Windows CLI test on exact new source",
+      "full applicable Windows/macOS/Linux Bazel and CI",
+      "Architecture required (not metadata-only)",
+      "V8 actual builds if applicable",
+      "Cargo-deny and RustSec",
+      "B4 authority caller proof",
+      "Windows sandbox original outside-root DELETE",
+      "Memory recovery and AppServer TTL"
+    ]
+  },
+  "research": "P39 2026-10-22 original frozen pairing screen remains closed in its declared scope",
+  "production": "SHADOW_ONLY/DENY_ALL/HOLD_NO_GO",
+  "user_authorized_isolated_draft": true
+}
