@@ -1,0 +1,413 @@
+diff --git a/widgets/src/text_input.rs b/widgets/src/text_input.rs
+index c62cf13..fef52b3 100644
+--- a/widgets/src/text_input.rs
++++ b/widgets/src/text_input.rs
+@@ -662,6 +662,14 @@ pub struct TextInput {
+     composition_boundary: bool,
+     #[rust]
+     composition_cancelled: bool,
++    // Production-time ownership and ordered committed snapshots, not another
++    // composition implementation. CompositionEdit remains the only IME state.
++    #[rust]
++    edit_scope: u64,
++    #[rust]
++    edit_sequence: u64,
++    #[rust]
++    edit_before: Option<TextInputState>,
+     /// Frame ID when IME input was last received (echo prevention)
+     #[rust]
+     ime_update_frame: u64,
+@@ -691,7 +699,62 @@ impl ScriptHook for TextInput {
+ }
+ 
+ impl TextInput {
++    fn committed_snapshot(&self) -> TextInputState {
++        let mut state = TextInputState {
++            text: self.text.clone(), password_text: self.password_text.clone(),
++            selection: self.selection, history: self.history.clone(),
++        };
++        if let Some(pending) = &self.composition_edit {
++            state.text.replace_range(self.composition_start..self.composition_end, &pending.replaced);
++            state.selection = pending.selection;
++            state.password_text.clear();
++        }
++        state
++    }
++
++    fn capture_edit(&mut self) {
++        self.edit_before = (self.edit_scope != 0).then(|| self.committed_snapshot());
++    }
++
++    fn emit_outcome(&mut self, cx: &mut Cx, uid: WidgetUid, phase: TextEditPhase) {
++        let before = self.edit_before.take();
++        if self.edit_scope == 0 { return; }
++        self.edit_sequence = self.edit_sequence.checked_add(1).expect("text edit sequence exhausted");
++        cx.widget_action(uid, TextInputAction::EditOutcome(TextEditOutcome {
++            scope: self.edit_scope, sequence: self.edit_sequence, phase,
++            before, state: self.committed_snapshot(),
++        }));
++    }
++
++    fn restore_checkpoint(&mut self, cx: &mut Cx, state: TextInputState) {
++        // Rejection restores an accepted committed projection silently; queued
++        // successors are invalidated by the caller's subsequent scope rotation.
++        self.clear_composition();
++        self.composition_boundary = false;
++        self.composition_cancelled = false;
++        self.edit_before = None;
++        self.text = state.text;
++        self.password_text = state.password_text;
++        self.selection = state.selection;
++        self.history = state.history;
++        self.laidout_text = None;
++        self.needs_scroll_to_cursor = true;
++        self.last_sent_ime_sel_start = usize::MAX;
++        self.last_sent_ime_sel_end = usize::MAX;
++        self.check_text_is_empty(cx, Animate::Yes);
++        self.draw_bg.redraw(cx);
++    }
++
+     fn emit_change(&mut self, cx: &mut Cx, uid: WidgetUid) {
++        // Cancellation already emitted its terminal outcome at the owner.
++        // Failed/no-op commands must not reuse an earlier before checkpoint.
++        if self.edit_before.is_some() {
++            self.emit_outcome(cx, uid, TextEditPhase::Committed);
++        }
++        self.emit_legacy_change(cx, uid);
++    }
++
++    fn emit_legacy_change(&mut self, cx: &mut Cx, uid: WidgetUid) {
+         cx.widget_action(uid, TextInputAction::Changed(self.text.clone()));
+         if let Some(handler) = self.on_change.as_object() {
+             let text = self.text.clone();
+@@ -932,6 +995,8 @@ impl TextInput {
+     }
+ 
+     pub fn set_cursor(&mut self, cx: &mut Cx, cursor: Cursor, keep_selection: bool) {
++        // Preserve the restored committed anchor, not the old preview caret.
++        self.cancel_composition(cx);
+         self.set_selection(
+             cx,
+             Selection {
+@@ -1779,6 +1844,7 @@ impl TextInput {
+         text: &str,
+         undo: UndoGroup,
+     ) -> Result<(), ReplaceRangeError> {
++        self.edit_before = None;
+         if self.is_read_only {
+             return Err(ReplaceRangeError::ReadOnly);
+         }
+@@ -1815,6 +1881,9 @@ impl TextInput {
+         }
+         let uid = self.widget_uid();
+         self.preserved_selection_cursor = None;
++        // Legal edits outside a preview are committed edits in the projected
++        // coordinate space, even while the widget is still composing.
++        self.capture_edit();
+         if undo == UndoGroup::New {
+             self.history.force_new_edit_group();
+         }
+@@ -2215,6 +2284,7 @@ impl TextInput {
+         self.laidout_text = None;
+         self.check_text_is_empty(cx, Animate::Yes);
+         self.draw_bg.redraw(cx);
++        self.emit_outcome(cx, self.widget_uid(), TextEditPhase::Cancelled);
+         true
+     }
+ 
+@@ -2340,6 +2410,7 @@ impl TextInput {
+ 
+     fn undo(&mut self, cx: &mut Cx) -> bool {
+         if self.cancel_composition(cx) { return true; }
++        self.capture_edit();
+         if let Some(new_selection) = self.history.undo(self.selection, &mut self.text) {
+             // The text the IME was composing is gone, so the composition is too.
+             self.clear_composition();
+@@ -2349,12 +2420,14 @@ impl TextInput {
+             self.check_text_is_empty(cx, Animate::Yes);
+             true
+         } else {
++            self.edit_before = None;
+             false
+         }
+     }
+ 
+     fn redo(&mut self, cx: &mut Cx) -> bool {
+         if self.cancel_composition(cx) { return true; }
++        self.capture_edit();
+         if let Some(new_selection) = self.history.redo(self.selection, &mut self.text) {
+             self.clear_composition();
+             self.laidout_text = None;
+@@ -2363,6 +2436,7 @@ impl TextInput {
+             self.check_text_is_empty(cx, Animate::Yes);
+             true
+         } else {
++            self.edit_before = None;
+             false
+         }
+     }
+@@ -2581,6 +2655,20 @@ impl Widget for TextInput {
+     }
+ 
+     fn handle_event(&mut self, cx: &mut Cx, event: &Event, _scope: &mut Scope) {
++        self.capture_edit();
++        // A cancel restores text with invalid hit-test layout. Keep the bounded
++        // first-press-cancels policy; a later press after redraw selects.
++        let pointer_selects = self.edit_scope != 0 && self.draw_bg.area().is_valid(cx) && match event {
++            Event::MouseDown(mouse) => self.draw_bg.area().clipped_rect(cx).contains(mouse.abs),
++            Event::TouchUpdate(touch) => touch.touches.iter().any(|point|
++                matches!(point.state, TouchState::Start)
++                    && self.draw_bg.area().clipped_rect(cx).contains(point.abs)),
++            _ => false,
++        };
++        if pointer_selects && self.cancel_composition(cx) {
++            self.emit_legacy_change(cx, self.widget_uid());
++            return;
++        }
+         if self.animator_handle_event(cx, event).must_redraw() {
+             self.draw_bg.redraw(cx);
+             self.draw_cursor.redraw(cx);
+@@ -3066,6 +3154,13 @@ impl Widget for TextInput {
+                 self.preserved_selection_cursor = None;
+                 self.pending_outside_focus_loss_touch = None;
+ 
++                // Scoped protocol is native desktop only. Do not misclassify
++                // full-state mobile replacement as a committed native edit.
++                if self.edit_scope != 0 && (event.full_state_sync.is_some() || event.replace_range.is_some()) {
++                    self.cancel_composition(cx);
++                    self.edit_before = None;
++                    return;
++                }
+                 // Full state sync (authoritative: Android InputConnection / iOS UITextView)
+                 if event.full_state_sync.is_some() || event.replace_range.is_some() {
+                     self.cancel_composition(cx);
+@@ -3260,6 +3355,7 @@ impl Widget for TextInput {
+                     if event.input.is_empty() && self.cancel_composition(cx) {
+                         self.emit_change(cx, uid);
+                     }
++                    self.edit_before = None;
+                     return;
+                 }
+                 if event.replace_last {
+@@ -3285,10 +3381,20 @@ impl Widget for TextInput {
+                 }
+                 self.animator_play(cx, ids!(empty.off));
+                 self.draw_bg.redraw(cx);
+-                self.emit_change(cx, uid);
++                if event.replace_last {
++                    self.emit_outcome(cx, uid, TextEditPhase::Preview);
++                    self.emit_legacy_change(cx, uid);
++                } else {
++                    self.emit_change(cx, uid);
++                }
+                 cx.hide_clipboard_actions();
+             }
+             Hit::TextRangeReplace(event) if !self.is_read_only => {
++                if self.edit_scope != 0 {
++                    self.cancel_composition(cx);
++                    self.edit_before = None;
++                    return;
++                }
+                 self.cancel_composition(cx);
+                 self.pending_outside_focus_loss_touch = None;
+ 
+@@ -3396,6 +3502,42 @@ impl Widget for TextInput {
+ }
+ 
+ impl TextInputRef {
++    /// Bind before action production. This does not identify origin-less late
++    /// raw OS IME events; that platform-session boundary remains separate.
++    pub fn begin_edit_scope(&self) -> u64 {
++        static NEXT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
++        let token = NEXT.fetch_update(std::sync::atomic::Ordering::Relaxed,
++            std::sync::atomic::Ordering::Relaxed, |n| n.checked_add(1))
++            .expect("text edit scope exhausted");
++        if let Some(mut inner) = self.borrow_mut() {
++            assert!(inner.composition_edit.is_none() && !inner.has_composition(),
++                "cancel previous composition before rebinding edit scope");
++            inner.edit_scope = token;
++            inner.edit_sequence = 0;
++            inner.edit_before = None;
++        }
++        token
++    }
++
++    pub fn edit_position(&self) -> (u64, u64) {
++        self.borrow().map_or((0, 0), |inner| (inner.edit_scope, inner.edit_sequence))
++    }
++
++    pub fn edit_outcomes(&self, actions: &Actions) -> Vec<TextEditOutcome> {
++        actions.filter_widget_actions_cast::<TextInputAction>(self.widget_uid())
++            .filter_map(|action| match action {
++                TextInputAction::EditOutcome(value) => Some(value), _ => None,
++            }).collect()
++    }
++
++    pub fn restore_checkpoint(&self, cx: &mut Cx, state: TextInputState) {
++        if let Some(mut inner) = self.borrow_mut() { inner.restore_checkpoint(cx, state); }
++    }
++
++    pub fn cancel_composition(&self, cx: &mut Cx) -> bool {
++        self.borrow_mut().is_some_and(|mut inner| inner.cancel_composition(cx))
++    }
++
+     /// See [`TextInput::set_max_lines`].
+     pub fn set_max_lines(&self, cx: &mut Cx, max_lines: usize) {
+         if let Some(mut inner) = self.borrow_mut() {
+@@ -3631,20 +3773,7 @@ impl TextInputRef {
+     /// the checkpoint retains the committed text, selection and history.
+     pub fn save_state(&self) -> TextInputState {
+         if let Some(inner) = self.borrow() {
+-            let mut state = TextInputState {
+-                text: inner.text.clone(),
+-                password_text: inner.password_text.clone(),
+-                selection: inner.selection,
+-                history: inner.history.clone(),
+-            };
+-            if let Some(pending) = &inner.composition_edit {
+-                // A durable checkpoint must not turn a transient preview into
+-                // committed text with a mismatched committed history.
+-                state.text.replace_range(inner.composition_start..inner.composition_end, &pending.replaced);
+-                state.selection = pending.selection;
+-                state.password_text.clear();
+-            }
+-            state
++            inner.committed_snapshot()
+         } else {
+             TextInputState::default()
+         }
+@@ -3725,6 +3854,7 @@ pub struct TextInputState {
+ 
+ #[derive(Clone, Debug, Default)]
+ pub enum TextInputAction {
++    EditOutcome(TextEditOutcome),
+     #[default]
+     None,
+     KeyFocus,
+@@ -3790,6 +3920,24 @@ impl TextNavigation {
+     }
+ }
+ 
++impl TextInputState {
++    pub fn text(&self) -> &str { &self.text }
++}
++
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum TextEditPhase { Preview, Committed, Cancelled }
++
++/// An immutable production-time committed projection. Preview is explicit;
++/// neither before nor state contains transient preedit text or undo entries.
++#[derive(Clone, Debug)]
++pub struct TextEditOutcome {
++    pub scope: u64,
++    pub sequence: u64,
++    pub phase: TextEditPhase,
++    pub before: Option<TextInputState>,
++    pub state: TextInputState,
++}
++
+ #[derive(Clone, Debug)]
+ struct CompositionEdit {
+     replaced: String,
+diff --git a/widgets/src/text_input_composition_undo_tests.rs b/widgets/src/text_input_composition_undo_tests.rs
+index 83ee457..702763c 100644
+--- a/widgets/src/text_input_composition_undo_tests.rs
++++ b/widgets/src/text_input_composition_undo_tests.rs
+@@ -532,3 +532,97 @@ fn select_all_uses_the_restored_committed_length_after_short_preview() {
+     s.text("x", false);
+     s.undo(); assert_eq!(s.input.text(), "original long text");
+ }
++
++// Integration regressions use this sibling's original drawn SDK Surface.
++// They qualify neither native session origin nor real platform input.
++use crate::window::WindowWidgetRefExt;
++
++fn scoped_outcomes(s: &mut Surface, text: &str, preview: bool) -> Vec<TextEditOutcome> {
++    let input = s.input.clone();
++    let actions = s.cx.capture_actions(|cx| {
++        input.borrow_mut().unwrap().handle_event(cx, &Event::TextInput(TextInputEvent {
++            input: text.into(), replace_last: preview, ..Default::default()
++        }), &mut Scope::empty());
++    });
++    input.edit_outcomes(&actions)
++}
++
++#[test]
++fn typed_outcomes_project_preview_and_filtered_input_without_reclassifying_live_phase() {
++    let mut s = Surface::new();
++    s.input.borrow_mut().unwrap().set_is_numeric_only(&mut s.cx, true);
++    let token = s.input.begin_edit_scope();
++    let preview = scoped_outcomes(&mut s, "12", true);
++    assert_eq!(preview.len(), 1);
++    assert_eq!(preview[0].phase, TextEditPhase::Preview);
++    assert_eq!(preview[0].state.text(), "");
++    assert_eq!(preview[0].scope, token);
++    assert!(scoped_outcomes(&mut s, "invalid", false).is_empty());
++    assert!(s.input.is_composing());
++    assert!(s.input.borrow().unwrap().edit_before.is_none());
++    let commit = scoped_outcomes(&mut s, "123", false);
++    assert_eq!(commit.len(), 1);
++    assert_eq!(commit[0].phase, TextEditPhase::Committed);
++    assert_eq!(commit[0].sequence, 2);
++    assert_eq!(commit[0].before.as_ref().unwrap().text(), "");
++    assert_eq!(commit[0].state.text(), "123");
++    scoped_outcomes(&mut s, "4", true);
++    assert!(s.input.is_composing());
++    assert_eq!(commit[0].state.text(), "123");
++}
++
++#[test]
++fn typed_cancel_emits_once_and_noop_undo_leaves_no_before_checkpoint() {
++    let mut s = Surface::new();
++    s.input.begin_edit_scope();
++    scoped_outcomes(&mut s, "你好", true);
++    let input = s.input.clone();
++    let actions = s.cx.capture_actions(|cx| {
++        input.borrow_mut().unwrap().handle_event(cx, &Event::KeyDown(KeyEvent {
++            key_code: KeyCode::KeyZ,
++            modifiers: KeyModifiers { control: true, ..Default::default() },
++            ..Default::default()
++        }), &mut Scope::empty());
++    });
++    let outcomes = input.edit_outcomes(&actions);
++    assert_eq!(outcomes.len(), 1);
++    assert_eq!(outcomes[0].phase, TextEditPhase::Cancelled);
++    assert_eq!(outcomes[0].state.text(), "");
++    assert!(!input.borrow_mut().unwrap().undo(&mut s.cx));
++    assert!(input.borrow().unwrap().edit_before.is_none());
++}
++
++#[test]
++fn scoped_first_pointer_press_cancels_before_invalid_layout_selection() {
++    let mut s = Surface::new();
++    s.text("original", false);
++    s.select(0, 8);
++    let before = format!("{:?}", s.input.save_state());
++    s.input.begin_edit_scope();
++    scoped_outcomes(&mut s, "你", true);
++    let window = s.cx.with_vm(|vm| {
++        let value = vm.eval(crate::makepad_script::script! {
++            use mod.prelude.widgets.*
++            Window { create_on_start: false }
++        });
++        WidgetRef::script_from_value(vm, value).as_window()
++    });
++    let rect = s.input.area().clipped_rect(&s.cx);
++    assert!(rect.size.x > 0.0 && rect.size.y > 0.0);
++    let input = s.input.clone();
++    let actions = s.cx.capture_actions(|cx| {
++        input.borrow_mut().unwrap().handle_event(cx, &Event::MouseDown(MouseDownEvent {
++            abs: rect.pos + rect.size * 0.5,
++            button: MouseButton::PRIMARY,
++            window_id: window.window_id().unwrap(),
++            modifiers: KeyModifiers::default(),
++            handled: std::cell::Cell::new(Area::Empty),
++            time: 0.0,
++        }), &mut Scope::empty());
++    });
++    let outcomes = input.edit_outcomes(&actions);
++    assert_eq!(outcomes.len(), 1);
++    assert_eq!(outcomes[0].phase, TextEditPhase::Cancelled);
++    assert_eq!(format!("{:?}", input.save_state()), before);
++    assert!(input.borrow().unwrap().laidout_text.is_none());
++}

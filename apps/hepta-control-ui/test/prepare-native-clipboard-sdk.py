@@ -17,7 +17,7 @@ SOURCE = "https://github.com/kevinaboos/makepad"
 ORIGINAL_SOURCE = "git+" + SOURCE + "?rev=" + BASE + "#" + BASE
 PROFILES = {
     "clipboard": ("", "native-clipboard-sdk", "hepta-native-clipboard-sdk"),
-    "preedit-callbacks": ("preedit-callbacks", "native-presentation", "hepta-native-makepad"),
+    "preedit-callbacks": ("preedit-callbacks", "native-ime-sdk", "hepta-native-preedit-sdk"),
 }
 # Git package discovery at BASE resolves the original 0.2.20 vendor copy.
 # The explicit path candidate must preserve that same package and source.

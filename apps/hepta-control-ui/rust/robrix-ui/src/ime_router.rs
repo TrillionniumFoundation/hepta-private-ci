@@ -71,8 +71,13 @@ impl ImeRouter {
         {
             // Detachment/focus loss is cancellation, not an IME commit. Preserve
             // local draft text, but do not keep a dead editor locking navigation.
-            let selection = previous.input.selection();
-            previous.input.set_selection(cx, selection);
+            #[cfg(feature = "native-ime-sdk")]
+            previous.input.cancel_composition(cx);
+            #[cfg(not(feature = "native-ime-sdk"))]
+            {
+                let selection = previous.input.selection();
+                previous.input.set_selection(cx, selection);
+            }
             if focus == previous.input.area() {
                 cx.set_key_focus(Area::Empty);
             }
