@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import statistics
 from pathlib import Path
 from typing import Any
 
@@ -137,7 +138,10 @@ def audit_arm(name: str, result: Any, spec: dict) -> list[str]:
                 or not _finite(perf.get("forward_latency_p50_ms"))
                 or perf["forward_latency_p50_ms"] < 0
                 or not _finite(perf.get("raw_forward_throughput_per_second"))
-                or perf["raw_forward_throughput_per_second"] <= 0):
+                or perf["raw_forward_throughput_per_second"] <= 0
+                or perf["forward_latency_p50_ms"] != statistics.median(timing)
+                or perf["raw_forward_throughput_per_second"] !=
+                   len(timing) / max(sum(timing) / 1000, 1e-9)):
             errors.append(f"{name}: raw full-CPU forward timing sample/identity missing")
     # Pinned upstream Agent can normalize tokenizer_config.json in place.
     # A complete Laya shadow receipt must disclose its private compatibility
