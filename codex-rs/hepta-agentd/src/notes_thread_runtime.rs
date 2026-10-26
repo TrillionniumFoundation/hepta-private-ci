@@ -190,10 +190,14 @@ impl AgentdNotesThreadToolRuntime {
                 return Err(invalid("original Notes callback connection changed"));
             }
             let (request_id, params) = match event.event() {
-                AppServerEvent::ServerRequest(ServerRequest::DynamicToolCall {
-                    request_id,
-                    params,
-                }) if matches!(params.tool.as_str(), READ_TOOL | REPLACE_TOOL | STATUS_TOOL) => {
+                AppServerEvent::ServerRequest(request) => {
+                    let ServerRequest::DynamicToolCall { request_id, params } = request.as_ref()
+                    else {
+                        continue;
+                    };
+                    if !matches!(params.tool.as_str(), READ_TOOL | REPLACE_TOOL | STATUS_TOOL) {
+                        continue;
+                    }
                     (request_id.clone(), params.clone())
                 }
                 AppServerEvent::Disconnected { .. } | AppServerEvent::Lagged { .. } => {
