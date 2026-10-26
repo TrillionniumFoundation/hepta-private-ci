@@ -38,6 +38,10 @@ pub use binding::AUTOMATION_STATUS_TOOL_NAME;
 pub use binding::PreboundAutomationStatusEffect;
 pub use binding::automation_status_effect_run_id;
 
+#[path = "runtime_process_effects.rs"]
+mod runtime_process;
+pub use runtime_process::*;
+
 /// A single admitted status tool. A model cannot select another host, payload,
 /// destination, operation, attempt or grant through this adapter.
 pub struct AutomationStatusEffectOwner<'a, A> {
