@@ -139,6 +139,20 @@ sticky; post-load rejection retains the same original session for cleanup, and
 shutdown failure retains it. Startup remains 120 seconds, neural shutdown ten
 seconds, and the separate Chain terminal cutoff eight seconds.
 
+`PreparedSelectedInitialSmolLmV1::with_current_initial_read` now adds a distinct
+initial-only query interface in the same owner. Its private borrowed permit is
+bound to the original physical port; the existing signed control, FinalUse and
+nonce owners still perform admission and settlement. The caller supplies the
+original at-most-two-second execution window. Before/after CURRENT, selection,
+load and forward checks bind the observed scores to the exact initial material.
+The callback receives historical observations: a later error cannot retract
+values it copied and grants no ordinary-task authority. Errors keep material
+unavailable and retain the original session for cleanup. The evaluated trait
+still rejects this initial port. This source candidate has not yet compiled or
+run its nine original/new real-model cases; its local validation stopped before
+build because the prior target's entire debug directory was missing. Agentd
+composition, selection, installation and next-task acceptance remain open.
+
 The selected-initial owner retains one cleanup task across cancellation of an
 await; a later await consumes that exact result. An uncertain driver unload keeps
 its original model handle and capacity fenced against both run routes. Retrying
@@ -167,7 +181,7 @@ An explicit fixed-initial-backbone sub-proof checks the actual observed backbone
 tokenizer and contract against the code-owned SmolLM2 initial commitments. A
 valid generic/trained observation does not automatically receive this proof.
 The proof also remains bound to its actual parameter bytes, generation, Ready
-hash and original control load ID; a future initial constructor must match those
+hash and original control load ID; the initial constructor must match those
 against the original selected initial material. Ready does not return the raw
 269,060,552-byte upstream file hash, so this observation does not claim that
 missing direct receipt. The worker itself retains its original real material

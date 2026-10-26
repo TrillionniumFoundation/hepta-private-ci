@@ -477,9 +477,16 @@ The original selection owner now validates the fixed canonical positive-zero
 initial material and exposes `SelectedInitialSmolLmMaterialV1`. Each use keeps the
 original signed/trusted-selector expiry, known revocation and fresh original-owner
 CURRENT checks; failure is sticky. Its 124 package cases and a deliberately
-broken trusted-expiry control are retained. This is selected byte material only.
-The host must still preserve measured main-weight/forward evidence, compose a
-distinct initial-only constructor and ordinary task context, then exercise the
+broken trusted-expiry control are retained. The host source now composes a
+distinct initial-only constructor and `with_current_initial_read` in the same
+selected-material/session owner. It binds actual measured load/forward facts and
+scores through the original signed control, FinalUse and nonce owners, with the
+original two-second read window. A read-only callback sees historical evidence;
+later failure cannot retract copied values or authorize ordinary-task effects.
+The evaluated neural trait remains closed to this initial port. Its nine
+original/new real-model cases are not yet qualified: local preflight stopped
+before build when the prior target's entire debug directory was absent.
+Agent-runtime must still compose the ordinary task context and exercise the
 unchanged eligible-child, CURRENT, cold-recovery and three-round upgrade owners.
 
 Learning-platform and agent-runtime must then compose the original ledger,
