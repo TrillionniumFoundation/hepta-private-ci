@@ -1,0 +1,32 @@
+name: Windows private-copy and parent-rename facts (observation only)
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-windows-recovery-facts.yml
+      - .github/scripts/windows_recovery_admission_facts.ps1
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-facts:
+    name: Observe actual private directory flush and retained-parent rename
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Observe exact ab59 native copy/rename prerequisites
+        shell: pwsh
+        run: |
+          ./.github/scripts/windows_recovery_admission_facts.ps1 -ExpectedHead "${{ github.event.pull_request.head.sha || github.sha }}" -OutputRoot "$env:RUNNER_TEMP/recovery-admission-facts"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: recovery-admission-facts-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/recovery-admission-facts/facts.json
+          if-no-files-found: error
+          retention-days: 14
