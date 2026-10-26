@@ -95,6 +95,27 @@ impl PreparedHostAuthoritySession {
         deployment: File,
     ) -> io::Result<Self> {
         let end = std::time::Instant::now() + std::time::Duration::from_secs(30);
+        self.with_notes_startup_from_session_before(
+            profile_file,
+            bootstrap,
+            session_pidfd,
+            deployment,
+            end,
+        )
+    }
+
+    /// Preserve the trusted launcher's already running startup episode across
+    /// metadata peeking, original owner registration and this sole consume.
+    /// Expiry consumes this prepared service; it cannot rearm a reservation.
+    pub fn with_notes_startup_from_session_before(
+        self,
+        profile_file: &Path,
+        bootstrap: UnixDatagram,
+        session_pidfd: OwnedFd,
+        deployment: File,
+        end: std::time::Instant,
+    ) -> io::Result<Self> {
+        reservation::remaining(end)?;
         let profile: Profile = crate::authority_host_config::read_root_json(profile_file)?;
         validate_profile(&profile, &self.config.signer_id)?;
         profile
@@ -107,6 +128,7 @@ impl PreparedHostAuthoritySession {
             &session_pidfd,
             self.config.peer_uid,
             self.config.peer_gid,
+            end,
         )?;
         if let Some(previous) = &profile.previous_recovery {
             previous

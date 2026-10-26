@@ -32,6 +32,45 @@ fn credential() -> libc::ucred {
 }
 
 #[test]
+fn original_reservation_consume_keeps_the_elapsed_episode_budget() {
+    let (root, _session) = UnixDatagram::pair().unwrap();
+    set_passcred(&root, 1).unwrap();
+    let end = Instant::now() + Duration::from_millis(250);
+    // This represents actual work in the earlier Root metadata phase.
+    std::thread::sleep(Duration::from_millis(200));
+    assert!(receive_packet_before(&root, credential(), end).is_err());
+    assert!(
+        root.read_timeout().unwrap().unwrap() <= Duration::from_millis(60),
+        "the original consume cannot borrow a new 30-second episode"
+    );
+    assert!(remaining(end).is_err());
+}
+
+#[test]
+fn expired_original_consume_neither_reads_nor_rearms_the_queued_reservation() {
+    let (root, session) = UnixDatagram::pair().unwrap();
+    set_passcred(&root, 1).unwrap();
+    let encoded = packet();
+    session.send(&encoded).unwrap();
+    let end = Instant::now() - Duration::from_millis(1);
+    assert!(receive_packet_before(&root, credential(), end).is_err());
+    let mut bytes = [0; 1024];
+    // SAFETY: reads only the bounded buffer from this actual live fixture socket.
+    let count = unsafe {
+        libc::recv(
+            root.as_raw_fd(),
+            bytes.as_mut_ptr().cast(),
+            bytes.len(),
+            libc::MSG_PEEK | libc::MSG_DONTWAIT,
+        )
+    };
+    assert!(count > 0);
+    let count = count as usize;
+    assert_eq!(&bytes[..count], encoded);
+    assert!(remaining(end + Duration::from_secs(31)).is_err());
+}
+
+#[test]
 fn reservation_checks_real_sender_and_rejects_missing_credential_option() {
     let (root, session) = UnixDatagram::pair().unwrap();
     assert!(receive_packet(&root, credential()).is_err());
