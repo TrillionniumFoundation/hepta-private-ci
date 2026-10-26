@@ -4,6 +4,7 @@ import importlib.util
 import sys
 import tempfile
 import textwrap
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -404,6 +405,161 @@ class FunctionOrderTests(unittest.TestCase):
             self.verify(
                 "fn bind() { listen()?; if condition { ready()?; } finish() }",
                 top_level=("ready()?;",),
+            )
+
+
+class OriginalNotesSourceGuardTests(unittest.TestCase):
+    """Exercise registered guards against mutations of the actual product source."""
+
+    def check_source(self, filename, mutate=None):
+        path = f"codex-rs/hepta-agentd/src/{filename}.rs"
+        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        rows = [row for row in manifest["protected_file"] if row["path"] == path]
+        self.assertTrue(rows)
+        source = (ROOT / path).read_text()
+        if mutate is not None:
+            source = mutate(source)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            target = root / path
+            target.parent.mkdir(parents=True)
+            target.write_text(source)
+            return MODULE._verify_protected_files(root, {"protected_file": rows})
+
+    def replace_once(self, old, new, *, within=None):
+        def mutate(source):
+            before, body = (
+                source.split(within, 1) if within is not None else ("", source)
+            )
+            self.assertIn(old, body)
+            changed = body.replace(old, new, 1)
+            return before + (within or "") + changed
+
+        return mutate
+
+    def test_current_original_notes_sources_pass(self):
+        for filename in (
+            "notes_thread_seed",
+            "notes_thread_execution",
+            "app_runtime",
+            "runtime",
+        ):
+            with self.subTest(filename=filename):
+                self.check_source(filename)
+
+    def test_resume_requires_persisted_checks_in_the_original_function(self):
+        for old, new in (
+            ("receipt.verify_persisted()?;", ""),
+            (
+                "receipt.verify_persisted()?;",
+                "/* receipt.verify_persisted()?; */",
+            ),
+            (
+                "receipt.verify_persisted()?;",
+                "fn unused() { receipt.verify_persisted()?; }",
+            ),
+        ):
+            with (
+                self.subTest(replacement=new),
+                self.assertRaisesRegex(
+                    MODULE.VerificationFailure, "required code order"
+                ),
+            ):
+                self.check_source(
+                    "notes_thread_seed",
+                    self.replace_once(
+                        old,
+                        new,
+                        within="pub async fn verify_original_notes_thread_seed(",
+                    ),
+                )
+
+    def test_resume_requires_both_effective_configuration_observations(self):
+        for stage in ("before", "after"):
+
+            def mutate(source):
+                start = source.index("pub async fn verify_original_notes_thread_seed(")
+                marker = f'request_id("config-{stage}-resume")?'
+                request = source.index(marker, start)
+                begin = source.rfind(
+                    "    notes_thread_execution::verify_effective(", start, request
+                )
+                end = source.index("    .await?;", request) + len("    .await?;")
+                block = source[begin:end]
+                # Keep every raw marker in a comment: only code order may reject it.
+                return source[:begin] + "/*" + block + "*/" + source[end:]
+
+            with (
+                self.subTest(stage=stage),
+                self.assertRaisesRegex(
+                    MODULE.VerificationFailure, "required code order"
+                ),
+            ):
+                self.check_source("notes_thread_seed", mutate)
+
+    def test_original_resume_cannot_add_configuration_overrides(self):
+        with self.assertRaisesRegex(MODULE.VerificationFailure, "required code order"):
+            self.check_source(
+                "notes_thread_seed",
+                self.replace_once(
+                    "exclude_turns: true,\n                ..Default::default()",
+                    'exclude_turns: true,\n                model: Some("other".into()),\n                ..Default::default()',
+                    within="async fn resume(",
+                ),
+            )
+
+    def test_execution_files_and_layered_origin_cannot_be_substituted(self):
+        for old, new in (
+            ("Digest32::of_bytes(&config)", 'Digest32::of_bytes(b"constant")'),
+            ("Digest32::of_bytes(&environments)", 'Digest32::of_bytes(b"constant")'),
+            ("include_local = false", "include_local = true"),
+            ("hepta_memory = false", "hepta_memory = true"),
+            ("hepta_cognitive_write = false", "hepta_cognitive_write = true"),
+            ("fields.iter().all(", "fields.iter().any("),
+            (
+                "ConfigLayerSource::User { file, .. }",
+                "ConfigLayerSource::Project { file, .. }",
+            ),
+            ("while let Some((key, value)) = pending.pop()", "while false"),
+            ("Some(&serde_json::to_value(expected_provider)?)", "None"),
+            ("before.modified()? != after.modified()?", "false"),
+        ):
+            with (
+                self.subTest(marker=old),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check_source("notes_thread_execution", self.replace_once(old, new))
+
+    def test_original_notes_producer_cannot_restore_general_cognitive_tools(self):
+        for old, new in (
+            ("Self::OriginalNotes => false", "Self::OriginalNotes => true"),
+            (
+                "production_cognitive_mutation.filter(|_| cognitive_tools_enabled)",
+                "production_cognitive_mutation",
+            ),
+            (
+                "required_feature_states.insert(Feature::HeptaMemory, false)",
+                "required_feature_states.insert(Feature::HeptaMemory, true)",
+            ),
+            (
+                "let cognitive_write_enabled = model_tools.cognitive_tools_enabled()",
+                "let cognitive_write_enabled = true",
+            ),
+        ):
+            with (
+                self.subTest(marker=old),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check_source("app_runtime", self.replace_once(old, new))
+
+    def test_actual_notes_producer_must_select_the_private_original_profile(self):
+        with self.assertRaises(MODULE.VerificationFailure):
+            self.check_source(
+                "runtime",
+                self.replace_once(
+                    "crate::app_runtime::AppServerModelToolProfile::OriginalNotes",
+                    "crate::app_runtime::AppServerModelToolProfile::Standard",
+                ),
             )
 
 
