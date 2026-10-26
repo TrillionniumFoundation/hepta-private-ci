@@ -2,6 +2,7 @@
 //! The existing two-FD handoff retains its exact marker/count and rejects this.
 
 use super::*;
+use std::os::unix::fs::MetadataExt;
 
 const WRITER_FRAME: &[u8] = b"HEPTA_ROOT_PRODUCTION_WRITER_INPUTS_V1";
 
