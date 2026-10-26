@@ -59,3 +59,7 @@ The formal v2 verifier checked 1,641 output files and 72 source/protocol/data fi
 The independently verified downloadable ZIP is 64,194,728 bytes and contains 3,946 tracked project/evidence files plus its delivery manifest. Its SHA-256 is `57b81960e0ffd036f8ac4d491a4d6fdedc5832f2e05196465702fe59bc35ea02`. The ZIP is supplied with the local deliverables; this mirror stores the smaller exact-history bundle as five ordered binary parts. Concatenation has been independently checked against the original bundle bytes; the split is only a transport format.
 
 This is a research qualification package. Native Hepta owner integration, production admission, general memory transfer, and autonomous type/topology discovery are not established. The mirror is provided as a draft for review; no merge or product activation is part of this delivery.
+
+## Repository asset policy
+
+The five fixed archive paths are individually registered as intentional large assets in the existing exact-path blob-size allowlist. The general 512,000-byte threshold, checker, and workflow remain unchanged. The allowlist mechanism is path-based; the per-part digests and reassembled bundle digest in `DELIVERY.json` provide the separately reviewable content identity.
