@@ -1,0 +1,54 @@
+{
+  "assurance_limits": [
+    "Static source review is not runtime qualification.",
+    "Existing wrong-owner,revoked/expired-after-preparation,non-consuming-preflight,unverified-path and originalChild terminal tests remain necessary.",
+    "Windows UnsafeStateDirectory and isolation failures leave these native checks red;inventory fix does not close them.",
+    "Existing scanner is conservative syntactic file matching,not a fully typed Rust whole-program proof."
+  ],
+  "canonical_CALLERS_not_changed": "final_use_dispatch_raw already lists only actual raw wrapper production_verified_dispatch.rs;CPU is deliberately not added there",
+  "classifications": {
+    "FinalUseAuthority::check_unclaimed_grant": {
+      "actual_production_callers": [
+        "hepta-infer-worker-host/src/final_use_grant_courier.rs:81",
+        "hepta-infer-worker-host/src/final_use_grant_courier.rs:124"
+      ],
+      "behavior": "Validates signer/binding/signature, reads current head/clock, checks existing nonce/capacity; no claim/persist/token/effect callback.",
+      "must_not_replace": "production_writer.rs:1308 actual claim and final owner/binding/live check remain mandatory.",
+      "role": "nonprivileged non-consuming readiness validation returning()",
+      "source": "final_use.rs:573-595"
+    },
+    "FinalUseAuthority::shares_owner": {
+      "behavior": "Arc::ptr_eq only; no token/claim/nonce/revocation change/persistence/callback",
+      "not_authority": "Owner identity does not validate current grant, expiry or revocation.",
+      "role": "nonprivileged opaque owner identity comparison",
+      "source": "final_use.rs:346-348"
+    }
+  },
+  "existing_required_checks": [
+    "python3 scripts/verify_hepta_callers.py self-test",
+    "python3 scripts/verify_hepta_callers.py verify",
+    "python3 -m unittest discover -s qa/b4-no-bypass -p 'test_*.py'"
+  ],
+  "guards_missing_in_reviewed_chain": [],
+  "merge_ready": false,
+  "no_build_tests_or_candidate_application_performed": true,
+  "only_QA_data_candidate": true,
+  "root_only_integrator": true,
+  "root_source": "05a373ccdae72d929464bfeb277f37d1859ecf9a",
+  "scanner_not_weakened": "Original regex, typeMarker anchoring, test assertions and all existing allowed sets retained;only2 audited paths added to previously empty one set",
+  "schema": "hepta-qa-kernel-authority-closed-set-role-review-v1",
+  "source_head": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+  "two_observed_paths": {
+    "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target.rs": {
+      "guards": "unsigned dispatch rejects; verify_target_authority precedes await entry; fixed registration validates request; permanent slot/no relaunch; synchronous Command.spawn only inside consumed sealed boundary; final entry rechecks live claim after await",
+      "proof": "FinalUseAuthority field/import + dispatch.with_dispatch_boundary at111 matches existing intentionally broad independent scanner",
+      "role": "conservative file-anchored scanner match on sealed wrapper method; no direct raw authority method call",
+      "terminal": "requires retained original Child + actual successful try_wait + durable record_terminal; disk-only recreation remains unknown"
+    },
+    "codex-rs/hepta-memory/src/production_verified_dispatch.rs": {
+      "guards": "final_use.rs:843-865 checks Arc owner and binding, state.failed, current clock/revocations while holding state lock through callback",
+      "proof": "pub(super) request/authority/token/expected; no Clone/Serialize; consuming self at final synchronous boundary line54",
+      "role": "actual raw authority.with_dispatch_boundary call with original sealed token and expected binding"
+    }
+  }
+}

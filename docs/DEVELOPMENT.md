@@ -1771,3 +1771,10 @@ criterion, limit and failure observation remain in force.
 PN0 retained [155264e3 four-lane original Windows failures](../qualification/windows-delete-boundary/155264e3-original-failures/README.md)
 keep all original twenty groups per lane: eighteen passed and broad-identity-delete /
 legacy-delete-boundary failed. These are historical failures, not later-source qualification.
+
+
+### PN0 existing CI closed-world inventory repair — 2026-10-26 (PARTIAL)
+
+[Original six-job failures and local repair evidence](../qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/README.md) retain blocking run 40312011219 attempt 1 at `155264e3b5d3dcdafa244cd0c31c336ab25a207f`. The independent caller inventory now classifies two explicitly non-authorizing methods and enumerates the two reviewed observed paths. `shares_owner` only compares original opaque owners; `check_unclaimed_grant` only checks readiness and cannot replace claim or final live validation. The canonical raw caller remains the sealed wrapper; the ordinary CPU target consumes that wrapper after preparation and enters the original synchronous physical boundary.
+
+The unchanged 17 original closed-world tests reproduced two failures before the inventory repair and then passed with zero skips. Canonical caller self-test and verification passed on unchanged inputs. No scanner, CALLERS, authority implementation, original assertion or acceptance bound changed. This closes only that local inventory mismatch. It does not close original Windows isolation, the three failing Windows Bazel shards, Clippy platform incompatibility, dependency advisories or any model/release/WAN gate. Existing PN0–PN6, historical failures and `merge_ready=false` remain in force; exact published-head and actual merge qualification must be obtained separately.

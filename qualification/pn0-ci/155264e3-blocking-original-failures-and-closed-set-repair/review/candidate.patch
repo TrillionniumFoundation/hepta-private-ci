@@ -1,0 +1,25 @@
+--- a/qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json
++++ b/qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json
+@@ -42,7 +42,9 @@
+         "issuer_key_ids",
+         "frontier",
+         "capacity",
+-        "revocation_head"
++        "revocation_head",
++        "shares_owner",
++        "check_unclaimed_grant"
+       ]
+     },
+     {
+@@ -259,7 +261,10 @@
+         "\\.\\s*with_dispatch_boundary\\s*\\(",
+         "FinalUseAuthority\\s*::\\s*with_dispatch_boundary\\s*\\("
+       ],
+-      "allowedCallers": []
++      "allowedCallers": [
++        "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target.rs",
++        "codex-rs/hepta-memory/src/production_verified_dispatch.rs"
++      ]
+     },
+     {
+       "id": "final_use_revocation_update",
