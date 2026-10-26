@@ -206,7 +206,7 @@ impl AgentdNotesThreadToolRuntime {
             biased;
             _ = cancellation.cancelled() => Ok(()),
             _ = session.readable() => Err(invalid("original Notes Session lifetime ended")),
-            result = self.run_bound(state, cancellation) => result,
+            result = self.run_bound(state, cancellation.clone()) => result,
         }
     }
 
