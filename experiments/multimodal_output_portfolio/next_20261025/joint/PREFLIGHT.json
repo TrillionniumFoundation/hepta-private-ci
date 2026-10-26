@@ -1,0 +1,51 @@
+{
+  "preflight_process": {
+    "cgroup_memory_events": "low 0\nhigh 0\nmax 3493053\noom 12\noom_kill 3\noom_group_kill 0\n",
+    "child_pid": 8,
+    "child_system_seconds": 1.774801,
+    "child_user_seconds": 6.757394,
+    "cost_scope": "Whole Python child including imports and waited codec children; RSS is peak, not summed process RSS",
+    "exit_code": 0,
+    "log_sha256": "42107a770f2cc0de32cc5afc2ed74b80b970fd75a853f5bf8067e38c5a772aed",
+    "peak_rss_bytes": 489316352,
+    "registration_sha256": "0ad685bf1ac6298125e0a4fe4bb12f3f965d0382b9f8c4d859327faddb85a097",
+    "waited_pid": 8,
+    "wall_ns": 7894488790
+  },
+  "preflight_summary": {
+    "actual_bundles": 8,
+    "external_asr_loaded": false,
+    "new_evaluation_sources_opened": false,
+    "purpose": "Executable shape/codec/readback contract on old train sources; no quality selection",
+    "restored_checkpoints": 6,
+    "status": "completed",
+    "wall_ns": 5021918278
+  },
+  "schema": "hepta.next.joint-preflight-and-gate.v1",
+  "v2_qualification_rejection": {
+    "executed_source_sha256": "bf2992eae62232946f37f96e1cc4381720523973b2ea45e98fca9a5e279d6256",
+    "exit_code": 1,
+    "fresh_source_run_created": false,
+    "process_receipt": {
+      "cgroup_memory_events": "low 0\nhigh 0\nmax 3497571\noom 12\noom_kill 3\noom_group_kill 0\n",
+      "child_pid": 8,
+      "child_system_seconds": 0.510381,
+      "child_user_seconds": 3.678543,
+      "cost_scope": "Whole Python child including imports and waited codec children; RSS is peak, not summed process RSS",
+      "exit_code": 1,
+      "log_sha256": "19381a23a0706c0d7f86208248b910b33bc497c4a8ef440e9c1a0dada9ce1450",
+      "peak_rss_bytes": 351490048,
+      "registration_sha256": "25d471bdf566076d19660749a8c9d61d6a474742886dc03e8b782b71680160dd",
+      "waited_pid": 8,
+      "wall_ns": 3981811601
+    },
+    "protocol_created": false,
+    "source_snapshot": "/tmp/hepta-ndu-next-joint/v2-guard-executed-source.py"
+  },
+  "v31_prospective_adapter": {
+    "requires_new_independent_qualification": true,
+    "selection_sha256": "bf70bd1d69ce42c0f2161eb589b7dcf061d6c7a51f68b16c88a322bfbacdbaaf",
+    "source_sha256": "cfc12edbf87929eeba8eb48ef720d41c39fec9fa846a712af8502948cec3fd36",
+    "training_models_unchanged": true
+  }
+}
