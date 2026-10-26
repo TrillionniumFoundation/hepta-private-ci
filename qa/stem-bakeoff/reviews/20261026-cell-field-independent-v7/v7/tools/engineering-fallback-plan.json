@@ -1,0 +1,17 @@
+{
+  "schema": "hepta.cell-field-separate-engineering-coverage.v7",
+  "development_protocol_sha256": "75def1fe5a2610f76f5fe02db082bb4f0d01d02f683da0ee500a9af1f7e5e0e6",
+  "executed_source_commit": "79860d4a2b16c4234124bfb3e544d5922925eabd",
+  "when": "only after complete development seal",
+  "configuration": "use frozen selected_index if present; otherwise fixed config00",
+  "policy": "future_field_h8",
+  "fits": "all24 historical version/task/head/seed combinations; no filtering",
+  "checkpoint_steps": [0, 16, 17, 32],
+  "missing": "explicitly retain every unavailable or uncommitted checkpoint",
+  "method": "load original controller bytes and replay original compact actions; never call a planner or select another policy",
+  "destination": "pft-native-v7-development-inputs outside the sealed grid",
+  "primary_selection_changed": false,
+  "new_confirmation_selected": false,
+  "scientific_acceptance": false,
+  "scope": "separately authorized engineering diagnostic; no new scientific qualification claim"
+}
