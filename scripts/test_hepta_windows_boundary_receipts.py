@@ -3,6 +3,7 @@
 import ast
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -414,6 +415,62 @@ class WindowsBoundaryReceiptTests(unittest.TestCase):
         self.assertIn('tests private-owner-descriptor 40 "$codes"', text)
         self.assertIn('tests private-local-ntfs 4 "$codes"', text)
         self.assertIn('tests private-owner-lock 4 "$codes"', text)
+
+
+    def test_new_query_group_requires_exact_source_roster_and_one_complete_summary(self):
+        assignment = next(node for node in ast.parse(self.source).body
+                          if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name)
+                          and target.id == "query_existing_selectors" for target in node.targets))
+        cases = ast.literal_eval(assignment.value)
+        native = ROOT / "codex-rs/windows-sandbox-rs/src/prepared_filesystem_readback_tests.rs"
+        actual = tuple("prepared_filesystem::readback_tests::" + line[3:line.index("(")]
+                       for line in native.read_text().splitlines() if line.startswith("fn existing_"))
+        self.assertEqual(cases, actual)
+        self.assertEqual(len(cases), 6)
+        complete = log(cases, skipped=200)
+        self.assertEqual(self.evaluate("query-existing-readback", 6, complete), 0)
+        invalid = (log(cases[:-1], passed=6), log(("unregistered::wrong",) + cases[1:]),
+                   complete + "test " + cases[0] + " ... ok\n", complete + log(cases),
+                   log(cases, failed=1), log(cases, passed=5), complete.replace("Summary", "Incomplete"))
+        for text in invalid:
+            with self.subTest(text=text):
+                self.assertEqual(self.evaluate("query-existing-readback", 6, text), 1)
+        for codes in ("1 0", "0 1"):
+            self.assertEqual(self.evaluate("query-existing-readback", 6, complete, codes=codes), 1)
+        self.assertEqual(self.evaluate("query-existing-readback", 5, complete), 1)
+
+    def test_extended_v2_aggregate_still_requires_each_original_twenty_receipt(self):
+        assignments = {target.id: node for node in ast.parse(self.source).body
+                       if isinstance(node, ast.Assign) for target in node.targets if isinstance(target, ast.Name)}
+        definition = next(node for node in ast.parse(self.source).body
+                          if isinstance(node, ast.FunctionDef) and node.name == "extended_query_result")
+        namespace = {"re": re}
+        nodes = [assignments[name] for name in ("probes", "store_selectors", "required", "query_existing_selectors")]
+        exec(compile(ast.Module(body=[*nodes, definition], type_ignores=[]), "extended-parser-only", "exec"), namespace)
+        required, cases = namespace["required"], namespace["query_existing_selectors"]
+        self.assertEqual(len(required), 20)
+        original = {"status": "passed", "source": {"scope": "synthetic parser only"},
+                    "tests": {name: {"status": "passed"} for name in required}}
+        query = {"schema": "hepta-windows-query-existing-receipt-v1", "status": "passed",
+                 "returncode": 0, "logging_returncode": 0, "log_sha256": "0" * 64,
+                 "minimum_tests": 6, "observed_passed_tests": 6, "observed_failed_tests": 0,
+                 "required_test_names": list(cases), "observed_passed_test_names": list(cases)}
+        combine = namespace["extended_query_result"]
+        self.assertEqual(combine(original, query)["status"], "passed")
+        for name in required:
+            with self.subTest(name=name):
+                missing = {**original, "tests": {key: value for key, value in original["tests"].items() if key != name}}
+                failed = {**original, "tests": {**original["tests"], name: {"status": "failed"}}}
+                self.assertEqual(combine(missing, query)["status"], "failed")
+                self.assertEqual(combine(failed, query)["status"], "failed")
+        for bad in ([], {"status": "not_run"}, {**query, "status": "failed"},
+                    {**query, "observed_passed_tests": 5}, {**query, "minimum_tests": 6.0},
+                    {**query, "returncode": 1}, {**query, "logging_returncode": 1},
+                    {**query, "log_sha256": "not-a-hash"},
+                    {**query, "observed_passed_test_names": list(cases[:-1])}):
+            self.assertEqual(combine(original, bad)["status"], "failed")
+        self.assertEqual(combine({**original, "status": "failed"}, query)["status"], "failed")
+        self.assertFalse(combine(original, query)["production_sandbox_admitted"])
 
 
 if __name__ == "__main__":

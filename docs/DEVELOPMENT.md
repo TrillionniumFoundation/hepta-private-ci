@@ -1328,6 +1328,18 @@ Err-drop, a new deadline or late cleanup cannot establish observed exit or
 recycle authority. The original twenty native groups and broad-identity/legacy
 failures remain required; no detached reaper or second registry is introduced.
 
+The same existing item now includes the private query-only root observer in
+`prepared_filesystem_existing.rs` and six controls in
+`prepared_filesystem_readback_tests.rs`. It consumes the same held root, actual
+read-role token and bounded descriptor; it queries existing grants without
+requesting `WRITE_DAC`, creating roots or repairing ACLs. Missing or excessive
+roles, changed identity, inheritance-only grants and uncertain readback refuse.
+This is a finite root proof, not whole-filesystem read, loader admission or
+production launch authority. The three reviewed source stages are integrated
+into the existing local candidate; all six Windows controls and the complete
+Windows package compile remain NOT_RUN. Keep every original native group and
+deletion failure, the eight-second cutoff and the existing resource limits.
+
 The following are implementation slices of that same PN0 item, not a second
 roadmap. The read-only volume and live-principal observation APIs below are
 implemented mechanisms. Create-only namespace and protected-directory
