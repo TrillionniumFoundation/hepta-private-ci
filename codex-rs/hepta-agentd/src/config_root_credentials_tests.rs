@@ -20,9 +20,8 @@ fn another_live_thread_is_rejected_without_changing_credentials() {
         held.recv().unwrap();
     });
     wait.recv().unwrap();
-    let error = require_single_thread()
-        .err()
-        .expect("a live worker must refuse credential transition");
+    let error =
+        require_single_thread().expect_err("a live worker must refuse credential transition");
     assert!(
         matches!(error, AgentdError::GenerationFenced(message) if message.contains("runtime thread"))
     );

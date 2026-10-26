@@ -68,12 +68,10 @@ pub(super) fn cpu_stat_path(workload: u32) -> io::Result<PathBuf> {
             .map(str::parse::<u32>)
             .collect::<Result<Vec<_>, _>>()
             .map_err(io::Error::other)?;
-        if pids == [workload] {
-            if selected.replace(entry.path().join("cpu.stat")).is_some() {
-                return Err(io::Error::other(
-                    "actual workload appears in multiple CPU owners",
-                ));
-            }
+        if pids == [workload] && selected.replace(entry.path().join("cpu.stat")).is_some() {
+            return Err(io::Error::other(
+                "actual workload appears in multiple CPU owners",
+            ));
         }
     }
     selected.ok_or_else(|| io::Error::other("actual workload CPU membership absent"))

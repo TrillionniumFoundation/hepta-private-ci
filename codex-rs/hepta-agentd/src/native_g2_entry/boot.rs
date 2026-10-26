@@ -27,7 +27,7 @@ impl Boot {
         // SAFETY: getauxval reads the current process's initial auxiliary vector.
         let address = unsafe { libc::getauxval(AUX_HEPTA_BOOT) } as usize;
         if address == 0
-            || address % 4096 != 0
+            || !address.is_multiple_of(4096)
             || address.checked_add(4096).is_none_or(|end| end > (1 << 47))
         {
             return Err(invalid("native sealed bootstrap page is absent"));
