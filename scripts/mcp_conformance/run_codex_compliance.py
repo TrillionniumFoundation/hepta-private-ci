@@ -985,7 +985,7 @@ def _run_case(
 ) -> CaseResult:
     started_at = time.monotonic()
     case = CaseResult(transport=transport, mode=mode)
-    case_home.mkdir(parents=True)
+    case_home.mkdir(mode=0o700, parents=True)
     workspace = case_home / "workspace"
     workspace.mkdir()
     env = _isolated_environment(case_home)
@@ -1153,7 +1153,7 @@ def _run_official_case(
 ) -> CaseResult:
     started_at = time.monotonic()
     case = CaseResult(transport="official-http", mode=mode)
-    case_home.mkdir(parents=True)
+    case_home.mkdir(mode=0o700, parents=True)
     env = _isolated_environment(case_home)
     env["CODEX_CONFORMANCE_TIMEOUT"] = str(timeout_seconds)
     env["CODEX_CONFORMANCE_ENABLE_MODERN_FEATURE"] = (
@@ -1260,7 +1260,7 @@ def _cimd_registration_checks(
     enable_modern_feature: bool,
 ) -> list[CheckResult]:
     checks: list[CheckResult] = []
-    case_home.mkdir(parents=True)
+    case_home.mkdir(mode=0o700, parents=True)
     for check_name, client_registration in (
         ("auto_cimd", None),
         ("forced_cimd", "cimd"),
