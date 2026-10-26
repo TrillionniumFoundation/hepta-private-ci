@@ -668,7 +668,7 @@ forbidden = ["Deserialize", "unsafe", "transmute", "AllowVerifier", "permit_all"
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/notes_thread_runtime.rs"
-required = ["RemoteAppServerClient::connect_with_bounded_events", "response.thread.session_id != connection.route.app_server_session_id", "ClientRequest::ThreadItemsList", "VerifiedNotesThreadCall::from_original_item", "VerifiedNotesThreadOperation::from_original_item", "self.observe_retained(&original).await", "self.execute(&call, &human).await"]
+required = ["RemoteAppServerClient::connect_with_bounded_events", "seed: &crate::NotesThreadSeedReceipt", "client.codex_home() != route.codex_home.to_str()", "crate::verify_original_notes_thread_seed(&client, seed).await?", "self.seed.as_ref().ok_or_else", "OriginalConnection::connect(self.route.clone(), seed)", "ClientRequest::ThreadItemsList", "VerifiedNotesThreadCall::from_original_item", "VerifiedNotesThreadOperation::from_original_item", "self.observe_retained(&original).await", "self.execute(&call, &human).await"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
@@ -905,4 +905,14 @@ forbidden = ["AllowVerifier", "permit_all"]
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_native_launch.rs"
 required = ["pub(super) fn launch_prepared_native(", "prepared: crate::PreparedHostAuthoritySession", "open_verified_program(&profile, config.peer_gid)?", "format!(\"/proc/self/fd/{}\", program.as_raw_fd())", "libc::PR_SET_NO_NEW_PRIVS", "libc::SYS_pidfd_open", "prepared.serve_with_text(&guard.path, ui_pidfd)"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/notes_thread_seed.rs"
+required = ["pub async fn verify_original_notes_thread_seed(", "require_home(client, &receipt.codex_home)?", "receipt.validate_shape()?", "let actual = resume(client, &receipt.thread_id).await?", "actual.thread.ephemeral", "actual.thread.id != receipt.thread_id", "actual.thread.session_id != receipt.app_server_session_id", "actual.model != receipt.model", "actual.model_provider != receipt.model_provider", "actual.thread.path.as_ref() != Some(&receipt.rollout_path)", "observe_metadata(receipt).await? != receipt.session_meta_sha256", "|| self.catalog_sha256\n                != Digest32::of_bytes(&serde_json::to_vec(&original_notes_thread_tools())?)", "home.to_str() != client.codex_home()", "home.canonicalize()? != home", "path.canonicalize()? != *path", "file.take(MAX_META_LINE + 1)", "line.len() as u64 > MAX_META_LINE", "let RolloutItem::SessionMeta(meta) = serde_json::from_slice::<RolloutLine>(&line)?.item", "meta.meta.id.to_string() != receipt.thread_id", "meta.meta.session_id.to_string() != receipt.app_server_session_id", "meta.meta.model_provider.as_deref() != Some(receipt.model_provider.as_str())", "catalog != expected", "Digest32::of_bytes(&serde_json::to_vec(&catalog)?).to_string() != receipt.catalog_sha256", "thread_id: thread_id.into()", "exclude_turns: true"]
+forbidden = ["AllowVerifier", "permit_all", "ClientRequest::TurnStart", "ClientRequest::TurnSteer"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/notes_thread_tool.rs"
+required = ["pub(crate) fn install_seed(", "self.seed.is_some()", "seed.codex_home != self.route.codex_home", "seed.thread_id != self.route.thread_id", "seed.app_server_session_id != self.route.app_server_session_id", "seed.model_tuple_digest()? != self.adapter.bindings.model_tuple_digest", "seed.verify_persisted()?", "self.seed = Some(seed)"]
 forbidden = ["AllowVerifier", "permit_all"]
