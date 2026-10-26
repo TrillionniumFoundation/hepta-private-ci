@@ -9,6 +9,10 @@ use std::os::fd::AsRawFd;
 
 #[path = "hos2_device_bootstrap.rs"]
 mod bootstrap;
+#[path = "hos2_history.rs"]
+mod history;
+
+pub use history::AgentdHos2HistoryDevice;
 
 use bootstrap::Attachment;
 use bootstrap::ProcessIdentity;
@@ -186,7 +190,12 @@ impl AgentdHos2Device {
         {
             return Err("invalid HOS2 bootstrap management binding".to_string());
         }
-        let response = device.exchange(
+        device.check_query_abi()?;
+        Ok(device)
+    }
+
+    fn check_query_abi(&self) -> Result<(), String> {
+        let response = self.exchange(
             /*opcode*/ 1,
             /*sequence*/ 1,
             /*slot*/ 0,
@@ -196,7 +205,7 @@ impl AgentdHos2Device {
         if response.status != 0
             || response.revision != 0
             || response.payload.len() != 48
-            || read16(&response.payload, /*offset*/ 0)? != device.local_space
+            || read16(&response.payload, /*offset*/ 0)? != self.local_space
             || read32(&response.payload, /*offset*/ 16)? != 4096
             || read32(&response.payload, /*offset*/ 20)? != 40
             || read32(&response.payload, /*offset*/ 24)? != 64
@@ -206,7 +215,7 @@ impl AgentdHos2Device {
         {
             return Err("native QueryAbi differs from the sealed HOS2 bootstrap".to_string());
         }
-        Ok(device)
+        Ok(())
     }
 
     /// Read the already-delegated CPU object once, without allocating D,
