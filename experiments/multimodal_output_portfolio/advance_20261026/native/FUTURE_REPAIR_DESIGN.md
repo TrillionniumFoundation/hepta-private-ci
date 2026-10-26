@@ -24,6 +24,20 @@ does not establish independence for two different words spoken by the same
 speaker. A policy can have numerically correct finite integration and still
 use a misspecified model of the experiment.
 
+The initial target belief has a separate limitation. The current two
+`78 -> 32 -> 10` marginal heads construct the 100-target prior as
+`q(t_left, t_right | x) = q_left(t_left | x) * q_right(t_right | x)`.
+Training the two marginal distributions with NLL does not identify their
+conditional dependence. This factorization remains an unverified modeling
+assumption, distinct from the demonstrated same-WAV observation-support error.
+Neither issue has been established as the causal explanation of the selected
+ECE failure or any efficacy result. A later repair should separately compare a
+properly normalized joint target model or a declared dependence model, using
+source-group-held-out joint log loss and selected-policy calibration. Correcting
+the acquisition likelihood alone does not validate the initial factorized
+prior. Any joint-prior candidate and its selection rule must be frozen before
+access to a new qualification or confirmation panel.
+
 Finally, numerical modulation has been shown to change actual recurrent state,
 but the registered positive/zero/negative history experiment did not change the
 next selected output. A claim that numerical NDU feedback improves decisions or
