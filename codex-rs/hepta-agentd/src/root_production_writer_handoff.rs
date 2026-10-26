@@ -17,13 +17,15 @@ impl RootProductionWriterDescriptor {
 }
 
 /// Send the original sealed bootstrap, same Root pidfd and actual Root0600
-/// registered writer FD on this same Root-created private pair. The receiver's
+/// registered writer FD on this same Root-created private pair. Consuming the
+/// sender's file prevents Root from accidentally retaining the same locked
+/// open-file description after the child exits. The receiver's
 /// original config constructor still checks exact layout/inode/live authority.
 pub fn send_root_production_writer_handoff(
     socket: UnixDatagram,
     bootstrap: &File,
     root_pidfd: &OwnedFd,
-    writer: &File,
+    writer: File,
     timeout: Duration,
 ) -> Result<(), AgentdError> {
     // SAFETY: these functions read actual credentials only.
@@ -36,7 +38,7 @@ pub fn send_root_production_writer_handoff(
     }
     validate_bootstrap(bootstrap)?;
     require_root_pin(root_pidfd, std::process::id())?;
-    validate_writer(writer)?;
+    validate_writer(&writer)?;
     send_packet(
         &socket,
         WRITER_FRAME,
