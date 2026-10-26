@@ -42,7 +42,7 @@ pub(super) enum Command {
         cap_ns: u64,
     },
     Dispatch {
-        queued: ProductionQueuedReceipt,
+        queued: Box<ProductionQueuedReceipt>,
     },
     Retire {
         through: Hos2DeliveryId,
@@ -180,7 +180,7 @@ async fn execute(
             )?)
         }
         Command::Dispatch { queued } => Ok(serde_json::to_value(
-            owner.host().dispatch_with_grant_provider(queued).await?,
+            owner.host().dispatch_with_grant_provider(*queued).await?,
         )?),
         Command::Retire { through } => {
             let retired = owner.retire_through(&through).await?;

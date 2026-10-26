@@ -44,17 +44,32 @@ pub(super) fn current(
     Ok((owner, physical))
 }
 
+/// Borrow the SAME original Root and actual workload; no authority is cloned.
+pub(super) struct OwnerCycle<'a> {
+    pub(super) root: &'a PreparedHostAuthoritySession,
+    pub(super) heartbeat: &'a Heartbeat,
+    pub(super) pid: u32,
+}
+
+pub(super) struct OperationSpec<'a> {
+    pub(super) name: &'a str,
+    pub(super) cap: u64,
+    pub(super) retire: bool,
+}
+
 pub(super) fn operate(
     evidence: &mut Evidence,
     channel: &mut HostAuthorityPeerChannel,
-    root: &PreparedHostAuthoritySession,
-    heartbeat: &Heartbeat,
-    pid: u32,
-    name: &str,
-    cap: u64,
-    retire: bool,
+    owner: OwnerCycle<'_>,
+    operation: OperationSpec<'_>,
 ) -> Result<(ProductionQueuedReceipt, ProductionDispatchReceipt, Value), Box<dyn std::error::Error>>
 {
+    let OwnerCycle {
+        root,
+        heartbeat,
+        pid,
+    } = owner;
+    let OperationSpec { name, cap, retire } = operation;
     let before = usage(channel, heartbeat)?;
     let revision = before["revision"]
         .as_u64()
@@ -79,7 +94,7 @@ pub(super) fn operate(
     let dispatch: ProductionDispatchReceipt = serde_json::from_value(request(
         channel,
         Command::Dispatch {
-            queued: queued.clone(),
+            queued: Box::new(queued.clone()),
         },
     )?)?;
     let after = usage(channel, heartbeat)?;

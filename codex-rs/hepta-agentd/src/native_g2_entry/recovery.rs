@@ -47,12 +47,16 @@ pub(super) fn run(
     let (queued, dispatch, current) = cycle::operate(
         evidence,
         &mut manager,
-        &prepared,
-        heartbeat,
-        boot.pids[0],
-        name,
-        25_000_000,
-        /*retire*/ false,
+        cycle::OwnerCycle {
+            root: &prepared,
+            heartbeat,
+            pid: boot.pids[0],
+        },
+        cycle::OperationSpec {
+            name,
+            cap: 25_000_000,
+            retire: false,
+        },
     )?;
     let old: CognitiveCheckpointReceipt = serde_json::from_value(current)?;
     let physical = prepared.observe_physical_current()?;
@@ -131,12 +135,14 @@ pub(super) fn run(
         evidence,
         &mut recovery,
         &prepared,
-        "recovery",
-        boot.pids[2],
-        registry,
-        agent,
-        &config,
-        &proof,
+        root::OwnerReadiness {
+            role: "recovery",
+            pid: boot.pids[2],
+            registry,
+            agent,
+            config: &config,
+            proof: &proof,
+        },
     )?;
     let response = cycle::request(
         &mut recovery,
@@ -179,12 +185,16 @@ pub(super) fn run(
     let (_, _, current) = cycle::operate(
         evidence,
         &mut recovery,
-        &prepared,
-        heartbeat,
-        boot.pids[2],
-        "used-recovery-allowance",
-        50_000_000,
-        /*retire*/ true,
+        cycle::OwnerCycle {
+            root: &prepared,
+            heartbeat,
+            pid: boot.pids[2],
+        },
+        cycle::OperationSpec {
+            name: "used-recovery-allowance",
+            cap: 50_000_000,
+            retire: true,
+        },
     )?;
     evidence.emit(
         "complete",

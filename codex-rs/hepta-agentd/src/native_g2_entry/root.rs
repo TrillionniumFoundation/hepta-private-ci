@@ -72,12 +72,14 @@ pub(super) fn run(boot: Boot, control: File) -> Result<(), Box<dyn std::error::E
         &mut evidence,
         &mut manager,
         &prepared,
-        "manager",
-        boot.pids[0],
-        &registry,
-        &agent,
-        &config,
-        &proof,
+        OwnerReadiness {
+            role: "manager",
+            pid: boot.pids[0],
+            registry: &registry,
+            agent: &agent,
+            config: &config,
+            proof: &proof,
+        },
     )?;
     if evidence.scenario() == "steady-state-v1" {
         let mut last = Value::Null;
@@ -85,12 +87,16 @@ pub(super) fn run(boot: Boot, control: File) -> Result<(), Box<dyn std::error::E
             let (_, _, current) = cycle::operate(
                 &mut evidence,
                 &mut manager,
-                &prepared,
-                &heartbeat,
-                boot.pids[0],
-                name,
-                cap,
-                /*retire*/ true,
+                cycle::OwnerCycle {
+                    root: &prepared,
+                    heartbeat: &heartbeat,
+                    pid: boot.pids[0],
+                },
+                cycle::OperationSpec {
+                    name,
+                    cap,
+                    retire: true,
+                },
             )?;
             last = current;
         }
@@ -125,17 +131,30 @@ pub(super) fn run(boot: Boot, control: File) -> Result<(), Box<dyn std::error::E
     poweroff()
 }
 
+/// Readiness captures borrowed startup metadata from the same actual owners.
+pub(super) struct OwnerReadiness<'a> {
+    pub(super) role: &'a str,
+    pub(super) pid: u32,
+    pub(super) registry: &'a FleetRegistry,
+    pub(super) agent: &'a AgentId,
+    pub(super) config: &'a HostAuthorityServiceConfig,
+    pub(super) proof: &'a HostSignedWriterAuthorizationV1,
+}
+
 pub(super) fn owner_ready(
     evidence: &mut Evidence,
     channel: &mut HostAuthorityPeerChannel,
     root: &PreparedHostAuthoritySession,
-    role: &str,
-    pid: u32,
-    registry: &FleetRegistry,
-    agent: &AgentId,
-    config: &HostAuthorityServiceConfig,
-    proof: &HostSignedWriterAuthorizationV1,
+    readiness: OwnerReadiness<'_>,
 ) -> Result<Value, Box<dyn std::error::Error>> {
+    let OwnerReadiness {
+        role,
+        pid,
+        registry,
+        agent,
+        config,
+        proof,
+    } = readiness;
     let (owner, physical) = cycle::current(channel, root)?;
     let record = registry.load_agent(agent)?;
     let lock = std::fs::symlink_metadata(record.layout.writer_lock())?;
