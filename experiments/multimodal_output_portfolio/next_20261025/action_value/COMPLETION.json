@@ -1,0 +1,38 @@
+{
+  "H1_counterfactual_nodes": 18396,
+  "completed_unix_ns": 1792981647740252086,
+  "counterfactual_actions_per_node": 5,
+  "cpu_ns": 852718068822,
+  "failures": 0,
+  "files_sha256": {
+    "commitments.jsonl.gz": "135980edf2d0598e5ba9d6b5b5e33042229226c7a8b4d11c40a0756be5ee2bb7",
+    "counterfactual-scored.jsonl.gz": "bc9506349948e0cefda59f3382934d3b6407935691cefa642c7a0b3048834c85",
+    "counterfactuals.jsonl.gz": "860ccefbd00d83ab4e4c75ceaefe0f3cdd6d3dd6cdceb4c11b83cf5ca8260a27",
+    "diagnostic-commitments.jsonl.gz": "20361d4c93edc1521a4eba7c73f1ae9f4d9c0d3bc15d2e14b0099a6d33bd1b2b",
+    "media.bin": "92a7d1154d8d0890989904f33fa947b5f1d9f565d9c12ddfbc30c97d03cf9eea",
+    "registration.json": "5dc80d6008506a6e771c8ac16d09c34b4b4f272e2cf1b45d38cdafed068c6173",
+    "requests.jsonl.gz": "6fe4b3cecd9813532c294cf44c38cc23b5e1aa6be750db3e9c80408a6234c991",
+    "scored.jsonl.gz": "cb668aadfa61b9d6fc3dcc56142974556cec76ebb151de103502666620cea295"
+  },
+  "model_loads": [
+    {
+      "seed": 17,
+      "wall_ns": 27201345
+    },
+    {
+      "seed": 29,
+      "wall_ns": 77892676
+    },
+    {
+      "seed": 43,
+      "wall_ns": 19582899
+    }
+  ],
+  "offline_counterfactual_cpu_ns": 117112771028,
+  "offline_counterfactual_wall_ns": 171657335246,
+  "requests": 49152,
+  "scoring_wall_ns": 237862929092,
+  "source_pairs": 512,
+  "status": "completed",
+  "wall_ns": 1011412464090
+}
