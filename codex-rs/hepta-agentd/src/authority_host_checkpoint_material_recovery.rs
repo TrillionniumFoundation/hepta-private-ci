@@ -17,6 +17,32 @@ pub(crate) struct PreparedMaterialRecovery {
     material: RootCheckpointMaterial,
 }
 
+/// One-shot installation holds the physical exclusive lock. Adoption consumes
+/// this value; the same recovery preparation cannot install or adopt twice.
+pub(crate) struct InstalledMaterialRecovery {
+    recovery: PreparedMaterialRecovery,
+    installed: InstalledRootCheckpointImage,
+}
+
+impl InstalledMaterialRecovery {
+    pub(crate) fn adopt(
+        self,
+    ) -> Result<(HostCognitiveCheckpoint, InstalledRootCheckpointImage), AuthorityTrustError> {
+        let recovery = self.recovery;
+        recovery.require_retirement_window()?;
+        let backend = HostCognitiveCheckpoint::adopt_current_after_root_restart_with_material(
+            recovery.directory,
+            &recovery.previous,
+            &recovery.predecessor,
+            recovery.registration,
+            &recovery.successor,
+            recovery.clock,
+            recovery.profile,
+        )?;
+        Ok((backend, self.installed))
+    }
+}
+
 impl PreparedMaterialRecovery {
     pub(crate) fn observe(
         directory: Arc<RootAuthorityDirectory>,
@@ -63,25 +89,15 @@ impl PreparedMaterialRecovery {
         Ok(result)
     }
 
-    pub(crate) fn install(&self) -> Result<InstalledRootCheckpointImage, AuthorityTrustError> {
+    pub(crate) fn install(self) -> Result<InstalledMaterialRecovery, AuthorityTrustError> {
         self.require_retirement_window()?;
         let installed = self.material.install(self.previous.clone())?;
         self.require_retirement_window()
             .map_err(|_| AuthorityTrustError::Unavailable)?;
-        Ok(installed)
-    }
-
-    pub(crate) fn adopt(self) -> Result<HostCognitiveCheckpoint, AuthorityTrustError> {
-        self.require_retirement_window()?;
-        HostCognitiveCheckpoint::adopt_current_after_root_restart_with_material(
-            self.directory,
-            &self.previous,
-            &self.predecessor,
-            self.registration,
-            &self.successor,
-            self.clock,
-            self.profile,
-        )
+        Ok(InstalledMaterialRecovery {
+            recovery: self,
+            installed,
+        })
     }
 
     fn require_retirement_window(&self) -> Result<(), AuthorityTrustError> {

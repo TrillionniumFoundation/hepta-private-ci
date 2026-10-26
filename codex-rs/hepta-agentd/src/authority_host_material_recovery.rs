@@ -90,8 +90,11 @@ impl HostAuthorityService {
             // All authority, retirement and independent-image admission precedes
             // the first custody mutation. Never read/hash the suspect live DB.
             let _custody = seize_registered_cognitive_root(&self.identity, config.peer_uid)?;
-            let installed = recovery.install().map_err(io::Error::other)?;
-            let backend = recovery.adopt().map_err(io::Error::other)?;
+            let (backend, installed) = recovery
+                .install()
+                .map_err(io::Error::other)?
+                .adopt()
+                .map_err(io::Error::other)?;
             let consumers = match (
                 &config.consumers,
                 &config.sockets.device_frontier,
