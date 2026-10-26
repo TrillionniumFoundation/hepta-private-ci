@@ -4,6 +4,66 @@ use super::*;
 use pretty_assertions::assert_eq;
 
 #[tokio::test]
+async fn next_native_sequence_reads_original_terminal_prefix_without_reserving_or_redispatching()
+-> TestResult {
+    let directory = tempfile::tempdir()?;
+    let fixture = Fixture::open(directory.path()).await?;
+    assert_eq!(
+        fixture
+            .writer
+            .next_hos2_delivery_sequence([1; 16], [2; 16])
+            .await?,
+        1
+    );
+    assert_eq!(
+        fixture
+            .writer
+            .next_hos2_delivery_sequence([1; 16], [2; 16])
+            .await?,
+        1
+    );
+    let queued = fixture
+        .prepare("hos2:observed-next", /*sequence*/ 1)
+        .await?;
+    assert!(
+        fixture
+            .writer
+            .next_hos2_delivery_sequence([1; 16], [2; 16])
+            .await
+            .is_err()
+    );
+    let (binding, signed) = fixture.signed(&queued, /*nonce*/ 31).await?;
+    let terminal = fixture
+        .dispatcher
+        .dispatch(&fixture.writer, &signed, &binding, queued)
+        .await?;
+    assert_eq!(terminal.state, LocalOutcomeState::Committed);
+    assert_eq!(
+        fixture
+            .writer
+            .next_hos2_delivery_sequence([1; 16], [2; 16])
+            .await?,
+        2
+    );
+    assert_eq!(
+        fixture
+            .writer
+            .next_hos2_delivery_sequence([1; 16], [2; 16])
+            .await?,
+        2
+    );
+    assert_eq!(fixture.device.calls.load(Ordering::SeqCst), 1);
+    assert!(
+        fixture
+            .writer
+            .next_hos2_delivery_sequence([0; 16], [2; 16])
+            .await
+            .is_err()
+    );
+    Ok(())
+}
+
+#[tokio::test]
 async fn original_transaction_serializes_namespace_admission_and_blocks_unknown_predecessors()
 -> TestResult {
     let directory = tempfile::tempdir()?;

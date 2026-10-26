@@ -181,6 +181,43 @@ async fn verified_terminal(
 }
 
 impl LocalLeaseOutbox {
+    /// Observe the next D in this exact original namespace. This does not
+    /// reserve a number: admission still performs its original atomic checks.
+    pub(crate) async fn next_hos2_delivery_sequence(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        namespace_probe: &Hos2DeliveryId,
+    ) -> Result<u64, LocalLeaseOutboxError> {
+        let (boot, space) = namespace(namespace_probe)?;
+        let lease = self.current_lease(transaction).await?;
+        ensure_current_active(&lease, self)?;
+        let last: Option<String> = sqlx::query_scalar(
+            "SELECT json_extract(payload_json, '$.delivery.sequence') FROM cognitive_local_outbox
+             WHERE topic = 'hepta.hos2.install-budget.v1'
+               AND json_extract(payload_json, '$.delivery.boot_id') = ?
+               AND json_extract(payload_json, '$.delivery.space_id') = ?
+             ORDER BY json_extract(payload_json, '$.delivery.sequence') DESC LIMIT 1",
+        )
+        .bind(boot)
+        .bind(space)
+        .fetch_optional(&mut **transaction)
+        .await
+        .map_err(crate::cognitive_store::unavailable)?;
+        let Some(last) = last else {
+            return Ok(1);
+        };
+        let sequence = u64::from_str_radix(&last, 16)
+            .map_err(|_| corrupt("invalid original HOS2 sequence"))?;
+        let through =
+            Hos2DeliveryId::new(namespace_probe.boot_id, namespace_probe.space_id, sequence)
+                .map_err(LocalLeaseOutboxError::Corrupt)?;
+        self.hos2_durable_prefix(transaction, &through).await?;
+        sequence
+            .checked_add(1)
+            .filter(|value| *value < u64::MAX)
+            .ok_or_else(|| corrupt("original HOS2 sequence exhausted"))
+    }
+
     /// The exact current writer reads every member of the requested prefix
     /// from its original database. No cursor or caller receipt is trusted.
     /// The caller retains this transaction through protected publication and
