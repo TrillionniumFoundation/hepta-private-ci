@@ -33,6 +33,9 @@ use crate::authority_host_config::HostAuthorityRegistration;
 use crate::authority_host_config::HostAuthorityServiceConfig;
 use crate::authority_host_config::read_root_json;
 
+#[path = "authority_host_owner_status.rs"]
+mod owner_status;
+
 #[path = "authority_host_listeners.rs"]
 mod listeners;
 use listeners::serve_lanes;
@@ -337,33 +340,7 @@ pub(super) fn verify_process(registration: &HostAuthorityRegistration, uid: u32)
         return Err(io::Error::other("registered start identity mismatch"));
     }
     let status = std::fs::read_to_string(format!("/proc/{}/status", registration.peer_pid))?;
-    let actual_uid = status
-        .lines()
-        .find_map(|line| line.strip_prefix("Uid:"))
-        .map(|line| line.split_whitespace().collect::<Vec<_>>());
-    let expected_uid = uid.to_string();
-    if actual_uid
-        .as_ref()
-        .is_none_or(|values| values.len() != 4 || values.iter().any(|value| *value != expected_uid))
-        || !status.lines().any(|line| line == "NoNewPrivs:\t1")
-        || ["CapInh", "CapPrm", "CapEff", "CapBnd", "CapAmb"]
-            .iter()
-            .any(|field| {
-                !status.lines().any(|line| {
-                    line.strip_prefix(field)
-                        .is_some_and(|value| value == ":\t0000000000000000")
-                })
-            })
-        || !status.lines().any(|line| {
-            line.strip_prefix("Groups:")
-                .is_some_and(|groups| groups.split_whitespace().next().is_none())
-        })
-    {
-        return Err(io::Error::other(
-            "owner must have exact dedicated UID, no groups/capabilities and NoNewPrivileges",
-        ));
-    }
-    Ok(())
+    owner_status::verify_status(&status, uid, registration.peer_pid)
 }
 
 fn owner_alive(owner: &OwnedFd, end: Instant) -> io::Result<()> {
