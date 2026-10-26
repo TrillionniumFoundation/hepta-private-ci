@@ -183,7 +183,7 @@ impl PreparedHostAuthoritySession {
     }
 
     /// Retain the original provider's held login leader, independently verify
-    /// that exact physical logind session, and fence every Root lane on logout.
+    /// that exact physical logind session, and fence every Root lane on leader exit.
     /// This neither initializes authority nor accepts a numeric PID substitute.
     pub fn with_original_logind_session(
         mut self,

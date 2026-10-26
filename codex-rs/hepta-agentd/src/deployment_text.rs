@@ -300,7 +300,8 @@ impl DeploymentFinalUseIssuer {
         *next
             .text_signatures
             .last_mut()
-            .expect("reserved original reference") = retained;
+            .ok_or_else(|| io::Error::other("reserved original text reference is missing"))? =
+            retained;
         // The exact signature and shared sequence commit in the SAME original
         // issuer CAS. A lost response reopens this record without new signing.
         self.store
