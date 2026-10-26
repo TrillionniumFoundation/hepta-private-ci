@@ -57,7 +57,7 @@ struct StatusDiagnostic {
     peer_pid: u32,
     expected_uid: u32,
     status_bytes: usize,
-    // Bit order: UID, NNP, Inh, Prm, Eff, Bnd, Amb, Groups. 255 means all pass.
+    // Bit order: UID, NNP, inheritable, permitted, effective, bounding, ambient, Groups; 255 means all pass.
     pass_mask: u8,
     // One bit per exact UID token, in real/effective/saved/filesystem order.
     uid_match_mask: u8,
