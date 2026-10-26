@@ -75,6 +75,16 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           just test --locked -p codex-hepta-contracts --lib -E 'test(authority_lease::windows::tests::)' --test-threads 1 --no-tests fail --retries 0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise original network proxy Windows ingress and attribution tests
+        shell: pwsh
+        run: |
+          Set-Location codex-rs
+          $logDirectory = Join-Path $env:RUNNER_TEMP "network-proxy-native"
+          New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
+          just test --locked -p codex-network-proxy --lib --test-threads 1 --no-tests fail --retries 0 2>&1 | Tee-Object -FilePath (Join-Path $logDirectory "network-proxy-lib.log")
+          $testExitCode = $LASTEXITCODE
+          $testExitCode | Set-Content -Path (Join-Path $logDirectory "exit-code.txt")
+          if ($testExitCode -ne 0) { exit $testExitCode }
       - name: Validate Agentd Prompt Runtime integration and reopened state
         shell: pwsh
         run: |
@@ -111,5 +121,13 @@ jobs:
         with:
           name: windows-private-state-acquisition-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/private-state-acquisition
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Preserve original network proxy native test logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-network-proxy-native-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/network-proxy-native
           if-no-files-found: warn
           retention-days: 14
