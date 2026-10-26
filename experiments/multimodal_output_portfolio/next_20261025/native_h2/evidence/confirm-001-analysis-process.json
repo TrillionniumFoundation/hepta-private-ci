@@ -1,0 +1,48 @@
+{
+  "cgroup_after": {
+    "current": 8544227328,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3860264,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8472240128,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3860049,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 0.132775,
+  "child_user_seconds": 2.3464549999999997,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-B",
+    "-m",
+    "experiments.multimodal_output_portfolio.next_20261025.native_h2.analyze",
+    "--directory",
+    "/tmp/hepta-ndu-next-native-h2/confirm-001",
+    "--allocation",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/NATIVE_H2_ALLOCATION.json",
+    "--protocol",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/NATIVE_PROTOCOL.json",
+    "--output",
+    "/tmp/hepta-ndu-next-native-h2/confirm-001/AUDIT.json"
+  ],
+  "context": "Read-only actual native journal/media/projection audit and fixed4096-draw64writer bootstrap; media may now run its separate collector; no model inference",
+  "exit_code": 0,
+  "log_sha256": "e3242c0e5b48827fe9a6cff7c3cc0131fd633e5f277cf425b9368342d8d8ee8f",
+  "peak_rss_bytes": 53559296,
+  "registration_sha256": "55ada90dbaa1f3369211ba853e7db82f558325e5f7af4a3996bffe6cb543bc37",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 2119239854,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}

@@ -1,0 +1,111 @@
+{
+  "audit_source_sha256": "0ff870ce5cb09a0e778a78e5c556c210de8fefc0bfcc1ea197efb87089aa0c0a",
+  "journal_sha256": {
+    "/tmp/hepta-ndu-next-native-h2/confirm-001/correctness/state/control.jsonl": "db5a97d8f36adc54ea69b142d18d0572de9625071a856da85b389f3a9bb88a5d",
+    "/tmp/hepta-ndu-next-native-h2/confirm-001/ndu/state/control.jsonl": "e27cc634d48e1627f16fc55bbeef25a5aa0e8ffab3ea061961281765b6cac47b"
+  },
+  "model_or_native_execution_rerun": false,
+  "original_audit_sha256": "bbae2ec2f3132c852a57af05c1dcf4473d0e3aa20264d1ea9645025612c10e5b",
+  "original_files_or_gates_changed": false,
+  "original_results_sha256": "e867b366404136ef77d5763f31cc72571bc50d549bad2257f5045a0f9e5337b4",
+  "policies": {
+    "correctness": {
+      "all_ticks_covered_once": true,
+      "candidate_ticks": 1740,
+      "decisions": 348,
+      "processes": [
+        {
+          "classification": "original_resource_ceilings_pass",
+          "frontier_after": 5,
+          "frontier_before": 0,
+          "index": 0,
+          "reconstructed": {
+            "maximum_checkpoint_bytes": 1568,
+            "maximum_transient_allocation_bytes": 768,
+            "maximum_write_amplification_ppm": 530613,
+            "p95_execution_micros": 603,
+            "p99_execution_micros": 603,
+            "sample_count": 5
+          },
+          "sample_count": 5
+        },
+        {
+          "classification": "not_applicable_zero_ticks",
+          "frontier_after": 5,
+          "frontier_before": 5,
+          "index": 1,
+          "sample_count": 0
+        },
+        {
+          "classification": "original_resource_ceilings_pass",
+          "frontier_after": 1740,
+          "frontier_before": 5,
+          "index": 2,
+          "reconstructed": {
+            "maximum_checkpoint_bytes": 1568,
+            "maximum_transient_allocation_bytes": 768,
+            "maximum_write_amplification_ppm": 530613,
+            "p95_execution_micros": 665,
+            "p99_execution_micros": 1452,
+            "sample_count": 1735
+          },
+          "sample_count": 1735
+        }
+      ]
+    },
+    "ndu": {
+      "all_ticks_covered_once": true,
+      "candidate_ticks": 1800,
+      "decisions": 360,
+      "processes": [
+        {
+          "classification": "original_resource_ceilings_pass",
+          "frontier_after": 5,
+          "frontier_before": 0,
+          "index": 0,
+          "reconstructed": {
+            "maximum_checkpoint_bytes": 1568,
+            "maximum_transient_allocation_bytes": 768,
+            "maximum_write_amplification_ppm": 530613,
+            "p95_execution_micros": 560,
+            "p99_execution_micros": 560,
+            "sample_count": 5
+          },
+          "sample_count": 5
+        },
+        {
+          "classification": "not_applicable_zero_ticks",
+          "frontier_after": 5,
+          "frontier_before": 5,
+          "index": 1,
+          "sample_count": 0
+        },
+        {
+          "classification": "original_resource_ceilings_pass",
+          "frontier_after": 1800,
+          "frontier_before": 5,
+          "index": 2,
+          "reconstructed": {
+            "maximum_checkpoint_bytes": 1568,
+            "maximum_transient_allocation_bytes": 768,
+            "maximum_write_amplification_ppm": 530613,
+            "p95_execution_micros": 672,
+            "p99_execution_micros": 1218,
+            "sample_count": 1795
+          },
+          "sample_count": 1795
+        }
+      ]
+    }
+  },
+  "resource_addendum_sha256": "25227532e45595d67984c9e144908b5a38c5a766a1e05a7b5281c9b04bef1cb7",
+  "schema": "hepta.next.native-h2-independent-resource-review.v1",
+  "scope": "Native tick resource receipts only. Zero-tick processes are N/A. Original primary quality and whole Python/model-service cost results remain unchanged.",
+  "status": "passed",
+  "totals": {
+    "decisions": 708,
+    "measured_processes": 4,
+    "timed_candidate_ticks": 3540,
+    "zero_tick_processes": 2
+  }
+}
