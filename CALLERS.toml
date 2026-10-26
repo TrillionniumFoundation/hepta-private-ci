@@ -114,7 +114,13 @@ required_boundary_ids = [
   "root_notes_recovered_successor_startup_before",
   "root_notes_original_reserved_session_binding",
   "root_notes_registered_successor_policy_replace",
-  "root_notes_original_issuer_policy_cas"
+  "root_notes_original_issuer_policy_cas",
+  "root_retained_native_ready_launch",
+  "root_prepared_native_ready_execution",
+  "root_prepared_native_ready_text_session",
+  "root_original_bound_native_lanes",
+  "root_original_bound_native_lane_acceptance",
+  "root_original_ready_lane_bridge"
 ]
 
 [[boundary]]
@@ -929,7 +935,7 @@ id = "root_retained_native_ui_launch"
 symbol = "PreparedHostAuthoritySession::launch_native"
 call_pattern = '(?:\.\s*|PreparedHostAuthoritySession\s*::\s*)launch_native\s*\('
 definition_path = "codex-rs/hepta-agentd/src/authority_host_session.rs"
-definition_markers = ["pub fn launch_native(", "&self.owner_pidfd", "serde_json::to_vec(&self.config)", "serde_json::to_vec(&self.registration)", "launch_prepared_native(", "self,"]
+definition_markers = ["pub fn launch_native(", "self.launch_native_with_ready(config_file, registration_file, profile_file, || Ok(()))"]
 product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
 caller_markers = ["prepared.launch_native(&config, &registration, &profile)?", "PreparedHostAuthoritySession::prepare_fresh_from_registered"]
 
@@ -937,19 +943,21 @@ caller_markers = ["prepared.launch_native(&config, &registration, &profile)?", "
 id = "root_prepared_native_ui_execution"
 symbol = "launch_prepared_native"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_native_launch.rs"
-definition_markers = ["pub(super) fn launch_prepared_native(", "prepared: crate::PreparedHostAuthoritySession", "open_verified_program(&profile, config.peer_gid)?", "format!(\"/proc/self/fd/{}\", program.as_raw_fd())", "libc::SYS_pidfd_open", "prepared.serve_with_text(&guard.path, ui_pidfd)"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_session.rs"]
-caller_markers = ["pub fn launch_native(", "serde_json::to_vec(&self.config)", "crate::authority_host_native_launch::launch_prepared_native("]
+definition_markers = ["pub(super) fn launch_prepared_native(", "prepared: crate::PreparedHostAuthoritySession", "launch_prepared_native_with_ready(prepared, config, profile, profile_file, || Ok(()))"]
+product_callers = []
+caller_markers = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_session.rs"
-required = ["pub struct PreparedHostAuthoritySession", "owner_pidfd: OwnedFd", "service: HostAuthorityService", "open_registered_writer(&config, &registration, &owner_pidfd)?", "serde_json::to_vec(&self.config)", "serde_json::to_vec(&self.registration)", "native launch changed the retained original Root inputs", "service.with_live_human_text(text.clone(), ui_pidfd.try_clone()?)?"]
+required = ["pub struct PreparedHostAuthoritySession", "owner_pidfd: OwnedFd", "service: HostAuthorityService", "open_registered_writer(&config, &registration, &owner_pidfd)?", "serde_json::to_vec(&self.config)", "serde_json::to_vec(&self.registration)", "native launch changed the retained original Root inputs", "service.with_live_human_text(text.clone(), ui_pidfd.try_clone()?)?", "pub fn launch_native_with_ready(", "pub(crate) fn serve_with_text_and_ready(", "ready: impl FnOnce() -> io::Result<()>", "listeners::serve_lanes_with_ready(&service, &config, &registration, &owner_pidfd, ready)"]
 forbidden = ["AllowVerifier", "permit_all"]
+required_function_order = [{function = "fn launch_native(", sequence = ["self.launch_native_with_ready(", "|| Ok(())"]}, {function = "fn launch_native_with_ready(", sequence = ["crate::authority_host_native_launch::inputs(", ".check_logind_binding(&profile.original_human_binding())?", "serde_json::to_vec(&self.config)", "serde_json::to_vec(&self.registration)", "crate::authority_host_native_launch::launch_prepared_native_with_ready("]}, {function = "fn serve_with_text_and_ready(", sequence = ["fn serve_with_text_and_ready(", "self.serve_selected(Some((text_file, ui_pidfd)), ready)"]}, {function = "fn serve_selected(", sequence = ["text.validate(&service)?", "service.with_live_human_text(text.clone(), ui_pidfd.try_clone()?)?", "let bound = listeners::bind_runtime_lanes(&config, ready)?", "service.serve_text_ui(", "listeners::serve_bound_lanes("]}]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_native_launch.rs"
-required = ["pub(super) fn launch_prepared_native(", "prepared: crate::PreparedHostAuthoritySession", "open_verified_program(&profile, config.peer_gid)?", "format!(\"/proc/self/fd/{}\", program.as_raw_fd())", "libc::PR_SET_NO_NEW_PRIVS", "libc::SYS_pidfd_open", "prepared.serve_with_text(&guard.path, ui_pidfd)"]
+required = ["pub(super) fn launch_prepared_native(", "prepared: crate::PreparedHostAuthoritySession", "open_verified_program(&profile, config.peer_gid)?", "format!(\"/proc/self/fd/{}\", program.as_raw_fd())", "libc::PR_SET_NO_NEW_PRIVS", "libc::SYS_pidfd_open", "prepared.serve_with_text_and_ready(&guard.path, ui_pidfd, ready)", "pub(super) fn launch_prepared_native_with_ready(", "ready: impl FnOnce() -> io::Result<()>", "file.sync_all()?", "std::fs::File::open(parent)?.sync_all()?"]
 forbidden = ["AllowVerifier", "permit_all"]
+required_function_order = [{function = "fn launch_prepared_native(", sequence = ["fn launch_prepared_native(", "launch_prepared_native_with_ready(prepared, config, profile, profile_file, || Ok(()))"]}, {function = "fn launch_prepared_native_with_ready(", sequence = ["open_verified_program(&profile, config.peer_gid)?", "command.pre_exec(", "libc::PR_SET_NO_NEW_PRIVS", "let mut child = command.spawn()?", "libc::SYS_pidfd_open", "let registration = crate::HostAuthorityTextUiRegistration", "serde_json::to_writer(&mut file, &registration)", "file.flush()?", "file.sync_all()?", "std::fs::File::open(parent)?.sync_all()?", "prepared.serve_with_text_and_ready(&guard.path, ui_pidfd, ready)"]}]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/notes_thread_seed.rs"
@@ -1414,3 +1422,63 @@ required_order = [["reservation::receive(", "validate_recovery_policy(&profile, 
 path = "codex-rs/hepta-agentd/src/authority_host_notes_successor.rs"
 required = ["libc::getuid()", "libc::geteuid()", "self.notes.is_some()", "writer.registration.local_lease_generation <= 1", "self.issuer.replace_registered_notes_policy("]
 forbidden = ["AllowVerifier", "permit_all"]
+
+[[boundary]]
+id = "root_retained_native_ready_launch"
+symbol = "PreparedHostAuthoritySession::launch_native_with_ready"
+call_pattern = "\\blaunch_native_with_ready\\b"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_session.rs"
+definition_markers = ["pub fn launch_native_with_ready(", "ready: impl FnOnce() -> io::Result<()>", "&self.owner_pidfd", "serde_json::to_vec(&self.config)", "serde_json::to_vec(&self.registration)", ".check_logind_binding(&profile.original_human_binding())?", "crate::authority_host_native_launch::launch_prepared_native_with_ready("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "root_prepared_native_ready_execution"
+symbol = "launch_prepared_native_with_ready"
+call_pattern = "\\blaunch_prepared_native_with_ready\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_native_launch.rs"
+definition_markers = ["pub(super) fn launch_prepared_native_with_ready(", "prepared: crate::PreparedHostAuthoritySession", "ready: impl FnOnce() -> io::Result<()>", "open_verified_program(&profile, config.peer_gid)?", "libc::SYS_pidfd_open", "file.sync_all()?", "prepared.serve_with_text_and_ready(&guard.path, ui_pidfd, ready)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_session.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_prepared_native_ready_text_session"
+symbol = "PreparedHostAuthoritySession::serve_with_text_and_ready"
+call_pattern = "\\bserve_with_text_and_ready\\b"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_session.rs"
+definition_markers = ["pub(crate) fn serve_with_text_and_ready(", "self.serve_selected(Some((text_file, ui_pidfd)), ready)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_native_launch.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_original_bound_native_lanes"
+symbol = "bind_runtime_lanes"
+call_pattern = "\\bbind_runtime_lanes\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_listeners.rs"
+definition_markers = ["pub(super) fn bind_runtime_lanes(", "let lanes = validate_runtime_lanes(config)?", "let listener = UnixListener::bind(path)?", "listener.set_nonblocking(true)?", "ready()?", "Ok(BoundLanes {"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_session.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_original_bound_native_lane_acceptance"
+symbol = "serve_bound_lanes"
+call_pattern = "\\bserve_bound_lanes\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_listeners.rs"
+definition_markers = ["pub(super) fn serve_bound_lanes(", "bound: BoundLanes", "let BoundLanes { _guard, listeners } = bound", "owner_alive(owner, end)?", "listener.accept()", "service.serve(lane, stream, policy, pidfd)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_session.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_original_ready_lane_bridge"
+symbol = "serve_lanes_with_ready"
+call_pattern = "\\bserve_lanes_with_ready\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_listeners.rs"
+definition_markers = ["pub(super) fn serve_lanes_with_ready(", "let bound = bind_runtime_lanes(config, ready)?", "serve_bound_lanes(service, config, registration, owner, bound)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_session.rs"]
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_listeners.rs"
+required = ["struct SocketGuard(Vec<(std::path::PathBuf, u64, u64)>)", "entry.dev() == *device && entry.ino() == *inode", "std::fs::remove_file(path)", "HostAuthorityLane::Observation", "HostAuthorityLane::Issuer", "HostAuthorityLane::Checkpoint", "HostAuthorityLane::DeviceConsumerFrontier", "HostAuthorityLane::NotesConsumerFrontier", "validate_lane_paths(&paths, config.peer_gid)?", "metadata.uid() != 0", "metadata.gid() != peer_gid", "metadata.mode() & 0o7777 != 0o2710", "entry.mode() & 0o022 != 0", "ready: impl FnOnce() -> io::Result<()>", "guard.0.push((path.clone(), metadata.dev(), metadata.ino()))", "metadata.uid() != 0 || metadata.gid() != config.peer_gid", "listener.set_nonblocking(true)?", "owner_alive(owner, end)?", "listener.accept()", "owner.try_clone()?", "checked_duration_since(Instant::now())", "request_bound: 1", "response_bound: 1"]
+forbidden = ["AllowVerifier", "permit_all", "connect_with_retry"]
+required_function_order = [{function = "fn drop(", sequence = ["entry.dev() == *device && entry.ino() == *inode", "std::fs::remove_file(path)"]}, {function = "fn serve_lanes(", sequence = ["fn serve_lanes(", "serve_lanes_with_ready(service, config, registration, owner, || Ok(()))"]}, {function = "fn serve_lanes_with_ready(", sequence = ["let bound = bind_runtime_lanes(config, ready)?", "serve_bound_lanes(service, config, registration, owner, bound)"]}, {function = "fn bind_runtime_lanes(", top_level = ["ready()?;", "Ok(BoundLanes {"], sequence = ["let lanes = validate_runtime_lanes(config)?", "for (lane, path) in lanes", "let listener = UnixListener::bind(path)?", "std::fs::set_permissions(", "metadata.uid() != 0 || metadata.gid() != config.peer_gid", "guard.0.push((path.clone(), metadata.dev(), metadata.ino()))", "listener.set_nonblocking(true)?", "listeners.push((lane, listener));\n    }", "ready()?", "Ok(BoundLanes {"]}, {function = "fn serve_bound_lanes(", sequence = ["let BoundLanes { _guard, listeners } = bound", "for (lane, listener) in listeners", "owner_alive(owner, end)?", "listener.accept()", "streams.push((lane, stream))", "std::thread::scope(", "owner.try_clone()?", "checked_duration_since(Instant::now())", "service.serve(lane, stream, policy, pidfd)"]}]

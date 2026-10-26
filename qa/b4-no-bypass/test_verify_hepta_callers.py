@@ -308,5 +308,104 @@ class RequiredCodeOrderTests(unittest.TestCase):
             self.check("fn rotate() { predecessor.validate_successor(successor)?; }")
 
 
+class FunctionOrderTests(unittest.TestCase):
+    def verify(self, source, *, top_level=()):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "source.rs").write_text(source)
+            return MODULE._verify_protected_files(
+                root,
+                {
+                    "protected_file": [
+                        {
+                            "path": "source.rs",
+                            "required": [],
+                            "forbidden": [],
+                            "required_function_order": [
+                                {
+                                    "function": "fn bind(",
+                                    "sequence": ["listen()?", "ready()?", "finish()"],
+                                    "top_level": list(top_level),
+                                }
+                            ],
+                        }
+                    ]
+                },
+            )
+
+    def test_original_order_inside_one_function(self):
+        self.verify("fn bind(ready: impl FnOnce()) { listen()?; ready()?; finish() }")
+
+    def test_functions_cannot_supply_each_others_markers(self):
+        with self.assertRaisesRegex(MODULE.VerificationFailure, "required code order"):
+            self.verify(
+                "fn bind() { listen()?; } fn unrelated() { ready()?; finish() }"
+            )
+
+    def test_early_ready_is_rejected(self):
+        with self.assertRaisesRegex(MODULE.VerificationFailure, "required code order"):
+            self.verify("fn bind() { ready()?; listen()?; finish() }")
+
+    def test_comments_and_strings_cannot_supply_the_missing_order(self):
+        with self.assertRaisesRegex(MODULE.VerificationFailure, "required code order"):
+            self.verify(
+                'fn bind() { ready()?; listen()?; /* ready()? */ "ready()?"; finish() }'
+            )
+
+    def test_test_only_function_cannot_supply_production_body(self):
+        with self.assertRaisesRegex(MODULE.VerificationFailure, "unique code function"):
+            self.verify("#[cfg(test)] fn bind() { listen()?; ready()?; finish() }")
+
+    def test_duplicate_function_is_not_an_unambiguous_guard(self):
+        with self.assertRaisesRegex(MODULE.VerificationFailure, "unique code function"):
+            self.verify("fn bind() { listen()?; } fn bind() { ready()?; finish() }")
+
+    def test_function_declaration_cannot_borrow_a_later_body(self):
+        with self.assertRaisesRegex(
+            MODULE.VerificationFailure, "function body required"
+        ):
+            self.verify(
+                "trait A { fn bind(); } fn other() { listen()?; ready()?; finish() }"
+            )
+
+    def test_unused_nested_function_cannot_supply_the_outer_order(self):
+        with self.assertRaisesRegex(MODULE.VerificationFailure, "required code order"):
+            self.verify("fn bind() { fn unused() { listen()?; ready()?; finish() } }")
+
+    def test_nested_raw_identifier_function_cannot_supply_the_outer_order(self):
+        with self.assertRaisesRegex(MODULE.VerificationFailure, "required code order"):
+            self.verify("fn bind() { fn r#unused() { listen()?; ready()?; finish() } }")
+
+    def test_nested_unicode_function_cannot_supply_the_outer_order(self):
+        with self.assertRaisesRegex(MODULE.VerificationFailure, "required code order"):
+            self.verify("fn bind() { fn 未调用() { listen()?; ready()?; finish() } }")
+
+    def test_registered_closure_keeps_its_actual_call_markers(self):
+        self.verify("fn bind() { register(|| { listen()?; ready()?; finish() }); }")
+
+    def test_callback_and_return_are_in_the_outer_function_body(self):
+        self.verify(
+            "fn bind() { listen()?; ready()?; finish() }", top_level=("ready()?;",)
+        )
+
+    def test_uncalled_closure_cannot_hide_the_outer_ready_callback(self):
+        with self.assertRaisesRegex(
+            MODULE.VerificationFailure, "top-level function code"
+        ):
+            self.verify(
+                "fn bind() { listen()?; let unused = || { ready()?; }; finish() }",
+                top_level=("ready()?;",),
+            )
+
+    def test_conditional_branch_cannot_hide_the_outer_ready_callback(self):
+        with self.assertRaisesRegex(
+            MODULE.VerificationFailure, "top-level function code"
+        ):
+            self.verify(
+                "fn bind() { listen()?; if condition { ready()?; } finish() }",
+                top_level=("ready()?;",),
+            )
+
+
 if __name__ == "__main__":
     unittest.main()
