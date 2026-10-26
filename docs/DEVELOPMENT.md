@@ -1767,3 +1767,7 @@ report SHA256 `8ca0b29590fa53c0a3e9ae94ea30915fdd9e0b409c7b7a305c28bf47d221bcd6`
 This contract and its interfaces are pending implementation/native verification.
 `task_complete=false`, `merge_ready=false`; PN0–PN6 and every original acceptance
 criterion, limit and failure observation remain in force.
+
+PN0 retained [155264e3 four-lane original Windows failures](../qualification/windows-delete-boundary/155264e3-original-failures/README.md)
+keep all original twenty groups per lane: eighteen passed and broad-identity-delete /
+legacy-delete-boundary failed. These are historical failures, not later-source qualification.

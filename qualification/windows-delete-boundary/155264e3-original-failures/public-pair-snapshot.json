@@ -1,0 +1,663 @@
+{
+  "schema": "1133-independent-live-source-pair-complete-checks-v1",
+  "started": {
+    "current_time": "2026-10-26 11:33:49 UTC"
+  },
+  "sealed": {
+    "current_time": "2026-10-26 11:41:25 UTC"
+  },
+  "non_atomic": true,
+  "published_pair": [
+    {
+      "repository": "chain",
+      "head": "53fb654b532ed8e737e0dea635a31dce3b73b3cc",
+      "base": "57c1ed545d067937cbd7aaa7570d5f22123265e6",
+      "actual_preview": "bd6094ff2aa1c82421c74bd582d8fd762332b4c4",
+      "head_ref": "docs/chain-audit-remediation-20261022",
+      "base_ref": "fix/chain-bulk-state-tree-20261017",
+      "mergeable": true,
+      "merged": false
+    },
+    {
+      "repository": "hepta",
+      "head": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+      "base": "c38e7727220f32c7410f59083c5ea7878bbae078",
+      "actual_preview": "5c78e40b510c35cbeaa4849790516997c976f1b4",
+      "head_ref": "docs/audit-remediation-20261022",
+      "base_ref": "ci/hepta-chain322-current-main-20261017",
+      "mergeable": true,
+      "merged": false
+    }
+  ],
+  "git_objects": {
+    "chain": {
+      "head": {
+        "sha": "53fb654b532ed8e737e0dea635a31dce3b73b3cc",
+        "tree": "d82ba0c7bbaea04200f11d38f6e9c4dccac81f78",
+        "ordered_parents": [
+          "b24e7f95df93b7d5ffc9a0b3dc98c9bb5d83852e"
+        ]
+      },
+      "base": {
+        "sha": "57c1ed545d067937cbd7aaa7570d5f22123265e6",
+        "tree": "8065f1d4329bb67f32476667d6100dd9ff868090",
+        "ordered_parents": [
+          "96a98a635def8c13b2d4f234aa1daee59c57afa0"
+        ]
+      },
+      "preview": {
+        "sha": "bd6094ff2aa1c82421c74bd582d8fd762332b4c4",
+        "tree": "d82ba0c7bbaea04200f11d38f6e9c4dccac81f78",
+        "ordered_parents": [
+          "57c1ed545d067937cbd7aaa7570d5f22123265e6",
+          "53fb654b532ed8e737e0dea635a31dce3b73b3cc"
+        ]
+      }
+    },
+    "hepta": {
+      "head": {
+        "sha": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+        "tree": "0b9dede8b0d6812bd4c6a95d9572e886468c5c7f",
+        "ordered_parents": [
+          "8c8a7555f8a0145053e493fe79873fd2bcd659f0"
+        ]
+      },
+      "base": {
+        "sha": "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "tree": "6ab79ebde4932a05b10bf803ad2904ecc8cb3006",
+        "ordered_parents": [
+          "5003a975543cd1f0db4996d2db0e9474a8a17b48"
+        ]
+      },
+      "preview": {
+        "sha": "5c78e40b510c35cbeaa4849790516997c976f1b4",
+        "tree": "0b9dede8b0d6812bd4c6a95d9572e886468c5c7f",
+        "ordered_parents": [
+          "c38e7727220f32c7410f59083c5ea7878bbae078",
+          "155264e3b5d3dcdafa244cd0c31c336ab25a207f"
+        ]
+      }
+    }
+  },
+  "metadata_before_after_stable": true,
+  "counts": {
+    "chain": {
+      "success": 6,
+      "queued": 43
+    },
+    "hepta": {
+      "queued": 29,
+      "in_progress": 2,
+      "success": 5,
+      "failure": 4
+    }
+  },
+  "all_visible_check_pages_complete": true,
+  "all_latest_attempt_metadata_complete": true,
+  "current_head_latest_attempts": {
+    "chain": {
+      "total": 12,
+      "pages": 1,
+      "page_complete": true,
+      "checks_have_run_metadata": true,
+      "all_check_run_ids": [
+        40310512534,
+        40310512304,
+        40310512696,
+        40310512563,
+        40310512319,
+        40310512354,
+        40310512480,
+        40310512251,
+        40310512330,
+        40310512341,
+        40310506158
+      ],
+      "runs": [
+        {
+          "id": 40310512696,
+          "path": ".github/workflows/pon-baseline-diagnostic-readback.yml",
+          "event": "pull_request",
+          "head_sha": "53fb654b532ed8e737e0dea635a31dce3b73b3cc",
+          "head_branch": "docs/chain-audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-10-26T10:50:25Z",
+          "updated_at": "2026-10-26T10:50:25Z",
+          "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40310512696"
+        },
+        {
+          "id": 40310512354,
+          "path": ".github/workflows/codeql-analysis-export.yml",
+          "event": "pull_request",
+          "head_sha": "53fb654b532ed8e737e0dea635a31dce3b73b3cc",
+          "head_branch": "docs/chain-audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-10-26T10:50:24Z",
+          "updated_at": "2026-10-26T10:50:24Z",
+          "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40310512354"
+        },
+        {
+          "id": 40310512534,
+          "path": ".github/workflows/release-finality-reference.yml",
+          "event": "pull_request",
+          "head_sha": "53fb654b532ed8e737e0dea635a31dce3b73b3cc",
+          "head_branch": "docs/chain-audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-10-26T10:50:24Z",
+          "updated_at": "2026-10-26T10:50:24Z",
+          "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40310512534"
+        },
+        {
+          "id": 40310512251,
+          "path": ".github/workflows/pon-recent-batch-acceptance.yml",
+          "event": "pull_request",
+          "head_sha": "53fb654b532ed8e737e0dea635a31dce3b73b3cc",
+          "head_branch": "docs/chain-audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-10-26T10:50:24Z",
+          "updated_at": "2026-10-26T10:50:24Z",
+          "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40310512251"
+        },
+        {
+          "id": 40310512330,
+          "path": ".github/workflows/pon-model-parent-acceptance.yml",
+          "event": "pull_request",
+          "head_sha": "53fb654b532ed8e737e0dea635a31dce3b73b3cc",
+          "head_branch": "docs/chain-audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-10-26T10:50:24Z",
+          "updated_at": "2026-10-26T10:50:24Z",
+          "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40310512330"
+        },
+        {
+          "id": 40310512563,
+          "path": ".github/workflows/pon-owned-process-cleanup.yml",
+          "event": "pull_request",
+          "head_sha": "53fb654b532ed8e737e0dea635a31dce3b73b3cc",
+          "head_branch": "docs/chain-audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-10-26T10:50:24Z",
+          "updated_at": "2026-10-26T10:50:24Z",
+          "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40310512563"
+        },
+        {
+          "id": 40310512319,
+          "path": ".github/workflows/pon-branch-encoding-acceptance.yml",
+          "event": "pull_request",
+          "head_sha": "53fb654b532ed8e737e0dea635a31dce3b73b3cc",
+          "head_branch": "docs/chain-audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-10-26T10:50:24Z",
+          "updated_at": "2026-10-26T10:50:24Z",
+          "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40310512319"
+        },
+        {
+          "id": 40310512480,
+          "path": ".github/workflows/pon-cloud-build-inputs.yml",
+          "event": "pull_request",
+          "head_sha": "53fb654b532ed8e737e0dea635a31dce3b73b3cc",
+          "head_branch": "docs/chain-audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-10-26T10:50:24Z",
+          "updated_at": "2026-10-26T10:50:24Z",
+          "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40310512480"
+        },
+        {
+          "id": 40310512304,
+          "path": ".github/workflows/pon-priority-acceptance.yml",
+          "event": "pull_request",
+          "head_sha": "53fb654b532ed8e737e0dea635a31dce3b73b3cc",
+          "head_branch": "docs/chain-audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-10-26T10:50:24Z",
+          "updated_at": "2026-10-26T10:50:24Z",
+          "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40310512304"
+        },
+        {
+          "id": 40310512277,
+          "path": ".github/workflows/trnm-required-baseline.yml",
+          "event": "pull_request",
+          "head_sha": "53fb654b532ed8e737e0dea635a31dce3b73b3cc",
+          "head_branch": "docs/chain-audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "pending",
+          "conclusion": null,
+          "created_at": "2026-10-26T10:50:24Z",
+          "updated_at": "2026-10-26T10:50:25Z",
+          "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40310512277"
+        },
+        {
+          "id": 40310512341,
+          "path": ".github/workflows/pon-native-campaign-qualification.yml",
+          "event": "pull_request",
+          "head_sha": "53fb654b532ed8e737e0dea635a31dce3b73b3cc",
+          "head_branch": "docs/chain-audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-10-26T10:50:24Z",
+          "updated_at": "2026-10-26T10:50:24Z",
+          "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40310512341"
+        },
+        {
+          "id": 40310506158,
+          "path": "dynamic/github-code-scanning/codeql",
+          "event": "dynamic",
+          "head_sha": "53fb654b532ed8e737e0dea635a31dce3b73b3cc",
+          "head_branch": "refs/pull/328/head",
+          "run_attempt": 1,
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-26T10:50:22Z",
+          "updated_at": "2026-10-26T10:57:35Z",
+          "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40310506158"
+        }
+      ],
+      "legacy_or_non_action_detail_urls": [
+        {
+          "check_id": 121530661271,
+          "name": "CodeQL",
+          "details_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/runs/121530661271"
+        }
+      ]
+    },
+    "hepta": {
+      "total": 8,
+      "pages": 1,
+      "page_complete": true,
+      "checks_have_run_metadata": true,
+      "all_check_run_ids": [
+        40312011148,
+        40312011219,
+        40312011173,
+        40312011286,
+        40312011054,
+        40312011017,
+        40312011111,
+        40312011036
+      ],
+      "runs": [
+        {
+          "id": 40312011054,
+          "path": ".github/workflows/hepta-windows-delete-boundary.yml",
+          "event": "pull_request",
+          "head_sha": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+          "head_branch": "docs/audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "completed",
+          "conclusion": "failure",
+          "created_at": "2026-10-26T11:02:14Z",
+          "updated_at": "2026-10-26T11:17:39Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40312011054"
+        },
+        {
+          "id": 40312011111,
+          "path": ".github/workflows/hepta-v8-windows-sandbox.yml",
+          "event": "pull_request",
+          "head_sha": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+          "head_branch": "docs/audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-26T11:02:14Z",
+          "updated_at": "2026-10-26T11:09:22Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40312011111"
+        },
+        {
+          "id": 40312011036,
+          "path": ".github/workflows/hepta-safe-yaml-rustsec-qualification.yml",
+          "event": "pull_request",
+          "head_sha": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+          "head_branch": "docs/audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-10-26T11:02:14Z",
+          "updated_at": "2026-10-26T11:02:14Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40312011036"
+        },
+        {
+          "id": 40312011219,
+          "path": ".github/workflows/blocking-ci.yml",
+          "event": "pull_request",
+          "head_sha": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+          "head_branch": "docs/audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-10-26T11:02:14Z",
+          "updated_at": "2026-10-26T11:02:14Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40312011219"
+        },
+        {
+          "id": 40312011017,
+          "path": ".github/workflows/hepta-pon-native-pair.yml",
+          "event": "pull_request",
+          "head_sha": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+          "head_branch": "docs/audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-10-26T11:02:14Z",
+          "updated_at": "2026-10-26T11:02:14Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40312011017"
+        },
+        {
+          "id": 40312011173,
+          "path": ".github/workflows/matrix-sdk-upgrade.yml",
+          "event": "pull_request",
+          "head_sha": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+          "head_branch": "docs/audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-10-26T11:02:14Z",
+          "updated_at": "2026-10-26T11:02:14Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40312011173"
+        },
+        {
+          "id": 40312011286,
+          "path": ".github/workflows/hepta-architecture-convergence.yml",
+          "event": "pull_request",
+          "head_sha": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+          "head_branch": "docs/audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-10-26T11:02:14Z",
+          "updated_at": "2026-10-26T11:02:14Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40312011286"
+        },
+        {
+          "id": 40312011148,
+          "path": ".github/workflows/v8-canary.yml",
+          "event": "pull_request",
+          "head_sha": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+          "head_branch": "docs/audit-remediation-20261022",
+          "run_attempt": 1,
+          "status": "queued",
+          "conclusion": null,
+          "created_at": "2026-10-26T11:02:14Z",
+          "updated_at": "2026-10-26T11:03:08Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40312011148"
+        }
+      ],
+      "legacy_or_non_action_detail_urls": []
+    }
+  },
+  "mainqualification": {
+    "sha": "cec527c866bd6569799e40a4251424769b96bea3",
+    "tree": "d82ba0c7bbaea04200f11d38f6e9c4dccac81f78",
+    "ordered_parents": [
+      "9fedf7ecbbe07177069c030592b4e03dcffebb81",
+      "53fb654b532ed8e737e0dea635a31dce3b73b3cc"
+    ],
+    "actual_execution_qualified": false,
+    "actual_PR_preview_distinct": true
+  },
+  "Hepta_pair_workflow": {
+    "git_blob": "60fc9243b79b265751f0d1c98fb178f24d8787a2",
+    "Chain_source": "53fb654b532ed8e737e0dea635a31dce3b73b3cc",
+    "Chain_main_base": "9fedf7ecbbe07177069c030592b4e03dcffebb81",
+    "Chain_mainqualification": "cec527c866bd6569799e40a4251424769b96bea3",
+    "run_id": 40312011017,
+    "status_as_run_metadata": "queued",
+    "qualified": false,
+    "old630_a895_results_not_inherited": true
+  },
+  "Hepta_full_CI": {
+    "old_run_id": 40191778095,
+    "old_source": "de133b601e133917cbe1ae03efb3a2ffc06dcd4a",
+    "old_status": "completed",
+    "old_conclusion": "failure",
+    "branch_active_status_queries": {
+      "inprogress": {
+        "total": 0,
+        "runs": []
+      },
+      "queued": {
+        "total": 6,
+        "runs": [
+          {
+            "id": 40312011036,
+            "path": ".github/workflows/hepta-safe-yaml-rustsec-qualification.yml",
+            "head": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+            "status": "queued",
+            "attempt": 1
+          },
+          {
+            "id": 40312011219,
+            "path": ".github/workflows/blocking-ci.yml",
+            "head": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+            "status": "queued",
+            "attempt": 1
+          },
+          {
+            "id": 40312011017,
+            "path": ".github/workflows/hepta-pon-native-pair.yml",
+            "head": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+            "status": "queued",
+            "attempt": 1
+          },
+          {
+            "id": 40312011173,
+            "path": ".github/workflows/matrix-sdk-upgrade.yml",
+            "head": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+            "status": "queued",
+            "attempt": 1
+          },
+          {
+            "id": 40312011286,
+            "path": ".github/workflows/hepta-architecture-convergence.yml",
+            "head": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+            "status": "queued",
+            "attempt": 1
+          },
+          {
+            "id": 40312011148,
+            "path": ".github/workflows/v8-canary.yml",
+            "head": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+            "status": "queued",
+            "attempt": 1
+          }
+        ]
+      },
+      "pending": {
+        "total": 0,
+        "runs": []
+      },
+      "waiting": {
+        "total": 0,
+        "runs": []
+      },
+      "requested": {
+        "total": 0,
+        "runs": []
+      }
+    },
+    "no_active_standalone_rust_ci_full_observed": true,
+    "current_fullworkflow_git_blob": "adb5cc930fbaa46db5b087bd3c78ae97593da021",
+    "trigger": "workflow_call/workflow_dispatch/push branches **full-ci**",
+    "concurrency": "rust-ci-full-${github.ref_name}, cancel-in-progress:true",
+    "docs_branch_ordinary_push_not_direct_full_trigger": true,
+    "blocking_run_40312011219_retained_queued": true,
+    "blocking_concurrency_true_same_branch_push_cancellation_risk": true
+  },
+  "Chain_retained_CI": {
+    "workflow_sources": [
+      {
+        "run_id": 40310512696,
+        "path": ".github/workflows/pon-baseline-diagnostic-readback.yml",
+        "git_blob": "177ed2a383dee5c6ac1ee4f3ffeda34022683006",
+        "concurrency_lines": []
+      },
+      {
+        "run_id": 40310512354,
+        "path": ".github/workflows/codeql-analysis-export.yml",
+        "git_blob": "6ff6dcc7adcb9005d1570e1dcf4064f2e1e05edc",
+        "concurrency_lines": [
+          "concurrency:",
+          "  group: codeql-analysis-export-${{ github.event.pull_request.number || inputs.pr_number }}",
+          "  cancel-in-progress: false"
+        ]
+      },
+      {
+        "run_id": 40310512534,
+        "path": ".github/workflows/release-finality-reference.yml",
+        "git_blob": "b8436de9ad3c58d545b0badfc99d0329adc2a819",
+        "concurrency_lines": [
+          "concurrency:",
+          "  group: release-finality-${{ github.event.pull_request.number }}",
+          "  cancel-in-progress: false"
+        ]
+      },
+      {
+        "run_id": 40310512251,
+        "path": ".github/workflows/pon-recent-batch-acceptance.yml",
+        "git_blob": "1b293f493acb0614f828dda6e287638689b52841",
+        "concurrency_lines": []
+      },
+      {
+        "run_id": 40310512330,
+        "path": ".github/workflows/pon-model-parent-acceptance.yml",
+        "git_blob": "eb6a46a70a4e5d5cd13655b6bfa3438be1d7f5ac",
+        "concurrency_lines": []
+      },
+      {
+        "run_id": 40310512563,
+        "path": ".github/workflows/pon-owned-process-cleanup.yml",
+        "git_blob": "3ed5bff6e3ec2a9451cd3834289a5d83b59eb4f5",
+        "concurrency_lines": []
+      },
+      {
+        "run_id": 40310512319,
+        "path": ".github/workflows/pon-branch-encoding-acceptance.yml",
+        "git_blob": "9e9b4dda455113022715bb84d95ac9e09dad40cc",
+        "concurrency_lines": []
+      },
+      {
+        "run_id": 40310512480,
+        "path": ".github/workflows/pon-cloud-build-inputs.yml",
+        "git_blob": "36d0cdef797a21aca7e6884082ffb2a8d861b8a6",
+        "concurrency_lines": [
+          "concurrency:",
+          "  group: pon-cloud-build-inputs-${{ github.event.pull_request.number || github.ref }}",
+          "  cancel-in-progress: false"
+        ]
+      },
+      {
+        "run_id": 40310512304,
+        "path": ".github/workflows/pon-priority-acceptance.yml",
+        "git_blob": "ad91c7ab30a98b04d256356a9212596362624ef8",
+        "concurrency_lines": [
+          "concurrency:",
+          "  group: pon-priority-${{ github.ref }}",
+          "  cancel-in-progress: false"
+        ]
+      },
+      {
+        "run_id": 40310512277,
+        "path": ".github/workflows/trnm-required-baseline.yml",
+        "git_blob": "925a3daee2421fb05e89e60eae2a99154a772a45",
+        "concurrency_lines": [
+          "concurrency:",
+          "  group: portable-${{ github.workflow }}-${{ github.ref }}",
+          "  cancel-in-progress: false"
+        ]
+      },
+      {
+        "run_id": 40310512341,
+        "path": ".github/workflows/pon-native-campaign-qualification.yml",
+        "git_blob": "6120258e0e15b319b78adf522297a93c9e29690a",
+        "concurrency_lines": [
+          "concurrency:",
+          "  group: pon-native-campaign-${{ github.event.pull_request.number || github.ref }}",
+          "  cancel-in-progress: false"
+        ]
+      }
+    ],
+    "no_explicit_cancel_in_progress_true_in_11_retained_workflow_sources": true,
+    "required_baseline_pending_run": 40310512277,
+    "default_single_pending_replacement_risk_despite_cancel_false": true,
+    "official_primary_url": "https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency",
+    "official_primary_rule_paraphrase": "Default single pending slot is replaced by a newer same-group run; cancel-in-progress:false protects running work, not that pending slot. queue:max is absent from these workflow sources.",
+    "push_without_cancellation_not_qualified": true
+  },
+  "actual_base_protection": {
+    "chain": "UNKNOWN; connector actualbase protection GET error retained",
+    "hepta": "UNKNOWN; connector actualbase protection GET error retained",
+    "not_replaced_by_main_rules": true
+  },
+  "new_actual_failures": {
+    "run_id": 40312011054,
+    "head": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+    "attempt": 1,
+    "job_ids": [
+      121535242058,
+      121535241484,
+      121535241448,
+      121535241216
+    ],
+    "all_four_complete_logs_and_original_artifacts_retained": true,
+    "each_lane_groups": {
+      "passed": 18,
+      "failed": 2,
+      "total": 20
+    },
+    "case_failures": [
+      "broad-identity-delete",
+      "legacy-delete-boundary"
+    ],
+    "E0063_not_this_failure": true,
+    "production_sandbox_admitted": false,
+    "rerun_performed": false
+  },
+  "Hepta155_vs71a": {
+    "changed_paths": [
+      ".github/workflows/hepta-pon-native-pair.yml",
+      "docs/lane-e/END_TO_END_LEARNING_SEQUENCE.md",
+      "docs/modules/MODULE_DOCS.json",
+      "docs/modules/inference.worker/IMPLEMENTATION_MAP.json",
+      "docs/modules/inference.worker/TECHNICAL.md",
+      "docs/modules/learning.ledger/IMPLEMENTATION_MAP.json",
+      "docs/modules/memory.federation/IMPLEMENTATION_MAP.json"
+    ],
+    "commits": 4,
+    "no_Rust_product_or_test_source_delta": true,
+    "fixture_unchanged23122B_SHA256": "79a16226cdaf5f4aea93f3007daf2c976017b8d230389947ca3db8102b330dd1",
+    "missing_physical_scope_staticP1_retained": true,
+    "no_actual_model_result_added": true
+  },
+  "all_necessary_checks_pass": false,
+  "task_complete": false,
+  "merge_ready": false,
+  "decision": "NO_GO_NEW_EXACT_SOURCES_REQUIRE_ALL_CHECKS_WINDOWS_ORIGINAL_FAILURES_STILL_OPEN",
+  "operations": {
+    "Github_GET_only": true,
+    "full_job_GET_fallback_existing_gh": true,
+    "four_needed_artifacts_downloaded_no_execution": true,
+    "no_SSH_needed": true,
+    "no_CI_mutation_or_source_edit_or_test_or_build_or_outputs_write": true
+  },
+  "canonical_revision": 2,
+  "prior_summary_retained": "summary.json",
+  "parser_correction": "Legacy /runs/<checkid> detail URL is not an /actions/runs/<workflowrunid> URL. Original conservativefalse summary retained; corrected Actionrun mapping and all20 latest run records complete."
+}
