@@ -8,8 +8,8 @@
 
 use crate::desktop::LaunchDesktop;
 use crate::proc_thread_attr::ProcThreadAttributeList;
-use crate::process::PreparedProcessContext;
 use crate::process::PreparedFilesystemOwners;
+use crate::process::PreparedProcessContext;
 use crate::winutil::format_last_error;
 use crate::winutil::quote_windows_arg;
 use crate::winutil::to_wide;
@@ -161,15 +161,8 @@ pub(crate) fn spawn_conpty_process_prepared(
 ) -> Result<(PROCESS_INFORMATION, PreparedConptyInstance)> {
     let (owners, desktop, job) = context.into_parts()?;
     let h_token = owners.as_handle().as_raw_handle() as HANDLE;
-    let (pi, transport, owners) = spawn_on_desktop(
-        h_token,
-        argv,
-        cwd,
-        env_map,
-        desktop,
-        job,
-        owners,
-    )?;
+    let (pi, transport, owners) =
+        spawn_on_desktop(h_token, argv, cwd, env_map, desktop, job, owners)?;
     Ok((
         pi,
         PreparedConptyInstance {

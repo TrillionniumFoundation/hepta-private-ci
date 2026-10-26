@@ -1,0 +1,34 @@
+{
+  "schema": "root-formatting-admission-correction-v1",
+  "recorded_utc": "2026-10-26T19:03:56.372391+00:00",
+  "actual_source_merge": "86eb6e2458499623d68fa781d6b285c3971cb332",
+  "merge_tree": "9713b42b9a0d98d3da735bdcba63cadcadd613d2",
+  "original_merged_source_was_GNU_typechecked": true,
+  "initial_admission_helper_exit": 1,
+  "failure": "incorrectassumptionthatformatterchangedzeroof28files;actual3fileslisted",
+  "initial_formatter_exit_code_not_saved_before_helper_assertion": true,
+  "initial_formatter_stdout_bytes": 0,
+  "initial_formatter_stderr_bytes": 0,
+  "merge_commit_message_zero_byte_change_statement": "overbroad;supersededbythiscorrection;originalcommitisretainedunamended",
+  "original_staged_M_source_still_matches_preformatcrosscheck": true,
+  "followup_contains_only_expected_three_formatting_changes_plusmapsanddocumented_evidence": true,
+  "changed_files": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/conpty/mod.rs",
+      "exact_changes": "reordertwoimports+wrapsamecall",
+      "same_runtime_tokens_and_arguments": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/process.rs",
+      "exact_changes": "reordertwoexistingreexports",
+      "same_visibility_and_items": true
+    },
+    {
+      "path": "scripts/test_hepta_windows_boundary_receipts.py",
+      "entire_Python_AST_identical": true,
+      "assertions_values_and_order_unchanged": true
+    }
+  ],
+  "no_native_or_new_compile_qualification_claim": true,
+  "merge_ready": false
+}
