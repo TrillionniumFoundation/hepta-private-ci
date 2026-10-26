@@ -37,6 +37,7 @@ pub struct CognitiveCheckpointImage {
     cut: CognitiveRecoveryAnchor,
     sha256: Sha256Digest,
     bytes: u64,
+    file: File,
 }
 
 impl CognitiveCheckpointImage {
@@ -98,6 +99,7 @@ impl CognitiveStore {
             cut: expected.clone(),
             sha256: digest,
             bytes,
+            file,
         })
     }
 
@@ -193,12 +195,17 @@ impl CognitiveStore {
                 cut,
                 sha256,
                 bytes,
+                file: image,
             })
         })
         .await
         .map_err(unavailable)?
     }
 }
+
+#[path = "cognitive_checkpoint_install.rs"]
+mod install;
+pub use install::InstalledRootCheckpointImage;
 
 async fn validate_image(
     path: &Path,

@@ -52,6 +52,8 @@ pub use read_only::RecoveredCognitiveReadOnly;
 mod checkpoint_image;
 #[cfg(target_os = "linux")]
 pub use checkpoint_image::CognitiveCheckpointImage;
+#[cfg(target_os = "linux")]
+pub use checkpoint_image::InstalledRootCheckpointImage;
 
 const PROFILE: &str = "hepta:cognitive:exact-current-cut:v1";
 const MAX_ROWS: i64 = 262_144;

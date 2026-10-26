@@ -68,6 +68,8 @@ pub use recovery::CognitiveCheckpointImage;
 pub use recovery::CognitiveRecoveryAnchor;
 pub use recovery::CognitiveRecoveryError;
 pub use recovery::CognitiveRecoveryRequirement;
+#[cfg(target_os = "linux")]
+pub use recovery::InstalledRootCheckpointImage;
 pub use recovery::RecoveredCognitiveReadOnly;
 pub(crate) use recovery::capture as capture_recovery_anchor;
 
