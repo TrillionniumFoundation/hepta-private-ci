@@ -5,6 +5,8 @@ use anyhow::Result;
 use anyhow::anyhow;
 use codex_api::EncodedRequestBodyObserver;
 use codex_api::EncodedRequestTerminal;
+use codex_api::OpaqueResponsesContinuation;
+use codex_api::OpaqueResponsesIncomplete;
 use codex_hepta_agent_loop::Error as LoopError;
 use codex_hepta_agent_loop::ModelRequest;
 use codex_hepta_agent_loop::ResponsesContinuation;
@@ -191,17 +193,97 @@ pub(crate) struct ContinuationEvidence {
 }
 
 impl ResponsesContinuationOwner for ContinuationEvidence {
+    fn supports_opaque_retention(&self) -> bool {
+        true
+    }
+    fn supports_incomplete_retention(&self) -> bool {
+        true
+    }
+
+    async fn retain_incomplete(
+        &mut self,
+        binding: &TurnBinding,
+        request: &ModelRequest,
+        incomplete: OpaqueResponsesIncomplete,
+    ) -> codex_hepta_agent_loop::Result<Digest32> {
+        if binding != &self.binding || request != &self.request {
+            return Err(LoopError::Contract("qualification incomplete identity"));
+        }
+        let bytes = incomplete
+            .private_evidence_json()
+            .map_err(|_| LoopError::Contract("qualification incomplete encoding"))?;
+        let raw_digest = self
+            .evidence
+            .record_bytes("provider-opaque-incomplete.json", &bytes)
+            .map_err(|_| {
+                LoopError::Owner("qualification incomplete private persistence failed".into())
+            })?;
+        let value = json!({
+            "schema":"hepta-native-qualification-incomplete:v1",
+            "run_id":binding.run_id.as_str(), "turn_id":binding.turn_id.as_str(),
+            "request_id":request.request_id.as_str(), "admission_digest":binding.admission_digest.to_string(),
+            "context_digest":request.context_digest.to_string(),
+            "terminal":"incomplete", "reason":incomplete.reason().as_str(),
+            "terminal_consistent":incomplete.terminal_consistent(),
+            "usage_status":incomplete.usage_status().as_str(), "usage":incomplete.usage(),
+            "provider_rollout_budget_units":incomplete.usage().and_then(|usage| usage.codex_rollout_budget_units.clone()),
+            "echoed_max_output_tokens":incomplete.echoed_max_output_tokens(),
+            "opaque_sha256":raw_digest.to_string(),
+            "reservation_settlement":"retained_indeterminate",
+            "retained_reservation":{
+                "provider_input_tokens":request.maximum_provider_input_tokens,
+                "output_tokens":request.maximum_output_tokens,
+                "provider_calls":1,
+            },
+            "automatic_retry":false, "completed_continuation":false,
+            "production_token_quota_ledger":false,
+        });
+        let receipt = self
+            .evidence
+            .record("provider-incomplete.json", &value)
+            .map_err(|_| {
+                LoopError::Owner("qualification incomplete receipt persistence failed".into())
+            })?;
+        *self
+            .retained
+            .lock()
+            .map_err(|_| LoopError::Owner("qualification observation lock".into()))? = Some(value);
+        Ok(receipt)
+    }
+
     async fn retain(
         &mut self,
         binding: &TurnBinding,
         request: &ModelRequest,
         continuation: ResponsesContinuation,
     ) -> codex_hepta_agent_loop::Result<Digest32> {
+        self.retain_private(binding, request, continuation, None)
+    }
+
+    async fn retain_opaque(
+        &mut self,
+        binding: &TurnBinding,
+        request: &ModelRequest,
+        continuation: ResponsesContinuation,
+        opaque: OpaqueResponsesContinuation,
+    ) -> codex_hepta_agent_loop::Result<Digest32> {
+        self.retain_private(binding, request, continuation, Some(opaque))
+    }
+}
+
+impl ContinuationEvidence {
+    fn retain_private(
+        &mut self,
+        binding: &TurnBinding,
+        request: &ModelRequest,
+        continuation: ResponsesContinuation,
+        opaque: Option<OpaqueResponsesContinuation>,
+    ) -> codex_hepta_agent_loop::Result<Digest32> {
         if binding != &self.binding || request != &self.request {
             return Err(LoopError::Contract("qualification continuation identity"));
         }
         let items = response_items_evidence(&continuation.items)?;
-        let value = json!({
+        let mut value = json!({
             "schema":"hepta-native-qualification-continuation:v1",
             "run_id":binding.run_id.as_str(), "turn_id":binding.turn_id.as_str(),
             "request_id":request.request_id.as_str(), "admission_digest":binding.admission_digest.to_string(),
@@ -212,6 +294,21 @@ impl ResponsesContinuationOwner for ContinuationEvidence {
             "provider_rollout_budget_units":continuation.provider_rollout_budget_units,
             "end_turn":continuation.end_turn,
         });
+        if let Some(opaque) = opaque {
+            let bytes = opaque
+                .private_evidence_json()
+                .map_err(|_| LoopError::Contract("qualification opaque encoding"))?;
+            let digest = self
+                .evidence
+                .record_bytes("provider-opaque-continuation.json", &bytes)
+                .map_err(|_| LoopError::Owner("qualification opaque persistence failed".into()))?;
+            value["schema"] = json!("hepta-native-qualification-continuation:v2");
+            value["opaque"] = json!({
+                "schema":"responses-opaque-continuation:v1", "sha256":digest.to_string(),
+                "completed_item_count":opaque.item_count(),
+                "projection_supported":opaque.projection_supported(),
+            });
+        }
         // Actual usage and every provider item are retained even when a later
         // reservation or expected-output check rejects this qualification.
         let receipt = self

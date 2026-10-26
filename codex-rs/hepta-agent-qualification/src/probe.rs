@@ -2,7 +2,6 @@ use crate::Args;
 use crate::evidence::ContinuationEvidence;
 use crate::evidence::Evidence;
 use crate::evidence::ExactBodyObserver;
-use crate::policy::QualificationPolicy;
 use crate::request_wire::PreparedOrdinaryWire;
 use anyhow::Result;
 use anyhow::anyhow;
@@ -37,10 +36,10 @@ use std::time::UNIX_EPOCH;
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
 
-#[path = "probe_settings.rs"]
-mod settings;
 #[path = "probe_request.rs"]
 mod request_template;
+#[path = "probe_settings.rs"]
+mod settings;
 
 const EXPECTED: &str = "HEPTA_NATIVE_STREAM_OK";
 const MAXIMUM_VISIBLE_BYTES: usize = 8_192;
@@ -98,6 +97,18 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
     let identity = uuid::Uuid::new_v4().to_string();
     let request_id = StableId::new(format!("qualification-request:{identity}"))?;
     let run_id = StableId::new(format!("qualification-run:{identity}"))?;
+    let turn_id = StableId::new(format!("qualification-turn:{identity}"))?;
+    // Cold migrations are a separate bounded preparation phase. No generation
+    // binding/deadline, admitted attempt or dispatch exists before it is ready.
+    let bootstrap = crate::bootstrap::prepare(
+        &config,
+        &evidence,
+        &run_id,
+        &turn_id,
+        args.maximum_bootstrap_seconds,
+    )
+    .await?;
+    let policy = bootstrap.owner;
     let api_request = request_template::prepare(model, &run_id, normalized_settings)?;
     let encoded = EncodedJsonBody::encode(&api_request)
         .map_err(|_| anyhow!("qualification request encoding failed"))?;
@@ -119,6 +130,8 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
         "maximum_provider_input_tokens":args.maximum_provider_input_tokens,
         "maximum_output_tokens":args.maximum_output_tokens,
         "maximum_elapsed_seconds":args.maximum_elapsed_seconds,
+        "policy_bootstrap_sha256":bootstrap.evidence_digest.to_string(),
+        "maximum_policy_bootstrap_seconds":args.maximum_bootstrap_seconds,
         "maximum_provider_calls":1, "research_only":true,
     });
     let admission_digest = evidence.record("admission.json", &admission)?;
@@ -136,23 +149,13 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
     let now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
     let binding = TurnBinding {
         run_id,
-        turn_id: StableId::new(format!("qualification-turn:{identity}"))?,
+        turn_id,
         generation: Generation::new(1)?,
         admission_digest,
         deadline_unix_ms: now
             .checked_add(args.maximum_elapsed_seconds * 1_000)
             .ok_or_else(|| anyhow!("qualification deadline overflow"))?,
     };
-    let policy = tokio::time::timeout(
-        Duration::from_secs(10),
-        QualificationPolicy::open(
-            &config,
-            &evidence.directory().join("provider-policy"),
-            &binding,
-        ),
-    )
-    .await
-    .map_err(|_| anyhow!("qualification policy setup deadline"))??;
     let observer = Arc::new(ExactBodyObserver::new(evidence.clone(), body_digest));
     let dispatch = wire.dispatch_metadata();
     let retained = Arc::new(Mutex::new(None));
@@ -246,36 +249,141 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
         Err(_) => "provider_or_owner_failure",
     };
     let output_matches = observed.text.trim() == EXPECTED;
-    let report = json!({
-        "schema":"hepta-native-provider-qualification-result:v1",
-        "qualified":complete && observed.completed && !observed.unexpected_tool && terminal_recorded && within_reservations && output_matches,
-        "status":status, "provider_transport_invoked":dispatch.transport_invoked(),
-        "failure_diagnostic":result.as_ref().err().map(failure_diagnostic),
-        "wire_semantic_sha256":wire.semantic_digest().to_string(),
-        "request_settings_evidence_sha256":request_settings_evidence_digest.to_string(),
-        "request_normalization":"shared_original_model_settings_ordinary_v1",
-        "ordinary_tool_shape":"shared_core_empty_tools_auto_v1",
-        "catalog_refresh_strategy":"offline", "full_core_request_parity":false,
-        "routing_and_lite_headers_must_be_absent":true,
-        "previous_indeterminate_attempt_repaired":false,
-        "maximum_provider_calls":1, "automatic_retry":false,
-        "requested_model":model, "server_model":continuation.as_ref().and_then(|c| c.get("server_model")),
-        "configured_reasoning_effort":config.model_reasoning_effort,
-        "actual_usage":usage, "provider_rollout_budget_units":continuation.as_ref().and_then(|c| c.get("provider_rollout_budget_units")),
-        "within_declared_reservations":within_reservations,
-        "provider_hard_token_cap":"not_exposed_by_current_request_schema",
-        "compiled_context_tokens":0, "compiled_context_qualified":false,
-        "local_reservation_input_tokens":args.maximum_provider_input_tokens,
-        "local_reservation_output_tokens":args.maximum_output_tokens,
-        "elapsed_ms":elapsed_ms, "first_visible_ms":observed.first_visible_ms,
-        "visible_bytes":observed.text.len(), "visible_sha256":Digest32::of_bytes(observed.text.as_bytes()).to_string(),
-        "expected_marker_matches":output_matches, "encoded_terminal_recorded":terminal_recorded,
-        "full_continuation_retained":continuation.is_some(),
-        "continuation_scope":"supported typed ResponseItem fields exposed by the parser",
-        "tool_calls_executed":0, "unexpected_tool_call":observed.unexpected_tool,
-        "production_native_agent_qualified":false, "same_model_codex_ab":false,
-        "core_linked_for_config_bootstrap":true,
-    });
+    // Serialize fields independently so report growth does not deepen the
+    // json! object parser recursion; keep the original keys and expressions.
+    let report = Value::Object(serde_json::Map::from_iter([
+        (
+            "policy_bootstrap_sha256".to_owned(),
+            json!(bootstrap.evidence_digest.to_string()),
+        ),
+        (
+            "policy_bootstrap_elapsed_ms".to_owned(),
+            json!(bootstrap.elapsed_ms),
+        ),
+        (
+            "generation_deadline_started_after_policy_bootstrap".to_owned(),
+            json!(true),
+        ),
+        (
+            "schema".to_owned(),
+            json!("hepta-native-provider-qualification-result:v1"),
+        ),
+        (
+            "qualified".to_owned(),
+            json!(
+                complete
+                    && observed.completed
+                    && !observed.unexpected_tool
+                    && terminal_recorded
+                    && within_reservations
+                    && output_matches
+            ),
+        ),
+        ("status".to_owned(), json!(status)),
+        (
+            "provider_transport_invoked".to_owned(),
+            json!(dispatch.transport_invoked()),
+        ),
+        (
+            "failure_diagnostic".to_owned(),
+            json!(result.as_ref().err().map(failure_diagnostic)),
+        ),
+        (
+            "wire_semantic_sha256".to_owned(),
+            json!(wire.semantic_digest().to_string()),
+        ),
+        (
+            "request_settings_evidence_sha256".to_owned(),
+            json!(request_settings_evidence_digest.to_string()),
+        ),
+        (
+            "request_normalization".to_owned(),
+            json!("shared_original_model_settings_ordinary_v1"),
+        ),
+        (
+            "ordinary_tool_shape".to_owned(),
+            json!("shared_core_empty_tools_auto_v1"),
+        ),
+        ("catalog_refresh_strategy".to_owned(), json!("offline")),
+        ("full_core_request_parity".to_owned(), json!(false)),
+        (
+            "routing_and_lite_headers_must_be_absent".to_owned(),
+            json!(true),
+        ),
+        (
+            "previous_indeterminate_attempt_repaired".to_owned(),
+            json!(false),
+        ),
+        ("maximum_provider_calls".to_owned(), json!(1)),
+        ("automatic_retry".to_owned(), json!(false)),
+        ("requested_model".to_owned(), json!(model)),
+        (
+            "server_model".to_owned(),
+            json!(continuation.as_ref().and_then(|c| c.get("server_model"))),
+        ),
+        (
+            "configured_reasoning_effort".to_owned(),
+            json!(config.model_reasoning_effort),
+        ),
+        ("actual_usage".to_owned(), json!(usage)),
+        (
+            "provider_rollout_budget_units".to_owned(),
+            json!(
+                continuation
+                    .as_ref()
+                    .and_then(|c| c.get("provider_rollout_budget_units"))
+            ),
+        ),
+        (
+            "within_declared_reservations".to_owned(),
+            json!(within_reservations),
+        ),
+        (
+            "provider_hard_token_cap".to_owned(),
+            json!("not_exposed_by_current_request_schema"),
+        ),
+        ("compiled_context_tokens".to_owned(), json!(0)),
+        ("compiled_context_qualified".to_owned(), json!(false)),
+        (
+            "local_reservation_input_tokens".to_owned(),
+            json!(args.maximum_provider_input_tokens),
+        ),
+        (
+            "local_reservation_output_tokens".to_owned(),
+            json!(args.maximum_output_tokens),
+        ),
+        ("elapsed_ms".to_owned(), json!(elapsed_ms)),
+        (
+            "first_visible_ms".to_owned(),
+            json!(observed.first_visible_ms),
+        ),
+        ("visible_bytes".to_owned(), json!(observed.text.len())),
+        (
+            "visible_sha256".to_owned(),
+            json!(Digest32::of_bytes(observed.text.as_bytes()).to_string()),
+        ),
+        ("expected_marker_matches".to_owned(), json!(output_matches)),
+        (
+            "encoded_terminal_recorded".to_owned(),
+            json!(terminal_recorded),
+        ),
+        (
+            "full_continuation_retained".to_owned(),
+            json!(continuation.is_some()),
+        ),
+        (
+            "continuation_scope".to_owned(),
+            json!("supported typed ResponseItem fields exposed by the parser"),
+        ),
+        ("tool_calls_executed".to_owned(), json!(0)),
+        (
+            "unexpected_tool_call".to_owned(),
+            json!(observed.unexpected_tool),
+        ),
+        ("production_native_agent_qualified".to_owned(), json!(false)),
+        ("same_model_codex_ab".to_owned(), json!(false)),
+        ("core_linked_for_config_bootstrap".to_owned(), json!(true)),
+    ]));
     if terminal_recorded {
         policy.state.close().await;
     }

@@ -1,6 +1,7 @@
 //! Isolated live qualification executable. Core is linked solely to bootstrap
 //! the installed configuration; this executable is not a Core-free RSS sample.
 
+mod bootstrap;
 mod evidence;
 mod inspection_args;
 mod inspector;
@@ -29,6 +30,8 @@ struct Args {
     maximum_output_tokens: u64,
     /// Local stream deadline, bounded to at most 120 seconds.
     maximum_elapsed_seconds: u64,
+    /// Separate wait for the original cold policy owner; at most 300 seconds.
+    maximum_bootstrap_seconds: u64,
 }
 
 impl Args {
@@ -38,6 +41,7 @@ impl Args {
             || !(1..=65_536).contains(&self.maximum_provider_input_tokens)
             || !(1..=4_096).contains(&self.maximum_output_tokens)
             || !(1..=120).contains(&self.maximum_elapsed_seconds)
+            || !(1..=300).contains(&self.maximum_bootstrap_seconds)
         {
             return Err(anyhow!(
                 "invalid explicit qualification model, path or budget"
@@ -61,6 +65,8 @@ async fn main() -> Result<()> {
         "maximum_provider_input_tokens_reservation":args.maximum_provider_input_tokens,
         "maximum_output_tokens_reservation":args.maximum_output_tokens,
         "maximum_stream_seconds":args.maximum_elapsed_seconds,
+        "maximum_policy_bootstrap_seconds":args.maximum_bootstrap_seconds,
+        "generation_deadline_starts_after_policy_bootstrap":true,
         "provider_hard_token_caps":"not_exposed_by_current_request_schema",
         "auth":"existing Core ConfigBuilder + AuthManager + scoped ModelProvider",
         "policy":"existing Hepta governance Enforce contributor, isolated evidence",
@@ -88,6 +94,9 @@ async fn main() -> Result<()> {
             // Auth, config, endpoint and provider errors are mapped to static
             // strings at their boundary; no credentials enter this message.
             "reason":error.to_string(),
+            "failure_phase":error.downcast_ref::<bootstrap::BootstrapFailure>().map(|_| "policy_bootstrap"),
+            "provider_transport_invoked":error.downcast_ref::<bootstrap::BootstrapFailure>().map(|_| false),
+            "provider_attempt_admitted":error.downcast_ref::<bootstrap::BootstrapFailure>().map(|_| false),
             "automatic_retry":false,
             "note":"Inspect original private evidence; absence of a terminal receipt is unresolved.",
         }),

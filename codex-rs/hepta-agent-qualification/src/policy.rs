@@ -20,6 +20,7 @@ use codex_hepta_agent_loop::ModelRequest;
 use codex_hepta_agent_loop::TurnBinding;
 use codex_hepta_contracts::GovernanceMode;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use codex_protocol::protocol::SessionSource;
 use codex_state::SqliteConfig;
 use codex_state::StateRuntime;
@@ -33,12 +34,19 @@ pub(crate) struct QualificationPolicy {
     session: ExtensionData,
     thread: ExtensionData,
     turn: ExtensionData,
+    run_id: StableId,
+    turn_id: StableId,
     // Keep the actual evidence runtime alive through all terminal callbacks.
     pub(crate) state: Arc<StateRuntime>,
 }
 
 impl QualificationPolicy {
-    pub(crate) async fn open(config: &Config, path: &Path, binding: &TurnBinding) -> Result<Self> {
+    pub(crate) async fn bootstrap(
+        config: &Config,
+        path: &Path,
+        run_id: &StableId,
+        turn_id: &StableId,
+    ) -> Result<Self> {
         let state = StateRuntime::init(
             SqliteConfig::from_sqlite_home(AbsolutePathBuf::try_from(path.to_path_buf())?),
             config.model_provider_id.clone(),
@@ -53,9 +61,9 @@ impl QualificationPolicy {
             |_: &Config| true,
         );
         let registry = registry.build();
-        let session = ExtensionData::new(binding.run_id.as_str());
-        let thread = ExtensionData::new(binding.run_id.as_str());
-        let turn = ExtensionData::new(binding.turn_id.as_str());
+        let session = ExtensionData::new(run_id.as_str());
+        let thread = ExtensionData::new(run_id.as_str());
+        let turn = ExtensionData::new(turn_id.as_str());
         for contributor in registry.thread_lifecycle_contributors() {
             contributor
                 .on_thread_start(ThreadStartInput {
@@ -63,7 +71,7 @@ impl QualificationPolicy {
                     session_source: &SessionSource::Exec,
                     // This is a new qualification host identity, never copied from
                     // or represented as the production Agentd installation.
-                    installation_id: binding.run_id.as_str(),
+                    installation_id: run_id.as_str(),
                     persistent_thread_state_available: false,
                     environments: &[],
                     mcp_resource_client: None,
@@ -78,6 +86,8 @@ impl QualificationPolicy {
             session,
             thread,
             turn,
+            run_id: run_id.clone(),
+            turn_id: turn_id.clone(),
             state,
         })
     }
@@ -92,6 +102,9 @@ impl QualificationPolicy {
         prepared_wire: &PreparedOrdinaryWire,
         auth_policy: &str,
     ) -> Result<Box<dyn ModelProviderAttemptLease>> {
+        if binding.run_id != self.run_id || binding.turn_id != self.turn_id {
+            return Err(anyhow!("qualification policy bootstrap identity mismatch"));
+        }
         let policies = self.registry.model_provider_policy_contributors();
         if policies.len() != 1 || !policies[0].is_active(&self.thread) {
             return Err(anyhow!("qualification Enforce provider owner unavailable"));

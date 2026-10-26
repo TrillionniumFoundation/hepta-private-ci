@@ -12,7 +12,7 @@ pub(crate) struct CommandLine {
     #[arg(long, conflicts_with = "inspect")]
     run: bool,
     /// Inspect installed owners with an Offline model catalog; auth may initialize/refresh.
-    #[arg(long, conflicts_with_all = ["run", "maximum_provider_input_tokens", "maximum_output_tokens", "maximum_elapsed_seconds"])]
+    #[arg(long, conflicts_with_all = ["run", "maximum_provider_input_tokens", "maximum_output_tokens", "maximum_elapsed_seconds", "maximum_bootstrap_seconds"])]
     inspect: bool,
     /// New private evidence directory; existing paths fail closed for either action.
     #[arg(long)]
@@ -29,6 +29,9 @@ pub(crate) struct CommandLine {
     /// Local generation-stream deadline, at most 120 seconds.
     #[arg(long, required_unless_present = "inspect")]
     maximum_elapsed_seconds: Option<u64>,
+    /// Separate cold policy-owner setup wait (default 60; at most 300 seconds).
+    #[arg(long)]
+    maximum_bootstrap_seconds: Option<u64>,
     /// Wait bound for each inspection owner setup step (default 20; at most 60 seconds).
     #[arg(long, requires = "inspect")]
     inspection_setup_seconds: Option<u64>,
@@ -73,6 +76,7 @@ impl CommandLine {
                 .ok_or_else(missing)?,
             maximum_output_tokens: self.maximum_output_tokens.ok_or_else(missing)?,
             maximum_elapsed_seconds: self.maximum_elapsed_seconds.ok_or_else(missing)?,
+            maximum_bootstrap_seconds: self.maximum_bootstrap_seconds.unwrap_or(60),
         }))
     }
 }
