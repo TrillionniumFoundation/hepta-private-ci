@@ -116,7 +116,11 @@ impl Boot {
         {
             return Err(io::Error::last_os_error());
         }
-        let word = |offset| u64::from_le_bytes(query[offset..offset + 8].try_into().unwrap());
+        let word = |offset| {
+            let mut value = [0_u8; 8];
+            value.copy_from_slice(&query[offset..offset + 8]);
+            u64::from_le_bytes(value)
+        };
         if &query[..8] != b"HOS2LRES"
             || word(8) != 1
             || word(16) != 1
@@ -140,7 +144,9 @@ impl Boot {
 }
 
 fn word(page: &[u8; 4096], offset: usize) -> u64 {
-    u64::from_le_bytes(page[offset..offset + 8].try_into().unwrap())
+    let mut value = [0_u8; 8];
+    value.copy_from_slice(&page[offset..offset + 8]);
+    u64::from_le_bytes(value)
 }
 
 fn invalid(message: &str) -> io::Error {

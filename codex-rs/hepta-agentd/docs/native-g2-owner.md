@@ -58,7 +58,9 @@ existing disk rather than repairing partial state or interpreting it as genesis.
 The existing two-FD Root purpose remains unchanged and rejects the new purpose.
 Native startup transfers exactly the original sealed bootstrap, the same actual
 Root pidfd and the original registered Root0600 read/write writer descriptor.
-The sender consumes its exported File. Root retains no clone of that OFD that
+The getter is not a single-use API: it can open another independently checked
+OFD. This entry calls it once per actual selected owner and consumes that
+exported File in the sender. Root retains no clone of that OFD that
 could keep the child's original flock alive after exit. The recipient receives
 an opaque non-clonable descriptor and consumes it into the original config,
 which repeats actual identity, Starting, custody, inode and live-authority checks.

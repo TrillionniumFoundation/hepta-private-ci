@@ -54,8 +54,8 @@ pub(super) fn initialize_authority(
             let request = Hos2InstallBudgetV1 {
                 schema_version: 1,
                 delivery: Hos2DeliveryId::new(
-                    boot.page[96..112].try_into().unwrap(),
-                    boot.page[offset..offset + 16].try_into().unwrap(),
+                    boot.page[96..112].try_into()?,
+                    boot.page[offset..offset + 16].try_into()?,
                     /*sequence*/ 1,
                 )?,
                 manage_slot: 2,

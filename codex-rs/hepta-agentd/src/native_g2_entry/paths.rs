@@ -54,20 +54,39 @@ pub(super) fn mount_fresh() -> io::Result<()> {
 }
 
 pub(super) fn prepare_runtime() -> io::Result<()> {
+    verify_root_ancestry(Path::new("/run"))?;
     std::fs::DirBuilder::new().mode(0o755).create(RUNTIME)?;
-    let path = CString::new(RUNTIME).unwrap();
+    let path = CString::new(RUNTIME).map_err(io::Error::other)?;
     // SAFETY: path is a fixed NUL-terminated live string; only group ownership
     // of this newly created Root-owned directory changes, with no write grant.
     if unsafe { libc::chown(path.as_ptr(), 0, 60001) } != 0 {
         return Err(io::Error::last_os_error());
     }
     std::fs::DirBuilder::new().mode(0o2710).create(LANES)?;
-    let lanes = CString::new(LANES).unwrap();
+    let lanes = CString::new(LANES).map_err(io::Error::other)?;
     // SAFETY: only this newly created private Root runtime directory changes.
     if unsafe { libc::chown(lanes.as_ptr(), 0, 60001) } != 0 {
         return Err(io::Error::last_os_error());
     }
     std::fs::set_permissions(LANES, std::fs::Permissions::from_mode(0o2710))?;
+    verify_root_ancestry(Path::new(LANES))?;
+    Ok(())
+}
+
+fn verify_root_ancestry(path: &Path) -> io::Result<()> {
+    if path.canonicalize()? != path {
+        return Err(io::Error::other(
+            "physical native Root runtime ancestry required",
+        ));
+    }
+    for ancestor in path.ancestors() {
+        let metadata = std::fs::symlink_metadata(ancestor)?;
+        if !metadata.is_dir() || metadata.uid() != 0 || metadata.mode() & 0o022 != 0 {
+            return Err(io::Error::other(
+                "native runtime ancestor is not exclusively Root controlled",
+            ));
+        }
+    }
     Ok(())
 }
 
@@ -131,8 +150,8 @@ fn mount(source: &str, target: &str, kind: MountKind) -> io::Result<()> {
     let source = CString::new(source).map_err(io::Error::other)?;
     let target = CString::new(target).map_err(io::Error::other)?;
     let (kind, flags) = match kind {
-        MountKind::Ext2 => (Some(CString::new("ext2").unwrap()), 0),
-        MountKind::Cgroup2 => (Some(CString::new("cgroup2").unwrap()), 0),
+        MountKind::Ext2 => (Some(CString::new("ext2").map_err(io::Error::other)?), 0),
+        MountKind::Cgroup2 => (Some(CString::new("cgroup2").map_err(io::Error::other)?), 0),
         MountKind::Bind => (None, libc::MS_BIND),
     };
     // SAFETY: every string and optional filesystem name remains NUL-terminated

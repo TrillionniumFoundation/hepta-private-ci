@@ -63,5 +63,5 @@ fn denial(file: &File, boot: &Boot, opcode: u16, slot: u64, payload: &[u8]) -> i
     {
         return Err(io::Error::other("uncorrelated Root denial response"));
     }
-    Ok(u16::from_le_bytes(output[10..12].try_into().unwrap()))
+    Ok(u16::from_le_bytes([output[10], output[11]]))
 }
