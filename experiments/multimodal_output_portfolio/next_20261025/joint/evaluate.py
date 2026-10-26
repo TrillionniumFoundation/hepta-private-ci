@@ -27,6 +27,13 @@ from ..sources import load_registered
 from .model import JointModel, PublicTask
 
 
+def codec_executables():
+    paths = {name: shutil.which(name) for name in ("ffmpeg", "ffprobe")}
+    if any(path is None for path in paths.values()):
+        raise ValueError("Actual physical codec executables are required")
+    return {name: str(Path(path).resolve()) for name, path in paths.items()}
+
+
 def load_model(path):
     record = torch.load(path, map_location="cpu", weights_only=True)
     if record["schema"] != "hepta.next.joint-model.v1":
@@ -93,6 +100,8 @@ def freeze(args):
     for group in ("next_20261025/joint", "next_20261025/media", "closure_20261025/media", "v6", "v7", "v7_media", "abc_next/temporal"):
         paths.extend((area / group).glob("*.py"))
     paths.append(area / "next_20261025/sources.py")
+    codecs = codec_executables()
+    paths.extend(Path(path) for path in codecs.values())
     paths += [Path(row["checkpoint"]) for row in training["arms"].values()]
     paths.append(args.shared / "abc2-runs/qualification-001/secondary-observer.pt")
     for name in ("whisper-base.en", "whisper-small.en"):
@@ -108,6 +117,7 @@ def freeze(args):
             "study": "joint", "source_allocation_sha256": file_sha(args.allocation),
             "audio_source_allocation_sha256": file_sha(args.audio_allocation),
             "frozen_candidate_sha256": pins, "pairs": 128, "seeds": [17, 29, 43],
+            "codec_executables": codecs,
             "profiles": ["mean", "entropic"], "input_routes": ["image", "text", "audio", "video"],
             "route_assignment": "case modulo four; each writer contributes one separate pair per route",
             "image_view_assignment": "writer-group index modulo eight; severe missing views retained",
@@ -149,6 +159,9 @@ def run(args):
     for p, h in spec["frozen_candidate_sha256"].items():
         if file_sha(Path(p)) != h:
             raise ValueError("Frozen input changed: " + p)
+    codecs = codec_executables()
+    if codecs != spec["codec_executables"]:
+        raise ValueError("Actual codec executable paths differ from registration")
     actual_inputs = [args.allocation, args.audio_allocation, args.qualification,
                      args.training / "RESULTS.json",
                      args.shared / "abc2-runs/qualification-001/secondary-observer.pt"]
@@ -200,7 +213,7 @@ def run(args):
                 media = carrier_media.write_media(directory, render_tokens(output["tokens"][0]), output["image"][0],
                           output["waveform"][0], output["video"][0],
                           {"request_sha256": hashlib.sha256(f"joint:{seed}:{case}".encode()).hexdigest(), "state_sha256": state_hash},
-                          shutil.which("ffmpeg"), shutil.which("ffprobe"))
+                          codecs["ffmpeg"], codecs["ffprobe"])
                 generation_ns = time.perf_counter_ns() - request_start
                 observed = observe_bundle({name: row["path"] for name, row in media["files"].items()}, judge, audit, carrier=True)
                 score = score_ensemble_observation(observed, target.labels[0].tolist())
@@ -219,6 +232,8 @@ def run(args):
         raise ValueError("Incomplete registered actual-output census")
     if any(file_sha(Path(path)) != expected for path, expected in spec["frozen_candidate_sha256"].items()):
         raise ValueError("A frozen evaluation input changed during actual output generation")
+    if codec_executables() != codecs:
+        raise ValueError("Codec lookup changed during actual output generation")
     write_json(args.output / "completion.json", {"status": "completed", "actual_outputs": len(records),
               "source_pairs": 128, "image_writers": 32, "audio_speakers": 24, "connected_clusters": 24,
               "wall_ns": time.perf_counter_ns() - start, "cpu_ns": time.process_time_ns() - cpu,

@@ -21,6 +21,23 @@
     "status": "completed",
     "wall_ns": 5021918278
   },
+  "prospective_codec_binding": {
+    "change": "Bind actual ffmpeg and ffprobe paths and bytes before new source opening; physical decoder lookup must remain identical through completion",
+    "evaluation_outcomes_observed_before_change": false,
+    "executables": {
+      "ffmpeg": {
+        "path": "/usr/bin/ffmpeg",
+        "sha256": "ed16af623947494a72e284b6eb8ff225f2da22b38b5d5069c2fd4b4ba3384e41"
+      },
+      "ffprobe": {
+        "path": "/usr/bin/ffprobe",
+        "sha256": "272f6ebc634a63d9c8b4ca68e964119d980f25154e5aa2c35e5487da48e9a58f"
+      }
+    },
+    "prior_v31_adapter_sha256": "cfc12edbf87929eeba8eb48ef720d41c39fec9fa846a712af8502948cec3fd36",
+    "source_sha256": "249c009240a0929dd01ce0e0af07eb5fd8cd842d1925460516059d85e6d75a94",
+    "training_models_unchanged": true
+  },
   "schema": "hepta.next.joint-preflight-and-gate.v1",
   "v2_qualification_rejection": {
     "executed_source_sha256": "bf2992eae62232946f37f96e1cc4381720523973b2ea45e98fca9a5e279d6256",
