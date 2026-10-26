@@ -1,4 +1,6 @@
 //! Same-UID/synthetic-key qualification with the original durable owners.
+//! Two executor workers match the production Agentd runtime: synchronous
+//! durable fixture initialization must not starve its original Root read feed.
 use super::*;
 use crate::root_writer_proof::tests::fixture;
 use crate::root_writer_proof::tests::observation;
@@ -197,7 +199,7 @@ async fn connected() -> (
     .unwrap();
     (session, head, worker, key)
 }
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn exact_original_consumers_activate_writer_and_drop_fences_retained_clones() {
     let (session, _, peer, key) = connected().await;
     let authority = session.authority();
@@ -324,7 +326,7 @@ async fn both_original_frontiers_finish_before_new_head_is_published() {
     tokio::time::sleep(Duration::from_millis(20)).await;
     peer.join().unwrap();
 }
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn uncertain_original_consumer_update_fences_even_with_fresh_root_responses() {
     let (session, head, peer, key) = connected().await;
     let (device, first, _device_dir) = owner(&session, key);
