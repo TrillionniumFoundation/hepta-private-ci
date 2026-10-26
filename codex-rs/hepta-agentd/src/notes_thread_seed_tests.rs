@@ -3,7 +3,6 @@
 use super::*;
 use codex_protocol::protocol::SessionMeta;
 use codex_protocol::protocol::SessionMetaLine;
-use pretty_assertions::assert_eq;
 
 #[test]
 fn persisted_seed_metadata_requires_exact_original_identity_and_catalog() {
@@ -11,6 +10,17 @@ fn persisted_seed_metadata_requires_exact_original_identity_and_catalog() {
     let home = directory.path().canonicalize().unwrap();
     let path = home.join("original-rollout.jsonl");
     let catalog = original_notes_thread_tools();
+    let config = format!(
+        "model = \"fixture-model\"\nmodel_provider = \"fixture-provider\"\n{}",
+        crate::ORIGINAL_NOTES_THREAD_EXECUTION_CONFIG
+    );
+    std::fs::write(home.join("config.toml"), &config).unwrap();
+    std::fs::write(
+        home.join("environments.toml"),
+        crate::ORIGINAL_NOTES_THREAD_ENVIRONMENTS_CONFIG,
+    )
+    .unwrap();
+    let execution = notes_thread_execution::inspect(&home).unwrap();
     let meta = SessionMeta {
         cwd: home.clone(),
         model_provider: Some("fixture-provider".into()),
@@ -29,8 +39,8 @@ fn persisted_seed_metadata_requires_exact_original_identity_and_catalog() {
     encoded.push(b'\n');
     std::fs::write(&path, &encoded).unwrap();
     let mut receipt = NotesThreadSeedReceipt {
-        schema_version: 1,
-        codex_home: home,
+        schema_version: 2,
+        codex_home: home.clone(),
         thread_id: meta.id.to_string(),
         app_server_session_id: meta.session_id.to_string(),
         model: "fixture-model".into(),
@@ -38,12 +48,28 @@ fn persisted_seed_metadata_requires_exact_original_identity_and_catalog() {
         rollout_path: path.clone(),
         catalog_sha256: Digest32::of_bytes(&serde_json::to_vec(&catalog).unwrap()).to_string(),
         session_meta_sha256: Digest32::of_bytes(&encoded).to_string(),
+        execution_profile: notes_thread_execution::PROFILE.into(),
+        execution_cwd: home.clone(),
+        core_config_sha256: execution.config_sha256,
+        environments_sha256: execution.environments_sha256,
     };
     assert_eq!(
         inspect_metadata(&receipt).unwrap(),
         receipt.session_meta_sha256
     );
     receipt.verify_persisted().unwrap();
+    receipt.schema_version = 1;
+    assert!(
+        receipt.verify_persisted().is_err(),
+        "legacy unrestricted seed was silently upgraded"
+    );
+    receipt.schema_version = 2;
+    std::fs::write(home.join("config.toml"), format!("{config}\n")).unwrap();
+    assert!(
+        receipt.verify_persisted().is_err(),
+        "changed execution bytes retained the old model tuple"
+    );
+    std::fs::write(home.join("config.toml"), &config).unwrap();
     let tuple = receipt.model_tuple_digest().unwrap();
     let route = crate::text_session::AgentdTextSessionConfig {
         control_socket: receipt.codex_home.join("control.sock"),

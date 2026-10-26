@@ -251,6 +251,7 @@ mod notes_organ;
 #[cfg(target_os = "linux")]
 mod notes_recovery_process;
 #[cfg(target_os = "linux")]
+mod notes_thread_execution;
 mod notes_thread_seed;
 #[cfg(target_os = "linux")]
 mod notes_thread_tool;
@@ -497,6 +498,8 @@ pub use notes_literal_observation::AgentdNotesObservationRetention;
 pub use notes_literal_observation::AgentdNotesSubmissionObservation;
 #[cfg(target_os = "linux")]
 pub use notes_literal_observation::AgentdNotesSubmissionState;
+pub use notes_thread_execution::ORIGINAL_NOTES_THREAD_ENVIRONMENTS_CONFIG;
+pub use notes_thread_execution::ORIGINAL_NOTES_THREAD_EXECUTION_CONFIG;
 #[cfg(target_os = "linux")]
 pub use notes_thread_seed::NotesThreadSeedOptions;
 #[cfg(target_os = "linux")]

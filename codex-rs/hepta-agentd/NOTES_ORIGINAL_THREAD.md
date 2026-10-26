@@ -31,6 +31,38 @@ its receipt records real responses, catalog hash and metadata hash. It submits n
 user message, starts no turn, stops no process and creates no human authorization.
 A lost Start acknowledgement is unknown and is never retried automatically.
 
+The seed receipt is now schema 2. Its model tuple also binds the finite
+`hepta.notes.core-execution.v2` profile, actual canonical execution cwd, and exact
+`config.toml`/`environments.toml` byte hashes. The helper semantically checks the
+fixed public execution configuration before creating a thread. Shell, image,
+browser, computer, agent, plugin, MCP, web and utility tool sources are disabled;
+the original three dynamic Notes tools remain registered. Start explicitly
+selects no environments or capability roots and ReadOnly/Never permissions.
+The persistent environment file must contain `default = "none"` and
+`include_local = false`, with no configured environments. Empty Start
+environments alone are insufficient: an unused rollout contains SessionMeta,
+and a different owner would otherwise select its manager's default environment.
+
+Before and after the original Start/Resume, `config/read` observes the effective
+cwd configuration, including requirements and project layers. The public API
+omits two utility tool settings, so their effective origins must remain the
+inspected original user config; the corresponding file semantics are checked.
+The selected model/provider and every supplied provider field must also retain
+that original user-config origin. The complete normalized provider definition,
+including endpoint and authentication/header options, must equal the frozen
+home configuration; a matching provider name alone is insufficient.
+Actual Start and Resume replies must report Never and read-only with network
+access disabled. The finite profile does not itself grant any Notes operation.
+These observations do not replace installed-product evidence of the model's
+actual outgoing tool catalog or a human-authorized Notes effect.
+
+Schema 1 did not establish this execution scope and is rejected. There is no
+automatic schema upgrade, config repair, replacement thread or fallback to
+unrestricted Core defaults. A changed configuration byte also invalidates the
+original tuple, even when a change only adds whitespace. An administrator must
+preserve the old deployment and investigate it; this helper never rewrites old
+conversation metadata.
+
 The trusted launcher can then gracefully stop the seed owner and launch the
 final Agentd with that same Core home. `verify_original_notes_thread_seed` must
 resume the original thread on the final actual App Server and compare the real

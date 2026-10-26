@@ -9,8 +9,11 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use codex_app_server_client::RemoteAppServerClient;
+use codex_app_server_protocol::AskForApproval;
 use codex_app_server_protocol::ClientRequest;
 use codex_app_server_protocol::RequestId;
+use codex_app_server_protocol::SandboxMode;
+use codex_app_server_protocol::SandboxPolicy;
 use codex_app_server_protocol::ThreadResumeParams;
 use codex_app_server_protocol::ThreadResumeResponse;
 use codex_app_server_protocol::ThreadStartParams;
@@ -23,14 +26,16 @@ use serde::Serialize;
 
 use crate::AgentdError;
 use crate::notes_literal_adapter::invalid;
+use crate::notes_thread_execution;
 use crate::original_notes_thread_tools;
 
 const DEADLINE: Duration = Duration::from_secs(10);
 const MAX_META_LINE: u64 = 1024 * 1024;
 static NEXT_REQUEST: AtomicU64 = AtomicU64::new(1);
 
-/// Existing actual Core/provider configuration is inherited when omitted. These
-/// are trusted startup settings, never model tool arguments or human authority.
+/// Model/provider must match the explicit persistent finite configuration. The
+/// canonical cwd is required. These are trusted startup settings, never model
+/// tool arguments or human authority.
 #[derive(Default)]
 pub struct NotesThreadSeedOptions {
     pub model: Option<String>,
@@ -53,6 +58,10 @@ pub struct NotesThreadSeedReceipt {
     pub rollout_path: PathBuf,
     pub catalog_sha256: String,
     pub session_meta_sha256: String,
+    pub execution_profile: String,
+    pub execution_cwd: PathBuf,
+    pub core_config_sha256: String,
+    pub environments_sha256: String,
 }
 
 impl NotesThreadSeedReceipt {
@@ -61,16 +70,29 @@ impl NotesThreadSeedReceipt {
     pub fn model_tuple_digest(&self) -> Result<Digest32, AgentdError> {
         self.validate_shape()?;
         Ok(Digest32::of_bytes(&serde_json::to_vec(&(
-            "hepta.notes.original-model-tuple.v1",
+            "hepta.notes.original-model-tuple.v2",
             &self.model,
             &self.model_provider,
             &self.catalog_sha256,
             &self.session_meta_sha256,
+            &self.execution_profile,
+            &self.execution_cwd,
+            &self.core_config_sha256,
+            &self.environments_sha256,
         ))?))
     }
 
     fn validate_shape(&self) -> Result<(), AgentdError> {
-        if self.schema_version != 1
+        if self.schema_version != 2
+            || self.execution_profile != notes_thread_execution::PROFILE
+            || !self.execution_cwd.is_absolute()
+            || [&self.core_config_sha256, &self.environments_sha256]
+                .iter()
+                .any(|digest| {
+                    digest
+                        .parse::<Digest32>()
+                        .map_or(true, |digest| digest.is_zero())
+                })
             || self.thread_id.is_empty()
             || self.thread_id.len() > 128
             || self.app_server_session_id.is_empty()
@@ -97,8 +119,20 @@ impl NotesThreadSeedReceipt {
         Ok(())
     }
 
-    pub(crate) fn verify_persisted(&self) -> Result<(), AgentdError> {
+    /// Recheck the original metadata and finite configuration files without
+    /// starting Core or minting any conversation or authority.
+    pub fn verify_persisted(&self) -> Result<(), AgentdError> {
         self.validate_shape()?;
+        let execution = notes_thread_execution::inspect(&self.codex_home)?;
+        if execution.config_sha256 != self.core_config_sha256
+            || execution.environments_sha256 != self.environments_sha256
+            || execution.model != self.model
+            || execution.model_provider != self.model_provider
+        {
+            return Err(invalid(
+                "original Notes execution configuration changed; no replacement thread is admitted",
+            ));
+        }
         if inspect_metadata(self)? != self.session_meta_sha256 {
             return Err(invalid("original persisted seed metadata changed"));
         }
@@ -136,17 +170,37 @@ pub async fn seed_original_notes_thread(
     options: NotesThreadSeedOptions,
 ) -> Result<NotesThreadSeedReceipt, AgentdError> {
     require_home(client, codex_home)?;
-    let cwd = options
+    let execution = notes_thread_execution::inspect(codex_home)?;
+    if options
+        .model
+        .as_ref()
+        .is_some_and(|model| model != &execution.model)
+        || options
+            .model_provider
+            .as_ref()
+            .is_some_and(|provider| provider != &execution.model_provider)
+    {
+        return Err(invalid(
+            "original Notes seed options differ from the frozen Core model/provider",
+        ));
+    }
+    let execution_cwd = options
         .cwd
-        .map(|path| {
-            if !path.is_absolute() {
-                return Err(invalid("original seed cwd must be absolute"));
-            }
-            path.into_os_string()
-                .into_string()
-                .map_err(|_| invalid("original seed cwd is not UTF-8"))
-        })
-        .transpose()?;
+        .ok_or_else(|| invalid("finite original Notes seed requires an explicit cwd"))?;
+    if !execution_cwd.is_absolute() || execution_cwd.canonicalize()? != execution_cwd {
+        return Err(invalid("original seed cwd must be canonical and absolute"));
+    }
+    let cwd = execution_cwd
+        .to_str()
+        .ok_or_else(|| invalid("original seed cwd is not UTF-8"))?
+        .to_owned();
+    notes_thread_execution::verify_effective(
+        client,
+        codex_home,
+        &execution_cwd,
+        request_id("config-before-start")?,
+    )
+    .await?;
     let started: ThreadStartResponse = tokio::time::timeout(
         DEADLINE,
         client.request_typed(ClientRequest::ThreadStart {
@@ -154,11 +208,15 @@ pub async fn seed_original_notes_thread(
             params: ThreadStartParams {
                 model: options.model,
                 model_provider: options.model_provider,
-                cwd,
+                cwd: Some(cwd),
                 developer_instructions: options.developer_instructions,
                 allow_provider_model_fallback: false,
                 ephemeral: Some(false),
                 dynamic_tools: Some(original_notes_thread_tools()),
+                environments: Some(Vec::new()),
+                selected_capability_roots: Some(Vec::new()),
+                approval_policy: Some(AskForApproval::Never),
+                sandbox: Some(SandboxMode::ReadOnly),
                 ..Default::default()
             },
         }),
@@ -169,8 +227,14 @@ pub async fn seed_original_notes_thread(
     if started.thread.ephemeral
         || started.thread.id.is_empty()
         || started.thread.session_id.is_empty()
-        || started.model.is_empty()
-        || started.model_provider.is_empty()
+        || started.model != execution.model
+        || started.model_provider != execution.model_provider
+        || started.cwd.as_path() != execution_cwd
+        || started.approval_policy != AskForApproval::Never
+        || started.sandbox
+            != (SandboxPolicy::ReadOnly {
+                network_access: false,
+            })
     {
         return Err(invalid(
             "original thread Start returned no persistent identity or actual model",
@@ -184,13 +248,19 @@ pub async fn seed_original_notes_thread(
         || resumed.model != started.model
         || resumed.model_provider != started.model_provider
         || resumed.thread.ephemeral
+        || resumed.cwd.as_path() != execution_cwd
+        || resumed.approval_policy != AskForApproval::Never
+        || resumed.sandbox
+            != (SandboxPolicy::ReadOnly {
+                network_access: false,
+            })
     {
         return Err(invalid(
             "same-owner seed resume changed thread/session/model/provider",
         ));
     }
     let mut receipt = NotesThreadSeedReceipt {
-        schema_version: 1,
+        schema_version: 2,
         codex_home: codex_home.to_owned(),
         thread_id: resumed.thread.id,
         app_server_session_id: resumed.thread.session_id,
@@ -203,8 +273,21 @@ pub async fn seed_original_notes_thread(
         catalog_sha256: Digest32::of_bytes(&serde_json::to_vec(&original_notes_thread_tools())?)
             .to_string(),
         session_meta_sha256: String::new(),
+        execution_profile: notes_thread_execution::PROFILE.into(),
+        execution_cwd,
+        core_config_sha256: execution.config_sha256,
+        environments_sha256: execution.environments_sha256,
     };
     receipt.session_meta_sha256 = observe_metadata(&receipt).await?;
+    receipt.verify_persisted()?;
+    notes_thread_execution::verify_effective(
+        client,
+        codex_home,
+        &receipt.execution_cwd,
+        request_id("config-after-start")?,
+    )
+    .await?;
+    receipt.verify_persisted()?;
     Ok(receipt)
 }
 
@@ -215,7 +298,14 @@ pub async fn verify_original_notes_thread_seed(
     receipt: &NotesThreadSeedReceipt,
 ) -> Result<(), AgentdError> {
     require_home(client, &receipt.codex_home)?;
-    receipt.validate_shape()?;
+    receipt.verify_persisted()?;
+    notes_thread_execution::verify_effective(
+        client,
+        &receipt.codex_home,
+        &receipt.execution_cwd,
+        request_id("config-before-resume")?,
+    )
+    .await?;
     let actual = resume(client, &receipt.thread_id).await?;
     if actual.thread.ephemeral
         || actual.thread.id != receipt.thread_id
@@ -223,12 +313,27 @@ pub async fn verify_original_notes_thread_seed(
         || actual.model != receipt.model
         || actual.model_provider != receipt.model_provider
         || actual.thread.path.as_ref() != Some(&receipt.rollout_path)
+        || actual.cwd.as_path() != receipt.execution_cwd
+        || actual.approval_policy != AskForApproval::Never
+        || actual.sandbox
+            != (SandboxPolicy::ReadOnly {
+                network_access: false,
+            })
         || observe_metadata(receipt).await? != receipt.session_meta_sha256
     {
         return Err(invalid(
             "final original thread/session/model/provider/catalog metadata differs from seed",
         ));
     }
+    receipt.verify_persisted()?;
+    notes_thread_execution::verify_effective(
+        client,
+        &receipt.codex_home,
+        &receipt.execution_cwd,
+        request_id("config-after-resume")?,
+    )
+    .await?;
+    receipt.verify_persisted()?;
     Ok(())
 }
 
@@ -293,6 +398,7 @@ fn inspect_metadata(receipt: &NotesThreadSeedReceipt) -> Result<String, AgentdEr
         .dynamic_tools
         .ok_or_else(|| invalid("original seed catalog was not persisted"))?;
     if meta.meta.id.to_string() != receipt.thread_id
+        || meta.meta.cwd != receipt.execution_cwd
         || meta.meta.session_id.to_string() != receipt.app_server_session_id
         || meta.meta.model_provider.as_deref() != Some(receipt.model_provider.as_str())
         || catalog != expected
