@@ -51,7 +51,11 @@ required_boundary_ids = [
   "authority_lease_dispatch_witness",
   "final_use_async_dispatch_fence",
   "automation_taskflow_provider_effect_bridge",
-  "final_use_guarded_effect"
+  "final_use_guarded_effect",
+  "notes_original_pending_call_proof",
+  "notes_original_operation_observation_proof",
+  "notes_original_thread_prepare",
+  "notes_original_writer_terminal_receipt"
 ]
 
 [[boundary]]
@@ -605,4 +609,68 @@ forbidden = ["AllowVerifier", "permit_all"]
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/authority_host_issuer.rs"
 required = ["lease.revision != lease_revision", "with_dispatch_boundary", "lease.authority_epoch != self.authority_epoch", "min(lease.expires_at_unix_ms)"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[boundary]]
+id = "notes_original_pending_call_proof"
+symbol = "VerifiedNotesThreadCall::from_original_item"
+definition_path = "codex-rs/hepta-agentd/src/notes_thread_proof.rs"
+definition_markers = ["pub(super) struct VerifiedNotesThreadCall", "pub(super) fn from_original_item(", "DynamicToolCallStatus::InProgress", "arguments != &params.arguments"]
+product_callers = ["codex-rs/hepta-agentd/src/notes_thread_runtime.rs"]
+caller_markers = ["self.original_item(&params.turn_id, &params.call_id).await?", "VerifiedNotesThreadCall::from_original_item"]
+
+[[boundary]]
+id = "notes_original_operation_observation_proof"
+symbol = "VerifiedNotesThreadOperation::from_original_item"
+definition_path = "codex-rs/hepta-agentd/src/notes_thread_proof.rs"
+definition_markers = ["pub(super) struct VerifiedNotesThreadOperation", "pub(super) fn from_original_item(", "id != call_id || tool != REPLACE_TOOL", "VerifiedNotesThreadCall::validate_callback(route, &params)?"]
+product_callers = ["codex-rs/hepta-agentd/src/notes_thread_runtime.rs"]
+caller_markers = ["VerifiedNotesThreadOperation::from_original_item", "self.observe_retained(&original).await"]
+
+[[boundary]]
+id = "notes_original_thread_prepare"
+symbol = "AgentdNotesLiteralAdapter::prepare_thread"
+call_pattern = '\.\s*prepare_thread\s*\('
+definition_path = "codex-rs/hepta-agentd/src/notes_literal_adapter.rs"
+definition_markers = ["pub(crate) async fn prepare_thread(", "self.profile != NotesAdapterProfile::OriginalThread", "Some(expected_revision)"]
+product_callers = ["codex-rs/hepta-agentd/src/notes_thread_tool.rs"]
+caller_markers = ["call: &VerifiedNotesThreadCall", "call.intent_id(&self.route)?", ".prepare_thread(&request_id, &arguments.text, arguments.expected_revision)"]
+
+[[boundary]]
+id = "notes_original_writer_terminal_receipt"
+symbol = "ProductionDurableWriter::retained_notes_terminal_receipt"
+call_pattern = '\.\s*retained_notes_terminal_receipt\s*\('
+definition_path = "codex-rs/hepta-memory/src/production_notes_owner.rs"
+definition_markers = ["pub async fn retained_notes_terminal_receipt(", "self.verify_authority().await?", "NotesTerminalReceipt::from_json(&retained.payload_json, &receipt)", "Sha256Digest::for_bytes(receipt.as_bytes()).as_str() != digest"]
+product_callers = ["codex-rs/hepta-agentd/src/notes_thread_tool.rs"]
+caller_markers = ["async fn observe_retained(", "async fn observe_operation(", ".retained_notes_terminal_receipt(&run_id)", "retained_thread_request_sha256(&request_id)"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/notes_thread_proof.rs"
+required = ["pub(super) struct VerifiedNotesThreadCall", "pub(super) struct VerifiedNotesThreadOperation", "DynamicToolCallStatus::InProgress", "id != &params.call_id", "tool != &params.tool", "arguments != &params.arguments", "id != call_id || tool != REPLACE_TOOL", "VerifiedNotesThreadCall::validate_callback(route, &params)?"]
+forbidden = ["Deserialize", "unsafe", "transmute", "AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/notes_thread_runtime.rs"
+required = ["RemoteAppServerClient::connect_with_bounded_events", "response.thread.session_id != connection.route.app_server_session_id", "ClientRequest::ThreadItemsList", "VerifiedNotesThreadCall::from_original_item", "VerifiedNotesThreadOperation::from_original_item", "self.observe_retained(&original).await", "self.execute(&call).await"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/notes_thread_tool.rs"
+required = ["#[serde(deny_unknown_fields)]", "route.app_server_session_id.is_empty()", "Arc::ptr_eq(&self.adapter.writer, &writer.writer())", "self.observe_operation(original.original_call(), None).await", "ready.submit_once(remaining).await?", "retained_notes_terminal_receipt(&run_id)"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/notes_literal_adapter.rs"
+required = ["NotesAdapterProfile::Literal", "NotesAdapterProfile::OriginalThread", "literal_notes_admission_profile_json_v1", "thread_notes_admission_profile_json_v1", "Some(expected_revision)"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-memory/src/production_notes_owner.rs"
+required = ["self.verify_authority().await?", "retained.topic != crate::NOTES_REPLACE_TOPIC_V1", "payload_sha256", "Sha256Digest::for_bytes(receipt.as_bytes()).as_str() != digest", "NotesTerminalReceipt::from_json(&retained.payload_json, &receipt)"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-objective/src/notes_thread_source.rs"
+required = ["organ.notes.thread-tool.v1", "notes.original-thread.profile", "decode_admission_profile_json_v1", "literal_notes_admission_profile_json_v1"]
 forbidden = ["AllowVerifier", "permit_all"]
