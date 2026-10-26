@@ -18,6 +18,10 @@ use std::sync::Arc;
 #[path = "sqlite_recovery_image.rs"]
 mod image;
 
+#[cfg(any(unix, windows))]
+#[path = "sqlite_recovery_io.rs"]
+mod descriptor_io;
+
 #[cfg(windows)]
 #[path = "sqlite_recovery_windows.rs"]
 mod windows;

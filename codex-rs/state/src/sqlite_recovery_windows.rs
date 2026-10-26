@@ -282,3 +282,17 @@ fn open_home(home: &Path) -> Result<(Vec<File>, File), SqliteRecoveryError> {
     }
     Ok((ancestors, current))
 }
+
+#[cfg(test)]
+#[path = "sqlite_recovery_windows_tests.rs"]
+mod tests;
+
+// Newly created recovery material remains subject to the same private-owner
+// checks. These helpers do not publish it or supply a Current witness.
+pub(super) fn require_private_created_file(file: &File) -> Result<(), SqliteRecoveryError> {
+    identity::snapshot(file, Kind::File).map(|_| ())
+}
+
+pub(super) fn require_private_directory(file: &File) -> Result<(), SqliteRecoveryError> {
+    identity::snapshot(file, Kind::Directory).map(|_| ())
+}
