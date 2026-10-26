@@ -15,6 +15,20 @@ use std::time::UNIX_EPOCH;
 
 const LEASE: &str = "notes-real-clock-handoff";
 
+fn at_phase<T>(
+    result: Result<T, ObjectiveSenderError>,
+    phase: &str,
+    expiry: u64,
+) -> Result<T, Box<dyn Error>> {
+    result.map_err(|error| {
+        format!(
+            "{phase}: {error}; wall_clock={}, original_fixture_expiry={expiry}",
+            now()
+        )
+        .into()
+    })
+}
+
 struct ProcessVerifier {
     spawn: u64,
     local: u64,
@@ -192,7 +206,11 @@ impl ColdFixture {
         assert!(writer.release().await.is_err());
         assert!(writer.rollback_lease().await.is_err());
         // Seal the owner before any Objective exists. No dummy ticket is needed.
-        sender.acknowledge_owner_cut().await?;
+        at_phase(
+            sender.acknowledge_owner_cut().await,
+            "initial owner checkpoint",
+            expiry,
+        )?;
         assert!(
             sender
                 .retained_page(ObjectiveSenderRetainedPosition::Beginning)
@@ -200,7 +218,11 @@ impl ColdFixture {
                 .requests
                 .is_empty()
         );
-        let _lost_ticket = sender.retain_before_send(request(&owner, 1)).await?;
+        let _lost_ticket = at_phase(
+            sender.retain_before_send(request(&owner, 1)).await,
+            "initial retained request checkpoint",
+            expiry,
+        )?;
         assert_eq!(
             peer.receipt.lock().unwrap().head.phase,
             CognitiveCheckpointPhase::Current
@@ -336,11 +358,19 @@ async fn notes_local_handoff_real_clock_preserves_unknown_with_distinct_spawn_an
     );
     let config = config.with_production_writer_host(host.clone())?;
     let sender = config.original_objective_sender(protected, Duration::from_secs(2))?;
-    sender.acknowledge_owner_cut().await?;
+    at_phase(
+        sender.acknowledge_owner_cut().await,
+        "recovered owner checkpoint",
+        expiry,
+    )?;
     let current = peer.receipt.lock().unwrap().clone();
     assert_eq!(current.head.phase, CognitiveCheckpointPhase::Current);
     assert_eq!(current.head.last_current, new_cut);
-    sender.acknowledge_owner_cut().await?;
+    at_phase(
+        sender.acknowledge_owner_cut().await,
+        "unchanged recovered owner checkpoint",
+        expiry,
+    )?;
     assert_eq!(*peer.receipt.lock().unwrap(), current); // independent ReadHead, no mutation
     let recovered = sender.recover_pending(request(&owner, 1)).await?;
     assert!(sender.mark_send_started(&recovered).await.is_err());
@@ -348,7 +378,11 @@ async fn notes_local_handoff_real_clock_preserves_unknown_with_distinct_spawn_an
         sender.retain_before_send(request(&owner, 1)).await,
         Err(ObjectiveSenderError::IdentityMismatch)
     ));
-    let ticket = sender.retain_before_send(request(&owner, 3)).await?;
+    let ticket = at_phase(
+        sender.retain_before_send(request(&owner, 3)).await,
+        "new generation retained request checkpoint",
+        expiry,
+    )?;
     let same_generation_recovered = sender.recover_pending(request(&owner, 3)).await?;
     assert!(matches!(
         sender.mark_send_started(&same_generation_recovered).await,

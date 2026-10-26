@@ -9,6 +9,7 @@ use pretty_assertions::assert_eq;
 use std::io::Read;
 use std::io::Write;
 use std::os::fd::FromRawFd;
+use std::os::unix::fs::PermissionsExt;
 use std::sync::atomic::AtomicU64;
 struct Frontier {
     value: Mutex<FinalUseFrontier>,
@@ -59,7 +60,10 @@ fn owner(
         entered: AtomicBool::new(false),
         fail: AtomicBool::new(false),
     });
-    let directory = tempfile::tempdir().unwrap();
+    let directory = tempfile::Builder::new()
+        .permissions(std::fs::Permissions::from_mode(0o700))
+        .tempdir()
+        .unwrap();
     let authority = FinalUseAuthority::open_state_dir_with_issuer_keys(
         directory.path(),
         "root-issuer".into(),

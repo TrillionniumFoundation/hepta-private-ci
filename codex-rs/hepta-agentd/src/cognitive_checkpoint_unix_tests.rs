@@ -1,6 +1,7 @@
 //! Explicit same-UID channel fixtures exercise the real client, not a deployed
 //! root service, authority issuance, checkpoint CAS or durable publication.
 use super::*;
+use codex_hepta_memory::CognitiveCheckpointCommand;
 use std::io::Write;
 use std::os::fd::FromRawFd;
 
@@ -112,11 +113,16 @@ fn fixture(timeout: Duration) -> (AgentdUnixCognitiveCheckpointTransport, UnixSt
 }
 
 fn request() -> Vec<u8> {
-    serde_json::to_vec(&serde_json::json!({
-        "schema_version":1,"operation":"runtime.cognitive.checkpoint.v1",
-        "request_id":"00000000000000010000000000000001","command":"read_head",
-        "expected":null,"proposal":null,
-    }))
+    // Keep the byte-for-byte assertion against the same wire DTO as the
+    // production initial read, rather than json! object's sorted field order.
+    serde_json::to_vec(&CognitiveCheckpointRequest {
+        schema_version: 1,
+        operation: "runtime.cognitive.checkpoint.v1".into(),
+        request_id: "00000000000000010000000000000001".into(),
+        command: CognitiveCheckpointCommand::ReadHead,
+        expected: None,
+        proposal: None,
+    })
     .unwrap()
 }
 
