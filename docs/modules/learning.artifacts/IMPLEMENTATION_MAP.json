@@ -2,20 +2,16 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "b5b9379bedaf0065f8f3b373c5da59228f8d9539",
-    "tree": "2e9edf3eeaa49b22e8a9135774b3ee12638af9ea"
+    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
+    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
   "owner": "learning-platform",
   "deputy": "durability-kernel",
   "technicalGuide": "docs/modules/learning.artifacts/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-learning-artifacts"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-learning-artifacts"
-  ],
+  "declaredRoots": ["codex-rs/hepta-learning-artifacts"],
+  "resolvedRoots": ["codex-rs/hepta-learning-artifacts"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "explicit_read_and_writer_service_composed",
@@ -380,9 +376,7 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": [
-    "codex-rs/hepta-learning-artifacts"
-  ],
+  "sourceRoot": ["codex-rs/hepta-learning-artifacts"],
   "productCallerBindings": [
     {
       "operation": "load_pinned_candidate",
@@ -444,7 +438,7 @@
     },
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "be377029f542b2f1bac08d9165a7632b22c559b3"
+      "object": "b1a38e578ac9cc552b2491cbcb5cae1f21e6e8a1"
     },
     {
       "path": "codex-rs/Cargo.toml",
@@ -468,7 +462,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
-      "object": "ea703a7f09602d6cce36684db5e8f84128123a0a"
+      "object": "ae03129a1b0b5a32e5ecff278265a356011bc43f"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
@@ -532,8 +526,8 @@
     }
   ],
   "observedAtHead": {
-    "commit": "b5b9379bedaf0065f8f3b373c5da59228f8d9539",
-    "tree": "2e9edf3eeaa49b22e8a9135774b3ee12638af9ea"
+    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
+    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
   },
   "sourceObservationScope": "Current source navigation was independently re-observed at sourceBase. Source objects and observed paths bind that source snapshot; this observation does not renew historical execution, acceptance, activation or release evidence.",
   "observedSourcePaths": [

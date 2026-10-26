@@ -2,20 +2,16 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
-    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
+    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
+    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "learning.plasticity",
   "owner": "learning-platform",
   "deputy": "architecture",
   "technicalGuide": "docs/modules/learning.plasticity/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-plasticity"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-plasticity"
-  ],
+  "declaredRoots": ["codex-rs/hepta-plasticity"],
+  "resolvedRoots": ["codex-rs/hepta-plasticity"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "agentd_process_bootstrap_and_state_held_runtime_handle_source_composed_test_only_learning_submission_adapter_product_trigger_not_composed_or_target_host_qualified",
@@ -642,9 +638,7 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": [
-    "codex-rs/hepta-plasticity"
-  ],
+  "sourceRoot": ["codex-rs/hepta-plasticity"],
   "productCallers": [
     {
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
@@ -660,7 +654,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "be377029f542b2f1bac08d9165a7632b22c559b3"
+      "object": "b1a38e578ac9cc552b2491cbcb5cae1f21e6e8a1"
     },
     {
       "path": "codex-rs/Cargo.toml",
@@ -748,7 +742,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
-      "object": "ea703a7f09602d6cce36684db5e8f84128123a0a"
+      "object": "ae03129a1b0b5a32e5ecff278265a356011bc43f"
     },
     {
       "path": "codex-rs/hepta-learning-ledger",
@@ -828,8 +822,8 @@
     }
   ],
   "observedAtHead": {
-    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
-    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
+    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
+    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
   },
   "sourceObservationScope": "Current source navigation was independently re-observed at sourceBase. Source objects and observed paths bind that source snapshot; this observation does not renew historical execution, acceptance, activation or release evidence.",
   "observedSourcePaths": [

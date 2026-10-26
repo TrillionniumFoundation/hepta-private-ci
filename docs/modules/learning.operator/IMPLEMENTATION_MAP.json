@@ -2,20 +2,16 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
-    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
+    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
+    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
   "owner": "learning-platform",
   "deputy": "qualification-plane",
   "technicalGuide": "docs/modules/learning.operator/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-bellman-operator"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-bellman-operator"
-  ],
+  "declaredRoots": ["codex-rs/hepta-bellman-operator"],
+  "resolvedRoots": ["codex-rs/hepta-bellman-operator"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "explicit_read_consumer_composed_default_learning_loop_absent",
@@ -289,13 +285,11 @@
     "defaultProductLoopWired": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": [
-    "codex-rs/hepta-bellman-operator"
-  ],
+  "sourceRoot": ["codex-rs/hepta-bellman-operator"],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
-    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
+    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
+    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -318,7 +312,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "be377029f542b2f1bac08d9165a7632b22c559b3"
+      "object": "b1a38e578ac9cc552b2491cbcb5cae1f21e6e8a1"
     },
     {
       "path": "codex-rs/Cargo.toml",

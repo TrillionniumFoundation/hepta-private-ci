@@ -2,20 +2,16 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "60ff5dd2f5bf63ddb1d865e57ab2cff886fa0eba",
-    "tree": "337ed91c0d1501457f4c76eec1e22efdd447fcc6"
+    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
+    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.ledger",
   "owner": "learning-platform",
   "deputy": "cognitive-platform",
   "technicalGuide": "docs/modules/learning.ledger/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-learning-ledger"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-learning-ledger"
-  ],
+  "declaredRoots": ["codex-rs/hepta-learning-ledger"],
+  "resolvedRoots": ["codex-rs/hepta-learning-ledger"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "qualification_consumer_composed_live_product_not_established",
@@ -27,9 +23,7 @@
       "sourcePath": "codex-rs/hepta-learning-ledger/src/run_start.rs",
       "state": "source_implemented_destination_owned_run_start_durability",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-learning-ledger/src/run_start_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-learning-ledger/src/run_start_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "durable_run_start_journal",
       "mappingClass": "owner_native",
@@ -124,9 +118,7 @@
       "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
       "state": "source_implemented_ledger_derived",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-learning-ledger/src/production_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-learning-ledger/src/production_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "freeze_dataset",
       "mappingClass": "owner_native",
@@ -139,9 +131,7 @@
       "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
       "state": "source_implemented_final_use_currentness",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-learning-ledger/src/production_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-learning-ledger/src/production_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "revalidate_dataset_snapshot",
       "mappingClass": "owner_native",
@@ -214,9 +204,7 @@
       "sourcePath": "codex-rs/hepta-learning-ledger/src/protocol.rs",
       "state": "source_implemented_registered_v1_views",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-learning-ledger/src/protocol_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-learning-ledger/src/protocol_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "canonical_protocol_adapters",
       "mappingClass": "owner_native",
@@ -229,9 +217,7 @@
       "sourcePath": "codex-rs/hepta-learning-ledger/src/checkpoint.rs",
       "state": "source_implemented_rebuildable_projection",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-learning-ledger/src/checkpoint_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-learning-ledger/src/checkpoint_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "build_ledger_index_checkpoint",
       "mappingClass": "owner_native",
@@ -244,9 +230,7 @@
       "sourcePath": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
       "state": "source_implemented_compatibility_validator",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "validate_candidate_set_completeness",
       "mappingClass": "owner_native",
@@ -259,9 +243,7 @@
       "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
       "state": "source_implemented_host_authorized_directory_fsync",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-learning-ledger/src/production_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-learning-ledger/src/production_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "sync_directory_handle",
       "mappingClass": "owner_native",
@@ -276,9 +258,7 @@
       "sourcePathExists": true,
       "state": "source_implemented_ci_pending",
       "mappingClass": "owner_native",
-      "tests": [
-        "codex-rs/hepta-learning-ledger/src/production_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-learning-ledger/src/production_tests.rs"],
       "delegatedCallees": [],
       "sourceBlob": "4460df7dd872fd4cbc28cb20eb955e0dc627cdaa"
     },
@@ -290,9 +270,7 @@
       "sourcePathExists": true,
       "state": "source_implemented_ci_pending",
       "mappingClass": "owner_native",
-      "tests": [
-        "codex-rs/hepta-learning-ledger/src/checkpoint_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-learning-ledger/src/checkpoint_tests.rs"],
       "delegatedCallees": [],
       "sourceBlob": "17605c9a41c57aaacc843b4069c2a1733ed673af"
     },
@@ -337,9 +315,7 @@
     "authenticatedProductRunStartComposition": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": [
-    "codex-rs/hepta-learning-ledger"
-  ],
+  "sourceRoot": ["codex-rs/hepta-learning-ledger"],
   "currentSourceEvidence": {
     "commit": "cbb3cee084a4caf4702dd4e575cae5504486c176",
     "tree": "e22806b086240bb2015344dfb545734342c7fdb3",
@@ -400,7 +376,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "be377029f542b2f1bac08d9165a7632b22c559b3"
+      "object": "b1a38e578ac9cc552b2491cbcb5cae1f21e6e8a1"
     },
     {
       "path": "codex-rs/Cargo.toml",
@@ -544,7 +520,7 @@
     },
     {
       "path": "docs/modules/MODULE_DOCS.json",
-      "object": "58ff377f51458efaf7a15e72044e281435abd24b"
+      "object": "c063443424490441db317d4dd3e553d7cc450304"
     },
     {
       "path": "docs/modules/learning.ledger/TECHNICAL.md",
@@ -576,8 +552,8 @@
     }
   ],
   "observedAtHead": {
-    "commit": "60ff5dd2f5bf63ddb1d865e57ab2cff886fa0eba",
-    "tree": "337ed91c0d1501457f4c76eec1e22efdd447fcc6"
+    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
+    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
   },
   "sourceObservationScope": "Current source navigation was independently re-observed at sourceBase. Source objects and observed paths bind that source snapshot; this observation does not renew historical execution, acceptance, activation or release evidence.",
   "currentSourceEvidenceScope": "The unchanged currentSourceEvidence and sourceEvidencePolicy fields retain the historical cbb3cee durable-run-start observation and its original no-drift policy. They do not claim absence of later source/test changes or current execution. Current navigation is independently bound by sourceBase, observedAtHead and sourceObjects.",

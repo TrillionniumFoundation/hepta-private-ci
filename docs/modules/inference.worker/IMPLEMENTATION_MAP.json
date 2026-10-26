@@ -2,18 +2,14 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "60ff5dd2f5bf63ddb1d865e57ab2cff886fa0eba",
-    "tree": "337ed91c0d1501457f4c76eec1e22efdd447fcc6"
+    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
+    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
   "sourceMaturity": "durable_native_app_server_profile_and_local_driver_component",
-  "declaredRoots": [
-    "codex-rs/hepta-infer-worker-host"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-infer-worker-host"
-  ],
+  "declaredRoots": ["codex-rs/hepta-infer-worker-host"],
+  "resolvedRoots": ["codex-rs/hepta-infer-worker-host"],
   "stateOwnerDisposition": "The native App Server path owns live provider handles while inference.control retains its request/slot/observation journal. The separate fixed ordinary CPU destination owns the trusted destination SQLite dedupe and sixteen permanent lifetime entries, including terminal tombstones, and the original in-memory Child handles; it neither owns inference.control facts nor refunds entries.",
   "terminalObserverDisposition": "The hosted native App Server profile observes exact turn events. The separately registered ordinary destination observes only its retained original Child: timely exit zero plus durable terminal storage is an ordinary exit fact; missing owner, nonzero/late exit and uncertain durability stay indeterminate. Neither that fact nor the injected local driver proves model/device behavior, resource retirement or pool/process cold recovery.",
   "operations": [
@@ -139,9 +135,7 @@
   "owner": "inference-platform",
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/inference.worker/TECHNICAL.md",
-  "sourceRoot": [
-    "codex-rs/hepta-infer-worker-host"
-  ],
+  "sourceRoot": ["codex-rs/hepta-infer-worker-host"],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -169,7 +163,7 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host",
-      "object": "5e4c1a40b45f6e5fab85e0678739c227ebc100f7"
+      "object": "e5e31ad0a9908857e5545baae0ce5261c75856ce"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/BUILD.bazel",
@@ -177,7 +171,7 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/Cargo.toml",
-      "object": "d4a3202856f1e578a3b4c00048b766c3835e6132"
+      "object": "10355ea7f9423eea6c9cd9420978d43529abd792"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/ordinary_cpu_owner.sql",
@@ -189,11 +183,11 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
-      "object": "26ee6559a9de6baf5846ea367d02e5ffb01a40d6"
+      "object": "d8a811794b5d3bdb3a30d46e89f89f7150222e37"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
-      "object": "5ae05aaefebfc6a52bf4c6be9e1ed7b6a42f7201"
+      "object": "ab01ad363ad35d126bac267fcee0a6849e9eafbe"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
@@ -253,11 +247,11 @@
     },
     {
       "path": "docs/modules/inference.worker/TECHNICAL.md",
-      "object": "93c8d76a3c8a7b80870e385f5ce293650d247a21"
+      "object": "00c0eba4396e00bb34a28a8bce81720d911911a5"
     }
   ],
   "observedAtHead": {
-    "commit": "60ff5dd2f5bf63ddb1d865e57ab2cff886fa0eba",
-    "tree": "337ed91c0d1501457f4c76eec1e22efdd447fcc6"
+    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
+    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
   }
 }

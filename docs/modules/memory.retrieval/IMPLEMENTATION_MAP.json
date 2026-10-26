@@ -2,20 +2,16 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
-    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
+    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
+    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
   "owner": "cognitive-platform",
   "deputy": "performance",
   "technicalGuide": "docs/modules/memory.retrieval/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-memory-retrieval"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-memory-retrieval"
-  ],
+  "declaredRoots": ["codex-rs/hepta-memory-retrieval"],
+  "resolvedRoots": ["codex-rs/hepta-memory-retrieval"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "source_composed_explicit_profile_not_product_qualified",
@@ -27,9 +23,7 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/v2.rs",
       "state": "source_implemented_not_product_qualified",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-memory-retrieval/src/v2_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-memory-retrieval/src/v2_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "retrieve_v2",
       "mappingClass": "owner_native",
@@ -41,9 +35,7 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generator.rs",
       "state": "source_implemented_not_product_qualified",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-memory-retrieval/src/generator_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-memory-retrieval/src/generator_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "compile_cue",
       "mappingClass": "owner_native",
@@ -70,9 +62,7 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/engram.rs",
       "state": "source_implemented_not_product_qualified",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-memory-retrieval/src/engram_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-memory-retrieval/src/engram_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "engram_settle",
       "mappingClass": "owner_native",
@@ -99,9 +89,7 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/decision.rs",
       "state": "source_implemented_not_product_qualified",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-memory-retrieval/src/decision_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-memory-retrieval/src/decision_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "assignment_observation",
       "mappingClass": "owner_native",
@@ -169,9 +157,7 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": [
-    "codex-rs/hepta-memory-retrieval"
-  ],
+  "sourceRoot": ["codex-rs/hepta-memory-retrieval"],
   "compositionRoots": [
     "codex-rs/hepta-memory/src/cognitive_model.rs",
     "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
@@ -191,8 +177,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
-    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
+    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
+    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
@@ -254,7 +240,7 @@
     },
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "be377029f542b2f1bac08d9165a7632b22c559b3"
+      "object": "b1a38e578ac9cc552b2491cbcb5cae1f21e6e8a1"
     },
     {
       "path": "codex-rs/Cargo.toml",
