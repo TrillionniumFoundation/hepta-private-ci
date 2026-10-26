@@ -17,6 +17,7 @@ enum Command {
     Verify,
     Rebind(CognitiveCheckpointReceipt),
     Install,
+    ReopenInstallation,
 }
 
 struct Job {
@@ -84,6 +85,10 @@ impl RootCheckpointMaterial {
                             Command::Install => {
                                 area.install(&job.candidate).await.map(Outcome::Installed)
                             }
+                            Command::ReopenInstallation => area
+                                .reopen_installation(&job.candidate)
+                                .await
+                                .map(Outcome::Installed),
                         }
                     });
                     worker_occupied.store(false, Ordering::Release);
@@ -129,6 +134,16 @@ impl RootCheckpointMaterial {
         previous: CognitiveCheckpointReceipt,
     ) -> Result<codex_hepta_memory::InstalledRootCheckpointImage, AuthorityTrustError> {
         match self.call(previous, Command::Install)? {
+            Outcome::Installed(image) => Ok(image),
+            Outcome::Verified => Err(AuthorityTrustError::Invalid),
+        }
+    }
+
+    pub(crate) fn reopen_installation(
+        &self,
+        current: CognitiveCheckpointReceipt,
+    ) -> Result<codex_hepta_memory::InstalledRootCheckpointImage, AuthorityTrustError> {
+        match self.call(current, Command::ReopenInstallation)? {
             Outcome::Installed(image) => Ok(image),
             Outcome::Verified => Err(AuthorityTrustError::Invalid),
         }

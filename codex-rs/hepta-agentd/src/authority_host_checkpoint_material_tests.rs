@@ -154,6 +154,20 @@ async fn adopted_current_before_uid_release_cannot_be_adopted_again_or_reinitial
         .is_err()
     );
     assert_eq!(adopted.current_for_handoff().unwrap(), current);
+    let retained = adopted.reopen_material_installation().unwrap();
+    retained
+        .release_to_registered_owner(/*uid*/ 60001, /*gid*/ 60001)
+        .unwrap();
+    assert_eq!(adopted.current_for_handoff().unwrap(), current);
+    assert_eq!(
+        f.material_profile()
+            .layout
+            .cognitive_root()
+            .metadata()
+            .unwrap()
+            .uid(),
+        60001
+    );
 }
 
 #[tokio::test]

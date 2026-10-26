@@ -4,6 +4,19 @@ use super::*;
 use crate::authority_host_checkpoint::RootMaterialProfile;
 
 impl PreparedHostAuthoritySession {
+    /// Complete only an existing Current's interrupted filesystem release.
+    /// Open this same live registration with `open_with_physical_material`
+    /// first. Root verifies the independently retained image against the
+    /// unreleased generation, without capture, pointer mutation or adoption.
+    pub fn resume_physical_material_handoff(self) -> io::Result<Self> {
+        self.service.resume_registered_material_handoff(
+            &self.config,
+            &self.registration,
+            &self.owner_pidfd,
+        )?;
+        Ok(self)
+    }
+
     /// Recover only the actual protected predecessor Current into this already
     /// registered successor. Root reads the independent material itself; callers
     /// supply no Current, digest, image path, reset flag or replacement grant.

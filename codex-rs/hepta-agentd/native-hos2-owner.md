@@ -111,6 +111,18 @@ An error keeps partial material and Root custody available for diagnosis;
 retrying the fresh constructor is forbidden. The successor still needs the
 original Agentd authority/recovery admission before it can write.
 
+If Root stops after Current adoption but before releasing the data UID, reopen
+the exact still-live registration with `open_with_physical_material`, then
+consume it with `resume_physical_material_handoff`. Under the original live
+Registry fence and writer lock, this verifies the installed generation against
+the independently retained Root image and completes only filesystem custody.
+It creates no image, active pointer, Current, epoch or adoption. Partial file
+UID release is accepted only inside the still Root0700 directory, only for
+Root/the exact registered UID, and only when all bytes match the independent
+pre-crash material. If that publisher actually exited, a legitimately registered
+new successor may use the normal retirement/expiry recovery ceremony from an
+existing Root-owned directory. Same-generation adoption remains forbidden.
+
 The first combined typecheck found the memory crate's `forbid(unsafe_code)`
 correctly rejected raw credential reads. Those reads and installation ownership
 changes now use safe workspace rustix APIs; the prohibition remains intact.

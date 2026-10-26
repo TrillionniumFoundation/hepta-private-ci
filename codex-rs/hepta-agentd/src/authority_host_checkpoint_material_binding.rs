@@ -25,6 +25,16 @@ impl FreshMaterial {
 }
 
 impl HostCognitiveCheckpoint {
+    pub(crate) fn reopen_material_installation(
+        &self,
+    ) -> Result<codex_hepta_memory::InstalledRootCheckpointImage, AuthorityTrustError> {
+        let head = self.current_for_handoff()?;
+        self.material
+            .as_ref()
+            .ok_or(AuthorityTrustError::Invalid)?
+            .reopen_installation(receipt(&head)?)
+    }
+
     /// Called only by the original fresh service while its opaque fresh DB
     /// witness and original writer lock remain retained. No runtime wire entry.
     pub(crate) fn initialize_fresh_with_material(

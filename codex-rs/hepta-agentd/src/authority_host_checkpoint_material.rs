@@ -106,14 +106,7 @@ impl MaterialArea {
         }
         // The first native profile is finite. Exhaustion refuses publication;
         // it never deletes an older independent image to make the request fit.
-        if std::fs::read_dir(&self.path)
-            .map_err(|_| AuthorityTrustError::Unavailable)?
-            .take(129)
-            .count()
-            > 126
-        {
-            return Err(AuthorityTrustError::Unavailable);
-        }
+        self.ensure_capacity(/*additional*/ 2)?;
         let temporary = self.path.join(format!(
             "capture-{}.sqlite3",
             candidate.token.head_sha256.as_str()
@@ -155,7 +148,26 @@ impl MaterialArea {
         self.verify(candidate).await
     }
 
+    fn ensure_capacity(&self, additional: usize) -> Result<(), AuthorityTrustError> {
+        let count = std::fs::read_dir(&self.path)
+            .map_err(|_| AuthorityTrustError::Unavailable)?
+            .take(129)
+            .try_fold(0_usize, |count, entry| {
+                entry
+                    .map(|_| count + 1)
+                    .map_err(|_| AuthorityTrustError::Unavailable)
+            })?;
+        if count
+            .checked_add(additional)
+            .is_none_or(|count| count > 128)
+        {
+            return Err(AuthorityTrustError::Unavailable);
+        }
+        Ok(())
+    }
+
     fn retain_record(&self, record: &MaterialRecord) -> Result<(), AuthorityTrustError> {
+        self.ensure_capacity(/*additional*/ 1)?;
         let bytes = serde_json::to_vec(&record).map_err(|_| AuthorityTrustError::Unavailable)?;
         if bytes.len() > 32_768 {
             return Err(AuthorityTrustError::Invalid);
@@ -187,6 +199,19 @@ impl MaterialArea {
         if candidate.head.last_current != previous.head.last_current {
             return Err(AuthorityTrustError::Invalid);
         }
+        match std::fs::symlink_metadata(self.record_path(candidate)) {
+            Ok(_) => {
+                let existing = self.verify(candidate).await?;
+                if existing.image_sha256 != retained.image_sha256
+                    || existing.image_bytes != retained.image_bytes
+                {
+                    return Err(AuthorityTrustError::Invalid);
+                }
+                return Ok(existing);
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(_) => return Err(AuthorityTrustError::Unavailable),
+        }
         retained.candidate = candidate.clone();
         self.retain_record(&retained)?;
         self.verify(candidate).await
@@ -207,6 +232,27 @@ impl MaterialArea {
         CognitiveStore::install_root_checkpoint_image(&self.layout, image)
             .await
             .map_err(|_| AuthorityTrustError::Unavailable)
+    }
+
+    async fn reopen_installation(
+        &self,
+        candidate: &CognitiveCheckpointReceipt,
+    ) -> Result<codex_hepta_memory::InstalledRootCheckpointImage, AuthorityTrustError> {
+        let retained = self.verify(candidate).await?;
+        let image = CognitiveStore::verify_retained_checkpoint_image(
+            &self.image_path(&retained.image_sha256),
+            &candidate.head.last_current,
+            &retained.image_sha256,
+        )
+        .await
+        .map_err(|_| AuthorityTrustError::Unavailable)?;
+        CognitiveStore::reopen_root_checkpoint_installation(
+            &self.layout,
+            image,
+            candidate.head.peer_lifetime.uid,
+        )
+        .await
+        .map_err(|_| AuthorityTrustError::Unavailable)
     }
 
     async fn verify(
