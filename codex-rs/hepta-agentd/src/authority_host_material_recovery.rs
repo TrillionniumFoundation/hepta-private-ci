@@ -22,6 +22,61 @@ use std::time::Duration;
 use std::time::Instant;
 
 impl HostAuthorityService {
+    pub(crate) fn original_root_writer_descriptor(&self) -> io::Result<File> {
+        // SAFETY: these functions read actual credentials, not a wire witness.
+        if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 {
+            return Err(io::Error::other(
+                "actual Root required for original writer FD handoff",
+            ));
+        }
+        let writer = self
+            .writer
+            .as_ref()
+            .ok_or_else(|| io::Error::other("original registered writer required"))?;
+        writer.registration.with_live(&writer.leases, |_| {
+            if self
+                .issuer
+                .retained_writer_authorization(&writer.registration)?
+                != writer.proof
+            {
+                return Err(io::Error::other("retained original writer proof changed"));
+            }
+            let record = verify_original_starting_record(&self.identity)?;
+            self.checkpoint
+                .as_ref()
+                .ok_or_else(|| io::Error::other("original material-backed Current required"))?
+                .backend
+                .observe_physical_current()
+                .map_err(io::Error::other)?;
+            let path = self.identity.layout.writer_lock();
+            let file = OpenOptions::new()
+                .read(true)
+                .write(true)
+                .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK)
+                .open(path)?;
+            let held = file.metadata()?;
+            let named = std::fs::symlink_metadata(path)?;
+            if !held.is_file()
+                || !named.is_file()
+                || held.uid() != 0
+                || named.uid() != 0
+                || held.nlink() != 1
+                || named.nlink() != 1
+                || held.mode() & 0o7777 != 0o600
+                || named.mode() & 0o7777 != 0o600
+                || (held.dev(), held.ino()) != (named.dev(), named.ino())
+                || verify_original_starting_record(&self.identity)? != record
+                || self.clock.now_unix_ms().map_err(io::Error::other)?
+                    >= writer.registration.authority_lease.expires_at_unix_ms
+            {
+                return Err(io::Error::other(
+                    "original Root writer FD custody or registration changed",
+                ));
+            }
+            Ok(file)
+        })
+    }
+
     pub(crate) fn observe_registered_physical_current(
         &self,
     ) -> io::Result<crate::HostPhysicalCurrentObservation> {
