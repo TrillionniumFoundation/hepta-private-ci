@@ -10,3 +10,14 @@ The public pair snapshot is non-atomic, observed11:33–11:41UTC2026-10-26:Chain
 
 
 Storage note: the original artifacts listed in the PN0 source-history index remain in immutable source ancestor `9d88e3e5acdd65272581b32735af8a08cfb65dbc`, with exact path/blob/SHA256/length. See `qualification/pn0-ci/SOURCE_HISTORY_EVIDENCE.md` from the repository root before replaying the original manifests. These manifests and failures retain their original pinned9d scope; this is not current-head qualification.
+
+The historical `public-pair-snapshot.json` is retained in the same fixed9d
+ancestor and the existing complete80-file recovery index. It describes the
+original non-atomic Chain53fb/Hepta155 observation, including workflow metadata
+from both repositories. The current tree omits this duplicate historical data.
+Before replaying the original packet, use the complete six-package recovery
+procedure linked above; it restores this snapshot together with its unchanged
+original manifest and retained-path mapping. Its25111 original bytes have
+SHA256 `6507068e1d2c3f2af6ff90b9162133cc83950e278f279caedeea368f8b76839b`
+and Git blob `deb4e0ba7d8a42aac5d920b3ff5283903c4c8a96`. The existing80-file
+index, original raw bytes/history, scanner and acceptance contracts are unchanged.
