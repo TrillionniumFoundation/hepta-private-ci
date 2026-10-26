@@ -1,0 +1,301 @@
+{
+  "actual_codec_files_verified": 3072,
+  "actual_outputs": 768,
+  "audio_speakers": 24,
+  "completion_sha256": "047d3454c74c58830aed530241561b5f9ba52c8cca83baf2a0d5dc3ad32f33a3",
+  "cost_scope": {
+    "actual_event_asr_calls": 60,
+    "actual_event_cache_hits": 1476,
+    "child_codec_cpu_seconds": 304.017048,
+    "cpu_ns": 352162155660,
+    "peak_rss_bytes": 1405755392,
+    "wall_ns": 569666583458
+  },
+  "descriptive_only": {
+    "entropic": {
+      "by_route": {
+        "audio": {
+          "CE": 0.6959866323781518,
+          "audio_success": 0.875,
+          "image_success": 0.8645833333333334,
+          "joint_success": 0.8333333333333334,
+          "mean_utility": 0.8619791666666666,
+          "text_success": 0.8645833333333334,
+          "video_success": 0.84375
+        },
+        "image": {
+          "CE": 0.42303067426115587,
+          "audio_success": 0.71875,
+          "image_success": 0.6145833333333334,
+          "joint_success": 0.4791666666666667,
+          "mean_utility": 0.6145833333333334,
+          "text_success": 0.6458333333333334,
+          "video_success": 0.4791666666666667
+        },
+        "text": {
+          "CE": 0.9999999999999999,
+          "audio_success": 1.0,
+          "image_success": 1.0,
+          "joint_success": 1.0,
+          "mean_utility": 1.0,
+          "text_success": 1.0,
+          "video_success": 1.0
+        },
+        "video": {
+          "CE": 0.7388801180379041,
+          "audio_success": 0.8958333333333334,
+          "image_success": 0.8958333333333334,
+          "joint_success": 0.8645833333333334,
+          "mean_utility": 0.8880208333333334,
+          "text_success": 0.8958333333333334,
+          "video_success": 0.8645833333333334
+        }
+      },
+      "by_seed": {
+        "17": {
+          "CE": 0.6670019870992943,
+          "audio_success": 0.8671875,
+          "image_success": 0.84375,
+          "joint_success": 0.7890625,
+          "mean_utility": 0.837890625,
+          "text_success": 0.8515625,
+          "video_success": 0.7890625
+        },
+        "29": {
+          "CE": 0.6864910718868079,
+          "audio_success": 0.8828125,
+          "image_success": 0.84375,
+          "joint_success": 0.8125,
+          "mean_utility": 0.849609375,
+          "text_success": 0.8515625,
+          "video_success": 0.8203125
+        },
+        "43": {
+          "CE": 0.6657017726875707,
+          "audio_success": 0.8671875,
+          "image_success": 0.84375,
+          "joint_success": 0.78125,
+          "mean_utility": 0.8359375,
+          "text_success": 0.8515625,
+          "video_success": 0.78125
+        }
+      },
+      "generation_and_codec_ms": {
+        "mean": 248.1951071197917,
+        "p50": 241.4982495,
+        "p95": 297.31659659999997
+      },
+      "whole_request_ms": {
+        "mean": 736.6979812161458,
+        "p50": 416.6211985,
+        "p95": 4373.63183005
+      }
+    },
+    "mean": {
+      "by_route": {
+        "audio": {
+          "CE": 0.7175961715528664,
+          "audio_success": 0.8854166666666666,
+          "image_success": 0.8854166666666666,
+          "joint_success": 0.84375,
+          "mean_utility": 0.875,
+          "text_success": 0.8854166666666666,
+          "video_success": 0.84375
+        },
+        "image": {
+          "CE": 0.4273114799567453,
+          "audio_success": 0.71875,
+          "image_success": 0.59375,
+          "joint_success": 0.5208333333333334,
+          "mean_utility": 0.625,
+          "text_success": 0.6666666666666666,
+          "video_success": 0.5208333333333334
+        },
+        "text": {
+          "CE": 0.9999999999999999,
+          "audio_success": 1.0,
+          "image_success": 1.0,
+          "joint_success": 1.0,
+          "mean_utility": 1.0,
+          "text_success": 1.0,
+          "video_success": 1.0
+        },
+        "video": {
+          "CE": 0.7388801180379041,
+          "audio_success": 0.8958333333333334,
+          "image_success": 0.8958333333333334,
+          "joint_success": 0.8645833333333334,
+          "mean_utility": 0.8880208333333334,
+          "text_success": 0.8958333333333334,
+          "video_success": 0.8645833333333334
+        }
+      },
+      "by_seed": {
+        "17": {
+          "CE": 0.665315685118706,
+          "audio_success": 0.8671875,
+          "image_success": 0.828125,
+          "joint_success": 0.8046875,
+          "mean_utility": 0.837890625,
+          "text_success": 0.8515625,
+          "video_success": 0.8046875
+        },
+        "29": {
+          "CE": 0.6937138968357517,
+          "audio_success": 0.8828125,
+          "image_success": 0.8515625,
+          "joint_success": 0.828125,
+          "mean_utility": 0.857421875,
+          "text_success": 0.8671875,
+          "video_success": 0.828125
+        },
+        "43": {
+          "CE": 0.6808588893660392,
+          "audio_success": 0.875,
+          "image_success": 0.8515625,
+          "joint_success": 0.7890625,
+          "mean_utility": 0.845703125,
+          "text_success": 0.8671875,
+          "video_success": 0.7890625
+        }
+      },
+      "generation_and_codec_ms": {
+        "mean": 242.47909678645837,
+        "p50": 237.850007,
+        "p95": 281.52859719999987
+      },
+      "whole_request_ms": {
+        "mean": 732.6471943619791,
+        "p50": 407.114244,
+        "p95": 4426.195829049999
+      }
+    }
+  },
+  "image_writers": 32,
+  "independent_connected_groups": 24,
+  "limitations": [
+    "Constructed digit tasks; twenty motion-transformed frames do not constitute natural-video generation",
+    "Wave decoder distills ten fixed teacher conditions; no open-vocabulary audio claim",
+    "Training uses sampled outputs and pre-codec proxy utility; deployment here is greedy with physical codecs and separate observers",
+    "No unchanged-generator arm: the between-arm comparison isolates the two continued-training objectives, not the gain from continued training itself",
+    "Fixed arm order and waveform-byte caching make cost comparisons descriptive",
+    "ASR point qualification does not certify all output distributions or unknown ASR pretraining data independence",
+    "Per-route and per-seed summaries are descriptive; the only registered superiority claim is the joint primary contrast"
+  ],
+  "primary": {
+    "arms": {
+      "entropic": {
+        "CE": 0.6729749352927263,
+        "audio_success": 0.8723958333333334,
+        "image_success": 0.84375,
+        "joint_success": 0.7942708333333334,
+        "mean_utility": 0.8411458333333334,
+        "text_success": 0.8515625,
+        "video_success": 0.796875
+      },
+      "mean": {
+        "CE": 0.6798279013588847,
+        "audio_success": 0.875,
+        "image_success": 0.84375,
+        "joint_success": 0.8072916666666666,
+        "mean_utility": 0.8470052083333334,
+        "text_success": 0.8619791666666666,
+        "video_success": 0.8072916666666666
+      }
+    },
+    "difference_entropic_minus_mean": {
+      "CE": {
+        "estimate": -0.0068529660661583724,
+        "interval": [
+          -0.014722981775785215,
+          -0.0011904477158238666
+        ]
+      },
+      "audio_success": {
+        "estimate": -0.0026041666666666297,
+        "interval": [
+          -0.008620689655172487,
+          0.0
+        ]
+      },
+      "image_success": {
+        "estimate": 0.0,
+        "interval": [
+          -0.011111111111111072,
+          0.00980392156862742
+        ]
+      },
+      "joint_success": {
+        "estimate": -0.01302083333333326,
+        "interval": [
+          -0.033333333333333326,
+          0.005050505050505083
+        ]
+      },
+      "mean_utility": {
+        "estimate": -0.005859375,
+        "interval": [
+          -0.011068793402777808,
+          -0.0012626262626262985
+        ]
+      },
+      "text_success": {
+        "estimate": -0.01041666666666663,
+        "interval": [
+          -0.02011494252873569,
+          -0.0026041666666666297
+        ]
+      },
+      "video_success": {
+        "estimate": -0.01041666666666663,
+        "interval": [
+          -0.030555555555555558,
+          0.006178774928774868
+        ]
+      }
+    },
+    "groups": 24
+  },
+  "protocol_sha256": "6a305d92578da4d6e41ebc104101b7af58ebc02306ea6c54d9e73ae724222f08",
+  "quality_claim_eligible": false,
+  "registered_gates": {
+    "CE_superiority": false,
+    "joint_success_noninferiority": false
+  },
+  "schema": "hepta.next.joint-analysis.v1",
+  "seed_inference": "Conditional on this fixed trained panel; three seeds are not three hundred eighty-four independent sources",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "source_pairs": 128,
+  "status": "completed",
+  "training_sha256": "015708c6573519220a6305a40c44ac417d73a7943b78da784e93fd2671b713d7",
+  "training_updates": {
+    "17/entropic": {
+      "all_five_components_changed": true,
+      "all_five_components_received_gradient": true
+    },
+    "17/mean": {
+      "all_five_components_changed": true,
+      "all_five_components_received_gradient": true
+    },
+    "29/entropic": {
+      "all_five_components_changed": true,
+      "all_five_components_received_gradient": true
+    },
+    "29/mean": {
+      "all_five_components_changed": true,
+      "all_five_components_received_gradient": true
+    },
+    "43/entropic": {
+      "all_five_components_changed": true,
+      "all_five_components_received_gradient": true
+    },
+    "43/mean": {
+      "all_five_components_changed": true,
+      "all_five_components_received_gradient": true
+    }
+  }
+}
