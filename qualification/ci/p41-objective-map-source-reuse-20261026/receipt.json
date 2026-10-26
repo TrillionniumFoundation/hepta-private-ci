@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.qualification.objective-map-exact-source-reuse.v1",
+  "created_date_utc": "2026-10-26",
+  "parent_pr": 4036,
+  "parent_head": "77df8f969c578e337151516cae0980483cf92891",
+  "source_fix_pr": 4003,
+  "source_fix_head": "8ed517a01d3eff22cae0ea9ea29cebc92a865945",
+  "old_map_blob": "9690eb4d3e4bed54237ecb06a9c5df89e82ad18d",
+  "new_map_blob": "1c73a4f0a63c15856cadd1ec6e9b1236b686c0cd",
+  "source_objects": {
+    "objective_runtime": "61bf3fb010fe99dae796e6bd4d986a409f70fc36",
+    "objective_submission": "90dcf376a1d00afdd41ced44ecc3342ca8316594"
+  },
+  "failure": {
+    "workflow_run": 40361481951,
+    "job": 121752281404,
+    "diagnostic": "FAIL_HEPTA_IMPLEMENTATION_MAPS: objective.compiler: missing product caller symbol submit"
+  },
+  "scope": "documentation map only; no production code/test/authority/required gate changes",
+  "owning_ci": "PENDING_NEW_HEAD",
+  "policy": "SHADOW_ONLY/DENY_ALL/HOLD_NO_GO"
+}
