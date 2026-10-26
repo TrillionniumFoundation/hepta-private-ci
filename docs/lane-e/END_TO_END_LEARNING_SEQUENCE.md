@@ -438,6 +438,15 @@ source-bound `767d0f21` run passes five selected-initial cases and the original
 gen3/gen1 signed cases within their original limits; it grants none of those
 missing product qualifications. Earlier failures remain retained.
 
+The separate [new-engine I09 run002](../../qualification/learning-generations/real-model-owner-controlled-20261025/i09-eleven-material-sqlite3513-controlled-20261026.json)
+uses clean Chain `4c8c2ee7` / Hepta `8d25c5d7`, the SQLite 3.51.3 Cell binary and
+fresh databases. The same eleven-object / 269-chunk fetch and readback takes
+4.257683 seconds within the original 35 seconds; the original signed native
+case passes in 10.357 seconds. Three authorizer bindings yield two durable nonce
+claims. The overall controller still fails exit1 at I10 selected-installation
+UNAVAILABLE. This does not relabel run001's `915f933c` / `da4a920` source pair,
+qualify full PN1/SDK, or establish ordinary-task/CURRENT/three-round/WAN success.
+
 The subsequent bounded parallel-start repair is actually tested on clean Hepta
 `43ad626b` on the local ROG Linux CPU host. The same three original native cases
 all pass: artifact publication/recovery in 0.239 seconds, complete gen2/gen3
@@ -495,6 +504,20 @@ still bind this explicit recipe/source and actual predecessor into the same
 training/evaluation budget and lineage, validate the full 135M model, and perform
 ordinary installation and next-task readback. These controls grant no selection,
 CURRENT, FinalUse, reward or three-round acceptance.
+A later [single controlled V2 train](../../qualification/learning-generations/real-model-owner-controlled-20261025/initial-v2-controlled-train-20261026.json)
+on isolated Chain `a23b5f2d` actually loads the 135M backbone and canonical parent,
+validates the distinct new-task contract and completes ten optimizer steps in
+the same original 1,800-second / 16-GiB supervisor. Setup changes only sixty A
+factors, with B still zero; training then changes all 120 factors independently
+of setup. Exact original wait4 and completion verification pass in 25.334008
+seconds; the original missing-RSS reconciliation remains raw evidence. Fourteen
+raw pins distinguish the thirteen result-tree files from the launcher stream.
+This is unsigned train-only evidence in the current accelerate 1.15 profile,
+not historical 1.12 equivalence, useful gain or full-model numeric preservation.
+V2 evaluation/readback remain closed. Matched evaluation, owner-approved
+selection, I10 installation and ordinary next-task/three-round composition
+still require the existing owners; all qualification flags remain false.
+
 The separate fresh native host raw-U observation still fails its original
 eight-second cutoff; its post-deadline 4,096-byte kernel charge is diagnostic,
 with the same original owner retained. Funded resource return remains open.

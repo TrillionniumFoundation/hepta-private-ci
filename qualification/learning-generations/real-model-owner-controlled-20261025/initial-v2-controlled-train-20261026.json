@@ -1,0 +1,301 @@
+{
+  "schema": "trnm.controlled-initial-v2-135m-train-observation.v1",
+  "scope": "Unsigned single actual supervised train-only engineering observation. No selected/CURRENT/ordinary/quality/reward/three-round qualification.",
+  "actual_source": {
+    "chain_head": "a23b5f2d3ffc1e3de921921cbe197a07ecbd2f86",
+    "chain_tree": "aa6ef2abcaa2d085d2f7645f5ab2c2cd7b289af2",
+    "clean_before_and_after": true,
+    "exact_export_files": 350,
+    "source_pack": {
+      "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-preparation-20261026-001/source-a23b5f2d-complete.tar",
+      "bytes": 5949440,
+      "sha256": "8394ba8a6779ca5ec318e29d88e1dde5bcef71a9f1b1cec5332c1699f3208fa6"
+    },
+    "source_pins": {
+      "contract": "e46311a08584ad7becfc56cd0b699d9bc6921adcfe39319e50aa14faa984ced5",
+      "family": "0837bbfb31f3f2b9a8731545c9f742aee1ebd32daed392a936a3ec9719537e52",
+      "inherited": "1c356c4e8e9a114ac7b6348cac4bed9a6fc72d53ce71ce00139c3deed8733596",
+      "initial_setup": "247c5055da04dab4a30dd59f58dcdb3ec616e149bb900575aaf6615e8c677ef5",
+      "parent_step": "d8d7bb008380cbf5a96929f54baae378b8832b032b78a46a224c6c84af9644f8",
+      "parent_step_v2": "05e6ec9b133b58856ddfe16c317c1bdcab13df7c5663b954a1c095c5cbab36af",
+      "preflight": "5396d72c4730aea2d271b55a8404f6eaba64dc57f91343537710c28f7686b43c",
+      "runtime": "65ccc6454befd96fa5ce1f5bdde2c56cb6cbb741cf495b8d24a758039f99f755",
+      "task_link": "cd0d1a2c65fd3d95c78ea9db2522e7a30dbf2b30d8c1e241faa93a932bd41f76"
+    },
+    "not_the_primary_4c8_execution_source": true,
+    "Hepta_model_or_task_execution": false
+  },
+  "profile": "canonical-positive-zero-to-caller-peft-A-new-task-v2",
+  "input_binding": {
+    "canonical_input_identity": "e62584bdfc7ea748216e1636e72bef85af6b76e1d0787c4752ca2596950027f7",
+    "attempt_binding": "655db39cfdb22f995c61716c5e684aa51012580cf93524c5f46d85b0baea8e1d",
+    "original_parent": {
+      "adapter": "c28daec2ff15a5f512f4406ece7c4440fee991e30abc2d1f9c8480c936864f5f",
+      "contract": "2bb480a2becd44b7f4e4b03e557e270ed92a4bb952e0a634562d23d7f0f97e46",
+      "file_sha256": "1c5af7b5a7144a619dfac83b14bd83ae77f1e2227b18a6a9c5dcb214889a0cba"
+    },
+    "actual_loaded_execution_contract": "c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f",
+    "task_link": {
+      "derived_contract": "c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f",
+      "parent_admission": "d7caa8c3569c133afe07d5a7299dee397df369fcad04636f12d15e37cd34baf1",
+      "training_plan": "4eb748aee63bb946b93c5df6780833691dc3a90e91dd1d8e6d29d1c93b9c7420"
+    },
+    "allowed_contract_difference": "Only registration.target_admission; original parent contract/raw/triple remain unchanged.",
+    "recipe": {
+      "initialization_seed": 7,
+      "initializer": "caller-peft-default-A-kaiming-B-positive-zero-v1",
+      "kind": "lora"
+    },
+    "seed_scope": "Caller-declared seed7; not measured initialization provenance or authority.",
+    "original_saved_input": {
+      "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-20261026-001/parent-step-input-v2.json",
+      "bytes": 3529,
+      "sha256": "3894b131bfe1f9d3728875025482b0fb05113cc2dbc0f4f0b32e4562a253de04"
+    },
+    "prepared_expected_input": {
+      "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-preparation-20261026-001/expected-parent-step-input-v2.json",
+      "bytes": 3858,
+      "sha256": "201edd6f65fa0c2b1c90165a6cb099287f129b042403dae88aa7208731b9389a"
+    },
+    "serialization": "Expected file is pretty JSON; unchanged original runtime.save writes canonical JSON+LF. Fields and canonical identity are exact, file-byte hashes intentionally differ.",
+    "serialization_readback": {
+      "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-preparation-20261026-001/actual-input-serialization-clarification.json",
+      "bytes": 1205,
+      "sha256": "108a71cb134b8aa48d9468459221732665cbe34c3a4ceaf9e8e92699443748c9"
+    }
+  },
+  "observed": {
+    "launches": 1,
+    "retries": 0,
+    "extra_forward_or_warmup": false,
+    "original_cli_exit": 0,
+    "original_verify_completion": "PASS",
+    "completion_verified": true,
+    "training_budget": {
+      "rss_bytes": 17179869184,
+      "wall_seconds": 1800
+    },
+    "supervisor_wall_ns": 25334008072,
+    "training_wall_ns": 18004851467,
+    "exact_child_cpu_ns": 33145502000,
+    "sampled_peak_rss_bytes": 3120578560,
+    "wait4_peak_rss_bytes": 3116003328,
+    "original_training": {
+      "flop_scope": "profiler-supported-operators-only-not-total-work",
+      "loss": [
+        "3.96016216278",
+        "3.62071847916",
+        "1.08996760845",
+        "1.42350840569",
+        "0.81425756216",
+        "0.438867360353",
+        "0.286466747522",
+        "0.614643573761",
+        "0.488372832537",
+        "0.269330829382"
+      ],
+      "steps": 10,
+      "supervised_tokens": 40,
+      "supported_profile_flops": 289144351496,
+      "tokens": 526
+    },
+    "cost_events": 11,
+    "all_cost_events_success": true,
+    "environment": {
+      "accelerate": "1.15.0",
+      "numpy": "1.26.4",
+      "peft": "0.18.0",
+      "safetensors": "0.7.0",
+      "tokenizers": "0.22.2",
+      "torch": "2.9.1+cpu",
+      "transformers": "4.57.3"
+    },
+    "environment_scope": "Current controlled accelerate1.15 profile, distinct from prior1.12 preparation; no installation or environment change.",
+    "selected_environment_files_bound": 27,
+    "actual_material_files_bound": 13
+  },
+  "factor_readback": {
+    "factor_tensors": 120,
+    "factor_bytes": 921600,
+    "original_parent_all_positive_zero": true,
+    "parent_to_setup": {
+      "A_changed_tensors": 60,
+      "B_changed_tensors": 0,
+      "B_stays_positive_zero": true,
+      "is_learning_or_gain": false
+    },
+    "setup_to_optimizer_final": {
+      "A_changed_tensors": 60,
+      "B_changed_tensors": 60,
+      "A_changed_f32_values": 138240,
+      "B_changed_f32_values": 92160,
+      "is_quality_or_function_improvement_evidence": false
+    },
+    "counts": {
+      ".A": {
+        "original_to_setup_changed_bytes": 547378,
+        "original_to_setup_changed_tensors": 60,
+        "setup_to_trained_changed_bytes": 481153,
+        "setup_to_trained_changed_f32_values": 138240,
+        "setup_to_trained_changed_tensors": 60,
+        "tensors": 60,
+        "trained_nonzero_values": 138240
+      },
+      ".B": {
+        "original_to_setup_changed_bytes": 0,
+        "original_to_setup_changed_tensors": 0,
+        "setup_to_trained_changed_bytes": 367481,
+        "setup_to_trained_changed_f32_values": 92160,
+        "setup_to_trained_changed_tensors": 60,
+        "tensors": 60,
+        "trained_nonzero_values": 92160
+      }
+    },
+    "setup": {
+      "adapter": "303ac1b87d13642617a6298bd4479881ea4fa5bff48e56a897f39754389c7c69",
+      "file_sha256": "b8cacfd5d00ec538dd6b8eb30e9e740592b8b2c059e38a1aa2adf74d2353dbf9",
+      "receipt_sha256": "a82e43fa9e91377c41096060a2bcd09214454c2bcd39ff889d618645f94535db"
+    },
+    "candidate": {
+      "adapter": "d04043e3520141f5bf1bf4f10b0984f5bc4bac91e83cfd8c917db165e3983b43",
+      "file_sha256": "2a1c51e820c6f3d93477e11d3d91317a2aa0addcc08696e841d5d7d120c516c4"
+    },
+    "original_setup_receipt_scope": {
+      "full_model_numeric_preservation": "NOT_RUN",
+      "trainability": "NOT_RUN",
+      "explanation": "These original preparation-stage fields predate optimizer execution and are preserved. Later actual optimizer changes are reported separately; no all-input numerical/function-equivalence proof is claimed."
+    }
+  },
+  "terminal": {
+    "outcome": "success",
+    "exit_code": 0,
+    "stop_reason": null,
+    "cleanup_method": "wait4",
+    "waited_child_reaped": true,
+    "owned_child_reap_resolved": true,
+    "owned_child_echild_observed": false,
+    "waited_child_observation_error": null,
+    "recorded_RSS_gaps_preserved": 1,
+    "RSS_gap_scope": "Original held-pidfd irreversible-exit reconciliation reaches exact wait4. The missing RSS sample is not replaced with zero.",
+    "memory_scope": "sampled_peak_rss_bytes is direct-child 50ms RSS; waited_child_peak_rss_bytes is exact owned-child Linux wait4 ru_maxrss in KiB times 1024, a maximum single-process high-water with inherited waited-descendant accounting; neither is simultaneous process-tree RSS",
+    "original_cli_and_child_proc_absent": true
+  },
+  "raw_evidence": {
+    "result_subtree_regular_files": 13,
+    "launcher_stream_files": 1,
+    "total_regular_files": 14,
+    "total_bytes": 2010579,
+    "all_raw_files_retained_in_workspace": true,
+    "all_raw_files_and_directories_fsynced": true,
+    "pins": [
+      {
+        "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-20261026-001/execution/actual-receipt.json",
+        "bytes": 3754,
+        "sha256": "cb019f883d4ce9d3a17d6b4b03ccc67941db44b70820d3746bf5bcaf68c746fa"
+      },
+      {
+        "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-20261026-001/execution/artifact.safetensors",
+        "bytes": 933544,
+        "sha256": "2a1c51e820c6f3d93477e11d3d91317a2aa0addcc08696e841d5d7d120c516c4"
+      },
+      {
+        "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-20261026-001/execution/cost-events.jsonl",
+        "bytes": 2204,
+        "sha256": "e574a4ed24e79c9fed29ace4740a94fe364f3f670e2b965a6026fd93d03df02b"
+      },
+      {
+        "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-20261026-001/execution/initial-setup-v2.json",
+        "bytes": 26487,
+        "sha256": "a82e43fa9e91377c41096060a2bcd09214454c2bcd39ff889d618645f94535db"
+      },
+      {
+        "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-20261026-001/execution/parent-candidate-v2.json",
+        "bytes": 2414,
+        "sha256": "239ff5064fe607b060c3114de88deecaeb2e5d24e86ed73c8d7d8cf86d00b6a7"
+      },
+      {
+        "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-20261026-001/execution/process.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-20261026-001/execution/setup-artifact.safetensors",
+        "bytes": 933544,
+        "sha256": "b8cacfd5d00ec538dd6b8eb30e9e740592b8b2c059e38a1aa2adf74d2353dbf9"
+      },
+      {
+        "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-20261026-001/execution/setup-wrapped-adapter.json",
+        "bytes": 20962,
+        "sha256": "ad68e8957e160c4586e8d0d0ba17ae640f4eed0586e9999e918a03c20899d51c"
+      },
+      {
+        "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-20261026-001/execution/supervisor.json",
+        "bytes": 2825,
+        "sha256": "2dc544a915e51301fab4ce6ebece6803075ac07d6f19f4cf5a2a825b3c5e0f01"
+      },
+      {
+        "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-20261026-001/execution/target-contract.json",
+        "bytes": 56809,
+        "sha256": "f1c953c182f7528bc8288a1cfe5ebdc56ca5f72b2079aeff1252d05191d7fe9f"
+      },
+      {
+        "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-20261026-001/execution/wrapped-adapter.json",
+        "bytes": 20962,
+        "sha256": "3211affde7a2395d812a4d2654fcb694b5a75c29a93110a7460712579a2790b1"
+      },
+      {
+        "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-20261026-001/parent-step-input-v2.json",
+        "bytes": 3529,
+        "sha256": "3894b131bfe1f9d3728875025482b0fb05113cc2dbc0f4f0b32e4562a253de04"
+      },
+      {
+        "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-20261026-001/parent-step-result-v2.json",
+        "bytes": 3545,
+        "sha256": "65a8534dc098b5c283ed87bab4f06333585f1977c419c5d782d7df7bef3029fa"
+      },
+      {
+        "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-20261026-001.launcher.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "terminal_freeze": {
+      "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-preparation-20261026-001/actual-train-final-freeze.json",
+      "bytes": 16261,
+      "sha256": "f5a78331888ff3a455664efc430515201f7ecfe3d8c8e4d8c7700bd8f15e2401"
+    },
+    "tensor_readback": {
+      "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-preparation-20261026-001/actual-readonly-completion-and-tensor-readback.json",
+      "bytes": 91401,
+      "sha256": "f54a38ebe7441c9f2e2181ad591793e6eb6ee499c4c28415bc820c440f2877c6"
+    },
+    "source_input_freeze": {
+      "workspace_path": "work/chain-trainable-initial-setup-v2-actual-train-preparation-20261026-001/freeze.json",
+      "bytes": 190535,
+      "sha256": "9facfddcc485f25467a6c2ec2235a432a5d375cbb7a948cdade9d1d63a284ff2"
+    },
+    "independent_root_readonly_review": {
+      "workspace_path": "work/root-initial-v2-real-train-readonly-20261026-001/review.json",
+      "bytes": 6777,
+      "sha256": "79c43d08253f400c9a670bd95dbbc33c05392b49433eea9ed12a86acd0c503c2"
+    }
+  },
+  "prior_failures_retained": {
+    "strict_real_same_plan_profile": "PARENT_STEP_CURRENT_CONTRACT; original40/42 remain unchanged.",
+    "incomplete_first_source_export": "Preparation-only ModuleNotFoundError retained; no model/optimizer/supervisor ran before the sole authorized actual execution."
+  },
+  "qualification": {
+    "full_loop": false,
+    "quality_gain": false,
+    "statistical_gain": false,
+    "selected": false,
+    "CURRENT": false,
+    "installed": false,
+    "ordinary": false,
+    "reward": false,
+    "funded_WholeU": false,
+    "three_rounds": false,
+    "Windows": false
+  },
+  "remaining": "V2 evaluate/readback remain closed. Matched evaluation, lawful selection, I10 installation and ordinary next-task/three-round composition still require their original owners. Setup changes and training loss cannot replace them."
+}
