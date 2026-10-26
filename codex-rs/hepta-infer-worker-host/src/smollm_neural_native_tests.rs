@@ -3,7 +3,9 @@
 //! select, install or publish a product artifact.
 
 use std::error::Error;
+use std::io::Read;
 use std::os::unix::fs::DirBuilderExt;
+use std::os::unix::fs::OpenOptionsExt;
 
 use serde::Deserialize;
 
@@ -31,6 +33,57 @@ fn real_smollm_parent_query_original_control_final_use_and_terminal_unload()
     let input = std::env::var_os("HEPTA_PN3_NEURAL_NATIVE_CONFIG")
         .ok_or("explicit native configuration required")?;
     let input: NativeInput = serde_json::from_slice(&fs::read(input)?)?;
+    run_original_native_case(input, NativeRoute::Original)
+}
+
+enum NativeRoute {
+    Original,
+    ControlledCell { sidecar: PathBuf, sha256: Digest32 },
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct CellNativeInput {
+    schema: String,
+    native: NativeInput,
+    sidecar: PathBuf,
+    sidecar_sha256: String,
+}
+
+#[test]
+#[ignore = "requires HEPTA_PN3_CELL_NATIVE_CONFIG with pinned peer-fetched materials"]
+fn real_cell_release_original_signed_load_query_and_terminal_unload() -> Result<(), Box<dyn Error>>
+{
+    let path = std::env::var_os("HEPTA_PN3_CELL_NATIVE_CONFIG")
+        .ok_or("explicit cell native configuration required")?;
+    let file = fs::OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK)
+        .open(path)?;
+    if !file.metadata()?.is_file() || file.metadata()?.len() > 65_536 {
+        return Err("cell native input bound".into());
+    }
+    let mut raw = Vec::new();
+    file.take(65_537).read_to_end(&mut raw)?;
+    if raw.len() > 65_536 {
+        return Err("cell native input bound".into());
+    }
+    let input: CellNativeInput = serde_json::from_slice(&raw)?;
+    if input.schema != "hepta-smollm-controlled-cell-native-check-v1"
+        || !input.sidecar.is_absolute()
+    {
+        return Err("explicit controlled cell native profile required".into());
+    }
+    run_original_native_case(
+        input.native,
+        NativeRoute::ControlledCell {
+            sidecar: input.sidecar,
+            sha256: input.sidecar_sha256.parse()?,
+        },
+    )
+}
+
+fn run_original_native_case(input: NativeInput, route: NativeRoute) -> Result<(), Box<dyn Error>> {
     if input.schema != "hepta-smollm-neural-native-check-v1"
         || [
             &input.python,
@@ -124,18 +177,47 @@ fn real_smollm_parent_query_original_control_final_use_and_terminal_unload()
     ));
     let journal_path = input.output.join("original-inference.control");
     let control = Arc::new(Mutex::new(DurableInferenceControl::open(&journal_path, 8)?));
-    let port = SmolLmNeuralReadPortV1::start(
-        config,
-        pin.clone(),
-        parameter_bytes.clone(),
-        owner(),
-        /*body_generation*/ 1,
-        "controlled-neural-worker".to_owned(),
-        grant(),
-        control.clone(),
-        issuer.clone(),
-        runtime.handle().clone(),
-    )?;
+    let mut cell_binding = None;
+    let port = match route {
+        NativeRoute::Original => SmolLmNeuralReadPortV1::start(
+            config,
+            pin.clone(),
+            parameter_bytes.clone(),
+            owner(),
+            /*body_generation*/ 1,
+            "controlled-neural-worker".to_owned(),
+            grant(),
+            control.clone(),
+            issuer.clone(),
+            runtime.handle().clone(),
+        )?,
+        NativeRoute::ControlledCell { sidecar, sha256 } => {
+            let file = fs::OpenOptions::new()
+                .read(true)
+                .custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK)
+                .open(sidecar)?;
+            let verified = verify_controlled_cell_material_v1(
+                file,
+                sha256,
+                config,
+                pin.clone(),
+                parameter_bytes.clone(),
+                parent["operation_id"]
+                    .as_str()
+                    .ok_or("original operation id")?,
+            )?;
+            cell_binding = Some((verified.sidecar_digest(), verified.closure_digest()));
+            verified.start(SmolLmCellStartOwnerV1 {
+                owner_id: owner(),
+                body_generation: 1,
+                worker_id: "controlled-neural-worker".to_owned(),
+                grant: grant(),
+                control: control.clone(),
+                authorizer: issuer.clone(),
+                runtime: runtime.handle().clone(),
+            })?
+        }
+    };
     let (actual_ready_digest, measured_load_id) = measured::loaded(&port, &input.output, &pin)?;
     let query = "Answer with only yes or no. Is 101 greater than 29?".to_owned();
     let request = NeuralCognitiveRequestV1 {
@@ -284,5 +366,18 @@ fn real_smollm_parent_query_original_control_final_use_and_terminal_unload()
         input.output.join("native-owner-bridge-result.json"),
         serde_json::to_vec_pretty(&evidence)?,
     )?;
+    if let Some((sidecar, closure)) = cell_binding {
+        fs::write(
+            input.output.join("controlled-cell-loaded-readback-v1.json"),
+            serde_json::to_vec_pretty(&serde_json::json!({
+                "schema":"hepta-smollm-controlled-cell-loaded-readback-v1",
+                "sidecar_sha256":sidecar.to_string(), "closure_commitment":closure.to_string(),
+                "actual_ready_sha256":actual_ready_digest.to_string(), "actual_parameters_sha256":pin.payload_digest.to_string(),
+                "actual_generation":pin.generation.get(), "original_final_use_claims":3,
+                "controlled_load_query_unload_observed":true, "product_artifact_installed":false,
+                "ordinary_cognitive_context_qualified":false, "public_reward_eligible":false,
+            }))?,
+        )?;
+    }
     Ok(())
 }
