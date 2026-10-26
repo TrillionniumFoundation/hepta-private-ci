@@ -1,0 +1,50 @@
+{
+  "cgroup_after": {
+    "current": 8369381376,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3848177,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8557772800,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3846795,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 0.594899,
+  "child_user_seconds": 4.123025,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-B",
+    "-m",
+    "experiments.multimodal_output_portfolio.next_20261025.native_h2.run_v2",
+    "--binary",
+    "/tmp/hepta-ndu-next-native-h2/build-001/hepta-native-ndu-online",
+    "--package",
+    "/tmp/hepta-ndu-next-native-h2/model-001/package.json",
+    "--mode",
+    "smoke",
+    "--count",
+    "16",
+    "--output",
+    "/tmp/hepta-ndu-next-native-h2/smoke-001"
+  ],
+  "context": "Actual qualified H2 owner recovery and admission smoke on16 old train pairs; ASR exited; formal64writer sources unopened",
+  "exit_code": 0,
+  "log_sha256": "ac789494a59eb8acf555ef3b60b8f6f34fc78d2dd8412ea07730d6a5729991b8",
+  "peak_rss_bytes": 391213056,
+  "registration_sha256": "6572018b65246cefc0aefbc7e003a180becd4a396f69f0f59b4a676ba138b316",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 4506954714,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}

@@ -1,0 +1,54 @@
+{
+  "cgroup_after": {
+    "current": 8325742592,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3800237,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8430632960,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3798368,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 0.30830599999999997,
+  "child_user_seconds": 4.267569,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-B",
+    "-m",
+    "experiments.multimodal_output_portfolio.next_20261025.native_h2.prospective_v2",
+    "freeze",
+    "--study",
+    "native_h2_qualification",
+    "--predictor",
+    "/tmp/hepta-ndu-next-native-h2/development-002/predictor.json",
+    "--development",
+    "/tmp/hepta-ndu-next-native-h2/expanded-old-001/development.json",
+    "--output",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/QUALIFICATION_PROTOCOL.json",
+    "--extra",
+    "/tmp/hepta-ndu-next-native-h2/calibrator-001/calibration.json",
+    "/tmp/hepta-ndu-next-native-h2/calibration-002/STRUCTURAL_AUDIT.json",
+    "/tmp/hepta-ndu-next-native-h2/calibration-002-process.json",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/SOURCE_CONTAINER_AMENDMENT_V2.json"
+  ],
+  "context": "Freeze fixed1000writer prospective qualification after complete new100writer calibration and independent byte/array audit; one concurrent ASR qualification",
+  "exit_code": 0,
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "peak_rss_bytes": 320868352,
+  "registration_sha256": "a7af6a9007eb498a35e55e5955b094ce0c6637eb252b279fc07deef7e73709b6",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 3486827996,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}

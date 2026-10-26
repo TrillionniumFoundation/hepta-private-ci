@@ -1,0 +1,936 @@
+{
+  "actual_continuation_actions": 275,
+  "actual_emitted_outputs": 397,
+  "actual_owner_decisions": 708,
+  "actual_policy_episodes": 512,
+  "all_owners_closed_before_private_audit_ns": 1792984973431958284,
+  "cpu_ns": 12087522473,
+  "max_native_correctness_raw_error": 3.3306690738754696e-16,
+  "max_native_numpy_moment_error": 8.881784197001252e-16,
+  "max_native_original_teacher_error": 5.85677383035943e-07,
+  "negative_cases": [
+    {
+      "case": "generation",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Request identity, candidate set or bounded lifetime rejected",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "weights",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Request identity, candidate set or bounded lifetime rejected",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "objective",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Request identity, candidate set or bounded lifetime rejected",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "future_target",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "unknown field `target`, expected one of `request_id`, `episode_id`, `parent_outcome_digest`, `generation`, `weights_sha256`, `objective_digest`, `prefix_digest`, `candidates`",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "candidate_set",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Request identity, candidate set or bounded lifetime rejected",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "shared_prefix",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Candidate actions do not share the same public prefix",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "action_flags",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Rejected",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "feature_width",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Invalid public prefix or action encoding",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "shared_hidden",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Candidate actions do not share the same public prefix",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "invalid_horizon",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Invalid public prefix or action encoding",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "H1_without_outcome",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "H1 must bind its H2 observed outcome and resulting public state",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "pending_blocks_decision",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Pending outcome or repeated request",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "decision_binding",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Outcome is not bound to the pending decision",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "receipt_hash",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Pinned input file changed",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "observer",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Observed outcome identity or causal order rejected",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "causal_time",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Observed outcome identity or causal order rejected",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "media_hash",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Pinned input file changed",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "utility_bound",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Observed utility outside registered bounded score",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "episode",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Actual result does not match the committed H2 transition",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "remaining",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Actual result does not match the committed H2 transition",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "private_truth",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Observed outcome identity or causal order rejected",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "duplicate_outcome",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Outcome is not bound to the pending decision",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "duplicate_decision",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Pending outcome or repeated request",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "H1_wrong_parent",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "H1 must bind its H2 observed outcome and resulting public state",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "H1_wrong_public_state",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "H1 must bind its H2 observed outcome and resulting public state",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "H1_wrong_episode",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "H1 must bind its H2 observed outcome and resulting public state",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "duplicate_decision",
+      "owner_state_unchanged": true,
+      "policy": "ndu",
+      "result": {
+        "error": "Pending outcome or repeated request",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "generation",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Request identity, candidate set or bounded lifetime rejected",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "weights",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Request identity, candidate set or bounded lifetime rejected",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "objective",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Request identity, candidate set or bounded lifetime rejected",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "future_target",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "unknown field `target`, expected one of `request_id`, `episode_id`, `parent_outcome_digest`, `generation`, `weights_sha256`, `objective_digest`, `prefix_digest`, `candidates`",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "candidate_set",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Request identity, candidate set or bounded lifetime rejected",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "shared_prefix",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Candidate actions do not share the same public prefix",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "action_flags",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Rejected",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "feature_width",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Invalid public prefix or action encoding",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "shared_hidden",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Candidate actions do not share the same public prefix",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "invalid_horizon",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Invalid public prefix or action encoding",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "H1_without_outcome",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "H1 must bind its H2 observed outcome and resulting public state",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "pending_blocks_decision",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Pending outcome or repeated request",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "decision_binding",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Outcome is not bound to the pending decision",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "receipt_hash",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Pinned input file changed",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "observer",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Observed outcome identity or causal order rejected",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "causal_time",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Observed outcome identity or causal order rejected",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "media_hash",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Pinned input file changed",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "utility_bound",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Observed utility outside registered bounded score",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "episode",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Actual result does not match the committed H2 transition",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "remaining",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Actual result does not match the committed H2 transition",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "private_truth",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Observed outcome identity or causal order rejected",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "duplicate_outcome",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Outcome is not bound to the pending decision",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "duplicate_decision",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Pending outcome or repeated request",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "H1_wrong_parent",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "H1 must bind its H2 observed outcome and resulting public state",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "H1_wrong_public_state",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "H1 must bind its H2 observed outcome and resulting public state",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "H1_wrong_episode",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "H1 must bind its H2 observed outcome and resulting public state",
+        "fatal": false,
+        "ok": false
+      }
+    },
+    {
+      "case": "duplicate_decision",
+      "owner_state_unchanged": true,
+      "policy": "correctness",
+      "result": {
+        "error": "Pending outcome or repeated request",
+        "fatal": false,
+        "ok": false
+      }
+    }
+  ],
+  "new_sources_used_to_train": false,
+  "online_feedback_uses_only_existing_public_sensor": true,
+  "private_audit_wall_ns": 509849159,
+  "process_ids": {
+    "correctness": [
+      18,
+      21,
+      22
+    ],
+    "ndu": [
+      17,
+      19,
+      20
+    ]
+  },
+  "process_status": {
+    "correctness": [
+      {
+        "anchor": "11cd8b9ee71e6c06486c7ce2bcae55e30e1d7097a2e661e7ca1e091da99cfece",
+        "authority": "deny_all",
+        "daemon_deployment": false,
+        "episodes": {
+          "continuation": null,
+          "pending": [
+            "h2.case.0.0.correctness",
+            2,
+            "refine_image"
+          ],
+          "seen_episodes": 1
+        },
+        "history_digest": "342c10b83381066dc06503987aa4e5ce75696eec3ce45ba52bb3dee214c49358",
+        "model_forwards_in_process": 5,
+        "modulator": "59c6a54a1b78b83ecd8c5b0a0fbe4372566d8bcd19f46a5fa2fba481adf4ad81",
+        "native_resource_summary": {
+          "maximum_checkpoint_bytes": 1568,
+          "maximum_transient_allocation_bytes": 768,
+          "maximum_write_amplification_ppm": 530613,
+          "p95_execution_micros": 603,
+          "p99_execution_micros": 603,
+          "pilot_ceiling_passed_for_supplied_samples": true,
+          "sample_count": 5,
+          "sample_set_digest": "66200283109089d8d6626b5a7be94703da64176d6073e60d18dcc56095c8eaef"
+        },
+        "native_resource_summary_passed": true,
+        "native_sequence": 5,
+        "native_value_layers_loaded": true,
+        "objective_digest": "a5c77b4f1221f769f4732fd52325f8d987c84216655c5fdce951947c3f6c6e6a",
+        "outcomes": 0,
+        "pending": [
+          "h2.case.0.0.correctness.step0",
+          "342c10b83381066dc06503987aa4e5ce75696eec3ce45ba52bb3dee214c49358",
+          "refine_image"
+        ],
+        "requests": 1,
+        "selection": "correctness",
+        "ticks_in_process": 5,
+        "training_steps": 0,
+        "weights_decoded_in_process": 1,
+        "whole_owner_peak_bytes": 9675
+      },
+      {
+        "anchor": "11cd8b9ee71e6c06486c7ce2bcae55e30e1d7097a2e661e7ca1e091da99cfece",
+        "authority": "deny_all",
+        "daemon_deployment": false,
+        "episodes": {
+          "continuation": [
+            "h2.case.0.0.correctness",
+            "1fcdc1d571ac255f82522467e1044723a8fa97efddce0775dfce548b7ffb1b39",
+            "c6de301a21312f6f23034b6a04cf541d4dc73424d768178e8bd0f9d0b0d13708"
+          ],
+          "pending": null,
+          "seen_episodes": 1
+        },
+        "history_digest": "c6de301a21312f6f23034b6a04cf541d4dc73424d768178e8bd0f9d0b0d13708",
+        "model_forwards_in_process": 0,
+        "modulator": "47b6a8ad89b6492adb3a9e8ea89cde434645077df8ad24b5cbd970d3f26b6b73",
+        "native_resource_summary": null,
+        "native_resource_summary_passed": null,
+        "native_sequence": 5,
+        "native_value_layers_loaded": true,
+        "objective_digest": "a5c77b4f1221f769f4732fd52325f8d987c84216655c5fdce951947c3f6c6e6a",
+        "outcomes": 1,
+        "pending": null,
+        "requests": 1,
+        "selection": "correctness",
+        "ticks_in_process": 0,
+        "training_steps": 0,
+        "weights_decoded_in_process": 1,
+        "whole_owner_peak_bytes": 0
+      },
+      {
+        "anchor": "8aa4ddaaab17c4e59af1891af896714ca6ade26157a16cbb87035c9210c34301",
+        "authority": "deny_all",
+        "daemon_deployment": false,
+        "episodes": {
+          "continuation": null,
+          "pending": null,
+          "seen_episodes": 256
+        },
+        "history_digest": "b3c3c6e1408ecd6323015efd8cb3e35c7b546cdc583922b62700c04ab9381717",
+        "model_forwards_in_process": 1735,
+        "modulator": "a883f598957e6d288c1719d037cf6fc832ce3c3f471f866ec0e4650825ce5a91",
+        "native_resource_summary": {
+          "maximum_checkpoint_bytes": 1568,
+          "maximum_transient_allocation_bytes": 768,
+          "maximum_write_amplification_ppm": 530613,
+          "p95_execution_micros": 665,
+          "p99_execution_micros": 1452,
+          "pilot_ceiling_passed_for_supplied_samples": true,
+          "sample_count": 1735,
+          "sample_set_digest": "ec69740e85be2c0dbd09ea18c03e3a254b059029b3a4f578309f27dffbd2117c"
+        },
+        "native_resource_summary_passed": true,
+        "native_sequence": 1740,
+        "native_value_layers_loaded": true,
+        "objective_digest": "a5c77b4f1221f769f4732fd52325f8d987c84216655c5fdce951947c3f6c6e6a",
+        "outcomes": 192,
+        "pending": null,
+        "requests": 348,
+        "selection": "correctness",
+        "ticks_in_process": 1735,
+        "training_steps": 0,
+        "weights_decoded_in_process": 1,
+        "whole_owner_peak_bytes": 32996
+      }
+    ],
+    "ndu": [
+      {
+        "anchor": "c1e61504ec562c6cb0232efc5ba83b53cad759c44103eb885d4713f6457e5e45",
+        "authority": "deny_all",
+        "daemon_deployment": false,
+        "episodes": {
+          "continuation": null,
+          "pending": [
+            "h2.case.0.0.ndu",
+            2,
+            "refine_image"
+          ],
+          "seen_episodes": 1
+        },
+        "history_digest": "cfa7f385f4cd77f26c92c7208927850c6fdcb44ca97347c014809703d79fb233",
+        "model_forwards_in_process": 5,
+        "modulator": "fbced4465fcf8de852206fed4150ea5267dc758c840a982f5040b80678196c37",
+        "native_resource_summary": {
+          "maximum_checkpoint_bytes": 1568,
+          "maximum_transient_allocation_bytes": 768,
+          "maximum_write_amplification_ppm": 530613,
+          "p95_execution_micros": 560,
+          "p99_execution_micros": 560,
+          "pilot_ceiling_passed_for_supplied_samples": true,
+          "sample_count": 5,
+          "sample_set_digest": "5453d0ba8c0e4a24bb138a52f443e3c9065ba58ca76cfdf01f8591f42028a691"
+        },
+        "native_resource_summary_passed": true,
+        "native_sequence": 5,
+        "native_value_layers_loaded": true,
+        "objective_digest": "c58ec4ff49b102c40de0363c3728e4ac032e12dd8b16aed5d50525a9b756b9d6",
+        "outcomes": 0,
+        "pending": [
+          "h2.case.0.0.ndu.step0",
+          "cfa7f385f4cd77f26c92c7208927850c6fdcb44ca97347c014809703d79fb233",
+          "refine_image"
+        ],
+        "requests": 1,
+        "selection": "ndu",
+        "ticks_in_process": 5,
+        "training_steps": 0,
+        "weights_decoded_in_process": 1,
+        "whole_owner_peak_bytes": 9667
+      },
+      {
+        "anchor": "c1e61504ec562c6cb0232efc5ba83b53cad759c44103eb885d4713f6457e5e45",
+        "authority": "deny_all",
+        "daemon_deployment": false,
+        "episodes": {
+          "continuation": [
+            "h2.case.0.0.ndu",
+            "1fcdc1d571ac255f82522467e1044723a8fa97efddce0775dfce548b7ffb1b39",
+            "d7941c7495bda1f491e7dd5e6e437a9617bc420e2c078e5c79ace95c9c05cc48"
+          ],
+          "pending": null,
+          "seen_episodes": 1
+        },
+        "history_digest": "d7941c7495bda1f491e7dd5e6e437a9617bc420e2c078e5c79ace95c9c05cc48",
+        "model_forwards_in_process": 0,
+        "modulator": "d5ee72cabb59bcd92d465adc307ca91d4cdf08adbfeee74e5f1d6178314211c1",
+        "native_resource_summary": null,
+        "native_resource_summary_passed": null,
+        "native_sequence": 5,
+        "native_value_layers_loaded": true,
+        "objective_digest": "c58ec4ff49b102c40de0363c3728e4ac032e12dd8b16aed5d50525a9b756b9d6",
+        "outcomes": 1,
+        "pending": null,
+        "requests": 1,
+        "selection": "ndu",
+        "ticks_in_process": 0,
+        "training_steps": 0,
+        "weights_decoded_in_process": 1,
+        "whole_owner_peak_bytes": 0
+      },
+      {
+        "anchor": "8bbdb8ff2c8b8a0560d749f334cb94ea6a80287f2f98244f243552f793210100",
+        "authority": "deny_all",
+        "daemon_deployment": false,
+        "episodes": {
+          "continuation": null,
+          "pending": null,
+          "seen_episodes": 256
+        },
+        "history_digest": "5dcb3f16664113d8141f42df7568c0a2e02d81d084609c348adb40a7bfedb6f0",
+        "model_forwards_in_process": 1795,
+        "modulator": "9354b18e861b1c6ac8caae6d414fc83a72232dbf2f2e2299de8155b5115e89b5",
+        "native_resource_summary": {
+          "maximum_checkpoint_bytes": 1568,
+          "maximum_transient_allocation_bytes": 768,
+          "maximum_write_amplification_ppm": 530613,
+          "p95_execution_micros": 672,
+          "p99_execution_micros": 1218,
+          "pilot_ceiling_passed_for_supplied_samples": true,
+          "sample_count": 1795,
+          "sample_set_digest": "3071b910b0d78290bab3f584e929e0ab8ced5d65fcfd6165f8d4e2c23e852a06"
+        },
+        "native_resource_summary_passed": true,
+        "native_sequence": 1800,
+        "native_value_layers_loaded": true,
+        "objective_digest": "c58ec4ff49b102c40de0363c3728e4ac032e12dd8b16aed5d50525a9b756b9d6",
+        "outcomes": 205,
+        "pending": null,
+        "requests": 360,
+        "selection": "ndu",
+        "ticks_in_process": 1795,
+        "training_steps": 0,
+        "weights_decoded_in_process": 1,
+        "whole_owner_peak_bytes": 32988
+      }
+    ]
+  },
+  "production_authority": false,
+  "recoveries": [
+    {
+      "after": {
+        "anchor": "c1e61504ec562c6cb0232efc5ba83b53cad759c44103eb885d4713f6457e5e45",
+        "history_digest": "cfa7f385f4cd77f26c92c7208927850c6fdcb44ca97347c014809703d79fb233",
+        "modulator": "fbced4465fcf8de852206fed4150ea5267dc758c840a982f5040b80678196c37",
+        "native_sequence": 5,
+        "objective_digest": "c58ec4ff49b102c40de0363c3728e4ac032e12dd8b16aed5d50525a9b756b9d6",
+        "outcomes": 0,
+        "pending": [
+          "h2.case.0.0.ndu.step0",
+          "cfa7f385f4cd77f26c92c7208927850c6fdcb44ca97347c014809703d79fb233",
+          "refine_image"
+        ],
+        "requests": 1
+      },
+      "before": {
+        "anchor": "c1e61504ec562c6cb0232efc5ba83b53cad759c44103eb885d4713f6457e5e45",
+        "history_digest": "cfa7f385f4cd77f26c92c7208927850c6fdcb44ca97347c014809703d79fb233",
+        "modulator": "fbced4465fcf8de852206fed4150ea5267dc758c840a982f5040b80678196c37",
+        "native_sequence": 5,
+        "objective_digest": "c58ec4ff49b102c40de0363c3728e4ac032e12dd8b16aed5d50525a9b756b9d6",
+        "outcomes": 0,
+        "pending": [
+          "h2.case.0.0.ndu.step0",
+          "cfa7f385f4cd77f26c92c7208927850c6fdcb44ca97347c014809703d79fb233",
+          "refine_image"
+        ],
+        "requests": 1
+      },
+      "kind": "abrupt_pending_H2_decision",
+      "policy": "ndu"
+    },
+    {
+      "after": {
+        "anchor": "c1e61504ec562c6cb0232efc5ba83b53cad759c44103eb885d4713f6457e5e45",
+        "history_digest": "d7941c7495bda1f491e7dd5e6e437a9617bc420e2c078e5c79ace95c9c05cc48",
+        "modulator": "d5ee72cabb59bcd92d465adc307ca91d4cdf08adbfeee74e5f1d6178314211c1",
+        "native_sequence": 5,
+        "objective_digest": "c58ec4ff49b102c40de0363c3728e4ac032e12dd8b16aed5d50525a9b756b9d6",
+        "outcomes": 1,
+        "pending": null,
+        "requests": 1
+      },
+      "before": {
+        "anchor": "c1e61504ec562c6cb0232efc5ba83b53cad759c44103eb885d4713f6457e5e45",
+        "history_digest": "d7941c7495bda1f491e7dd5e6e437a9617bc420e2c078e5c79ace95c9c05cc48",
+        "modulator": "d5ee72cabb59bcd92d465adc307ca91d4cdf08adbfeee74e5f1d6178314211c1",
+        "native_sequence": 5,
+        "objective_digest": "c58ec4ff49b102c40de0363c3728e4ac032e12dd8b16aed5d50525a9b756b9d6",
+        "outcomes": 1,
+        "pending": null,
+        "requests": 1
+      },
+      "kind": "graceful_observed_H2_before_H1",
+      "policy": "ndu"
+    },
+    {
+      "after": {
+        "anchor": "11cd8b9ee71e6c06486c7ce2bcae55e30e1d7097a2e661e7ca1e091da99cfece",
+        "history_digest": "342c10b83381066dc06503987aa4e5ce75696eec3ce45ba52bb3dee214c49358",
+        "modulator": "59c6a54a1b78b83ecd8c5b0a0fbe4372566d8bcd19f46a5fa2fba481adf4ad81",
+        "native_sequence": 5,
+        "objective_digest": "a5c77b4f1221f769f4732fd52325f8d987c84216655c5fdce951947c3f6c6e6a",
+        "outcomes": 0,
+        "pending": [
+          "h2.case.0.0.correctness.step0",
+          "342c10b83381066dc06503987aa4e5ce75696eec3ce45ba52bb3dee214c49358",
+          "refine_image"
+        ],
+        "requests": 1
+      },
+      "before": {
+        "anchor": "11cd8b9ee71e6c06486c7ce2bcae55e30e1d7097a2e661e7ca1e091da99cfece",
+        "history_digest": "342c10b83381066dc06503987aa4e5ce75696eec3ce45ba52bb3dee214c49358",
+        "modulator": "59c6a54a1b78b83ecd8c5b0a0fbe4372566d8bcd19f46a5fa2fba481adf4ad81",
+        "native_sequence": 5,
+        "objective_digest": "a5c77b4f1221f769f4732fd52325f8d987c84216655c5fdce951947c3f6c6e6a",
+        "outcomes": 0,
+        "pending": [
+          "h2.case.0.0.correctness.step0",
+          "342c10b83381066dc06503987aa4e5ce75696eec3ce45ba52bb3dee214c49358",
+          "refine_image"
+        ],
+        "requests": 1
+      },
+      "kind": "abrupt_pending_H2_decision",
+      "policy": "correctness"
+    },
+    {
+      "after": {
+        "anchor": "11cd8b9ee71e6c06486c7ce2bcae55e30e1d7097a2e661e7ca1e091da99cfece",
+        "history_digest": "c6de301a21312f6f23034b6a04cf541d4dc73424d768178e8bd0f9d0b0d13708",
+        "modulator": "47b6a8ad89b6492adb3a9e8ea89cde434645077df8ad24b5cbd970d3f26b6b73",
+        "native_sequence": 5,
+        "objective_digest": "a5c77b4f1221f769f4732fd52325f8d987c84216655c5fdce951947c3f6c6e6a",
+        "outcomes": 1,
+        "pending": null,
+        "requests": 1
+      },
+      "before": {
+        "anchor": "11cd8b9ee71e6c06486c7ce2bcae55e30e1d7097a2e661e7ca1e091da99cfece",
+        "history_digest": "c6de301a21312f6f23034b6a04cf541d4dc73424d768178e8bd0f9d0b0d13708",
+        "modulator": "47b6a8ad89b6492adb3a9e8ea89cde434645077df8ad24b5cbd970d3f26b6b73",
+        "native_sequence": 5,
+        "objective_digest": "a5c77b4f1221f769f4732fd52325f8d987c84216655c5fdce951947c3f6c6e6a",
+        "outcomes": 1,
+        "pending": null,
+        "requests": 1
+      },
+      "kind": "graceful_observed_H2_before_H1",
+      "policy": "correctness"
+    }
+  ],
+  "registration": {
+    "H2_root_and_all_reachable_H1_supported": true,
+    "binary_sha256": "bf08b491479b1eb68de03f88b62ea0031704f7f024cfb63afea78f25e04af442",
+    "count": 128,
+    "frozen_unix_ns": 1792984956545621368,
+    "mode": "confirm",
+    "new_sources": true,
+    "null_action_is_rejection_not_successful_stop": true,
+    "online_feedback": "public sensor caption legality and image/text agreement only",
+    "online_proxy_equals_global_NDU": false,
+    "order": "cyclic policy rotation by source and view, fixed before outcomes",
+    "package_sha256": "1d048aa165bd1f50b6c9187ed0905a3213d0fc10702506693a9ce6ef35bb85a8",
+    "policies": [
+      "ndu",
+      "correctness"
+    ],
+    "private_truth_scoring": "after every native owner is closed; never passed to native",
+    "protocol_sha256": "88e2785e85c55496c41e039b36d01380138686d34de7d61cdad8b4cf2c79dc44",
+    "rejection_score": {
+      "joint_correct": false,
+      "utility": -1.0
+    },
+    "schema": "hepta.next.native-h2-owner-access.v1",
+    "source_allocation_sha256": "66aa5e30c26dc72736d8d4af2fac2de53cb9d5aa6fc7b514d56d0b06f5e60b7e",
+    "views": "one cycling ID view and both_missing per source"
+  },
+  "rollouts_sha256": "941840f45b9e476a691c500772610078d7fac8766f72803b58479a052cd538d5",
+  "schema": "hepta.next.native-h2-owner-results.v1",
+  "source_pairs": 128,
+  "wall_ns": 17300020221,
+  "whole_agentd_daemon": false
+}

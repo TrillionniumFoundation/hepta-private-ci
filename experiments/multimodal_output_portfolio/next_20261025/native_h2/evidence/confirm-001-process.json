@@ -1,0 +1,52 @@
+{
+  "cgroup_after": {
+    "current": 8350785536,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3853333,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8537153536,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3850756,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 1.658809,
+  "child_user_seconds": 14.395898,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-B",
+    "-m",
+    "experiments.multimodal_output_portfolio.next_20261025.native_h2.run_v2",
+    "--binary",
+    "/tmp/hepta-ndu-next-native-h2/build-001/hepta-native-ndu-online",
+    "--package",
+    "/tmp/hepta-ndu-next-native-h2/model-001/package.json",
+    "--mode",
+    "confirm",
+    "--count",
+    "128",
+    "--protocol",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/NATIVE_PROTOCOL.json",
+    "--output",
+    "/tmp/hepta-ndu-next-native-h2/confirm-001"
+  ],
+  "context": "Fixed64writer128pair actual qualified H2 original-owner comparison; ASR exited; media and joint collectors paused; no competing model jobs requested",
+  "exit_code": 0,
+  "log_sha256": "7992e8dc43b85568c64196bda207e68b8838a2d5d15328e6e839812d36e336d1",
+  "peak_rss_bytes": 305164288,
+  "registration_sha256": "d0fb5e923e443b4d5894f7b3d9b62853da479b51383ed8d00c979ee6ca55a9ab",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 18970721428,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}
