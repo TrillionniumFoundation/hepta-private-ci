@@ -646,6 +646,19 @@ def main() -> int:
             or "authority.claim(y)" not in cfg_code
         ):
             raise VerificationFailure("cfg-test stripping self-test failed")
+        # A test-only writer opener nested inside an impl must not expand the
+        # closed-world product caller set; an unguarded opener must remain visible.
+        opener = "ProductionDurableWriter::open_with_live_verifier"
+        source = (
+            "impl Fixture {\n"
+            "    #[cfg(test)]\n"
+            f"    pub async fn new() {{ {opener}(); }}\n"
+            f"    pub fn production() {{ {opener}(); }}\n"
+            "}\n"
+        )
+        scanned = _strip_cfg_test_items(_strip_rust_non_code(source))
+        if scanned.count(opener) != 1:
+            raise VerificationFailure("test-only writer opener caller proof regression")
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             protected = root / "protected.rs"
