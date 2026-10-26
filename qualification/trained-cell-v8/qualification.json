@@ -1,0 +1,148 @@
+{
+  "actual_v8_host_profile_installed": false,
+  "bazel_scope": {
+    "actual_main_Cargo_toml_lock_and_neuron_dependencies_changed": false,
+    "core_source_discovery": "codex_rust_crate uses src/**/*.rs at defs.bzl:309; new Rust modules need no extra compile_data",
+    "existing_unchanged_include_bytes": "only previous handoff-check and handoff-grid-check include source files; not changed",
+    "interpretation": "bazel executable absent (127) means full Bazel unverified; no introduced main dependency/compile_data blocker identified",
+    "main_Bazel_cargo_graph": "MODULE.bazel:320-322 uses //codex-rs:Cargo.toml;339-342 uses argument-comment-lint; isolated qualification manifests are outside both",
+    "new_compile_time_fixture_reads": false,
+    "qualification_only_dependency_changes": [
+      "existing standalone recovery-driver adds direct sha2=0.10.9 already present transitively",
+      "new standalone admission-driver and scoped engineering optimization profiles"
+    ]
+  },
+  "execution": "approved_escalated_local_qualification after default sandbox-layer ENOSPC; offline; no sandbox constants changed",
+  "final_commands": {
+    "final_cli_build": "PASS",
+    "just_bazel_lock_update": "UNAVAILABLE: bazel not installed, exit127; root Bazel lock/full-workspace gate not passed",
+    "just_fmt": "PASS",
+    "scoped_just_fix": "PASS",
+    "tests_rerun_after_final_fix_fmt": false
+  },
+  "historical_numerical_binary_note": "r3 records pre-final-build diagnostic SHA9987dafbda5bbe0242ee7cf55c7720517dd4d9b5724d45dfa456ba91eba8a3e4; its body was overwritten by the final rebuild and is not retained. Complete raw receipts and source pins remain. Final executables have separate saved identities; no binary equality claimed.",
+  "interrupted_attempts": [
+    "01 initial fixture syntax compile error; corrected",
+    "04 ambiguous test assert import compile error; corrected",
+    "05 large-stream harness60s timeout twice, no pass claimed; engineering SHA/type dependency optimization then passed06",
+    "09 and11 numerical ENOSPC; partial roots preserved; complete r3 passes12",
+    "10 recovery build ENOSPC; complete r2 passes13",
+    "normal sandbox mount ENOSPC; approved escalated local qualification used"
+  ],
+  "logs": {
+    "logs/01-test-initial.log": "3a19f71c51ab35f78747288b50a25189604637e26389d25398f3fedefdd0749b",
+    "logs/02-test.log": "de20c4e0d523b91bfca67db86a1b85b802ae1b490a67ff66d4aac8833830904c",
+    "logs/03-neuron-v8.log": "ff5bdfb47d24142eba43a379400d135a55f7290329f51277ec5ef13be0a3e244",
+    "logs/04-adapter-stream.log": "3a82ac1666f64c7ab4ed143e60d81dd0c2ffdb2038d92229c3a60c3070ad4483",
+    "logs/05-adapter-stream.log": "ff51139b6ff6e8aaeb7be9e50b617356bbf79c2654ad210f8cdf85ac69601957",
+    "logs/06-adapter-stream.log": "9f3d9110a1724a22c9d9eeb264a0780e9fb221579f7be9aed4497110a0797514",
+    "logs/07-final-filter-core.log": "453aed71d2ecfe2a1b4639e22d7291e346fbf2fa9d7f22bc57c08fd854966148",
+    "logs/08-profile-bin-build.log": "cdf4e04360d450514aa08b44b77d6e7dfcdec627a15ebce76cddef04355492ce",
+    "logs/09-numerical-handoff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/10-recovery-dispatch.log": "888f0481142ecebf9381772052ccb04c2e0875bac75474c62251c124691c9bfb",
+    "logs/11-numerical-handoff-r2.log": "5b5219954d38b8245d6083467c9471169a66e4dd94a1a76bacdbdf21758a9ee6",
+    "logs/12-numerical-handoff-r3.log": "0b9dfebb9a2cf3e431c78aa8766de20f847cccc9c64aa52bda4f24a300d97637",
+    "logs/13-recovery-dispatch-r2.log": "2413d94e5d8f4e59c6e67c97e3c86da5c06dbbe6b590ea4e46d745e1205ea2e9",
+    "logs/14-neuron-fix.log": "0b85b2371d125b7b57baca9e5927253b6b4875b88af0bb1b3382b2f5848f7631",
+    "logs/15-recovery-fix.log": "8c816616f673188afe8a1d235827f9d05587a15d17000bc3ef227a5761959be1",
+    "logs/16-adapter-fix.log": "0082678804bd8620c5415da60ca5a1de75141b7dbed4ccb4f15158c981279117",
+    "logs/17-audit-binding-regression.log": "cb33a70414003f97a74d5aac717ab3412d27749b4aacfd68fd1b6d0c000dfbb4",
+    "logs/18-recovery-final-fix.log": "4d93d89d90c2e927ffaafe3d483106ecc6f3cfe4907e48fed06befe12ef3ec05",
+    "logs/19-adapter-final-fix.log": "870c17acf5f6465d7218c56c6a1806e0f21659e282756108fceda4533c450a87",
+    "logs/20-final-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/21-bazel-lock-update.log": "5353ddecebdb07719f4dfc7f6043039635de102b541209c7b3dd4e70431ba303",
+    "logs/22-final-cli-build.log": "2bc63ca3acec777749d0a772d5101ed0b8a8d1914cfa122fbd5a10cf180d5858",
+    "logs/final-adapter-junit.xml": "e0c1113982261d6965513bb5f0aa3ecae25740854850b71cbc747e485e2340ef",
+    "logs/final-format-execution.json": "ae9092936f37f13fa8bd4d852646812498838bc44ceb1c389e6218f6858f8522",
+    "logs/final-nextest-junit.xml": "c4dc00fca6a511ba1243735ade63cd4ec2d45f85c416fb6b650d3f10111d03e8",
+    "logs/final-recovery-junit.xml": "a6903218cb1816fca43799c03aba9f81c8f1f69f242a2b7b002d8825b8feb8c0",
+    "logs/fix-execution.json": "5e2fbf7ef8bdcc0f35eab2162bbb612805a5279ec0af4739b85a164ed7a1f006",
+    "logs/numerical-r3-execution.json": "91e2cfc4876ddbd6a9373117e245f878304e55d36623cc65f22f44b0958217bc",
+    "logs/rebuildable-test-cache-cleanup.json": "57ef28296d8b19f138e7b05f9ba3c73caa92edd1289223cbe54dbf04cce89465",
+    "logs/stale-old-worktree-library-cleanup.json": "8edef6ca56b2c071a759046208aa30b361381ea7d5886e125b142ca1557e588e",
+    "logs/timed-out-stream-fixtures/cleanup.json": "9947d6da761dad9bba88186990ab766d00d3fa2c835fab1c421486559ecd1cc6",
+    "logs/timed-out-stream-fixtures/hepta-v5-external-review-unit-128-1-manifest.json": "0bad9c61ce95a96d3460250ae3f258c197fdc7c3ca99bd4e66a11a50a378cb9c",
+    "logs/timed-out-stream-fixtures/hepta-v5-external-review-unit-128-1-parity-header.json": "5cf09378f458f28a20a988c83ff3512e0b051734bfe6bd79c2e6591b94bab70f",
+    "logs/timed-out-stream-fixtures/hepta-v5-external-review-unit-134-1-manifest.json": "0bad9c61ce95a96d3460250ae3f258c197fdc7c3ca99bd4e66a11a50a378cb9c",
+    "logs/timed-out-stream-fixtures/hepta-v5-external-review-unit-134-1-parity-header.json": "5cf09378f458f28a20a988c83ff3512e0b051734bfe6bd79c2e6591b94bab70f"
+  },
+  "numerical": {
+    "actual_research_code": true,
+    "additional_cost_is_not_scientific_cost": true,
+    "exact_step17_continuations": 8,
+    "negative_mutations_rejected": 32,
+    "new_timing_and_verification_ledger_byte_identity_claimed": false,
+    "physical_trajectories_exact": true,
+    "raw_root": "/workspace/scratch/60f94d809f44/pft-native-controller-handoff-v8-r3",
+    "receipt_sha256": "ef8194c096f0efee1c63f3a129b48d587f5d7332cda768f547ac95047fe2ab40",
+    "restored_checkpoints": 24,
+    "synthetic_data": true
+  },
+  "optional_import_scope_audit_sha256": "5a3885d2535b6bfefb6db18f7443538afa3baf81b82433a02fdae8e258316070",
+  "preserved_tools_sha256": "819d3f2747a30b52bfa920071191995dabb515fff5c954b68d5613a92c2dda2a",
+  "production_activation": false,
+  "production_authority": false,
+  "real_scientific_candidate_approved": false,
+  "remaining_scope_limits": [
+    "genuine jointly passing independent confirmation and external reviewer signature still required for actual adoption",
+    "native checks reported statistical bounds and audit commitments, not independent bootstrap or dataset independence",
+    "full repository, Bazel and Agentd production integration not qualified"
+  ],
+  "schema": "hepta.native-profile-qualification.v8",
+  "scope": "isolated actual native crates and research-only synthetic mechanics; no actual scientific candidate approval",
+  "source_final_sha256": "9b01d36a6675759080ac1b2250953c8a81be3f4a5ebee3213e540c26bd9838ef",
+  "source_tested_sha256": "38db4244408a9f31aba288bc7dde9f3b99ea0e84ddc036be079a5ba82b1a8c2a",
+  "status": "PASS within the described native scope; Bazel/full-workspace unqualified",
+  "streaming": {
+    "actual_prediction_rows": 264000,
+    "all_class_nlls_checked": 1056000,
+    "fixtures": "generated constant-bias heads and sparse raw vectors; actual inference executes every row",
+    "head_versions": 24,
+    "raw_streams_removed_after_success": true,
+    "receipt_sha256": "4f12ec905001c084e5da972e33861c6d23873c38b3f016007a5792fb6ad844c0",
+    "row_subsampling": false,
+    "self_rehashed_wrong_tail_numeric_rejected": true,
+    "tail_byte_tamper_rejected": true,
+    "tail_truncation_rejected": true,
+    "task_rows": [
+      20000,
+      2000
+    ],
+    "vectors_bytes": 67584000
+  },
+  "tests": [
+    {
+      "log": "03-neuron-v8.log",
+      "passed": 116,
+      "scope": "113 existing neuron tests and3V8 before final safety-filter literal update"
+    },
+    {
+      "log": "07-final-filter-core.log",
+      "passed": 3,
+      "run_id": "ca48a474-ed5b-4810-a2bd-e2eea24d5bc5",
+      "scope": "affectedV8 tests after single_ray_then_joint_v8 update",
+      "skipped_existing": 113
+    },
+    {
+      "log": "06-adapter-stream.log",
+      "passed": 12,
+      "run_id": "95778ec1-e6a0-47b1-bac4-16666fac0838",
+      "scope": "full adapter suite before later audit reread guard"
+    },
+    {
+      "ignored_child_entry": 1,
+      "ignored_child_entry_executed_by_crash_matrix": true,
+      "log": "13-recovery-dispatch-r2.log",
+      "passed": 11,
+      "run_id": "00fc2c06-7c88-4bdc-bc71-f970682160d8",
+      "scope": "existing owner/crash/recovery with explicit version dispatch"
+    },
+    {
+      "log": "17-audit-binding-regression.log",
+      "passed": 4,
+      "run_id": "745e3adc-6db0-45b2-a535-c3d39e50dd50",
+      "scope": "two new reread rejection tests and signed V7/V8 owner positive fixtures after repair",
+      "skipped_unaffected": 10
+    }
+  ]
+}
