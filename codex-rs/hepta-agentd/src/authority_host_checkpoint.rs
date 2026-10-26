@@ -52,6 +52,7 @@ mod adoption;
 
 #[path = "authority_host_checkpoint_material.rs"]
 mod material;
+pub use material::HostPhysicalCurrentObservation;
 use material::RootCheckpointMaterial;
 pub(crate) use material::RootMaterialProfile;
 use material::SourceCustody;

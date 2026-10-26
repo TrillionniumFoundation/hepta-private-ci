@@ -4,6 +4,28 @@ use super::*;
 use crate::authority_host_checkpoint::RootMaterialProfile;
 
 impl PreparedHostAuthoritySession {
+    /// Observe this same service's actual complete Current and independently
+    /// verified physical image. The returned DTO has no authority or write FD.
+    pub fn observe_physical_current(&self) -> io::Result<crate::HostPhysicalCurrentObservation> {
+        let end = Instant::now() + std::time::Duration::from_secs(30);
+        verify_pinned_process(
+            &self.registration,
+            self.config.peer_uid,
+            self.config.peer_gid,
+            &self.owner_pidfd,
+            end,
+        )?;
+        let observed = self.service.observe_registered_physical_current()?;
+        verify_pinned_process(
+            &self.registration,
+            self.config.peer_uid,
+            self.config.peer_gid,
+            &self.owner_pidfd,
+            end,
+        )?;
+        Ok(observed)
+    }
+
     /// Complete only an existing Current's interrupted filesystem release.
     /// Open this same live registration with `open_with_physical_material`
     /// first. Root verifies the independently retained image against the

@@ -22,6 +22,30 @@ use std::time::Duration;
 use std::time::Instant;
 
 impl HostAuthorityService {
+    pub(crate) fn observe_registered_physical_current(
+        &self,
+    ) -> io::Result<crate::HostPhysicalCurrentObservation> {
+        let writer = self
+            .writer
+            .as_ref()
+            .ok_or_else(|| io::Error::other("original registered writer required"))?;
+        writer.registration.with_live(&writer.leases, |_| {
+            if self
+                .issuer
+                .retained_writer_authorization(&writer.registration)?
+                != writer.proof
+            {
+                return Err(io::Error::other("retained original writer proof changed"));
+            }
+            self.checkpoint
+                .as_ref()
+                .ok_or_else(|| io::Error::other("original material-backed checkpoint required"))?
+                .backend
+                .observe_physical_current()
+                .map_err(io::Error::other)
+        })
+    }
+
     pub(crate) fn resume_registered_material_handoff(
         &self,
         config: &HostAuthorityServiceConfig,

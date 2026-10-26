@@ -30,6 +30,8 @@ pub use authority_host_checkpoint::HostCognitiveCheckpoint;
 #[cfg(target_os = "linux")]
 pub use authority_host_checkpoint::HostCognitiveCheckpointRegistration;
 #[cfg(target_os = "linux")]
+pub use authority_host_checkpoint::HostPhysicalCurrentObservation;
+#[cfg(target_os = "linux")]
 pub use authority_host_checkpoint::RetainedCheckpointPublisher;
 #[cfg(target_os = "linux")]
 pub use authority_host_checkpoint::RetiredCheckpointPublisher;

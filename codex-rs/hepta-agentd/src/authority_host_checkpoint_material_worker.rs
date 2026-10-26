@@ -27,7 +27,7 @@ struct Job {
 }
 
 enum Outcome {
-    Verified,
+    Verified(MaterialRecord),
     Installed(codex_hepta_memory::InstalledRootCheckpointImage),
 }
 
@@ -72,16 +72,15 @@ impl RootCheckpointMaterial {
                                 };
                                 let captured = area.prepare(&job.candidate, uid).await?;
                                 publisher.require_alive()?;
-                                let _ = captured;
-                                Ok(Outcome::Verified)
+                                Ok(Outcome::Verified(captured))
                             }
                             Command::Verify => {
-                                area.verify(&job.candidate).await.map(|_| Outcome::Verified)
+                                area.verify(&job.candidate).await.map(Outcome::Verified)
                             }
                             Command::Rebind(previous) => area
                                 .rebind(&previous, &job.candidate)
                                 .await
-                                .map(|_| Outcome::Verified),
+                                .map(Outcome::Verified),
                             Command::Install => {
                                 area.install(&job.candidate).await.map(Outcome::Installed)
                             }
@@ -121,6 +120,20 @@ impl RootCheckpointMaterial {
         self.call(candidate, Command::Verify).map(|_| ())
     }
 
+    pub(crate) fn observe(
+        &self,
+        current: CognitiveCheckpointReceipt,
+    ) -> Result<HostPhysicalCurrentObservation, AuthorityTrustError> {
+        match self.call(current, Command::Verify)? {
+            Outcome::Verified(record) => Ok(HostPhysicalCurrentObservation {
+                current: record.candidate,
+                material_sha256: record.image_sha256,
+                material_bytes: record.image_bytes,
+            }),
+            Outcome::Installed(_) => Err(AuthorityTrustError::Invalid),
+        }
+    }
+
     pub(crate) fn rebind(
         &self,
         previous: CognitiveCheckpointReceipt,
@@ -135,7 +148,7 @@ impl RootCheckpointMaterial {
     ) -> Result<codex_hepta_memory::InstalledRootCheckpointImage, AuthorityTrustError> {
         match self.call(previous, Command::Install)? {
             Outcome::Installed(image) => Ok(image),
-            Outcome::Verified => Err(AuthorityTrustError::Invalid),
+            Outcome::Verified(_) => Err(AuthorityTrustError::Invalid),
         }
     }
 
@@ -145,7 +158,7 @@ impl RootCheckpointMaterial {
     ) -> Result<codex_hepta_memory::InstalledRootCheckpointImage, AuthorityTrustError> {
         match self.call(current, Command::ReopenInstallation)? {
             Outcome::Installed(image) => Ok(image),
-            Outcome::Verified => Err(AuthorityTrustError::Invalid),
+            Outcome::Verified(_) => Err(AuthorityTrustError::Invalid),
         }
     }
 

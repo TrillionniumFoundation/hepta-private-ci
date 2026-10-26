@@ -31,6 +31,27 @@ pub(crate) struct RootMaterialProfile {
     pub(crate) deadline: Duration,
 }
 
+/// Fresh observation from the original Root Current/material owner. This is
+/// serializable integrity evidence, never a writer permit or mutable image FD.
+#[derive(Clone, Debug, Serialize)]
+pub struct HostPhysicalCurrentObservation {
+    current: CognitiveCheckpointReceipt,
+    material_sha256: Sha256Digest,
+    material_bytes: u64,
+}
+
+impl HostPhysicalCurrentObservation {
+    pub fn current(&self) -> &CognitiveCheckpointReceipt {
+        &self.current
+    }
+    pub fn material_sha256(&self) -> &Sha256Digest {
+        &self.material_sha256
+    }
+    pub fn material_bytes(&self) -> u64 {
+        self.material_bytes
+    }
+}
+
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct MaterialRecord {

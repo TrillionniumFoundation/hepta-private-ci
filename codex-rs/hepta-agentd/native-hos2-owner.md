@@ -123,6 +123,16 @@ pre-crash material. If that publisher actually exited, a legitimately registered
 new successor may use the normal retirement/expiry recovery ceremony from an
 existing Root-owned directory. Same-generation adoption remains forbidden.
 
+`PreparedHostAuthoritySession::observe_physical_current` returns the same
+retained original service's actual complete `CognitiveCheckpointReceipt` and
+the Root owner's independently verified physical image digest and byte length.
+The original live Registry/proof and actual publisher pidfd are checked around
+the observation. The original checkpoint mutex covers head read, immutable
+material verification and exact head readback, with the original post-I/O
+expiry check. The DTO is serializable and has no deserializer, grant semantics,
+image write descriptor or manager-supplied hash. The native entry can serialize
+this observation directly without reconstructing a Root token or material.
+
 The first combined typecheck found the memory crate's `forbid(unsafe_code)`
 correctly rejected raw credential reads. Those reads and installation ownership
 changes now use safe workspace rustix APIs; the prohibition remains intact.

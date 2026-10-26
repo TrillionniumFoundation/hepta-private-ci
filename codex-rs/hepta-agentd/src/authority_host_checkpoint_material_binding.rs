@@ -25,6 +25,32 @@ impl FreshMaterial {
 }
 
 impl HostCognitiveCheckpoint {
+    pub(crate) fn observe_physical_current(
+        &self,
+    ) -> Result<HostPhysicalCurrentObservation, AuthorityTrustError> {
+        let _guard = self
+            .exchange_lock
+            .try_lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
+        if self.closed.load(Ordering::Acquire) || !self.within_expiry()? {
+            return Err(self.close());
+        }
+        let head = self.load()?;
+        if head.phase != CognitiveCheckpointPhase::Current || head.proposal.is_some() {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        let observed = self
+            .material
+            .as_ref()
+            .ok_or(AuthorityTrustError::Invalid)?
+            .observe(receipt(&head)?)
+            .map_err(|_| self.close())?;
+        if self.load()? != head || !self.within_expiry()? {
+            return Err(self.close());
+        }
+        Ok(observed)
+    }
+
     pub(crate) fn reopen_material_installation(
         &self,
     ) -> Result<codex_hepta_memory::InstalledRootCheckpointImage, AuthorityTrustError> {

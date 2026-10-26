@@ -58,6 +58,13 @@ async fn physical_current_survives_live_source_loss_and_refuses_corrupt_retained
     let current = f.backend.current_for_handoff().unwrap();
     let image = f.image();
     let metadata = image.metadata().unwrap();
+    let observed = f.backend.observe_physical_current().unwrap();
+    assert_eq!(observed.current(), &f.previous);
+    assert_eq!(
+        observed.material_sha256(),
+        &Sha256Digest::for_bytes(&std::fs::read(&image).unwrap())
+    );
+    assert_eq!(observed.material_bytes(), metadata.len());
     assert_eq!(
         (metadata.uid(), metadata.mode() & 0o7777, metadata.nlink()),
         (0, 0o600, 1)
