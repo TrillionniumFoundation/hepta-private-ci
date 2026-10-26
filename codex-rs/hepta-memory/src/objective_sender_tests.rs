@@ -3,10 +3,9 @@ use super::*;
 use crate::CognitiveStore;
 use crate::cognitive_test_support::layout;
 use codex_hepta_contracts::Sha256Digest;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
-use sqlx::Connection;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqliteConnection;
 
 #[derive(Clone, Copy)]
 enum ObservationPath {
@@ -251,15 +250,22 @@ async fn snapshot_acknowledged_holds_the_original_write_lock_through_the_current
     let sender = fixture.sender();
     drop(sender.retain_before_send(request()).await.unwrap());
     let recovered = sender.recover_pending(request()).await.unwrap();
-    let options = SqliteConnectOptions::new()
-        .filename(fixture.store.path())
-        .busy_timeout(Duration::ZERO);
-    let mut competing_writer = SqliteConnection::connect_with(&options).await.unwrap();
+    let competing_pool =
+        SqliteConfig::new_for_testing(AbsolutePathBuf::try_from(fixture.temp.path()).unwrap())
+            .open_durable_evidence_pool(fixture.store.path())
+            .await
+            .unwrap();
+    let mut competing_writer = competing_pool.acquire().await.unwrap();
+    // Keep the competing connection's original fail-immediately lock behavior.
+    sqlx::query("PRAGMA busy_timeout = 0")
+        .execute(&mut *competing_writer)
+        .await
+        .unwrap();
     *fixture.checkpoint.mode.lock().unwrap() = CheckpointMode::Hold;
     let read = tokio::spawn(async move { sender.snapshot_acknowledged(&recovered).await });
     fixture.checkpoint.entered.notified().await;
     let locked = sqlx::query("BEGIN IMMEDIATE")
-        .execute(&mut competing_writer)
+        .execute(&mut *competing_writer)
         .await
         .unwrap_err();
     assert_eq!(
@@ -271,11 +277,11 @@ async fn snapshot_acknowledged_holds_the_original_write_lock_through_the_current
     assert!(acknowledged.observations.is_empty());
     assert!(!acknowledged.locally_cancelled);
     sqlx::query("BEGIN IMMEDIATE")
-        .execute(&mut competing_writer)
+        .execute(&mut *competing_writer)
         .await
         .unwrap();
     sqlx::query("ROLLBACK")
-        .execute(&mut competing_writer)
+        .execute(&mut *competing_writer)
         .await
         .unwrap();
     let current = fixture.store.recovery_anchor().await.unwrap();
@@ -283,6 +289,8 @@ async fn snapshot_acknowledged_holds_the_original_write_lock_through_the_current
         fixture.checkpoint.seen.lock().unwrap().last().unwrap().0,
         current
     );
+    drop(competing_writer);
+    competing_pool.close().await;
 }
 
 #[tokio::test]
@@ -443,16 +451,23 @@ async fn failed_mismatched_or_revoked_final_checkpoint_leaves_unknown_not_a_new_
 #[tokio::test]
 async fn checkpoint_holds_original_sqlite_write_serialization_until_acknowledgement() {
     let fixture = Fixture::new().await;
-    let options = SqliteConnectOptions::new()
-        .filename(fixture.store.path())
-        .busy_timeout(Duration::ZERO);
-    let mut other_writer = SqliteConnection::connect_with(&options).await.unwrap();
+    let competing_pool =
+        SqliteConfig::new_for_testing(AbsolutePathBuf::try_from(fixture.temp.path()).unwrap())
+            .open_durable_evidence_pool(fixture.store.path())
+            .await
+            .unwrap();
+    let mut other_writer = competing_pool.acquire().await.unwrap();
+    // Keep the competing connection's original fail-immediately lock behavior.
+    sqlx::query("PRAGMA busy_timeout = 0")
+        .execute(&mut *other_writer)
+        .await
+        .unwrap();
     *fixture.checkpoint.mode.lock().unwrap() = CheckpointMode::Hold;
     let sender = fixture.sender();
     let retain = tokio::spawn(async move { sender.retain_before_send(request()).await });
     fixture.checkpoint.entered.notified().await;
     let locked = sqlx::query("BEGIN IMMEDIATE")
-        .execute(&mut other_writer)
+        .execute(&mut *other_writer)
         .await
         .unwrap_err();
     assert_eq!(
@@ -462,17 +477,19 @@ async fn checkpoint_holds_original_sqlite_write_serialization_until_acknowledgem
     fixture.checkpoint.release.notify_one();
     let ticket = retain.await.unwrap().unwrap();
     sqlx::query("BEGIN IMMEDIATE")
-        .execute(&mut other_writer)
+        .execute(&mut *other_writer)
         .await
         .unwrap();
     sqlx::query("ROLLBACK")
-        .execute(&mut other_writer)
+        .execute(&mut *other_writer)
         .await
         .unwrap();
     assert_eq!(
         ticket.request().exact_original(),
         request().exact_original()
     );
+    drop(other_writer);
+    competing_pool.close().await;
 }
 
 #[tokio::test]
