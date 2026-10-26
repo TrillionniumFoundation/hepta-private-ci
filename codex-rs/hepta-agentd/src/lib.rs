@@ -83,11 +83,21 @@ pub use authority_host_bootstrap::HostAuthorityPublicConsumersV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_bootstrap::HostAuthorityPublicIssuerKeyV1;
 #[cfg(target_os = "linux")]
+pub use authority_host_config::HostAuthorityBindIdentity;
+#[cfg(target_os = "linux")]
 pub use authority_host_config::HostAuthorityConsumerConfig;
 #[cfg(target_os = "linux")]
 pub use authority_host_config::HostAuthorityConsumersConfig;
 #[cfg(target_os = "linux")]
 pub use authority_host_config::HostAuthorityRegisteredIdentity;
+#[cfg(target_os = "linux")]
+pub use authority_host_config::HostAuthorityRegistration;
+#[cfg(target_os = "linux")]
+pub use authority_host_config::HostAuthorityServiceConfig;
+#[cfg(target_os = "linux")]
+pub use authority_host_config::HostAuthoritySocketPaths;
+#[cfg(target_os = "linux")]
+pub use authority_host_config::HostIssuerRecordProfile;
 #[cfg(target_os = "linux")]
 mod authority_host_native_launch;
 #[cfg(target_os = "linux")]
@@ -102,6 +112,10 @@ pub use authority_host_native_launch::diagnose_native_launch;
 pub use authority_host_native_launch::launch_host_authority_native_session;
 #[cfg(target_os = "linux")]
 mod authority_host_service;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::HostAuthorityBootstrap;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::HostAuthorityInitialized;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::PreparedHostAuthoritySession;
 #[cfg(target_os = "linux")]
