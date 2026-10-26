@@ -968,17 +968,22 @@ async fn inject_plaintext_credentials_if_enabled(
     Ok(())
 }
 
+#[cfg(any(target_os = "macos", test))]
+fn unix_socket_request_target(uri: &rama_net::uri::Uri) -> String {
+    let path = uri.path_or_root();
+    match uri.query() {
+        Some(query) => format!("{path}?{query}"),
+        None => path.into_owned(),
+    }
+}
+
 async fn proxy_via_unix_socket(req: Request, socket_path: &str) -> Result<Response> {
     #[cfg(target_os = "macos")]
     {
         let client = UpstreamClient::unix_socket(socket_path);
 
         let (mut parts, body) = req.into_parts();
-        let path = parts
-            .uri
-            .path_and_query()
-            .map(rama_net::uri::PathAndQuery::as_str)
-            .unwrap_or("/");
+        let path = unix_socket_request_target(&parts.uri);
         parts.uri = path
             .parse()
             .with_context(|| format!("invalid unix socket request path: {path}"))?;
@@ -1206,6 +1211,21 @@ struct BlockedResponse<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn unix_socket_request_target_preserves_path_and_query() {
+        for (input, expected) in [
+            ("http://example.com", "/"),
+            ("http://example.com/v1/notes", "/v1/notes"),
+            (
+                "http://example.com/v1/a%2Fb?key=x%2By&empty=",
+                "/v1/a%2Fb?key=x%2By&empty=",
+            ),
+        ] {
+            let uri = input.parse().expect("valid URI");
+            assert_eq!(unix_socket_request_target(&uri), expected);
+        }
+    }
 
     use crate::config::NetworkMode;
     use crate::config::NetworkProxyConfig;
