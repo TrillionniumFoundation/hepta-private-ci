@@ -116,3 +116,15 @@ The diagnostic stage changes no 500 ms bound, authority proof, policy, lease,
 cache recovery rule or effect retry rule. Source review and host regressions do
 not turn a failed native run into a success; the corrected evidence-bearing
 artifact must still complete the actual native chain before the VM-crash case.
+
+The read feed schedules its next serial exchange 100 ms from that exchange's
+actual start, after acquiring the consumer-synchronization lock. A response or
+consumer sync taking longer than 100 ms starts one next exchange immediately,
+then re-anchors the deadline to that new start. There are no accumulated ticks,
+overlapping reads or reconnects. BOOTTIME remains the authority clock; the Tokio
+instant only schedules work. All response age, previous-sample continuity,
+revocation synchronization and permanent fencing checks remain unchanged.
+Real-clock Unix-stream regressions retain a pre-fix failure for 210 ms replies
+and require 260 ms replies to fence specifically on the expired previous sample,
+even though each reply meets the 300 ms transport limit. They do not establish
+which native Root substage incurred delay or prove native qualification.

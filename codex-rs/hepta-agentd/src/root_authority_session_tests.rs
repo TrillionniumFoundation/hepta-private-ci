@@ -84,6 +84,16 @@ async fn connected() -> (
     std::thread::JoinHandle<()>,
     [u8; 32],
 ) {
+    connected_with_observation_delay(Duration::ZERO).await
+}
+async fn connected_with_observation_delay(
+    observation_delay: Duration,
+) -> (
+    AgentdRootAuthoritySession,
+    Arc<AtomicU64>,
+    std::thread::JoinHandle<()>,
+    [u8; 32],
+) {
     let (trust, proof) = fixture();
     let key = trust.verifying_key;
     let (client, mut server) = UnixStream::pair().unwrap();
@@ -144,6 +154,9 @@ async fn connected() -> (
                 .unwrap()
             } else {
                 assert_eq!(value["operation"], HOST_AUTHORITY_OBSERVATION_V2);
+                if !observation_delay.is_zero() {
+                    std::thread::sleep(observation_delay);
+                }
                 let mut sample = observation(&proof);
                 let elapsed = (boottime_ns().unwrap() - base) / 1_000_000;
                 sample.clock.boot_id = peer_boot.clone();
@@ -180,6 +193,46 @@ async fn connected() -> (
     .await
     .unwrap();
     (session, head, worker, key)
+}
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn request_start_cadence_keeps_original_clock_live_across_bounded_slow_observations() {
+    let (session, _, peer, _) = connected_with_observation_delay(Duration::from_millis(210)).await;
+    // Two valid ~210ms requests fit the unchanged 500ms continuity window.
+    // Adding a post-completion 100ms sleep makes that same chain expire.
+    tokio::time::sleep(Duration::from_millis(350)).await;
+    let result = session.clock().now_unix_ms();
+    let failure = session.live.cache.diagnostics.first();
+    drop(session);
+    peer.join().unwrap();
+    assert!(
+        result.is_ok(),
+        "bounded observation feed was fenced: {failure:?}"
+    );
+}
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn request_start_cadence_never_revives_an_expired_original_observation_chain() {
+    let (session, _, peer, _) = connected_with_observation_delay(Duration::from_millis(260)).await;
+    // Each transport reply is within 300ms, but two requests cannot preserve
+    // the original <=500ms chain. Faster scheduling must still fail closed.
+    tokio::time::sleep(Duration::from_millis(350)).await;
+    let clock = session.clock();
+    let first_result = clock.now_unix_ms();
+    let failure = session.live.cache.diagnostics.first();
+    tokio::time::sleep(Duration::from_millis(20)).await;
+    let later_result = clock.now_unix_ms();
+    let later_failure = session.live.cache.diagnostics.first();
+    drop(session);
+    peer.join().unwrap();
+    assert!(first_result.is_err());
+    assert!(later_result.is_err());
+    assert_eq!(later_failure, failure);
+    let failure = failure.expect("expired chain must retain the first refusal");
+    assert_eq!(failure.stage, "cache_accept_previous");
+    let started = failure.started_ns.unwrap();
+    let ended = failure.ended_ns.unwrap();
+    assert!(ended >= started);
+    assert!(ended - started <= 300_000_000);
+    assert!(failure.now_ns.unwrap() - failure.previous_started_ns.unwrap() > MAX_AGE_NS);
 }
 #[tokio::test]
 async fn exact_original_consumers_activate_writer_and_drop_fences_retained_clones() {

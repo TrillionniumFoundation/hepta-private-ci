@@ -202,15 +202,16 @@ impl AgentdRootAuthoritySession {
             consumers: Mutex::new(Vec::new()),
             serial: tokio::sync::Mutex::new(()),
         });
-        refresh(&live, &stream).await?;
+        let mut next_refresh_at = refresh(&live, &stream).await?;
         let background = Arc::clone(&live);
         let worker = tokio::spawn(async move {
             let _fence = FenceOnDrop(Arc::clone(&background));
             loop {
-                tokio::time::sleep(Duration::from_millis(100)).await;
-                if refresh(&background, &stream).await.is_err() {
-                    return;
-                }
+                tokio::time::sleep_until(next_refresh_at).await;
+                next_refresh_at = match refresh(&background, &stream).await {
+                    Ok(next) => next,
+                    Err(_) => return,
+                };
             }
         });
         Ok(Self { live, worker })
@@ -317,8 +318,13 @@ impl Drop for ActivationAttempt<'_> {
 async fn refresh(
     live: &Arc<LiveRoot>,
     stream: &RootObservationStream,
-) -> Result<(), AgentdRootAuthorityError> {
+) -> Result<tokio::time::Instant, AgentdRootAuthorityError> {
     let _serial = live.serial.lock().await;
+    // Schedule from the actual serialized request start, not its completion.
+    // Slow work starts one next request immediately; each request re-anchors
+    // the deadline so no accumulated ticks or concurrent reads are introduced.
+    // This scheduling instant never supplies an authority clock sample.
+    let next_refresh_at = tokio::time::Instant::now() + Duration::from_millis(100);
     let started = boottime_ns().inspect_err(|_| {
         live.cache.diagnostics.record(ObservationFailure {
             stage: "refresh_started_clock",
@@ -381,7 +387,8 @@ async fn refresh(
             })?;
         live.cache.end_update();
     }
-    live.validate_refresh()
+    live.validate_refresh()?;
+    Ok(next_refresh_at)
 }
 async fn synchronize_consumers(
     consumers: Vec<FinalUseAuthority>,

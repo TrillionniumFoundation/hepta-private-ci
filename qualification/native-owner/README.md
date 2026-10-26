@@ -38,6 +38,40 @@ The complete raw serial is retained without filtering; excess output still fails
 Keep every failed attempt; `passed` is only set after actual evidence validates.
 Neither enables production or claims general cross-boot writer handoff.
 
+## Reproduce the original owner build
+
+Install Rust 1.95.0 with the `x86_64-unknown-linux-musl` target, `musl-gcc`,
+and the normal locked workspace build dependencies. From this repository root,
+choose dedicated absolute build and temporary directories, then run:
+
+```sh
+export NATIVE_OWNER_TARGET=/absolute/path/to/dedicated-target
+export NATIVE_OWNER_TMP=/absolute/path/to/build-temporary-directory
+mkdir -p "$NATIVE_OWNER_TARGET" "$NATIVE_OWNER_TMP"
+cd codex-rs
+env RUSTUP_TOOLCHAIN=1.95.0-x86_64-unknown-linux-gnu \
+  CARGO_BUILD_JOBS=2 CARGO_INCREMENTAL=0 \
+  CARGO_PROFILE_RELEASE_DEBUG=0 CARGO_PROFILE_RELEASE_STRIP=symbols \
+  CARGO_TARGET_DIR="$NATIVE_OWNER_TARGET" TMPDIR="$NATIVE_OWNER_TMP" \
+  CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=musl-gcc \
+  CC_x86_64_unknown_linux_musl=musl-gcc \
+  CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUSTFLAGS='-C target-feature=+crt-static -C relocation-model=static -C link-arg=-no-pie' \
+  cargo build --locked --offline --release --target x86_64-unknown-linux-musl \
+    -p codex-hepta-agentd --features qualification-native-owner \
+    --bin hepta-native-owner-qualification
+```
+
+Populate the locked dependency cache before using `--offline`. The existing
+release profile remains unchanged; do not substitute a stub owner or remove
+dependencies to fit the loader. Retain the clean commit/tree, complete build
+command and log, and source measurements before and after compilation. Copy
+`$NATIVE_OWNER_TARGET/x86_64-unknown-linux-musl/release/hepta-native-owner-qualification`
+to a separate retained artifact, measure its SHA256 and inspect it with
+`readelf -h -l`: require static `ET_EXEC`, no `INTERP` or `DYNAMIC`, and the
+runner's bounded segment/TLS limits. A successful compiler exit alone is not a
+native execution result. Supply canonical absolute paths to the runner; its
+build receipt also checks the actual compiler arguments and target paths.
+
 `test-native-history-oracle.py` and `test-native-complete-oracle.py` test only the
 actual serial parsers with explicitly synthetic examples. They are not native
 evidence. Actual result summaries must bind
