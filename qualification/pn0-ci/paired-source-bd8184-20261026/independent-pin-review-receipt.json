@@ -1,0 +1,364 @@
+{
+  "schema": "independent-three-pin-pair-workflow-source-review-v1",
+  "recorded_utc": "2026-10-26T20:25:36.099729+00:00",
+  "Hepta_parent": "3e1afb5d3e199abf4fccab78f6812ffaf64f77ea",
+  "Hepta_parent_tree": "6414c131af834fbb9a4506570c000873d41d2d3d",
+  "reviewed_workflow": ".github/workflows/hepta-pon-native-pair.yml",
+  "before_sha256": "1ec9f82f0970abe385f8febbe5db67d714c6223e2f89554d653d90845d1fd2c8",
+  "candidate_sha256": "b61713098223e46d60e91cf2378b36841fa02279b327d0be825240b88b3e4df7",
+  "only_two_env_fields_three_hash_substitutions": true,
+  "original_source_occurrences": 2,
+  "original_qualification_occurrences": 1,
+  "all_other_bytes_preserved": true,
+  "all_other_deep_YAML_fields_exact": true,
+  "original_step_contracts": [
+    {
+      "job": "pair",
+      "steps": 56,
+      "raw_sha256": "e2f6eb313de43dce54ff5c106fc289c5bb6a5bbc7b0fd26e73fde4cbcdb62238",
+      "all_original_raw_bytes_exact": true,
+      "timeout_minutes": "60",
+      "matrix": {
+        "runner": [
+          "ubuntu-24.04",
+          "ubuntu-24.04-arm"
+        ],
+        "lane": [
+          "source-head",
+          "base-merge"
+        ]
+      }
+    },
+    {
+      "job": "windows-ledger",
+      "steps": 9,
+      "raw_sha256": "064c795438a7bbca07bd60d795be1eb319dd2ee1b4a7881646341ed946a33e2a",
+      "all_original_raw_bytes_exact": true,
+      "timeout_minutes": "30",
+      "matrix": {
+        "lane": [
+          "source-head",
+          "base-merge"
+        ]
+      }
+    }
+  ],
+  "Windows_native_workflow_not_changed": true,
+  "permissions_triggers_jobs_features_tests_assertions_bounds_concurrency_and_platforms_unchanged": true,
+  "new_fixed_source_plan": {
+    "Chain_source": "bd81849bb47b10e912cfea84f7532ccc1175e4ee",
+    "main_base": "9fedf7ecbbe07177069c030592b4e03dcffebb81",
+    "main_qualification": "96175153365914375739e5ccf6dd47b84a9e97a2",
+    "actual_qualification_ordered_parents": [
+      "9fedf7ecbbe07177069c030592b4e03dcffebb81",
+      "bd81849bb47b10e912cfea84f7532ccc1175e4ee"
+    ],
+    "actual_qualification_tree": "f1dfaf1a5a4baf98f4796f3532b3e13e11565c7c",
+    "new_Chain_actual_PRpreview": "985dd37f4dc6f1859b57ffcaed8f0cd75da3a032",
+    "actual_PRpreview_distinct": true,
+    "primary_GET_envelope_sha256": "21e8bfebca053e6ab9de72cc3768bba5d3278d8c05e9c3c902267881f2944070",
+    "source_snapshot_not_execution_receipt": true
+  },
+  "map_input_review": {
+    "module_count": 40,
+    "affected_input": ".github/workflows/hepta-pon-native-pair.yml",
+    "records": [
+      {
+        "module": "platform.types",
+        "map_path": "docs/modules/platform.types/IMPLEMENTATION_MAP.json",
+        "map_sha256": "bed7b4df066d6bfb52927ac27b70084d6ca3022aae2b6c556b5c05bbc2c58309",
+        "selector_count": 25,
+        "workflow_intersections": []
+      },
+      {
+        "module": "platform.wire",
+        "map_path": "docs/modules/platform.wire/IMPLEMENTATION_MAP.json",
+        "map_sha256": "8312c8d0dc012a2ee22c7629da04a9c8cfb0c0e277e53fcb11cfa48ef9dfffab",
+        "selector_count": 22,
+        "workflow_intersections": []
+      },
+      {
+        "module": "kernel.authority",
+        "map_path": "docs/modules/kernel.authority/IMPLEMENTATION_MAP.json",
+        "map_sha256": "89fa7d041c5d609df3566f7fcf452976bad8deee7093bae076fd00c43198d170",
+        "selector_count": 26,
+        "workflow_intersections": []
+      },
+      {
+        "module": "kernel.operations",
+        "map_path": "docs/modules/kernel.operations/IMPLEMENTATION_MAP.json",
+        "map_sha256": "db346755cf2cce3b35c39b715940d49fba595b03c08db8a0097f6d915a9a3237",
+        "selector_count": 37,
+        "workflow_intersections": []
+      },
+      {
+        "module": "kernel.evidence",
+        "map_path": "docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json",
+        "map_sha256": "75eda67a1db201aad0aa4f9afc9954418463b5a6b498443e1cdabbaddb0e513b",
+        "selector_count": 10,
+        "workflow_intersections": []
+      },
+      {
+        "module": "runtime.supervisor",
+        "map_path": "docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json",
+        "map_sha256": "04f82d5f111a1a7b66b24678e2b74317294c472bfb2cb189f23a086f7ebc29e4",
+        "selector_count": 20,
+        "workflow_intersections": []
+      },
+      {
+        "module": "runtime.fleet",
+        "map_path": "docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json",
+        "map_sha256": "ca0ac5d6394ca222c25f5ad1fc33baccd7770a61c36d0a92db5e9517f35c80c9",
+        "selector_count": 4,
+        "workflow_intersections": []
+      },
+      {
+        "module": "runtime.agentd",
+        "map_path": "docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json",
+        "map_sha256": "e280aa199e6ac765a4f0073cda3bab2ecbb85bf3fbfe80f7f1b9aac36606dd56",
+        "selector_count": 16,
+        "workflow_intersections": []
+      },
+      {
+        "module": "runtime.codex",
+        "map_path": "docs/modules/runtime.codex/IMPLEMENTATION_MAP.json",
+        "map_sha256": "a5664b92297fd58b05519e073a81155502240338d8411240b9f87eb7b2126a4d",
+        "selector_count": 28,
+        "workflow_intersections": []
+      },
+      {
+        "module": "auth.authbus",
+        "map_path": "docs/modules/auth.authbus/IMPLEMENTATION_MAP.json",
+        "map_sha256": "65cfdbbbda6863323e568c15126c0a4e5934510477301fb1c83b1d505dc651c6",
+        "selector_count": 6,
+        "workflow_intersections": []
+      },
+      {
+        "module": "secrets.heptabao",
+        "map_path": "docs/modules/secrets.heptabao/IMPLEMENTATION_MAP.json",
+        "map_sha256": "05359bf59aa80cf425de5aeff96302557efa8277618c2eab8dd254bca9286fc9",
+        "selector_count": 7,
+        "workflow_intersections": []
+      },
+      {
+        "module": "inference.control",
+        "map_path": "docs/modules/inference.control/IMPLEMENTATION_MAP.json",
+        "map_sha256": "bf33764981751a430b8595e698d9dbfaf67bcdecdcc7004300f3fb56f8dcf67a",
+        "selector_count": 5,
+        "workflow_intersections": []
+      },
+      {
+        "module": "inference.worker",
+        "map_path": "docs/modules/inference.worker/IMPLEMENTATION_MAP.json",
+        "map_sha256": "1129ac2103a6a526112dbbfdfc6552881fcfad1ebb441cdb1249782b9e8ae5ff",
+        "selector_count": 25,
+        "workflow_intersections": []
+      },
+      {
+        "module": "objective.compiler",
+        "map_path": "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json",
+        "map_sha256": "fe5a33b1ee471854f083a208171bd02bd44c6140089e4de23df83eb94338c6ff",
+        "selector_count": 27,
+        "workflow_intersections": []
+      },
+      {
+        "module": "utility.ndu",
+        "map_path": "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json",
+        "map_sha256": "c91e0ff19f0cccb21151ce85ab9c113d44ea3101b5daa11b8f3dc6f34f606c8b",
+        "selector_count": 36,
+        "workflow_intersections": []
+      },
+      {
+        "module": "neuron.runtime",
+        "map_path": "docs/modules/neuron.runtime/IMPLEMENTATION_MAP.json",
+        "map_sha256": "a88c529d383b0c296c93c111b66d2450ddcb2e7dea5ebc40065b9e7bfb6fbdcf",
+        "selector_count": 25,
+        "workflow_intersections": []
+      },
+      {
+        "module": "intuition.policy",
+        "map_path": "docs/modules/intuition.policy/IMPLEMENTATION_MAP.json",
+        "map_sha256": "fed9c4b22bedd23984cfe1aa254d4a545e492347a455031f5f4e5b1b48d4156c",
+        "selector_count": 4,
+        "workflow_intersections": []
+      },
+      {
+        "module": "prompt.registry",
+        "map_path": "docs/modules/prompt.registry/IMPLEMENTATION_MAP.json",
+        "map_sha256": "ab7b3e86cfbf7d0d16206161f315ad817c66648d4ebcce6c6154cd9594e0de30",
+        "selector_count": 4,
+        "workflow_intersections": []
+      },
+      {
+        "module": "prompt.optimizer",
+        "map_path": "docs/modules/prompt.optimizer/IMPLEMENTATION_MAP.json",
+        "map_sha256": "2c3ead4d5fc350ec3fbcb34f7d156704009069252d8a42a2a215f715ac6685b0",
+        "selector_count": 4,
+        "workflow_intersections": []
+      },
+      {
+        "module": "context.compiler",
+        "map_path": "docs/modules/context.compiler/IMPLEMENTATION_MAP.json",
+        "map_sha256": "a3a2ef0ceee33db3d1cafb035db87f9fea42ab416df92a4108a69ae092bb5997",
+        "selector_count": 13,
+        "workflow_intersections": []
+      },
+      {
+        "module": "intelligence.control",
+        "map_path": "docs/modules/intelligence.control/IMPLEMENTATION_MAP.json",
+        "map_sha256": "bdfc393de775c135c799ea6472851efad0ff9f4bf06bcdf82f2201a49a8f4438",
+        "selector_count": 42,
+        "workflow_intersections": []
+      },
+      {
+        "module": "cognitive.types",
+        "map_path": "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json",
+        "map_sha256": "652f67f6f0fb3140204dfa6de23f6334b471d69cb6d66d3afc94169cea86e112",
+        "selector_count": 11,
+        "workflow_intersections": []
+      },
+      {
+        "module": "cognitive.store",
+        "map_path": "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json",
+        "map_sha256": "979a8a67b42524d34e54145a61a0d6514abec40cbd3c41596e9d6524b9147cd5",
+        "selector_count": 19,
+        "workflow_intersections": []
+      },
+      {
+        "module": "cognitive.read",
+        "map_path": "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json",
+        "map_sha256": "c6c6ac8e3d8d86f6907660ad6a880085c14316ce64931a0d3daaf9955e4808b9",
+        "selector_count": 29,
+        "workflow_intersections": []
+      },
+      {
+        "module": "memory.retrieval",
+        "map_path": "docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json",
+        "map_sha256": "435186f0fbbf271750d159327e184686546c843cad78d4b925e1cf9f0dd3d369",
+        "selector_count": 44,
+        "workflow_intersections": []
+      },
+      {
+        "module": "memory.federation",
+        "map_path": "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
+        "map_sha256": "1c8aa326fb0701d64f855528a49052e0c0c2c0943bb26bee293d42fc6e219df4",
+        "selector_count": 26,
+        "workflow_intersections": []
+      },
+      {
+        "module": "knowledge.graph",
+        "map_path": "docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json",
+        "map_sha256": "c93e0042c9eb69be6e53ea1c5aaa1f2ccbc3504dce12d67bbc45729f60eedf93",
+        "selector_count": 40,
+        "workflow_intersections": []
+      },
+      {
+        "module": "compact.engine",
+        "map_path": "docs/modules/compact.engine/IMPLEMENTATION_MAP.json",
+        "map_sha256": "26a6fa4fceae0b10428dc63ae76f435a81f0133697a4cc29cef08a83ee8d7d70",
+        "selector_count": 4,
+        "workflow_intersections": []
+      },
+      {
+        "module": "learning.ledger",
+        "map_path": "docs/modules/learning.ledger/IMPLEMENTATION_MAP.json",
+        "map_sha256": "c80889b136993ea9732623e437349b7e027b98f605f5745bee8531445cbf6eb9",
+        "selector_count": 44,
+        "workflow_intersections": []
+      },
+      {
+        "module": "learning.operator",
+        "map_path": "docs/modules/learning.operator/IMPLEMENTATION_MAP.json",
+        "map_sha256": "e42a8820eb6f2756bf0d4201405604af292eb0912973eb965e74dba780576efb",
+        "selector_count": 18,
+        "workflow_intersections": []
+      },
+      {
+        "module": "learning.eval",
+        "map_path": "docs/modules/learning.eval/IMPLEMENTATION_MAP.json",
+        "map_sha256": "59226751bc91da85cecf4f017cabef1c8fd27de64d12a0223562aced4e18daf9",
+        "selector_count": 25,
+        "workflow_intersections": []
+      },
+      {
+        "module": "learning.artifacts",
+        "map_path": "docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json",
+        "map_sha256": "575f1fd5338a8170cf9ab17587a7decfc3c7205ef3f6a4775aa6097bfbc3fb80",
+        "selector_count": 23,
+        "workflow_intersections": []
+      },
+      {
+        "module": "learning.plasticity",
+        "map_path": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
+        "map_sha256": "0667bc9bf2aca7278f663d57fd34b91fcc037f6ca9c348b0177df0c6c47b24c5",
+        "selector_count": 42,
+        "workflow_intersections": []
+      },
+      {
+        "module": "automation.taskflow",
+        "map_path": "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json",
+        "map_sha256": "e387e139a3bdac050f8b8eee83c59b3158fa3142828bf348a5f4fbf76ba3f27b",
+        "selector_count": 33,
+        "workflow_intersections": []
+      },
+      {
+        "module": "channel.matrix",
+        "map_path": "docs/modules/channel.matrix/IMPLEMENTATION_MAP.json",
+        "map_sha256": "94bae828d4be7c028d336eea8fd320fb2eea0f869a27a4859dea87c21f4e6d6e",
+        "selector_count": 12,
+        "workflow_intersections": []
+      },
+      {
+        "module": "browser.servo",
+        "map_path": "docs/modules/browser.servo/IMPLEMENTATION_MAP.json",
+        "map_sha256": "8f4182e904f540ad5d7bffba3818f03788defcc9d352f38e0edc86a6f38d9732",
+        "selector_count": 5,
+        "workflow_intersections": []
+      },
+      {
+        "module": "ui.control",
+        "map_path": "docs/modules/ui.control/IMPLEMENTATION_MAP.json",
+        "map_sha256": "4c62af3d21d679ba0396de43d865041fe1be96196cb5e024bdfb7045d811ec23",
+        "selector_count": 4,
+        "workflow_intersections": []
+      },
+      {
+        "module": "ui.native",
+        "map_path": "docs/modules/ui.native/IMPLEMENTATION_MAP.json",
+        "map_sha256": "e569ca689e68646ee357621e6372dde88c9c7b3061975b2c63da64f2caefb9a8",
+        "selector_count": 4,
+        "workflow_intersections": []
+      },
+      {
+        "module": "control.runtime",
+        "map_path": "docs/modules/control.runtime/IMPLEMENTATION_MAP.json",
+        "map_sha256": "6942eb3bbeb37f973869af0223319eccb43e13ffd7e872f2816f3d860a3266bd",
+        "selector_count": 6,
+        "workflow_intersections": []
+      },
+      {
+        "module": "control.engineering",
+        "map_path": "docs/modules/control.engineering/IMPLEMENTATION_MAP.json",
+        "map_sha256": "982588c73cd329e0778644f1db19c37fb73bba825681f969b44e42c543791386",
+        "selector_count": 31,
+        "workflow_intersections": []
+      }
+    ],
+    "matching_modules": [],
+    "no_map_witness_rebinding_required_for_pin_only_change": true,
+    "historical40mapPASS_not_renewed_for_futurecommit": true,
+    "no_map_verifier_executed": true
+  },
+  "decision": "APPROVE_ONLY_EXACT_THREE_PIN_SOURCE_CHANGE_FOR_NORMAL_CI_ITERATION",
+  "qualification": {
+    "native_windows_original20_groups_and_two_delete_failures_still_open": true,
+    "pair56_and_Windows_ledger9_steps_not_executed_here": true,
+    "new_pair_not_yet_published_or_CIqualified": true,
+    "merge_ready": false
+  },
+  "scope": {
+    "root_source_Git_or_outputs_modified": false,
+    "network_CI_build_test_or_verifier_execution": false,
+    "dispatch_rerun_cancel_push": false
+  }
+}
