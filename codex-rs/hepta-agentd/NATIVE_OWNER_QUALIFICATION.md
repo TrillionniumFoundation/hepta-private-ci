@@ -128,6 +128,16 @@ awaits its actual result and retains at most 4096 diagnostic characters rather
 than dropping the startup error. An earlier generic exit does not by itself
 prove that home resolution was its first cause.
 
+The native Agentd now uses the normal `arg0_dispatch_or_else` path rather than
+empty `Arg0DispatchPaths`: it retains real current-image and helper paths for
+the original AppServer and uses the ordinary runtime stack setup. The sealed
+entry dispatches only original hidden helpers before requiring its bootstrap;
+an ordinary qualification invocation still requires its sealed role. Helper
+modes do not create a new Root, writer or HOS2 capability. The original dispatcher
+remains the sole helper implementation, with no dummy executable or substituted
+AppServer. The exact e537 guest exposed the previous missing executable-path
+error; its failed readiness and private disk remain historical evidence.
+
 The diagnostic stage changes no 500 ms bound, authority proof, policy, lease,
 cache recovery rule or effect retry rule. Source review and host regressions do
 not turn a failed native run into a success; the corrected evidence-bearing

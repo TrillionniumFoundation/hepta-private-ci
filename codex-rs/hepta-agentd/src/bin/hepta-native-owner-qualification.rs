@@ -1,6 +1,7 @@
 //! Explicit sealed-image guest qualification of the original Root and Agentd.
-//! It cannot run on an ordinary host: HOS2BOOT v2 and the actual process-bound
-//! device are mandatory. Fresh qualification Root state is not production.
+//! The qualification path requires HOS2BOOT v2 and the actual process-bound
+//! device. Original hidden helper re-execs dispatch before those role checks.
+//! Fresh qualification Root state is not production.
 #[path = "native_owner_qualification/agent.rs"]
 #[cfg(target_os = "linux")]
 mod agent;
@@ -16,6 +17,7 @@ mod root;
 
 #[cfg(target_os = "linux")]
 fn main() {
+    codex_arg0::dispatch_hidden_helper_if_requested();
     let result = common::Boot::read().and_then(|boot| match boot.role {
         1 => root::run(boot),
         2 => {
