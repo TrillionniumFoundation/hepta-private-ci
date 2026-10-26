@@ -33,7 +33,7 @@ Root role 4, Workload role 2 and version-4 history-only role 5 are rejected by
 both management constructors. In particular, a history successor has its own
 local namespace at offset 208 while offsets 112/128 refer to retained old D
 namespaces; those old namespaces must not be treated as new effect authority.
-A separate history-only composition remains necessary. The kernel launch
+The separate history-only adapter below supplies no management path. The kernel launch
 generation is also not the original Supervisor's Registry generation, and a
 launcher receipt is not proof that Root persisted it before `AckSaved`.
 
@@ -63,6 +63,64 @@ Registry, protected Root Current/issuer, durable writer, synchronous FinalUse
 device and actual retained storage. This interface change is a prerequisite;
 the old peer qualification example and a successful ReadUsage probe cannot
 replace that executable or its native writer/recovery evidence.
+
+## History-only successor adapter
+
+`AgentdHos2HistoryDevice::from_g2_successor_bootstrap` explicitly accepts only
+the kernel's version-4, 240-byte **role 5** page and the current final image's
+own already-open file. It reuses the original `FileTransport`, correlated
+QueryAbi/QueryDelivery parsing and retirement exchange. It adds no device
+executor, writer, FinalUse owner, key, journal, schema or persisted format.
+
+The page must name Root PID 1 and this actual child, zero Manager/Recovery PIDs,
+a distinct valid Workload PID, a nonzero launch generation, and the exact
+history slots `(3,1)` and `(4,1)`. Observe/manage slots, cap and lease must all
+be zero. Its own nonzero namespace at offset 208 must differ from both retained
+old namespaces. QueryAbi must independently return that new local namespace;
+using an old D namespace as the current image identity is refused. Padding,
+reserved bytes, wrong versions, another process/parent and unexpected rights
+fail before the QueryAbi call. The kernel independently checks the actual
+process and image epoch on every retained file call.
+
+This type implements the same `Hos2Device` consumed by `ProductionHos2Target`.
+`install` always refuses before any I/O; there is no install-request builder,
+current-usage method or way to extract its private management-shaped inner
+transport. `observe` first validates the persisted original G2 request's old
+namespace, management slot 2/generation 1 and 50 ms ceiling. These are bounds
+of the original request profile, never rights granted to the zero-cap history
+successor. Changed boot, inaccessible history, kernel refusal and malformed
+responses remain unavailable. They do not prove a zero-effect terminal state.
+
+Retirement still requires `ProductionDurableWriter::retire_hos2_through` on the
+original live writer. Only that owner can create the non-serializable borrowed
+`Hos2RetirementPermit` after its complete immutable terminal-prefix and protected
+checkpoint checks. An adapter constructor, copied D, query reply or caller-supplied
+result cannot create that permit. A lost retirement ACK can repeat only this
+original source proof and exact old namespace prefix; it cannot replay an effect.
+
+The focused regressions use the actual adapter/parser and explicit scripted
+transport. The owner regression also runs the original SQLx/SQLite writer and
+`ProductionHos2Target`: Queued/Unknown retirement is refused, independent
+observation must first persist a terminal, and a lost ACK repeats the identical
+retirement frame without adding a source journal. They supply test-only source
+authority and a test FinalUse owner; they do not execute a native G2 image or
+establish production trust. Run on the repository's locked Rust toolchain:
+
+```sh
+just test --locked -p codex-hepta-agentd --lib \
+  -E 'test(hos2_device) | test(g2_history_successor)'
+```
+
+**Production composition remains open.** Neither the management nor history
+constructor is called by the current Agentd startup. Its original production
+launcher accepts Android/Notes, not a G2 multi-role initial image. The trusted
+kernel supplies a read-only `AT_HEPTA_BOOT=240` mapping and requires the same
+final image to open its own root-only control file before dropping credentials.
+Passing a Root-opened file or execing Agentd after a small launcher does not
+preserve that process/image authority. A real G2 entry must compose the original
+Supervisor/Registry, Root five lanes, independently retained Current/frontiers,
+same original writer/FinalUse, and this explicit recovery attachment, with
+actual source-bound finite effect/recovery/retirement evidence.
 
 ## Original Root process credential contract
 
