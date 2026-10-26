@@ -33,17 +33,16 @@ pub struct AgentdNotesUiPeer {
     pub process_start_ticks: u64,
 }
 
-pub(crate) struct NotesUiEndpoint {
-    listener: tokio::net::UnixListener,
-    pub(crate) lifetime: AsyncFd<OwnedFd>,
-    peer: AgentdNotesUiPeer,
+/// Held original Session lifetime. This is a kernel descriptor check, not
+/// authority inferred from a PID, username or renderer-supplied DTO.
+pub struct AgentdNotesSessionLifetime {
+    lifetime: AsyncFd<OwnedFd>,
 }
 
-impl NotesUiEndpoint {
-    pub(crate) fn from_inherited(
-        listener: OwnedFd,
+impl AgentdNotesSessionLifetime {
+    pub fn from_inherited(
         session_pidfd: OwnedFd,
-        peer: AgentdNotesUiPeer,
+        peer: &AgentdNotesUiPeer,
     ) -> Result<Self, AgentdError> {
         // SAFETY: geteuid only reads this process's current credentials.
         let own_uid = unsafe { libc::geteuid() };
@@ -57,6 +56,63 @@ impl NotesUiEndpoint {
                 "Notes UI requires the actual same-UID Session birth identity",
             ));
         }
+        let number = session_pidfd.as_raw_fd();
+        if std::fs::read_link(format!("/proc/self/fd/{number}"))? != Path::new("anon_inode:[pidfd]")
+            || bounded_text(&format!("/proc/self/fdinfo/{number}"), 4096)?
+                .lines()
+                .find_map(|line| line.strip_prefix("Pid:")?.trim().parse::<u32>().ok())
+                != Some(peer.pid)
+            || bounded_text("/proc/sys/kernel/random/boot_id", 128)?.trim() != peer.boot_id
+        {
+            return Err(invalid(
+                "Notes UI pidfd or boot identity differs from actual Session",
+            ));
+        }
+        let stat = bounded_text(&format!("/proc/{}/stat", peer.pid), 8192)?;
+        if stat
+            .rsplit_once(") ")
+            .and_then(|(_, fields)| fields.split_whitespace().nth(19))
+            .and_then(|value| value.parse::<u64>().ok())
+            != Some(peer.process_start_ticks)
+        {
+            return Err(invalid("Notes UI Session process birth differs"));
+        }
+        crate::root_observation_stream::check_lifetime(&session_pidfd)
+            .map_err(|_| invalid("Notes UI Session is no longer alive"))?;
+        // SAFETY: the AsyncFd owns the held pidfd exclusively for its lifetime.
+        let lifetime = unsafe {
+            AsyncFd::register_with_interest(session_pidfd, tokio::io::Interest::READABLE)
+        }
+        .map_err(std::io::Error::from)?;
+        Ok(Self { lifetime })
+    }
+    pub(crate) fn check_alive(&self) -> Result<(), AgentdError> {
+        crate::root_observation_stream::check_lifetime(self.lifetime.get_ref())
+            .map_err(|_| invalid("original Notes Session lifetime ended"))
+    }
+}
+
+impl std::ops::Deref for AgentdNotesSessionLifetime {
+    type Target = AsyncFd<OwnedFd>;
+    fn deref(&self) -> &Self::Target {
+        &self.lifetime
+    }
+}
+
+pub(crate) struct NotesUiEndpoint {
+    listener: tokio::net::UnixListener,
+    pub(crate) lifetime: AgentdNotesSessionLifetime,
+    peer: AgentdNotesUiPeer,
+}
+
+impl NotesUiEndpoint {
+    pub(crate) fn from_inherited(
+        listener: OwnedFd,
+        session_pidfd: OwnedFd,
+        peer: AgentdNotesUiPeer,
+    ) -> Result<Self, AgentdError> {
+        // SAFETY: geteuid only reads this process's current credentials.
+        let own_uid = unsafe { libc::geteuid() };
         for (option, expected) in [
             (libc::SO_TYPE, libc::SOCK_STREAM),
             (libc::SO_DOMAIN, libc::AF_UNIX),
@@ -96,36 +152,9 @@ impl NotesUiEndpoint {
                 "Notes UI socket node must be private to the actual Session/Agentd UID",
             ));
         }
-        let number = session_pidfd.as_raw_fd();
-        if std::fs::read_link(format!("/proc/self/fd/{number}"))? != Path::new("anon_inode:[pidfd]")
-            || bounded_text(&format!("/proc/self/fdinfo/{number}"), 4096)?
-                .lines()
-                .find_map(|line| line.strip_prefix("Pid:")?.trim().parse::<u32>().ok())
-                != Some(peer.pid)
-            || bounded_text("/proc/sys/kernel/random/boot_id", 128)?.trim() != peer.boot_id
-        {
-            return Err(invalid(
-                "Notes UI pidfd or boot identity differs from actual Session",
-            ));
-        }
-        let stat = bounded_text(&format!("/proc/{}/stat", peer.pid), 8192)?;
-        if stat
-            .rsplit_once(") ")
-            .and_then(|(_, fields)| fields.split_whitespace().nth(19))
-            .and_then(|value| value.parse::<u64>().ok())
-            != Some(peer.process_start_ticks)
-        {
-            return Err(invalid("Notes UI Session process birth differs"));
-        }
-        crate::root_observation_stream::check_lifetime(&session_pidfd)
-            .map_err(|_| invalid("Notes UI Session is no longer alive"))?;
+        let lifetime = AgentdNotesSessionLifetime::from_inherited(session_pidfd, &peer)?;
         listener.set_nonblocking(true)?;
         let listener = tokio::net::UnixListener::from_std(listener)?;
-        // SAFETY: the AsyncFd owns the held pidfd exclusively for its lifetime.
-        let lifetime = unsafe {
-            AsyncFd::register_with_interest(session_pidfd, tokio::io::Interest::READABLE)
-        }
-        .map_err(std::io::Error::from)?;
         let endpoint = Self {
             listener,
             lifetime,

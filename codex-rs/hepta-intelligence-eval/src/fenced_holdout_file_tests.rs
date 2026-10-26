@@ -8,6 +8,7 @@ use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
 use codex_hepta_types::FixedQ32;
+use pretty_assertions::assert_eq;
 
 use crate::CrossFoldPartitionV1;
 use crate::CrossFoldPlanV1;
@@ -68,6 +69,71 @@ impl TempFile {
 impl Drop for TempFile {
     fn drop(&mut self) {
         let _ = fs::remove_file(&self.path);
+    }
+}
+
+#[test]
+fn retired_store_releases_its_lock_with_a_retained_open_description() {
+    let temp = TempFile::new();
+    let store = LockedFileFinalHoldoutCasStoreV1::create(temp.create(), digest("binding"))
+        .unwrap_or_else(|error| panic!("create store: {error}"));
+    let inherited = store.file.try_clone().expect("duplicate open description");
+    drop(store);
+    let recovered = LockedFileFinalHoldoutCasStoreV1::recover(
+        temp.open(),
+        digest("binding"),
+        /*minimum*/ None,
+    );
+    drop(inherited);
+    let recovered = recovered.unwrap_or_else(|error| panic!("retired owner lock: {error}"));
+    assert_eq!(
+        LockedFileFinalHoldoutCasStoreV1::recover(
+            temp.open(),
+            digest("binding"),
+            /*minimum*/ None,
+        )
+        .err(),
+        Some(LockedFileCasErrorV1::Busy),
+        "closing the old duplicate must not unlock the replacement owner"
+    );
+    drop(recovered);
+}
+
+#[test]
+fn failed_constructors_release_acquired_locks_with_retained_open_descriptions() {
+    enum Attempt {
+        Create,
+        Recover,
+    }
+    for attempt in [Attempt::Create, Attempt::Recover] {
+        let temp = TempFile::new();
+        let mut file = temp.create();
+        let inherited = file.try_clone().expect("duplicate open description");
+        let (rejected, expected) = match attempt {
+            Attempt::Create => {
+                file.write_all(b"occupied").expect("nonempty fixture");
+                (
+                    LockedFileFinalHoldoutCasStoreV1::create(file, digest("binding")),
+                    LockedFileCasErrorV1::AlreadyInitialized,
+                )
+            }
+            Attempt::Recover => (
+                LockedFileFinalHoldoutCasStoreV1::recover(
+                    file,
+                    digest("binding"),
+                    /*minimum*/ None,
+                ),
+                LockedFileCasErrorV1::MissingHeader,
+            ),
+        };
+        assert_eq!(rejected.err(), Some(expected));
+        let next = LockedFileFinalHoldoutCasStoreV1::recover(
+            temp.open(),
+            digest("binding"),
+            /*minimum*/ None,
+        );
+        drop(inherited);
+        assert_eq!(next.err(), Some(LockedFileCasErrorV1::MissingHeader));
     }
 }
 

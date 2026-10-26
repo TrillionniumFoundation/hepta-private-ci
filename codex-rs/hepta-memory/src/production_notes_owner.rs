@@ -49,6 +49,65 @@ impl NotesRetirementPermit {
 }
 
 impl ProductionDurableWriter {
+    /// Read an exact application receipt from this original writer's existing
+    /// terminal event. This creates no permit, event, dispatch, or retirement.
+    /// A source-side refusal without an application receipt returns `None`.
+    pub async fn retained_notes_terminal_receipt(
+        &self,
+        operation_id: &str,
+    ) -> Result<Option<String>, ProductionWriterError> {
+        let retained = self
+            .retained_operation(operation_id)
+            .await?
+            .ok_or_else(|| {
+                ProductionWriterError::Invalid("Notes observation has no original operation".into())
+            })?;
+        if retained.topic != crate::NOTES_REPLACE_TOPIC_V1 {
+            return Err(ProductionWriterError::Invalid(
+                "not a Notes operation".into(),
+            ));
+        }
+        if !matches!(
+            retained.state,
+            LocalOutcomeState::Committed | LocalOutcomeState::Rejected
+        ) {
+            return Ok(None);
+        }
+        let row: Option<(String, String, String)> = sqlx::query_as(
+            "SELECT event_kind, payload_json, payload_sha256 FROM cognitive_local_events
+             WHERE lease_id = ? AND occurrence_key = ? ORDER BY event_sequence DESC LIMIT 1",
+        )
+        .bind(self.lease_id())
+        .bind(operation_id)
+        .fetch_optional(self.store.observation_pool())
+        .await
+        .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+        let (kind, receipt, digest) = row.ok_or_else(|| {
+            ProductionWriterError::Invalid("original terminal event disappeared".into())
+        })?;
+        if Sha256Digest::for_bytes(receipt.as_bytes()).as_str() != digest {
+            return Err(ProductionWriterError::Invalid(
+                "terminal event digest mismatch".into(),
+            ));
+        }
+        let expected = match (retained.state, kind.as_str()) {
+            (LocalOutcomeState::Committed, "reconcile_committed") => {
+                LocalReconcileOutcome::Committed
+            }
+            (LocalOutcomeState::Rejected, "reconcile_rejected") => LocalReconcileOutcome::Rejected,
+            _ => return Ok(None),
+        };
+        let checked = NotesTerminalReceipt::from_json(&retained.payload_json, &receipt)
+            .map_err(ProductionWriterError::Invalid)?;
+        if checked.outcome() != expected {
+            return Err(ProductionWriterError::Invalid(
+                "terminal disposition mismatch".into(),
+            ));
+        }
+        self.verify_authority().await?;
+        Ok(Some(receipt))
+    }
+
     pub(super) async fn settle_notes_terminal(
         &self,
         request: &ProductionDispatchRequest,

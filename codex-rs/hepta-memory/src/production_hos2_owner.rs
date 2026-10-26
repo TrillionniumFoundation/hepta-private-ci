@@ -40,7 +40,72 @@ pub struct Hos2RetirementObservation {
     pub next_sequence: u64,
 }
 
+/// Read-only original source terminal. This DTO is neither a dispatch grant
+/// nor a retirement permit, and cannot append/reconcile another event.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ProductionRetainedHos2Terminal {
+    pub occurrence_key: String,
+    pub request_json: String,
+    pub terminal_json: String,
+    pub local_event_id: String,
+    pub state: LocalOutcomeState,
+}
+
 impl ProductionDurableWriter {
+    /// Observe the exact original durable K/D terminal under the live original
+    /// writer and one original SQLite barrier. Never dispatch or append.
+    pub async fn retained_hos2_terminal(
+        &self,
+        operation_id: &str,
+    ) -> Result<ProductionRetainedHos2Terminal, ProductionWriterError> {
+        self.verify_authority().await?;
+        let mut transaction = self
+            .store
+            .begin_checkpoint_barrier()
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+        let retained = self
+            .lease
+            .retained_hos2_terminal(&mut transaction, operation_id)
+            .await?;
+        self.retirement_live_check()?;
+        transaction
+            .rollback()
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+        self.verify_authority().await?;
+        Ok(retained)
+    }
+    /// Read the next namespace sequence from the ORIGINAL immutable source
+    /// outbox and complete verified native-terminal prefix. No counter is
+    /// cached or reserved. A concurrent admission may invalidate this observed
+    /// value; the original preparation still rejects a stale/non-next D.
+    pub async fn next_hos2_delivery_sequence(
+        &self,
+        boot_id: [u8; 16],
+        space_id: [u8; 16],
+    ) -> Result<u64, ProductionWriterError> {
+        self.verify_authority().await?;
+        let probe = Hos2DeliveryId::new(boot_id, space_id, /*sequence*/ 1)
+            .map_err(ProductionWriterError::Invalid)?;
+        let mut transaction = self
+            .store
+            .begin_checkpoint_barrier()
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+        let next = self
+            .lease
+            .next_hos2_delivery_sequence(&mut transaction, &probe)
+            .await?;
+        self.retirement_live_check()?;
+        transaction
+            .rollback()
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+        Ok(next)
+    }
+
     pub(super) async fn settle_hos2_protocol_conflict(
         &self,
         request: ProductionDispatchRequest,

@@ -52,6 +52,7 @@ pub(super) fn create_local(runtime: &Path) {
     assert_eq!(unsafe { libc::chown(path.as_ptr(), 60001, 60001) }, 0);
 }
 
+#[cfg(test)]
 pub(super) fn release(
     child: &mut std::process::Child,
     config: &HostAuthorityServiceConfig,

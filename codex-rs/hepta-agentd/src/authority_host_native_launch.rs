@@ -55,7 +55,7 @@ pub struct NativeLaunchDiagnostic {
     pub production_ready: bool,
 }
 
-fn inputs(
+pub(super) fn inputs(
     config_file: &Path,
     registration_file: &Path,
     profile_file: &Path,
@@ -172,6 +172,7 @@ fn validate_environment(environment: &BTreeMap<String, String>, uid: u32) -> io:
         "XDG_RUNTIME_DIR",
         "DBUS_SESSION_BUS_ADDRESS",
         "XAUTHORITY",
+        "XMODIFIERS",
         "HOME",
         "LANG",
         "LC_ALL",
@@ -186,6 +187,14 @@ fn validate_environment(environment: &BTreeMap<String, String>, uid: u32) -> io:
     {
         return Err(io::Error::other(
             "native environment must contain only bounded display/resource/draft inputs",
+        ));
+    }
+    if environment
+        .get("XMODIFIERS")
+        .is_some_and(|value| value != "@im=ibus")
+    {
+        return Err(io::Error::other(
+            "the native XIM selector must be the original IBus session",
         ));
     }
     if environment
@@ -317,6 +326,27 @@ pub fn launch_host_authority_native_session(
     owner: OwnedFd,
 ) -> io::Result<()> {
     let (config, profile) = inputs(config_file, registration_file, profile_file, &owner)?;
+    let prepared =
+        crate::PreparedHostAuthoritySession::open(config_file, registration_file, owner)?;
+    launch_prepared_native(prepared, config, profile, profile_file)
+}
+
+pub(super) fn launch_prepared_native(
+    prepared: crate::PreparedHostAuthoritySession,
+    config: HostAuthorityServiceConfig,
+    profile: HostAuthorityNativeProfile,
+    profile_file: &Path,
+) -> io::Result<()> {
+    launch_prepared_native_with_ready(prepared, config, profile, profile_file, || Ok(()))
+}
+
+pub(super) fn launch_prepared_native_with_ready(
+    prepared: crate::PreparedHostAuthoritySession,
+    config: HostAuthorityServiceConfig,
+    profile: HostAuthorityNativeProfile,
+    profile_file: &Path,
+    ready: impl FnOnce() -> io::Result<()>,
+) -> io::Result<()> {
     let uid = config.peer_uid;
     let gid = config.peer_gid;
     let program = open_verified_program(&profile, config.peer_gid)?;
@@ -413,12 +443,7 @@ pub fn launch_host_authority_native_session(
     file.flush()?;
     file.sync_all()?;
     std::fs::File::open(parent)?.sync_all()?;
-    let result = crate::serve_host_authority_session_with_text(
-        config_file,
-        registration_file,
-        owner,
-        Some((&guard.path, ui_pidfd)),
-    );
+    let result = prepared.serve_with_text_and_ready(&guard.path, ui_pidfd, ready);
     // Do not kill a UI which may now contain local drafts. Its authenticated
     // owner expires/fences independently when this bounded Root session ends.
     let _ = child.try_wait();

@@ -86,20 +86,28 @@ pub(super) fn serve_lanes(
     registration: &HostAuthorityRegistration,
     owner: &OwnedFd,
 ) -> io::Result<()> {
-    let lanes = validate_runtime_lanes(config)?;
-    let mut guard = SocketGuard(Vec::new());
-    let mut listeners = Vec::new();
-    for (lane, path) in lanes {
-        let listener = UnixListener::bind(path)?;
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o660))?;
-        let metadata = std::fs::symlink_metadata(path)?;
-        if metadata.uid() != 0 || metadata.gid() != config.peer_gid {
-            return Err(io::Error::other("socket ownership mismatch"));
-        }
-        guard.0.push((path.clone(), metadata.dev(), metadata.ino()));
-        listener.set_nonblocking(true)?;
-        listeners.push((lane, listener));
-    }
+    serve_lanes_with_ready(service, config, registration, owner, || Ok(()))
+}
+
+pub(super) fn serve_lanes_with_ready(
+    service: &HostAuthorityService,
+    config: &HostAuthorityServiceConfig,
+    registration: &HostAuthorityRegistration,
+    owner: &OwnedFd,
+    ready: impl FnOnce() -> io::Result<()>,
+) -> io::Result<()> {
+    let bound = bind_runtime_lanes(config, ready)?;
+    serve_bound_lanes(service, config, registration, owner, bound)
+}
+
+pub(super) fn serve_bound_lanes(
+    service: &HostAuthorityService,
+    config: &HostAuthorityServiceConfig,
+    registration: &HostAuthorityRegistration,
+    owner: &OwnedFd,
+    bound: BoundLanes,
+) -> io::Result<()> {
+    let BoundLanes { _guard, listeners } = bound;
     let end = Instant::now() + Duration::from_millis(config.lifetime_ms);
     let mut streams = Vec::new();
     for (lane, listener) in listeners {
@@ -145,3 +153,41 @@ pub(super) fn serve_lanes(
         Ok(())
     })
 }
+
+pub(super) struct BoundLanes {
+    _guard: SocketGuard,
+    listeners: Vec<(HostAuthorityLane, UnixListener)>,
+}
+
+pub(super) fn bind_runtime_lanes(
+    config: &HostAuthorityServiceConfig,
+    ready: impl FnOnce() -> io::Result<()>,
+) -> io::Result<BoundLanes> {
+    let lanes = validate_runtime_lanes(config)?;
+    let mut guard = SocketGuard(Vec::new());
+    let mut listeners = Vec::new();
+    for (lane, path) in lanes {
+        let listener = UnixListener::bind(path)?;
+        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o660))?;
+        let metadata = std::fs::symlink_metadata(path)?;
+        if metadata.uid() != 0 || metadata.gid() != config.peer_gid {
+            return Err(io::Error::other("socket ownership mismatch"));
+        }
+        guard.0.push((path.clone(), metadata.dev(), metadata.ino()));
+        listener.set_nonblocking(true)?;
+        listeners.push((lane, listener));
+    }
+    // Native launch has already completed its actual spawn and registration.
+    // Release the sole child handoff only after every original listener can
+    // accept, then immediately enter the original all-lane acceptance barrier.
+    // A failed release drops all held listeners and their exact socket guards.
+    ready()?;
+    Ok(BoundLanes {
+        _guard: guard,
+        listeners,
+    })
+}
+
+#[cfg(test)]
+#[path = "authority_host_listeners_tests.rs"]
+mod tests;

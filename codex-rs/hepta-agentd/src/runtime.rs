@@ -43,6 +43,16 @@ pub async fn run(
     let sockets = config.take_socket_inputs();
     #[cfg(target_os = "linux")]
     let notes_ui = config.take_original_notes_ui();
+    #[cfg(target_os = "linux")]
+    let notes_thread_tools = config.take_original_notes_thread_tools();
+    #[cfg(target_os = "linux")]
+    let app_server_model_tools = if notes_thread_tools.is_some() {
+        crate::app_runtime::AppServerModelToolProfile::OriginalNotes
+    } else {
+        crate::app_runtime::AppServerModelToolProfile::Standard
+    };
+    #[cfg(not(target_os = "linux"))]
+    let app_server_model_tools = crate::app_runtime::AppServerModelToolProfile::Standard;
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
         .authbus_trust_file()
@@ -308,6 +318,13 @@ pub async fn run(
         if let Some(ui) = notes_ui {
             tasks.spawn_required("notes-literal-ui", ui.run(cancellation.clone()))?;
         }
+        #[cfg(target_os = "linux")]
+        if let Some(tools) = notes_thread_tools {
+            tasks.spawn_required(
+                "notes-original-thread-tools",
+                tools.run(Arc::clone(&state), cancellation.clone()),
+            )?;
+        }
         let app_identity = identity.clone();
         let app_state = Arc::clone(&state);
         let app_drain = state.app_server_drain_handle();
@@ -320,6 +337,7 @@ pub async fn run(
                 app_state,
                 production_writer_host,
                 app_server_socket,
+                app_server_model_tools,
             )
             .await
             .map_err(AgentdError::from)?;

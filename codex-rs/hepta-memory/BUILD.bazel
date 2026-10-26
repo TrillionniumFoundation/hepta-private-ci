@@ -5,6 +5,7 @@ codex_rust_crate(
     compile_data = glob(["migrations/**"]) + [
         "tests/fixtures/android-bound-text-v1.json",
         "tests/fixtures/notes-target-v1.json",
+        "tests/fixtures/notes-model-v1.json",
         "tests/fixtures/notes-recovery-v1.json",
         "tests/fixtures/notes-document-state-v1.json",
         "tests/fixtures/notes-previous-receipt-v1.json",

@@ -116,6 +116,7 @@ pub use production_writer::ObjectiveSenderRetainedPosition;
 pub use production_writer::ObjectiveSenderSnapshot;
 pub use production_writer::ObjectiveSenderTicket;
 pub use production_writer::ObjectiveSenderWriterFence;
+pub use production_writer::OriginalNotesThreadReference;
 pub use production_writer::ProductionObjectiveSender;
 
 pub use shared_experience::SharedExperienceGrantV1;
@@ -215,11 +216,15 @@ pub use cognitive_retrieval_adapter::sqlite_owner_cue_profile_digest;
 pub use cognitive_retrieval_adapter::sqlite_owner_retrieval_policy_v1;
 pub use cognitive_runtime::CognitiveRuntime;
 pub use cognitive_runtime::CognitiveUnavailableReason;
+#[cfg(target_os = "linux")]
+pub use cognitive_store::CognitiveCheckpointImage;
 pub use cognitive_store::CognitiveRecoveryAnchor;
 pub use cognitive_store::CognitiveRecoveryError;
 pub use cognitive_store::CognitiveRecoveryRequirement;
 pub use cognitive_store::CognitiveStore;
 pub use cognitive_store::CognitiveStoreError;
+#[cfg(target_os = "linux")]
+pub use cognitive_store::InstalledRootCheckpointImage;
 pub use cognitive_store::RecoveredCognitiveReadOnly;
 pub use compact_persistence::COMPACT_PERSISTENCE_EXTERNAL_EFFECTS;
 pub use compact_persistence::COMPACT_PERSISTENCE_KG_WRITE_AUTHORITY;
@@ -479,6 +484,7 @@ pub use production_writer::ProductionOutboxTarget;
 pub use production_writer::ProductionOutcomeReceipt;
 pub use production_writer::ProductionQueuedReceipt;
 pub use production_writer::ProductionRecoveryReceipt;
+pub use production_writer::ProductionRetainedHos2Terminal;
 pub use production_writer::ProductionRetainedOperation;
 pub use production_writer::ProductionTargetOutcome;
 pub use production_writer::ProductionTerminalObservation;

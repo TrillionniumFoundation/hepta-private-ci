@@ -1,4 +1,6 @@
 //! Same-UID/synthetic-key qualification with the original durable owners.
+//! Two executor workers match the production Agentd runtime: synchronous
+//! durable fixture initialization must not starve its original Root read feed.
 use super::*;
 use crate::root_writer_proof::tests::fixture;
 use crate::root_writer_proof::tests::observation;
@@ -9,6 +11,7 @@ use pretty_assertions::assert_eq;
 use std::io::Read;
 use std::io::Write;
 use std::os::fd::FromRawFd;
+use std::os::unix::fs::PermissionsExt;
 use std::sync::atomic::AtomicU64;
 struct Frontier {
     value: Mutex<FinalUseFrontier>,
@@ -28,9 +31,19 @@ impl AuthorityFrontierStore<FinalUseFrontier> for Frontier {
         next: &FinalUseFrontier,
     ) -> Result<(), AuthorityTrustError> {
         self.entered.store(true, Ordering::Release);
+        let started = std::time::Instant::now();
+        eprintln!(
+            "fixture frontier CAS entered: wait={}, boottime_ns={}",
+            self.wait.load(Ordering::Acquire),
+            boottime_ns().unwrap()
+        );
         let bound = std::time::Instant::now() + Duration::from_secs(1);
         while self.wait.load(Ordering::Acquire) {
             if std::time::Instant::now() >= bound {
+                eprintln!(
+                    "fixture frontier CAS wait expired after {:?}",
+                    started.elapsed()
+                );
                 return Err(AuthorityTrustError::Unavailable);
             }
             std::thread::sleep(Duration::from_millis(1));
@@ -44,6 +57,10 @@ impl AuthorityFrontierStore<FinalUseFrontier> for Frontier {
         }
         *value = *next;
         self.commits.fetch_add(1, Ordering::AcqRel);
+        eprintln!(
+            "fixture frontier CAS completed after {:?}",
+            started.elapsed()
+        );
         Ok(())
     }
 }
@@ -59,7 +76,10 @@ fn owner(
         entered: AtomicBool::new(false),
         fail: AtomicBool::new(false),
     });
-    let directory = tempfile::tempdir().unwrap();
+    let directory = tempfile::Builder::new()
+        .permissions(std::fs::Permissions::from_mode(0o700))
+        .tempdir()
+        .unwrap();
     let authority = FinalUseAuthority::open_state_dir_with_issuer_keys(
         directory.path(),
         "root-issuer".into(),
@@ -179,7 +199,7 @@ async fn connected() -> (
     .unwrap();
     (session, head, worker, key)
 }
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn exact_original_consumers_activate_writer_and_drop_fences_retained_clones() {
     let (session, _, peer, key) = connected().await;
     let authority = session.authority();
@@ -242,7 +262,10 @@ async fn exact_original_consumers_activate_writer_and_drop_fences_retained_clone
     tokio::time::sleep(Duration::from_millis(20)).await;
     peer.join().unwrap();
 }
-#[tokio::test]
+// Opening both original durable owners performs synchronous filesystem I/O.
+// Match the production multi-worker runtime so that initialization cannot
+// starve the unchanged 100 ms Root feed past its 500 ms observation fence.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn both_original_frontiers_finish_before_new_head_is_published() {
     let (session, head, peer, key) = connected().await;
     let (device, first, _device_dir) = owner(&session, key);
@@ -260,6 +283,10 @@ async fn both_original_frontiers_finish_before_new_head_is_published() {
     })
     .await
     .unwrap();
+    eprintln!(
+        "test observed second frontier entry: boottime_ns={}",
+        boottime_ns().unwrap()
+    );
     let before = std::time::Instant::now();
     assert!(
         session
@@ -271,13 +298,25 @@ async fn both_original_frontiers_finish_before_new_head_is_published() {
     assert_eq!(first.commits.load(Ordering::Acquire), 1);
     assert_eq!(second.commits.load(Ordering::Acquire), 0);
     second.wait.store(false, Ordering::Release);
+    eprintln!(
+        "test released second frontier: boottime_ns={}",
+        boottime_ns().unwrap()
+    );
     tokio::time::timeout(Duration::from_millis(300), async {
         while session.revocations().is_err() {
             tokio::time::sleep(Duration::from_millis(2)).await;
         }
     })
     .await
-    .unwrap();
+    .unwrap_or_else(|error| {
+        panic!(
+            "original observation did not resume: {error}; updater_finished={}, first_commits={}, second_commits={}, second_wait={}",
+            session.worker.is_finished(),
+            first.commits.load(Ordering::Acquire),
+            second.commits.load(Ordering::Acquire),
+            second.wait.load(Ordering::Acquire),
+        )
+    });
     let current = session.revocations().unwrap();
     assert_eq!(current.revision, 2);
     assert_eq!(device.revocation_head().unwrap(), current);
@@ -287,7 +326,7 @@ async fn both_original_frontiers_finish_before_new_head_is_published() {
     tokio::time::sleep(Duration::from_millis(20)).await;
     peer.join().unwrap();
 }
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn uncertain_original_consumer_update_fences_even_with_fresh_root_responses() {
     let (session, head, peer, key) = connected().await;
     let (device, first, _device_dir) = owner(&session, key);

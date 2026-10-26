@@ -35,6 +35,12 @@ use consumers::RegisteredConsumers;
 #[path = "authority_host_text_ui.rs"]
 mod text_ui;
 pub use text_ui::HostAuthorityTextUiRegistration;
+#[path = "authority_host_human_text.rs"]
+mod human_text;
+#[path = "authority_host_logind.rs"]
+mod logind;
+#[path = "authority_host_notes_successor.rs"]
+mod notes_successor;
 
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
@@ -60,6 +66,8 @@ pub struct HostAuthorityService {
     root_registry: Option<Arc<codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry>>,
     checkpoint: Option<RegisteredCheckpoint>,
     consumers: Option<RegisteredConsumers>,
+    human_text: Option<(HostAuthorityTextUiRegistration, OwnedFd)>,
+    logind_session: Option<logind::OriginalLogindSession>,
 }
 
 impl HostAuthorityService {
@@ -80,6 +88,8 @@ impl HostAuthorityService {
             root_registry: None,
             checkpoint: None,
             consumers: None,
+            human_text: None,
+            logind_session: None,
         })
     }
 
@@ -227,7 +237,8 @@ impl HostAuthorityService {
         lane: HostAuthorityLane,
         bytes: &[u8],
     ) -> Result<Vec<u8>, HostIssuerTransportError> {
-        match lane {
+        self.check_logind_lifetime().map_err(unavailable)?;
+        let result = match lane {
             HostAuthorityLane::Observation => self.observe(bytes),
             HostAuthorityLane::Issuer => self.issue(bytes),
             HostAuthorityLane::Checkpoint => self
@@ -260,7 +271,9 @@ impl HostAuthorityService {
                     .ok_or(HostIssuerTransportError::Unavailable)?
                     .exchange_consumer(&self.issuer, &self.clock, backend, bytes)
             }
-        }
+        };
+        self.check_logind_lifetime().map_err(unavailable)?;
+        result
     }
 
     fn observe(&self, bytes: &[u8]) -> Result<Vec<u8>, HostIssuerTransportError> {
@@ -310,6 +323,22 @@ impl HostAuthorityService {
     fn issue(&self, bytes: &[u8]) -> Result<Vec<u8>, HostIssuerTransportError> {
         let request: IssuerRequest = decode(bytes)?;
         match request {
+            IssuerRequest::VerifyHumanText {
+                schema_version: 1,
+                ingress,
+            } => {
+                let owner = self.verify_original_human_text(&ingress)?;
+                encode_bounded(
+                    &serde_json::json!({
+                        "schema_version":1,
+                        "operation":"runtime.authbus.human_text.verified.v1",
+                        "ingress_sha256":codex_hepta_types::Digest32::of_bytes(&serde_json::to_vec(&ingress).map_err(|_| HostIssuerTransportError::InvalidRequest)?).to_string(),
+                        "owner":owner,
+                    }),
+                    16 * 1024,
+                )
+            }
+            IssuerRequest::VerifyHumanText { .. } => Err(HostIssuerTransportError::InvalidRequest),
             IssuerRequest::FinalUse {
                 schema_version,
                 binding,
@@ -423,6 +452,11 @@ struct ObservationResponse<'a> {
 #[derive(Deserialize)]
 #[serde(tag = "operation", deny_unknown_fields)]
 enum IssuerRequest {
+    #[serde(rename = "runtime.authbus.human_text.verify.v1")]
+    VerifyHumanText {
+        schema_version: u32,
+        ingress: crate::AuthBusTextIngress,
+    },
     #[serde(rename = "runtime.authbus.text.v1")]
     Text {
         schema_version: u32,

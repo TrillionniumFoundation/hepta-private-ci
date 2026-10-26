@@ -25,6 +25,12 @@ use crate::objective_runtime::objective_scope;
 impl DeploymentFinalUseIssuer {
     pub const OBJECTIVE_DESTINATION: &'static str = "hepta.authbus.objective";
 
+    /// Canonical public registration scope for this exact original Agentd.
+    /// Calculating it creates no policy, signature, lease or grant.
+    pub fn objective_scope_digest(identity: &AgentdIdentity) -> [u8; 32] {
+        *objective_scope(identity).as_array()
+    }
+
     /// Sign the original AuthBus claims for the installed subject and scope.
     /// The trusted service supplies the registered host identity; callers supply
     /// only a typed body, never a key, sequence, expiry or arbitrary preimage.

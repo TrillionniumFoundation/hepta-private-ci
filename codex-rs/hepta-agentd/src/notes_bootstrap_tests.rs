@@ -6,6 +6,70 @@ use std::io::Write;
 
 type TestResult = Result<(), Box<dyn Error>>;
 
+#[test]
+fn canonical_notes_model_uses_original_two_descriptor_bootstrap_and_startup() -> TestResult {
+    let contract: serde_json::Value =
+        serde_json::from_str(include_str!("../tests/fixtures/notes-model-v1.json"))?;
+    let raw = contract["bootstrap"]["offer_utf8"]
+        .as_str()
+        .ok_or("offer")?;
+    let offered: NotesOffer = serde_json::from_str(raw)?;
+    let (host, session) = UnixDatagram::pair()?;
+    let (effect, mut app) = UnixStream::pair()?;
+    let (recovery, recovery_app) = UnixDatagram::pair()?;
+    send_offer(
+        &session,
+        raw.as_bytes(),
+        &[effect.as_raw_fd(), recovery.as_raw_fd()],
+    )?;
+    let deadline = Instant::now() + Duration::from_secs(2);
+    let (received, mut actual_effect, actual_recovery) =
+        receive_session(&host, deadline, Some(&offered.target))?;
+    assert_eq!(received.target, offered.target);
+    actual_effect.write_all(b"model-wire-one")?;
+    let mut buffer = [0_u8; 14];
+    app.read_exact(&mut buffer)?;
+    assert_eq!(&buffer, b"model-wire-one");
+    actual_recovery.send(b"recovery-only")?;
+    let mut recovery_buffer = [0_u8; 32];
+    let count = recovery_app.recv(&mut recovery_buffer)?;
+    assert_eq!(&recovery_buffer[..count], b"recovery-only");
+    acknowledge(&host, &received, RegistrationStatus::Attached, deadline)?;
+    session.set_read_timeout(Some(Duration::from_millis(500)))?;
+    let mut bytes = [0_u8; MAX_BOOTSTRAP_BYTES];
+    let count = session.recv(&mut bytes)?;
+    assert_eq!(
+        serde_json::from_slice::<serde_json::Value>(&bytes[..count])?,
+        serde_json::from_str::<serde_json::Value>(
+            contract["bootstrap"]["ack_utf8"].as_str().ok_or("ack")?
+        )?
+    );
+    let reservation: serde_json::Value = serde_json::from_str(
+        contract["startup"]["reservation_utf8"]
+            .as_str()
+            .ok_or("reservation")?,
+    )?;
+    let (sender, receiver) = UnixDatagram::pair()?;
+    receiver.set_read_timeout(Some(Duration::from_millis(500)))?;
+    activate_startup(
+        &sender,
+        &AgentdNotesStartupRelease {
+            target: offered.target,
+            nonce: reservation["nonce"].as_str().ok_or("nonce")?.to_owned(),
+        },
+    )?;
+    let count = receiver.recv(&mut bytes)?;
+    assert_eq!(
+        serde_json::from_slice::<serde_json::Value>(&bytes[..count])?,
+        serde_json::from_str::<serde_json::Value>(
+            contract["startup"]["activation_utf8"]
+                .as_str()
+                .ok_or("activation")?
+        )?
+    );
+    Ok(())
+}
+
 #[derive(Deserialize)]
 struct Fixture {
     offer_utf8: String,

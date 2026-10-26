@@ -12,13 +12,51 @@ use std::os::unix::fs::DirBuilderExt;
 use std::time::Duration;
 use std::time::Instant;
 
+enum FreshHeadMaterial {
+    LogicalOnly,
+    Physical,
+}
+
 impl HostAuthorityService {
     pub(crate) fn initialize_fresh_heads(
+        self,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        owner_pidfd: &OwnedFd,
+        fresh: FreshHostCognitiveState,
+    ) -> io::Result<Self> {
+        self.initialize_fresh_heads_selected(
+            config,
+            registration,
+            owner_pidfd,
+            fresh,
+            FreshHeadMaterial::LogicalOnly,
+        )
+    }
+
+    pub(crate) fn initialize_fresh_heads_with_material(
+        self,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        owner_pidfd: &OwnedFd,
+        fresh: FreshHostCognitiveState,
+    ) -> io::Result<Self> {
+        self.initialize_fresh_heads_selected(
+            config,
+            registration,
+            owner_pidfd,
+            fresh,
+            FreshHeadMaterial::Physical,
+        )
+    }
+
+    fn initialize_fresh_heads_selected(
         mut self,
         config: &HostAuthorityServiceConfig,
         registration: &HostAuthorityRegistration,
         owner_pidfd: &OwnedFd,
         fresh: FreshHostCognitiveState,
+        material: FreshHeadMaterial,
     ) -> io::Result<Self> {
         let end = Instant::now() + Duration::from_secs(30);
         verify_pinned_process(
@@ -43,6 +81,10 @@ impl HostAuthorityService {
             .as_ref()
             .ok_or_else(|| io::Error::other("fresh checkpoint directory is required"))?;
         let mut paths = vec![directory];
+        let material_directory = config.state_dir.join("cognitive-material-v1");
+        if let FreshHeadMaterial::Physical = material {
+            paths.push(&material_directory);
+        }
         match (
             &config.consumers,
             &config.sockets.device_frontier,
@@ -113,12 +155,28 @@ impl HostAuthorityService {
                 std::fs::DirBuilder::new().mode(0o700).create(path)?;
                 File::open(&config.state_dir)?.sync_all()?;
             }
-            let checkpoint = RegisteredCheckpoint::initialize_fresh(
-                RootAuthorityDirectory::open(directory).map_err(io::Error::other)?,
-                binding,
-                cut.clone(),
-                self.clock.clone(),
-            )?;
+            let directory = RootAuthorityDirectory::open(directory).map_err(io::Error::other)?;
+            let checkpoint = match material {
+                FreshHeadMaterial::LogicalOnly => RegisteredCheckpoint::initialize_fresh(
+                    directory,
+                    binding,
+                    cut.clone(),
+                    self.clock.clone(),
+                )?,
+                FreshHeadMaterial::Physical => {
+                    RegisteredCheckpoint::initialize_fresh_with_material(
+                        directory,
+                        binding,
+                        cut.clone(),
+                        self.clock.clone(),
+                        crate::authority_host_checkpoint::RootMaterialProfile {
+                            layout: self.identity.layout.clone(),
+                            root: material_directory.clone(),
+                            deadline: Duration::from_millis(config.timeout_ms.min(5_000)),
+                        },
+                    )?
+                }
+            };
             let consumers = config
                 .consumers
                 .as_ref()

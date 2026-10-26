@@ -335,3 +335,14 @@ may be replaced by a self-signed grant, an echo callback, a UI ledger or an
 admission response with an invented publication sequence. This slice provides
 the real original-owner persistence mechanism and keeps those remaining trust
 requirements explicit.
+
+The optional `ObjectiveSenderOrigin.original_notes_thread` is bounded audit
+metadata, not an authority or Core-item proof. The original Notes producer
+retains the raw App Server session/thread/turn/call tuple and callback digest in
+the same `binding_json`, immutable record hash and independently acknowledged
+cut before the first send. Missing values default to `None` and are omitted on
+serialization, preserving legacy origin bytes/hash inputs. No table or ledger
+is added and legacy rows are never repaired. `retained_owner_requests` returns
+one complete physical read-only snapshot under the existing 1024-request / 32 MiB
+limits and original record/event checks; full requests remain private host data.
+Recovered data and tickets cannot regain a sending permission.

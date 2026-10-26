@@ -17,11 +17,11 @@ use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::NotesTargetIdentity;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
 
 use super::PreparedHostAuthoritySession;
+use crate::notes_launch_mode::NotesLaunchMode;
 
 #[path = "root_notes_reservation.rs"]
 mod reservation;
@@ -29,12 +29,21 @@ mod reservation;
 const DEPLOYMENT_BOUND: usize = 16 * 1024;
 const SEALS: i32 = libc::F_SEAL_WRITE | libc::F_SEAL_GROW | libc::F_SEAL_SHRINK | libc::F_SEAL_SEAL;
 
+/// Existing original policy metadata, not a grant or a new Session identity.
+/// The successor target is accepted only from the actual Reserved packet.
+pub struct RootNotesPolicyPredecessor<'a> {
+    pub target: &'a NotesTargetIdentity,
+    pub grant_lifetime_ms: u64,
+}
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Profile {
     schema: String,
     grant_lifetime_ms: u64,
     bindings: Bindings,
+    #[serde(default)]
+    interaction: NotesLaunchMode,
     #[serde(default)]
     previous_recovery: Option<PreviousRecovery>,
 }
@@ -61,7 +70,10 @@ struct PreviousRecovery {
     helper_sha256: String,
     state_directory: PathBuf,
     previous_target: NotesTargetIdentity,
-    operation_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    operation_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    selector: Option<crate::AgentdNotesRecoverySelector>,
 }
 
 #[derive(Serialize)]
@@ -73,6 +85,7 @@ struct Deployment {
     bindings: Bindings,
     previous_recovery: Option<PreviousRecovery>,
     startup_release: reservation::StartupRelease,
+    interaction: NotesLaunchMode,
 }
 
 impl PreparedHostAuthoritySession {
@@ -91,21 +104,102 @@ impl PreparedHostAuthoritySession {
         deployment: File,
     ) -> io::Result<Self> {
         let end = std::time::Instant::now() + std::time::Duration::from_secs(30);
+        self.with_notes_startup_from_session_before(
+            profile_file,
+            bootstrap,
+            session_pidfd,
+            deployment,
+            end,
+        )
+    }
+
+    /// Preserve the trusted launcher's already running startup episode across
+    /// metadata peeking, original owner registration and this sole consume.
+    /// Expiry consumes this prepared service; it cannot rearm a reservation.
+    pub fn with_notes_startup_from_session_before(
+        self,
+        profile_file: &Path,
+        bootstrap: UnixDatagram,
+        session_pidfd: OwnedFd,
+        deployment: File,
+        end: std::time::Instant,
+    ) -> io::Result<Self> {
+        self.with_notes_startup_selected(
+            profile_file,
+            bootstrap,
+            session_pidfd,
+            deployment,
+            end,
+            /*previous*/ None,
+        )
+    }
+
+    /// Same-boot successor startup after original physical Current recovery.
+    /// Only the actual new Session Reserved target replaces the old policy;
+    /// old operations remain recovery-only under their original identity.
+    pub fn with_notes_recovery_startup_from_session_before(
+        self,
+        profile_file: &Path,
+        bootstrap: UnixDatagram,
+        session_pidfd: OwnedFd,
+        deployment: File,
+        end: std::time::Instant,
+        previous: RootNotesPolicyPredecessor<'_>,
+    ) -> io::Result<Self> {
+        self.with_notes_startup_selected(
+            profile_file,
+            bootstrap,
+            session_pidfd,
+            deployment,
+            end,
+            Some(previous),
+        )
+    }
+
+    fn with_notes_startup_selected(
+        self,
+        profile_file: &Path,
+        bootstrap: UnixDatagram,
+        session_pidfd: OwnedFd,
+        deployment: File,
+        end: std::time::Instant,
+        previous: Option<RootNotesPolicyPredecessor<'_>>,
+    ) -> io::Result<Self> {
+        reservation::remaining(end)?;
         let profile: Profile = crate::authority_host_config::read_root_json(profile_file)?;
         validate_profile(&profile, &self.config.signer_id)?;
+        profile
+            .interaction
+            .validate_for(&self.registration.registered_identity.identity()?)
+            .map_err(io::Error::other)?;
+        profile
+            .interaction
+            .validate_model_tuple(
+                profile
+                    .bindings
+                    .model_tuple_digest
+                    .parse::<Digest32>()
+                    .map_err(io::Error::other)?,
+            )
+            .map_err(io::Error::other)?;
         validate_empty_deployment(&deployment)?;
         let (startup_release, session) = reservation::receive(
             bootstrap,
             &session_pidfd,
             self.config.peer_uid,
             self.config.peer_gid,
+            end,
         )?;
         if let Some(previous) = &profile.previous_recovery {
             previous
                 .previous_target
                 .validate()
                 .map_err(io::Error::other)?;
-            StableId::new(&previous.operation_id).map_err(io::Error::other)?;
+            crate::AgentdNotesRecoverySelector::from_fields(
+                previous.operation_id.as_deref(),
+                previous.selector.as_ref(),
+            )
+            .map_err(io::Error::other)?;
             Sha256Digest::parse(previous.helper_sha256.clone()).map_err(io::Error::other)?;
             if previous.previous_target == startup_release.target
                 || !previous.helper.is_absolute()
@@ -115,6 +209,31 @@ impl PreparedHostAuthoritySession {
                     "old Notes recovery requires its distinct actual target and absolute frozen paths",
                 ));
             }
+        }
+        if let Some(previous) = previous {
+            validate_recovery_policy(&profile, &previous, &startup_release.target)?;
+            // The original writer registration must be a genuine successor;
+            // a fresh source cannot turn this method into policy provisioning.
+            let writer = self
+                .config
+                .writer
+                .as_ref()
+                .ok_or_else(|| io::Error::other("original successor writer required"))?;
+            if writer.local_lease_generation <= 1 || self.fresh_filesystem {
+                return Err(io::Error::other(
+                    "original recovered successor required for Notes policy replacement",
+                ));
+            }
+            // Authenticated same-object physical Current observation, never a
+            // cached receipt or a replacement cut supplied by the launcher.
+            self.observe_physical_current()?;
+            self.service.replace_notes_policy_for_registered_successor(
+                previous.target,
+                previous.grant_lifetime_ms,
+                &startup_release.target,
+                profile.grant_lifetime_ms,
+            )?;
+            reservation::remaining(end)?;
         }
         let prepared = self.with_registered_notes_from_session(
             &startup_release.target,
@@ -133,12 +252,33 @@ impl PreparedHostAuthoritySession {
             bindings: profile.bindings,
             previous_recovery: profile.previous_recovery,
             startup_release,
+            interaction: profile.interaction,
         };
         let bytes = serde_json::to_vec(&value).map_err(io::Error::other)?;
         seal_deployment(deployment, &bytes)?;
         crate::authority_host_runtime::owner_alive(&session_pidfd, end)?;
         Ok(prepared)
     }
+}
+
+fn validate_recovery_policy(
+    profile: &Profile,
+    previous: &RootNotesPolicyPredecessor<'_>,
+    target: &NotesTargetIdentity,
+) -> io::Result<()> {
+    previous.target.validate().map_err(io::Error::other)?;
+    if previous.grant_lifetime_ms == 0
+        || previous.target == target
+        || profile
+            .previous_recovery
+            .as_ref()
+            .is_none_or(|old| old.previous_target != *previous.target)
+    {
+        return Err(io::Error::other(
+            "recovery must name its exact original old Notes policy and distinct actual Reserved target",
+        ));
+    }
+    Ok(())
 }
 
 fn validate_profile(profile: &Profile, issuer_id: &str) -> io::Result<()> {

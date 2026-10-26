@@ -42,11 +42,16 @@ pub(crate) use listeners::validate_runtime_lanes;
 #[path = "authority_host_session.rs"]
 mod session;
 pub use session::PreparedHostAuthoritySession;
+pub use session::RootNotesPolicyPredecessor;
+
+#[path = "authority_host_writer_rotate.rs"]
+mod writer_rotation;
+pub use writer_rotation::rotate_host_writer_authorization;
 
 const CLOCK_OWNER: &str = "root-authority-clock-v1";
 const LEASE_OWNER: &str = "root-authority-leases-v1";
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct HostAuthorityBootstrap {
     pub schema_version: u32,

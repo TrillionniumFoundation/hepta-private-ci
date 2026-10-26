@@ -4,6 +4,95 @@ use super::*;
 use pretty_assertions::assert_eq;
 
 #[tokio::test]
+async fn next_native_sequence_reads_original_terminal_prefix_without_reserving_or_redispatching()
+-> TestResult {
+    let directory = tempfile::tempdir()?;
+    let fixture = Fixture::open(directory.path()).await?;
+    assert_eq!(
+        fixture
+            .writer
+            .next_hos2_delivery_sequence([1; 16], [2; 16])
+            .await?,
+        1
+    );
+    assert_eq!(
+        fixture
+            .writer
+            .next_hos2_delivery_sequence([1; 16], [2; 16])
+            .await?,
+        1
+    );
+    let queued = fixture
+        .prepare("hos2:observed-next", /*sequence*/ 1)
+        .await?;
+    assert!(
+        fixture
+            .writer
+            .next_hos2_delivery_sequence([1; 16], [2; 16])
+            .await
+            .is_err()
+    );
+    assert!(
+        fixture
+            .writer
+            .retained_hos2_terminal(&queued.occurrence_key)
+            .await
+            .is_err(),
+        "queued rows are not durable native terminals"
+    );
+    let key = queued.occurrence_key.clone();
+    let original_payload = queued.payload_json.clone();
+    let (binding, signed) = fixture.signed(&queued, /*nonce*/ 31).await?;
+    let terminal = fixture
+        .dispatcher
+        .dispatch(&fixture.writer, &signed, &binding, queued)
+        .await?;
+    assert_eq!(terminal.state, LocalOutcomeState::Committed);
+    let cut = fixture.writer.recovery_anchor().await?;
+    let retained = fixture.writer.retained_hos2_terminal(&key).await?;
+    assert_eq!(retained.occurrence_key, key);
+    assert_eq!(retained.request_json, original_payload);
+    assert_eq!(
+        Some(retained.terminal_json.clone()),
+        terminal.target_receipt
+    );
+    assert_eq!(retained.local_event_id, terminal.local_event_id);
+    assert_eq!(retained.state, LocalOutcomeState::Committed);
+    let again = fixture.writer.retained_hos2_terminal(&key).await?;
+    assert_eq!(again.terminal_json, retained.terminal_json);
+    assert_eq!(again.local_event_id, retained.local_event_id);
+    assert_eq!(
+        fixture.writer.recovery_anchor().await?,
+        cut,
+        "readback cannot replace the original terminal event or mutate the source cut"
+    );
+
+    assert_eq!(
+        fixture
+            .writer
+            .next_hos2_delivery_sequence([1; 16], [2; 16])
+            .await?,
+        2
+    );
+    assert_eq!(
+        fixture
+            .writer
+            .next_hos2_delivery_sequence([1; 16], [2; 16])
+            .await?,
+        2
+    );
+    assert_eq!(fixture.device.calls.load(Ordering::SeqCst), 1);
+    assert!(
+        fixture
+            .writer
+            .next_hos2_delivery_sequence([0; 16], [2; 16])
+            .await
+            .is_err()
+    );
+    Ok(())
+}
+
+#[tokio::test]
 async fn original_transaction_serializes_namespace_admission_and_blocks_unknown_predecessors()
 -> TestResult {
     let directory = tempfile::tempdir()?;

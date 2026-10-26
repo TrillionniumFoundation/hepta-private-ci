@@ -349,8 +349,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "a6b3506da75fb9b37c1078b5490178cc8c2f137d",
+    "tree": "f4f5314e1fba99a3f9c83cc63bcc883e4e850e30"
   },
   "repositoryControlledGaps": [
     "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
@@ -424,7 +424,7 @@
   ],
   "productCallers": [
     {
-      "sourcePath": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_submission.rs",
       "nativeSymbol": "submit",
       "state": "authenticated_configured_objective_host"
     }
@@ -432,7 +432,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
-      "object": "84a4b156fa04f27665319300e241732697a0ea01"
+      "object": "61bf3fb010fe99dae796e6bd4d986a409f70fc36"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_submission.rs",
+      "object": "90dcf376a1d00afdd41ced44ecc3342ca8316594"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
@@ -440,11 +444,11 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
-      "object": "cfbb34705a6dee9a2b0c5afda76592109c83f86b"
+      "object": "492913779427e1ba5279d66535954a7a04e9aedc"
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "e89450f622d12e85f516df691291e349f42cd8fc"
+      "object": "ded21bfeed09206c086cf8dd4e6f0249ae5d2a3c"
     },
     {
       "path": "codex-rs/hepta-objective/src/compiler.rs",

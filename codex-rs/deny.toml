@@ -229,6 +229,7 @@ deny = [
     # https://github.com/openai/codex/pull/27304
     { crate = "async-trait", wrappers = [
         "hickory-proto",
+        "hickory-net",
         "matrix-sdk",
         "matrix-sdk-base",
         "matrix-sdk-crypto",

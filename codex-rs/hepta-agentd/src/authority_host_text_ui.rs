@@ -80,7 +80,7 @@ enum Request {
 }
 
 impl HostAuthorityTextUiRegistration {
-    fn namespace(&self) -> String {
+    pub(super) fn namespace(&self) -> String {
         let bytes = format!(
             "hepta.ui.text.intent.v1\0{}\0{}\0{}",
             self.principal_id, self.route.agent_id, self.route.thread_id
@@ -151,10 +151,11 @@ impl HostAuthorityTextUiRegistration {
 }
 
 impl HostAuthorityService {
-    fn text_ui_owner(
+    pub(super) fn text_ui_owner(
         &self,
         registration: &HostAuthorityTextUiRegistration,
     ) -> Result<TextOwnerReceipt, HostIssuerTransportError> {
+        self.check_logind_lifetime().map_err(unavailable)?;
         self.issuer
             .text_route_available(&self.identity, &registration.route.thread_id)
             .map_err(unavailable)?;
@@ -311,7 +312,16 @@ impl HostAuthorityService {
                     .writer
                     .as_ref()
                     .ok_or(HostIssuerTransportError::Unavailable)?
-                    .text(&self.issuer, &self.identity, &request_id, body, mode)
+                    .human_text(
+                        &self.issuer,
+                        &self.identity,
+                        crate::deployment_issuer::RootHumanTextRequest {
+                            request_id: &request_id,
+                            body,
+                            operation: mode,
+                            human: &registration.human_binding(),
+                        },
+                    )
                     .map_err(unavailable)?;
                 self.text_ui_owner(registration)?;
                 encode_bounded(

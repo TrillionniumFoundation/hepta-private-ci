@@ -1,5 +1,9 @@
 # Literal Notes Objective adapter
 
+For model-originated requests in the original conversation, use the distinct
+[original-thread Notes tools](NOTES_ORIGINAL_THREAD.md) profile. This literal
+adapter continues to mean a no-model action.
+
 This opt-in adapter executes one named `notes.replace` action through the
 existing Objective, Run and production operation owners. It interprets text as
 literal document content and performs no model turn, shell command or network

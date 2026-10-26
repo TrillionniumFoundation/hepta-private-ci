@@ -63,9 +63,13 @@ mod checkpoint_bind;
 
 #[path = "cognitive_store_recovery.rs"]
 mod recovery;
+#[cfg(target_os = "linux")]
+pub use recovery::CognitiveCheckpointImage;
 pub use recovery::CognitiveRecoveryAnchor;
 pub use recovery::CognitiveRecoveryError;
 pub use recovery::CognitiveRecoveryRequirement;
+#[cfg(target_os = "linux")]
+pub use recovery::InstalledRootCheckpointImage;
 pub use recovery::RecoveredCognitiveReadOnly;
 pub(crate) use recovery::capture as capture_recovery_anchor;
 
@@ -1728,6 +1732,17 @@ pub(crate) fn publish_active_database(
 }
 
 fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError> {
+    #[cfg(windows)]
+    let _private_directory = {
+        let parent = path.parent().ok_or_else(|| {
+            CognitiveStoreError::Invalid("cognitive directory has no parent".to_string())
+        })?;
+        fs::create_dir_all(parent).map_err(unavailable)?;
+        // The exact leaf is created atomically with current-user ownership and
+        // a protected DACL. Existing unsafe state is rejected, never repaired.
+        codex_utils_path::open_private_state_directory(path).map_err(unavailable)?
+    };
+    #[cfg(not(windows))]
     fs::create_dir_all(path).map_err(unavailable)?;
     let canonical = canonical_path_without_redirection(path)
         .map_err(unavailable)?

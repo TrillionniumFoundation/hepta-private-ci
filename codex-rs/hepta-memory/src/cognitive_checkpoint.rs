@@ -82,11 +82,19 @@ impl<T: CognitiveCheckpointTransport> ProtectedCognitiveCheckpoint<T> {
     }
 
     pub(crate) async fn verify_initial(&self) -> Result<(), ObjectiveSenderCheckpointError> {
-        let expected = self.receipt.lock().await;
-        if self.read_head(&expected).await? != *expected {
-            return Err(ObjectiveSenderCheckpointError::Refused);
-        }
-        Ok(())
+        self.receipt_transaction().await.verify_initial().await
+    }
+
+    /// Read the actual fixed authenticated protected peer, holding this same
+    /// receipt coordinator through validation. A cached cut is not a fresh
+    /// Current observation; drift, Dirty, Publishing and Fenced are refused.
+    pub async fn observed_current_receipt(
+        &self,
+    ) -> Result<CognitiveCheckpointReceipt, ObjectiveSenderCheckpointError> {
+        self.receipt_transaction()
+            .await
+            .observed_current_receipt()
+            .await
     }
 
     /// Called for new and reused connections, before owner code receives them.
@@ -95,25 +103,13 @@ impl<T: CognitiveCheckpointTransport> ProtectedCognitiveCheckpoint<T> {
         if self.gate.is_fenced() {
             return;
         }
-        let mut receipt = self.receipt.lock().await;
-        if self.gate.is_fenced() {
-            return;
-        }
-        if receipt.head.phase == CognitiveCheckpointPhase::Dirty {
-            self.gate.allow_dirty_commits();
-            return;
-        }
-        let attempt = self.gate.transition_attempt();
-        if receipt.head.phase != CognitiveCheckpointPhase::Current {
-            return;
-        }
-        if let Ok(next) = self
-            .transition(&receipt, CognitiveCheckpointCommand::BeginWrites, None)
-            .await
-        {
-            *receipt = next;
-            self.gate.allow_dirty_commits();
-            attempt.acknowledge();
+        self.receipt_transaction().await.before_checkout().await;
+    }
+
+    async fn receipt_transaction(&self) -> ProtectedReceiptTransaction<'_, T> {
+        ProtectedReceiptTransaction {
+            owner: self,
+            receipt: self.receipt.lock().await,
         }
     }
 
@@ -276,42 +272,111 @@ impl<T: CognitiveCheckpointTransport> ObjectiveSenderCheckpoint
         committed: &CognitiveRecoveryAnchor,
         writer: &ObjectiveSenderWriterFence,
     ) -> Result<CognitiveRecoveryAnchor, ObjectiveSenderCheckpointError> {
-        let mut receipt = self.receipt.lock().await;
-        if committed.owner_agent_id != receipt.head.owner_agent_id
-            || writer.owner_agent_id != receipt.head.owner_agent_id
-            || !receipt.head.writer_binding.matches(writer)
+        self.receipt_transaction()
+            .await
+            .acknowledge_current(committed, writer)
+            .await
+    }
+}
+
+/// An explicit transaction over the unique protected receipt coordinator.
+/// This guard must span every await in the bounded read/Dirty/Prepare/Commit
+/// protocol: dropping it early would permit another checkout to race its CAS.
+/// It is private, exposes no generic lock or mutable receipt, and supplies no
+/// authority. The workspace's generic async-lock lint remains enabled.
+struct ProtectedReceiptTransaction<'a, T: CognitiveCheckpointTransport> {
+    owner: &'a ProtectedCognitiveCheckpoint<T>,
+    receipt: tokio::sync::MutexGuard<'a, CognitiveCheckpointReceipt>,
+}
+
+impl<T: CognitiveCheckpointTransport> ProtectedReceiptTransaction<'_, T> {
+    async fn verify_initial(&self) -> Result<(), ObjectiveSenderCheckpointError> {
+        if self.owner.read_head(&self.receipt).await? != *self.receipt {
+            return Err(ObjectiveSenderCheckpointError::Refused);
+        }
+        Ok(())
+    }
+
+    async fn observed_current_receipt(
+        &self,
+    ) -> Result<CognitiveCheckpointReceipt, ObjectiveSenderCheckpointError> {
+        if self.receipt.head.phase != CognitiveCheckpointPhase::Current
+            || self.receipt.head.proposal.is_some()
         {
             return Err(ObjectiveSenderCheckpointError::Refused);
         }
-        if self.gate.is_fenced() {
+        let observed = self.owner.read_head(&self.receipt).await?;
+        if observed != *self.receipt
+            || observed.head.phase != CognitiveCheckpointPhase::Current
+            || observed.head.proposal.is_some()
+        {
+            return Err(ObjectiveSenderCheckpointError::Refused);
+        }
+        Ok(observed)
+    }
+    async fn before_checkout(&mut self) {
+        if self.owner.gate.is_fenced() {
+            return;
+        }
+        if self.receipt.head.phase == CognitiveCheckpointPhase::Dirty {
+            self.owner.gate.allow_dirty_commits();
+            return;
+        }
+        let attempt = self.owner.gate.transition_attempt();
+        if self.receipt.head.phase != CognitiveCheckpointPhase::Current {
+            return;
+        }
+        if let Ok(next) = self
+            .owner
+            .transition(&self.receipt, CognitiveCheckpointCommand::BeginWrites, None)
+            .await
+        {
+            *self.receipt = next;
+            self.owner.gate.allow_dirty_commits();
+            attempt.acknowledge();
+        }
+    }
+    async fn acknowledge_current(
+        &mut self,
+        committed: &CognitiveRecoveryAnchor,
+        writer: &ObjectiveSenderWriterFence,
+    ) -> Result<CognitiveRecoveryAnchor, ObjectiveSenderCheckpointError> {
+        if committed.owner_agent_id != self.receipt.head.owner_agent_id
+            || writer.owner_agent_id != self.receipt.head.owner_agent_id
+            || !self.receipt.head.writer_binding.matches(writer)
+        {
+            return Err(ObjectiveSenderCheckpointError::Refused);
+        }
+        if self.owner.gate.is_fenced() {
             // Independent readback may settle an unchanged cut. It cannot
             // reopen this publisher or mint another Objective send ticket.
-            let observed = self.read_head(&receipt).await?;
+            let observed = self.owner.read_head(&self.receipt).await?;
             if observed.head.phase != CognitiveCheckpointPhase::Current
                 || observed.head.proposal.is_some()
                 || observed.head.last_current != *committed
             {
                 return Err(ObjectiveSenderCheckpointError::Unavailable);
             }
-            *receipt = observed;
+            *self.receipt = observed;
             return Ok(committed.clone());
         }
-        if receipt.head.phase == CognitiveCheckpointPhase::Current {
+        if self.receipt.head.phase == CognitiveCheckpointPhase::Current {
             // The original sender holds a real BEGIN IMMEDIATE writer lock
             // on its lock-only connection. An identical protected head confirms
             // this cut without invalidating it or incrementing any counter.
-            if receipt.head.last_current != *committed
-                || self.read_head(&receipt).await? != *receipt
+            if self.receipt.head.last_current != *committed
+                || self.owner.read_head(&self.receipt).await? != *self.receipt
             {
                 return Err(ObjectiveSenderCheckpointError::Unavailable);
             }
             return Ok(committed.clone());
         }
-        self.gate.close_commits();
-        let attempt = self.gate.checkpoint_attempt();
-        *receipt = self
+        self.owner.gate.close_commits();
+        let attempt = self.owner.gate.checkpoint_attempt();
+        *self.receipt = self
+            .owner
             .transition(
-                &receipt,
+                &self.receipt,
                 CognitiveCheckpointCommand::PreparePublication,
                 Some(CognitiveCheckpointProposal {
                     cut: committed.clone(),
@@ -319,9 +384,10 @@ impl<T: CognitiveCheckpointTransport> ObjectiveSenderCheckpoint
                 }),
             )
             .await?;
-        *receipt = self
+        *self.receipt = self
+            .owner
             .transition(
-                &receipt,
+                &self.receipt,
                 CognitiveCheckpointCommand::CommitPublication,
                 None,
             )

@@ -16,14 +16,17 @@ use serde::Deserialize;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdNotesLiteralBindings;
-use crate::AgentdNotesPreviousRecoveryLaunch;
+use crate::AgentdNotesPreviousRecoveryRequest;
+use crate::AgentdNotesRecoverySelector;
 use crate::AgentdNotesStartupRelease;
+use crate::notes_launch_mode::NotesLaunchMode;
 
 pub(super) struct NotesDeployment {
     pub(super) bindings: AgentdNotesLiteralBindings,
     pub(super) peer: NotesUiPeer,
-    pub(super) previous_recovery: Option<AgentdNotesPreviousRecoveryLaunch>,
+    pub(super) previous_recovery: Option<AgentdNotesPreviousRecoveryRequest>,
     pub(super) startup_release: Option<AgentdNotesStartupRelease>,
+    pub(super) interaction: NotesLaunchMode,
 }
 
 #[derive(Deserialize)]
@@ -44,6 +47,8 @@ struct Deployment {
     session: NotesUiPeer,
     bindings: Bindings,
     #[serde(default)]
+    interaction: NotesLaunchMode,
+    #[serde(default)]
     previous_recovery: Option<PreviousRecovery>,
     #[serde(default)]
     startup_release: Option<StartupRelease>,
@@ -63,7 +68,10 @@ struct PreviousRecovery {
     helper_sha256: String,
     state_directory: PathBuf,
     previous_target: NotesTargetIdentity,
-    operation_id: String,
+    #[serde(default)]
+    operation_id: Option<String>,
+    #[serde(default)]
+    selector: Option<AgentdNotesRecoverySelector>,
 }
 
 #[derive(Deserialize)]
@@ -114,6 +122,7 @@ pub(super) fn read(
         ));
     }
     let bindings = value.bindings;
+    value.interaction.validate_for(identity)?;
     let frozen = AgentdNotesLiteralBindings {
         principal_scope: bindings.principal_scope,
         principal_scope_digest: digest(&bindings.principal_scope_digest)?,
@@ -127,16 +136,23 @@ pub(super) fn read(
         prompt_registry_digest: digest(&bindings.prompt_registry_digest)?,
         artifact_set_digest: digest(&bindings.artifact_set_digest)?,
     };
+    value
+        .interaction
+        .validate_model_tuple(frozen.model_tuple_digest)?;
     let previous_recovery = value
         .previous_recovery
         .map(|previous| {
-            Ok::<_, AgentdError>(AgentdNotesPreviousRecoveryLaunch {
+            let selector = AgentdNotesRecoverySelector::from_fields(
+                previous.operation_id.as_deref(),
+                previous.selector.as_ref(),
+            )?;
+            Ok::<_, AgentdError>(AgentdNotesPreviousRecoveryRequest {
                 helper: previous.helper,
                 helper_sha256: Sha256Digest::parse(previous.helper_sha256)
                     .map_err(AgentdError::Invalid)?,
                 state_directory: previous.state_directory,
                 previous_target: previous.previous_target,
-                operation_id: previous.operation_id,
+                selector,
             })
         })
         .transpose()?;
@@ -151,6 +167,7 @@ pub(super) fn read(
         peer: value.session,
         previous_recovery,
         startup_release,
+        interaction: value.interaction,
     })
 }
 

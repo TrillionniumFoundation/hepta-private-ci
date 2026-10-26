@@ -145,6 +145,16 @@ async fn failed_terminal_persistence_never_acks_and_reopened_writer_retries_exac
     .await?;
     let (payload, identity, target) = fixture()?;
     let operation = prepare(&writer, payload, &identity).await?;
+    assert_eq!(
+        writer.retained_notes_terminal_receipt(&operation).await?,
+        None
+    );
+    assert!(
+        writer
+            .retained_notes_terminal_receipt("absent-original-operation")
+            .await
+            .is_err()
+    );
     assert!(
         writer
             .retire_notes_receipt(&target, &operation)
@@ -179,6 +189,12 @@ async fn failed_terminal_persistence_never_acks_and_reopened_writer_retries_exac
     let persisted: String = sqlx::query_scalar("SELECT payload_json FROM cognitive_local_events WHERE lease_id = ? AND occurrence_key = ? AND event_kind = 'reconcile_committed'")
         .bind(LEASE).bind(&operation).fetch_one(&store.pool).await?;
     assert_eq!(persisted, target.receipt);
+    let anchor_before_observation = writer.recovery_anchor().await?;
+    assert_eq!(
+        writer.retained_notes_terminal_receipt(&operation).await?,
+        Some(target.receipt.clone())
+    );
+    assert_eq!(writer.recovery_anchor().await?, anchor_before_observation);
     drop(writer);
     store.close().await;
     let reopened_store = CognitiveStore::open(&layout).await?;
@@ -197,6 +213,12 @@ async fn failed_terminal_persistence_never_acks_and_reopened_writer_retries_exac
         0
     );
     assert_eq!(target.retirements.load(Ordering::SeqCst), 2);
+    let reopened_anchor = reopened.recovery_anchor().await?;
+    assert_eq!(
+        reopened.retained_notes_terminal_receipt(&operation).await?,
+        Some(target.receipt.clone())
+    );
+    assert_eq!(reopened.recovery_anchor().await?, reopened_anchor);
     assert_eq!(
         target.observations.load(Ordering::SeqCst),
         2,

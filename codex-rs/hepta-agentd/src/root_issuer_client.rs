@@ -10,6 +10,9 @@ use std::os::fd::OwnedFd;
 const SIGN_OBJECTIVE: &str = "runtime.authbus.objective.sign.v1";
 const SIGNED_OBJECTIVE: &str = "runtime.authbus.objective.signed.v1";
 
+#[path = "root_human_text_client.rs"]
+mod human;
+
 impl AgentdUnixFinalUseGrantProvider {
     /// Typed text signing/lookup over the SAME pre-held registered Root lane.
     /// The original service retains request_id and its exact signed identity.

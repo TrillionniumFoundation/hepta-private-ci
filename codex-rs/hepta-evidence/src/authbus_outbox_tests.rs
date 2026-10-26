@@ -103,6 +103,26 @@ async fn enqueue_commit_response_loss_is_idempotent_across_reopen() {
         .ack_authbus_delivery(&issuer, &delivery.lease, ack)
         .await
         .unwrap();
+    let before = second
+        .authbus_delivery_status(status.delivery_id)
+        .await
+        .unwrap();
+    let observed = second
+        .retained_authbus_delivery(status.delivery_id)
+        .await
+        .unwrap();
+    assert_eq!(observed.message.claims, message.claims);
+    assert_eq!(observed.message.signature, message.signature);
+    assert_eq!(observed.payload, b"payload");
+    assert_eq!(observed.status, before);
+    assert_eq!(
+        second
+            .authbus_delivery_status(status.delivery_id)
+            .await
+            .unwrap(),
+        before,
+        "retained observation must not claim, renew, acknowledge or requeue delivery"
+    );
     assert!(matches!(
         second
             .ack_authbus_delivery(&issuer, &delivery.lease, ack)

@@ -6,6 +6,14 @@
 
 mod app_runtime;
 #[cfg(target_os = "linux")]
+mod native_hos2_owner;
+#[cfg(target_os = "linux")]
+pub use native_hos2_owner::AgentdG2NativeImage;
+#[cfg(target_os = "linux")]
+pub use native_hos2_owner::AgentdG2NativeOperationHost;
+#[cfg(target_os = "linux")]
+pub use native_hos2_owner::attach_g2_native_operation_host;
+#[cfg(target_os = "linux")]
 mod root_bound_socket;
 #[cfg(target_os = "linux")]
 pub use root_bound_socket::bind_root_agentd_socket;
@@ -21,6 +29,8 @@ mod authority_host_checkpoint;
 pub use authority_host_checkpoint::HostCognitiveCheckpoint;
 #[cfg(target_os = "linux")]
 pub use authority_host_checkpoint::HostCognitiveCheckpointRegistration;
+#[cfg(target_os = "linux")]
+pub use authority_host_checkpoint::HostPhysicalCurrentObservation;
 #[cfg(target_os = "linux")]
 pub use authority_host_checkpoint::RetainedCheckpointPublisher;
 #[cfg(target_os = "linux")]
@@ -75,11 +85,21 @@ pub use authority_host_bootstrap::HostAuthorityPublicConsumersV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_bootstrap::HostAuthorityPublicIssuerKeyV1;
 #[cfg(target_os = "linux")]
+pub use authority_host_config::HostAuthorityBindIdentity;
+#[cfg(target_os = "linux")]
 pub use authority_host_config::HostAuthorityConsumerConfig;
 #[cfg(target_os = "linux")]
 pub use authority_host_config::HostAuthorityConsumersConfig;
 #[cfg(target_os = "linux")]
 pub use authority_host_config::HostAuthorityRegisteredIdentity;
+#[cfg(target_os = "linux")]
+pub use authority_host_config::HostAuthorityRegistration;
+#[cfg(target_os = "linux")]
+pub use authority_host_config::HostAuthorityServiceConfig;
+#[cfg(target_os = "linux")]
+pub use authority_host_config::HostAuthoritySocketPaths;
+#[cfg(target_os = "linux")]
+pub use authority_host_config::HostIssuerRecordProfile;
 #[cfg(target_os = "linux")]
 mod authority_host_native_launch;
 #[cfg(target_os = "linux")]
@@ -95,11 +115,19 @@ pub use authority_host_native_launch::launch_host_authority_native_session;
 #[cfg(target_os = "linux")]
 mod authority_host_service;
 #[cfg(target_os = "linux")]
+pub use authority_host_runtime::HostAuthorityBootstrap;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::HostAuthorityInitialized;
+#[cfg(target_os = "linux")]
 pub use authority_host_runtime::PreparedHostAuthoritySession;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootNotesPolicyPredecessor;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::initialize_host_authority;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::register_host_writer_authorization;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::rotate_host_writer_authorization;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::serve_host_authority_session;
 #[cfg(target_os = "linux")]
@@ -125,9 +153,17 @@ mod root_production_handoff;
 #[cfg(target_os = "linux")]
 pub use config::PreparedRootAgentdConfig;
 #[cfg(target_os = "linux")]
+pub use config::drop_root_native_owner_credentials;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::RootProductionWriterDescriptor;
+#[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_production_handoff;
 #[cfg(target_os = "linux")]
+pub use root_production_handoff::receive_root_production_writer_handoff;
+#[cfg(target_os = "linux")]
 pub use root_production_handoff::send_root_production_handoff;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::send_root_production_writer_handoff;
 #[cfg(target_os = "linux")]
 mod root_observation_cache;
 #[cfg(target_os = "linux")]
@@ -200,6 +236,8 @@ mod notes_channel;
 #[cfg(target_os = "linux")]
 mod notes_document_observer;
 #[cfg(target_os = "linux")]
+mod notes_launch_mode;
+#[cfg(target_os = "linux")]
 mod notes_literal_adapter;
 #[cfg(target_os = "linux")]
 mod notes_literal_control;
@@ -213,6 +251,12 @@ mod notes_literal_receipts;
 mod notes_organ;
 #[cfg(target_os = "linux")]
 mod notes_recovery_process;
+#[cfg(target_os = "linux")]
+mod notes_thread_execution;
+#[cfg(target_os = "linux")]
+mod notes_thread_seed;
+#[cfg(target_os = "linux")]
+mod notes_thread_tool;
 #[cfg(target_os = "linux")]
 mod notes_ui_endpoint;
 #[cfg(target_os = "linux")]
@@ -244,6 +288,12 @@ pub use notes_organ::run_notes_organ;
 pub use notes_organ::run_notes_organ_with_previous_recovery;
 #[cfg(target_os = "linux")]
 pub use notes_recovery_process::AgentdNotesPreviousRecoveryLaunch;
+#[cfg(target_os = "linux")]
+mod notes_recovery_selection;
+#[cfg(target_os = "linux")]
+pub use notes_recovery_selection::AgentdNotesPreviousRecoveryRequest;
+#[cfg(target_os = "linux")]
+pub use notes_recovery_selection::AgentdNotesRecoverySelector;
 mod runtime_tasks;
 mod shared_terminal_cell;
 mod state;
@@ -456,6 +506,24 @@ pub use notes_literal_observation::AgentdNotesObservationRetention;
 pub use notes_literal_observation::AgentdNotesSubmissionObservation;
 #[cfg(target_os = "linux")]
 pub use notes_literal_observation::AgentdNotesSubmissionState;
+#[cfg(target_os = "linux")]
+pub use notes_thread_execution::ORIGINAL_NOTES_THREAD_ENVIRONMENTS_CONFIG;
+#[cfg(target_os = "linux")]
+pub use notes_thread_execution::ORIGINAL_NOTES_THREAD_EXECUTION_CONFIG;
+#[cfg(target_os = "linux")]
+pub use notes_thread_seed::NotesThreadSeedOptions;
+#[cfg(target_os = "linux")]
+pub use notes_thread_seed::NotesThreadSeedReceipt;
+#[cfg(target_os = "linux")]
+pub use notes_thread_seed::seed_original_notes_thread;
+#[cfg(target_os = "linux")]
+pub use notes_thread_seed::verify_original_notes_thread_seed;
+#[cfg(target_os = "linux")]
+pub use notes_thread_tool::AgentdNotesThreadToolRuntime;
+#[cfg(target_os = "linux")]
+pub use notes_thread_tool::original_notes_thread_tools;
+#[cfg(target_os = "linux")]
+pub use notes_ui_endpoint::AgentdNotesSessionLifetime;
 #[cfg(target_os = "linux")]
 pub use notes_ui_endpoint::AgentdNotesUiPeer;
 pub use objective_runtime::authbus_objective_claims;

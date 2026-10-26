@@ -55,9 +55,9 @@ pub(super) fn receive(
     pidfd: &OwnedFd,
     uid: u32,
     gid: u32,
+    end: Instant,
 ) -> io::Result<(StartupRelease, SessionBirth)> {
-    let timeout = Duration::from_secs(30);
-    let end = Instant::now() + timeout;
+    let timeout = remaining(end)?;
     // SO_PEERCRED identifies the trusted pair creator; SCM_CREDENTIALS below
     // identifies the actual Session that sent this particular reservation.
     let creator =
@@ -97,18 +97,15 @@ pub(super) fn receive(
         .and_then(|value| value.parse::<u64>().ok())
         .filter(|value| *value != 0)
         .ok_or_else(|| io::Error::other("Notes Session birth is unavailable"))?;
-    let remaining = end
-        .checked_duration_since(Instant::now())
-        .ok_or_else(|| io::Error::other("Notes reservation deadline elapsed"))?;
     socket.set_nonblocking(false)?;
-    socket.set_read_timeout(Some(remaining))?;
-    let release = receive_packet(
+    let release = receive_packet_before(
         &socket,
         libc::ucred {
             pid: pid as i32,
             uid,
             gid,
         },
+        end,
     )?;
     crate::authority_host_runtime::owner_alive(pidfd, end)?;
     crate::authority_host_runtime::verify_process_credentials(pid, uid, gid)?;
@@ -124,6 +121,30 @@ pub(super) fn receive(
             process_start_ticks,
         },
     ))
+}
+
+pub(super) fn remaining(end: Instant) -> io::Result<Duration> {
+    let remaining = end
+        .checked_duration_since(Instant::now())
+        .filter(|duration| !duration.is_zero() && *duration <= Duration::from_secs(30))
+        .ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::TimedOut,
+                "original Notes startup episode elapsed or exceeds 30 seconds",
+            )
+        })?;
+    Ok(remaining)
+}
+
+fn receive_packet_before(
+    socket: &UnixDatagram,
+    expected: libc::ucred,
+    end: Instant,
+) -> io::Result<StartupRelease> {
+    socket.set_read_timeout(Some(remaining(end)?))?;
+    let release = receive_packet(socket, expected)?;
+    remaining(end)?;
+    Ok(release)
 }
 
 fn receive_packet(socket: &UnixDatagram, expected: libc::ucred) -> io::Result<StartupRelease> {

@@ -22,6 +22,8 @@ pub(crate) use sockets::AgentdSocketInputs;
 mod root_handoff;
 #[cfg(target_os = "linux")]
 pub use root_handoff::PreparedRootAgentdConfig;
+#[cfg(target_os = "linux")]
+pub use root_handoff::drop_root_native_owner_credentials;
 
 pub const HEPTA_AGENT_ID_ENV: &str = "HEPTA_AGENT_ID";
 pub const HEPTA_AGENT_GENERATION_ENV: &str = "HEPTA_AGENT_GENERATION";
@@ -81,6 +83,12 @@ fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrie
     parse_cognitive_retrieval_mode(std::env::var_os(HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV))
 }
 
+enum WriterSource {
+    OrdinaryPath,
+    #[cfg(target_os = "linux")]
+    RootDescriptor(File),
+}
+
 pub struct AgentdConfig {
     identity: AgentdIdentity,
     sockets: AgentdSocketInputs,
@@ -99,6 +107,8 @@ pub struct AgentdConfig {
     notes_objective: Option<crate::AgentdNotesObjectiveConfig>,
     #[cfg(target_os = "linux")]
     notes_ui: Option<crate::AgentdNotesUiRuntime>,
+    #[cfg(target_os = "linux")]
+    notes_thread_tools: Option<crate::AgentdNotesThreadToolRuntime>,
     cognitive_retrieval_mode: CognitiveRetrievalMode,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
@@ -147,6 +157,29 @@ impl AgentdConfig {
         codex_home: PathBuf,
         current_dir: PathBuf,
     ) -> Result<Self, AgentdError> {
+        Self::load_with_writer_source(
+            fleet_root,
+            agent_id,
+            spawn_generation,
+            home_root,
+            run_root,
+            codex_home,
+            current_dir,
+            WriterSource::OrdinaryPath,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn load_with_writer_source(
+        fleet_root: PathBuf,
+        agent_id: AgentId,
+        spawn_generation: u64,
+        home_root: PathBuf,
+        run_root: PathBuf,
+        codex_home: PathBuf,
+        current_dir: PathBuf,
+        writer_source: WriterSource,
+    ) -> Result<Self, AgentdError> {
         if spawn_generation == 0 {
             return Err(AgentdError::Invalid(
                 "spawn generation must be non-zero".to_string(),
@@ -182,12 +215,16 @@ impl AgentdConfig {
             )));
         }
 
-        let writer_lock = OpenOptions::new()
-            .create(true)
-            .truncate(false)
-            .read(true)
-            .write(true)
-            .open(record.layout.writer_lock())?;
+        let writer_lock = match writer_source {
+            WriterSource::OrdinaryPath => OpenOptions::new()
+                .create(true)
+                .truncate(false)
+                .read(true)
+                .write(true)
+                .open(record.layout.writer_lock())?,
+            #[cfg(target_os = "linux")]
+            WriterSource::RootDescriptor(file) => file,
+        };
         writer_lock.try_lock().map_err(|error| {
             AgentdError::Invalid(format!(
                 "agent {agent_id} already has a live writer lock: {error}"
@@ -226,6 +263,8 @@ impl AgentdConfig {
             notes_objective: None,
             #[cfg(target_os = "linux")]
             notes_ui: None,
+            #[cfg(target_os = "linux")]
+            notes_thread_tools: None,
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
@@ -409,7 +448,7 @@ impl AgentdConfig {
         mut self,
         runtime: crate::AgentdNotesUiRuntime,
     ) -> Result<Self, AgentdError> {
-        if self.notes_ui.is_some() {
+        if self.notes_ui.is_some() || self.notes_thread_tools.is_some() {
             return Err(AgentdError::Invalid(
                 "original Notes UI already configured".into(),
             ));
@@ -422,6 +461,58 @@ impl AgentdConfig {
     #[cfg(target_os = "linux")]
     pub(crate) fn take_original_notes_ui(&mut self) -> Option<crate::AgentdNotesUiRuntime> {
         self.notes_ui.take()
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn install_original_notes_thread_tools(
+        mut self,
+        runtime: crate::AgentdNotesThreadToolRuntime,
+    ) -> Result<Self, AgentdError> {
+        if self.notes_ui.is_some() || self.notes_thread_tools.is_some() {
+            return Err(AgentdError::Invalid(
+                "original Notes operation mode already selected".into(),
+            ));
+        }
+        runtime.validate_for(&self)?;
+        self.notes_thread_tools = Some(runtime);
+        Ok(self)
+    }
+
+    /// Hold the actual Session for the required original-thread worker. The
+    /// original inherited pidfd and birth validation must precede installation.
+    #[cfg(target_os = "linux")]
+    pub fn with_original_notes_thread_session(
+        mut self,
+        session: crate::AgentdNotesSessionLifetime,
+    ) -> Result<Self, AgentdError> {
+        let runtime = self.notes_thread_tools.as_mut().ok_or_else(|| {
+            AgentdError::Invalid("original Notes thread mode is not installed".into())
+        })?;
+        runtime.install_session(session)?;
+        Ok(self)
+    }
+
+    /// Retain only the mandatory original Start receipt bound to the installed
+    /// model tool profile. It is reverified on the final actual connection.
+    #[cfg(target_os = "linux")]
+    pub fn with_original_notes_thread_seed(
+        mut self,
+        seed: crate::NotesThreadSeedReceipt,
+    ) -> Result<Self, AgentdError> {
+        self.notes_thread_tools
+            .as_mut()
+            .ok_or_else(|| {
+                AgentdError::Invalid("original Notes tool runtime is not installed".into())
+            })?
+            .install_seed(seed)?;
+        Ok(self)
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn take_original_notes_thread_tools(
+        &mut self,
+    ) -> Option<crate::AgentdNotesThreadToolRuntime> {
+        self.notes_thread_tools.take()
     }
 
     /// Explicit old-incarnation recovery from the trusted sealed deployment.
@@ -437,6 +528,33 @@ impl AgentdConfig {
             .ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?
             .select_previous_notes_process(launch)?;
         Ok(self)
+    }
+
+    /// Resolve only on the already recovered original writer. Latest requires
+    /// the installed original-thread seed/session and complete protected cut;
+    /// the existing helper still receives one exact old operation only.
+    #[cfg(target_os = "linux")]
+    pub async fn with_original_notes_previous_recovery_request(
+        self,
+        request: crate::AgentdNotesPreviousRecoveryRequest,
+    ) -> Result<Self, AgentdError> {
+        let operation_id = match &request.selector {
+            crate::AgentdNotesRecoverySelector::ExactOperation { operation_id } => {
+                operation_id.clone()
+            }
+            crate::AgentdNotesRecoverySelector::LatestRecordedOriginalNotes => {
+                self.notes_thread_tools
+                    .as_ref()
+                    .ok_or_else(|| {
+                        AgentdError::Invalid(
+                            "latest recorded recovery requires original thread mode".into(),
+                        )
+                    })?
+                    .latest_recovery_operation(&request.previous_target)
+                    .await?
+            }
+        };
+        self.with_original_notes_previous_recovery(request.resolved(operation_id))
     }
 
     /// Attach an externally verified production cognitive writer to normal

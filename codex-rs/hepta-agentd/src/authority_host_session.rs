@@ -7,6 +7,10 @@ mod filesystem;
 
 #[path = "root_notes_startup.rs"]
 mod notes_startup;
+pub use notes_startup::RootNotesPolicyPredecessor;
+
+#[path = "authority_host_session_material.rs"]
+mod material;
 
 /// One Root session's immutable registration, retained actual process handle
 /// and original service. This wrapper is not Clone and creates no additional
@@ -173,16 +177,97 @@ impl PreparedHostAuthoritySession {
 
     /// Consume this retained service and serve its original fixed lanes.
     pub fn serve(self) -> io::Result<()> {
-        self.serve_selected(/*text_ui*/ None)
+        self.serve_selected(/*text_ui*/ None, || Ok(()))
     }
 
     /// Serve this same retained session and the original native text lane.
     /// The original profile, peer, socket and text registration checks apply.
     pub fn serve_with_text(self, text_file: &Path, ui_pidfd: OwnedFd) -> io::Result<()> {
-        self.serve_selected(Some((text_file, ui_pidfd)))
+        self.serve_selected(Some((text_file, ui_pidfd)), || Ok(()))
     }
 
-    fn serve_selected(self, text_ui: Option<(&Path, OwnedFd)>) -> io::Result<()> {
+    pub(crate) fn serve_with_text_and_ready(
+        self,
+        text_file: &Path,
+        ui_pidfd: OwnedFd,
+        ready: impl FnOnce() -> io::Result<()>,
+    ) -> io::Result<()> {
+        self.serve_selected(Some((text_file, ui_pidfd)), ready)
+    }
+
+    /// Retain the original provider's held login leader, independently verify
+    /// that exact physical logind session, and fence every Root lane on leader exit.
+    /// This neither initializes authority nor accepts a numeric PID substitute.
+    pub fn with_original_logind_session(
+        mut self,
+        profile_file: &Path,
+        original_login: OwnedFd,
+    ) -> io::Result<Self> {
+        let profile: crate::HostAuthorityNativeProfile = read_root_json(profile_file)?;
+        self.service = self.service.with_original_logind_session(
+            &profile,
+            self.config.peer_uid,
+            original_login,
+        )?;
+        Ok(self)
+    }
+
+    /// Launch the native UI from this SAME already prepared Root session.
+    /// Fresh publication/handoff and native serving cannot reopen the exclusive
+    /// clock/issuer/checkpoint owners. The original protected launch checks
+    /// still run and both files must equal this retained registration/config.
+    pub fn launch_native(
+        self,
+        config_file: &Path,
+        registration_file: &Path,
+        profile_file: &Path,
+    ) -> io::Result<()> {
+        self.launch_native_with_ready(config_file, registration_file, profile_file, || Ok(()))
+    }
+
+    /// Complete the same protected native launch before releasing one child
+    /// bootstrap at the original fixed-lane listener barrier. The callback
+    /// must only release that already prepared handoff; no new owner is opened
+    /// and every original peer, deadline and no-retry check remains in force.
+    pub fn launch_native_with_ready(
+        self,
+        config_file: &Path,
+        registration_file: &Path,
+        profile_file: &Path,
+        ready: impl FnOnce() -> io::Result<()>,
+    ) -> io::Result<()> {
+        let (config, profile) = crate::authority_host_native_launch::inputs(
+            config_file,
+            registration_file,
+            profile_file,
+            &self.owner_pidfd,
+        )?;
+        let registration: HostAuthorityRegistration = read_root_json(registration_file)?;
+        self.service
+            .check_logind_binding(&profile.original_human_binding())?;
+        if serde_json::to_vec(&config).map_err(io::Error::other)?
+            != serde_json::to_vec(&self.config).map_err(io::Error::other)?
+            || serde_json::to_vec(&registration).map_err(io::Error::other)?
+                != serde_json::to_vec(&self.registration).map_err(io::Error::other)?
+        {
+            return Err(io::Error::other(
+                "native launch changed the retained original Root inputs",
+            ));
+        }
+        crate::authority_host_native_launch::launch_prepared_native_with_ready(
+            self,
+            config,
+            profile,
+            profile_file,
+            ready,
+        )
+    }
+
+    fn serve_selected(
+        self,
+        text_ui: Option<(&Path, OwnedFd)>,
+        ready: impl FnOnce() -> io::Result<()>,
+    ) -> io::Result<()> {
         let Self {
             config,
             registration,
@@ -206,6 +291,7 @@ impl PreparedHostAuthoritySession {
                 ));
             }
             text.validate(&service)?;
+            let service = service.with_live_human_text(text.clone(), ui_pidfd.try_clone()?)?;
             if [
                 &config.sockets.observation,
                 &config.sockets.issuer,
@@ -218,6 +304,10 @@ impl PreparedHostAuthoritySession {
             {
                 return Err(io::Error::other("text UI requires a distinct private lane"));
             }
+            // A refused one-shot handoff must return before either serving
+            // loop starts. All native launch and human registration work is
+            // already complete; only the original accept barrier follows.
+            let bound = listeners::bind_runtime_lanes(&config, ready)?;
             std::thread::scope(|scope| {
                 let worker = scope.spawn(|| {
                     service.serve_text_ui(
@@ -228,14 +318,20 @@ impl PreparedHostAuthoritySession {
                         std::time::Duration::from_millis(config.lifetime_ms),
                     )
                 });
-                let original = serve_lanes(&service, &config, &registration, &owner_pidfd);
+                let original = listeners::serve_bound_lanes(
+                    &service,
+                    &config,
+                    &registration,
+                    &owner_pidfd,
+                    bound,
+                );
                 let ui = worker
                     .join()
                     .map_err(|_| io::Error::other("text UI lane panicked"))?;
                 original.and(ui)
             })
         } else {
-            serve_lanes(&service, &config, &registration, &owner_pidfd)
+            listeners::serve_lanes_with_ready(&service, &config, &registration, &owner_pidfd, ready)
         }
     }
 }

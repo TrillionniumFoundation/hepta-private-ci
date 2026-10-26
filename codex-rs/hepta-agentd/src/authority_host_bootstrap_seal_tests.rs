@@ -1,4 +1,7 @@
 use super::*;
+
+#[path = "root_production_writer_handoff_tests.rs"]
+mod original_writer;
 use pretty_assertions::assert_eq;
 use std::os::unix::fs::FileExt;
 

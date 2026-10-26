@@ -78,6 +78,7 @@ pub use objective_sender::ObjectiveSenderRetainedPosition;
 pub use objective_sender::ObjectiveSenderSnapshot;
 pub use objective_sender::ObjectiveSenderTicket;
 pub use objective_sender::ObjectiveSenderWriterFence;
+pub use objective_sender::OriginalNotesThreadReference;
 pub use objective_sender::ProductionObjectiveSender;
 pub(crate) use objective_sender::verify_sender_store;
 
@@ -89,6 +90,7 @@ pub(crate) use reauthorization::PreBoundaryRejected;
 mod hos2_owner;
 pub use hos2_owner::Hos2RetirementObservation;
 pub use hos2_owner::Hos2RetirementPermit;
+pub use hos2_owner::ProductionRetainedHos2Terminal;
 
 #[path = "production_effect_entry.rs"]
 mod effect_entry;

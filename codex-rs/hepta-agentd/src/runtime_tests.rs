@@ -397,6 +397,7 @@ async fn qualification_host_binds_one_local_turn_and_replays_exactly_once() {
         Arc::clone(&fixture.state),
         runtime,
         /*production_cognitive_mutation*/ None,
+        crate::app_runtime::AppServerModelToolProfile::Standard,
     )
     .expect("runtime options");
     assert!(

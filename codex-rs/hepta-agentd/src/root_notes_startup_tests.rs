@@ -39,3 +39,85 @@ fn original_root_seals_only_empty_private_deployment_and_readonly_consumer_obser
         "a previous sealed deployment is never reset"
     );
 }
+
+fn recovery_profile(previous: Option<NotesTargetIdentity>) -> Profile {
+    serde_json::from_value(serde_json::json!({
+        "schema":"hepta.root.notes_launch_profile.v1", "grant_lifetime_ms":1000,
+        "bindings":{"principal_scope":"test.read-only-contract","principal_scope_digest":"11".repeat(32),
+            "issuer_id":"test-contract","policy_generation":1,"locale":"zh-CN",
+            "runtime_body_digest":"22".repeat(32),"preference_state_digest":"33".repeat(32),
+            "model_tuple_digest":"44".repeat(32),"prompt_registry_digest":"55".repeat(32),
+            "artifact_set_digest":"66".repeat(32)},
+        "previous_recovery":previous.map(|target| serde_json::json!({"helper":"/unused-helper",
+            "helper_sha256":"77".repeat(32),"state_directory":"/unused-store",
+            "previous_target":target,"operation_id":"original-old-operation"}))
+    })).unwrap()
+}
+
+#[test]
+fn successor_policy_contract_requires_the_exact_old_identity_and_distinct_reserved_target() {
+    let old = NotesTargetIdentity {
+        session_instance: "a".repeat(32),
+        task_id: 1,
+        incarnation: "b".repeat(32),
+    };
+    let next = NotesTargetIdentity {
+        session_instance: "c".repeat(32),
+        task_id: 1,
+        incarnation: "d".repeat(32),
+    };
+    let profile = recovery_profile(Some(old.clone()));
+    let prior = RootNotesPolicyPredecessor {
+        target: &old,
+        grant_lifetime_ms: 1000,
+    };
+    assert!(validate_recovery_policy(&profile, &prior, &next).is_ok());
+    assert!(validate_recovery_policy(&profile, &prior, &old).is_err());
+    assert!(
+        validate_recovery_policy(
+            &profile,
+            &RootNotesPolicyPredecessor {
+                target: &next,
+                grant_lifetime_ms: 1000
+            },
+            &old
+        )
+        .is_err()
+    );
+}
+
+#[test]
+fn successor_policy_contract_cannot_drop_the_old_recovery_or_invent_a_policy_lifetime() {
+    let old = NotesTargetIdentity {
+        session_instance: "a".repeat(32),
+        task_id: 1,
+        incarnation: "b".repeat(32),
+    };
+    let next = NotesTargetIdentity {
+        session_instance: "c".repeat(32),
+        task_id: 1,
+        incarnation: "d".repeat(32),
+    };
+    assert!(
+        validate_recovery_policy(
+            &recovery_profile(None),
+            &RootNotesPolicyPredecessor {
+                target: &old,
+                grant_lifetime_ms: 1000
+            },
+            &next
+        )
+        .is_err()
+    );
+    assert!(
+        validate_recovery_policy(
+            &recovery_profile(Some(old.clone())),
+            &RootNotesPolicyPredecessor {
+                target: &old,
+                grant_lifetime_ms: 0
+            },
+            &next
+        )
+        .is_err()
+    );
+}

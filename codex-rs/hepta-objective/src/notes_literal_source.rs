@@ -29,9 +29,21 @@ pub struct LiteralNotesSourceContext<'a> {
 pub fn literal_notes_source_json_v1(
     context: LiteralNotesSourceContext<'_>,
 ) -> Result<String, String> {
+    encode_source(context, SCHEMA, NORMALIZATION, "notes.literal.profile")
+}
+
+pub(super) fn encode_source(
+    context: LiteralNotesSourceContext<'_>,
+    schema: &[u8],
+    normalization: &[u8],
+    evidence: &str,
+) -> Result<String, String> {
     if context.client_intent_id.is_empty()
         || context.client_intent_id.len() > 96
-        || !context.client_intent_id.bytes().all(|byte| byte.is_ascii_alphanumeric() || b"-_".contains(&byte))
+        || !context
+            .client_intent_id
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"-_".contains(&byte))
         || context.source_digest.is_zero()
         || context.principal_scope_digest.is_zero()
         || !matches!(context.locale, "en-US" | "zh-CN")
@@ -47,14 +59,14 @@ pub fn literal_notes_source_json_v1(
             "successPredicates":[{"predicateId":"notes.document.matches","unit":"boolean","comparator":"eq","boundQ32":4294967296_i64,"evidenceSourceId":"notes.original.readback","terminal":false}],
             "terminalConditions":[{"predicateId":"notes.operation.committed","unit":"boolean","comparator":"eq","boundQ32":4294967296_i64,"evidenceSourceId":"notes.original.owner","terminal":true}],
             "legalActionClasses":["notes.replace"],"forbiddenActionClasses":["network","process.execute"],"confirmationActionClasses":[],
-            "constraints":[{"constraintId":"notes.exact.destination","unit":"boolean","comparator":"eq","boundQ32":4294967296_i64,"evidenceSourceId":"notes.literal.profile","terminal":false}],"softDimensions":[],
+            "constraints":[{"constraintId":"notes.exact.destination","unit":"boolean","comparator":"eq","boundQ32":4294967296_i64,"evidenceSourceId":evidence,"terminal":false}],"softDimensions":[],
             "evidenceRequirements":[{"requirementId":"notes.exact.receipt","evidenceSourceId":"notes.original.owner","minimumConfidencePpm":1000000,"terminal":true}],
             "resources":{"timeMicros":5000000,"tokenCount":0,"computeMicros":1000000,"memoryBytes":8192,"networkBytes":0,"externalEffectCount":1},
             "risk":{"riskClass":"low","abstentionRule":"refuse_if_unbound","rollbackClass":"none","compensationRequired":false},
-            "provenance":{"sourceDigest":context.source_digest.to_string(),"normalizationProfileDigest":Digest32::of_bytes(NORMALIZATION).to_string()}
+            "provenance":{"sourceDigest":context.source_digest.to_string(),"normalizationProfileDigest":Digest32::of_bytes(normalization).to_string()}
         },
         "sourceTrustClass":"authorized_adapter","locale":context.locale,"observedAt":context.observed_at,
-        "deadline":context.deadline,"inputSchemaDigest":Digest32::of_bytes(SCHEMA).to_string(),
+        "deadline":context.deadline,"inputSchemaDigest":Digest32::of_bytes(schema).to_string(),
     });
     let decoded = decode_source_envelope_json_v1(
         &serde_json::to_vec(&source).map_err(|error| error.to_string())?,

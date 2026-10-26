@@ -654,6 +654,13 @@ strip = false
 # Balance parallel release code generation against binary size.
 codegen-units = 4
 
+[profile.product-linux]
+inherits = "release"
+# Explicit size candidate for the bounded Linux product archive. Preserve
+# thin LTO, unwind semantics, features, and the packaging symbol transform.
+opt-level = "s"
+codegen-units = 1
+
 [profile.profiling]
 inherits = "release"
 debug = "full"
@@ -668,6 +675,9 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Preserve AWS credentials-login while using the fixed RustCrypto P-256 stack.
+# The audited upstream 1.12.0 package and compatibility patch are recorded beside it.
+aws-config = { path = "third_party/aws-config-1.12.0" }
 # Retain the existing encrypted Secret Service backend with maintained zbus 6
 # and replace the archived i18n parser without changing its 0.4 public variants.
 i18n-config = { path = "third_party/i18n-config-0.4.8" }

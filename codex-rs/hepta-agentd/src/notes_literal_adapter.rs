@@ -41,6 +41,8 @@ mod read;
 pub use read::AgentdNotesRetainedIntents;
 #[path = "notes_literal_history.rs"]
 mod history;
+#[path = "notes_thread_recorded.rs"]
+pub(crate) mod recorded;
 #[path = "notes_ui_runtime.rs"]
 mod ui_runtime;
 pub use ui_runtime::AgentdNotesUiRuntime;
@@ -89,18 +91,32 @@ pub enum AgentdNotesPreparedObjective {
 /// One non-cloneable preparation capability, with one bounded blocking slot.
 /// The slot remains held by started observation/signing work after cancellation.
 /// It owns no database, nonce, request-ID mapping or parallel admission ledger.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(crate) enum NotesAdapterProfile {
+    Literal,
+    OriginalThread,
+}
+
+struct ThreadPreparation<'a> {
+    expected_revision: u64,
+    original_call_id: &'a str,
+    original_reference: codex_hepta_memory::OriginalNotesThreadReference,
+    human: &'a crate::notes_thread_tool::human::VerifiedHumanTurn,
+}
+
 pub struct AgentdNotesLiteralAdapter {
     pub(crate) identity: AgentdIdentity,
-    writer: Arc<ProductionDurableWriter>,
+    pub(crate) writer: Arc<ProductionDurableWriter>,
     sender: Arc<ProductionObjectiveSender<RootCheckpoint>>,
     root: Arc<AgentdRootAuthoritySession>,
-    observer: AgentdNotesDocumentObserver,
+    pub(crate) observer: AgentdNotesDocumentObserver,
     grants: Arc<AgentdUnixFinalUseGrantProvider>,
-    bindings: AgentdNotesLiteralBindings,
+    pub(crate) bindings: AgentdNotesLiteralBindings,
     input_schema_digest: Digest32,
     normalization_digest: Digest32,
-    blocking: Arc<Semaphore>,
-    deadline: Duration,
+    pub(crate) blocking: Arc<Semaphore>,
+    pub(crate) deadline: Duration,
+    profile: NotesAdapterProfile,
     next_request: u64,
 }
 
@@ -114,6 +130,16 @@ impl AgentdConfig {
         attachment: &AgentdRootProductionAttachment,
         bindings: AgentdNotesLiteralBindings,
         deadline: Duration,
+    ) -> Result<(Self, AgentdNotesLiteralAdapter), AgentdError> {
+        self.with_root_notes_adapter(attachment, bindings, deadline, NotesAdapterProfile::Literal)
+    }
+
+    pub(crate) fn with_root_notes_adapter(
+        self,
+        attachment: &AgentdRootProductionAttachment,
+        bindings: AgentdNotesLiteralBindings,
+        deadline: Duration,
+        profile: NotesAdapterProfile,
     ) -> Result<(Self, AgentdNotesLiteralAdapter), AgentdError> {
         if deadline.is_zero()
             || deadline > Duration::from_secs(10)
@@ -146,7 +172,13 @@ impl AgentdConfig {
                 "Notes Root attachment differs from installed writer",
             ));
         }
-        let expected = literal_notes_admission_profile_json_v1(
+        let encode_profile = match profile {
+            NotesAdapterProfile::Literal => literal_notes_admission_profile_json_v1,
+            NotesAdapterProfile::OriginalThread => {
+                codex_hepta_objective::thread_notes_admission_profile_json_v1
+            }
+        };
+        let expected = encode_profile(
             &bindings.principal_scope,
             bindings.principal_scope_digest,
             &bindings.issuer_id,
@@ -191,6 +223,7 @@ impl AgentdConfig {
             normalization_digest: selected.expected_normalization_profile_digest,
             blocking: Arc::new(Semaphore::new(1)),
             deadline,
+            profile,
             next_request: 1,
         };
         adapter.check_available()?;
@@ -210,13 +243,76 @@ impl AgentdNotesLiteralAdapter {
         {
             return Err(invalid("invalid Notes client intent ID"));
         }
+        let (domain, prefix) = match self.profile {
+            NotesAdapterProfile::Literal => ("organ.notes.literal.run.v1", "notes.literal"),
+            NotesAdapterProfile::OriginalThread => {
+                ("organ.notes.original-turn.run.v1", "notes.thread")
+            }
+        };
         let binding = serde_json::to_vec(&(
-            "organ.notes.literal.run.v1",
+            domain,
             self.identity.agent_id.as_str(),
             self.bindings.principal_scope_digest.to_string(),
             client_intent_id,
         ))?;
-        Ok(format!("notes.literal.{}", Digest32::of_bytes(&binding)))
+        Ok(format!("{prefix}.{}", Digest32::of_bytes(&binding)))
+    }
+
+    pub(crate) async fn retained_thread_request_sha256(
+        &self,
+        client_intent_id: &str,
+        original_call_id: &str,
+    ) -> Result<Option<String>, AgentdError> {
+        let run_id = self.run_id(client_intent_id)?;
+        let request = self
+            .sender
+            .retained_request_for_run(&run_id)
+            .await
+            .map_err(|error| invalid(&error.to_string()))?;
+        if let Some(request) = &request {
+            require_original_thread_call(request, original_call_id)?;
+        }
+        Ok(request.map(|request| request.identity().original_sha256.as_str().to_owned()))
+    }
+
+    pub(crate) async fn verify_original_human_text(
+        &self,
+        ingress: &crate::AuthBusTextIngress,
+        route: &crate::text_session::AgentdTextSessionConfig,
+    ) -> Result<crate::text_session::TextOwnerReceipt, AgentdError> {
+        self.check_available()?;
+        let permit = Arc::clone(&self.blocking)
+            .try_acquire_owned()
+            .map_err(|_| invalid("original human verification worker is occupied"))?;
+        let grants = Arc::clone(&self.grants);
+        let root = Arc::clone(&self.root);
+        let ingress = ingress.clone();
+        let expected = route.clone();
+        let receipt = tokio::time::timeout(
+            self.deadline,
+            tokio::task::spawn_blocking(move || {
+                let _permit = permit;
+                let receipt = grants
+                    .verify_original_human_text(&ingress)
+                    .map_err(|_| invalid("Root did not verify this original human input"))?;
+                let now = root
+                    .clock()
+                    .now_unix_ms()
+                    .map_err(|_| invalid("protected Root clock unavailable"))?;
+                if !receipt.validate() || receipt.route != expected || receipt.expires_at_ms <= now
+                {
+                    return Err(invalid(
+                        "Root human input proof differs from current fixed route or lifetime",
+                    ));
+                }
+                Ok(receipt)
+            }),
+        )
+        .await
+        .map_err(|_| invalid("Root human input verification timed out"))?
+        .map_err(|_| invalid("Root human verification worker failed"))??;
+        self.check_available()?;
+        Ok(receipt)
     }
 
     pub fn check_available(&self) -> Result<(), AgentdError> {
@@ -257,6 +353,81 @@ impl AgentdNotesLiteralAdapter {
         end: Instant,
         phase: &mut NotesUiCallPhase,
     ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
+        if self.profile != NotesAdapterProfile::Literal {
+            return Err(invalid("literal UI cannot prepare a model tool operation"));
+        }
+        self.prepare_bound(client_intent_id, text, None, end, phase)
+            .await
+    }
+
+    pub(crate) async fn prepare_thread(
+        &mut self,
+        client_intent_id: &str,
+        original_call_id: &str,
+        original_reference: codex_hepta_memory::OriginalNotesThreadReference,
+        text: &str,
+        expected_revision: u64,
+        human: &crate::notes_thread_tool::human::VerifiedHumanTurn,
+    ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
+        if self.profile != NotesAdapterProfile::OriginalThread {
+            return Err(invalid(
+                "model tool cannot use the no-model literal profile",
+            ));
+        }
+        let (turn, call) =
+            recorded::reference_ids(&original_reference, self.identity.agent_id.as_str())?;
+        if turn != client_intent_id
+            || call != original_call_id
+            || original_reference.thread_id != human.route().thread_id
+            || original_reference.app_server_session_id != human.route().app_server_session_id
+            || !recorded::callback_matches(&original_reference, text, expected_revision)?
+        {
+            return Err(invalid("original Notes raw callback reference differs"));
+        }
+        let current_human = self
+            .verify_original_human_text(human.ingress(), human.route())
+            .await?;
+        if !human.owner().same_authorization(&current_human) {
+            return Err(invalid(
+                "original human authorization changed before Notes preparation",
+            ));
+        }
+        let end = Instant::now() + self.deadline;
+        let mut phase = NotesUiCallPhase::ReadOnly;
+        tokio::time::timeout_at(
+            end.into(),
+            self.prepare_bound(
+                client_intent_id,
+                text,
+                Some(ThreadPreparation {
+                    expected_revision,
+                    original_call_id,
+                    original_reference,
+                    human,
+                }),
+                end,
+                &mut phase,
+            ),
+        )
+        .await
+        .map_err(|_| invalid("original thread preparation acknowledgement unknown"))?
+    }
+
+    async fn prepare_bound(
+        &mut self,
+        client_intent_id: &str,
+        text: &str,
+        thread: Option<ThreadPreparation<'_>>,
+        end: Instant,
+        phase: &mut NotesUiCallPhase,
+    ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
+        if self.profile == NotesAdapterProfile::OriginalThread && thread.is_none() {
+            return Err(invalid(
+                "original Notes thread preparation requires verified human input",
+            ));
+        }
+        let expected_revision = thread.as_ref().map(|binding| binding.expected_revision);
+        let original_call_id = thread.as_ref().map(|binding| binding.original_call_id);
         let run_id = self.run_id(client_intent_id)?;
         if let Some(retained) = self
             .sender
@@ -264,7 +435,34 @@ impl AgentdNotesLiteralAdapter {
             .await
             .map_err(|error| invalid(&error.to_string()))?
         {
+            if let Some(original_call_id) = original_call_id {
+                require_original_thread_call(&retained, original_call_id)?;
+            }
+            if let Some(expected_revision) = expected_revision {
+                let original = self
+                    .writer
+                    .retained_operation(&run_id)
+                    .await?
+                    .ok_or_else(|| {
+                        invalid("retained thread request lost its original operation")
+                    })?;
+                let payload: serde_json::Value = serde_json::from_str(&original.payload_json)?;
+                if payload["text"].as_str() != Some(text)
+                    || payload["expected_revision"].as_u64() != Some(expected_revision)
+                {
+                    return Err(invalid(
+                        "original thread call was rebound to different arguments",
+                    ));
+                }
+            }
             return Ok(AgentdNotesPreparedObjective::Retained(retained));
+        }
+        // The operation ID is the durable original-turn fence. A preparation
+        // without a signed sender is uncertainty, not permission to sign again
+        // under a new call, worker, connection, or process after a lost reply.
+        if original_call_id.is_some() {
+            crate::notes_literal_prepare::require_unprepared_original_turn(&self.writer, &run_id)
+                .await?;
         }
         self.check_available()?;
         // Startup cannot consume a durable send opportunity while the original
@@ -288,6 +486,11 @@ impl AgentdNotesLiteralAdapter {
         .await
         .map_err(|_| invalid("Notes observation worker failed"))??;
         self.check_available()?;
+        if expected_revision.is_some_and(|revision| revision != observed.revision) {
+            return Err(invalid(
+                "original thread predecessor changed; no operation was prepared",
+            ));
+        }
         let now_ms = self
             .root
             .clock()
@@ -295,7 +498,15 @@ impl AgentdNotesLiteralAdapter {
             .map_err(|_| invalid("protected Root clock unavailable"))?;
         let source_deadline = now_ms
             .checked_add(5_000)
-            .ok_or_else(|| invalid("Notes source deadline overflow"))?;
+            .ok_or_else(|| invalid("Notes source deadline overflow"))?
+            .min(
+                thread
+                    .as_ref()
+                    .map_or(u64::MAX, |binding| binding.human.owner().expires_at_ms),
+            );
+        if source_deadline <= now_ms {
+            return Err(invalid("original human Notes window expired"));
+        }
         if Instant::now() >= end {
             return Err(invalid(
                 "Notes deadline elapsed before original preparation",
@@ -314,8 +525,14 @@ impl AgentdNotesLiteralAdapter {
             },
         )
         .await?;
-        let source = literal_notes_source_json_v1(LiteralNotesSourceContext {
-            client_intent_id,
+        let encode_source = match self.profile {
+            NotesAdapterProfile::Literal => literal_notes_source_json_v1,
+            NotesAdapterProfile::OriginalThread => {
+                codex_hepta_objective::thread_notes_source_json_v1
+            }
+        };
+        let source = encode_source(LiteralNotesSourceContext {
+            client_intent_id: original_call_id.unwrap_or(client_intent_id),
             source_digest: semantic,
             principal_scope_digest: self.bindings.principal_scope_digest,
             locale: &self.bindings.locale,
@@ -340,6 +557,13 @@ impl AgentdNotesLiteralAdapter {
             .map_err(|_| invalid("Notes signer slot is occupied"))?;
         let grants = Arc::clone(&self.grants);
         let root = Arc::clone(&self.root);
+        let human_check = thread.as_ref().map(|binding| {
+            (
+                binding.human.ingress().clone(),
+                binding.human.owner().clone(),
+                binding.human.route().clone(),
+            )
+        });
         let signed = tokio::task::spawn_blocking(move || {
             let _permit = permit;
             if Instant::now() >= end
@@ -350,6 +574,24 @@ impl AgentdNotesLiteralAdapter {
                     >= source_deadline
             {
                 return Err(invalid("Notes source expired before Root signing"));
+            }
+            if let Some((ingress, original, route)) = human_check {
+                let current = grants.verify_original_human_text(&ingress).map_err(|_| {
+                    invalid("original human session is unavailable before Notes signing")
+                })?;
+                if !current.validate()
+                    || current.route != route
+                    || !original.same_authorization(&current)
+                    || root
+                        .clock()
+                        .now_unix_ms()
+                        .map_err(|_| invalid("Root clock unavailable"))?
+                        >= current.expires_at_ms
+                {
+                    return Err(invalid(
+                        "original human session changed or expired before Notes signing",
+                    ));
+                }
             }
             grants
                 .sign_objective(&body)
@@ -370,7 +612,10 @@ impl AgentdNotesLiteralAdapter {
                 "Notes signed ingress expired or differs from frozen issuer",
             ));
         }
-        let origin = self.next_origin()?;
+        let mut origin = self.next_origin()?;
+        origin.original_notes_thread = thread
+            .as_ref()
+            .map(|binding| binding.original_reference.clone());
         let request =
             ObjectiveSenderRequest::from_original(serde_json::to_string(&signed)?, origin)
                 .map_err(|error| invalid(&error.to_string()))?;
@@ -402,3 +647,24 @@ impl AgentdNotesLiteralAdapter {
 pub(crate) fn invalid(message: &str) -> AgentdError {
     AgentdError::Invalid(format!("original literal Notes: {message}"))
 }
+
+fn require_original_thread_call(
+    request: &ObjectiveSenderRequest,
+    original_call_id: &str,
+) -> Result<(), AgentdError> {
+    let ingress: AuthBusObjectiveIngress = serde_json::from_slice(request.exact_original())?;
+    let source = codex_hepta_objective::decode_source_envelope_json_v1(
+        ingress.body.source_envelope_json.as_bytes(),
+    )
+    .map_err(|_| invalid("original thread source is invalid"))?;
+    if source.request_id != original_call_id {
+        return Err(invalid(
+            "this original turn belongs to another Notes call; reconcile that original item",
+        ));
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+#[path = "notes_thread_sender_tests.rs"]
+mod thread_sender_tests;

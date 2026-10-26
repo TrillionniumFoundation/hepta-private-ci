@@ -22,6 +22,9 @@ pub use fresh::FreshHostCognitiveState;
 #[path = "authority_host_fresh_publish.rs"]
 mod fresh_publish;
 
+#[path = "authority_host_material_recovery.rs"]
+mod material_recovery;
+
 pub(super) struct RegisteredWriter {
     pub(super) registration: HostAuthorityWriterRegistration,
     leases: AuthorityLeaseVerifier,
@@ -86,6 +89,21 @@ impl RegisteredWriter {
 
     pub(super) fn matches_notes(&self, notes: &crate::RootNotesGrantAdmission) -> bool {
         notes.matches_writer(&self.registration, &self.proof)
+    }
+
+    pub(super) fn human_text(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        identity: &AgentdIdentity,
+        request: crate::deployment_issuer::RootHumanTextRequest<'_>,
+    ) -> io::Result<crate::AuthBusTextIngress> {
+        issuer.registered_writer_human_text(
+            identity,
+            request,
+            &self.registration,
+            &self.leases,
+            &self.proof,
+        )
     }
 
     pub(super) fn exchange_consumer(
