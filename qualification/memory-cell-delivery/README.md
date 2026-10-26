@@ -63,3 +63,7 @@ This is a research qualification package. Native Hepta owner integration, produc
 ## Repository asset policy
 
 The five fixed archive paths are individually registered as intentional large assets in the existing exact-path blob-size allowlist. The general 512,000-byte threshold, checker, and workflow remain unchanged. The allowlist mechanism is path-based; the per-part digests and reassembled bundle digest in `DELIVERY.json` provide the separately reviewable content identity.
+
+## Figure preview formatting
+
+The visible generated SVG preview has line-ending whitespace removed for repository formatting checks. Its mirror manifest records that byte-only publication transform and both identities. The original analysis SVG and original analysis manifest remain unchanged in the exact-history bundle; all executable source, fixed data, model weights, predictions, and PNG content are unchanged.
