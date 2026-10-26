@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.qualification.supervisor-clippy-macos-fixture-candidate.v1",
+  "observed_date_utc": "2026-10-26",
+  "source_repo": "TrillionniumFoundation/hepta-private-ci",
+  "parent_pr": 4014,
+  "parent_sha": "96918e032d06bdff25dd71ec8897669e0904f0ad",
+  "original_native_failure": {
+    "parent_pr": 4005,
+    "source_sha": "71d7da4458ffd4c3a37ee650fe9f00aade927012",
+    "workflow_run": 40275160497,
+    "workflow_job": 121436154001,
+    "platform": "macos-15 aarch64-apple-darwin",
+    "job": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+    "result": "FAILURE",
+    "target": "//codex-rs/hepta-supervisor:hepta-supervisor-unit-tests-bin",
+    "file": "codex-rs/hepta-supervisor/src/restart_journal_persistence_tests.rs",
+    "diagnostic": "-D clippy::expect-used",
+    "lines": [
+      11,
+      12,
+      13,
+      24
+    ],
+    "failed_test_expect_sites": 4
+  },
+  "source_equivalence": {
+    "original_job_source_blob": "efaeebf5682a85d9a1a92601212f6f3e418cf131",
+    "parent_4014_source_blob": "efaeebf5682a85d9a1a92601212f6f3e418cf131",
+    "candidate_test_blob": "eed85a0234291bedfb7d7c4ccf49b28d8d483c61",
+    "source_code_commit": "18142513af525e8a239f1ea52744878aea2c6a44"
+  },
+  "change_scope": {
+    "paths": [
+      "codex-rs/hepta-supervisor/src/restart_journal_persistence_tests.rs"
+    ],
+    "helpers": [
+      "companion",
+      "identity"
+    ],
+    "change": "Replace exactly four Result::expect calls outside #[test] with explicit Ok/Err pattern matches and equivalent panic-on-fixture-error; preserve parsed constants and all existing assertions, failure cases, and production code.",
+    "cargo_or_bazel_dependency_changed": false,
+    "required_gates_changed": false,
+    "tests_deleted_or_skipped": false,
+    "negative_assertions_changed": false
+  },
+  "validation": {
+    "source_scope_and_assertion_lines": "STATIC REVIEW ONLY",
+    "native_macos_clippy": "NOT_RUN_ON_CANDIDATE",
+    "rustfmt": "NOT_RUN_ON_CANDIDATE",
+    "full_ci": "NOT_RUN_ON_CANDIDATE",
+    "terminal_success_claimed": false
+  },
+  "authority": "DENY_ALL",
+  "mode": "SHADOW_ONLY",
+  "go_no_go": "HOLD_NO_GO"
+}
