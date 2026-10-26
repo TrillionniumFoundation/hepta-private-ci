@@ -155,7 +155,15 @@ fn verify_original_login(
             "show-session",
             parts[2],
             "--no-pager",
-            "--property=Id,User,Active,State,Remote,Class,Type,Leader,Seat",
+            "--property=Id",
+            "--property=User",
+            "--property=Active",
+            "--property=State",
+            "--property=Remote",
+            "--property=Class",
+            "--property=Type",
+            "--property=Leader",
+            "--property=Seat",
         ])
         .env_clear()
         .env("PATH", "/usr/bin:/bin")
