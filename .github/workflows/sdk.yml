@@ -79,6 +79,16 @@ jobs:
         with:
           target: x86_64-unknown-linux-gnu
 
+      - name: Restore bazel repository cache
+        id: restore_bazel_repository
+        continue-on-error: true
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ steps.setup_bazel.outputs.repository-cache-path }}
+          key: bazel-cache-x86_64-unknown-linux-gnu-${{ hashFiles('MODULE.bazel', 'codex-rs/Cargo.lock', 'codex-rs/Cargo.toml') }}
+          restore-keys: |
+            bazel-cache-x86_64-unknown-linux-gnu-
+
       - name: Build codex and code-mode host with Bazel
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
@@ -182,7 +192,7 @@ jobs:
         run: pnpm -r --filter ./sdk/typescript run test
 
       - name: Save bazel repository cache
-        if: always() && !cancelled() && steps.setup_bazel.outputs.cache-hit != 'true'
+        if: always() && !cancelled() && steps.restore_bazel_repository.outputs.cache-hit != 'true'
         continue-on-error: true
         uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
