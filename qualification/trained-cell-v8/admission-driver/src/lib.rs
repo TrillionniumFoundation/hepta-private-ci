@@ -17,3 +17,19 @@ pub(crate) fn ensure(condition: bool, message: &str) -> Result<()> {
     }
 }
 
+#[cfg(test)]
+use codex_hepta_types::Digest32;
+#[cfg(test)]
+use serde_json::Value;
+#[cfg(test)]
+use serde_json::json;
+#[cfg(test)]
+use std::collections::BTreeMap;
+#[cfg(test)]
+use std::path::Path;
+#[cfg(test)]
+#[path = "../../../trained-cell-v7/recovery-driver/src/terminal_review.rs"]
+mod terminal_review;
+#[cfg(test)]
+#[path = "adapter_tests.rs"]
+mod tests;
