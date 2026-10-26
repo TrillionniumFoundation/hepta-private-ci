@@ -383,7 +383,7 @@ def _run_scenario(
     scenario_dir.mkdir(parents=True, exist_ok=True)
     adapter_report = scenario_dir / "codex-adapter.json"
     adapter_home = scenario_dir / "codex-home"
-    adapter_home.mkdir()
+    adapter_home.mkdir(mode=0o700)
 
     env = dict(base_env)
     env.update(
