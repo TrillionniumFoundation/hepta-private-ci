@@ -1,4 +1,4 @@
-//! Whole-owner publication for irreversible metadata retirement.
+//! Whole-owner publication and irreversible metadata retirement.
 
 use super::*;
 use crate::cognitive_store::capture_recovery_anchor;
@@ -6,6 +6,32 @@ use sqlx::Sqlite;
 use sqlx::Transaction;
 
 impl ProductionDurableWriter {
+    /// Acknowledge this original managed owner's exact current cut without
+    /// sending an Objective or retiring native history. The same live authority,
+    /// local lease and lock-only BEGIN IMMEDIATE barrier used by retirement
+    /// remain mandatory. This adds no source event, grant or replacement owner.
+    ///
+    /// This acknowledges one cut at the original publication boundary; another
+    /// authorized writer action may subsequently invalidate Current. Readback
+    /// must independently observe the protected host's actual Current receipt.
+    /// A lost/uncertain publication reply fences this writer in the existing
+    /// bound coordinator. An unmanaged store cannot claim this acknowledgement.
+    pub async fn acknowledge_current(&self) -> Result<(), ProductionWriterError> {
+        self.verify_authority().await?;
+        if !self.store.commit_gate.is_managed() {
+            return Err(ProductionWriterError::Durability(
+                "Current acknowledgement requires the original bound protected owner".to_string(),
+            ));
+        }
+        let mut transaction = self
+            .store
+            .begin_checkpoint_barrier()
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+        self.acknowledge_bound_owner_transaction(&mut transaction)
+            .await
+    }
+
     /// Runs under the original lock-only BEGIN IMMEDIATE transaction, so publication
     /// and the following synchronous metadata retirement refer to one cut.
     pub(super) async fn acknowledge_bound_owner_transaction(

@@ -236,6 +236,10 @@ mod barrier_tests;
 #[path = "cognitive_checkpoint_observation_tests.rs"]
 mod observation_tests;
 
+#[cfg(test)]
+#[path = "cognitive_checkpoint_native_owner_tests.rs"]
+mod native_owner_tests;
+
 #[tokio::test]
 async fn protected_checkpoint_invalidates_current_before_normal_owner_writes_and_can_republish() {
     let fixture = ManagedFixture::new().await;
