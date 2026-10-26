@@ -5,6 +5,8 @@ fn finite_profile_rejects_enabled_builtins_agents_and_external_mcp() {
     let valid = parse(ORIGINAL_NOTES_THREAD_EXECUTION_CONFIG.as_bytes()).unwrap();
     validate_config(&valid).unwrap();
     for pointer in [
+        "/features/hepta_memory",
+        "/features/hepta_cognitive_write",
         "/features/shell_tool",
         "/features/unified_exec",
         "/features/view_image",

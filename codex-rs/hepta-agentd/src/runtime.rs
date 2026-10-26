@@ -45,6 +45,14 @@ pub async fn run(
     let notes_ui = config.take_original_notes_ui();
     #[cfg(target_os = "linux")]
     let notes_thread_tools = config.take_original_notes_thread_tools();
+    #[cfg(target_os = "linux")]
+    let app_server_model_tools = if notes_thread_tools.is_some() {
+        crate::app_runtime::AppServerModelToolProfile::OriginalNotes
+    } else {
+        crate::app_runtime::AppServerModelToolProfile::Standard
+    };
+    #[cfg(not(target_os = "linux"))]
+    let app_server_model_tools = crate::app_runtime::AppServerModelToolProfile::Standard;
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
         .authbus_trust_file()
@@ -329,6 +337,7 @@ pub async fn run(
                 app_state,
                 production_writer_host,
                 app_server_socket,
+                app_server_model_tools,
             )
             .await
             .map_err(AgentdError::from)?;

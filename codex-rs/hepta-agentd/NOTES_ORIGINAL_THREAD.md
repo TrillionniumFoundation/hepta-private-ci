@@ -56,6 +56,17 @@ access disabled. The finite profile does not itself grant any Notes operation.
 These observations do not replace installed-product evidence of the model's
 actual outgoing tool catalog or a human-authorized Notes effect.
 
+The final owner embeds Core inside Agentd, whose ordinary production mode
+enables Hepta Memory and cognitive mutation tools. Original Notes mode instead
+selects a deny-only model-tool profile from its installed Notes runtime. Both
+`hepta_memory` and `hepta_cognitive_write` remain false in the persistent
+configuration and the embedding's required feature states, after per-request
+overrides. This prevents the general cognitive extension from creating its
+model-tool state. The same original Root Notes writer, protected cognitive
+store, governance and turn-recovery owners remain outside that tool profile;
+other production modes retain their existing feature selection. A standalone
+App Server seed test alone cannot qualify this embedding distinction.
+
 Schema 1 did not establish this execution scope and is rejected. There is no
 automatic schema upgrade, config repair, replacement thread or fallback to
 unrestricted Core defaults. A changed configuration byte also invalidates the

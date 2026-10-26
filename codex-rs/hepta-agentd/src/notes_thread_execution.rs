@@ -26,6 +26,8 @@ web_search = "disabled"
 [agents]
 enabled = false
 [features]
+hepta_memory = false
+hepta_cognitive_write = false
 shell_tool = false
 unified_exec = false
 view_image = false
