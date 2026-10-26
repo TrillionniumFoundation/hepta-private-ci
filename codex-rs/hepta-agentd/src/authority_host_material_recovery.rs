@@ -49,6 +49,14 @@ impl HostAuthorityService {
                 .observe_physical_current()
                 .map_err(io::Error::other)?;
             let path = self.identity.layout.writer_lock();
+            for ancestor in path.ancestors().skip(1) {
+                let metadata = std::fs::symlink_metadata(ancestor)?;
+                if !metadata.is_dir() || metadata.uid() != 0 || metadata.mode() & 0o022 != 0 {
+                    return Err(io::Error::other(
+                        "original writer control ancestry must remain Root-owned",
+                    ));
+                }
+            }
             let file = OpenOptions::new()
                 .read(true)
                 .write(true)
