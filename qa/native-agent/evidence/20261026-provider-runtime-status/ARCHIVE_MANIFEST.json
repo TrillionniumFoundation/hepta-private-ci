@@ -1,0 +1,39 @@
+{
+  "schema": "hepta-engineering-archive-custody-inputs:v1",
+  "status": "original_bytes_verified_locally_remote_readback_pending",
+  "snapshot_source_commit": "63b22b4fd29440c00680ed3111aadc6c84d18627",
+  "archives": [
+    {
+      "id": "original",
+      "path": "archives/original-receipts.tar.gz",
+      "bytes": 159013,
+      "sha256": "40640a1446747727df72701a5d8c69b79eedb1c95b715bdb2e05692e08e33c5a",
+      "regular_members": 96,
+      "payload_files": 95,
+      "payload_bytes": 838857,
+      "member_prefix": "",
+      "internal_manifest": {
+        "path": "manifest.json",
+        "bytes": 18980,
+        "sha256": "412de260857a2a93f256c1b272fbc5f19c569715ae69def553981a77c131b905",
+        "schema": "hepta-engineering-evidence-snapshot:v1"
+      }
+    },
+    {
+      "id": "auxiliary",
+      "path": "archives/independent-reviews.tar.gz",
+      "bytes": 186284,
+      "sha256": "02dd83a4825418cb8e3b18154b4ba93b1150424f05bf71e1e5cd29e15a05711e",
+      "regular_members": 10,
+      "payload_files": 9,
+      "payload_bytes": 201713,
+      "member_prefix": "engineering-independent-reviews-v1/",
+      "internal_manifest": {
+        "path": "engineering-independent-reviews-v1/MANIFEST.json",
+        "bytes": 1835,
+        "sha256": "26b4cae868a39bef5f534b00b23ef95828906266131c2d3f5c8161ecea30d1fe",
+        "schema": "hepta-engineering-independent-review-bundle:v1"
+      }
+    }
+  ]
+}

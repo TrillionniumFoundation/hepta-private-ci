@@ -1,0 +1,42 @@
+{
+  "schema": "hepta-engineering-independent-remote-readback:v1",
+  "status": "passed",
+  "repository": "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+  "branch": "research/native-engineering-evidence-20261026",
+  "archive_commit": "9d2e428184193469162b4374eafa3274db5dca04",
+  "independent_clone": {
+    "bare": true,
+    "no_local": true,
+    "depth": 1,
+    "filter": "blob:none",
+    "alternates": false,
+    "shared_local_object_store": false,
+    "stored_origin_credential_free": true
+  },
+  "archives": [
+    {
+      "path": "qa/native-agent/evidence/20261026-provider-runtime-status/archives/original-receipts.tar.gz",
+      "bytes": 159013,
+      "sha256": "40640a1446747727df72701a5d8c69b79eedb1c95b715bdb2e05692e08e33c5a",
+      "git_show_returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "qa/native-agent/evidence/20261026-provider-runtime-status/archives/independent-reviews.tar.gz",
+      "bytes": 186284,
+      "sha256": "02dd83a4825418cb8e3b18154b4ba93b1150424f05bf71e1e5cd29e15a05711e",
+      "git_show_returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "elapsed_seconds": 14.745277836998866,
+  "source_worktree_unchanged": true,
+  "original_archive_bytes_changed": false,
+  "model_runtime_or_tests_executed": false,
+  "prior_attempt": {
+    "job_id": "1a175b2180e-96a-77b",
+    "outcome": "missing helper path before output directory or Git/network invocation; original traceback retained"
+  }
+}
