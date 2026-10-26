@@ -1,0 +1,302 @@
+{
+  "schema": "actual-source-bound-new-SQLite3513-eleven-material-single-I09-observation-v1",
+  "at_utc": "2026-10-26T05:45:14.420519+00:00",
+  "source": {
+    "chain": {
+      "head": "4c8c2ee70d8aba1fc959900741e89335ddcd71f8",
+      "tree": "1cd27084a7fef9e4d6e4984a5780cf4c3951e72c",
+      "status": ""
+    },
+    "hepta": {
+      "head": "8d25c5d71f7401a383b4c80046c8b26811abe394",
+      "tree": "7d1aa7abb787610b03cd8a319a3f905f33acb2ea",
+      "status": ""
+    }
+  },
+  "actual_controller_launches": 1,
+  "actual_model_warmup_or_training_launches": 0,
+  "actual_cell_engine": {
+    "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/root-chain-862631a-sqlite3513-cell-release-build-20261026/trnm-cell",
+    "bytes": 3242608,
+    "sha256": "9974e444f0d8e096df182d57b6f7f038e5e6daed8c67066d36c71c569e1f140f"
+  },
+  "new_engine_last_writer_DB_headers": [
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/root-i09-eleven-material-native-positive-20261026-002/handoff/producer.sqlite",
+      "bytes": 272613376,
+      "page_size": 4096,
+      "last_writer_SQLite_version_number": 3051003,
+      "last_writer_SQLite_version": "3.51.3",
+      "fresh_inode_distinct_from_oldDB": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/root-i09-eleven-material-native-positive-20261026-002/handoff/consumer.sqlite",
+      "bytes": 272613376,
+      "page_size": 4096,
+      "last_writer_SQLite_version_number": 3051003,
+      "last_writer_SQLite_version": "3.51.3",
+      "fresh_inode_distinct_from_oldDB": true
+    }
+  ],
+  "native_selected_case": {
+    "selector": "smollm_neural_read::tests::native::real_cell_release_original_signed_load_query_and_terminal_unload",
+    "nextest_run_id": "6b3906b7-ac85-4f68-9ff0-9aa70120d23f",
+    "profile": "local",
+    "actual_passed": 1,
+    "actual_failed": 0,
+    "actual_timedout": 0,
+    "original_selector_excluded": 131,
+    "actual_retries": 0,
+    "case_seconds": 10.357,
+    "command_including_compile_seconds": 131.0491740419966,
+    "native_stdout_summary": "1 test run:1 passed,131 skipped; skipped are selector exclusions, not executed cases",
+    "deadline_profile_unchanged": "Original30s*2=60s per attempt, retry1 unchanged; actualfirst attemptPASS"
+  },
+  "transport": {
+    "material_count": 11,
+    "chunks": 269,
+    "downloaded_bytes": 272190131,
+    "aggregate_transfer_seconds": 4.2576826509975945,
+    "original_limit_seconds": 35,
+    "includes_cache_only_materialize_and_final_readback": true,
+    "supplier_count": 1,
+    "scope": "single-host controlled loopback, notWAN or independentoperator",
+    "received_response_bytes": 272204931,
+    "connections": 280,
+    "max_response_bytes": 555919638,
+    "max_connections": 560,
+    "fresh_consumer_cached_chunks_before_acquisition": 0,
+    "all_eleven_cache_materializations_additional_network_bytes": 0,
+    "provider_natural_exit_before_native": 0,
+    "provider_final_counters": {
+      "schema": "trnm.cell.serve.bounded.v1",
+      "connections": 280,
+      "overloaded": 0,
+      "completed": 280,
+      "peak_active_workers": 2,
+      "sent_response_bytes": 272204931
+    }
+  },
+  "controlled_actual_model": {
+    "generation": 3,
+    "parameter_sha256": "30504b3d1e4d6e17841b073e1457b119b5f65d2ffe083611a78bff592c391a29",
+    "ready_sha256": "214ba33f752dbc1e7cb3374bf80ea1a31b7ee171564ec06d26d79317890128ac",
+    "strict_TCMTCR_and_sealed_Hepta_consumer_executed": true,
+    "sidecar_sha256": "774dc9e474609af7c45e66e8cd4cbfa455c368973453dc9c9029036bdcaed3d7",
+    "closure_commitment": "07cd8d81bf0bcd3f749adeb9e96b2542d0557ec91e69432f7bb2a1280eb35c2b",
+    "readback_sha256": "ff59d7e14d17610dfc6aad3c8a7208226b5b4b560899a2950d8c8d009104034d",
+    "actual_measurement": {
+      "actual_adapter_digest": "4f1afd0b023545b2bbc069d1add8b5594a24fbd6272aaf56368e84f0f137cd18",
+      "actual_backbone_digest": "c320c094769446c21d7e4a33795d7f9310b5e4c8ca5a6fecca40207b1f735b7c",
+      "actual_contract_digest": "2bb480a2becd44b7f4e4b03e557e270ed92a4bb952e0a634562d23d7f0f97e46",
+      "actual_execution_ns": 67453520,
+      "actual_generation": 3,
+      "actual_input_sha256": "fa65f17a6aa9c40774b726d67db28e5ae573573c1de145c88644eea8dde7b48f",
+      "actual_input_tokens": 48,
+      "actual_logits_sha256": "42b3893680dc3d22119519a861e4417362046e30f0f18db18ef8e1300b964a9b",
+      "actual_parameter_file_sha256": "30504b3d1e4d6e17841b073e1457b119b5f65d2ffe083611a78bff592c391a29",
+      "actual_ready_sha256": "214ba33f752dbc1e7cb3374bf80ea1a31b7ee171564ec06d26d79317890128ac",
+      "actual_response_sha256": "ed2ff5f2bf5da5093c695d2c83862ab0f3ea3df065073869ecb2721abf29a9b2",
+      "actual_rss_bytes": 1149550592,
+      "actual_tokenizer_digest": "a1883207efeacecee399f4dc699d2b547eb2d6ddb7500522933ed76c1521fb93",
+      "authority_posture": "DENY_ALL",
+      "control_forward_ids": [
+        "neural-1792993186470-2",
+        "reservation-neural-1792993186470-2"
+      ],
+      "control_load_ids": [
+        "neural-1792993183810-1",
+        "reservation-neural-1792993183810-1"
+      ],
+      "product_artifact_installed": false,
+      "public_reward_eligible": false,
+      "query_sha256": "e4e65a4048ba0228ed8bed6d84f8e05244fe02ed9c9b87806ee553e9047ce3d1",
+      "schema": "hepta-smollm-settled-measurement-observation-v1"
+    },
+    "actual_process_supervisor_terminal": {
+      "outcome": "success",
+      "cleanup_method": "wait4",
+      "waited_child_reaped": true,
+      "owned_child_reap_resolved": true,
+      "resource_scope_not_WholeU": "Original simple owned childwait4 and its RSSobservations only; no newfundedO/C/A/retirement/refund authority.",
+      "rss_gap_reconciliation_preserved_in_raw": [
+        {
+          "after": {
+            "error": "pidfd-coordinate-unavailable",
+            "owned_pid": 1264283,
+            "parent_nspid": [
+              1264282
+            ],
+            "pidfd_nspid": [
+              -1
+            ],
+            "pidfd_ready": true,
+            "pidfd_visible_pid": -1
+          },
+          "at_wall_ns": 3126841555,
+          "before": {
+            "child": {
+              "NSpid": "1264283",
+              "PPid": "1264282",
+              "Pid": "1264283",
+              "State": "Z (zombie)",
+              "Threads": "2",
+              "VmRSS": null,
+              "VmSize": null
+            },
+            "exit_cleanup_proof": {
+              "kernel_release": "7.0.0-38-generic",
+              "observed_at_monotonic_ns": 61174974421208,
+              "owned_pid": 1264283,
+              "pidfd_nspid": [
+                1264283
+              ],
+              "pidfd_visible_pid": 1264283,
+              "rss_sample_produced": false,
+              "schema": "linux-owned-thread-group-exit-cleanup-v1",
+              "threads": [
+                {
+                  "flags": 4227084,
+                  "start_time_ticks": 6117184,
+                  "state": "Z",
+                  "tid": 1264283
+                },
+                {
+                  "flags": 4195404,
+                  "start_time_ticks": 6117422,
+                  "state": "R",
+                  "tid": 1264434
+                }
+              ]
+            },
+            "owned_pid": 1264283,
+            "owned_threads": [
+              {
+                "NSpid": "1264283",
+                "NStgid": "1264283",
+                "PPid": "1264282",
+                "Pid": "1264283",
+                "State": "Z (zombie)",
+                "Tgid": "1264283",
+                "VmRSS": null,
+                "VmSize": null
+              },
+              {
+                "NSpid": "1264434",
+                "NStgid": "1264283",
+                "PPid": "1264282",
+                "Pid": "1264434",
+                "State": "R (running)",
+                "Tgid": "1264283",
+                "VmRSS": null,
+                "VmSize": null
+              }
+            ],
+            "parent_nspid": [
+              1264282
+            ],
+            "pidfd_identity_changed_during_read": false,
+            "pidfd_nspid": [
+              1264283
+            ],
+            "pidfd_ready": false,
+            "pidfd_visible_pid": 1264283
+          },
+          "reconciliation": {
+            "absolute_wall_deadline_ns": 61771847084737,
+            "elapsed_ns": 13257287,
+            "exit_cleanup_proof": {
+              "kernel_release": "7.0.0-38-generic",
+              "observed_at_monotonic_ns": 61174974610162,
+              "owned_pid": 1264283,
+              "pidfd_nspid": [
+                1264283
+              ],
+              "pidfd_visible_pid": 1264283,
+              "rss_sample_produced": false,
+              "schema": "linux-owned-thread-group-exit-cleanup-v1",
+              "threads": [
+                {
+                  "flags": 4227084,
+                  "start_time_ticks": 6117184,
+                  "state": "Z",
+                  "tid": 1264283
+                },
+                {
+                  "flags": 4195404,
+                  "start_time_ticks": 6117422,
+                  "state": "R",
+                  "tid": 1264434
+                }
+              ]
+            },
+            "initial_reap": "live",
+            "mode": "kernel-exit-cleanup",
+            "pidfd_ready_after_wait": true,
+            "terminal_reap": "terminal",
+            "wait_deadline_ns": 61771847084737,
+            "wait_polls": 1
+          }
+        }
+      ]
+    }
+  },
+  "original_authorization_and_journal": {
+    "original_authorizer_binding_attempts": 3,
+    "raw_legacy_readback_field_original_final_use_claims": 3,
+    "durable_nonce_frames": 2,
+    "durable_nonce_epoch": 9,
+    "durable_nonce_distinct_nonzero": true,
+    "durable_nonce_sha256_values": [
+      "3772dd2bb0e82a7b29581658360b3ffcce58cc25afbf5be291f3fcab8400d04b",
+      "5a38fb03ce11ee85ecca16b157f83d4d9fb83f66bf451a2ba2e78dcbb25303c3"
+    ],
+    "explanation": "OriginalTestIssuer records binding before its controlled-denial branch. Firstload/forward each burn a signednonce; thirddeniedbinding creates no thirdnonce or forward.",
+    "control_request_ids": [
+      "neural-1792993183810-1",
+      "neural-1792993186470-2",
+      "neural-1792993186577-3"
+    ],
+    "terminal_states_and_consumed_tokens": [
+      [
+        "completed",
+        0
+      ],
+      [
+        "completed",
+        1
+      ],
+      [
+        "failed",
+        0
+      ]
+    ],
+    "cold_journal_reopen_exact_original_assertion_passed": true,
+    "journal_sha256": "8d374ba900dbbbae1cdbc1dfff39878ea8bf66b4432717d3a9747f5662ee8af8",
+    "cross_owner_and_body_refused_beforeadmission": true,
+    "denied_forward_executed": false
+  },
+  "handoff_overall": {
+    "status": "failed",
+    "controller_exit": 1,
+    "elapsed_seconds": 180.1672882730054,
+    "error": "I10 selected installation UNAVAILABLE; controlled byte-closure load is not installation authority",
+    "native_receipt_status": "UNVERIFIED",
+    "installation_I10_success": false,
+    "ordinary_cognitive_context": false,
+    "three_round_improvement": false,
+    "independent_custody_WAN": false,
+    "public_reward": false,
+    "CLI_Agentd_execution_proven": false,
+    "CLI_note": "Existingnewdev CLIhash verified as sourceprovenance only; thisselector directly ownsPythonSmolLM, notCLI/Agentd E2E."
+  },
+  "all_source_and_input_post_hashes_match": true,
+  "all_original_limits_assertions_and_retry_unchanged": true,
+  "old_failure_and07d9_ELF_preserved": true,
+  "raw_manifest": {
+    "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/root-i09-eleven-material-native-positive-preparation-20261026-002/11-actual-run-full-raw-manifest.json",
+    "bytes": 31056,
+    "sha256": "061d6689e9e175de08a32e0bafda509f99ba289524d2f0176cffffda4572a76f"
+  },
+  "no_product_source_remote_CI_mutation": true
+}

@@ -1,0 +1,250 @@
+{
+  "schema": "complete-cold-release-gap-inventory-v1",
+  "source_scope": {
+    "controlled_native_I09": {
+      "chain": {
+        "head": "4c8c2ee70d8aba1fc959900741e89335ddcd71f8",
+        "tree": "1cd27084a7fef9e4d6e4984a5780cf4c3951e72c",
+        "status": ""
+      },
+      "hepta": {
+        "head": "8d25c5d71f7401a383b4c80046c8b26811abe394",
+        "tree": "7d1aa7abb787610b03cd8a319a3f905f33acb2ea",
+        "status": ""
+      }
+    },
+    "Hepta_source_only_current_review": {
+      "head": "71a8850fb30e57c77ff58dc08cb6cc78f53ad1c8",
+      "tree": "37cec9fd1966249cf8dec2e869d4f737795609c6",
+      "ordered_parents": [
+        "727f1f25c68385e7b8d50223c11593ba4a6477f6"
+      ]
+    },
+    "Chain_runtime_source_local": {
+      "head": "ec0acdff5717b8f584b26f30f1162bd9bf1cc888",
+      "tree": "49de9450a7738b15f3dc63b808f957ce49804df2",
+      "basis": "retained clean-source admission and exact local file hashes; later53fb review verifies its seven-path delta has no model/loader runtime source changes"
+    },
+    "Chain_new_CI_requirements_source": {
+      "head": "53fb654b532ed8e737e0dea635a31dce3b73b3cc",
+      "tree": "d82ba0c7bbaea04200f11d38f6e9c4dccac81f78",
+      "source_only": true
+    },
+    "original_LAN_profile": "lan72h-630f871-20261025-setup3; separate original eight-material transport profile, not an I09 cold-runtime owner"
+  },
+  "observed_installed_distribution_versions": [
+    {
+      "name": "accelerate",
+      "version": "1.15.0"
+    },
+    {
+      "name": "certifi",
+      "version": "2026.10.23"
+    },
+    {
+      "name": "charset-normalizer",
+      "version": "3.5.2"
+    },
+    {
+      "name": "filelock",
+      "version": "4.2.4"
+    },
+    {
+      "name": "fsspec",
+      "version": "2026.9.0"
+    },
+    {
+      "name": "hf-xet",
+      "version": "1.7.0"
+    },
+    {
+      "name": "huggingface_hub",
+      "version": "0.36.2"
+    },
+    {
+      "name": "idna",
+      "version": "3.20"
+    },
+    {
+      "name": "Jinja2",
+      "version": "3.1.6"
+    },
+    {
+      "name": "MarkupSafe",
+      "version": "3.0.4"
+    },
+    {
+      "name": "mpmath",
+      "version": "1.3.0"
+    },
+    {
+      "name": "networkx",
+      "version": "3.7"
+    },
+    {
+      "name": "numpy",
+      "version": "1.26.4"
+    },
+    {
+      "name": "packaging",
+      "version": "26.3"
+    },
+    {
+      "name": "peft",
+      "version": "0.18.0"
+    },
+    {
+      "name": "pip",
+      "version": "25.1.1"
+    },
+    {
+      "name": "psutil",
+      "version": "7.2.2"
+    },
+    {
+      "name": "PyYAML",
+      "version": "6.0.3"
+    },
+    {
+      "name": "regex",
+      "version": "2026.9.29"
+    },
+    {
+      "name": "requests",
+      "version": "2.34.2"
+    },
+    {
+      "name": "safetensors",
+      "version": "0.7.0"
+    },
+    {
+      "name": "setuptools",
+      "version": "84.2.1"
+    },
+    {
+      "name": "sympy",
+      "version": "1.14.0"
+    },
+    {
+      "name": "tokenizers",
+      "version": "0.22.2"
+    },
+    {
+      "name": "torch",
+      "version": "2.9.1+cpu"
+    },
+    {
+      "name": "tqdm",
+      "version": "4.70.1"
+    },
+    {
+      "name": "transformers",
+      "version": "4.57.3"
+    },
+    {
+      "name": "typing_extensions",
+      "version": "4.16.0"
+    },
+    {
+      "name": "urllib3",
+      "version": "2.8.0"
+    }
+  ],
+  "new_CI_requirement_unique_distribution_names": [
+    "accelerate",
+    "certifi",
+    "cffi",
+    "charset-normalizer",
+    "cryptography",
+    "filelock",
+    "fsspec",
+    "hf-xet",
+    "huggingface-hub",
+    "idna",
+    "jinja2",
+    "markupsafe",
+    "mpmath",
+    "networkx",
+    "numpy",
+    "packaging",
+    "peft",
+    "psutil",
+    "pycparser",
+    "pyyaml",
+    "regex",
+    "requests",
+    "safetensors",
+    "setuptools",
+    "sympy",
+    "tokenizers",
+    "torch",
+    "tqdm",
+    "transformers",
+    "typing-extensions",
+    "urllib3"
+  ],
+  "new_CI_requirement_unique_distribution_count": 31,
+  "new_requirements_are_not_runtime_release": true,
+  "inventory": [
+    {
+      "dependency": "platform / CPU / ABI / selected markers and extras",
+      "observed": "CI requirements declare Linux CPython3.12 x86_64/aarch64 wheel choices; prior installed metadata assumes Linux CPython3.12 x86_64 with no extras",
+      "missing": "actual complete runtime ABI/base-image/glibc/loader/CPU-feature identity, exact marker environment and selected-extras closure; per-platform loader validation",
+      "closed": false
+    },
+    {
+      "dependency": "interpreter and Python standard library",
+      "observed": "configured venv bin/python resolves to /usr/bin/python3.12; observed executable8020928B SHAe50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f; pyvenv.cfg metadata captured",
+      "missing": "original interpreter distribution/provenance, symlink/ancestor closure, complete stdlib/base prefix/extensions/loader hashes and fresh offline transport/use",
+      "closed": false
+    },
+    {
+      "dependency": "original wheel archives / install recipe",
+      "observed": "new53fb CI file pins31unique distributions and32 requirement records (two architecture torch alternatives) with allowed wheelSHA256; installed29distribution RECORDs separately captured",
+      "missing": "retained original archive bytes and sizes for the chosen actual platform, acquisition/installation provenance and reproducible offline installation in the release owner; newCI source does not confer this",
+      "closed": false
+    },
+    {
+      "dependency": "installed Python package files",
+      "observed": "23990RECORD rows /20378existing paths /922881591B;18731declaredhashes match,0size/digest mismatch;3612missingpyc remain originalFAILED contract",
+      "missing": "unlisted-file inventory, immutable atomic runtime namespace, handling of .pth/sys.path/site/user environment and explicit pyc policy under a reviewed versioned contract; existing failure is not relabeledPASS",
+      "closed": false
+    },
+    {
+      "dependency": "native extension/shared-library closure",
+      "observed": "44filename-native candidates547041392B, including libtorch_cpu.so432269632B; both are subsets of installedpathname total",
+      "missing": "actual ELF dependency graph/interpreter/DT_NEEDED/RPATH/RUNPATH/dlopen and transitive system-library/CPU ABI binding, including dependencies outside venv; name heuristic is not this graph",
+      "closed": false
+    },
+    {
+      "dependency": "model backbone/tokenizer/config",
+      "observed": "eightbasefile exact roster including269060552B model.safetensors; I09run002 materialization checks and native real load/forward PASS in a preinstalled runtime",
+      "missing": "fresh complete runtime acquisition plus real load using the same admitted whole release and held authorized namespace, durable custody/repair and independent-domain proof",
+      "closed": "FINITE_I09_DATA_AND_LOAD_ONLY"
+    },
+    {
+      "dependency": "bounded adapter/contracts/profile/project scripts",
+      "observed": "threeadapterobjects +sixsource/family pins; actual generation3 parent-file/contract/backbone/tokenizer/Ready checks and signed load/query/deniedquery/unload in I09",
+      "missing": "original I10 selected installation/CURRENT update, ordinary next-task route and three real predecessor-linked installed rounds; projectsource pins do not bind interpreter/site-packages",
+      "closed": "FINITE_I09_ONLY"
+    },
+    {
+      "dependency": "runtime-generated files and mutable caches",
+      "observed": "old measured noRECORDhash rows include1618pyc; old missing3612pyc retained; originalHF/local loading is offline for model reads",
+      "missing": "explicit bytecode/import/hub/temp/compiled-extension/generated-file policy, same-owner accounting for extraction/install/scratch and old/new runtime overlap; no ambient cache dependency permitted in fullcold acceptance",
+      "closed": false
+    },
+    {
+      "dependency": "Cell transport / materialization / retention",
+      "observed": "newSQLite3.51.3 I09:11objects269chunks272190131payloadB,4.2576826509975945s within35s,0initialconsumerchunks,one loopback supplier",
+      "missing": "runtime_root payload transport, whole held namespace, release-wide destination/temporary/DB/WAL/SHM/old-version ledger, persistent custody repair/recovery and WAN independently administered campaign",
+      "closed": "FINITE_LOOPBACK_MATERIAL_ONLY"
+    },
+    {
+      "dependency": "installation and ordinary-use authority / process terminal",
+      "observed": "original resource/control/FinalUse owners required;3bindings2nonces,denialbeforeforward; I09simpleownedchildwait4/reaped terminal observed",
+      "missing": "I10selectedinstallation explicitly unavailable:overallexit1/180.167288273s; no ordinaryAgentdnexttask/threeinstalledrounds/gain/whole-funded-U/independentWAN qualification",
+      "closed": false
+    }
+  ]
+}

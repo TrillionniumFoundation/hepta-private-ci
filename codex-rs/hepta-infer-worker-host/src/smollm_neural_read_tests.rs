@@ -603,6 +603,8 @@ fn passive_failure_snapshot_survives_closed_admission_but_refuses_busy_and_poiso
         model_digest: digest.to_string(),
     };
     let port = SmolLmNeuralReadPortV1 {
+        physical: SmolLmRuntimeIdentityV1::from(&pin),
+        scope: pin.compatibility_digest(),
         pin: Some(pin),
         model_id: "not-loaded".to_owned(),
         worker: Mutex::new(
