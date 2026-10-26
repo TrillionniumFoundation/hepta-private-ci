@@ -22,6 +22,8 @@ pub(crate) use sockets::AgentdSocketInputs;
 mod root_handoff;
 #[cfg(target_os = "linux")]
 pub use root_handoff::PreparedRootAgentdConfig;
+#[cfg(target_os = "linux")]
+pub use root_handoff::drop_root_native_owner_credentials;
 
 pub const HEPTA_AGENT_ID_ENV: &str = "HEPTA_AGENT_ID";
 pub const HEPTA_AGENT_GENERATION_ENV: &str = "HEPTA_AGENT_GENERATION";

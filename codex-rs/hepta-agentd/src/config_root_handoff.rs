@@ -8,6 +8,7 @@ use std::os::unix::fs::PermissionsExt;
 
 #[path = "config_root_credentials.rs"]
 mod credentials;
+pub use credentials::drop_root_native_owner_credentials;
 
 #[path = "config_root_late_writer.rs"]
 mod late_writer;
