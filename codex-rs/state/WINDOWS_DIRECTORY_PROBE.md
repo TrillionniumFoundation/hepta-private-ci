@@ -2,13 +2,16 @@
 
 This development probe runs only the exact State test
 `sqlite_recovery::windows::tests::directory_probe::records_native_directory_flush_capability`.
-The independent `hepta-windows-directory-probe.yml` workflow is dispatch-only,
+The independent `hepta-windows-directory-probe.yml` diagnostic job is dispatch-only,
 uses Rust1.96.0 MSVC and the original pinned repository test runners, and selects
 one test with one thread and zero retries. It does not run or modify the original
 91-case Windows workflow or the Operator26/Shadow31 product oracles.
 The new manual collector is ignored in ordinary State suites because it requires
 an explicit external output. This diagnostic explicitly executes its exact name
 with `--run-ignored only`; a skip, empty selection or wrong test fails collection.
+An exact diagnostic-branch push event registers the new workflow with GitHub;
+the sole job rejects push events and remains skipped, without a runner. This
+registration event is recorded separately from the single native dispatch.
 
 The test creates a new owned scratch root and an atomically private leaf using
 the existing State fixture primitive. The unchanged State identity/security

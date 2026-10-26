@@ -1,6 +1,9 @@
 name: Windows directory durability diagnostic only
 
 on:
+  push:
+    branches:
+      - codex/windows-durability-probe-20261026
   workflow_dispatch:
 
 permissions:
@@ -18,6 +21,7 @@ env:
 
 jobs:
   native-directory-probe:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
     timeout-minutes: 35
     steps:
