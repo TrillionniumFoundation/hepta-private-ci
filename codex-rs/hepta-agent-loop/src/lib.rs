@@ -90,6 +90,8 @@ pub use managed_responses::ManagedResponsesAttempt;
 pub use managed_responses::ManagedResponsesClient;
 #[cfg(feature = "managed-responses")]
 pub use managed_responses::ManagedResponsesObservation;
+#[cfg(feature = "managed-responses")]
+pub use managed_responses::ManagedResponsesTerminalCompletion;
 
 #[cfg(feature = "taskflow-owner")]
 mod taskflow_owner;

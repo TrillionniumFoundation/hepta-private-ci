@@ -81,6 +81,7 @@ impl Server {
             )
             .with_redacted_response_diagnostics(),
             endpoint,
+            terminal_completion: tokio::sync::watch::channel(false).0,
         };
         let stop = CancellationToken::new();
         let stopping = stop.clone();

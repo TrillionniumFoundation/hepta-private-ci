@@ -184,6 +184,7 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
     )
     .await
     .map_err(|_| anyhow!("qualification policy admission deadline"))??;
+    let mut terminal_completion = client.terminal_completion();
     let result = client
         .stream_admitted(
             ManagedResponsesAttempt {
@@ -216,10 +217,14 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
     let elapsed_ms = started.elapsed().as_millis();
     // A local timeout is not a provider cancellation ACK. Give the retained
     // supervisor its bounded terminal-write grace before this process exits.
-    let terminal_recorded =
-        tokio::time::timeout(Duration::from_secs(10), observer.terminal_recorded())
-            .await
-            .is_ok();
+    // Either terminal owner can finish first. Encoded evidence alone cannot
+    // authorize closing the policy state while its original write is pending.
+    let (settled, encoded) = tokio::join!(
+        tokio::time::timeout(Duration::from_secs(10), terminal_completion.wait()),
+        tokio::time::timeout(Duration::from_secs(10), observer.terminal_recorded()),
+    );
+    let terminal_writes_settled = matches!(settled, Ok(Ok(())));
+    let terminal_recorded = encoded.is_ok();
     let observed = collector
         .await
         .map_err(|_| anyhow!("qualification event collector failed"))?;
@@ -275,6 +280,7 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
                     && observed.completed
                     && !observed.unexpected_tool
                     && terminal_recorded
+                    && terminal_writes_settled
                     && within_reservations
                     && output_matches
             ),
@@ -364,6 +370,10 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
         ),
         ("expected_marker_matches".to_owned(), json!(output_matches)),
         (
+            "terminal_writes_settled".to_owned(),
+            json!(terminal_writes_settled),
+        ),
+        (
             "encoded_terminal_recorded".to_owned(),
             json!(terminal_recorded),
         ),
@@ -384,7 +394,7 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
         ("same_model_codex_ab".to_owned(), json!(false)),
         ("core_linked_for_config_bootstrap".to_owned(), json!(true)),
     ]));
-    if terminal_recorded {
+    if terminal_writes_settled {
         policy.state.close().await;
     }
     Ok(report)

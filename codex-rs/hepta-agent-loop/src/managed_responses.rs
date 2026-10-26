@@ -47,6 +47,30 @@ mod attempt;
 pub struct ManagedResponsesClient {
     client: ResponsesClient<ReqwestTransport>,
     endpoint: String,
+    terminal_completion: tokio::sync::watch::Sender<bool>,
+}
+
+/// Observes both original terminal futures resolving, including failed writes.
+/// This is not a successful-persistence ACK, provider-stop proof or crash log.
+/// A dropped/cancelled waiter does not stop either supervised write.
+pub struct ManagedResponsesTerminalCompletion {
+    receiver: tokio::sync::watch::Receiver<bool>,
+}
+
+impl ManagedResponsesTerminalCompletion {
+    /// Wait for both terminal futures to return, not necessarily successfully.
+    /// Callers must impose their own bounded grace. An unstarted attempt never
+    /// reports settlement; losing the supervisor before settlement is an error.
+    pub async fn wait(&mut self) -> Result<()> {
+        loop {
+            if *self.receiver.borrow_and_update() {
+                return Ok(());
+            }
+            self.receiver.changed().await.map_err(|_| {
+                Error::Owner("provider terminal supervisor unavailable before settlement".into())
+            })?;
+        }
+    }
 }
 
 struct OpaqueMode {
@@ -97,6 +121,7 @@ impl ManagedResponsesClient {
                 )
                 .with_redacted_response_diagnostics(),
                 endpoint,
+                terminal_completion: tokio::sync::watch::channel(false).0,
             })
         };
         tokio::select! {
@@ -105,6 +130,14 @@ impl ManagedResponsesClient {
             result = tokio::time::timeout(setup_timeout, setup) => {
                 result.map_err(|_| Error::Limit("provider setup deadline"))?
             }
+        }
+    }
+
+    /// Retain before consuming this single-attempt client to observe shutdown
+    /// readiness independently of an encoded-owner notification or caller error.
+    pub fn terminal_completion(&self) -> ManagedResponsesTerminalCompletion {
+        ManagedResponsesTerminalCompletion {
+            receiver: self.terminal_completion.subscribe(),
         }
     }
 
@@ -200,6 +233,7 @@ impl ManagedResponsesClient {
             lease,
             dispatch.clone(),
             options.encoded_body_observer.clone(),
+            self.terminal_completion.clone(),
         );
         let capture = opaque_mode.as_ref().map(|_| {
             Arc::new(ResponseCapture::new(
