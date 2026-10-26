@@ -2,8 +2,10 @@
   "all_scientific_and_failure_evidence_retained": true,
   "metadata_archive": {
     "bytes": 3761485,
+    "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e07e31186458ac36655919020235197fc429687f/experiments/multimodal_output_portfolio/v6/results/fresh-factorial-001/archives/reporting-metadata.tar.gz",
     "name": "reporting-metadata.tar.gz",
     "regular_members": 74,
+    "repository_path": "experiments/multimodal_output_portfolio/v6/results/fresh-factorial-001/archives/reporting-metadata.tar.gz",
     "sha256": "7a52402940d92489f4625bac035160d0eee3cf51c872422f5184445af6319735",
     "transfer_receipt": "provenance/verified-transfer.json"
   },
@@ -13,14 +15,30 @@
     "manifest": "provenance/owner-manifest.json"
   },
   "protocol_sha256": "a3531af321d47e82d98d31d2bb5db0cb9eb87809ac30a470468a7b7cde5c1e46",
-  "publication_status": "original archives retained and byte-verified on main; root must attach originals or lossless verified parts when publishing this report",
+  "publication": {
+    "archive_first_publication_commit": "e07e31186458ac36655919020235197fc429687f",
+    "previous_custody": {
+      "bytes": 1492,
+      "path": "verification/history/pre-remote-readback-RAW_CUSTODY.json",
+      "sha256": "a2375bbd1e04b57f3df4537ba70dd0ead7e31a6760c055867334a7dfd3b4715b"
+    },
+    "readback_receipt": {
+      "bytes": 1859,
+      "path": "provenance/remote-archive-readback.json",
+      "sha256": "1a3d2653d18220b2f7ba6f3a4d64b36b674edb8976a14701438ce7756983c3aa"
+    },
+    "repository": "TrillionniumFoundation/hepta-private-ci"
+  },
+  "publication_status": "Published to GitHub and both original archives independently read back byte-for-byte from a fresh bare partial clone.",
   "raw_archive": {
     "bytes": 82855926,
+    "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e07e31186458ac36655919020235197fc429687f/experiments/multimodal_output_portfolio/v6/results/fresh-factorial-001/archives/raw-evidence.tar.gz",
     "main_byte_verification_receipt": "provenance/archive-verification.json",
     "member_manifest": "provenance/raw-archive-members.json",
     "name": "raw-evidence.tar.gz",
     "regular_member_payload_bytes": 96384286,
     "regular_members": 4417,
+    "repository_path": "experiments/multimodal_output_portfolio/v6/results/fresh-factorial-001/archives/raw-evidence.tar.gz",
     "sha256": "ce836866d54bf5ea3a6d4d43cbde5f34c31017fcfffcadb60e6068055e23b62c"
   },
   "report_package_contains_large_original_archives": false,

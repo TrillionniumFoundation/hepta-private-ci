@@ -1,16 +1,17 @@
 {
   "algorithm_commit": "689c45e1903a6b28dcff6d05c7b732a07511f512",
+  "archive_readback_receipt": "provenance/remote-archive-readback.json",
   "delivered_manifest": {
     "bytes": 7619,
     "path": "verification/history/delivered-FILE_MANIFEST.json",
     "sha256": "1ba34d37188f46c0503cabd40ffe325ba742befc360a26b60343be4b770de7ff"
   },
-  "file_count": 46,
+  "file_count": 48,
   "files": [
     {
-      "bytes": 1492,
+      "bytes": 2770,
       "path": "RAW_CUSTODY.json",
-      "sha256": "a2375bbd1e04b57f3df4537ba70dd0ead7e31a6760c055867334a7dfd3b4715b"
+      "sha256": "7d99e8a8af2501bd714c1566179e22de8cc3fb52b47f361a0d7fc108a87b63e1"
     },
     {
       "bytes": 22704,
@@ -108,6 +109,11 @@
       "sha256": "40a9010c0e017c8e0e081681b95f4f046a4e093f50d763abde31b547c26acbd8"
     },
     {
+      "bytes": 1859,
+      "path": "provenance/remote-archive-readback.json",
+      "sha256": "1a3d2653d18220b2f7ba6f3a4d64b36b674edb8976a14701438ce7756983c3aa"
+    },
+    {
       "bytes": 379,
       "path": "provenance/replay.json",
       "sha256": "4d72234a162cc223a8f7760a7cad11a5ae621a21f4035b7e316640e2b497d6f9"
@@ -203,6 +209,11 @@
       "sha256": "85761ff915966a6ce148109b6fff215ec6b352223c8c381c437713e115afa7b5"
     },
     {
+      "bytes": 1492,
+      "path": "verification/history/pre-remote-readback-RAW_CUSTODY.json",
+      "sha256": "a2375bbd1e04b57f3df4537ba70dd0ead7e31a6760c055867334a7dfd3b4715b"
+    },
+    {
       "bytes": 5980,
       "path": "verification/independent-statistics-review.json",
       "sha256": "8dad52f7a30fb127f721341fc33f108b4c4d3cd03715d1a3b630e523faac3f11"
@@ -240,7 +251,7 @@
   ],
   "protocol_sha256": "a3531af321d47e82d98d31d2bb5db0cb9eb87809ac30a470468a7b7cde5c1e46",
   "schema": "hepta.ndu-fresh.result-files.v1",
-  "scope": "Prepared result tree with exact local archive copies; not yet remotely published or verified.",
+  "scope": "Result tree with both published original archives independently read back; manifest excludes only itself.",
   "source_commit": "ee7609048da0c12d542765e29422c0d3c647e0a5",
-  "total_bytes": 89009142
+  "total_bytes": 89013771
 }
