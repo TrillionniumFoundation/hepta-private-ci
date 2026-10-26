@@ -12,7 +12,7 @@ fn notes_policy_post_cas_clock_error_retains_the_same_successor_for_exact_retry(
         ..f.target.clone()
     };
     let before = f.issuer.store.load(STATE_OWNER).unwrap();
-    let mut expected = before.clone();
+    let mut expected = before;
     expected.policies[0].destination_id = next.destination_id();
     expected.policies[0].scope_sha256 = next.scope_digest().into_array();
     let frontier = f.registry.frontier().unwrap();
