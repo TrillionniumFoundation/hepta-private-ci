@@ -50,6 +50,10 @@ pub use publisher::RetiredCheckpointPublisher;
 #[path = "authority_host_checkpoint_adoption.rs"]
 mod adoption;
 
+#[path = "authority_host_checkpoint_recovery.rs"]
+mod recovery;
+pub(crate) use recovery::RetiredCurrentRecovery;
+
 /// Actual trusted launcher registration. The peer cannot replace these fields.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct HostCognitiveCheckpointRegistration {

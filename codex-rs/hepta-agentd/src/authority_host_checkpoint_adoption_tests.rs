@@ -13,6 +13,12 @@ use std::sync::atomic::AtomicU64;
 use std::time::Duration;
 use std::time::Instant;
 
+#[path = "authority_host_checkpoint_recovery_tests.rs"]
+mod recovery;
+
+#[path = "authority_host_notes_recovery_root_tests.rs"]
+mod notes_recovery_original;
+
 #[derive(Default)]
 struct Clock {
     reads: AtomicU64,

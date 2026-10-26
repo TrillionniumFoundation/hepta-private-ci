@@ -15,6 +15,21 @@ pub(super) struct RegisteredCheckpoint {
 }
 
 impl RegisteredCheckpoint {
+    /// The original registered writer fence must surround this administrative
+    /// call; the retained admission never substitutes for live authority.
+    pub(super) fn adopt_or_reconcile(
+        recovery: &crate::authority_host_checkpoint::RetiredCurrentRecovery,
+        registration: HostCognitiveCheckpointRegistration,
+        successor: &crate::RetainedCheckpointPublisher,
+    ) -> io::Result<Self> {
+        Ok(Self {
+            peer: registration.peer_lifetime.clone(),
+            backend: recovery
+                .adopt_or_reconcile(registration, successor)
+                .map_err(io::Error::other)?,
+        })
+    }
+
     pub(super) fn initialize_fresh(
         directory: Arc<RootAuthorityDirectory>,
         registration: HostCognitiveCheckpointRegistration,
@@ -66,36 +81,51 @@ impl RegisteredWriter {
         publisher_epoch: u64,
         peer_lifetime: CognitiveCheckpointPeerLifetime,
     ) -> io::Result<HostCognitiveCheckpointRegistration> {
-        let registration = &self.registration;
-        let key = issuer.trust_key()?;
-        let verified = VerifiedRootWriterProof::verify(
-            self.proof.clone(),
-            &crate::AgentdRootWriterTrust {
-                issuer_id: key.key_id,
-                verifying_key: key.verifying_key,
-                agent_id: registration.registered_agent_id.clone(),
-                spawn_generation: registration.spawn_generation,
-                owner_epoch: registration.owner_epoch,
-                local_lease_id: registration.local_lease_id.clone(),
-                local_lease_generation: registration.local_lease_generation,
-                authority_lease: registration.authority_lease.clone(),
-            },
-        )
-        .map_err(io::Error::other)?;
-        let authority = verified.authority();
-        Ok(HostCognitiveCheckpointRegistration {
-            owner_agent_id: authority.agent_id.clone(),
+        registration_from_proof(
+            issuer,
+            &self.registration,
+            &self.proof,
             publisher_epoch,
-            writer_binding: CognitiveCheckpointWriterBinding {
-                lease_id: registration.local_lease_id.clone(),
-                generation: registration.local_lease_generation,
-                authority_epoch: authority.authority_epoch,
-                owner_epoch: authority.owner_epoch,
-                authority_grant_digest: authority.grant_digest.clone(),
-                fencing_token_digest: authority.fencing_token_digest().map_err(io::Error::other)?,
-                expires_at_unix_seconds: authority.lease_expires_at_unix_seconds,
-            },
             peer_lifetime,
-        })
+        )
     }
+}
+
+pub(super) fn registration_from_proof(
+    issuer: &DeploymentFinalUseIssuer,
+    registration: &crate::HostAuthorityWriterRegistration,
+    proof: &crate::HostSignedWriterAuthorizationV1,
+    publisher_epoch: u64,
+    peer_lifetime: CognitiveCheckpointPeerLifetime,
+) -> io::Result<HostCognitiveCheckpointRegistration> {
+    let key = issuer.trust_key()?;
+    let verified = VerifiedRootWriterProof::verify(
+        proof.clone(),
+        &crate::AgentdRootWriterTrust {
+            issuer_id: key.key_id,
+            verifying_key: key.verifying_key,
+            agent_id: registration.registered_agent_id.clone(),
+            spawn_generation: registration.spawn_generation,
+            owner_epoch: registration.owner_epoch,
+            local_lease_id: registration.local_lease_id.clone(),
+            local_lease_generation: registration.local_lease_generation,
+            authority_lease: registration.authority_lease.clone(),
+        },
+    )
+    .map_err(io::Error::other)?;
+    let authority = verified.authority();
+    Ok(HostCognitiveCheckpointRegistration {
+        owner_agent_id: authority.agent_id.clone(),
+        publisher_epoch,
+        writer_binding: CognitiveCheckpointWriterBinding {
+            lease_id: registration.local_lease_id.clone(),
+            generation: registration.local_lease_generation,
+            authority_epoch: authority.authority_epoch,
+            owner_epoch: authority.owner_epoch,
+            authority_grant_digest: authority.grant_digest.clone(),
+            fencing_token_digest: authority.fencing_token_digest().map_err(io::Error::other)?,
+            expires_at_unix_seconds: authority.lease_expires_at_unix_seconds,
+        },
+        peer_lifetime,
+    })
 }

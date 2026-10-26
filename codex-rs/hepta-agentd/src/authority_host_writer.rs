@@ -22,6 +22,11 @@ pub use fresh::FreshHostCognitiveState;
 #[path = "authority_host_fresh_publish.rs"]
 mod fresh_publish;
 
+#[path = "authority_host_notes_recovery.rs"]
+mod notes_recovery;
+pub use notes_recovery::HostNotesRecoveryPredecessor;
+pub(crate) use notes_recovery::RetainedNotesRecovery;
+
 pub(super) struct RegisteredWriter {
     pub(super) registration: HostAuthorityWriterRegistration,
     leases: AuthorityLeaseVerifier,

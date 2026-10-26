@@ -25,7 +25,9 @@ use crate::DeploymentFinalUseIssuer;
 #[path = "authority_host_writer.rs"]
 mod writer;
 pub use writer::FreshHostCognitiveState;
+pub use writer::HostNotesRecoveryPredecessor;
 use writer::RegisteredWriter;
+pub(crate) use writer::RetainedNotesRecovery;
 #[path = "authority_host_checkpoint_lane.rs"]
 mod checkpoint;
 use checkpoint::RegisteredCheckpoint;
