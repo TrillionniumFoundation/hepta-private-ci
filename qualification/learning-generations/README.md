@@ -21,6 +21,9 @@ comparison, and a passing signed neural read/unload over peer-fetched model
 weights. The adapter is supplied separately; CURRENT and three-round product
 closure remain unchanged. These compact files match the Chain plan's evidence
 byte for byte and preserve the unsuccessful attempts and raw-archive hashes.
+A later separately source-bound eleven-object controlled release observation
+is indexed in that same bank; it preserves overall I10 refusal and provides
+no selected installation authority.
 
 Four actual SQLite memory records contain arithmetic instructions. The initial
 model supports one query family; each of three candidate fits receives fresh

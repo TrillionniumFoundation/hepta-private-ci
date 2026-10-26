@@ -425,6 +425,19 @@ and hashes distinguish these runs from the earlier five-control experiment.
 The same compact observation files are retained in the Chain development-plan
 evidence; they grant no new trust or admission authority.
 
+A later [eleven-object controlled I09 observation](../../qualification/learning-generations/real-model-owner-controlled-20261025/i09-eleven-material-controlled-20261026.json)
+on clean Chain `915f933c` / Hepta `da4a920` reconstructs all original TCM1/TCR1
+bytes from one loopback peer and passes the original signed load/query/denial/
+terminal-unload case in 10.133 seconds. Transfer and final readback take
+3.240547 seconds within the original 35-second budget, separately from native
+load. Three authorizer binding calls yield two durable nonce claims. Its
+overall handoff still fails/exit1 at unavailable I10 selected installation;
+ordinary-task forwarding, CURRENT installation, three installed-parent rounds,
+funded resource return and independent custody remain open. The separately
+source-bound `767d0f21` run passes five selected-initial cases and the original
+gen3/gen1 signed cases within their original limits; it grants none of those
+missing product qualifications. Earlier failures remain retained.
+
 The subsequent bounded parallel-start repair is actually tested on clean Hepta
 `43ad626b` on the local ROG Linux CPU host. The same three original native cases
 all pass: artifact publication/recovery in 0.239 seconds, complete gen2/gen3

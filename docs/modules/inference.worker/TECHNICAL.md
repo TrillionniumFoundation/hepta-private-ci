@@ -188,9 +188,12 @@ consumes its checked config, pin and parameters only through the original
 signed read port; it issues no grant or selected-installation authority.
 The new native selector reuses all original claims and assertions and emits
 a fresh controlled-load readback. Original V1 inputs/results are unchanged.
-The complete eleven-material native positive remains pending; declaration
-unit controls cannot replace it. This route does not close I10 installation,
-ordinary-task use, three installed-parent rounds, durable custody or reward.
+The subsequent [source-bound eleven-material controlled native case](../../../qualification/learning-generations/real-model-owner-controlled-20261025/i09-eleven-material-controlled-20261026.json)
+passes on Chain `915f933c` / Hepta `da4a920`; declaration unit controls alone do
+not establish that execution. Three authorizer binding calls yield two durable
+nonce claims. The overall handoff remains failed/exit1 because I10 selected
+installation is unavailable. This route does not close ordinary-task use,
+three installed-parent rounds, full runtime closure, durable custody or reward.
 
 The ordinary neural read still uses its original FinalUse/resource admission,
 120-second startup, two-second request and original neural unload boundary

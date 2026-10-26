@@ -63,5 +63,22 @@ and refund remain false. No old owner is touched. This is one scheduling
 observation, not a general multi-CPU repair or unique kernel-cause proof. The
 original failed multi-CPU observation remains in `host-retirement.json`.
 
+A later [controlled I09 observation](i09-eleven-material-controlled-20261026.json)
+on clean Chain `915f933c` / Hepta `da4a920` fetches all eleven model-data objects
+(272,190,131 payload bytes / 269 chunks) from one loopback peer and reconstructs
+the original TCM1/TCR1 bytes. Transfer and final readback take 3.240547 seconds
+within the original 35-second budget; packing and native load are separate.
+The original signed load/query/denied-query/terminal-unload case passes in
+10.133 seconds. Three authorizer binding calls yield two durable nonce claims;
+the denied query issues no token and executes no forward. The original nextest
+60-second, startup 120-second, request two-second, Session shutdown ten-second
+and separate Chain eight-second limits remain unchanged. The controller still
+fails with exit1 at I10 selected-installation UNAVAILABLE. CURRENT, ordinary-task
+use, three installed-parent rounds, funded Whole-U return and independent
+custody remain open. A separate later run on clean Hepta `767d0f21` passes all
+five selected-initial cases and the original gen3/gen1 signed cases; it does not
+change the actual I09 source pair or those qualification limits. All previous
+failures and raw V1 fields remain unchanged.
+
 `manifest.json` fixes the compact JSON projections. These unsigned observations
 cannot mint any of the original admission, selection, funding or release proofs.

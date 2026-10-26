@@ -1,0 +1,287 @@
+{
+  "schema": "trnm.controlled-i09-eleven-material-owner-observation.v1",
+  "scope": "Unsigned finite controlled-byte-closure and original signed-load/query/unload engineering observation; no I10 installation authority or qualification.",
+  "actual_source": {
+    "chain": {
+      "head": "915f933c2f81151998c9cab6d6b959ad842fb965",
+      "tree": "3dce6082fe85f181b6109cc79c77ab3a005ff2a9",
+      "dirty": false
+    },
+    "hepta": {
+      "head": "da4a92026e235556afc3e4a186153d1698618089",
+      "tree": "afc729db23c749fbbaa72fa75d71518a81f572f3",
+      "dirty": false
+    }
+  },
+  "newer_Hepta_767d0f_is_not_actual_run_source": true,
+  "observed": {
+    "controlled_profile": "smollm-signed-read-v1",
+    "family": "smollm2-135m-cpu-dev-v1",
+    "objects": 11,
+    "payload_bytes": 272190131,
+    "chunks": 269,
+    "TCM1_and_TCR1_reconstruction": true,
+    "release_id": "63b4dadea9a8cd7ca13686f2ae33127fd03a2c3523f061e93b93cc8e31f40fdc",
+    "sidecar_bytes": 30028,
+    "sidecar_sha256": "774dc9e474609af7c45e66e8cd4cbfa455c368973453dc9c9029036bdcaed3d7",
+    "closure_commitment": "07cd8d81bf0bcd3f749adeb9e96b2542d0557ec91e69432f7bb2a1280eb35c2b",
+    "aggregate_transfer_seconds": 3.2405468959987047,
+    "aggregate_transfer_original_limit_seconds": 35,
+    "aggregate_clock_scope": "Listener announcement through aggregate release fetch, cache-only materialization and final consumer readback; excludes packing/release preparation, provider drain and Hepta load.",
+    "transport": "One supplier over same-host loopback TCP; producer exited0 before native load. This does not establish multi-supplier failover or origin-loss retrieval by an independently running custodian.",
+    "release_fetch_downloaded_chunks": 269,
+    "release_fetch_initial_cached_chunks": 0,
+    "release_response_bytes": 272204931,
+    "cache_only_member_materialization_extra_network_bytes": 0,
+    "native_case": "smollm_neural_read::tests::native::real_cell_release_original_signed_load_query_and_terminal_unload",
+    "native_passed": 1,
+    "native_failed": 0,
+    "native_filtered_not_passed": 131,
+    "actual_test_seconds": 10.133,
+    "command_elapsed_with_compile_metadata_seconds": 29.052856283000438,
+    "generation": 3,
+    "actual_parameter_sha256": "30504b3d1e4d6e17841b073e1457b119b5f65d2ffe083611a78bff592c391a29",
+    "actual_ready_sha256": "4951d1abd7d2203888d120fccb4fede8a0b041a2b74c226b40df097dfdd6336c",
+    "actual_logits_sha256": "42b3893680dc3d22119519a861e4417362046e30f0f18db18ef8e1300b964a9b",
+    "actual_execution_ns": 74528602,
+    "actual_input_tokens": 48,
+    "authorizer_binding_calls": 3,
+    "durable_nonce_claim_records": 2,
+    "claim_record_bytes": 40,
+    "authority_claim_file_bytes": 80,
+    "nonce_sequence_numbers": [
+      1,
+      2
+    ],
+    "claim_denominator_note": "Original V1 field original_final_use_claims=3 and freeze original_signed_claims=3 count Load, Query and denied Query authorizer binding calls. Denied Query issues/claims no token and executes no forward. They are not three signed-token nonce claim records.",
+    "original_control_requests": 3,
+    "original_events_per_phase": 3,
+    "original_control_cold_reopen_exact": true,
+    "original_nextest_seconds": 60,
+    "original_startup_seconds": 120,
+    "original_query_seconds": 2,
+    "original_IO_cap_ms": 1500,
+    "original_Hepta_Session_shutdown_seconds": 10,
+    "separate_Chain_rawU_cutoff_seconds": 8,
+    "terminal": {
+      "supervisor_outcome": "success",
+      "exit_code": 0,
+      "cleanup_method": "wait4",
+      "exact_original_child_reaped_reported": true,
+      "echild_or_wait_error": false,
+      "observed_child_wall_ns": 2922106281,
+      "child_CPU_ns": 6033319000,
+      "wait4_peak_rss_bytes": 1150058496,
+      "sampled_peak_rss_bytes": 1001721856,
+      "recorded_RSS_gaps_preserved": 1,
+      "RSS_scope": "Original direct-childsample/exactwait4 highwater; no simultaneousWholeU/entiretree memory claim."
+    },
+    "overall_status": "failed",
+    "controller_exit": 1,
+    "overall_failure_reason": "I10 selected installation UNAVAILABLE; controlled byte-closure load is not installation authority",
+    "original_native_receipt_status": "UNVERIFIED"
+  },
+  "member_payload_bindings": [
+    {
+      "role": "adapter/artifact.safetensors",
+      "bytes": 933544,
+      "payload_sha256": "30504b3d1e4d6e17841b073e1457b119b5f65d2ffe083611a78bff592c391a29",
+      "TCM1_id": "e007a8079d4e6ac0f95c1b4ff475092ababfebd857cf06e3dcb0bd954b60325e"
+    },
+    {
+      "role": "adapter/target-contract.json",
+      "bytes": 56809,
+      "payload_sha256": "f1c953c182f7528bc8288a1cfe5ebdc56ca5f72b2079aeff1252d05191d7fe9f",
+      "TCM1_id": "3a1a628f7a736c9d9930dd4506f4c3cb5e8bd9c65528583b257794f222187cf8"
+    },
+    {
+      "role": "adapter/wrapped-adapter.json",
+      "bytes": 20962,
+      "payload_sha256": "c2dec365f917b1271b6201b178e8061004721d95834afe52b1d3a9759be0398a",
+      "TCM1_id": "314d269c27e2a8413c1a5602e6a52ee4705bb5c4b3698ccdb397bfc987549fa4"
+    },
+    {
+      "role": "base/README.md",
+      "bytes": 6772,
+      "payload_sha256": "4f97533ad95b1b2fea15fbc075c01b94578ebdd7c8138888fa43fa3abd530dc4",
+      "TCM1_id": "7404d0de68fa03c874ff13d580123cd85256d30daeaa3ba536e280c477e2f96c"
+    },
+    {
+      "role": "base/config.json",
+      "bytes": 861,
+      "payload_sha256": "8eb740e8bbe4cff95ea7b4588d17a2432deb16e8075bc5828ff7ba9be94d982a",
+      "TCM1_id": "e3de353420ee47205c0114bb8fc744e28c65b7b5f8ef7ab9243be0a7b12fcfd1"
+    },
+    {
+      "role": "base/generation_config.json",
+      "bytes": 132,
+      "payload_sha256": "87b916edaaab66b3899b9d0dd0752727dff6666686da0504d89ae0a6e055a013",
+      "TCM1_id": "e2ea144eade3875548b7a62e84a89f39833949d4d3cae4160302daed95c03435"
+    },
+    {
+      "role": "base/material-manifest.json",
+      "bytes": 1524,
+      "payload_sha256": "e84bf22d543592b96ee1e4e41f396a01c611ca460bdae3718bb0da4c45d2190a",
+      "TCM1_id": "008390d7a7703ce11b5f15fda4e98a491c382231d5bfae088928ca0dfc36ef8f"
+    },
+    {
+      "role": "base/model.safetensors",
+      "bytes": 269060552,
+      "payload_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+      "TCM1_id": "ee4b8275d0738f76d75a7564b3d8092d23aa672a6af593a1f725045f470ef9d1"
+    },
+    {
+      "role": "base/special_tokens_map.json",
+      "bytes": 655,
+      "payload_sha256": "2b7379f3ae813529281a5c602bc5a11c1d4e0a99107aaa597fe936c1e813ca52",
+      "TCM1_id": "cc7918e5fff43f7d24438009bb3498943d7f959a18bd9c4ab0f8cff7585b5bf5"
+    },
+    {
+      "role": "base/tokenizer.json",
+      "bytes": 2104556,
+      "payload_sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+      "TCM1_id": "9597ba35c1db76214f1e4bc4d310392ee1f07fe069817db54ddefab04ab05739"
+    },
+    {
+      "role": "base/tokenizer_config.json",
+      "bytes": 3764,
+      "payload_sha256": "4ec77d44f62efeb38d7e044a1db318f6a939438425312dfa333b8382dbad98df",
+      "TCM1_id": "0f278f1df4a6d322c38c18116a426959663f24d9f4f4f807ca25a439a8316138"
+    }
+  ],
+  "source_bound_receipt_notes": [
+    "The actual Cell ELF SHA07d9d378... is a historical source-bound M09 build whose M09 crate matches the actual Chain run source; it is not new SQLite3513/full4097/native node qualification.",
+    "Full interpreter/wheel/native ABI/runtime closure is not part of the eleven model-data objects.",
+    "No persisted signed grant bytes were supplied for independent offline Ed25519 replay; unchanged original signer/claim route plus actual native assertions and durable nonce journal are the finite evidence.",
+    "Parent descriptor directory alone is explicitly relocated and freshly hashed; worker-owned derived parent is not asserted byte-identical to the external descriptor.",
+    "Model/SQLite payloads and raw logs remain in the original workspace; this compact projection is not delivery of those bytes."
+  ],
+  "raw_freeze": {
+    "basename": "root-i09-eleven-material-native-positive-20261026-001-freeze.json",
+    "sha256": "f3e5a603389c263b72547b3848295040e96d8611f3f13fef475ae620488ca870",
+    "regular_files": 97,
+    "regular_bytes": 818656436,
+    "all_original_payloads_or_raw_logs_deleted": false
+  },
+  "independent_review": {
+    "basename": "i09-first-real-eleven-native-independent-review-20261026.json",
+    "sha256": "0f31718fbe5f5a1e905f22c2df2a30c65f96bfd307c074ad804f5fcd20a21722",
+    "verdict": "FINITE_CONTROLLED_LOAD_POSITIVE_SUPPORTED; overallI10FAIL and widerNO_GO preserved"
+  },
+  "qualification": {
+    "I10": false,
+    "CURRENT_installed": false,
+    "ordinary_task_next_task_wire": false,
+    "three_installed_parent_upgrade_rounds": false,
+    "beneficial_release": false,
+    "public_reward": false,
+    "funded_WholeU_return": false,
+    "new_SQLite3513_full4097": false,
+    "native_Windows": false,
+    "independent_custody_WAN72h": false,
+    "whole_project_GO": false
+  },
+  "raw_original_V1_fields_modified": false,
+  "raw_receipt_pins": [
+    {
+      "path": "controller.log",
+      "bytes": 870,
+      "sha256": "b615256f456f5cb32d303d7e24e366c65a664b439a83e9eb04fdeab6dff2e91b"
+    },
+    {
+      "path": "invocation-started.json",
+      "bytes": 3023,
+      "sha256": "9e556399c23a6a0d1eeaec97b4d845214e3d558b57ca0943cde6a1f481452b88"
+    },
+    {
+      "path": "invocation-finished.json",
+      "bytes": 28542,
+      "sha256": "c31916c1271031e5b910ba53168eb8cd0815596ea4986555b48c15d7dca30623"
+    },
+    {
+      "path": "handoff/handoff.json",
+      "bytes": 24094,
+      "sha256": "8ea10e3eb2a3fad8c39a4f33650c36e6a0bf9243cb7a40d329c077bc30b7f2a3"
+    },
+    {
+      "path": "handoff/controlled-cell-native-v1.json",
+      "bytes": 1318,
+      "sha256": "a80cc21e36c9b7b9bc3b6e103b3f82c9a618df6dc6f877f848c17fbd1040ffbc"
+    },
+    {
+      "path": "handoff/controlled-byte-closure-v1.json",
+      "bytes": 30028,
+      "sha256": "774dc9e474609af7c45e66e8cd4cbfa455c368973453dc9c9029036bdcaed3d7"
+    },
+    {
+      "path": "handoff/source-release.tcr1",
+      "bytes": 544,
+      "sha256": "a63b494496f9f81c20fcd3b2bb883440b052516ccf0cb2c15075fd29712e7b40"
+    },
+    {
+      "path": "handoff/consumer-release.tcr1",
+      "bytes": 544,
+      "sha256": "a63b494496f9f81c20fcd3b2bb883440b052516ccf0cb2c15075fd29712e7b40"
+    },
+    {
+      "path": "handoff/controlled-original-native/native-owner-bridge-result.json",
+      "bytes": 1395,
+      "sha256": "85d9b7a168e6c18e05f12fc299dae05ed022623d5d8886eed86f5164714eb47f"
+    },
+    {
+      "path": "handoff/controlled-original-native/controlled-cell-loaded-readback-v1.json",
+      "bytes": 668,
+      "sha256": "5a4b8e14b5eb2482cadadf18f219a0d22eda0b4d7f6a24f1ad6010247f468380"
+    },
+    {
+      "path": "handoff/controlled-original-native/actual-neural-measurement-v1.json",
+      "bytes": 1449,
+      "sha256": "4cbaab31e312f657b3416932df71ca35ef3958c5499a6f7a38cb9a24104d3864"
+    },
+    {
+      "path": "handoff/controlled-original-native/actual-neural-first-failure-v1.json",
+      "bytes": 148,
+      "sha256": "7253cda90ec3413b57c8acaee86e3822c67326378ca927fb6ce252f19737171d"
+    },
+    {
+      "path": "handoff/controlled-original-native/controlled-test-authority/authority.claims",
+      "bytes": 80,
+      "sha256": "0dcce4851234eee63a3f8b3c26cb2224ef308800edc0522d3a908d0cec700556"
+    },
+    {
+      "path": "handoff/controlled-original-native/original-inference.control",
+      "bytes": 2586,
+      "sha256": "614b3e443f0a3aaebf7659e346e6c1ff419079a6b6545ffe3332652b7584fb99"
+    },
+    {
+      "path": "handoff/controlled-original-native/owned-model-session/session/worker/supervisor.json",
+      "bytes": 2788,
+      "sha256": "253b244c6ce8c603e5ef2cf08a441faa92772f605c163e6f5b543e7fb89443b7"
+    }
+  ],
+  "claim_count_observer_clarification": {
+    "basename": "root-i09-original-final-use-count-clarification-20261026.json",
+    "sha256": "6d3ac1b8cfe65434070a6b1ab9920be9e7ea89838fcd855fd0ac4fb8a01aa3e8",
+    "original_fields_unchanged": true
+  },
+  "subsequent_original_native_regressions": {
+    "source": {
+      "head": "767d0f2143d39ca008933c14e6844dafc67b49ab",
+      "tree": "96715fdacd356005fefdbe0afa46d70fecadac49",
+      "codex_rs_tree": "49ee03a2adb9d882371b33abda1643e7f004f740",
+      "dirty": false,
+      "sdk_tree": "900cc7167a7618c38581a8cca39d3fdc613fe216"
+    },
+    "actual_selected_initial_passed": 5,
+    "actual_trained_gen3_passed": 1,
+    "actual_zero_gen1_passed": 1,
+    "original_assertions_and_limits_unchanged": true,
+    "raw_freeze": {
+      "basename": "root-hepta-767-original-seven-native-20261026-001-freeze.json",
+      "sha256": "8e9ef8a66f76744e7261f13621a76792a4f2694ec4012ed1a4c5e840e72be9b6",
+      "regular_files": 450,
+      "regular_bytes": 25826412
+    },
+    "scope": "Separate later controlled regressions at clean767; they do not change the actual I09 run source915/da4 or qualify ordinary-task use, installed selected parent or three-round efficacy."
+  }
+}
