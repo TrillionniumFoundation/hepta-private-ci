@@ -56,6 +56,21 @@ TextInput edits on the UI thread. The current RoomKey and IME guard are checked
 again; stale node identities cannot act on a different room. This bridge still
 requires real AT-SPI/Orca execution against the selected binary.
 
+Native Tab/Shift+Tab use `keyboard_navigation` inside that same `ImeRouter`,
+after its composition gate. The fixed SDK's `NavControl` requires an existing
+focused stop, does not wrap, and registers disabled buttons; the original
+custom conversation rows are not SDK nav stops. The App therefore consumes
+that Tab before `Window::NavControl` and visits only the actual focused window's
+active, drawn, clipped controls. It enters from no control focus, wraps in both
+directions and omits disabled or hidden controls. It uses the original Cx and
+TextInput focus APIs; AccessKit observes the resulting focus after Draw.
+Ctrl/Alt/Logo+Tab are not reinterpreted as plain Tab. Space/Return still traverse
+the original widget handlers and room/proposal guards. The regression surface
+draws the actual HomeScreen and sends SDK key events; it does not establish
+focus through an assistive action. Its pass is separate from final packaged
+ELF, native X11, real IME and Orca acceptance; previous binary evidence cannot
+qualify this changed source.
+
 The original native editor snapshots the SDK's complete valid editor state before
 input. A rejected over-limit/NUL edit restores that text, selection and undo
 history as one transaction. A checkpoint is never retained across a room or

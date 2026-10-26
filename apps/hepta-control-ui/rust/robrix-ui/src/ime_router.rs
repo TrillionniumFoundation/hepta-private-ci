@@ -209,7 +209,9 @@ impl ImeRouter {
             Event::ImeAction(_) if preedit == Preedit::Active => forward = false,
             _ => {}
         }
-        if forward {
+        // A handled Tab never reaches Window::NavControl, so the original SDK
+        // cannot advance the same key a second time. Other keys stay unchanged.
+        if forward && !crate::keyboard_navigation::handle_tab(cx, root, event) {
             root.handle_event(cx, event, &mut Scope::with_data(&mut *workspace));
         }
         if self.pointers.is_overflowed() {

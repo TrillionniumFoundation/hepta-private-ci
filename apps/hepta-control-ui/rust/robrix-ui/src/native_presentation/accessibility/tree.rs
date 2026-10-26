@@ -82,7 +82,7 @@ impl NativeAccessibility {
             let button_enabled = widget.as_button().borrow().map(|button| button.enabled());
             let row = widget
                 .borrow::<RoomsListEntry>()
-                .and_then(|row| row.accessible_room());
+                .and_then(|row| row.rendered_room());
             let mut node;
             let id = self.id(uid, 0);
             if input_exists {
