@@ -1,0 +1,60 @@
+name: Windows legacy workspace refusal and original counterexamples
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-windows-legacy-workspace-refusal.yml"
+      - ".github/fixtures/windows-legacy-workspace-refusal-scope.json"
+      - "codex-rs/windows-sandbox-rs/src/token.rs"
+      - "codex-rs/windows-sandbox-rs/src/legacy_workspace_unavailable_tests.rs"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-windows-legacy-refusal-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  RUSTUP_TOOLCHAIN: 1.96.0
+  CARGO_BUILD_JOBS: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_TERM_COLOR: never
+  PYTHONUTF8: "1"
+
+jobs:
+  refusal-and-original-cases:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout the exact safety candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install the pinned native compiler
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+      - name: Install repository test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Verify strict result rejection controls
+        shell: pwsh
+        run: |
+          python -m unittest discover -s .github/scripts -p test_windows_current_ci.py
+          exit $LASTEXITCODE
+      - name: Execute refusals and preserve every original functional failure
+        shell: pwsh
+        run: |
+          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "legacy-workspace-refusal-target"
+          python .github/scripts/windows_current_ci.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --scope .github/fixtures/windows-legacy-workspace-refusal-scope.json --output "$env:RUNNER_TEMP/legacy-workspace-refusal"
+          exit $LASTEXITCODE
+      - name: Retain source identity and all native results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: legacy-workspace-refusal-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/legacy-workspace-refusal/
+          if-no-files-found: error
+          retention-days: 14

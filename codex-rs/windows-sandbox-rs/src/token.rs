@@ -375,7 +375,8 @@ pub unsafe fn create_readonly_token_with_cap_from(
     Ok((new_token, psid_capability))
 }
 
-/// Restrict legacy workspace writes to the provided capability SIDs alone.
+/// Refuse legacy ambient-user workspace tokens: native parent-directory
+/// delete-child access is not confined by `WRITE_RESTRICTED` capability SIDs.
 ///
 /// # Safety
 /// Caller must close the returned token handle; base_token must be a valid primary token.
@@ -470,6 +471,14 @@ enum RestrictingIdentity {
     Exclude,
 }
 
+pub(crate) fn legacy_workspace_write_unavailable() -> anyhow::Error {
+    std::io::Error::new(
+        std::io::ErrorKind::Unsupported,
+        "legacy Windows workspace isolation cannot restrict parent-directory deletion; use the elevated Windows sandbox backend",
+    )
+    .into()
+}
+
 unsafe fn create_token_with_caps_from(
     base_token: HANDLE,
     psid_capabilities: &[*mut c_void],
@@ -478,6 +487,9 @@ unsafe fn create_token_with_caps_from(
 ) -> Result<HANDLE> {
     if psid_capabilities.is_empty() {
         return Err(anyhow!("no capability SIDs provided"));
+    }
+    if matches!(restricting_identity, RestrictingIdentity::Exclude) {
+        return Err(legacy_workspace_write_unavailable());
     }
     let mut logon_sid_bytes = get_logon_sid_bytes(base_token)?;
     let psid_logon = logon_sid_bytes.as_mut_ptr() as *mut c_void;
