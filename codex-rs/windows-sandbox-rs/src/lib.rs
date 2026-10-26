@@ -70,6 +70,9 @@ mod helper_materialization;
 mod hide_users;
 #[cfg(target_os = "windows")]
 mod identity;
+#[cfg(all(test, target_os = "windows"))]
+#[path = "legacy_workspace_unavailable_tests.rs"]
+mod legacy_workspace_unavailable_tests;
 #[cfg(target_os = "windows")]
 mod logging;
 #[cfg(target_os = "windows")]
@@ -367,7 +370,6 @@ mod windows_impl {
     use super::logging::log_success;
     use super::process::ConsoleMode;
     use super::process::create_process_as_user;
-    use super::sandbox_utils::ensure_codex_home_exists;
     use super::spawn_prep::LegacyAclSids;
     use super::spawn_prep::SpawnPrepOptions;
     use super::spawn_prep::allow_null_device_for_workspace_write;
@@ -375,7 +377,6 @@ mod windows_impl {
     use super::spawn_prep::legacy_session_capability_roots;
     use super::spawn_prep::prepare_legacy_session_security;
     use super::spawn_prep::prepare_legacy_spawn_context;
-    use super::spawn_prep::root_capability_sids;
     use anyhow::Result;
     use codex_protocol::models::PermissionProfile;
     use codex_utils_absolute_path::AbsolutePathBuf;
@@ -735,7 +736,7 @@ mod windows_impl {
     pub fn run_windows_sandbox_legacy_preflight(
         permission_profile: &PermissionProfile,
         workspace_roots: &[AbsolutePathBuf],
-        codex_home: &Path,
+        _codex_home: &Path,
         cwd: &Path,
         env_map: &HashMap<String, String>,
     ) -> Result<()> {
@@ -745,30 +746,11 @@ mod windows_impl {
         ) else {
             return Ok(());
         };
-        if !permissions.uses_write_capabilities_for_cwd(cwd, env_map) {
-            return Ok(());
+        if permissions.uses_write_capabilities_for_cwd(cwd, env_map) {
+            Err(crate::token::legacy_workspace_write_unavailable())
+        } else {
+            Ok(())
         }
-
-        ensure_codex_home_exists(codex_home)?;
-        let current_dir = cwd.to_path_buf();
-        let capability_roots =
-            legacy_session_capability_roots(&permissions, &current_dir, env_map, codex_home);
-        let write_root_sids = root_capability_sids(codex_home, cwd, capability_roots)?;
-        apply_legacy_session_acl_rules(
-            &permissions,
-            codex_home,
-            &current_dir,
-            env_map,
-            &[],
-            &[],
-            LegacyAclSids {
-                readonly_sid: None,
-                readonly_sid_str: None,
-                write_root_sids: &write_root_sids,
-            },
-        )?;
-
-        Ok(())
     }
 
     #[cfg(test)]

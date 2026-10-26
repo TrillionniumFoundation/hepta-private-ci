@@ -126,6 +126,11 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--expected-head", required=True)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument(
+        "--scope",
+        type=Path,
+        default=Path(".github/fixtures/windows-current-ci-scope.json"),
+    )
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     output = args.output.resolve()
@@ -144,9 +149,9 @@ def main() -> int:
     (output / "compiler.txt").write_text(compiler)
     if not compiler.startswith("rustc 1.96.0 "):
         raise RuntimeError("native compiler differs from Rust 1.96.0")
-    manifest = json.loads(
-        (root / ".github/fixtures/windows-current-ci-scope.json").read_text()
-    )
+    scope = root / args.scope
+    scope_bytes = scope.read_bytes()
+    manifest = json.loads(scope_bytes)
     temporary = {
         "originalTemp": os.environ.get("TEMP"),
         "originalTmp": os.environ.get("TMP"),
@@ -178,6 +183,8 @@ def main() -> int:
         "platform": platform.platform(),
         "machine": platform.machine(),
         "temporaryEnvironment": temporary,
+        "scopePath": str(args.scope),
+        "scopeSha256": hashlib.sha256(scope_bytes).hexdigest(),
         "groups": results,
         "testRetries": 0,
         "productionAuthorityGranted": False,

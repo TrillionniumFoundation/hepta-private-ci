@@ -42,6 +42,16 @@ pub struct CreatedProcess {
     _desktop: LaunchDesktop,
 }
 
+#[cfg(test)]
+std::thread_local! {
+    static LAUNCH_ATTEMPTS: std::cell::Cell<usize> = const { std::cell::Cell::new(0) };
+}
+
+#[cfg(test)]
+pub(crate) fn launch_attempts_on_current_thread() -> usize {
+    LAUNCH_ATTEMPTS.get()
+}
+
 /// Controls console creation for pipe-backed child processes.
 pub enum ConsoleMode {
     Inherit,
@@ -99,6 +109,8 @@ pub unsafe fn create_process_as_user(
     console_mode: ConsoleMode,
     use_private_desktop: bool,
 ) -> Result<CreatedProcess> {
+    #[cfg(test)]
+    LAUNCH_ATTEMPTS.set(LAUNCH_ATTEMPTS.get() + 1);
     let cmdline_str = argv_to_command_line(argv);
     let mut cmdline: Vec<u16> = to_wide(&cmdline_str);
     let env_block = make_env_block(env_map);
