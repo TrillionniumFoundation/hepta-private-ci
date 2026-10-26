@@ -214,6 +214,8 @@ mod notes_organ;
 #[cfg(target_os = "linux")]
 mod notes_recovery_process;
 #[cfg(target_os = "linux")]
+mod notes_thread_tool;
+#[cfg(target_os = "linux")]
 mod notes_ui_endpoint;
 #[cfg(target_os = "linux")]
 mod notes_ui_queue;
@@ -456,6 +458,10 @@ pub use notes_literal_observation::AgentdNotesObservationRetention;
 pub use notes_literal_observation::AgentdNotesSubmissionObservation;
 #[cfg(target_os = "linux")]
 pub use notes_literal_observation::AgentdNotesSubmissionState;
+#[cfg(target_os = "linux")]
+pub use notes_thread_tool::AgentdNotesThreadToolRuntime;
+#[cfg(target_os = "linux")]
+pub use notes_thread_tool::original_notes_thread_tools;
 #[cfg(target_os = "linux")]
 pub use notes_ui_endpoint::AgentdNotesUiPeer;
 pub use objective_runtime::authbus_objective_claims;

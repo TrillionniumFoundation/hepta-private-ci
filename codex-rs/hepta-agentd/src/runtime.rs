@@ -43,6 +43,8 @@ pub async fn run(
     let sockets = config.take_socket_inputs();
     #[cfg(target_os = "linux")]
     let notes_ui = config.take_original_notes_ui();
+    #[cfg(target_os = "linux")]
+    let notes_thread_tools = config.take_original_notes_thread_tools();
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
         .authbus_trust_file()
@@ -307,6 +309,13 @@ pub async fn run(
         #[cfg(target_os = "linux")]
         if let Some(ui) = notes_ui {
             tasks.spawn_required("notes-literal-ui", ui.run(cancellation.clone()))?;
+        }
+        #[cfg(target_os = "linux")]
+        if let Some(tools) = notes_thread_tools {
+            tasks.spawn_required(
+                "notes-original-thread-tools",
+                tools.run(Arc::clone(&state), cancellation.clone()),
+            )?;
         }
         let app_identity = identity.clone();
         let app_state = Arc::clone(&state);

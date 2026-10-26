@@ -89,18 +89,25 @@ pub enum AgentdNotesPreparedObjective {
 /// One non-cloneable preparation capability, with one bounded blocking slot.
 /// The slot remains held by started observation/signing work after cancellation.
 /// It owns no database, nonce, request-ID mapping or parallel admission ledger.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(crate) enum NotesAdapterProfile {
+    Literal,
+    OriginalThread,
+}
+
 pub struct AgentdNotesLiteralAdapter {
     pub(crate) identity: AgentdIdentity,
-    writer: Arc<ProductionDurableWriter>,
+    pub(crate) writer: Arc<ProductionDurableWriter>,
     sender: Arc<ProductionObjectiveSender<RootCheckpoint>>,
     root: Arc<AgentdRootAuthoritySession>,
-    observer: AgentdNotesDocumentObserver,
+    pub(crate) observer: AgentdNotesDocumentObserver,
     grants: Arc<AgentdUnixFinalUseGrantProvider>,
-    bindings: AgentdNotesLiteralBindings,
+    pub(crate) bindings: AgentdNotesLiteralBindings,
     input_schema_digest: Digest32,
     normalization_digest: Digest32,
-    blocking: Arc<Semaphore>,
-    deadline: Duration,
+    pub(crate) blocking: Arc<Semaphore>,
+    pub(crate) deadline: Duration,
+    profile: NotesAdapterProfile,
     next_request: u64,
 }
 
@@ -114,6 +121,16 @@ impl AgentdConfig {
         attachment: &AgentdRootProductionAttachment,
         bindings: AgentdNotesLiteralBindings,
         deadline: Duration,
+    ) -> Result<(Self, AgentdNotesLiteralAdapter), AgentdError> {
+        self.with_root_notes_adapter(attachment, bindings, deadline, NotesAdapterProfile::Literal)
+    }
+
+    pub(crate) fn with_root_notes_adapter(
+        self,
+        attachment: &AgentdRootProductionAttachment,
+        bindings: AgentdNotesLiteralBindings,
+        deadline: Duration,
+        profile: NotesAdapterProfile,
     ) -> Result<(Self, AgentdNotesLiteralAdapter), AgentdError> {
         if deadline.is_zero()
             || deadline > Duration::from_secs(10)
@@ -146,7 +163,13 @@ impl AgentdConfig {
                 "Notes Root attachment differs from installed writer",
             ));
         }
-        let expected = literal_notes_admission_profile_json_v1(
+        let encode_profile = match profile {
+            NotesAdapterProfile::Literal => literal_notes_admission_profile_json_v1,
+            NotesAdapterProfile::OriginalThread => {
+                codex_hepta_objective::thread_notes_admission_profile_json_v1
+            }
+        };
+        let expected = encode_profile(
             &bindings.principal_scope,
             bindings.principal_scope_digest,
             &bindings.issuer_id,
@@ -191,6 +214,7 @@ impl AgentdConfig {
             normalization_digest: selected.expected_normalization_profile_digest,
             blocking: Arc::new(Semaphore::new(1)),
             deadline,
+            profile,
             next_request: 1,
         };
         adapter.check_available()?;
@@ -210,13 +234,33 @@ impl AgentdNotesLiteralAdapter {
         {
             return Err(invalid("invalid Notes client intent ID"));
         }
+        let (domain, prefix) = match self.profile {
+            NotesAdapterProfile::Literal => ("organ.notes.literal.run.v1", "notes.literal"),
+            NotesAdapterProfile::OriginalThread => {
+                ("organ.notes.thread-tool.run.v1", "notes.thread")
+            }
+        };
         let binding = serde_json::to_vec(&(
-            "organ.notes.literal.run.v1",
+            domain,
             self.identity.agent_id.as_str(),
             self.bindings.principal_scope_digest.to_string(),
             client_intent_id,
         ))?;
-        Ok(format!("notes.literal.{}", Digest32::of_bytes(&binding)))
+        Ok(format!("{prefix}.{}", Digest32::of_bytes(&binding)))
+    }
+
+    pub(crate) async fn retained_thread_request_sha256(
+        &self,
+        client_intent_id: &str,
+    ) -> Result<String, AgentdError> {
+        let run_id = self.run_id(client_intent_id)?;
+        let request = self
+            .sender
+            .retained_request_for_run(&run_id)
+            .await
+            .map_err(|error| invalid(&error.to_string()))?
+            .ok_or_else(|| invalid("original thread request was not retained"))?;
+        Ok(request.identity().original_sha256.as_str().to_owned())
     }
 
     pub fn check_available(&self) -> Result<(), AgentdError> {
@@ -257,6 +301,48 @@ impl AgentdNotesLiteralAdapter {
         end: Instant,
         phase: &mut NotesUiCallPhase,
     ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
+        if self.profile != NotesAdapterProfile::Literal {
+            return Err(invalid("literal UI cannot prepare a model tool operation"));
+        }
+        self.prepare_bound(client_intent_id, text, None, end, phase)
+            .await
+    }
+
+    pub(crate) async fn prepare_thread(
+        &mut self,
+        client_intent_id: &str,
+        text: &str,
+        expected_revision: u64,
+    ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
+        if self.profile != NotesAdapterProfile::OriginalThread {
+            return Err(invalid(
+                "model tool cannot use the no-model literal profile",
+            ));
+        }
+        let end = Instant::now() + self.deadline;
+        let mut phase = NotesUiCallPhase::ReadOnly;
+        tokio::time::timeout_at(
+            end.into(),
+            self.prepare_bound(
+                client_intent_id,
+                text,
+                Some(expected_revision),
+                end,
+                &mut phase,
+            ),
+        )
+        .await
+        .map_err(|_| invalid("original thread preparation acknowledgement unknown"))?
+    }
+
+    async fn prepare_bound(
+        &mut self,
+        client_intent_id: &str,
+        text: &str,
+        expected_revision: Option<u64>,
+        end: Instant,
+        phase: &mut NotesUiCallPhase,
+    ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
         let run_id = self.run_id(client_intent_id)?;
         if let Some(retained) = self
             .sender
@@ -264,6 +350,23 @@ impl AgentdNotesLiteralAdapter {
             .await
             .map_err(|error| invalid(&error.to_string()))?
         {
+            if let Some(expected_revision) = expected_revision {
+                let original = self
+                    .writer
+                    .retained_operation(&run_id)
+                    .await?
+                    .ok_or_else(|| {
+                        invalid("retained thread request lost its original operation")
+                    })?;
+                let payload: serde_json::Value = serde_json::from_str(&original.payload_json)?;
+                if payload["text"].as_str() != Some(text)
+                    || payload["expected_revision"].as_u64() != Some(expected_revision)
+                {
+                    return Err(invalid(
+                        "original thread call was rebound to different arguments",
+                    ));
+                }
+            }
             return Ok(AgentdNotesPreparedObjective::Retained(retained));
         }
         self.check_available()?;
@@ -288,6 +391,11 @@ impl AgentdNotesLiteralAdapter {
         .await
         .map_err(|_| invalid("Notes observation worker failed"))??;
         self.check_available()?;
+        if expected_revision.is_some_and(|revision| revision != observed.revision) {
+            return Err(invalid(
+                "original thread predecessor changed; no operation was prepared",
+            ));
+        }
         let now_ms = self
             .root
             .clock()
@@ -314,7 +422,13 @@ impl AgentdNotesLiteralAdapter {
             },
         )
         .await?;
-        let source = literal_notes_source_json_v1(LiteralNotesSourceContext {
+        let encode_source = match self.profile {
+            NotesAdapterProfile::Literal => literal_notes_source_json_v1,
+            NotesAdapterProfile::OriginalThread => {
+                codex_hepta_objective::thread_notes_source_json_v1
+            }
+        };
+        let source = encode_source(LiteralNotesSourceContext {
             client_intent_id,
             source_digest: semantic,
             principal_scope_digest: self.bindings.principal_scope_digest,

@@ -57,3 +57,8 @@ pre-effect Current scope74/74, including all original67 in one run and9 real
 SIGKILL cases. This new result does not retroactively validate the old barrier.
 See [the actual replacement design](OWNER_PUBLICATION_BARRIER.md) and
 [its original success/failure records](acceptance/2026-10-23-owner-barrier-effect-entry/README.md).
+## Model compatibility
+
+See [the Notes identity/version contract](NOTES_MODEL_CONTRACT.md) for checkpoint
+v2, read-only legacy input, typed canonical interchange and unchanged original
+operation/receipt identity.

@@ -64,6 +64,8 @@ pub(crate) struct AgentdState {
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
+    #[cfg(target_os = "linux")]
+    app_server_ready_notify: tokio::sync::Notify,
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
@@ -166,6 +168,8 @@ impl AgentdState {
             }),
             identity,
             registry,
+            #[cfg(target_os = "linux")]
+            app_server_ready_notify: tokio::sync::Notify::new(),
             events: Mutex::new(events),
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
@@ -452,6 +456,8 @@ impl AgentdState {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
         if !runtime.app_server_ready {
             runtime.app_server_ready = true;
+            #[cfg(target_os = "linux")]
+            self.app_server_ready_notify.notify_waiters();
             runtime.required_ports_ready = true;
             if runtime.lifecycle == AgentLifecycle::Running
                 && runtime.critical_stores_ready
@@ -466,6 +472,27 @@ impl AgentdState {
                 .push(AgentdEventKind::AppServerReady);
         }
         Ok(())
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) async fn wait_original_app_server_ready(&self) -> Result<(), AgentdError> {
+        loop {
+            let notified = self.app_server_ready_notify.notified();
+            tokio::pin!(notified);
+            notified.as_mut().enable();
+            {
+                let runtime = self.runtime.lock().map_err(poisoned_state)?;
+                if runtime.fenced {
+                    return Err(AgentdError::GenerationFenced(
+                        "original App Server was fenced".into(),
+                    ));
+                }
+                if runtime.app_server_ready {
+                    return Ok(());
+                }
+            }
+            notified.await;
+        }
     }
 
     pub(crate) fn mark_draining(&self) -> Result<(), AgentdError> {

@@ -99,6 +99,8 @@ pub struct AgentdConfig {
     notes_objective: Option<crate::AgentdNotesObjectiveConfig>,
     #[cfg(target_os = "linux")]
     notes_ui: Option<crate::AgentdNotesUiRuntime>,
+    #[cfg(target_os = "linux")]
+    notes_thread_tools: Option<crate::AgentdNotesThreadToolRuntime>,
     cognitive_retrieval_mode: CognitiveRetrievalMode,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
@@ -226,6 +228,8 @@ impl AgentdConfig {
             notes_objective: None,
             #[cfg(target_os = "linux")]
             notes_ui: None,
+            #[cfg(target_os = "linux")]
+            notes_thread_tools: None,
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
@@ -409,7 +413,7 @@ impl AgentdConfig {
         mut self,
         runtime: crate::AgentdNotesUiRuntime,
     ) -> Result<Self, AgentdError> {
-        if self.notes_ui.is_some() {
+        if self.notes_ui.is_some() || self.notes_thread_tools.is_some() {
             return Err(AgentdError::Invalid(
                 "original Notes UI already configured".into(),
             ));
@@ -422,6 +426,28 @@ impl AgentdConfig {
     #[cfg(target_os = "linux")]
     pub(crate) fn take_original_notes_ui(&mut self) -> Option<crate::AgentdNotesUiRuntime> {
         self.notes_ui.take()
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn install_original_notes_thread_tools(
+        mut self,
+        runtime: crate::AgentdNotesThreadToolRuntime,
+    ) -> Result<Self, AgentdError> {
+        if self.notes_ui.is_some() || self.notes_thread_tools.is_some() {
+            return Err(AgentdError::Invalid(
+                "original Notes operation mode already selected".into(),
+            ));
+        }
+        runtime.validate_for(&self)?;
+        self.notes_thread_tools = Some(runtime);
+        Ok(self)
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn take_original_notes_thread_tools(
+        &mut self,
+    ) -> Option<crate::AgentdNotesThreadToolRuntime> {
+        self.notes_thread_tools.take()
     }
 
     /// Explicit old-incarnation recovery from the trusted sealed deployment.
