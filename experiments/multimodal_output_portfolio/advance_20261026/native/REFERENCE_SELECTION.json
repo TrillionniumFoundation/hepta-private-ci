@@ -1,0 +1,42 @@
+{
+  "calibration_sha256": "f2b694201b9fb496d04947d99ef02580e38f2d35834f7d76b2f4924eafbb4d4f",
+  "candidate_references": [
+    "fixed_initial",
+    "fixed_late"
+  ],
+  "future_waveform_read_online_before_acquire": false,
+  "new_confirmation_used": false,
+  "old_development": {
+    "dynamic": {
+      "actual_cached_source_CNN_acquisitions": 12,
+      "cases": 256,
+      "certainty_equivalent": -0.2558640848883578,
+      "mean_registered_cost": 0.0016796875000000006,
+      "strict_task_success_including_rejection_as_failure": 0.7578125,
+      "terminal_rejections": 53
+    },
+    "fixed_initial": {
+      "actual_cached_source_CNN_acquisitions": 0,
+      "cases": 256,
+      "certainty_equivalent": -0.32695026806040284,
+      "mean_registered_cost": 0.0015156250000000005,
+      "strict_task_success_including_rejection_as_failure": 0.72265625,
+      "terminal_rejections": 62
+    },
+    "fixed_late": {
+      "actual_cached_source_CNN_acquisitions": 203,
+      "cases": 256,
+      "certainty_equivalent": -0.2912483801514749,
+      "mean_registered_cost": 0.003132812500000001,
+      "strict_task_success_including_rejection_as_failure": 0.76171875,
+      "terminal_rejections": 58
+    }
+  },
+  "original_owner_resource_refusals_in_this_selection": "not simulated; independently measured during real owner evaluation",
+  "primary_contrast": "dynamic minus fixed_late",
+  "schema": "hepta.advance.native-reference-selection.v1",
+  "selected_reference": "fixed_late",
+  "selection_rule": "Max old-development realized entropic CE; fixed_initial wins exact ties",
+  "source_record_sha256": "b5e5dd9e98a53a6107f95f5413807be8360468f4ae70723caeba2932aa76b3b6",
+  "source_scope": "Previously selected old image/video sources; actual frozen CNN observation cache; no new source"
+}
