@@ -79,14 +79,7 @@ impl VerifiedNotesThreadCall {
             READ_TOOL if params.arguments == json!({}) => Ok(()),
             STATUS_TOOL => {
                 let navigation: StatusArguments = serde_json::from_value(params.arguments.clone())?;
-                if navigation.turn_id.is_empty()
-                    || navigation.turn_id.len() > 128
-                    || navigation.call_id.is_empty()
-                    || navigation.call_id.len() > 128
-                {
-                    return Err(invalid("original Notes status navigation bound"));
-                }
-                Ok(())
+                navigation.validate()
             }
             REPLACE_TOOL => {
                 let arguments: ReplaceArguments = serde_json::from_value(params.arguments.clone())?;

@@ -31,6 +31,24 @@ struct OriginalConnection {
     next_request: i64,
 }
 
+impl status::OriginalStatusHistory for OriginalConnection {
+    async fn turns(
+        &mut self,
+        params: codex_app_server_protocol::ThreadTurnsListParams,
+    ) -> Result<codex_app_server_protocol::ThreadTurnsListResponse, AgentdError> {
+        self.call(|request_id| ClientRequest::ThreadTurnsList { request_id, params })
+            .await
+    }
+
+    async fn items(
+        &mut self,
+        params: ThreadItemsListParams,
+    ) -> Result<ThreadItemsListResponse, AgentdError> {
+        self.call(|request_id| ClientRequest::ThreadItemsList { request_id, params })
+            .await
+    }
+}
+
 impl OriginalConnection {
     async fn connect(
         route: AgentdTextSessionConfig,
@@ -327,6 +345,7 @@ impl AgentdNotesThreadToolRuntime {
                 _ => continue,
             };
             let mut operation_id = None;
+            let mut original_reference = None;
             let mut human_observation = None;
             let result = async {
                 let call = connection.verify(&params).await?;
@@ -337,25 +356,39 @@ impl AgentdNotesThreadToolRuntime {
                 if call.tool() == STATUS_TOOL {
                     let navigation: StatusArguments =
                         serde_json::from_value(call.arguments().clone())?;
-                    let item = connection
-                        .original_item(&navigation.turn_id, &navigation.call_id)
-                        .await?;
-                    let original = VerifiedNotesThreadOperation::from_original_item(
-                        &self.route,
-                        &navigation.turn_id,
-                        &navigation.call_id,
-                        &item,
-                    )?;
-                    let first = connection.first_original_replace(&navigation.turn_id).await?;
-                    if first.original_item().call_id() != original.original_item().call_id() {
-                        return Err(invalid("status must name the original turn's first Notes write"));
-                    }
+                    let original = match navigation {
+                        StatusArguments::Exact(navigation) => {
+                            let item = connection.original_item(&navigation.turn_id, &navigation.call_id).await?;
+                            let original = VerifiedNotesThreadOperation::from_original_item(
+                                &self.route, &navigation.turn_id, &navigation.call_id, &item,
+                            )?;
+                            let first = connection.first_original_replace(&navigation.turn_id).await?;
+                            if first.original_item().call_id() != original.original_item().call_id() {
+                                return Err(invalid("status must name the original turn's first Notes write"));
+                            }
+                            original
+                        }
+                        StatusArguments::Selected(status::SelectedStatusArguments {selector:status::StatusSelector::LatestOriginalReplace}) => {
+                            match status::discover_latest_original_replace(&self.route, &mut connection).await? {
+                                status::StatusDiscovery::Found(original) => original,
+                                status::StatusDiscovery::Unknown(reason) => return Ok(json!({
+                                    "status":"unknown", "reason":reason, "thread_id":self.route.thread_id,
+                                    "original_reference":null, "operation_id":null,
+                                    "callback":{"thread_id":self.route.thread_id,"app_server_session_id":self.route.app_server_session_id,
+                                        "turn_id":params.turn_id,"call_id":params.call_id},
+                                    "instruction":"No exact original Notes result was verified in this bounded window. Do not repeat the effect. Use an exact original turn/call reference or original-owner recovery."
+                                })),
+                            }
+                        }
+                    };
+                    original_reference = Some(self.provenance(original.original_item()));
                     operation_id = Some(self.adapter.run_id(&original.original_item().turn_intent_id(&self.route)?)?);
                     return self.observe_retained(&original).await;
                 }
                 if call.tool() == REPLACE_TOOL {
                     let first = connection.first_original_replace(call.turn_id()).await?;
                     let original_operation_id = self.adapter.run_id(&first.original_item().turn_intent_id(&self.route)?)?;
+                    original_reference = Some(self.provenance(first.original_item()));
                     operation_id = Some(original_operation_id.clone());
                     if first.original_item().call_id() != call.call_id() {
                         // Core's original ordered items are the turn fence. A
@@ -386,7 +419,11 @@ impl AgentdNotesThreadToolRuntime {
                     // renderer/model output remains a bounded observation.
                     eprintln!("original Notes tool refused or uncertain: {error}");
                     (
-                        json!({"status":"unavailable_or_unknown", "operation_id":operation_id, "thread_id":self.route.thread_id,"turn_id":params.turn_id,"call_id":params.call_id,"instruction":"Reconcile the original call and retained operation. Do not repeat this as a new effect."}),
+                        json!({"status":"unavailable_or_unknown", "operation_id":operation_id,
+                            "original_reference":original_reference,
+                            "callback":{"thread_id":self.route.thread_id,"app_server_session_id":self.route.app_server_session_id,
+                                "turn_id":params.turn_id,"call_id":params.call_id},
+                            "instruction":"Reconcile the original reference and retained operation. The status callback is not the original write. Do not repeat this as a new effect."}),
                         false,
                     )
                 }

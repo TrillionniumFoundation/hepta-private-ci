@@ -692,8 +692,8 @@ id = "notes_original_operation_observation_proof"
 symbol = "VerifiedNotesThreadOperation::from_original_item"
 definition_path = "codex-rs/hepta-agentd/src/notes_thread_proof.rs"
 definition_markers = ["pub(super) struct VerifiedNotesThreadOperation", "pub(super) fn from_original_item(", "id != call_id || tool != REPLACE_TOOL", "VerifiedNotesThreadCall::validate_callback(route, &params)?"]
-product_callers = ["codex-rs/hepta-agentd/src/notes_thread_runtime.rs"]
-caller_markers = ["VerifiedNotesThreadOperation::from_original_item", "self.observe_retained(&original).await"]
+product_callers = ["codex-rs/hepta-agentd/src/notes_thread_runtime.rs", "codex-rs/hepta-agentd/src/notes_thread_status.rs"]
+caller_markers = ["VerifiedNotesThreadOperation::from_original_item"]
 
 [[boundary]]
 id = "notes_original_thread_prepare"
@@ -722,6 +722,11 @@ forbidden = ["Deserialize", "unsafe", "transmute", "AllowVerifier", "permit_all"
 path = "codex-rs/hepta-agentd/src/notes_thread_runtime.rs"
 required = ["RemoteAppServerClient::connect_with_bounded_events", "seed: &crate::NotesThreadSeedReceipt", "client.codex_home() != route.codex_home.to_str()", "crate::verify_original_notes_thread_seed(&client, seed).await?", "self.seed.as_ref().ok_or_else", "OriginalConnection::connect(self.route.clone(), seed)", "ClientRequest::ThreadItemsList", "VerifiedNotesThreadCall::from_original_item", "VerifiedNotesThreadOperation::from_original_item", "self.observe_retained(&original).await", "self.execute(&call, &human).await"]
 forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/notes_thread_status.rs"
+required = ["enum StatusArguments", "#[serde(untagged)]", "#[serde(tag = \"kind\", rename_all = \"snake_case\", deny_unknown_fields)]", "LatestOriginalReplace", "const TURNS: usize = 16", "const PAGE_ITEMS: usize = 64", "const TURN_PAGES: usize = 4", "const TOTAL_ITEMS: usize = 1024", "const RPCS: usize = 64", "Duration::from_secs(5)", "thread_id: route.thread_id.clone()", "SortDirection::Desc", "TurnItemsView::NotLoaded", "SortDirection::Asc", "entry.turn_id != turn.id", "VerifiedNotesThreadOperation::from_original_item", "StatusUnknownReason::WindowExhausted", "StatusUnknownReason::OriginalReplaceNotObserved"]
+forbidden = ["AllowVerifier", "permit_all", "prepare_thread(", "submit_once(", "sign_objective(", "ThreadStart", "ThreadResume", "dispatch(", "unsafe"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/notes_thread_tool.rs"

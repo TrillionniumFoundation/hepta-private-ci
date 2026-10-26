@@ -27,10 +27,13 @@ pub(crate) mod human;
 mod proof;
 #[path = "notes_thread_runtime.rs"]
 mod runtime;
+#[path = "notes_thread_status.rs"]
+mod status;
 use human::VerifiedHumanTurn;
 use proof::OriginalNotesThreadItem;
 use proof::VerifiedNotesThreadCall;
 use proof::VerifiedNotesThreadOperation;
+use status::StatusArguments;
 
 pub(crate) const READ_TOOL: &str = "hepta_notes_state";
 pub(crate) const REPLACE_TOOL: &str = "hepta_notes_replace";
@@ -49,11 +52,15 @@ pub fn original_notes_thread_tools() -> Vec<DynamicToolSpec> {
                 "expected_revision":{"type":"integer", "minimum":0}
             }, "required":["text","expected_revision"], "additionalProperties":false
         })),
-        (STATUS_TOOL, "Read only the exact retained result of an original hepta_notes_replace item in this same thread. Supply its original turn_id and call_id; this never prepares, signs, sends, or repeats an effect.", json!({
+        (STATUS_TOOL, "Read only an original hepta_notes_replace result in this same thread. Supply its original turn_id and call_id, or selector {kind: latest_original_replace} when a lost reply or compacted context hid those IDs. Discovery checks at most 16 original turns and returns the first write of the latest matching turn, never a retry call. Unknown/window_exhausted means do not repeat the effect. Original receipt/target and current_document are separate. This never prepares, signs, sends, or repeats an effect.", json!({
             "type":"object", "properties":{
                 "turn_id":{"type":"string","maxLength":128},
-                "call_id":{"type":"string","maxLength":128}
-            }, "required":["turn_id","call_id"], "additionalProperties":false
+                "call_id":{"type":"string","maxLength":128},
+                "selector":{"type":"object", "properties":{"kind":{"type":"string","enum":["latest_original_replace"]}},"required":["kind"],"additionalProperties":false}
+            }, "oneOf":[
+                {"required":["turn_id","call_id"],"not":{"required":["selector"]}},
+                {"required":["selector"],"not":{"anyOf":[{"required":["turn_id"]},{"required":["call_id"]}]}}
+            ], "additionalProperties":false
         })),
     ].into_iter().map(|(name, description, input_schema)| DynamicToolSpec::Function(DynamicToolFunctionSpec {
         name: name.into(), description: description.into(), input_schema, defer_loading: false,
@@ -65,13 +72,6 @@ pub fn original_notes_thread_tools() -> Vec<DynamicToolSpec> {
 struct ReplaceArguments {
     text: String,
     expected_revision: u64,
-}
-
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-struct StatusArguments {
-    turn_id: String,
-    call_id: String,
 }
 
 /// A required original-Agentd task. It owns one original connection and one
@@ -288,6 +288,19 @@ impl AgentdNotesThreadToolRuntime {
             .adapter
             .retained_thread_request_sha256(&request_id, &original_call_id)
             .await?;
+        let payload: Value = serde_json::from_str(&original.payload_json)?;
+        let original_target: codex_hepta_memory::NotesTargetIdentity =
+            serde_json::from_value(payload["target"].clone())?;
+        original_target
+            .validate()
+            .map_err(|error| invalid(&error))?;
+        if payload["operation_id"] != run_id
+            || original_target.destination_id() != original.operation.destination_id().as_str()
+        {
+            return Err(invalid(
+                "original Notes result target differs from its source",
+            ));
+        }
         // Losing the application or its readback cannot erase an already
         // verified immutable source receipt. Report freshness separately.
         let document = self.observe_document().await.ok();
@@ -297,7 +310,8 @@ impl AgentdNotesThreadToolRuntime {
             "exact_request_sha256":request_sha256,
             "sender_observation_retained":sender_observation_retained,
             "state":format!("{:?}",original.state), "receipt_utf8":receipt,
-            "document_readback_available":document.is_some(), "document":document,
+            "original_target":original_target,
+            "current_document_readback_available":document.is_some(), "current_document":document,
         }))
     }
 }

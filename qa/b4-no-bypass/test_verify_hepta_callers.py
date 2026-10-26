@@ -441,11 +441,29 @@ class OriginalNotesSourceGuardTests(unittest.TestCase):
         for filename in (
             "notes_thread_seed",
             "notes_thread_execution",
+            "notes_thread_status",
             "app_runtime",
             "runtime",
         ):
             with self.subTest(filename=filename):
                 self.check_source(filename)
+
+    def test_notes_status_discovery_keeps_original_proof_and_read_bounds(self):
+        for old, new in (
+            ("const TURNS: usize = 16", "const TURNS: usize = 64"),
+            ("const TOTAL_ITEMS: usize = 1024", "const TOTAL_ITEMS: usize = 65536"),
+            ("Duration::from_secs(5)", "Duration::from_secs(300)"),
+            ("entry.turn_id != turn.id", "false"),
+            (
+                "VerifiedNotesThreadOperation::from_original_item",
+                "unverified_history_reference",
+            ),
+        ):
+            with (
+                self.subTest(old=old),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check_source("notes_thread_status", self.replace_once(old, new))
 
     def test_resume_requires_persisted_checks_in_the_original_function(self):
         for old, new in (

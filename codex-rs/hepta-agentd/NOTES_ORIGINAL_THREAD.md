@@ -74,6 +74,14 @@ original tuple, even when a change only adds whitespace. An administrator must
 preserve the old deployment and investigate it; this helper never rewrites old
 conversation metadata.
 
+The status discovery selector below changes the exact three-tool catalog bytes.
+It must be present at the first product Start. Schema 2 alone does not make an
+older catalog compatible: seed validation and Resume compare the full catalog
+hash and original SessionMeta, including the status schema and description.
+Existing receipts/catalogs are refused, never dynamically extended, repaired or
+reseeded into a replacement thread. The first installed product must select one
+source combination containing this catalog before its seed is created.
+
 The trusted launcher can then gracefully stop the seed owner and launch the
 final Agentd with that same Core home. `verify_original_notes_thread_seed` must
 resume the original thread on the final actual App Server and compare the real
@@ -117,7 +125,28 @@ two arguments. `hepta_notes_status({"turn_id":"…","call_id":"…"})` reads the
 exact result of a retained original replace item in the fixed thread, including
 an original item whose tool reply was unknown. These are navigation IDs; the
 original item and operation are independently checked, and this path never
-prepares, signs or resends. UTF-8 text is bounded to 4096 bytes. A changed predecessor or
+prepares, signs or resends.
+
+After a lost tool reply or model-context compaction, use
+`hepta_notes_status({"selector":{"kind":"latest_original_replace"}})` when the
+old turn/call IDs are unknown. This selector and explicit IDs are mutually
+exclusive. On the same seed-verified physical Core connection it requests
+`thread/turns/list` descending with `NotLoaded`, at most 16 turns, then reads
+`thread/items/list` ascending with 64 items per page and at most four pages per
+turn. The entire lookup permits at most 1024 items, 64 RPCs and five seconds.
+The latest matching turn's **first** original replace is selected, including an
+item with no tool reply. No old model result, summary or directory supplies the
+reference. The existing read-only operation proof and original writer then
+verify its exact identity, signed request and retained receipt. No history page
+is injected into model context. Only the selected reference/result is returned.
+
+An incomplete newer turn cannot be skipped to select an older write. Exhausted
+bounds return `status: unknown` with `reason: window_exhausted` or
+`deadline_elapsed`; a completed window without a verified replace returns
+`original_replace_not_observed`, not proof that no effect exists. None permits
+a repeat write. Discovery cannot recover an original item absent from Core.
+
+UTF-8 text is bounded to 4096 bytes. A changed predecessor or
 pending receipt prevents preparation. The application still performs its atomic
 predecessor check at the effect boundary.
 
@@ -191,8 +220,14 @@ replayed callback recovers the original retained request and cannot resend it.
 checks its payload hash and exact typed Notes receipt against the retained
 operation, and verifies live authority. It writes no event, grants no permit and
 does not retire a receipt. The tool result includes operation and semantic IDs,
-exact signed-request hash, original callback provenance, exact receipt bytes and
-fresh document readback. Only a committed original receipt reports success.
+exact signed-request hash, original callback provenance and exact receipt bytes.
+`original_target` belongs to that retained operation and `receipt_utf8`;
+`current_document` and `current_document_readback_available` describe only the
+currently attached observer. After recovery this may be a different target.
+Neither a new empty document nor failed current readback invalidates an old
+verified receipt, and no old-document freshness is claimed. State-only reads
+still use their existing `document` field. Only a committed original receipt
+reports success.
 Unknown results retain their original call/operation identity and instruct the
 caller to reconcile it; a missing result is never proof of no effect.
 
