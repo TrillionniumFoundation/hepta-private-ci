@@ -3,7 +3,7 @@ include!("../../../trained-cell-v5/driver/src/parity.rs");
 pub fn compare_handoff(
     inputs: &Inputs,
     index: usize,
-    typed: &mut OwnerTypedSelectedCandidateV5<codex_hepta_neuron::TrainingHandoffBundleV7>,
+    typed: &mut OwnerTypedSelectedCandidateV5<crate::handoff_version::Handoff>,
     owner: &LearningArtifactOwnerService,
     now: u64,
 ) -> Result<Value> {

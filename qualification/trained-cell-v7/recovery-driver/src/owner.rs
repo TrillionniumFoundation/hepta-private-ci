@@ -8,9 +8,8 @@ pub(crate) use legacy::inventory;
 pub(crate) use legacy::request;
 pub(crate) use legacy::trust;
 
+use crate::handoff_version::Handoff;
 use crate::*;
-use codex_hepta_neuron::TrainingHandoffBundleV7;
-use codex_hepta_neuron::training_handoff_compatibility_digest_v7;
 
 pub(crate) fn manifest(
     name: &str,
@@ -20,15 +19,15 @@ pub(crate) fn manifest(
     now: u64,
 ) -> Result<LearningArtifactManifestV2> {
     let mut result = legacy::manifest(name, payload, previous, inputs, now)?;
-    if payload.starts_with(b"HPTHOF07") {
-        let bundle = TrainingHandoffBundleV7::decode(payload, Digest32::of_bytes(payload))?;
+    if Handoff::recognizes(payload) {
+        let bundle = Handoff::decode(payload, Digest32::of_bytes(payload))?;
         ensure(
             bundle.artifact_id().as_str() == name
                 && bundle.generation() == result.generation
                 && bundle.protocol_digest() == inputs.policy.protocol_digest,
             "handoff manifest identity differs",
         )?;
-        result.compatibility_digest = training_handoff_compatibility_digest_v7();
+        result.compatibility_digest = bundle.compatibility_digest();
         result.schema_profile_digest = result.compatibility_digest;
     }
     Ok(result)

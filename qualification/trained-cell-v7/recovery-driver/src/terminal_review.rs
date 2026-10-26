@@ -1,12 +1,11 @@
 //! Bind positive admission to the exact evaluated terminal checkpoint family.
 //! Generic transport and unadmitted diagnostic restoration may remain mid-plan.
 
+use crate::handoff_version::Handoff;
 use crate::*;
-use codex_hepta_neuron::TrainingHandoffBundleV7;
 
 pub(crate) fn commitment(inputs: &report::Inputs, gate: &Value) -> Result<Value> {
-    let bundle =
-        TrainingHandoffBundleV7::decode(&inputs.candidate, Digest32::of_bytes(&inputs.candidate))?;
+    let bundle = Handoff::decode(&inputs.candidate, Digest32::of_bytes(&inputs.candidate))?;
     ensure(
         bundle.protocol_digest() == inputs.policy.protocol_digest,
         "terminal candidate protocol differs",
@@ -61,12 +60,14 @@ pub(crate) fn commitment(inputs: &report::Inputs, gate: &Value) -> Result<Value>
             == expected,
         "terminal candidate family is incomplete",
     )?;
-    Ok(json!({"schema":"hepta.reviewed-terminal-checkpoints.v7",
+    Ok(
+        json!({"schema":format!("hepta.reviewed-terminal-checkpoints.v{}",bundle.version()),
         "protocol_sha256":inputs.policy.protocol_digest.to_string(),
         "report_sha256":inputs.report_digest.to_string(),
         "source_candidate_bundle_sha256":report::hash(gate,"source_candidate_bundle_sha256")?.to_string(),
         "native_candidate_sha256":bundle.content_digest().to_string(),
-        "registered_steps":32,"cells":cells}))
+        "registered_steps":32,"cells":cells}),
+    )
 }
 
 pub(crate) fn verify(
@@ -76,20 +77,33 @@ pub(crate) fn verify(
     replay: &Path,
     statistics: &Path,
 ) -> Result<()> {
-    if !inputs.candidate.starts_with(b"HPTHOF07") {
+    if !Handoff::recognizes(&inputs.candidate) {
         // Frozen V5 regression path has its own historical serving-only profile.
         return Ok(());
     }
     let expected = commitment(inputs, gate)?;
     let digest = Digest32::of_bytes(&serde_json::to_vec(&expected)?);
-    let converted: Value = serde_json::from_slice(&report::read(conversion)?)?;
+    let conversion_bytes = report::read(conversion)?;
+    ensure(
+        Digest32::of_bytes(&conversion_bytes) == report::hash(gate, "conversion_manifest_sha256")?,
+        "terminal conversion read differs from its bound commitment",
+    )?;
+    let converted: Value = serde_json::from_slice(&conversion_bytes)?;
     ensure(
         converted["evaluated_terminal_checkpoints"] == expected
             && report::hash(gate, "evaluated_terminal_checkpoints_sha256")? == digest,
         "reviewed terminal checkpoint map differs from the actual candidate",
     )?;
-    for path in [replay, statistics] {
-        let audit: Value = serde_json::from_slice(&report::read(path)?)?;
+    for (path, field) in [
+        (replay, "independent_replay_sha256"),
+        (statistics, "independent_statistics_sha256"),
+    ] {
+        let bytes = report::read(path)?;
+        ensure(
+            Digest32::of_bytes(&bytes) == report::hash(gate, field)?,
+            "terminal audit read differs from its bound commitment",
+        )?;
+        let audit: Value = serde_json::from_slice(&bytes)?;
         ensure(
             report::hash(&audit, "evaluated_terminal_checkpoints_sha256")? == digest,
             "independent audit did not review this exact terminal checkpoint family",

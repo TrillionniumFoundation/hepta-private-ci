@@ -2,12 +2,17 @@
 //! owner/admission boundary; this serialization does not confer authority.
 
 use crate::Result;
+use crate::handoff_version::Handoff;
 use crate::owner;
 use codex_hepta_neuron::TrainingHandoffBundleV7;
 use serde_json::Value;
 use serde_json::json;
 
 pub fn dump(bundle: &TrainingHandoffBundleV7) -> Result<Value> {
+    dump_versioned(&Handoff::V7(bundle.clone()))
+}
+
+pub fn dump_versioned(bundle: &Handoff) -> Result<Value> {
     let mut checkpoints = Vec::new();
     for checkpoint in bundle.checkpoints() {
         let vector: Vec<u8> = checkpoint
@@ -27,10 +32,12 @@ pub fn dump(bundle: &TrainingHandoffBundleV7) -> Result<Value> {
             "state_vector_le_hex":owner::hex(&vector),"resolved_actions_le_hex":owner::hex(&actions),
             "pending_actions":checkpoint.pending_actions().len()}));
     }
-    Ok(json!({"schema":"hepta.native-full-checkpoint-dump.v7",
+    Ok(
+        json!({"schema":format!("hepta.native-full-checkpoint-dump.v{}",bundle.version()),
         "artifact_id":bundle.artifact_id().as_str(),"generation":bundle.generation().get(),
         "handoff_sha256":bundle.content_digest().to_string(),"serving_sha256":bundle.serving().content_digest().to_string(),
         "protocol_sha256":bundle.protocol_digest().to_string(),
         "predecessor_sha256":bundle.predecessor_digest().map(|v| v.to_string()),"checkpoints":checkpoints,
-        "authority":"DENY_ALL","optimizer_executed":false,"production_activation":false}))
+        "authority":"DENY_ALL","optimizer_executed":false,"production_activation":false}),
+    )
 }

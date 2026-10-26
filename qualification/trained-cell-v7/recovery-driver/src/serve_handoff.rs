@@ -2,10 +2,9 @@
 //! A distinct local selector exercises current-view selection and rollback;
 //! no production selector or dispatch authority is installed.
 
+use crate::handoff_version::Handoff;
 use crate::*;
-use codex_hepta_neuron::TrainingHandoffBundleV7;
 use codex_hepta_neuron::TrainingHandoffErrorV7;
-use codex_hepta_neuron::training_handoff_compatibility_digest_v7;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
@@ -91,15 +90,15 @@ fn decode(
     bytes: &[u8],
     manifest: &ArtifactManifest,
     predecessor: Option<Digest32>,
-) -> std::result::Result<TrainingHandoffBundleV7, TrainingHandoffErrorV7> {
-    let bundle = TrainingHandoffBundleV7::decode(bytes, manifest.content_digest)?;
+) -> std::result::Result<Handoff, TrainingHandoffErrorV7> {
+    let bundle = Handoff::decode(bytes, manifest.content_digest)?;
     if bundle.artifact_id() != &manifest.artifact_id
         || bundle.generation() != manifest.generation
         || bundle.content_digest() != manifest.content_digest
         || bundle.protocol_digest() != manifest.objective_digest
         || bundle.predecessor_digest() != predecessor
         || bytes.len() as u64 != manifest.encoded_size_bytes
-        || manifest.compatibility_digest != training_handoff_compatibility_digest_v7()
+        || manifest.compatibility_digest != bundle.compatibility_digest()
     {
         return Err(TrainingHandoffErrorV7::Binding);
     }
@@ -111,7 +110,7 @@ pub fn roundtrip(
     required: SignedCurrentArtifactHeadV1,
     baseline: LearningArtifactManifestV2,
     candidate: LearningArtifactManifestV2,
-    inputs: &parity::Inputs,
+    inputs: &parity_profile::Inputs,
     now: u64,
 ) -> Result<Value> {
     config.required_current_head = Some(required);
@@ -133,11 +132,11 @@ pub fn roundtrip(
             manifest: &candidate,
             now,
         },
-        training_handoff_compatibility_digest_v7(),
+        candidate.compatibility_digest,
         |bytes, manifest| decode(bytes, manifest, Some(baseline.bytes_digest)),
     )?;
-    let candidate_parity = parity::compare_handoff(inputs, 1, &mut typed, &owner, now)?;
-    let candidate_dump = typed.with_owner(&owner, now, handoff_dump::dump)??;
+    let candidate_parity = inputs.compare_handoff(1, &mut typed, &owner, now)?;
+    let candidate_dump = typed.with_owner(&owner, now, handoff_dump::dump_versioned)??;
     let (snapshot, payload) = files(&config.root, &owner, &baseline, now)?;
     typed.rollback_to_predecessor(
         snapshot,
@@ -150,8 +149,8 @@ pub fn roundtrip(
         },
         |bytes, manifest| decode(bytes, manifest, None),
     )?;
-    let predecessor_parity = parity::compare_handoff(inputs, 0, &mut typed, &owner, now)?;
-    let baseline_dump = typed.with_owner(&owner, now, handoff_dump::dump)??;
+    let predecessor_parity = inputs.compare_handoff(0, &mut typed, &owner, now)?;
+    let baseline_dump = typed.with_owner(&owner, now, handoff_dump::dump_versioned)??;
     let exports = [
         write_dump(&config.root, "candidate", &candidate_dump)?,
         write_dump(&config.root, "predecessor", &baseline_dump)?,
