@@ -14,6 +14,8 @@ use super::need;
 
 const CHUNK: usize = 1024 * 1024;
 
+type MeasuredPayloadParts = (u64, Digest32, Vec<(u32, Digest32)>);
+
 pub(super) enum ManifestKind {
     Cell,
     Release,
@@ -52,10 +54,7 @@ pub(super) fn open_regular(path: &Path, maximum: u64) -> Result<File, String> {
     Ok(file)
 }
 
-pub(super) fn measure(
-    mut input: impl Read,
-    maximum: u64,
-) -> Result<(u64, Digest32, Vec<(u32, Digest32)>), String> {
+pub(super) fn measure(mut input: impl Read, maximum: u64) -> Result<MeasuredPayloadParts, String> {
     let mut scratch = vec![0; CHUNK];
     let mut whole = Sha256::new();
     let mut chunks = Vec::new();

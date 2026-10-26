@@ -299,7 +299,7 @@ fn validate_declaration(
     }
     need(
         pin.execution_profile_digest == config.execution_profile_digest()?
-            && Digest32::of_bytes(&parameters) == pin.payload_digest,
+            && Digest32::of_bytes(parameters) == pin.payload_digest,
         "owned model inputs",
     )?;
     need(
