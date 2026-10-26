@@ -1,0 +1,40 @@
+{
+  "candidate": {
+    "checkpoint": "/tmp/hepta-ndu-advance-control/development-001/ridge-0.1.json",
+    "checkpoint_sha256": "205940fb455c39459c8d3c7ace1b629c29a5ae88c08248bc9c44088609a4dd97",
+    "development_admitted": true,
+    "diagnostics": {
+      "executable_H1_delta_MSE": 0.0054649791086006745,
+      "executable_H1_delta_count": 8996,
+      "executable_H1_zero_delta_MSE": 0.0059845225271239295,
+      "selected_actual_delta_mean": -0.0030911545584733353,
+      "selected_delta_MSE": 0.0034416674574406928,
+      "selected_nonstop_with_executable_stop": 101,
+      "selected_prediction_bias": -0.016049622076714173
+    },
+    "max_export_prediction_error": 3.1086244689504383e-15,
+    "outcome": {
+      "action_cost_CE": -0.6204527228350838,
+      "mean_continuation_actions": 0.65380859375,
+      "raw_CE": -0.6190032362937927,
+      "rejection_fraction": 0.455078125,
+      "success": 0.51611328125
+    },
+    "ridge": 0.1
+  },
+  "computation_scope": "Torch limited to one thread; NumPy BLAS thread count was not capped, reflected in actual CPU exceeding wall.",
+  "development_result_sha256": "352402a96826e20c61110d1affd9f67efa72de19b1f55efc2166616a78f471a3",
+  "numeric_prior": "H1 features include actual public caption/image agreement; H2 prior is zero before any observation. This is not independent truth evidence.",
+  "production_authority": false,
+  "quality_scope": "Historical development only. Selected-action prediction bias remains nonzero.",
+  "runtime_scope": "Original frozen text/image V6 5-refinement system. Does not inherit qualification for the new 100-code canonical renderer.",
+  "schema": "hepta.advance.old-refinement-candidate-freeze.v1",
+  "source_inputs": {
+    "/tmp/hepta-ndu-next-native-h2/calibrator-001/calibration.json": "162af685af18a7e3aaad8d35b8bde4e2790b251beca0e87d81dd502c99584481",
+    "/tmp/hepta-ndu-next-native-h2/development-002/predictor.json": "2ea073f7de0cf0a134c94cb0a683e3924733dd7206cf619264e370bbce2f37f8",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc3-runs/controllers-001/seed-17/output_ndu/controller.pt": "af83aa182ed037f8a0792093f69c19c8ddd51f0622f5851ef037277113a561ce",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc4-control-runs/development-001/seed-17/fit/data.pt": "5a01bde7946110030e0fabf30c1008830b053f337eb4b25a32aa62a5eaa30f8c",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc4-control-runs/development-001/seed-17/selection/data.pt": "5ce003835c39699471f317e42dd9a1407f9f871ff80d3544801db470d5dd9e01"
+  },
+  "source_level_independent_confirmation": false
+}
