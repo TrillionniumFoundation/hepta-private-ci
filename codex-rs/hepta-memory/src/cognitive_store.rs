@@ -63,6 +63,8 @@ mod checkpoint_bind;
 
 #[path = "cognitive_store_recovery.rs"]
 mod recovery;
+#[cfg(target_os = "linux")]
+pub use recovery::CognitiveCheckpointImage;
 pub use recovery::CognitiveRecoveryAnchor;
 pub use recovery::CognitiveRecoveryError;
 pub use recovery::CognitiveRecoveryRequirement;

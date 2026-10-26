@@ -215,6 +215,8 @@ pub use cognitive_retrieval_adapter::sqlite_owner_cue_profile_digest;
 pub use cognitive_retrieval_adapter::sqlite_owner_retrieval_policy_v1;
 pub use cognitive_runtime::CognitiveRuntime;
 pub use cognitive_runtime::CognitiveUnavailableReason;
+#[cfg(target_os = "linux")]
+pub use cognitive_store::CognitiveCheckpointImage;
 pub use cognitive_store::CognitiveRecoveryAnchor;
 pub use cognitive_store::CognitiveRecoveryError;
 pub use cognitive_store::CognitiveRecoveryRequirement;

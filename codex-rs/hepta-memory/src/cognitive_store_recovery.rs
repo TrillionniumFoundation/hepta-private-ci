@@ -47,6 +47,12 @@ use crate::framing::frame_part;
 mod read_only;
 pub use read_only::RecoveredCognitiveReadOnly;
 
+#[cfg(target_os = "linux")]
+#[path = "cognitive_checkpoint_image.rs"]
+mod checkpoint_image;
+#[cfg(target_os = "linux")]
+pub use checkpoint_image::CognitiveCheckpointImage;
+
 const PROFILE: &str = "hepta:cognitive:exact-current-cut:v1";
 const MAX_ROWS: i64 = 262_144;
 const MAX_BYTES: i64 = 128 * 1024 * 1024;
