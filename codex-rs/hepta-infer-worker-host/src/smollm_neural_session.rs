@@ -34,6 +34,7 @@ pub(super) struct Session {
     supervisor: SupervisorOwner,
     runtime: tokio::runtime::Handle,
     cleanup_deadline: Instant,
+    shutdown_deadline: Option<Instant>,
     in_flight_or_unknown: AtomicBool,
 }
 
@@ -52,6 +53,7 @@ impl Session {
             supervisor,
             runtime,
             cleanup_deadline,
+            shutdown_deadline: None,
             in_flight_or_unknown: AtomicBool::new(false),
         })
     }
@@ -206,29 +208,41 @@ impl Session {
     }
 
     pub(super) fn shutdown(&mut self) -> Result<(), String> {
-        let deadline = Instant::now() + Duration::from_secs(10);
+        let deadline = *self
+            .shutdown_deadline
+            .get_or_insert_with(|| Instant::now() + Duration::from_secs(10));
+        shutdown_remaining(deadline)?;
         if !self.has_exited()? {
             let mut stream = self
                 .connect(deadline)
                 .map_err(ExchangeFailure::into_original)?;
             stream
-                .set_write_timeout(Some(Duration::from_secs(1)))
+                .set_write_timeout(Some(
+                    shutdown_remaining(deadline)?.min(Duration::from_secs(1)),
+                ))
                 .map_err(|error| error.to_string())?;
             stream.write_all(STOP).map_err(|error| error.to_string())?;
         }
         while !self.has_exited()? {
-            if Instant::now() >= deadline {
-                return Err(
-                    "neural unload terminal observation unavailable; original supervisor retained"
-                        .to_owned(),
-                );
-            }
+            shutdown_remaining(deadline)?;
             std::thread::sleep(Duration::from_millis(10));
         }
+        shutdown_remaining(deadline)?;
         verify_terminal_receipt(&self.directory, self.supervisor.try_wait()?)?;
+        shutdown_remaining(deadline)?;
         self.supervisor.release_verified_terminal()?;
         Ok(())
     }
+}
+
+fn shutdown_remaining(deadline: Instant) -> Result<Duration, String> {
+    deadline
+        .checked_duration_since(Instant::now())
+        .filter(|left| !left.is_zero())
+        .ok_or_else(|| {
+            "neural unload terminal observation unavailable; original supervisor retained"
+                .to_owned()
+        })
 }
 
 impl Drop for Session {

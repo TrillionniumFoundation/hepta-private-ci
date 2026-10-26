@@ -67,6 +67,17 @@ fn terminal_unload_requires_successful_supervisor_and_original_child_receipt() {
         // race. std::process::Child retains its exact status for try_wait.
         assert_eq!(supervisor.wait().unwrap().code(), Some(exit_code));
         assert_eq!(session.shutdown(), Err(expected.to_owned()));
+        let original_cutoff = session.shutdown_deadline.unwrap();
+        assert_eq!(session.shutdown(), Err(expected.to_owned()));
+        assert_eq!(session.shutdown_deadline, Some(original_cutoff));
+        // Shorten only this negative fixture; a late receipt cannot renew it.
+        session.shutdown_deadline = Some(Instant::now());
+        assert!(
+            session
+                .shutdown()
+                .unwrap_err()
+                .contains("terminal observation unavailable")
+        );
         assert!(session.supervisor.is_some());
     }
 }

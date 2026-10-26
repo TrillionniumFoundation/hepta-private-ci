@@ -128,6 +128,25 @@ pin, including its objective/dataset binding, exact request equality and origina
 compatibility/FinalUse scope. This private factoring grants no initial admission
 and does not interpret missing evaluation fields as an initial qualification.
 
+The separate initial-only preparation owns its original config, opaque selected
+positive-zero material, concrete original CURRENT reader and warm session in one
+private object. It joins actual Ready/settled load IDs and fixed measured roots
+to the exact selected gen1 parameter bytes before exposing a bounded read-only
+observation. The initial physical port has no evaluated pin and refuses the old
+neural inference trait before admission. It provides no ordinary task route,
+installation, efficacy or reward authority. CURRENT/selector/callback errors are
+sticky; post-load rejection retains the same original session for cleanup, and
+shutdown failure retains it. Startup remains 120 seconds, neural shutdown ten
+seconds, and the separate Chain terminal cutoff eight seconds.
+
+The selected-initial owner retains one cleanup task across cancellation of an
+await; a later await consumes that exact result. An uncertain driver unload keeps
+its original model handle and capacity fenced against both run routes. Retrying
+physical unload uses the first Session shutdown's fixed 10-second cutoff, never
+a renewed window; a missing/late receipt remains unknown, including when a later
+call reports `ModelNotLoaded`. This does not change Chain's separate 8-second raw-U
+boundary or issue a resource receipt.
+
 The PN3 SmolLM read owner retains bounded measurement observations in its
 existing mailbox: one validated actual worker Ready and one last successfully
 settled forward. `smollm_neural_measurement.rs` owns opaque, non-serializable

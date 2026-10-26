@@ -10,8 +10,12 @@
   "owner": "cognitive-platform",
   "deputy": "agent-runtime",
   "technicalGuide": "docs/modules/cognitive.read/TECHNICAL.md",
-  "declaredRoots": ["codex-rs/hepta-cognitive-read"],
-  "resolvedRoots": ["codex-rs/hepta-cognitive-read"],
+  "declaredRoots": [
+    "codex-rs/hepta-cognitive-read"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-cognitive-read"
+  ],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "composed_local_host",
@@ -23,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-cognitive-read/src/ids.rs",
       "state": "source_implemented_product_composed",
       "authority": "none",
-      "tests": ["codex-rs/hepta-cognitive-read/src/ids_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/ids_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "read_ids",
       "mappingClass": "owner_native",
@@ -39,7 +45,9 @@
       "sourcePath": "codex-rs/hepta-cognitive-read/src/v2.rs",
       "state": "source_implemented_compatibility_library",
       "authority": "none",
-      "tests": ["codex-rs/hepta-cognitive-read/src/v2_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "bounded_compatibility_projection",
       "mappingClass": "owner_native",
@@ -52,7 +60,9 @@
       "sourcePath": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
       "state": "source_implemented_compatibility_library",
       "authority": "none",
-      "tests": ["codex-rs/hepta-cognitive-read/src/authoritative_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "compatibility_authoritative_provider",
       "mappingClass": "owner_native",
@@ -65,7 +75,9 @@
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
       "state": "source_implemented_product_composed",
       "authority": "none",
-      "tests": ["codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "acquire_snapshot",
       "mappingClass": "existing_owner_adapter",
@@ -105,7 +117,9 @@
       "sourcePath": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
       "state": "source_implemented_shadow_only_not_product_composed",
       "authority": "none",
-      "tests": ["codex-rs/hepta-cognitive-read/src/authoritative_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "canonical_authoritative_read_shadow",
       "mappingClass": "owner_native",
@@ -144,7 +158,9 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": ["codex-rs/hepta-cognitive-read"],
+  "sourceRoot": [
+    "codex-rs/hepta-cognitive-read"
+  ],
   "observedImplementationBase": {
     "commit": "a74246c4d7657d4c6b09fc50c41f1d715ace5e0e",
     "interpretation": "latest reviewed main base for this rebased closure candidate; sourceBase remains repository-wide generated-map baseline while exact production source objects bind current candidate bytes"

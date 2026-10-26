@@ -50,7 +50,7 @@ impl SmolLmNeuralReadConfigV1 {
         Ok(Digest32::of_bytes(&bytes))
     }
 
-    pub(super) fn source_identities(&self) -> Result<BTreeMap<String, String>, String> {
+    pub(crate) fn source_identities(&self) -> Result<BTreeMap<String, String>, String> {
         let mut identities = BTreeMap::new();
         for (path, expected) in &self.source_pins {
             if !path.is_absolute() || expected.is_zero() {
