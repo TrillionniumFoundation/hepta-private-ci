@@ -611,6 +611,8 @@ def generate_v2_all(schema_dir: Path) -> None:
     _preserve_plan_type_enum(out_path)
     _normalize_generated_timestamps(out_path)
     _preserve_default_validation(out_path)
+    # Keep generated imports stable under the repository's explicit-file formatter.
+    run_python_module("ruff", ["check", "--fix", "--fix-only", str(out_path)], cwd=sdk_root())
     run_python_module("ruff", ["format", str(out_path)], cwd=sdk_root())
 
 
