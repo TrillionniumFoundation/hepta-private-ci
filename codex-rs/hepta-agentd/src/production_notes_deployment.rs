@@ -16,14 +16,17 @@ use serde::Deserialize;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdNotesLiteralBindings;
+use crate::AgentdNotesModelRoute;
 use crate::AgentdNotesPreviousRecoveryLaunch;
 use crate::AgentdNotesStartupRelease;
+use crate::notes_model_route::RegisteredNotesModelRoute;
 
 pub(super) struct NotesDeployment {
     pub(super) bindings: AgentdNotesLiteralBindings,
     pub(super) peer: NotesUiPeer,
     pub(super) previous_recovery: Option<AgentdNotesPreviousRecoveryLaunch>,
     pub(super) startup_release: Option<AgentdNotesStartupRelease>,
+    pub(super) model_route: Option<AgentdNotesModelRoute>,
 }
 
 #[derive(Deserialize)]
@@ -47,6 +50,8 @@ struct Deployment {
     previous_recovery: Option<PreviousRecovery>,
     #[serde(default)]
     startup_release: Option<StartupRelease>,
+    #[serde(default)]
+    model_route: Option<RegisteredNotesModelRoute>,
 }
 
 #[derive(Deserialize)]
@@ -146,11 +151,16 @@ pub(super) fn read(
             target: release.target,
             nonce: release.nonce,
         });
+    let model_route = value
+        .model_route
+        .map(|route| route.into_route(frozen.principal_scope_digest))
+        .transpose()?;
     Ok(NotesDeployment {
         bindings: frozen,
         peer: value.session,
         previous_recovery,
         startup_release,
+        model_route,
     })
 }
 

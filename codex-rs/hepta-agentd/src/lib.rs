@@ -210,6 +210,8 @@ mod notes_literal_prepare;
 #[cfg(target_os = "linux")]
 mod notes_literal_receipts;
 #[cfg(target_os = "linux")]
+mod notes_model_route;
+#[cfg(target_os = "linux")]
 mod notes_organ;
 #[cfg(target_os = "linux")]
 mod notes_recovery_process;
@@ -456,6 +458,8 @@ pub use notes_literal_observation::AgentdNotesObservationRetention;
 pub use notes_literal_observation::AgentdNotesSubmissionObservation;
 #[cfg(target_os = "linux")]
 pub use notes_literal_observation::AgentdNotesSubmissionState;
+#[cfg(target_os = "linux")]
+pub use notes_model_route::AgentdNotesModelRoute;
 #[cfg(target_os = "linux")]
 pub use notes_ui_endpoint::AgentdNotesUiPeer;
 pub use objective_runtime::authbus_objective_claims;

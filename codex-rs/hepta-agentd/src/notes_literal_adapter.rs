@@ -6,6 +6,7 @@ use std::sync::Arc;
 use std::time::Duration;
 use std::time::Instant;
 
+use codex_hepta_memory::NotesDocumentState;
 use codex_hepta_memory::ObjectiveSenderOrigin;
 use codex_hepta_memory::ObjectiveSenderRequest;
 use codex_hepta_memory::ObjectiveSenderTicket;
@@ -33,6 +34,8 @@ use crate::AgentdUnixFinalUseGrantProvider;
 use crate::AuthBusObjectiveBody;
 use crate::AuthBusObjectiveIngress;
 use crate::notes_literal_prepare::LiteralOperationInput;
+use crate::notes_literal_prepare::LiteralPredecessor;
+use crate::notes_literal_prepare::check_retained_literal;
 use crate::notes_literal_prepare::prepare_original_literal;
 use crate::notes_literal_prepare::utc_millis;
 
@@ -44,6 +47,10 @@ mod history;
 #[path = "notes_ui_runtime.rs"]
 mod ui_runtime;
 pub use ui_runtime::AgentdNotesUiRuntime;
+#[path = "notes_model_bridge.rs"]
+mod model_bridge;
+#[path = "notes_model_proposal.rs"]
+mod model_proposal;
 #[path = "notes_ui_worker.rs"]
 mod ui_worker;
 
@@ -244,36 +251,72 @@ impl AgentdNotesLiteralAdapter {
         let mut phase = NotesUiCallPhase::ReadOnly;
         tokio::time::timeout_at(
             end.into(),
-            self.prepare_until(client_intent_id, text, end, &mut phase),
+            self.prepare_until(
+                client_intent_id,
+                text,
+                LiteralPredecessor::Current,
+                end,
+                &mut phase,
+            ),
         )
         .await
         .map_err(|_| invalid("Notes original preparation acknowledgement unknown"))?
+    }
+
+    /// Confirm only the exact document the human reviewed. The fresh read must
+    /// match its target, revision, text digest and lack of a pending receipt.
+    /// After a document change or effect, recover through the original read APIs
+    /// instead of retrying preparation. A retained request grants no new send.
+    pub async fn prepare_reviewed(
+        &mut self,
+        client_intent_id: &str,
+        text: &str,
+        expected: &NotesDocumentState,
+    ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
+        let end = Instant::now() + self.deadline;
+        let mut phase = NotesUiCallPhase::ReadOnly;
+        tokio::time::timeout_at(
+            end.into(),
+            self.prepare_until(
+                client_intent_id,
+                text,
+                LiteralPredecessor::Reviewed(expected),
+                end,
+                &mut phase,
+            ),
+        )
+        .await
+        .map_err(|_| invalid("Notes reviewed preparation acknowledgement unknown"))?
     }
 
     async fn prepare_until(
         &mut self,
         client_intent_id: &str,
         text: &str,
+        predecessor: LiteralPredecessor<'_>,
         end: Instant,
         phase: &mut NotesUiCallPhase,
     ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
         let run_id = self.run_id(client_intent_id)?;
-        if let Some(retained) = self
+        if text.trim().is_empty() || text.len() > 4096 {
+            return Err(invalid("literal Notes text exceeds original bounds"));
+        }
+        let retained = self
             .sender
             .retained_request_for_run(&run_id)
             .await
-            .map_err(|error| invalid(&error.to_string()))?
+            .map_err(|error| invalid(&error.to_string()))?;
+        if let Some(retained) = retained.as_ref()
+            && matches!(predecessor, LiteralPredecessor::Current)
         {
-            return Ok(AgentdNotesPreparedObjective::Retained(retained));
+            check_retained_literal(&self.writer, &run_id, text, predecessor).await?;
+            return Ok(AgentdNotesPreparedObjective::Retained(retained.clone()));
         }
         self.check_available()?;
         // Startup cannot consume a durable send opportunity while the original
         // control listener/profile is still unavailable. This is a bounded,
         // authenticated read-only query, not a delivery attempt or retry.
         self.require_objective_ready().await?;
-        if text.trim().is_empty() || text.len() > 4096 {
-            return Err(invalid("literal Notes text exceeds original bounds"));
-        }
         let permit = Arc::clone(&self.blocking)
             .try_acquire_owned()
             .map_err(|_| invalid("previous Notes blocking work is still in progress"))?;
@@ -288,6 +331,11 @@ impl AgentdNotesLiteralAdapter {
         .await
         .map_err(|_| invalid("Notes observation worker failed"))??;
         self.check_available()?;
+        predecessor.check(self.observer.target(), &observed)?;
+        if let Some(retained) = retained {
+            check_retained_literal(&self.writer, &run_id, text, predecessor).await?;
+            return Ok(AgentdNotesPreparedObjective::Retained(retained));
+        }
         let now_ms = self
             .root
             .clock()
@@ -307,6 +355,7 @@ impl AgentdNotesLiteralAdapter {
             LiteralOperationInput {
                 target: self.observer.target(),
                 observed: &observed,
+                predecessor,
                 run_id: &run_id,
                 text,
                 subject: self.identity.agent_id.as_str(),

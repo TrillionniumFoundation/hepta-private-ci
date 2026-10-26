@@ -56,6 +56,21 @@ TextInput edits on the UI thread. The current RoomKey and IME guard are checked
 again; stale node identities cannot act on a different room. This bridge still
 requires real AT-SPI/Orca execution against the selected binary.
 
+Native Tab/Shift+Tab use `keyboard_navigation` inside that same `ImeRouter`,
+after its composition gate. The fixed SDK's `NavControl` requires an existing
+focused stop, does not wrap, and registers disabled buttons; the original
+custom conversation rows are not SDK nav stops. The App therefore consumes
+that Tab before `Window::NavControl` and visits only the actual focused window's
+active, drawn, clipped controls. It enters from no control focus, wraps in both
+directions and omits disabled or hidden controls. It uses the original Cx and
+TextInput focus APIs; AccessKit observes the resulting focus after Draw.
+Ctrl/Alt/Logo+Tab are not reinterpreted as plain Tab. Space/Return still traverse
+the original widget handlers and room/proposal guards. The regression surface
+draws the actual HomeScreen and sends SDK key events; it does not establish
+focus through an assistive action. Its pass is separate from final packaged
+ELF, native X11, real IME and Orca acceptance; previous binary evidence cannot
+qualify this changed source.
+
 The original native editor snapshots the SDK's complete valid editor state before
 input. A rejected over-limit/NUL edit restores that text, selection and undo
 history as one transaction. A checkpoint is never retained across a room or
@@ -119,11 +134,11 @@ IME session, device authority, admitted chat or completed external operations.
 ### Finite Notes controls beside the original composer
 
 An embedding may return `Some(NativeNotesView { status, can_write, can_refresh,
-can_cancel })` from `NativeChatComposition::notes_view`. The default returns
+can_cancel, model_proposal })` from `NativeChatComposition::notes_view`. The default returns
 `None`, which hides the Notes panel and refuses all Notes actions. The optional
 panel uses the same original RoomScreen and the sole `ChatWorkspace` draft;
 there is no second editor, transcript, operation ledger or generic tool runner.
-Its explicit buttons are **写入笔记**, **核对结果** and **取消笔记任务**. Status is a
+Its explicit buttons are **写入当前草稿**, **核对结果** and **取消笔记任务**. Status is a
 bounded host projection (at most 4096 UTF-8 bytes), never optimistic saved text.
 The host puts a compact human-readable state first; technical target/revision
 details wrap inside an 88-pixel-high scroll area. Notes actions and the sole
@@ -247,3 +262,31 @@ composition. A real native window, actual font use, physical IME, assistive
 technology, Web integration, mobile devices, bare metal and full Desktop
 workspace navigation each remain separate gates. Chat Send remains unavailable
 until its independent original authority and durable owner are connected.
+
+
+## Review an original model Notes proposal
+
+`NativeNotesView.model_proposal` optionally carries one
+`NativeNotesModelProposalView`: its original proposal ID and SHA-256, original
+thread, full bounded review details, and separate confirm/decline availability.
+The original RoomScreen displays the complete proposal in a separate scroll
+area with **确认此提案** and **拒绝此提案** buttons. It never places proposed text in
+the sole composer or changes that draft. Details over 8192 UTF-8 bytes are
+refused as a whole, rather than truncating the text the person would approve.
+The original keyboard/accessibility path visits the same visible buttons.
+
+Both widget dispatch and the receiving presentation guard the rendered room,
+its epoch, conversation tab, IME state, original selected thread and exact
+proposal ID/digest. The embedding's `request_notes_model_decision` must then
+recheck authenticated owner/thread scope, current observations and predecessor
+state before queuing the existing original-owner command. The callback carries
+only the proposal ID, digest and Confirm/Decline decision. There is no text,
+target, thread replacement, signer, authority or receipt synthesized by a
+widget. The default callback refuses both decisions.
+
+An accepted local queue action is not completion. The embedding retains that
+same proposal ID, queries its original status after reply loss and never
+reenables confirmation just because an earlier cached review is received.
+`ReplyStarted` records only an attempted original tool reply; `ReplyObserved`
+requires the original thread/turn/call completion observation. An Unknown
+result remains uncertain even after its tool reply has been observed.

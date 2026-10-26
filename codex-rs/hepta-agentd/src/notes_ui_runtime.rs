@@ -11,6 +11,7 @@ use tokio_util::sync::CancellationToken;
 pub struct AgentdNotesUiRuntime {
     endpoint: NotesUiEndpoint,
     adapter: AgentdNotesLiteralAdapter,
+    model_route: Option<crate::AgentdNotesModelRoute>,
 }
 
 impl AgentdNotesUiRuntime {
@@ -25,7 +26,25 @@ impl AgentdNotesUiRuntime {
     ) -> Result<Self, AgentdError> {
         adapter.check_available()?;
         let endpoint = NotesUiEndpoint::from_inherited(listener, session_pidfd, peer)?;
-        Ok(Self { endpoint, adapter })
+        Ok(Self {
+            endpoint,
+            adapter,
+            model_route: None,
+        })
+    }
+
+    /// Install only Root's sealed declaration of an already registered tool
+    /// on the original thread. Attachment occurs inside the managed runtime.
+    pub fn with_model_route(
+        mut self,
+        route: crate::AgentdNotesModelRoute,
+    ) -> Result<Self, AgentdError> {
+        route.validate_for(self.adapter.bindings.principal_scope_digest)?;
+        if self.model_route.is_some() {
+            return Err(invalid("original Notes model route is already installed"));
+        }
+        self.model_route = Some(route);
+        Ok(self)
     }
 
     pub(crate) fn validate_for(&self, config: &AgentdConfig) -> Result<(), AgentdError> {
@@ -42,17 +61,21 @@ impl AgentdNotesUiRuntime {
             ));
         }
         self.endpoint.check_alive()?;
+        if let Some(route) = &self.model_route {
+            route.validate_for(self.adapter.bindings.principal_scope_digest)?;
+        }
         self.adapter.check_available()
     }
 
     pub(crate) async fn run(mut self, cancellation: CancellationToken) -> Result<(), AgentdError> {
         let queue = NotesUiQueue::new();
+        let model_route = self.model_route.take();
         tokio::select! {
             biased;
             _ = cancellation.cancelled() => Ok(()),
             _ = self.endpoint.lifetime.readable() => Err(invalid("original Notes Session lifetime ended")),
             result = self.endpoint.receive(&queue) => result,
-            result = self.adapter.run_ui(&queue) => result,
+            result = self.adapter.run_ui(&queue, model_route) => result,
         }
         // Dropping this future drops both bounded loops and all queued work.
         // Started original calls retain their own uncertainty and durable fence.

@@ -12,26 +12,64 @@ use crate::notes_ui_queue::NotesUiQueue;
 use crate::notes_ui_wire::*;
 
 impl AgentdNotesLiteralAdapter {
-    pub(super) async fn run_ui(&mut self, queue: &NotesUiQueue) -> Result<(), AgentdError> {
+    pub(super) async fn run_ui(
+        &mut self,
+        queue: &NotesUiQueue,
+        route: Option<crate::AgentdNotesModelRoute>,
+    ) -> Result<(), AgentdError> {
+        let mut model = match route {
+            Some(route) => Some(super::model_bridge::NotesModelBridge::attach(self, route).await?),
+            None => None,
+        };
         loop {
+            if let Some(model) = model.as_mut() {
+                let refreshed = tokio::time::timeout(
+                    crate::notes_ui_queue::ACTION_LIFETIME,
+                    model.refresh(self, queue),
+                )
+                .await;
+                if !matches!(refreshed, Ok(Ok(()))) {
+                    queue
+                        .publish_model(model.view(None))
+                        .map_err(|_| invalid("Notes model view update failed"))?;
+                }
+            }
             let Some(entry) = queue
                 .take(Instant::now())
                 .map_err(|_| invalid("Notes UI queue failed"))?
             else {
-                queue.wake.notified().await;
+                if let Some(model) = model.as_mut() {
+                    model.wait(self, queue).await?;
+                } else {
+                    queue.wake.notified().await;
+                }
                 continue;
             };
             self.check_available()?;
             let mut view = queue
                 .current(&entry.command)
                 .map_err(|_| invalid("Notes UI view missing"))?;
-            let submitting = matches!(entry.command, ObjectiveCommand::Submit { .. });
+            let submitting = matches!(
+                entry.command,
+                ObjectiveCommand::Submit { .. } | ObjectiveCommand::ConfirmModelProposal { .. }
+            );
             let cancelling = matches!(entry.command, ObjectiveCommand::Cancel { .. });
             let mut phase = CallPhase::ReadOnly;
-            let outcome = tokio::time::timeout_at(
-                entry.end.into(),
-                self.handle_ui(entry.command, entry.end, &mut view, &mut phase),
-            )
+            let outcome = tokio::time::timeout_at(entry.end.into(), async {
+                if matches!(
+                    entry.command,
+                    ObjectiveCommand::ConfirmModelProposal { .. }
+                        | ObjectiveCommand::DeclineModelProposal { .. }
+                ) && let Some(model) = model.as_mut()
+                {
+                    model
+                        .handle_command(self, entry.command, entry.end, &mut view, &mut phase)
+                        .await
+                } else {
+                    self.handle_ui(entry.command, entry.end, &mut view, &mut phase)
+                        .await
+                }
+            })
             .await;
             if !matches!(outcome, Ok(Ok(()))) {
                 // Readiness includes the attempted application readback. Its
@@ -68,6 +106,9 @@ impl AgentdNotesLiteralAdapter {
                 view.issue = Some(issue);
             }
             self.check_available()?;
+            if let Some(model) = model.as_ref() {
+                view.model_proposal = model.view(view.client_intent_id.as_deref());
+            }
             queue
                 .update(view)
                 .map_err(|_| invalid("Notes UI view update failed"))?;
@@ -103,72 +144,29 @@ impl AgentdNotesLiteralAdapter {
                 .await?;
             }
             ObjectiveCommand::Submit { intent } => {
-                if intent.text.trim().is_empty() || intent.text.len() > 4096 {
-                    view.issue = Some(ObjectiveHostIssue::InvalidIntent);
-                    return Ok(());
-                }
-                let preparation_end = end.min(Instant::now() + self.deadline);
-                let prepared = tokio::time::timeout_at(
-                    preparation_end.into(),
-                    self.prepare_until(
-                        &intent.client_intent_id,
-                        &intent.text,
-                        preparation_end,
-                        phase,
-                    ),
-                )
-                .await
-                .map_err(|_| invalid("Notes UI preparation deadline elapsed"))??;
-                match prepared {
-                    AgentdNotesPreparedObjective::Retained(_) => {
-                        *view = self.retained_view(&intent.client_intent_id).await?;
-                    }
-                    prepared @ AgentdNotesPreparedObjective::Ready { .. } => {
-                        // Preparation already obtained the original request ACK.
-                        view.request_retained = true;
-                        view.stage = ObjectiveStage::Retained;
-                        let remaining = end
-                            .checked_duration_since(Instant::now())
-                            .filter(|remaining| !remaining.is_zero())
-                            .ok_or_else(|| invalid("Notes UI submission deadline elapsed"))?;
-                        *phase = CallPhase::Sending;
-                        let observed = prepared.submit_once(remaining).await?;
-                        let acknowledged =
-                            observed.retention == AgentdNotesObservationRetention::Acknowledged;
-                        view.stage = match observed.state {
-                            AgentdNotesSubmissionState::NotSent { .. } => ObjectiveStage::NotSent,
-                            AgentdNotesSubmissionState::SubmitUnknown { .. } => {
-                                ObjectiveStage::SubmitUnknown
-                            }
-                            AgentdNotesSubmissionState::RefusedBeforePublication { .. } => {
-                                ObjectiveStage::Refused
-                            }
-                            AgentdNotesSubmissionState::Admitted { receipt, .. } => {
-                                view.publication_retained = acknowledged;
-                                if matches!(
-                                    receipt.disposition.as_str(),
-                                    "explicit_abstain" | "canonical_abstained"
-                                ) {
-                                    ObjectiveStage::Abstained
-                                } else {
-                                    ObjectiveStage::Admitted
-                                }
-                            }
-                            AgentdNotesSubmissionState::Conflict { .. } => {
-                                view.publication_retained = acknowledged;
-                                ObjectiveStage::Conflict
-                            }
-                        };
-                        if !acknowledged {
-                            view.stage = ObjectiveStage::SubmitUnknown;
-                            view.issue = Some(ObjectiveHostIssue::PersistenceUnknown);
-                        }
-                    }
-                }
-                self.refresh_ui_run(&intent.client_intent_id, view).await?;
+                self.submit_ui_intent(&intent, LiteralPredecessor::Current, end, view, phase)
+                    .await?;
             }
             ObjectiveCommand::Status { client_intent_id } => {
+                let run_id = self.run_id(&client_intent_id)?;
+                if let Ok(Some(terminal)) = self.writer.observe_notes_terminal(&run_id).await {
+                    let observed =
+                        NotesModelTerminalObservation::from_original(&run_id, &terminal)?;
+                    if view
+                        .notes_terminal
+                        .as_ref()
+                        .is_some_and(|previous| previous != &observed)
+                    {
+                        view.issue = Some(ObjectiveHostIssue::IdentityMismatch);
+                        return Ok(());
+                    }
+                    view.notes_terminal = Some(observed);
+                }
+                // The local original receipt is available even when sender or
+                // control reconciliation is temporarily unavailable afterward.
+                let previous_terminal = view.notes_terminal.clone();
                 *view = self.retained_view(&client_intent_id).await?;
+                view.notes_terminal = previous_terminal;
                 self.refresh_ui_run(&client_intent_id, view).await?;
             }
             ObjectiveCommand::Cancel { client_intent_id } => {
@@ -195,8 +193,89 @@ impl AgentdNotesLiteralAdapter {
                 };
                 view.run = Some(run_view(cancelled.receipt));
             }
+            ObjectiveCommand::ConfirmModelProposal { .. }
+            | ObjectiveCommand::DeclineModelProposal { .. } => {
+                // Only the original model-owner runtime can resolve one of
+                // its private live callbacks. A literal lane has no such route.
+                view.issue = Some(ObjectiveHostIssue::OwnerRefused);
+            }
         }
         self.refresh_ui_document(view, end).await
+    }
+
+    pub(super) async fn submit_ui_intent(
+        &mut self,
+        intent: &ObjectiveIntent,
+        predecessor: LiteralPredecessor<'_>,
+        end: Instant,
+        view: &mut ObjectiveObservation,
+        phase: &mut CallPhase,
+    ) -> Result<(), AgentdError> {
+        if intent.text.trim().is_empty() || intent.text.len() > 4096 {
+            view.issue = Some(ObjectiveHostIssue::InvalidIntent);
+            return Ok(());
+        }
+        let preparation_end = end.min(Instant::now() + self.deadline);
+        let prepared = tokio::time::timeout_at(
+            preparation_end.into(),
+            self.prepare_until(
+                &intent.client_intent_id,
+                &intent.text,
+                predecessor,
+                preparation_end,
+                phase,
+            ),
+        )
+        .await
+        .map_err(|_| invalid("Notes UI preparation deadline elapsed"))??;
+        match prepared {
+            AgentdNotesPreparedObjective::Retained(_) => {
+                *view = self.retained_view(&intent.client_intent_id).await?;
+            }
+            prepared @ AgentdNotesPreparedObjective::Ready { .. } => {
+                // Preparation already obtained the original request ACK.
+                view.request_retained = true;
+                view.stage = ObjectiveStage::Retained;
+                let remaining = end
+                    .checked_duration_since(Instant::now())
+                    .filter(|remaining| !remaining.is_zero())
+                    .ok_or_else(|| invalid("Notes UI submission deadline elapsed"))?;
+                *phase = CallPhase::Sending;
+                let observed = prepared.submit_once(remaining).await?;
+                let acknowledged =
+                    observed.retention == AgentdNotesObservationRetention::Acknowledged;
+                view.stage = match observed.state {
+                    AgentdNotesSubmissionState::NotSent { .. } => ObjectiveStage::NotSent,
+                    AgentdNotesSubmissionState::SubmitUnknown { .. } => {
+                        ObjectiveStage::SubmitUnknown
+                    }
+                    AgentdNotesSubmissionState::RefusedBeforePublication { .. } => {
+                        ObjectiveStage::Refused
+                    }
+                    AgentdNotesSubmissionState::Admitted { receipt, .. } => {
+                        view.publication_retained = acknowledged;
+                        if matches!(
+                            receipt.disposition.as_str(),
+                            "explicit_abstain" | "canonical_abstained"
+                        ) {
+                            ObjectiveStage::Abstained
+                        } else {
+                            ObjectiveStage::Admitted
+                        }
+                    }
+                    AgentdNotesSubmissionState::Conflict { .. } => {
+                        view.publication_retained = acknowledged;
+                        ObjectiveStage::Conflict
+                    }
+                };
+                if !acknowledged {
+                    view.stage = ObjectiveStage::SubmitUnknown;
+                    view.issue = Some(ObjectiveHostIssue::PersistenceUnknown);
+                }
+            }
+        }
+        self.refresh_ui_run(&intent.client_intent_id, view).await?;
+        Ok(())
     }
 
     async fn refresh_ui_run(
@@ -212,29 +291,33 @@ impl AgentdNotesLiteralAdapter {
 }
 
 impl AgentdNotesLiteralAdapter {
-    async fn refresh_ui_document(
+    pub(super) async fn refresh_ui_document(
         &self,
         view: &mut ObjectiveObservation,
         end: Instant,
     ) -> Result<(), AgentdError> {
-        publish_document_readback(view, async {
-            let permit = Arc::clone(&self.blocking)
-                .try_acquire_owned()
-                .map_err(|_| invalid("Notes readback worker is still occupied"))?;
-            let observer = self.observer.clone();
-            let observed = tokio::task::spawn_blocking(move || {
-                let _permit = permit;
-                if Instant::now() >= end {
-                    return Err(invalid("Notes readback expired before start"));
-                }
-                observer.observe_document()
-            })
-            .await
-            .map_err(|_| invalid("Notes readback worker failed"))??;
-            self.check_available()?;
-            Ok(observed)
+        publish_document_readback(view, self.observe_ui_document(end)).await
+    }
+
+    pub(super) async fn observe_ui_document(
+        &self,
+        end: Instant,
+    ) -> Result<codex_hepta_memory::NotesDocumentState, AgentdError> {
+        let permit = Arc::clone(&self.blocking)
+            .try_acquire_owned()
+            .map_err(|_| invalid("Notes readback worker is still occupied"))?;
+        let observer = self.observer.clone();
+        let observed = tokio::task::spawn_blocking(move || {
+            let _permit = permit;
+            if Instant::now() >= end {
+                return Err(invalid("Notes readback expired before start"));
+            }
+            observer.observe_document()
         })
         .await
+        .map_err(|_| invalid("Notes readback worker failed"))??;
+        self.check_available()?;
+        Ok(observed)
     }
 }
 

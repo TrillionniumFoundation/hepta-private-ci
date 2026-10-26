@@ -1,6 +1,98 @@
 use super::*;
 
 #[test]
+fn model_notes_decisions_use_the_visible_proposal_and_original_thread_without_a_draft() {
+    use hepta_control_core::chat_timeline::History;
+    use hepta_control_core::chat_timeline::ViewFence;
+    let mut workspace = ChatWorkspace::default();
+    let room = RoomKey {
+        epoch: workspace.presentation_epoch(),
+        local_id: workspace.active_id(),
+    };
+    let ticket = workspace
+        .begin_history(
+            room.local_id,
+            "original-thread",
+            ViewFence {
+                owner_session: "owner".into(),
+                generation: 1,
+            },
+        )
+        .unwrap();
+    workspace
+        .receive_history(
+            &ticket,
+            History {
+                thread_id: "original-thread".into(),
+                title: "Original".into(),
+                revision: 1,
+                event_sequence: 0,
+                messages: vec![],
+            },
+        )
+        .unwrap();
+    let controls = Controls {
+        room: Some(room),
+        notes: Some(NativeNotesView {
+            model_proposal: Some(super::super::NativeNotesModelProposalView {
+                proposal_id: "model-original".into(),
+                proposal_sha256: "a".repeat(64),
+                thread_id: "original-thread".into(),
+                details: "完整拟写入文本；不是草稿".into(),
+                can_confirm: true,
+                can_decline: true,
+            }),
+            ..NativeNotesView::default()
+        }),
+        ..Controls::default()
+    };
+    assert!(workspace.draft().text.is_empty());
+    for decision in [
+        NativeNotesModelDecision::Confirm,
+        NativeNotesModelDecision::Decline,
+    ] {
+        assert!(controls.permits_notes_model_decision(
+            room,
+            "model-original",
+            &"a".repeat(64),
+            decision,
+            &workspace
+        ));
+        assert!(!controls.permits_notes_model_decision(
+            room,
+            "model-other",
+            &"a".repeat(64),
+            decision,
+            &workspace
+        ));
+        assert!(!controls.permits_notes_model_decision(
+            room,
+            "model-original",
+            &"b".repeat(64),
+            decision,
+            &workspace
+        ));
+    }
+    workspace.composing = true;
+    assert!(!controls.permits_notes_model_decision(
+        room,
+        "model-original",
+        &"a".repeat(64),
+        NativeNotesModelDecision::Confirm,
+        &workspace
+    ));
+    workspace.composing = false;
+    assert!(workspace.new_draft());
+    assert!(!controls.permits_notes_model_decision(
+        room,
+        "model-original",
+        &"a".repeat(64),
+        NativeNotesModelDecision::Confirm,
+        &workspace
+    ));
+}
+
+#[test]
 fn approval_actions_are_bound_to_the_visible_original_request_room_and_ime() {
     let mut workspace = ChatWorkspace::default();
     let room = RoomKey {
@@ -90,6 +182,7 @@ fn notes_controls_refuse_missing_owner_each_unavailable_action_and_uncommitted_i
         can_write: true,
         can_refresh: true,
         can_cancel: true,
+        model_proposal: None,
     });
     // Notes availability is independent of authenticated model-chat Send.
     assert!(!controls.permits_submit(room, &workspace));
@@ -129,6 +222,7 @@ fn notes_callbacks_cannot_reuse_an_old_room_epoch_or_hidden_conversation() {
             can_write: true,
             can_refresh: true,
             can_cancel: true,
+            model_proposal: None,
         }),
         ..Controls::default()
     };
@@ -171,6 +265,7 @@ fn notes_write_uses_the_sole_bounded_draft_while_readback_needs_no_new_text() {
             can_write: true,
             can_refresh: true,
             can_cancel: false,
+            model_proposal: None,
         }),
         ..Controls::default()
     };
@@ -184,4 +279,30 @@ fn notes_write_uses_the_sole_bounded_draft_while_readback_needs_no_new_text() {
     workspace.edit("x".repeat(hepta_control_core::chat::MAX_DRAFT_BYTES + 1));
     assert!(!controls.permits_write_note(room, &workspace));
     assert!(controls.permits_notes_refresh(room, &workspace));
+}
+
+#[test]
+fn a_new_proposal_cannot_reuse_a_confirm_button_before_its_details_are_drawn() {
+    let room = RoomKey {
+        epoch: 1,
+        local_id: 0,
+    };
+    let mut proposal = super::super::NativeNotesModelProposalView {
+        proposal_id: "model-old".into(),
+        proposal_sha256: "a".repeat(64),
+        thread_id: "thread".into(),
+        details: "the text actually shown".into(),
+        can_confirm: true,
+        can_decline: true,
+    };
+    let rendered = RenderedControls {
+        model_review: Some((room, proposal.clone())),
+        ..RenderedControls::default()
+    };
+    assert!(rendered.visible_model_matches(room, &proposal));
+    proposal.proposal_id = "model-new".into();
+    assert!(!rendered.visible_model_matches(room, &proposal));
+    proposal.proposal_id = "model-old".into();
+    proposal.details = "not yet drawn text".into();
+    assert!(!rendered.visible_model_matches(room, &proposal));
 }

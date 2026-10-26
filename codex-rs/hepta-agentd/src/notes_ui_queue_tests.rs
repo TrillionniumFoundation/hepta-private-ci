@@ -89,3 +89,41 @@ fn bounded_actions_and_views_refuse_new_work_without_replacing_existing_state() 
         Some(ObjectiveHostIssue::Capacity)
     );
 }
+
+#[test]
+fn same_intent_terminal_survives_later_transport_views_and_rejects_replacement() {
+    let queue = NotesUiQueue::new();
+    let command = ObjectiveCommand::Status {
+        client_intent_id: "original-id".into(),
+    };
+    queue.request(command.clone());
+    let mut observed =
+        ObjectiveObservation::new(Some("original-id".into()), ObjectiveStage::Admitted);
+    observed.notes_terminal = Some(NotesModelTerminalObservation {
+        operation_id: "notes.literal.fixture".into(),
+        result: NotesModelResult::Applied,
+        application_receipt_sha256: "a".repeat(64),
+        terminal_event_id: "event:fixture:1".into(),
+        terminal_event_sha256: "b".repeat(64),
+    });
+    queue.update(observed.clone()).unwrap();
+    let mut unavailable =
+        ObjectiveObservation::new(Some("original-id".into()), ObjectiveStage::SubmitUnknown);
+    unavailable.issue = Some(ObjectiveHostIssue::TransportUnknown);
+    queue.update(unavailable).unwrap();
+    assert_eq!(
+        queue.current(&command).unwrap().notes_terminal,
+        observed.notes_terminal
+    );
+    let mut replaced = observed.clone();
+    replaced
+        .notes_terminal
+        .as_mut()
+        .unwrap()
+        .terminal_event_sha256 = "c".repeat(64);
+    assert!(queue.update(replaced).is_err());
+    assert_eq!(
+        queue.current(&command).unwrap().notes_terminal,
+        observed.notes_terminal
+    );
+}

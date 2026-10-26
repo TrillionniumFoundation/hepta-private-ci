@@ -26,6 +26,8 @@ mod runtime_status;
 mod ime_pointer_gate;
 #[cfg(feature = "ui")]
 mod ime_router;
+#[cfg(feature = "ui")]
+mod keyboard_navigation;
 pub mod presentation;
 
 #[cfg(feature = "ui")]

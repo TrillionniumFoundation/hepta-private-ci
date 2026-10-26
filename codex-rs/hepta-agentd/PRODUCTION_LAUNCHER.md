@@ -203,6 +203,7 @@ Root authority handoff.
 | `bindings.runtime_body_digest`, `bindings.preference_state_digest`, `bindings.model_tuple_digest`, `bindings.prompt_registry_digest`, `bindings.artifact_set_digest` | Exact retained runtime/artifact inputs; no default, zero digest or invented no-model identity |
 | Optional `previous_recovery` | Exact original `helper`, `helper_sha256`, `state_directory`, `previous_target`, `operation_id`; no directory discovery or new old-incarnation effect permission |
 | Optional `startup_release` | Actual `target` and `nonce` from the original Session's staged reservation; no replacement target or generated nonce |
+| Optional `model_route` | Existing original `thread_id`, `app_server_session_id`, the same `principal_scope_digest`, and `registered_tool_schema_sha256`; absent/null leaves the model Notes route unavailable |
 
 The original Session bridge requires both private socket owner and peer UID to
 equal its own UID. Therefore this profile uses the same dedicated UID for
@@ -258,6 +259,141 @@ record the original helper/receiver/signature deployment, source-bound Runtime
 peer, actual Root writer/human policy and the exact native effect plus retained
 terminal. Missing external inputs remain explicit startup/qualification errors.
 
+## Existing-thread Notes model route
+
+The original Root producer is
+[`PreparedHostAuthoritySession::with_notes_startup_from_session`](src/root_notes_startup.rs),
+selected by `hepta-authority-host serve-fresh-session --notes-launch-profile`.
+The same protected `hepta.root.notes_launch_profile.v1` file can carry optional
+`model_route` data. Root checks the route before consuming the Session
+reservation or registering its existing Notes policy, then copies those exact
+four declared values into the original sealed deployment. Missing or null
+`model_route` remains absent; it never selects a default thread or creates one.
+An incomplete, unknown-field, duplicate-field, different-scope or different-tool
+declaration is rejected before that startup side effect.
+
+The trusted launcher may obtain `thread_id` and `app_server_session_id` from
+its already authenticated `HostAuthorityNativeProfile.route`, after checking
+that this route names the same original Agentd/private home and human session.
+That text profile alone does not contain the Notes principal-scope binding or
+the registered tool definition. Both must already exist in the original trusted
+registration material. The launcher must supply their exact evidence in the
+Notes profile; copying the fixed tool hash without that registration does not
+make an unregistered thread eligible. The producer reads no renderer-selected
+route, provider credential or socket/PID hint to fill missing evidence.
+
+Desktop's `ui/session/src/notes_bootstrap.rs` supplies only the actual Notes
+target, reservation nonce and inherited application channels. It does not
+produce this deployment JSON. The ordinary installed user-service startup in
+`support/ui/product/desktop.py` starts `trill-session` without the trusted Root
+bootstrap descriptors; its optional chat socket/PID also does not create them.
+An authorized production launch must enter the existing Root staged handoff
+with the registered original profile and Session lifetime. This wiring does
+not turn a normal user-service launch into a Root deployment or constitute
+installed-product acceptance.
+
+`model_route` is an optional extension of the same sealed deployment. It has
+exactly the four fields listed above. It cannot override the Agent ID,
+generation, control socket, private home, issuer or Notes target. Runtime derives
+those values from its actual original Agentd identity and keeps the unique
+Notes adapter. The model route's principal digest must equal the existing
+finite Notes profile's human scope. The trusted launcher must establish that
+this is the same already authenticated human/session represented by the
+existing native text profile; an equal digest supplied by a renderer cannot
+establish that mapping.
+
+The fixed tool is `trill_notes.propose_replace` with only `{ "text": "..." }`.
+The complete registration definition is
+`AgentdNotesModelRoute::TOOL_DEFINITION_JSON` in
+[notes_model_route.rs](src/notes_model_route.rs). The sealed schema digest is
+SHA256 of those exact UTF-8 bytes, without an added newline. The original tool
+registration must contain this definition. The host additionally rejects
+unknown argument fields, blank text and text exceeding 4096 UTF-8 bytes; the
+JSON Schema character limit is not a replacement for this byte limit.
+
+The declaration must come from the original trusted launcher's retained
+thread-registration material. Computing the expected hash alone does not prove
+that a live thread registered the tool. The current App Server protocol accepts
+`dynamicTools` at `thread/start`; `thread/resume` cannot install them and its
+response does not expose their schema for introspection. Missing registration
+evidence therefore leaves this field absent and the model Notes route
+unavailable. No existing thread is replaced or silently re-registered. The
+checked-in source fixtures and historical acceptance receipts do not supply a
+production human profile or an actual registered model-tool route.
+
+The launcher only injects these validated inputs using
+`AgentdNotesUiRuntime::with_model_route`. Connection belongs inside the existing
+required runtime task after original control/App Server startup. It resumes
+the declared thread through the original Agentd ingress and checks its actual
+thread/session/home identity, with bounded startup and reconnect behavior.
+No model turn, signature or device operation is implied by attachment.
+
+Each observed call remains owned by the original App Server. Its thread, turn,
+call ID and exact arguments are retained only in bounded transient state for
+human review. A confirmation names that original proposal and preview digest;
+it does not supply new text, a target or a callback ID. The same original Notes
+adapter rechecks the preview with `prepare_reviewed` before preparation/signing
+and uses its once-only sender. Recovery uses the stable original call-derived
+intent and original operation/receipt APIs; it does not regenerate an effect
+after an unknown result. A tool response write is not effect or callback
+completion: the original `DynamicToolCall` completed item/history supplies the
+callback result, while the original Notes terminal receipt supplies the
+application effect evidence. Dynamic tools do not emit the command/file
+approval lane's `serverRequest/resolved` notification.
+
+### Original identity and recovery observations
+
+The stable model intent is derived from the persistent Agent ID, human scope,
+original App Server session, thread, turn and call ID. Arguments and transport
+generation are excluded: changed text for the same original call must conflict
+with its first retained operation. The separate preview digest binds the exact
+replacement and the reviewed target, revision, previous text digest and pending
+receipt state. Ordinary literal UI submissions cannot use the reserved
+`model-` intent prefix to bypass review. A recovered operation has no fresh
+review permission; its preview can be absent, while its original identity stays
+available for observation.
+
+The finite terminal observation budget starts again when the human confirms and
+the original preparation begins. Time spent reading a preview does not consume
+that settlement budget. A missing or source-only rejection receipt produces an
+unknown application outcome. The response explicitly does not authorize another
+effect or a replacement call.
+
+`model_proposal.result` and its receipt digest describe the original callback
+response. A later application receipt is projected separately as
+`model_proposal.owner_terminal`; it never rewrites an earlier unknown answer or
+causes a second tool response. The existing `Status(client_intent_id)` also
+returns an optional top-level `notes_terminal`, read directly from the original
+writer before sender/control reconciliation. This path works after the owner
+reopens even if the completed callback is no longer replayed. It reconstructs
+neither a model call nor a sending permission. Both terminal projections carry
+the exact original operation ID, application receipt digest and event identity.
+Previously observed terminal evidence is immutable under the same intent ID.
+
+There are at most eight transient tracked proposals. A completed callback with
+an unknown application outcome keeps its original lookup slot; it cannot be
+silently evicted for another call. Capacity exhaustion returns an explicit tool
+refusal while the existing operations remain observable. A private admission
+state records whether original preparation may have started. A callback closed
+before any preparation can release its preview slot; once preparation may have
+started or an original retained operation is observed, its slot remains until
+exact original terminal evidence is available. No absence lookup can reset
+that state or prove that an earlier effect did not occur.
+
+Temporary model socket failure marks the model route unavailable and retries
+only the same sealed route with bounded backoff. Original writer receipt reads
+remain independent of model connectivity. Root authority or Session lifetime
+loss still fences the managed owner through its existing checks. After an App
+Server process loses a pending callback, receipt recovery cannot fabricate the
+missing callback or append a result to a different model turn.
+
+The added regressions use the original SQLite writer, original Notes Objective
+fixtures (including lost application replies), prior-receipt reconciliation,
+and an actual App Server with a mocked model. They do not establish a real human
+authorization, production model invocation or final installed-package result.
+Those require the sealed production profile and original thread-registration
+material described above.
+
 ## Development verification
 
 Use the repository's `just test` entry, with separate scopes for the layers:
@@ -271,6 +407,7 @@ just test -p codex-hepta-agentd --lib production_launcher
 just test -p codex-hepta-agentd --lib android_runtime
 just test -p codex-hepta-agentd --lib notes_ui
 just test -p codex-hepta-agentd --lib notes_literal
+just test -p codex-hepta-agentd --lib notes_model_route
 ```
 
 Build the actual `codex-hepta-agentd` binary as well: its manifest deliberately

@@ -72,6 +72,13 @@ pub use auth::TextOwnerReceipt;
 pub(crate) use signer::TextUnsignedClosure;
 #[path = "text_session_approvals.rs"]
 mod approvals;
+#[cfg(target_os = "linux")]
+#[path = "text_session_notes_tools.rs"]
+mod notes_tools;
+#[cfg(target_os = "linux")]
+pub(crate) use notes_tools::NotesToolCall;
+#[cfg(target_os = "linux")]
+pub(crate) use notes_tools::NotesToolPhase;
 #[path = "text_session_signer.rs"]
 mod signer;
 pub use approvals::TextApproval;
@@ -151,6 +158,8 @@ struct State {
     snapshot_turns: BTreeMap<String, bool>,
     stream_bytes: BTreeMap<String, usize>,
     approvals: BTreeMap<String, approvals::PendingApproval>,
+    #[cfg(target_os = "linux")]
+    notes_tools: notes_tools::NotesToolCallbacks,
 }
 
 struct Shared {
@@ -160,6 +169,14 @@ struct Shared {
     connection_id: u64,
     request_id: AtomicI64,
     state: Mutex<State>,
+    callback_owner: CallbackOwner,
+}
+
+#[derive(Clone, Copy)]
+enum CallbackOwner {
+    Text,
+    #[cfg(target_os = "linux")]
+    Notes,
 }
 
 impl Shared {
@@ -190,6 +207,20 @@ impl AgentdTextSession {
     /// Subscribes to one existing thread through Agentd's own session ingress.
     /// No thread, queue entry, signature, grant, or model call is created here.
     pub async fn connect(config: AgentdTextSessionConfig) -> Result<Self, TextSessionError> {
+        Self::connect_as(config, CallbackOwner::Text).await
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) async fn connect_notes_owner(
+        config: AgentdTextSessionConfig,
+    ) -> Result<Self, TextSessionError> {
+        Self::connect_as(config, CallbackOwner::Notes).await
+    }
+
+    async fn connect_as(
+        config: AgentdTextSessionConfig,
+        callback_owner: CallbackOwner,
+    ) -> Result<Self, TextSessionError> {
         if config.thread_id.is_empty()
             || config.thread_id.len() > 128
             || config.app_server_session_id.is_empty()
@@ -241,6 +272,7 @@ impl AgentdTextSession {
             connection_id: client.connection_id(),
             request_id: AtomicI64::new(1),
             state: Mutex::new(State::default()),
+            callback_owner,
         });
         let requests = AgentdTextRequests {
             handle: client.request_handle(),
@@ -295,7 +327,7 @@ impl AgentdTextSession {
             }
             retained
         };
-        let next = Self::connect(config).await?;
+        let next = Self::connect_as(config, self.requests.shared.callback_owner).await?;
         next.requests.shared.state()?.pending = retained;
         Ok(next)
     }

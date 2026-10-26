@@ -3,6 +3,8 @@
 
 use super::*;
 use crate::notes_literal_prepare::LiteralOperationInput;
+use crate::notes_literal_prepare::LiteralPredecessor;
+use crate::notes_literal_prepare::check_retained_literal;
 use crate::notes_literal_prepare::prepare_original_literal;
 use crate::notes_literal_prepare::utc_millis;
 use codex_hepta_memory::LocalOutcomeState;
@@ -19,6 +21,7 @@ fn input<'a>(
     LiteralOperationInput {
         target,
         observed,
+        predecessor: LiteralPredecessor::Current,
         run_id: "notes.literal.test-original",
         text,
         subject,
@@ -164,4 +167,125 @@ fn notes_literal_protected_time_preserves_milliseconds_and_rejects_overflow() {
     );
     assert_eq!(utc_millis(0).unwrap(), "1970-01-01T00:00:00.000Z");
     assert!(utc_millis(u64::MAX).is_err());
+}
+
+#[tokio::test]
+async fn notes_reviewed_predecessor_conflict_precedes_original_preparation()
+-> Result<(), Box<dyn Error>> {
+    let NotesHostFixture {
+        directory: _directory,
+        config,
+        host,
+        issuer,
+        primary_device,
+        ..
+    } = notes_host_fixture().await?;
+    let writer = host.writer();
+    let target = NotesTargetIdentity {
+        session_instance: "1".repeat(32),
+        task_id: 1,
+        incarnation: "2".repeat(32),
+    };
+    let reviewed = NotesDocumentState {
+        target: target.clone(),
+        revision: 7,
+        text_sha256: Sha256Digest::for_bytes(b"reviewed predecessor"),
+        receipt_pending: false,
+    };
+    let text = "模型提案经确认后保持原文";
+    let before = writer.recovery_anchor().await?;
+    for field in ["target", "revision", "text", "pending_receipt"] {
+        let mut changed = reviewed.clone();
+        match field {
+            "target" => changed.target.task_id += 1,
+            "revision" => changed.revision += 1,
+            "text" => changed.text_sha256 = Sha256Digest::for_bytes(b"concurrent edit"),
+            "pending_receipt" => changed.receipt_pending = true,
+            _ => unreachable!(),
+        }
+        let mut prepared = input(&target, &changed, config.identity().agent_id.as_str(), text);
+        prepared.predecessor = LiteralPredecessor::Reviewed(&reviewed);
+        assert!(prepare_original_literal(&writer, prepared).await.is_err());
+    }
+    assert_eq!(writer.recovery_anchor().await?, before);
+    assert!(
+        writer
+            .retained_operation("notes.literal.test-original")
+            .await?
+            .is_none()
+    );
+
+    let mut prepared = input(
+        &target,
+        &reviewed,
+        config.identity().agent_id.as_str(),
+        text,
+    );
+    prepared.predecessor = LiteralPredecessor::Reviewed(&reviewed);
+    prepare_original_literal(&writer, prepared).await?;
+    let retained = writer.recovery_anchor().await?;
+    let mut repeated = input(
+        &target,
+        &reviewed,
+        config.identity().agent_id.as_str(),
+        text,
+    );
+    repeated.predecessor = LiteralPredecessor::Reviewed(&reviewed);
+    prepare_original_literal(&writer, repeated).await?;
+    assert_eq!(writer.recovery_anchor().await?, retained);
+
+    check_retained_literal(
+        &writer,
+        "notes.literal.test-original",
+        text,
+        LiteralPredecessor::Reviewed(&reviewed),
+    )
+    .await?;
+    assert!(
+        check_retained_literal(
+            &writer,
+            "notes.literal.test-original",
+            "different replacement",
+            LiteralPredecessor::Current,
+        )
+        .await
+        .is_err()
+    );
+    for field in ["target", "revision"] {
+        let mut changed = reviewed.clone();
+        match field {
+            "target" => changed.target.task_id += 1,
+            "revision" => changed.revision += 1,
+            _ => unreachable!(),
+        }
+        assert!(
+            check_retained_literal(
+                &writer,
+                "notes.literal.test-original",
+                text,
+                LiteralPredecessor::Reviewed(&changed),
+            )
+            .await
+            .is_err()
+        );
+    }
+    assert_eq!(writer.recovery_anchor().await?, retained);
+    writer
+        .mark_indeterminate(
+            "notes.literal.test-original",
+            "fixture lost original effect reply",
+        )
+        .await?;
+    let uncertain = writer.recovery_anchor().await?;
+    check_retained_literal(
+        &writer,
+        "notes.literal.test-original",
+        text,
+        LiteralPredecessor::Current,
+    )
+    .await?;
+    assert_eq!(writer.recovery_anchor().await?, uncertain);
+    assert_eq!(issuer.requests.load(Ordering::SeqCst), 0);
+    assert_eq!(primary_device.installs.load(Ordering::SeqCst), 0);
+    Ok(())
 }

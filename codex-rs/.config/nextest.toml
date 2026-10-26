@@ -122,3 +122,10 @@ filter = 'package(codex-hepta-operations) & test(growing_history_keeps_early_ide
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
+
+# Bound this complete 256-handoff durability test separately from the ordinary
+# unit-test watchdog. Its 10-second replies, 2-second service shutdowns, SQLite
+# checks and final original-receipt verification remain unchanged.
+[[profile.default.overrides]]
+filter = 'package(=codex-hepta-agentd) & test(=runtime_tasks::service_generations::writer_tests::sqlite_writer_rotates_256_times_without_consuming_new_service_identities)'
+slow-timeout = { period = "30s", terminate-after = 6 }

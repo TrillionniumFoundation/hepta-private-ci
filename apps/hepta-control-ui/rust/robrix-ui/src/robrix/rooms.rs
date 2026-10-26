@@ -195,9 +195,8 @@ pub struct RoomsListEntry {
     #[rust]
     room: Option<RoomKey>,
 }
-#[cfg(all(feature = "native-presentation", target_os = "linux"))]
 impl RoomsListEntry {
-    pub(crate) fn accessible_room(&self) -> Option<RoomKey> {
+    pub(crate) fn rendered_room(&self) -> Option<RoomKey> {
         self.room
     }
 }

@@ -268,6 +268,7 @@ impl AgentdProductionLaunch {
                     peer,
                     previous_recovery,
                     startup_release: _,
+                    model_route,
                 } = deployment;
                 if let Some(previous) = previous_recovery {
                     config = config.with_original_notes_previous_recovery(previous)?;
@@ -291,6 +292,10 @@ impl AgentdProductionLaunch {
                     },
                     adapter,
                 )?;
+                let runtime = match model_route {
+                    Some(route) => runtime.with_model_route(route)?,
+                    None => runtime,
+                };
                 config = config.with_original_notes_ui(runtime)?;
             }
             if let Some(deadline) = android_deadline {

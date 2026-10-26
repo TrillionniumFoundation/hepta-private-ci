@@ -60,6 +60,15 @@ impl TextEventReader {
                     return Err(unavailable("stream gap; reconcile original identities"));
                 }
                 AppServerEvent::ServerRequest(request) => {
+                    #[cfg(target_os = "linux")]
+                    if matches!(self.shared.callback_owner, CallbackOwner::Notes) {
+                        self.shared.current()?.notes_tools.observe(
+                            self.shared.connection_id,
+                            &self.shared.config.thread_id,
+                            &self.shared.config.app_server_session_id,
+                            request,
+                        )?;
+                    }
                     let requests = AgentdTextRequests {
                         handle: self.client.request_handle(),
                         shared: self.shared.clone(),
@@ -68,6 +77,15 @@ impl TextEventReader {
                     return Ok(Some(AgentdTextObservation::Approval(observation)));
                 }
             };
+            // Callback completion must precede display snapshot/delta filters.
+            // Dynamic tools do not emit serverRequest/resolved.
+            #[cfg(target_os = "linux")]
+            if matches!(self.shared.callback_owner, CallbackOwner::Notes) {
+                self.shared
+                    .current()?
+                    .notes_tools
+                    .observe_notification(notification)?;
+            }
             if let ServerNotification::ServerRequestResolved(resolved) = notification {
                 if resolved.thread_id != self.shared.config.thread_id {
                     continue;

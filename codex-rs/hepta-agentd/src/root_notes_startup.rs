@@ -22,6 +22,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use super::PreparedHostAuthoritySession;
+use crate::notes_model_route::RegisteredNotesModelRoute;
 
 #[path = "root_notes_reservation.rs"]
 mod reservation;
@@ -37,6 +38,8 @@ struct Profile {
     bindings: Bindings,
     #[serde(default)]
     previous_recovery: Option<PreviousRecovery>,
+    #[serde(default)]
+    model_route: Option<RegisteredNotesModelRoute>,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -73,6 +76,8 @@ struct Deployment {
     bindings: Bindings,
     previous_recovery: Option<PreviousRecovery>,
     startup_release: reservation::StartupRelease,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    model_route: Option<RegisteredNotesModelRoute>,
 }
 
 impl PreparedHostAuthoritySession {
@@ -133,6 +138,7 @@ impl PreparedHostAuthoritySession {
             bindings: profile.bindings,
             previous_recovery: profile.previous_recovery,
             startup_release,
+            model_route: profile.model_route,
         };
         let bytes = serde_json::to_vec(&value).map_err(io::Error::other)?;
         seal_deployment(deployment, &bytes)?;
@@ -169,6 +175,16 @@ fn validate_profile(profile: &Profile, issuer_id: &str) -> io::Result<()> {
         {
             return Err(io::Error::other("original Notes frozen digest is absent"));
         }
+    }
+    if let Some(route) = &profile.model_route {
+        // The Root-owned profile supplies its retained registration evidence.
+        // Validate before receiving a reservation or registering any Notes
+        // policy; this producer never discovers a thread or synthesizes a route.
+        let scope = bindings
+            .principal_scope_digest
+            .parse::<Digest32>()
+            .map_err(io::Error::other)?;
+        route.clone().into_route(scope).map_err(io::Error::other)?;
     }
     Ok(())
 }

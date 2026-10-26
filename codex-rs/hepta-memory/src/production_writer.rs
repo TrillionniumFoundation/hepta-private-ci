@@ -61,6 +61,10 @@ use crate::operation_claims::DurableDispatchClaim;
 mod retained_operation;
 pub use retained_operation::ProductionRetainedOperation;
 
+#[path = "production_notes_observation.rs"]
+mod notes_observation;
+pub use notes_observation::ProductionNotesTerminalObservation;
+
 #[path = "objective_sender.rs"]
 mod objective_sender;
 pub use objective_sender::ObjectiveSenderCheckpoint;

@@ -5,6 +5,8 @@ use crate::AgentdNotesObjectiveConfig;
 use crate::AgentdState;
 use crate::AuthBusObjectiveBody;
 use crate::AuthBusObjectiveIngress;
+use crate::notes_ui_wire::NotesModelResult;
+use crate::notes_ui_wire::NotesModelTerminalObservation;
 use codex_hepta_memory::NotesPrivateChannel;
 use codex_hepta_memory::ProductionNotesTarget;
 use codex_hepta_objective::canonical_objective_intent_digest_v1;
@@ -311,6 +313,28 @@ async fn notes_objective_roundtrip(execution: ExecutionFixture) -> Result<(), Bo
             host.writer().status(run_id).await?,
             LocalOutcomeState::Committed
         );
+        let before_read = host.writer().recovery_anchor().await?;
+        let terminal = host
+            .writer()
+            .observe_notes_terminal(run_id)
+            .await?
+            .ok_or("missing original Notes terminal")?;
+        let projected = NotesModelTerminalObservation::from_original(run_id, &terminal)?;
+        assert_eq!(projected.result, NotesModelResult::Applied);
+        assert_eq!(projected.operation_id, run_id);
+        let application_receipt = serde_json::to_string(
+            application
+                .receipt
+                .lock()
+                .unwrap()
+                .as_ref()
+                .ok_or("missing application fixture receipt")?,
+        )?;
+        assert_eq!(
+            projected.application_receipt_sha256,
+            Sha256Digest::for_bytes(application_receipt.as_bytes()).as_str()
+        );
+        assert_eq!(host.writer().recovery_anchor().await?, before_read);
         let response = state
             .response(
                 /*request_id*/ 10,
@@ -327,6 +351,17 @@ async fn notes_objective_roundtrip(execution: ExecutionFixture) -> Result<(), Bo
         assert!(run.terminal_observed);
         execution.submit(&runtime, &state, ingress).await?;
         runtime.reconcile_notes(&state).await?;
+        let after_retry = host.writer().recovery_anchor().await?;
+        let recovered = host
+            .writer()
+            .observe_notes_terminal(run_id)
+            .await?
+            .ok_or("missing retained terminal")?;
+        assert_eq!(
+            NotesModelTerminalObservation::from_original(run_id, &recovered)?,
+            projected
+        );
+        assert_eq!(host.writer().recovery_anchor().await?, after_retry);
         assert_eq!(application.effects.load(Ordering::SeqCst), 1);
         assert_eq!(issuer.requests.load(Ordering::SeqCst), 1);
         if lose_reply {
