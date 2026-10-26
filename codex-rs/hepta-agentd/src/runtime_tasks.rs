@@ -327,7 +327,8 @@ impl RuntimeTasks {
             Err(error) => error,
         };
         if let AgentdError::ProductionWriter(
-            codex_hepta_memory::ProductionWriterError::AuthorityRejected(reason),
+            codex_hepta_memory::ProductionWriterError::AuthorityRejected(reason)
+            | codex_hepta_memory::ProductionWriterError::Durability(reason),
         ) = &mut error
         {
             let task = match entry.name.as_str() {

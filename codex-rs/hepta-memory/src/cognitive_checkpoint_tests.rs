@@ -18,6 +18,7 @@ struct ProtocolPeer {
     commands: Mutex<Vec<CognitiveCheckpointCommand>>,
     hold_current_reply: AtomicBool,
     wrong_owner_reply: AtomicBool,
+    refuse_next: AtomicBool,
     published: Notify,
 }
 
@@ -25,6 +26,17 @@ impl CognitiveCheckpointTransport for ProtocolPeer {
     async fn exchange(&self, bytes: &[u8]) -> Result<Vec<u8>, ObjectiveSenderCheckpointError> {
         let request: CognitiveCheckpointRequest = serde_json::from_slice(bytes).unwrap();
         self.commands.lock().unwrap().push(request.command);
+        if self.refuse_next.swap(false, Ordering::SeqCst) {
+            return Ok(serde_json::to_vec(&CognitiveCheckpointResponse {
+                schema_version: 1,
+                request_id: request.request_id,
+                status: CognitiveCheckpointStatus::Refused,
+                reason: Some(CognitiveCheckpointReason::AuthorityDenied),
+                token: None,
+                head: None,
+            })
+            .unwrap());
+        }
         let current = {
             let mut current = self.receipt.lock().unwrap();
             if request.command != CognitiveCheckpointCommand::ReadHead {
@@ -186,6 +198,7 @@ impl ManagedFixture {
             commands: Mutex::new(Vec::new()),
             hold_current_reply: AtomicBool::new(false),
             wrong_owner_reply: AtomicBool::new(false),
+            refuse_next: AtomicBool::new(false),
             published: Notify::new(),
         });
         let (store, checkpoint) = store
@@ -222,6 +235,83 @@ impl ManagedFixture {
 #[cfg(test)]
 #[path = "cognitive_checkpoint_observation_tests.rs"]
 mod observation_tests;
+
+#[tokio::test]
+async fn serial_publication_fences_waiting_checkout_on_cancel_after_prepare_ack() {
+    let fixture = ManagedFixture::new().await;
+    fixture
+        .peer
+        .hold_current_reply
+        .store(true, Ordering::SeqCst);
+    let writer = Arc::clone(&fixture.writer);
+    let publication = tokio::spawn(async move { writer.checkpoint_current().await });
+    fixture.peer.published.notified().await;
+    assert_eq!(
+        fixture.peer.receipt.lock().unwrap().head.phase,
+        CognitiveCheckpointPhase::Current
+    );
+    let mut checkout = Box::pin(fixture.checkpoint.before_checkout());
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), &mut checkout)
+            .await
+            .is_err()
+    );
+    let commands = fixture.peer.commands.lock().unwrap().clone();
+    assert!(commands.ends_with(&[
+        CognitiveCheckpointCommand::PreparePublication,
+        CognitiveCheckpointCommand::CommitPublication
+    ]));
+    publication.abort();
+    assert!(publication.await.unwrap_err().is_cancelled());
+    checkout.await;
+    assert_eq!(*fixture.peer.commands.lock().unwrap(), commands);
+    assert!(fixture.writer.checkpoint_fenced());
+    assert!(!fixture.store.commit_gate.commit_allowed());
+}
+
+#[tokio::test]
+async fn current_unknown_distinguishes_refusal_mismatch_and_outer_timeout_without_reopening() {
+    for fault in ["refusal", "mismatch", "transition_mismatch", "timeout"] {
+        let mut fixture = ManagedFixture::new().await;
+        match fault {
+            "refusal" => fixture.peer.refuse_next.store(true, Ordering::SeqCst),
+            "mismatch" => {
+                fixture.writer.checkpoint_current().await.unwrap();
+                fixture.peer.wrong_owner_reply.store(true, Ordering::SeqCst);
+            }
+            "transition_mismatch" => fixture.peer.wrong_owner_reply.store(true, Ordering::SeqCst),
+            "timeout" => {
+                Arc::get_mut(&mut fixture.writer)
+                    .unwrap()
+                    .store
+                    .current_publisher
+                    .as_mut()
+                    .unwrap()
+                    .deadline = Duration::from_millis(40);
+                fixture
+                    .peer
+                    .hold_current_reply
+                    .store(true, Ordering::SeqCst);
+            }
+            _ => unreachable!(),
+        }
+        let error = fixture.writer.checkpoint_current().await.unwrap_err();
+        let ProductionWriterError::Durability(reason) = error else {
+            panic!("changed original error class");
+        };
+        let (outer, inner) = match fault {
+            "refusal" => ("publisher_refused", "Refused(Some(AuthorityDenied))"),
+            "mismatch" => ("publisher_refused", "HeadMismatch"),
+            "transition_mismatch" => ("publisher_unavailable", "TransitionMismatch"),
+            "timeout" => ("outer_timeout", "OuterTimeout"),
+            _ => unreachable!(),
+        };
+        assert!(reason.contains(outer) && reason.contains(inner), "{reason}");
+        assert!(reason.len() < 1024);
+        assert!(fixture.writer.checkpoint_fenced());
+        assert!(!fixture.store.commit_gate.commit_allowed());
+    }
+}
 
 #[tokio::test]
 async fn protected_checkpoint_invalidates_current_before_normal_owner_writes_and_can_republish() {

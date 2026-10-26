@@ -69,6 +69,20 @@ also pass the original one-vCPU native profile and unchanged authority gates.
 
 ## Whole-owner SQLite and Objective sender
 
+The original Current barrier keeps its complete checkpoint protocol serialized
+with one operation permit; the receipt lock is held only for a local copy or
+publication. Every confirmed Prepare and Commit still advances that original
+receipt. Cancellation or unknown acknowledgement keeps the whole-owner fence;
+an independent Current read cannot reopen its generation. The Unix lane owns
+its taken stream during I/O and restores it only after a complete matching
+reply. Short slot locks do not make a cancelled lane reusable.
+
+Current failures distinguish outer timeout, publisher refusal/unavailability
+and cut mismatch, with one bounded per-attempt command/phase/elapsed snapshot.
+Only static reason variants and numeric request sequences are retained, never
+server text, SQLite data, tokens or policy. These diagnostics do not retry,
+extend the existing deadline or identify a native root cause without evidence.
+
 Observation failures retain a bounded diagnostic snapshot of the last feed
 phase, request sequence, current/previous independent request start/reply-end
 samples, accepted/validated request starts, and the authority-attachment stage.

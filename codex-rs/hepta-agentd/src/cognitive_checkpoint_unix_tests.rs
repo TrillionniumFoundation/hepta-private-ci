@@ -156,6 +156,39 @@ async fn exact_framing_keeps_a_complete_refusal_lane_usable_without_retrying() {
 }
 
 #[tokio::test]
+async fn owned_stream_reservation_rejects_overlap_then_restores_only_after_complete_reply() {
+    let (transport, mut server) = fixture(Duration::from_secs(2));
+    let (entered, ready) = tokio::sync::oneshot::channel();
+    let (release, released) = std::sync::mpsc::channel();
+    let peer = std::thread::spawn(move || {
+        read_request(&mut server);
+        entered.send(()).unwrap();
+        released.recv().unwrap();
+        for index in 0..2 {
+            if index == 1 {
+                read_request(&mut server);
+            }
+            let response = response();
+            server
+                .write_all(&(response.len() as u32).to_be_bytes())
+                .unwrap();
+            server.write_all(&response).unwrap();
+        }
+    });
+    let bytes = request();
+    let mut first = Box::pin(transport.exchange(&bytes));
+    tokio::select! {
+        result = &mut first => panic!("completed before controlled reply: {result:?}"),
+        result = ready => result.unwrap(),
+    }
+    assert!(transport.exchange(&bytes).await.is_err());
+    release.send(()).unwrap();
+    assert_eq!(first.await.unwrap(), response());
+    assert_eq!(transport.exchange(&bytes).await.unwrap(), response());
+    peer.join().unwrap();
+}
+
+#[tokio::test]
 async fn partial_frame_deadline_permanently_closes_the_original_stream() {
     let (transport, mut server) = fixture(Duration::from_millis(40));
     let peer = std::thread::spawn(move || {
@@ -181,12 +214,25 @@ async fn cancelling_an_exchange_discards_its_late_reply_and_cannot_rearm_the_lan
         let _ = server.write_all(&(response.len() as u32).to_be_bytes());
         let _ = server.write_all(&response);
     });
+    let diagnostics = CheckpointDiagnostics::default();
     assert!(
-        tokio::time::timeout(Duration::from_millis(40), transport.exchange(&request()))
-            .await
-            .is_err()
+        tokio::time::timeout(
+            Duration::from_millis(40),
+            transport.exchange_diagnosed(&request(), &diagnostics)
+        )
+        .await
+        .is_err()
     );
+    let first = diagnostics.first().unwrap();
+    assert_eq!(first.stage, Stage::ReadPrefix);
+    assert_eq!(first.cause, Some(Cause::Cancelled));
+    assert_eq!(
+        first.command,
+        Some(codex_hepta_memory::CognitiveCheckpointCommand::ReadHead)
+    );
+    assert_eq!(first.request_sequence, Some(1));
     assert!(transport.exchange(&request()).await.is_err());
+    assert_eq!(diagnostics.first(), Some(first));
     peer.join().unwrap();
 }
 

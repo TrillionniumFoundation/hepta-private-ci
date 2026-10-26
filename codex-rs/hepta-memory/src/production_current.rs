@@ -1,6 +1,8 @@
 //! Ordinary FinalUse boundaries use the original protected SQLite Current cut.
 
 use super::*;
+use crate::CheckpointDiagnostics;
+use crate::CheckpointFailureCause;
 use crate::ObjectiveSenderWriterFence;
 use crate::cognitive_store::capture_recovery_anchor;
 use sqlx::Sqlite;
@@ -104,15 +106,38 @@ impl ProductionDurableWriter {
             .await
             .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         self.sender_live_check()?;
+        let diagnostics = std::sync::Arc::new(CheckpointDiagnostics::default());
         let acknowledged = tokio::time::timeout(
             publisher.deadline,
-            publisher.acknowledge(cut.clone(), writer),
+            publisher.acknowledge(cut.clone(), writer, std::sync::Arc::clone(&diagnostics)),
         )
         .await
-        .map_err(|_| publication_unknown())?
-        .map_err(|_| publication_unknown())?;
+        .map_err(|_| {
+            publication_unknown(
+                "outer_timeout",
+                &diagnostics,
+                CheckpointFailureCause::OuterTimeout,
+            )
+        })?
+        .map_err(|error| {
+            let (stage, cause) = match error {
+                crate::ObjectiveSenderCheckpointError::Refused => (
+                    "publisher_refused",
+                    CheckpointFailureCause::PublisherRefused,
+                ),
+                crate::ObjectiveSenderCheckpointError::Unavailable => (
+                    "publisher_unavailable",
+                    CheckpointFailureCause::PublisherUnavailable,
+                ),
+            };
+            publication_unknown(stage, &diagnostics, cause)
+        })?;
         if acknowledged != cut {
-            return Err(publication_unknown());
+            return Err(publication_unknown(
+                "cut_mismatch",
+                &diagnostics,
+                CheckpointFailureCause::CutMismatch,
+            ));
         }
         self.sender_live_check()?;
         attempt.acknowledge();
@@ -120,8 +145,14 @@ impl ProductionDurableWriter {
     }
 }
 
-fn publication_unknown() -> ProductionWriterError {
-    ProductionWriterError::Durability(
-        "independent original Current acknowledgement is unknown; owner remains fenced".to_string(),
-    )
+fn publication_unknown(
+    stage: &'static str,
+    diagnostics: &CheckpointDiagnostics,
+    cause: CheckpointFailureCause,
+) -> ProductionWriterError {
+    diagnostics.fail(cause);
+    ProductionWriterError::Durability(format!(
+        "independent original Current acknowledgement is unknown; owner remains fenced; publication_stage={stage} checkpoint_failure={:?}",
+        diagnostics.first()
+    ))
 }

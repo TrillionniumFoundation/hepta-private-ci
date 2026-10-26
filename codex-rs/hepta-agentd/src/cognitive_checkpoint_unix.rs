@@ -7,10 +7,14 @@ use std::os::fd::AsRawFd;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 use std::path::Path;
+use std::sync::Mutex;
 use std::time::Duration;
 use std::time::Instant;
 
 use codex_hepta_memory::COGNITIVE_CHECKPOINT_FRAME_LIMIT;
+use codex_hepta_memory::CheckpointDiagnostics;
+use codex_hepta_memory::CheckpointFailureCause as Cause;
+use codex_hepta_memory::CheckpointStage as Stage;
 use codex_hepta_memory::CognitiveCheckpointRequest;
 use codex_hepta_memory::CognitiveCheckpointResponse;
 use codex_hepta_memory::CognitiveCheckpointTransport;
@@ -18,7 +22,6 @@ use codex_hepta_memory::ObjectiveSenderCheckpointError;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::io::unix::AsyncFd;
-use tokio::sync::Mutex;
 
 /// Exact root process identity established by the trusted launcher before
 /// descriptor transfer. A numeric PID discovered from the connection is not
@@ -120,67 +123,154 @@ impl CognitiveCheckpointTransport for AgentdUnixCognitiveCheckpointTransport {
         &self,
         request_json: &[u8],
     ) -> Result<Vec<u8>, ObjectiveSenderCheckpointError> {
+        self.exchange_with_diagnostics(request_json, &CheckpointDiagnostics::default())
+            .await
+    }
+    async fn exchange_diagnosed(
+        &self,
+        request_json: &[u8],
+        diagnostics: &CheckpointDiagnostics,
+    ) -> Result<Vec<u8>, ObjectiveSenderCheckpointError> {
+        self.exchange_with_diagnostics(request_json, diagnostics)
+            .await
+    }
+}
+impl AgentdUnixCognitiveCheckpointTransport {
+    async fn exchange_with_diagnostics(
+        &self,
+        request_json: &[u8],
+        diagnostics: &CheckpointDiagnostics,
+    ) -> Result<Vec<u8>, ObjectiveSenderCheckpointError> {
         if request_json.is_empty() || request_json.len() > COGNITIVE_CHECKPOINT_FRAME_LIMIT {
+            diagnostics.fail(Cause::Size);
             return Err(ObjectiveSenderCheckpointError::Refused);
         }
-        let request: CognitiveCheckpointRequest = serde_json::from_slice(request_json)
-            .map_err(|_| ObjectiveSenderCheckpointError::Refused)?;
-        let mut slot = self
-            .stream
-            .try_lock()
-            .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
-        let mut stream = slot
-            .take()
-            .ok_or(ObjectiveSenderCheckpointError::Unavailable)?;
+        let request: CognitiveCheckpointRequest =
+            serde_json::from_slice(request_json).map_err(|_| {
+                diagnostics.fail(Cause::Decode);
+                ObjectiveSenderCheckpointError::Refused
+            })?;
+        diagnostics.request(&request);
+        diagnostics.stage(Stage::ReserveStream);
+        let mut stream = {
+            let mut slot = self.stream.try_lock().map_err(|_| {
+                diagnostics.fail(Cause::SlotBusy);
+                ObjectiveSenderCheckpointError::Unavailable
+            })?;
+            slot.take().ok_or_else(|| {
+                diagnostics.fail(Cause::SlotEmpty);
+                ObjectiveSenderCheckpointError::Unavailable
+            })?
+        };
+        let mut attempt = CheckpointExchangeAttempt {
+            diagnostics,
+            complete: false,
+        };
         // From this point cancellation or every uncertain error leaves None.
-        check_lifetime(self.root.get_ref())?;
+        check_lifetime(self.root.get_ref())
+            .inspect_err(|_| diagnostics.fail(Cause::PeerUnavailable))?;
         let deadline = (Instant::now() + self.timeout).min(self.end);
         if deadline <= Instant::now() {
+            diagnostics.fail(Cause::Deadline);
             return Err(ObjectiveSenderCheckpointError::Unavailable);
         }
         let response = tokio::select! {
             biased;
-            _ = self.root.readable() => return Err(ObjectiveSenderCheckpointError::Unavailable),
+            _ = self.root.readable() => {
+                diagnostics.fail(Cause::PeerUnavailable);
+                return Err(ObjectiveSenderCheckpointError::Unavailable);
+            },
             _ = tokio::time::sleep_until(tokio::time::Instant::from_std(deadline)) => {
+                diagnostics.fail(Cause::Timeout);
                 return Err(ObjectiveSenderCheckpointError::Unavailable);
             }
-            response = framed_exchange(&mut stream, request_json) => response?,
+            response = framed_exchange(&mut stream, request_json, diagnostics) => response?,
         };
-        check_lifetime(self.root.get_ref())?;
-        let parsed: CognitiveCheckpointResponse = serde_json::from_slice(&response)
-            .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
-        if Instant::now() >= deadline
-            || parsed.schema_version != 1
-            || parsed.request_id != request.request_id
-        {
+        check_lifetime(self.root.get_ref())
+            .inspect_err(|_| diagnostics.fail(Cause::PeerUnavailable))?;
+        diagnostics.stage(Stage::ValidateResponse);
+        let parsed: CognitiveCheckpointResponse =
+            serde_json::from_slice(&response).map_err(|_| {
+                diagnostics.fail(Cause::Decode);
+                ObjectiveSenderCheckpointError::Unavailable
+            })?;
+        if Instant::now() >= deadline {
+            diagnostics.fail(Cause::Late);
             return Err(ObjectiveSenderCheckpointError::Unavailable);
         }
-        *slot = Some(stream);
+        if parsed.schema_version != 1 || parsed.request_id != request.request_id {
+            diagnostics.fail(Cause::Identity);
+            return Err(ObjectiveSenderCheckpointError::Unavailable);
+        }
+        {
+            let mut slot = self.stream.try_lock().map_err(|_| {
+                diagnostics.fail(Cause::SlotBusy);
+                ObjectiveSenderCheckpointError::Unavailable
+            })?;
+            if slot.is_some() {
+                diagnostics.fail(Cause::SlotBusy);
+                return Err(ObjectiveSenderCheckpointError::Unavailable);
+            }
+            *slot = Some(stream);
+        }
+        attempt.complete = true;
         Ok(response)
+    }
+}
+
+struct CheckpointExchangeAttempt<'a> {
+    diagnostics: &'a CheckpointDiagnostics,
+    complete: bool,
+}
+impl Drop for CheckpointExchangeAttempt<'_> {
+    fn drop(&mut self) {
+        if !self.complete {
+            self.diagnostics.fail(Cause::Cancelled);
+        }
     }
 }
 
 async fn framed_exchange(
     stream: &mut tokio::net::UnixStream,
     request: &[u8],
+    diagnostics: &CheckpointDiagnostics,
 ) -> Result<Vec<u8>, ObjectiveSenderCheckpointError> {
+    diagnostics.stage(Stage::WritePrefix);
     stream
         .write_all(&(request.len() as u32).to_be_bytes())
         .await
-        .map_err(unavailable)?;
-    stream.write_all(request).await.map_err(unavailable)?;
+        .map_err(|error| diagnosed_io(error, diagnostics))?;
+    diagnostics.stage(Stage::WriteBody);
+    stream
+        .write_all(request)
+        .await
+        .map_err(|error| diagnosed_io(error, diagnostics))?;
     let mut prefix = [0; 4];
-    stream.read_exact(&mut prefix).await.map_err(unavailable)?;
+    diagnostics.stage(Stage::ReadPrefix);
+    stream
+        .read_exact(&mut prefix)
+        .await
+        .map_err(|error| diagnosed_io(error, diagnostics))?;
     let length = u32::from_be_bytes(prefix) as usize;
     if length == 0 || length > COGNITIVE_CHECKPOINT_FRAME_LIMIT {
+        diagnostics.fail(Cause::Size);
         return Err(ObjectiveSenderCheckpointError::Unavailable);
     }
     let mut response = vec![0; length];
+    diagnostics.stage(Stage::ReadBody);
     stream
         .read_exact(&mut response)
         .await
-        .map_err(unavailable)?;
+        .map_err(|error| diagnosed_io(error, diagnostics))?;
     Ok(response)
+}
+
+fn diagnosed_io(
+    error: std::io::Error,
+    diagnostics: &CheckpointDiagnostics,
+) -> ObjectiveSenderCheckpointError {
+    diagnostics.fail(Cause::Io(error.raw_os_error()));
+    unavailable(error)
 }
 
 fn bounded_text(path: &str, limit: u64) -> Result<String, ObjectiveSenderCheckpointError> {

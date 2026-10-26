@@ -4,6 +4,11 @@ pub use codex_hepta_memory_federation::FederatedCoverageV2;
 pub use codex_hepta_memory_federation::FederatedFailureCoverageV2;
 
 mod cognitive_checkpoint;
+mod cognitive_checkpoint_diagnostic;
+pub use cognitive_checkpoint_diagnostic::CheckpointDiagnostics;
+pub use cognitive_checkpoint_diagnostic::CheckpointFailure;
+pub use cognitive_checkpoint_diagnostic::CheckpointFailureCause;
+pub use cognitive_checkpoint_diagnostic::CheckpointStage;
 mod cognitive_checkpoint_wire;
 pub use cognitive_checkpoint::CognitiveCheckpointTransport;
 pub use cognitive_checkpoint::ProtectedCognitiveCheckpoint;

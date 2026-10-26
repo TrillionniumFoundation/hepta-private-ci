@@ -1,7 +1,7 @@
 //! Fixed original Current publisher retained at protected-store binding.
 
+use crate::CheckpointDiagnostics;
 use crate::CognitiveRecoveryAnchor;
-use crate::ObjectiveSenderCheckpoint;
 use crate::ObjectiveSenderCheckpointError;
 use crate::ObjectiveSenderWriterFence;
 use crate::cognitive_checkpoint::CognitiveCheckpointTransport;
@@ -16,8 +16,13 @@ type Publication = Pin<
         dyn Future<Output = Result<CognitiveRecoveryAnchor, ObjectiveSenderCheckpointError>> + Send,
     >,
 >;
-type Publish =
-    dyn Fn(CognitiveRecoveryAnchor, ObjectiveSenderWriterFence) -> Publication + Send + Sync;
+type Publish = dyn Fn(
+        CognitiveRecoveryAnchor,
+        ObjectiveSenderWriterFence,
+        Arc<CheckpointDiagnostics>,
+    ) -> Publication
+    + Send
+    + Sync;
 
 /// Type erasure retains the one protected coordinator. Runtime callers cannot
 /// install an alternate publisher or substitute a locally calculated receipt.
@@ -33,9 +38,13 @@ impl BoundCurrentPublisher {
         deadline: Duration,
     ) -> Self {
         Self {
-            publish: Arc::new(move |cut, writer| {
+            publish: Arc::new(move |cut, writer, diagnostics| {
                 let coordinator = Arc::clone(&coordinator);
-                Box::pin(async move { coordinator.acknowledge_current(&cut, &writer).await })
+                Box::pin(async move {
+                    coordinator
+                        .acknowledge_diagnosed(&cut, &writer, &diagnostics)
+                        .await
+                })
             }),
             deadline,
         }
@@ -45,7 +54,8 @@ impl BoundCurrentPublisher {
         &self,
         cut: CognitiveRecoveryAnchor,
         writer: ObjectiveSenderWriterFence,
+        diagnostics: Arc<CheckpointDiagnostics>,
     ) -> Publication {
-        (self.publish)(cut, writer)
+        (self.publish)(cut, writer, diagnostics)
     }
 }
