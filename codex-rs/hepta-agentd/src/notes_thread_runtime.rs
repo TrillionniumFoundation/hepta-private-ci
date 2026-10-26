@@ -368,7 +368,7 @@ impl AgentdNotesThreadToolRuntime {
                             }
                             original
                         }
-                        StatusArguments::Selected(status::SelectedStatusArguments {selector:status::StatusSelector::LatestOriginalReplace}) => {
+                        StatusArguments::Selected(status::SelectedStatusArguments {selector:status::StatusSelector {kind: status::StatusSelectorKind::LatestOriginalReplace}}) => {
                             match status::discover_latest_original_replace(&self.route, &mut connection).await? {
                                 status::StatusDiscovery::Found(original) => original,
                                 status::StatusDiscovery::Unknown(reason) => return Ok(json!({

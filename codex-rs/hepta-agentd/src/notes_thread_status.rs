@@ -32,8 +32,14 @@ pub(super) struct SelectedStatusArguments {
 }
 
 #[derive(Deserialize)]
-#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
-pub(super) enum StatusSelector {
+#[serde(deny_unknown_fields)]
+pub(super) struct StatusSelector {
+    pub kind: StatusSelectorKind,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub(super) enum StatusSelectorKind {
     LatestOriginalReplace,
 }
 

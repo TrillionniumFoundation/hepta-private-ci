@@ -725,7 +725,7 @@ forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/notes_thread_status.rs"
-required = ["enum StatusArguments", "#[serde(untagged)]", "#[serde(tag = \"kind\", rename_all = \"snake_case\", deny_unknown_fields)]", "LatestOriginalReplace", "const TURNS: usize = 16", "const PAGE_ITEMS: usize = 64", "const TURN_PAGES: usize = 4", "const TOTAL_ITEMS: usize = 1024", "const RPCS: usize = 64", "Duration::from_secs(5)", "thread_id: route.thread_id.clone()", "SortDirection::Desc", "TurnItemsView::NotLoaded", "SortDirection::Asc", "entry.turn_id != turn.id", "VerifiedNotesThreadOperation::from_original_item", "StatusUnknownReason::WindowExhausted", "StatusUnknownReason::OriginalReplaceNotObserved"]
+required = ["enum StatusArguments", "#[serde(untagged)]", "pub(super) struct StatusSelector", "pub kind: StatusSelectorKind", "LatestOriginalReplace", "const TURNS: usize = 16", "const PAGE_ITEMS: usize = 64", "const TURN_PAGES: usize = 4", "const TOTAL_ITEMS: usize = 1024", "const RPCS: usize = 64", "Duration::from_secs(5)", "thread_id: route.thread_id.clone()", "SortDirection::Desc", "TurnItemsView::NotLoaded", "SortDirection::Asc", "entry.turn_id != turn.id", "VerifiedNotesThreadOperation::from_original_item", "StatusUnknownReason::WindowExhausted", "StatusUnknownReason::OriginalReplaceNotObserved"]
 forbidden = ["AllowVerifier", "permit_all", "prepare_thread(", "submit_once(", "sign_objective(", "ThreadStart", "ThreadResume", "dispatch(", "unsafe"]
 
 [[protected_file]]
