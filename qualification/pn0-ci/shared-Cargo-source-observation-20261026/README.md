@@ -1,0 +1,5 @@
+# PN0 shared Cargo input source observations — no execution claim
+
+The first exact merged-source map verifier failed for fifteen modules because their old observations preceded the reviewed Cargo.toml/Cargo.lock security dependency migration. Every changed observed path was independently confirmed to be exactly those two shared workspace inputs. This successor refreshes only each module's observedAtHead commit/tree to the actual clean source8913221 and leaves sourceBase provenance, source objects, code/evidence inventories, policies, authority and all acceptance claims unchanged. The original failed verifier output and receipt remain here.
+
+This is source identity housekeeping required after a real dependency change; it does not certify compilation, model benefit, native Windows or the paired PR checks. Old runtime, Windows, DPoP, source-check and WAN failures remain failed. The two ROG journal maps separately bind the actual merged source86eb6e2. All PN0–PN6 gates remain; `task_complete=false`, `merge_ready=false`, **NO_GO**.
