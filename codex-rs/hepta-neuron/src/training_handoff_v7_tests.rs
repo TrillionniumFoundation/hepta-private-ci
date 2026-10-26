@@ -18,7 +18,7 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn fixture(gated: bool) -> (TrainedCellBundleV5, CellTrainingCheckpointV7) {
+pub(crate) fn fixture(gated: bool) -> (TrainedCellBundleV5, CellTrainingCheckpointV7) {
     let mode = if gated { "gated" } else { "linear" };
     let cell = id(&format!("development-{mode}-seed7"));
     let mut weights = [[0.125; 4]; 8];

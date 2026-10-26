@@ -77,3 +77,6 @@ pub fn training_handoff_compatibility_digest_v8() -> Digest32 {
     Digest32::of_bytes(b"hepta.neuron.training-handoff.v8.serving-v5.full-adam-pcg64.forecast-h8.certified-prefix-stride1248")
 }
 
+#[cfg(test)]
+#[path = "training_handoff_v8_tests.rs"]
+mod tests;
