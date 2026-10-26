@@ -60,16 +60,14 @@ impl AgentdProductionWriterHost {
                 config.identity().spawn_generation,
             )
             .map_err(AgentdError::GenerationFenced)?;
-        let store = CognitiveStore::open_with_recovery(
-            &config.identity().layout,
+        let store = Self::recover_cognitive_store(
+            config,
             CognitiveRecoveryRequirement::ExactCurrentCut(&receipt.head.last_current),
             &authority,
             verifier.as_ref(),
+            "recover protected cognitive store",
         )
-        .await
-        .map_err(|error| {
-            AgentdError::Protocol(format!("recover protected cognitive store: {error}"))
-        })?;
+        .await?;
         let (store, checkpoint) = store
             .bind_protected_checkpoint(checkpoint.transport, receipt, checkpoint.deadline)
             .await
