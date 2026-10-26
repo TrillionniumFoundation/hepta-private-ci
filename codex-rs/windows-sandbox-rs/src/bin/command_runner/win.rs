@@ -13,6 +13,10 @@
 #![allow(unsafe_op_in_unsafe_fn)]
 
 mod cwd_junction;
+mod process_observation;
+
+use self::process_observation::ProcessObservation;
+use self::process_observation::observe_process;
 
 use anyhow::Context;
 use anyhow::Result;
@@ -51,6 +55,7 @@ use codex_windows_sandbox::token_mode_for_permission_profile;
 use codex_windows_sandbox::write_frame;
 use std::ffi::OsStr;
 use std::fs::File;
+use std::os::windows::io::BorrowedHandle;
 use std::os::windows::io::FromRawHandle;
 use std::path::Path;
 use std::path::PathBuf;
@@ -68,21 +73,18 @@ use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
 use windows_sys::Win32::Storage::FileSystem::OPEN_EXISTING;
 use windows_sys::Win32::System::Console::COORD;
 use windows_sys::Win32::System::Console::ResizePseudoConsole;
-use windows_sys::Win32::System::Threading::GetExitCodeProcess;
 use windows_sys::Win32::System::Threading::GetProcessId;
 use windows_sys::Win32::System::Threading::INFINITE;
 use windows_sys::Win32::System::Threading::MUTEX_ALL_ACCESS;
 use windows_sys::Win32::System::Threading::OpenMutexW;
 use windows_sys::Win32::System::Threading::PROCESS_INFORMATION;
 use windows_sys::Win32::System::Threading::TerminateProcess;
-use windows_sys::Win32::System::Threading::WaitForSingleObject;
 
 // Kept in sync with codex_exec_server::CODEX_FS_HELPER_ARG1 without introducing
 // a dependency cycle.
 const FS_HELPER_ARG: &str = "--codex-run-as-fs-helper";
 const READ_ACL_MUTEX_NAME: &str = "Local\\CodexSandboxReadAcl";
 const TERMINATION_WAIT_MS: u32 = 5_000;
-const WAIT_TIMEOUT: u32 = 0x0000_0102;
 
 #[cfg(test)]
 #[path = "win_boundary_tests.rs"]
@@ -692,39 +694,38 @@ pub fn main() -> Result<()> {
     );
 
     let timeout = req.timeout_ms.map(|ms| ms as u32).unwrap_or(INFINITE);
-    let wait_res = unsafe { WaitForSingleObject(pi.hProcess, timeout) };
-    let timed_out = wait_res == WAIT_TIMEOUT;
-    let child_stopped = if timed_out {
-        terminate_job_or_process(&job, pi.hProcess, log_dir);
-        let termination_wait = unsafe { WaitForSingleObject(pi.hProcess, TERMINATION_WAIT_MS) };
-        if termination_wait == WAIT_TIMEOUT {
-            log_note(
-                "runner root process did not exit after termination",
-                log_dir,
-            );
-            false
-        } else {
-            true
+    let (timed_out, raw_exit) = {
+        // Borrow only this original PI while its owner still holds the handle.
+        let process = unsafe { BorrowedHandle::borrow_raw(pi.hProcess as _) };
+        match observe_process(process, timeout)? {
+            ProcessObservation::Exited(code) => {
+                if let Err(err) = job.preserve_descendants() {
+                    log_note(
+                        &format!("runner failed to preserve descendants after root exit: {err}"),
+                        log_dir,
+                    );
+                }
+                (false, code)
+            }
+            ProcessObservation::Pending => {
+                terminate_job_or_process(&job, pi.hProcess, log_dir);
+                match observe_process(process, TERMINATION_WAIT_MS)? {
+                    ProcessObservation::Exited(code) => (true, code),
+                    ProcessObservation::Pending => {
+                        log_note(
+                            "runner root process did not exit after termination",
+                            log_dir,
+                        );
+                        anyhow::bail!("runner root process did not exit after termination");
+                    }
+                }
+            }
         }
-    } else {
-        if let Err(err) = job.preserve_descendants() {
-            log_note(
-                &format!("runner failed to preserve descendants after root exit: {err}"),
-                log_dir,
-            );
-        }
-        true
     };
 
-    let exit_code: i32;
+    // Keep the timeout UI code distinct from the actual observed root exit.
+    let exit_code = if timed_out { 128 + 64 } else { raw_exit as i32 };
     unsafe {
-        if timed_out {
-            exit_code = 128 + 64;
-        } else {
-            let mut raw_exit: u32 = 1;
-            GetExitCodeProcess(pi.hProcess, &mut raw_exit);
-            exit_code = raw_exit as i32;
-        }
         if pi.hThread != 0 {
             CloseHandle(pi.hThread);
         }
@@ -738,15 +739,13 @@ pub fn main() -> Result<()> {
     }
     drop(conpty_owner.take());
 
-    if child_stopped {
-        if out_thread.join().is_err() {
-            log_note("runner stdout reader thread panicked", log_dir);
-        }
-        if let Some(thread) = err_thread
-            && thread.join().is_err()
-        {
-            log_note("runner stderr reader thread panicked", log_dir);
-        }
+    if out_thread.join().is_err() {
+        log_note("runner stdout reader thread panicked", log_dir);
+    }
+    if let Some(thread) = err_thread
+        && thread.join().is_err()
+    {
+        log_note("runner stderr reader thread panicked", log_dir);
     }
 
     let exit_msg = FramedMessage {

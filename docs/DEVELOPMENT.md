@@ -1350,6 +1350,26 @@ establish a child capability, loader or complete-lifetime handoff. The existing
 `into_files` handoff still ends this startup owner. All guards and original
 Windows failures remain; this source step has not been compiled or run natively.
 
+The next source slice repairs terminal facts in the original command runner.
+Both its first wait and its existing post-termination wait now require a
+signalled original process handle and a successful exit-code query on that same
+handle. A failed wait, failed query or unexpected wait result cannot publish an
+`Exit` frame or preserve descendants. Timeout UI code 192 is emitted only after
+that actual root exit is observed; a real signalled exit code 259 remains valid.
+The request timeout conversion and the existing 5000ms termination wait are
+unchanged. Three added native test sources use actual owned children and reduced
+views of their original handles, retaining the eight-second child deadline.
+The four-lane diagnostic explicitly selects the runner binary for those three
+cases. Its separate `result-v3.json` requires the original twenty groups, all
+six query-existing controls and all three terminal controls; the original
+receipts remain intact. These new native controls have not been compiled or
+executed. Security-authority and runtime-control still own the complete
+production handoff: an error return or Job close does not
+retain all owners on Unknown or prove resource return. The fixed prebirth slot,
+parent-death/error custody, loader and original twenty-group/four-lane native
+acceptance remain open, including both original deletion failures. All guards,
+ambient-read behavior and existing assertions stay unchanged.
+
 The following are implementation slices of that same PN0 item, not a second
 roadmap. The read-only volume and live-principal observation APIs below are
 implemented mechanisms. Create-only namespace and protected-directory
