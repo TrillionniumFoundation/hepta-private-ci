@@ -4,6 +4,78 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
+#[tokio::test]
+async fn observed_current_receipt_reads_the_peer_without_mutating_or_reopening_writes() {
+    let fixture = ManagedFixture::new().await;
+    fixture
+        .sender()
+        .retain_before_send(request())
+        .await
+        .unwrap();
+    let expected = fixture.peer.receipt.lock().unwrap().clone();
+    let commands = fixture.peer.commands.lock().unwrap().len();
+    let anchor = fixture.writer.recovery_anchor().await.unwrap();
+    assert_eq!(expected.head.phase, CognitiveCheckpointPhase::Current);
+    assert_eq!(
+        fixture.checkpoint.observed_current_receipt().await.unwrap(),
+        expected
+    );
+    assert_eq!(*fixture.peer.receipt.lock().unwrap(), expected);
+    assert_eq!(fixture.peer.commands.lock().unwrap().len(), commands + 1);
+    assert_eq!(
+        fixture.peer.commands.lock().unwrap().last(),
+        Some(&CognitiveCheckpointCommand::ReadHead)
+    );
+    assert_eq!(fixture.writer.recovery_anchor().await.unwrap(), anchor);
+    assert!(!fixture.store.commit_gate.commit_allowed());
+    assert!(!fixture.writer.checkpoint_fenced());
+
+    // Normal writer entry changes the original peer to Dirty. A cached prior
+    // Current must not be exposed as a new authenticated observation.
+    fixture
+        .writer
+        .admit("observed-current-dirty", "fixture", "{}")
+        .await
+        .unwrap();
+    assert_eq!(
+        fixture.peer.receipt.lock().unwrap().head.phase,
+        CognitiveCheckpointPhase::Dirty
+    );
+    let commands = fixture.peer.commands.lock().unwrap().len();
+    assert!(fixture.checkpoint.observed_current_receipt().await.is_err());
+    assert_eq!(fixture.peer.commands.lock().unwrap().len(), commands);
+}
+
+#[tokio::test]
+async fn observed_current_receipt_rejects_an_actual_changed_head_and_keeps_its_coordinator() {
+    let fixture = ManagedFixture::new().await;
+    fixture
+        .sender()
+        .retain_before_send(request())
+        .await
+        .unwrap();
+    let expected = fixture.peer.receipt.lock().unwrap().clone();
+    {
+        let mut peer = fixture.peer.receipt.lock().unwrap();
+        peer.head.counter += 1;
+        peer.token = token_for(&peer.head);
+    }
+    let commands = fixture.peer.commands.lock().unwrap().len();
+    assert!(fixture.checkpoint.observed_current_receipt().await.is_err());
+    assert_eq!(
+        fixture.peer.commands.lock().unwrap().len(),
+        commands + 1,
+        "must read the actual peer instead of returning the cached receipt"
+    );
+    *fixture.peer.receipt.lock().unwrap() = expected.clone();
+    assert_eq!(
+        fixture.checkpoint.observed_current_receipt().await.unwrap(),
+        expected,
+        "a changed response must not replace the original coordinator receipt"
+    );
+    assert!(!fixture.store.commit_gate.commit_allowed());
+}
+
 async fn poll_without_mutating_current(fixture: &ManagedFixture, ticket: &ObjectiveSenderTicket) {
     let sender = fixture.sender();
     let before = fixture.peer.receipt.lock().unwrap().clone();
