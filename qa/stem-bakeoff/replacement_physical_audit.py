@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from replacement_parameter_identity import validate_identity_receipt
+from replacement_arctic_unpadded_mask import METHOD as ARCTIC_MASK_METHOD, SCOPE as ARCTIC_MASK_SCOPE
 from replacement_gate import EXPECTED, SPLITS, score_rows, validate_registry
 from replacement_physical import TRAIN_RATE, TRAIN_SEED, TRAIN_STEPS, TEMPERATURES
 
@@ -169,7 +170,7 @@ def audit_arm(name: str, result: Any, spec: dict) -> list[str]:
     if name == "arctic_305m":
         expected_keys = {"method", "original_position_buffer_valid",
                          "original_rope_cache_valid", "max_position_embeddings",
-                         "rope_dim", "rope_theta", "production_qualified", "loaded_parameter_identity"}
+                         "rope_dim", "rope_theta", "production_qualified", "loaded_parameter_identity", "attention_mask_compat"}
         if (not isinstance(rope, dict) or set(rope) != expected_keys
                 or rope["method"] != "pinned_gte_runtime_buffers_v1"
                 or type(rope["original_position_buffer_valid"]) is not bool
@@ -177,7 +178,10 @@ def audit_arm(name: str, result: Any, spec: dict) -> list[str]:
                 or rope["max_position_embeddings"] != 8192
                 or rope["rope_dim"] != 64 or rope["rope_theta"] != 160000
                 or rope["production_qualified"] is not False
-                or not validate_identity_receipt(rope["loaded_parameter_identity"])):
+                or not validate_identity_receipt(rope["loaded_parameter_identity"])
+                or rope["attention_mask_compat"] != {
+                    "method": ARCTIC_MASK_METHOD, "scope": ARCTIC_MASK_SCOPE,
+                    "transformers_version": "5.20.2", "production_qualified": False}):
             errors.append(f"{name}: missing or unqualified pinned Arctic RoPE receipt")
     elif rope is not None:
         errors.append(f"{name}: unrelated model must not claim Arctic RoPE reconstruction")
