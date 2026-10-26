@@ -308,16 +308,14 @@ impl AgentdProductionWriterHost {
                 config.identity().spawn_generation,
             )
             .map_err(AgentdError::GenerationFenced)?;
-        let store = CognitiveStore::open_with_recovery(
-            &config.identity().layout,
+        let store = Self::recover_cognitive_store(
+            config,
             requirement,
             &authority,
             verifier.as_ref(),
+            "recover production cognitive store",
         )
-        .await
-        .map_err(|error| {
-            AgentdError::Protocol(format!("recover production cognitive store: {error}"))
-        })?;
+        .await?;
         Self::from_recovered_store(
             config.identity().spawn_generation,
             store,
@@ -327,6 +325,26 @@ impl AgentdProductionWriterHost {
             lease_generation,
         )
         .await
+    }
+
+    /// Keep privileged store recovery in the original writer-owner module.
+    /// Both the ordinary and protected-current paths verify their sender
+    /// binding before reaching this single fenced recovery entry point.
+    pub(super) async fn recover_cognitive_store(
+        config: &AgentdConfig,
+        requirement: CognitiveRecoveryRequirement<'_>,
+        authority: &ProductionAuthorityLease,
+        verifier: &dyn ProductionAuthorityVerifier,
+        context: &'static str,
+    ) -> Result<CognitiveStore, AgentdError> {
+        CognitiveStore::open_with_recovery(
+            &config.identity().layout,
+            requirement,
+            authority,
+            verifier,
+        )
+        .await
+        .map_err(|error| AgentdError::Protocol(format!("{context}: {error}")))
     }
 
     async fn from_recovered_store(
