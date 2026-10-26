@@ -14,8 +14,10 @@ use anyhow::Result;
 use anyhow::anyhow;
 use codex_utils_pty::JobObject;
 pub use prepared_context::PreparedProcessContext;
+pub(crate) use prepared_context::PreparedFilesystemOwners;
 use std::collections::HashMap;
 use std::ffi::c_void;
+use std::os::windows::io::AsHandle;
 use std::os::windows::io::AsRawHandle;
 use std::path::Path;
 use std::ptr;
@@ -38,6 +40,13 @@ pub struct CreatedProcess {
     pub startup_info: STARTUPINFOW,
     pub(crate) job: Arc<JobObject>,
     _desktop: LaunchDesktop,
+}
+
+/// Keeps the original prepared owners local with their exact process transport.
+/// This wrapper cannot release the transport or promote it to launch authority.
+pub(crate) struct PreparedCreatedProcess {
+    transport: CreatedProcess,
+    owners: Box<PreparedFilesystemOwners>,
 }
 
 /// Controls console creation for pipe-backed child processes.
@@ -85,7 +94,7 @@ pub unsafe fn create_process_as_user(
 ) -> Result<CreatedProcess> {
     let desktop = LaunchDesktop::prepare(h_token, use_private_desktop, logs_base_dir)?;
     let job = Arc::new(JobObject::create().context("create process job")?);
-    create_process_on_desktop(
+    let (transport, ()) = create_process_on_desktop(
         h_token,
         argv,
         cwd,
@@ -95,16 +104,18 @@ pub unsafe fn create_process_as_user(
         console_mode,
         desktop,
         job,
-    )
+        /*owners*/ (),
+    )?;
+    Ok(transport)
 }
 
-/// Consumes the qualified owner's one-use launch resources. Process creation
-/// itself does not prove image initialization or terminal reconciliation.
+/// Consumes and retains the prepared mechanism's one-use launch resources.
+/// This provides no production admission, image initialization or terminal proof.
 ///
 /// # Safety
 /// All explicitly supplied stdio handles must remain valid until return.
 #[allow(clippy::too_many_arguments)]
-pub unsafe fn create_process_as_user_prepared(
+pub(crate) unsafe fn create_process_as_user_prepared(
     context: PreparedProcessContext,
     argv: &[String],
     cwd: &Path,
@@ -112,10 +123,11 @@ pub unsafe fn create_process_as_user_prepared(
     logs_base_dir: Option<&Path>,
     stdio: Option<(HANDLE, HANDLE, HANDLE)>,
     console_mode: ConsoleMode,
-) -> Result<CreatedProcess> {
-    let (token, desktop, job) = context.into_parts()?;
-    create_process_on_desktop(
-        token.as_raw_handle() as HANDLE,
+) -> Result<PreparedCreatedProcess> {
+    let (owners, desktop, job) = context.into_parts()?;
+    let h_token = owners.as_handle().as_raw_handle() as HANDLE;
+    let (transport, owners) = create_process_on_desktop(
+        h_token,
         argv,
         cwd,
         env_map,
@@ -124,11 +136,13 @@ pub unsafe fn create_process_as_user_prepared(
         console_mode,
         desktop,
         job,
-    )
+        owners,
+    )?;
+    Ok(PreparedCreatedProcess { transport, owners })
 }
 
 #[allow(clippy::too_many_arguments)]
-unsafe fn create_process_on_desktop(
+unsafe fn create_process_on_desktop<Owners>(
     h_token: HANDLE,
     argv: &[String],
     cwd: &Path,
@@ -138,7 +152,8 @@ unsafe fn create_process_on_desktop(
     console_mode: ConsoleMode,
     desktop: LaunchDesktop,
     job: Arc<JobObject>,
-) -> Result<CreatedProcess> {
+    owners: Owners,
+) -> Result<(CreatedProcess, Owners)> {
     let cmdline_str = argv_to_command_line(argv);
     let mut cmdline: Vec<u16> = to_wide(&cmdline_str);
     let env_block = make_env_block(env_map);
@@ -195,12 +210,13 @@ unsafe fn create_process_on_desktop(
         return Err(std::io::Error::from_raw_os_error(err)).context(msg);
     }
 
-    Ok(CreatedProcess {
+    let transport = CreatedProcess {
         process_info: pi,
         startup_info: si.StartupInfo,
         job,
         _desktop: desktop,
-    })
+    };
+    Ok((transport, owners))
 }
 
 /// Controls whether the child's stdin handle is kept open for writing.
@@ -228,6 +244,19 @@ pub struct PipeSpawnHandles {
     pub(crate) desktop: LaunchDesktop,
 }
 
+/// Borrowing endpoints does not transfer or discard the original proof owners.
+/// The ordinary legacy transport keeps its original layout and auto-traits.
+pub(crate) struct PreparedPipeSpawnHandles {
+    transport: PipeSpawnHandles,
+    _owners: Box<PreparedFilesystemOwners>,
+}
+
+impl PreparedPipeSpawnHandles {
+    pub(crate) fn handles(&self) -> &PipeSpawnHandles {
+        &self.transport
+    }
+}
+
 impl PipeSpawnHandles {
     /// Returns the Job Object containing the spawned process.
     pub fn job(&self) -> Arc<JobObject> {
@@ -251,21 +280,29 @@ pub fn spawn_process_with_pipes(
     use_private_desktop: bool,
     logs_base_dir: Option<&Path>,
 ) -> Result<PipeSpawnHandles> {
-    spawn_with_pipes(
-        PipeLaunch::Legacy(h_token, use_private_desktop),
-        argv,
-        cwd,
-        env_map,
+    let (transport, ()) = spawn_with_pipes(
+        |stdio| unsafe {
+            create_process_as_user(
+                h_token,
+                argv,
+                cwd,
+                env_map,
+                logs_base_dir,
+                stdio,
+                console_mode,
+                use_private_desktop,
+            )
+            .map(|transport| (transport, ()))
+        },
         stdin_mode,
         stderr_mode,
-        console_mode,
-        logs_base_dir,
-    )
+    )?;
+    Ok(transport)
 }
 
-/// Pipe launch for the admitted owner; retains the same EOF/output contracts.
+/// Pipe launch retaining the prepared owners and the same EOF/output contracts.
 #[allow(clippy::too_many_arguments)]
-pub fn spawn_process_with_pipes_prepared(
+pub(crate) fn spawn_process_with_pipes_prepared(
     context: PreparedProcessContext,
     argv: &[String],
     cwd: &Path,
@@ -274,35 +311,34 @@ pub fn spawn_process_with_pipes_prepared(
     stderr_mode: StderrMode,
     console_mode: ConsoleMode,
     logs_base_dir: Option<&Path>,
-) -> Result<PipeSpawnHandles> {
-    spawn_with_pipes(
-        PipeLaunch::Prepared(context),
-        argv,
-        cwd,
-        env_map,
+) -> Result<PreparedPipeSpawnHandles> {
+    let (transport, owners) = spawn_with_pipes(
+        |stdio| unsafe {
+            let PreparedCreatedProcess { transport, owners } = create_process_as_user_prepared(
+                context,
+                argv,
+                cwd,
+                env_map,
+                logs_base_dir,
+                stdio,
+                console_mode,
+            )?;
+            Ok((transport, owners))
+        },
         stdin_mode,
         stderr_mode,
-        console_mode,
-        logs_base_dir,
-    )
+    )?;
+    Ok(PreparedPipeSpawnHandles {
+        transport,
+        _owners: owners,
+    })
 }
 
-enum PipeLaunch {
-    Legacy(HANDLE, bool),
-    Prepared(PreparedProcessContext),
-}
-
-#[allow(clippy::too_many_arguments)]
-fn spawn_with_pipes(
-    launch: PipeLaunch,
-    argv: &[String],
-    cwd: &Path,
-    env_map: &HashMap<String, String>,
+fn spawn_with_pipes<Owners>(
+    launch: impl FnOnce(Option<(HANDLE, HANDLE, HANDLE)>) -> Result<(CreatedProcess, Owners)>,
     stdin_mode: StdinMode,
     stderr_mode: StderrMode,
-    console_mode: ConsoleMode,
-    logs_base_dir: Option<&Path>,
-) -> Result<PipeSpawnHandles> {
+) -> Result<(PipeSpawnHandles, Owners)> {
     let mut in_r: HANDLE = 0;
     let mut in_w: HANDLE = 0;
     let mut out_r: HANDLE = 0;
@@ -335,30 +371,8 @@ fn spawn_with_pipes(
     };
 
     let stdio = Some((in_r, out_w, stderr_handle));
-    let spawn_result = unsafe {
-        match launch {
-            PipeLaunch::Legacy(h_token, use_private_desktop) => create_process_as_user(
-                h_token,
-                argv,
-                cwd,
-                env_map,
-                logs_base_dir,
-                stdio,
-                console_mode,
-                use_private_desktop,
-            ),
-            PipeLaunch::Prepared(context) => create_process_as_user_prepared(
-                context,
-                argv,
-                cwd,
-                env_map,
-                logs_base_dir,
-                stdio,
-                console_mode,
-            ),
-        }
-    };
-    let created = match spawn_result {
+    let spawn_result = launch(stdio);
+    let (created, owners) = match spawn_result {
         Ok(v) => v,
         Err(err) => {
             unsafe {
@@ -378,7 +392,7 @@ fn spawn_with_pipes(
         process_info: pi,
         job,
         _desktop: desktop,
-        ..
+        startup_info: _,
     } = created;
 
     unsafe {
@@ -392,7 +406,7 @@ fn spawn_with_pipes(
         }
     }
 
-    Ok(PipeSpawnHandles {
+    let transport = PipeSpawnHandles {
         process: pi,
         job,
         stdin_write: match stdin_mode {
@@ -405,7 +419,8 @@ fn spawn_with_pipes(
             StderrMode::MergeStdout => None,
         },
         desktop,
-    })
+    };
+    Ok((transport, owners))
 }
 
 /// Reads a HANDLE until EOF and invokes `on_chunk` for each read.
