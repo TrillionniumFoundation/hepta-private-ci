@@ -6,6 +6,7 @@ import argparse
 import datetime
 import hashlib
 import json
+import os
 from pathlib import Path
 import platform
 import re
@@ -146,6 +147,21 @@ def main() -> int:
     manifest = json.loads(
         (root / ".github/fixtures/windows-current-ci-scope.json").read_text()
     )
+    temporary = {
+        "originalTemp": os.environ.get("TEMP"),
+        "originalTmp": os.environ.get("TMP"),
+        "runnerTemp": os.environ.get("RUNNER_TEMP"),
+    }
+    # Exercise the unchanged canonical/reparse admission on an actual canonical
+    # private test root. The runner's inherited TEMP may use a short-name alias.
+    case_temp = Path(os.environ["RUNNER_TEMP"]) / "hepta-original-case-temp"
+    case_temp.mkdir(exist_ok=False)
+    native_temp = case_temp.resolve(strict=True)
+    os.environ["TEMP"] = os.environ["TMP"] = str(native_temp)
+    temporary["physicalCaseTemp"] = str(native_temp)
+    (output / "temporary-environment.json").write_text(
+        json.dumps(temporary, indent=2) + "\n"
+    )
     results = execute_groups(root, output, manifest["groups"])
     after = source(root)
     intact = valid_source(args.expected_head, before, after)
@@ -161,6 +177,7 @@ def main() -> int:
         "sourceUnchanged": intact,
         "platform": platform.platform(),
         "machine": platform.machine(),
+        "temporaryEnvironment": temporary,
         "groups": results,
         "testRetries": 0,
         "productionAuthorityGranted": False,

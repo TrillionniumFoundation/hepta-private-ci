@@ -8,6 +8,12 @@ on:
       - ".github/scripts/test_windows_current_ci.py"
       - ".github/fixtures/windows-current-ci-scope.json"
       - "codex-rs/git-utils/src/git_process_tests.rs"
+      - "codex-rs/state/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-operator-acceptance/**"
+      - "codex-rs/hepta-shadow-qualification/**"
+      - "codex-rs/windows-sandbox-rs/**"
+      - "codex-rs/Cargo.lock"
   workflow_dispatch:
 
 permissions:
@@ -39,8 +45,6 @@ jobs:
           persist-credentials: false
       - name: Install the pinned native compiler
         uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
-        with:
-          toolchain: 1.96.0
       - name: Install repository test runners
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:

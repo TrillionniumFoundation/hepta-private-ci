@@ -18,6 +18,21 @@
   },
   "groups": [
     {
+      "id": "retained-windows-identity",
+      "package": "codex-state",
+      "expectedTestCount": 7,
+      "requiredTests": [
+        "sqlite_recovery::windows::tests::retained_windows_bundle_is_read_only_and_same_handles",
+        "sqlite_recovery::windows::tests::retained_windows_replacement_uses_file_id_even_with_same_metadata",
+        "sqlite_recovery::windows::tests::retained_windows_rejects_extra_links_for_each_component",
+        "sqlite_recovery::windows::tests::retained_windows_rejects_new_sidecar_and_mutated_bytes",
+        "sqlite_recovery::windows::tests::retained_windows_rejects_parent_junction_and_replacement",
+        "sqlite_recovery::windows::tests::retained_windows_rejects_foreign_read_grants",
+        "sqlite_recovery::windows::tests::cold_image_windows_reconnects_to_original_immutable_copy"
+      ],
+      "filter": "test(=sqlite_recovery::windows::tests::retained_windows_bundle_is_read_only_and_same_handles) | test(=sqlite_recovery::windows::tests::retained_windows_replacement_uses_file_id_even_with_same_metadata) | test(=sqlite_recovery::windows::tests::retained_windows_rejects_extra_links_for_each_component) | test(=sqlite_recovery::windows::tests::retained_windows_rejects_new_sidecar_and_mutated_bytes) | test(=sqlite_recovery::windows::tests::retained_windows_rejects_parent_junction_and_replacement) | test(=sqlite_recovery::windows::tests::retained_windows_rejects_foreign_read_grants) | test(=sqlite_recovery::windows::tests::cold_image_windows_reconnects_to_original_immutable_copy)"
+    },
+    {
       "id": "git-process-cleanup",
       "package": "codex-git-utils",
       "expectedTestCount": 2,
