@@ -1,0 +1,46 @@
+{
+  "changes": {
+    "collect_qualification": {
+      "diff": "--- collect_qualification.py\n+++ collect_qualification_v2.py\n@@ -45,7 +45,8 @@\n           'formal_sources_opened_once': True})\n     began, cpu = time.perf_counter_ns(), time.process_time_ns()\n     torch.set_num_threads(1)\n-    corpus, allocation = load_registered(args.cache, args.allocation, args.protocol, study=args.study)\n+    corpus = load_registered(args.cache, args.allocation, args.protocol, study=args.study)\n+    allocation = corpus.manifest\n     suffix = args.study.removeprefix('native_h2_')\n     role = 'next_native_h2_' + suffix\n     count = len(corpus.splits[role].ids) // 2\n",
+      "new_path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/collect_qualification_v2.py",
+      "new_sha256": "4bfdc729f34aff0a1c1e861f7665bdf05667a60b3e4dff3cf6307977666fab3a",
+      "original_path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/collect_qualification.py",
+      "original_sha256": "1a7591ed385e9bb2a06bda50475604d75cfa916ef70555cb9dc76c6c0e7f8315"
+    },
+    "prospective": {
+      "diff": "--- prospective.py\n+++ prospective_v2.py\n@@ -53,7 +53,7 @@\n         if (cal['predictor_sha256'] != sha(predictor) or max(before['ECE_ID'], before['ECE_all']) > .03\n                 or before['OOD_FAR'] > .004999 or before['ID_acceptance'] < .25):\n             raise ValueError('Failing calibration cannot spend the 1000-writer verification cohort')\n-        calibration_protocol = AREA / 'CALIBRATION_PROTOCOL.json'\n+        calibration_protocol = AREA / 'CALIBRATION_PROTOCOL_V2.json'\n         if cal.get('calibration_protocol_sha256') != sha(calibration_protocol):\n             raise ValueError('Only the registered prospective calibration may open qualification')\n         collection_path = Path(cal['source_collection_directory']).resolve()\n",
+      "new_path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/prospective_v2.py",
+      "new_sha256": "4331a8f78953cd966cd0042c982e1e51dac7326dd5cafd9cc6eca8898bf10e3b",
+      "original_path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/prospective.py",
+      "original_sha256": "4e0589ab85e9e7df0fe10302f0554e01947d5c847ded1159b8497fd5320e3147"
+    },
+    "run": {
+      "diff": "--- run.py\n+++ run_v2.py\n@@ -100,7 +100,8 @@\n         frozen = json.loads(args.protocol.read_text())\n         if frozen['binary_sha256'] != sha(args.binary) or frozen['package_sha256'] != sha(args.package):\n             raise ValueError('Native binary or model package differs from prospective freeze')\n-        corpus, allocation = load_registered(ASSETS / 'qmnist', ALLOCATION, args.protocol, study='native_h2_execution')\n+        corpus = load_registered(ASSETS / 'qmnist', ALLOCATION, args.protocol, study='native_h2_execution')\n+        allocation = corpus.manifest\n         role = 'next_native_h2_execution'\n     model = Snapshot.load(MODEL, expected_file_sha256=sha(MODEL))._model\n     encoder = PublicEncoder(Path(package['predictor_path']))\n",
+      "new_path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/run_v2.py",
+      "new_sha256": "4b3b1cd0795493d4a5139e0bdabe4abc00e6ccc7bc5bd1fb6b3b4b9e510c62b2",
+      "original_path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/run.py",
+      "original_sha256": "b9d5d41919003ed2e01ab2fbbb19ca5a1c29532bdb96fd5e1bb4c9565fa11138"
+    }
+  },
+  "failed_log_sha256": "5ba3b4b2a96cc4b74b5e72ccb0f59a412b42f97eda5c516946f93d64d2a9a02a",
+  "failed_process_receipt_sha256": "b36f4268a801be9d58b7dfc5f574f63d0a034b1a4663088ba4a23de699c6a659",
+  "failure": "SourceCorpus was incorrectly tuple-unpacked before generator or observer loading",
+  "native_binary_unchanged": true,
+  "new_sample_draw_or_size_change": false,
+  "old_code_protocol_results_preserved": true,
+  "previous_protocol_path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/CALIBRATION_PROTOCOL.json",
+  "previous_protocol_sha256": "eb2163bdbc21f9b95f214963c9bbde6765b86afe72452040c2fee91f1daada17",
+  "prior_generated_outputs": 0,
+  "prior_scored_outputs": 0,
+  "prior_source_pixels_loaded": true,
+  "prior_stage_files": [
+    "access-registration.json"
+  ],
+  "production_authority": false,
+  "registered_ns": 1792983810627981990,
+  "retry_same_registered_100writer_role": true,
+  "schema": "hepta.next.native-h2-source-container-api-amendment.v2",
+  "source_loader_path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/h2_sources.py",
+  "source_loader_sha256": "a5dd79be8fa409dec8cf5d4372966d585bab0e6dd5c269fe47a3e785f8bc107d",
+  "teacher_generator_predictor_cuts_bins_sources_thresholds_unchanged": true
+}

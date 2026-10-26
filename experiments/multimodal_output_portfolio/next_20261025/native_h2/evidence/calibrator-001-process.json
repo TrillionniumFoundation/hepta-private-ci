@@ -1,0 +1,47 @@
+{
+  "cgroup_after": {
+    "current": 8342614016,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3798112,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8378888192,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3795727,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 0.334476,
+  "child_user_seconds": 3.618777,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-B",
+    "-m",
+    "experiments.multimodal_output_portfolio.next_20261025.native_h2.prospective_v2",
+    "calibrate",
+    "--predictor",
+    "/tmp/hepta-ndu-next-native-h2/development-002/predictor.json",
+    "--directory",
+    "/tmp/hepta-ndu-next-native-h2/calibration-002",
+    "--output",
+    "/tmp/hepta-ndu-next-native-h2/calibrator-001"
+  ],
+  "context": "Fit fixed three-bin frequencies on completed100writer calibration; one concurrent ASR qualification; no model inference",
+  "exit_code": 0,
+  "log_sha256": "47090d6709acd0b5c9c18cdcc494d7872581e3a215ed62d9ebbadea45538cf60",
+  "peak_rss_bytes": 321007616,
+  "registration_sha256": "999aea02c6419631a9725fa7be502af6d8f542e876486655fa3d767b3e2767a4",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 3274227346,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}

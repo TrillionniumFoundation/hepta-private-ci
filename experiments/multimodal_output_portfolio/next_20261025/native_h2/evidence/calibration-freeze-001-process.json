@@ -1,0 +1,52 @@
+{
+  "cgroup_after": {
+    "current": 8439545856,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3761195,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8589692928,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3758425,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 0.325996,
+  "child_user_seconds": 2.436499,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-B",
+    "-m",
+    "experiments.multimodal_output_portfolio.next_20261025.native_h2.prospective",
+    "freeze",
+    "--study",
+    "native_h2_calibration",
+    "--predictor",
+    "/tmp/hepta-ndu-next-native-h2/development-002/predictor.json",
+    "--development",
+    "/tmp/hepta-ndu-next-native-h2/expanded-old-001/development.json",
+    "--output",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/CALIBRATION_PROTOCOL.json",
+    "--extra",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/EXPANDED_OLD_PROTOCOL.json",
+    "/tmp/hepta-ndu-next-native-h2/expanded-old-001/STRUCTURAL_AUDIT.json"
+  ],
+  "context": "Protocol freeze; one concurrent ASR qualification process; no model or source inference",
+  "exit_code": 0,
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "peak_rss_bytes": 233005056,
+  "registration_sha256": "9710f22077565d2798866b2b9e94dac9809196a8f2d2f86c8b796f35628ca156",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 2527130034,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}

@@ -1,0 +1,254 @@
+{
+  "algorithm": "fixed three ID bins per horizon/action and one public-absence bin",
+  "calibration": {
+    "Brier": 0.08832173666742091,
+    "ECE_ID": 6.197200001127134e-07,
+    "ECE_all": 5.164333334272613e-07,
+    "ID_acceptance": 0.68,
+    "OOD_FAR": 0.0,
+    "OOD_false_units": 0,
+    "OOD_upper95": 0.02951304960703993,
+    "by_horizon_action": {
+      "H1:couple": {
+        "ECE_ID": 4.1599999993793823e-07,
+        "ID_acceptance": 0.64,
+        "rows": 4000
+      },
+      "H1:refine_image": {
+        "ECE_ID": 5.262500000047244e-07,
+        "ID_acceptance": 0.645,
+        "rows": 4000
+      },
+      "H1:refine_semantic": {
+        "ECE_ID": 9.259999998267875e-07,
+        "ID_acceptance": 0.694,
+        "rows": 4000
+      },
+      "H1:refine_text": {
+        "ECE_ID": 5.422500001588948e-07,
+        "ID_acceptance": 0.62175,
+        "rows": 4000
+      },
+      "H1:stop": {
+        "ECE_ID": 8.397500001147419e-07,
+        "ID_acceptance": 0.69425,
+        "rows": 4000
+      },
+      "H2:couple": {
+        "ECE_ID": 5.880000000546559e-07,
+        "ID_acceptance": 1.0,
+        "rows": 1000
+      },
+      "H2:refine_image": {
+        "ECE_ID": 3.8399999997973394e-07,
+        "ID_acceptance": 0.602,
+        "rows": 1000
+      },
+      "H2:refine_semantic": {
+        "ECE_ID": 3.560000000094599e-07,
+        "ID_acceptance": 0.613,
+        "rows": 1000
+      },
+      "H2:refine_text": {
+        "ECE_ID": 6.669999999626697e-07,
+        "ID_acceptance": 1.0,
+        "rows": 1000
+      },
+      "H2:stop": {
+        "ECE_ID": 4.970000001341956e-07,
+        "ID_acceptance": 0.605,
+        "rows": 1000
+      }
+    },
+    "independent_units": 100,
+    "ood_units": 100,
+    "rows": 30000,
+    "unit_is_writer": true
+  },
+  "calibration_protocol_sha256": "c06e77687dcd7215edabcd41235e5e7383dcb739d05e045b086f20f710482a76",
+  "data_sha256": "2f72a49d6752e2bc1bd2b70eac975ba0658366502c2e883f77fab3893bb153e8",
+  "no_bound_relaxation": true,
+  "predictor_sha256": "2ea073f7de0cf0a134c94cb0a683e3924733dd7206cf619264e370bbce2f37f8",
+  "rows_sha256": "239e522a579b908bd12c250b82ac0ab629e5569041b92f8aed8c5400d949e056",
+  "schema": "hepta.next.native-h2-admission-calibration.v1",
+  "source_access_registration_sha256": "53859710a92b4bf444005fba6337e0376811d3b21695dab86e4c4a35c21afa35",
+  "source_collection_directory": "/tmp/hepta-ndu-next-native-h2/calibration-002",
+  "source_collection_sha256": "2e797bcf94a166881cc6974532c6abd03024f99b77274a3e53b856ec40229f6b",
+  "strata": [
+    [
+      {
+        "absent_probability": 0.0,
+        "calibration_bin_counts": [
+          1223,
+          1670,
+          1107
+        ],
+        "cuts": [
+          0.9883707761764526,
+          0.9995608925819397
+        ],
+        "probabilities": [
+          0.6132461161079313,
+          0.9538922155688623,
+          0.979223125564589
+        ]
+      },
+      {
+        "absent_probability": 0.0,
+        "calibration_bin_counts": [
+          1224,
+          1664,
+          1112
+        ],
+        "cuts": [
+          0.9880708456039429,
+          0.9995273351669312
+        ],
+        "probabilities": [
+          0.613562091503268,
+          0.9525240384615384,
+          0.9811151079136691
+        ]
+      },
+      {
+        "absent_probability": 0.0,
+        "calibration_bin_counts": [
+          1420,
+          1445,
+          1135
+        ],
+        "cuts": [
+          0.9644694328308105,
+          0.9962047934532166
+        ],
+        "probabilities": [
+          0.676056338028169,
+          0.9418685121107266,
+          0.9629955947136564
+        ]
+      },
+      {
+        "absent_probability": 0.0,
+        "calibration_bin_counts": [
+          1513,
+          1450,
+          1037
+        ],
+        "cuts": [
+          0.9507694840431213,
+          0.9927167296409607
+        ],
+        "probabilities": [
+          0.7270323859881032,
+          0.9372413793103448,
+          0.9508196721311475
+        ]
+      },
+      {
+        "absent_probability": 0.0,
+        "calibration_bin_counts": [
+          1440,
+          1433,
+          1127
+        ],
+        "cuts": [
+          0.937947154045105,
+          0.9882408976554871
+        ],
+        "probabilities": [
+          0.7472222222222222,
+          0.8946266573621773,
+          0.9343389529724934
+        ]
+      }
+    ],
+    [
+      {
+        "absent_probability": 0.0,
+        "calibration_bin_counts": [
+          395,
+          309,
+          296
+        ],
+        "cuts": [
+          0.9978522062301636,
+          0.9999403953552246
+        ],
+        "probabilities": [
+          0.6582278481012658,
+          0.9514563106796117,
+          0.9932432432432432
+        ]
+      },
+      {
+        "absent_probability": 0.0,
+        "calibration_bin_counts": [
+          387,
+          320,
+          293
+        ],
+        "cuts": [
+          0.9980746507644653,
+          0.9999501705169678
+        ],
+        "probabilities": [
+          0.6511627906976745,
+          0.953125,
+          0.9931740614334471
+        ]
+      },
+      {
+        "absent_probability": 0.0,
+        "calibration_bin_counts": [
+          398,
+          321,
+          281
+        ],
+        "cuts": [
+          0.9876235723495483,
+          0.9989045858383179
+        ],
+        "probabilities": [
+          0.6708542713567839,
+          0.9501557632398754,
+          0.9501779359430605
+        ]
+      },
+      {
+        "absent_probability": 0.0,
+        "calibration_bin_counts": [
+          368,
+          331,
+          301
+        ],
+        "cuts": [
+          0.9838998317718506,
+          0.9990050196647644
+        ],
+        "probabilities": [
+          0.7581521739130435,
+          0.918429003021148,
+          0.9601328903654485
+        ]
+      },
+      {
+        "absent_probability": 0.0,
+        "calibration_bin_counts": [
+          372,
+          296,
+          332
+        ],
+        "cuts": [
+          0.9877645373344421,
+          0.9990359544754028
+        ],
+        "probabilities": [
+          0.7580645161290323,
+          0.9155405405405406,
+          0.9487951807228916
+        ]
+      }
+    ]
+  ],
+  "target": "immediate emitted-output joint_fact_correct after each action"
+}
