@@ -128,6 +128,8 @@ pub(super) struct Fixture {
 }
 
 impl Fixture {
+    // This synthetic writer opener is exclusively a test fixture, never a production caller.
+    #[cfg(test)]
     pub async fn new() -> Self {
         let temp = TempDir::new().expect("test root");
         let owner = agent_id(OWNER);
