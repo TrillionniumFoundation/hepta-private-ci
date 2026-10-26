@@ -602,9 +602,12 @@ fn passive_failure_snapshot_survives_closed_admission_but_refuses_busy_and_poiso
         grant: grant(),
         model_digest: digest.to_string(),
     };
+    let physical = SmolLmRuntimeIdentityV1::from(&pin);
     let port = SmolLmNeuralReadPortV1 {
         pin: Some(pin),
         model_id: "not-loaded".to_owned(),
+        physical,
+        scope: digest,
         worker: Mutex::new(
             InferenceWorker::new(
                 now_ms().unwrap(),
