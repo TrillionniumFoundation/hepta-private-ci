@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "1ab08d0b3f296c1e2e52e21ad8828ef58017d2bb",
+    "tree": "c0bd48ddd33744f3eceef8461dc49af1e206b175"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -524,7 +524,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "3f587295a7860e70005f2c754c313c9df8821b81"
+      "object": "b08cacf1b0c0b5ad295e415f343a79ca55612661"
     },
     {
       "path": "codex-rs/hepta-agentd/src/authority_host_notes_startup.rs",
@@ -536,7 +536,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/deployment_notes_policy_startup_tests.rs",
-      "object": "6f840087e1900fdfb96bde4a2a67947dfee3d057"
+      "object": "b326c85bfb842849e641d7ad246de8fb6739144a"
     },
     {
       "path": "codex-rs/hepta-agentd/src/deployment_notes_route_tests.rs",
@@ -684,7 +684,7 @@
     },
     {
       "path": "docs/modules/runtime.agentd/TECHNICAL.md",
-      "object": "d5e6054b0996d79324fb5c2fb40901b5193ea0aa"
+      "object": "97b4c1782b17aef416cd517e5cbfb2c49340b8f1"
     }
   ],
   "mappingScope": "Original daemon lifecycle plus explicit protected Root/Notes/model composition. Canonical Lane B execution gaps remain separately scoped; this is not an exhaustive crate map or deployment receipt."
