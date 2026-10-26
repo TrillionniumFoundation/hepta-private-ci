@@ -207,6 +207,7 @@ async fn cancellation_during_encoded_write_keeps_both_original_terminal_owners()
         let mut completion = CompletionOwner {
             continuation_owner: &mut retained,
             attempt: Some(attempt),
+            opaque_capture: None,
         };
         let binding = TurnBinding {
             run_id: StableId::new("run:original").expect("run ID"),

@@ -14,10 +14,10 @@ use std::sync::Arc;
 use std::sync::atomic::Ordering;
 
 #[path = "managed_responses_error_fixture.rs"]
-mod fixture;
+pub(super) mod fixture;
 use fixture::*;
 #[path = "managed_responses_http_fixture.rs"]
-mod http_fixture;
+pub(super) mod http_fixture;
 use http_fixture::*;
 
 async fn observed_error(status: u16, body: String, content_type: &'static str) -> ResponsesFailure {

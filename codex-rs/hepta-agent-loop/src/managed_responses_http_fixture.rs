@@ -28,7 +28,7 @@ impl AuthProvider for FixtureAuth {
     }
 }
 
-pub(super) struct Server {
+pub(in super::super) struct Server {
     pub client: ManagedResponsesClient,
     pub requests: Arc<Mutex<Vec<bool>>>,
     stop: CancellationToken,
@@ -37,6 +37,15 @@ pub(super) struct Server {
 
 impl Server {
     pub async fn start(status: u16, body: String, content_type: &'static str) -> Self {
+        Self::start_with_cap(status, body, content_type, None).await
+    }
+
+    pub async fn start_with_cap(
+        status: u16,
+        body: String,
+        content_type: &'static str,
+        expected_cap: Option<u64>,
+    ) -> Self {
         let listener = TcpListener::bind((std::net::Ipv4Addr::LOCALHOST, 0))
             .await
             .expect("owned loopback listener");
@@ -97,7 +106,15 @@ impl Server {
                 observed.lock().expect("fixture request lock").push(
                     request.contains(URL_SECRET)
                         && request.contains(AUTH_SECRET)
-                        && request.contains(BODY_SECRET),
+                        && request.contains(BODY_SECRET)
+                        && expected_cap.is_none_or(|cap| {
+                            request
+                                .split_once("\r\n\r\n")
+                                .and_then(|(_, body)| {
+                                    serde_json::from_str::<serde_json::Value>(body).ok()
+                                })
+                                .is_some_and(|body| body["max_output_tokens"].as_u64() == Some(cap))
+                        }),
                 );
                 socket
                     .write_all(response.as_bytes())
