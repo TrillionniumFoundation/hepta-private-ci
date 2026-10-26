@@ -35,6 +35,9 @@ windows-sys = { version = "0.52", features = [
     "Win32_System_Threading",
 ] }
 
+[target.'cfg(windows)'.dev-dependencies]
+codex-utils-path = { workspace = true }
+
 [dev-dependencies]
 codex-git-utils = { workspace = true }
 pretty_assertions = { workspace = true }

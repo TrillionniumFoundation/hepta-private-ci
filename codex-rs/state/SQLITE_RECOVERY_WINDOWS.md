@@ -53,15 +53,33 @@ Implementation is split into `sqlite_recovery_windows.rs` (rooted handles),
 `sqlite_recovery_image.rs`. Windows uses the existing `windows-sys` 0.52 source;
 the Cargo dependency edge and Bazel resolution must stay synchronized.
 
-Seven native tests cover unchanged retained handles, same-byte replacement after
+Eight native tests cover unchanged retained handles, same-byte replacement after
 restoring mutable metadata, extra hard links for every component, appearing
 sidecars/content drift, parent replacement/junctions, foreign read grants, and a real read-only image
-connection replacement after the source changes.
+connection replacement after the source changes. The eighth test grants a real
+foreign read ACE to an existing home, then proves admission refuses it without
+changing its complete owner/DACL bytes or database bytes. Hard-link rejection
+first verifies an unchanged private bundle, so rejection cannot pass vacuously
+at an earlier directory guard.
 The declared Windows workflow also reruns the original fourteen protected-owner
 cases without retries or relaxed assertions. Cross compilation is a build check;
 only the native runner's exact-source results qualify Windows behavior. The
 first official pre-backend run at `3afe4c6` retained 49 actual failures and must
-not be described as green. New-backend native acceptance is pending.
+not be described as green. The next native run at `9a1f1f9` executed all
+90 selected tests: 35 passed and 55 failed, including six of the seven new state
+cases and all fourteen original protected-owner cases. A separate native handle
+and security-descriptor observation confirmed valid NTFS file IDs and birth
+metadata, but fresh directories inherited BUILTIN\Users read/create grants.
+The original guard correctly refused that shared state.
+
+Fresh cognitive-store homes now use the existing `codex-utils-path` atomic
+private-directory creation: current-user ownership and a protected DACL are
+supplied at the actual native creation operation. Existing unsafe directories
+are never re-owned or repaired. The state fixtures use that same creation path;
+security and identity admission remain unchanged. This reuses the private-state
+primitive whose separate native scope passed at `9a1f1f9`; it does not transfer
+that success to the retained recovery or protected-owner cases. Acceptance of
+this new source remains pending until its own native results are retained.
 
 Authoritative platform contracts:
 [relative NtCreateFile opens](https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntcreatefile),

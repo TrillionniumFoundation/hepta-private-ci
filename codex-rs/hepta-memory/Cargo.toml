@@ -39,6 +39,9 @@ unicode-segmentation = { workspace = true }
 [target.'cfg(target_os = "linux")'.dependencies]
 rustix = { workspace = true, features = ["fs", "process"] }
 
+[target.'cfg(windows)'.dependencies]
+codex-utils-path = { workspace = true }
+
 [dev-dependencies]
 pretty_assertions = { workspace = true }
 tempfile = { workspace = true }
