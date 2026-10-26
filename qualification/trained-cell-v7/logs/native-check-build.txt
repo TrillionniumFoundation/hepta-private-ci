@@ -1,0 +1,11 @@
+warning: function `reject` is never used
+   --> src/../../../trained-cell-v5/actual-review-driver/src/owner.rs:162:8
+    |
+162 | pub fn reject(inputs: &Inputs, root: &Path, now: u64) -> Result<Value> {
+    |        ^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `hepta-handoff-recovery-v7` (lib) generated 1 warning
+   Compiling hepta-handoff-recovery-v7 v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v7/qualification/trained-cell-v7/recovery-driver)
+    Finished `dev` profile [unoptimized] target(s) in 0.76s

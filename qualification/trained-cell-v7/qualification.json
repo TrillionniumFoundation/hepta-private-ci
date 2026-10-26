@@ -1,0 +1,52 @@
+{
+  "actual_grid_diagnostic": "pending sealed selected/config00 materialization",
+  "base_commit": "63ac6dc8a11bd467f8798db172d563e124d8e939",
+  "core_tests": {
+    "log": "logs/native-tests.txt",
+    "passed": 113
+  },
+  "created_utc": "2026-10-26T05:10:22.741304+00:00",
+  "final_fix_exit": 0,
+  "final_fmt_exit": 0,
+  "independent_source_review": "PASS including exact32 terminal review map; reviewer /root/paper_theory_audit",
+  "log_sha256": {
+    "logs/fmt.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/native-check-build.txt": "f26e33c16961b739f39b4e82edb5d3b23836cec6abb12f94c74f593dc80e5302",
+    "logs/native-fix-allowed.txt": "ef9232a7ec2cbd94f5ee7e8c86d8b49036d94bcfe6b29c6e496c57365f1a63fb",
+    "logs/native-fix.txt": "6bb10e993781fcfafa03cdc3bb9385d58a4125ed406243f1ca86f8aa893f5afd",
+    "logs/native-tests.txt": "0bc581116408c5e9fcf027a581a9b35d93d7ba8d5924ffb7134989b2893ae53b",
+    "logs/numerical-handoff-r2.txt": "59e781a1c98935115ab5d4a287fa2adc9f579a3eb92aadd2442b57a7f7a6e27d",
+    "logs/numerical-handoff.txt": "ab948da7fe82d20c44bf4a19106c25f7c81b3cdbfca65f39261bf975d3e4631e",
+    "logs/recovery-fix.txt": "99e3bf9a6e6911ea35ea8229b3e1e129686f3ff9f5d9619accd9e61a5012de78",
+    "logs/recovery-junit.xml": "50882cde57cfbb495607da29822b2c9f9da742caac54d50fd2accad68b65c637",
+    "logs/terminal-fmt.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/terminal-recovery-fix.txt": "2cfbeb6ed9027480e13d1928b28aaef6d1a1395539448db25525b298e24cb7ef",
+    "logs/terminal-recovery-junit.xml": "fbe2414e7d0465a64d1f96c570ba4499ddf460a2d9bb676e877e5e38f447b67b",
+    "logs/terminal-recovery-tests-r2.txt": "db76124c9c02539181d78bef5fe59884bdf9911b819d0e024a6631114e67440a",
+    "logs/terminal-recovery-tests-r3.txt": "7861e6326ec1bf3c477282209ab67100debb761bbed10f70a9f3e09eb90a146b",
+    "logs/terminal-recovery-tests.txt": "db76124c9c02539181d78bef5fe59884bdf9911b819d0e024a6631114e67440a"
+  },
+  "numerical_tests": {
+    "midpoint_exact_remaining15_continuations": 2,
+    "negative_rejections": 6,
+    "receipt_sha256": "3c461cdd89c2699a9c5567a04131fd53fa5e1dcbac2112ea1114c776430e64e1",
+    "scope": "actual code over synthetic data",
+    "states_restored": 8
+  },
+  "production_activation": false,
+  "schema": "hepta.native-handoff-qualification.v7",
+  "scientific_acceptance": false,
+  "source_final_sha256": "69187fa24f1cda79ebf2cc86227f426b5795907cb82709d87f0108926bcddf6c",
+  "terminal_admission_negatives": [
+    "valid native mid17 payload cannot use terminal32 review",
+    "self-consistently rehashed wrong terminal-state map cannot touch owner"
+  ],
+  "terminal_recovery_tests": {
+    "ignored_worker": 1,
+    "log": "logs/terminal-recovery-tests-r3.txt",
+    "passed": 11,
+    "run_id": "b6984486-aa32-4b95-a505-a11e16c4ef9f",
+    "worker_invocations": 6
+  },
+  "tests_repeated_after_final_fix_fmt": false
+}
