@@ -30,6 +30,18 @@ def seal(definition, archive, receipt, workspace, repository):
     if any(path.exists() for path in (archive, receipt, manifest_path, expanded_path)):
         raise FileExistsError("Never replace a completed evidence package")
     spec = json.loads(definition.read_text())
+    roots = [workspace]
+    for source_root in spec.get("additional_source_roots", []):
+        root = Path(source_root).resolve()
+        if root == Path("/tmp") or not (root.is_relative_to("/tmp") or root.is_relative_to(workspace)):
+            raise ValueError("Extra evidence roots must name a study path in /tmp or the workspace")
+        if not root.exists():
+            raise ValueError("Missing additional evidence root")
+        roots.append(root)
+
+    def allowed(path):
+        return any(path.is_relative_to(root) for root in roots)
+
     files, source_names = {}, {}
 
     def add(path, name):
@@ -37,8 +49,8 @@ def seal(definition, archive, receipt, workspace, repository):
         member = PurePosixPath(name)
         if member.is_absolute() or ".." in member.parts or name == "MANIFEST.json":
             raise ValueError("Unsafe or reserved member name")
-        if not path.is_file() or not path.is_relative_to(workspace):
-            raise ValueError("Evidence must be an existing workspace file: " + str(path))
+        if not path.is_file() or not allowed(path):
+            raise ValueError("Evidence must belong to an explicit study source root: " + str(path))
         if name in files and files[name] != path:
             raise ValueError("Two source files have one archive name")
         if path in source_names and source_names[path] != name:
@@ -47,7 +59,7 @@ def seal(definition, archive, receipt, workspace, repository):
 
     for root in spec["trees"]:
         path = Path(root["path"]).resolve()
-        if not path.is_dir() or not path.is_relative_to(workspace):
+        if not path.is_dir() or not allowed(path):
             raise ValueError("Missing declared evidence tree")
         for child in sorted(path.rglob("*")):
             if child.is_file() and "__pycache__" not in child.parts:
@@ -121,6 +133,7 @@ def seal(definition, archive, receipt, workspace, repository):
         raise ValueError("Archive identity or internal manifest changed")
     result = {**prior, "schema": "hepta.next.closed-evidence.v1", "status": "passed",
               "definition_sha256": file_sha(definition), "protocols_verified": protocols,
+              "allowed_source_roots": list(map(str, roots)),
               "historical_exact_source_snapshots_verified": historical,
               "member_manifest": str(manifest_path), "expanded_inputs": str(expanded_path),
               "external_frozen_inputs": external, "linked_complete_archives": custody,
