@@ -35,7 +35,8 @@ pub enum CargoBinError {
 /// In `cargo test`, `CARGO_BIN_EXE_*` env vars are absolute.
 /// In `bazel test`, `CARGO_BIN_EXE_*` env vars are rlocationpaths, intended to be consumed by `rlocation`.
 /// This helper allows callers to transparently support both.
-#[allow(deprecated)]
+/// Missing binary metadata is returned as `CargoBinError::NotFound`, so callers
+/// can handle unavailable optional helpers through the normal `Result` API.
 pub fn cargo_bin(name: &str) -> Result<PathBuf, CargoBinError> {
     let env_keys = cargo_bin_env_keys(name);
     for key in &env_keys {
@@ -43,29 +44,11 @@ pub fn cargo_bin(name: &str) -> Result<PathBuf, CargoBinError> {
             return resolve_bin_from_env(key, value);
         }
     }
-    match assert_cmd::Command::cargo_bin(name) {
-        Ok(cmd) => {
-            let mut path = PathBuf::from(cmd.get_program());
-            if !path.is_absolute() {
-                path = std::env::current_dir()
-                    .map_err(|source| CargoBinError::CurrentDir { source })?
-                    .join(path);
-            }
-            if path.exists() {
-                Ok(path)
-            } else {
-                Err(CargoBinError::ResolvedPathDoesNotExist {
-                    key: "assert_cmd::Command::cargo_bin".to_owned(),
-                    path,
-                })
-            }
-        }
-        Err(err) => Err(CargoBinError::NotFound {
-            name: name.to_owned(),
-            env_keys,
-            fallback: format!("assert_cmd fallback failed: {err}"),
-        }),
-    }
+    Err(CargoBinError::NotFound {
+        name: name.to_owned(),
+        env_keys,
+        fallback: "Cargo/Bazel binary metadata is unavailable".to_owned(),
+    })
 }
 
 fn cargo_bin_env_keys(name: &str) -> Vec<String> {
