@@ -12,7 +12,6 @@ use std::sync::Mutex;
 use std::time::Duration;
 use std::time::Instant;
 
-use codex_hepta_agentd::NeuralCognitiveRequestV1;
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
 use tokio_util::sync::CancellationToken;
@@ -75,7 +74,7 @@ pub(super) struct Response {
 }
 
 pub(super) struct Exchange {
-    pub(super) request: NeuralCognitiveRequestV1,
+    pub(super) query: String,
     pub(super) execution: codex_hepta_agentd::NeuralCognitiveExecutionV1,
     pub(super) request_id: String,
     pub(super) payload_digest: String,
@@ -295,7 +294,7 @@ impl ModelDriver for SmolLmDriver {
             let serialization = Attempt::new("request_serialization");
             let bytes = serde_json::to_vec(
                 &serde_json::json!({"schema":"hepta-smollm-inference-input-v1",
-                "request_id":request.request_id, "prompt":exchange.request.query}),
+                "request_id":request.request_id, "prompt":exchange.query}),
             )
             .map_err(|error| failure.retain(serialization.message(error.to_string())))?;
             let timing = Attempt::new("operation_deadline");

@@ -8,6 +8,11 @@ use codex_hepta_agentd::AgentdIdentity;
 use codex_hepta_learning_artifacts::ArtifactOwnerCurrentReaderV1;
 use codex_hepta_learning_artifacts::SelectedInitialSmolLmMaterialV1;
 
+#[path = "smollm_initial_query.rs"]
+mod query;
+pub(crate) use query::InitialReadPermitV1;
+pub use query::InitialSelectedReadObservationV1;
+
 /// Original host-owned paths, bounded resources and executable expectations.
 /// No selector, issuer key, evaluation evidence or observed root is supplied.
 pub struct SmolLmInitialHostInputsV1 {

@@ -31,7 +31,9 @@ const MAX_PARAMETER_BYTES: u64 = 2 * 1024 * 1024;
 
 #[path = "smollm_initial_host.rs"]
 mod initial;
+pub(crate) use initial::InitialReadPermitV1;
 pub use initial::InitialSelectedLoadObservationV1;
+pub use initial::InitialSelectedReadObservationV1;
 pub use initial::InitialSmolLmPreparationErrorV1;
 pub use initial::PreparedSelectedInitialSmolLmV1;
 pub use initial::SmolLmInitialHostInputsV1;

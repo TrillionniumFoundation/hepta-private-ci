@@ -25,6 +25,7 @@ use codex_hepta_infer_core::durable_control::Reservation;
 use codex_hepta_infer_core::durable_control::TerminalObservation;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use tokio_util::sync::CancellationToken;
 
 use crate::model_worker::ExecutionStatus;
@@ -38,6 +39,9 @@ use crate::native_app_server::TurnStartAuthorizer;
 mod driver;
 use driver::Exchange;
 use driver::Mailbox;
+
+#[path = "smollm_neural_query.rs"]
+mod query;
 pub use driver::SmolLmCellStartOwnerV1;
 use driver::SmolLmDriver;
 pub use driver::SmolLmFirstExchangeFailureV1;
@@ -276,6 +280,8 @@ impl ControlContext {
 pub struct SmolLmNeuralReadPortV1 {
     pin: Option<NeuralCognitivePinV1>,
     model_id: String,
+    physical: SmolLmRuntimeIdentityV1,
+    scope: Digest32,
     context: ControlContext,
     worker: Mutex<InferenceWorker<SmolLmDriver>>,
     mailbox: Mailbox,
@@ -515,6 +521,8 @@ impl SmolLmNeuralReadPortV1 {
         Ok(Self {
             pin,
             model_id,
+            physical: identity,
+            scope,
             context,
             worker: Mutex::new(worker),
             mailbox,
@@ -582,34 +590,24 @@ impl SmolLmNeuralReadPortV1 {
     }
 }
 
-impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
-    fn execute(
+impl SmolLmNeuralReadPortV1 {
+    fn execute_physical(
         &self,
-        request: &NeuralCognitiveRequestV1,
-        parameters: &[u8],
+        query: &str,
+        action_ids: &[StableId],
+        payload: Digest32,
+        scope: Digest32,
         execution: &codex_hepta_agentd::NeuralCognitiveExecutionV1,
-    ) -> Result<NeuralCognitiveObservationV1, String> {
-        let pin = self
-            .pin
-            .as_ref()
-            .ok_or("initial-only model cannot enter the evaluated neural route")?;
+    ) -> Result<(Option<Vec<i64>>, Digest32), String> {
         execution.check()?;
         if self.admission_closed.load(Ordering::SeqCst) {
             return Err(
                 "neural session has unresolved physical execution; unload required".to_owned(),
             );
         }
-        if request.owner_id != self.context.owner_id
-            || request.body_generation != self.context.body_generation
-            || &request.pin != pin
-            || Digest32::of_bytes(parameters) != pin.payload_digest
-            || request.query_digest != Digest32::of_bytes(request.query.as_bytes())
-            || request.query.is_empty()
-            || request.query.len() > 2048
-            || request.action_ids.is_empty()
-            || request.action_ids.len() > 128
+        if query.is_empty() || query.len() > 2048 || action_ids.is_empty() || action_ids.len() > 128
         {
-            return Err("neural owner request differs from its pinned parameters".to_owned());
+            return Err("neural query exceeds its original registered bounds".to_owned());
         }
         // Queueing behind another call could outlive the ordinary read request
         // and then execute after its caller had already timed out.
@@ -617,23 +615,6 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
             .worker
             .try_lock()
             .map_err(|_| "original neural worker is active or poisoned")?;
-        let action_bytes = serde_json::to_vec(
-            &request
-                .action_ids
-                .iter()
-                .map(ToString::to_string)
-                .collect::<Vec<_>>(),
-        )
-        .map_err(|error| error.to_string())?;
-        let payload = Digest32::of_parts(&[
-            b"hepta.smollm-read-request.v1\0",
-            request.owner_id.as_str().as_bytes(),
-            &request.body_generation.to_be_bytes(),
-            pin.payload_digest.as_array(),
-            pin.execution_profile_digest.as_array(),
-            request.query_digest.as_array(),
-            &action_bytes,
-        ]);
         // Keep the original read admission cap even for a direct host caller
         // supplying a longer startup/evaluation window. This can only shorten
         // the original caller's remaining window, never renew it.
@@ -644,10 +625,7 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
             return Err("neural read execution deadline".to_owned());
         }
         let admitted = self.context.admit(payload, remaining_ms)?;
-        let entered = match self
-            .context
-            .enter(&admitted, pin.compatibility_digest(), execution)
-        {
+        let entered = match self.context.enter(&admitted, scope, execution) {
             Ok(token) => token,
             Err(error) => {
                 self.context.settle(&admitted, None, true, 0)?;
@@ -660,7 +638,7 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
             .map_err(|_| "neural exchange poisoned")?;
         mailbox.measurements.clear_forward();
         mailbox.exchange = Some(Exchange {
-            request: request.clone(),
+            query: query.to_owned(),
             execution: execution.clone(),
             request_id: admitted.request_id.clone(),
             payload_digest: admitted.payload_digest.clone(),
@@ -747,8 +725,7 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
             return Err(error);
         }
         drop(mailbox);
-        let scores = request
-            .action_ids
+        let scores = action_ids
             .iter()
             .map(|action| {
                 response
@@ -758,12 +735,7 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
                     .map(|index| response.scores_q32[index])
             })
             .collect::<Option<Vec<_>>>();
-        Ok(NeuralCognitiveObservationV1 {
-            request: request.clone(),
-            scores_q32: scores,
-            execution_receipt_digest: receipt,
-            authority: AuthorityPosture::DENY_ALL,
-        })
+        Ok((scores, receipt))
     }
 }
 

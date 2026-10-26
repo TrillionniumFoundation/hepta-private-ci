@@ -682,3 +682,6 @@ mod cleanup;
 
 #[path = "smollm_initial_positive_tests.rs"]
 mod positive;
+
+#[path = "smollm_initial_query_tests.rs"]
+mod initial_query;
