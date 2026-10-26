@@ -95,6 +95,13 @@ async fn fixture() -> Result<(Arc<McpConnectionSet>, RetainedServer)> {
     ready.client().await?;
     let mut manager = McpConnectionSet::empty(/*prefix_mcp_tool_names*/ true);
     manager.insert_test_client("runtime", ready);
+    // Capture applies the current server view's policy even for a reused
+    // client. The generic test helper leaves that budget unset by default.
+    manager
+        .servers
+        .get_mut("runtime")
+        .expect("original server")
+        .tool_timeout = Some(Duration::from_millis(200));
     manager.set_test_server_metadata(
         "runtime",
         McpServerMetadata {
