@@ -1340,6 +1340,16 @@ into the existing local candidate; all six Windows controls and the complete
 Windows package compile remain NOT_RUN. Keep every original native group and
 deletion failure, the eight-second cutoff and the existing resource limits.
 
+The parent startup path now consumes that observer using only the actual
+`CreateProcessWithLogonW` process and its held token. It validates the original
+request/role plan before birth, retains the query context in the original
+managed-process owner, and revalidates it around existing token/liveness
+readback during the pipe handshake. Missing or broad setup grants can refuse
+early; no ACL is repaired. These parent-local handles do not cross IPC or
+establish a child capability, loader or complete-lifetime handoff. The existing
+`into_files` handoff still ends this startup owner. All guards and original
+Windows failures remain; this source step has not been compiled or run natively.
+
 The following are implementation slices of that same PN0 item, not a second
 roadmap. The read-only volume and live-principal observation APIs below are
 implemented mechanisms. Create-only namespace and protected-directory

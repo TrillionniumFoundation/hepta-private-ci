@@ -43,7 +43,7 @@ impl FreshManagedRunnerBase {
     /// The original birth owner transfers an opaque same-object process capability.
     pub(crate) fn capture(
         mut source: ManagedAccountSource,
-        birth: OriginalManagedRunnerProcess,
+        mut birth: OriginalManagedRunnerProcess,
     ) -> Result<Self> {
         source.revalidate()?;
         let [initial, current] = birth.readback()?;

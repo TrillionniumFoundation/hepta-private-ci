@@ -9,6 +9,7 @@ use crate::ipc_framed::SpawnRequest;
 use crate::ipc_framed::read_frame;
 use crate::ipc_framed::write_frame;
 use crate::managed_token_policy::ManagedTokenSnapshot;
+use crate::prepared_filesystem::PreparedFilesystemAclContext;
 use crate::runner_pipe::PIPE_ACCESS_INBOUND;
 use crate::runner_pipe::PIPE_ACCESS_OUTBOUND;
 use crate::runner_pipe::connect_pipe;
@@ -23,6 +24,7 @@ use anyhow::Context;
 use anyhow::Result;
 use std::ffi::c_void;
 use std::fs::File;
+use std::os::windows::io::AsHandle;
 use std::os::windows::io::AsRawHandle;
 use std::os::windows::io::FromRawHandle;
 use std::os::windows::io::OwnedHandle;
@@ -113,10 +115,12 @@ pub(crate) struct RunnerTransport {
 pub(crate) struct OriginalManagedRunnerProcess {
     process: OwnedHandle,
     token: OwnedHandle,
+    filesystem: PreparedFilesystemAclContext,
 }
 
 impl OriginalManagedRunnerProcess {
-    pub(crate) fn readback(&self) -> Result<[ManagedTokenSnapshot; 2]> {
+    pub(crate) fn readback(&mut self) -> Result<[ManagedTokenSnapshot; 2]> {
+        self.filesystem.validate_for_token(self.token.as_handle())?;
         anyhow::ensure!(
             unsafe {
                 WaitForSingleObject(
@@ -151,6 +155,7 @@ impl OriginalManagedRunnerProcess {
             } == 258,
             "original managed process exited during readback"
         );
+        self.filesystem.validate_for_token(self.token.as_handle())?;
         Ok(result)
     }
 }
@@ -379,6 +384,30 @@ pub(crate) fn spawn_runner_transport(
         dunce::canonicalize(codex_home)? == dunce::canonicalize(&spawn_request.real_codex_home)?,
         "managed source and spawn request scopes differ"
     );
+    let filesystem_roles = spawn_request
+        .filesystem_roles
+        .as_ref()
+        .context("runner: missing versioned filesystem role plan")?;
+    let root_resolution = spawn_request
+        .root_resolution
+        .as_ref()
+        .context("runner: missing original root-resolution context")?;
+    let permissions =
+        crate::ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
+            &spawn_request.permission_profile,
+            &spawn_request.workspace_roots,
+        )?;
+    crate::validate_filesystem_plan_for_request(
+        crate::SandboxSetupRequest {
+            permissions: &permissions,
+            command_cwd: &spawn_request.cwd,
+            env_map: &spawn_request.env,
+            codex_home: &spawn_request.real_codex_home,
+            proxy_enforced: spawn_request.network_proxy_restricting_sid.is_some(),
+        },
+        root_resolution,
+        filesystem_roles,
+    )?;
     let managed_source = ManagedAccountSource::select(codex_home, sandbox_creds)?;
     let (pipe_in_name, pipe_out_name) = pipe_pair();
     let h_pipe_in =
@@ -470,9 +499,18 @@ pub(crate) fn spawn_runner_transport(
             } != 0,
             "original managed token is unqueryable"
         );
+        let token = unsafe { OwnedHandle::from_raw_handle(token as _) };
+        // Observe setup's actual grants with this original PI's held token.
+        // These parent-local query owners never cross the runner IPC boundary.
+        let filesystem = PreparedFilesystemAclContext::observe_existing(
+            &spawn_request.real_codex_home,
+            filesystem_roles,
+            token.as_handle(),
+        )?;
         let birth = OriginalManagedRunnerProcess {
             process,
-            token: unsafe { OwnedHandle::from_raw_handle(token as _) },
+            token,
+            filesystem,
         };
         let managed_base = FreshManagedRunnerBase::capture(managed_source, birth)?;
         connect_pipe_with_timeout(h_pipe_in, expected_runner_pid, "pipe-in")?;
