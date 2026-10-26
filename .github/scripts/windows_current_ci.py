@@ -20,9 +20,21 @@ def assess(group: dict, returncode: int, log: str) -> dict:
     text = ANSI.sub("", log)
     starts = re.findall(r"Starting (\d+) tests across", text)
     selected = int(starts[-1]) if starts else None
-    observed = sorted(set(re.findall(r"\(\s*\d+/\d+\)\s+\S+\s+(\S+)", text)))
+    terminal = re.findall(
+        r"^\s*(PASS|FAIL|TIMEOUT|EXECFAIL|LEAK|SKIP)\s+\[[^\]\n]+\]\s+"
+        r"(?:\(\s*\d+/\d+\)\s+)?(\S+)\s+(\S+)\s*$",
+        text,
+        re.MULTILINE,
+    )
+    observed = sorted({name for status, _, name in terminal if status != "SKIP"})
     missing = sorted(set(group["requiredTests"]) - set(observed))
-    matches = selected == group["expectedTestCount"] and not missing
+    failures = sorted({name for status, _, name in terminal if status != "PASS"})
+    matches = (
+        selected == group["expectedTestCount"]
+        and len(observed) == selected
+        and not missing
+        and all(package == group["package"] for _, package, _ in terminal)
+    )
     return {
         "id": group["id"],
         "package": group["package"],
@@ -31,8 +43,9 @@ def assess(group: dict, returncode: int, log: str) -> dict:
         "selectedTestCount": selected,
         "observedTests": observed,
         "missingRequiredTests": missing,
+        "nonPassingTests": failures,
         "selectionMatches": matches,
-        "passed": returncode == 0 and matches,
+        "passed": returncode == 0 and matches and not failures,
     }
 
 
