@@ -11,9 +11,9 @@ use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
 use std::collections::BTreeSet;
 use std::os::unix::fs::PermissionsExt;
-use std::sync::mpsc;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
+use std::sync::mpsc;
 use std::time::Duration;
 
 type Pause = (mpsc::SyncSender<ClockRecord>, mpsc::Receiver<()>);
@@ -31,10 +31,18 @@ struct DelayedStore {
 impl AuthorityFrontierStore<ClockRecord> for DelayedStore {
     fn load(&self, owner: &str) -> Result<ClockRecord, AuthorityTrustError> {
         let record = self.inner.load(owner)?;
-        let pause = self.load_pause.lock().map_err(|_| AuthorityTrustError::Unavailable)?.take();
+        let pause = self
+            .load_pause
+            .lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?
+            .take();
         if let Some((arrived, resume)) = pause {
-            arrived.send(record.clone()).map_err(|_| AuthorityTrustError::Unavailable)?;
-            resume.recv_timeout(Duration::from_secs(15)).map_err(|_| AuthorityTrustError::Unavailable)?;
+            arrived
+                .send(record.clone())
+                .map_err(|_| AuthorityTrustError::Unavailable)?;
+            resume
+                .recv_timeout(Duration::from_secs(15))
+                .map_err(|_| AuthorityTrustError::Unavailable)?;
         }
         Ok(record)
     }
@@ -132,7 +140,11 @@ fn root_current_window_reads_the_full_record_without_republishing_it() {
         std::thread::sleep(Duration::from_millis(2));
     }
     assert!(observed.windows(2).all(|pair| pair[0] <= pair[1]));
-    assert!(observed.iter().all(|now| *now * 1_000_000 <= before.ceiling_ns));
+    assert!(
+        observed
+            .iter()
+            .all(|now| *now * 1_000_000 <= before.ceiling_ns)
+    );
     assert_eq!(fixture.store.load("slow-clock").unwrap(), before);
     assert_eq!(fixture.store.cas_calls.load(Ordering::SeqCst), 0);
     let renewed = fixture.clock.refresh_projection().unwrap();
@@ -167,14 +179,21 @@ fn root_window_expiring_during_load_requires_fresh_durable_time() {
 #[ignore = "explicit root-only corrupted retained clock refusal qualification"]
 fn root_invalid_retained_window_is_never_renewed_or_reinitialized() {
     let fixture = Fixture::new();
-    let files: Vec<_> = std::fs::read_dir(fixture._directory.path()).unwrap()
+    let files: Vec<_> = std::fs::read_dir(fixture._directory.path())
+        .unwrap()
         .map(|entry| entry.unwrap().path())
-        .filter(|path| path.extension().is_some_and(|extension| extension == "json"))
+        .filter(|path| {
+            path.extension()
+                .is_some_and(|extension| extension == "json")
+        })
         .collect();
     assert_eq!(files.len(), 1);
     let corrupt = b"{\"schema\":1,\"owner_id\":\"slow-clock\",\"frontier\":null}";
     std::fs::write(&files[0], corrupt).unwrap();
-    assert_eq!(fixture.clock.now_unix_ms(), Err(AuthorityTrustError::Invalid));
+    assert_eq!(
+        fixture.clock.now_unix_ms(),
+        Err(AuthorityTrustError::Invalid)
+    );
     assert_eq!(fixture.store.cas_calls.load(Ordering::SeqCst), 0);
     assert_eq!(std::fs::read(&files[0]).unwrap(), corrupt);
 }
