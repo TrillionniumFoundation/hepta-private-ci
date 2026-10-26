@@ -57,7 +57,10 @@ fn encoded_marker_preserves_owner_settings_and_binds_the_new_ordinary_shape() ->
         }
         let mut request = prepare(&model, &run_id, settings)?;
         let encoded = EncodedJsonBody::encode(&request)?;
-        assert_eq!(serde_json::from_slice::<Value>(encoded.as_bytes())?, expected);
+        assert_eq!(
+            serde_json::from_slice::<Value>(encoded.as_bytes())?,
+            expected
+        );
 
         let body_digest = Digest32::of_bytes(encoded.as_bytes());
         let settings_digest = Digest32::of_bytes(format!("owner-settings:{index}").as_bytes());
@@ -68,10 +71,8 @@ fn encoded_marker_preserves_owner_settings_and_binds_the_new_ordinary_shape() ->
         request.tools = None;
         request.tool_choice = "none".into();
         let old_body = EncodedJsonBody::encode(&request)?;
-        let old_wire = PreparedOrdinaryWire::new(
-            Digest32::of_bytes(old_body.as_bytes()),
-            settings_digest,
-        )?;
+        let old_wire =
+            PreparedOrdinaryWire::new(Digest32::of_bytes(old_body.as_bytes()), settings_digest)?;
         assert_ne!(wire.semantic_digest(), old_wire.semantic_digest());
         assert!(!wire.dispatch_metadata().transport_invoked());
     }
