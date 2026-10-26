@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.next.joint-independent-audit-execution-receipt.v1",
+  "argv": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/joint/review/audit_completed.py",
+    "--run",
+    "/tmp/hepta-ndu-next-joint/confirmation-001",
+    "--protocol",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/joint/PROTOCOL.json",
+    "--primary",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/joint/RESULT.json",
+    "--process",
+    "/tmp/hepta-ndu-next-joint/confirmation-001.process.json",
+    "--cache",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/qmnist",
+    "--audio-root",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/media/new-assets/speech-commands-v002-digits",
+    "--output",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/joint/review/AUDIT.json"
+  ],
+  "working_directory": "/workspace/scratch/87e43aa872f5/hepta-ndu",
+  "observed_exec_tool_exit_code": 0,
+  "observed_exec_tool_wall_time_seconds": 5.367945893,
+  "audit_internal_seconds": 5.269652304,
+  "audit_source_sha256": "f43937c74a06a45adaefa8696f06397d1cdee0e11d20134e2b353800d40087b3",
+  "audit_result_sha256": "ddbd240ee34d2c4bb34e92ffe0655a8697966601635629e041d71ea607584235",
+  "preparation_sha256": "1572472c06a9a1e19d4bed9daf73cb995ec5d8b27366b51a896541846b2120d4",
+  "max_primary_numeric_abs_difference": 1.1102230246251565e-16,
+  "execution_after_root_complete_and_primary_notification": true,
+  "models_asr_codecs_or_primary_analysis_rerun": false,
+  "status": "passed",
+  "registered_quality_gates": {
+    "CE_superiority": false,
+    "joint_success_noninferiority": false
+  },
+  "meaning": "Audit execution and independent verification passed; original quality superiority and strict-joint noninferiority gates remain failed"
+}
