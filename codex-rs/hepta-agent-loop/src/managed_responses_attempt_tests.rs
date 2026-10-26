@@ -498,3 +498,6 @@ async fn a_failed_encoded_write_never_acknowledges_completion() {
         EncodedRequestTerminal::Abandoned { .. }
     ));
 }
+
+#[path = "managed_responses_client_completion_tests.rs"]
+mod client_completion_tests;

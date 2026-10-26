@@ -8,6 +8,7 @@ mod inspector;
 mod policy;
 mod probe;
 mod request_wire;
+mod terminal_shutdown;
 
 use anyhow::Result;
 use anyhow::anyhow;

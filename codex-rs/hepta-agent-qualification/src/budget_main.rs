@@ -6,6 +6,7 @@ mod policy;
 #[path = "budget_probe.rs"]
 mod probe;
 mod request_wire;
+mod terminal_shutdown;
 
 use anyhow::Result;
 use anyhow::anyhow;
