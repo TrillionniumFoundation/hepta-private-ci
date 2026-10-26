@@ -349,8 +349,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "230c9a80858383f6c6c5d282db0f985b4385d24a",
+    "tree": "ce90218d6302f44d788a553568a980d5b75bf4a0"
   },
   "repositoryControlledGaps": [
     "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
@@ -374,7 +374,7 @@
   },
   "productCallerEvidence": [
     {
-      "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "path": "codex-rs/hepta-agentd/src/objective_submission.rs",
       "symbol": "ObjectiveRuntimeHost::submit",
       "semantics": "signed AuthBus -> current trust authentication -> admission -> durable publication -> current-trust revalidation -> generation/fence-bound runtime admission"
     },
@@ -390,8 +390,8 @@
     }
   ],
   "exactSourceCandidate": {
-    "commit": "e946a7ed08814881f9986d813c5b8cd821241f99",
-    "tree": "5c62cf98768ee7f99c55e80c3b4430bcfddd41e7",
+    "commit": "230c9a80858383f6c6c5d282db0f985b4385d24a",
+    "tree": "ce90218d6302f44d788a553568a980d5b75bf4a0",
     "roots": [
       "codex-rs/hepta-objective"
     ],
@@ -402,10 +402,11 @@
     "RunStartSnapshotV1"
   ],
   "productCompositionSourceCandidate": {
-    "commit": "e603e7ac675843e69f6cfd741e42180b2d5437ed",
-    "tree": "6de843d2ddf162869e4aff0ebb84642d4b2c26c3",
+    "commit": "fdef130d284c9cc59f39af5ae6e85943ac97e076",
+    "tree": "cbb48fdcecc422e3255a6d7667b30df3ac552abc",
     "paths": [
       "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "codex-rs/hepta-agentd/src/objective_submission.rs",
       "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
       "codex-rs/hepta-intelligence/src/objective_run.rs",
       "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
@@ -424,7 +425,7 @@
   ],
   "productCallers": [
     {
-      "sourcePath": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_submission.rs",
       "nativeSymbol": "submit",
       "state": "authenticated_configured_objective_host"
     }
@@ -432,7 +433,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
-      "object": "84a4b156fa04f27665319300e241732697a0ea01"
+      "object": "61bf3fb010fe99dae796e6bd4d986a409f70fc36"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_submission.rs",
+      "object": "90dcf376a1d00afdd41ced44ecc3342ca8316594"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
@@ -440,11 +445,11 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
-      "object": "cfbb34705a6dee9a2b0c5afda76592109c83f86b"
+      "object": "492913779427e1ba5279d66535954a7a04e9aedc"
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "e89450f622d12e85f516df691291e349f42cd8fc"
+      "object": "da2ffee0f17b6047b9aab1f487463d5e28838fb1"
     },
     {
       "path": "codex-rs/hepta-objective/src/compiler.rs",

@@ -137,6 +137,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m unittest discover -s apps/hepta-control-ui/test -p test_prepare_fonts.py -v
+          node --test apps/hepta-control-ui/test/generated-workspace-patches.test.mjs
           cargo fmt --manifest-path apps/hepta-control-ui/rust/Cargo.toml --all -- --check
           just test --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-robrix-ui --no-default-features
           cargo clippy --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --target wasm32-unknown-unknown -- -D warnings
@@ -430,17 +431,22 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y pkg-config libasound2-dev libwayland-dev libx11-dev libxcursor-dev libxrandr-dev libxi-dev libxinerama-dev libxkbcommon-dev libgl1-mesa-dev libegl1-mesa-dev
-          dpkg-query -W pkg-config libasound2-dev libwayland-dev libx11-dev libxcursor-dev libxrandr-dev libxi-dev libxinerama-dev libxkbcommon-dev libgl1-mesa-dev libegl1-mesa-dev > "$RUNNER_TEMP/native-presentation-evidence/system-inputs.txt"
+          sudo apt-get install -y pkg-config libasound2-dev libpulse-dev libwayland-dev libx11-dev libxcursor-dev libxrandr-dev libxi-dev libxinerama-dev libxkbcommon-dev libgl1-mesa-dev libegl1-mesa-dev
+          dpkg-query -W pkg-config libasound2-dev libpulse-dev libwayland-dev libx11-dev libxcursor-dev libxrandr-dev libxi-dev libxinerama-dev libxkbcommon-dev libgl1-mesa-dev libegl1-mesa-dev > "$RUNNER_TEMP/native-presentation-evidence/system-inputs.txt"
+          pkg-config --modversion libpulse > "$RUNNER_TEMP/native-presentation-evidence/libpulse-version.txt"
+          # Makepad's native audio module links libpulse even without a live audio server.
+          printf 'int main(void) { return 0; }\n' | cc -x c - -o "$RUNNER_TEMP/native-presentation-pulse-link" -lpulse
       - name: Execute the explicitly enabled composition and lifecycle tests
         run: |
           set -euo pipefail
           TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/native-presentation-evidence/junit-gate-tests.json" --minimum-tests 12 --timeout-seconds 60 -- python3 apps/hepta-control-ui/test/test_native_composition_junit.py
+          TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/native-presentation-evidence/junit-location-test.json" --minimum-tests 1 --timeout-seconds 60 -- python3 scripts/test_run_nextest.py ScopedNextestTests.test_explicit_manifest_junit_uses_workspace_store
           cargo fmt --manifest-path apps/hepta-control-ui/rust/Cargo.toml --all -- --check
-          python3 apps/hepta-control-ui/tools/check-native-composition-junit.py prepare --start "$RUNNER_TEMP/native-presentation-evidence/headless-junit-start.json" --junit "$CARGO_TARGET_DIR/nextest/native-composition-headless/junit.xml" --mode headless --tested-sha "$(git rev-parse HEAD)"
+          # Nextest store.dir is relative to the selected workspace; CARGO_TARGET_DIR only moves compiler output.
+          python3 apps/hepta-control-ui/tools/check-native-composition-junit.py prepare --start "$RUNNER_TEMP/native-presentation-evidence/headless-junit-start.json" --junit "$GITHUB_WORKSPACE/apps/hepta-control-ui/rust/target/nextest/native-composition-headless/junit.xml" --mode headless --tested-sha "$(git rev-parse HEAD)"
           TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/native-presentation-evidence/headless.json" --minimum-tests 5 --timeout-seconds 600 -- just test --locked --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --no-default-features --features native-presentation --lib --profile native-composition-headless
           python3 apps/hepta-control-ui/tools/check-native-composition-junit.py verify --start "$RUNNER_TEMP/native-presentation-evidence/headless-junit-start.json" --execution "$RUNNER_TEMP/native-presentation-evidence/headless.json" --output "$RUNNER_TEMP/native-presentation-evidence/headless-junit.json"
-          python3 apps/hepta-control-ui/tools/check-native-composition-junit.py prepare --start "$RUNNER_TEMP/native-presentation-evidence/native-junit-start.json" --junit "$CARGO_TARGET_DIR/nextest/native-composition-native/junit.xml" --mode native --tested-sha "$(git rev-parse HEAD)"
+          python3 apps/hepta-control-ui/tools/check-native-composition-junit.py prepare --start "$RUNNER_TEMP/native-presentation-evidence/native-junit-start.json" --junit "$GITHUB_WORKSPACE/apps/hepta-control-ui/rust/target/nextest/native-composition-native/junit.xml" --mode native --tested-sha "$(git rev-parse HEAD)"
           TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/native-presentation-evidence/native.json" --minimum-tests 8 --timeout-seconds 1200 -- just test --locked --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --features ui,native-host,native-presentation --lib --profile native-composition-native
           python3 apps/hepta-control-ui/tools/check-native-composition-junit.py verify --start "$RUNNER_TEMP/native-presentation-evidence/native-junit-start.json" --execution "$RUNNER_TEMP/native-presentation-evidence/native.json" --output "$RUNNER_TEMP/native-presentation-evidence/native-junit.json"
           cargo clippy --locked --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --all-targets --features ui,native-host,native-presentation -- -D warnings 2>&1 | tee "$RUNNER_TEMP/native-presentation-evidence/clippy.log"
@@ -453,7 +459,7 @@ jobs:
           name: native-presentation-${{ matrix.lane }}-${{ github.event.pull_request.head.sha }}
           path: |
             ${{ runner.temp }}/native-presentation-evidence/
-            ${{ runner.temp }}/native-presentation-target/nextest/native-composition-*/junit.xml
+            apps/hepta-control-ui/rust/target/nextest/native-composition-*/junit.xml
           if-no-files-found: error
 
   ui-bazel-lock-generation:

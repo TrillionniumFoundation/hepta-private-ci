@@ -155,15 +155,15 @@ pub use crate::transport::AppServerTransport;
 pub use crate::transport::InheritedControlSocket;
 
 mod inherited_transport;
-pub use inherited_transport::run_main_with_transport_options;
-#[cfg(target_os = "linux")]
-pub use inherited_transport::run_main_with_inherited_unix_listener;
 pub use crate::transport::RemoteControlStartupMode;
 pub use crate::transport::app_server_control_socket_path;
 pub use crate::transport::auth::AppServerWebsocketAuthArgs;
 pub use crate::transport::auth::AppServerWebsocketAuthSettings;
 pub use crate::transport::auth::WebsocketAuthCliMode;
 pub use crate::transport::take_remote_control_disabled_env;
+#[cfg(target_os = "linux")]
+pub use inherited_transport::run_main_with_inherited_unix_listener;
+pub use inherited_transport::run_main_with_transport_options;
 
 const LOG_FORMAT_ENV_VAR: &str = "LOG_FORMAT";
 const OTEL_SERVICE_NAME: &str = "codex-app-server";
@@ -1003,11 +1003,18 @@ async fn run_main_with_transport_options_inner(
         AppServerTransport::UnixSocket { socket_path } => {
             let accept_handle = match inherited_socket.take() {
                 Some(socket) => start_inherited_control_socket_acceptor(
-                    socket, transport_event_tx.clone(), transport_shutdown_token.clone(),
+                    socket,
+                    transport_event_tx.clone(),
+                    transport_shutdown_token.clone(),
                 ),
-                None => start_control_socket_acceptor(
-                    socket_path.clone(), transport_event_tx.clone(), transport_shutdown_token.clone(),
-                ).await?,
+                None => {
+                    start_control_socket_acceptor(
+                        socket_path.clone(),
+                        transport_event_tx.clone(),
+                        transport_shutdown_token.clone(),
+                    )
+                    .await?
+                }
             };
             transport_accept_handles.push(accept_handle);
         }

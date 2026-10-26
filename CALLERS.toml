@@ -75,7 +75,10 @@ id = "cognitive_store_recovery_open"
 symbol = "CognitiveStore::open_with_recovery"
 definition_path = "codex-rs/hepta-memory/src/cognitive_store_recovery.rs"
 definition_markers = ["pub async fn open_with_recovery", "ProductionAuthorityVerifier", "CognitiveStoreOpenGuard::acquire_exclusive"]
-product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+product_callers = [
+  "codex-rs/hepta-agentd/src/production_writer_host.rs",
+  "codex-rs/hepta-agentd/src/production_protected_host.rs",
+]
 caller_markers = ["CognitiveStore::open_with_recovery", "ProductionAuthorityVerifier"]
 
 [[boundary]]
@@ -370,8 +373,14 @@ symbol = "AuthorityLeaseVerifier::verify_use"
 call_pattern = '\bverifier\s*\.\s*verify_use\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub struct AuthorityLeaseVerifier", "pub fn verify_use(", "LeaseVerifiedUseToken"]
-product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs"]
-caller_markers = ["AuthorityLeaseVerifier", ".verify_use(", "FleetAuthorityPort"]
+product_callers = [
+  "codex-rs/hepta-fleet/src/authority_port.rs",
+  "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+  "codex-rs/hepta-agentd/src/deployment_writer.rs",
+  "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs",
+]
+# Caller-specific guards remain mandatory in protected_file entries below.
+caller_markers = [".verify_use("]
 
 [[boundary]]
 id = "authority_lease_delivery"
@@ -402,8 +411,39 @@ id = "authority_lease_dispatch_witness"
 symbol = "dispatch_authority_lease_with_witness"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn dispatch_authority_lease_with_witness", "VerifiedUseTokenWitnessV1", "with_dispatch_boundary_witness"]
-product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs"]
-caller_markers = ["dispatch_authority_lease_with_witness", "issue_with_witness", "FleetAuthorityPort"]
+product_callers = [
+  "codex-rs/hepta-fleet/src/authority_port.rs",
+  "codex-rs/hepta-agentd/src/deployment_writer.rs",
+]
+caller_markers = ["dispatch_authority_lease_with_witness"]
+
+# These are existing original-owner call sites. This inventory grants no
+# authority; it retains each caller's own guard instead of requiring Fleet's
+# wrapper name in the independent Root issuer implementation.
+[[protected_file]]
+path = "codex-rs/hepta-fleet/src/authority_port.rs"
+required = ["AuthorityLeaseVerifier", ".verify_use(", "FleetAuthorityPort", "dispatch_authority_lease_with_witness", "issue_with_witness"]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/production_protected_host.rs"
+required = ["CognitiveStore::open_with_recovery", "CognitiveRecoveryRequirement::ExactCurrentCut", "receipt.head.writer_binding != binding", "CognitiveCheckpointPhase::Current", "verify_sender_process_binding", "bind_protected_checkpoint", "Self::from_recovered_store"]
+forbidden = ["AllowVerifier", "permit_all", "CognitiveStore::open("]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_issuer_root.rs"
+required = ["AuthorityLeaseVerifier", ".verify_use(", "original lease revision mismatch", "runtime.agentd.production_operation", ".with_dispatch_boundary("]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_writer.rs"
+required = ["AuthorityLeaseVerifier", "self.validate()?", "lease != self.authority_lease", ".verify_use(", "dispatch_authority_lease_with_witness", "VerifiedUseAuthorityRefV1::AuthorityLease", "runtime.agentd.production_writer"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs"
+required = ["predecessor.validate()?", "successor.validate()?", ".verify_use(", ".with_retired_predecessor_boundary(", "self.validate_writer_proof_identity", "validate_writer_time", "successor lease changed"]
+forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-supervisor/src/main.rs"
@@ -520,3 +560,36 @@ definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_effect", "enter_verified_effect", "active_dispatches"]
 product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs"]
 caller_markers = ["with_verified_effect"]
+
+# Existing original Root consumers inventoried independently by the typed
+# closed-world check. These source guards confer no runtime authority.
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/production_authority.rs"
+required = ["pub struct AgentdFinalUseHostInputs", "FinalUseAuthority::open_state_dir_with_issuer_keys", "self.issuer_keys", "self.revocations", "self.clock", "self.frontier_store"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_production_inputs.rs"
+required = ["validate_sealed", "root_pidfd.try_clone()", "session.revocations()", "bundle.revocations", "verify_sender_process_binding", "RootFinalUseFrontierClient::from_stream", "frontier.load", "FinalUseAuthority::open_state_dir_with_issuer_keys"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_authority_session.rs"
+required = ["self.live.cache.fence()", "self.worker.abort()", "live.cache.begin_update()", "live.proof.matches_observation", "synchronize_consumers", "update_revocations", "MAX_AGE_NS", "revocation_head()"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+required = ["RootAuthorityDirectory::open", "read_root_json", "bootstrap.required_bind.verify()?", "config.required_bind.verify()?", "verify_pinned_process", "read_existing_private", "issuer public key pin mismatch", "production_ready: false", "put_lease", "register_host_writer_authorization"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_notes.rs"
+required = ["self.writer.with_live", "registered writer proof changed", "registry.put_lease", "self.policy.lifetime_ms", "writer.authority_lease.expires_at_unix_ms", "with_joint_dispatch_boundary", "Notes signing boundary changed"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/authority_host_issuer.rs"
+required = ["RootAuthorityDirectory", "key_name", "root.open_private", "lease.revision != lease_revision", ".verify_use", ".with_dispatch_boundary", "checked_add(GRANT_LIFETIME_MS)", "min(lease.expires_at_unix_ms)", "SigningKey", "self.clock.now_unix_ms"]
+forbidden = ["AllowVerifier", "permit_all"]

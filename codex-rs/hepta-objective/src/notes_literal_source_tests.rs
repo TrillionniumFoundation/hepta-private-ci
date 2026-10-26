@@ -43,7 +43,10 @@ fn literal_notes_source_binds_original_operation_and_uses_real_admission() {
     };
     let admitted = admit_and_compile_objective_v1(&decoded, &profile, &context).unwrap();
     assert!(admitted.compile_result.is_ok());
-    assert_eq!(decoded.structured_intent.provenance.source_digest, operation);
+    assert_eq!(
+        decoded.structured_intent.provenance.source_digest,
+        operation
+    );
 
     // Reusing authentication for a different original operation cannot admit
     // the source whose payload/predecessor digest was changed.
@@ -67,10 +70,12 @@ fn literal_notes_source_refuses_invalid_navigation_and_unbound_inputs() {
     }
     assert!(source(&"x".repeat(97), operation).is_err());
     assert!(source("note-1", Digest32::ZERO).is_err());
-    assert!(literal_notes_admission_profile_json_v1(
-        "test.notes.principal",
-        Digest32::ZERO,
-        "test.notes.issuer"
-    )
-    .is_err());
+    assert!(
+        literal_notes_admission_profile_json_v1(
+            "test.notes.principal",
+            Digest32::ZERO,
+            "test.notes.issuer"
+        )
+        .is_err()
+    );
 }

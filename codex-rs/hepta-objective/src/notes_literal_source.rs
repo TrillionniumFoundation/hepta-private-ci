@@ -31,7 +31,10 @@ pub fn literal_notes_source_json_v1(
 ) -> Result<String, String> {
     if context.client_intent_id.is_empty()
         || context.client_intent_id.len() > 96
-        || !context.client_intent_id.bytes().all(|byte| byte.is_ascii_alphanumeric() || b"-_".contains(&byte))
+        || !context
+            .client_intent_id
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"-_".contains(&byte))
         || context.source_digest.is_zero()
         || context.principal_scope_digest.is_zero()
         || !matches!(context.locale, "en-US" | "zh-CN")

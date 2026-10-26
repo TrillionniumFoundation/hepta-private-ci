@@ -2,8 +2,23 @@
 import {execOwned as execFileSync} from './owned-artifact-lease.mjs';
 import {createHash} from 'node:crypto';
 import {cp,mkdir,readFile,rm,writeFile,lstat} from 'node:fs/promises';
-import {join} from 'node:path';
+import {join,relative,resolve} from 'node:path';
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+// Cargo resolves patch paths against the manifest that declares them. The
+// generated workspace is three directories deeper; preserve the original
+// reviewed package locations instead of copying their relative spelling.
+export function rebaseWorkspacePatches(manifest,source,destination){
+ let section='';
+ return manifest.split('\n').map(line=>{
+  const header=line.match(/^\s*\[([^\]]+)\]\s*(?:#.*)?$/);
+  if(header){section=header[1];return line;}
+  if(!section.startsWith('patch.')||/^\s*#/.test(line))return line;
+  return line.replace(/(\bpath\s*=\s*)("(?:[^"\\]|\\.)*"|'[^']*')/,(_,key,quoted)=>{
+   const path=quoted.startsWith('"')?JSON.parse(quoted):quoted.slice(1,-1);
+   return key+JSON.stringify(relative(destination,resolve(source,path)).replaceAll('\\','/'));
+  });
+ }).join('\n');
+}
 export async function preparePlatform(workspace,makepadRoot,revision){
  const generated=join(workspace,'target/robrix-build');
  const platform=join(generated,'makepad-platform');
@@ -80,6 +95,6 @@ export async function preparePlatform(workspace,makepadRoot,revision){
  for(const name of ['core','web','robrix-ui']) {await rm(join(app,name),{recursive:true,force:true});await cp(join(workspace,name),join(app,name),{recursive:true});}
  await cp(join(workspace,'Cargo.lock'),join(app,'Cargo.lock'));
  const sourceManifest=await readFile(join(workspace,'Cargo.toml'),'utf8');
- await writeFile(join(app,'Cargo.toml'),sourceManifest+'\n[patch."https://github.com/kevinaboos/makepad"]\nmakepad-platform = { path = "../makepad-platform" }\nmakepad-draw = { path = "../makepad-draw" }\n');
+ await writeFile(join(app,'Cargo.toml'),rebaseWorkspacePatches(sourceManifest,workspace,app)+'\n[patch."https://github.com/kevinaboos/makepad"]\nmakepad-platform = { path = "../makepad-platform" }\nmakepad-draw = { path = "../makepad-draw" }\n');
  return {workspace:app,identity,layoutIdentity,imeIdentity,drawIdentity,consumerIdentity,platformManifestSha256:sha(manifest),drawManifestSha256:sha(drawManifest)};
 }

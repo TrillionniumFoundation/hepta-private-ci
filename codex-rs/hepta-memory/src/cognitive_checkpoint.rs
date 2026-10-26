@@ -81,6 +81,13 @@ impl<T: CognitiveCheckpointTransport> ProtectedCognitiveCheckpoint<T> {
         })
     }
 
+    // Preserve the exact receipt throughout initial protected readback. The
+    // consuming bind owns the original SQLite barrier and cancellation fence.
+    #[deny(unfulfilled_lint_expectations)]
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "initial protected readback must observe one serialized receipt"
+    )]
     pub(crate) async fn verify_initial(&self) -> Result<(), ObjectiveSenderCheckpointError> {
         let expected = self.receipt.lock().await;
         if self.read_head(&expected).await? != *expected {
@@ -91,6 +98,14 @@ impl<T: CognitiveCheckpointTransport> ProtectedCognitiveCheckpoint<T> {
 
     /// Called for new and reused connections, before owner code receives them.
     /// A failed transition fences writes but preserves read-only inspection.
+    // The receipt lock also orders commit permission against publication. A
+    // stale Dirty observation must not reopen commits after a newer Current.
+    // An unacknowledged transition fences the pool before this lock is released.
+    #[deny(unfulfilled_lint_expectations)]
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "Current-to-Dirty CAS and opening commit permission must serialize with publication"
+    )]
     pub(crate) async fn before_checkout(&self) {
         if self.gate.is_fenced() {
             return;
@@ -271,6 +286,14 @@ impl<T: CognitiveCheckpointTransport> ProtectedCognitiveCheckpoint<T> {
 impl<T: CognitiveCheckpointTransport> ObjectiveSenderCheckpoint
     for ProtectedCognitiveCheckpoint<T>
 {
+    // The caller retains its original SQLite writer barrier. Serialize both
+    // publication CAS operations and receipt replacement against all checkouts;
+    // cancellation drops CheckpointAttempt and fences before that barrier ends.
+    #[deny(unfulfilled_lint_expectations)]
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the receipt lock must cover protected publication and its cancellation fence"
+    )]
     async fn acknowledge_current(
         &self,
         committed: &CognitiveRecoveryAnchor,

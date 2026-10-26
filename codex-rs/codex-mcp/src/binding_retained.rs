@@ -29,6 +29,11 @@ impl McpBinding {
     /// Retain only named, model-visible tools already present in this binding
     /// and running in the independently selected original environment. No bare
     /// client is exported, and disabled/unready tools cannot trigger startup.
+    #[deny(unfulfilled_lint_expectations)]
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the original catalog check and exact ready peer capture must share the same read fence"
+    )]
     pub async fn retain_calls(
         &self,
         server: &str,
@@ -36,14 +41,17 @@ impl McpBinding {
         tools: &[&str],
     ) -> Result<RetainedMcpCalls> {
         ensure!(
-            !server.is_empty() && !environment_id.is_empty() && !tools.is_empty() && tools.len() <= 16,
+            !server.is_empty()
+                && !environment_id.is_empty()
+                && !tools.is_empty()
+                && tools.len() <= 16,
             "retained MCP calls require an explicit server, environment and bounded tool set"
         );
         let mut calls = HashMap::new();
         for tool in tools {
-            let call = self
-                .prepare_call(server, tool)
-                .ok_or_else(|| anyhow!("MCP tool `{server}/{tool}` is not permitted in the original binding"))?;
+            let call = self.prepare_call(server, tool).ok_or_else(|| {
+                anyhow!("MCP tool `{server}/{tool}` is not permitted in the original binding")
+            })?;
             ensure!(
                 call.server_environment_id() == environment_id,
                 "retained MCP tool environment differs from the original binding"
@@ -57,11 +65,17 @@ impl McpBinding {
                 "retained MCP tool set contains a duplicate"
             );
         }
-        let first = calls.values().next().expect("nonempty tool set");
+        let first = calls
+            .values()
+            .next()
+            .ok_or_else(|| anyhow!("retained MCP tool set is empty"))?;
         ensure!(
             calls.values().all(|call| {
                 Arc::ptr_eq(&call.client.client, &first.client.client)
-                    && Arc::ptr_eq(&call.catalog_revision_source, &first.catalog_revision_source)
+                    && Arc::ptr_eq(
+                        &call.catalog_revision_source,
+                        &first.catalog_revision_source,
+                    )
                     && call.catalog_revision == first.catalog_revision
             }),
             "retained MCP calls do not share the same original peer and catalog"
@@ -81,7 +95,9 @@ impl RetainedMcpCalls {
     /// Exposes the original policy for the trusted caller's existing approval
     /// gate. This value never turns an approval-required tool into an approved one.
     pub fn tool_approval_mode(&self, tool: &str) -> Option<AppToolApproval> {
-        self.calls.get(tool).map(PreparedMcpCall::tool_approval_mode)
+        self.calls
+            .get(tool)
+            .map(PreparedMcpCall::tool_approval_mode)
     }
 
     /// Send once on the same peer, preserving the original catalog read fence
@@ -100,7 +116,10 @@ impl RetainedMcpCalls {
             .calls
             .get(tool)
             .ok_or_else(|| anyhow!("tool is outside the retained MCP binding"))?;
-        let budget = call.client.tool_timeout.map_or(budget, |limit| budget.min(limit));
+        let budget = call
+            .client
+            .tool_timeout
+            .map_or(budget, |limit| budget.min(limit));
         ensure!(!budget.is_zero(), "retained MCP call deadline expired");
         let deadline = tokio::time::Instant::now()
             .checked_add(budget)

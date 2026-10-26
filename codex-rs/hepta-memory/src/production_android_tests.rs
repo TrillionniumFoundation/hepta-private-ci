@@ -65,7 +65,11 @@ fn replies(payload: &AndroidSetTextV1, digest: &Sha256Digest) -> (Value, Value) 
     observation["target"]["prior_text_sha256"] =
         json!(Sha256Digest::for_bytes(payload.value.as_bytes()));
     let mut node = observation["target"].clone();
-    node.as_object_mut().expect("node").remove("node_sha256");
+    let node_fields = node.as_object_mut().expect("node");
+    node_fields.remove("node_sha256");
+    // preserve_order uses swap_remove; the receiver's canonical bytes always
+    // require lexicographic keys, including after removing the digest itself.
+    node_fields.sort_keys();
     observation["target"]["node_sha256"] = json!(Sha256Digest::for_bytes(
         &serde_json::to_vec(&node).expect("canonical node")
     ));

@@ -165,9 +165,27 @@ async fn authenticated_server(
 #[tokio::test]
 async fn retained_session_never_recovers_404_or_retries_auth_or_transient_failures()
 -> anyhow::Result<()> {
-    for (auth, redirects, status) in [FixtureAuth::Bearer, FixtureAuth::RuntimeHeader].into_iter().flat_map(|auth| [StreamableHttpRedirectMode::Legacy, StreamableHttpRedirectMode::AgentPluginV1].into_iter().flat_map(move |redirects| [404, 401, 400, 403, 502, 307].map(|status| (auth, redirects, status)))) {
+    for (auth, redirects, status) in [FixtureAuth::Bearer, FixtureAuth::RuntimeHeader]
+        .into_iter()
+        .flat_map(|auth| {
+            [
+                StreamableHttpRedirectMode::Legacy,
+                StreamableHttpRedirectMode::AgentPluginV1,
+            ]
+            .into_iter()
+            .flat_map(move |redirects| {
+                [404, 401, 400, 403, 502, 307].map(|status| (auth, redirects, status))
+            })
+        })
+    {
         let (server, initializes, calls) = authenticated_server(status, Duration::ZERO, auth).await;
-        let client = authenticated_client(&server, redirects, auth, Environment::default_for_tests().get_http_client()).await?;
+        let client = authenticated_client(
+            &server,
+            redirects,
+            auth,
+            Environment::default_for_tests().get_http_client(),
+        )
+        .await?;
         let retained = client.retain_tool_session().await?;
         assert!(
             retained

@@ -17,6 +17,11 @@ use hepta_control_core::chat_timeline::Role;
 #[cfg(feature = "ui-fixtures")]
 use makepad_widgets::makepad_platform::script::res::CxScriptResourceData;
 use makepad_widgets::*;
+
+#[cfg(test)]
+#[path = "room_full_state_tests.rs"]
+mod full_state_tests;
+
 // The pinned Makepad field parser consumes a simple type identifier, not a
 // bare qualified path. Resolve conditional state outside that parser as well.
 #[cfg(feature = "native-presentation")]
@@ -306,10 +311,17 @@ pub struct RoomScreen {
 }
 impl Widget for RoomScreen {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        let mut pending_full_state_commit = None;
         if let Some(workspace) = scope.data.get_mut::<ChatWorkspace>() {
             let input = self.view.text_input(cx, ids!(message_input));
             self.composer_transaction
                 .checkpoint(&input, workspace, self.active_key);
+            if matches!(event, Event::TextInput(event) if event.full_state_sync.is_some())
+                && input.is_composing()
+                && cx.key_focus() == input.area()
+            {
+                pending_full_state_commit = Some(input.text());
+            }
         }
         self.view.handle_event(cx, event, scope);
         let Some(workspace) = scope.data.get_mut::<ChatWorkspace>() else {
@@ -319,6 +331,20 @@ impl Widget for RoomScreen {
             return;
         };
         let input = self.view.text_input(cx, ids!(message_input));
+        if let Some(text) = pending_full_state_commit
+            && !input.is_composing()
+            && cx.key_focus() == input.area()
+            && input.text() == text
+        {
+            // Full-state IME commit can clear the SDK's marked range without
+            // changing its text. That path emits no Changed action, while its
+            // preview was deliberately withheld from the original draft owner.
+            // Publish this one observed completion through the same room fence
+            // and rejection/undo transaction before draw restores owner text.
+            self.composer_transaction
+                .edit(cx, &input, workspace, source, text);
+            self.view.redraw(cx);
+        }
         let follow_latest = workspace
             .timeline()
             .is_none_or(|timeline| timeline.scroll.at_end);
