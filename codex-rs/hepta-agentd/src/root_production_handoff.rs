@@ -18,6 +18,12 @@ use crate::HOST_AUTHORITY_BOOTSTRAP_BOUND;
 
 const FRAME: &[u8] = b"HEPTA_ROOT_PRODUCTION_INPUTS_V1";
 
+#[path = "root_production_writer_handoff.rs"]
+mod writer;
+pub use writer::RootProductionWriterDescriptor;
+pub use writer::receive_root_production_writer_handoff;
+pub use writer::send_root_production_writer_handoff;
+
 /// Consume exactly one inherited unnamed pair. The retained creator must be
 /// actual UID0, and the second transferred descriptor must pin that same Root.
 /// All received rights close on malformed/truncated frames. This function does

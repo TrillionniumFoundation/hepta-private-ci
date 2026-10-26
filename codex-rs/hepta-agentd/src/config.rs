@@ -81,6 +81,12 @@ fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrie
     parse_cognitive_retrieval_mode(std::env::var_os(HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV))
 }
 
+enum WriterSource {
+    OrdinaryPath,
+    #[cfg(target_os = "linux")]
+    RootDescriptor(File),
+}
+
 pub struct AgentdConfig {
     identity: AgentdIdentity,
     sockets: AgentdSocketInputs,
@@ -149,6 +155,29 @@ impl AgentdConfig {
         codex_home: PathBuf,
         current_dir: PathBuf,
     ) -> Result<Self, AgentdError> {
+        Self::load_with_writer_source(
+            fleet_root,
+            agent_id,
+            spawn_generation,
+            home_root,
+            run_root,
+            codex_home,
+            current_dir,
+            WriterSource::OrdinaryPath,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn load_with_writer_source(
+        fleet_root: PathBuf,
+        agent_id: AgentId,
+        spawn_generation: u64,
+        home_root: PathBuf,
+        run_root: PathBuf,
+        codex_home: PathBuf,
+        current_dir: PathBuf,
+        writer_source: WriterSource,
+    ) -> Result<Self, AgentdError> {
         if spawn_generation == 0 {
             return Err(AgentdError::Invalid(
                 "spawn generation must be non-zero".to_string(),
@@ -184,12 +213,16 @@ impl AgentdConfig {
             )));
         }
 
-        let writer_lock = OpenOptions::new()
-            .create(true)
-            .truncate(false)
-            .read(true)
-            .write(true)
-            .open(record.layout.writer_lock())?;
+        let writer_lock = match writer_source {
+            WriterSource::OrdinaryPath => OpenOptions::new()
+                .create(true)
+                .truncate(false)
+                .read(true)
+                .write(true)
+                .open(record.layout.writer_lock())?,
+            #[cfg(target_os = "linux")]
+            WriterSource::RootDescriptor(file) => file,
+        };
         writer_lock.try_lock().map_err(|error| {
             AgentdError::Invalid(format!(
                 "agent {agent_id} already has a live writer lock: {error}"

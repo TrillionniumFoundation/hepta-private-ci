@@ -149,9 +149,15 @@ mod root_production_handoff;
 #[cfg(target_os = "linux")]
 pub use config::PreparedRootAgentdConfig;
 #[cfg(target_os = "linux")]
+pub use root_production_handoff::RootProductionWriterDescriptor;
+#[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_production_handoff;
 #[cfg(target_os = "linux")]
+pub use root_production_handoff::receive_root_production_writer_handoff;
+#[cfg(target_os = "linux")]
 pub use root_production_handoff::send_root_production_handoff;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::send_root_production_writer_handoff;
 #[cfg(target_os = "linux")]
 mod root_observation_cache;
 #[cfg(target_os = "linux")]
