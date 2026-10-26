@@ -370,7 +370,7 @@ assert_matches = "1.5.0"
 async-channel = "2.3.1"
 async-io = "2.6.0"
 async-stream = "0.3.6"
-aws-config = "1"
+aws-config = "=1.8.12"
 aws-credential-types = "1"
 aws-sigv4 = "1"
 aws-types = "1"
@@ -584,7 +584,7 @@ zip = { version = "9.0.4", default-features = false, features = [
     "zstd",
     "xz",
 ] }
-zstd = "0.13"
+zstd = "0.14.3"
 
 wiremock = "0.6"
 zeroize = "1.8.2"
@@ -676,6 +676,8 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Preserve credentials-login while migrating only its reviewed P-256/RNG dependency edge.
+aws-config = { path = "third_party/aws-config-1.8.12" }
 # Adapt the original Rama alpha.4 DNS edge to maintained Hickory 0.26.3.
 rama-dns = { path = "third_party/rama-dns-0.3.0-alpha.4" }
 # Backport the upstream maintained TOML parser migration for age localization.

@@ -5,6 +5,7 @@ codex-rs/target
 # Non-workspace Cargo patches are materialized by @crates. Their vendored BUILD
 # files cannot consume the workspace DEP_DATA table. Keep the explicit Cargo
 # workspace member i18n-config visible: generated crate aliases reference it.
+codex-rs/third_party/aws-config-1.8.12
 codex-rs/third_party/imbl-6.1.0
 codex-rs/third_party/matrix-sdk-0.19.1
 codex-rs/third_party/matrix-sdk-sqlite-0.18.0
