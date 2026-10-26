@@ -95,3 +95,18 @@ pub(crate) fn utc_millis(milliseconds: u64) -> Result<String, AgentdError> {
         milliseconds % 1_000
     ))
 }
+
+/// Existing original-writer state is the durable per-turn fence, including a
+/// prepared operation whose signing/checkpoint reply never arrived. Observation
+/// never grants another preparation or send opportunity after reconnection.
+pub(crate) async fn require_unprepared_original_turn(
+    writer: &ProductionDurableWriter,
+    run_id: &str,
+) -> Result<(), AgentdError> {
+    if writer.retained_operation(run_id).await?.is_some() {
+        return Err(invalid(
+            "original turn already has a prepared Notes operation; read only, never rearm",
+        ));
+    }
+    Ok(())
+}

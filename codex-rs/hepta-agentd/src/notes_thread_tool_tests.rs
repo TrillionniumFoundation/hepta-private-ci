@@ -176,3 +176,24 @@ fn retained_unknown_item_can_only_be_referenced_for_read_only_status() {
         "a status item cannot supply a mutation reference"
     );
 }
+
+#[test]
+fn a_new_call_cannot_escape_the_original_turn_operation_fence() {
+    let route = route();
+    let first = callback();
+    let first = VerifiedNotesThreadCall::from_original_item(&route, &first, &item(&first)).unwrap();
+    let mut later = callback();
+    later.call_id = "new-call-after-unknown-result".into();
+    later.arguments["expected_revision"] = json!(8);
+    let later = VerifiedNotesThreadCall::from_original_item(&route, &later, &item(&later)).unwrap();
+    assert_eq!(
+        first.turn_intent_id(&route).unwrap(),
+        later.turn_intent_id(&route).unwrap(),
+        "a new call/revision in the same turn must reach the same original writer operation"
+    );
+    assert_ne!(
+        first.intent_id(&route).unwrap(),
+        later.intent_id(&route).unwrap(),
+        "the signed source must still distinguish and refuse a different original call"
+    );
+}

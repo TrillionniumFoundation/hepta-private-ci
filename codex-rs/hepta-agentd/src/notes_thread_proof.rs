@@ -116,6 +116,19 @@ impl OriginalNotesThreadItem {
         ))?)
         .to_string())
     }
+    pub(super) fn turn_intent_id(
+        &self,
+        route: &AgentdTextSessionConfig,
+    ) -> Result<String, AgentdError> {
+        Ok(Digest32::of_bytes(&serde_json::to_vec(&(
+            "hepta.notes.original-thread-turn.v1",
+            route.agent_id.as_str(),
+            &route.app_server_session_id,
+            &route.thread_id,
+            &self.params.turn_id,
+        ))?)
+        .to_string())
+    }
     pub(super) fn turn_id(&self) -> &str {
         &self.params.turn_id
     }

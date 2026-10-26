@@ -40,7 +40,7 @@ pub fn original_notes_thread_tools() -> Vec<DynamicToolSpec> {
         (READ_TOOL, "Read the attached Notes document identity, current revision and content hash. This does not grant write authority.", json!({
             "type":"object", "properties":{}, "required":[], "additionalProperties":false
         })),
-        (REPLACE_TOOL, "Replace the attached Notes document with exact text at the revision returned by hepta_notes_state. Root must authorize the original operation. Preserve an unknown result's operation identity; never repeat it as a new effect.", json!({
+        (REPLACE_TOOL, "Replace the attached Notes document once per original turn with exact text at the revision returned by hepta_notes_state. Root must authorize the original operation. After any attempt, use only hepta_notes_status or hepta_notes_state in this turn. A new call ID cannot repeat an unknown effect.", json!({
             "type":"object", "properties":{
                 "text":{"type":"string", "maxLength":4096},
                 "expected_revision":{"type":"integer", "minimum":0}
@@ -183,11 +183,17 @@ impl AgentdNotesThreadToolRuntime {
         if arguments.text.trim().is_empty() || arguments.text.len() > 4096 {
             return Err(invalid("original Notes text exceeds its UTF-8 byte bound"));
         }
-        let request_id = call.intent_id(&self.route)?;
+        let request_id = call.turn_intent_id(&self.route)?;
+        let original_call_id = call.intent_id(&self.route)?;
         let end = Instant::now() + self.adapter.deadline;
         let prepared = self
             .adapter
-            .prepare_thread(&request_id, &arguments.text, arguments.expected_revision)
+            .prepare_thread(
+                &request_id,
+                &original_call_id,
+                &arguments.text,
+                arguments.expected_revision,
+            )
             .await?;
         let submission = match prepared {
             AgentdNotesPreparedObjective::Retained(_) => None,
@@ -219,7 +225,8 @@ impl AgentdNotesThreadToolRuntime {
         call: &OriginalNotesThreadItem,
         sender_observation_retained: Option<bool>,
     ) -> Result<Value, AgentdError> {
-        let request_id = call.intent_id(&self.route)?;
+        let request_id = call.turn_intent_id(&self.route)?;
+        let original_call_id = call.intent_id(&self.route)?;
         let run_id = self.adapter.run_id(&request_id)?;
         let original = self
             .adapter
@@ -234,7 +241,7 @@ impl AgentdNotesThreadToolRuntime {
             .await?;
         let request_sha256 = self
             .adapter
-            .retained_thread_request_sha256(&request_id)
+            .retained_thread_request_sha256(&request_id, &original_call_id)
             .await?;
         // Losing the application or its readback cannot erase an already
         // verified immutable source receipt. Report freshness separately.

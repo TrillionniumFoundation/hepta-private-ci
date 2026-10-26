@@ -57,12 +57,26 @@ ID, fixed thread/session and exact in-progress original item through
 `VerifiedNotesThreadCall` exist. Extra arguments such as principal, target,
 authority, policy, operation ID or thread ID are rejected.
 
-The original session/thread/turn/call tuple deterministically derives the sender
-request ID and `notes.thread.*` operation ID. Arguments are excluded from this
-identity projection: changed text cannot create a second operation for the same
-callback. The original writer separately checks its retained text and exact
-predecessor. Its operation semantic digest binds that tuple through the operation
-ID, fixed target, exact text and predecessor. The signed Objective body retains
+Each original turn permits at most one Notes write attempt. The original
+ordered thread items designate its first `hepta_notes_replace` call. Later
+replace calls can only read that original result, even if they change call ID,
+text or expected revision. State and status remain available. A subsequent
+human-authenticated turn is a separate intent domain.
+
+The fixed original session/thread/turn tuple derives one `notes.thread.*`
+operation ID in the original writer. The signed source separately retains the
+complete original call digest in its request ID. Replayed calls compare that
+retained call digest and exact text/predecessor. A prepared operation without a
+signed sender is retained uncertainty and cannot be signed or rearmed by a new
+worker, reconnection or process; it remains available for readback. This may
+require a later human turn after a preparation failure, rather than an automatic
+retry. These fences use the existing original writer/sender and ordered original
+thread items, not an in-memory flag or a new ledger.
+
+Status also verifies that the referenced original item was the turn's first
+Notes call and that its digest matches the retained signed source, so an old
+receipt cannot be attributed to a later call. The operation semantic digest binds
+the fixed target, exact text and predecessor. The signed Objective body retains
 the actual model/runtime/prompt/artifact digests. This provenance describes an
 original Core tool callback; a real model execution is established only by the
 corresponding installed-product run, never by these protocol tests.

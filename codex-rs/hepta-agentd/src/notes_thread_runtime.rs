@@ -116,6 +116,26 @@ impl OriginalConnection {
         original_turn_id: &str,
         original_call_id: &str,
     ) -> Result<codex_app_server_protocol::ThreadItem, AgentdError> {
+        self.find_original_item(original_turn_id, Some(original_call_id))
+            .await
+    }
+
+    async fn first_original_replace(
+        &mut self,
+        turn_id: &str,
+    ) -> Result<VerifiedNotesThreadOperation, AgentdError> {
+        let item = self.find_original_item(turn_id, None).await?;
+        let codex_app_server_protocol::ThreadItem::DynamicToolCall { id, .. } = &item else {
+            return Err(invalid("original Notes turn item changed kind"));
+        };
+        VerifiedNotesThreadOperation::from_original_item(&self.route, turn_id, id, &item)
+    }
+
+    async fn find_original_item(
+        &mut self,
+        original_turn_id: &str,
+        original_call_id: Option<&str>,
+    ) -> Result<codex_app_server_protocol::ThreadItem, AgentdError> {
         let end = tokio::time::Instant::now() + Duration::from_secs(5);
         let mut cursor = None;
         for _ in 0..16 {
@@ -145,11 +165,20 @@ impl OriginalConnection {
                 return Err(invalid("original callback page escaped its turn"));
             }
             for item in page.data {
-                if let codex_app_server_protocol::ThreadItem::DynamicToolCall { id, .. } =
-                    &item.item
-                    && id == original_call_id
+                if let codex_app_server_protocol::ThreadItem::DynamicToolCall {
+                    id,
+                    namespace,
+                    tool,
+                    ..
+                } = &item.item
                 {
-                    return Ok(item.item);
+                    let selected = match original_call_id {
+                        Some(call_id) => id == call_id,
+                        None => namespace.is_none() && tool == REPLACE_TOOL,
+                    };
+                    if selected {
+                        return Ok(item.item);
+                    }
                 }
             }
             cursor = page.next_cursor;
@@ -222,22 +251,38 @@ impl AgentdNotesThreadToolRuntime {
                         &navigation.call_id,
                         &item,
                     )?;
-                    operation_id = Some(
-                        self.adapter
-                            .run_id(&original.original_item().intent_id(&self.route)?)?,
-                    );
+                    let first = connection.first_original_replace(&navigation.turn_id).await?;
+                    if first.original_item().call_id() != original.original_item().call_id() {
+                        return Err(invalid("status must name the original turn's first Notes write"));
+                    }
+                    operation_id = Some(self.adapter.run_id(&original.original_item().turn_intent_id(&self.route)?)?);
                     return self.observe_retained(&original).await;
                 }
                 if call.tool() == REPLACE_TOOL {
-                    operation_id = Some(self.adapter.run_id(&call.intent_id(&self.route)?)?);
+                    let first = connection.first_original_replace(call.turn_id()).await?;
+                    let original_operation_id = self.adapter.run_id(&first.original_item().turn_intent_id(&self.route)?)?;
+                    operation_id = Some(original_operation_id.clone());
+                    if first.original_item().call_id() != call.call_id() {
+                        // Core's original ordered items are the turn fence. A
+                        // later call can only inspect the designated original
+                        // operation; it cannot prepare or sign another one.
+                        let mut value = self.observe_retained(&first).await.unwrap_or_else(|_| json!({"state":"Unknown","operation_id":original_operation_id,"receipt_utf8":null}));
+                        value["write_admission"] = json!("refused_later_replace_in_original_turn");
+                        value["original_turn_id"] = json!(first.original_item().turn_id());
+                        value["original_call_id"] = json!(first.original_item().call_id());
+                        return Ok(value);
+                    }
                 }
                 self.execute(&call).await
             }
             .await;
             let (value, success) = match result {
                 Ok(value) => {
-                    let success = params.tool == READ_TOOL
-                        || (value["state"] == "Committed" && value["receipt_utf8"].is_string());
+                    let success = value["write_admission"]
+                        != "refused_later_replace_in_original_turn"
+                        && (params.tool == READ_TOOL
+                            || (value["state"] == "Committed"
+                                && value["receipt_utf8"].is_string()));
                     (value, success)
                 }
                 Err(_) => (

@@ -6,7 +6,7 @@ use codex_hepta_types::Digest32;
 use serde_json::Value;
 
 const SCHEMA: &[u8] = b"organ.notes.thread-tool.v1:replace_document(text,expected_revision);private:original-thread,turn,call,target,operation,subject,policy";
-const NORMALIZATION: &[u8] = b"organ.notes.thread-tool.v1:original-core-dynamic-tool-call;exact-thread-item-readback;preserve-utf8-exactly;exact-predecessor;original-operation-semantic-digest;one-note-no-network";
+const NORMALIZATION: &[u8] = b"organ.notes.thread-tool.v1:original-core-dynamic-tool-call;exact-thread-item-readback;preserve-utf8-exactly;exact-predecessor;original-operation-semantic-digest;one-write-attempt-per-original-turn;durable-original-writer-fence;signed-original-call-binding;one-note-no-network";
 
 /// The request ID is a digest of the original callback identity. Identity and
 /// authority are never decoded from the model's argument object.

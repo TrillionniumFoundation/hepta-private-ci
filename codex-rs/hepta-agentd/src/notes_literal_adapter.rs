@@ -237,7 +237,7 @@ impl AgentdNotesLiteralAdapter {
         let (domain, prefix) = match self.profile {
             NotesAdapterProfile::Literal => ("organ.notes.literal.run.v1", "notes.literal"),
             NotesAdapterProfile::OriginalThread => {
-                ("organ.notes.thread-tool.run.v1", "notes.thread")
+                ("organ.notes.original-turn.run.v1", "notes.thread")
             }
         };
         let binding = serde_json::to_vec(&(
@@ -252,6 +252,7 @@ impl AgentdNotesLiteralAdapter {
     pub(crate) async fn retained_thread_request_sha256(
         &self,
         client_intent_id: &str,
+        original_call_id: &str,
     ) -> Result<Option<String>, AgentdError> {
         let run_id = self.run_id(client_intent_id)?;
         let request = self
@@ -259,6 +260,9 @@ impl AgentdNotesLiteralAdapter {
             .retained_request_for_run(&run_id)
             .await
             .map_err(|error| invalid(&error.to_string()))?;
+        if let Some(request) = &request {
+            require_original_thread_call(request, original_call_id)?;
+        }
         Ok(request.map(|request| request.identity().original_sha256.as_str().to_owned()))
     }
 
@@ -303,13 +307,14 @@ impl AgentdNotesLiteralAdapter {
         if self.profile != NotesAdapterProfile::Literal {
             return Err(invalid("literal UI cannot prepare a model tool operation"));
         }
-        self.prepare_bound(client_intent_id, text, None, end, phase)
+        self.prepare_bound(client_intent_id, text, None, None, end, phase)
             .await
     }
 
     pub(crate) async fn prepare_thread(
         &mut self,
         client_intent_id: &str,
+        original_call_id: &str,
         text: &str,
         expected_revision: u64,
     ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
@@ -326,6 +331,7 @@ impl AgentdNotesLiteralAdapter {
                 client_intent_id,
                 text,
                 Some(expected_revision),
+                Some(original_call_id),
                 end,
                 &mut phase,
             ),
@@ -339,6 +345,7 @@ impl AgentdNotesLiteralAdapter {
         client_intent_id: &str,
         text: &str,
         expected_revision: Option<u64>,
+        original_call_id: Option<&str>,
         end: Instant,
         phase: &mut NotesUiCallPhase,
     ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
@@ -349,6 +356,9 @@ impl AgentdNotesLiteralAdapter {
             .await
             .map_err(|error| invalid(&error.to_string()))?
         {
+            if let Some(original_call_id) = original_call_id {
+                require_original_thread_call(&retained, original_call_id)?;
+            }
             if let Some(expected_revision) = expected_revision {
                 let original = self
                     .writer
@@ -367,6 +377,13 @@ impl AgentdNotesLiteralAdapter {
                 }
             }
             return Ok(AgentdNotesPreparedObjective::Retained(retained));
+        }
+        // The operation ID is the durable original-turn fence. A preparation
+        // without a signed sender is uncertainty, not permission to sign again
+        // under a new call, worker, connection, or process after a lost reply.
+        if original_call_id.is_some() {
+            crate::notes_literal_prepare::require_unprepared_original_turn(&self.writer, &run_id)
+                .await?;
         }
         self.check_available()?;
         // Startup cannot consume a durable send opportunity while the original
@@ -428,7 +445,7 @@ impl AgentdNotesLiteralAdapter {
             }
         };
         let source = encode_source(LiteralNotesSourceContext {
-            client_intent_id,
+            client_intent_id: original_call_id.unwrap_or(client_intent_id),
             source_digest: semantic,
             principal_scope_digest: self.bindings.principal_scope_digest,
             locale: &self.bindings.locale,
@@ -515,3 +532,24 @@ impl AgentdNotesLiteralAdapter {
 pub(crate) fn invalid(message: &str) -> AgentdError {
     AgentdError::Invalid(format!("original literal Notes: {message}"))
 }
+
+fn require_original_thread_call(
+    request: &ObjectiveSenderRequest,
+    original_call_id: &str,
+) -> Result<(), AgentdError> {
+    let ingress: AuthBusObjectiveIngress = serde_json::from_slice(request.exact_original())?;
+    let source = codex_hepta_objective::decode_source_envelope_json_v1(
+        ingress.body.source_envelope_json.as_bytes(),
+    )
+    .map_err(|_| invalid("original thread source is invalid"))?;
+    if source.request_id != original_call_id {
+        return Err(invalid(
+            "this original turn belongs to another Notes call; reconcile that original item",
+        ));
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+#[path = "notes_thread_sender_tests.rs"]
+mod thread_sender_tests;

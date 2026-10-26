@@ -4,6 +4,7 @@
 use super::*;
 use crate::notes_literal_prepare::LiteralOperationInput;
 use crate::notes_literal_prepare::prepare_original_literal;
+use crate::notes_literal_prepare::require_unprepared_original_turn;
 use crate::notes_literal_prepare::utc_millis;
 use codex_hepta_memory::LocalOutcomeState;
 use codex_hepta_memory::NotesDocumentState;
@@ -50,6 +51,7 @@ async fn notes_literal_preparation_retains_exact_owner_payload_without_grant_or_
         receipt_pending: false,
     };
     let before = writer.recovery_anchor().await?;
+    require_unprepared_original_turn(&writer, "notes.literal.test-original").await?;
     observed.receipt_pending = true;
     assert!(
         prepare_original_literal(
@@ -98,6 +100,14 @@ async fn notes_literal_preparation_retains_exact_owner_payload_without_grant_or_
         .await?
         .unwrap();
     assert_eq!(retained.state, LocalOutcomeState::Queued);
+    let prepared_cut = writer.recovery_anchor().await?;
+    assert!(
+        require_unprepared_original_turn(&writer, "notes.literal.test-original")
+            .await
+            .is_err(),
+        "a prepared original operation without a signed sender is a durable uncertainty fence"
+    );
+    assert_eq!(writer.recovery_anchor().await?, prepared_cut);
     assert_eq!(retained.operation.semantic_digest(), digest);
     let payload: Value = serde_json::from_str(&retained.payload_json)?;
     assert_eq!(payload["text"], text);
