@@ -1,11 +1,13 @@
-# Legacy ambient-user workspace isolation is unavailable
+# Legacy ambient-user Windows isolation is unavailable
 
-The legacy ambient-user workspace token constructor and its preflight now return
+The legacy ambient-user workspace and readonly constructors and preflight return
 `std::io::ErrorKind::Unsupported`. Callers must propagate this error. They must
 not retry with the same ambient token, remove the sandbox, or label a failed
 operation as a successful workspace capability. The dedicated-account elevated
-backend and the existing readonly constructor retain their prior behavior; this
-change does not qualify either backend.
+backend retains its prior behavior. The direct ambient-readonly role is refused
+separately from the explicit-user factory used by the dedicated-account backend;
+the generic identity-including implementation is not disabled. Keeping that
+backend's behavior does not qualify its complete isolation context.
 
 Official Windows run `40366317884`, job `121725643044`, at source
 `e483642459a58f7e18f9f4d317e3bc687bd0e24c` reproduced the original outside-delete
@@ -24,6 +26,17 @@ roots; those reads are part of the current contract. A lower integrity label on
 the token alone cannot establish capability isolation from an arbitrary existing
 outside directory with the same lower label. Neither change is a substitute for
 a separately qualified native isolation boundary.
+
+Independent native run `40371814048`, job `121744229293`, at source
+`0c787b9b339f946bfbe6bf22303dbf12b76ef33e` proved the original ambient-readonly
+failure: the actual token contained capability, Logon and Everyone restrictors.
+An outside read succeeded, but so did all four forbidden effects: overwrite,
+create, file deletion and directory deletion. Only the owned disposable fixture
+was changed. Original production and test bytes were restored. The caller role
+now refuses with typed `Unsupported` before creating a token; it cannot silently
+retry under the same ambient identity. This evidence does not qualify a
+dedicated-account backend with different setup, grants or filesystem constraints;
+that whole native context still requires an independent wide-ACL counterexample.
 
 The new regression controls require that the constructor returns no token, that
 the actual capture entry never reaches its process-creation wrapper and leaves

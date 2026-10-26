@@ -1,4 +1,4 @@
-name: Windows legacy workspace refusal and original counterexamples
+name: Windows ambient legacy refusals and original counterexamples
 
 on:
   pull_request:
@@ -7,6 +7,7 @@ on:
       - ".github/fixtures/windows-legacy-workspace-refusal-scope.json"
       - "codex-rs/windows-sandbox-rs/src/token.rs"
       - "codex-rs/windows-sandbox-rs/src/legacy_workspace_unavailable_tests.rs"
+      - "codex-rs/windows-sandbox-rs/src/legacy_readonly_unavailable_tests.rs"
   workflow_dispatch:
 
 permissions:
