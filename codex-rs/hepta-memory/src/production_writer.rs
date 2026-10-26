@@ -492,17 +492,30 @@ impl DurableWriterLock {
                 "cognitive database path has no parent for writer lock".to_string(),
             )
         })?;
-        let canonical_parent = parent.canonicalize().map_err(|error| {
-            ProductionWriterError::Durability(format!(
-                "cannot canonicalize writer-lock parent {}: {error}",
-                parent.display()
-            ))
-        })?;
-        if canonical_parent != parent {
-            return Err(ProductionWriterError::Durability(
-                "writer-lock parent must be canonical".to_string(),
-            ));
-        }
+        let canonical_parent = crate::cognitive_path::canonical_path_without_redirection(parent)
+            .map_err(|error| {
+                ProductionWriterError::Durability(format!(
+                    "cannot canonicalize writer-lock parent {}: {error}",
+                    parent.display()
+                ))
+            })?
+            .ok_or_else(|| {
+                ProductionWriterError::Durability(
+                    "writer-lock parent must be canonical".to_string(),
+                )
+            })?;
+
+        // Keep one original OS-canonical lock key even when SqliteConfig uses
+        // its reviewed non-verbatim Windows spelling. Existing successful
+        // writer keys retain their bytes; a prefix alias cannot acquire a
+        // second lock for the same database and lease.
+        #[cfg(windows)]
+        let canonical_database_path =
+            canonical_parent.join(database_path.file_name().ok_or_else(|| {
+                ProductionWriterError::Durability("writer-lock database name is missing".into())
+            })?);
+        #[cfg(windows)]
+        let database_path = canonical_database_path.as_path();
 
         // Hash the lease id instead of placing caller text in a path.  The
         // database parent is already the private Agent-local root checked by
@@ -513,7 +526,7 @@ impl DurableWriterLock {
         key.push(0);
         key.extend_from_slice(lease_id.as_bytes());
         let lock_digest = Sha256Digest::for_bytes(&key);
-        let path = parent.join(format!(
+        let path = canonical_parent.join(format!(
             ".hepta-production-writer-{}.lock",
             lock_digest.as_str()
         ));
