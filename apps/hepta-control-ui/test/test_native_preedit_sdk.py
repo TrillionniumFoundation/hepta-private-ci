@@ -24,7 +24,7 @@ class PreeditSdkGraphTests(fixture.OriginalSdkGraphTests):
         manifest.update(profile="preedit-callbacks", upstream_tree=self.git("rev-parse", "HEAD^{tree}"))
         (candidate_root / "MANIFEST.json").write_text(json.dumps(manifest))
         for metadata in (self.original, self.candidate):
-            self.node(metadata, "original-ui")["features"] = ["ui", "native-presentation"]
+            self.node(metadata, "original-ui")["features"] = ["ui", "native-presentation", "native-ime-sdk"]
         _, config = fixture.VERIFY.PREPARE.cargo_override(self.original, self.prepared, "preedit-callbacks")
         self.config = config.encode()
 
@@ -33,6 +33,20 @@ class PreeditSdkGraphTests(fixture.OriginalSdkGraphTests):
             self.hepta, self.prepared, json.dumps(self.original).encode(),
             json.dumps(self.candidate if candidate is None else candidate).encode(),
             self.config, "preedit-callbacks")
+
+    def test_typed_profile_refuses_unscoped_ui_even_with_correct_source(self):
+        self.node(self.candidate, "original-ui")["features"].remove("native-ime-sdk")
+        with self.assertRaisesRegex(ValueError, "requires resolved feature hepta-robrix-ui/native-ime-sdk"):
+            self.verify()
+
+    def test_typed_profile_requires_explicit_desktop_forwarding(self):
+        metadata = json.loads(json.dumps(self.candidate))
+        metadata["packages"].append({"name": "trill-shell", "id": "desktop-shell"})
+        metadata["resolve"]["nodes"].append({"id": "desktop-shell", "features": ["hepta-native-makepad"]})
+        with self.assertRaisesRegex(ValueError, "requires resolved feature trill-shell/hepta-native-preedit-sdk"):
+            fixture.VERIFY.PREPARE.require_native_feature(metadata, "preedit-callbacks")
+        metadata["resolve"]["nodes"][-1]["features"].append("hepta-native-preedit-sdk")
+        fixture.VERIFY.PREPARE.require_native_feature(metadata, "preedit-callbacks")
 
     def test_clipboard_api_cannot_be_advertised_by_the_preedit_only_sdk(self):
         self.node(self.candidate, "original-ui")["features"].append("native-clipboard-sdk")
