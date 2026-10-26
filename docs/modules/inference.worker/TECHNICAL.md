@@ -153,6 +153,19 @@ It records this one actual settled forward and its unique control IDs under a
 fresh schema, without changing the existing native result V1 or executing an
 additional load/forward/claim.
 
+The additive controlled Cell route uses a separate 64 KiB declaration and
+an opaque, non-cloneable `VerifiedCellMaterialV1`. Its factory verifies the
+fixed original family, six local executable source pins, exact eleven role/path
+roster, actual parent/model/profile identities and every payload, then
+reconstructs the original TCM1/TCR1 bytes and domain identities. The witness
+consumes its checked config, pin and parameters only through the original
+signed read port; it issues no grant or selected-installation authority.
+The new native selector reuses all original claims and assertions and emits
+a fresh controlled-load readback. Original V1 inputs/results are unchanged.
+The complete eleven-material native positive remains pending; declaration
+unit controls cannot replace it. This route does not close I10 installation,
+ordinary-task use, three installed-parent rounds, durable custody or reward.
+
 The ordinary neural read still uses its original FinalUse/resource admission,
 120-second startup, two-second request and original neural unload boundary
 (currently ten seconds in `Session::shutdown`). The separate Chain aggregate

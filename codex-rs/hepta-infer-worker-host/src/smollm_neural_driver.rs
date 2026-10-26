@@ -25,6 +25,12 @@ use crate::model_worker::ModelDriver;
 use crate::model_worker::ModelManifest;
 use crate::model_worker::WorkerRequest;
 
+#[path = "smollm_cell_material.rs"]
+mod cell_material;
+pub use cell_material::SmolLmCellStartOwnerV1;
+pub use cell_material::VerifiedCellMaterialV1;
+pub use cell_material::verify_controlled_cell_material_v1;
+
 #[path = "smollm_neural_measurement.rs"]
 mod measurement;
 #[path = "smollm_neural_profile.rs"]

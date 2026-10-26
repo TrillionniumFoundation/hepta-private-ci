@@ -38,11 +38,14 @@ use crate::native_app_server::TurnStartAuthorizer;
 mod driver;
 use driver::Exchange;
 use driver::Mailbox;
+pub use driver::SmolLmCellStartOwnerV1;
 use driver::SmolLmDriver;
 pub use driver::SmolLmFixedInitialBackboneProofV1;
 pub use driver::SmolLmMeasuredForwardV1;
 pub use driver::SmolLmMeasuredLoadV1;
 pub use driver::SmolLmNeuralReadConfigV1;
+pub use driver::VerifiedCellMaterialV1;
+pub use driver::verify_controlled_cell_material_v1;
 
 static REQUEST_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
