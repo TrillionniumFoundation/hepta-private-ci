@@ -50,6 +50,12 @@ pub use publisher::RetiredCheckpointPublisher;
 #[path = "authority_host_checkpoint_adoption.rs"]
 mod adoption;
 
+#[path = "authority_host_checkpoint_material.rs"]
+mod material;
+use material::RootCheckpointMaterial;
+pub(crate) use material::RootMaterialProfile;
+use material::SourceCustody;
+
 /// Actual trusted launcher registration. The peer cannot replace these fields.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct HostCognitiveCheckpointRegistration {

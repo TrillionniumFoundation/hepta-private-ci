@@ -46,3 +46,30 @@ records and independent workload CPU observations. No code here emits those
 records or claims full G2, image renewal, power-loss recovery or physical-device
 qualification. Its compilation and integration results must be recorded for
 the exact final source combination before execution.
+# Root physical material owner (implementation stage)
+
+`authority_host_checkpoint_material.rs` owns immutable Root0600 SQLite images
+and Root0600 candidate records in one retained Root0700 directory outside the
+registered cognitive directory. The original Root transition supplies the
+complete candidate head and token; managers supply neither a digest nor a cut.
+A record alone confers no Current status. Admission requires the actual original
+protected Current to equal that candidate, including its original token.
+
+The image is made by the original CognitiveStore's read-only live snapshot API,
+checked against its original cut, synced, and retained by physical SHA-256. The
+candidate record is synced before the original Current CAS. Reopening verifies
+the existing record and image only. Missing/corrupt material cannot trigger a
+fresh capture of the live store. The first profile allows at most 128 directory
+entries and refuses exhaustion without removing older evidence.
+
+`authority_host_checkpoint_material_worker.rs` supplies one Root worker and one
+occupied operation. The caller waits at most its original configured deadline
+(up to five seconds). Timeout does not release the worker's occupied capacity.
+The original publisher pidfd is checked before and after live capture. The
+worker runs asynchronous SQLite outside the Root's synchronous publication
+mutex; the original caller retains its publication transaction while waiting.
+
+This stage adds private implementation only. It has not yet been compiled in
+the final combined source or executed with actual Root/Agentd credentials.
+It is not a restore/install permission, a replacement Current owner, a writer
+grant, or evidence of a completed native G2 product.
