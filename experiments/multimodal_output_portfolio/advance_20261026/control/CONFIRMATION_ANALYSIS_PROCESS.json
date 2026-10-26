@@ -1,0 +1,43 @@
+{
+  "cgroup_after": {
+    "current": 8531537920,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 4642004,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8589144064,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 4641618,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 0.09303499999999999,
+  "child_user_seconds": 0.424155,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-m",
+    "experiments.multimodal_output_portfolio.advance_20261026.control.analyze_confirm",
+    "--run",
+    "/tmp/hepta-ndu-advance-control/confirmation-001",
+    "--output",
+    "/tmp/hepta-ndu-advance-control/confirmation-001/result.json"
+  ],
+  "context": "Frozen pure-NumPy writer-cluster analysis of closed old-five actual requests; no model calls or new source opening",
+  "exit_code": 0,
+  "log_sha256": "e6eed2b3066794fc7b62faafe7ab922cc93540bc1efd60cc00fe7be5469d74d9",
+  "peak_rss_bytes": 73183232,
+  "registration_sha256": "b74f869f593c289199c59721d816d2bfb990e30173b87ea68cc0242814239715",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 698006662,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}

@@ -1,0 +1,43 @@
+{
+  "cgroup_after": {
+    "current": 8325423104,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 4630883,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8570322944,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 4610956,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 3.274116,
+  "child_user_seconds": 101.449666,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-m",
+    "experiments.multimodal_output_portfolio.advance_20261026.control.confirm",
+    "--protocol",
+    "experiments/multimodal_output_portfolio/advance_20261026/control/CONFIRMATION_PROTOCOL.json",
+    "--output",
+    "/tmp/hepta-ndu-advance-control/confirmation-001"
+  ],
+  "context": "Frozen advance old-five primary confirmation: 85 new writer clusters, 5440 actual requests, post-choice counterfactuals; full single-thread process; no candidate updates",
+  "exit_code": 0,
+  "log_sha256": "912bedfb867853ca0a083136f031c43231ebe9a18ade308119f1b740720df722",
+  "peak_rss_bytes": 307089408,
+  "registration_sha256": "90824c160e618916078b68eaa67a16c65919610cea7cce131e121f2a9b693dfd",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 140283229484,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}

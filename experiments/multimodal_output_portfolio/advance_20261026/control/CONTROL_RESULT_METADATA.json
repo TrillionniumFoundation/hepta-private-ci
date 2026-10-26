@@ -1,0 +1,41 @@
+{
+  "all_operational_failures": 0,
+  "alternative_generation_failures": 0,
+  "files_sha256": {
+    "CONFIRMATION_ANALYSIS_PROCESS.json": "324473f50c3caf22984309eeb6b4020fee54b2a2f3cd4e000a91ad6b2c15dd1d",
+    "CONFIRMATION_COMPLETION.json": "851c1d79b98d7de51d9400f15b8f35a9977482c2783c86fcf498aad0a3f9e994",
+    "CONFIRMATION_PROCESS.json": "3b2cd0137399eb502fec87b0e3719b48c4e4acc4016b297ef410f338c15d23a0",
+    "CONFIRMATION_RESULT.json": "95bc6e1d753f9f15f7d658cf92a76f2eb5157f0b86cf12174db9184930cc0001"
+  },
+  "fixed_trained_seed": 17,
+  "independent_writer_clusters": 85,
+  "native_and_alias_audits": "Separate finite100-code native path; cannot transfer old-five qualification or efficacy",
+  "no_fresh_source_tuning": true,
+  "offline_H1_nodes": 1404,
+  "primary": {
+    "confidence_interval": [
+      0.0019457451377810687,
+      0.020595022148230165
+    ],
+    "confidence_level": 0.9833333333333333,
+    "contrast": "constrained_paired minus masked_teacher",
+    "efficacy_gate": true,
+    "estimand": "CE(U - .002 * attempted non-stop actions), gamma=2",
+    "lower_bound_positive": true,
+    "operational_gate": true,
+    "point": 0.011077026256393174
+  },
+  "production_authority": false,
+  "protocol_sha256": "be0b345d8ad76758292b4c675bc41e28528aaf2bebee6aef3470f3d91461a28d",
+  "schema": "hepta.advance.control-result-metadata.v1",
+  "scientific_status": {
+    "H1_delta_MSE_vs_zero": "candidate point estimate worse; descriptive",
+    "H1_same_state_regret_vs_teacher": "candidate point estimate worse; descriptive",
+    "component_causal_contributions": "not separated in this combined-candidate contrast",
+    "initial_terminal_correctness": "large descriptive ECE; no terminal-correctness qualification",
+    "predeclared_primary": "passed",
+    "strong_fixed_or_allocation_comparison": "not newly performed"
+  },
+  "scope": "One frozen text/image generator, original five actions, common static correctness mask; no actual native owner executed in this comparison",
+  "source_pairs": 170
+}
