@@ -29,9 +29,19 @@ impl AuthorityFrontierStore<FinalUseFrontier> for Frontier {
         next: &FinalUseFrontier,
     ) -> Result<(), AuthorityTrustError> {
         self.entered.store(true, Ordering::Release);
+        let started = std::time::Instant::now();
+        eprintln!(
+            "fixture frontier CAS entered: wait={}, boottime_ns={}",
+            self.wait.load(Ordering::Acquire),
+            boottime_ns().unwrap()
+        );
         let bound = std::time::Instant::now() + Duration::from_secs(1);
         while self.wait.load(Ordering::Acquire) {
             if std::time::Instant::now() >= bound {
+                eprintln!(
+                    "fixture frontier CAS wait expired after {:?}",
+                    started.elapsed()
+                );
                 return Err(AuthorityTrustError::Unavailable);
             }
             std::thread::sleep(Duration::from_millis(1));
@@ -45,6 +55,10 @@ impl AuthorityFrontierStore<FinalUseFrontier> for Frontier {
         }
         *value = *next;
         self.commits.fetch_add(1, Ordering::AcqRel);
+        eprintln!(
+            "fixture frontier CAS completed after {:?}",
+            started.elapsed()
+        );
         Ok(())
     }
 }
@@ -264,6 +278,10 @@ async fn both_original_frontiers_finish_before_new_head_is_published() {
     })
     .await
     .unwrap();
+    eprintln!(
+        "test observed second frontier entry: boottime_ns={}",
+        boottime_ns().unwrap()
+    );
     let before = std::time::Instant::now();
     assert!(
         session
@@ -275,13 +293,25 @@ async fn both_original_frontiers_finish_before_new_head_is_published() {
     assert_eq!(first.commits.load(Ordering::Acquire), 1);
     assert_eq!(second.commits.load(Ordering::Acquire), 0);
     second.wait.store(false, Ordering::Release);
+    eprintln!(
+        "test released second frontier: boottime_ns={}",
+        boottime_ns().unwrap()
+    );
     tokio::time::timeout(Duration::from_millis(300), async {
         while session.revocations().is_err() {
             tokio::time::sleep(Duration::from_millis(2)).await;
         }
     })
     .await
-    .unwrap();
+    .unwrap_or_else(|error| {
+        panic!(
+            "original observation did not resume: {error}; updater_finished={}, first_commits={}, second_commits={}, second_wait={}",
+            session.worker.is_finished(),
+            first.commits.load(Ordering::Acquire),
+            second.commits.load(Ordering::Acquire),
+            second.wait.load(Ordering::Acquire),
+        )
+    });
     let current = session.revocations().unwrap();
     assert_eq!(current.revision, 2);
     assert_eq!(device.revocation_head().unwrap(), current);
