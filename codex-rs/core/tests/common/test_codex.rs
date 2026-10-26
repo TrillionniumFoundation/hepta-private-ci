@@ -339,6 +339,20 @@ pub struct TestCodexBuilder {
     models_manager: Option<SharedModelsManager>,
 }
 
+// Only fresh default homes are created here; an explicitly supplied home is
+// preserved for caller-controlled fixtures, including deliberate bad inputs.
+fn new_private_codex_home() -> std::io::Result<TempDir> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        tempfile::Builder::new()
+            .permissions(std::fs::Permissions::from_mode(0o700))
+            .tempdir()
+    }
+    #[cfg(not(unix))]
+    tempfile::tempdir()
+}
+
 impl TestCodexBuilder {
     pub fn with_config<T>(mut self, mutator: T) -> Self
     where
@@ -469,7 +483,7 @@ impl TestCodexBuilder {
     pub async fn build(&mut self, server: &wiremock::MockServer) -> anyhow::Result<TestCodex> {
         let home = match self.home.clone() {
             Some(home) => home,
-            None => Arc::new(TempDir::new()?),
+            None => Arc::new(new_private_codex_home()?),
         };
         let base_url = format!("{}/v1", server.uri());
         let test_env = TestEnv::local().await?;
@@ -495,7 +509,7 @@ impl TestCodexBuilder {
     ) -> anyhow::Result<TestCodex> {
         let home = match self.home.clone() {
             Some(home) => home,
-            None => Arc::new(TempDir::new()?),
+            None => Arc::new(new_private_codex_home()?),
         };
         let base_url = format!("{}/v1", server.uri());
         let test_env = test_env().await?;
@@ -512,7 +526,7 @@ impl TestCodexBuilder {
     ) -> anyhow::Result<TestCodex> {
         let home = match self.home.clone() {
             Some(home) => home,
-            None => Arc::new(TempDir::new()?),
+            None => Arc::new(new_private_codex_home()?),
         };
         let base_url = format!("{}/v1", server.uri());
         let test_env = test_env().await?;
@@ -530,7 +544,7 @@ impl TestCodexBuilder {
         let base_url = server.uri();
         let home = match self.home.clone() {
             Some(home) => home,
-            None => Arc::new(TempDir::new()?),
+            None => Arc::new(new_private_codex_home()?),
         };
         let test_env = TestEnv::local().await?;
         Box::pin(self.build_with_home_and_base_url(
@@ -550,7 +564,7 @@ impl TestCodexBuilder {
         let base_url = format!("{}/v1", server.uri());
         let home = match self.home.clone() {
             Some(home) => home,
-            None => Arc::new(TempDir::new()?),
+            None => Arc::new(new_private_codex_home()?),
         };
         let base_url_clone = base_url.clone();
         self.config_mutators.push(Box::new(move |config| {
