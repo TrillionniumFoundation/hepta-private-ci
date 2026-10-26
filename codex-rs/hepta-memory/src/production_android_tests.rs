@@ -2,6 +2,7 @@ use super::*;
 use pretty_assertions::assert_eq;
 use serde_json::Value;
 use serde_json::json;
+use std::collections::BTreeMap;
 use std::collections::VecDeque;
 use std::sync::Mutex;
 
@@ -66,8 +67,11 @@ fn replies(payload: &AndroidSetTextV1, digest: &Sha256Digest) -> (Value, Value) 
         json!(Sha256Digest::for_bytes(payload.value.as_bytes()));
     let mut node = observation["target"].clone();
     node.as_object_mut().expect("node").remove("node_sha256");
+    // The wire protocol hashes lexicographically ordered node fields. Cargo
+    // and Bazel may unify different serde_json/preserve_order features.
+    let canonical_node: BTreeMap<_, _> = node.as_object().expect("node").iter().collect();
     observation["target"]["node_sha256"] = json!(Sha256Digest::for_bytes(
-        &serde_json::to_vec(&node).expect("canonical node")
+        &serde_json::to_vec(&canonical_node).expect("canonical node")
     ));
     let mut readback = common;
     for (key, value) in json!({"observation":observation,"destination_id":payload.destination_id,"action_submitted":false,
