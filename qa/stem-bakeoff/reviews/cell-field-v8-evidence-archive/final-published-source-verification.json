@@ -1,0 +1,822 @@
+{
+  "schema": "hepta.research-source-publication-verification.v8.final",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "verified_head": "7bf4fb3bc04c809de997fe16a2de10abea5eb493",
+  "verified_tree": "6f3af6bedf6dd4492c87518fa415ef36ca21f887",
+  "qa_tree": "aeb5adc653baa74b00b11b16a2033234f214b7c5",
+  "remote_tree_truncated": false,
+  "source_checks": [
+    {
+      "name": "pft-development-v8/grid-executed-source.json",
+      "count": 117,
+      "canonical_sha256": "cda4c60b6a3f256f87f1207a2104f62755633a289902c4dae31c15a139a20276",
+      "mismatches": []
+    },
+    {
+      "name": "pft-development-v8/remaining-compressed-executed-source.json",
+      "count": 129,
+      "canonical_sha256": "660f79d805689b880ba6637e3038eb4251e8f3cc959cb608e282004824ef328a",
+      "mismatches": []
+    }
+  ],
+  "published_paths_checked": 158,
+  "published_path_mismatches": [],
+  "markdown_documents_checked": 4,
+  "relative_links_checked": 40,
+  "missing_relative_links": [],
+  "archive": {
+    "bytes": 318805867,
+    "sha256": "af02493df470aa28fd91970164f2c79acef3cd09caed740d4ac832d7f32fa524",
+    "manifest_sha256": "e344fc9d230a6ae18fb09d4ebb4666b7f99cace9c51b5cd3085cdbad8fe7050f",
+    "receipt_sha256": "46199f4f3ccc8f88a0a71466adcc538dd98fdde6c10865416ea22e7f53b3345c",
+    "evidence_members": 11105,
+    "library_uploaded": false
+  },
+  "native_pr": {
+    "number": 4008,
+    "head": "b899e46a07571a0cbc2b1f8487a1df3001e30313",
+    "draft": true,
+    "actual_candidate_admission": false
+  },
+  "status": "PASS",
+  "scope": "Final executed source closures and published result/document/archive metadata at the named parent commit. A following metadata-only commit may append this receipt; no scientific acceptance, CI, merge, Library upload, or owner activation.",
+  "files": {
+    "qa/stem-bakeoff/cell_field_joint_search_v8.py": {
+      "sha": "acd5f9807d39e1250c0cad6dc963ead237aa6ac8",
+      "sha256": "54eadba1bae20c9b4cc436e5e3f3d7be52d4372ea702aa06a05d08746b330b01",
+      "commit": "5ff09c3c455ec617574284966a25473f5c7d8544"
+    },
+    "qa/stem-bakeoff/cell_field_safety_v8.py": {
+      "sha": "53ad8b422599b282b025c3efe529555fc98c19bf",
+      "sha256": "e03ab92a081749be2ab6ed2e6c5f1988240035df78fb02ce85b82d6b91e8021d",
+      "commit": "5ff09c3c455ec617574284966a25473f5c7d8544"
+    },
+    "qa/stem-bakeoff/cell_field_proposal_v8.py": {
+      "sha": "a64c9d274f9c44802eeb9a86b1c8cff61e1b9b4f",
+      "sha256": "f00f421a0d0cd687cc2d44af3bdd875131f63ccb68c2af5981edbd04dd6c160d",
+      "commit": "5ff09c3c455ec617574284966a25473f5c7d8544"
+    },
+    "qa/stem-bakeoff/test_cell_field_safety_v8.py": {
+      "sha": "aa015d639d55ae8e73027475de61f38684b7e28e",
+      "sha256": "991cff95c333cae1595866c19543cd14700921ee108a4be6a982aac51ec898bf",
+      "commit": "5ff09c3c455ec617574284966a25473f5c7d8544"
+    },
+    "qa/stem-bakeoff/cell_field_controller_v8.py": {
+      "sha": "e550848c575799f539cf37b678e15edf8a5c73e2",
+      "sha256": "4f400b2eabe0e0b80d4efbf68e71a782cdedff8ff7a76808a06ea67c0571f455",
+      "commit": "ed56425d483f81979b32cba2b107f39e9d76127e"
+    },
+    "qa/stem-bakeoff/cell_field_policy_v8.py": {
+      "sha": "fa23f088e115271c9bc2406f4f61add1bdcd818e",
+      "sha256": "7f429ac035a4fde3c2987be0723c87015fcebd0489320b25b017671af08fa4b0",
+      "commit": "ed56425d483f81979b32cba2b107f39e9d76127e"
+    },
+    "qa/stem-bakeoff/test_cell_field_policy_v8.py": {
+      "sha": "86a736d5ac621d6bf2207231adec106c47215265",
+      "sha256": "b960ff0c9771caa740450b0aae3cb9994688bb3e29f391b0a8488383eccf5025",
+      "commit": "98d5f4c46e6210d1aa61fa2b0e2bc239dcb0668a"
+    },
+    "qa/stem-bakeoff/cell_field_common_objective_v8.py": {
+      "sha": "479b2ca25895883a519685a2377ad9bb89709ae9",
+      "sha256": "65f6471fbbe183134cc7fb1d50dcdd3851c3c909b0a4b96c8ffae29c1f4ea555",
+      "commit": "12cb0c0c6937922a4d75795d3971eb6e4fd45e2b"
+    },
+    "qa/stem-bakeoff/test_cell_field_common_objective_v8.py": {
+      "sha": "5e80469f8143b04f90898dcd5c7906d94826d428",
+      "sha256": "612806b77fcb64205cc7bae41132bbc77c5b976b4d9e9b7134e09b66afb79d2a",
+      "commit": "12cb0c0c6937922a4d75795d3971eb6e4fd45e2b"
+    },
+    "qa/stem-bakeoff/cell_field_common_run_v8.py": {
+      "sha": "ee19303bc989fe9866373ccbcb2350fec1ea0e88",
+      "sha256": "db442c8b89cf3a63546e5f8f912adbb5390dccdff98673be9f1a7752eeed05f6",
+      "commit": "6f1b57802b13866472a3f799343b705b4acddc55"
+    },
+    "qa/stem-bakeoff/test_cell_field_common_run_v8.py": {
+      "sha": "d121e8f215457ec5eb1fea1558169184e99f070a",
+      "sha256": "1f3f3b64916355c8e2b358a3cbacc4f550ae0383a06bff5c3a0844ea6f6f2fd3",
+      "commit": "6f1b57802b13866472a3f799343b705b4acddc55"
+    },
+    "qa/stem-bakeoff/cell_field_common_objective_protocol_v8.json": {
+      "sha": "27d454d30a3bc2ab2cec78f35e80757fa14e9ba2",
+      "sha256": "0c89285fe70713a959884248de24d7b45e2652901627aa59e844897b0304d0b9",
+      "commit": "6f1b57802b13866472a3f799343b705b4acddc55"
+    },
+    "qa/stem-bakeoff/cell_field_stop_inputs_v8.py": {
+      "sha": "723a63e160635ef9ccd302115cb23bdb714eb9ee",
+      "sha256": "b9084f5cc973b3a3e1cec66be4819fa6f5f454f47cb8474458f9fdc2b6693de0",
+      "commit": "6c80eff2d837c2ed62f026641f18a709aa823610"
+    },
+    "qa/stem-bakeoff/cell_field_filter_observer_v8.py": {
+      "sha": "1eb61a09c26b46b6aeaf0802de7bf7a0ea59e0b7",
+      "sha256": "48b5fc35a694739bd1f694b5e3c614321ec9d8a05cf3550e95ce9a307546a322",
+      "commit": "6c80eff2d837c2ed62f026641f18a709aa823610"
+    },
+    "qa/stem-bakeoff/cell_field_filter_audit_v8.py": {
+      "sha": "8c65489040e2194bce15a34101f80cd07273f983",
+      "sha256": "f6f11450dc36b53c8b7fca03568bc0e15d16b9c4e11c66706f4a3a1f03fd3008",
+      "commit": "6c80eff2d837c2ed62f026641f18a709aa823610"
+    },
+    "qa/stem-bakeoff/cell_field_stop_run_v8.py": {
+      "sha": "3d0e784849eb47a98d39c91923cdb6e01c724cd2",
+      "sha256": "a98cf286ae3bb41ffc42a03f1ab56c6bee8b95372f115a25fc7bf8f9d503ddd4",
+      "commit": "bdaed1dc94adc1c52dfbc0ac9a0f1ebc6299f9af"
+    },
+    "qa/stem-bakeoff/test_cell_field_stop_run_v8.py": {
+      "sha": "8b4c9ae73a60a39c7efb0cf8fe0d5520ea3bab5b",
+      "sha256": "a9fde04720f2a31b7eb39454575f544c0c4c0f732b3ba44387bcc724c3451977",
+      "commit": "bdaed1dc94adc1c52dfbc0ac9a0f1ebc6299f9af"
+    },
+    "qa/stem-bakeoff/cell_field_stop_protocol_v8.json": {
+      "sha": "dc5822e105c0ec60ac521a189db9d2ce426dce27",
+      "sha256": "6342a84f7582a8bce9334f12500f904f01e64c9f4451cb27b6bc7d3cf5414851",
+      "commit": "bdaed1dc94adc1c52dfbc0ac9a0f1ebc6299f9af"
+    },
+    "qa/stem-bakeoff/cell_field_safety_portfolio_v8.py": {
+      "sha": "3309c1b4b1f50ef15e95d8cc9df84fc610575d52",
+      "sha256": "00d5f30dd602b5f154b507073ec86613816094691bc7049e0922794bf0aab1db",
+      "commit": "ed56425d483f81979b32cba2b107f39e9d76127e"
+    },
+    "qa/stem-bakeoff/test_cell_field_safety_portfolio_v8.py": {
+      "sha": "b377c360ed1cb72666c6d1d66a5dfd3d9461fc85",
+      "sha256": "a2555c81ef90e19069d42fc0591da27bd1ba9c8d1cd1c0d13dd01ca74b201c25",
+      "commit": "ed56425d483f81979b32cba2b107f39e9d76127e"
+    },
+    "qa/stem-bakeoff/cell_field_development_audit_v8.py": {
+      "sha": "4a7532b007690f8e70a5657486cc07e8742e307e",
+      "sha256": "2511b1e82ad56994c0320372d1269c049be38929c39880d0039e32eb65a0dd6a",
+      "commit": "8f72d8a4e54e4f4fb6889a038572adf1045e374d"
+    },
+    "qa/stem-bakeoff/cell_field_development_artifacts_v8.py": {
+      "sha": "b858fe5e19ebbdf52b26a99db804c3a9831e254e",
+      "sha256": "b901b29f4e579c8a52e3350bad3e47c8e9ae931d1587d8d69bbcd569a389c576",
+      "commit": "8f72d8a4e54e4f4fb6889a038572adf1045e374d"
+    },
+    "qa/stem-bakeoff/test_cell_field_development_v8.py": {
+      "sha": "0416cb11b8a1858428aa2a6bca13c6487c6f8dfd",
+      "sha256": "a8b42705e483df29ef2d1cd51181243c7672429a07b3e2e3cbe792f29a5e9f48",
+      "commit": "8f72d8a4e54e4f4fb6889a038572adf1045e374d"
+    },
+    "qa/stem-bakeoff/cell_field_development_selection_v8.py": {
+      "sha": "942ccbd51cb0ac41a7f7aeb5882da64e4b2a7f81",
+      "sha256": "5fb220ea54bd5e8980a6e6947eead1d6a7067053924fd1b6695091b5ff499414",
+      "commit": "374cac16b492b47e1902b1b28f78eb0cd668d172"
+    },
+    "qa/stem-bakeoff/cell_field_development_run_v8.py": {
+      "sha": "5a4e8598f7bcc010af626998d21a759babe37be7",
+      "sha256": "052421ede14499bf099f3d151ab0beeff6f0a9bb2a228f5ed52c497ef8b9cf40",
+      "commit": "374cac16b492b47e1902b1b28f78eb0cd668d172"
+    },
+    "qa/stem-bakeoff/cell_field_development_protocol_v8.json": {
+      "sha": "3ebff2a5217155f4293f34a61d48015949558ea8",
+      "sha256": "d84f8e40551e31ac502b9bd7c8813ea1394fa722440658a7cca13694af8b5786",
+      "commit": "201d28f2c3e784d02da910fc24156e15e493d288"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/stop_census_v8.py": {
+      "sha": "9eca66f5fb8501c4a2677addfc197b465602076e",
+      "sha256": "42a747ca9133cea32952a144002c20daa0308285f903be5440103f6a2b1fc3e1",
+      "commit": "5519e8cea2c4afe073b733f628c04dbcc9e9c2ad"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/test_stop_census_v8.py": {
+      "sha": "09786b6e6b1ac16fd4f9389419dd60be3fb0f50c",
+      "sha256": "23fb8e820615e144c82892ecc247346f73fb061cab4be065c71d7765235927d0",
+      "commit": "5519e8cea2c4afe073b733f628c04dbcc9e9c2ad"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/export_stop_origins_v8.py": {
+      "sha": "025fe4c0e3d7c5ccc91877f7619fd0c6471eed5f",
+      "sha256": "03a762697598ab3abe885a461b60077eff5d5090eca4e1795f22c897d7d2200f",
+      "commit": "5519e8cea2c4afe073b733f628c04dbcc9e9c2ad"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/stop-census.json": {
+      "sha": "5c326f3a4a1c052dcc5f248359c23dab85422782",
+      "sha256": "f3dbf2d06ca8064634b50a04dc70d5ab78d05c4a81423941324838979ca6d1f3",
+      "commit": "5519e8cea2c4afe073b733f628c04dbcc9e9c2ad"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/source_design_v8.py": {
+      "sha": "ffe83d899a7884667934bc88bccea0f33d6c182f",
+      "sha256": "b4ccf69f6149db9c7389e3fb8054e8cdc3715ffa2d06492928284120632889d1",
+      "commit": "ca013aba6bafd392ebbe6d9fe560e5ed2d7cbe5a"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/validate_prior_witnesses_v8.py": {
+      "sha": "74d2cf30f3cad31d332a69949672cbe4d0565551",
+      "sha256": "d63e85f8acbb9f16a000b049522203b813fd302bf4d40d01dd54eba334d011fe",
+      "commit": "ca013aba6bafd392ebbe6d9fe560e5ed2d7cbe5a"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/source-evaluation-design.json": {
+      "sha": "4b7c890140e4fc357ae6a669221a3b2b2a096929",
+      "sha256": "46aa9cf86b4ec1dadc1df909789a90441bae2c52cf6a6c51ae702bb79ee7edf9",
+      "commit": "ca013aba6bafd392ebbe6d9fe560e5ed2d7cbe5a"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/witness-provenance-audit.json": {
+      "sha": "cf9f4659321e1ec75d345d4ca9c120e656167a63",
+      "sha256": "2f39253b76e29818d0cefa79aa90f8a806c0a58e7aecf7a5c5f5789147c1e1ce",
+      "commit": "ca013aba6bafd392ebbe6d9fe560e5ed2d7cbe5a"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/git-provenance-index.json": {
+      "sha": "6e0e2e7d12c441790ae27b64de29c590cf31daf5",
+      "sha256": "7e7e983c797045baa69f896a69f0f43c79cb8075437c690493666685720935ef",
+      "commit": "ca013aba6bafd392ebbe6d9fe560e5ed2d7cbe5a"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/PREPARATION_REPORT.md": {
+      "sha": "71a5c77ea134ba31b25e5b89856709bfd9e93900",
+      "sha256": "e912d649b5dc17f9369b97893d2bb168906b06083835028a8dc0cb26545f6f51",
+      "commit": "ca013aba6bafd392ebbe6d9fe560e5ed2d7cbe5a"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/record_stop_retry_v8.py": {
+      "sha": "aa9116516406873cb183e9191278838889b1d440",
+      "sha256": "ade45d6e3ac91a4d04e6b9e60e47a57285e5ee5599a6894987a5a37311ca5c11",
+      "commit": "defa0517d7cddb8d27fc9a2324a4d7c2b3946a7f"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/audit_stop_filter_v8.py": {
+      "sha": "561a3e2537a2991842ec416af627f277f0c39f1a",
+      "sha256": "f2309810aea2eb36d794f488c5099e1af34c46f971740c1ff9b53442e4e82203",
+      "commit": "defa0517d7cddb8d27fc9a2324a4d7c2b3946a7f"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/stop-attempt1-interruption.json": {
+      "sha": "2490845fa54f228045e287bdcbb1996b9f186452",
+      "sha256": "b4749ce5dc9f188be546b1d6f36058781f1c3194fc2595500e323f2aa611feba",
+      "commit": "defa0517d7cddb8d27fc9a2324a4d7c2b3946a7f"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/stop-retry-declaration.json": {
+      "sha": "3a02fff4de2b006d5cd546773f0c86b8759ab2c7",
+      "sha256": "126274b9c2ba5ea031d9363ce4b94ca979b0fee7410b786db2012a918a35ba15",
+      "commit": "defa0517d7cddb8d27fc9a2324a4d7c2b3946a7f"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/stop-filter-audit.json": {
+      "sha": "109a9fd6b20e8bef0216997b8c7ca0871eb5abe5",
+      "sha256": "4f36837be760f54641f6e41fffb15ccb1758b9df273625a8f9ef9950190b85a4",
+      "commit": "defa0517d7cddb8d27fc9a2324a4d7c2b3946a7f"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/stop-run.log": {
+      "sha": "e1d84c11292a47fdf11dbc5b2d2e63b646af245d",
+      "sha256": "d416a669e2c3f4739f6667bcee7620a9f3aca7f901c72050768f3c7bd35de2e4",
+      "commit": "defa0517d7cddb8d27fc9a2324a4d7c2b3946a7f"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/stop-run-r2.log": {
+      "sha": "c26f11ee35f9ed4605fd51a6931eb2bbd628292c",
+      "sha256": "f0cdcb107b185b33f20222d520ce6176329917b93e2669761c42327efa422fd9",
+      "commit": "defa0517d7cddb8d27fc9a2324a4d7c2b3946a7f"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/portfolio_counterfactual_v8.py": {
+      "sha": "53966de5322b027f02e27dafe1c4b64b68d5f345",
+      "sha256": "0ad0c6f6370ec39c6c620b30143d740bb564154b045d6ee85fa2494440e11df7",
+      "commit": "7353f92736f65c5325578510bde470ce07c2f888"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/stop-portfolio-counterfactual.json": {
+      "sha": "61c08abe17d4bdc434ba645d7950c53fbbaff38c",
+      "sha256": "f99657675b4433e34627dfee221b5fb54e6d07f4f4017031075623a44fab9aec",
+      "commit": "7353f92736f65c5325578510bde470ce07c2f888"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/STOP_FILTER_REPORT.md": {
+      "sha": "5b7dc2a382d1929d049c31217889654c1accb612",
+      "sha256": "d681095be42ad98aa6923dbfdc05dbf844d4a9fe791c19270774da1c2bbd556d",
+      "commit": "7353f92736f65c5325578510bde470ce07c2f888"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/original-origins-manifest.json": {
+      "sha": "14a0d3f6c11217ad19a07c04023510ee553be927",
+      "sha256": "929d43714529995317be8aa8b7da4e6e0c57ef07418ea533b9d843bc605eb03c",
+      "commit": "4813ce3035aedb9ec4ab8c727ebaee53e4881ded"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/complete-attempt-report.json": {
+      "sha": "3115b4ed7fe667ff6deb2b229e3401be743da7f4",
+      "sha256": "81ccfc68622b20e6377890710bce66a677598ae5dd569ac7bc7bfec5cd74dab4",
+      "commit": "4813ce3035aedb9ec4ab8c727ebaee53e4881ded"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/complete-attempt-seal.json": {
+      "sha": "bdebd7bae7d66a19b18ea0bcf84fa6c0845071c7",
+      "sha256": "8b894f06f958180f5745d239b61b31818a4e352a9d7d9c104254f89cbd1ae6a6",
+      "commit": "4813ce3035aedb9ec4ab8c727ebaee53e4881ded"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-stop-filter/executed-source-freeze.json": {
+      "sha": "fac754ef2be598ca367b7009ef2b82bb517538b3",
+      "sha256": "1deda30bd2100f693b8022893d27c793bfd1dd87013d6ea4d3290291ae2fd6cc",
+      "commit": "4813ce3035aedb9ec4ab8c727ebaee53e4881ded"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-common-objective/audit_common_objective_v8.py": {
+      "sha": "47e599d94a835eca156f1cdaabca42adda0292d7",
+      "sha256": "40c45c341652b2ffc547260ea53aaab2ae27c97e99cdcaf44d46370fddf049a2",
+      "commit": "30e813666591cca475a57bfc44461ab598564133"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-common-objective/common_objective_summary_v8.py": {
+      "sha": "64f00b55196260b760a68c096ac7cda612537e3d",
+      "sha256": "4d8907b3714dcf5dfecf1b97bb5bfade59836c6640af87e29dcd42e021d29053",
+      "commit": "30e813666591cca475a57bfc44461ab598564133"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-common-objective/test_common_objective_audit_v8.py": {
+      "sha": "12554127612f158fb095ffe9834e539b32f7fa50",
+      "sha256": "ea58a1bc519d9b24764560b5f6c57f530424d6cbb239884260abb68d29c8f38d",
+      "commit": "30e813666591cca475a57bfc44461ab598564133"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-common-objective/common-objective-audit.json": {
+      "sha": "018ad5e5b07fc94ead0ebb4b24a7a889327c8b97",
+      "sha256": "83fdd12b2689bc45ba06ae33a2b90c1f176a5aa236f86c908397c90aca116750",
+      "commit": "30e813666591cca475a57bfc44461ab598564133"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-common-objective/common-objective-audit-qualification.json": {
+      "sha": "84fbcd759d32f0d455000fadba6699a3d381884d",
+      "sha256": "c14e6c2ed326c767e047ced0f6c94b9205f3542cdff9cc01334ebaea105d755a",
+      "commit": "30e813666591cca475a57bfc44461ab598564133"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-common-objective/common_objective_attribution_v8.py": {
+      "sha": "bb635a3f5e7cf205bd3202e59c967a2dac8b1a1c",
+      "sha256": "6771f897d8dbde565ffd2de349044e6c0b7a8fc1433f98ec6fc00c1b99e36e95",
+      "commit": "a38e63ae0cedd2e29544c06cbd17c9982166a656"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-common-objective/verify_common_seal_v8.py": {
+      "sha": "44f534161a92cf88e9e74f8307f508167d15ed3a",
+      "sha256": "824576d16caab7bc4a1c5c7f2bd8634a2515173c78c5e579b63868bfb56b02b1",
+      "commit": "a38e63ae0cedd2e29544c06cbd17c9982166a656"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-common-objective/common-objective-attribution.json": {
+      "sha": "d8956e1b32f2418be8c0a1fc07ae92b640f81ad6",
+      "sha256": "be377262e8e311121dafa6e816d0835e8229977eaef63475a4cacb0a49f2d331",
+      "commit": "a38e63ae0cedd2e29544c06cbd17c9982166a656"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-common-objective/common-objective-post-audit-seal.json": {
+      "sha": "308378cf49274df3f697f6ea00fb4d77b03182a9",
+      "sha256": "c47217f9fefc1fde84730e75600900e6306aefcb72f2edf6c27bf36742c957a2",
+      "commit": "a38e63ae0cedd2e29544c06cbd17c9982166a656"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-common-objective/common-objective-report.md": {
+      "sha": "ac38a4c2bee371a57e1462bb03cd3eac9b3bb227",
+      "sha256": "d02cadd133748209c596b201f83b9b50eaee6a9a99d8119d5df877c313d2f8dc",
+      "commit": "a38e63ae0cedd2e29544c06cbd17c9982166a656"
+    },
+    "qa/stem-bakeoff/cell_field_terminal_v8.py": {
+      "sha": "c63c6205d74a32f1fad727301785528d0a1bf81c",
+      "sha256": "c0532fcd8f2e4deda4f40ba9920b2df05e906fdc827f78cc19ba424673799c4b",
+      "commit": "e7159701e3995716fc0b5a2bab8df23090c2a05c"
+    },
+    "qa/stem-bakeoff/test_cell_field_terminal_v8.py": {
+      "sha": "a32109f90b99f06bc43ff4c0f4acb2b4e3731006",
+      "sha256": "a8d11da742b4e2cc180353c6cd6c0ad02178960b5acb0550fdaba022f215c526",
+      "commit": "e7159701e3995716fc0b5a2bab8df23090c2a05c"
+    },
+    "qa/stem-bakeoff/cell_field_remaining_v8.py": {
+      "sha": "6f690fd905aae85e7c87b81b96ead7041cc82504",
+      "sha256": "f15e50360e03270b251b3c3eaf89ad5bf7faa625930e0a29448dcb766b16aef0",
+      "commit": "636a075ecafd43379b1b894d91919299bd5400f6"
+    },
+    "qa/stem-bakeoff/test_cell_field_remaining_v8.py": {
+      "sha": "a3754caf5494e9ea230282c53c7f776916ef56d3",
+      "sha256": "5229c6691e1fef12f14c8638fa5c411c5d6e63ffd6e4491920cb587ce144b5ae",
+      "commit": "636a075ecafd43379b1b894d91919299bd5400f6"
+    },
+    "qa/stem-bakeoff/cell_field_remaining_run_v8.py": {
+      "sha": "93c70e8688a84d528fd2a00310bf8124b5af5e80",
+      "sha256": "d61c43667947c0ea145e4bb355cfd0d569dd7de5e23dcff712cbb4dbb5011b47",
+      "commit": "6db6e13ada239bd7478820c20b0611f3dd912ebf"
+    },
+    "qa/stem-bakeoff/test_cell_field_remaining_run_v8.py": {
+      "sha": "928a765282df9a8f8fd01cd84c29f80871bbef9b",
+      "sha256": "9d71ea0a3c9ac3169295ec785181dce9f2f9a7d33e71bdf45dca4ce3007e0486",
+      "commit": "6db6e13ada239bd7478820c20b0611f3dd912ebf"
+    },
+    "qa/stem-bakeoff/cell_field_remaining_protocol_v8.json": {
+      "sha": "290ce761d8f1d2545a5e9e56ec843a0861b88380",
+      "sha256": "27a84ceccb166766a4c6af299aef259b639486411d344c7f593552c0778e1585",
+      "commit": "6db6e13ada239bd7478820c20b0611f3dd912ebf"
+    },
+    "qa/stem-bakeoff/reviews/20261026-cell-field-v8/remaining/executed-source.json": {
+      "sha": "0ce520de3a39fd92f718883772e2d7de590c939f",
+      "sha256": "7d56b7b36a60f9cab466fa19a5c273754980c86451f9eba7583a6ce1d21e0290",
+      "commit": "1ec4c4437d0db3d9ad7887aeaf5c77a1401b4ee2"
+    },
+    "qa/stem-bakeoff/reviews/20261026-cell-field-v8/remaining/source-freeze.json": {
+      "sha": "b6026c3a2dd8a91d1d798a3f0a248b28c476a144",
+      "sha256": "f0df0a08bb1362a750196f0349d54070b3d3f496dc52c793755ff74a0733b8a2",
+      "commit": "1ec4c4437d0db3d9ad7887aeaf5c77a1401b4ee2"
+    },
+    "qa/stem-bakeoff/reviews/20261026-cell-field-v8/remaining/source-tests.json": {
+      "sha": "019bec967de0dbcd1a917af0ab75f18358f8b75e",
+      "sha256": "a272d5c96aab85b5c5a959a89b4ca0d6c03ae33a9193c184e729712bd5feeb3e",
+      "commit": "1ec4c4437d0db3d9ad7887aeaf5c77a1401b4ee2"
+    },
+    "qa/stem-bakeoff/reviews/20261026-cell-field-v8/remaining/preparation-cost-amendment.json": {
+      "sha": "270f9b5f4b66f3a2b00d5301f8506c949032d378",
+      "sha256": "8fb8bf504cfd581c86918d08ca7a4af99281fba0622ac5558453ecd6132b2c91",
+      "commit": "1ec4c4437d0db3d9ad7887aeaf5c77a1401b4ee2"
+    },
+    "qa/stem-bakeoff/reviews/20261026-cell-field-v8/remaining/root-peer-review.json": {
+      "sha": "3bc9e475b1e91dc2f2129afe230f496916929557",
+      "sha256": "ca3e9b6d1d920327f897bd1e84f6b3ef608030e56e607606869cecae9167151f",
+      "commit": "1ec4c4437d0db3d9ad7887aeaf5c77a1401b4ee2"
+    },
+    "qa/stem-bakeoff/cell_field_remaining_run_compressed_v8.py": {
+      "sha": "30464ce9a8412b74d99b75ddb4311d019bd39d87",
+      "sha256": "b36bfd30feb7b0831b96af0c4f692b4df7b8fec4912e6e3d40e2abcfbd76c937",
+      "commit": "65a5a1e6bb5034c27168535600a408a34d792e74"
+    },
+    "qa/stem-bakeoff/test_cell_field_remaining_storage_v8.py": {
+      "sha": "bbd05c3337c5321197e6367a17a3e7f7baef09d9",
+      "sha256": "ada0a620b2171238c1071db3bc0d5164876da1054223ff55e42b97b625c36ecd",
+      "commit": "65a5a1e6bb5034c27168535600a408a34d792e74"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/v8_audit_records.py": {
+      "sha": "2e2c5b3ef706da8523b7db4e964afc3a6884f570",
+      "sha256": "fd8458cfda824945b7c6f2fa1e7f2c4e535df4fc115f2931b05c3f3b18eb6fa7",
+      "commit": "bb8efa14116ac75e56cb2b9fadb5f39f38757bb8"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/v8_audit_statistics.py": {
+      "sha": "3ad2e25a39ef35b9ddfb2539a92d3bdb52c2d1d0",
+      "sha256": "0883028718e508915d7285b6f3f63490309d19459de9792770ccbf6a215c4905",
+      "commit": "226d1c762f2421fd23896cba99ea5e4c9c40fea2"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/test_v8_audit.py": {
+      "sha": "aae9bacd09af62545a78781b52ed556b40766cc1",
+      "sha256": "ecf2c07a1d2e746d631af59baf6d87bd32798a8ff8d048aec233bfc84635d7ec",
+      "commit": "226d1c762f2421fd23896cba99ea5e4c9c40fea2"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/audit_v8_development.py": {
+      "sha": "7cb8ea6e27193109da0d363360de40810c2512fc",
+      "sha256": "71a78c2f9c059bcd62213715d6f01f59f20bd63c7541e8eb04c00fcaacdc7d74",
+      "commit": "6d6efc1fdbff5bea8e043bb43e553cda355baff9"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/pins.json": {
+      "sha": "c06327653771cf60cecd03fa907c734ae0410aee",
+      "sha256": "c1a67da8eef9ad28ffc29a3945ff915bc615f618e81ed81c8aa580c192d24f22",
+      "commit": "6d6efc1fdbff5bea8e043bb43e553cda355baff9"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/qualification.json": {
+      "sha": "648f4afebc6e712e53248156870128520e40841e",
+      "sha256": "2372665404402cc664badb51445bc94ccec5d4a164e71c7236bb8fb7dcb66d8d",
+      "commit": "6d6efc1fdbff5bea8e043bb43e553cda355baff9"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/real-case-schema-qualification.json": {
+      "sha": "176c1e4e08f9919e3e0861c8ecc9a47c4adf4bc8",
+      "sha256": "62581ab8b99480be7affe878344bb86f52b3075ee9661cc57c46e8470c027f3a",
+      "commit": "6d6efc1fdbff5bea8e043bb43e553cda355baff9"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/audit.json": {
+      "sha": "f6ab80a11864ef1dc4ecc54ff442ea1b453144f4",
+      "sha256": "08fc961c76cbe0ae09cfd695ac077178e2d84b39221ee759ef663ffc67595017",
+      "commit": "6d6efc1fdbff5bea8e043bb43e553cda355baff9"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/audit.log": {
+      "sha": "517af7fca523bd5240fc5fb3c56e4ac2861a95fc",
+      "sha256": "c858b13bcf4d17f8e0b5d7162bf490d26ffff3aed28b17046688d7d0f204ff18",
+      "commit": "6d6efc1fdbff5bea8e043bb43e553cda355baff9"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/record_grid_interruption_v8.py": {
+      "sha": "77d57a7064bdaf80076990fbbc566175d4737e55",
+      "sha256": "a51bf8db38213b1770df6e6da1e89367352bf3db853062597da8ca970fdf49bd",
+      "commit": "ca3dd1c192c75123ed81b85549a2f7f7a925f0fc"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/launch_grid_retry_v8.py": {
+      "sha": "201b205288d0325765fb5f4e0aca195365441410",
+      "sha256": "d71206f942ff595b8243bf452dec0c16d7876214f3928733cedc057a3bc38506",
+      "commit": "ca3dd1c192c75123ed81b85549a2f7f7a925f0fc"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/account_grid_infrastructure_v8.py": {
+      "sha": "70536347781fd5acfb24a0fe9be0ca8e44ac55ba",
+      "sha256": "478bed5c8fbc334363d7d71e438f63d983b3a6b589190e4dc9f229e81cf8d859",
+      "commit": "ca3dd1c192c75123ed81b85549a2f7f7a925f0fc"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/grid-attempt1-interruption-approved-exec.json": {
+      "sha": "e6af4c41e5e11bcdd87d0cd7a20e0e302c6b8a28",
+      "sha256": "84f6dacbd13e48ff00e34bd4ee1207992840abe74b87cc873fe22f13fe2070a7",
+      "commit": "ca3dd1c192c75123ed81b85549a2f7f7a925f0fc"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/grid-retry-declaration.json": {
+      "sha": "edfd13e0a9028eb0ebec6555a4f8a489677f1334",
+      "sha256": "ac4dcd23968bc3a5cf134c1449798303ed3511afac4a83e5adf05f070b31e681",
+      "commit": "ca3dd1c192c75123ed81b85549a2f7f7a925f0fc"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/grid-r2-runtime-execution.json": {
+      "sha": "045bdb782fe3a8fabee97036c0852e66a43c75ab",
+      "sha256": "636f7bf5292feeca9fe62640a070cedc48e3eb0c74e1293b4be62aae62013938",
+      "commit": "ca3dd1c192c75123ed81b85549a2f7f7a925f0fc"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/grid-r2-pause.json": {
+      "sha": "e0c426d986b64b8cb169f75a4f9735ba55832b0b",
+      "sha256": "347f3f27dcec8a3a69dec1f271ca081962429d2d59210b62ca7629833893cc75",
+      "commit": "ca3dd1c192c75123ed81b85549a2f7f7a925f0fc"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/grid-r2-capacity-probe.json": {
+      "sha": "a6f8bc287453bacc883264906c3df3b3efa9d186",
+      "sha256": "943946547f52180d063afd80ab7b1d597404e2068388cba0df6e96ba751e1a31",
+      "commit": "ca3dd1c192c75123ed81b85549a2f7f7a925f0fc"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/grid-r2-resume.json": {
+      "sha": "64f6c44bf77bdfd6acd50e0dffc86d827ca04427",
+      "sha256": "85a755b412fc3243bd9038e1fcc30706ae627df264f558d708f668d1718e3b12",
+      "commit": "ca3dd1c192c75123ed81b85549a2f7f7a925f0fc"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/grid-infrastructure-accounting.json": {
+      "sha": "fb6835b43bdec475fceda052a1c3b53bffc9cae8",
+      "sha256": "2e73561807670e8e19e4af952245aee26cea7f05b7b9c4382e5c5b01ab34861f",
+      "commit": "ca3dd1c192c75123ed81b85549a2f7f7a925f0fc"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/grid-attempt1.log": {
+      "sha": "5c644d62e386e3e2d7419b2b1c514748fa50bd3f",
+      "sha256": "ff83ad1cf10d85c2588a211eea8ae0dbe0b85cbf2c652ab2a19254842116a3cb",
+      "commit": "ca3dd1c192c75123ed81b85549a2f7f7a925f0fc"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/grid-r2.log": {
+      "sha": "36e9ff58babed872571ae3ba9a7aa135846301ad",
+      "sha256": "3c7d20ca06ec19613e36a9817445f8afdbda7b11c1ed5c4db6dfb6ecaae46d5b",
+      "commit": "ca3dd1c192c75123ed81b85549a2f7f7a925f0fc"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/summarize_grid_v8.py": {
+      "sha": "74cc7b501703ab25db538764efba0c5aad001806",
+      "sha256": "a570c90f851cc4c53640e308447860630a924bd9e375df6a045dd092e93e2e39",
+      "commit": "3397d55c5a7fe29db18537d4872aa4f1e6f68c4f"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/summary.json": {
+      "sha": "9dd25c7d8b6eb57ff017b91f6b3e1bfca081f41a",
+      "sha256": "a158dcb8476250d3e2658dc8ab99c364b5cbba6ce3dc7b084970e31be76ab6e1",
+      "commit": "3397d55c5a7fe29db18537d4872aa4f1e6f68c4f"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/GRID_DEVELOPMENT_REPORT.md": {
+      "sha": "ddd41a23f22c2e86178dcd5df17391a30bf72cf0",
+      "sha256": "c06c1ce2c0b89cd711bda16dede1faecf754f3acdbbb0386a3701e099174b3bc",
+      "commit": "3397d55c5a7fe29db18537d4872aa4f1e6f68c4f"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/case-census.json.gz": {
+      "sha": "26ba75d5d60a2405b819d5586a298659a208b29b",
+      "sha256": "5061a51e5aa3cba0828ae4b53873e1816b6147c2b8ccdc4b1057967a3cd8bfc8",
+      "commit": "3397d55c5a7fe29db18537d4872aa4f1e6f68c4f"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/compressed-census-receipt.json": {
+      "sha": "dd8e92515a19059e126fa9f6586feac72c64354c",
+      "sha256": "7975c4562012596f217a9b7ff659324dec793a7876b04caa604893a0d60c1ab4",
+      "commit": "3397d55c5a7fe29db18537d4872aa4f1e6f68c4f"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/development_seal.json.gz": {
+      "sha": "bf6d86717749508209d380e031931b92fc5519e2",
+      "sha256": "6c9b321aa276197c6b984cf3b65e81adc645b34cce4cf6156a97aa6ca49c8067",
+      "commit": "3397d55c5a7fe29db18537d4872aa4f1e6f68c4f"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/raw-evidence-location.json": {
+      "sha": "8f60841ede77592d388d28c3491c35c2a2ae2b3d",
+      "sha256": "88993e26f2663b8b3faf27f853b5cab7e47b02e426297cfc4fa01702e222bbd7",
+      "commit": "3397d55c5a7fe29db18537d4872aa4f1e6f68c4f"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/render-verification.json": {
+      "sha": "ccfcfc267e1768d352b84f5a8c93f77f87ce1c46",
+      "sha256": "ba2796c4dfe7fb2f90b2c57621809296c7a70be2091c04eca57ac8bd53d975a0",
+      "commit": "3397d55c5a7fe29db18537d4872aa4f1e6f68c4f"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/producer-run.json": {
+      "sha": "051d4ffbba1296d7ab0fbee6152c5c6e68d9efb5",
+      "sha256": "2a9fbe573727c64900df0e8a68a7570ec27d8bdc03b659341ab313b1bb8f690e",
+      "commit": "3397d55c5a7fe29db18537d4872aa4f1e6f68c4f"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-development/producer-selection.json": {
+      "sha": "1484d7ba16ce2c18b12d36c106af130dc57c6e5d",
+      "sha256": "d9059c9bfdbec50c5d81ee862102b2d73cb88d91422f8ad720dfb1739b8c5db2",
+      "commit": "3397d55c5a7fe29db18537d4872aa4f1e6f68c4f"
+    },
+    "qa/stem-bakeoff/evidence_archive_v8/archive_plan_v8.py": {
+      "sha": "05d4e5b7500821bbc2729de25276db7f0076818e",
+      "sha256": "33fdae0dbef9e18a2451281fae5e7249f67f57d7a2768a42ef3a8305cb9efcb2",
+      "commit": "4e7216f43a3d4e4280461367e3847b79d072dd8a"
+    },
+    "qa/stem-bakeoff/evidence_archive_v8/archive_verify_v8.py": {
+      "sha": "1cba4506ec45c3e2dfa993f344734e398d127ed2",
+      "sha256": "5bd87b8c892c3672d7b8d0a2bf8054e8aaa5f0117d11ec8e053ad5b866027633",
+      "commit": "4e7216f43a3d4e4280461367e3847b79d072dd8a"
+    },
+    "qa/stem-bakeoff/evidence_archive_v8/archive_pack_v8.py": {
+      "sha": "f162b0d2053fa333fc62ed3f2eda406bbb618b4f",
+      "sha256": "14643175300544b410c4dfce6e209a0537125e9db39d0f6579bf2ec817062e08",
+      "commit": "ce95294880ace8bf5bbd2fd95e5fee0310d71a43"
+    },
+    "qa/stem-bakeoff/evidence_archive_v8/archive_cli_v8.py": {
+      "sha": "d6159909ba63750e4512d42550ef74e3239d01f8",
+      "sha256": "0e92f8300cd0c3a49ecd7bc631cd39a08d5518713b8104f4f5394d05d103cb64",
+      "commit": "ce95294880ace8bf5bbd2fd95e5fee0310d71a43"
+    },
+    "qa/stem-bakeoff/evidence_archive_v8/test_archive_v8.py": {
+      "sha": "4841bf99aac7eeeae082963adf3cf6be36a99d3d",
+      "sha256": "098ec16f9dafaddfb8021c908aef5e4c9434e5ecca68760874c69b8bcad49a49",
+      "commit": "5780834a34cc54031f0fdf993c3c1db2102768dd"
+    },
+    "qa/stem-bakeoff/evidence_archive_v8/README.md": {
+      "sha": "53befc1392cb0bf33787d734c8bf6cb530443c0a",
+      "sha256": "106863e78c3772372708c646d86ffc1fcd3db7a636b357f91190bdc27d4f6910",
+      "commit": "5780834a34cc54031f0fdf993c3c1db2102768dd"
+    },
+    "qa/stem-bakeoff/evidence_archive_v8/root-spec-schema.json": {
+      "sha": "db308d23eba28750a3acb83b21848a9723322c38",
+      "sha256": "15ef7a5beb927f25509e335977dd78c65f4840a6a314651bd92131cbe0abcca1",
+      "commit": "2fbea8a86c2423892a8f56d35829d363e29e33bc"
+    },
+    "qa/evidence/cell-field/v8/archive-tools/source-final.json": {
+      "sha": "57b9dc8473e111464e2e2e733e9ff8f30945896d",
+      "sha256": "befa24535aff5fb1da9aa7c0b57e80c4ce144576923007e544b623d95eaa8a76",
+      "commit": "aa510deb2b46e8d705094d9fa8a0b641e50fc67a"
+    },
+    "qa/evidence/cell-field/v8/archive-tools/qualification.json": {
+      "sha": "b19a84defbaeef79cd7960627a0ff0c44868a583",
+      "sha256": "b766c1df33ab5b14c190ef2cdb53b5a787eb63627455a938365a4afc1238029f",
+      "commit": "aa510deb2b46e8d705094d9fa8a0b641e50fc67a"
+    },
+    "qa/evidence/cell-field/v8/archive-tools/peer-review.json": {
+      "sha": "1ea232fb8d6c364e64937d970c8218ab5937f602",
+      "sha256": "06aa1f8365ceaa841b600c364a14b12f2a1a8729f95050c9aa66f73ec4e2c6ef",
+      "commit": "aa510deb2b46e8d705094d9fa8a0b641e50fc67a"
+    },
+    "qa/evidence/cell-field/v8/archive-tools/test-final.log": {
+      "sha": "81a7a7723b0e8ee62653510010119bfd2524956c",
+      "sha256": "09d943c342590b8fbfcf80e3e3d2a08e2a929ebeb449f0e7deb9340b07fba342",
+      "commit": "aa510deb2b46e8d705094d9fa8a0b641e50fc67a"
+    },
+    "qa/evidence/cell-field/v8/archive-tools/final-binary-estimate.json": {
+      "sha": "6f682311fb9eaee0691dcd67ba3e80be269cc445",
+      "sha256": "85c8a53a2bacbd7b73d59605504d18afae2a2b456055c170d0dffdde305d27b1",
+      "commit": "aa510deb2b46e8d705094d9fa8a0b641e50fc67a"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/tools/remaining_audit_case_v8.py": {
+      "sha": "be10accbb61858d356fab745ef8070c03fad43ef",
+      "sha256": "bb8b4655e17dd5d6cc60a3c730af17193348b201f6199cded9882217e2fd4ae2",
+      "commit": "f635f7f20e23448b58f7bd9cc6c1443e36f951c9"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/tools/remaining_audit_core_v8.py": {
+      "sha": "0bffdaa6c369bcc1485171bd4d474534f401ba99",
+      "sha256": "535ec09e96674be94051dce8615e0f681969c73d09eb2b233adf59bb5c12aacf",
+      "commit": "f635f7f20e23448b58f7bd9cc6c1443e36f951c9"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/tools/test_remaining_audit_v8.py": {
+      "sha": "2e0c1f7dcc53e94e9cf3cf9f2c3a0d6ba55f4d55",
+      "sha256": "91be82aad8969a624a46648ba7ca07ad9485049f3047204a338c6dbd960398e1",
+      "commit": "f635f7f20e23448b58f7bd9cc6c1443e36f951c9"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/tools/audit_remaining_v8.py": {
+      "sha": "81162ef318fc167fbf12138af6bd83772aee4c36",
+      "sha256": "520a3283533586b62aabd0b86ca278fcfb93cb201c16fae7681b8e505a37dd21",
+      "commit": "fe4e4b159299b1afe914cb3d6bd185d10c6ce2a5"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/tools/test_remaining_boundaries_v8.py": {
+      "sha": "bc47a3311306a01a91027ce2a54309cb542ae79c",
+      "sha256": "bdaf2d15ee60946302e36c250aba5212ebfc1ecbdc1a2c361d8bbeb6374cb274",
+      "commit": "fe4e4b159299b1afe914cb3d6bd185d10c6ce2a5"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/tools/remaining_dev_statistics_v8.py": {
+      "sha": "97a5a68bbfb285d443c6eb31a86238d70896dbe0",
+      "sha256": "18503a690e44c43b119071d4c735627fbcd034578a5f796185fd9d5703d30a52",
+      "commit": "1934c96e6d5f752eb9bfa956ef2fa676d5dab835"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/tools/score_remaining_v8.py": {
+      "sha": "4c0bc1c87ca9e93af6f7df954021b7dc0b74ad5c",
+      "sha256": "aac9d460757ae501b72d5a53005eddcdf0d287f5ee5027f0bf0e1acbad74248a",
+      "commit": "1934c96e6d5f752eb9bfa956ef2fa676d5dab835"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/tools/test_remaining_statistics_v8.py": {
+      "sha": "bd4d8153da4f62913b3d5673afe244b69c31035a",
+      "sha256": "5cc3b41e7520180b9e209ba848b2fa0565a20c6f428cc816cd1782dbf4fa0859",
+      "commit": "1934c96e6d5f752eb9bfa956ef2fa676d5dab835"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/tools/summarize_remaining_v8.py": {
+      "sha": "227b54abc71d7d9775430cd05b81c4361564ea43",
+      "sha256": "5e6aaeb52fa5976d41fcbae445a7a5c8ed2ea1faf912c0ac385e42ef079f8ada",
+      "commit": "9afdeeb5790cfd60cb4ea852af6d5282b09f5293"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/REMAINING_TERMINAL_V8_REPORT.md": {
+      "sha": "8c1e5d81949984e71e2179481c30455b04d2414f",
+      "sha256": "eb6864641dce01d5dcf067a3fbb47d54f1ebe67d24cfd55f42874ff7c231524f",
+      "commit": "9afdeeb5790cfd60cb4ea852af6d5282b09f5293"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/tools/tool-qualification.json": {
+      "sha": "8b10753ebd88727d07675e938ac2e7a6564da748",
+      "sha256": "bceedcb3ed89691a70fb9b4e617dd8dc53a2be894a6b4b058b44a2df1c66aed6",
+      "commit": "79431530f41585535dbc7309c417ae213efb76ac"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/tools/execution-pins.json": {
+      "sha": "8481dd131947f78fb0ec94d54855da2a9c720341",
+      "sha256": "ece6b90d7dbc6c3f483b89d47d95217802e1b686b5f5af91249dcedfffdc05b2",
+      "commit": "79431530f41585535dbc7309c417ae213efb76ac"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/audit/audit.json": {
+      "sha": "725f3ecd9c0e1fc2aff408c521d74c1fd238499d",
+      "sha256": "8451f3830951eee294f18d84118d9764aee5ea042179079bb4a88859a23c6d73",
+      "commit": "79431530f41585535dbc7309c417ae213efb76ac"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/audit/cases.json": {
+      "sha": "9ea5f5855429b1ef30400bdff77e250108a0097a",
+      "sha256": "900ae307fd91b94feb69872aaaa66b4064e05c039d70febbc6d04e33460c8a58",
+      "commit": "79431530f41585535dbc7309c417ae213efb76ac"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/control/report.json": {
+      "sha": "bf2da769a00216de062ccb63f655f087bcb93d83",
+      "sha256": "be41a3ac46db817396f9e5135987bae09ac6bc5f9c04943e4e3090bcad2d50f0",
+      "commit": "79431530f41585535dbc7309c417ae213efb76ac"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/control/control_seal.json": {
+      "sha": "28780a92b3334a785546e9b2350611c6d90cd5fa",
+      "sha256": "f0b71272ec0e148bf05fad8b1e244defa4ae5802b26e40c8b017c44ead09cef4",
+      "commit": "79431530f41585535dbc7309c417ae213efb76ac"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/control/protocol.json": {
+      "sha": "290ce761d8f1d2545a5e9e56ec843a0861b88380",
+      "sha256": "27a84ceccb166766a4c6af299aef259b639486411d344c7f593552c0778e1585",
+      "commit": "79431530f41585535dbc7309c417ae213efb76ac"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/control/executed_source.json": {
+      "sha": "b9a634b999fccce48517407ee07bd8dd37800a51",
+      "sha256": "a33363b1f6a20c30247e89d46a355faf9b7c3561d0a315fb181d3ebec5f8311b",
+      "commit": "79431530f41585535dbc7309c417ae213efb76ac"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/evaluation.json": {
+      "sha": "0eac7f78e0dce60e2af4cd955845d8ffa6f3f69a",
+      "sha256": "8121678b55d77e96f44c4a15d76675fd6cb73aac297ec2a41b83131e92f3666a",
+      "commit": "79431530f41585535dbc7309c417ae213efb76ac"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/records.json": {
+      "sha": "6a0a7e894ac0123a74c8ff9741296eebd0445e56",
+      "sha256": "818f37436c9c15a579eb804bcda88e92ddf86e9ed6d2ad955b0d5ad57f334171",
+      "commit": "79431530f41585535dbc7309c417ae213efb76ac"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/historical-provenance.json": {
+      "sha": "fe7d946118764064c6c193aa9d01e3c989df33f8",
+      "sha256": "f50190f1d908e5ae890dfbedc80ea51ec15c971abafcb9fece115891f4e879b4",
+      "commit": "79431530f41585535dbc7309c417ae213efb76ac"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/per-source-dev-statistics.npz": {
+      "sha": "63393a80fa3c2f49559cde8edd0286ba20144f48",
+      "sha256": "414edf010f49166eb77cb66574286e5cf728e36f918ec9bcc09e3a42ab9b6e78",
+      "commit": "79431530f41585535dbc7309c417ae213efb76ac"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/descriptive-contrasts.json": {
+      "sha": "6a991c7be16f5f5da5d3b13205b3db3da01384c4",
+      "sha256": "462125a594950b6ad0e0cfa95e45c805455f3cd4050bd1e9c2f8df57d314cb31",
+      "commit": "79431530f41585535dbc7309c417ae213efb76ac"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/completion-qualification.json": {
+      "sha": "38a85da8078567ab811075828b2d01cddab157fb",
+      "sha256": "2d6a5cef19d50a089f798d900e072ef7b2142c2adce9f6ac3293da16868696b0",
+      "commit": "79431530f41585535dbc7309c417ae213efb76ac"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/publication-manifest.json": {
+      "sha": "bdd57c691206f43a38a169605735cf5bd5919312",
+      "sha256": "c7e5adae7f52cbcdb44549384700b71e180766927d5ad8ecb14b1afadc84fab3",
+      "commit": "79431530f41585535dbc7309c417ae213efb76ac"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/tools/remaining_statistics_peer_v8.py": {
+      "sha": "452cf6da73203507505bc49aad0201560b1b9c2e",
+      "sha256": "b2154050d6be11d1394a95627855ff86f492dc4068335a80686daddbc2edbd4f",
+      "commit": "d9694087046f8ef159ae9ece91470d8db0ffe9a6"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/audit/remaining-statistics-peer-audit.json": {
+      "sha": "e8d558635031bee69da80162183fd5cf7cf7d9af",
+      "sha256": "f769d2a14b5e76bcf42634084ed097e5ed7791909e41ea166867006d74b573ab",
+      "commit": "d9694087046f8ef159ae9ece91470d8db0ffe9a6"
+    },
+    "qa/stem-bakeoff/CELL_FIELD_V8_RESEARCH_COMMENTS.md": {
+      "sha": "9d5041870b08420f535c75bd8fb55f84c8d332c8",
+      "sha256": "fea84488975f7ecdcf1739af88ab3981aec1f9b9fd8c8f7db52363ea3b79f7fb",
+      "commit": "8f03117c9cd2079bd6f3eb71614f9daef97d21ef"
+    },
+    "qa/stem-bakeoff/CELL_FIELD_V8_CLOSURE_REPORT.md": {
+      "sha": "4f7f9e5d71bb8b55c6f14ccb4b11c076cd0e4bae",
+      "sha256": "cc484b6fe1263352b44bcc768458856443da99345e4fbd50dff3d14ed1a1810b"
+    },
+    "qa/stem-bakeoff/reviews/20261026-cell-field-v8/remaining-compressed/executed-source.json": {
+      "sha": "b9a634b999fccce48517407ee07bd8dd37800a51",
+      "sha256": "a33363b1f6a20c30247e89d46a355faf9b7c3561d0a315fb181d3ebec5f8311b"
+    },
+    "qa/stem-bakeoff/reviews/20261026-cell-field-v8/remaining-compressed/source-freeze.json": {
+      "sha": "a8df11fede74211199c79c5a3eaef44d38a15c4c",
+      "sha256": "f866a096cd9f0ef2f7873aa0b1b1ec4023af84d353a33280cfaab98f1eb79fc6"
+    },
+    "qa/stem-bakeoff/reviews/20261026-cell-field-v8/remaining-compressed/storage-qualification.json": {
+      "sha": "de7495e67beb20d5b209e543b6d5a351e687604a",
+      "sha256": "d58b428f6bb5a9c82f62dccd540788182b04a2e4ab81ea8bc6e9830307963e49"
+    },
+    "qa/stem-bakeoff/reviews/20261026-cell-field-v8/remaining-compressed/storage-only.diff": {
+      "sha": "9d73d94633120a40f2b0b8de3a8ebfcf6132853e",
+      "sha256": "520787a0d258f9022270bf11a4b81b5fb28c793fa1a42a16ccf78530f5df7051"
+    },
+    "qa/stem-bakeoff/reviews/20261026-cell-field-v8/remaining-compressed/storage-estimate.json": {
+      "sha": "4cfb1e42ae905ae5524fb2e06348ad2f328165c6",
+      "sha256": "1173087607b14f3e13fb6a097384d0a952d75433cbc7a027e145ca4e84189eba"
+    },
+    "qa/stem-bakeoff/cell_field_remaining_compressed_confirmation_entry_v8.json": {
+      "sha": "460d8f29dd52577ae4a57661602992125a431dac",
+      "sha256": "5b195a871b492a6680bcd2a3087c528ecce9fa55cbeb732d40116f4200b21b9a"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-evidence-archive/manifest.json.gz": {
+      "sha": "e3d23c569a8634b98a263f0ac79f2a2870e401c2",
+      "sha256": "6a610e2a6d786f8583a4eb48fc012a2a35b2f746779ddfb00942dab94e5e34cf"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-evidence-archive/provenance-bundle.json.gz": {
+      "sha": "35e5b345ac8ce83c10316c9f0a363ea366272197",
+      "sha256": "91494d2625b347de3d95b0d7c02a71c3c6182907cb9c3c6c7167df44d03d2c16"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-evidence-archive/metadata-publication-manifest.json": {
+      "sha": "98b46b9c87c931bd43186f7f0ee63e12650d6067",
+      "sha256": "76b4e95ff5c702c7e68fc4f39881ebfbb3ec0b4497a7118910cf28ed6ad367e0"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-evidence-archive/archive-receipt.json": {
+      "sha": "20dbe93c7a1b2954c4675bb7604afc8aefba028e",
+      "sha256": "46199f4f3ccc8f88a0a71466adcc538dd98fdde6c10865416ea22e7f53b3345c"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-evidence-archive/final-rebuildable-cache-cleanup.json": {
+      "sha": "7f8dd0c5671af374f5cfc4f055df601939d613bb",
+      "sha256": "23832c6406649e7129fc1834720e6e057d0ee96fbb3b6920e3440a50cb4e67c3"
+    },
+    "qa/stem-bakeoff/reviews/cell-field-v8-evidence-archive/ARCHIVE_REPORT.md": {
+      "sha": "a253b9a2fc27ffc6ea4319d37a30c33eab2b2e50",
+      "sha256": "e9ed9e1394366f3d070d65c41e6b20d241aa58ea03782e3dd680954351631d9f"
+    }
+  }
+}

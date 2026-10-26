@@ -1,0 +1,47 @@
+{
+  "actual_archive_created": false,
+  "code_map_sha256": "ee28de5df29c83575c44d232e43d8ab671bc8dd7fa9a0e320759ab1d0ffe828d",
+  "command": "PYTHONDONTWRITEBYTECODE=1 /workspace/scratch/60f94d809f44/pft-venv/bin/python -m unittest test_archive_v8 -v",
+  "earlier_execution": {
+    "count": 9,
+    "phase": "Before peer hardening; superseded by final15, not15+9 unique tests.",
+    "result": "PASS",
+    "unittest_elapsed_seconds": 0.109
+  },
+  "execution_mode": "approved_escalated_local_qualification",
+  "final_tests": {
+    "count": 15,
+    "exit_code": 0,
+    "log_sha256": "09d943c342590b8fbfcf80e3e3d2a08e2a929ebeb449f0e7deb9340b07fba342",
+    "result": "PASS",
+    "unittest_elapsed_seconds": 0.268
+  },
+  "independent_source_review": {
+    "receipt_sha256": "06aa1f8365ceaa841b600c364a14b12f2a1a8729f95050c9aa66f73ec4e2c6ef",
+    "scope": "Four runtime modules, tests, saved log and README reviewed read-only; reviewer did not rerun tests.",
+    "status": "PASS"
+  },
+  "native_adoption": false,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "real_plan_measure_pack_commands": 0,
+  "remaining_preconditions": [
+    "Exact final roots and complete historical expected maps approved by root after all output owners freeze.",
+    "Externally approved roots document SHA and generated plan SHA.",
+    "Explicit compressed output budget and retained disk reserve.",
+    "No actual scientific acceptance can be inferred from archival verification."
+  ],
+  "saved_binary_estimate": {
+    "all37_hashes_rechecked": true,
+    "raw_bytes": 95682744,
+    "receipt_sha256": "85c8a53a2bacbd7b73d59605504d18afae2a2b456055c170d0dffdde305d27b1",
+    "scope": "Read-only requested capacity estimate; separate streams exclude archive framing; no compressed file created.",
+    "sum_independent_gzip6_bytes": 30811890
+  },
+  "schema": "hepta.v8-archive-tool-qualification.v1",
+  "scientific_verdict_from_archive": false,
+  "scope": "Standard-library archive tooling; synthetic temporary fixtures only; no real archive/plan approved or created. Native227 and research129 source closures unchanged.",
+  "source_final_sha256": "befa24535aff5fb1da9aa7c0b57e80c4ce144576923007e544b623d95eaa8a76",
+  "status": "PASS",
+  "synthetic_fixture_directories_remaining": 0,
+  "workdir": "/workspace/scratch/60f94d809f44/pft-v8-archive-tools"
+}

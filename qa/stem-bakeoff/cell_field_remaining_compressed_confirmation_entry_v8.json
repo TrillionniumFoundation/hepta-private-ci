@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.remaining-terminal-confirmation-entry-rule.v8",
+  "status": "FROZEN",
+  "frozen_before": "all96 remaining-terminal control runs and their post-seal development scoring",
+  "control_protocol_sha256": "27a84ceccb166766a4c6af299aef259b639486411d344c7f593552c0778e1585",
+  "control_source_sha256": "660f79d805689b880ba6637e3038eb4251e8f3cc959cb608e282004824ef328a",
+  "control_execution_commit": "65a5a1e6bb5034c27168535600a408a34d792e74",
+  "declared_candidate": "terminal_field8_remaining",
+  "scope": "Prospective rule for deciding whether this separate development mechanism is worth an independent confirmation. Historical development outcomes remain development, including every refusal/error. This rule cannot approve an SCI result, native owner admission or production.",
+  "mandatory_complete_slots": 96,
+  "required_complete_fits_per_method": 24,
+  "required_methods": [
+    "myopic_h1",
+    "loss2_remaining",
+    "full_adjoint_remaining",
+    "terminal_field8_remaining"
+  ],
+  "all_actual_errors_disqualify": true,
+  "all_saved_states_actions_receipts_and_anchor_losses_must_replay": true,
+  "full_field_reference": {
+    "fits": 24,
+    "require_complete32": true,
+    "maximum_action_state_old_loss_difference": 1e-10
+  },
+  "development_plausibility": {
+    "future_loss_candidate_minus_each_comparator": {
+      "comparators": [
+        "myopic_h1",
+        "loss2_remaining"
+      ],
+      "version_task_head_groups": 8,
+      "required_group_comparisons": 16,
+      "mean_upper_bound": -0.006
+    },
+    "old_loss_candidate_minus_original_warmup": {
+      "version_task_head_groups": 8,
+      "mean_upper_bound": -0.02
+    },
+    "candidate_over_myopic_policy_cpu": {
+      "version_task_head_groups": 8,
+      "maximum_ratio": 3,
+      "scope": "Entire measured per-policy process CPU, including all proposal and failed safety work; no safety or reference work removed."
+    }
+  },
+  "no_posthoc_threshold_or_cohort_relaxation": true,
+  "no_additional_configuration_search_in_this_study": true,
+  "if_all_pass": "Prepare and freeze a new independent-source confirmation protocol using already specified disjointness, original scientific gates, prospective execution/source identities and sealed roles before revealing new outcomes.",
+  "if_any_fail": "REJECT_FOR_CONFIRMATION at this registered design; preserve complete negative outcomes and stop before consuming the limited independent cohort.",
+  "unchanged_future_scientific_requirements": {
+    "primary_comparisons": 12,
+    "one_sided_family_alpha": 0.05,
+    "future_loss_upper_confidence_bound_strictly_below": -0.001,
+    "old_loss_upper_confidence_bound_at_most": 0,
+    "maximum_candidate_over_myopic_policy_cpu_ratio": 3,
+    "all_required_primary_trajectories_complete32": true,
+    "component_identity_and_role_disjointness_required": true
+  },
+  "native_integration": "The remaining-terminal trace is not HPTHOF07 or HPTHOF08. Any candidate that passes research must receive its own correctly qualified native contract; relabeling an older handoff is prohibited.",
+  "scientific_acceptance": false,
+  "production_authority": false,
+  "storage_only_revision": {
+    "parent_entry_rule_sha256": "f2e970082338cdce95edb40ef15062c651a91619382a4772652c1c23b5a4d312",
+    "parent_entry_rule_commit": "b3c1ffeeee18cccf57532d6e539535b17d6a8d44",
+    "parent_source_sha256": "3f01aadd8b247bc3628fcf06d84f996045d496a955e5c7db443b0419f915b2ed",
+    "parent_execution_commit": "6db6e13ada239bd7478820c20b0611f3dd912ebf",
+    "original_127_files_unchanged": true,
+    "new_source_files": 129,
+    "unchanged_scientific_protocol": true,
+    "unchanged_gate_values": true,
+    "real_study_fits_before_revision": 0,
+    "reason": "Complete ledgers require deterministic lossless compression within the available local storage. No numerical/controller/cost-interval or decision-threshold change."
+  }
+}

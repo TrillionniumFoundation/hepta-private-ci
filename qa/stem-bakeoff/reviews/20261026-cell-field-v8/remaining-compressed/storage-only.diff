@@ -1,0 +1,95 @@
+--- cell_field_remaining_run_v8.py
++++ cell_field_remaining_run_compressed_v8.py
+@@ -1,4 +1,4 @@
+-"""All24 warmups by four fixed commit-one controllers; planning data only.
++"""Storage-only revision: deterministic gzip for the complete policy ledger.
+ 
+ A new externally pinned FROZEN protocol is mandatory. The control process
+ cannot read historical selection labels; a separately invoked DEV scorer may
+@@ -7,6 +7,8 @@
+ 
+ import argparse
+ from collections import Counter
++import gzip
++import hashlib
+ from itertools import product
+ import json
+ import os
+@@ -16,18 +18,47 @@
+ 
+ import numpy as np
+ 
+-from cell_field_common_run_v8 import (AXES, SOURCE_REQUIRED, file_hash, load_planning,
++from cell_field_common_run_v8 import (AXES, SOURCE_REQUIRED, canonical, file_hash, load_planning,
+     load_warmup, read, require, sha, verify_sources, write)
+ from cell_field_terminal_v8 import METHODS
+ 
+ 
+ REQUIRED = SOURCE_REQUIRED | {"cell_field_terminal_v8.py", "cell_field_remaining_v8.py",
++    "cell_field_remaining_run_compressed_v8.py",
+     "cell_field_remaining_run_v8.py", "cell_field_repair_v7.py", "cell_field_safety_v8.py",
+     "cell_field_joint_search_v8.py", "cell_field_safety_portfolio_v8.py"}
+ MECHANISM = {"steps": 32, "commit_stride": 1, "dt": .02, "effort_price": .03,
+     "action_bound": 4., "current_mean_weight": 1., "old_mean_weight": .25,
+     "current_dispersion_weight": 0., "free_actions_per_proposal": 1,
+     "nominal_continuation": "zero_control", "safety_filter": "fixed_old_first_portfolio"}
++
++INDEX_KEYS = ("method", "status", "error", "completed_steps", "common_J32", "parameter_action_penalty",
++    "policy_call_cpu_ns", "policy_call_wall_ns", "terminal_state_sha256", "retained_prefix_available",
++    "checkpoint_cuts", "terminal_checkpoint", "saved_plan_count", "scientific_acceptance", "production_authority")
++
++
++def load_record(directory):
++    """Verify compressed and expanded bytes plus the small public index."""
++    directory = Path(directory)
++    index = read(directory/"result.json")
++    if index["schema"] == "hepta.remaining-terminal-policy-error.v8":
++        require(index["status"] == "actual_error" and index["completed_steps"] is None
++            and index["retained_prefix_available"] is False, "unavailable error remains unavailable")
++        return index
++    require(index["schema"] == "hepta.remaining-terminal-policy-record-index.v8", "explicit compressed ledger index required")
++    pin = index["policy_record"]
++    require(pin["file"] == "policy-record.json.gz" and type(pin["uncompressed_bytes"]) is int
++        and 0 < pin["uncompressed_bytes"] <= 32 << 20, "bounded fixed ledger member required")
++    path = directory/pin["file"]
++    require(file_hash(path) == pin["sha256"] and path.stat().st_size == pin["bytes"], "compressed ledger identity differs")
++    with gzip.open(path, "rb") as stream:
++        raw = stream.read((32 << 20)+1)
++    require(len(raw) == pin["uncompressed_bytes"] and hashlib.sha256(raw).hexdigest() == pin["uncompressed_sha256"],
++        "expanded complete ledger identity differs")
++    record = json.loads(raw)
++    require(canonical(record)+b"\n" == raw and all(index[k] == record.get(k) for k in INDEX_KEYS)
++        and (record["status"] != "completed" or record["completed_steps"] == 32), "canonical ledger/index or complete32 disposition differs")
++    return record
+ 
+ 
+ def frozen_plan(path, expected):
+@@ -51,7 +82,8 @@
+     record, states, plans = result["record"], result["states"], result["plans"]
+     n, p = len(result["actions"]), result["state"].parameter_count
+     require(len(states) == n+1 and record["completed_steps"] == n
+-        and states[-1].digest() == record["terminal_state_sha256"], "complete retained physical prefix required")
++        and states[-1].digest() == record["terminal_state_sha256"]
++        and (record["status"] != "completed" or n == 32), "complete retained physical prefix required")
+     np.savez_compressed(directory/"trajectory.npz", states=np.asarray([s.vector() for s in states]),
+         actions=result["actions"], old_losses=result["old_losses"])
+     np.savez_compressed(directory/"plans.npz",
+@@ -66,7 +98,17 @@
+         states[cut].save(directory/"checkpoints"/str(cut))
+     record.update(checkpoint_cuts=cuts, terminal_checkpoint="checkpoints/"+str(n),
+         retained_prefix_available=True, saved_plan_count=len(plans))
+-    write(directory/"result.json", record)
++    raw = canonical(record)+b"\n"
++    require(len(raw) <= 32 << 20, "bounded complete canonical policy ledger required")
++    path = directory/"policy-record.json.gz"
++    with path.open("xb") as stream:
++        with gzip.GzipFile(filename="", fileobj=stream, mode="wb", mtime=0) as compressed:
++            compressed.write(raw)
++    write(directory/"result.json", {"schema": "hepta.remaining-terminal-policy-record-index.v8",
++        **{k: record.get(k) for k in INDEX_KEYS}, "policy_record": {
++            "file": path.name, "sha256": file_hash(path), "bytes": path.stat().st_size,
++            "uncompressed_sha256": hashlib.sha256(raw).hexdigest(), "uncompressed_bytes": len(raw)}})
++    require(load_record(directory) == record, "lossless complete policy ledger round trip")
+ 
+ 
+ def execute_one(directory, warmup, train, panels, anchors, method, protocol_sha, source_sha):
