@@ -1,31 +1,23 @@
 use crate::logging;
+#[path = "desktop_capability.rs"]
+mod capability;
 use crate::token::get_current_token_for_restriction;
 use crate::token::get_logon_sid_bytes;
 use crate::winutil::format_last_error;
 use crate::winutil::to_wide;
 use anyhow::Result;
-use rand::Rng;
-use rand::SeedableRng;
-use rand::rngs::SmallRng;
-use std::ffi::c_void;
+pub use capability::DesktopCapability;
+use rand::RngCore;
+use rand::rngs::OsRng;
+#[path = "desktop_acl.rs"]
+mod native_acl;
+use native_acl::DesktopAcl;
 use std::path::Path;
 use std::ptr;
 use windows_sys::Win32::Foundation::CloseHandle;
-use windows_sys::Win32::Foundation::ERROR_SUCCESS;
 use windows_sys::Win32::Foundation::GetLastError;
 use windows_sys::Win32::Foundation::HANDLE;
-use windows_sys::Win32::Foundation::HLOCAL;
-use windows_sys::Win32::Foundation::LocalFree;
-use windows_sys::Win32::Security::Authorization::EXPLICIT_ACCESS_W;
-use windows_sys::Win32::Security::Authorization::GRANT_ACCESS;
-use windows_sys::Win32::Security::Authorization::SE_WINDOW_OBJECT;
-use windows_sys::Win32::Security::Authorization::SetEntriesInAclW;
-use windows_sys::Win32::Security::Authorization::SetSecurityInfo;
-use windows_sys::Win32::Security::Authorization::TRUSTEE_IS_SID;
-use windows_sys::Win32::Security::Authorization::TRUSTEE_IS_UNKNOWN;
-use windows_sys::Win32::Security::Authorization::TRUSTEE_W;
 use windows_sys::Win32::Security::CopySid;
-use windows_sys::Win32::Security::DACL_SECURITY_INFORMATION;
 use windows_sys::Win32::Security::EqualSid;
 use windows_sys::Win32::Security::GetLengthSid;
 use windows_sys::Win32::Security::GetTokenInformation;
@@ -61,12 +53,46 @@ const DESKTOP_ALL_ACCESS: u32 = DESKTOP_READOBJECTS
     | DESKTOP_WRITE_DAC
     | DESKTOP_WRITE_OWNER;
 
+const DESKTOP_PROCESS_ACCESS: u32 = DESKTOP_READOBJECTS
+    | DESKTOP_CREATEWINDOW
+    | DESKTOP_CREATEMENU
+    | DESKTOP_ENUMERATE
+    | DESKTOP_WRITEOBJECTS
+    | DESKTOP_READ_CONTROL;
+
 pub struct LaunchDesktop {
     _private_desktop: Option<PrivateDesktop>,
     startup_name: Vec<u16>,
 }
 
 impl LaunchDesktop {
+    /// Requires the exact independent session role in the actual restricted
+    /// token. Filesystem SIDs are never promoted into desktop authority.
+    pub(crate) fn prepare_for_capability(
+        h_token: HANDLE,
+        capability: &DesktopCapability,
+        logs_base_dir: Option<&Path>,
+    ) -> Result<Self> {
+        let subjects = unsafe { private_desktop_restricting_sids(h_token)? };
+        let sid = capability.as_sid();
+        let length = unsafe { GetLengthSid(sid.as_ptr()) } as usize;
+        let bytes = unsafe { std::slice::from_raw_parts(sid.as_ptr().cast::<u8>(), length) };
+        anyhow::ensure!(
+            subjects.iter().any(|subject| subject == bytes),
+            "token lacks this launch's independent desktop capability"
+        );
+        let ordinary_logon = unsafe { get_logon_sid_bytes(h_token)? };
+        let private_desktop = PrivateDesktop::create_with_subjects(
+            vec![bytes.to_vec(), ordinary_logon],
+            DESKTOP_PROCESS_ACCESS,
+            logs_base_dir,
+        )?;
+        Ok(Self {
+            startup_name: to_wide(format!("Winsta0\\{}", private_desktop.name)),
+            _private_desktop: Some(private_desktop),
+        })
+    }
+
     pub fn prepare(
         h_token: HANDLE,
         use_private_desktop: bool,
@@ -103,8 +129,24 @@ struct PrivateDesktop {
 
 impl PrivateDesktop {
     fn create(restricting_sids: Vec<Vec<u8>>, logs_base_dir: Option<&Path>) -> Result<Self> {
-        let mut rng = SmallRng::from_entropy();
-        let name = format!("CodexSandboxDesktop-{:x}", rng.r#gen::<u128>());
+        let token = unsafe { get_current_token_for_restriction()? };
+        let logon_sid = unsafe { get_logon_sid_bytes(token) };
+        unsafe { CloseHandle(token) };
+        let mut subjects = restricting_sids;
+        subjects.push(logon_sid?);
+        Self::create_with_subjects(subjects, DESKTOP_ALL_ACCESS, logs_base_dir)
+    }
+
+    fn create_with_subjects(
+        subjects: Vec<Vec<u8>>,
+        subject_access: u32,
+        logs_base_dir: Option<&Path>,
+    ) -> Result<Self> {
+        let mut bytes = [0u8; 16];
+        OsRng.try_fill_bytes(&mut bytes)?;
+        let name = format!("CodexSandboxDesktop-{:032x}", u128::from_le_bytes(bytes));
+        let mut acl = DesktopAcl::new(subjects, subject_access)?;
+        let attributes = acl.attributes();
         let name_wide = to_wide(&name);
         let handle = unsafe {
             CreateDesktopW(
@@ -112,8 +154,8 @@ impl PrivateDesktop {
                 ptr::null(),
                 ptr::null_mut(),
                 0,
-                DESKTOP_ALL_ACCESS,
-                ptr::null_mut(),
+                subject_access,
+                &attributes,
             )
         };
         if handle == 0 {
@@ -129,11 +171,9 @@ impl PrivateDesktop {
             return Err(anyhow::anyhow!("CreateDesktopW failed: {err}"));
         }
 
-        unsafe {
-            if let Err(err) = grant_desktop_access(handle, restricting_sids, logs_base_dir) {
-                let _ = CloseDesktop(handle);
-                return Err(err);
-            }
+        if let Err(error) = acl.verify(handle) {
+            unsafe { CloseDesktop(handle) };
+            return Err(error);
         }
 
         Ok(Self { handle, name })
@@ -153,7 +193,7 @@ unsafe fn private_desktop_restricting_sids(h_token: HANDLE) -> Result<Vec<Vec<u8
         0,
         &mut needed,
     );
-    if needed < std::mem::size_of::<TOKEN_GROUPS>() as u32 {
+    if needed < std::mem::size_of::<TOKEN_GROUPS>() as u32 || needed > 16 * 1024 {
         anyhow::bail!(
             "GetTokenInformation(TokenRestrictedSids) size query failed: {}",
             GetLastError()
@@ -175,9 +215,10 @@ unsafe fn private_desktop_restricting_sids(h_token: HANDLE) -> Result<Vec<Vec<u8
         );
     }
     let groups = &*buffer.as_ptr().cast::<TOKEN_GROUPS>();
-    if groups.GroupCount == 0 {
-        anyhow::bail!("sandbox token has no restricting SIDs");
-    }
+    anyhow::ensure!(
+        groups.GroupCount > 0 && groups.GroupCount <= 128,
+        "sandbox token restricting SID count exceeds launch bound"
+    );
     let entries = std::slice::from_raw_parts(groups.Groups.as_ptr(), groups.GroupCount as usize);
     if entries
         .iter()
@@ -196,74 +237,6 @@ unsafe fn private_desktop_restricting_sids(h_token: HANDLE) -> Result<Vec<Vec<u8
             Ok(sid)
         })
         .collect()
-}
-
-unsafe fn grant_desktop_access(
-    handle: isize,
-    mut restricting_sids: Vec<Vec<u8>>,
-    logs_base_dir: Option<&Path>,
-) -> Result<()> {
-    let token = get_current_token_for_restriction()?;
-    let logon_sid = get_logon_sid_bytes(token);
-    CloseHandle(token);
-    restricting_sids.push(logon_sid?);
-
-    let entries: Vec<EXPLICIT_ACCESS_W> = restricting_sids
-        .iter_mut()
-        .map(|sid| EXPLICIT_ACCESS_W {
-            grfAccessPermissions: DESKTOP_ALL_ACCESS,
-            grfAccessMode: GRANT_ACCESS,
-            grfInheritance: 0,
-            Trustee: TRUSTEE_W {
-                pMultipleTrustee: ptr::null_mut(),
-                MultipleTrusteeOperation: 0,
-                TrusteeForm: TRUSTEE_IS_SID,
-                TrusteeType: TRUSTEE_IS_UNKNOWN,
-                ptstrName: sid.as_mut_ptr() as *mut c_void as *mut u16,
-            },
-        })
-        .collect();
-
-    let mut updated_dacl = ptr::null_mut();
-    let set_entries_code = SetEntriesInAclW(
-        entries.len() as u32,
-        entries.as_ptr(),
-        ptr::null_mut(),
-        &mut updated_dacl,
-    );
-    if set_entries_code != ERROR_SUCCESS {
-        logging::debug_log(
-            &format!("SetEntriesInAclW failed for private desktop: {set_entries_code}"),
-            logs_base_dir,
-        );
-        return Err(anyhow::anyhow!(
-            "SetEntriesInAclW failed for private desktop: {set_entries_code}"
-        ));
-    }
-
-    let set_security_code = SetSecurityInfo(
-        handle,
-        SE_WINDOW_OBJECT,
-        DACL_SECURITY_INFORMATION,
-        ptr::null_mut(),
-        ptr::null_mut(),
-        updated_dacl,
-        ptr::null_mut(),
-    );
-    if !updated_dacl.is_null() {
-        LocalFree(updated_dacl as HLOCAL);
-    }
-    if set_security_code != ERROR_SUCCESS {
-        logging::debug_log(
-            &format!("SetSecurityInfo failed for private desktop: {set_security_code}"),
-            logs_base_dir,
-        );
-        return Err(anyhow::anyhow!(
-            "SetSecurityInfo failed for private desktop: {set_security_code}"
-        ));
-    }
-
-    Ok(())
 }
 
 impl Drop for PrivateDesktop {

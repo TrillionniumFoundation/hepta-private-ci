@@ -1,4 +1,9 @@
 use crate::desktop::LaunchDesktop;
+#[path = "owned_child_stdio.rs"]
+mod owned_child_stdio;
+use owned_child_stdio::OwnedChildStdio;
+#[path = "prepared_process_context.rs"]
+mod prepared_context;
 use crate::logging;
 use crate::proc_thread_attr::ProcThreadAttributeList;
 use crate::winutil::argv_to_command_line;
@@ -8,6 +13,7 @@ use anyhow::Context;
 use anyhow::Result;
 use anyhow::anyhow;
 use codex_utils_pty::JobObject;
+pub use prepared_context::PreparedProcessContext;
 use std::collections::HashMap;
 use std::ffi::c_void;
 use std::os::windows::io::AsRawHandle;
@@ -17,21 +23,13 @@ use std::sync::Arc;
 use windows_sys::Win32::Foundation::CloseHandle;
 use windows_sys::Win32::Foundation::GetLastError;
 use windows_sys::Win32::Foundation::HANDLE;
-use windows_sys::Win32::Foundation::HANDLE_FLAG_INHERIT;
-use windows_sys::Win32::Foundation::INVALID_HANDLE_VALUE;
-use windows_sys::Win32::Foundation::SetHandleInformation;
 use windows_sys::Win32::Storage::FileSystem::ReadFile;
-use windows_sys::Win32::System::Console::GetStdHandle;
-use windows_sys::Win32::System::Console::STD_ERROR_HANDLE;
-use windows_sys::Win32::System::Console::STD_INPUT_HANDLE;
-use windows_sys::Win32::System::Console::STD_OUTPUT_HANDLE;
 use windows_sys::Win32::System::Pipes::CreatePipe;
 use windows_sys::Win32::System::Threading::CREATE_NO_WINDOW;
 use windows_sys::Win32::System::Threading::CREATE_UNICODE_ENVIRONMENT;
 use windows_sys::Win32::System::Threading::CreateProcessAsUserW;
 use windows_sys::Win32::System::Threading::EXTENDED_STARTUPINFO_PRESENT;
 use windows_sys::Win32::System::Threading::PROCESS_INFORMATION;
-use windows_sys::Win32::System::Threading::STARTF_USESTDHANDLES;
 use windows_sys::Win32::System::Threading::STARTUPINFOEXW;
 use windows_sys::Win32::System::Threading::STARTUPINFOW;
 
@@ -67,23 +65,6 @@ pub fn make_env_block(env: &HashMap<String, String>) -> Vec<u16> {
     w
 }
 
-unsafe fn ensure_inheritable_stdio(si: &mut STARTUPINFOW) -> Result<()> {
-    for kind in [STD_INPUT_HANDLE, STD_OUTPUT_HANDLE, STD_ERROR_HANDLE] {
-        let h = GetStdHandle(kind);
-        if h == 0 || h == INVALID_HANDLE_VALUE {
-            return Err(anyhow!("GetStdHandle failed: {}", GetLastError()));
-        }
-        if SetHandleInformation(h, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT) == 0 {
-            return Err(anyhow!("SetHandleInformation failed: {}", GetLastError()));
-        }
-    }
-    si.dwFlags |= STARTF_USESTDHANDLES;
-    si.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
-    si.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-    si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
-    Ok(())
-}
-
 /// Low-level process creation using the supplied token, without permission-profile
 /// admission or any filesystem isolation guarantee.
 ///
@@ -102,11 +83,65 @@ pub unsafe fn create_process_as_user(
     console_mode: ConsoleMode,
     use_private_desktop: bool,
 ) -> Result<CreatedProcess> {
+    let desktop = LaunchDesktop::prepare(h_token, use_private_desktop, logs_base_dir)?;
+    let job = Arc::new(JobObject::create().context("create process job")?);
+    create_process_on_desktop(
+        h_token,
+        argv,
+        cwd,
+        env_map,
+        logs_base_dir,
+        stdio,
+        console_mode,
+        desktop,
+        job,
+    )
+}
+
+/// Consumes the qualified owner's one-use launch resources. Process creation
+/// itself does not prove image initialization or terminal reconciliation.
+///
+/// # Safety
+/// All explicitly supplied stdio handles must remain valid until return.
+#[allow(clippy::too_many_arguments)]
+pub unsafe fn create_process_as_user_prepared(
+    context: PreparedProcessContext,
+    argv: &[String],
+    cwd: &Path,
+    env_map: &HashMap<String, String>,
+    logs_base_dir: Option<&Path>,
+    stdio: Option<(HANDLE, HANDLE, HANDLE)>,
+    console_mode: ConsoleMode,
+) -> Result<CreatedProcess> {
+    let (token, desktop, job) = context.into_parts()?;
+    create_process_on_desktop(
+        token.as_raw_handle() as HANDLE,
+        argv,
+        cwd,
+        env_map,
+        logs_base_dir,
+        stdio,
+        console_mode,
+        desktop,
+        job,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+unsafe fn create_process_on_desktop(
+    h_token: HANDLE,
+    argv: &[String],
+    cwd: &Path,
+    env_map: &HashMap<String, String>,
+    logs_base_dir: Option<&Path>,
+    stdio: Option<(HANDLE, HANDLE, HANDLE)>,
+    console_mode: ConsoleMode,
+    desktop: LaunchDesktop,
+    job: Arc<JobObject>,
+) -> Result<CreatedProcess> {
     let cmdline_str = argv_to_command_line(argv);
     let mut cmdline: Vec<u16> = to_wide(&cmdline_str);
     let env_block = make_env_block(env_map);
-    let desktop = LaunchDesktop::prepare(h_token, use_private_desktop, logs_base_dir)?;
-    let job = Arc::new(JobObject::create().context("create process job")?);
     let mut pi: PROCESS_INFORMATION = std::mem::zeroed();
     let cwd_wide = to_wide(cwd);
     let env_block_len = env_block.len();
@@ -116,8 +151,8 @@ pub unsafe fn create_process_as_user(
         | (None, ConsoleMode::Inherit)
         | (None, ConsoleMode::NoWindow) => 0,
     };
-    let attr_count = if stdio.is_some() { 2 } else { 1 };
-    let mut attrs = ProcThreadAttributeList::new(attr_count)?;
+    let child_stdio = OwnedChildStdio::duplicate(stdio)?;
+    let mut attrs = ProcThreadAttributeList::new(/*attr_count*/ 2)?;
     attrs.set_job(job.as_raw_handle() as HANDLE)?;
 
     let mut si: STARTUPINFOEXW = std::mem::zeroed();
@@ -126,30 +161,8 @@ pub unsafe fn create_process_as_user(
     // if lpDesktop is not set when launching with a restricted token.
     // Point explicitly at the interactive desktop or a private desktop.
     si.StartupInfo.lpDesktop = desktop.startup_info_desktop();
-    match stdio {
-        Some((stdin_h, stdout_h, stderr_h)) => {
-            si.StartupInfo.dwFlags |= STARTF_USESTDHANDLES;
-            si.StartupInfo.hStdInput = stdin_h;
-            si.StartupInfo.hStdOutput = stdout_h;
-            si.StartupInfo.hStdError = stderr_h;
-            let mut inherited_handles = vec![stdin_h, stdout_h];
-            if !inherited_handles.contains(&stderr_h) {
-                inherited_handles.push(stderr_h);
-            }
-            for &handle in &inherited_handles {
-                if SetHandleInformation(handle, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT) == 0 {
-                    return Err(anyhow!(
-                        "SetHandleInformation failed for stdio handle: {}",
-                        GetLastError()
-                    ));
-                }
-            }
-            attrs.set_handle_list(inherited_handles)?;
-        }
-        None => {
-            ensure_inheritable_stdio(&mut si.StartupInfo)?;
-        }
-    }
+    child_stdio.apply(&mut si.StartupInfo);
+    attrs.set_handle_list(child_stdio.handle_list())?;
     si.lpAttributeList = attrs.as_mut_ptr();
 
     let creation_flags = CREATE_UNICODE_ENVIRONMENT | EXTENDED_STARTUPINFO_PRESENT | console_flags;
@@ -238,6 +251,58 @@ pub fn spawn_process_with_pipes(
     use_private_desktop: bool,
     logs_base_dir: Option<&Path>,
 ) -> Result<PipeSpawnHandles> {
+    spawn_with_pipes(
+        PipeLaunch::Legacy(h_token, use_private_desktop),
+        argv,
+        cwd,
+        env_map,
+        stdin_mode,
+        stderr_mode,
+        console_mode,
+        logs_base_dir,
+    )
+}
+
+/// Pipe launch for the admitted owner; retains the same EOF/output contracts.
+#[allow(clippy::too_many_arguments)]
+pub fn spawn_process_with_pipes_prepared(
+    context: PreparedProcessContext,
+    argv: &[String],
+    cwd: &Path,
+    env_map: &HashMap<String, String>,
+    stdin_mode: StdinMode,
+    stderr_mode: StderrMode,
+    console_mode: ConsoleMode,
+    logs_base_dir: Option<&Path>,
+) -> Result<PipeSpawnHandles> {
+    spawn_with_pipes(
+        PipeLaunch::Prepared(context),
+        argv,
+        cwd,
+        env_map,
+        stdin_mode,
+        stderr_mode,
+        console_mode,
+        logs_base_dir,
+    )
+}
+
+enum PipeLaunch {
+    Legacy(HANDLE, bool),
+    Prepared(PreparedProcessContext),
+}
+
+#[allow(clippy::too_many_arguments)]
+fn spawn_with_pipes(
+    launch: PipeLaunch,
+    argv: &[String],
+    cwd: &Path,
+    env_map: &HashMap<String, String>,
+    stdin_mode: StdinMode,
+    stderr_mode: StderrMode,
+    console_mode: ConsoleMode,
+    logs_base_dir: Option<&Path>,
+) -> Result<PipeSpawnHandles> {
     let mut in_r: HANDLE = 0;
     let mut in_w: HANDLE = 0;
     let mut out_r: HANDLE = 0;
@@ -271,16 +336,27 @@ pub fn spawn_process_with_pipes(
 
     let stdio = Some((in_r, out_w, stderr_handle));
     let spawn_result = unsafe {
-        create_process_as_user(
-            h_token,
-            argv,
-            cwd,
-            env_map,
-            logs_base_dir,
-            stdio,
-            console_mode,
-            use_private_desktop,
-        )
+        match launch {
+            PipeLaunch::Legacy(h_token, use_private_desktop) => create_process_as_user(
+                h_token,
+                argv,
+                cwd,
+                env_map,
+                logs_base_dir,
+                stdio,
+                console_mode,
+                use_private_desktop,
+            ),
+            PipeLaunch::Prepared(context) => create_process_as_user_prepared(
+                context,
+                argv,
+                cwd,
+                env_map,
+                logs_base_dir,
+                stdio,
+                console_mode,
+            ),
+        }
     };
     let created = match spawn_result {
         Ok(v) => v,

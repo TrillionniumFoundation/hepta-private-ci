@@ -144,7 +144,7 @@ class WindowsBoundaryReceiptTests(unittest.TestCase):
         )
         operations = ast.literal_eval(assignments["operations"].value)
         groups = namespace["filtered_selectors"]
-        self.assertEqual(len(groups), 10)
+        self.assertEqual(len(groups), 14)
         for name, cases in groups.items():
             markers = ""
             if name in namespace["probes"]:

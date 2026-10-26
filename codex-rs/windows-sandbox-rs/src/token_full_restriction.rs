@@ -49,93 +49,9 @@ impl UnqualifiedFullRestrictionToken {
     /// Public SID selection and this result confer no role or launch authority.
     pub fn from_primary(base: BorrowedHandle<'_>, subjects: &[&LocalSid]) -> Result<Self> {
         anyhow::ensure!(!subjects.is_empty() && subjects.len() <= 128);
-        let base = base.as_raw_handle() as HANDLE;
-        let before = version(base)?;
-        require_unfiltered_primary(base)?;
-        let normal = TokenBytes::query(base, TokenGroups)?.group_entries()?;
-        let original_privileges = enabled_privileges(base)?;
-        let original_user = user(base)?;
-        let original_dacl = TokenBytes::query(base, TokenDefaultDacl)?.default_dacl()?;
-        let mut expected = Vec::with_capacity(subjects.len());
-        for sid in subjects {
-            // SAFETY: LocalSid retains a validated native SID during this call.
-            let length = unsafe { GetLengthSid(sid.as_ptr()) } as usize;
-            anyhow::ensure!((8..=68).contains(&length), "invalid limiting SID length");
-            let bytes =
-                unsafe { std::slice::from_raw_parts(sid.as_ptr().cast::<u8>(), length) }.to_vec();
-            anyhow::ensure!(
-                bytes != original_user
-                    && !normal.iter().any(|(sid, _)| sid == &bytes)
-                    && !expected.contains(&bytes),
-                "limiting SID is ambient or duplicated"
-            );
-            expected.push(bytes);
-        }
-        let entries: Vec<_> = subjects
-            .iter()
-            .map(|sid| SID_AND_ATTRIBUTES {
-                Sid: sid.as_ptr(),
-                Attributes: 0,
-            })
-            .collect();
-        let mut raw = 0;
-        // SAFETY: the borrowed base and owned SID cohort stay live. This only
-        // restricts; no WRITE_RESTRICTED, default-DACL repair or identity fallback.
-        anyhow::ensure!(
-            unsafe {
-                CreateRestrictedToken(
-                    base,
-                    /*flags*/ 0x01 | 0x04,
-                    /*disablesidcount*/ 0,
-                    std::ptr::null(),
-                    /*deleteprivilegecount*/ 0,
-                    std::ptr::null(),
-                    entries.len() as u32,
-                    entries.as_ptr(),
-                    &mut raw,
-                )
-            } != 0,
-            "full restriction failed: {}",
-            unsafe { GetLastError() }
-        );
-        // SAFETY: successful native creation transferred exactly this handle.
-        let token = unsafe { OwnedHandle::from_raw_handle(raw as _) };
-        let output = token.as_raw_handle() as HANDLE;
-        let mut actual = TokenBytes::query(output, TokenRestrictedSids)?.groups()?;
-        actual.sort();
-        expected.sort();
-        anyhow::ensure!(actual == expected, "actual limiting SID cohort differs");
-        anyhow::ensure!(scalar(output, TokenType)? == 1 && has_restrictions(output)?);
-        let output_groups = TokenBytes::query(output, TokenGroups)?.group_entries()?;
-        anyhow::ensure!(
-            !output_groups.is_empty()
-                && output_groups.iter().all(|(sid, attributes)| {
-                    normal.iter().any(|(base_sid, base_attributes)| {
-                        sid == base_sid
-                            && (attributes & 0x04 == 0 || base_attributes & 0x04 != 0)
-                            && (base_attributes & 0x10 == 0 || attributes & 0x10 != 0)
-                    })
-                })
-                && expected
-                    .iter()
-                    .all(|sid| !output_groups.iter().any(|(group, _)| group == sid)),
-            "full restriction introduced or enabled an ambient group"
-        );
-        anyhow::ensure!(
-            user(output)? == original_user,
-            "full restriction changed TokenUser"
-        );
-        anyhow::ensure!(
-            TokenBytes::query(output, TokenDefaultDacl)?.default_dacl()? == original_dacl,
-            "full restriction changed the original default DACL"
-        );
-        require_bounded_privileges(output, &original_privileges)?;
-        require_unfiltered_primary(base)?;
-        anyhow::ensure!(
-            version(base)? == before,
-            "base token changed during restriction"
-        );
-        Ok(Self { token })
+        Ok(Self {
+            token: create_checked_full_restriction(base, subjects, /*capacity*/ 128)?,
+        })
     }
 
     /// Transfer the same OS handle. It remains unqualified for sandbox launch.
@@ -148,6 +64,103 @@ impl AsHandle for UnqualifiedFullRestrictionToken {
     fn as_handle(&self) -> BorrowedHandle<'_> {
         self.token.as_handle()
     }
+}
+
+/// Native full restriction shared by qualified admission and the unchanged
+/// diagnostic mechanism. Only the admission owner supplies filesystem roles.
+pub(super) fn create_checked_full_restriction(
+    base: BorrowedHandle<'_>,
+    subjects: &[&LocalSid],
+    capacity: usize,
+) -> Result<OwnedHandle> {
+    anyhow::ensure!(!subjects.is_empty() && subjects.len() <= capacity);
+    let base = base.as_raw_handle() as HANDLE;
+    let before = version(base)?;
+    require_unfiltered_primary(base)?;
+    let normal = TokenBytes::query(base, TokenGroups)?.group_entries()?;
+    let original_privileges = enabled_privileges(base)?;
+    let original_user = user(base)?;
+    let original_dacl = TokenBytes::query(base, TokenDefaultDacl)?.default_dacl()?;
+    let mut expected = Vec::with_capacity(subjects.len());
+    for sid in subjects {
+        // SAFETY: LocalSid retains a validated native SID during this call.
+        let length = unsafe { GetLengthSid(sid.as_ptr()) } as usize;
+        anyhow::ensure!((8..=68).contains(&length), "invalid limiting SID length");
+        let bytes =
+            unsafe { std::slice::from_raw_parts(sid.as_ptr().cast::<u8>(), length) }.to_vec();
+        anyhow::ensure!(
+            bytes != original_user
+                && !normal.iter().any(|(sid, _)| sid == &bytes)
+                && !expected.contains(&bytes),
+            "limiting SID is ambient or duplicated"
+        );
+        expected.push(bytes);
+    }
+    let entries: Vec<_> = subjects
+        .iter()
+        .map(|sid| SID_AND_ATTRIBUTES {
+            Sid: sid.as_ptr(),
+            Attributes: 0,
+        })
+        .collect();
+    let mut raw = 0;
+    // SAFETY: the borrowed base and owned SID cohort stay live. This only
+    // restricts; no WRITE_RESTRICTED, default-DACL repair or identity fallback.
+    anyhow::ensure!(
+        unsafe {
+            CreateRestrictedToken(
+                base,
+                /*flags*/ 0x01 | 0x04,
+                /*disablesidcount*/ 0,
+                std::ptr::null(),
+                /*deleteprivilegecount*/ 0,
+                std::ptr::null(),
+                entries.len() as u32,
+                entries.as_ptr(),
+                &mut raw,
+            )
+        } != 0,
+        "full restriction failed: {}",
+        unsafe { GetLastError() }
+    );
+    // SAFETY: successful native creation transferred exactly this handle.
+    let token = unsafe { OwnedHandle::from_raw_handle(raw as _) };
+    let output = token.as_raw_handle() as HANDLE;
+    let mut actual = TokenBytes::query(output, TokenRestrictedSids)?.groups()?;
+    actual.sort();
+    expected.sort();
+    anyhow::ensure!(actual == expected, "actual limiting SID cohort differs");
+    anyhow::ensure!(scalar(output, TokenType)? == 1 && has_restrictions(output)?);
+    let output_groups = TokenBytes::query(output, TokenGroups)?.group_entries()?;
+    anyhow::ensure!(
+        !output_groups.is_empty()
+            && output_groups.iter().all(|(sid, attributes)| {
+                normal.iter().any(|(base_sid, base_attributes)| {
+                    sid == base_sid
+                        && (attributes & 0x04 == 0 || base_attributes & 0x04 != 0)
+                        && (base_attributes & 0x10 == 0 || attributes & 0x10 != 0)
+                })
+            })
+            && expected
+                .iter()
+                .all(|sid| !output_groups.iter().any(|(group, _)| group == sid)),
+        "full restriction introduced or enabled an ambient group"
+    );
+    anyhow::ensure!(
+        user(output)? == original_user,
+        "full restriction changed TokenUser"
+    );
+    anyhow::ensure!(
+        TokenBytes::query(output, TokenDefaultDacl)?.default_dacl()? == original_dacl,
+        "full restriction changed the original default DACL"
+    );
+    require_bounded_privileges(output, &original_privileges)?;
+    require_unfiltered_primary(base)?;
+    anyhow::ensure!(
+        version(base)? == before,
+        "base token changed during restriction"
+    );
+    Ok(token)
 }
 
 fn scalar(token: HANDLE, class: TOKEN_INFORMATION_CLASS) -> Result<u32> {
@@ -177,7 +190,7 @@ fn user(token: HANDLE) -> Result<Vec<u8>> {
     data.sid(data.value::<SID_AND_ATTRIBUTES>(/*offset*/ 0)?.Sid)
 }
 
-fn version(token: HANDLE) -> Result<(u32, i32, u32, i32)> {
+pub(super) fn version(token: HANDLE) -> Result<(u32, i32, u32, i32)> {
     let data = TokenBytes::query(token, TokenStatistics)?;
     let value = data.value::<TOKEN_STATISTICS>(/*offset*/ 0)?;
     Ok((
@@ -188,7 +201,7 @@ fn version(token: HANDLE) -> Result<(u32, i32, u32, i32)> {
     ))
 }
 
-fn require_unfiltered_primary(token: HANDLE) -> Result<()> {
+pub(super) fn require_unfiltered_primary(token: HANDLE) -> Result<()> {
     anyhow::ensure!(
         scalar(token, TokenType)? == 1,
         "base is not a primary token"

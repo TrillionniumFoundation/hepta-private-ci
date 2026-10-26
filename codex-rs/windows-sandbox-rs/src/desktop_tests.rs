@@ -1,3 +1,4 @@
+use super::DesktopCapability;
 use super::LaunchDesktop;
 use crate::token::LocalSid;
 use crate::token::create_readonly_token_with_caps_from;
@@ -142,5 +143,63 @@ fn desktop_rejects_unrestricted_and_invalid_tokens() -> Result<()> {
             );
         }
     }
+    Ok(())
+}
+
+#[test]
+fn separate_desktop_roles_refuse_sessions_with_the_same_read_roots() -> Result<()> {
+    let base = TokenHandle(unsafe { get_current_token_for_restriction()? });
+    let shared_read = LocalSid::from_string("S-1-5-21-101-202-303-407")?;
+    let first = DesktopCapability::create()?;
+    let second = DesktopCapability::create()?;
+    // These original raw tokens are used only to observe the desktop mechanism;
+    // they neither qualify full filesystem restriction nor production launch.
+    let first_token = TokenHandle(unsafe {
+        create_workspace_write_token_with_caps_from(
+            base.0,
+            &[shared_read.as_ptr(), first.as_sid().as_ptr()],
+        )?
+    });
+    let second_token = TokenHandle(unsafe {
+        create_workspace_write_token_with_caps_from(
+            base.0,
+            &[shared_read.as_ptr(), second.as_sid().as_ptr()],
+        )?
+    });
+    let first_desktop =
+        LaunchDesktop::prepare_for_capability(first_token.0, &first, /*logs_base_dir*/ None)?;
+    let second_desktop = LaunchDesktop::prepare_for_capability(
+        second_token.0,
+        &second,
+        /*logs_base_dir*/ None,
+    )?;
+    let first_name = &first_desktop
+        ._private_desktop
+        .as_ref()
+        .expect("private")
+        .name;
+    let second_name = &second_desktop
+        ._private_desktop
+        .as_ref()
+        .expect("private")
+        .name;
+    assert_eq!(
+        (
+            desktop_write_access(first_token.0, first_name)?,
+            desktop_write_access(second_token.0, second_name)?,
+            desktop_write_access(first_token.0, second_name)?,
+            desktop_write_access(second_token.0, first_name)?,
+        ),
+        (
+            ERROR_SUCCESS,
+            ERROR_SUCCESS,
+            ERROR_ACCESS_DENIED,
+            ERROR_ACCESS_DENIED,
+        )
+    );
+    assert!(
+        LaunchDesktop::prepare_for_capability(first_token.0, &second, /*logs_base_dir*/ None)
+            .is_err()
+    );
     Ok(())
 }

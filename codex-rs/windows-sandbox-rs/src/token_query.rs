@@ -13,13 +13,13 @@ use windows_sys::Win32::Security::TOKEN_GROUPS;
 use windows_sys::Win32::Security::TOKEN_INFORMATION_CLASS;
 
 // Kernel query memory is aligned, bounded, initialized and never escapes as a pointer.
-pub(super) struct TokenBytes {
+pub(crate) struct TokenBytes {
     words: Vec<usize>,
-    pub(super) length: usize,
+    pub(crate) length: usize,
 }
 
 impl TokenBytes {
-    pub(super) fn query(token: HANDLE, class: TOKEN_INFORMATION_CLASS) -> Result<Self> {
+    pub(crate) fn query(token: HANDLE, class: TOKEN_INFORMATION_CLASS) -> Result<Self> {
         let mut needed = 0;
         // SAFETY: token is owned by the caller; this first call has no output buffer.
         let first = unsafe {
@@ -57,7 +57,7 @@ impl TokenBytes {
         Ok(result)
     }
 
-    pub(super) fn value<T: Copy>(&self, offset: usize) -> Result<T> {
+    pub(crate) fn value<T: Copy>(&self, offset: usize) -> Result<T> {
         anyhow::ensure!(
             offset
                 .checked_add(size_of::<T>())
@@ -71,7 +71,7 @@ impl TokenBytes {
         )
     }
 
-    pub(super) fn pointed_bytes(&self, pointer: *const u8, length: usize) -> Result<Vec<u8>> {
+    pub(crate) fn pointed_bytes(&self, pointer: *const u8, length: usize) -> Result<Vec<u8>> {
         let start = pointer as usize;
         let base = self.words.as_ptr() as usize;
         anyhow::ensure!(
@@ -84,13 +84,13 @@ impl TokenBytes {
         Ok(unsafe { std::slice::from_raw_parts(pointer, length) }.to_vec())
     }
 
-    pub(super) fn sid(&self, pointer: *mut c_void) -> Result<Vec<u8>> {
+    pub(crate) fn sid(&self, pointer: *mut c_void) -> Result<Vec<u8>> {
         let header = self.pointed_bytes(pointer.cast(), /*length*/ 8)?;
         anyhow::ensure!(header[0] == 1 && header[1] <= 15, "invalid queried SID");
         self.pointed_bytes(pointer.cast(), 8 + usize::from(header[1]) * 4)
     }
 
-    pub(super) fn groups(&self) -> Result<Vec<Vec<u8>>> {
+    pub(crate) fn groups(&self) -> Result<Vec<Vec<u8>>> {
         let mut result = self
             .group_entries()?
             .into_iter()
@@ -100,7 +100,7 @@ impl TokenBytes {
         Ok(result)
     }
 
-    pub(super) fn group_entries(&self) -> Result<Vec<(Vec<u8>, u32)>> {
+    pub(crate) fn group_entries(&self) -> Result<Vec<(Vec<u8>, u32)>> {
         let count = self.value::<u32>(/*offset*/ 0)? as usize;
         let offset = offset_of!(TOKEN_GROUPS, Groups);
         anyhow::ensure!(
@@ -116,7 +116,7 @@ impl TokenBytes {
         Ok(result)
     }
 
-    pub(super) fn default_dacl(&self) -> Result<Option<Vec<u8>>> {
+    pub(crate) fn default_dacl(&self) -> Result<Option<Vec<u8>>> {
         let pointer = self.value::<*const u8>(/*offset*/ 0)?;
         if pointer.is_null() {
             return Ok(None); // A token may legitimately have no default DACL.

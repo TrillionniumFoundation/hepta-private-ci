@@ -48,6 +48,10 @@ unsafe extern "system" {
 }
 
 pub(crate) fn open(path: &Path) -> Result<File> {
+    open_with_access(path, READ_CONTROL | FILE_READ_ATTRIBUTES | SYNCHRONIZE)
+}
+
+pub(crate) fn open_with_access(path: &Path, access: u32) -> Result<File> {
     ensure!(
         path.is_absolute() && path.parent().is_some(),
         "read proof requires a local non-volume root"
@@ -90,7 +94,7 @@ pub(crate) fn open(path: &Path) -> Result<File> {
     let status = unsafe {
         NtOpenFile(
             &mut raw,
-            READ_CONTROL | FILE_READ_ATTRIBUTES | SYNCHRONIZE,
+            access,
             &attributes,
             &mut io,
             FILE_SHARE_READ | FILE_SHARE_WRITE,

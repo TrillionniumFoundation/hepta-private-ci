@@ -8,6 +8,7 @@
 
 use crate::desktop::LaunchDesktop;
 use crate::proc_thread_attr::ProcThreadAttributeList;
+use crate::process::PreparedProcessContext;
 use crate::winutil::format_last_error;
 use crate::winutil::quote_windows_arg;
 use crate::winutil::to_wide;
@@ -109,6 +110,37 @@ pub fn spawn_conpty_process_as_user(
     use_private_desktop: bool,
     logs_base_dir: Option<&Path>,
 ) -> Result<(PROCESS_INFORMATION, ConptyInstance)> {
+    let desktop = LaunchDesktop::prepare(h_token, use_private_desktop, logs_base_dir)?;
+    let job = Arc::new(JobObject::create().context("create process job")?);
+    spawn_on_desktop(h_token, argv, cwd, env_map, desktop, job)
+}
+
+/// ConPTY launch for the qualified owner, with atomic non-breakaway containment.
+pub fn spawn_conpty_process_prepared(
+    context: PreparedProcessContext,
+    argv: &[String],
+    cwd: &Path,
+    env_map: &HashMap<String, String>,
+) -> Result<(PROCESS_INFORMATION, ConptyInstance)> {
+    let (token, desktop, job) = context.into_parts()?;
+    spawn_on_desktop(
+        token.as_raw_handle() as HANDLE,
+        argv,
+        cwd,
+        env_map,
+        desktop,
+        job,
+    )
+}
+
+fn spawn_on_desktop(
+    h_token: HANDLE,
+    argv: &[String],
+    cwd: &Path,
+    env_map: &HashMap<String, String>,
+    desktop: LaunchDesktop,
+    job: Arc<JobObject>,
+) -> Result<(PROCESS_INFORMATION, ConptyInstance)> {
     let cmdline_str = argv
         .iter()
         .map(|arg| quote_windows_arg(arg))
@@ -122,9 +154,7 @@ pub fn spawn_conpty_process_as_user(
     si.StartupInfo.hStdInput = INVALID_HANDLE_VALUE;
     si.StartupInfo.hStdOutput = INVALID_HANDLE_VALUE;
     si.StartupInfo.hStdError = INVALID_HANDLE_VALUE;
-    let desktop = LaunchDesktop::prepare(h_token, use_private_desktop, logs_base_dir)?;
     si.StartupInfo.lpDesktop = desktop.startup_info_desktop();
-    let job = Arc::new(JobObject::create().context("create process job")?);
 
     let raw = RawConPty::new(/*cols*/ 80, /*rows*/ 24)?;
     let (pseudoconsole, input_write, output_read) = raw.into_handles();

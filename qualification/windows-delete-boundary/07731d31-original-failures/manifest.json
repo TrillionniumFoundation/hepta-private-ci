@@ -1,0 +1,191 @@
+{
+  "schema": "hepta.windows-delete-boundary.preserved-original-failures.v1",
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40177474398",
+  "run_attempt": 1,
+  "scope": "Original failed Windows native execution only; no later source qualification or sandbox admission. Archives are unchanged GitHub artifact bytes; all log hashes and before/after source identities were checked.",
+  "production_sandbox_admitted": false,
+  "lanes": [
+    {
+      "artifact_id": 12596835224,
+      "archive": "windows-latest-source-head.zip",
+      "archive_sha256": "57f4a536a6ea2f2f7aa327a04f8f16d324797ec7973debc248cc4c7981d5f260",
+      "source": {
+        "base_sha": "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "lane": "source-head",
+        "native": {
+          "runner": "windows-latest",
+          "runner_arch": "X64",
+          "target": "x86_64-pc-windows-msvc"
+        },
+        "parents": ["9650c9825da3f0e723ac9d74b802d3ab1319979a"],
+        "source_sha": "07731d314366bb9215753d23355b3ebf6449b32b",
+        "symlink_placeholders": 0,
+        "tested_sha": "07731d314366bb9215753d23355b3ebf6449b32b",
+        "tracked_bytes_sha256": "2f929253cf1295356eea84737ffec49c99738efcc64ebc4ab6964bcc5f3f81b9",
+        "tracked_files": 9946,
+        "tree": "07c7e7c34b53de5adf0209f38ef074a3ec5b7063"
+      },
+      "status": "failed",
+      "verified_log_hashes": 16,
+      "passed_groups": 14,
+      "failed_groups": {
+        "broad-identity-delete": {
+          "log_sha256": "bf10862ec6a39f46eaba2d432136a92e148a0b72e3d891f05ed7c7119b94d268",
+          "logging_returncode": 0,
+          "minimum_tests": 1,
+          "observed_failed_tests": 1,
+          "observed_passed_tests": 0,
+          "returncode": 1,
+          "status": "failed"
+        },
+        "legacy-delete-boundary": {
+          "log_sha256": "7a1158d35cb1fedf61d95fe035cdb4dd7d21ed2123c2bc19ad5749929ac5d016",
+          "logging_returncode": 0,
+          "minimum_tests": 1,
+          "observed_failed_tests": 1,
+          "observed_passed_tests": 0,
+          "returncode": 1,
+          "status": "failed"
+        }
+      }
+    },
+    {
+      "artifact_id": 12596269611,
+      "archive": "windows-latest-base-merge.zip",
+      "archive_sha256": "5fd15890311396d8560f101c032acf13b208be0257112cd7951ee66f8fd16f9d",
+      "source": {
+        "base_sha": "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "lane": "base-merge",
+        "native": {
+          "runner": "windows-latest",
+          "runner_arch": "X64",
+          "target": "x86_64-pc-windows-msvc"
+        },
+        "parents": [
+          "c38e7727220f32c7410f59083c5ea7878bbae078",
+          "07731d314366bb9215753d23355b3ebf6449b32b"
+        ],
+        "source_sha": "07731d314366bb9215753d23355b3ebf6449b32b",
+        "symlink_placeholders": 0,
+        "tested_sha": "ccff5bed2ee85ccdd2b8db3791db67dbbb636a62",
+        "tracked_bytes_sha256": "2f929253cf1295356eea84737ffec49c99738efcc64ebc4ab6964bcc5f3f81b9",
+        "tracked_files": 9946,
+        "tree": "07c7e7c34b53de5adf0209f38ef074a3ec5b7063"
+      },
+      "status": "failed",
+      "verified_log_hashes": 16,
+      "passed_groups": 14,
+      "failed_groups": {
+        "broad-identity-delete": {
+          "log_sha256": "f0b92c4df23c536773f3c8aad2cc32424deee0974f9d66d52ad84f5bce5d33e3",
+          "logging_returncode": 0,
+          "minimum_tests": 1,
+          "observed_failed_tests": 1,
+          "observed_passed_tests": 0,
+          "returncode": 1,
+          "status": "failed"
+        },
+        "legacy-delete-boundary": {
+          "log_sha256": "37c8a17738bbf478b6fb29e65974ace4238546348cdae8161ef41d32d7947d6e",
+          "logging_returncode": 0,
+          "minimum_tests": 1,
+          "observed_failed_tests": 1,
+          "observed_passed_tests": 0,
+          "returncode": 1,
+          "status": "failed"
+        }
+      }
+    },
+    {
+      "artifact_id": 12592864191,
+      "archive": "windows-11-arm-source-head.zip",
+      "archive_sha256": "1245f68e38eefb2a2e468a6339af87a810e82e5874e467671acd785f877e9469",
+      "source": {
+        "base_sha": "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "lane": "source-head",
+        "native": {
+          "runner": "windows-11-arm",
+          "runner_arch": "ARM64",
+          "target": "aarch64-pc-windows-msvc"
+        },
+        "parents": ["9650c9825da3f0e723ac9d74b802d3ab1319979a"],
+        "source_sha": "07731d314366bb9215753d23355b3ebf6449b32b",
+        "symlink_placeholders": 0,
+        "tested_sha": "07731d314366bb9215753d23355b3ebf6449b32b",
+        "tracked_bytes_sha256": "2f929253cf1295356eea84737ffec49c99738efcc64ebc4ab6964bcc5f3f81b9",
+        "tracked_files": 9946,
+        "tree": "07c7e7c34b53de5adf0209f38ef074a3ec5b7063"
+      },
+      "status": "failed",
+      "verified_log_hashes": 16,
+      "passed_groups": 14,
+      "failed_groups": {
+        "broad-identity-delete": {
+          "log_sha256": "1ae3e0ed0587b1079929492d6e15cfb45a2ec1ba8a387767abb1a439127b4e7b",
+          "logging_returncode": 0,
+          "minimum_tests": 1,
+          "observed_failed_tests": 1,
+          "observed_passed_tests": 0,
+          "returncode": 1,
+          "status": "failed"
+        },
+        "legacy-delete-boundary": {
+          "log_sha256": "3c39302fba47d20e323ae2d3887e5f8095aae7e6e5a444ae1bb5c9d1b8bf9705",
+          "logging_returncode": 0,
+          "minimum_tests": 1,
+          "observed_failed_tests": 1,
+          "observed_passed_tests": 0,
+          "returncode": 1,
+          "status": "failed"
+        }
+      }
+    },
+    {
+      "artifact_id": 12592819422,
+      "archive": "windows-11-arm-base-merge.zip",
+      "archive_sha256": "12efa1ecc1a66439ca38030022edcf87be8e025ef9402c639c9e8a7fac4d236b",
+      "source": {
+        "base_sha": "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "lane": "base-merge",
+        "native": {
+          "runner": "windows-11-arm",
+          "runner_arch": "ARM64",
+          "target": "aarch64-pc-windows-msvc"
+        },
+        "parents": [
+          "c38e7727220f32c7410f59083c5ea7878bbae078",
+          "07731d314366bb9215753d23355b3ebf6449b32b"
+        ],
+        "source_sha": "07731d314366bb9215753d23355b3ebf6449b32b",
+        "symlink_placeholders": 0,
+        "tested_sha": "ccff5bed2ee85ccdd2b8db3791db67dbbb636a62",
+        "tracked_bytes_sha256": "2f929253cf1295356eea84737ffec49c99738efcc64ebc4ab6964bcc5f3f81b9",
+        "tracked_files": 9946,
+        "tree": "07c7e7c34b53de5adf0209f38ef074a3ec5b7063"
+      },
+      "status": "failed",
+      "verified_log_hashes": 16,
+      "passed_groups": 14,
+      "failed_groups": {
+        "broad-identity-delete": {
+          "log_sha256": "2632700721f9eee91901e67d171257c56a18ae6fd6e057e3da92dd13d3cdaba7",
+          "logging_returncode": 0,
+          "minimum_tests": 1,
+          "observed_failed_tests": 1,
+          "observed_passed_tests": 0,
+          "returncode": 1,
+          "status": "failed"
+        },
+        "legacy-delete-boundary": {
+          "log_sha256": "89a2a74b990ff4aeeabc42140a78a6288e001f2411db79308be67b69540feb73",
+          "logging_returncode": 0,
+          "minimum_tests": 1,
+          "observed_failed_tests": 1,
+          "observed_passed_tests": 0,
+          "returncode": 1,
+          "status": "failed"
+        }
+      }
+    }
+  ]
+}

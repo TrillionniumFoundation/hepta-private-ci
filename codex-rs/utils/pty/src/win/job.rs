@@ -33,6 +33,7 @@ unsafe extern "system" {
 #[derive(Debug)]
 pub struct JobObject {
     handle: OwnedHandle,
+    allow_preserve: bool,
     // A mutex makes the state check, Job Object API call, and state update
     // atomic with respect to concurrent preserve and terminate requests.
     preserve_descendants: Mutex<bool>,
@@ -54,14 +55,16 @@ impl JobObject {
 
         Ok(Self {
             handle,
+            allow_preserve: true,
             preserve_descendants: Mutex::new(false),
         })
     }
 
     /// Creates a Job Object whose owned descendants cannot explicitly break away.
     pub fn create_without_breakaway() -> io::Result<Self> {
-        let job = Self::create()?;
+        let mut job = Self::create()?;
         Self::set_limit_flags(&job.handle, JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE)?;
+        job.allow_preserve = false;
         Ok(job)
     }
 
@@ -191,6 +194,12 @@ impl JobObject {
     /// acquires the state lock first determines whether the process tree is
     /// preserved or terminated.
     pub fn preserve_descendants(&self) -> io::Result<()> {
+        if !self.allow_preserve {
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "controlled process ownership cannot release descendants",
+            ));
+        }
         let mut preserve_descendants = self
             .preserve_descendants
             .lock()
@@ -230,3 +239,7 @@ impl AsRawHandle for JobObject {
         self.handle.as_raw_handle()
     }
 }
+
+#[cfg(test)]
+#[path = "job_tests.rs"]
+mod tests;

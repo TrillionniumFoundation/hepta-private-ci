@@ -3,12 +3,15 @@ use crate::winutil::to_wide;
 pub(crate) mod fresh_managed_base;
 #[path = "token_full_restriction.rs"]
 mod full_restriction;
+#[path = "token_prepared_filesystem.rs"]
+mod prepared_filesystem;
 #[path = "token_query.rs"]
 mod token_query;
 use anyhow::Result;
 use anyhow::anyhow;
 pub use full_restriction::UnqualifiedFullRestrictionToken;
 use std::ffi::c_void;
+pub(crate) use token_query::TokenBytes;
 use windows_sys::Win32::Foundation::CloseHandle;
 use windows_sys::Win32::Foundation::ERROR_SUCCESS;
 use windows_sys::Win32::Foundation::GetLastError;

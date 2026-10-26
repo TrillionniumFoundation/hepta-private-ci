@@ -185,7 +185,7 @@ jobs:
                   "durable::platform::tests::native_registry_existing_marker_with_missing_manifest_never_reinitializes",
               ),
           }
-          required = ("partial-delete-deny", "broad-identity-delete", "legacy-delete-boundary", *probes, "acl-unit-controls", "private-owner-descriptor", "full-restriction-candidate", "held-read-acl", "private-local-ntfs", "private-principal-continuity", "private-owner-lock", *store_selectors)
+          required = ("partial-delete-deny", "broad-identity-delete", "legacy-delete-boundary", *probes, "acl-unit-controls", "private-owner-descriptor", "full-restriction-candidate", "held-read-acl", "private-local-ntfs", "private-principal-continuity", "private-owner-lock", *store_selectors, "bounded-filesystem-preparation", "explicit-stdio", "session-desktop", "controlled-job")
           filtered_selectors = {
               "partial-delete-deny": ("token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",),
               "broad-identity-delete": ("token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",),
@@ -196,6 +196,19 @@ jobs:
                   "filesystem_read_acl::tests::actual_readv3_query_retains_same_plan_noninherited_handles_without_acl_repair",
                   "filesystem_read_acl::tests::actual_read_role_extra_mutation_and_changed_descriptor_are_sticky_refusals",
                   "filesystem_read_acl::tests::actual_read_role_different_plan_and_registry_change_never_rebind_an_old_proof",
+              ),
+              "bounded-filesystem-preparation": (
+                  "token::tests::prepared_filesystem::prepared_full_token_preserves_bounded_reads_and_refuses_broad_parent_delete",
+                  "token::tests::prepared_filesystem::full_token_mutation_deny_keeps_native_reads_and_idempotence",
+              ),
+              "explicit-stdio": (
+                  "process::owned_child_stdio::tests::duplicates_exact_endpoints_without_changing_caller_inheritance",
+                  "process::owned_child_stdio::tests::stdio_does_not_inherit_unrelated_sentinel",
+              ),
+              "session-desktop": ("desktop::tests::separate_desktop_roles_refuse_sessions_with_the_same_read_roots",),
+              "controlled-job": (
+                  "win::job::tests::controlled_job_keeps_ownership_after_preserve_attempt",
+                  "win::job::tests::interactive_job_preserves_its_existing_descendant_contract",
               ),
               **{name: (selector,) for name, (selector, _) in probes.items()},
           }
@@ -306,7 +319,7 @@ jobs:
               save(name + ".json", {"returncode": code, "logging_returncode": log_code, "minimum_tests": minimum, "observed_passed_tests": passed, "observed_failed_tests": failed, "log_sha256": hashlib.sha256(raw).hexdigest(), "status": "passed" if ok else "failed", **proof})
               sys.exit(0 if ok else 1)
           phase = sys.argv[2]
-          result = {"scope": "three native Windows deletion regressions, four private-state mechanism probes, 40 private-state library controls including five original descriptor controls, four owner-lock process controls, eight current ACL controls, one test-only full-restriction candidate, four read-only local-NTFS controls, four live principal controls, seven original FinalUse/held-stage controls and three original Registry controls; real remote-device rejection is untested; no Windows owner support, production sandbox admission or power-loss qualification", "production_sandbox_admitted": False, "windows_private_state_owners_supported": False, "power_loss_qualified": False, "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"], "status": "running"}
+          result = {"scope": "three native Windows deletion regressions, four private-state mechanism probes, 40 private-state library controls including five original descriptor controls, four owner-lock process controls, eight current ACL controls, one test-only full-restriction candidate, four read-only local-NTFS controls, four live principal controls, seven original FinalUse/held-stage controls and three original Registry controls; four additional bounded filesystem, stdio, desktop and Job mechanism groups preserve the original sixteen groups; real remote-device rejection is untested; no Windows owner support, production sandbox admission or power-loss qualification", "production_sandbox_admitted": False, "windows_private_state_owners_supported": False, "power_loss_qualified": False, "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"], "status": "running"}
           save("result.json", result)
           assert sys.argv[1] == "source" and phase in {"before", "after"}
           if phase == "before":
@@ -488,7 +501,39 @@ jobs:
           codes="${PIPESTATUS[*]}"
           set -e
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests acl-unit-controls 8 "$codes"
-      - name: Require unchanged source and all sixteen completed Windows result receipts
+      - name: Verify bounded ACL and full-token preparation without replacing the original regressions
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set +e
+          just test --locked -p codex-windows-sandbox --lib -E 'test(/^token::tests::prepared_filesystem::/)' --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-delete-boundary/bounded-filesystem-preparation.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests bounded-filesystem-preparation 2 "$codes"
+      - name: Verify exact stdio duplicates and unrelated sentinel refusal
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set +e
+          just test --locked -p codex-windows-sandbox --lib -E 'test(/^process::owned_child_stdio::tests::/)' --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-delete-boundary/explicit-stdio.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests explicit-stdio 2 "$codes"
+      - name: Verify separate desktop roles for sessions sharing read roots
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set +e
+          just test --locked -p codex-windows-sandbox --lib -E 'test(/^desktop::tests::separate_desktop_roles_refuse_sessions_with_the_same_read_roots/)' --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-delete-boundary/session-desktop.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests session-desktop 1 "$codes"
+      - name: Verify controlled Job flags and the original interactive lifetime contract
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set +e
+          just test --locked -p codex-utils-pty --lib -E 'test(/^win::job::tests::/)' --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-delete-boundary/controlled-job.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests controlled-job 2 "$codes"
+      - name: Require unchanged source and all twenty completed Windows result receipts
         if: ${{ always() && steps.source.outcome == 'success' }}
         run: python "$RUNNER_TEMP/windows-delete-boundary/check.py" source after
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
