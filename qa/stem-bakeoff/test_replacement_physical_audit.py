@@ -59,7 +59,7 @@ def fake(name):
                 performance=dict(device="cpu", forward_count=40,
                     original_forward_latency_ms=[1.0] * 40,
                     load_ms=200., forward_latency_p50_ms=1.,
-                    raw_forward_throughput_per_second=1.0,
+                    raw_forward_throughput_per_second=1000.0,
                     laya_tokenizer_compat=compat,
                     arctic_rope_compat=arctic_rope),
                 limits=dict(historical_2014_dataset=True, target_device_qualified=False,
@@ -155,10 +155,27 @@ class PhysicalAuditTests(unittest.TestCase):
                 case["performance"][key] = value
                 self.assertTrue(any("timing" in error for error in
                                     audit_arm("arctic_305m", case, REGISTRY["models"]["arctic_305m"])))
-        for median in (0, 0.0, 1, 1.0):
+        for median in (1, 1.0):
             case = fake("arctic_305m")
             case["performance"]["forward_latency_p50_ms"] = median
             self.assertEqual(audit_arm("arctic_305m", case, REGISTRY["models"]["arctic_305m"]), [])
+
+    def test_derived_latency_and_throughput_require_raw_sample_parity(self):
+        for key, fake_value in (
+                ("forward_latency_p50_ms", 0.0),
+                ("forward_latency_p50_ms", 2.0),
+                ("raw_forward_throughput_per_second", 1.0),
+                ("raw_forward_throughput_per_second", 1000000.0)):
+            with self.subTest(key=key, fake_value=fake_value):
+                case = fake("arctic_305m")
+                case["performance"][key] = fake_value
+                self.assertTrue(any("timing" in error for error in
+                                    audit_arm("arctic_305m", case, REGISTRY["models"]["arctic_305m"])))
+        case = fake("arctic_305m")
+        case["performance"]["original_forward_latency_ms"] = [2.0] * 40
+        case["performance"]["forward_latency_p50_ms"] = 2.0
+        case["performance"]["raw_forward_throughput_per_second"] = 500.0
+        self.assertEqual(audit_arm("arctic_305m", case, REGISTRY["models"]["arctic_305m"]), [])
 
     def test_head_training_scalar_type_aliases_rejected(self):
         for key, value in (("seed", 7.0), ("steps", 200.0),
