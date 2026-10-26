@@ -67,8 +67,21 @@ to accept unexplained changes. An upstream revision or additional dependency
 patch requires a reviewed new manifest, explicit verifier hash update, and the
 same source-equivalence, original test, audit, and SDK checks.
 
-Upstream c37 requests `@modelcontextprotocol/sdk ^1.29.0`; this repository's
-existing global 1.26.0 override remains visible in the initial vendor candidate.
-Any resulting compatibility failure must remain a failed gate until a separate
-SDK dependency update passes the same checks. This maintenance does not provide
-Asterinas native or production qualification.
+Upstream c37 requests `@modelcontextprotocol/sdk ^1.29.0`. The separate SDK
+maintenance candidate locks 1.32.0, the first version fixing the currently
+reported OAuth, redirect, task ownership and validation advisories. It keeps
+both legal Zod contexts: the TypeScript SDK uses 3.25.76 and the conformance
+workspace uses 4.4.3. The isolated pnpm linker preserves these peer contexts;
+the prior hoisted layout resolved the conformance SDK against the root Zod 3
+instance and failed the original type check despite two contexts in the lock.
+No dependency source, build trust, release age or script policy is weakened.
+
+The original 641-case suite initially reports 639 passes and two failures with
+SDK 1.32.0. Wire observations show the SDK sends the pathless resource exactly
+as published and registers new credentials after authorization-server migration.
+The old example's known-failure expectation and negative producer therefore need
+an explicit, reviewed local compatibility patch. Keep those failed results and
+the original c37 manifest; do not restore the SDK vulnerabilities to make the
+old example fail. The package audit still has other findings, so this candidate
+does not close the repository dependency gate or provide Asterinas native or
+production qualification.
