@@ -10,6 +10,19 @@ use uuid::Uuid;
 
 use super::LocalThreadStoreConfig;
 
+/// Create a fresh test home with explicit custody before SQLite opens it.
+pub(super) fn private_home() -> std::io::Result<tempfile::TempDir> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        tempfile::Builder::new()
+            .permissions(std::fs::Permissions::from_mode(0o700))
+            .tempdir()
+    }
+    #[cfg(not(unix))]
+    tempfile::tempdir()
+}
+
 pub(super) fn test_config(codex_home: &Path) -> LocalThreadStoreConfig {
     LocalThreadStoreConfig {
         codex_home: codex_home.to_path_buf(),
