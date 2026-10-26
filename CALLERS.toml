@@ -1326,7 +1326,7 @@ forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/native_g2_entry/owner.rs"
-required = ["receive_root_production_writer_handoff(handoff", "receive_root_production_inputs(", "AgentdConfig::from_root_writer_handoff(&inputs, writer", "attach_g2_native_operation_host(", "owner.host().dispatch_with_grant_provider(queued)", "retained_hos2_terminal(&occurrence_key)", "original[\"observation\"] != serde_json::to_value(&observed)?", "owner.acknowledge_current_receipt().await?"]
+required = ["receive_root_production_writer_handoff(handoff", "receive_root_production_inputs(", "AgentdConfig::from_root_writer_handoff(&inputs, writer", "attach_g2_native_operation_host(", "owner.host().dispatch_with_grant_provider(*queued)", "retained_hos2_terminal(&occurrence_key)", "original[\"observation\"] != serde_json::to_value(&observed)?", "owner.acknowledge_current_receipt().await?"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
