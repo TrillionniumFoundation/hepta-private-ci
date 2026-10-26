@@ -1,0 +1,14 @@
+{
+  "actual_experiment_failure": false,
+  "actual_experiment_retried": false,
+  "attempt": 1,
+  "cause": "The reporting checker assumed exposure_reviewed_scope was the short scope enum. The immutable published protocol uses that field for the detailed scope prose and uses source_freshness_scope for audited_known_v6_sources_only.",
+  "checker_preimage_sha256": "0620d25ace2b3eb4b4c56cba69daa6e644b0c84bcf616682bc58c353da106353",
+  "correction": "Check the exact source_freshness_scope enum and retain the detailed exposure_reviewed_scope text; do not alter protocol/evidence.",
+  "error_type": "ValueError",
+  "exit_code": 1,
+  "message": "algorithm/exposure scope differs",
+  "model_or_final_target_payload_opened": false,
+  "original_protocol_sha256": "a3531af321d47e82d98d31d2bb5db0cb9eb87809ac30a470468a7b7cde5c1e46",
+  "schema": "hepta.ndu-fresh.reporting-checker-correction.v1"
+}
