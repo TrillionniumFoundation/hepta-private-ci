@@ -1,0 +1,72 @@
+{
+  "schema": "hepta.p41-independent-kernel-authority-boundary-review.v1",
+  "observed_date_utc": "2026-10-26",
+  "parent_pr": 4047,
+  "parent_head": "d7b13c045f22f67ce25a604ac712fc3dc554717a",
+  "parent_inventory_blob": "3bcc1751701ce5da7d5d830b09a3c4ef898c2303",
+  "original_failing_run": 40397849035,
+  "original_failing_job": 121836595713,
+  "exact_diagnostic": "qa/b4-no-bypass/test_kernel_authority_closed_world.py: 17 executed, 8 failures; standalone CALLERS.toml verifier reported PASS_HEPTA_CALLER_CLOSED_SET",
+  "classification": "FinalUseAuthority.observe_now_unix_ms is a read-only pass-through to the already configured owner clock; no grant, nonce, revocation change or admission",
+  "boundary_additions": {
+    "final_use_open_state": [
+      "codex-rs/hepta-agentd/src/production_authority.rs"
+    ],
+    "final_use_revocation_update": [
+      "codex-rs/hepta-agentd/src/root_authority_session.rs"
+    ],
+    "authority_lease_open_state": [
+      "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+    ],
+    "authority_lease_put": [
+      "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "codex-rs/hepta-agentd/src/deployment_notes.rs"
+    ],
+    "authority_lease_verify_use": [
+      "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+      "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "codex-rs/hepta-contracts/src/authority_host_issuer.rs"
+    ],
+    "authority_lease_dispatch_raw": [
+      "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+      "codex-rs/hepta-contracts/src/authority_host_issuer.rs"
+    ],
+    "authority_lease_dispatch_witness": [
+      "codex-rs/hepta-agentd/src/deployment_writer.rs"
+    ]
+  },
+  "reviewed_source_blobs": {
+    "codex-rs/hepta-agentd/src/production_authority.rs": "5fca295975820a2ab10308b82eaf0bf7d31e6f7a",
+    "codex-rs/hepta-agentd/src/root_authority_session.rs": "52700a440e6de92fe9fecd6bd12a4a3bc273b18c",
+    "codex-rs/hepta-agentd/src/authority_host_runtime.rs": "23d6dad25b72f346a80f720fcd464fe2f74e2a8f",
+    "codex-rs/hepta-agentd/src/deployment_notes.rs": "1becf4afeed14e01357b084e076a0c076dae9af8",
+    "codex-rs/hepta-agentd/src/deployment_issuer_root.rs": "7409020fdd680f8697ef8c02796bd5ecd5fddc6b",
+    "codex-rs/hepta-agentd/src/deployment_writer.rs": "07f81c22b2694fc998660cafe2343812898a067d",
+    "codex-rs/hepta-contracts/src/authority_host_issuer.rs": "cbd5eb1ed0ea67fc20dcff244d1e637a5a73fff9",
+    "codex-rs/hepta-contracts/src/final_use.rs": "a2b2633e2fb192ccf1f31117e1bbd6ffc6983d77"
+  },
+  "source_review": {
+    "final_use_open_state": "Only an AgentdFinalUseHostInputs owner call with supplied protected clock/frontier, issuer keys and revocation head",
+    "final_use_revocation_update": "Root authenticated retained stream refresh, serial barrier, checked root observation, consumer update and fence-on-error",
+    "authority_lease_open_state": "Root launcher bootstrap and reopened original state require root bind identity, protected clock/frontier and existing private records on runtime path",
+    "authority_lease_put": "Explicit root admin writer registration; Notes uses exact target, retained writer proof, bounded lease ID, CAS and post-registration revalidation",
+    "authority_lease_verify_use": "Existing protected lease, registered writer and original HostSigningKey issuance verify exact current lease; no caller-supplied verifier replacement",
+    "authority_lease_dispatch_raw": "Pinned owner token used with original in-lock dispatch boundary by protected issuer and signed host issuer",
+    "authority_lease_dispatch_witness": "Writer takes original opaque token, dispatches under original owner lock; witness is metadata only"
+  },
+  "controls": {
+    "runtime_code_changed": false,
+    "kernel_checker_code_changed": false,
+    "original_tests_changed": false,
+    "existing_allowed_callers_removed": false,
+    "privileges_granted": false,
+    "rust_dependencies_changed": false,
+    "frozen_research_unchanged": true,
+    "deployment": "SHADOW_ONLY / DENY_ALL / HOLD_NO_GO"
+  },
+  "limitations": [
+    "Proposed independent inventory reconciles the eight exact observed assertions; not itself an owning CI success.",
+    "Independent type-marker scan does not identify every unqualified inherited invocation (e.g. deployment_writer_rotate), while first CALLERS proof does cover that file. No broader completeness claim.",
+    "No closure for cargo-deny (four RustSec findings and async-trait ban), Windows sandbox/Memory/AppServer, full-policy learning, target-device energy or final P38-P41 merge."
+  ]
+}
