@@ -1,0 +1,93 @@
+{
+  "schema": "hepta.windows-current-ci-scope.v1",
+  "originalHead": "a6b3506da75fb9b37c1078b5490178cc8c2f137d",
+  "originalJobs": [
+    121311957080,
+    121311957042,
+    121311957053,
+    121311956989
+  ],
+  "scopeBase": "641641c2b6b8d7ce23fbdfc61f76b6cced4949bc",
+  "policy": {
+    "testRetries": 0,
+    "testThreads": 1,
+    "emptySelection": "fail",
+    "allSelectedFailuresFatal": true,
+    "productionAuthorityGranted": false,
+    "finalProductQualification": false
+  },
+  "groups": [
+    {
+      "id": "git-process-cleanup",
+      "package": "codex-git-utils",
+      "expectedTestCount": 2,
+      "requiredTests": [
+        "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running",
+        "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running"
+      ],
+      "filter": "test(=git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running) | test(=git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running)"
+    },
+    {
+      "id": "retained-mcp",
+      "package": "codex-mcp",
+      "expectedTestCount": 3,
+      "requiredTests": [
+        "connection_manager::tests::retained_binding_tests::retained_binding_preserves_tool_environment_and_catalog_fences",
+        "connection_manager::tests::retained_binding_tests::retained_binding_holds_catalog_until_original_server_budget_expires",
+        "connection_manager::tests::retained_binding_tests::retained_binding_refuses_disabled_tools_and_original_shutdown"
+      ],
+      "filter": "test(=connection_manager::tests::retained_binding_tests::retained_binding_preserves_tool_environment_and_catalog_fences) | test(=connection_manager::tests::retained_binding_tests::retained_binding_holds_catalog_until_original_server_budget_expires) | test(=connection_manager::tests::retained_binding_tests::retained_binding_refuses_disabled_tools_and_original_shutdown)"
+    },
+    {
+      "id": "original-protected-owner",
+      "package": "codex-hepta-memory",
+      "expectedTestCount": 14,
+      "requiredTests": [
+        "production_writer::objective_sender::gate_tests::recovered_generation_keeps_its_exclusive_store_fence_after_checkpoint_failure",
+        "production_writer::objective_sender::protected_checkpoint_tests::barrier_tests::protected_checkpoint_barrier_cancelled_acquisition_cannot_return_write_mode",
+        "production_writer::objective_sender::protected_checkpoint_tests::barrier_tests::protected_checkpoint_barrier_excludes_writers_without_dirtying_current",
+        "production_writer::objective_sender::protected_checkpoint_tests::barrier_tests::protected_checkpoint_barrier_never_commits_even_if_query_only_is_disabled",
+        "production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_acknowledges_exact_terminal_cut_without_an_objective",
+        "production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_cancelled_publication_retains_receipt_and_never_reopens_writer",
+        "production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_holds_original_sqlite_lock_through_synchronous_metadata_ack",
+        "production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_managed_owner_without_bound_capability_cannot_fall_back_to_local_commit",
+        "production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_revoked_after_current_ack_keeps_application_receipt",
+        "production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_waits_for_bound_whole_owner_publication",
+        "production_writer::objective_sender::protected_checkpoint_tests::observation_tests::protected_checkpoint_read_only_polling_preserves_current_and_rejects_writes",
+        "production_writer::objective_sender::protected_checkpoint_tests::protected_checkpoint_invalidates_current_before_normal_owner_writes_and_can_republish",
+        "production_writer::objective_sender::protected_checkpoint_tests::protected_checkpoint_lost_current_ack_fences_waiting_and_previously_checked_out_connections",
+        "production_writer::objective_sender::protected_checkpoint_tests::protected_checkpoint_mismatched_dirty_ack_never_opens_commit_permission"
+      ],
+      "filter": "test(=production_writer::objective_sender::gate_tests::recovered_generation_keeps_its_exclusive_store_fence_after_checkpoint_failure) | test(=production_writer::objective_sender::protected_checkpoint_tests::barrier_tests::protected_checkpoint_barrier_cancelled_acquisition_cannot_return_write_mode) | test(=production_writer::objective_sender::protected_checkpoint_tests::barrier_tests::protected_checkpoint_barrier_excludes_writers_without_dirtying_current) | test(=production_writer::objective_sender::protected_checkpoint_tests::barrier_tests::protected_checkpoint_barrier_never_commits_even_if_query_only_is_disabled) | test(=production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_acknowledges_exact_terminal_cut_without_an_objective) | test(=production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_cancelled_publication_retains_receipt_and_never_reopens_writer) | test(=production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_holds_original_sqlite_lock_through_synchronous_metadata_ack) | test(=production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_managed_owner_without_bound_capability_cannot_fall_back_to_local_commit) | test(=production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_revoked_after_current_ack_keeps_application_receipt) | test(=production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_waits_for_bound_whole_owner_publication) | test(=production_writer::objective_sender::protected_checkpoint_tests::observation_tests::protected_checkpoint_read_only_polling_preserves_current_and_rejects_writes) | test(=production_writer::objective_sender::protected_checkpoint_tests::protected_checkpoint_invalidates_current_before_normal_owner_writes_and_can_republish) | test(=production_writer::objective_sender::protected_checkpoint_tests::protected_checkpoint_lost_current_ack_fences_waiting_and_previously_checked_out_connections) | test(=production_writer::objective_sender::protected_checkpoint_tests::protected_checkpoint_mismatched_dirty_ack_never_opens_commit_permission)"
+    },
+    {
+      "id": "operator-native",
+      "package": "codex-hepta-operator-acceptance",
+      "expectedTestCount": 26,
+      "requiredTests": [],
+      "filter": "package(codex-hepta-operator-acceptance)"
+    },
+    {
+      "id": "shadow-native",
+      "package": "codex-hepta-shadow-qualification",
+      "expectedTestCount": 31,
+      "requiredTests": [],
+      "filter": "package(codex-hepta-shadow-qualification)"
+    },
+    {
+      "id": "sandbox-original-failures",
+      "package": "codex-windows-sandbox",
+      "expectedTestCount": 7,
+      "requiredTests": [
+        "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+        "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
+        "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
+        "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+        "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+        "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+        "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+      ],
+      "filter": "test(=token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces) | test(=unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit) | test(=unified_exec::tests::legacy_non_tty_cmd_emits_output) | test(=unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides) | test(=unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots)"
+    }
+  ]
+}
