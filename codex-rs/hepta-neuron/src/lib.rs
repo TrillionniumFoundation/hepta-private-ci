@@ -32,6 +32,7 @@ mod runtime_types;
 mod shared_encoder;
 mod sparse;
 mod trained_cell_v5;
+mod training_handoff_v7;
 mod witness;
 
 pub use cell_evidence::CellEvidenceError;
@@ -167,6 +168,11 @@ pub use trained_cell_v5::TrainedCellModeV5;
 pub use trained_cell_v5::TrainedCellOutputV5;
 pub use trained_cell_v5::trained_cell_compatibility_digest_v5;
 pub use trained_cell_v5::trained_cell_normalization_digest_v5;
+pub use training_handoff_v7::CellTrainingCheckpointV7;
+pub use training_handoff_v7::MAX_TRAINING_HANDOFF_BYTES_V7;
+pub use training_handoff_v7::TrainingHandoffBundleV7;
+pub use training_handoff_v7::TrainingHandoffErrorV7;
+pub use training_handoff_v7::training_handoff_compatibility_digest_v7;
 pub use witness::FileAnchorWitnessStore;
 
 const MAX_FEATURES: usize = 4_096;
