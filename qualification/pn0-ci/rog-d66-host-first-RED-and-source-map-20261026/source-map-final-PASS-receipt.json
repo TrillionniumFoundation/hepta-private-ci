@@ -1,0 +1,26 @@
+{
+  "recorded_utc": "2026-10-26T19:25:48.936265+00:00",
+  "source_HEAD": "82f6e9e906afd21c3fcef1ae5d872d79b4a3b1f0",
+  "source_tree": "f766fb9170af7566c0bce4ac38a3b52842448496",
+  "command": [
+    "python3",
+    "-B",
+    "scripts/hepta-implementation-maps.py",
+    "verify",
+    "--profile",
+    "qualification",
+    "--expected-sha",
+    "82f6e9e906afd21c3fcef1ae5d872d79b4a3b1f0",
+    "--expected-tree",
+    "f766fb9170af7566c0bce4ac38a3b52842448496"
+  ],
+  "exit_code": 0,
+  "seconds": 11.796686021989444,
+  "both_original_failures_retained": true,
+  "policy_verifier_tests_claims_unchanged": true,
+  "source_only_not_runtime_or_CI_qualification": true,
+  "source_before_after_clean": true,
+  "stdout_sha256": "01882c00e44d7519099346f6e51429911bb5b9b3ea6a53c5a8cc2859d78bf16f",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_ready": false
+}
