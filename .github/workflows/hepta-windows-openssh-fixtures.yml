@@ -1,0 +1,56 @@
+name: Windows original Operator OpenSSH fixtures
+
+on:
+  pull_request:
+    paths:
+      - ".github/scripts/windows_openssh_fixture_scope.py"
+      - ".github/workflows/hepta-windows-openssh-fixtures.yml"
+      - "codex-rs/hepta-operator-acceptance/src/test_support.rs"
+      - "codex-rs/hepta-operator-acceptance/src/trust_tests.rs"
+      - "codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-windows-openssh-fixtures-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  RUSTUP_TOOLCHAIN: 1.96.0
+  CARGO_BUILD_JOBS: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_TERM_COLOR: never
+  PYTHONUTF8: "1"
+
+jobs:
+  original-operator-cases:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout the exact fixture candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install the pinned native compiler
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+      - name: Install repository test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Execute all original Operator cases without retries or skipped dependencies
+        shell: pwsh
+        run: |
+          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "operator-openssh-fixtures-target"
+          python .github/scripts/windows_openssh_fixture_scope.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --output "$env:RUNNER_TEMP/operator-openssh-fixtures"
+          exit $LASTEXITCODE
+      - name: Retain exact source and every native result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: operator-openssh-fixtures-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/operator-openssh-fixtures/
+          if-no-files-found: error
+          retention-days: 14
