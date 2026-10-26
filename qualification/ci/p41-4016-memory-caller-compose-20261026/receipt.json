@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.qualification.4016-memory-caller-composition-candidate.v1",
+  "observation_date_utc": "2026-10-26",
+  "source_repo": "TrillionniumFoundation/hepta-private-ci",
+  "parent_pr": 4016,
+  "parent_sha": "35d36a99ce83ba2b1fb4821dcd35d8e93d3a0e6a",
+  "donor_pr": 4007,
+  "donor_sha": "aed1803088c26053f3dcf6ec7f4aae3938c862ca",
+  "observed_native_failure": {
+    "run": 40303297275,
+    "job": 121589048397,
+    "step": "repo-checks / build-test",
+    "diagnostic": "FAIL_HEPTA_CALLER_PROOF: memory_production_writer_open: caller set mismatch; unexpected=['codex-rs/hepta-memory/src/objective_sender_test_support.rs']"
+  },
+  "donor_native_progress": {
+    "run": 40279360967,
+    "job": 121457550610,
+    "observed": "PASS_HEPTA_CALLER_PROOF_SELF_TEST; later independent cognitive_store_recovery_open mismatch",
+    "not_total_success": true
+  },
+  "patch": [
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_test_support.rs",
+      "source_blob": "6f45dcad101acebab0ddabd1c4ed11b10511d3bf",
+      "donor_blob": "8dd9d383854635e4468c5302418eefac34d5e44c",
+      "insertion_only": true,
+      "inserted_bytes": 111
+    },
+    {
+      "path": "scripts/verify_hepta_callers.py",
+      "source_blob": "b0c197d84659086f75b14329cf2e4f8e796eb516",
+      "donor_blob": "3aea65a699420ae051d8794da07694bd8c73ed06",
+      "insertion_only": true,
+      "inserted_bytes": 656
+    }
+  ],
+  "scope": "Reuse exact previously published test-fixture cfg(test) guard and paired lexical-scanner regression; leave original caller manifests, product code, tests and gate thresholds unchanged.",
+  "validation": {
+    "current_candidate_owning_test": "NOT_RUN",
+    "current_candidate_full_ci": "NOT_RUN",
+    "denied_authority": "DENY_ALL",
+    "mode": "SHADOW_ONLY",
+    "deployment": "HOLD_NO_GO"
+  },
+  "blockers_closed": []
+}
