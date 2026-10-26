@@ -385,16 +385,28 @@ async fn root_two_independent_handles_cannot_both_win_the_same_original_cas() {
             .count(),
         1
     );
-    let winner = values.iter().find(|value| value.status == CognitiveCheckpointStatus::Ack).unwrap();
-    let loser = values.iter().find(|value| value.status != CognitiveCheckpointStatus::Ack).unwrap();
-    assert_eq!(loser.status, CognitiveCheckpointStatus::Refused, "{values:?}");
+    let winner = values
+        .iter()
+        .find(|value| value.status == CognitiveCheckpointStatus::Ack)
+        .unwrap();
+    let loser = values
+        .iter()
+        .find(|value| value.status != CognitiveCheckpointStatus::Ack)
+        .unwrap();
+    assert_eq!(
+        loser.status,
+        CognitiveCheckpointStatus::Refused,
+        "{values:?}"
+    );
     let head = winner.head.as_ref().unwrap();
     // When request3 wins before request2's first read, the persistent
     // highwater correctly refuses request2 as stale. If both read the old
     // head, the original CAS/publication lock refuses the loser as Conflict.
     match loser.reason {
         Some(CognitiveCheckpointReason::Conflict) => {}
-        Some(CognitiveCheckpointReason::StalePublisher) => assert_eq!(head.last_mutation_sequence, 3),
+        Some(CognitiveCheckpointReason::StalePublisher) => {
+            assert_eq!(head.last_mutation_sequence, 3)
+        }
         other => panic!("unexpected concurrent refusal: {other:?}; {values:?}"),
     }
     let head = f.reopen().load().unwrap();
@@ -407,8 +419,11 @@ async fn root_two_independent_handles_cannot_both_win_the_same_original_cas() {
 #[ignore = "explicit root-owned data-bind qualification"]
 async fn root_unavailable_read_permanently_fences_even_after_original_file_returns() {
     let f = Fixture::new().await;
-    let entries = std::fs::read_dir(&f.path).unwrap().map(|entry| entry.unwrap().path())
-        .filter(|path| path.extension().is_some_and(|value| value == "json")).collect::<Vec<_>>();
+    let entries = std::fs::read_dir(&f.path)
+        .unwrap()
+        .map(|entry| entry.unwrap().path())
+        .filter(|path| path.extension().is_some_and(|value| value == "json"))
+        .collect::<Vec<_>>();
     assert_eq!(entries.len(), 1);
     let original = &entries[0];
     let backup = f.path.join("retained-original-for-io-qualification");
@@ -424,7 +439,10 @@ async fn root_unavailable_read_permanently_fences_even_after_original_file_retur
     assert_eq!(exchange(&f.backend, &read), unknown);
     // A distinct explicit root open can observe the still-unmodified durable
     // original, but it cannot revive the uncertain existing publisher object.
-    assert_eq!(f.reopen().load().unwrap().phase, CognitiveCheckpointPhase::Current);
+    assert_eq!(
+        f.reopen().load().unwrap().phase,
+        CognitiveCheckpointPhase::Current
+    );
 }
 
 #[tokio::test]
