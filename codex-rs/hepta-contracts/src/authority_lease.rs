@@ -24,7 +24,10 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 use std::sync::Arc;
-use std::sync::Mutex;
+
+#[path = "authority_lease_state.rs"]
+mod lease_state;
+use lease_state::LeaseState;
 
 #[path = "authority_lease_pair_boundary.rs"]
 mod pair_boundary;
@@ -181,7 +184,7 @@ struct Store {
 
 struct Inner {
     owner_id: String,
-    state: Mutex<State>,
+    state: LeaseState,
     store: Store,
     clock: Arc<dyn AuthorityClock>,
     frontier_store: Option<Arc<dyn AuthorityFrontierStore<AuthorityLeaseFrontier>>>,
@@ -259,7 +262,7 @@ impl AuthorityLeaseRegistry {
         let (store, state) = Store::open(directory, &owner_id, trusted_frontier)?;
         Ok(Self(Arc::new(Inner {
             owner_id,
-            state: Mutex::new(state),
+            state: LeaseState::new(state),
             store,
             clock: Arc::new(SystemAuthorityClock),
             frontier_store: None,
@@ -300,7 +303,7 @@ impl AuthorityLeaseRegistry {
         let (store, state) = Store::open(directory, &owner_id, trusted_frontier)?;
         Ok(Self(Arc::new(Inner {
             owner_id,
-            state: Mutex::new(state),
+            state: LeaseState::new(state),
             store,
             clock,
             frontier_store: None,
@@ -331,7 +334,7 @@ impl AuthorityLeaseRegistry {
         }
         Ok(Self(Arc::new(Inner {
             owner_id,
-            state: Mutex::new(state),
+            state: LeaseState::new(state),
             store,
             clock,
             frontier_store: Some(frontier_store),
@@ -576,21 +579,13 @@ impl AuthorityLeaseRegistry {
         Ok(frontier_for_state(&state))
     }
 
-    fn lock_state(&self) -> Result<std::sync::MutexGuard<'_, State>, AuthorityLeaseError> {
-        let state = self
-            .0
-            .state
-            .lock()
-            .map_err(|_| AuthorityLeaseError::Unavailable)?;
-        if state.failed {
-            return Err(AuthorityLeaseError::Unavailable);
-        }
-        Ok(state)
+    fn lock_state(&self) -> Result<std::sync::RwLockWriteGuard<'_, State>, AuthorityLeaseError> {
+        self.0.state.write()
     }
 
     fn persist_or_fence(
         &self,
-        state: &mut std::sync::MutexGuard<'_, State>,
+        state: &mut std::sync::RwLockWriteGuard<'_, State>,
         next: State,
     ) -> Result<(), AuthorityLeaseError> {
         if let Some(frontier_store) = &self.0.frontier_store {
@@ -706,6 +701,9 @@ impl AuthorityLeaseVerifier {
     /// The callback must be bounded and local: publish durable intent and/or
     /// enter the concrete owner mutation, then return. It must not wait for
     /// remote execution, terminal acknowledgement or reconciliation.
+    /// Independent callbacks can share the live fence. Their concrete owners
+    /// must serialize their own effects; registry administration waits for all
+    /// readers. No callback may reenter this registry.
     pub fn with_dispatch_boundary<T>(
         &self,
         token: LeaseVerifiedUseToken,
@@ -787,16 +785,8 @@ impl AuthorityLeaseVerifier {
         ))
     }
 
-    fn lock_state(&self) -> Result<std::sync::MutexGuard<'_, State>, AuthorityLeaseError> {
-        let state = self
-            .0
-            .state
-            .lock()
-            .map_err(|_| AuthorityLeaseError::Unavailable)?;
-        if state.failed {
-            return Err(AuthorityLeaseError::Unavailable);
-        }
-        Ok(state)
+    fn lock_state(&self) -> Result<lease_state::LeaseReadGuard<'_>, AuthorityLeaseError> {
+        self.0.state.read()
     }
 }
 
@@ -1394,6 +1384,27 @@ mod tests {
                 .recv_timeout(Duration::from_secs(2))
                 .expect("revocation did not complete after local dispatch boundary")
                 .is_ok()
+        );
+    }
+
+    #[test]
+    fn dispatch_panic_fences_later_verification_and_administration() {
+        let (registry, _directory) = fixture();
+        registry.put_lease(lease(), 0).unwrap();
+        let verifier = registry.verifier();
+        let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
+        let panicked = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            verifier
+                .with_dispatch_boundary(token, &binding(), || panic!("controlled callback panic"))
+        }));
+        assert!(panicked.is_err());
+        assert!(matches!(
+            verifier.verify_use("lease-one", 1, &binding()),
+            Err(AuthorityLeaseError::Unavailable)
+        ));
+        assert_eq!(
+            registry.revoke("lease-one", 1, [9; 32]),
+            Err(AuthorityLeaseError::Unavailable)
         );
     }
 

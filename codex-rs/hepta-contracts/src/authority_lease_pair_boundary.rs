@@ -16,7 +16,8 @@ pub enum AuthorityLeaseRetirement {
 impl AuthorityLeaseVerifier {
     /// Enter one bounded local boundary requiring two distinct original leases.
     /// Both opaque tokens must originate from this exact owner Arc. The same
-    /// mutex protects their complete current records, revocation and time check.
+    /// shared owner fence protects their complete current records, revocation
+    /// and time check; administrative mutation requires its exclusive side.
     /// The callback receives the actual full leases and global revision only as
     /// metadata. It MUST NOT reenter this registry, wait for remote execution,
     /// or treat those serializable values as a replacement capability. A caller

@@ -1,6 +1,7 @@
 //! Controlled expiry while waiting for the original owner/revocation mutex.
 use super::*;
 use pretty_assertions::assert_eq;
+use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -62,13 +63,13 @@ fn expires_while_waiting(boundary: Boundary) {
     let token = verifier
         .verify_use(&lease.lease_id, lease.revision, &lease.binding)
         .unwrap();
-    let guard = verifier.lock_state().unwrap();
+    let guard = registry.lock_state().unwrap();
     let (sampled_tx, sampled_rx) = mpsc::channel();
     *clock.sampled.lock().unwrap() = Some(sampled_tx);
     let (started_tx, started_rx) = mpsc::channel();
     let entered = Arc::new(AtomicBool::new(false));
     let attempted = entered.clone();
-    let worker_verifier = verifier.clone();
+    let worker_verifier = verifier;
     let worker = std::thread::spawn(move || {
         started_tx.send(()).unwrap();
         let entry = || attempted.store(true, Ordering::SeqCst);
