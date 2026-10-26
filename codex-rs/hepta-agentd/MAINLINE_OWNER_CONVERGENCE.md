@@ -20,9 +20,13 @@ This projection retains the exact owning API closure in four crates:
 
 Seven unrelated Agentd cleanup/test-refactor files were left at main. No
 application, third-party vendor tree, general CLI refactor or dependency-version
-upgrade is needed. Cargo.lock adds only the original Agentd dependencies
-`libc`, `codex-utils-path` and `pretty_assertions`, using existing resolved
-versions. Windows path handling is retained but requires its own platform CI.
+upgrade is needed. The projection originally added `libc`, `codex-utils-path`
+and `pretty_assertions`, using existing resolved versions. The follow-up
+dependency check removes the unused Windows-only `codex-utils-path` edge from
+Agentd and its Cargo lock entry. No resolved package versions change. The
+repository's pinned `cargo-shear` check covers that edge; its eight existing
+unlinked-source and doctest warnings remain visible. Windows execution still
+requires its own platform CI.
 
 The large mechanical source projection is intentionally one coherent buildable
 stage: separating out the owner implementation while leaving its control wire
