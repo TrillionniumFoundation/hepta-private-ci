@@ -1,0 +1,447 @@
+{
+  "actual_requests_total": 4608,
+  "additional_independent_sources": 0,
+  "frozen_graph_qualification": {
+    "cpu_ns": 4052949995,
+    "new_sources_opened": false,
+    "records": [
+      {
+        "actual_media_rows": 640,
+        "hidden": 32,
+        "historical_data_sha256": "5ce003835c39699471f317e42dd9a1407f9f871ff80d3544801db470d5dd9e01",
+        "invalid_input_rejections": 3,
+        "mode": "enriched",
+        "one_two_action_mismatches": [
+          0,
+          0
+        ],
+        "one_two_max_absolute_moment_error": [
+          0.0,
+          0.0
+        ],
+        "public_nodes": 10240,
+        "seed": 17,
+        "sensor_max_absolute_error": 0.0,
+        "visual_max_absolute_error": 0.0
+      },
+      {
+        "actual_media_rows": 640,
+        "hidden": 32,
+        "historical_data_sha256": "a6416ae6541766c149e137f731d3fbd42e4034316c0ddc92e0966ff9628c51ee",
+        "invalid_input_rejections": 3,
+        "mode": "enriched",
+        "one_two_action_mismatches": [
+          0,
+          0
+        ],
+        "one_two_max_absolute_moment_error": [
+          0.0,
+          0.0
+        ],
+        "public_nodes": 10240,
+        "seed": 29,
+        "sensor_max_absolute_error": 0.0,
+        "visual_max_absolute_error": 0.0
+      },
+      {
+        "actual_media_rows": 640,
+        "hidden": 32,
+        "historical_data_sha256": "9f749990e90c895a3507daa06b05f614b321efc1b1835d21e6c1299e98e4b79e",
+        "invalid_input_rejections": 3,
+        "mode": "enriched",
+        "one_two_action_mismatches": [
+          0,
+          0
+        ],
+        "one_two_max_absolute_moment_error": [
+          0.0,
+          0.0
+        ],
+        "public_nodes": 10240,
+        "seed": 43,
+        "sensor_max_absolute_error": 0.0,
+        "visual_max_absolute_error": 0.0
+      }
+    ],
+    "scope": "Empirical parity on all old selection public nodes and deterministic archived-media subset, plus declared invalid-input rejection. Not a global floating-point equivalence proof.",
+    "source_sha256": {
+      "__init__.py": "b8029900891efcf7ad6f10057add9f7e737292f4b12f7949a755720646f8cff9",
+      "analyze.py": "9ffe2b554393e013bfdcd57174e955212082faa1489ada3be6f4a3caf818e74b",
+      "compiled.py": "3a7db8937c4246ceec0aafbc44478c989ee178d32b0665de402f4b522aad1f86",
+      "process.py": "942ef457095db2af6275781970fa8105b921029ad2cea23888e85472bde629f4",
+      "qualify.py": "364e140291c8827386aef3d805a08044b1320f0b64c2ae25f0fb375a8088c79c",
+      "register.py": "79f1ceac19ad4f4b1c30a4acecfbf82eb496d71db3c70901e1aaf773a77c5a13",
+      "run.py": "3fe0eb17d80ccd02798dd85a29d7594fa42b99d80da6930692035acaaa1a6e1f"
+    },
+    "status": "passed",
+    "wall_ns": 4239179165
+  },
+  "schema": "hepta.next.control-development-summary.v1",
+  "scope": "Both stages use previously opened forecast_calibration sources; the 32-pair stage is nested in the 64-pair source set, with view construction determined by declared batch shape. Clock and feedback differences are development evidence only.",
+  "stages": [
+    {
+      "actual_requests": 1536,
+      "compiled_comparison": {
+        "cpu_price_curve": [
+          {
+            "estimate": 0.0,
+            "price": 0.0,
+            "simultaneous_lower": -0.00772372286468388,
+            "simultaneous_upper": 0.00772372286468388
+          },
+          {
+            "estimate": 0.0005175506751925463,
+            "price": 0.001,
+            "simultaneous_lower": -0.0072061721894913335,
+            "simultaneous_upper": 0.008241273539876425
+          },
+          {
+            "estimate": 0.0010745686397308774,
+            "price": 0.002,
+            "simultaneous_lower": -0.006649154224953002,
+            "simultaneous_upper": 0.008798291504414756
+          },
+          {
+            "estimate": 0.0030078899500927125,
+            "price": 0.005,
+            "simultaneous_lower": -0.004715832914591167,
+            "simultaneous_upper": 0.010731612814776591
+          }
+        ],
+        "mean_cpu_ms": {
+          "estimate": -0.1837029453125023,
+          "lower": -0.5611397108398448,
+          "nominal_level": 0.975,
+          "upper": 0.20913535146483725
+        },
+        "mean_wall_ms": {
+          "estimate": -1.8519132226562505,
+          "lower": -4.418054784814458,
+          "nominal_level": 0.975,
+          "upper": 0.016950014404298205
+        },
+        "original_replacement_family_pass": false,
+        "quality_superiority_family_pass": false,
+        "raw_CE": {
+          "estimate": 0.0,
+          "lower": 0.0,
+          "nominal_level": 0.975,
+          "upper": 0.0
+        },
+        "secondary_CE": {
+          "estimate": 0.0,
+          "lower": 0.0,
+          "nominal_level": 0.975,
+          "upper": 0.0
+        },
+        "success": {
+          "estimate": 0.0,
+          "lower": 0.0,
+          "nominal_level": 0.975,
+          "upper": 0.0
+        },
+        "wall_price_curve": [
+          {
+            "estimate": 0.0,
+            "price": 0.0,
+            "simultaneous_lower": -0.008435553618629918,
+            "simultaneous_upper": 0.008435553618629918
+          },
+          {
+            "estimate": 0.0009584875848752672,
+            "price": 0.001,
+            "simultaneous_lower": -0.007477066033754651,
+            "simultaneous_upper": 0.009394041203505185
+          },
+          {
+            "estimate": 0.0020991624550984467,
+            "price": 0.002,
+            "simultaneous_lower": -0.006336391163531472,
+            "simultaneous_upper": 0.010534716073728365
+          },
+          {
+            "estimate": 0.00721272330032563,
+            "price": 0.005,
+            "simultaneous_lower": -0.0012228303183042886,
+            "simultaneous_upper": 0.015648276918955546
+          }
+        ]
+      },
+      "compiled_exact_pairs": 256,
+      "complete_evidence_directory": "/workspace/scratch/87e43aa872f5/ndu-runs/control-next-development-001",
+      "feedback_comparison": {
+        "cpu_price_curve": [
+          {
+            "estimate": -0.0005049962510115247,
+            "price": 0.0,
+            "simultaneous_lower": -0.023058302697343193,
+            "simultaneous_upper": 0.022048310195320144
+          },
+          {
+            "estimate": -0.0003292070585998452,
+            "price": 0.001,
+            "simultaneous_lower": -0.022882513504931513,
+            "simultaneous_upper": 0.022224099387731823
+          },
+          {
+            "estimate": -0.00018972422891083696,
+            "price": 0.002,
+            "simultaneous_lower": -0.022743030675242505,
+            "simultaneous_upper": 0.02236358221742083
+          },
+          {
+            "estimate": -1.4798099862600722e-05,
+            "price": 0.005,
+            "simultaneous_lower": -0.02256810454619427,
+            "simultaneous_upper": 0.022538508346469067
+          }
+        ],
+        "mean_cpu_ms": {
+          "estimate": -0.2113998281249998,
+          "lower": -0.5804776518554685,
+          "nominal_level": 0.975,
+          "upper": 0.1420221430664101
+        },
+        "mean_wall_ms": {
+          "estimate": -0.24681282812499816,
+          "lower": -0.658111017138673,
+          "nominal_level": 0.975,
+          "upper": 0.15231136171874862
+        },
+        "original_replacement_family_pass": false,
+        "quality_superiority_family_pass": false,
+        "raw_CE": {
+          "estimate": -0.0005049962510115247,
+          "lower": -0.02765571767341478,
+          "nominal_level": 0.975,
+          "upper": 0.01956333227056429
+        },
+        "secondary_CE": {
+          "estimate": 0.0025858595986530952,
+          "lower": -0.024030424856250655,
+          "nominal_level": 0.975,
+          "upper": 0.023952267225084492
+        },
+        "success": {
+          "estimate": -0.0078125,
+          "lower": -0.023486328124999817,
+          "nominal_level": 0.975,
+          "upper": 0.0078125
+        },
+        "wall_price_curve": [
+          {
+            "estimate": -0.0005049962510115247,
+            "price": 0.0,
+            "simultaneous_lower": -0.02314870221208638,
+            "simultaneous_upper": 0.02213870971006333
+          },
+          {
+            "estimate": -2.7236104251926463e-06,
+            "price": 0.001,
+            "simultaneous_lower": -0.022646429571500048,
+            "simultaneous_upper": 0.022640982350649663
+          },
+          {
+            "estimate": 0.0004647168213830488,
+            "price": 0.002,
+            "simultaneous_lower": -0.022178989139691806,
+            "simultaneous_upper": 0.023108422782457904
+          },
+          {
+            "estimate": 0.0016299478537530332,
+            "price": 0.005,
+            "simultaneous_lower": -0.021013758107321822,
+            "simultaneous_upper": 0.02427365381482789
+          }
+        ]
+      },
+      "frozen_source_archive_sha256": "a56e276148a052784bd7d0aa1d9eccfcde7de232b600a474c4345a361f613410",
+      "phase": 1,
+      "protocol_sha256": "8489975a63b200aef8d44cb8647872d7c72fbf6c5c92b397f1c8d5ea9d0d0f51",
+      "unique_historical_pairs": 32
+    },
+    {
+      "actual_requests": 3072,
+      "compiled_comparison": {
+        "cpu_price_curve": [
+          {
+            "estimate": 0.0,
+            "price": 0.0,
+            "simultaneous_lower": -0.0023341050467234332,
+            "simultaneous_upper": 0.0023341050467234332
+          },
+          {
+            "estimate": -1.2503076309844374e-05,
+            "price": 0.001,
+            "simultaneous_lower": -0.0023466081230332776,
+            "simultaneous_upper": 0.002321601970413589
+          },
+          {
+            "estimate": -3.3446336636488994e-05,
+            "price": 0.002,
+            "simultaneous_lower": -0.0023675513833599222,
+            "simultaneous_upper": 0.0023006587100869442
+          },
+          {
+            "estimate": -0.00014963022047720376,
+            "price": 0.005,
+            "simultaneous_lower": -0.002483735267200637,
+            "simultaneous_upper": 0.0021844748262462295
+          }
+        ],
+        "mean_cpu_ms": {
+          "estimate": -0.1878477148437483,
+          "lower": -0.4091358673095724,
+          "nominal_level": 0.975,
+          "upper": 0.027671459277341704
+        },
+        "mean_wall_ms": {
+          "estimate": -0.8843853457031265,
+          "lower": -2.2895852333496056,
+          "nominal_level": 0.975,
+          "upper": -0.012839188354492555
+        },
+        "original_replacement_family_pass": true,
+        "quality_superiority_family_pass": false,
+        "raw_CE": {
+          "estimate": 0.0,
+          "lower": 0.0,
+          "nominal_level": 0.975,
+          "upper": 0.0
+        },
+        "secondary_CE": {
+          "estimate": 0.0,
+          "lower": 0.0,
+          "nominal_level": 0.975,
+          "upper": 0.0
+        },
+        "success": {
+          "estimate": 0.0,
+          "lower": 0.0,
+          "nominal_level": 0.975,
+          "upper": 0.0
+        },
+        "wall_price_curve": [
+          {
+            "estimate": 0.0,
+            "price": 0.0,
+            "simultaneous_lower": -0.024336804990848608,
+            "simultaneous_upper": 0.024336804990848608
+          },
+          {
+            "estimate": 0.0008711684651099283,
+            "price": 0.001,
+            "simultaneous_lower": -0.02346563652573868,
+            "simultaneous_upper": 0.025207973455958536
+          },
+          {
+            "estimate": 0.002223577216825423,
+            "price": 0.002,
+            "simultaneous_lower": -0.022113227774023185,
+            "simultaneous_upper": 0.02656038220767403
+          },
+          {
+            "estimate": 0.012532548503774277,
+            "price": 0.005,
+            "simultaneous_lower": -0.011804256487074331,
+            "simultaneous_upper": 0.036869353494622885
+          }
+        ]
+      },
+      "compiled_exact_pairs": 512,
+      "complete_evidence_directory": "/workspace/scratch/87e43aa872f5/ndu-runs/control-next-development-002",
+      "feedback_comparison": {
+        "cpu_price_curve": [
+          {
+            "estimate": 0.021978539632295124,
+            "price": 0.0,
+            "simultaneous_lower": 0.0025424116539527614,
+            "simultaneous_upper": 0.04141466761063749
+          },
+          {
+            "estimate": 0.02197794067725145,
+            "price": 0.001,
+            "simultaneous_lower": 0.002541812698909088,
+            "simultaneous_upper": 0.041414068655593814
+          },
+          {
+            "estimate": 0.021983329129173557,
+            "price": 0.002,
+            "simultaneous_lower": 0.0025472011508311937,
+            "simultaneous_upper": 0.04141945710751592
+          },
+          {
+            "estimate": 0.022074637447586754,
+            "price": 0.005,
+            "simultaneous_lower": 0.0026385094692443906,
+            "simultaneous_upper": 0.041510765425929116
+          }
+        ],
+        "mean_cpu_ms": {
+          "estimate": -0.18453574609375245,
+          "lower": -0.8991990941162107,
+          "nominal_level": 0.975,
+          "upper": 0.3419048326904305
+        },
+        "mean_wall_ms": {
+          "estimate": -0.3400466171875003,
+          "lower": -1.406579730957032,
+          "nominal_level": 0.975,
+          "upper": 0.42554839763183494
+        },
+        "original_replacement_family_pass": false,
+        "quality_superiority_family_pass": false,
+        "raw_CE": {
+          "estimate": 0.021978539632295124,
+          "lower": 0.001498675941468262,
+          "nominal_level": 0.975,
+          "upper": 0.04547572683693262
+        },
+        "secondary_CE": {
+          "estimate": 0.026949007766920774,
+          "lower": 0.006755358227708222,
+          "nominal_level": 0.975,
+          "upper": 0.049914839636240736
+        },
+        "success": {
+          "estimate": 0.001953125,
+          "lower": -0.0078125,
+          "nominal_level": 0.975,
+          "upper": 0.01171875
+        },
+        "wall_price_curve": [
+          {
+            "estimate": 0.021978539632295124,
+            "price": 0.0,
+            "simultaneous_lower": -6.504363322214907e-05,
+            "simultaneous_upper": 0.0440221228978124
+          },
+          {
+            "estimate": 0.022321501086332574,
+            "price": 0.001,
+            "simultaneous_lower": 0.0002779178208153002,
+            "simultaneous_upper": 0.04436508435184985
+          },
+          {
+            "estimate": 0.022821137895166044,
+            "price": 0.002,
+            "simultaneous_lower": 0.0007775546296487704,
+            "simultaneous_upper": 0.04486472116068332
+          },
+          {
+            "estimate": 0.02585135082991763,
+            "price": 0.005,
+            "simultaneous_lower": 0.0038077675644003564,
+            "simultaneous_upper": 0.0478949340954349
+          }
+        ]
+      },
+      "frozen_source_archive_sha256": "254e5dae026e6c1c42e2b75642f85b9957669d8e2ef8be8ad64ea2cb2a77bfd9",
+      "phase": 2,
+      "protocol_sha256": "8fc688bb3fc46a45f742e1368fa155dc94570403d8929adab0bd0c5ecfc54a74",
+      "unique_historical_pairs": 64
+    }
+  ],
+  "trained_parameters": 0,
+  "unique_source_pairs_total": 64
+}
