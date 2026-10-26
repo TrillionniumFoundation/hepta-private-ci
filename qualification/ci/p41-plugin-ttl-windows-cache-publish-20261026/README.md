@@ -1,0 +1,16 @@
+# P41 Plugin Catalog Windows publication failure — bounded candidate
+
+Observed 2026-10-26 UTC. **Source-only isolation, not closure.**
+
+- Parent Draft: [#3972](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3972), exact head `fa34ec73cf79e4a11ac7c9dee1ba0ad4c77ca350`; parent PR base `c31907a29fe3570afdb07e622f64a7c7b7417cdc`.
+- Native executed [blocking-ci run 40241505918 / Windows Bazel shard 2 job 121353366929](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40241505918/job/121353366929): **FAILURE**, including `suite::v2::plugin_list::plugin_list_honors_global_remote_catalog_cache_ttl`. The test's four `plugin/list` responses were observed, then the test timed out.
+- The same test's captured stderr explicitly emitted `failed to refresh cached remote plugin catalog error=failed to publish remote plugin catalog cache (kind=PermissionDenied, os_code=Some(5)) scope=Global`. This establishes a native Windows cache-publication failure **within the TTL test**, not a proven sole root cause for all TTL failures. The mocks also logged unrelated suggested/featured endpoint 404 responses. No inferred Force-startup race.
+- Exact parent source `codex-rs/core-plugins/src/remote/catalog_cache.rs` uses `codex_utils_path::write_atomically`; implementation `codex-rs/utils/path-utils/src/lib.rs` writes via `NamedTempFile::persist`. On Windows, replacing a file can transiently fail if a reader denies `FILE_SHARE_DELETE`. Whether that mechanism caused the observed OS error 5 in this job remains **unproven**.
+- Candidate modification: preserve atomic replace; for Windows only, retry boundedly (up to eight attempts, 25 ms intervals) **only** for OS error 5/32 while the destination is a regular file. Non-Windows executes once. Permanent publication failure still propagates, and foreground fetched plugins remain usable.
+- Added a Windows-native regression fixture that holds a read handle with `share_mode(0)` during an existing-file cache replacement; verifies a later atomic publication after handle release and preserved original-then-refreshed bytes. Original TTL exact request counts, permission negatives, and all prior cache tests are unchanged.
+- **Unvalidated candidate:** no Rust/cargo toolchain or project checkout was available in the current ephemeral container. The precise new candidate must pass its owning Windows regression, original AppServer TTL, real-I/O/HTTP publication cases, Linux/macOS checks, required composite CI and no regressions. A passing compile, nextest report, or artifact alone does not close the blocker.
+- Other observed parent-head Windows shard-2 failures include Sandbox DELETE (55 pass/3 fail), Memory cold recovery (64 pass/4 fail), AppServer thread rollback/resume and WebSocket timeout. Do not conflate those failures with Plugin TTL, or claim they are repaired here.
+- Parent-head cargo-deny remains **FAILURE**, `RUSTSEC-2026-0387` / `crypto-bigint 0.5.5`; this candidate changes no dependencies/lockfiles/ignore rules.
+- P39's frozen source-pairing learning/confidence and multimodal small loop remain **CLOSED in their original research scope**. Full owner-backed policy and target-device p95/p99/energy are **OPEN**. No production admission.
+
+`SHADOW_ONLY / DENY_ALL / HOLD_NO_GO`. Do not merge, mark Ready, activate, dilute required gates, or change main.
