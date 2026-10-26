@@ -29,7 +29,12 @@ def _sha(value: Any) -> bool:
 
 
 def _finite(value: Any) -> bool:
-    return type(value) in (float, int) and math.isfinite(value)
+    if type(value) not in (float, int):
+        return False
+    try:
+        return math.isfinite(value)
+    except OverflowError:
+        return False
 
 
 def audit_arm(name: str, result: Any, spec: dict) -> list[str]:
@@ -104,6 +109,8 @@ def audit_arm(name: str, result: Any, spec: dict) -> list[str]:
         if head is not None:
             errors.append(f"{name}: pretrained full policy cannot claim independently trained task Head")
     elif (not isinstance(head, dict)
+          or type(head.get("seed")) is not int
+          or type(head.get("steps")) is not int
           or head.get("seed") != TRAIN_SEED
           or head.get("steps") != TRAIN_STEPS
           or head.get("optimizer") != "AdamW"
@@ -111,6 +118,7 @@ def audit_arm(name: str, result: Any, spec: dict) -> list[str]:
           or not _sha(head.get("head_initial_sha256"))
           or not _sha(head.get("head_trained_sha256"))
           or head.get("head_initial_sha256") == head.get("head_trained_sha256")
+          or not _finite(head.get("calibration_temperature"))
           or head.get("calibration_temperature") not in TEMPERATURES
           or type(head.get("head_parameters")) is not int
           or head["head_parameters"] < 4):
@@ -127,6 +135,7 @@ def audit_arm(name: str, result: Any, spec: dict) -> list[str]:
                 or any(not _finite(x) or x <= 0 for x in timing)
                 or not _finite(perf.get("load_ms")) or perf["load_ms"] <= 0
                 or not _finite(perf.get("forward_latency_p50_ms"))
+                or perf["forward_latency_p50_ms"] < 0
                 or not _finite(perf.get("raw_forward_throughput_per_second"))
                 or perf["raw_forward_throughput_per_second"] <= 0):
             errors.append(f"{name}: raw full-CPU forward timing sample/identity missing")
