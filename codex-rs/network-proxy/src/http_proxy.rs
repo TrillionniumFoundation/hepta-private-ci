@@ -974,11 +974,9 @@ async fn proxy_via_unix_socket(req: Request, socket_path: &str) -> Result<Respon
         let client = UpstreamClient::unix_socket(socket_path);
 
         let (mut parts, body) = req.into_parts();
-        let path = parts
-            .uri
-            .path_and_query()
-            .map(rama_net::uri::PathAndQuery::as_str)
-            .unwrap_or("/");
+        // Rama 0.3 uses a native URI: preserve the full origin-form target,
+        // including an empty query, without forwarding the authority or fragment.
+        let path = parts.uri.request_target().into_owned();
         parts.uri = path
             .parse()
             .with_context(|| format!("invalid unix socket request path: {path}"))?;
@@ -1673,6 +1671,27 @@ mod tests {
     }
 
     #[cfg(target_os = "macos")]
+    #[test]
+    fn unix_socket_request_target_preserves_path_and_query() {
+        for (uri, expected) in [
+            ("http://example.com", "/"),
+            (
+                "http://example.com/path%2Fpart?token=a%2Bb",
+                "/path%2Fpart?token=a%2Bb",
+            ),
+            ("http://example.com/path?", "/path?"),
+        ] {
+            let uri = uri.parse::<rama_net::uri::Uri>().expect("valid URI");
+            let target = uri.request_target().into_owned();
+            assert_eq!(target, expected);
+            let origin = target
+                .parse::<rama_net::uri::Uri>()
+                .expect("valid origin form");
+            assert_eq!(origin.request_target(), expected);
+        }
+    }
+
+    #[cfg(target_os = "macos")]
     #[tokio::test(flavor = "current_thread")]
     async fn http_plain_proxy_attempts_allowed_unix_socket_proxy() {
         let state = Arc::new(network_proxy_state_for_policy({
@@ -1681,7 +1700,7 @@ mod tests {
             network
         }));
 
-        let mut req = Request::builder()
+        let req = Request::builder()
             .method(Method::GET)
             .uri("http://example.com")
             .header("x-unix-socket", "/tmp/test.sock")
