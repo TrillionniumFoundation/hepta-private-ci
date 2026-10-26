@@ -1,5 +1,6 @@
 //! Native counterexample only; no change to the original readonly constructor.
 use super::*;
+use pretty_assertions::assert_eq;
 use serde_json::json;
 
 #[test]
