@@ -1,0 +1,109 @@
+{
+  "schema": "hepta.cell-field-followthrough-decisions.v7b",
+  "date": "2026-10-26",
+  "user_scope": "P0 matched H8 state comparison; attribution; retention pressure; P1 independent utility; native owner/snapshot handoff",
+  "all_scientific_admission_conditions_satisfied": false,
+  "selected_configuration": null,
+  "new_confirmation_executed": false,
+  "real_candidate_published": false,
+  "production_activation": false,
+  "implemented_and_verified": [
+    {
+      "id": "action_box_roundoff",
+      "result": "resolved",
+      "evidence": "mechanism-v7/receipts/action-rounding-reproduction.json",
+      "original_actual_errors": 29,
+      "corrected_actual_errors": 0,
+      "original_action_box_unchanged": true
+    },
+    {
+      "id": "terminal_controller_preimages",
+      "result": "resolved",
+      "original_preimages_recovered_with_exact_committed_hash": 93,
+      "corrected_terminal_preimages": 864,
+      "corrected_missing_terminal_preimages": 0,
+      "evidence": "v7b/receipts/audit.json"
+    },
+    {
+      "id": "complete_development_census",
+      "result": "resolved",
+      "original_slots": 864,
+      "corrected_slots": 864,
+      "rows_dropped_or_replaced": 0,
+      "evidence": "v7b/receipts/comparison.json"
+    },
+    {
+      "id": "new_stops_explained",
+      "result": "verified_fail_closed",
+      "new_stops_from_original_completed": 2,
+      "implementation_errors": 0,
+      "thresholds_unchanged": true,
+      "evidence": "v7b/receipts/stopped-regressions.json"
+    },
+    {
+      "id": "same_state_compression_counterexamples",
+      "result": "diagnostic_completed",
+      "original_stopped_loss2_origins": 71,
+      "branches": 284,
+      "full_safe_h8_witnesses": 69,
+      "loss2_tangent_infeasible_origins_with_full_safe_witness": 35,
+      "scope": "eight-step reused-panel safety only",
+      "evidence": "mechanism-v7/receipts/mechanism-summary.json"
+    },
+    {
+      "id": "actual_native_handoff",
+      "result": "verified_each_version",
+      "versions": [
+        "v7",
+        "v7b"
+      ],
+      "registered_cuts_per_version": 96,
+      "restored_per_version": 92,
+      "stopped_rejected_per_version": 1,
+      "missing_preserved_per_version": 3,
+      "predictions_per_version": 211968,
+      "midpoint_continuations_per_version": 23,
+      "exact_continuation_updates_per_version": 337,
+      "completed32_per_version": 22,
+      "original_stop24_per_version": 1,
+      "native_commit": "d2f8a56c5219718f1841b4e9f92d2ad6dbb8fd49"
+    },
+    {
+      "id": "native_terminal_identity_and_recovery",
+      "result": "verified_in_declared_scope",
+      "native_crate_tests_passed": 113,
+      "terminal_owner_recovery_tests_passed": 11,
+      "actual_process_crash_phases": 6,
+      "cross_version_rejections": 4,
+      "positive_owner_fixture_scope": "synthetic gate-passing evidence; no real scientific acceptance"
+    }
+  ],
+  "scientific_or_operational_conditions_not_satisfied": [
+    {
+      "id": "complete_eligible_configuration",
+      "state": "not_met",
+      "corrected_completed": 766,
+      "corrected_repair_rejected": 54,
+      "corrected_tangent_infeasible": 37,
+      "corrected_unresolved": 7,
+      "eligible_configurations": 0,
+      "plausible_configurations": 0,
+      "evidence": "v7b/receipts/selection.json"
+    },
+    {
+      "id": "independent_joint_utility",
+      "state": "not_demonstrated",
+      "historical_v6_future_gates_passed": 0,
+      "historical_v6_future_gates_total": 8,
+      "historical_v6_scientific_gates_passed": 2,
+      "historical_v6_scientific_gates_total": 12,
+      "development_samples_not_fresh_confirmation": true
+    },
+    {
+      "id": "real_positive_native_admission",
+      "state": "precondition_not_met",
+      "reason": "No scientifically accepted candidate exists in these evaluated versions; actual positive admission and production activation were not performed."
+    }
+  ],
+  "interpretation": "Implementation and evidence gaps are resolved or explicitly classified; failed scientific conditions are retained as failed. Completion of this work is not a claim that all scientific blockers passed."
+}
