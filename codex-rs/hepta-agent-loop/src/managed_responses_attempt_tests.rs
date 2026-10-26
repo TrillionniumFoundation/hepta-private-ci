@@ -109,6 +109,7 @@ async fn dropped_uninvoked_attempt_records_both_original_owners() {
         }),
         RequestDispatchMetadata::new(),
         Some(observer),
+        tokio::sync::watch::channel(false).0,
     );
     drop(owner);
     let observed = timeout(Duration::from_secs(2), rx)
@@ -128,6 +129,10 @@ async fn dropped_uninvoked_attempt_records_both_original_owners() {
 
 #[tokio::test]
 async fn aborting_terminal_waiter_does_not_cancel_the_original_lease_write() {
+    let (completion_tx, completion_rx) = tokio::sync::watch::channel(false);
+    let mut completion = crate::ManagedResponsesTerminalCompletion {
+        receiver: completion_rx,
+    };
     let (tx, rx) = oneshot::channel();
     let (observer, encoded) = observer(None, false);
     let started = Arc::new(Notify::new());
@@ -140,6 +145,7 @@ async fn aborting_terminal_waiter_does_not_cancel_the_original_lease_write() {
         }),
         RequestDispatchMetadata::new(),
         Some(observer),
+        completion_tx,
     );
     let waiter = tokio::spawn(owner.finish(
         ModelProviderTerminal::Rejected {
@@ -152,8 +158,20 @@ async fn aborting_terminal_waiter_does_not_cancel_the_original_lease_write() {
     timeout(Duration::from_secs(2), started.notified())
         .await
         .expect("write started");
+    // The independent encoded owner must finish before the policy gate opens.
+    // The original sequential implementation stalls here.
+    let observed = timeout(Duration::from_secs(2), encoded)
+        .await
+        .expect("encoded owner must progress while policy is pending")
+        .expect("same encoded owner");
+    assert!(
+        matches!(observed, EncodedRequestTerminal::Rejected { reason_code }
+        if reason_code == "controlled_rejection")
+    );
     assert!(!waiter.is_finished(), "both terminal ACKs are required");
+    assert!(timeout(Duration::from_millis(20), completion.wait()).await.is_err());
     waiter.abort();
+    assert!(waiter.await.expect_err("caller aborted").is_cancelled());
     proceed.notify_one();
     let observed = timeout(Duration::from_secs(2), rx)
         .await
@@ -163,17 +181,163 @@ async fn aborting_terminal_waiter_does_not_cancel_the_original_lease_write() {
         matches!(observed, ModelProviderTerminal::Rejected { reason_code }
         if reason_code == "controlled_rejection")
     );
-    let observed = timeout(Duration::from_secs(2), encoded)
+    timeout(Duration::from_secs(2), completion.wait())
         .await
-        .expect("encoded terminal deadline")
-        .expect("same encoded owner");
-    assert!(
-        matches!(observed, EncodedRequestTerminal::Rejected { reason_code }
-        if reason_code == "controlled_rejection")
+        .expect("supervisor completion after caller abort")
+        .expect("both futures resolved");
+}
+
+#[tokio::test]
+async fn both_terminal_writes_start_before_either_finishes_and_ack_waits_for_both() {
+    let (completion_tx, completion_rx) = tokio::sync::watch::channel(false);
+    let mut completion = crate::ManagedResponsesTerminalCompletion {
+        receiver: completion_rx,
+    };
+    let (policy_tx, policy_rx) = oneshot::channel();
+    let policy_started = Arc::new(Notify::new());
+    let policy_proceed = Arc::new(Notify::new());
+    let encoded_started = Arc::new(Notify::new());
+    let encoded_proceed = Arc::new(Notify::new());
+    let (observer, encoded_rx) = observer(
+        Some((encoded_started.clone(), encoded_proceed.clone())),
+        /*fail*/ false,
     );
+    let owner = AttemptOwner::new(
+        Box::new(Lease {
+            terminal: policy_tx,
+            gates: Some((policy_started.clone(), policy_proceed.clone())),
+            fail: false,
+        }),
+        RequestDispatchMetadata::new(),
+        Some(observer),
+        completion_tx,
+    );
+    let mut waiter = tokio::spawn(owner.finish(
+        ModelProviderTerminal::NotDispatched {
+            reason_code: "controlled_no_send".into(),
+        },
+        EncodedRequestTerminal::Abandoned {
+            reason_code: "controlled_no_send".into(),
+        },
+    ));
+    timeout(Duration::from_secs(2), policy_started.notified())
+        .await
+        .expect("policy write started");
+    timeout(Duration::from_secs(2), encoded_started.notified())
+        .await
+        .expect("encoded write starts without waiting for policy completion");
+    policy_proceed.notify_one();
+    assert!(matches!(
+        timeout(Duration::from_secs(2), policy_rx)
+            .await
+            .expect("policy completion deadline")
+            .expect("original policy terminal"),
+        ModelProviderTerminal::NotDispatched { .. }
+    ));
+    assert!(timeout(Duration::from_millis(20), &mut waiter).await.is_err());
+    assert!(timeout(Duration::from_millis(20), completion.wait()).await.is_err());
+    encoded_proceed.notify_one();
+    assert!(matches!(
+        timeout(Duration::from_secs(2), encoded_rx)
+            .await
+            .expect("encoded completion deadline")
+            .expect("original encoded terminal"),
+        EncodedRequestTerminal::Abandoned { .. }
+    ));
+    timeout(Duration::from_secs(2), completion.wait())
+        .await
+        .expect("supervisor completion deadline")
+        .expect("both futures resolved, regardless of result");
+    timeout(Duration::from_secs(2), waiter)
+        .await
+        .expect("both terminal ACK deadline")
+        .expect("waiter joined")
+        .expect("both owners persisted");
+}
+
+#[tokio::test]
+async fn terminal_error_does_not_cancel_or_ack_before_the_other_original_write() {
+    for policy_fails in [true, false] {
+        let (completion_tx, completion_rx) = tokio::sync::watch::channel(false);
+        let mut completion = crate::ManagedResponsesTerminalCompletion {
+            receiver: completion_rx,
+        };
+        let (policy_tx, policy_rx) = oneshot::channel();
+        let started = Arc::new(Notify::new());
+        let proceed = Arc::new(Notify::new());
+        let gates = Some((started.clone(), proceed.clone()));
+        let (observer, encoded_rx) = observer(
+            if policy_fails { gates.clone() } else { None },
+            /*fail*/ !policy_fails,
+        );
+        let owner = AttemptOwner::new(
+            Box::new(Lease {
+                terminal: policy_tx,
+                gates: if policy_fails { None } else { gates },
+                fail: policy_fails,
+            }),
+            RequestDispatchMetadata::new(),
+            Some(observer),
+            completion_tx,
+        );
+        let mut waiter = tokio::spawn(owner.finish(
+            ModelProviderTerminal::NotDispatched {
+                reason_code: "controlled_no_send".into(),
+            },
+            EncodedRequestTerminal::Abandoned {
+                reason_code: "controlled_no_send".into(),
+            },
+        ));
+        timeout(Duration::from_secs(2), started.notified())
+            .await
+            .expect("other original write started");
+        // A fail-fast join would return the error and drop the gated write.
+        assert!(timeout(Duration::from_millis(20), &mut waiter).await.is_err());
+        assert!(timeout(Duration::from_millis(20), completion.wait()).await.is_err());
+        proceed.notify_one();
+        assert!(matches!(
+            timeout(Duration::from_secs(2), waiter)
+                .await
+                .expect("both writes must finish")
+                .expect("waiter joined"),
+            Err(Error::Owner(_))
+        ));
+        timeout(Duration::from_secs(2), completion.wait())
+            .await
+            .expect("supervisor completion deadline")
+            .expect("both futures resolved, regardless of result");
+        assert!(matches!(
+            policy_rx.await.expect("policy owner retained terminal"),
+            ModelProviderTerminal::NotDispatched { .. }
+        ));
+        assert!(matches!(
+            encoded_rx.await.expect("encoded owner retained terminal"),
+            EncodedRequestTerminal::Abandoned { .. }
+        ));
+    }
 }
 
 struct ContinuationOwner;
+
+#[tokio::test]
+async fn dropped_supervisor_without_settlement_is_not_shutdown_readiness() {
+    let (sender, receiver) = tokio::sync::watch::channel(false);
+    let mut completion = crate::ManagedResponsesTerminalCompletion { receiver };
+    drop(sender);
+    assert!(matches!(completion.wait().await, Err(Error::Owner(_))));
+}
+
+#[tokio::test]
+async fn settlement_before_wait_is_retained_after_supervisor_exit() {
+    let (sender, receiver) = tokio::sync::watch::channel(false);
+    let mut completion = crate::ManagedResponsesTerminalCompletion { receiver };
+    sender.send_replace(true);
+    drop(sender);
+    timeout(Duration::from_secs(2), completion.wait())
+        .await
+        .expect("no missed settlement notification")
+        .expect("settlement retained");
+}
 
 impl ResponsesContinuationOwner for ContinuationOwner {
     async fn retain(
@@ -201,6 +365,7 @@ async fn cancellation_during_encoded_write_keeps_both_original_terminal_owners()
         }),
         RequestDispatchMetadata::new(),
         Some(observer),
+        tokio::sync::watch::channel(false).0,
     );
     let waiter = tokio::spawn(async move {
         let mut retained = ContinuationOwner;
@@ -276,6 +441,7 @@ async fn a_failed_policy_write_still_observes_encoded_terminal_without_acknowled
         }),
         RequestDispatchMetadata::new(),
         Some(observer),
+        tokio::sync::watch::channel(false).0,
     );
     let result = owner
         .finish(
@@ -310,6 +476,7 @@ async fn a_failed_encoded_write_never_acknowledges_completion() {
         }),
         RequestDispatchMetadata::new(),
         Some(observer),
+        tokio::sync::watch::channel(false).0,
     );
     let result = owner
         .finish(

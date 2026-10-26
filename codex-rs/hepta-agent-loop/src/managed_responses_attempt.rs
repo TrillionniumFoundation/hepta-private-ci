@@ -40,6 +40,7 @@ impl AttemptOwner {
         lease: Box<dyn ModelProviderAttemptLease>,
         dispatch: RequestDispatchMetadata,
         observer: Option<Arc<dyn EncodedRequestBodyObserver>>,
+        terminal_completion: tokio::sync::watch::Sender<bool>,
     ) -> Self {
         let (commands, mut receiver) = mpsc::channel::<TerminalCommand>(1);
         tokio::spawn(async move {
@@ -54,22 +55,27 @@ impl AttemptOwner {
                     (policy, encoded, None)
                 }
             };
-            // Both callbacks retain the actual provider observation. A failure
-            // in one owner must not prevent the other owner recording it. The
-            // caller receives no completion ACK until both writes succeed.
-            let policy_result = lease
-                .finish(policy)
-                .await
-                .map_err(|_| Error::Owner("provider lease terminal persistence failed".into()));
-            let encoded_result = async {
+            // Poll both independent original owners: a pending write must not
+            // prevent the other owner recording the actual observation. Keep
+            // both futures in this detached supervisor even after an error or
+            // caller cancellation; never use fail-fast join or cancel a write
+            // to manufacture an ACK. This is not process-crash recovery.
+            let policy_write = async {
+                lease.finish(policy).await.map_err(|_| {
+                    Error::Owner("provider lease terminal persistence failed".into())
+                })
+            };
+            let encoded_write = async {
                 let observer =
                     observer.ok_or(Error::Contract("exact encoded request owner absent"))?;
                 observer
                     .observe_terminal(encoded)
                     .await
                     .map_err(|_| Error::Owner("encoded request terminal persistence failed".into()))
-            }
-            .await;
+            };
+            let (policy_result, encoded_result) = tokio::join!(policy_write, encoded_write);
+            terminal_completion.send_replace(true);
+            // A terminal ACK still requires both original writes to succeed.
             let result = policy_result.and(encoded_result);
             if result.is_err() {
                 tracing::warn!(
