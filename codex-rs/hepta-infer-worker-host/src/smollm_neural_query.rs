@@ -61,7 +61,7 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
             .with_measurements(|load, forward| {
                 super::settled::verify(
                     &self.context,
-                    request,
+                    super::settled::ReadSource::Evaluated(request),
                     payload,
                     execution_receipt_digest,
                     load,
@@ -117,6 +117,30 @@ impl SmolLmNeuralReadPortV1 {
             Digest32::of_bytes(query.as_bytes()).as_array(),
             &actions,
         ]);
-        self.execute_physical(query, action_ids, payload, self.scope, execution)
+        let result = self.execute_physical(query, action_ids, payload, self.scope, execution)?;
+        // Check both original completed records before returning this initial
+        // observation. Keep the actual payload on this stack; a caller cannot
+        // provide another expected digest or convert it into evaluated admission.
+        let verified = self
+            .with_measurements(|load, forward| {
+                super::settled::verify(
+                    &self.context,
+                    super::settled::ReadSource::SelectedInitial {
+                        identity: &self.physical,
+                        query,
+                    },
+                    payload,
+                    result.1,
+                    load,
+                    forward,
+                )
+            })
+            .and_then(std::convert::identity)
+            .and_then(|()| execution.check());
+        if let Err(error) = verified {
+            self.admission_closed.store(true, Ordering::SeqCst);
+            return Err(error);
+        }
+        Ok(result)
     }
 }

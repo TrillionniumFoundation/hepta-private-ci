@@ -274,7 +274,7 @@ fn run_original_native_case(input: NativeInput, route: NativeRoute) -> Result<()
     port.with_measurements(|load, forward| {
         super::super::settled::verify(
             &port.context,
-            &request,
+            super::super::settled::ReadSource::Evaluated(&request),
             actual_payload,
             observed.execution_receipt_digest,
             load,
@@ -300,7 +300,7 @@ fn run_original_native_case(input: NativeInput, route: NativeRoute) -> Result<()
             port.with_measurements(|load, forward| {
                 super::super::settled::verify(
                     &port.context,
-                    &mixed,
+                    super::super::settled::ReadSource::Evaluated(&mixed),
                     payload,
                     receipt,
                     load,

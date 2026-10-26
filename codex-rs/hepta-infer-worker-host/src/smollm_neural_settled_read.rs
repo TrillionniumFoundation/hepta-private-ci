@@ -1,25 +1,57 @@
-//! Same-owner settlement joins before an evaluated read returns its observation.
+//! Same-owner settlement joins before an initial or evaluated read returns.
 //! This private check reads the existing journal; it grants no new authority,
 //! context binding, installation, CURRENT or terminal-resource qualification.
 use super::*;
 
+// Borrowed original-owner inputs only. This is not a selection, receipt or
+// conversion between initial and evaluated admission.
+pub(super) enum ReadSource<'a> {
+    Evaluated(&'a NeuralCognitiveRequestV1),
+    SelectedInitial {
+        identity: &'a SmolLmRuntimeIdentityV1,
+        query: &'a str,
+    },
+}
+
 pub(super) fn verify(
     context: &ControlContext,
-    request: &NeuralCognitiveRequestV1,
+    source: ReadSource<'_>,
     payload: Digest32,
     receipt: Digest32,
     load: &SmolLmMeasuredLoadV1,
     forward: Option<&SmolLmMeasuredForwardV1>,
 ) -> Result<(), String> {
+    let (identity, query, load_domain): (_, _, &[u8]) = match source {
+        ReadSource::Evaluated(request) => {
+            if request.owner_id != context.owner_id
+                || request.body_generation != context.body_generation
+                || request.query_digest != Digest32::of_bytes(request.query.as_bytes())
+            {
+                return Err("completed read differs from its original request/load".to_owned());
+            }
+            (
+                SmolLmRuntimeIdentityV1::from(&request.pin),
+                request.query.as_str(),
+                b"hepta.smollm-load.v1\0",
+            )
+        }
+        ReadSource::SelectedInitial { identity, query } => {
+            if identity.generation.get() != 1 {
+                return Err("initial read requires its selected generation-one parent".to_owned());
+            }
+            (
+                identity.clone(),
+                query,
+                b"hepta.smollm.selected-initial-runtime-load.v1\0",
+            )
+        }
+    };
     let forward = forward.ok_or("original completed forward is unavailable")?;
     let load_ids = load
         .control_load_ids()
         .ok_or("original settled load IDs are unavailable")?;
-    if request.owner_id != context.owner_id
-        || request.body_generation != context.body_generation
-        || request.query_digest != Digest32::of_bytes(request.query.as_bytes())
-        || load.parameter_file_digest() != request.pin.payload_digest
-        || load.generation() != request.pin.generation.get()
+    if load.parameter_file_digest() != identity.payload_digest
+        || load.generation() != identity.generation.get()
         || forward.ready_digest() != load.ready_digest()
         || forward.response_digest() != receipt
         || payload.is_zero()
@@ -29,18 +61,18 @@ pub(super) fn verify(
     }
     let input = serde_json::to_vec(&serde_json::json!({
         "schema":"hepta-smollm-inference-input-v1",
-        "request_id":forward.control_ids().0, "prompt":request.query,
+        "request_id":forward.control_ids().0, "prompt":query,
     }))
     .map_err(|error| error.to_string())?;
     if forward.input_digest() != Digest32::of_bytes(&input) {
         return Err("completed read input differs from its actual worker frame".to_owned());
     }
     let load_payload = Digest32::of_parts(&[
-        b"hepta.smollm-load.v1\0",
+        load_domain,
         context.owner_id.as_str().as_bytes(),
         &context.body_generation.to_be_bytes(),
-        request.pin.payload_digest.as_array(),
-        request.pin.execution_profile_digest.as_array(),
+        identity.payload_digest.as_array(),
+        identity.execution_profile_digest.as_array(),
     ]);
     // Keep the original worker/mailbox lock order. An observation cannot wait
     // unboundedly behind another control owner or create a new deadline.

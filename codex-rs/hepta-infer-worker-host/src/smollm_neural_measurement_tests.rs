@@ -1,4 +1,7 @@
 //! Wire-boundary controls only; these explicit JSON fixtures are not model runs.
+#[path = "smollm_neural_initial_journal_tests.rs"]
+mod initial_journal;
+
 use super::*;
 use pretty_assertions::assert_eq;
 use serde_json::Value;
