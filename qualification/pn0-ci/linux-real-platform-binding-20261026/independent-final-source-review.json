@@ -1,0 +1,399 @@
+{
+  "schema": "hepta.root-linux-routing.independent-final-source-and-evidence-review.v1",
+  "recorded_utc": "2026-10-26T18:19:35.930859+00:00",
+  "reviewer": "/root/hepta_dependency_final_review",
+  "root_source_parent": "8987059863d4c2c095d191ade658a00c05598a11",
+  "production_patch": "1fe05cec7a32ae0d4dcca88372295ae828e7016fdd5bd789ed7391a322f42528",
+  "two_production_files_exact_original_frozen_candidate": true,
+  "review_conclusion": "NO_BLOCKING_SOURCE_FINDING; appropriate reviewable branch commit with original failures and NO_GO preserved; no native or merge qualification",
+  "scope": "Readonly independent root source, proposed controls, actual captured prior RED/PASS logs, originalmethod preservation, permanentarchive readback and claims. No commands executing repo code, no build/test/newwindow/CIpoll/sourceedit in this review. Only new independent scratch receipts written.",
+  "original_method_preservation": [
+    {
+      "name": "setUp",
+      "before_sha256": "03de155d8135b996efebaed4059bdccd65704fea46e4a800089e63546017db88",
+      "after_sha256": "03de155d8135b996efebaed4059bdccd65704fea46e4a800089e63546017db88",
+      "byte_exact": true
+    },
+    {
+      "name": "run_wrapper",
+      "before_sha256": "88c04e27baf20bafb49d17d7acdd69e78eaffa510f7b0e353de801f818ba9358",
+      "after_sha256": "88c04e27baf20bafb49d17d7acdd69e78eaffa510f7b0e353de801f818ba9358",
+      "byte_exact": true
+    },
+    {
+      "name": "test_keyless_cross_uses_msvc_exec_and_gnullvm_target",
+      "before_sha256": "bb3d12937f535546e97452f7f153e0bc39e24327cadedf4647e2e915d23f7653",
+      "after_sha256": "bb3d12937f535546e97452f7f153e0bc39e24327cadedf4647e2e915d23f7653",
+      "byte_exact": true
+    },
+    {
+      "name": "test_large_windows_build_preserves_all_targets_without_a_large_native_command",
+      "before_sha256": "34ab1c09b9bcd89caf2ad947c3856088ca239e3d1266231947d55d3f39d73462",
+      "after_sha256": "34ab1c09b9bcd89caf2ad947c3856088ca239e3d1266231947d55d3f39d73462",
+      "byte_exact": true
+    },
+    {
+      "name": "test_windows_target_files_preserve_test_and_coverage_failures",
+      "before_sha256": "18a47bbafd3e279d59b02a84ac74ee86202f4f9bea475aaa39a8a4ecbd4cc119",
+      "after_sha256": "18a47bbafd3e279d59b02a84ac74ee86202f4f9bea475aaa39a8a4ecbd4cc119",
+      "byte_exact": true
+    },
+    {
+      "name": "test_native_windows_forwards_required_msvc_environment",
+      "before_sha256": "24a5577ac185fa486541bcbc6524bcbef973e7554188b121056f9d74d49c38dc",
+      "after_sha256": "24a5577ac185fa486541bcbc6524bcbef973e7554188b121056f9d74d49c38dc",
+      "byte_exact": true
+    },
+    {
+      "name": "test_native_windows_rejects_missing_required_msvc_environment",
+      "before_sha256": "39b0637d6785640d58931e0810941666523da7ba4bef2e8b8317745d6881e1a3",
+      "after_sha256": "39b0637d6785640d58931e0810941666523da7ba4bef2e8b8317745d6881e1a3",
+      "byte_exact": true
+    },
+    {
+      "name": "test_windows_argument_lint_uses_the_shared_split_abi_wrapper",
+      "before_sha256": "0e7d5310b30136b74c69adf8fb19a4e9c177c833a142fecc85b69e0c1e0e15ef",
+      "after_sha256": "0e7d5310b30136b74c69adf8fb19a4e9c177c833a142fecc85b69e0c1e0e15ef",
+      "byte_exact": true
+    },
+    {
+      "name": "run_argument_lint",
+      "before_sha256": "db27459bbb9c422ecd7c243fc40ea7abba6d67976de19c8d70bf934c24b879a1",
+      "after_sha256": "db27459bbb9c422ecd7c243fc40ea7abba6d67976de19c8d70bf934c24b879a1",
+      "byte_exact": true
+    },
+    {
+      "name": "test_windows_argument_lint_preserves_the_entire_large_crlf_query_roster",
+      "before_sha256": "27fd494b47155ce83e4ab122f24739837ce1c3af3e31096f0316d36a59e074f7",
+      "after_sha256": "27fd494b47155ce83e4ab122f24739837ce1c3af3e31096f0316d36a59e074f7",
+      "byte_exact": true
+    },
+    {
+      "name": "test_authenticated_cross_keeps_linux_build_actions_and_windows_tests",
+      "before_sha256": "70ff0b2bd7304110194e3998d8b30737477e97835a473c478138627eceb6b4aa",
+      "after_sha256": "70ff0b2bd7304110194e3998d8b30737477e97835a473c478138627eceb6b4aa",
+      "byte_exact": true
+    },
+    {
+      "name": "test_failure_preserves_status_linker_diagnostics_and_test_log_configuration",
+      "before_sha256": "ba762902945610947ec8ffcf88b6c4e4881200a68398a0a40841e2371197760e",
+      "after_sha256": "ba762902945610947ec8ffcf88b6c4e4881200a68398a0a40841e2371197760e",
+      "byte_exact": true
+    }
+  ],
+  "old_original_test_methods": 9,
+  "old_helper_methods": 3,
+  "new_methods": [
+    "test_authenticated_linux_explicit_target_follows_ci_default",
+    "test_keyless_linux_preserves_explicit_target_and_gnu_host_default"
+  ],
+  "actual_captured_results": {
+    "original_production_plus_identical11tests": "RED exit1; all9oldtestsOK; fourkeyednewsubcases fail position4 notafterconfig5/6",
+    "corrected_production_plus_identical11tests": "PASS exit0;11testsOK/0skip;owner3.224505541s,unittest3.088s different timing scopes",
+    "raw_stdout_stderr_hashes_match_original_receipts": true,
+    "two_new_methods_total_subcases": 8,
+    "no_Bazel_compiler_toolchain_native_network_execution": true,
+    "parent_final_fmt_receipt": "PASS0/.373010561s,old9methods/source2exact/ASTunchanged;no retest requested or executedbyreviewer"
+  },
+  "control_soundness": "Existing recordingBazel fixture executes real shell+Python argument pipeline. Each method startsfreshprivateTemporaryDirectory and cleanBAZEL/BUILDBUDDY/GITHUBenv. Four distinct platform/form subcases recordlastactualcall; assertions require latestexplicitvalue/form,config-relativepositionor keylessconfigremoval,unchangedtargetseparator. Dummytest-onlykey isrecordedbyfakeprocess,nofetchnetwork. This proves argumentrouting only,not actualRC expansion/resolution/hostABI.",
+  "source_and_docs_contract": "Matrix4rows/oldactions,targetpatterns/features/filters/concurrency/resources/deadlines preserved;Linuxexplicitplatform afterci-default only;GNUhost/execsource defaults unchanged;Windows/macOSbranches unchanged. PN0README+prose explicitlyleave nativeGNU/muslABI,ELF,remoteexecution/incompatibleinventory,existingGNU-onlyWine,oldreleaseLLVMmapping,original60minCI/Windowsandpair gates OPEN.",
+  "archive": {
+    "path": "work/root-hepta-integration-20261026/qualification/pn0-ci/linux-real-platform-binding-20261026",
+    "regular_members": 54,
+    "archive_sha256_actual": "f3e8ddad5558f6e9aa46c6010d595552696bb07056707686ecc2f5534938a2e8",
+    "archive_sha256_manifest": "f3e8ddad5558f6e9aa46c6010d595552696bb07056707686ecc2f5534938a2e8",
+    "all54members_original_size_hash_readback_exact": true,
+    "each_corresponding_original_file_current_hash_exact": true,
+    "members": [
+      {
+        "member": "work/ci-follow/Hepta-Linux-explicit-platform-real-wrapper-controls-20261026-001/added-routing-controls.patch",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-explicit-platform-real-wrapper-controls-20261026-001/corrected-source-PASS.json",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-explicit-platform-real-wrapper-controls-20261026-001/corrected-source-PASS.stderr",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-explicit-platform-real-wrapper-controls-20261026-001/corrected-source-PASS.stdout",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-explicit-platform-real-wrapper-controls-20261026-001/original-source-RED.json",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-explicit-platform-real-wrapper-controls-20261026-001/original-source-RED.stderr",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-explicit-platform-real-wrapper-controls-20261026-001/original-source-RED.stdout",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-explicit-platform-real-wrapper-controls-20261026-001/original-test-preservation.json",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/bash-n.stderr",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/bash-n.stdout",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/candidate.patch",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/initial-generator-source-count-failure.json",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/initial-static-helper-key-conversion-failure.json",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/manifest.json",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/materialized-primary/llvm/constraints/cxxstdlib/BUILD.bazel",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/materialized-primary/llvm/constraints/cxxstdlib/cxxstdlib_versions.bzl",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/materialized-primary/llvm/constraints/libc/BUILD.bazel",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/materialized-primary/llvm/constraints/libc/libc_versions.bzl",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/materialized-primary/llvm/constraints/pie/BUILD.bazel",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/materialized-primary/llvm/platforms/common.bzl",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/materialized-primary/llvm/platforms/config/declare_config_settings.bzl",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/materialized-primary/llvm/platforms/declare_platforms.bzl",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/materialized-primary/llvm/toolchain/BUILD.bazel",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/materialized-primary/llvm/toolchain/declare_toolchains.bzl",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/materialized-primary/rules_rs/rs/platforms/config/declare_config_settings.bzl",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/materialized-primary/rules_rs/rs/platforms/constraints/BUILD.bazel",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/materialized-primary/rules_rs/rs/platforms/declare_platforms.bzl",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/materialized-primary/rules_rs/rs/platforms/triples.bzl",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/materialized-primary/rules_rs/rs/toolchains/declare_rustc_toolchains.bzl",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/materialized-primary/rules_rs/rs/toolchains/module_extension.bzl",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/original898/.github/scripts/run-bazel-ci.sh",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/original898/.github/workflows/bazel.yml",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/ownedsource/.github/scripts/run-bazel-ci.sh",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/ownedsource/.github/workflows/bazel.yml",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/report.md",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source-candidate-receipt.json",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source-static-invariants.json",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source898/.bazelrc",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source898/.github/scripts/run-bazel-ci.sh",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source898/.github/scripts/run_bazel_with_buildbuddy.py",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source898/.github/workflows/bazel.yml",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source898/BUILD.bazel",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source898/MODULE.bazel",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source898/MODULE.bazel.lock",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source898/bazel/platforms/release_binaries.bzl",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source898/bazel/rules/testing/wine/wine_runtime.bzl",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source898/defs.bzl",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source898/patches/llvm_rusty_v8_custom_libcxx.patch",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source898/patches/v8_bazel_rules.patch",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source898/patches/v8_source_portability.patch",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source898/rbe.bzl",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source898/third_party/v8/BUILD.bazel",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source898/third_party/v8/libcxx.BUILD.bazel",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      },
+      {
+        "member": "work/ci-follow/Hepta-Linux-matrix-platform-binding-source-candidate-20261026-001/source898/third_party/v8/libcxxabi.BUILD.bazel",
+        "archive_byte_hash_exact": true,
+        "original_still_exact": true
+      }
+    ]
+  },
+  "limitations": [
+    "FakeBazel doesnot expand realBazelrc/selecttoolchains or execute compiler",
+    "No actualnewGNU/muslC++/Rust/V8ABI/ELF/native qualification",
+    "No original60minhostedtimeout closure",
+    "ExistingGNU-onlyWinetargetinventory separate",
+    "ExistingreleaseLLVMplatformmapping OPEN",
+    "No oldexpiredmodel900/root600/otherbudget reset",
+    "No allrequiredCI/exactpublicpair qualification"
+  ],
+  "qualified": {
+    "argument_routing_controls_supported_by_prior_actual_logs": true,
+    "actual_Bazel_platform_analysis": false,
+    "compiler_or_native_musl": false,
+    "throughput_gain": false,
+    "Windows_failures_closed": false,
+    "all_required_CI_pass": false,
+    "merge_ready": false,
+    "task_complete": false
+  }
+}

@@ -275,6 +275,28 @@ if [[ ${#bazel_args[@]} -eq 0 || ${#bazel_targets[@]} -eq 0 ]]; then
 fi
 
 post_config_bazel_args=()
+if [[ "${RUNNER_OS:-}" == "Linux" ]]; then
+  # ci-linux supplies a GNU default target. Repeat the caller's explicit
+  # platform after that config so keyed and keyless Linux builds agree.
+  # Leave host/exec platforms and all other caller/config ordering unchanged.
+  copy_next_platform=0
+  for arg in "${bazel_args[@]}"; do
+    if [[ $copy_next_platform -eq 1 ]]; then
+      post_config_bazel_args+=("$arg")
+      copy_next_platform=0
+      continue
+    fi
+    case "$arg" in
+      --platforms)
+        post_config_bazel_args+=("$arg")
+        copy_next_platform=1
+        ;;
+      --platforms=*)
+        post_config_bazel_args+=("$arg")
+        ;;
+    esac
+  done
+fi
 if [[ "${RUNNER_OS:-}" == "Windows" && $windows_msvc_host_platform -eq 1 ]]; then
   has_host_platform_override=0
   for arg in "${bazel_args[@]}"; do
