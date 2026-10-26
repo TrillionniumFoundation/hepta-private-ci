@@ -1,6 +1,6 @@
 use codex_utils_absolute_path::AbsolutePathBuf;
-use serde_json::json;
 use serde_json::Value;
+use serde_json::json;
 use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::sqlite::SqliteJournalMode;
 use sqlx::sqlite::SqlitePoolOptions;
@@ -11,8 +11,9 @@ fn acl(path: &Path) -> Result<Value, Box<dyn std::error::Error>> {
     if !path.try_exists()? {
         return Ok(json!({"exists": false}));
     }
-    let shell = PathBuf::from(std::env::var_os("SystemRoot").ok_or("SystemRoot missing")?)
-        .join("System32/WindowsPowerShell/v1.0/powershell.exe");
+    let shell = PathBuf::from(
+        std::env::var_os("HEPTA_PROBE_POWERSHELL").ok_or("actual parent PowerShell missing")?,
+    );
     let code = r#"$ErrorActionPreference='Stop'; $a=Get-Acl -LiteralPath $env:HEPTA_SQLITE_PROBE_FILE; $rules=@($a.GetAccessRules($true,$true,[System.Security.Principal.SecurityIdentifier]) | ForEach-Object { [ordered]@{sid=$_.IdentityReference.Value;mask=[int]$_.FileSystemRights;type=$_.AccessControlType.ToString();inherited=$_.IsInherited} }); [ordered]@{exists=$true;owner=$a.GetOwner([System.Security.Principal.SecurityIdentifier]).Value;protected=$a.AreAccessRulesProtected;rules=$rules} | ConvertTo-Json -Depth 8 -Compress"#;
     let output = std::process::Command::new(shell)
         .args(["-NoProfile", "-NonInteractive", "-Command", code])
@@ -32,6 +33,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let normalized = AbsolutePathBuf::try_from(canonical.clone())?;
     let source = canonical.join("actual-sqlx.sqlite3");
     let candidate = canonical.join("candidate.sqlite3");
+    eprintln!(
+        "PATH_NORMALIZATION_FACTS={}",
+        json!({
+            "osCanonicalHome": canonical,
+            "normalizedAbsoluteHome": normalized.as_path(),
+            "sourceParentEqualsNormalizedHome": source.parent() == Some(normalized.as_path()),
+            "candidateParentEqualsNormalizedHome": candidate.parent() == Some(normalized.as_path()),
+            "authorityGranted": false,
+        })
+    );
     let pool = SqlitePoolOptions::new()
         .max_connections(1)
         .connect_with(

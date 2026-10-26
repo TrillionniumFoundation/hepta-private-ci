@@ -62,6 +62,7 @@ jobs:
           Copy-Item .github/scripts/windows_recovery_rust_probe.rs (Join-Path $probe 'src/main.rs')
           Copy-Item codex-rs/Cargo.lock (Join-Path $probe 'Cargo.lock')
           $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP 'recovery-rust-utility-target'
+          $env:HEPTA_PROBE_POWERSHELL = (Get-Process -Id $PID).Path
           cargo run --quiet --manifest-path (Join-Path $probe 'Cargo.toml') -- "$env:RUNNER_TEMP/recovery-admission-facts/actual-sqlx-private-home" 1> "$env:RUNNER_TEMP/recovery-admission-facts/rust-probe.json" 2> "$env:RUNNER_TEMP/recovery-admission-facts/rust-probe.stderr.log"
           $probeExit = $LASTEXITCODE
           Copy-Item (Join-Path $probe 'Cargo.lock') "$env:RUNNER_TEMP/recovery-admission-facts/rust-probe.Cargo.lock"
