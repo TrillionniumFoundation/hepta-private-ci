@@ -75,12 +75,16 @@ impl Surface {
             pass,
             draw_list,
         };
+        surface.cx.redraw_all();
         surface.draw();
         surface
     }
 
     fn draw(&mut self) {
-        let event = DrawEvent::default();
+        // Match the SDK's call_draw_event: consume the real queued redraws.
+        // An empty event leaves Dock contents cached even after root.redraw,
+        // retaining stale rendered RoomKeys and visible proposal snapshots.
+        let event = std::mem::take(&mut self.cx.new_draw_event);
         let mut draw = CxDraw::new(&mut self.cx, &event);
         let mut cx2d = Cx2d::new(&mut draw);
         cx2d.begin_pass(&self.pass, None);
@@ -247,12 +251,14 @@ fn native_space_and_return_reuse_original_room_and_page_actions_and_retain_draft
     surface.press(KeyCode::Space);
     assert_eq!(surface.scene.borrow().workspace.drafts().count(), 2);
     assert_eq!(surface.scene.borrow().workspace.draft().text, "");
+    assert_eq!(editor.text(), "");
     surface.seek(&editor);
     surface.event(Event::TextInput(TextInputEvent {
         input: "second room".into(),
         ..Default::default()
     }));
     surface.draw();
+    assert_eq!(surface.scene.borrow().workspace.draft().text, "second room");
     let first_row = (0..2)
         .map(|index| surface.row(index))
         .find(|row| {
@@ -407,6 +413,8 @@ fn native_model_confirm_rechecks_the_original_last_drawn_proposal_on_key_release
         }),
         ..Controls::default()
     };
+    // The real native renderer redraws after installing changed Controls.
+    surface.scene.borrow().root.redraw(&mut surface.cx);
     surface.draw();
     let confirm = surface.widget(ids!(original_notes_model_confirm));
     surface.seek(&confirm);
@@ -434,6 +442,8 @@ fn native_model_confirm_rechecks_the_original_last_drawn_proposal_on_key_release
         surface.scene.borrow().intents.is_empty(),
         "stale visible proposal authorized a keyboard decision"
     );
+    // Only now present the replacement; the stale press above saw no redraw.
+    surface.scene.borrow().root.redraw(&mut surface.cx);
     surface.draw();
     surface.seek(&confirm);
     surface.press(KeyCode::Space);
