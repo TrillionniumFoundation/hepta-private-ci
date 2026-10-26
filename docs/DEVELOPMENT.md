@@ -1315,6 +1315,19 @@ C2a native readback → C2b trusted parent/creation → C3/C4 consumers → C5 i
 no token, descriptor or fixture result supplies a `PrivateDirectory`, FinalUse
 backend, registry backend, cold-recovery or resource-release qualification.
 
+Within the same PN0/PN4 item, local source checkpoint `01f2757d` separates the
+four-file opaque prepared process/pipe/ConPTY owner prerequisite from terminal
+observation. It is reviewed source only, not compiled or native qualification.
+The retained six-file terminal candidate still needs the original controlled
+session to own one fixed attempt slot before birth and retain the complete
+original child, Job, token/root/desktop and pipe owners on a failed wait. Pending
+or Unknown occupies that slot and forbids the next birth; no caller/harness
+transfer with this lifetime is wired yet. Keep the same absolute eight seconds,
+actual exit0/7/259 and reduced-rights sticky-refusal assertions. Stop requests,
+Err-drop, a new deadline or late cleanup cannot establish observed exit or
+recycle authority. The original twenty native groups and broad-identity/legacy
+failures remain required; no detached reaper or second registry is introduced.
+
 The following are implementation slices of that same PN0 item, not a second
 roadmap. The read-only volume and live-principal observation APIs below are
 implemented mechanisms. Create-only namespace and protected-directory
