@@ -1,8 +1,10 @@
 use super::*;
 
+use pretty_assertions::assert_eq;
 use rmcp::model::CallToolRequestParams;
+use rmcp::model::CallToolResponse;
 use rmcp::model::CallToolResult as NativeCallToolResult;
-use rmcp::model::Content;
+use rmcp::model::ContentBlock;
 
 const TOOLS: [&str; 3] = ["process_start", "process_wait", "process_read"];
 
@@ -23,13 +25,13 @@ impl ServerHandler for RetainedServer {
         &self,
         _request: CallToolRequestParams,
         _context: RequestContext<RoleServer>,
-    ) -> Result<NativeCallToolResult, McpError> {
+    ) -> Result<CallToolResponse, McpError> {
         self.calls.fetch_add(1, Ordering::SeqCst);
         self.entered.notify_one();
         if self.pause.load(Ordering::Acquire) {
             self.release.notified().await;
         }
-        Ok(NativeCallToolResult::success(vec![Content::text("original reply")]))
+        Ok(NativeCallToolResult::success(vec![ContentBlock::text("original reply")]).into())
     }
 }
 
@@ -109,7 +111,7 @@ async fn retained_binding_preserves_tool_environment_and_catalog_fences() -> Res
     assert!(retained.call_tool_once("shell", Default::default(), Duration::from_secs(1)).await.is_err());
     assert_eq!(server.calls.load(Ordering::SeqCst), 0);
     let response = retained.call_tool_once("process_read", Default::default(), Duration::from_secs(1)).await?;
-    assert_eq!(response.content, vec![Content::text("original reply")]);
+    assert_eq!(response.content, vec![ContentBlock::text("original reply")]);
     *manager.tool_catalog_revision.write().await += 1;
     assert!(retained.call_tool_once("process_start", Default::default(), Duration::from_secs(1)).await.is_err());
     assert!(binding.retain_calls("runtime", "local", &TOOLS).await.is_err());
