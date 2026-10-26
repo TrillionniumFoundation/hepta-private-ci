@@ -77,6 +77,18 @@ class ReplacementPhysicalTests(unittest.TestCase):
         repeat = p.restore_arctic_nonpersistent_buffers(model)
         self.assertTrue(repeat["original_position_buffer_valid"])
         self.assertTrue(repeat["original_rope_cache_valid"])
+        # Detect a same-key weight mutation performed during buffer replacement.
+        from unittest.mock import patch
+        original = model.embeddings.register_buffer
+        def mutating_registration(*args, **kwargs):
+            original(*args, **kwargs)
+            with torch.no_grad():
+                model.weight.add_(1)
+        with patch.object(model.embeddings, "register_buffer", mutating_registration):
+            with self.assertRaisesRegex(ValueError, "parameter identity changed"):
+                p.restore_arctic_nonpersistent_buffers(model)
+        with torch.no_grad():
+            model.weight.sub_(1)
         model.config.rope_scaling = {"type": "ntk", "factor": 2}
         with self.assertRaisesRegex(ValueError, "unexpected pinned Arctic"):
             p.restore_arctic_nonpersistent_buffers(model)

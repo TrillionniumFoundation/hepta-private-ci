@@ -19,6 +19,8 @@ import time
 
 from prepare_news_cohorts import load_cohorts, sha
 from replacement_gate import EXPECTED, SPLITS, score_rows, validate_registry
+from replacement_parameter_identity import (parameter_identity, METHOD, SCOPE,
+                                            CHUNK_BYTES, MAX_PARAMETER_BYTES)
 from replacement_laya_view import guard_laya_originals, load_laya_cpu_isolated
 
 LAYA_SOURCE_REVISION = "c7527708f9f5220c669d8aa385077cd28d04708a"
@@ -120,8 +122,8 @@ def configure_arctic_cpu(config) -> dict:
 def restore_arctic_nonpersistent_buffers(encoder) -> dict:
     """Recompute pinned GTE runtime-only RoPE buffers on the CPU research host.
 
-    transformers 5 meta loading can leave custom-code nonpersistent buffers
-    uninitialized. No publisher file or model parameter is patched.
+    Invalid nonpersistent buffers are consistent with a loading issue; the
+    exact root cause is not established by this reconstruction. No publisher file or model parameter is patched.
     """
     import torch
 
@@ -146,6 +148,10 @@ def restore_arctic_nonpersistent_buffers(encoder) -> dict:
         raise ValueError("unexpected pinned Arctic embedding module or RoPE buffers")
     if any(p.device.type != "cpu" for p in encoder.parameters()):
         raise ValueError("Arctic shadow buffer reconstruction is CPU-only")
+    hash_cpu, hash_wall = time.process_time_ns(), time.perf_counter_ns()
+    before = parameter_identity(encoder)
+    hash_cpu = time.process_time_ns() - hash_cpu
+    hash_wall = time.perf_counter_ns() - hash_wall
     before_keys = tuple(sorted(encoder.state_dict()))
     with torch.no_grad():
         positions = torch.arange(8192, dtype=torch.long)
@@ -171,7 +177,18 @@ def restore_arctic_nonpersistent_buffers(encoder) -> dict:
                                       torch.ones_like(rotary.cos_cached), rtol=0, atol=2e-6)
                 or before_keys != tuple(sorted(encoder.state_dict()))):
             raise ValueError("Arctic nonpersistent RoPE reconstruction failed")
+    started_cpu, started_wall = time.process_time_ns(), time.perf_counter_ns()
+    after = parameter_identity(encoder)
+    hash_cpu += time.process_time_ns() - started_cpu
+    hash_wall += time.perf_counter_ns() - started_wall
+    if before != after:
+        raise ValueError("loaded parameter identity changed during RoPE reconstruction")
     return {"method": "pinned_gte_runtime_buffers_v1",
+            "loaded_parameter_identity": {"method": METHOD, "scope": SCOPE,
+                "before": before, "after": after,
+                "bytes_hashed": before["parameter_bytes"] + after["parameter_bytes"],
+                "hash_cpu_ns": hash_cpu, "hash_wall_ns": hash_wall,
+                "chunk_bytes": CHUNK_BYTES, "byte_cap": MAX_PARAMETER_BYTES},
             "original_position_buffer_valid": bool(original_positions_valid),
             "original_rope_cache_valid": bool(original_rope_cache_valid),
             "max_position_embeddings": 8192, "rope_dim": 64, "rope_theta": 160000,
