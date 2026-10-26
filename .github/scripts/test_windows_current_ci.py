@@ -25,6 +25,25 @@ class StrictWindowsReceiptTests(unittest.TestCase):
         ):
             self.assertFalse(assess(GROUP, 0, text)["passed"])
 
+    def test_actual_windows_ci_terminal_lines_without_progress_counts(self):
+        actual = "Starting 1 tests across 1 binary (99 tests skipped)\n        PASS [   3.283s] owner original\nSummary [ 3.283s] 1 tests run: 1 passed, 99 skipped\n"
+        self.assertTrue(assess(GROUP, 0, actual)["passed"])
+        self.assertEqual(assess(GROUP, 0, actual)["observedTests"], ["original"])
+        for replacement in ("SKIP", "FAIL", "TIMEOUT", "EXECFAIL", "LEAK"):
+            self.assertFalse(
+                assess(GROUP, 0, actual.replace("PASS [", replacement + " ["))["passed"]
+            )
+        self.assertFalse(
+            assess(GROUP, 0, actual.replace("owner original", "other original"))[
+                "passed"
+            ]
+        )
+        self.assertFalse(
+            assess(
+                {**GROUP, "requiredTests": []}, 0, "Starting 1 tests across 1 binary"
+            )["passed"]
+        )
+
     def test_diagnostics_continue_but_each_failure_is_retained(self):
         seen = []
 
