@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/60f94d809f44/hepta-native-v7/qualification/trained-cell-v7/qualify_handoff_v7.py", line 135, in <module>
+    result = run(**vars(parser.parse_args()))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/60f94d809f44/hepta-native-v7/qualification/trained-cell-v7/qualify_handoff_v7.py", line 75, in run
+    item = checkpoint(current, controller, contract, code, source)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/60f94d809f44/hepta-native-v7/qualification/trained-cell-v7/handoff_v7.py", line 84, in checkpoint
+    _, _, controller = verified_modules(code, state.bindings["executed_code_sha256"],
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/60f94d809f44/hepta-native-v7/qualification/trained-cell-v7/handoff_v7.py", line 40, in verified_modules
+    require(Path(name).name == name and name.endswith(".py")
+  File "/workspace/scratch/60f94d809f44/hepta-native-v7/qualification/trained-cell-v7/handoff_v7.py", line 28, in require
+    raise ValueError(message)
+ValueError: executed research source changed

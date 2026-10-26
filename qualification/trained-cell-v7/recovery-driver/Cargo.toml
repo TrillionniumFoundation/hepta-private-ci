@@ -1,0 +1,21 @@
+[package]
+name = "hepta-handoff-recovery-v7"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[workspace]
+
+[dependencies]
+codex-hepta-learning-artifacts = { path = "../../../codex-rs/hepta-learning-artifacts" }
+codex-hepta-neuron = { path = "../../../codex-rs/hepta-neuron" }
+codex-hepta-types = { path = "../../../codex-rs/hepta-types" }
+ed25519-dalek = { version = "=2.2.0", features = ["pkcs8"] }
+serde_json = { version = "=1.0.149", features = ["float_roundtrip"] }
+
+[dev-dependencies]
+pretty_assertions = "=1.4.1"
+
+[profile.dev]
+debug = 0
+incremental = false

@@ -1,0 +1,30 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling codex-hepta-neuron v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v7/codex-rs/hepta-neuron)
+   Compiling hepta-handoff-recovery-v7 v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v7/qualification/trained-cell-v7/recovery-driver)
+warning: function `reject` is never used
+   --> src/../../../trained-cell-v5/actual-review-driver/src/owner.rs:162:8
+    |
+162 | pub fn reject(inputs: &Inputs, root: &Path, now: u64) -> Result<Value> {
+    |        ^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `hepta-handoff-recovery-v7` (lib) generated 1 warning
+warning: `hepta-handoff-recovery-v7` (lib test) generated 1 warning (1 duplicate)
+    Finished `test` profile [unoptimized] target(s) in 5.14s
+────────────
+ Nextest run ID b6984486-aa32-4b95-a505-a11e16c4ef9f with nextest profile: local
+    Starting 11 tests across 2 binaries (1 test skipped)
+        PASS [   0.009s] ( 1/11) hepta-handoff-recovery-v7 census::tests::aggregate_cpu_ratio_must_equal_raw_paired_timings
+        PASS [   0.019s] ( 2/11) hepta-handoff-recovery-v7 census::tests::missing_or_duplicated_fixed_family_members_cannot_pass
+        PASS [   0.020s] ( 3/11) hepta-handoff-recovery-v7 census::tests::candidate_stopping_at24_is_unavailable_and_forged_completion_flags_reject
+        PASS [   0.027s] ( 4/11) hepta-handoff-recovery-v7 census::tests::complete_fixed_census_and_stopped_nonrequired_diagnostic_remain_distinct
+        PASS [   0.027s] ( 5/11) hepta-handoff-recovery-v7 positive::tests::failed_actual_gate_cannot_prepare_even_with_present_audit_envelopes
+        PASS [   2.685s] ( 6/11) hepta-handoff-recovery-v7 positive::tests::self_consistently_rehashed_wrong_terminal_state_review_cannot_touch_owner
+        PASS [   2.976s] ( 7/11) hepta-handoff-recovery-v7 positive::tests::valid_mid17_transport_cannot_borrow_terminal32_science_before_any_owner_write
+        PASS [   2.999s] ( 8/11) hepta-handoff-recovery-v7 positive::tests::wrong_external_key_or_changed_independent_evidence_cannot_publish
+        PASS [   3.143s] ( 9/11) hepta-handoff-recovery-v7 positive::tests::changed_proposal_or_payload_cannot_recover_another_operation
+        PASS [   3.627s] (10/11) hepta-handoff-recovery-v7 positive::tests::external_signature_synthetic_fixture_publishes_reopens_serves_and_rolls_back
+        PASS [  21.734s] (11/11) hepta-handoff-recovery-v7 positive::tests::publication_crash_matrix_recovers_exact_signed_operation
+────────────
+     Summary [  21.736s] 11 tests run: 11 passed, 1 skipped

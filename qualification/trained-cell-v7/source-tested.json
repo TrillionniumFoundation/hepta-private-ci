@@ -1,0 +1,29 @@
+{
+  "base_commit": "63ac6dc8a11bd467f8798db172d563e124d8e939",
+  "files": {
+    "codex-rs/hepta-neuron/src/lib.rs": "1bca42521626100da7ab172cce232722eee34a3c0d8643a30df392c55ab01653",
+    "codex-rs/hepta-neuron/src/training_handoff_codec_v7.rs": "f041dfdca3a24538c388eb5b8ea24ffbc38c79bfb5ebd6b76b9ccda6d8323454",
+    "codex-rs/hepta-neuron/src/training_handoff_state_v7.rs": "1cc0d2d34d854e68b77fc6ac1b02c77d5d26235cd37838d78b11eb5a9042cc48",
+    "codex-rs/hepta-neuron/src/training_handoff_v7.rs": "cfaa6a3e293bc99610941cfe3e582fce7e7fb2baab0fc8e732857cf4f2feb2c9",
+    "codex-rs/hepta-neuron/src/training_handoff_v7_tests.rs": "e4e62282819a5aa74006aecea02cb2717d928128a7429fb90120a89753d844ee",
+    "qualification/trained-cell-v7/handoff_v7.py": "1d8a37927e8b2802bcda9b1f8d4cb0ff645ab7c00284385208a77645beecd010",
+    "qualification/trained-cell-v7/qualify_handoff_v7.py": "f5d8c4e68cd96c37bea8122535f3239f9c29d55d9b2ef4e6b66dd6f9c9dabcd6",
+    "qualification/trained-cell-v7/recovery-driver/Cargo.lock": "a71f2cd4992aa4f4bb530dac01f28f3489020cd4933666b20b785308abb20ddc",
+    "qualification/trained-cell-v7/recovery-driver/Cargo.toml": "68afbf6821d277d10cd37bebb3917555c47a61c17f39980e679d82bb974cf5ad",
+    "qualification/trained-cell-v7/recovery-driver/src/bin/handoff-check.rs": "d9e0b86f428753d46744a49531f40d058f41ce117184911a671422ccff09aad3",
+    "qualification/trained-cell-v7/recovery-driver/src/handoff_dump.rs": "aa0cace32fdbb354884eea6eb3ec1a20e5003806f178d1a5132cba19ef5574aa",
+    "qualification/trained-cell-v7/recovery-driver/src/handoff_fixtures.rs": "3d5334a58fc0df625f03677e44455f5a8a61d21f5a71fdb052806aa2695707c8",
+    "qualification/trained-cell-v7/recovery-driver/src/handoff_pair.rs": "b1bb743750687137931a68d168e401786a42a382e3e5072af447c07eeb7cddf9",
+    "qualification/trained-cell-v7/recovery-driver/src/lib.rs": "b80771c1f12b8191fd0956f612b126abc32435a578b4ea573ca0c0a848369d9a",
+    "qualification/trained-cell-v7/recovery-driver/src/owner.rs": "5df04b4c529266c8d88cfcbc93618ef68d95e3180cf38e009f23009d5bf0c386",
+    "qualification/trained-cell-v7/recovery-driver/src/parity.rs": "232edd499c33fddb3c8f404d4f237e6f2baeb7e6fbe5b9242967c5e07df9d13a",
+    "qualification/trained-cell-v7/recovery-driver/src/positive.rs": "3d53d1062774d4e481592a09a665d0f43fca073b095a3ba101e56bd388a20976",
+    "qualification/trained-cell-v7/recovery-driver/src/positive_owner.rs": "6e08931919b454fcfee46ee4c0b34972a08ef15085e22aad0aeda2b1225065e1",
+    "qualification/trained-cell-v7/recovery-driver/src/positive_tests.rs": "15d2abe23271855a6f09d035f679d0b1fc694444082a5b8e71ec87094c86c75c",
+    "qualification/trained-cell-v7/recovery-driver/src/serve_handoff.rs": "5bcf2e8b3c891a5994b567df124a86ed3dba403070522536c8852e0c6771a4c1"
+  },
+  "numeric_scope": "actual code over synthetic inputs; no scientific acceptance",
+  "recovery_suite": "9 passed, one child worker explicitly invoked by six-phase matrix; nextest run 4053c713-8a9b-44c6-8e24-1765d0356fbe",
+  "rust_suite": "113 passed; logs/native-tests.txt",
+  "schema": "hepta.native-handoff-tested-source.v7"
+}
