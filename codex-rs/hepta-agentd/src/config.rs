@@ -530,6 +530,33 @@ impl AgentdConfig {
         Ok(self)
     }
 
+    /// Resolve only on the already recovered original writer. Latest requires
+    /// the installed original-thread seed/session and complete protected cut;
+    /// the existing helper still receives one exact old operation only.
+    #[cfg(target_os = "linux")]
+    pub async fn with_original_notes_previous_recovery_request(
+        self,
+        request: crate::AgentdNotesPreviousRecoveryRequest,
+    ) -> Result<Self, AgentdError> {
+        let operation_id = match &request.selector {
+            crate::AgentdNotesRecoverySelector::ExactOperation { operation_id } => {
+                operation_id.clone()
+            }
+            crate::AgentdNotesRecoverySelector::LatestRecordedOriginalNotes => {
+                self.notes_thread_tools
+                    .as_ref()
+                    .ok_or_else(|| {
+                        AgentdError::Invalid(
+                            "latest recorded recovery requires original thread mode".into(),
+                        )
+                    })?
+                    .latest_recovery_operation(&request.previous_target)
+                    .await?
+            }
+        };
+        self.with_original_notes_previous_recovery(request.resolved(operation_id))
+    }
+
     /// Attach an externally verified production cognitive writer to normal
     /// Agentd composition. Agentd never manufactures this authority.
     pub fn with_production_writer_host(

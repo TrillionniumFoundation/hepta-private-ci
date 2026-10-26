@@ -287,6 +287,12 @@ pub use notes_organ::run_notes_organ;
 pub use notes_organ::run_notes_organ_with_previous_recovery;
 #[cfg(target_os = "linux")]
 pub use notes_recovery_process::AgentdNotesPreviousRecoveryLaunch;
+#[cfg(target_os = "linux")]
+mod notes_recovery_selection;
+#[cfg(target_os = "linux")]
+pub use notes_recovery_selection::AgentdNotesPreviousRecoveryRequest;
+#[cfg(target_os = "linux")]
+pub use notes_recovery_selection::AgentdNotesRecoverySelector;
 mod runtime_tasks;
 mod shared_terminal_cell;
 mod state;

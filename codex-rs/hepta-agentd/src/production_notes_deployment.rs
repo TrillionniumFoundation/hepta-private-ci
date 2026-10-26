@@ -16,14 +16,15 @@ use serde::Deserialize;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdNotesLiteralBindings;
-use crate::AgentdNotesPreviousRecoveryLaunch;
+use crate::AgentdNotesPreviousRecoveryRequest;
+use crate::AgentdNotesRecoverySelector;
 use crate::AgentdNotesStartupRelease;
 use crate::notes_launch_mode::NotesLaunchMode;
 
 pub(super) struct NotesDeployment {
     pub(super) bindings: AgentdNotesLiteralBindings,
     pub(super) peer: NotesUiPeer,
-    pub(super) previous_recovery: Option<AgentdNotesPreviousRecoveryLaunch>,
+    pub(super) previous_recovery: Option<AgentdNotesPreviousRecoveryRequest>,
     pub(super) startup_release: Option<AgentdNotesStartupRelease>,
     pub(super) interaction: NotesLaunchMode,
 }
@@ -67,7 +68,10 @@ struct PreviousRecovery {
     helper_sha256: String,
     state_directory: PathBuf,
     previous_target: NotesTargetIdentity,
-    operation_id: String,
+    #[serde(default)]
+    operation_id: Option<String>,
+    #[serde(default)]
+    selector: Option<AgentdNotesRecoverySelector>,
 }
 
 #[derive(Deserialize)]
@@ -138,13 +142,17 @@ pub(super) fn read(
     let previous_recovery = value
         .previous_recovery
         .map(|previous| {
-            Ok::<_, AgentdError>(AgentdNotesPreviousRecoveryLaunch {
+            let selector = AgentdNotesRecoverySelector::from_fields(
+                previous.operation_id.as_deref(),
+                previous.selector.as_ref(),
+            )?;
+            Ok::<_, AgentdError>(AgentdNotesPreviousRecoveryRequest {
                 helper: previous.helper,
                 helper_sha256: Sha256Digest::parse(previous.helper_sha256)
                     .map_err(AgentdError::Invalid)?,
                 state_directory: previous.state_directory,
                 previous_target: previous.previous_target,
-                operation_id: previous.operation_id,
+                selector,
             })
         })
         .transpose()?;

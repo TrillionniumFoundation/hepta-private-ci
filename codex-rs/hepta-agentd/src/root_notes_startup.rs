@@ -17,7 +17,6 @@ use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::NotesTargetIdentity;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -71,7 +70,10 @@ struct PreviousRecovery {
     helper_sha256: String,
     state_directory: PathBuf,
     previous_target: NotesTargetIdentity,
-    operation_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    operation_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    selector: Option<crate::AgentdNotesRecoverySelector>,
 }
 
 #[derive(Serialize)]
@@ -193,7 +195,11 @@ impl PreparedHostAuthoritySession {
                 .previous_target
                 .validate()
                 .map_err(io::Error::other)?;
-            StableId::new(&previous.operation_id).map_err(io::Error::other)?;
+            crate::AgentdNotesRecoverySelector::from_fields(
+                previous.operation_id.as_deref(),
+                previous.selector.as_ref(),
+            )
+            .map_err(io::Error::other)?;
             Sha256Digest::parse(previous.helper_sha256.clone()).map_err(io::Error::other)?;
             if previous.previous_target == startup_release.target
                 || !previous.helper.is_absolute()

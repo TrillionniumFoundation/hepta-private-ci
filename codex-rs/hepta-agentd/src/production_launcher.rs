@@ -270,9 +270,6 @@ impl AgentdProductionLaunch {
                     startup_release: _,
                     interaction,
                 } = deployment;
-                if let Some(previous) = previous_recovery {
-                    config = config.with_original_notes_previous_recovery(previous)?;
-                }
                 let peer = crate::AgentdNotesUiPeer {
                     uid: peer.uid,
                     pid: peer.pid,
@@ -318,6 +315,11 @@ impl AgentdProductionLaunch {
                         // endpoint. Root retains pathname cleanup custody.
                         drop(listener);
                     }
+                }
+                if let Some(previous) = previous_recovery {
+                    config = config
+                        .with_original_notes_previous_recovery_request(previous)
+                        .await?;
                 }
             }
             if let Some(deadline) = android_deadline {

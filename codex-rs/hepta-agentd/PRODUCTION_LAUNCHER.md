@@ -292,3 +292,14 @@ socket nodes, peer unlink denial, wrong-path refusal, and rejection of an
 already Root-listening descriptor. Ordinary non-Root source tests do not run or
 qualify this ignored check. It is not a Root authority, application receipt or
 production device-effect qualification.
+
+Previous Notes recovery accepts `selector: {"kind":"exact_operation",
+"operation_id":"..."}` or `selector: {"kind":"latest_recorded_original_notes"}`.
+The legacy top-level `operation_id` is accepted only without `selector`. Unknown
+fields and mixed selections are rejected. The canonical writer is opened first;
+original-thread seed and Session guards are installed before
+`with_original_notes_previous_recovery_request` resolves a latest selection
+through the complete protected sender cut. It must match the same original
+thread/model/principal and exact previous target in Indeterminate/Committed
+state. The existing helper receives only the resolved exact operation; absence,
+legacy missing reference or ambiguity creates no fresh operation or authority.
