@@ -120,7 +120,7 @@ struct Response {
 
 fn random_bytes() -> io::Result<[u8; 32]> {
     let mut bytes = [0; 32];
-    File::open("/dev/urandom")?.read_exact(&mut bytes)?;
+    getrandom::fill(&mut bytes).map_err(io::Error::other)?;
     Ok(bytes)
 }
 

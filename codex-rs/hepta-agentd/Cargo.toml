@@ -91,6 +91,7 @@ codex-utils-cli = { workspace = true }
 codex-utils-home-dir = { workspace = true }
 codex-state = { workspace = true }
 ed25519-dalek = { workspace = true }
+getrandom = { version = "0.3", features = ["std"] }
 http = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }

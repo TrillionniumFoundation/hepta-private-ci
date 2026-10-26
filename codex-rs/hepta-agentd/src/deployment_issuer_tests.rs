@@ -42,11 +42,22 @@ fn actual_random_key_signs_original_grant_and_ids_survive_reopen() {
         &ed25519_dalek::Signature::from_slice(&first.signature).unwrap(),
     )
     .unwrap();
+    let second = issuer.issue(&binding()).unwrap().unwrap();
     drop(issuer);
     let issuer = DeploymentFinalUseIssuer::open(&path, clock).unwrap();
-    let second = issuer.issue(&binding()).unwrap().unwrap();
-    assert_ne!(first.grant.grant_id, second.grant.grant_id);
-    assert_ne!(first.grant.nonce, second.grant.nonce);
+    let third = issuer.issue(&binding()).unwrap().unwrap();
+    let signed = [&first, &second, &third];
+    for (index, grant) in signed.iter().enumerate() {
+        key.verify(
+            &grant.grant.signing_bytes().unwrap(),
+            &ed25519_dalek::Signature::from_slice(&grant.signature).unwrap(),
+        )
+        .unwrap();
+        for previous in &signed[..index] {
+            assert_ne!(grant.grant.grant_id, previous.grant.grant_id);
+            assert_ne!(grant.grant.nonce, previous.grant.nonce);
+        }
+    }
     assert_eq!(
         issuer.trust_key().unwrap().verifying_key,
         public.verifying_key

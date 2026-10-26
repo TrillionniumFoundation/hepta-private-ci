@@ -104,12 +104,14 @@ impl Fixture {
     }
 
     fn grant(&self, mutate: impl FnOnce(&mut FinalUseGrant)) -> SignedFinalUseGrant {
+        let mut nonce = [0; 32];
+        getrandom::fill(&mut nonce).unwrap();
         let mut grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "isolated-composition-issuer".to_string(),
             authority_epoch: 9,
             grant_id: "fixture-grant".to_string(),
-            nonce: [7; 32],
+            nonce,
             binding: FinalUseBinding {
                 subject_id: "fixture-agent".to_string(),
                 destination_id: "fixture-target".to_string(),
@@ -222,4 +224,25 @@ fn rejected_keyring_drift_preserves_original_durable_claims() {
         Some(FinalUseError::AlreadyClaimed)
     );
     assert_eq!(fixture.frontier.commits.load(Ordering::SeqCst), 1);
+}
+
+#[test]
+fn independently_generated_grants_admit_separately_and_exact_replay_stays_burned() {
+    let fixture = Fixture::new();
+    let authority = fixture.inputs().open().unwrap();
+    let first = fixture.grant(|_| {});
+    let second = fixture.grant(|_| {});
+    assert_ne!(first.grant.nonce, second.grant.nonce);
+    drop(authority.claim(&first, &first.grant.binding).unwrap());
+    drop(authority.claim(&second, &second.grant.binding).unwrap());
+    assert_eq!(fixture.frontier.commits.load(Ordering::SeqCst), 2);
+    drop(authority);
+    let reopened = fixture.inputs().open().unwrap();
+    for signed in [&first, &second] {
+        assert_eq!(
+            reopened.claim(signed, &signed.grant.binding).err(),
+            Some(FinalUseError::AlreadyClaimed)
+        );
+    }
+    assert_eq!(fixture.frontier.commits.load(Ordering::SeqCst), 2);
 }
