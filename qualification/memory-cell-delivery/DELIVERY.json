@@ -1,0 +1,78 @@
+{
+  "all_blockers_closed": false,
+  "base_model_cache_and_runtime_binaries_included": false,
+  "base_model_restorable_from_pinned_model_source": true,
+  "bundle": {
+    "bundle_verify_passed": true,
+    "bytes": 36526176,
+    "git_blob_sha1": "d08dbec4f1be2736607961cf3b99b05b13520452",
+    "name": "hepta-memory-v1-v2-history-20261026.bundle",
+    "sha256": "283ed9c9c966417c9ac72388e8f22f1f03b46620130e3f193cb31024586fce7d"
+  },
+  "bundle_prerequisite_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "delivery_commit": "57d2b9658839f11aa4685049f90cb7142d59026d",
+  "github_bundle_transport": {
+    "format": "ordered binary parts; concatenate in listed order to recover original verified bundle",
+    "parts": [
+      {
+        "base64_chars": 10666668,
+        "base64_offset": 0,
+        "bytes": 8000001,
+        "git_blob_sha1": "6c6aebfe3c5bbbc4467365224fcd4d76011ab494",
+        "name": "hepta-memory-v1-v2-history-20261026.bundle.part001",
+        "sha256": "0676581830fc33551904706ec74f9e6cd223c9a17bc4eecdc82a44d2416682c0"
+      },
+      {
+        "base64_chars": 10666668,
+        "base64_offset": 10666668,
+        "bytes": 8000001,
+        "git_blob_sha1": "f70d91086b0510e3846fe80499db19b73b316581",
+        "name": "hepta-memory-v1-v2-history-20261026.bundle.part002",
+        "sha256": "15a6d373f4c9e8033717862051517864bf64d92503df3512999e76dea4c5ba54"
+      },
+      {
+        "base64_chars": 10666668,
+        "base64_offset": 21333336,
+        "bytes": 8000001,
+        "git_blob_sha1": "9a16f466f20156f81f558451aca6eb546d4ab47c",
+        "name": "hepta-memory-v1-v2-history-20261026.bundle.part003",
+        "sha256": "10d598f90c2a8501efa564d31febac4349342c0bdd5d51188c44b8606137b79c"
+      },
+      {
+        "base64_chars": 10666668,
+        "base64_offset": 32000004,
+        "bytes": 8000001,
+        "git_blob_sha1": "551c51534f07e9b216168ba73c67eea6ae9ee45f",
+        "name": "hepta-memory-v1-v2-history-20261026.bundle.part004",
+        "sha256": "a759da546c3e258f51aa9a871976ed64d527c612a4235e1cea3cdd76a479c8ce"
+      },
+      {
+        "base64_chars": 6034896,
+        "base64_offset": 42666672,
+        "bytes": 4526172,
+        "git_blob_sha1": "c58377929aff911f6099c35f8e71a5685a5fa285",
+        "name": "hepta-memory-v1-v2-history-20261026.bundle.part005",
+        "sha256": "bfafc97391c99999d191b22f7baf5667e89c2209a65242b76ccf4ef243e85ef1"
+      }
+    ],
+    "reason": "connector request-body limit is 16 MiB",
+    "reassembled_sha256": "283ed9c9c966417c9ac72388e8f22f1f03b46620130e3f193cb31024586fce7d"
+  },
+  "local_branch": "research/memory-cell-six-stage-20261025",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta-memory.v2.delivery.v1",
+  "supplemental_deletion_manifest_sha256": "a557e5266eaee5c76e8e9409b2b71b457c959ba2bec8a8bb4090fef2662624dd",
+  "v1_formal_manifest_sha256": "cfa89c5b225b3925fd429fe62f51e9d9ec41c0f6e8f00b53b2f08a57b6aa7136",
+  "v2_executed_source_commit": "d1204d6108eef75de384c8c8e98304b68984ffd1",
+  "v2_formal_manifest_sha256": "a5cb0b3075a2aff203f88a2e97c8278a4014d5b2d9d229558312270f776529be",
+  "zip": {
+    "archive": "hepta-memory-v1-v2-evidence-20261026.zip",
+    "bytes": 64194728,
+    "delivery_commit": "57d2b9658839f11aa4685049f90cb7142d59026d",
+    "exact_index_blobs_verified": true,
+    "files": 3946,
+    "sha256": "57b81960e0ffd036f8ac4d491a4d6fdedc5832f2e05196465702fe59bc35ea02",
+    "uncompressed_bytes": 174223815,
+    "zip_inventory_and_all_member_bytes_verified": true
+  }
+}

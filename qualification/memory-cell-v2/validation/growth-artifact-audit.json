@@ -1,0 +1,93 @@
+{
+  "schema": "memory-cell-v2.independent-read-only-growth-review.v1",
+  "review_date_utc": "2026-10-26",
+  "source_commit": "d1204d6108eef75de384c8c8e98304b68984ffd1",
+  "formal_result_directory": "qualification/memory-cell-v2/results/20261026-v2-frozen",
+  "formal_manifest_sha256": "a5cb0b3075a2aff203f88a2e97c8278a4014d5b2d9d229558312270f776529be",
+  "scope": "Independent read-only reconstruction from existing artifact bytes, saved raw prediction rows and recorded receipts. No model inference, training or unit tests were performed in this initial review.",
+  "record_kind": "Summary of completed checks; transient inspection scripts and tool outputs were used. This file is not a fabricated per-check execution log.",
+  "artifact_inventory_checks": {
+    "completed_assertion_count": 2957,
+    "inconsistencies": [],
+    "scopes": [
+      "Canonical checkpoint payload digest matches envelope and owner registry record",
+      "Manifest canonical digest and tensor file digest match checkpoint bindings and owner registry",
+      "Training input JSON digest matches model lineage dataset digest",
+      "All model and checkpoint source commit bindings match the frozen source commit",
+      "Model parent IDs, generations and tensor digests match immutable registry records",
+      "Per-fit parameter counts, input/target/source counts and optimizer receipts agree",
+      "Every checkpoint has total rank 16, 3072 parameters and 24576 parameter bytes",
+      "Checkpoint directory inventory and receipt bodies equal the cost ledger inventory",
+      "Actual per-arm file bytes plus source stream and withdrawal bytes equal retained-byte ledger",
+      "Summed actual write receipts equal write_seconds ledger",
+      "Revoked-source closure produces the recorded tainted checkpoint counts",
+      "Clean selected models have no inherited parent and exclude revoked source IDs",
+      "All migration receipts have CAS revisions 1 through 4, 16 probes and saved restore parity true"
+    ]
+  },
+  "raw_prediction_and_decision_checks": {
+    "completed_assertion_count": 1275,
+    "prediction_rows_read": 108718,
+    "selection_batches": 80,
+    "hidden_batches": 80,
+    "inconsistencies": [],
+    "scopes": [
+      "Raw prediction key sets are unique and equal the expected stable label-independent hash split",
+      "Selection and hidden effective input keys are disjoint at every update",
+      "Raw targets match the saved source stream values",
+      "Raw rows reproduce accuracy, correct count, retained accuracy and per-domain error",
+      "Saved decision files equal formal summary decisions",
+      "Per-candidate selection objectives reproduce the frozen formula",
+      "Chosen candidate reproduces retention eligibility and min_selection_gain rule using selection only",
+      "Four-update macro accuracy and query-weighted stream accuracy reproduce the saved summary",
+      "Selection and hidden latency aggregates reproduce the saved ledger"
+    ]
+  },
+  "resource_equation_review": {
+    "seed_arm_ledgers_recomputed": 20,
+    "all_equations_matched_with_absolute_tolerance": 1e-12,
+    "expected_reads_per_seed_arm": 40000,
+    "formula": "upfront = byte_price * retained_bytes + training_second_price * (write_seconds + other_maintenance_seconds_including_migrations + shared_setup_seconds_charged_once) + read_second_price * selection_read_seconds; expected = upfront + read_second_price * read_seconds_per_query * 40000; net = policy_macro - comparator_macro - policy_expected/40000 + comparator_expected/40000",
+    "migration_seconds_already_in_maintenance": true,
+    "discarded_candidates_included": true
+  },
+  "recorded_inventory": {
+    "policy": {"checkpoints": 40, "model_fit_receipts": 54, "optimizer_steps": 16200, "examples_seen": 18408000, "migration_receipts": 20, "structural_migrations": 2},
+    "fixed-single": {"checkpoints": 20, "model_fit_receipts": 20, "optimizer_steps": 6000, "examples_seen": 8424000, "migration_receipts": 20, "structural_migrations": 0},
+    "fixed-domain": {"checkpoints": 20, "model_fit_receipts": 40, "optimizer_steps": 12000, "examples_seen": 8424000, "migration_receipts": 20, "structural_migrations": 0},
+    "fixed-hash": {"checkpoints": 20, "model_fit_receipts": 40, "optimizer_steps": 12000, "examples_seen": 8424000, "migration_receipts": 20, "structural_migrations": 0},
+    "total_checkpoints": 100,
+    "total_model_fit_receipts": 154,
+    "total_optimizer_steps": 46200,
+    "optimizer_steps_note": "Summed per-fit optimizer_steps=300; inherited cumulative manifest.total_steps were not summed."
+  },
+  "efficacy_findings": {
+    "seed_gate_passes": [227, 233],
+    "seed_gate_failures": [211, 223, 229],
+    "strict_all_seed_gate": false,
+    "accepted_operations": "Only seeds 227 and 233 adopted domain split ranks [12,4] at the 1280-source update; all other updates retained structure. No merge was adopted.",
+    "mean_macro_accuracy": {"policy": 0.5518216701012507, "fixed-single": 0.5274746458042597, "fixed-domain": 0.49782495101357016, "fixed-hash": 0.5141896077040062},
+    "mean_net_gain_per_query": {"fixed-single": 0.0242827892682067, "fixed-domain": 0.05393324943467484, "fixed-hash": 0.03757107975420065},
+    "mean_is_not_a_replacement_for_strict_all_seed_gate": true
+  },
+  "withdrawal_findings": {
+    "source_keys_withdrawn_per_seed": 16,
+    "seeds": 5,
+    "arms_per_seed": 4,
+    "reported_interface_refusals_per_seed_arm": 16,
+    "clean_training_sources_per_seed_arm": 2032,
+    "tainted_checkpoint_count_per_seed": {"policy": 7, "fixed-single": 3, "fixed-domain": 3, "fixed-hash": 3},
+    "aggregate_raw_old_value_matches_read_from_summary": {"policy": 2, "fixed-single": 1, "fixed-domain": 3, "fixed-hash": 3},
+    "raw_matches_denominator_per_arm": 80,
+    "initial_review_evidence_gap": "Deleted-key raw predictions and serving responses were only retained as summary counts, so they could not be independently recounted from saved per-query rows during this read-only review.",
+    "authorized_follow_up_directory": "qualification/memory-cell-v2/results/20261026-v2-deletion-readout-audit",
+    "method": "Full fresh retraining, not selective parameter erasure. Tombstone refusal is not proof of unlearning or physical source deletion."
+  },
+  "limitations": [
+    "Recorded optimizer receipts and migration parity observations were inspected; the initial review did not repeat training or model execution.",
+    "The four-update macro includes an initial 100-percent accuracy snapshot; final clean policy accuracy was only about 32.49 to 37.62 percent.",
+    "Given-domain split [12,4] left clean domain-B accuracy at about 14.42 percent for seed 227 and 11.96 percent for seed 233.",
+    "Deployment parameter budget is matched and full candidate costs are charged, but extra optimization opportunities are not causally isolated by a same-optimizer-step control.",
+    "Given domain routing and two successful split seeds do not establish a universal self-organizing memory network."
+  ]
+}
