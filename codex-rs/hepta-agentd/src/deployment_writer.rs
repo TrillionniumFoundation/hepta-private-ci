@@ -215,7 +215,7 @@ impl DeploymentFinalUseIssuer {
     }
     // Authentication of a retired predecessor is deliberately independent of
     // temporal liveness. Its retirement is proved by the original registry.
-    fn validate_writer_proof_identity(
+    pub(super) fn validate_writer_proof_identity(
         &self,
         state: &IssuerState,
         registration: &HostAuthorityWriterRegistration,

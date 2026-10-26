@@ -9,6 +9,13 @@ use codex_hepta_contracts::authority_lease::AuthorityLeaseError;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry;
 use codex_hepta_memory::NotesTargetIdentity;
 
+#[path = "deployment_notes_recovery.rs"]
+mod recovery;
+pub(crate) use recovery::NotesRecoveryPolicyCheck;
+
+#[path = "deployment_notes_capture.rs"]
+mod capture;
+
 /// Trusted launcher capability, never accepted from a wire request. The Root
 /// launcher must obtain the target from its actual Session Reserved capability
 /// before installation. Text/schema validation remains delegated to the fixed
@@ -18,6 +25,7 @@ pub struct RootNotesGrantAdmission {
     writer: HostAuthorityWriterRegistration,
     proof: crate::HostSignedWriterAuthorizationV1,
     policy: DeploymentGrantPolicy,
+    target: NotesTargetIdentity,
 }
 
 impl RootNotesGrantAdmission {
@@ -88,6 +96,7 @@ impl RootNotesGrantAdmission {
             writer,
             proof,
             policy,
+            target: target.clone(),
         })
     }
 
@@ -302,14 +311,8 @@ impl DeploymentFinalUseIssuer {
     ) -> io::Result<()> {
         previous_target.validate().map_err(io::Error::other)?;
         target.validate().map_err(io::Error::other)?;
-        let policy = |target: &NotesTargetIdentity, lifetime_ms| DeploymentGrantPolicy {
-            subject_id: registration.registered_agent_id.as_str().into(),
-            destination_id: target.destination_id(),
-            scope_sha256: target.scope_digest().into_array(),
-            lifetime_ms,
-        };
-        let previous = policy(previous_target, previous_lifetime_ms);
-        let next = policy(target, lifetime_ms);
+        let previous = notes_policy(registration, previous_target, previous_lifetime_ms);
+        let next = notes_policy(registration, target, lifetime_ms);
         let verifier = &self
             .lease
             .as_ref()
@@ -326,26 +329,7 @@ impl DeploymentFinalUseIssuer {
                 return Err(denied("registered writer proof changed"));
             }
             // Use the original grant validation before retaining a new policy.
-            FinalUseGrant {
-                schema_version: 1,
-                signer_id: state.signer_id.clone(),
-                authority_epoch: state.head.authority_epoch,
-                grant_id: "policy-validation".into(),
-                nonce: [1; 32],
-                binding: FinalUseBinding {
-                    subject_id: next.subject_id.clone(),
-                    destination_id: next.destination_id.clone(),
-                    scope_sha256: next.scope_sha256,
-                    payload_sha256: [1; 32],
-                    request_sha256: [1; 32],
-                },
-                not_before_unix_ms: 1,
-                expires_at_unix_ms: 1_u64
-                    .checked_add(lifetime_ms)
-                    .ok_or_else(|| io::Error::other("invalid Notes lifetime"))?,
-            }
-            .signing_bytes()
-            .map_err(io::Error::other)?;
+            validate_notes_policy(&state, &next)?;
             let slot = notes_slot(&state.policies, &next.subject_id)?;
             if state.policies[slot] == next {
                 let after = self.clock.now_unix_ms().map_err(io::Error::other)?;
@@ -369,6 +353,43 @@ impl DeploymentFinalUseIssuer {
             writer::validate_writer_time(registration, state.head.authority_epoch, after)
         })
     }
+}
+
+fn notes_policy(
+    registration: &HostAuthorityWriterRegistration,
+    target: &NotesTargetIdentity,
+    lifetime_ms: u64,
+) -> DeploymentGrantPolicy {
+    DeploymentGrantPolicy {
+        subject_id: registration.registered_agent_id.as_str().into(),
+        destination_id: target.destination_id(),
+        scope_sha256: target.scope_digest().into_array(),
+        lifetime_ms,
+    }
+}
+
+fn validate_notes_policy(state: &IssuerState, policy: &DeploymentGrantPolicy) -> io::Result<()> {
+    FinalUseGrant {
+        schema_version: 1,
+        signer_id: state.signer_id.clone(),
+        authority_epoch: state.head.authority_epoch,
+        grant_id: "policy-validation".into(),
+        nonce: [1; 32],
+        binding: FinalUseBinding {
+            subject_id: policy.subject_id.clone(),
+            destination_id: policy.destination_id.clone(),
+            scope_sha256: policy.scope_sha256,
+            payload_sha256: [1; 32],
+            request_sha256: [1; 32],
+        },
+        not_before_unix_ms: 1,
+        expires_at_unix_ms: 1_u64
+            .checked_add(policy.lifetime_ms)
+            .ok_or_else(|| io::Error::other("invalid Notes lifetime"))?,
+    }
+    .signing_bytes()
+    .map(|_| ())
+    .map_err(io::Error::other)
 }
 
 #[cfg(test)]

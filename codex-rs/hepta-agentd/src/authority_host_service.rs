@@ -25,7 +25,9 @@ use crate::DeploymentFinalUseIssuer;
 #[path = "authority_host_writer.rs"]
 mod writer;
 pub use writer::FreshHostCognitiveState;
+pub use writer::HostNotesRecoveryPredecessor;
 use writer::RegisteredWriter;
+pub(crate) use writer::RetainedNotesRecovery;
 #[path = "authority_host_checkpoint_lane.rs"]
 mod checkpoint;
 use checkpoint::RegisteredCheckpoint;
@@ -35,6 +37,10 @@ use consumers::RegisteredConsumers;
 #[path = "authority_host_text_ui.rs"]
 mod text_ui;
 pub use text_ui::HostAuthorityTextUiRegistration;
+
+#[cfg(test)]
+#[path = "root_notes_capture_peer_tests.rs"]
+pub(crate) mod notes_capture_peer;
 
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]

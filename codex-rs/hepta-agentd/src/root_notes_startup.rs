@@ -22,6 +22,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use super::PreparedHostAuthoritySession;
+use crate::authority_host_config::HostAuthorityServiceConfig;
 
 #[path = "root_notes_reservation.rs"]
 mod reservation;
@@ -75,16 +76,21 @@ struct Deployment {
     startup_release: reservation::StartupRelease,
 }
 
-impl PreparedHostAuthoritySession {
-    /// Consume the actual Session's first metadata packet, install its exact
-    /// pre-existing original Notes policy on this retained service, then seal
-    /// the already inherited read-only deployment. Root must have created the
-    /// anonymous pair and enabled SO_PASSCRED before spawning Session. Agentd
-    /// holds a duplicate but may not read it until the late Root handoff.
-    /// No Activate, application FD offer or attached acknowledgement is made
-    /// here; only the recovered original Agentd factory can perform those.
-    pub fn with_notes_startup_from_session(
-        self,
+/// One actual reservation retained between Root's validation, original policy
+/// admission and sealing. Neither a profile nor caller-supplied target can
+/// construct this value without receiving the original Session packet.
+pub(super) struct ReservedNotesStartup {
+    profile: Profile,
+    session: reservation::SessionBirth,
+    startup_release: reservation::StartupRelease,
+    session_pidfd: OwnedFd,
+    deployment: File,
+    end: std::time::Instant,
+}
+
+impl ReservedNotesStartup {
+    pub(super) fn receive(
+        config: &HostAuthorityServiceConfig,
         profile_file: &Path,
         bootstrap: UnixDatagram,
         session_pidfd: OwnedFd,
@@ -92,14 +98,10 @@ impl PreparedHostAuthoritySession {
     ) -> io::Result<Self> {
         let end = std::time::Instant::now() + std::time::Duration::from_secs(30);
         let profile: Profile = crate::authority_host_config::read_root_json(profile_file)?;
-        validate_profile(&profile, &self.config.signer_id)?;
+        validate_profile(&profile, &config.signer_id)?;
         validate_empty_deployment(&deployment)?;
-        let (startup_release, session) = reservation::receive(
-            bootstrap,
-            &session_pidfd,
-            self.config.peer_uid,
-            self.config.peer_gid,
-        )?;
+        let (startup_release, session) =
+            reservation::receive(bootstrap, &session_pidfd, config.peer_uid, config.peer_gid)?;
         if let Some(previous) = &profile.previous_recovery {
             previous
                 .previous_target
@@ -116,10 +118,43 @@ impl PreparedHostAuthoritySession {
                 ));
             }
         }
-        let prepared = self.with_registered_notes_from_session(
-            &startup_release.target,
-            profile.grant_lifetime_ms,
-        )?;
+        Ok(Self {
+            profile,
+            session,
+            startup_release,
+            session_pidfd,
+            deployment,
+            end,
+        })
+    }
+
+    pub(super) fn target(&self) -> &NotesTargetIdentity {
+        &self.startup_release.target
+    }
+
+    pub(super) fn lifetime_ms(&self) -> u64 {
+        self.profile.grant_lifetime_ms
+    }
+
+    pub(super) fn require_previous_target(&self, previous: &NotesTargetIdentity) -> io::Result<()> {
+        if self
+            .profile
+            .previous_recovery
+            .as_ref()
+            .is_some_and(|recovery| &recovery.previous_target != previous)
+        {
+            return Err(io::Error::other(
+                "Notes readback profile differs from retained predecessor",
+            ));
+        }
+        self.require_alive()
+    }
+
+    pub(super) fn require_alive(&self) -> io::Result<()> {
+        crate::authority_host_runtime::owner_alive(&self.session_pidfd, self.end)
+    }
+
+    pub(super) fn seal(self, prepared: &PreparedHostAuthoritySession) -> io::Result<()> {
         let value = Deployment {
             schema: "hepta.agentd.original_notes_launch.v1",
             agent_id: prepared
@@ -129,14 +164,42 @@ impl PreparedHostAuthoritySession {
                 .as_str()
                 .to_owned(),
             spawn_generation: prepared.registration.registered_identity.spawn_generation,
-            session,
-            bindings: profile.bindings,
-            previous_recovery: profile.previous_recovery,
-            startup_release,
+            session: self.session,
+            bindings: self.profile.bindings,
+            previous_recovery: self.profile.previous_recovery,
+            startup_release: self.startup_release,
         };
         let bytes = serde_json::to_vec(&value).map_err(io::Error::other)?;
-        seal_deployment(deployment, &bytes)?;
-        crate::authority_host_runtime::owner_alive(&session_pidfd, end)?;
+        seal_deployment(self.deployment, &bytes)?;
+        crate::authority_host_runtime::owner_alive(&self.session_pidfd, self.end)
+    }
+}
+
+impl PreparedHostAuthoritySession {
+    /// Consume the actual Session's first metadata packet, install its exact
+    /// pre-existing original Notes policy on this retained service, then seal
+    /// the already inherited read-only deployment. Root must have created the
+    /// anonymous pair and enabled SO_PASSCRED before spawning Session. Agentd
+    /// holds a duplicate but may not read it until the late Root handoff.
+    /// No Activate, application FD offer or attached acknowledgement is made
+    /// here; only the recovered original Agentd factory can perform those.
+    pub fn with_notes_startup_from_session(
+        self,
+        profile_file: &Path,
+        bootstrap: UnixDatagram,
+        session_pidfd: OwnedFd,
+        deployment: File,
+    ) -> io::Result<Self> {
+        let startup = ReservedNotesStartup::receive(
+            &self.config,
+            profile_file,
+            bootstrap,
+            session_pidfd,
+            deployment,
+        )?;
+        let prepared =
+            self.with_registered_notes_from_session(startup.target(), startup.lifetime_ms())?;
+        startup.seal(&prepared)?;
         Ok(prepared)
     }
 }

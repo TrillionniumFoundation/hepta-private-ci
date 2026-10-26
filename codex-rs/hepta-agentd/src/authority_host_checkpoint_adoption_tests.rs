@@ -13,6 +13,12 @@ use std::sync::atomic::AtomicU64;
 use std::time::Duration;
 use std::time::Instant;
 
+#[path = "authority_host_checkpoint_recovery_tests.rs"]
+mod recovery;
+
+#[path = "authority_host_notes_recovery_root_tests.rs"]
+mod notes_recovery_original;
+
 #[derive(Default)]
 struct Clock {
     reads: AtomicU64,
@@ -43,7 +49,7 @@ struct Publisher {
 
 impl Publisher {
     fn spawn() -> Self {
-        let mut child = Command::new("/usr/bin/setpriv")
+        let child = Command::new("/usr/bin/setpriv")
             .args([
                 "--reuid=60001",
                 "--regid=60001",
@@ -60,6 +66,10 @@ impl Publisher {
             .stderr(Stdio::null())
             .spawn()
             .unwrap();
+        Self::capture(child)
+    }
+
+    fn capture(mut child: Child) -> Self {
         let until = Instant::now() + Duration::from_secs(2);
         loop {
             assert!(child.try_wait().unwrap().is_none());

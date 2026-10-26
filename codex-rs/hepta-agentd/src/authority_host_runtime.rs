@@ -42,6 +42,8 @@ pub(crate) use listeners::validate_runtime_lanes;
 #[path = "authority_host_session.rs"]
 mod session;
 pub use session::PreparedHostAuthoritySession;
+pub use session::PreparedHostNotesRecovery;
+pub use session::StoppedHostNotesSession;
 
 const CLOCK_OWNER: &str = "root-authority-clock-v1";
 const LEASE_OWNER: &str = "root-authority-leases-v1";
@@ -231,6 +233,26 @@ pub(super) fn open_registered_writer(
     registration: &HostAuthorityRegistration,
     owner_pidfd: &OwnedFd,
 ) -> io::Result<HostAuthorityService> {
+    validate_registered_process(config, registration, owner_pidfd)?;
+    let (clock, leases, issuer) = open_registered_issuer(config)?;
+    let service = HostAuthorityService::from_registered_owner(
+        issuer,
+        clock,
+        registration.registered_identity.identity()?,
+    )?;
+    let service = if let Some(writer) = &config.writer {
+        service.with_registered_writer(writer.clone(), leases.verifier())?
+    } else {
+        service
+    };
+    Ok(service.retain_original_root_registry(Arc::new(leases)))
+}
+
+pub(super) fn validate_registered_process(
+    config: &HostAuthorityServiceConfig,
+    registration: &HostAuthorityRegistration,
+    owner_pidfd: &OwnedFd,
+) -> io::Result<()> {
     if config.schema_version != 1
         || registration.schema_version != 1
         || config.peer_uid == 0
@@ -248,19 +270,7 @@ pub(super) fn open_registered_writer(
         config.peer_gid,
         owner_pidfd,
         Instant::now() + std::time::Duration::from_secs(30),
-    )?;
-    let (clock, leases, issuer) = open_registered_issuer(config)?;
-    let service = HostAuthorityService::from_registered_owner(
-        issuer,
-        clock,
-        registration.registered_identity.identity()?,
-    )?;
-    let service = if let Some(writer) = &config.writer {
-        service.with_registered_writer(writer.clone(), leases.verifier())?
-    } else {
-        service
-    };
-    Ok(service.retain_original_root_registry(Arc::new(leases)))
+    )
 }
 
 /// Explicit root administration authorizes a new original registry writer

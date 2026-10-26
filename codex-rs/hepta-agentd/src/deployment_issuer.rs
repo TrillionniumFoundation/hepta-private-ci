@@ -51,6 +51,7 @@ pub use writer::HostAuthorityWriterRegistration;
 
 #[path = "deployment_notes.rs"]
 mod notes;
+pub(crate) use notes::NotesRecoveryPolicyCheck;
 pub use notes::RootNotesGrantAdmission;
 
 const STATE_OWNER: &str = "local-final-use-issuer";
