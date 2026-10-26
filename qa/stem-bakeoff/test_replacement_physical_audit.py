@@ -106,6 +106,43 @@ class PhysicalAuditTests(unittest.TestCase):
                             audit_arm("harrier_270m", case,
                                       REGISTRY["models"]["harrier_270m"])))
 
+    def test_arctic_mask_receipt_strict_schema(self):
+        good = fake("arctic_305m")
+        original = good["performance"]["arctic_rope_compat"]["attention_mask_compat"]
+        variants = []
+        for value in (0, 0.0, None, True, "false"):
+            variants.append(dict(original, production_qualified=value))
+        for key in ("method", "scope", "transformers_version"):
+            for value in (None, 0, False, [], {}):
+                variants.append(dict(original, **{key: value}))
+        for key in original:
+            row = dict(original)
+            del row[key]
+            variants.append(row)
+        variants.extend((dict(original, extra=False), None, [], False))
+        for variant in variants:
+            with self.subTest(receipt=variant):
+                case = copy.deepcopy(good)
+                case["performance"]["arctic_rope_compat"]["attention_mask_compat"] = variant
+                self.assertTrue(any("Arctic RoPE" in error for error in
+                                    audit_arm("arctic_305m", case, REGISTRY["models"]["arctic_305m"])))
+        self.assertEqual(audit_arm("arctic_305m", good, REGISTRY["models"]["arctic_305m"]), [])
+
+    def test_arctic_rope_receipt_strict_scalar_types(self):
+        good = fake("arctic_305m")
+        for key, values in (
+                ("max_position_embeddings", (8192.0, True)),
+                ("rope_dim", (64.0, True)), ("rope_theta", (160000.0, True)),
+                ("original_position_buffer_valid", (0, 0.0, 1, 1.0)),
+                ("original_rope_cache_valid", (0, 0.0, 1, 1.0)),
+                ("production_qualified", (0, 0.0)), ("method", (None, False))):
+            for value in values:
+                with self.subTest(key=key, value=value):
+                    case = copy.deepcopy(good)
+                    case["performance"]["arctic_rope_compat"][key] = value
+                    self.assertTrue(any("Arctic RoPE" in error for error in
+                                        audit_arm("arctic_305m", case, REGISTRY["models"]["arctic_305m"])))
+
     def test_metric_forgery_rejected(self):
         cases = samples()
         cases[EXPECTED[0]]["scores"]["future_1"]["metrics"]["accuracy"] = .01
