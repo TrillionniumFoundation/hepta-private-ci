@@ -32,12 +32,30 @@ impl PreparedHostAuthoritySession {
     /// Root can concurrently serialize its actual material observations. This
     /// creates no second authority owner and retains all original lane checks.
     pub fn serve_retained(&self) -> io::Result<()> {
-        serve_lanes(
-            &self.service,
-            &self.config,
-            &self.registration,
-            &self.owner_pidfd,
-        )
+        let serve = || {
+            listeners::serve_lanes_with_ready(
+                &self.service,
+                &self.config,
+                &self.registration,
+                &self.owner_pidfd,
+                || {
+                    if let Some(admin) = &self.root_admin {
+                        admin.activate();
+                    }
+                    Ok(())
+                },
+            )
+        };
+        match &self.root_admin {
+            Some(admin) => admin.run(
+                &self.service,
+                &self.config,
+                &self.registration,
+                &self.owner_pidfd,
+                serve,
+            ),
+            None => serve(),
+        }
     }
 
     /// Observe this same service's actual complete Current and independently
@@ -94,6 +112,7 @@ impl PreparedHostAuthoritySession {
             owner_pidfd,
             service,
             fresh_filesystem: false,
+            root_admin: None,
         })
     }
 
@@ -123,6 +142,7 @@ impl PreparedHostAuthoritySession {
             owner_pidfd,
             service,
             fresh_filesystem: true,
+            root_admin: None,
         })
     }
 
@@ -148,6 +168,7 @@ impl PreparedHostAuthoritySession {
             owner_pidfd,
             service,
             fresh_filesystem: false,
+            root_admin: None,
         })
     }
 }

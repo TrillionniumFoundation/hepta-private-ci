@@ -113,7 +113,23 @@ pub use authority_host_native_launch::diagnose_native_launch;
 #[cfg(target_os = "linux")]
 pub use authority_host_native_launch::launch_host_authority_native_session;
 #[cfg(target_os = "linux")]
+mod authority_host_admin;
+#[cfg(target_os = "linux")]
 mod authority_host_service;
+#[cfg(target_os = "linux")]
+pub use authority_host_admin::ROOT_ADMIN_FRAME_BOUND;
+#[cfg(target_os = "linux")]
+pub use authority_host_admin::RootAdminAction;
+#[cfg(target_os = "linux")]
+pub use authority_host_admin::RootAdminCapability;
+#[cfg(target_os = "linux")]
+pub use authority_host_admin::RootAdminInstance;
+#[cfg(target_os = "linux")]
+pub use authority_host_admin::RootAdminObservation;
+#[cfg(target_os = "linux")]
+pub use authority_host_admin::RootAdminRequest;
+#[cfg(target_os = "linux")]
+pub use authority_host_admin::RootAdminResponse;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::HostAuthorityBootstrap;
 #[cfg(target_os = "linux")]
