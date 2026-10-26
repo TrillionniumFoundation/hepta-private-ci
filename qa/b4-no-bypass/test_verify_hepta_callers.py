@@ -412,7 +412,11 @@ class OriginalNotesSourceGuardTests(unittest.TestCase):
     """Exercise registered guards against mutations of the actual product source."""
 
     def check_source(self, filename, mutate=None):
-        path = f"codex-rs/hepta-agentd/src/{filename}.rs"
+        return self.check_path_source(
+            f"codex-rs/hepta-agentd/src/{filename}.rs", mutate
+        )
+
+    def check_path_source(self, path, mutate=None):
         manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
         rows = [row for row in manifest["protected_file"] if row["path"] == path]
         self.assertTrue(rows)
@@ -442,6 +446,10 @@ class OriginalNotesSourceGuardTests(unittest.TestCase):
             "notes_thread_seed",
             "notes_thread_execution",
             "notes_thread_status",
+            "notes_thread_runtime",
+            "notes_thread_proof",
+            "notes_thread_recorded",
+            "notes_recovery_selection",
             "app_runtime",
             "runtime",
         ):
@@ -452,7 +460,7 @@ class OriginalNotesSourceGuardTests(unittest.TestCase):
         for old, new in (
             ("const TURNS: usize = 16", "const TURNS: usize = 64"),
             ("const TOTAL_ITEMS: usize = 1024", "const TOTAL_ITEMS: usize = 65536"),
-            ("Duration::from_secs(5)", "Duration::from_secs(300)"),
+            ("end: tokio::time::Instant", "end: std::time::Instant"),
             ("entry.turn_id != turn.id", "false"),
             (
                 "VerifiedNotesThreadOperation::from_original_item",
@@ -464,6 +472,337 @@ class OriginalNotesSourceGuardTests(unittest.TestCase):
                 self.assertRaises(MODULE.VerificationFailure),
             ):
                 self.check_source("notes_thread_status", self.replace_once(old, new))
+
+    def test_status_discovery_preserves_every_budget_and_the_single_deadline(self):
+        for old, new in (
+            ("const PAGE_ITEMS: usize = 64", "const PAGE_ITEMS: usize = 4096"),
+            ("const TURN_PAGES: usize = 4", "const TURN_PAGES: usize = 100"),
+            ("const RPCS: usize = 64", "const RPCS: usize = 1024"),
+            ("let mut rpc_count = 1", "let mut rpc_count = 0"),
+            ("rpc_count += 1", "rpc_count += 0"),
+            ("rpc_count >= RPCS || item_count >= TOTAL_ITEMS", "false"),
+            ("item_count += page.data.len()", "item_count += 0"),
+            ("item_count > TOTAL_ITEMS", "false"),
+            (
+                "let page = tokio::time::timeout_at(\n                end,",
+                "let page = tokio::time::timeout_at(\n                tokio::time::Instant::now() + Duration::from_secs(5),",
+            ),
+        ):
+            with (
+                self.subTest(marker=old),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check_source("notes_thread_status", self.replace_once(old, new))
+
+    def test_status_cannot_select_the_wrong_turn_order_or_unbound_items(self):
+        for old, new in (
+            ("SortDirection::Desc", "SortDirection::Asc"),
+            ("SortDirection::Asc", "SortDirection::Desc"),
+            ("turn_id: Some(turn.id.clone())", "turn_id: None"),
+            ("!seen_turns.insert(turn.id.clone())", "false"),
+            ("turn.items_view != TurnItemsView::NotLoaded", "false"),
+            ("!turn.items.is_empty()", "false"),
+            ("namespace.is_none()", "true"),
+        ):
+            with (
+                self.subTest(marker=old),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check_source("notes_thread_status", self.replace_once(old, new))
+
+    def test_status_cannot_skip_incomplete_newer_turns_or_repeat_cursors(self):
+        for old, new in (
+            ("if cursor.is_some() {", "if false {"),
+            ("next.is_empty()", "false"),
+            ("next.len() > 2048", "false"),
+            ("!seen_cursors.insert(next.clone())", "false"),
+            ("if turns.next_cursor.is_some()", "if false"),
+        ):
+            with (
+                self.subTest(marker=old),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check_source("notes_thread_status", self.replace_once(old, new))
+
+    def test_status_callback_keeps_seed_and_human_checks_in_actual_code(self):
+        for old, within in (
+            (
+                "crate::verify_original_notes_thread_seed(&client, seed).await?;",
+                "async fn connect(",
+            ),
+            (
+                "let human = connection.verify_human_turn(&state, &self.adapter, call.turn_id()).await?;",
+                "async fn run_bound(",
+            ),
+            (
+                "let call = connection.verify(&params).await?;",
+                "async fn run_bound(",
+            ),
+        ):
+            with (
+                self.subTest(marker=old),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check_source(
+                    "notes_thread_runtime",
+                    self.replace_once(old, "/*" + old + "*/", within=within),
+                )
+
+    def test_status_selector_is_strict_and_cannot_bypass_argument_validation(self):
+        with self.assertRaises(MODULE.VerificationFailure):
+            self.check_source(
+                "notes_thread_status",
+                self.replace_once(
+                    "#[serde(deny_unknown_fields)]\npub(super) struct StatusSelector",
+                    "pub(super) struct StatusSelector",
+                ),
+            )
+        with self.assertRaises(MODULE.VerificationFailure):
+            self.check_source(
+                "notes_thread_proof",
+                self.replace_once("navigation.validate()", "Ok(())"),
+            )
+
+    def test_unknown_status_never_fabricates_an_original_operation_identity(self):
+        for old, new in (
+            ('"original_reference":null', '"original_reference":params.call_id'),
+            ('"operation_id":null', '"operation_id":params.call_id'),
+            (
+                '"app_server_session_id":self.route.app_server_session_id,',
+                '"app_server_session_id":"unknown",',
+            ),
+        ):
+            with (
+                self.subTest(marker=old),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check_source(
+                    "notes_thread_runtime",
+                    self.replace_once(old, new, within="async fn run_bound("),
+                )
+
+    def test_core_and_recorded_navigation_cannot_restart_the_shared_deadline(self):
+        for old, new in (
+            (
+                "let end = tokio::time::Instant::now() + Duration::from_secs(5)",
+                "let end = tokio::time::Instant::now() + Duration::from_secs(10)",
+            ),
+            (
+                "status::discover_latest_original_replace(&self.route, &mut connection, end)",
+                "status::discover_latest_original_replace(&self.route, &mut connection, tokio::time::Instant::now() + Duration::from_secs(5))",
+            ),
+            (
+                "self.adapter.latest_recorded_thread_operation(&self.route, end)",
+                "self.adapter.latest_recorded_thread_operation(&self.route, tokio::time::Instant::now() + Duration::from_secs(5))",
+            ),
+        ):
+            with (
+                self.subTest(marker=old),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check_source(
+                    "notes_thread_runtime",
+                    self.replace_once(old, new, within="async fn run_bound("),
+                )
+        for old, new in (
+            ("if !lookup_budget_available(end)", "if false"),
+            (
+                "match tokio::time::timeout_at(end, async",
+                "match tokio::time::timeout(Duration::from_secs(5), async",
+            ),
+            (
+                "latest_matching_request(scope, requests, end)?",
+                "unbounded_latest(scope, requests)?",
+            ),
+        ):
+            with (
+                self.subTest(marker=old),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check_source(
+                    "notes_thread_recorded",
+                    self.replace_once(
+                        old, new, within="async fn latest_recorded_thread_operation("
+                    ),
+                )
+
+    def test_retained_receipt_cannot_turn_incomplete_core_navigation_into_success(self):
+        for old, new in (
+            (
+                "&& !matches!(reason, status::StatusUnknownReason::OriginalReplaceNotObserved)",
+                "&& false",
+            ),
+            (
+                "return Ok(status::preserve_incomplete_navigation(unknown, observed))",
+                "return Ok(observed)",
+            ),
+            ('&& value["status"] != "unknown"', "&& true"),
+        ):
+            with (
+                self.subTest(marker=old),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check_source("notes_thread_runtime", self.replace_once(old, new))
+        for old, new in (
+            (
+                'unknown["operation_id"] = serde_json::Value::Null',
+                'unknown["operation_id"] = observed["operation_id"].clone()',
+            ),
+            (
+                'unknown["original_reference"] = serde_json::Value::Null',
+                'unknown["original_reference"] = observed["original_reference"].clone()',
+            ),
+            (
+                'unknown["last_known_retained_observation"] = observed',
+                "unknown = observed",
+            ),
+        ):
+            with (
+                self.subTest(marker=old),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check_source("notes_thread_status", self.replace_once(old, new))
+
+    def test_recorded_reference_must_match_signed_source_and_actual_operation(self):
+        for old, new in (
+            ("reference.app_server_session_id != route.app_server_session_id", "false"),
+            (
+                "ingress.body.model_tuple_digest != scope.bindings.model_tuple_digest.to_string()",
+                "false",
+            ),
+            ("source.request_id != call_intent_id", "false"),
+            ("exact_operation != operation.operation", "false"),
+            (
+                "source.principal_scope_digest != scope.bindings.principal_scope_digest",
+                "false",
+            ),
+            ("== reference.callback_sha256", "== String::new()"),
+        ):
+            with (
+                self.subTest(marker=old),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check_source("notes_thread_recorded", self.replace_once(old, new))
+
+    def test_original_sender_cut_remains_private_bounded_and_read_only(self):
+        for filename in (
+            "objective_sender_read",
+            "objective_sender_store",
+            "objective_sender_model",
+            "objective_sender_integrity",
+        ):
+            self.check_path_source(f"codex-rs/hepta-memory/src/{filename}.rs")
+        for filename, old, new in (
+            (
+                "objective_sender_read",
+                "transaction.rollback().await",
+                "transaction.commit().await",
+            ),
+            (
+                "objective_sender_read",
+                "self.writer.verify_authority().await?;",
+                "/* self.writer.verify_authority().await?; */",
+            ),
+            (
+                "objective_sender_store",
+                "if requests.len() > MAX_REQUESTS as usize",
+                "if false",
+            ),
+            ("objective_sender_store", "if foreign != 0", "if false"),
+            (
+                "objective_sender_model",
+                'skip_serializing_if = "Option::is_none"',
+                'skip_serializing_if = "always_false"',
+            ),
+            (
+                "objective_sender_model",
+                "MAX_REQUESTS: i64 = 1_024",
+                "MAX_REQUESTS: i64 = 65_536",
+            ),
+            (
+                "objective_sender_integrity",
+                "verify_fence(tx, row, &binding).await?;",
+                "/* verify_fence(tx, row, &binding).await?; */",
+            ),
+        ):
+            with (
+                self.subTest(file=filename, marker=old),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check_path_source(
+                    f"codex-rs/hepta-memory/src/{filename}.rs",
+                    self.replace_once(old, new),
+                )
+
+    def test_recovery_selector_cannot_accept_ambiguous_or_unverified_selection(self):
+        for old, new in (
+            ("(Some(operation_id), None)", "(Some(operation_id), _)"),
+            ("codex_hepta_types::StableId::new(&operation_id)", "Ok(())"),
+            ("#[serde(deny_unknown_fields)]\n        struct Latest", "struct Latest"),
+        ):
+            with (
+                self.subTest(marker=old),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check_source(
+                    "notes_recovery_selection", self.replace_once(old, new)
+                )
+        with self.assertRaises(MODULE.VerificationFailure):
+            self.check_source(
+                "notes_thread_recorded",
+                self.replace_once("original.target == *previous_target", "true"),
+            )
+        with self.assertRaises(MODULE.VerificationFailure):
+            self.check_source(
+                "notes_thread_tool",
+                self.replace_once(
+                    ".verify_persisted()?;", "/* .verify_persisted()?; */"
+                ),
+            )
+
+    def test_original_callback_reference_is_validated_before_preparation(self):
+        for old, new in (
+            ("original_reference.thread_id != human.route().thread_id", "false"),
+            (
+                "!recorded::callback_matches(&original_reference, text, expected_revision)?",
+                "false",
+            ),
+            (
+                ".map(|binding| binding.original_reference.clone())",
+                ".map(|_| untrusted_reference())",
+            ),
+        ):
+            with (
+                self.subTest(marker=old),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check_source("notes_literal_adapter", self.replace_once(old, new))
+
+    def test_new_read_only_apis_reject_an_unregistered_product_caller(self):
+        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        calls = {
+            "notes_original_retained_reference_projection": "verified.recorded_reference(&route);",
+            "memory_original_sender_read_only_cut": "sender.retained_owner_requests().await;",
+            "notes_recorded_original_observation_proof": "adapter.latest_recorded_thread_operation(&route, end).await;",
+            "notes_previous_recovery_typed_resolution": "config.with_original_notes_previous_recovery_request(request).await;",
+        }
+        for boundary in MODULE._boundary_rows(manifest):
+            if boundary.identifier not in calls:
+                continue
+            index = {
+                caller: MODULE._strip_cfg_test_items(
+                    MODULE._strip_rust_non_code((ROOT / caller).read_text())
+                )
+                for caller in boundary.product_callers
+            }
+            index["codex-rs/unregistered/src/lib.rs"] = calls[boundary.identifier]
+            with (
+                self.subTest(boundary=boundary.identifier),
+                self.assertRaisesRegex(MODULE.VerificationFailure, "unexpected"),
+            ):
+                MODULE._verify_boundary(
+                    ROOT, boundary, index, tuple(manifest["ignored_path_fragments"])
+                )
 
     def test_resume_requires_persisted_checks_in_the_original_function(self):
         for old, new in (
