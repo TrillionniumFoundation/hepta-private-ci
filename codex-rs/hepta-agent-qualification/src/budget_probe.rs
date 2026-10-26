@@ -259,12 +259,14 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
     // supervisor its bounded terminal-write grace before this process exits.
     // Either terminal owner can finish first. Encoded evidence alone cannot
     // authorize closing the policy state while its original write is pending.
-    let (settled, encoded) = tokio::join!(
-        tokio::time::timeout(Duration::from_secs(10), terminal_completion.wait()),
-        tokio::time::timeout(Duration::from_secs(10), observer.terminal_recorded()),
-    );
-    let terminal_writes_settled = matches!(settled, Ok(Ok(())));
-    let terminal_recorded = encoded.is_ok();
+    let shutdown = crate::terminal_shutdown::TerminalShutdown::wait(
+        &mut terminal_completion,
+        &observer,
+        Duration::from_secs(10),
+    )
+    .await;
+    let terminal_writes_settled = shutdown.writes_settled();
+    let terminal_recorded = shutdown.encoded_recorded();
     let observed = collector
         .await
         .map_err(|_| anyhow!("qualification event collector failed"))?;
@@ -458,9 +460,7 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
         ("same_model_codex_ab".to_owned(), json!(false)),
         ("core_linked_for_config_bootstrap".to_owned(), json!(true)),
     ]));
-    if terminal_writes_settled {
-        policy.state.close().await;
-    }
+    shutdown.close_if_settled(&policy.state).await;
     Ok(report)
 }
 
