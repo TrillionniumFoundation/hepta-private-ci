@@ -47,7 +47,8 @@ fn persisted_seed_metadata_requires_exact_original_identity_and_catalog() {
     let tuple = receipt.model_tuple_digest().unwrap();
     let route = crate::text_session::AgentdTextSessionConfig {
         control_socket: receipt.codex_home.join("control.sock"),
-        agent_id: codex_hepta_contracts::AgentId::parse("seed-fixture").unwrap(),
+        agent_id: codex_hepta_contracts::AgentId::parse("12345678-1234-4234-8234-123456789abc")
+            .unwrap(),
         spawn_generation: 1,
         thread_id: receipt.thread_id.clone(),
         app_server_session_id: receipt.app_server_session_id.clone(),
