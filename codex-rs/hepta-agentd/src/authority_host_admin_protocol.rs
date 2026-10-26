@@ -27,6 +27,9 @@ pub struct RootAdminRequest {
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum RootAdminAction {
     Observe {},
+    ObserveIssuedNotesGrant {
+        selection: crate::RootIssuedNotesGrantSelection,
+    },
     RevokeWriter {
         expected_revision: u64,
         reason_sha256: [u8; 32],
@@ -50,6 +53,10 @@ pub struct RootAdminObservation {
 pub enum RootAdminResponse {
     Observed {
         observation: RootAdminObservation,
+    },
+    IssuedNotesGrantObserved {
+        instance: RootAdminInstance,
+        observation: crate::RootIssuedNotesGrantObservation,
     },
     WriterRevoked {
         instance: RootAdminInstance,

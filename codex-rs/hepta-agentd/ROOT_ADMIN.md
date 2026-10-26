@@ -40,6 +40,23 @@ The Desktop adapter must retain it only in the actual original Root launcher
 and authenticate its separate Root-only local lane. It must connect to that
 already-live instance, never open another service from paths.
 
+Root enable also installs one bounded volatile observer on the SAME fixed
+Notes admission. It mirrors only the actual SignedFinalUseGrant returned by
+the original issue call; its exact JSON bytes, ID/epoch/nonce/binding/signature
+are preserved. Other routes, denied issues and disabled observations add no
+artifact. Capturing uses try-lock and does not block/change/retry issuance.
+The ring has at most 16 slots and a 64 KiB stored-byte/slot budget; no file,
+authority owner or durable grant/operation ledger is created.
+
+`observe_issued_notes_grant` selects exact ID or latest observation attempt.
+Capture failures advance a volatile attempt counter, so a lost newer capture
+cannot turn an older retained item into a successful latest result. Missing,
+evicted, busy or restarted observations are explicitly Unknown. Captured data
+does not prove delivery/effect and is never accepted as a permission source.
+An administrator may export the actual existing artifact; revocation must
+independently verify its signature, own key/epoch/time, exact existing lease
+and fixed Notes policy. It must not sign a replacement or trust this ring.
+
 Precise signed Notes effect/FinalUse revoke and confirmation through the
 original authenticated observation/consumer synchronization are the next
 stage. Writer revoke does not qualify those semantics. Ordinary schema and

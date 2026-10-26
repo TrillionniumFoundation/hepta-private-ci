@@ -226,6 +226,10 @@ pub use deployment_issuer::DeploymentIssuerObserver;
 #[cfg(target_os = "linux")]
 pub use deployment_issuer::HostAuthorityWriterRegistration;
 #[cfg(target_os = "linux")]
+pub use deployment_issuer::RootIssuedNotesGrantObservation;
+#[cfg(target_os = "linux")]
+pub use deployment_issuer::RootIssuedNotesGrantSelection;
+#[cfg(target_os = "linux")]
 pub use deployment_issuer::RootNotesGrantAdmission;
 mod android_runtime;
 #[cfg(target_os = "linux")]

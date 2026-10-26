@@ -6,6 +6,13 @@ use codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry;
 use std::time::Instant;
 
 impl HostAuthorityService {
+    pub(crate) fn enable_original_notes_observations(&mut self) -> io::Result<()> {
+        if let Some(notes) = &mut self.notes {
+            notes.enable_original_issued_observations(&self.issuer)?;
+        }
+        Ok(())
+    }
+
     pub(crate) fn validate_admin_registration(&self) -> io::Result<()> {
         if self.logind_session.is_none() {
             return Err(io::Error::other(
@@ -88,6 +95,19 @@ impl HostAuthorityService {
             .ok_or_else(|| io::Error::other("registered writer required"))?;
         let original = &writer.registration.authority_lease;
         match action {
+            RootAdminAction::ObserveIssuedNotesGrant { selection } => {
+                let observation = match &self.notes {
+                    Some(notes) => notes.observe_original_issued_grant(selection),
+                    None => crate::RootIssuedNotesGrantObservation::Unknown {
+                        reason: "no_original_notes_policy",
+                    },
+                };
+                context.check_for(self)?;
+                Ok(RootAdminResponse::IssuedNotesGrantObserved {
+                    instance: instance.clone(),
+                    observation,
+                })
+            }
             RootAdminAction::Observe {} => {
                 let before = registry.frontier().map_err(io::Error::other)?;
                 let head = self.issuer.revocations()?;

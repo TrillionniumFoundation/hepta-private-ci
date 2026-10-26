@@ -53,6 +53,8 @@ pub use writer::HostAuthorityWriterRegistration;
 
 #[path = "deployment_notes.rs"]
 mod notes;
+pub use notes::RootIssuedNotesGrantObservation;
+pub use notes::RootIssuedNotesGrantSelection;
 pub use notes::RootNotesGrantAdmission;
 
 const STATE_OWNER: &str = "local-final-use-issuer";

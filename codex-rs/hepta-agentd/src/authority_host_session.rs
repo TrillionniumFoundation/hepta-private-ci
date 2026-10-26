@@ -43,6 +43,7 @@ impl PreparedHostAuthoritySession {
         let (runtime, capability) = crate::authority_host_admin::RootAdminRuntime::mint(
             std::time::Duration::from_millis(self.config.timeout_ms.min(1_000)),
         )?;
+        self.service.enable_original_notes_observations()?;
         self.root_admin = Some(runtime);
         Ok(capability)
     }
