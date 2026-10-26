@@ -199,60 +199,49 @@ export class CodexExec {
     });
 
     let spawnError: unknown | null = null;
-    child.once("error", (err) => (spawnError = err));
-
-    if (!child.stdin) {
-      child.kill();
-      throw new Error("Child process has no stdin");
-    }
-    child.stdin.write(args.input);
-    child.stdin.end();
-
-    if (!child.stdout) {
-      child.kill();
-      throw new Error("Child process has no stdout");
-    }
-    const stderrChunks: Buffer[] = [];
-
-    if (child.stderr) {
-      child.stderr.on("data", (data) => {
-        stderrChunks.push(data);
-      });
-    }
-
-    const exitPromise = new Promise<{ code: number | null; signal: NodeJS.Signals | null }>(
+    const onSpawnError = (error: unknown) => (spawnError = error);
+    child.once("error", onSpawnError);
+    let closed = false;
+    const closePromise = new Promise<{ code: number | null; signal: NodeJS.Signals | null }>(
       (resolve) => {
-        child.once("exit", (code, signal) => {
+        child.once("close", (code, signal) => {
+          closed = true;
           resolve({ code, signal });
         });
       },
     );
-
-    const rl = readline.createInterface({
-      input: child.stdout,
-      crlfDelay: Infinity,
-    });
+    let rl: readline.Interface | undefined;
 
     try {
+      if (!child.stdin) throw new Error("Child process has no stdin");
+      if (!child.stdout) throw new Error("Child process has no stdout");
+      child.stdin.write(args.input);
+      child.stdin.end();
+      const stderrChunks: Buffer[] = [];
+      child.stderr?.on("data", (data) => stderrChunks.push(data));
+      rl = readline.createInterface({ input: child.stdout, crlfDelay: Infinity });
+
       for await (const line of rl) {
-        // `line` is a string (Node sets default encoding to utf8 for readline)
         yield line as string;
       }
 
+      // `close` follows process exit and closing its stdio. An abort/error or
+      // consumer return must not release the caller while the child still owns
+      // files in CODEX_HOME or inherited pipe handles.
+      const { code, signal } = await closePromise;
       if (spawnError) throw spawnError;
-      const { code, signal } = await exitPromise;
       if (code !== 0 || signal) {
         const stderrBuffer = Buffer.concat(stderrChunks);
         const detail = signal ? `signal ${signal}` : `code ${code ?? 1}`;
         throw new Error(`Codex Exec exited with ${detail}: ${stderrBuffer.toString("utf8")}`);
       }
     } finally {
-      rl.close();
-      child.removeAllListeners();
+      rl?.close();
       try {
-        if (!child.killed) child.kill();
-      } catch {
-        // ignore
+        if (!closed && !child.killed) child.kill();
+      } finally {
+        await closePromise;
+        child.off("error", onSpawnError);
       }
     }
   }
