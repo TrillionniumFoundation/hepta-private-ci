@@ -17,7 +17,10 @@ impl Fixture {
     fn new() -> anyhow::Result<Self> {
         let root = unique_temp_dir();
         let home = root.join("private-home");
-        std::fs::create_dir_all(&home)?;
+        std::fs::create_dir_all(&root)?;
+        // Match the product's atomic private-leaf creation, not a public
+        // inherited DACL which the original guard must continue to reject.
+        drop(codex_utils_path::open_private_state_directory(&home)?);
         let path = home.join("original.sqlite3");
         std::fs::write(&path, b"original database bytes")?;
         let sqlite = super::super::SqliteConfig::new_for_testing(home.as_path().abs());
@@ -138,6 +141,11 @@ fn retained_windows_replacement_uses_file_id_even_with_same_metadata() -> anyhow
 fn retained_windows_rejects_extra_links_for_each_component() -> anyhow::Result<()> {
     for role in 0..4 {
         let fixture = Fixture::bundle()?;
+        let baseline = fixture
+            .sqlite
+            .bind_existing_recovery_database(&fixture.path)?;
+        baseline.verify_inspection_unchanged()?;
+        drop(baseline);
         std::fs::hard_link(&fixture.paths()[role], fixture.home.join("second-link"))?;
         assert!(
             matches!(
@@ -278,6 +286,63 @@ async fn cold_image_windows_reconnects_to_original_immutable_copy() -> anyhow::R
     assert_eq!(fact, "original");
     pool.close().await;
     Ok(())
+}
+
+#[test]
+fn retained_windows_does_not_repair_existing_shared_home() -> anyhow::Result<()> {
+    let fixture = Fixture::new()?;
+    let directory = std::fs::OpenOptions::new()
+        .access_mode(READ_CONTROL | WRITE_DAC | FILE_READ_ATTRIBUTES)
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+        .open(&fixture.home)?;
+    grant_world_read(&directory)?;
+    let before = raw_security(&directory)?;
+    let bytes = std::fs::read(&fixture.path)?;
+    assert!(codex_utils_path::open_private_state_directory(&fixture.home).is_err());
+    assert!(matches!(
+        fixture
+            .sqlite
+            .bind_existing_recovery_database(&fixture.path),
+        Err(SqliteRecoveryError::Indeterminate)
+    ));
+    assert_eq!(raw_security(&directory)?, before);
+    assert_eq!(std::fs::read(&fixture.path)?, bytes);
+    Ok(())
+}
+
+fn raw_security(file: &File) -> anyhow::Result<Vec<u8>> {
+    let information = OWNER_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION;
+    let mut length = 0;
+    // SAFETY: first call requests only the required size from the live handle.
+    unsafe {
+        GetKernelObjectSecurity(
+            file.as_raw_handle() as _,
+            information,
+            std::ptr::null_mut(),
+            0,
+            &mut length,
+        )
+    };
+    anyhow::ensure!(length > 0 && length <= 128 * 1024, "native security size");
+    let mut words = vec![0usize; (length as usize).div_ceil(std::mem::size_of::<usize>())];
+    // SAFETY: the aligned allocation holds the full declared buffer length.
+    anyhow::ensure!(
+        unsafe {
+            GetKernelObjectSecurity(
+                file.as_raw_handle() as _,
+                information,
+                words.as_mut_ptr().cast(),
+                length,
+                &mut length,
+            )
+        } != 0,
+        "read original security descriptor"
+    );
+    Ok(
+        unsafe { std::slice::from_raw_parts(words.as_ptr().cast::<u8>(), length as usize) }
+            .to_vec(),
+    )
 }
 
 fn grant_world_read(file: &File) -> anyhow::Result<()> {
