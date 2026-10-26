@@ -192,7 +192,11 @@ mod platform {
     #[cfg(target_os = "linux")]
     pub(super) fn ensure_current_user_or_root_peer(stream: &Stream) -> IoResult<()> {
         let uid = peer_uid(stream)?;
-        if uid == 0 { Ok(()) } else { ensure_peer_uid(uid) }
+        if uid == 0 {
+            Ok(())
+        } else {
+            ensure_peer_uid(uid)
+        }
     }
 
     #[cfg(any(target_os = "linux", target_os = "android"))]
@@ -216,7 +220,10 @@ mod platform {
             return Err(io::Error::last_os_error());
         }
         if credentials_len as usize != std::mem::size_of::<libc::ucred>() {
-            return Err(io::Error::new(ErrorKind::PermissionDenied, "Unix peer credentials are incomplete"));
+            return Err(io::Error::new(
+                ErrorKind::PermissionDenied,
+                "Unix peer credentials are incomplete",
+            ));
         }
         Ok(credentials.uid)
     }

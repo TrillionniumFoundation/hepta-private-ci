@@ -22,10 +22,18 @@ pub async fn run_main_with_transport_options(
     runtime_options: AppServerRuntimeOptions,
 ) -> std::io::Result<()> {
     crate::run_main_with_transport_options_inner(
-        arg0_paths, cli_config_overrides, loader_overrides, strict_config,
-        default_analytics_enabled, transport, session_source, auth, runtime_options,
+        arg0_paths,
+        cli_config_overrides,
+        loader_overrides,
+        strict_config,
+        default_analytics_enabled,
+        transport,
+        session_source,
+        auth,
+        runtime_options,
         /*inherited_socket*/ None,
-    ).await
+    )
+    .await
 }
 
 /// Preserve one embedding-owned listener and its pathname custody through the
@@ -45,10 +53,20 @@ pub async fn run_main_with_inherited_unix_listener(
     auth: AppServerWebsocketAuthSettings,
     runtime_options: AppServerRuntimeOptions,
 ) -> std::io::Result<()> {
-    let transport = AppServerTransport::UnixSocket { socket_path: listener.socket_path().clone() };
+    let transport = AppServerTransport::UnixSocket {
+        socket_path: listener.socket_path().clone(),
+    };
     crate::run_main_with_transport_options_inner(
-        arg0_paths, cli_config_overrides, loader_overrides, strict_config,
-        default_analytics_enabled, transport, session_source, auth, runtime_options,
+        arg0_paths,
+        cli_config_overrides,
+        loader_overrides,
+        strict_config,
+        default_analytics_enabled,
+        transport,
+        session_source,
+        auth,
+        runtime_options,
         Some(listener),
-    ).await
+    )
+    .await
 }

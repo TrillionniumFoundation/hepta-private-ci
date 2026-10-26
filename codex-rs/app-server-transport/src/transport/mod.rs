@@ -24,14 +24,14 @@ use tracing::warn;
 /// plenty for an interactive CLI.
 pub const CHANNEL_CAPACITY: usize = 128;
 
+#[cfg(all(test, target_os = "linux"))]
+#[path = "inherited_socket_tests.rs"]
+mod inherited_socket_tests;
 mod remote_control;
 mod stdio;
 mod unix_socket;
 #[cfg(test)]
 mod unix_socket_tests;
-#[cfg(all(test, target_os = "linux"))]
-#[path = "inherited_socket_tests.rs"]
-mod inherited_socket_tests;
 mod websocket;
 
 pub use remote_control::REMOTE_CONTROL_DISABLED_ENV_VAR;

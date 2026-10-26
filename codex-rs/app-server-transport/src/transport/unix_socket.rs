@@ -37,7 +37,10 @@ impl InheritedControlSocket {
         socket_path: AbsolutePathBuf,
     ) -> IoResult<Self> {
         let listener = UnixListener::from_inherited(fd, socket_path.as_path())?;
-        Ok(Self { listener, socket_path })
+        Ok(Self {
+            listener,
+            socket_path,
+        })
     }
 
     pub fn socket_path(&self) -> &AbsolutePathBuf {
@@ -54,7 +57,10 @@ pub fn start_inherited_control_socket_acceptor(
 ) -> JoinHandle<()> {
     info!(socket_path = %socket.socket_path.display(), "app-server inherited control socket listening");
     tokio::spawn(run_control_socket_acceptor(
-        socket.listener, transport_event_tx, shutdown_token, /*socket_guard*/ None,
+        socket.listener,
+        transport_event_tx,
+        shutdown_token,
+        /*socket_guard*/ None,
     ))
 }
 
@@ -129,7 +135,8 @@ async fn run_control_socket_acceptor(
                     }
                 };
                 let (websocket_writer, websocket_reader) = websocket_stream.split();
-                run_websocket_connection(websocket_writer, websocket_reader, transport_event_tx).await;
+                run_websocket_connection(websocket_writer, websocket_reader, transport_event_tx)
+                    .await;
             };
             match connection_shutdown {
                 Some(shutdown) => tokio::select! {

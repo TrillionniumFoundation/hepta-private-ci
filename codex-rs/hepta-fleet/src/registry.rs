@@ -477,17 +477,30 @@ fn write_new_file(path: &Path, contents: &[u8]) -> Result<(), FleetRegistryError
 /// exclusive directory mutation rights remain Root's; no profile file or
 /// second lifecycle model is introduced. Ordinary private registries are intact.
 #[cfg(unix)]
-pub(crate) fn preserve_root_reader_mode(file: &File, path: &Path) -> Result<(), FleetRegistryError> {
+pub(crate) fn preserve_root_reader_mode(
+    file: &File,
+    path: &Path,
+) -> Result<(), FleetRegistryError> {
     use std::os::unix::fs::MetadataExt;
     use std::os::unix::fs::PermissionsExt;
-    let parent = path.parent().ok_or_else(|| FleetRegistryError::Invalid("control parent missing".into()))?;
+    let parent = path
+        .parent()
+        .ok_or_else(|| FleetRegistryError::Invalid("control parent missing".into()))?;
     let directory = std::fs::symlink_metadata(parent)?;
-    if directory.is_dir() && directory.uid() == 0 && directory.gid() != 0
+    if directory.is_dir()
+        && directory.uid() == 0
+        && directory.gid() != 0
         && directory.mode() & 0o7777 == 0o2750
     {
         let metadata = file.metadata()?;
-        if !metadata.is_file() || metadata.uid() != 0 || metadata.gid() != directory.gid() || metadata.nlink() != 1 {
-            return Err(FleetRegistryError::Corrupt("Root control publication lost its exact reader-group custody".into()));
+        if !metadata.is_file()
+            || metadata.uid() != 0
+            || metadata.gid() != directory.gid()
+            || metadata.nlink() != 1
+        {
+            return Err(FleetRegistryError::Corrupt(
+                "Root control publication lost its exact reader-group custody".into(),
+            ));
         }
         file.set_permissions(std::fs::Permissions::from_mode(0o640))?;
     }
@@ -495,7 +508,10 @@ pub(crate) fn preserve_root_reader_mode(file: &File, path: &Path) -> Result<(), 
 }
 
 #[cfg(not(unix))]
-pub(crate) fn preserve_root_reader_mode(_file: &std::fs::File, _path: &Path) -> Result<(), FleetRegistryError> {
+pub(crate) fn preserve_root_reader_mode(
+    _file: &std::fs::File,
+    _path: &Path,
+) -> Result<(), FleetRegistryError> {
     Ok(())
 }
 
