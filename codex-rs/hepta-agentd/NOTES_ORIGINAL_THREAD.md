@@ -41,7 +41,11 @@ the task; it cannot create a replacement writer or rearm a request.
 `hepta_notes_state({})` returns the attached target, current revision, exact text
 hash and pending-receipt flag. This state is an observation, not permission.
 `hepta_notes_replace({"text": "…", "expected_revision": 7})` accepts only these
-two arguments. UTF-8 text is bounded to 4096 bytes. A changed predecessor or
+two arguments. `hepta_notes_status({"turn_id":"…","call_id":"…"})` reads the
+exact result of a retained original replace item in the fixed thread, including
+an original item whose tool reply was unknown. These are navigation IDs; the
+original item and operation are independently checked, and this path never
+prepares, signs or resends. UTF-8 text is bounded to 4096 bytes. A changed predecessor or
 pending receipt prevents preparation. The application still performs its atomic
 predecessor check at the effect boundary.
 

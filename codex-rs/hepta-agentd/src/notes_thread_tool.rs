@@ -26,9 +26,11 @@ mod proof;
 #[path = "notes_thread_runtime.rs"]
 mod runtime;
 use proof::VerifiedNotesThreadCall;
+use proof::VerifiedNotesThreadOperation;
 
 pub(crate) const READ_TOOL: &str = "hepta_notes_state";
 pub(crate) const REPLACE_TOOL: &str = "hepta_notes_replace";
+pub(crate) const STATUS_TOOL: &str = "hepta_notes_status";
 
 /// Install this exact catalog at the original `thread/start`. Resume must use
 /// the original owner's retained catalog and cannot silently add tools.
@@ -43,6 +45,12 @@ pub fn original_notes_thread_tools() -> Vec<DynamicToolSpec> {
                 "expected_revision":{"type":"integer", "minimum":0}
             }, "required":["text","expected_revision"], "additionalProperties":false
         })),
+        (STATUS_TOOL, "Read only the exact retained result of an original hepta_notes_replace item in this same thread. Supply its original turn_id and call_id; this never prepares, signs, sends, or repeats an effect.", json!({
+            "type":"object", "properties":{
+                "turn_id":{"type":"string","maxLength":128},
+                "call_id":{"type":"string","maxLength":128}
+            }, "required":["turn_id","call_id"], "additionalProperties":false
+        })),
     ].into_iter().map(|(name, description, input_schema)| DynamicToolSpec::Function(DynamicToolFunctionSpec {
         name: name.into(), description: description.into(), input_schema, defer_loading: false,
     })).collect()
@@ -53,6 +61,13 @@ pub fn original_notes_thread_tools() -> Vec<DynamicToolSpec> {
 struct ReplaceArguments {
     text: String,
     expected_revision: u64,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct StatusArguments {
+    turn_id: String,
+    call_id: String,
 }
 
 /// A required original-Agentd task. It owns one original connection and one
@@ -141,7 +156,7 @@ impl AgentdNotesThreadToolRuntime {
         )
     }
 
-    async fn execute(&mut self, call: &VerifiedNotesThreadCall) -> Result<Value, AgentdError> {
+    fn provenance(&self, call: &VerifiedNotesThreadCall) -> Value {
         let provenance = json!({
             "kind":"original_core_dynamic_tool", "thread_id":self.route.thread_id,
             "app_server_session_id":self.route.app_server_session_id,
@@ -152,15 +167,23 @@ impl AgentdNotesThreadToolRuntime {
             "prompt_registry_sha256":self.adapter.bindings.prompt_registry_digest.to_string(),
             "artifact_set_sha256":self.adapter.bindings.artifact_set_digest.to_string(),
         });
+        provenance
+    }
+
+    async fn execute(&mut self, call: &VerifiedNotesThreadCall) -> Result<Value, AgentdError> {
         if call.tool() == READ_TOOL {
-            return Ok(json!({"provenance":provenance,"document":self.observe_document().await?}));
+            return Ok(
+                json!({"provenance":self.provenance(call),"document":self.observe_document().await?}),
+            );
+        }
+        if call.tool() != REPLACE_TOOL {
+            return Err(invalid("operation status cannot enter Notes preparation"));
         }
         let arguments: ReplaceArguments = serde_json::from_value(call.arguments().clone())?;
         if arguments.text.trim().is_empty() || arguments.text.len() > 4096 {
             return Err(invalid("original Notes text exceeds its UTF-8 byte bound"));
         }
         let request_id = call.intent_id(&self.route)?;
-        let run_id = self.adapter.run_id(&request_id)?;
         let end = Instant::now() + self.adapter.deadline;
         let prepared = self
             .adapter
@@ -178,6 +201,26 @@ impl AgentdNotesThreadToolRuntime {
                 Some(ready.submit_once(remaining).await?)
             }
         };
+        let retained = submission.map(|observed| {
+            observed.retention == crate::AgentdNotesObservationRetention::Acknowledged
+        });
+        self.observe_operation(call, retained).await
+    }
+
+    async fn observe_retained(
+        &mut self,
+        original: &VerifiedNotesThreadOperation,
+    ) -> Result<Value, AgentdError> {
+        self.observe_operation(original.original_call(), None).await
+    }
+
+    async fn observe_operation(
+        &self,
+        call: &VerifiedNotesThreadCall,
+        sender_observation_retained: Option<bool>,
+    ) -> Result<Value, AgentdError> {
+        let request_id = call.intent_id(&self.route)?;
+        let run_id = self.adapter.run_id(&request_id)?;
         let original = self
             .adapter
             .writer
@@ -193,16 +236,16 @@ impl AgentdNotesThreadToolRuntime {
             .adapter
             .retained_thread_request_sha256(&request_id)
             .await?;
-        let sender_observation_retained = submission.map(|observed| {
-            observed.retention == crate::AgentdNotesObservationRetention::Acknowledged
-        });
+        // Losing the application or its readback cannot erase an already
+        // verified immutable source receipt. Report freshness separately.
+        let document = self.observe_document().await.ok();
         Ok(json!({
-            "provenance":provenance, "operation_id":run_id,
+            "provenance":self.provenance(call), "operation_id":run_id,
             "semantic_sha256":original.operation.semantic_digest().to_string(),
             "exact_request_sha256":request_sha256,
             "sender_observation_retained":sender_observation_retained,
             "state":format!("{:?}",original.state), "receipt_utf8":receipt,
-            "document":self.observe_document().await?,
+            "document_readback_available":document.is_some(), "document":document,
         }))
     }
 }

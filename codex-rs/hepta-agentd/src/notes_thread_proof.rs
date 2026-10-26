@@ -53,7 +53,7 @@ impl VerifiedNotesThreadCall {
     ) -> Result<(), AgentdError> {
         if params.thread_id != route.thread_id
             || params.namespace.is_some()
-            || !matches!(params.tool.as_str(), READ_TOOL | REPLACE_TOOL)
+            || !matches!(params.tool.as_str(), READ_TOOL | REPLACE_TOOL | STATUS_TOOL)
             || params.turn_id.is_empty()
             || params.turn_id.len() > 128
             || params.call_id.is_empty()
@@ -64,6 +64,17 @@ impl VerifiedNotesThreadCall {
         }
         match params.tool.as_str() {
             READ_TOOL if params.arguments == json!({}) => Ok(()),
+            STATUS_TOOL => {
+                let navigation: StatusArguments = serde_json::from_value(params.arguments.clone())?;
+                if navigation.turn_id.is_empty()
+                    || navigation.turn_id.len() > 128
+                    || navigation.call_id.is_empty()
+                    || navigation.call_id.len() > 128
+                {
+                    return Err(invalid("original Notes status navigation bound"));
+                }
+                Ok(())
+            }
             REPLACE_TOOL => {
                 let arguments: ReplaceArguments = serde_json::from_value(params.arguments.clone())?;
                 if arguments.text.trim().is_empty() || arguments.text.len() > 4096 {
@@ -104,5 +115,53 @@ impl VerifiedNotesThreadCall {
     }
     pub(super) fn callback_digest(&self) -> Digest32 {
         self.callback_digest
+    }
+}
+
+/// A read-only reference to an actual original replace item, including a
+/// completed unknown response. It is never admitted to `execute` or preparation.
+pub(super) struct VerifiedNotesThreadOperation {
+    original: VerifiedNotesThreadCall,
+}
+impl VerifiedNotesThreadOperation {
+    pub(super) fn from_original_item(
+        route: &AgentdTextSessionConfig,
+        turn_id: &str,
+        call_id: &str,
+        item: &ThreadItem,
+    ) -> Result<Self, AgentdError> {
+        let ThreadItem::DynamicToolCall {
+            id,
+            namespace,
+            tool,
+            arguments,
+            ..
+        } = item
+        else {
+            return Err(invalid("status navigation is not an original dynamic item"));
+        };
+        if id != call_id || tool != REPLACE_TOOL {
+            return Err(invalid(
+                "status navigation is not an original Notes replace item",
+            ));
+        }
+        let params = DynamicToolCallParams {
+            thread_id: route.thread_id.clone(),
+            turn_id: turn_id.into(),
+            call_id: call_id.into(),
+            namespace: namespace.clone(),
+            tool: tool.clone(),
+            arguments: arguments.clone(),
+        };
+        VerifiedNotesThreadCall::validate_callback(route, &params)?;
+        Ok(Self {
+            original: VerifiedNotesThreadCall {
+                callback_digest: Digest32::of_bytes(&serde_json::to_vec(&params)?),
+                params,
+            },
+        })
+    }
+    pub(super) fn original_call(&self) -> &VerifiedNotesThreadCall {
+        &self.original
     }
 }

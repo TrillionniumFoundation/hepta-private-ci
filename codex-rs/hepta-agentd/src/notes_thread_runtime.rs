@@ -107,11 +107,20 @@ impl OriginalConnection {
         params: &DynamicToolCallParams,
     ) -> Result<VerifiedNotesThreadCall, AgentdError> {
         VerifiedNotesThreadCall::validate_callback(&self.route, params)?;
+        let item = self.original_item(&params.turn_id, &params.call_id).await?;
+        VerifiedNotesThreadCall::from_original_item(&self.route, params, &item)
+    }
+
+    async fn original_item(
+        &mut self,
+        original_turn_id: &str,
+        original_call_id: &str,
+    ) -> Result<codex_app_server_protocol::ThreadItem, AgentdError> {
         let end = tokio::time::Instant::now() + Duration::from_secs(5);
         let mut cursor = None;
         for _ in 0..16 {
             let thread_id = self.route.thread_id.clone();
-            let turn_id = params.turn_id.clone();
+            let turn_id = original_turn_id.to_owned();
             let page: ThreadItemsListResponse = tokio::time::timeout_at(
                 end,
                 self.call(|request_id| ClientRequest::ThreadItemsList {
@@ -127,20 +136,20 @@ impl OriginalConnection {
             )
             .await
             .map_err(|_| invalid("original callback preview deadline elapsed"))??;
-            if page.data.len() > 128 || page.data.iter().any(|item| item.turn_id != params.turn_id)
+            if page.data.len() > 128
+                || page
+                    .data
+                    .iter()
+                    .any(|item| item.turn_id != original_turn_id)
             {
                 return Err(invalid("original callback page escaped its turn"));
             }
             for item in page.data {
                 if let codex_app_server_protocol::ThreadItem::DynamicToolCall { id, .. } =
                     &item.item
-                    && id == &params.call_id
+                    && id == original_call_id
                 {
-                    return VerifiedNotesThreadCall::from_original_item(
-                        &self.route,
-                        params,
-                        &item.item,
-                    );
+                    return Ok(item.item);
                 }
             }
             cursor = page.next_cursor;
@@ -184,7 +193,7 @@ impl AgentdNotesThreadToolRuntime {
                 AppServerEvent::ServerRequest(ServerRequest::DynamicToolCall {
                     request_id,
                     params,
-                }) if matches!(params.tool.as_str(), READ_TOOL | REPLACE_TOOL) => {
+                }) if matches!(params.tool.as_str(), READ_TOOL | REPLACE_TOOL | STATUS_TOOL) => {
                     (request_id.clone(), params.clone())
                 }
                 AppServerEvent::Disconnected { .. } | AppServerEvent::Lagged { .. } => {
@@ -197,6 +206,24 @@ impl AgentdNotesThreadToolRuntime {
             let mut operation_id = None;
             let result = async {
                 let call = connection.verify(&params).await?;
+                if call.tool() == STATUS_TOOL {
+                    let navigation: StatusArguments =
+                        serde_json::from_value(call.arguments().clone())?;
+                    let item = connection
+                        .original_item(&navigation.turn_id, &navigation.call_id)
+                        .await?;
+                    let original = VerifiedNotesThreadOperation::from_original_item(
+                        &self.route,
+                        &navigation.turn_id,
+                        &navigation.call_id,
+                        &item,
+                    )?;
+                    operation_id = Some(
+                        self.adapter
+                            .run_id(&original.original_call().intent_id(&self.route)?)?,
+                    );
+                    return self.observe_retained(&original).await;
+                }
                 if call.tool() == REPLACE_TOOL {
                     operation_id = Some(self.adapter.run_id(&call.intent_id(&self.route)?)?);
                 }

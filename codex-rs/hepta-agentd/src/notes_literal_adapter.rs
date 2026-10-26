@@ -252,15 +252,14 @@ impl AgentdNotesLiteralAdapter {
     pub(crate) async fn retained_thread_request_sha256(
         &self,
         client_intent_id: &str,
-    ) -> Result<String, AgentdError> {
+    ) -> Result<Option<String>, AgentdError> {
         let run_id = self.run_id(client_intent_id)?;
         let request = self
             .sender
             .retained_request_for_run(&run_id)
             .await
-            .map_err(|error| invalid(&error.to_string()))?
-            .ok_or_else(|| invalid("original thread request was not retained"))?;
-        Ok(request.identity().original_sha256.as_str().to_owned())
+            .map_err(|error| invalid(&error.to_string()))?;
+        Ok(request.map(|request| request.identity().original_sha256.as_str().to_owned()))
     }
 
     pub fn check_available(&self) -> Result<(), AgentdError> {

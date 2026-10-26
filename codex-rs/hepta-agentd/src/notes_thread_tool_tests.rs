@@ -115,11 +115,64 @@ fn model_arguments_cannot_supply_identity_authority_or_a_new_tool_route() {
         "UTF-8 byte bound applies even when the JSON character bound passes"
     );
     let tools = original_notes_thread_tools();
-    assert_eq!(tools.len(), 2);
+    assert_eq!(tools.len(), 3);
     for tool in tools {
         let DynamicToolSpec::Function(tool) = tool else {
             panic!("fixed function catalog");
         };
         assert_eq!(tool.input_schema["additionalProperties"], false);
     }
+}
+
+#[test]
+fn retained_unknown_item_can_only_be_referenced_for_read_only_status() {
+    let route = route();
+    let params = callback();
+    let mut original = item(&params);
+    if let ThreadItem::DynamicToolCall {
+        status, success, ..
+    } = &mut original
+    {
+        *status = DynamicToolCallStatus::Failed;
+        *success = Some(false);
+    }
+    assert!(VerifiedNotesThreadCall::from_original_item(&route, &params, &original).is_err());
+    let observed = VerifiedNotesThreadOperation::from_original_item(
+        &route,
+        &params.turn_id,
+        &params.call_id,
+        &original,
+    )
+    .unwrap();
+    let pending =
+        VerifiedNotesThreadCall::from_original_item(&route, &params, &item(&params)).unwrap();
+    assert_eq!(
+        observed.original_call().intent_id(&route).unwrap(),
+        pending.intent_id(&route).unwrap()
+    );
+    assert!(
+        VerifiedNotesThreadOperation::from_original_item(
+            &route,
+            &params.turn_id,
+            "different-call",
+            &original
+        )
+        .is_err()
+    );
+    let mut status = callback();
+    status.tool = STATUS_TOOL.into();
+    status.arguments = json!({"turn_id":params.turn_id,"call_id":params.call_id});
+    assert!(VerifiedNotesThreadCall::from_original_item(&route, &status, &item(&status)).is_ok());
+    status.arguments["thread_id"] = json!("forged");
+    assert!(VerifiedNotesThreadCall::from_original_item(&route, &status, &item(&status)).is_err());
+    assert!(
+        VerifiedNotesThreadOperation::from_original_item(
+            &route,
+            &status.turn_id,
+            &status.call_id,
+            &item(&status)
+        )
+        .is_err(),
+        "a status item cannot supply a mutation reference"
+    );
 }
