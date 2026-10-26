@@ -1,11 +1,9 @@
 use super::*;
 
-const MAGIC: &[u8; 8] = b"HPTHOF07";
-
 impl TrainingHandoffBundleV7 {
     #[must_use]
     pub fn encode(&self) -> Vec<u8> {
-        let mut bytes = MAGIC.to_vec();
+        let mut bytes = self.controller_version.magic().to_vec();
         bytes.extend_from_slice(self.protocol_digest.as_array());
         bytes.push(u8::from(self.predecessor_digest.is_some()));
         if let Some(previous) = self.predecessor_digest {
@@ -31,6 +29,14 @@ impl TrainingHandoffBundleV7 {
 
     /// Require the independently admitted outer digest before any decoding.
     pub fn decode(bytes: &[u8], expected: Digest32) -> Result<Self, TrainingHandoffErrorV7> {
+        Self::decode_versioned(bytes, expected, ControllerVersion::V7)
+    }
+
+    pub(crate) fn decode_versioned(
+        bytes: &[u8],
+        expected: Digest32,
+        controller_version: ControllerVersion,
+    ) -> Result<Self, TrainingHandoffErrorV7> {
         if bytes.len() > MAX_TRAINING_HANDOFF_BYTES_V7
             || expected.is_zero()
             || Digest32::of_bytes(bytes) != expected
@@ -38,7 +44,7 @@ impl TrainingHandoffBundleV7 {
             return Err(TrainingHandoffErrorV7::Digest);
         }
         let mut reader = Reader { bytes, offset: 0 };
-        if reader.take(8)? != MAGIC {
+        if reader.take(8)? != controller_version.magic() {
             return Err(TrainingHandoffErrorV7::Encoding);
         }
         let protocol = Digest32::from_array(reader.fixed()?);
@@ -87,7 +93,13 @@ impl TrainingHandoffBundleV7 {
         if reader.offset != bytes.len() {
             return Err(TrainingHandoffErrorV7::Encoding);
         }
-        let bundle = Self::new(serving, protocol, predecessor, checkpoints)?;
+        let bundle = Self::new_versioned(
+            serving,
+            protocol,
+            predecessor,
+            checkpoints,
+            controller_version,
+        )?;
         if bundle.content_digest != expected {
             return Err(TrainingHandoffErrorV7::Digest);
         }
