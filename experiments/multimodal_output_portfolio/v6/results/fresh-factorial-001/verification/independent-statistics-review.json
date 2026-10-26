@@ -1,0 +1,169 @@
+{
+  "analysis_environment": {
+    "numpy": "2.3.5",
+    "python": "3.12.14",
+    "torch_imported": false
+  },
+  "bootstrap": {
+    "fixed_seed_average_first": true,
+    "quantile_method": "linear",
+    "quantiles": [
+      0.008333333333333333,
+      0.9916666666666667
+    ],
+    "replicates": 10000,
+    "seed": 431125,
+    "source_pairs": 60,
+    "source_pairs_per_stratum": 10,
+    "strata": 6
+  },
+  "cases": {
+    "distinct_pixel_hashes": 180,
+    "distinct_source_ids": 180,
+    "future": 60,
+    "observed_prior_exclusion_overlap": 0,
+    "retention": 30
+  },
+  "expanded_vs_matrix_max_abs_difference": 5.551115123125783e-17,
+  "inputs_read": {
+    "owner-manifest.json": {
+      "bytes": 1065487,
+      "sha256": "86ef3010a27258102933b80a6b1dd68607b23b0998d60f8efbb2f222f525404c"
+    },
+    "owner/data/cases.json": {
+      "bytes": 23677,
+      "sha256": "a21bd33b7f8de91a1b53e19310824ad73eaf811be281f79e100e0175f6c0badc"
+    },
+    "owner/data/data-receipt.json": {
+      "bytes": 6062,
+      "sha256": "8d7e68e9af6187a688efaad64f5415be6c5608b39d31a000329b5cc711976220"
+    },
+    "owner/evaluation/evaluation-seal.json": {
+      "bytes": 544,
+      "sha256": "db43414cdcc77837e435f3c1f510eaafc144ce304cb98020a8cab0088c837575"
+    },
+    "owner/evaluation/final-access.json": {
+      "bytes": 1221,
+      "sha256": "933ce81e5c408e4e4cd5ae95c8a38c11be80a1039695a9823c0f49f4791c0989"
+    },
+    "owner/evaluation/scored-rows.json": {
+      "bytes": 2149546,
+      "sha256": "189c765ccbe7797b3a59010a90d7ad5241dcbc95837244b2506bb8306bfb7954"
+    },
+    "owner/evaluation/source-freeze.json": {
+      "bytes": 4148,
+      "sha256": "d0746ee6f17d8333bdf7596e20cc50e0fd2edf6a4bb040d80016dc0d1280e669"
+    },
+    "owner/evaluation/summary.json": {
+      "bytes": 27618,
+      "sha256": "d8ec3a2430cd3f491c1ae58fbd88371d8ef62fc6c3f57a871e1dfaab90398a88"
+    },
+    "owner/inference/rows.json": {
+      "bytes": 1598160,
+      "sha256": "0cd36dd9f164522c19b71d59a9e9b10fb0804f41c5ffb471c079dabffe302a5b"
+    },
+    "owner/inference/run-seal.json": {
+      "bytes": 293222,
+      "sha256": "7385621d161dd9b21851aaa9675c235a703be8e2033951abef568978a1e2ddb0"
+    },
+    "owner/inference/run.json": {
+      "bytes": 1331,
+      "sha256": "ba80ad6420ae293ae7857a7ece59a8cab8dcb50c6e823fbad0565baa9a627833"
+    },
+    "owner/model-seal.json": {
+      "bytes": 3217,
+      "sha256": "43317d832f00e2bd105092df5e0b3e827d0d874acf73e933f3ef3d913ddfec33"
+    },
+    "owner/replay/rows.json": {
+      "bytes": 1598155,
+      "sha256": "5341a2ff6b658bcc7326672a26a5246978a9ab43a7f94714e717746e70d39ee4"
+    },
+    "owner/replay/run-seal.json": {
+      "bytes": 293326,
+      "sha256": "3ea01fcb91ecf78c64b874d2f460bc9732045666e751a282857e0b8dd35f825c"
+    },
+    "owner/replay/run.json": {
+      "bytes": 1328,
+      "sha256": "4624320d3f95e44d0cad83273a18cad7e0da6518252949de1765cd17febbf395"
+    },
+    "owner/training/training.json": {
+      "bytes": 7413,
+      "sha256": "e9826ea24dd8cd3f50646ea1873d25ee567b20717279cf6b2e87ae299bca2e0b"
+    },
+    "protocol.json": {
+      "bytes": 48276,
+      "sha256": "a3531af321d47e82d98d31d2bb5db0cb9eb87809ac30a470468a7b7cde5c1e46"
+    }
+  },
+  "interpretation": "all three registered intervals contain zero; neither main effect meets upper<0; this is unresolved rather than equivalence/no effect",
+  "metadata_archive": {
+    "bytes": 3761485,
+    "sha256": "7a52402940d92489f4625bac035160d0eee3cf51c872422f5184445af6319735"
+  },
+  "metric_arithmetic_max_abs_difference": 0.0,
+  "not_reperformed": [
+    "model training/inference",
+    "OCR/ground-truth scoring",
+    "pixel MSE from target arrays",
+    "state tensor comparison",
+    "binary output payload hashing on local machine"
+  ],
+  "opaque_payload_scope": "original output/state/model hashes are metadata bindings to the owner manifest; main-host raw-byte verification remains separately attributed",
+  "original_primary_max_abs_difference": 1.3877787807814457e-17,
+  "original_source_means_and_contrasts_max_abs_difference": 1.6653345369377348e-16,
+  "output_hash_bindings_to_both_original_seals_and_owner_manifest": 4320,
+  "primary": {
+    "base_main_effect": {
+      "direction": "unresolved",
+      "estimate": -0.004488275341896543,
+      "interval": [
+        -0.018601761109984682,
+        0.009524689580999439
+      ],
+      "main_effect_improvement": false
+    },
+    "gate_main_effect": {
+      "direction": "unresolved",
+      "estimate": 0.00021129128316209952,
+      "interval": [
+        -0.005834006337681792,
+        0.00570008345100925
+      ],
+      "main_effect_improvement": false
+    },
+    "interaction": {
+      "direction": "unresolved",
+      "estimate": 0.004296420299344591,
+      "interval": [
+        -0.003909223574058458,
+        0.012771636407460183
+      ],
+      "main_effect_improvement": null
+    }
+  },
+  "production_authority": false,
+  "protocol_canonical_sha256": "1bc83a267d06f88f62ce6913197f50f34b70ebef2241ad89a788dae16dcbc360",
+  "protocol_file_sha256": "a3531af321d47e82d98d31d2bb5db0cb9eb87809ac30a470468a7b7cde5c1e46",
+  "result": "passed",
+  "reviewed_at_utc": "2026-10-25T16:03:07.522396+00:00",
+  "rows": {
+    "exact_registered_order": true,
+    "future_each": 720,
+    "inference": 1080,
+    "replay": 1080,
+    "replay_all_row_fields_except_cost_equal": true,
+    "retention_each": 360,
+    "scored": 1080,
+    "scored_rows_retain_all_inference_fields": true,
+    "unique_keys_each": 1080
+  },
+  "run_required_set_sizes": {
+    "evaluation": 4,
+    "inference": 2164,
+    "replay": 2165
+  },
+  "schema": "hepta.ndu-fresh-independent-statistics-review.v1",
+  "scope": "JSON-only independent key/source/action/output-hash binding and fixed statistical arithmetic; no original experiment module imported",
+  "source_commit": "ee7609048da0c12d542765e29422c0d3c647e0a5",
+  "uncertainty_scope": "source resampling conditional on these fitted models/observers and three fixed seeds; no training-population or general-intelligence claim"
+}
