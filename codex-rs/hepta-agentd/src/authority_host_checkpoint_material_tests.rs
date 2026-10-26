@@ -4,6 +4,7 @@
 
 use super::*;
 use crate::authority_host_checkpoint::PreparedMaterialRecovery;
+use pretty_assertions::assert_eq;
 use std::os::unix::fs::MetadataExt;
 use std::path::PathBuf;
 
