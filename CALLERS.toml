@@ -75,7 +75,10 @@ id = "cognitive_store_recovery_open"
 symbol = "CognitiveStore::open_with_recovery"
 definition_path = "codex-rs/hepta-memory/src/cognitive_store_recovery.rs"
 definition_markers = ["pub async fn open_with_recovery", "ProductionAuthorityVerifier", "CognitiveStoreOpenGuard::acquire_exclusive"]
-product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+product_callers = [
+  "codex-rs/hepta-agentd/src/production_writer_host.rs",
+  "codex-rs/hepta-agentd/src/production_protected_host.rs",
+]
 caller_markers = ["CognitiveStore::open_with_recovery", "ProductionAuthorityVerifier"]
 
 [[boundary]]
@@ -370,8 +373,13 @@ symbol = "AuthorityLeaseVerifier::verify_use"
 call_pattern = '\bverifier\s*\.\s*verify_use\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub struct AuthorityLeaseVerifier", "pub fn verify_use(", "LeaseVerifiedUseToken"]
-product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs"]
-caller_markers = ["AuthorityLeaseVerifier", ".verify_use(", "FleetAuthorityPort"]
+product_callers = [
+  "codex-rs/hepta-fleet/src/authority_port.rs",
+  "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+  "codex-rs/hepta-agentd/src/deployment_writer.rs",
+  "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs",
+]
+caller_markers = [".verify_use("]
 
 [[boundary]]
 id = "authority_lease_delivery"
@@ -402,8 +410,11 @@ id = "authority_lease_dispatch_witness"
 symbol = "dispatch_authority_lease_with_witness"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn dispatch_authority_lease_with_witness", "VerifiedUseTokenWitnessV1", "with_dispatch_boundary_witness"]
-product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs"]
-caller_markers = ["dispatch_authority_lease_with_witness", "issue_with_witness", "FleetAuthorityPort"]
+product_callers = [
+  "codex-rs/hepta-fleet/src/authority_port.rs",
+  "codex-rs/hepta-agentd/src/deployment_writer.rs",
+]
+caller_markers = ["dispatch_authority_lease_with_witness"]
 
 [[protected_file]]
 path = "codex-rs/hepta-supervisor/src/main.rs"
@@ -520,3 +531,32 @@ definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_effect", "enter_verified_effect", "active_dispatches"]
 product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs"]
 caller_markers = ["with_verified_effect"]
+
+
+# Shared boundary markers apply to each registered caller. Role-specific
+# constraints preserve the original Fleet checks and bind the exact Agentd
+# protected construction/rotation paths; no new ignored source is introduced.
+[[protected_file]]
+path = "codex-rs/hepta-fleet/src/authority_port.rs"
+required = ["AuthorityLeaseVerifier", ".verify_use(", "FleetAuthorityPort", "dispatch_authority_lease_with_witness", "issue_with_witness"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/production_protected_host.rs"
+required = ["open_with_protected_recovery", "CognitiveRecoveryRequirement::ExactCurrentCut", "verify_sender_process_binding", ".bind_protected_checkpoint(", "CognitiveCheckpointPhase::Current", "from_recovered_store"]
+forbidden = ["AllowVerifier", "permit_all", "CognitiveStore::open("]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_issuer_root.rs"
+required = ["ProtectedLease", "AuthorityLeaseVerifier", ".verify_use(", ".with_dispatch_boundary(", "lease.revision != self.revision"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_writer.rs"
+required = ["HostAuthorityWriterRegistration", "AuthorityLeaseVerifier", ".verify_use(", "dispatch_authority_lease_with_witness", "VerifiedUseAuthorityRefV1::AuthorityLease", "registration.with_live("]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs"
+required = ["rotate_writer_authorization", "predecessor.validate()?", "successor.validate()?", ".verify_use(", ".with_retired_predecessor_boundary("]
+forbidden = ["AllowVerifier", "permit_all"]
