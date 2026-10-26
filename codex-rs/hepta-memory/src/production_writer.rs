@@ -492,13 +492,27 @@ impl DurableWriterLock {
                 "cognitive database path has no parent for writer lock".to_string(),
             )
         })?;
-        let canonical_parent = parent.canonicalize().map_err(|error| {
+        // On Windows, canonicalize() adds a verbatim drive/UNC prefix. That
+        // spelling alone does not indicate a redirect. Keep the component and
+        // reparse-point checks from the existing private-root admission path.
+        #[cfg(windows)]
+        let canonical_parent_matches =
+            crate::cognitive_path::canonical_path_without_redirection(parent)
+                .map_err(|error| {
+                    ProductionWriterError::Durability(format!(
+                        "cannot canonicalize writer-lock parent {}: {error}",
+                        parent.display()
+                    ))
+                })?
+                .is_some();
+        #[cfg(not(windows))]
+        let canonical_parent_matches = parent.canonicalize().map_err(|error| {
             ProductionWriterError::Durability(format!(
                 "cannot canonicalize writer-lock parent {}: {error}",
                 parent.display()
             ))
-        })?;
-        if canonical_parent != parent {
+        })? == parent;
+        if !canonical_parent_matches {
             return Err(ProductionWriterError::Durability(
                 "writer-lock parent must be canonical".to_string(),
             ));
