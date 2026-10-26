@@ -587,6 +587,7 @@ impl AgentdProductionWriterHost {
     /// Notes observer. The original writer validates every retained binding.
     /// This adds no dispatcher or grant provider and never changes the current
     /// destination used for new Notes intents. Call on the trusted worker.
+    #[cfg(target_os = "linux")]
     pub async fn attach_previous_notes_recovery(
         mut self,
         observer: &crate::AgentdNotesDocumentObserver,
@@ -652,5 +653,13 @@ impl AgentdProductionWriterHost {
         Ok(dispatcher
             .dispatch(self.writer.as_ref(), signed, expected, receipt)
             .await?)
+    }
+}
+
+#[cfg(all(test, target_os = "windows"))]
+mod windows_notes_api_regression {
+    #[test]
+    fn explicit_recovery_api_remains_available_without_linux_observer() {
+        let _method = super::AgentdProductionWriterHost::attach_explicit_previous_notes_recovery;
     }
 }
