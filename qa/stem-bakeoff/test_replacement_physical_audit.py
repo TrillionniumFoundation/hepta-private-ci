@@ -143,6 +143,38 @@ class PhysicalAuditTests(unittest.TestCase):
                     self.assertTrue(any("Arctic RoPE" in error for error in
                                         audit_arm("arctic_305m", case, REGISTRY["models"]["arctic_305m"])))
 
+    def test_finite_timing_rejects_overflow_and_negative_median(self):
+        for key, value in (("load_ms", 10**400),
+                           ("forward_latency_p50_ms", -1),
+                           ("forward_latency_p50_ms", -0.5),
+                           ("forward_latency_p50_ms", float("nan")),
+                           ("raw_forward_throughput_per_second", float("inf")),
+                           ("load_ms", True)):
+            with self.subTest(key=key, value=value):
+                case = fake("arctic_305m")
+                case["performance"][key] = value
+                self.assertTrue(any("timing" in error for error in
+                                    audit_arm("arctic_305m", case, REGISTRY["models"]["arctic_305m"])))
+        for median in (0, 0.0, 1, 1.0):
+            case = fake("arctic_305m")
+            case["performance"]["forward_latency_p50_ms"] = median
+            self.assertEqual(audit_arm("arctic_305m", case, REGISTRY["models"]["arctic_305m"]), [])
+
+    def test_head_training_scalar_type_aliases_rejected(self):
+        for key, value in (("seed", 7.0), ("steps", 200.0),
+                           ("calibration_temperature", True),
+                           ("calibration_temperature", float("nan")),
+                           ("calibration_temperature", 10**400)):
+            with self.subTest(key=key, value=value):
+                case = fake("arctic_305m")
+                case["head_training"][key] = value
+                self.assertTrue(any("Head training" in error for error in
+                                    audit_arm("arctic_305m", case, REGISTRY["models"]["arctic_305m"])))
+        for temperature in (1, 1.0, 0.5, 2, 4.0):
+            case = fake("arctic_305m")
+            case["head_training"]["calibration_temperature"] = temperature
+            self.assertEqual(audit_arm("arctic_305m", case, REGISTRY["models"]["arctic_305m"]), [])
+
     def test_metric_forgery_rejected(self):
         cases = samples()
         cases[EXPECTED[0]]["scores"]["future_1"]["metrics"]["accuracy"] = .01
