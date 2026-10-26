@@ -431,4 +431,143 @@ mod scoped_ime {
         assert_eq!(format!("{:?}", input.save_state()), accepted);
         assert!(!input.is_composing());
     }
+    fn key_event(cx: &mut Cx, input: &TextInputRef, redo: bool) {
+        input.borrow_mut().unwrap().handle_event(cx, &Event::KeyDown(KeyEvent {
+            key_code: KeyCode::KeyZ,
+            modifiers: KeyModifiers { control: true, shift: redo, ..Default::default() },
+            ..Default::default()
+        }), &mut Scope::empty());
+    }
+
+    fn full_state_event(cx: &mut Cx, input: &TextInputRef, text: &str, composing: bool) {
+        let end = CharOffset(text.chars().count());
+        input.borrow_mut().unwrap().handle_event(cx, &Event::TextInput(TextInputEvent {
+            full_state_sync: Some(FullTextState {
+                text: text.into(), selection: end..end,
+                composition: composing.then_some(CharOffset(0)..end),
+            }),
+            ..Default::default()
+        }), &mut Scope::empty());
+    }
+
+    #[test]
+    fn identical_preview_and_commit_publish_one_typed_commit_and_fence_replays() {
+        let (mut cx, input, mut workspace, _, pending, mut tx, _surface) = fixture("");
+        event(&mut cx, &input, "中文🚀", true);
+        let visible_preview = input.text();
+        event(&mut cx, &input, "中文🚀", false);
+        assert_eq!(input.text(), visible_preview);
+        assert!(!input.is_composing());
+        assert_eq!(workspace.draft().text, "");
+        cx.handle_actions();
+        let outcomes = std::mem::take(&mut *pending.borrow_mut());
+        assert_eq!(outcomes.iter().map(|o| o.phase).collect::<Vec<_>>(),
+            vec![TextEditPhase::Preview, TextEditPhase::Committed]);
+        assert_eq!(outcomes[1].before.as_ref().unwrap().text(), "");
+        assert_eq!(outcomes[1].state.text(), "中文🚀");
+        let replay = outcomes[1].clone();
+        let old_owner = replay.clone();
+        let results = outcomes.into_iter().map(|o| tx.outcome(&mut cx, &input, &mut workspace, o)).collect::<Vec<_>>();
+        assert_eq!(results, vec![ActionResult::Ignored, ActionResult::Applied]);
+        let accepted = workspace.draft().clone();
+        let state = format!("{:?}", input.save_state());
+        assert_eq!(tx.outcome(&mut cx, &input, &mut workspace, replay), ActionResult::Rejected);
+        assert_eq!(workspace.draft(), &accepted);
+        assert_eq!(format!("{:?}", input.save_state()), state);
+        assert!(workspace.new_draft());
+        input.restore_checkpoint(&mut cx, TextInputState::default());
+        tx.reset();
+        let room = RoomKey { epoch: workspace.presentation_epoch(), local_id: workspace.active_id() };
+        tx.checkpoint(&input, &workspace, Some(room));
+        let next = workspace.draft().clone();
+        assert_eq!(tx.outcome(&mut cx, &input, &mut workspace, old_owner), ActionResult::Stale);
+        assert_eq!(workspace.draft(), &next);
+        assert_eq!(input.text(), "");
+    }
+
+    #[test]
+    fn net_zero_typed_commit_keeps_redo_and_production_selection_checkpoint() {
+        let (mut cx, input, mut workspace, room, pending, mut tx, _surface) = fixture("你好");
+        input.set_selection(&mut cx, Selection {
+            anchor: Cursor { index: 0, prefer_next_row: false },
+            cursor: Cursor { index: 6, prefer_next_row: false },
+        });
+        input.replace_range(&mut cx, 0..6, "old", UndoGroup::New).unwrap();
+        assert_eq!(deliver(&mut cx, &input, &mut workspace, &pending, &mut tx), vec![ActionResult::Applied]);
+        key_event(&mut cx, &input, false);
+        assert_eq!(deliver(&mut cx, &input, &mut workspace, &pending, &mut tx), vec![ActionResult::Applied]);
+        assert_eq!(input.text(), "你好");
+        // Preserve an actual reversed selection in the production before snapshot.
+        input.set_selection(&mut cx, Selection {
+            anchor: Cursor { index: 6, prefer_next_row: false },
+            cursor: Cursor { index: 0, prefer_next_row: false },
+        });
+        tx.checkpoint(&input, &workspace, Some(room));
+        let before = format!("{:?}", input.save_state());
+        event(&mut cx, &input, "ni", true);
+        event(&mut cx, &input, "你好", false);
+        cx.handle_actions();
+        let outcomes = std::mem::take(&mut *pending.borrow_mut());
+        assert_eq!(outcomes.iter().map(|o| o.phase).collect::<Vec<_>>(),
+            vec![TextEditPhase::Preview, TextEditPhase::Committed]);
+        assert_eq!(format!("{:?}", outcomes[1].before.as_ref().unwrap()), before);
+        assert_eq!(outcomes[1].before.as_ref().unwrap().text(), outcomes[1].state.text());
+        let accepted = format!("{:?}", outcomes[1].state);
+        for outcome in outcomes { tx.outcome(&mut cx, &input, &mut workspace, outcome); }
+        assert_eq!(workspace.draft().text, "你好");
+        assert_eq!(format!("{:?}", tx.saved.as_ref().unwrap().1), accepted);
+        assert_eq!(input.selection().anchor.index, 6);
+        assert_eq!(input.selection().cursor.index, 6);
+        // A real key event proves the old redo was not cleared by a net-zero commit.
+        key_event(&mut cx, &input, true);
+        assert_eq!(deliver(&mut cx, &input, &mut workspace, &pending, &mut tx), vec![ActionResult::Applied]);
+        assert_eq!(workspace.draft().text, "old");
+        key_event(&mut cx, &input, false);
+        assert_eq!(deliver(&mut cx, &input, &mut workspace, &pending, &mut tx), vec![ActionResult::Applied]);
+        assert_eq!(workspace.draft().text, "你好");
+    }
+
+    #[test]
+    fn firefox_shaped_full_state_preview_and_same_text_commit_are_both_refused() {
+        let (mut cx, input, mut workspace, _, pending, mut tx, _surface) = fixture("retained 中文");
+        let draft = workspace.draft().clone();
+        let state = format!("{:?}", input.save_state());
+        let position = input.edit_position();
+        // Packet shape reported by Firefox keyboard.insertText; this is an SDK
+        // event regression, NOT an executed browser or platform qualification.
+        for composing in [true, false, false] {
+            full_state_event(&mut cx, &input, "Theme round trip draft 中文🚀", composing);
+            assert!(deliver(&mut cx, &input, &mut workspace, &pending, &mut tx).is_empty());
+            assert_eq!(workspace.draft(), &draft);
+            assert_eq!(format!("{:?}", input.save_state()), state);
+            assert_eq!(input.edit_position(), position);
+            assert!(!input.is_composing());
+        }
+    }
+
+    #[test]
+    fn full_state_during_native_preview_cancels_once_without_publishing_replacement() {
+        let (mut cx, input, mut workspace, _, pending, mut tx, _surface) = fixture("selected 中文");
+        input.set_selection(&mut cx, Selection {
+            anchor: Cursor { index: 0, prefer_next_row: false },
+            cursor: Cursor { index: 8, prefer_next_row: false },
+        });
+        let state = format!("{:?}", input.save_state());
+        let draft = workspace.draft().clone();
+        event(&mut cx, &input, "native preview", true);
+        full_state_event(&mut cx, &input, "untrusted full-state replacement", false);
+        full_state_event(&mut cx, &input, "untrusted full-state replacement", false);
+        cx.handle_actions();
+        let outcomes = std::mem::take(&mut *pending.borrow_mut());
+        assert_eq!(outcomes.iter().map(|o| o.phase).collect::<Vec<_>>(),
+            vec![TextEditPhase::Preview, TextEditPhase::Cancelled]);
+        for outcome in outcomes {
+            assert_eq!(tx.outcome(&mut cx, &input, &mut workspace, outcome), ActionResult::Ignored);
+        }
+        assert_eq!(workspace.draft(), &draft);
+        assert_eq!(format!("{:?}", input.save_state()), state);
+        assert_eq!(format!("{:?}", tx.saved.as_ref().unwrap().1), state);
+        assert!(!input.is_composing());
+    }
+
 }
