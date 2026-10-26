@@ -337,6 +337,16 @@ pub(super) fn launch_prepared_native(
     profile: HostAuthorityNativeProfile,
     profile_file: &Path,
 ) -> io::Result<()> {
+    launch_prepared_native_with_ready(prepared, config, profile, profile_file, || Ok(()))
+}
+
+pub(super) fn launch_prepared_native_with_ready(
+    prepared: crate::PreparedHostAuthoritySession,
+    config: HostAuthorityServiceConfig,
+    profile: HostAuthorityNativeProfile,
+    profile_file: &Path,
+    ready: impl FnOnce() -> io::Result<()>,
+) -> io::Result<()> {
     let uid = config.peer_uid;
     let gid = config.peer_gid;
     let program = open_verified_program(&profile, config.peer_gid)?;
@@ -433,7 +443,7 @@ pub(super) fn launch_prepared_native(
     file.flush()?;
     file.sync_all()?;
     std::fs::File::open(parent)?.sync_all()?;
-    let result = prepared.serve_with_text(&guard.path, ui_pidfd);
+    let result = prepared.serve_with_text_and_ready(&guard.path, ui_pidfd, ready);
     // Do not kill a UI which may now contain local drafts. Its authenticated
     // owner expires/fences independently when this bounded Root session ends.
     let _ = child.try_wait();

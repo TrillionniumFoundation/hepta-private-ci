@@ -177,13 +177,22 @@ impl PreparedHostAuthoritySession {
 
     /// Consume this retained service and serve its original fixed lanes.
     pub fn serve(self) -> io::Result<()> {
-        self.serve_selected(/*text_ui*/ None)
+        self.serve_selected(/*text_ui*/ None, || Ok(()))
     }
 
     /// Serve this same retained session and the original native text lane.
     /// The original profile, peer, socket and text registration checks apply.
     pub fn serve_with_text(self, text_file: &Path, ui_pidfd: OwnedFd) -> io::Result<()> {
-        self.serve_selected(Some((text_file, ui_pidfd)))
+        self.serve_selected(Some((text_file, ui_pidfd)), || Ok(()))
+    }
+
+    pub(crate) fn serve_with_text_and_ready(
+        self,
+        text_file: &Path,
+        ui_pidfd: OwnedFd,
+        ready: impl FnOnce() -> io::Result<()>,
+    ) -> io::Result<()> {
+        self.serve_selected(Some((text_file, ui_pidfd)), ready)
     }
 
     /// Retain the original provider's held login leader, independently verify
@@ -213,6 +222,20 @@ impl PreparedHostAuthoritySession {
         registration_file: &Path,
         profile_file: &Path,
     ) -> io::Result<()> {
+        self.launch_native_with_ready(config_file, registration_file, profile_file, || Ok(()))
+    }
+
+    /// Complete the same protected native launch before releasing one child
+    /// bootstrap at the original fixed-lane listener barrier. The callback
+    /// must only release that already prepared handoff; no new owner is opened
+    /// and every original peer, deadline and no-retry check remains in force.
+    pub fn launch_native_with_ready(
+        self,
+        config_file: &Path,
+        registration_file: &Path,
+        profile_file: &Path,
+        ready: impl FnOnce() -> io::Result<()>,
+    ) -> io::Result<()> {
         let (config, profile) = crate::authority_host_native_launch::inputs(
             config_file,
             registration_file,
@@ -231,15 +254,20 @@ impl PreparedHostAuthoritySession {
                 "native launch changed the retained original Root inputs",
             ));
         }
-        crate::authority_host_native_launch::launch_prepared_native(
+        crate::authority_host_native_launch::launch_prepared_native_with_ready(
             self,
             config,
             profile,
             profile_file,
+            ready,
         )
     }
 
-    fn serve_selected(self, text_ui: Option<(&Path, OwnedFd)>) -> io::Result<()> {
+    fn serve_selected(
+        self,
+        text_ui: Option<(&Path, OwnedFd)>,
+        ready: impl FnOnce() -> io::Result<()>,
+    ) -> io::Result<()> {
         let Self {
             config,
             registration,
@@ -276,6 +304,10 @@ impl PreparedHostAuthoritySession {
             {
                 return Err(io::Error::other("text UI requires a distinct private lane"));
             }
+            // A refused one-shot handoff must return before either serving
+            // loop starts. All native launch and human registration work is
+            // already complete; only the original accept barrier follows.
+            let bound = listeners::bind_runtime_lanes(&config, ready)?;
             std::thread::scope(|scope| {
                 let worker = scope.spawn(|| {
                     service.serve_text_ui(
@@ -286,14 +318,20 @@ impl PreparedHostAuthoritySession {
                         std::time::Duration::from_millis(config.lifetime_ms),
                     )
                 });
-                let original = serve_lanes(&service, &config, &registration, &owner_pidfd);
+                let original = listeners::serve_bound_lanes(
+                    &service,
+                    &config,
+                    &registration,
+                    &owner_pidfd,
+                    bound,
+                );
                 let ui = worker
                     .join()
                     .map_err(|_| io::Error::other("text UI lane panicked"))?;
                 original.and(ui)
             })
         } else {
-            serve_lanes(&service, &config, &registration, &owner_pidfd)
+            listeners::serve_lanes_with_ready(&service, &config, &registration, &owner_pidfd, ready)
         }
     }
 }
