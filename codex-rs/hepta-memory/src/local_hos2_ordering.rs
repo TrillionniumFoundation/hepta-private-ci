@@ -181,6 +181,44 @@ async fn verified_terminal(
 }
 
 impl LocalLeaseOutbox {
+    /// Read one already terminal original operation. Reuse the identical
+    /// immutable admission/outbox/operation/event verifier used by retirement.
+    pub(crate) async fn retained_hos2_terminal(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        operation_id: &str,
+    ) -> Result<crate::ProductionRetainedHos2Terminal, LocalLeaseOutboxError> {
+        validate_text(operation_id, "operation id", /*max_bytes*/ 512)?;
+        let lease = self.current_lease(transaction).await?;
+        ensure_current_active(&lease, self)?;
+        let (request, _) = verified_terminal(
+            transaction,
+            &self.owner_agent_id,
+            &self.lease_id,
+            operation_id,
+        )
+        .await?;
+        let event = latest_occurrence_event(
+            transaction,
+            &self.lease_id,
+            operation_id,
+            &self.owner_agent_id,
+        )
+        .await?
+        .ok_or_else(|| corrupt("original terminal disappeared"))?;
+        let state = match event.kind.as_str() {
+            "reconcile_committed" => crate::LocalOutcomeState::Committed,
+            "reconcile_rejected" => crate::LocalOutcomeState::Rejected,
+            _ => return Err(corrupt("original HOS2 event is not terminal")),
+        };
+        Ok(crate::ProductionRetainedHos2Terminal {
+            occurrence_key: operation_id.into(),
+            request_json: request.to_json().map_err(LocalLeaseOutboxError::Corrupt)?,
+            terminal_json: event.payload_json,
+            local_event_id: event.event_id,
+            state,
+        })
+    }
     /// Observe the next D in this exact original namespace. This does not
     /// reserve a number: admission still performs its original atomic checks.
     pub(crate) async fn next_hos2_delivery_sequence(

@@ -89,6 +89,7 @@ pub(crate) use reauthorization::PreBoundaryRejected;
 mod hos2_owner;
 pub use hos2_owner::Hos2RetirementObservation;
 pub use hos2_owner::Hos2RetirementPermit;
+pub use hos2_owner::ProductionRetainedHos2Terminal;
 
 #[path = "production_effect_entry.rs"]
 mod effect_entry;

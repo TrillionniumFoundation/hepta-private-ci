@@ -14,7 +14,10 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseFrontier;
 use codex_hepta_memory::CognitiveCheckpointReceipt;
 use codex_hepta_memory::Hos2DeliveryId;
+use codex_hepta_memory::Hos2DeliveryObservation;
+use codex_hepta_memory::Hos2Device;
 use codex_hepta_memory::Hos2InstallBudgetV1;
+use codex_hepta_memory::Hos2InstallOutcome;
 use codex_hepta_memory::Hos2RetirementObservation;
 use codex_hepta_memory::ProductionHos2Target;
 
@@ -47,6 +50,25 @@ pub struct AgentdG2NativeOperationHost {
 }
 
 impl AgentdG2NativeOperationHost {
+    /// Read only retained native history for an original immutable request.
+    /// No grant is issued, no dispatch is entered, and no source event changes.
+    pub async fn observe_retained_native_delivery(
+        &self,
+        request: &Hos2InstallBudgetV1,
+    ) -> Result<Hos2DeliveryObservation, AgentdError> {
+        self.host.writer().verify_current_authority().await?;
+        let observed = self
+            .native
+            .observe(request)
+            .map_err(AgentdError::Protocol)?;
+        self.host.writer().verify_current_authority().await?;
+        match observed {
+            Hos2InstallOutcome::Observed(observation) => Ok(observation),
+            Hos2InstallOutcome::Contradiction(_) => Err(AgentdError::Protocol(
+                "retained native delivery contradicts the original request".into(),
+            )),
+        }
+    }
     /// Read both already activated original consumers. These clones share the
     /// exact original owners; no new local journal or nonce ledger is opened.
     pub async fn consumer_frontiers(

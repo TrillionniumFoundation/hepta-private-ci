@@ -483,6 +483,7 @@ pub use production_writer::ProductionOutboxTarget;
 pub use production_writer::ProductionOutcomeReceipt;
 pub use production_writer::ProductionQueuedReceipt;
 pub use production_writer::ProductionRecoveryReceipt;
+pub use production_writer::ProductionRetainedHos2Terminal;
 pub use production_writer::ProductionRetainedOperation;
 pub use production_writer::ProductionTargetOutcome;
 pub use production_writer::ProductionTerminalObservation;
