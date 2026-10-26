@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.authority-lease-original-owner-caller-proof-review.v1",
+  "observed_at_utc": "2026-10-26",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "exact_parent_pr": 4046,
+  "exact_parent_head_sha": "723f28f900ded699aca9069549ff23ad609863f8",
+  "exact_parent_manifest_blob_sha": "a9f08f8729bf81a078ae3c4277e3a97ff2a564f4",
+  "first_patch_commit": "a31ab887a58ed22c43d30ac2298e85c0945e7d95",
+  "failure": {
+    "workflow_run": 40388569452,
+    "job": 121820922470,
+    "name": "repo-checks / build-test",
+    "evidence": "FAIL_HEPTA_CALLER_PROOF authority_lease_verify_use unexpected three Agentd paths"
+  },
+  "original_authority_owner": "codex-rs/hepta-contracts/src/authority_lease.rs::AuthorityLeaseVerifier",
+  "original_owner_mechanism": "Original opaque LeaseVerifiedUseToken stays bound to Arc owner; verify_use validates current revision, binding, epoch, expiry and revocation; dispatch boundary revalidates while holding original owner mutex.",
+  "static_audit": {
+    "deployment_issuer_root.rs": "ProtectedLease reads pinned original id/revision, checks independently constructed FinalUseBinding and invokes original with_dispatch_boundary; with_live_lease uses already pinned live lease and only invokes observer callback.",
+    "deployment_writer.rs": "Trusted HostAuthorityWriterRegistration checks exact registered identity and exact on-disk AuthorityLease; verify_use + dispatch_authority_lease_with_witness at original local mutation boundary; issuer request lock and durable state checks remain.",
+    "deployment_writer_rotate.rs": "Trusted-launcher successor with increasing spawn/owner epoch and same registration scope; verify_use successor then with_retired_predecessor_boundary under original owner fence; predecessor signature, retained state, epoch/time and same successor checked before durable update.",
+    "authority_port.rs": "Existing FleetAuthorityPort grant binding still derived from actual AllocationGrant, not caller-provided."
+  },
+  "audited_source_blobs": [
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "blob_sha": "13fe1b3def1e894ba9fbd755662f9da4a23204e9",
+      "required_markers": [
+        "AuthorityLeaseVerifier",
+        ".verify_use(",
+        "FleetAuthorityPort",
+        "dispatch_authority_lease_with_witness",
+        "issue_with_witness",
+        "allocation_binding"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+      "blob_sha": "7409020fdd680f8697ef8c02796bd5ecd5fddc6b",
+      "required_markers": [
+        "ProtectedLease",
+        ".verify_use(",
+        "original lease revision mismatch",
+        "with_dispatch_boundary",
+        "with_live_lease"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "blob_sha": "07f81c22b2694fc998660cafe2343812898a067d",
+      "required_markers": [
+        "HostAuthorityWriterRegistration",
+        ".verify_use(",
+        "writer lease changed",
+        "dispatch_authority_lease_with_witness",
+        "register_writer_authorization"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs",
+      "blob_sha": "31773eb216d6fc74416e0e7ea858089c9545ce8b",
+      "required_markers": [
+        "rotate_writer_authorization",
+        ".verify_use(",
+        "with_retired_predecessor_boundary",
+        "successor lease changed",
+        "validate_writer_proof_identity"
+      ]
+    }
+  ],
+  "manifest_policy": "Existing Fleet-specific marker requirements preserved as path-specific protected_file guards; exact additional existing Agentd sources enumerated. No wildcard allowlist, no test deletion or modified source/runtime permissions.",
+  "limits": [
+    "Static original-owner review only: native owning B4 and original tests must actually pass on final exact new SHA; an additional mismatch may be reported after this first scanner error.",
+    "Does not resolve cargo-deny RUSTSEC-2026-0387/0391/0398/0403, Windows outside-root DELETE, plugin TTL, P38-P41 composition or target device.",
+    "Does not grant production authority. SHADOW_ONLY / DENY_ALL / HOLD_NO_GO."
+  ],
+  "frozen_research_untouched": true,
+  "dependencies_unchanged": true,
+  "main_untouched": true
+}
