@@ -52,23 +52,21 @@ impl ObjectiveCommand {
     }
 
     pub fn validate(&self) -> Result<(), ObjectiveHostIssue> {
-        if let Some(id) = self.client_intent_id() {
-            if id.is_empty()
+        if let Some(id) = self.client_intent_id()
+            && (id.is_empty()
                 || id.len() > 96
                 || !id
                     .bytes()
-                    .all(|c| c.is_ascii_alphanumeric() || b"-_".contains(&c))
-            {
-                return Err(ObjectiveHostIssue::InvalidIntent);
-            }
+                    .all(|c| c.is_ascii_alphanumeric() || b"-_".contains(&c)))
+        {
+            return Err(ObjectiveHostIssue::InvalidIntent);
         }
-        if let Self::Submit { intent } = self {
-            if intent.client_intent_id.starts_with("model-")
+        if let Self::Submit { intent } = self
+            && (intent.client_intent_id.starts_with("model-")
                 || intent.text.trim().is_empty()
-                || intent.text.len() > MAX_INTENT_BYTES
-            {
-                return Err(ObjectiveHostIssue::InvalidIntent);
-            }
+                || intent.text.len() > MAX_INTENT_BYTES)
+        {
+            return Err(ObjectiveHostIssue::InvalidIntent);
         }
         if let Self::ConfirmModelProposal {
             proposal_sha256, ..

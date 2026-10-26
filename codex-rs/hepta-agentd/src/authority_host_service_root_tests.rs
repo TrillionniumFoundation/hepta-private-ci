@@ -566,7 +566,7 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
         let (clock, leases, issuer) = open_registered_issuer(&config).unwrap();
         let service = HostAuthorityService::from_registered_owner(
             issuer.clone(),
-            clock.clone(),
+            clock,
             registration.registered_identity.identity().unwrap(),
         )
         .unwrap()
