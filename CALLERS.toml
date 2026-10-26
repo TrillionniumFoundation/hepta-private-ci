@@ -370,8 +370,13 @@ symbol = "AuthorityLeaseVerifier::verify_use"
 call_pattern = '\bverifier\s*\.\s*verify_use\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub struct AuthorityLeaseVerifier", "pub fn verify_use(", "LeaseVerifiedUseToken"]
-product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs"]
-caller_markers = ["AuthorityLeaseVerifier", ".verify_use(", "FleetAuthorityPort"]
+product_callers = [
+  "codex-rs/hepta-fleet/src/authority_port.rs",
+  "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+  "codex-rs/hepta-agentd/src/deployment_writer.rs",
+  "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs",
+]
+caller_markers = [".verify_use("]
 
 [[boundary]]
 id = "authority_lease_delivery"
@@ -402,8 +407,35 @@ id = "authority_lease_dispatch_witness"
 symbol = "dispatch_authority_lease_with_witness"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn dispatch_authority_lease_with_witness", "VerifiedUseTokenWitnessV1", "with_dispatch_boundary_witness"]
-product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs"]
-caller_markers = ["dispatch_authority_lease_with_witness", "issue_with_witness", "FleetAuthorityPort"]
+product_callers = [
+  "codex-rs/hepta-fleet/src/authority_port.rs",
+  "codex-rs/hepta-agentd/src/deployment_writer.rs",
+]
+caller_markers = ["dispatch_authority_lease_with_witness"]
+
+
+# Explicit original-owner guard sets for the exact audited AuthorityLease
+# consumers above. These retain the previous Fleet-specific requirements and
+# additionally bind every Agentd source to its original synchronous fence.
+[[protected_file]]
+path = "codex-rs/hepta-fleet/src/authority_port.rs"
+required = ["AuthorityLeaseVerifier", ".verify_use(", "FleetAuthorityPort", "dispatch_authority_lease_with_witness", "issue_with_witness", "allocation_binding"]
+forbidden = ["permit_all", "AllowVerifier"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_issuer_root.rs"
+required = ["ProtectedLease", ".verify_use(", "original lease revision mismatch", "with_dispatch_boundary", "with_live_lease"]
+forbidden = ["permit_all", "AllowVerifier"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_writer.rs"
+required = ["HostAuthorityWriterRegistration", ".verify_use(", "writer lease changed", "dispatch_authority_lease_with_witness", "register_writer_authorization"]
+forbidden = ["permit_all", "AllowVerifier"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs"
+required = ["rotate_writer_authorization", ".verify_use(", "with_retired_predecessor_boundary", "successor lease changed", "validate_writer_proof_identity"]
+forbidden = ["permit_all", "AllowVerifier"]
 
 [[protected_file]]
 path = "codex-rs/hepta-supervisor/src/main.rs"
