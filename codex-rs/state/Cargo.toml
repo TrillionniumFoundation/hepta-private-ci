@@ -25,6 +25,7 @@ tracing-subscriber = { workspace = true }
 uuid = { workspace = true }
 
 [target.'cfg(windows)'.dependencies]
+codex-utils-path = { workspace = true }
 windows-sys = { version = "0.52", features = [
     "Wdk_Foundation",
     "Wdk_Storage_FileSystem",
@@ -35,8 +36,6 @@ windows-sys = { version = "0.52", features = [
     "Win32_System_Threading",
 ] }
 
-[target.'cfg(windows)'.dev-dependencies]
-codex-utils-path = { workspace = true }
 
 [dev-dependencies]
 codex-git-utils = { workspace = true }

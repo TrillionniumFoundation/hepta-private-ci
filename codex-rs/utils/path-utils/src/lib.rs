@@ -4,6 +4,22 @@ pub(crate) mod env;
 pub use env::is_wsl;
 
 #[cfg(windows)]
+mod private_file_identity_windows;
+#[cfg(windows)]
+pub use private_file_identity_windows::PrivateFileIdentity;
+#[cfg(windows)]
+pub use private_file_identity_windows::PrivateFileKind;
+#[cfg(windows)]
+pub use private_file_identity_windows::PrivateSecurityIdentity;
+#[cfg(windows)]
+pub use private_file_identity_windows::WindowsFileId;
+
+#[cfg(windows)]
+mod private_child_name_windows;
+#[cfg(windows)]
+pub use private_child_name_windows::validate_private_windows_child_name;
+
+#[cfg(windows)]
 mod private_state_windows;
 #[cfg(windows)]
 pub use private_state_windows::PrivateFileAccess;

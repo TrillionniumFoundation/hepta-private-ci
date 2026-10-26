@@ -8,7 +8,6 @@ use super::SqliteRecoveryError;
 use std::ffi::OsStr;
 use std::ffi::OsString;
 use std::fs::File;
-use std::os::windows::ffi::OsStrExt;
 use std::os::windows::io::AsRawHandle;
 use std::os::windows::io::FromRawHandle;
 use std::path::Component;
@@ -145,31 +144,8 @@ fn file_name(path: &Path) -> Result<&OsStr, SqliteRecoveryError> {
 }
 
 fn validate_name(name: &OsStr) -> Result<Vec<u16>, SqliteRecoveryError> {
-    let units: Vec<_> = name.encode_wide().collect();
-    let base = name
-        .to_string_lossy()
-        .split('.')
-        .next()
-        .unwrap_or_default()
-        .to_ascii_uppercase();
-    let reserved = matches!(base.as_str(), "CON" | "PRN" | "AUX" | "NUL" | "CLOCK$")
-        || base
-            .strip_prefix("COM")
-            .or_else(|| base.strip_prefix("LPT"))
-            .is_some_and(|suffix| {
-                matches!(suffix.as_bytes(), [b'1'..=b'9']) || matches!(suffix, "¹" | "²" | "³")
-            });
-    if reserved
-        || units.is_empty()
-        || units.iter().any(|unit| matches!(*unit, 0 | 47 | 58 | 92))
-        || units == [46]
-        || units == [46, 46]
-        || matches!(units.last(), Some(32 | 46))
-        || units.len() > (u16::MAX as usize / 2)
-    {
-        return Err(SqliteRecoveryError::Indeterminate);
-    }
-    Ok(units)
+    codex_utils_path::validate_private_windows_child_name(name)
+        .map_err(|_| SqliteRecoveryError::Indeterminate)
 }
 
 fn relative(parent: &File, name: &OsStr, kind: Kind) -> Result<Option<File>, SqliteRecoveryError> {
