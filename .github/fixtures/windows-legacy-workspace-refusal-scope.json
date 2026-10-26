@@ -1,5 +1,5 @@
 {
-  "schema": "hepta.windows-legacy-workspace-refusal-scope.v1",
+  "schema": "hepta.windows-legacy-ambient-refusal-scope.v1",
   "scopeOnly": true,
   "functionalWorkspaceQualification": false,
   "groups": [
@@ -13,6 +13,17 @@
         "legacy_workspace_unavailable_tests::legacy_ambient_workspace_preflight_refuses_before_acl_setup"
       ],
       "filter": "test(=legacy_workspace_unavailable_tests::legacy_ambient_workspace_returns_no_token) | test(=legacy_workspace_unavailable_tests::legacy_ambient_workspace_capture_never_reaches_process_creation) | test(=legacy_workspace_unavailable_tests::legacy_ambient_workspace_preflight_refuses_before_acl_setup)"
+    },
+    {
+      "id": "legacy-readonly-refusal-controls",
+      "package": "codex-windows-sandbox",
+      "expectedTestCount": 3,
+      "requiredTests": [
+        "legacy_readonly_unavailable_tests::legacy_ambient_readonly_returns_no_token",
+        "legacy_readonly_unavailable_tests::legacy_ambient_readonly_capture_never_reaches_process_creation",
+        "legacy_readonly_unavailable_tests::legacy_ambient_readonly_preflight_refuses_before_acl_setup"
+      ],
+      "filter": "test(=legacy_readonly_unavailable_tests::legacy_ambient_readonly_returns_no_token) | test(=legacy_readonly_unavailable_tests::legacy_ambient_readonly_capture_never_reaches_process_creation) | test(=legacy_readonly_unavailable_tests::legacy_ambient_readonly_preflight_refuses_before_acl_setup)"
     },
     {
       "id": "sandbox-original-failures",
@@ -30,7 +41,7 @@
       "filter": "test(=token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces) | test(=unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit) | test(=unified_exec::tests::legacy_non_tty_cmd_emits_output) | test(=unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides) | test(=unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots)"
     },
     {
-      "id": "unchanged-readonly-and-elevated-construction",
+      "id": "original-readonly-and-elevated-construction",
       "package": "codex-windows-sandbox",
       "expectedTestCount": 2,
       "requiredTests": [
@@ -39,5 +50,6 @@
       ],
       "filter": "test(=token::tests::elevated_token_includes_network_proxy_restricting_sid) | test(=desktop::tests::readonly_preserves_private_and_default_desktop_access)"
     }
-  ]
+  ],
+  "functionalReadonlyQualification": false
 }

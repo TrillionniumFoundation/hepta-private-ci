@@ -71,6 +71,9 @@ mod hide_users;
 #[cfg(target_os = "windows")]
 mod identity;
 #[cfg(all(test, target_os = "windows"))]
+#[path = "legacy_readonly_unavailable_tests.rs"]
+mod legacy_readonly_unavailable_tests;
+#[cfg(all(test, target_os = "windows"))]
 #[path = "legacy_workspace_unavailable_tests.rs"]
 mod legacy_workspace_unavailable_tests;
 #[cfg(target_os = "windows")]
@@ -749,7 +752,7 @@ mod windows_impl {
         if permissions.uses_write_capabilities_for_cwd(cwd, env_map) {
             Err(crate::token::legacy_workspace_write_unavailable())
         } else {
-            Ok(())
+            Err(crate::token::legacy_readonly_unavailable())
         }
     }
 
