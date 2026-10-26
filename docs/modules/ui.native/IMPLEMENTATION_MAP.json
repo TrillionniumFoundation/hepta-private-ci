@@ -7,7 +7,7 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "ui.native",
-  "sourceMaturity": "native_shell_boundary",
+  "sourceMaturity": "legacy_javascript_shell_boundary_rust_renderer_owned_by_ui_control",
   "declaredRoots": [
     "apps/hepta-native"
   ],
@@ -34,11 +34,12 @@
           "command": "node --test apps/hepta-native/test/shell-runtime.test.js"
         }
       ],
-      "sourceSemantics": "Authenticates endpoint manifest, protocol version, session identity, and process generation.",
+      "sourceSemantics": "Injected JavaScript compatibility boundary only. Authenticates endpoint manifest, protocol version, session identity, and process generation.",
       "operation": "connect_runtime",
       "nativeSymbol": "async connectRuntime(",
       "sourcePath": "apps/hepta-native/src/shell-runtime.js",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "state": "legacy_javascript_compatibility_boundary_not_rust_native_renderer"
     },
     {
       "designOperation": "render_runtime_view",
@@ -57,11 +58,12 @@
           "command": "node --test apps/hepta-native/test/shell-runtime.test.js"
         }
       ],
-      "sourceSemantics": "Rejects mixed/regressed view generations and exposes one coherent presentation state.",
+      "sourceSemantics": "Injected JavaScript compatibility boundary only. Rejects mixed/regressed view generations and exposes one coherent presentation state.",
       "operation": "render_runtime_view",
       "nativeSymbol": "renderRuntimeView(",
       "sourcePath": "apps/hepta-native/src/shell-runtime.js",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "state": "legacy_javascript_compatibility_boundary_not_rust_native_renderer"
     },
     {
       "designOperation": "request_platform_capability",
@@ -80,11 +82,12 @@
           "command": "node --test apps/hepta-native/test/shell-runtime.test.js"
         }
       ],
-      "sourceSemantics": "Requires both platform permission and final-payload-bound operation identity before invoking a narrow OS adapter.",
+      "sourceSemantics": "Injected JavaScript compatibility boundary only. Requires both platform permission and final-payload-bound operation identity before invoking a narrow OS adapter.",
       "operation": "request_platform_capability",
       "nativeSymbol": "async requestPlatformCapability(",
       "sourcePath": "apps/hepta-native/src/shell-runtime.js",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "state": "legacy_javascript_compatibility_boundary_not_rust_native_renderer"
     },
     {
       "designOperation": "apply_shell_update",
@@ -103,24 +106,28 @@
           "command": "node --test apps/hepta-native/test/shell-runtime.test.js"
         }
       ],
-      "sourceSemantics": "Requires independent selection, signature/compatibility verification, explicit restart, and predecessor rollback on uncertain update.",
+      "sourceSemantics": "Injected JavaScript compatibility boundary only. Requires independent selection, signature/compatibility verification, explicit restart, and predecessor rollback on uncertain update.",
       "operation": "apply_shell_update",
       "nativeSymbol": "async applyShellUpdate(",
       "sourcePath": "apps/hepta-native/src/shell-runtime.js",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "state": "legacy_javascript_compatibility_boundary_not_rust_native_renderer"
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "This JavaScript compatibility root is not the selected Rust/Makepad renderer; its mapped operations do not establish native window or accessibility implementation.",
+    "Real platform permission and updater implementations are absent from this injected-port boundary."
+  ],
   "externalEvidenceGates": [
-    "selected native framework and supported platform matrix",
-    "real code signing/notarization/keychain and updater trust roots",
-    "packaged crash/restart/accessibility/update rollback qualification"
+    "actual platform permission, signing/notarization/keychain and updater trust-root integration",
+    "exact package crash/restart/update rollback qualification for any consumer of this compatibility library",
+    "native renderer evidence belongs to the separately mapped ui.control source and exact package"
   ],
   "claimBoundary": {
-    "nativeSourceMappingComplete": true,
+    "nativeSourceMappingComplete": false,
     "repositoryControlledDocumentationGapsClosed": true,
-    "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -141,5 +148,24 @@
   "technicalGuide": "docs/modules/ui.native/TECHNICAL.md",
   "sourceRoot": [
     "apps/hepta-native"
+  ],
+  "mappingScope": "Only the registered apps/hepta-native JavaScript compatibility library. The Rust/Makepad window, keyboard and accessibility implementation is mapped by ui.control; no ownership transfer is implied.",
+  "sourceObjects": [
+    {
+      "path": "apps/hepta-native",
+      "object": "a8a8f73f47b8f700eca7c87e07385bf65fe0705d"
+    },
+    {
+      "path": "apps/hepta-native/src/shell-runtime.js",
+      "object": "16352accac43e1a6a8cafda987a3180ee7fce9d9"
+    },
+    {
+      "path": "apps/hepta-native/test/shell-runtime.test.js",
+      "object": "91ce88b9a2e3fadba860db0d6e9a801750ccb5be"
+    },
+    {
+      "path": "docs/modules/ui.native/TECHNICAL.md",
+      "object": "865935f31d217a62d14057b62d7b306ef0122dc9"
+    }
   ]
 }

@@ -14,7 +14,7 @@
   "resolvedRoots": [
     "codex-rs/hepta-agentd"
   ],
-  "stateOwnerDisposition": "Owns only ephemeral run admission, immutable snapshot references, and runtime-health composition state.",
+  "stateOwnerDisposition": "Owns ephemeral daemon run/health composition and hosts the registered original Root authority/checkpoint service. Notes data, effect facts and durable sender state remain in their original delegated owners; the presentation and model callback are not authorities.",
   "terminalObserverDisposition": "Agentd preserves dispatch-boundary uncertainty and accepts terminal state only from the delegated execution/effect owner.",
   "operations": [
     {
@@ -273,12 +273,182 @@
       "sourcePathExists": true,
       "buildTarget": "codex-hepta-agentd",
       "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
+    },
+    {
+      "operation": "original_root_notes_startup",
+      "designOperation": "original_root_notes_startup",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "with_notes_startup_from_session",
+      "sourcePath": "codex-rs/hepta-agentd/src/root_notes_startup.rs",
+      "sourcePathExists": true,
+      "buildTarget": "codex-hepta-agentd",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_notes_startup.rs",
+          "symbol": "with_notes_from_original_session",
+          "role": "delegated_callee"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/deployment_notes.rs",
+          "symbol": "replace_registered_notes_policy",
+          "role": "delegated_callee"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/root_notes_startup_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "just test --locked -p codex-hepta-agentd"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_notes_reservation_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "just test --locked -p codex-hepta-agentd"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/deployment_notes_policy_startup_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "just test --locked -p codex-hepta-agentd"
+        }
+      ],
+      "state": "source_implemented_selected_profile_execution_requires_exact_candidate_receipt",
+      "authority": "none",
+      "sourceSemantics": "Consumes actual Session Reserved metadata after credential/pidfd checks; optionally CASes the exact predecessor Notes policy using the same original issuer, Registry and writer before sealing deployment. Unknown after durable CAS is not rollback or a new authority."
+    },
+    {
+      "operation": "original_production_notes_launcher",
+      "designOperation": "original_production_notes_launcher",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "run",
+      "sourcePath": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "sourcePathExists": true,
+      "buildTarget": "codex-hepta-agentd",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-agentd/src/production_notes_deployment.rs",
+          "symbol": "read",
+          "role": "delegated_callee"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/notes_ui_runtime.rs",
+          "symbol": "with_model_route",
+          "role": "delegated_callee"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/notes_model_route.rs",
+          "symbol": "into_route",
+          "role": "delegated_callee"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/production_launcher_inputs_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "just test --locked -p codex-hepta-agentd"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/notes_startup_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "just test --locked -p codex-hepta-agentd"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/deployment_notes_route_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "just test --locked -p codex-hepta-agentd"
+        }
+      ],
+      "state": "source_implemented_selected_profile_execution_requires_exact_candidate_receipt",
+      "authority": "none",
+      "sourceSemantics": "Explicit production launch assembles original registered Root/session/writer inputs and sealed Notes deployment. Ordinary CLI stays separate; a source entry does not prove a real authenticated deployment."
+    },
+    {
+      "operation": "original_thread_notes_callback",
+      "designOperation": "original_thread_notes_callback",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "refresh",
+      "sourcePath": "codex-rs/hepta-agentd/src/notes_model_bridge.rs",
+      "sourcePathExists": true,
+      "buildTarget": "codex-hepta-agentd",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-agentd/src/text_session_notes_tools.rs",
+          "symbol": "reply_notes_tool",
+          "role": "delegated_callee"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/notes_model_confirmation.rs",
+          "symbol": "handle_command",
+          "role": "delegated_callee"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/text_session_notes_tools_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "just test --locked -p codex-hepta-agentd"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/notes_model_admission_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "just test --locked -p codex-hepta-agentd"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/notes_model_proposal_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "just test --locked -p codex-hepta-agentd"
+        }
+      ],
+      "state": "source_implemented_selected_profile_execution_requires_exact_candidate_receipt",
+      "authority": "none",
+      "sourceSemantics": "Bounded private owner retains the exact registered AppServer session/thread/turn/call. UI confirms only ID/digest; callback response is fenced before I/O. A new connection alone grants no response right; only actual original pending-request replay can supply a new response opportunity, without rearming the effect. Late owner terminal is separate from an already returned Unknown."
+    },
+    {
+      "operation": "reviewed_notes_prepare_and_original_terminal",
+      "designOperation": "reviewed_notes_prepare_and_original_terminal",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "prepare_reviewed",
+      "sourcePath": "codex-rs/hepta-agentd/src/notes_literal_adapter.rs",
+      "sourcePathExists": true,
+      "buildTarget": "codex-hepta-agentd",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-agentd/src/notes_ui_worker.rs",
+          "symbol": "handle_ui",
+          "role": "delegated_callee"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_notes_observation.rs",
+          "symbol": "observe_notes_terminal",
+          "role": "delegated_callee"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/notes_literal_prepare_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "just test --locked -p codex-hepta-agentd"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/notes_ui_worker_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "just test --locked -p codex-hepta-agentd"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_notes_observation_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "just test --locked -p codex-hepta-memory production_notes_observation"
+        }
+      ],
+      "state": "source_implemented_selected_profile_execution_requires_exact_candidate_receipt",
+      "authority": "none",
+      "sourceSemantics": "Checks original target/revision/content digest before grant request; retained identity must match payload/version. Worker reads the same original writer terminal before sender/run status and never dispatches for readback."
     }
   ],
   "repositoryControlledGaps": [
-    "Compose the canonical caller through runtime.codex so physical turn start/interrupt and terminal observations are real invocation edges rather than design-only delegated targets.",
+    "The canonical Lane B run coordinator still needs its complete runtime.codex start/interrupt/terminal composition; the separate authenticated TextSession and finite Notes model callback path does not close that general coordinator gap.",
     "Bind current AuthBus/trust revalidation to the durable RunStartRecordV1 before start_revalidated_run_start; raw journal records are not current authentication evidence. Post-dispatch recovery remains Indeterminate and non-redispatchable.",
-    "Compose AgentdNeuronOwner into the daemon-owned run lifecycle once the canonical runtime.agentd coordinator line converges, with selected-artifact/current inference.control/witness dependencies constructed by the registered owner composition rather than an ambient singleton."
+    "Compose AgentdNeuronOwner into the daemon-owned run lifecycle once the canonical runtime.agentd coordinator line converges, with selected-artifact/current inference.control/witness dependencies constructed by the registered owner composition rather than an ambient singleton.",
+    "Keep the explicit Root/Notes/model subset and its exact source binding current; deployed human-session/model/owner recovery qualification is separate from this navigation map."
   ],
   "externalEvidenceGates": [
     "deployed Agentd process and authenticated socket identity",
@@ -286,9 +456,9 @@
     "independent acceptance, promotion and release"
   ],
   "claimBoundary": {
-    "nativeSourceMappingComplete": true,
+    "nativeSourceMappingComplete": false,
     "repositoryControlledDocumentationGapsClosed": true,
-    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": false,
     "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
@@ -305,8 +475,8 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "daemon_lifecycle_and_durable_run_start_projection_composed_physical_codex_pending",
-  "productionWriterState": "not_established",
+  "productCallerState": "daemon_lifecycle_and_explicit_protected_notes_host_composed_canonical_lane_b_physical_codex_pending",
+  "productionWriterState": "explicit_recovered_original_writer_required_by_protected_notes_host_not_installed_by_default_cli",
   "owner": "agent-runtime",
   "deputy": "runtime-control",
   "technicalGuide": "docs/modules/runtime.agentd/TECHNICAL.md",
@@ -339,12 +509,38 @@
       "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
       "nativeSymbol": "start_canonical_intelligence",
       "state": "configured_canonical_profile_freezes_prepared_run_and_context"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/root_notes_startup.rs",
+      "nativeSymbol": "with_notes_startup_from_session",
+      "state": "explicit_original_root_session_startup"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "nativeSymbol": "with_model_route",
+      "state": "sealed_original_owner_model_route_optional"
     }
   ],
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "2b8596e4410642981a52fc857c5eafa9ae692108"
+      "object": "3f587295a7860e70005f2c754c313c9df8821b81"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_notes_startup.rs",
+      "object": "47dbc5b58a31feb811758a1c8215b31830b23f04"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes.rs",
+      "object": "3cffadfeb76d6e0c2012c97c9b6e36220d9f1fce"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes_policy_startup_tests.rs",
+      "object": "6f840087e1900fdfb96bde4a2a67947dfee3d057"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes_route_tests.rs",
+      "object": "bedb0025b94dc2b85686e0b03c8eeb25f49226e7"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
@@ -356,7 +552,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/main.rs",
-      "object": "60595420f4bf42089b5745830ac611df1c7ec2c2"
+      "object": "199b6999659a026ea45d497b36412aad852fb39c"
     },
     {
       "path": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
@@ -365,6 +561,74 @@
     {
       "path": "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs",
       "object": "c7f7d080ac94724ad8625d0e5d9287df94af2abe"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_literal_adapter.rs",
+      "object": "46aca8aaaf86c41a4d0e07e0817a24e4746e37ce"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_literal_prepare_tests.rs",
+      "object": "ddcc1dcb5c59355198d44fe86a47e88d15aa5b8c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_model_admission_tests.rs",
+      "object": "2d6449a616e49de8f16f430b012444670e4884d9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_model_bridge.rs",
+      "object": "a97e32696c450879fab26c149b6fed0d33260ad6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_model_confirmation.rs",
+      "object": "4a71023f53278b479f92cb723da5455dd8aa4dcc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_model_proposal_tests.rs",
+      "object": "17b7b3a792cae7eb1ea3abddf165fbe28670d6ad"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_model_route.rs",
+      "object": "a65949cef5ef329720b65b3cdd7cf4a7573c4cc7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_startup_tests.rs",
+      "object": "efcc5c6e3b5a1cef52105f249a3e4a54e005dbd4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_ui_runtime.rs",
+      "object": "45f3ec10ab8301bb981b6203f0e17a9f4b551f0c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_ui_worker.rs",
+      "object": "71b79f3cc13661585d3dbb8ba28c6aaa3622464d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_ui_worker_tests.rs",
+      "object": "81a478fc277e40d8d22ba439a35ca9ef4b8a578c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "object": "5edc60cbedac80142f27dfe837de2a6bd170eeb5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs_tests.rs",
+      "object": "f4d513e6f07a7a4c5985b29a0ee9eeb8d6421278"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_notes_deployment.rs",
+      "object": "0c40badaf22a4a7ff75f887222354729b1d3de8a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_notes_reservation_tests.rs",
+      "object": "d63ab536bf70a3c81b3f12a1660a24ed3024cc16"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_notes_startup.rs",
+      "object": "aa88499086ceb508927fc93d4b0deb700366865c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_notes_startup_tests.rs",
+      "object": "189d41dd96c5383d3868b5a7fc1b95c6d29badcf"
     },
     {
       "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
@@ -376,23 +640,39 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state.rs",
-      "object": "0a17007f64bbbded6b8acfe9c1a79e7023b0054f"
+      "object": "94479da2b82c420aac701d361e5ea465209a2eed"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28"
+      "object": "682eefa82c23ced19823c756ba927d6012d70bfd"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
-      "object": "4abb3ded6c18ff0deb6bc3a2b8aa417c512be3d0"
+      "object": "ef90d7f993365627c4fcbc69d3b75b380958738d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/text_session_notes_tools.rs",
+      "object": "c04604aa7fed722c3556e1efff96aad30d903056"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/text_session_notes_tools_tests.rs",
+      "object": "4deab21d970ab41ef6282debd529d702a392b357"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
-      "object": "e6a6e032c59f36859327c08bbbcc0c0c7353b399"
+      "object": "dc06eca8abfc6c85e1f32ea0846c75dd9883d80e"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
-      "object": "adf96585c3efb947e35ae73cc096ca1d18d40a78"
+      "object": "cb387137df02044221c2b2caa0bc8db0ccde3fd7"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_notes_observation.rs",
+      "object": "49a0a54bd3f68c7812c7352a0545435dbbcc01a8"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_notes_observation_tests.rs",
+      "object": "a31143759aa3e739aeaae31ba264d82b4fa1a973"
     },
     {
       "path": "codex-rs/hepta-neuron/src/inference_control.rs",
@@ -404,7 +684,8 @@
     },
     {
       "path": "docs/modules/runtime.agentd/TECHNICAL.md",
-      "object": "cb5c75c1eb3abe1e402c26b011e51703f501ca67"
+      "object": "d5e6054b0996d79324fb5c2fb40901b5193ea0aa"
     }
-  ]
+  ],
+  "mappingScope": "Original daemon lifecycle plus explicit protected Root/Notes/model composition. Canonical Lane B execution gaps remain separately scoped; this is not an exhaustive crate map or deployment receipt."
 }

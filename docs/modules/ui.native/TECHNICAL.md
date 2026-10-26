@@ -18,7 +18,12 @@ This stable document is the implementation guide for `ui.native`. Normative iden
 
 ## 1. Identity, mission and ownership
 
-Provide the native shell and accessibility layer over the same typed runtime boundary.
+The target mission is a native shell and accessibility layer over the typed
+runtime boundary. The currently registered `apps/hepta-native` root contains
+the retained JavaScript intent/shell compatibility library. The implemented
+Rust/Makepad App and Linux accessibility bridge are owned by `ui.control` at
+`apps/hepta-control-ui/rust/robrix-ui`; the module name `ui.native` does not
+make the compatibility library the shipped native renderer.
 
 The primary owner `ui-platform` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `accessibility` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit co-owner or a separate integration package.
 
@@ -46,7 +51,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [apps/hepta-native/src/native.js](../../../apps/hepta-native/src/native.js); observed identifiers include `buildNativeIntent`, `observeNativeOutcome`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/ui.native.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) for the implemented subset and remaining product work.
+The registered compatibility source is [apps/hepta-native/src/native.js](../../../apps/hepta-native/src/native.js), with `buildNativeIntent` and `observeNativeOutcome`; [shell-runtime.js](../../../apps/hepta-native/src/shell-runtime.js) implements the map's injected backend/platform/updater boundaries. Those are real source paths but are not Rust window, input, AT-SPI or packaged application implementations. The [ui.control guide](../ui.control/TECHNICAL.md#current-rust-source-navigation) maps the actual native renderer without changing either module's exclusive root. Read the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) as the remaining target design, not an execution receipt for the Rust product.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -141,13 +146,19 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [apps/hepta-native/src/native.js](../../../apps/hepta-native/src/native.js) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements. The limits in [native.js](../../../apps/hepta-native/src/native.js) belong to the JavaScript compatibility boundary; the Rust editor, focus, accessibility and renderer limits belong to the separate `ui.control` implementation.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Native-shell adapter library around injected backend, OS-permission and updater ports. It is not yet a selected packaged OS application. Framework/platform matrix, signing/notarization/keychain and real updater trust roots remain required implementation/deployment work; no empty wrapper command establishes those capabilities.
+The registered root is a JavaScript shell adapter around injected backend,
+OS-permission and updater ports. It does not launch the Rust product. Makepad
+has already been selected for the renderer in `ui.control`; that source fact
+does not supply this adapter with a real updater, signing/notarization/keychain
+integration or a qualified platform matrix. Keep those remaining capabilities
+explicitly unavailable until their original implementations and execution
+receipts exist.
 
 Current operating and state-format references:
 
@@ -157,7 +168,7 @@ Current operating and state-format references:
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Compatibility-library test sources (not native window or package pass receipts):
 
 - [apps/hepta-native/test/native.test.js](../../../apps/hepta-native/test/native.test.js); named case: `native intent requires exact payload binding`.
 - [apps/hepta-native/test/shell-runtime.test.js](../../../apps/hepta-native/test/shell-runtime.test.js); named case: `executes a final-payload-bound platform request`.

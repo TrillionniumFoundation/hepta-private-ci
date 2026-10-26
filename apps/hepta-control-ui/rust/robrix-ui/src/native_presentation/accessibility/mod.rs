@@ -114,7 +114,6 @@ pub(crate) struct NativeAccessibility {
     targets: BTreeMap<NodeId, Target>,
     #[cfg(feature = "native-clipboard-sdk")]
     pending_paste: Option<clipboard::PendingPaste>,
-    dpi: f64,
 }
 
 impl NativeAccessibility {
@@ -131,7 +130,6 @@ impl NativeAccessibility {
             targets: BTreeMap::new(),
             #[cfg(feature = "native-clipboard-sdk")]
             pending_paste: None,
-            dpi: 1.0,
         }
     }
 
@@ -183,13 +181,6 @@ impl NativeAccessibility {
             }
             Event::WindowLostFocus(id) if Some(*id) == window => {
                 self.adapter.update_window_focus_state(false)
-            }
-            Event::WindowGeomChange(change)
-                if Some(change.window_id) == window
-                    && change.new_geom.dpi_factor.is_finite()
-                    && change.new_geom.dpi_factor > 0.0 =>
-            {
-                self.dpi = change.new_geom.dpi_factor;
             }
             _ => {}
         }

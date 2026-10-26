@@ -22,6 +22,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use super::PreparedHostAuthoritySession;
+use crate::authority_host_service::ExpectedNotesPolicy;
 use crate::notes_model_route::RegisteredNotesModelRoute;
 
 #[path = "root_notes_reservation.rs"]
@@ -36,6 +37,8 @@ struct Profile {
     schema: String,
     grant_lifetime_ms: u64,
     bindings: Bindings,
+    #[serde(default)]
+    expected_notes_policy: Option<ExpectedNotesPolicy>,
     #[serde(default)]
     previous_recovery: Option<PreviousRecovery>,
     #[serde(default)]
@@ -82,7 +85,7 @@ struct Deployment {
 
 impl PreparedHostAuthoritySession {
     /// Consume the actual Session's first metadata packet, install its exact
-    /// pre-existing original Notes policy on this retained service, then seal
+    /// original Notes policy on this retained service, then seal
     /// the already inherited read-only deployment. Root must have created the
     /// anonymous pair and enabled SO_PASSCRED before spawning Session. Agentd
     /// holds a duplicate but may not read it until the late Root handoff.
@@ -121,9 +124,10 @@ impl PreparedHostAuthoritySession {
                 ));
             }
         }
-        let prepared = self.with_registered_notes_from_session(
+        let prepared = self.with_registered_notes_from_session_policy(
             &startup_release.target,
             profile.grant_lifetime_ms,
+            profile.expected_notes_policy.as_ref(),
         )?;
         let value = Deployment {
             schema: "hepta.agentd.original_notes_launch.v1",
@@ -160,6 +164,9 @@ fn validate_profile(profile: &Profile, issuer_id: &str) -> io::Result<()> {
         ));
     }
     Generation::new(bindings.policy_generation).map_err(io::Error::other)?;
+    if let Some(previous) = &profile.expected_notes_policy {
+        previous.validate(profile.grant_lifetime_ms)?;
+    }
     for digest in [
         &bindings.principal_scope_digest,
         &bindings.runtime_body_digest,

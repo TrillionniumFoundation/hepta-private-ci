@@ -22,7 +22,11 @@ Present runtime state and requests without issuing authority or directly writing
 
 The primary owner `ui-platform` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `accessibility` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit co-owner or a separate integration package.
 
-Plane `presentation`, kind `web`, state model `stateless` and architecture role `presentation` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
+Plane `presentation`, the registry's historical kind `web`, state model `stateless`
+and architecture role `presentation` define ownership. The existing exclusive
+root now also contains the shared Rust/Makepad renderer and its Linux native
+composition. This does not move those sources into `ui.native` or give the UI
+ownership of backend durable facts.
 
 ## 2. Source binding and implementation status
 
@@ -51,6 +55,31 @@ does not activate `ui.control`, create a production caller, grant runtime or
 effect authority, issue independent acceptance, select or promote a candidate,
 or authorize release. Any later source move updates `MODULES.json`,
 `SOURCE_BINDINGS.json` and this guide in one candidate.
+
+### Current Rust source navigation
+
+The product entry is the Rust/Makepad application under
+`apps/hepta-control-ui/rust/robrix-ui`, with bounded presentation state in
+`rust/core`. The JavaScript `control.js` and `runtime-client.js` operations in
+the map remain compatibility oracles. They are not the native renderer, its
+authenticated host, or evidence that a model tool executed.
+
+| Responsibility | Current implementation and existing regression source | Boundary |
+| --- | --- | --- |
+| Caller-owned chat and drafts | `rust/core/src/chat.rs`; `chat/basic_tests.rs`, `chat/integration_tests.rs` | One caller-owned workspace; local drafts do not become backend history. |
+| Original native App adoption | `rust/robrix-ui/src/native_presentation/{mod,render}.rs`; `native_presentation_tests.rs` | `run_native_presentation` borrows the original `NativeChatComposition`; absent authenticated host methods remain unavailable. |
+| Editor and native keyboard | `src/ime_router.rs`, `src/keyboard_navigation.rs`, `src/robrix/composer_transaction.rs`; `keyboard_navigation_tests.rs`, `composer_transaction_tests.rs` | Original SDK key and editor paths, IME gate, room identity, active drawn controls and disabled-state checks. |
+| AT-SPI projection and scale | `src/native_presentation/accessibility/{mod,tree}.rs`; `tree_tests.rs`, `text_tests.rs` | Projects actual SDK focus and layout through the current window's DPI conversion. Component tests do not qualify an installed ELF or a physical display. |
+| Model Notes review | `src/native_presentation/chat_controls.rs`; `chat_controls_tests.rs` | Sends only the original proposal identity/digest and decision; the original Agentd owner retains text, target, grant and effect. Last-drawn proposal and room checks fence late input. |
+
+Paths beginning with `src/` in the table are relative to `rust/robrix-ui`.
+The map is a reviewed subset of these implementation paths, not a claim that
+all native public surfaces, browser behavior or platform adapters are qualified.
+The [native composition contract](../../../apps/hepta-control-ui/rust/robrix-ui/NATIVE_COMPOSITION.md)
+and [product developer guide](../../../apps/hepta-control-ui/README.md) define
+the existing build/test entrypoints. Final packaged ELF, real IBus/AT-SPI,
+native keyboard, private X11 DPI, Orca, physical input and Wayland evidence
+remain separately scoped; one result cannot be substituted for another.
 
 ## 3. Boundary, responsibilities and non-goals
 

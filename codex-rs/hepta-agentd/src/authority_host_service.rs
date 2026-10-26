@@ -36,6 +36,10 @@ use consumers::RegisteredConsumers;
 mod text_ui;
 pub use text_ui::HostAuthorityTextUiRegistration;
 
+#[path = "authority_host_notes_startup.rs"]
+mod notes_startup;
+pub(crate) use notes_startup::ExpectedNotesPolicy;
+
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
 pub enum HostAuthorityLane {
@@ -122,33 +126,6 @@ impl HostAuthorityService {
     ) -> Self {
         self.root_registry = Some(registry);
         self
-    }
-
-    pub(crate) fn with_notes_from_original_session(
-        self,
-        target: &codex_hepta_memory::NotesTargetIdentity,
-        lifetime_ms: u64,
-    ) -> io::Result<Self> {
-        if self.notes.is_some() {
-            return Err(io::Error::other(
-                "the original Notes route is already registered",
-            ));
-        }
-        let registry = self.root_registry.as_ref().ok_or_else(|| {
-            io::Error::other("retained original Root Registry required for Notes")
-        })?;
-        let writer = self
-            .writer
-            .as_ref()
-            .ok_or_else(|| io::Error::other("original registered writer required"))?;
-        let notes = crate::RootNotesGrantAdmission::from_registered_notes(
-            &self.issuer,
-            Arc::clone(registry),
-            writer.registration.clone(),
-            target,
-            lifetime_ms,
-        )?;
-        self.with_registered_notes(notes)
     }
 
     /// Open the existing protected checkpoint for this verified writer and

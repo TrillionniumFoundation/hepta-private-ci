@@ -264,6 +264,33 @@ terminal. Missing external inputs remain explicit startup/qualification errors.
 The original Root producer is
 [`PreparedHostAuthoritySession::with_notes_startup_from_session`](src/root_notes_startup.rs),
 selected by `hepta-authority-host serve-fresh-session --notes-launch-profile`.
+Its private profile may additionally declare `expected_notes_policy` containing
+only the complete prior Notes `target` and its original `lifetime_ms`. This is
+an explicit administrative CAS precondition, not a successor or an authority
+grant. The new target still comes exclusively from the actual Session Reserved
+packet, verified using the same Root-created pair, held Session pidfd and kernel
+sender credentials. Both declared old and new lifetimes are limited to
+1–300,000 ms, and the new lifetime cannot be larger. The declared predecessor
+must differ from the actual new target.
+
+After the original Agentd birth check, the retained service calls the original
+Root-only issuer policy replacement and then the exact Notes admission factory.
+It retains the same Registry, writer registration, key, revocation head and
+counter. Missing or ambiguous old slots and mismatched predecessors fail;
+omitting `expected_notes_policy` keeps the old preinstalled-only behavior.
+The declaration is consumed by Root and is not added to the Agentd deployment
+or accepted from the UI. See [Root Notes admission](ROOT_NOTES_ADMISSION.md)
+for the original CAS, failure cuts and exact qualification commands.
+
+Policy CAS may persist even when later admission, peer-liveness, sealing or
+late handoff fails. Such a failure does not mean no policy change occurred.
+Root must read/retry the same actual target and full lifetime under its original
+live writer; the existing CAS recognizes the exact retained successor without
+another write. It does not send an application ACK, revive the original Session
+after its reservation deadline, extend a lease, or roll back policy on failure.
+A subsequent actual Session is a separately reviewed transition, never an
+automatic replacement for an unknown earlier launch.
+
 The same protected `hepta.root.notes_launch_profile.v1` file can carry optional
 `model_route` data. Root checks the route before consuming the Session
 reservation or registering its existing Notes policy, then copies those exact

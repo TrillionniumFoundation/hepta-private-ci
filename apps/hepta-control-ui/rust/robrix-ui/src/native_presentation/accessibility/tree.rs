@@ -19,6 +19,31 @@ use std::collections::BTreeSet;
 
 const ROOT: NodeId = NodeId(1);
 
+fn layout_bounds(cx: &Cx, window_id: WindowId, rect: Rect) -> AccessibleRect {
+    let rect = cx.windows[window_id].layout_rect_to_physical_pixels(rect);
+    AccessibleRect {
+        x0: rect.pos.x,
+        y0: rect.pos.y,
+        x1: rect.pos.x + rect.size.x,
+        y1: rect.pos.y + rect.size.y,
+    }
+}
+
+fn window_bounds(cx: &Cx, window_id: WindowId) -> AccessibleRect {
+    let window = &cx.windows[window_id];
+    let size = window.layout_vec2d_to_physical_pixels(window.get_inner_size());
+    // The SDK's X11 screen position is already physical; only the layout size
+    // is converted. Read the current window, including its initial DPI and any
+    // override, without depending on a preceding WindowGeomChange event.
+    let position = window.get_position();
+    AccessibleRect {
+        x0: position.x,
+        y0: position.y,
+        x1: position.x + size.x,
+        y1: position.y + size.y,
+    }
+}
+
 impl NativeAccessibility {
     fn id(&mut self, widget: WidgetUid, part: usize) -> NodeId {
         *self.ids.entry((widget, part)).or_insert_with(|| {
@@ -35,6 +60,9 @@ impl NativeAccessibility {
         if !self.active {
             return;
         }
+        let Some(window_id) = ui.window(cx, ids!(main_window)).window_id() else {
+            return;
+        };
         let room = RoomKey {
             epoch: workspace.presentation_epoch(),
             local_id: workspace.active_id(),
@@ -185,24 +213,11 @@ impl NativeAccessibility {
             if widget.key_focus(cx) {
                 focus = id;
             }
-            node.set_bounds(AccessibleRect {
-                x0: rect.pos.x * self.dpi,
-                y0: rect.pos.y * self.dpi,
-                x1: (rect.pos.x + rect.size.x) * self.dpi,
-                y1: (rect.pos.y + rect.size.y) * self.dpi,
-            });
+            node.set_bounds(layout_bounds(cx, window_id, rect));
             nodes.push((id, node));
             children.push(id);
         }
-        let window = ui.window(cx, ids!(main_window));
-        let size = window.get_inner_size(cx);
-        let position = window.get_position(cx);
-        let bounds = AccessibleRect {
-            x0: position.x,
-            y0: position.y,
-            x1: position.x + size.x * self.dpi,
-            y1: position.y + size.y * self.dpi,
-        };
+        let bounds = window_bounds(cx, window_id);
         self.adapter.set_root_window_bounds(bounds, bounds);
         let mut root = Node::new(Role::Window);
         root.set_label("Hepta Conversations");
@@ -217,3 +232,7 @@ impl NativeAccessibility {
         });
     }
 }
+
+#[cfg(test)]
+#[path = "tree_tests.rs"]
+mod tests;

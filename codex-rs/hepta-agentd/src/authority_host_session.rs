@@ -146,9 +146,22 @@ impl PreparedHostAuthoritySession {
     /// The exact pre-existing issuer policy must match; no policy, issuer or
     /// lease Registry is opened or created by this method.
     pub fn with_registered_notes_from_session(
+        self,
+        target: &codex_hepta_memory::NotesTargetIdentity,
+        lifetime_ms: u64,
+    ) -> io::Result<Self> {
+        self.with_registered_notes_from_session_policy(
+            target,
+            lifetime_ms,
+            /*expected_notes_policy*/ None,
+        )
+    }
+
+    fn with_registered_notes_from_session_policy(
         mut self,
         target: &codex_hepta_memory::NotesTargetIdentity,
         lifetime_ms: u64,
+        expected_notes_policy: Option<&crate::authority_host_service::ExpectedNotesPolicy>,
     ) -> io::Result<Self> {
         let end = Instant::now() + std::time::Duration::from_secs(30);
         verify_pinned_process(
@@ -158,9 +171,11 @@ impl PreparedHostAuthoritySession {
             &self.owner_pidfd,
             end,
         )?;
-        self.service = self
-            .service
-            .with_notes_from_original_session(target, lifetime_ms)?;
+        self.service = self.service.with_notes_from_original_session(
+            target,
+            lifetime_ms,
+            expected_notes_policy,
+        )?;
         verify_pinned_process(
             &self.registration,
             self.config.peer_uid,

@@ -10,10 +10,21 @@ use std::sync::atomic::Ordering;
 #[path = "deployment_notes_route_tests.rs"]
 mod issuer_routing;
 
-struct Clock(AtomicU64);
+#[path = "deployment_notes_policy_startup_tests.rs"]
+mod startup_policy;
+
+struct Clock {
+    value: AtomicU64,
+    reads: AtomicU64,
+    unavailable_on: AtomicU64,
+}
 impl AuthorityClock for Clock {
     fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
-        Ok(self.0.load(Ordering::SeqCst))
+        let read = self.reads.fetch_add(1, Ordering::SeqCst) + 1;
+        if read == self.unavailable_on.load(Ordering::SeqCst) {
+            return Err(AuthorityTrustError::Unavailable);
+        }
+        Ok(self.value.load(Ordering::SeqCst))
     }
 }
 
@@ -30,7 +41,11 @@ struct Fixture {
 impl Fixture {
     fn new() -> Self {
         let root = tempfile::tempdir().unwrap();
-        let clock = Arc::new(Clock(AtomicU64::new(10_000)));
+        let clock = Arc::new(Clock {
+            value: AtomicU64::new(10_000),
+            reads: AtomicU64::new(0),
+            unavailable_on: AtomicU64::new(u64::MAX),
+        });
         let path = root.path().join("leases");
         std::fs::create_dir(&path).unwrap();
         std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o700)).unwrap();
@@ -170,11 +185,11 @@ fn deployment_notes_repeated_binding_never_renews_expired_or_pruned_lease() {
     admission.issue(&f.issuer, &f.binding).unwrap().unwrap();
     let id = admission.lease_id(&f.binding).unwrap();
     let original = f.registry.read_lease(&id).unwrap().unwrap().lease;
-    f.clock.0.store(10_500, Ordering::SeqCst);
+    f.clock.value.store(10_500, Ordering::SeqCst);
     let second = admission.issue(&f.issuer, &f.binding).unwrap().unwrap();
     assert_eq!(second.grant.expires_at_unix_ms, original.expires_at_unix_ms);
     assert_eq!(f.registry.read_lease(&id).unwrap().unwrap().lease, original);
-    f.clock.0.store(11_000, Ordering::SeqCst);
+    f.clock.value.store(11_000, Ordering::SeqCst);
     assert_eq!(
         admission.issue(&f.issuer, &f.binding).unwrap_err().kind(),
         io::ErrorKind::PermissionDenied
@@ -384,7 +399,7 @@ fn deployment_notes_policy_wrong_predecessor_or_expired_writer_cannot_change_sta
             .replace_notes_policy(&f.writer, &f.target, 1_000, &next, 0)
             .is_err()
     );
-    f.clock.0.store(20_000, Ordering::SeqCst);
+    f.clock.value.store(20_000, Ordering::SeqCst);
     assert!(
         f.issuer
             .replace_notes_policy(&f.writer, &f.target, 1_000, &next, 1_000)
@@ -578,7 +593,7 @@ fn deployment_notes_actual_root_clock_registry_and_canonical_issuer_issue_distin
         .unwrap();
     std::fs::set_permissions(home.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
     let root = RootAuthorityDirectory::open(home.path()).unwrap();
-    let clock: Arc<dyn AuthorityClock> =
+    let clock =
         Arc::new(HostAuthorityClock::initialize(root.clone(), "notes-exact-clock".into()).unwrap());
     let frontier = Arc::new(
         HostAuthorityFrontierStore::initialize(
@@ -700,6 +715,110 @@ fn deployment_notes_actual_root_clock_registry_and_canonical_issuer_issue_distin
         .unwrap();
     assert_eq!(denied.code(), Some(1));
     let key = issuer.trust_key().unwrap();
+    let issuer = Arc::new(issuer);
+    let retained_after_startup = {
+        use crate::authority_host_service::ExpectedNotesPolicy;
+        let fleet = codex_hepta_paths::HeptaFleetRoot::parse(home.path().join("fleet")).unwrap();
+        let layout = fleet.layout().agent(&agent);
+        let identity = crate::AgentdIdentity {
+            agent_id: agent,
+            layout: layout.clone(),
+            spawn_generation: writer.spawn_generation,
+            fleet_root: fleet.as_path().to_path_buf(),
+            workspace: home.path().join("workspace"),
+            resources: codex_hepta_fleet::ResourceBudget::local_default(),
+            home_root: layout.home_root().to_path_buf(),
+            run_root: layout.run_root().to_path_buf(),
+            control_socket: layout.agentd_control_socket().to_path_buf(),
+            app_server_socket: layout.app_server_socket().to_path_buf(),
+        };
+        let service = || {
+            crate::HostAuthorityService::from_registered_owner(
+                Arc::clone(&issuer),
+                Arc::clone(&clock),
+                identity.clone(),
+            )
+            .unwrap()
+            .with_registered_writer(writer.clone(), registry.verifier())
+            .unwrap()
+            .retain_original_root_registry(Arc::clone(&registry))
+        };
+        let next = NotesTargetIdentity {
+            incarnation: "3".repeat(32),
+            ..target.clone()
+        };
+        let previous = ExpectedNotesPolicy {
+            target: target.clone(),
+            lifetime_ms: 1000,
+        };
+        let before = issuer.store.load(STATE_OWNER).unwrap();
+        let frontier = registry.frontier().unwrap();
+        assert!(
+            service()
+                .with_notes_from_original_session(
+                    &next, /*lifetime_ms*/ 900, /*expected_notes_policy*/ None,
+                )
+                .is_err(),
+            "legacy startup must not update a missing exact policy"
+        );
+        let stale = ExpectedNotesPolicy {
+            target: target.clone(),
+            lifetime_ms: 1001,
+        };
+        assert!(
+            service()
+                .with_notes_from_original_session(&next, /*lifetime_ms*/ 900, Some(&stale))
+                .is_err()
+        );
+        assert!(
+            service()
+                .with_notes_from_original_session(
+                    &target,
+                    /*lifetime_ms*/ 900,
+                    Some(&previous)
+                )
+                .is_err()
+        );
+        assert!(
+            service()
+                .with_notes_from_original_session(&next, /*lifetime_ms*/ 1001, Some(&previous))
+                .is_err()
+        );
+        assert_eq!(
+            serde_json::to_value(issuer.store.load(STATE_OWNER).unwrap()).unwrap(),
+            serde_json::to_value(&before).unwrap(),
+        );
+        assert_eq!(registry.frontier().unwrap(), frontier);
+        let installed = service()
+            .with_notes_from_original_session(&next, /*lifetime_ms*/ 900, Some(&previous))
+            .unwrap();
+        // Abandon the retained service before sending a late handoff/ACK. This
+        // cannot roll back the original policy or create a fresh target. It is
+        // a Root component cut, not an actual Session crash qualification.
+        drop(installed);
+        let mut expected = before;
+        expected.policies[0] = DeploymentGrantPolicy {
+            subject_id: writer.registered_agent_id.as_str().into(),
+            destination_id: next.destination_id(),
+            scope_sha256: next.scope_digest().into_array(),
+            lifetime_ms: 900,
+        };
+        assert_eq!(
+            serde_json::to_value(issuer.store.load(STATE_OWNER).unwrap()).unwrap(),
+            serde_json::to_value(&expected).unwrap(),
+        );
+        drop(
+            service()
+                .with_notes_from_original_session(&next, /*lifetime_ms*/ 900, Some(&previous))
+                .unwrap(),
+        );
+        assert_eq!(
+            serde_json::to_value(issuer.store.load(STATE_OWNER).unwrap()).unwrap(),
+            serde_json::to_value(&expected).unwrap(),
+        );
+        assert_eq!(registry.frontier().unwrap(), frontier);
+        serde_json::to_value(expected).unwrap()
+    };
     drop(admission);
     drop(issuer);
     let reopened = DeploymentFinalUseIssuer::open_protected(
@@ -715,4 +834,8 @@ fn deployment_notes_actual_root_clock_registry_and_canonical_issuer_issue_distin
         key.verifying_key
     );
     assert_eq!(reopened.store.load(STATE_OWNER).unwrap().sequence, 3);
+    assert_eq!(
+        serde_json::to_value(reopened.store.load(STATE_OWNER).unwrap()).unwrap(),
+        retained_after_startup,
+    );
 }

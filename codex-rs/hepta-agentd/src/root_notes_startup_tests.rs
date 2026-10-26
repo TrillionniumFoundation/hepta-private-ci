@@ -114,6 +114,76 @@ fn ordinary_file_cannot_be_a_pending_root_deployment() {
 }
 
 #[test]
+fn root_profile_requires_the_exact_bounded_policy_predecessor() -> anyhow::Result<()> {
+    let mut input = profile();
+    let legacy: Profile = serde_json::from_value(input.clone())?;
+    validate_profile(&legacy, "issuer:fixture")?;
+    assert_eq!(legacy.expected_notes_policy, None);
+    input["expected_notes_policy"] = serde_json::json!({
+        "target": {
+            "session_instance": "1".repeat(32), "task_id": 1, "incarnation": "2".repeat(32),
+        },
+        "lifetime_ms": 1000,
+    });
+    let declared: Profile = serde_json::from_value(input.clone())?;
+    validate_profile(&declared, "issuer:fixture")?;
+    assert_eq!(
+        declared.expected_notes_policy,
+        Some(ExpectedNotesPolicy {
+            target: NotesTargetIdentity {
+                session_instance: "1".repeat(32),
+                task_id: 1,
+                incarnation: "2".repeat(32),
+            },
+            lifetime_ms: 1000,
+        })
+    );
+    for (old, next) in [(0, 1000), (300_001, 1000), (1000, 0), (1000, 1001)] {
+        let mut changed = input.clone();
+        changed["expected_notes_policy"]["lifetime_ms"] = serde_json::json!(old);
+        changed["grant_lifetime_ms"] = serde_json::json!(next);
+        let declared: Profile = serde_json::from_value(changed)?;
+        assert!(validate_profile(&declared, "issuer:fixture").is_err());
+    }
+    for (field, value) in [
+        (
+            "session_instance",
+            serde_json::json!("unregistered-session"),
+        ),
+        ("task_id", serde_json::json!(0)),
+        ("incarnation", serde_json::json!("0".repeat(31))),
+    ] {
+        let mut changed = input.clone();
+        changed["expected_notes_policy"]["target"][field] = value;
+        let declared: Profile = serde_json::from_value(changed)?;
+        assert!(validate_profile(&declared, "issuer:fixture").is_err());
+    }
+    for field in [
+        "subject_id",
+        "signer_id",
+        "successor",
+        "scope_sha256",
+        "grant",
+    ] {
+        let mut changed = input.clone();
+        changed["expected_notes_policy"][field] = serde_json::json!("override");
+        assert!(serde_json::from_value::<Profile>(changed).is_err());
+    }
+    input["expected_notes_policy"]
+        .as_object_mut()
+        .unwrap()
+        .remove("lifetime_ms");
+    assert!(serde_json::from_value::<Profile>(input).is_err());
+    let duplicate = serde_json::to_string(&profile())?.replacen(
+        "\"grant_lifetime_ms\":1000",
+        "\"expected_notes_policy\":null,\"expected_notes_policy\":null,\"grant_lifetime_ms\":1000",
+        /*count*/ 1,
+    );
+    assert!(serde_json::from_str::<Profile>(&duplicate).is_err());
+    Ok(())
+}
+
+#[test]
 #[ignore = "requires actual Root; execute the user-built test ELF in the isolated Root runner"]
 fn original_root_seals_only_empty_private_deployment_and_readonly_consumer_observes_it() {
     // SAFETY: geteuid reads the current process's actual UID.

@@ -73,9 +73,14 @@ writer remains installed, read the exact original document state and emit no
 effect or issuer request. Their issuer/application inputs remain explicit
 fixtures; they do not qualify a production Root deployment.
 
-The Root launcher must separately register the actual Session Reserved target's
-Notes grant route with the **same retained Root issuer/lease registry** before
-effects. Activating the Notes FinalUse frontier is not that registration. The
+The Root launcher must register the actual Session Reserved target's Notes grant
+route with the **same retained Root issuer/lease registry** before effects.
+The original staged producer can perform the existing policy CAS when its
+Root-owned profile explicitly supplies the complete prior policy; otherwise it
+still requires the exact policy to be preinstalled. The
+[Root Notes admission contract](ROOT_NOTES_ADMISSION.md) defines this caller,
+the non-increasing lifetime and retained-state recovery after startup failure.
+Activating the Notes FinalUse frontier is not that registration. The
 Session offer/ACK remains bounded and startup-only. Desktop ordinary product
 startup and a configured chat socket cannot manufacture this descriptor custody.
 

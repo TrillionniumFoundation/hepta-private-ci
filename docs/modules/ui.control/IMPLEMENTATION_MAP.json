@@ -7,7 +7,7 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "ui.control",
-  "sourceMaturity": "native_web_client_boundary",
+  "sourceMaturity": "rust_makepad_shared_and_native_presentation_with_legacy_javascript_oracles",
   "declaredRoots": [
     "apps/hepta-control-ui"
   ],
@@ -34,11 +34,12 @@
           "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
         }
       ],
-      "sourceSemantics": "Projects a coherent generation/revision snapshot and explicitly marks absent snapshots stale.",
+      "sourceSemantics": "Retained JavaScript compatibility oracle only. Projects a coherent generation/revision snapshot and explicitly marks absent snapshots stale.",
       "operation": "read_view",
       "nativeSymbol": "readView()",
       "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "state": "legacy_javascript_compatibility_oracle_not_rust_product_entry"
     },
     {
       "designOperation": "submit_request",
@@ -57,11 +58,12 @@
           "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
         }
       ],
-      "sourceSemantics": "Submits an authenticated request bound to displayed revision, operation identity, and semantic digest.",
+      "sourceSemantics": "Retained JavaScript compatibility oracle only. Submits an authenticated request bound to displayed revision, operation identity, and semantic digest.",
       "operation": "submit_request",
       "nativeSymbol": "async submitRequest(",
       "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "state": "legacy_javascript_compatibility_oracle_not_rust_product_entry"
     },
     {
       "designOperation": "request_stop",
@@ -80,24 +82,187 @@
           "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
         }
       ],
-      "sourceSemantics": "Uses the same authenticated identity/revision path for stop while preserving backend terminality.",
+      "sourceSemantics": "Retained JavaScript compatibility oracle only. Uses the same authenticated identity/revision path for stop while preserving backend terminality.",
       "operation": "request_stop",
       "nativeSymbol": "async requestStop(",
       "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "state": "legacy_javascript_compatibility_oracle_not_rust_product_entry"
+    },
+    {
+      "operation": "rust_chat_workspace",
+      "designOperation": "rust_chat_workspace",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "ChatWorkspace",
+      "sourcePath": "apps/hepta-control-ui/rust/core/src/chat.rs",
+      "sourcePathExists": true,
+      "buildTarget": "hepta-control-core",
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "apps/hepta-control-ui/rust/core/src/chat/basic_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "npm test --prefix apps/hepta-control-ui"
+        },
+        {
+          "path": "apps/hepta-control-ui/rust/core/src/chat/integration_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "npm test --prefix apps/hepta-control-ui"
+        }
+      ],
+      "state": "source_implemented_selected_profile_execution_requires_exact_candidate_receipt",
+      "authority": "none",
+      "sourceSemantics": "Caller-owned bounded draft, room and history projection state; does not create backend facts or an authenticated transport."
+    },
+    {
+      "operation": "rust_native_external_workspace",
+      "designOperation": "rust_native_external_workspace",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "run_native_presentation",
+      "sourcePath": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/render.rs",
+      "sourcePathExists": true,
+      "buildTarget": "hepta-robrix-ui",
+      "delegatedCallees": [
+        {
+          "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/mod.rs",
+          "symbol": "NativeChatComposition",
+          "role": "delegated_callee"
+        },
+        {
+          "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_launch.rs",
+          "symbol": "run",
+          "role": "delegated_callee"
+        }
+      ],
+      "tests": [
+        {
+          "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/native_presentation_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "cargo +1.95.0 nextest run --locked --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --no-default-features --features ui,native-host,native-presentation --lib"
+        },
+        {
+          "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_launch_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "cargo +1.95.0 nextest run --locked --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --no-default-features --features ui,native-host,native-presentation --lib"
+        }
+      ],
+      "state": "source_implemented_selected_profile_execution_requires_exact_candidate_receipt",
+      "authority": "none",
+      "sourceSemantics": "Adopts the original App and one caller-owned NativeChatComposition. Resources and original lifecycle are required; absent host capabilities remain unavailable."
+    },
+    {
+      "operation": "rust_native_keyboard_editor",
+      "designOperation": "rust_native_keyboard_editor",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "handle_tab",
+      "sourcePath": "apps/hepta-control-ui/rust/robrix-ui/src/keyboard_navigation.rs",
+      "sourcePathExists": true,
+      "buildTarget": "hepta-robrix-ui",
+      "delegatedCallees": [
+        {
+          "path": "apps/hepta-control-ui/rust/robrix-ui/src/ime_router.rs",
+          "symbol": "ImeRouter",
+          "role": "delegated_callee"
+        },
+        {
+          "path": "apps/hepta-control-ui/rust/robrix-ui/src/robrix/composer_transaction.rs",
+          "symbol": "ComposerTransaction",
+          "role": "delegated_callee"
+        }
+      ],
+      "tests": [
+        {
+          "path": "apps/hepta-control-ui/rust/robrix-ui/src/keyboard_navigation_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "cargo +1.95.0 nextest run --locked --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --no-default-features --features ui,native-host,native-presentation --lib"
+        },
+        {
+          "path": "apps/hepta-control-ui/rust/robrix-ui/src/robrix/composer_transaction_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "cargo +1.95.0 nextest run --locked --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --no-default-features --features ui,native-host,native-presentation --lib"
+        }
+      ],
+      "state": "source_implemented_selected_profile_execution_requires_exact_candidate_receipt",
+      "authority": "none",
+      "sourceSemantics": "Original IME-gated active-widget Tab traversal and SDK focus; Space/Return stay in original controls. Prepared SDK/resources are prerequisites; component tests are not physical keyboard evidence."
+    },
+    {
+      "operation": "rust_native_accessibility_projection",
+      "designOperation": "rust_native_accessibility_projection",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "after_draw",
+      "sourcePath": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/accessibility/tree.rs",
+      "sourcePathExists": true,
+      "buildTarget": "hepta-robrix-ui",
+      "delegatedCallees": [
+        {
+          "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/accessibility/mod.rs",
+          "symbol": "NativeAccessibility",
+          "role": "delegated_callee"
+        }
+      ],
+      "tests": [
+        {
+          "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/accessibility/tree_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "cargo +1.95.0 nextest run --locked --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --no-default-features --features ui,native-host,native-presentation --lib"
+        },
+        {
+          "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/accessibility/text_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "cargo +1.95.0 nextest run --locked --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --no-default-features --features ui,native-host,native-presentation --lib"
+        }
+      ],
+      "state": "source_implemented_selected_profile_execution_requires_exact_candidate_receipt",
+      "authority": "none",
+      "sourceSemantics": "Projects active drawn controls, actual focus and current-window physical bounds through the existing AccessKit bridge. SDK geometry tests do not qualify actual AT-SPI, Orca, glyphs or physical displays."
+    },
+    {
+      "operation": "rust_native_notes_model_review",
+      "designOperation": "rust_native_notes_model_review",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "dispatch",
+      "sourcePath": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/chat_controls.rs",
+      "sourcePathExists": true,
+      "buildTarget": "hepta-robrix-ui",
+      "delegatedCallees": [
+        {
+          "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/mod.rs",
+          "symbol": "request_notes_model_decision",
+          "role": "delegated_callee"
+        }
+      ],
+      "tests": [
+        {
+          "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/chat_controls_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "cargo +1.95.0 nextest run --locked --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --no-default-features --features ui,native-host,native-presentation --lib"
+        },
+        {
+          "path": "apps/hepta-control-ui/rust/robrix-ui/src/keyboard_navigation_tests.rs",
+          "kind": "existing_source_regression_not_execution_receipt",
+          "command": "cargo +1.95.0 nextest run --locked --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --no-default-features --features ui,native-host,native-presentation --lib"
+        }
+      ],
+      "state": "source_implemented_selected_profile_execution_requires_exact_candidate_receipt",
+      "authority": "none",
+      "sourceSemantics": "Original room and last-drawn proposal checks forward only proposal identity/digest and decision to the authenticated embedding; text/target/grant and durable outcome stay with the original Notes owner."
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Keep native and browser operation inventories current as their Rust surfaces change; this map is a selected implementation subset.",
+    "The external Desktop authenticated host and exact packaged ELF receipts remain separate source-bound inputs."
+  ],
   "externalEvidenceGates": [
-    "selected Web framework/build artifact and browser support matrix",
-    "deployed authentication/CSP/CSRF/WebSocket topology",
-    "end-to-end accessibility and backend deployment qualification"
+    "exact selected Rust/Makepad SDK, lock, resource and build receipts for browser or native target",
+    "authenticated original host/model/Notes owner execution and recovery receipts",
+    "final packaged ELF input, keyboard, AT-SPI, private X11 DPI, screen-reader and separately scoped physical/Wayland qualification"
   ],
   "claimBoundary": {
-    "nativeSourceMappingComplete": true,
+    "nativeSourceMappingComplete": false,
     "repositoryControlledDocumentationGapsClosed": true,
-    "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -118,5 +283,100 @@
   "technicalGuide": "docs/modules/ui.control/TECHNICAL.md",
   "sourceRoot": [
     "apps/hepta-control-ui"
+  ],
+  "mappingScope": "Reviewed Rust presentation/input/accessibility/Notes entrypoints plus retained JavaScript protocol oracles; not an exhaustive native public-surface inventory or packaged product qualification.",
+  "sourceObjects": [
+    {
+      "path": "apps/hepta-control-ui",
+      "object": "005b131cd5b298aa3365a2065c5376323a4245af"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/core/src/chat.rs",
+      "object": "e121fd668bc2675ff26e5355ee5e9f45162d62d4"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/core/src/chat/basic_tests.rs",
+      "object": "d535e51221065cd82ba219278dc49d2c817a0357"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/core/src/chat/integration_tests.rs",
+      "object": "c66c62304e08c52e266416800132f646880d904e"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/robrix-ui/src/ime_router.rs",
+      "object": "2a5c5684e0095586e1d3890fa0c0d3d36604c88b"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/robrix-ui/src/keyboard_navigation.rs",
+      "object": "d57e710465700ee7987864bee0007b7a6b943d8b"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/robrix-ui/src/keyboard_navigation_tests.rs",
+      "object": "b080b89f5d2c5faa2dd6762dc3908d71f9ee0e3b"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_launch.rs",
+      "object": "995fc346ae6269fe0eb891a574bdd7c05ee42bf3"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_launch_tests.rs",
+      "object": "2cc67b8434b51312cc316c3d6d7e4100f56bbff8"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/accessibility/mod.rs",
+      "object": "2cf4f205f3ae297ee2436f919c675a361b2f43b0"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/accessibility/text_tests.rs",
+      "object": "133b3be5c7bac31dfa6e63381fad41a08dc67fcd"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/accessibility/tree.rs",
+      "object": "ebeb56b63dd6e6c966ec60c334d4b5e1f3efe419"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/accessibility/tree_tests.rs",
+      "object": "bc3404b3f2583068a549c13b8c16bb09a7546db5"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/chat_controls.rs",
+      "object": "6b77cdc56d6f8a23ccf678cd8f6c8d60fc5ed3c7"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/chat_controls_tests.rs",
+      "object": "6855b1e69ed42ab1a5db926e26f1cbbcceab73df"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/mod.rs",
+      "object": "6655d97467da41b3d4ad280362e76551994c107c"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/native_presentation_tests.rs",
+      "object": "e6be75ba6c812e7a4129d09b69cd14f841eeed6f"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/render.rs",
+      "object": "a92d0dc69a7b931ba8c975afa1338e31c70c27f5"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/robrix-ui/src/robrix/composer_transaction.rs",
+      "object": "5b5b4c410d0dd05fa3fa5fab1c3cbcec62f0348b"
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/robrix-ui/src/robrix/composer_transaction_tests.rs",
+      "object": "62641393a2d524ec105cd29b64c753348ff824f1"
+    },
+    {
+      "path": "apps/hepta-control-ui/src/runtime-client.js",
+      "object": "e29f5086deb9593cb2ba3c1465d6e0bc3deb0b8a"
+    },
+    {
+      "path": "apps/hepta-control-ui/test/runtime-client.test.js",
+      "object": "d7a4f124f4a7e0c50712a5612d7900904eafc3df"
+    },
+    {
+      "path": "docs/modules/ui.control/TECHNICAL.md",
+      "object": "3afac9e68021bfe630f9a2fc88bc3a2fe5d6980a"
+    }
   ]
 }

@@ -210,10 +210,12 @@ An absent receipt, matching visible text, application restart, or timeout cannot
 be converted to success or to permission to resend. Reconnection requires new
 trusted bootstrap and the original owner's recovery decision.
 
-The normal Agentd CLI has no Notes grant-provider loader. In the owning source
-roots, `AgentdFinalUseGrantProvider` is an injected production interface; its
-concrete signing implementation is confined to test fixtures. Therefore a
-deployment without an independently authenticated recovery cut, live source
+The ordinary Agentd CLI does not select a Notes issuer or policy. The explicit
+Root production composition below uses the original protected issuer and the
+registered `RootNotesGrantAdmission`; `AgentdFinalUseGrantProvider` remains its
+bounded consumer interface. The isolated host fixture also supplies a synthetic
+issuer, whose results do not qualify the Root deployment. A deployment without
+an independently authenticated recovery cut, live source
 authority/verifier, existing FinalUse trust state, real external grant provider,
 or private Session channel remains blocked. Production FinalUse construction
 uses `FinalUseAuthority::open_state_dir_with_issuer_keys` with the trusted bounded
@@ -662,9 +664,10 @@ configuration returns the original Notes identity.
 
 See `codex-rs/hepta-agentd/PRODUCTION_COMPOSITION.md` for input ownership,
 transaction/failure semantics, owning-package test gates and remaining deployment
-requirements. This source composition does not qualify production trust inputs,
-activate the default CLI, implement the issuer service, or add Objective signing
-or sender-side durable retention.
+requirements. The helper alone does not qualify production trust inputs or
+activate the default CLI. The original issuer service, Objective signing and
+durable sender are explicit owners in the separate Root/Notes launcher path
+below; they are not constructed by this helper or by the UI.
 
 ### Original Root preparation and filesystem custody
 
@@ -707,8 +710,10 @@ two FinalUse owners. They do not define replacement identities or ledgers.
    identity and writer inode, and the live original verifier before and after
    reacquiring the retained writer descriptor. The recovered writer and runtime
    retain that same Root session. A real Notes route additionally requires the
-   original Session target and an exactly matching pre-existing issuer policy;
-   `with_registered_notes_from_session` uses the already retained Root Registry.
+   original Session target and the matching original issuer policy. The explicit
+   startup path below may compare-and-set a named predecessor policy through
+   the same retained issuer, Registry and registered writer; it does not create
+   another policy owner or lease.
 
 | Path | Owner and mode after fresh handoff | Allowed operation |
 |---|---|---|
@@ -759,9 +764,12 @@ does not itself provide the kernel-precreated roles with their native handoff.
 and `--notes-deployment-fd`. The profile is a Root0600 file under the original
 Root custody checks, with schema `hepta.root.notes_launch_profile.v1`, a
 `grant_lifetime_ms`, the original frozen literal compiler `bindings`, and an
-optional explicit `previous_recovery`. It cannot contain a Session target,
-PID or nonce. The bindings and previous-recovery fields use the original
-sealed `hepta.agentd.original_notes_launch.v1` representation.
+optional explicit `previous_recovery`, `expected_notes_policy` and `model_route`.
+It cannot choose the new Session target, PID or nonce. A predecessor target in
+`expected_notes_policy` or `previous_recovery` describes the exact old binding;
+it is never the source of the new target. The original sealed
+`hepta.agentd.original_notes_launch.v1` representation carries the public
+bindings and supplied model route after Root validation.
 
 The same Root process creates the anonymous Session pair before launch and
 enables `SO_PASSCRED` on its receiving endpoint. Agentd inherits a duplicate of
@@ -775,15 +783,45 @@ must agree. Root then turns `SO_PASSCRED` off on the shared endpoint before
 closing its duplicate, so the subsequent original two-rights Offer has no
 additional credential ancillary data.
 
-`with_notes_startup_from_session` installs this target through the same
-retained service's `with_registered_notes_from_session`. Its original issuer
-must already contain the exact Notes policy, including target scope and grant
-lifetime. A fresh trusted runner must obtain the actual Session target before
-calling the original initializer, for example by peeking the same Reserved
-packet without consuming it; it must provision the exact original policy and
-writer proof through the existing Root factories. This entry never invents a
-target, adds a missing policy, replaces a lease, or bypasses the opaque
-original lease Registry check.
+`with_notes_startup_from_session` passes that actual target into the retained
+service's `with_notes_from_original_session`. With no `expected_notes_policy`,
+the original exact-policy admission remains required. An explicit predecessor
+contains only the old target and lifetime. After the real Session credential
+check, Root revalidates its original registered writer proof and invokes the
+existing `replace_registered_notes_policy` full-state CAS. The new lifetime
+must be nonzero, at most 300,000 ms and no greater than the predecessor's;
+the actual new target must differ. Missing policy, wrong predecessor, stale
+writer or absent retained Root Registry is refused. No issuer, lease, grant
+or second ledger is introduced. A failure after CAS, admission, sealing or
+readback can leave the original update durable: preserve that Unknown and
+reconcile the same old/new policy, rather than roll back or select another
+target. The startup component tests and the real Root fixture have separate
+scope; neither is an end-to-end Session recovery receipt.
+
+The optional `model_route` carries the original AppServer session/thread,
+human principal scope digest and `registered_tool_schema_sha256` for the exact
+fixed `trill_notes.propose_replace` definition. `notes_model_route.rs` checks
+those four fields before Root consumes Reserved or changes a Notes policy.
+The registration fact must come from trusted deployment evidence; resuming
+the original thread does not independently inspect its registered tool schema.
+`production_notes_deployment.rs` rechecks the sealed route and
+`production_launcher.rs` installs it through `AgentdNotesUiRuntime`.
+Absent evidence leaves the model route unavailable; no new thread is opened
+or registered to fill the gap.
+
+The private callback owner in `text_session_notes_tools.rs` retains the
+original request. `notes_model_bridge.rs` and `notes_model_confirmation.rs`
+carry the bounded proposal/confirmation path; `prepare_reviewed` in
+`notes_literal_adapter.rs` checks the actual target/revision/content digest
+before requesting a grant. UI decisions contain only proposal ID and digest.
+The original sender retains the once-send fence, and `notes_ui_worker.rs`
+queries `ProductionDurableWriter::observe_notes_terminal` for the exact old
+operation without dispatch. A model response already sent as Unknown remains
+Unknown; a later original owner terminal is a separate observation. A new
+connection or an absent response alone never authorizes another effect or
+callback response. Only an actual replay of the same pending request by the
+original AppServer can supply a new callback response opportunity; it does
+not rearm the original Notes effect.
 
 The deployment FD is a pre-created empty Root0600 sealable memfd. Before
 launching the child, Root opens `/proc/self/fd/<memfd>` independently with

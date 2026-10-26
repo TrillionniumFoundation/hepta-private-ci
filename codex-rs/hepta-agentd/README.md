@@ -54,9 +54,15 @@ The original full-daemon size rejection must remain in the qualification record.
 The explicit Desktop `--notes-root-bootstrap-stdin` mode first reserves its
 actual initial Notes target and a fresh nonce on the inherited private pair.
 Root consumes that metadata using the actual Session sender credentials and
-held pidfd, installs the exact existing policy, and seals those same values in
-the Notes deployment. Root then disables `SO_PASSCRED` on its shared receiving
-endpoint and closes its duplicate before the original late authority handoff.
+held pidfd, disables `SO_PASSCRED` on its shared receiving endpoint, installs
+the exact existing policy, and seals those same values in
+the Notes deployment. The Root-only optional `expected_notes_policy` declaration
+lets that same producer call the original issuer CAS for the actual new target;
+it requires the full existing predecessor and cannot increase its bounded
+lifetime. Without the declaration, startup only accepts an already-matching
+policy. The [Root Notes admission contract](ROOT_NOTES_ADMISSION.md) documents
+the original caller, retained-state failures and explicit Root tests.
+Root closes its duplicate before the original late authority handoff.
 Agentd must not concurrently consume the reservation.
 
 The actual launcher passes that sealed `AgentdNotesStartupRelease` to
