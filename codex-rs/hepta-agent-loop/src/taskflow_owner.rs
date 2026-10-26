@@ -24,6 +24,12 @@ mod snapshot;
 use snapshot::RetainedBounds;
 use snapshot::Snapshot;
 
+#[cfg(feature = "automation-effects")]
+#[path = "taskflow_effect_observation.rs"]
+mod effect_observation;
+#[cfg(feature = "automation-effects")]
+pub(crate) use effect_observation::observe_bound_effect_turn;
+
 /// Full loop observation, including provider continuation receipts and usage.
 /// A prepared successor request is retained before it can be dispatched.
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]

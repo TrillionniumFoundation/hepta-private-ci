@@ -10,6 +10,11 @@ use crate::requests::Compression;
 use crate::requests::headers::build_session_headers;
 use crate::requests::headers::insert_header;
 use crate::requests::headers::subagent_header;
+use crate::response_capture::ResponseCapture;
+use crate::response_input::RawResponsesInput;
+use crate::response_output_limit::RequestedOutputLimit;
+use crate::response_output_limit::encode_request_with_requested_output_limit;
+use crate::sse::responses::spawn_response_stream_with_capture;
 use crate::sse::spawn_response_stream;
 use crate::telemetry::SseTelemetry;
 use codex_client::EncodedJsonBody;
@@ -84,8 +89,13 @@ impl<T: HttpTransport> ResponsesClient<T> {
         request: ResponsesApiRequest,
         options: ResponsesOptions,
     ) -> Result<ResponseStream, ApiError> {
-        self.stream_request_with_retry_mode(request, options, StreamRetryMode::ProviderDefault)
-            .await
+        self.stream_request_with_retry_mode(
+            request,
+            options,
+            StreamRetryMode::ProviderDefault,
+            None,
+        )
+        .await
     }
 
     /// Streams one request without transparent transport retries.
@@ -102,6 +112,54 @@ impl<T: HttpTransport> ResponsesClient<T> {
             request,
             options,
             StreamRetryMode::SingleTransportAttempt(dispatch_metadata),
+            None,
+        )
+        .await
+    }
+
+    /// A single original-owner attempt with bounded private continuation capture.
+    /// Capture does not change typed request bytes, auth or retry mode. Optional
+    /// raw input changes the body and must be included in the owner's admission.
+    pub async fn stream_request_single_attempt_captured(
+        &self,
+        request: ResponsesApiRequest,
+        options: ResponsesOptions,
+        dispatch_metadata: RequestDispatchMetadata,
+        capture: Arc<ResponseCapture>,
+        raw_input: Option<RawResponsesInput>,
+    ) -> Result<ResponseStream, ApiError> {
+        let body = match raw_input {
+            Some(input) => input.encode_request(&request)?,
+            None => EncodedJsonBody::encode(&request).map_err(|_| {
+                ApiError::Stream("failed to encode private Responses request".into())
+            })?,
+        };
+        self.stream_encoded_request(
+            body,
+            options,
+            StreamRetryMode::SingleTransportAttempt(dispatch_metadata),
+            Some(capture),
+        )
+        .await
+    }
+
+    /// One original-owner attempt with an explicit requested wire limit. A
+    /// rejected limit is returned as a failure; it is never removed or retried.
+    pub async fn stream_request_single_attempt_capped(
+        &self,
+        request: ResponsesApiRequest,
+        options: ResponsesOptions,
+        dispatch_metadata: RequestDispatchMetadata,
+        capture: Arc<ResponseCapture>,
+        raw_input: Option<RawResponsesInput>,
+        limit: RequestedOutputLimit,
+    ) -> Result<ResponseStream, ApiError> {
+        let body = encode_request_with_requested_output_limit(&request, raw_input.as_ref(), limit)?;
+        self.stream_encoded_request(
+            body,
+            options,
+            StreamRetryMode::SingleTransportAttempt(dispatch_metadata),
+            Some(capture),
         )
         .await
     }
@@ -111,6 +169,20 @@ impl<T: HttpTransport> ResponsesClient<T> {
         request: ResponsesApiRequest,
         options: ResponsesOptions,
         retry_mode: StreamRetryMode,
+        capture: Option<Arc<ResponseCapture>>,
+    ) -> Result<ResponseStream, ApiError> {
+        let body = EncodedJsonBody::encode(&request)
+            .map_err(|e| ApiError::Stream(format!("failed to encode responses request: {e}")))?;
+        self.stream_encoded_request(body, options, retry_mode, capture)
+            .await
+    }
+
+    async fn stream_encoded_request(
+        &self,
+        body: EncodedJsonBody,
+        options: ResponsesOptions,
+        retry_mode: StreamRetryMode,
+        capture: Option<Arc<ResponseCapture>>,
     ) -> Result<ResponseStream, ApiError> {
         let ResponsesOptions {
             session_id,
@@ -122,8 +194,6 @@ impl<T: HttpTransport> ResponsesClient<T> {
             encoded_body_observer,
         } = options;
 
-        let body = EncodedJsonBody::encode(&request)
-            .map_err(|e| ApiError::Stream(format!("failed to encode responses request: {e}")))?;
         if let Some(observer) = encoded_body_observer.as_ref() {
             observer
                 .observe_encoded_body(body.as_bytes())
@@ -144,7 +214,7 @@ impl<T: HttpTransport> ResponsesClient<T> {
             insert_header(&mut headers, "x-openai-subagent", &subagent);
         }
 
-        self.stream_encoded(body, headers, compression, turn_state, retry_mode)
+        self.stream_encoded(body, headers, compression, turn_state, retry_mode, capture)
             .await
     }
 
@@ -178,6 +248,7 @@ impl<T: HttpTransport> ResponsesClient<T> {
             compression,
             turn_state,
             StreamRetryMode::ProviderDefault,
+            None,
         )
         .await
     }
@@ -189,6 +260,7 @@ impl<T: HttpTransport> ResponsesClient<T> {
         compression: Compression,
         turn_state: Option<Arc<OnceLock<String>>>,
         retry_mode: StreamRetryMode,
+        capture: Option<Arc<ResponseCapture>>,
     ) -> Result<ResponseStream, ApiError> {
         let request_compression = match compression {
             Compression::None => RequestCompression::None,
@@ -228,13 +300,23 @@ impl<T: HttpTransport> ResponsesClient<T> {
             }
         };
 
-        Ok(spawn_response_stream(
-            stream_response,
-            self.session.provider().stream_idle_timeout,
-            self.sse_telemetry.clone(),
-            turn_state,
-            self.redact_response_diagnostics,
-        ))
+        Ok(match capture {
+            Some(capture) => spawn_response_stream_with_capture(
+                stream_response,
+                self.session.provider().stream_idle_timeout,
+                self.sse_telemetry.clone(),
+                turn_state,
+                self.redact_response_diagnostics,
+                Some(capture),
+            ),
+            None => spawn_response_stream(
+                stream_response,
+                self.session.provider().stream_idle_timeout,
+                self.sse_telemetry.clone(),
+                turn_state,
+                self.redact_response_diagnostics,
+            ),
+        })
     }
 }
 

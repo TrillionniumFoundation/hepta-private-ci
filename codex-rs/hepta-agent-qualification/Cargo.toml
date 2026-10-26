@@ -8,6 +8,10 @@ version.workspace = true
 name = "hepta-native-provider-qualification"
 path = "src/main.rs"
 
+[[bin]]
+name = "hepta-native-provider-cap-witness"
+path = "src/budget_main.rs"
+
 [lints]
 workspace = true
 
@@ -29,6 +33,7 @@ codex-model-provider = { workspace = true }
 codex-models-manager = { workspace = true }
 codex-protocol = { workspace = true }
 codex-state = { workspace = true }
+codex-tools = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
 futures = { workspace = true }
 serde = { workspace = true, features = ["derive"] }

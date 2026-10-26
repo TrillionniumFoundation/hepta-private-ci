@@ -104,3 +104,31 @@ Git or build action. Its local guards check mismatch/partial-install rejection,
 no mutation on failed preflight and exact idempotent installation. Rust compile,
 formatting, focused tests and any fresh request outcome are reported separately
 by the actual isolated execution owner. No result is implied by this document.
+
+## Empty-tool ordinary request shape
+
+The fixed-marker qualifier now calls Core's exported
+`create_tools_raw_json_for_responses_api(&[])` and selects `tool_choice: auto`.
+Its actual encoded body therefore carries `tools: []`, following Core's
+ordinary no-tool request construction. The prior marker omitted `tools` and
+selected `none`. These two source-level differences are established; whether
+either caused the earlier HTTP 400 remains unknown because its body was not
+retained.
+
+This does not expose tools or execute effects. The collector continues to
+cancel on an unexpected tool call and cannot qualify that response. Model,
+effort, summary, tier filtering, original AuthManager, offline catalog owner,
+transport, admission and both terminal owners retain their original paths.
+The actual body is prepared before admission, and a changed body produces a new
+encoded-body and wire-semantic identity. The admission and report record
+`ordinary_tool_shape: shared_core_empty_tools_auto_v1`. An old receipt cannot
+be used for the changed request.
+
+The offline request regression uses the same actual template as the probe,
+exercises absent and present owner-normalized settings, verifies the complete
+serialized ordinary body, and checks that the prior request shape has a
+different admitted wire identity. It does not contact a provider. Remaining
+Core differences include routing, session identity, client metadata, transport
+feature selection and catalog refresh policy. This is not full Core parity or
+a successful live qualification. The output reservation remains distinct from
+a provider-enforced output cap; the same-task A/B gate is unchanged.

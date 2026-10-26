@@ -257,3 +257,6 @@ mod concurrency_tests;
 
 #[path = "support/automation_effect_late_ack_tests.rs"]
 mod late_ack_tests;
+
+#[path = "support/runtime_process_effect_tests.rs"]
+mod runtime_process_tests;

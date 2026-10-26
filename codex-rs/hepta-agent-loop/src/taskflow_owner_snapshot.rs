@@ -45,6 +45,19 @@ pub(super) struct Snapshot {
 }
 
 impl Snapshot {
+    #[cfg(feature = "automation-effects")]
+    pub(super) fn replay_retained(&self) -> Result<Frame> {
+        self.replay(&Limits {
+            maximum_rounds: self.bounds.maximum_rounds,
+            maximum_total_tokens: self.bounds.maximum_total_tokens,
+            maximum_context_bytes: self.bounds.maximum_context_bytes,
+            maximum_output_bytes: self.bounds.maximum_output_bytes,
+            maximum_calls: self.bounds.maximum_calls,
+            timeout: self.bounds.timeout,
+            cancellation_timeout: self.bounds.cancellation_timeout,
+        })
+    }
+
     pub(super) fn initial(
         binding: &TurnBinding,
         request: &ModelRequest,

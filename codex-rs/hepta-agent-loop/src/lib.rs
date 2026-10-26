@@ -43,6 +43,17 @@ pub use context::PreparedNativeContextV2;
 pub use context::prepare_native_context_v2;
 
 #[cfg(feature = "responses-api")]
+mod responses_provider_error;
+#[cfg(feature = "responses-api")]
+pub use responses_provider_error::ResponsesProviderError;
+#[cfg(feature = "responses-api")]
+pub use responses_provider_error::ResponsesProviderErrorCode;
+#[cfg(feature = "responses-api")]
+pub use responses_provider_error::ResponsesProviderErrorParam;
+#[cfg(feature = "responses-api")]
+pub use responses_provider_error::ResponsesProviderErrorType;
+
+#[cfg(feature = "responses-api")]
 mod responses_failure;
 #[cfg(feature = "responses-api")]
 pub use responses_failure::ResponsesFailure;
@@ -100,4 +111,20 @@ pub use automation_effects::AutomationStatusEffectOwner;
 #[cfg(feature = "automation-effects")]
 pub use automation_effects::PreboundAutomationStatusEffect;
 #[cfg(feature = "automation-effects")]
+pub use automation_effects::PreboundRuntimeProcessEffect;
+#[cfg(feature = "automation-effects")]
+pub use automation_effects::RUNTIME_PROCESS_TOOL_NAME;
+#[cfg(feature = "automation-effects")]
+pub use automation_effects::RuntimeProcessEffectOwner;
+#[cfg(feature = "automation-effects")]
+pub use automation_effects::RuntimeProcessObservation;
+#[cfg(feature = "automation-effects")]
+pub use automation_effects::RuntimeProcessOwner;
+#[cfg(feature = "automation-effects")]
+pub use automation_effects::RuntimeProcessResult;
+#[cfg(feature = "automation-effects")]
+pub use automation_effects::RuntimeProcessStatus;
+#[cfg(feature = "automation-effects")]
 pub use automation_effects::automation_status_effect_run_id;
+#[cfg(feature = "automation-effects")]
+pub use automation_effects::runtime_process_effect_run_id;

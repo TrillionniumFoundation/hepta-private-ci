@@ -7,7 +7,9 @@
 
 use codex_api::EncodedRequestBodyObserver;
 use codex_api::EncodedRequestTerminal;
+use codex_api::OpaqueResponsesContinuation;
 use codex_api::RequestDispatchMetadata;
+use codex_api::ResponseCapture;
 use codex_extension_api::ModelProviderAttemptLease;
 use codex_extension_api::ModelProviderSha256Digest;
 use codex_extension_api::ModelProviderTerminal;
@@ -105,6 +107,7 @@ impl AttemptOwner {
 pub(super) struct CompletionOwner<'a, O> {
     pub(super) continuation_owner: &'a mut O,
     pub(super) attempt: Option<AttemptOwner>,
+    pub(super) opaque_capture: Option<Arc<ResponseCapture>>,
 }
 
 impl<O: ResponsesContinuationOwner> ResponsesContinuationOwner for CompletionOwner<'_, O> {
@@ -115,11 +118,31 @@ impl<O: ResponsesContinuationOwner> ResponsesContinuationOwner for CompletionOwn
         continuation: ResponsesContinuation,
     ) -> Result<Digest32> {
         let response_id = continuation.provider_response_id.clone();
+        let typed_items = crate::response_items_evidence(&continuation.items)?;
+        let opaque = self
+            .opaque_capture
+            .as_ref()
+            .map(|capture| {
+                capture
+                    .completed(&response_id, &continuation.items)
+                    .map_err(|_| Error::Contract("opaque continuation terminal binding"))
+            })
+            .transpose()?;
+        let projection_supported = opaque
+            .as_ref()
+            .is_none_or(OpaqueResponsesContinuation::projection_supported);
+        let response_items = match &opaque {
+            Some(opaque) => serde_json::from_slice(
+                &opaque
+                    .private_output_items_json()
+                    .map_err(|_| Error::Contract("opaque continuation encoding"))?,
+            )
+            .map_err(|_| Error::Contract("opaque continuation JSON"))?,
+            None => typed_items,
+        };
         let terminal = ModelProviderTerminal::Completed {
             response_id_sha256: digest(response_id.as_bytes())?,
-            response_items_sha256: canonical_digest(crate::response_items_evidence(
-                &continuation.items,
-            )?)?,
+            response_items_sha256: canonical_digest(response_items)?,
             token_usage_sha256: canonical_digest(serde_json::json!({
                 "token_usage": &continuation.usage,
                 "provider_rollout_budget_units": &continuation.provider_rollout_budget_units,
@@ -129,10 +152,18 @@ impl<O: ResponsesContinuationOwner> ResponsesContinuationOwner for CompletionOwn
         // Keep the full provider continuation before emitting any terminal
         // projection. The caller's owner must retain actual usage even if a
         // later loop budget validation rejects the completed output.
-        let receipt = self
-            .continuation_owner
-            .retain(binding, request, continuation)
-            .await?;
+        let receipt = match opaque {
+            Some(opaque) => {
+                self.continuation_owner
+                    .retain_opaque(binding, request, continuation, opaque)
+                    .await?
+            }
+            None => {
+                self.continuation_owner
+                    .retain(binding, request, continuation)
+                    .await?
+            }
+        };
         if receipt.is_zero() {
             return Err(Error::Contract("continuation owner returned no receipt"));
         }
@@ -141,7 +172,46 @@ impl<O: ResponsesContinuationOwner> ResponsesContinuationOwner for CompletionOwn
             .ok_or(Error::Contract("provider lease already finished"))?
             .finish(terminal, EncodedRequestTerminal::Completed { response_id })
             .await?;
+        // The actual completed provider usage is durable, but unknown item
+        // semantics must not become native ModelEvent::Completed/tool effects.
+        if !projection_supported {
+            return Err(Error::Contract("opaque continuation semantics unsupported"));
+        }
         Ok(receipt)
+    }
+}
+
+impl<O: ResponsesContinuationOwner> CompletionOwner<'_, O> {
+    pub(super) async fn retain_incomplete(
+        &mut self,
+        binding: &TurnBinding,
+        request: &ModelRequest,
+    ) -> Result<Option<Digest32>> {
+        if self.attempt.is_none() {
+            return Ok(None);
+        }
+        let Some(capture) = &self.opaque_capture else {
+            return Ok(None);
+        };
+        let Some(incomplete) = capture
+            .incomplete()
+            .map_err(|_| Error::Contract("incomplete provider capture"))?
+        else {
+            return Ok(None);
+        };
+        if !self.continuation_owner.supports_incomplete_retention() {
+            return Err(Error::Contract(
+                "original continuation owner has no incomplete retention",
+            ));
+        }
+        let receipt = self
+            .continuation_owner
+            .retain_incomplete(binding, request, incomplete)
+            .await?;
+        if receipt.is_zero() {
+            return Err(Error::Contract("incomplete owner returned no receipt"));
+        }
+        Ok(Some(receipt))
     }
 }
 
@@ -150,13 +220,27 @@ impl<O> CompletionOwner<'_, O> {
         &mut self,
         dispatch: &RequestDispatchMetadata,
         reason: &'static str,
+        partial: Option<Digest32>,
     ) -> Result<()> {
         let Some(attempt) = self.attempt.take() else {
             // A terminal pair has already been transferred to the supervisor.
             // Caller cancellation cannot cancel either pending owner write.
             return Ok(());
         };
-        let (policy, encoded) = unresolved(dispatch, reason);
+        let (mut policy, encoded) = unresolved(dispatch, reason);
+        if let (
+            ModelProviderTerminal::Indeterminate {
+                partial_response_sha256,
+                ..
+            },
+            Some(receipt),
+        ) = (&mut policy, partial)
+        {
+            *partial_response_sha256 = Some(
+                ModelProviderSha256Digest::parse(receipt.to_string())
+                    .map_err(|_| Error::Contract("incomplete receipt digest"))?,
+            );
+        }
         attempt.finish(policy, encoded).await
     }
 }

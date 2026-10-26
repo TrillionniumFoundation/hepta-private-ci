@@ -4,6 +4,7 @@ use crate::common::SafetyBuffering;
 use crate::common::SafetyBufferingTreatment;
 use crate::error::ApiError;
 use crate::rate_limits::parse_all_rate_limits;
+use crate::response_capture::ResponseCapture;
 use crate::safety_buffering::treatment_from_headers;
 use crate::telemetry::SseTelemetry;
 use codex_client::ByteStream;
@@ -38,6 +39,25 @@ pub fn spawn_response_stream(
     turn_state: Option<Arc<OnceLock<String>>>,
     redact_provider_diagnostics: bool,
 ) -> ResponseStream {
+    spawn_response_stream_with_capture(
+        stream_response,
+        idle_timeout,
+        telemetry,
+        turn_state,
+        redact_provider_diagnostics,
+        None,
+    )
+}
+
+pub(crate) fn spawn_response_stream_with_capture(
+    stream_response: StreamResponse,
+    idle_timeout: Duration,
+    telemetry: Option<Arc<dyn SseTelemetry>>,
+    turn_state: Option<Arc<OnceLock<String>>>,
+    redact_provider_diagnostics: bool,
+    capture: Option<Arc<ResponseCapture>>,
+) -> ResponseStream {
+    let redact_provider_diagnostics = redact_provider_diagnostics || capture.is_some();
     let rate_limit_snapshots = parse_all_rate_limits(&stream_response.headers);
     let models_etag = stream_response
         .headers
@@ -91,6 +111,7 @@ pub fn spawn_response_stream(
             telemetry,
             safety_buffering_treatment,
             redact_provider_diagnostics,
+            capture,
         )
         .await;
     });
@@ -122,7 +143,7 @@ struct ResponseCompleted {
 }
 
 #[derive(Debug, Deserialize)]
-struct ResponseCompletedUsage {
+pub(crate) struct ResponseCompletedUsage {
     input_tokens: i64,
     input_tokens_details: Option<ResponseCompletedInputTokensDetails>,
     output_tokens: i64,
@@ -576,6 +597,7 @@ pub async fn process_sse(
         telemetry,
         SafetyBufferingTreatment::default(),
         /*redact_provider_diagnostics*/ false,
+        None,
     )
     .await;
 }
@@ -587,6 +609,7 @@ async fn process_sse_with_treatment(
     telemetry: Option<Arc<dyn SseTelemetry>>,
     safety_buffering_treatment: SafetyBufferingTreatment,
     redact_provider_diagnostics: bool,
+    capture: Option<Arc<ResponseCapture>>,
 ) {
     let mut stream = stream.eventsource();
     let mut response_error: Option<ApiError> = None;
@@ -626,6 +649,17 @@ async fn process_sse_with_treatment(
             }
         };
 
+        if let Some(capture) = &capture
+            && capture.observe(&sse.data).is_err()
+        {
+            let _ = tx_event
+                .send(Err(ApiError::Stream(
+                    "opaque provider continuation capture rejected the stream".into(),
+                )))
+                .await;
+            return;
+        }
+
         if redact_provider_diagnostics {
             trace!("redacted provider SSE event received");
         } else {
@@ -649,6 +683,7 @@ async fn process_sse_with_treatment(
                 continue;
             }
         };
+        let captured_incomplete = capture.is_some() && event.kind == "response.incomplete";
         let model_verifications = event.model_verifications();
         let turn_moderation_metadata = event.turn_moderation_metadata();
         let safety_buffering = event.safety_buffering(&safety_buffering_treatment);
@@ -702,6 +737,12 @@ async fn process_sse_with_treatment(
             }
             Ok(None) => {}
             Err(error) => {
+                if captured_incomplete {
+                    // The original raw terminal is already captured. Deliver
+                    // its failure now, even if the server leaves SSE open.
+                    let _ = tx_event.send(Err(error.into_api_error())).await;
+                    return;
+                }
                 response_error = Some(error.into_api_error());
             }
         };

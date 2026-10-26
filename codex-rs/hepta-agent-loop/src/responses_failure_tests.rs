@@ -66,6 +66,27 @@ fn all_upstream_message_fields_are_discarded_without_displaying_the_error() {
     }
 }
 
+#[test]
+fn json_shaped_messages_do_not_gain_http_body_provenance() {
+    let message = serde_json::json!({"error": {
+        "type":"invalid_request_error", "code":"unsupported_parameter", "param":"tools",
+        "message":SECRET,
+    }})
+    .to_string();
+    for error in [
+        ApiError::Api {
+            status: StatusCode::BAD_REQUEST,
+            message: message.clone(),
+        },
+        ApiError::Stream(message.clone()),
+        ApiError::InvalidRequest { message },
+    ] {
+        let safe = ResponsesFailure::from_api(ResponsesFailureStage::Stream, &error);
+        assert_eq!(safe.provider_error, None);
+        assert!(!format!("{safe:?}").contains(SECRET));
+    }
+}
+
 struct Turn {
     frame: Frame,
     writes: usize,
@@ -155,6 +176,7 @@ async fn typed_provider_failure_preserves_original_owner_error_recovery_behavior
         stage: ResponsesFailureStage::Request,
         category: ResponsesFailureCategory::TransportHttp,
         http_status: Some(503),
+        provider_error: None,
     };
     let mut turn = Turn {
         frame: initial.clone(),

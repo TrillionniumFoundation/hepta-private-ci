@@ -1,9 +1,11 @@
 //! Allowlisted diagnostics from the existing API error type.
 //!
-//! No upstream message, URL, header, body or error source is retained. These
-//! fields describe an observed error category; they do not establish provider
-//! acceptance, rejection, absence of effects, retry authority or a terminal ACK.
+//! No upstream message, URL, header, raw body or error source is retained. A
+//! bounded HTTP-body projection may add only static type/code/parameter labels.
+//! These fields do not establish provider acceptance, rejection, absence of
+//! effects, retry authority or a terminal ACK.
 
+use crate::responses_provider_error::ResponsesProviderError;
 use codex_api::ApiError;
 use codex_api::TransportError;
 use std::fmt;
@@ -75,6 +77,7 @@ pub struct ResponsesFailure {
     pub stage: ResponsesFailureStage,
     pub category: ResponsesFailureCategory,
     pub http_status: Option<u16>,
+    pub provider_error: Option<ResponsesProviderError>,
 }
 
 impl ResponsesFailure {
@@ -103,10 +106,17 @@ impl ResponsesFailure {
             ApiError::MisalignmentPolicyViolation { .. } => (Category::MisalignmentPolicy, None),
             ApiError::ServerOverloaded => (Category::ServerOverloaded, None),
         };
+        let provider_error = match error {
+            ApiError::Transport(TransportError::Http {
+                body: Some(body), ..
+            }) => ResponsesProviderError::from_http_body(body),
+            _ => None,
+        };
         Self {
             stage,
             category,
             http_status,
+            provider_error,
         }
     }
 }

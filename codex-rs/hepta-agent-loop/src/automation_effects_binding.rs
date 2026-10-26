@@ -25,7 +25,13 @@ const MAXIMUM_ARGUMENT_BYTES: usize = 65_536;
 /// AutomationStore. This computes no authority and creates no run or grant.
 /// The original intent/grant must bind this exact run ID before attachment.
 pub fn automation_status_effect_run_id(frame: &Frame) -> Result<String> {
-    let (_, _, mapping) = selection(frame)?;
+    effect_run_id(frame, AUTOMATION_STATUS_TOOL_NAME, STATUS_BINDING_DOMAIN)
+}
+
+const STATUS_BINDING_DOMAIN: &[u8] = b"hepta.native-agent.automation-status-binding.v1\0";
+
+pub(super) fn effect_run_id(frame: &Frame, tool: &str, domain: &[u8]) -> Result<String> {
+    let (_, _, mapping) = selection(frame, tool, domain)?;
     Ok(format!("native-effect:{mapping}"))
 }
 
@@ -62,7 +68,27 @@ impl PreboundAutomationStatusEffect {
         signed_grant: SignedFinalUseGrant,
         command_id: String,
     ) -> Result<Self> {
-        let (selected_index, call, mapping_digest) = selection(frame)?;
+        Self::new_for_tool(
+            frame,
+            intent,
+            wire_payload,
+            fence,
+            signed_grant,
+            command_id,
+            (AUTOMATION_STATUS_TOOL_NAME, STATUS_BINDING_DOMAIN),
+        )
+    }
+
+    pub(super) fn new_for_tool(
+        frame: &Frame,
+        intent: AuthorizedEffectIntent,
+        wire_payload: Vec<u8>,
+        fence: TaskFlowFence,
+        signed_grant: SignedFinalUseGrant,
+        command_id: String,
+        tool: (&str, &[u8]),
+    ) -> Result<Self> {
+        let (selected_index, call, mapping_digest) = selection(frame, tool.0, tool.1)?;
         let key = operation_key(frame, call);
         if intent.run_id != format!("native-effect:{mapping_digest}")
             || intent.run_id == frame.binding.run_id.as_str()
@@ -123,7 +149,11 @@ impl PreboundAutomationStatusEffect {
     }
 }
 
-fn selection(frame: &Frame) -> Result<(usize, &ToolCall, Digest32)> {
+fn selection<'a>(
+    frame: &'a Frame,
+    tool: &str,
+    domain: &[u8],
+) -> Result<(usize, &'a ToolCall, Digest32)> {
     let Phase::Tools { calls, next } = &frame.phase else {
         return Err(Error::Contract(
             "automation status requires the current tool frame",
@@ -132,7 +162,7 @@ fn selection(frame: &Frame) -> Result<(usize, &ToolCall, Digest32)> {
     let call = calls
         .get(*next)
         .ok_or(Error::Contract("original tool selection"))?;
-    if call.name.as_str() != AUTOMATION_STATUS_TOOL_NAME {
+    if call.name.as_str() != tool {
         return Err(Error::Contract(
             "output-bearing or unregistered effect tool",
         ));
@@ -148,7 +178,7 @@ fn selection(frame: &Frame) -> Result<(usize, &ToolCall, Digest32)> {
         return Err(Error::Contract("original native admission"));
     }
     let mut ids = BTreeSet::new();
-    let mut bytes = b"hepta.native-agent.automation-status-binding.v1\0".to_vec();
+    let mut bytes = domain.to_vec();
     // The actual runner owns operation identity; do not reproduce its hash.
     bytes.extend_from_slice(operation_key(frame, call).as_array());
     bytes.extend_from_slice(&frame.revision.to_be_bytes());

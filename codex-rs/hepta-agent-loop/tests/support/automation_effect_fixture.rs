@@ -17,11 +17,20 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use std::collections::BTreeSet;
 use std::os::unix::fs::PermissionsExt;
+use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 pub(super) const NATIVE_RUN: &str = "native-status-run";
 const AGENT: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
+
+/// Opt-in diagnostic only: retain the original workload, assertions and waits.
+pub(super) fn phase_timing(phase: &str, started: Instant) {
+    if std::env::var_os("HEPTA_TEST_PHASE_TIMING").is_some() {
+        let elapsed_ms = started.elapsed().as_millis();
+        eprintln!("HEPTA_TEST_PHASE phase={phase} elapsed_ms={elapsed_ms}");
+    }
+}
 
 pub(super) fn clock() -> u64 {
     SystemTime::now()
@@ -91,10 +100,13 @@ pub(super) struct Fixture {
 
 impl Fixture {
     pub(super) fn new() -> Self {
+        let started = Instant::now();
+        phase_timing("fixture.new.begin", started);
         let temp = tempfile::tempdir().expect("private fixture root");
         let root = temp.path().canonicalize().expect("canonical root");
         let fleet = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet path");
         let registry = FleetRegistry::initialize(fleet.clone()).expect("fixture registry");
+        phase_timing("fixture.new.registry_initialized", started);
         let workspace = root.join("workspace");
         std::fs::create_dir(&workspace).expect("fixture workspace");
         let manifest = AgentManifest::new(
@@ -111,13 +123,24 @@ impl Fixture {
             .register(manifest)
             .expect("register fixture agent")
             .layout;
+        phase_timing("fixture.new.registered", started);
         Self { temp, layout }
     }
 
     pub(super) async fn native(&self) -> (AutomationStore, TaskFlowFence, Frame) {
+        self.native_with_tool(AUTOMATION_STATUS_TOOL_NAME).await
+    }
+
+    pub(super) async fn native_with_tool(
+        &self,
+        tool: &str,
+    ) -> (AutomationStore, TaskFlowFence, Frame) {
+        let started = Instant::now();
+        phase_timing("fixture.native.open_begin", started);
         let store = AutomationStore::open(&self.layout)
             .await
             .expect("original automation store");
+        phase_timing("fixture.native.store_opened", started);
         let fence = TaskFlowFence::new(
             AgentId::parse(AGENT).expect("agent"),
             "fixture-native-owner",
@@ -148,7 +171,9 @@ impl Fixture {
             .register_taskflow_definition(&definition, &fence, now)
             .await
             .expect("register native definition");
+        phase_timing("fixture.native.definition_registered", started);
         start_run(&store, &fence, &definition, NATIVE_RUN, now).await;
+        phase_timing("fixture.native.run_started", started);
         let binding = TurnBinding {
             run_id: id(NATIVE_RUN),
             turn_id: id("native-status-turn:0"),
@@ -166,10 +191,11 @@ impl Fixture {
         )
         .await
         .expect("actual native turn owner");
+        phase_timing("fixture.native.turn_opened", started);
         let initial_frame = turn.load(&binding).await.expect("frozen initial request");
         let call = ToolCall {
             call_id: id("fixture-call:0"),
-            name: id(AUTOMATION_STATUS_TOOL_NAME),
+            name: id(tool),
             arguments: "{\"value\":\"owned fixture effect\"}".into(),
         };
         let frame = turn
@@ -190,6 +216,7 @@ impl Fixture {
             )
             .await
             .expect("actual native cursor selects tool");
+        phase_timing("fixture.native.tool_selected", started);
         drop(turn);
         (store, fence, frame)
     }
@@ -198,6 +225,8 @@ impl Fixture {
         &self,
         effect: &AuthorizedEffectIntent,
     ) -> (FinalUseAuthority, SignedFinalUseGrant) {
+        let started = Instant::now();
+        phase_timing("fixture.authority.begin", started);
         let issuer = SigningKey::from_bytes(&[73; 32]); // Explicit test-only issuer.
         let now = clock();
         let grant = FinalUseGrant {
@@ -231,6 +260,7 @@ impl Fixture {
             },
         )
         .expect("actual original final-use owner");
+        phase_timing("fixture.authority.ready", started);
         (authority, SignedFinalUseGrant { grant, signature })
     }
 }
@@ -277,7 +307,14 @@ pub(super) async fn prepare_effect(
     fence: &TaskFlowFence,
     frame: &Frame,
 ) -> AuthorizedEffectIntent {
-    let run = automation_status_effect_run_id(frame).expect("integrity mapping only");
+    let started = Instant::now();
+    phase_timing("fixture.effect.begin", started);
+    let run = if call(frame).name.as_str() == RUNTIME_PROCESS_TOOL_NAME {
+        runtime_process_effect_run_id(frame)
+    } else {
+        automation_status_effect_run_id(frame)
+    }
+    .expect("integrity mapping only");
     let definition = TaskFlowDefinition::new(
         "fixture-status-effect",
         1,
@@ -304,7 +341,9 @@ pub(super) async fn prepare_effect(
         .register_taskflow_definition(&definition, fence, now)
         .await
         .expect("register effect definition");
+    phase_timing("fixture.effect.definition_registered", started);
     start_run(store, fence, &definition, &run, now).await;
+    phase_timing("fixture.effect.run_started", started);
     let intent = AuthorizedEffectIntent {
         run_id: run,
         step_id: "effect".into(),
@@ -333,6 +372,7 @@ pub(super) async fn prepare_effect(
         )
         .await
         .expect("original durable preparation");
+    phase_timing("fixture.effect.step_prepared", started);
     store
         .claim_taskflow_step(
             &intent.run_id,
@@ -346,6 +386,7 @@ pub(super) async fn prepare_effect(
         )
         .await
         .expect("original durable claim");
+    phase_timing("fixture.effect.step_claimed", started);
     intent
 }
 

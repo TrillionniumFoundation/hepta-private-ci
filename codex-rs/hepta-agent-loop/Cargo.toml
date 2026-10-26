@@ -14,7 +14,7 @@ doctest = false
 automation-effects = ["taskflow-owner", "dep:codex-hepta-contracts"]
 taskflow-owner = ["dep:codex-hepta-automation", "dep:serde", "dep:serde_json"]
 managed-responses = ["responses-api", "dep:codex-extension-api", "dep:codex-http-client", "dep:codex-login", "dep:codex-model-provider", "dep:tracing", "tokio/rt"]
-responses-api = ["dep:codex-api", "dep:codex-protocol", "dep:futures", "dep:serde_json"]
+responses-api = ["dep:codex-api", "dep:codex-protocol", "dep:futures", "dep:serde", "dep:serde_json"]
 context-v2 = ["dep:codex-hepta-context-compiler"]
 
 [lints]

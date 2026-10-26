@@ -8,6 +8,8 @@
 use std::future::Future;
 
 use codex_api::ApiError;
+use codex_api::OpaqueResponsesContinuation;
+use codex_api::OpaqueResponsesIncomplete;
 use codex_api::ResponseEvent;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -29,9 +31,9 @@ use crate::ToolCall;
 use crate::TurnBinding;
 use crate::Usage;
 
-/// Passed intact to the existing inference/context owner. In particular,
-/// reasoning, message phases and encrypted content may not be reconstructed
-/// from the visible text/tool projection.
+/// Typed continuation passed to the existing inference/context owner. The
+/// optional opaque path additionally retains original completed JSON before
+/// typed parsing. Neither path reconstructs reasoning from visible text.
 pub struct ResponsesContinuation {
     pub provider_response_id: String,
     pub server_model: Option<String>,
@@ -51,6 +53,48 @@ pub trait ResponsesContinuationOwner: Send {
         request: &ModelRequest,
         continuation: ResponsesContinuation,
     ) -> impl Future<Output = Result<Digest32>> + Send;
+
+    /// A local storage capability, never provider support or authorization.
+    fn supports_opaque_retention(&self) -> bool {
+        false
+    }
+
+    /// The original owner can durably keep incomplete terminal/usage together
+    /// with the entire original reservation, without refund/retry/completion.
+    fn supports_incomplete_retention(&self) -> bool {
+        false
+    }
+
+    fn retain_incomplete(
+        &mut self,
+        _binding: &TurnBinding,
+        _request: &ModelRequest,
+        _incomplete: OpaqueResponsesIncomplete,
+    ) -> impl Future<Output = Result<Digest32>> + Send {
+        async {
+            Err(Error::Contract(
+                "original continuation owner has no incomplete retention",
+            ))
+        }
+    }
+
+    /// Optional raw continuation retention through this same original owner.
+    /// Persist private opaque bytes and their exact admitted binding before
+    /// returning a durable receipt. Unsupported projection must still be
+    /// retained; it is not permission to execute or resend its unknown schema.
+    fn retain_opaque(
+        &mut self,
+        _binding: &TurnBinding,
+        _request: &ModelRequest,
+        _continuation: ResponsesContinuation,
+        _opaque: OpaqueResponsesContinuation,
+    ) -> impl Future<Output = Result<Digest32>> + Send {
+        async {
+            Err(Error::Contract(
+                "original continuation owner has no opaque retention",
+            ))
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug)]

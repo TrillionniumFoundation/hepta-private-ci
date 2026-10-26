@@ -4,7 +4,10 @@
 //! adapter creates no credential store, login, turn, policy lease, retry or
 //! final-use grant. The optional feature has no Core/App Server dependency.
 
+use codex_api::RawResponsesInput;
 use codex_api::RequestDispatchMetadata;
+use codex_api::RequestedOutputLimit;
+use codex_api::ResponseCapture;
 use codex_api::ResponsesApiRequest;
 use codex_api::ResponsesClient;
 use codex_api::ResponsesOptions;
@@ -16,6 +19,7 @@ use codex_http_client::ReqwestTransport;
 use codex_login::default_client::create_client_for_sensitive_route;
 use codex_model_provider::ProviderAuthScope;
 use codex_model_provider::SharedModelProvider;
+use std::sync::Arc;
 use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -43,6 +47,11 @@ mod attempt;
 pub struct ManagedResponsesClient {
     client: ResponsesClient<ReqwestTransport>,
     endpoint: String,
+}
+
+struct OpaqueMode {
+    raw_input: Option<RawResponsesInput>,
+    output_limit: Option<RequestedOutputLimit>,
 }
 
 impl ManagedResponsesClient {
@@ -112,6 +121,67 @@ impl ManagedResponsesClient {
         events: mpsc::Sender<Result<ModelEvent>>,
         cancellation: &CancellationToken,
     ) -> Result<ManagedResponsesObservation> {
+        self.stream_admitted_mode(attempt, owner, events, cancellation, None)
+            .await
+    }
+
+    /// Opt-in raw completed-item/terminal retention. The same original owner
+    /// must implement retain_opaque and bind any raw replay input to its exact
+    /// encoded-body admission. No provider-capability claim is implied.
+    pub async fn stream_admitted_opaque<O: ResponsesContinuationOwner>(
+        self,
+        attempt: ManagedResponsesAttempt<'_>,
+        raw_input: Option<RawResponsesInput>,
+        owner: &mut O,
+        events: mpsc::Sender<Result<ModelEvent>>,
+        cancellation: &CancellationToken,
+    ) -> Result<ManagedResponsesObservation> {
+        self.stream_admitted_mode(
+            attempt,
+            owner,
+            events,
+            cancellation,
+            Some(OpaqueMode {
+                raw_input,
+                output_limit: None,
+            }),
+        )
+        .await
+    }
+
+    /// Explicit fresh qualification attempt requesting a provider output cap.
+    /// This is not evidence of backend support. The complete final capped body
+    /// must be admitted by the same original owner before this method is called.
+    pub async fn stream_admitted_bounded_opaque<O: ResponsesContinuationOwner>(
+        self,
+        attempt: ManagedResponsesAttempt<'_>,
+        raw_input: Option<RawResponsesInput>,
+        output_limit: RequestedOutputLimit,
+        owner: &mut O,
+        events: mpsc::Sender<Result<ModelEvent>>,
+        cancellation: &CancellationToken,
+    ) -> Result<ManagedResponsesObservation> {
+        self.stream_admitted_mode(
+            attempt,
+            owner,
+            events,
+            cancellation,
+            Some(OpaqueMode {
+                raw_input,
+                output_limit: Some(output_limit),
+            }),
+        )
+        .await
+    }
+
+    async fn stream_admitted_mode<O: ResponsesContinuationOwner>(
+        self,
+        attempt: ManagedResponsesAttempt<'_>,
+        owner: &mut O,
+        events: mpsc::Sender<Result<ModelEvent>>,
+        cancellation: &CancellationToken,
+        opaque_mode: Option<OpaqueMode>,
+    ) -> Result<ManagedResponsesObservation> {
         let ManagedResponsesAttempt {
             binding,
             request,
@@ -131,12 +201,31 @@ impl ManagedResponsesClient {
             dispatch.clone(),
             options.encoded_body_observer.clone(),
         );
+        let capture = opaque_mode.as_ref().map(|_| {
+            Arc::new(ResponseCapture::new(
+                bridge_limits.maximum_items,
+                bridge_limits.maximum_retained_bytes,
+            ))
+        });
         let mut completion = attempt::CompletionOwner {
             continuation_owner: owner,
             attempt: Some(lease_owner),
+            opaque_capture: capture.clone(),
         };
         let result = async {
-            if options.encoded_body_observer.is_none()
+            let bounded_valid = opaque_mode
+                .as_ref()
+                .and_then(|mode| mode.output_limit)
+                .is_none_or(|limit| {
+                    limit.tokens() == request.maximum_output_tokens
+                        && completion
+                            .continuation_owner
+                            .supports_incomplete_retention()
+                });
+            if !bounded_valid
+                || (opaque_mode.is_some()
+                    && !completion.continuation_owner.supports_opaque_retention())
+                || options.encoded_body_observer.is_none()
                 || binding.admission_digest.is_zero()
                 || request.context_digest != Digest32::of_bytes(request.payload.as_bytes())
                 || request.maximum_output_tokens == 0
@@ -164,16 +253,55 @@ impl ManagedResponsesClient {
                 return Ok(ResponsesBridgeStatus::LocalCancellation);
             }
             let execute = async {
-                let stream = self
-                    .client
-                    .stream_request_single_attempt(api_request, options, dispatch.clone())
-                    .await
-                    .map_err(|error| {
-                        Error::Responses(ResponsesFailure::from_api(
-                            ResponsesFailureStage::Request,
-                            &error,
-                        ))
-                    })?;
+                let stream = match (capture, opaque_mode) {
+                    (
+                        Some(capture),
+                        Some(OpaqueMode {
+                            raw_input,
+                            output_limit: Some(limit),
+                        }),
+                    ) => {
+                        self.client
+                            .stream_request_single_attempt_capped(
+                                api_request,
+                                options,
+                                dispatch.clone(),
+                                capture,
+                                raw_input,
+                                limit,
+                            )
+                            .await
+                    }
+                    (
+                        Some(capture),
+                        Some(OpaqueMode {
+                            raw_input,
+                            output_limit: None,
+                        }),
+                    ) => {
+                        self.client
+                            .stream_request_single_attempt_captured(
+                                api_request,
+                                options,
+                                dispatch.clone(),
+                                capture,
+                                raw_input,
+                            )
+                            .await
+                    }
+                    (None, None) => {
+                        self.client
+                            .stream_request_single_attempt(api_request, options, dispatch.clone())
+                            .await
+                    }
+                    _ => return Err(Error::Contract("prepared Responses capture mode mismatch")),
+                }
+                .map_err(|error| {
+                    Error::Responses(ResponsesFailure::from_api(
+                        ResponsesFailureStage::Request,
+                        &error,
+                    ))
+                })?;
                 forward_responses_stream(
                     binding,
                     request,
@@ -195,10 +323,21 @@ impl ManagedResponsesClient {
         }
         .await;
         if !matches!(result, Ok(ResponsesBridgeStatus::Completed)) {
-            tokio::time::timeout(
-                terminal_timeout,
-                completion.finish_unresolved(&dispatch, "native_response_unresolved"),
-            )
+            tokio::time::timeout(terminal_timeout, async {
+                let retention = completion.retain_incomplete(binding, request).await;
+                let partial = retention.as_ref().ok().copied().flatten();
+                let reason = if partial.is_some() {
+                    "native_provider_incomplete_retained"
+                } else {
+                    "native_response_unresolved"
+                };
+                // Even a failed private retention must leave both original
+                // terminal owners conservative, never an unrecorded send.
+                completion
+                    .finish_unresolved(&dispatch, reason, partial)
+                    .await?;
+                retention.map(|_| ())
+            })
             .await
             .map_err(|_| Error::Owner("provider terminal acknowledgment deadline".into()))??;
         }
@@ -240,3 +379,11 @@ pub struct ManagedResponsesObservation {
 #[cfg(test)]
 #[path = "managed_responses_error_tests.rs"]
 mod error_tests;
+
+#[cfg(test)]
+#[path = "managed_responses_opaque_tests.rs"]
+mod opaque_tests;
+
+#[cfg(test)]
+#[path = "managed_responses_budget_tests.rs"]
+mod budget_tests;

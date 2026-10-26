@@ -17,7 +17,7 @@ use std::sync::Mutex;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
-pub(super) struct State {
+pub(in super::super) struct State {
     pub policy: Mutex<Vec<ModelProviderTerminal>>,
     pub encoded: Mutex<Vec<EncodedRequestTerminal>>,
     pub bodies: AtomicUsize,
@@ -28,17 +28,21 @@ pub(super) struct State {
 impl State {
     pub fn new(api: &ResponsesApiRequest) -> Arc<Self> {
         let body = EncodedJsonBody::encode(api).expect("controlled request encode");
+        Self::for_encoded_body(body.as_bytes())
+    }
+
+    pub fn for_encoded_body(body: &[u8]) -> Arc<Self> {
         Arc::new(Self {
             policy: Mutex::new(Vec::new()),
             encoded: Mutex::new(Vec::new()),
             bodies: AtomicUsize::new(0),
             continuations: AtomicUsize::new(0),
-            expected_body: Digest32::of_bytes(body.as_bytes()),
+            expected_body: Digest32::of_bytes(body),
         })
     }
 }
 
-pub(super) struct Lease(pub Arc<State>);
+pub(in super::super) struct Lease(pub Arc<State>);
 
 impl ModelProviderAttemptLease for Lease {
     fn finish(
@@ -56,7 +60,7 @@ impl ModelProviderAttemptLease for Lease {
     }
 }
 
-pub(super) struct Observer(pub Arc<State>);
+pub(in super::super) struct Observer(pub Arc<State>);
 
 impl fmt::Debug for Observer {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -93,7 +97,7 @@ impl EncodedRequestBodyObserver for Observer {
     }
 }
 
-pub(super) struct Continuation(pub Arc<State>);
+pub(in super::super) struct Continuation(pub Arc<State>);
 
 impl ResponsesContinuationOwner for Continuation {
     async fn retain(
@@ -107,7 +111,7 @@ impl ResponsesContinuationOwner for Continuation {
     }
 }
 
-pub(super) fn request() -> (TurnBinding, ModelRequest, ResponsesApiRequest) {
+pub(in super::super) fn request() -> (TurnBinding, ModelRequest, ResponsesApiRequest) {
     let id = |value: &str| StableId::new(value).expect("controlled ID");
     let binding = TurnBinding {
         run_id: id("fixture-run"),
