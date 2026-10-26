@@ -65,10 +65,30 @@ async fn lost_original_current_reply_fences_the_same_writer_without_retrying_pub
     assert!(fixture.writer.checkpoint_fenced());
     assert!(!fixture.store.commit_gate.commit_allowed());
     let committed = fixture.peer.receipt.lock().unwrap().clone();
+    let commands = fixture.peer.commands.lock().unwrap().len();
+    let cut = fixture.store.recovery_anchor().await.unwrap();
     fixture
         .peer
         .hold_current_reply
         .store(false, Ordering::SeqCst);
-    assert!(fixture.writer.acknowledge_current().await.is_err());
+    // The original permanently fenced coordinator may settle this unchanged
+    // cut by an independent ReadHead. It cannot retry publication, reopen the
+    // writer, mint a send ticket or admit another source write.
+    fixture.writer.acknowledge_current().await.unwrap();
+    assert_eq!(
+        &fixture.peer.commands.lock().unwrap()[commands..],
+        &[CognitiveCheckpointCommand::ReadHead]
+    );
     assert_eq!(*fixture.peer.receipt.lock().unwrap(), committed);
+    assert_eq!(fixture.store.recovery_anchor().await.unwrap(), cut);
+    assert!(fixture.writer.checkpoint_fenced());
+    assert!(!fixture.store.commit_gate.commit_allowed());
+    assert!(
+        fixture
+            .writer
+            .admit("fenced-native-current", "native-current", "{}")
+            .await
+            .is_err()
+    );
+    assert_eq!(fixture.store.recovery_anchor().await.unwrap(), cut);
 }
