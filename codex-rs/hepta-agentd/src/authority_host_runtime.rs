@@ -43,6 +43,7 @@ pub(crate) use listeners::validate_runtime_lanes;
 mod session;
 pub use session::PreparedHostAuthoritySession;
 pub use session::PreparedHostNotesRecovery;
+pub use session::StoppedHostNotesSession;
 
 const CLOCK_OWNER: &str = "root-authority-clock-v1";
 const LEASE_OWNER: &str = "root-authority-leases-v1";

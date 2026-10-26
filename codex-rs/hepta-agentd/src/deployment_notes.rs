@@ -13,6 +13,9 @@ use codex_hepta_memory::NotesTargetIdentity;
 mod recovery;
 pub(crate) use recovery::NotesRecoveryPolicyCheck;
 
+#[path = "deployment_notes_capture.rs"]
+mod capture;
+
 /// Trusted launcher capability, never accepted from a wire request. The Root
 /// launcher must obtain the target from its actual Session Reserved capability
 /// before installation. Text/schema validation remains delegated to the fixed
@@ -22,6 +25,7 @@ pub struct RootNotesGrantAdmission {
     writer: HostAuthorityWriterRegistration,
     proof: crate::HostSignedWriterAuthorizationV1,
     policy: DeploymentGrantPolicy,
+    target: NotesTargetIdentity,
 }
 
 impl RootNotesGrantAdmission {
@@ -92,6 +96,7 @@ impl RootNotesGrantAdmission {
             writer,
             proof,
             policy,
+            target: target.clone(),
         })
     }
 

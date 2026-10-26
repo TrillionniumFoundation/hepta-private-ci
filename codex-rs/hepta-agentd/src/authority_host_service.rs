@@ -38,6 +38,10 @@ use consumers::RegisteredConsumers;
 mod text_ui;
 pub use text_ui::HostAuthorityTextUiRegistration;
 
+#[cfg(test)]
+#[path = "root_notes_capture_peer_tests.rs"]
+pub(crate) mod notes_capture_peer;
+
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
 pub enum HostAuthorityLane {

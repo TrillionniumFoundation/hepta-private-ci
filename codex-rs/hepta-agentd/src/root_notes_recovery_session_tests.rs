@@ -18,6 +18,9 @@ use std::path::PathBuf;
 mod process;
 use process::ActualSession;
 
+#[path = "root_notes_capture_tests.rs"]
+mod capture;
+
 fn output() -> PathBuf {
     let path = PathBuf::from(std::env::var_os("HEPTA_NOTES_SESSION_OUTPUT").unwrap());
     assert_eq!(path.canonicalize().unwrap(), path);
@@ -52,15 +55,12 @@ struct PublicFixture {
 
 impl PublicFixture {
     async fn new() -> Self {
-        let mountpoint = PathBuf::from(std::env::var_os("HEPTA_NOTES_RECOVERY_BIND").unwrap());
-        let source = PathBuf::from(std::env::var_os("HEPTA_NOTES_RECOVERY_BIND_SOURCE").unwrap());
-        let metadata = std::fs::metadata(&source).unwrap();
-        let bind = HostAuthorityBindIdentity {
-            mountpoint,
-            source_path: source,
-            device: metadata.dev(),
-            inode: metadata.ino(),
-        };
+        Self::from_original(
+            OriginalFixture::with_layout(FixtureLayout::OriginalHostBind(original_bind())).await,
+        )
+    }
+
+    fn from_original(original: OriginalFixture) -> Self {
         let OriginalFixture {
             _root,
             _old,
@@ -76,7 +76,7 @@ impl PublicFixture {
             old_target,
             new_target: _,
             lease_owner: _,
-        } = OriginalFixture::with_layout(FixtureLayout::OriginalHostBind(bind)).await;
+        } = original;
         let owner_pidfd = process::pidfd(&_new.child);
         let config_path = _root.path().join("existing-config.json");
         let registration_path = _root.path().join("existing-registration.json");
@@ -142,6 +142,18 @@ impl PublicFixture {
             self.previous.take().unwrap(),
         )
         .unwrap()
+    }
+}
+
+fn original_bind() -> HostAuthorityBindIdentity {
+    let mountpoint = PathBuf::from(std::env::var_os("HEPTA_NOTES_RECOVERY_BIND").unwrap());
+    let source = PathBuf::from(std::env::var_os("HEPTA_NOTES_RECOVERY_BIND_SOURCE").unwrap());
+    let metadata = std::fs::metadata(&source).unwrap();
+    HostAuthorityBindIdentity {
+        mountpoint,
+        source_path: source,
+        device: metadata.dev(),
+        inode: metadata.ino(),
     }
 }
 

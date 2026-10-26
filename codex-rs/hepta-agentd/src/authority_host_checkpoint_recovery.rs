@@ -2,6 +2,40 @@
 use super::*;
 use codex_hepta_memory::CognitiveCheckpointReceipt;
 
+impl HostCognitiveCheckpoint {
+    /// Historical read after this publisher retired. A closed live transport is
+    /// never reopened: only its complete durable Current can be observed. The
+    /// Root caller separately checks its held pidfd and full millisecond lease.
+    pub(crate) fn current_for_retired_capture(
+        &self,
+        registration: &HostCognitiveCheckpointRegistration,
+    ) -> Result<CognitiveCheckpointReceipt, AuthorityTrustError> {
+        let _guard = self
+            .exchange_lock
+            .try_lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
+        if registration != &self.registration {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        let head = self.load()?;
+        let expiry = head
+            .writer_binding
+            .expires_at_unix_seconds
+            .checked_mul(1000)
+            .ok_or(AuthorityTrustError::Invalid)?;
+        if head.phase != CognitiveCheckpointPhase::Current || self.clock.now_unix_ms()? < expiry {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        let retired = RetiredCheckpointPublisher::observe(head.peer_lifetime.clone())?;
+        let token = token_for(&head)?;
+        if self.load()? != head {
+            return Err(AuthorityTrustError::Conflict);
+        }
+        retired.require_retired()?;
+        Ok(CognitiveCheckpointReceipt { head, token })
+    }
+}
+
 /// Captured from the actual protected predecessor before any writer rotation.
 /// The value retains the original store, clock, receipt and kernel retirement
 /// proof. It cannot be reconstructed from successor JSON after an uncertain CAS.

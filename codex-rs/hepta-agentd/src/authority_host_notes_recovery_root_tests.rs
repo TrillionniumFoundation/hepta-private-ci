@@ -1,5 +1,5 @@
 //! Real original issuer/Registry/clock/Current component fixture. Dedicated
-//! sleep children stand in for publishers; no production Session, Agentd turn,
+//! controlled children stand in for publishers; no production Session, Agentd turn,
 //! deployment profile, persistent signer input or physical device is qualified.
 use super::*;
 use crate::DeploymentFinalUseIssuer;
@@ -32,6 +32,14 @@ enum FixtureLayout {
     OriginalHostBind(HostAuthorityBindIdentity),
 }
 
+enum FixturePredecessor {
+    Retired,
+    Retained {
+        publisher: Publisher,
+        target: NotesTargetIdentity,
+    },
+}
+
 struct OriginalFixture {
     _root: tempfile::TempDir,
     _old: Publisher,
@@ -60,6 +68,13 @@ impl OriginalFixture {
     }
 
     async fn with_layout(fixture_layout: FixtureLayout) -> Self {
+        Self::with_predecessor(fixture_layout, FixturePredecessor::Retired).await
+    }
+
+    async fn with_predecessor(
+        fixture_layout: FixtureLayout,
+        predecessor: FixturePredecessor,
+    ) -> Self {
         let (parent, clock_owner, lease_owner) = match &fixture_layout {
             FixtureLayout::Component => (
                 std::path::PathBuf::from(
@@ -106,10 +121,13 @@ impl OriginalFixture {
             .unwrap(),
         );
         let agent = AgentId::parse("00000000-0000-4000-8000-00000000c072").unwrap();
-        let old_target = NotesTargetIdentity {
-            session_instance: "1".repeat(32),
-            task_id: 7,
-            incarnation: "2".repeat(32),
+        let old_target = match &predecessor {
+            FixturePredecessor::Retired => NotesTargetIdentity {
+                session_instance: "1".repeat(32),
+                task_id: 7,
+                incarnation: "2".repeat(32),
+            },
+            FixturePredecessor::Retained { target, .. } => target.clone(),
         };
         let new_target = NotesTargetIdentity {
             incarnation: "3".repeat(32),
@@ -210,7 +228,11 @@ impl OriginalFixture {
         )
         .unwrap();
         let authority = verified.authority();
-        let mut old = Publisher::spawn();
+        let retire = matches!(&predecessor, FixturePredecessor::Retired);
+        let mut old = match predecessor {
+            FixturePredecessor::Retired => Publisher::spawn(),
+            FixturePredecessor::Retained { publisher, .. } => publisher,
+        };
         let new = Publisher::spawn();
         let fleet = root.path().join("fleet");
         let workspace = root.path().join("workspace");
@@ -328,14 +350,16 @@ impl OriginalFixture {
             checkpoint_owner_agent_id: agent,
             publisher_epoch: 2,
         };
-        old.stop();
-        let deadline = Instant::now() + Duration::from_secs(15);
-        while clock.now_unix_ms().unwrap() < old_writer.authority_lease.expires_at_unix_ms {
-            assert!(
-                Instant::now() < deadline,
-                "original local and registry leases did not expire"
-            );
-            std::thread::sleep(Duration::from_millis(10));
+        if retire {
+            old.stop();
+            let deadline = Instant::now() + Duration::from_secs(15);
+            while clock.now_unix_ms().unwrap() < old_writer.authority_lease.expires_at_unix_ms {
+                assert!(
+                    Instant::now() < deadline,
+                    "original local and registry leases did not expire"
+                );
+                std::thread::sleep(Duration::from_millis(10));
+            }
         }
         Self {
             _root: root,

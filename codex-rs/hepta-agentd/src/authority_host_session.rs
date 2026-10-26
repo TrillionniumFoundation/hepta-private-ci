@@ -12,6 +12,10 @@ mod notes_startup;
 mod notes_recovery;
 pub use notes_recovery::PreparedHostNotesRecovery;
 
+#[path = "root_notes_capture.rs"]
+mod notes_capture;
+pub use notes_capture::StoppedHostNotesSession;
+
 /// One Root session's immutable registration, retained actual process handle
 /// and original service. This wrapper is not Clone and creates no additional
 /// issuer, clock, checkpoint or consumer owner during bootstrap capture.
@@ -186,7 +190,7 @@ impl PreparedHostAuthoritySession {
         self.serve_selected(Some((text_file, ui_pidfd)))
     }
 
-    fn serve_selected(self, text_ui: Option<(&Path, OwnedFd)>) -> io::Result<()> {
+    fn serve_selected(&self, text_ui: Option<(&Path, OwnedFd)>) -> io::Result<()> {
         let Self {
             config,
             registration,
@@ -209,7 +213,7 @@ impl PreparedHostAuthoritySession {
                     "text UI must share the registered Agentd owner UID for its existing private ingress",
                 ));
             }
-            text.validate(&service)?;
+            text.validate(service)?;
             if [
                 &config.sockets.observation,
                 &config.sockets.issuer,
@@ -227,19 +231,19 @@ impl PreparedHostAuthoritySession {
                     service.serve_text_ui(
                         &text,
                         &ui_pidfd,
-                        &owner_pidfd,
+                        owner_pidfd,
                         std::time::Duration::from_millis(config.timeout_ms),
                         std::time::Duration::from_millis(config.lifetime_ms),
                     )
                 });
-                let original = serve_lanes(&service, &config, &registration, &owner_pidfd);
+                let original = serve_lanes(service, config, registration, owner_pidfd);
                 let ui = worker
                     .join()
                     .map_err(|_| io::Error::other("text UI lane panicked"))?;
                 original.and(ui)
             })
         } else {
-            serve_lanes(&service, &config, &registration, &owner_pidfd)
+            serve_lanes(service, config, registration, owner_pidfd)
         }
     }
 }

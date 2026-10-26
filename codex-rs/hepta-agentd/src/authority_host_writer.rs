@@ -27,6 +27,9 @@ mod notes_recovery;
 pub use notes_recovery::HostNotesRecoveryPredecessor;
 pub(crate) use notes_recovery::RetainedNotesRecovery;
 
+#[path = "authority_host_notes_capture.rs"]
+mod notes_capture;
+
 pub(super) struct RegisteredWriter {
     pub(super) registration: HostAuthorityWriterRegistration,
     leases: AuthorityLeaseVerifier,

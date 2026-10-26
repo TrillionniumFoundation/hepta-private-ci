@@ -49,7 +49,7 @@ struct Publisher {
 
 impl Publisher {
     fn spawn() -> Self {
-        let mut child = Command::new("/usr/bin/setpriv")
+        let child = Command::new("/usr/bin/setpriv")
             .args([
                 "--reuid=60001",
                 "--regid=60001",
@@ -66,6 +66,10 @@ impl Publisher {
             .stderr(Stdio::null())
             .spawn()
             .unwrap();
+        Self::capture(child)
+    }
+
+    fn capture(mut child: Child) -> Self {
         let until = Instant::now() + Duration::from_secs(2);
         loop {
             assert!(child.try_wait().unwrap().is_none());

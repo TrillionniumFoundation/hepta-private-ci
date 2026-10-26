@@ -99,6 +99,8 @@ pub use authority_host_runtime::PreparedHostAuthoritySession;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::PreparedHostNotesRecovery;
 #[cfg(target_os = "linux")]
+pub use authority_host_runtime::StoppedHostNotesSession;
+#[cfg(target_os = "linux")]
 pub use authority_host_runtime::initialize_host_authority;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::register_host_writer_authorization;

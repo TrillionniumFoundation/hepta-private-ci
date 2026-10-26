@@ -606,7 +606,8 @@ once with no failed, skipped or retried case.
 | Gate | Selection and scope |
 |---|---|
 | Retained owners | `test(authority_host_checkpoint::adoption::tests::) - test(staged_session::)`; eighteen original Current/adoption and Notes CAS cases. `HEPTA_CHECKPOINT_TEST_ROOT` must be an isolated protected Root0700 ancestry. |
-| Public loader and actual Session | `test(staged_session::)`; `root_notes_recovery_public_loader_actual_session_seals_exact_reservation` and `root_notes_recovery_public_loader_dead_session_preserves_all_original_state`. Supply the real private bind/source, pinned ordinary-built Session/App copies, isolated Xvfb and dedicated fixture UID/GID 60001. |
+| Public loader and actual Session | `test(staged_session::) - test(staged_session::capture::)`; `root_notes_recovery_public_loader_actual_session_seals_exact_reservation` and `root_notes_recovery_public_loader_dead_session_preserves_all_original_state`. Supply the real private bind/source, pinned ordinary-built Session/App copies, isolated Xvfb and dedicated fixture UID/GID 60001. |
+| Stopped-service capture | `test(staged_session::capture::)`; four `root_notes_capture_*` cases in `root_notes_capture_tests.rs`. Use the same private Root layout and actual Session inputs. They exercise controlled five-lane serving, real retirement/expiry, single capture, latest Current and drift rejection; the controlled publisher is not Agentd. |
 
 The Session worker requires `HEPTA_NOTES_RECOVERY_BIND` and
 `HEPTA_NOTES_RECOVERY_BIND_SOURCE` with actual matching mount identity;
@@ -615,6 +616,21 @@ The Session worker requires `HEPTA_NOTES_RECOVERY_BIND` and
 isolated display, runtime root and fresh evidence directory. These are explicit
 test inputs, not a production authority profile. Missing inputs must fail the
 test; do not substitute fabricated packets, a Direct bootstrap or a fake Activate.
+
+The stopped-capture gate additionally requires `HEPTA_NOTES_CAPTURE_PEER_BIN`
+and `HEPTA_NOTES_CAPTURE_PEER_SHA256`. Copy the exact ordinary-built library
+test ELF into the task's private namespace as a Root-owned, single-link 0555
+file; verify its SHA before and after and leave the ordinary ELF/cache modes
+unchanged. The four Root cases launch only
+`authority_host_service::notes_capture_peer::retained_notes_lane_peer` at
+UID/GID 60001 with no groups/capabilities and NoNewPrivileges. This ignored
+child entry is outside the Root adoption filter and is not a fifth Root test.
+The original twenty cases plus four captures must appear exactly once in the
+fresh Root JUnit. Independently check the four
+`hepta.notes-stopped-capture-fixture.v1` receipts, original-state assertions,
+declared false production/effect flags, actual process cleanup and whole
+namespace exit; a receipt alone is insufficient. The negative injections are
+limited to disposable protected fixture state and must never touch production.
 
 Finish with the original scoped `just fmt`/`just fix` workflow. Report baseline
 dependency lint failures separately; do not add blanket warning allowances.

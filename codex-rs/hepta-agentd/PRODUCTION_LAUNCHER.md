@@ -262,7 +262,10 @@ For an existing same-boot clean Current, the typed `PreparedHostNotesRecovery`
 composition and its retained-attempt/failure rules are defined in the
 [canonical runtime.agentd recovery contract](../../docs/modules/runtime.agentd/TECHNICAL.md#retained-same-boot-notes-recovery).
 The existing CLI commands keep their meanings; the typed API is not an
-already-wired production recovery launcher. Follow the linked development
+already-wired production recovery launcher. The same canonical contract also
+defines the once-served `StoppedHostNotesSession` capture lifecycle; it does
+not import arbitrary predecessor JSON or create successor authorization.
+Follow the linked development
 gates and preserve their component-only qualification scope.
 
 ## Development verification
