@@ -618,7 +618,7 @@ forbidden = ["AllowVerifier", "permit_all"]
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs"
 required_order = [["predecessor.validate_successor(successor)?", ".with_retired_predecessor_boundary("]]
-required = ["rotate_writer_authorization", "predecessor.validate()?", "successor.validate()?", ".verify_use(", ".with_retired_predecessor_boundary(", "predecessor.validate_successor(successor)?", "self.authority_lease.lease_id == successor.authority_lease.lease_id", "self.local_lease_id != successor.local_lease_id", "self.local_lease_generation.checked_add(1) != Some(successor.local_lease_generation)", "self.spawn_generation >= successor.spawn_generation", "self.owner_epoch >= successor.owner_epoch", "self.validate_writer_proof_identity(&state, predecessor, predecessor_proof)?", "self.validate_writer_proof(&state, successor, retained)?"]
+required = ["rotate_writer_authorization", "self.validate()?", "successor.validate()?", ".verify_use(", ".with_retired_predecessor_boundary(", "predecessor.validate_successor(successor)?", "self.authority_lease.lease_id == successor.authority_lease.lease_id", "self.local_lease_id != successor.local_lease_id", "self.local_lease_generation.checked_add(1) != Some(successor.local_lease_generation)", "self.spawn_generation >= successor.spawn_generation", "self.owner_epoch >= successor.owner_epoch", "self.validate_writer_proof_identity(&state, predecessor, predecessor_proof)?", "self.validate_writer_proof(&state, successor, retained)?"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
