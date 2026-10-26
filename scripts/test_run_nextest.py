@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+import xml.etree.ElementTree as ET
 from unittest.mock import patch
 
 SPEC = importlib.util.spec_from_file_location(
@@ -179,6 +180,42 @@ class ScopedNextestTests(unittest.TestCase):
         output = (self.root / "output.log").read_text()
         self.assertIn("hepta-nextest-alternate-fixture", output)
         self.assertIn("1 failed", output)
+
+    def test_explicit_manifest_junit_uses_workspace_store(self):
+        alternate = self.root / "alternate"
+        (alternate / "src").mkdir(parents=True)
+        (alternate / ".config").mkdir()
+        (alternate / "Cargo.toml").write_text(
+            '[package]\nname="junit-location-fixture"\nversion="0.1.0"\nedition="2024"\n[workspace]\n'
+        )
+        (alternate / "src/lib.rs").write_text("#[test]\nfn actual_test() {}\n")
+        (alternate / ".config/nextest.toml").write_text(
+            '[profile.location.junit]\npath="junit.xml"\nreport-name="workspace-location"\n'
+        )
+        self.assertEqual(
+            RUNNER.run(
+                [
+                    "--manifest-path",
+                    str(alternate / "Cargo.toml"),
+                    "-p",
+                    "junit-location-fixture",
+                    "--offline",
+                    "--lib",
+                    "--profile",
+                    "location",
+                ]
+            ),
+            0,
+        )
+        # The compiler target remains self.root/target. Nextest's default
+        # store is rooted in the selected workspace, not CARGO_TARGET_DIR.
+        junit = alternate / "target/nextest/location/junit.xml"
+        self.assertTrue(junit.is_file())
+        report = ET.parse(junit).getroot()
+        self.assertEqual(report.get("name"), "workspace-location")
+        self.assertEqual(report.get("tests"), "1")
+        self.assertEqual(report.get("failures"), "0")
+        self.assertFalse((self.root / "target/nextest/location/junit.xml").exists())
 
     def test_pure_filters_preserve_real_selection_and_feature_failure(self):
         for option in (
