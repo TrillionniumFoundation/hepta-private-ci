@@ -47,3 +47,17 @@ workspace tests remain unchanged and continue to report functional failure;
 native broker or separately confined identity must prove normal reading,
 authorized workspace and temporary-directory deletion, and denial of outside
 effects before this mode can be restored.
+
+## Development and qualification
+
+The original Windows CI workflow retains its unchanged 91-case functional scope
+and zero retries. An independent always-running step executes the six new
+refusal controls as two exact three-case scopes, even when original functional
+tests fail. The safety result is separate from functional qualification.
+
+The dedicated runner records the exact clean source, compiler and test-tool
+versions and hashes, unchanged original scope and driver hashes, and fresh
+per-group logs. Unknown, missing, duplicate, nonpassing or wrong-package test
+results fail. Its receipt grants no runtime authority. See
+[the native runner](../../.github/scripts/windows_final_safety.py) and
+[the workflow](../../.github/workflows/hepta-windows-current-ci.yml).

@@ -6,6 +6,8 @@ on:
       - ".github/workflows/hepta-windows-current-ci.yml"
       - ".github/scripts/windows_current_ci.py"
       - ".github/scripts/test_windows_current_ci.py"
+      - ".github/scripts/windows_final_safety.py"
+      - ".github/scripts/test_windows_final_safety.py"
       - ".github/fixtures/windows-current-ci-scope.json"
       - "codex-rs/git-utils/src/git_process_tests.rs"
       - "codex-rs/state/**"
@@ -54,17 +56,28 @@ jobs:
         run: |
           python -m unittest discover -s .github/scripts -p test_windows_current_ci.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m unittest discover -s .github/scripts -p test_windows_final_safety.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Run the original process, transport and backend regressions
         shell: pwsh
         run: |
           $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "hepta-windows-current-target"
           python .github/scripts/windows_current_ci.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --output "$env:RUNNER_TEMP/hepta-windows-current-ci"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Run six legacy refusal controls separately from original functional results
+        if: always()
+        shell: pwsh
+        run: |
+          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "hepta-windows-current-target"
+          python .github/scripts/windows_final_safety.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --output "$env:RUNNER_TEMP/hepta-windows-final-safety"
+          exit $LASTEXITCODE
       - name: Retain every result with exact source identity
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: windows-current-ci-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/hepta-windows-current-ci/
+          path: |
+            ${{ runner.temp }}/hepta-windows-current-ci/
+            ${{ runner.temp }}/hepta-windows-final-safety/
           if-no-files-found: error
           retention-days: 14
