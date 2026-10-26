@@ -225,3 +225,140 @@ fn existing_write_role_requires_effective_complete_root_grant_without_repair() -
     PreparedFilesystemAclContext::observe_existing(&home, &plan, base.as_handle())?;
     Ok(())
 }
+
+#[test]
+fn existing_roles_reject_cross_root_write_and_read_mutation_even_with_overlap() -> Result<()> {
+    let (_temporary, home, plan, base) = fixture()?;
+    drop(PreparedFilesystemAclContext::prepare(
+        &home,
+        &plan,
+        base.as_handle(),
+    )?);
+    let (write_path, write_sid) = plan
+        .write_root_sids()
+        .next()
+        .ok_or_else(|| anyhow::anyhow!("write role"))?;
+    let (outside, _) = plan
+        .read_root_sids()
+        .find(|(path, _)| *path != write_path)
+        .ok_or_else(|| anyhow::anyhow!("separate read root"))?;
+    for flags in [3, 3 | 8] {
+        set_role(outside, write_sid, WRITE, flags)?;
+        let before = snapshots(&plan)?;
+        assert!(
+            PreparedFilesystemAclContext::observe_existing(&home, &plan, base.as_handle()).is_err()
+        );
+        assert_eq!(snapshots(&plan)?, before);
+    }
+    set_role(outside, write_sid, /*mask*/ 0, /*flags*/ 3)?;
+    let (_, read_sid) = plan
+        .read_root_sids()
+        .find(|(path, _)| *path == write_path)
+        .ok_or_else(|| anyhow::anyhow!("same-path read role"))?;
+    set_role(write_path, read_sid, RX | DELETE, /*flags*/ 3)?;
+    let before = snapshots(&plan)?;
+    assert!(
+        PreparedFilesystemAclContext::observe_existing(&home, &plan, base.as_handle()).is_err()
+    );
+    assert_eq!(snapshots(&plan)?, before);
+    Ok(())
+}
+
+#[test]
+fn existing_readback_keeps_descriptor_registry_and_base_token_refusal_sticky() -> Result<()> {
+    let (_temporary, home, plan, base) = fixture()?;
+    drop(PreparedFilesystemAclContext::prepare(
+        &home,
+        &plan,
+        base.as_handle(),
+    )?);
+    let mut observed =
+        PreparedFilesystemAclContext::observe_existing(&home, &plan, base.as_handle())?;
+    let (path, sid) = plan
+        .read_root_sids()
+        .next()
+        .ok_or_else(|| anyhow::anyhow!("read role"))?;
+    set_role(path, sid, RX | DELETE, /*flags*/ 3)?;
+    assert!(observed.revalidate().is_err());
+    set_role(path, sid, RX, /*flags*/ 3)?;
+    assert!(observed.revalidate().is_err());
+    let mut observed =
+        PreparedFilesystemAclContext::observe_existing(&home, &plan, base.as_handle())?;
+    let registry = home.join("cap_sid.v3.json");
+    let bytes = std::fs::read(&registry)?;
+    std::fs::write(&registry, b"invalid")?;
+    assert!(observed.revalidate().is_err());
+    std::fs::write(&registry, bytes)?;
+    assert!(observed.revalidate().is_err());
+    let mut observed =
+        PreparedFilesystemAclContext::observe_existing(&home, &plan, base.as_handle())?;
+    let mut raw = 0;
+    assert_ne!(
+        unsafe { DuplicateToken(base.as_raw_handle() as _, SecurityImpersonation, &mut raw) },
+        0
+    );
+    // SAFETY: successful DuplicateToken transferred this distinct native token.
+    let other = unsafe { OwnedHandle::from_raw_handle(raw as _) };
+    assert!(observed.validate_for_token(other.as_handle()).is_err());
+    assert!(observed.validate_for_token(base.as_handle()).is_err());
+    Ok(())
+}
+
+#[test]
+fn existing_role_containment_rejects_registry_bound_parent_directory_aliases() -> Result<()> {
+    let (_temporary, home, plan, base) = fixture()?;
+    drop(PreparedFilesystemAclContext::prepare(
+        &home,
+        &plan,
+        base.as_handle(),
+    )?);
+    let (write_path, write_sid) = plan
+        .write_root_sids()
+        .next()
+        .ok_or_else(|| anyhow::anyhow!("write role"))?;
+    let (outside, _) = plan
+        .read_root_sids()
+        .find(|(path, _)| *path != write_path)
+        .ok_or_else(|| anyhow::anyhow!("separate read root"))?;
+    set_role(outside, write_sid, WRITE, /*flags*/ 3)?;
+    let before = snapshots(&plan)?;
+    let alias = format!("{write_path}/../readonly");
+    let registry_path = home.join("cap_sid.v3.json");
+    let original = std::fs::read(&registry_path)?;
+    let mut registry: serde_json::Value = serde_json::from_slice(&original)?;
+    let roots = registry["readable_root_by_path"]
+        .as_object_mut()
+        .ok_or_else(|| anyhow::anyhow!("root map"))?;
+    let sid = roots
+        .remove(outside)
+        .ok_or_else(|| anyhow::anyhow!("original root"))?;
+    roots.insert(alias.clone(), sid);
+    let bytes = serde_json::to_vec(&registry)?;
+    std::fs::write(&registry_path, &bytes)?;
+    std::fs::write(home.join("cap_sid.v3.lock"), &bytes)?;
+    let mut wire = serde_json::to_value(&plan)?;
+    for root in wire["read"]
+        .as_array_mut()
+        .ok_or_else(|| anyhow::anyhow!("read roots"))?
+    {
+        if root["path"].as_str() == Some(outside) {
+            root["path"] = serde_json::Value::String(alias.clone());
+        }
+    }
+    let aliased: FilesystemCapabilityPlan = serde_json::from_value(wire)?;
+    crate::validate_filesystem_capability_plan(&home, &aliased)?;
+    let error =
+        match PreparedFilesystemAclContext::observe_existing(&home, &aliased, base.as_handle()) {
+            Ok(_) => anyhow::bail!("lexical alias must not authorize cross-root write"),
+            Err(error) => error,
+        };
+    assert!(
+        error
+            .to_string()
+            .contains("noncanonical existing root declaration")
+    );
+    assert_eq!(snapshots(&plan)?, before);
+    assert_eq!(std::fs::read(&registry_path)?, bytes);
+    assert_eq!(std::fs::read(home.join("cap_sid.v3.lock"))?, bytes);
+    Ok(())
+}
