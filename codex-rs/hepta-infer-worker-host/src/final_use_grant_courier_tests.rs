@@ -9,6 +9,7 @@ use pretty_assertions::assert_eq;
 use std::collections::BTreeSet;
 use std::fs;
 use std::io::Write;
+use std::os::unix::fs::FileTypeExt;
 use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
@@ -206,13 +207,12 @@ fn courier_refuses_symlink_hardlink_fifo_wrong_owner_and_shared_write() -> TestR
     fs::set_permissions(&fixture.path, fs::Permissions::from_mode(0o620))?;
     assert!(fixture.courier().is_err());
     let fifo = fixture.temp.path().join("fifo");
-    rustix::fs::mknodat(
-        rustix::fs::CWD,
-        &fifo,
-        rustix::fs::FileType::Fifo,
-        rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
-        0,
-    )?;
+    let status = std::process::Command::new("mkfifo")
+        .args(["-m", "600"])
+        .arg(&fifo)
+        .status()?;
+    assert!(status.success());
+    assert!(fs::symlink_metadata(&fifo)?.file_type().is_fifo());
     let start = std::time::Instant::now();
     assert!(
         SignedFinalUseGrantCourier::open(

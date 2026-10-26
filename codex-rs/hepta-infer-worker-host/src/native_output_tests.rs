@@ -29,7 +29,8 @@ fn terminal_message_recovers_missing_deltas_and_replaces_partial_text_once() {
         let mut output = output();
         output.output = streamed.to_string();
         assert!(
-            observe_for_test(&mut observation,
+            observe_for_test(
+                &mut observation,
                 &mut output,
                 completed(vec![message("final", "final answer")])
             )
@@ -75,7 +76,11 @@ fn invalid_terminal_binding_never_replaces_output_or_becomes_terminal() {
         Some("test-app-server".to_string()),
         Some("/home/agent".to_string()),
     );
-    assert!(observation.observe_event(&mut output, &wrong_connection).is_err());
+    assert!(
+        observation
+            .observe_event(&mut output, &wrong_connection)
+            .is_err()
+    );
     assert_eq!(output, before);
 }
 
@@ -87,14 +92,20 @@ fn terminal_item_text_is_bounded_in_aggregate_bytes_before_mutation() {
     let before = output.clone();
     let full = "é".repeat(MAX_OUTPUT_BYTES / 2);
     assert!(
-        observe_for_test(&mut observation,
+        observe_for_test(
+            &mut observation,
             &mut output,
             completed(vec![message("first", &full), message("second", "x")])
         )
         .is_err()
     );
     assert_eq!(output, before);
-    observe_for_test(&mut observation, &mut output, completed(vec![message("first", &full)])).unwrap();
+    observe_for_test(
+        &mut observation,
+        &mut output,
+        completed(vec![message("first", &full)]),
+    )
+    .unwrap();
     assert_eq!(output.output, full);
     assert!(output.terminal_observed);
 }

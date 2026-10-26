@@ -258,7 +258,6 @@ async fn ordinary_sqlite_read_uses_neural_port_before_result_limit() {
     assert!(actual.plan.unwrap().read_allowed);
 }
 
-
 #[test]
 fn expired_or_cancelled_read_at_current_boundaries_never_publishes_late_ranking() {
     struct GatedCurrent {
@@ -272,30 +271,60 @@ fn expired_or_cancelled_read_at_current_boundaries_never_publishes_late_ranking(
         fn current(&self) -> Result<VerifiedCurrentRegistryViewV1, String> {
             if self.calls.fetch_add(1, Ordering::SeqCst) == self.gate_at {
                 self.started.send(()).map_err(|error| error.to_string())?;
-                self.release.lock().map_err(|error| error.to_string())?
-                    .recv_timeout(std::time::Duration::from_secs(4)).map_err(|error| error.to_string())?;
+                self.release
+                    .lock()
+                    .map_err(|error| error.to_string())?
+                    .recv_timeout(std::time::Duration::from_secs(4))
+                    .map_err(|error| error.to_string())?;
             }
             self.inner.current()
         }
     }
     for (cancel, gate_at) in [(false, 0), (true, 0), (false, 1), (true, 1)] {
-        let port = Arc::new(Port { calls: AtomicUsize::new(0), corrupt: 0 });
+        let port = Arc::new(Port {
+            calls: AtomicUsize::new(0),
+            corrupt: 0,
+        });
         let (_directory, ranker) = fixture(port.clone());
         let mut ranker = Arc::try_unwrap(ranker).ok().unwrap();
         let (started_tx, started_rx) = std::sync::mpsc::channel();
         let (release_tx, release_rx) = std::sync::mpsc::channel();
-        ranker.current = Arc::new(GatedCurrent { inner: ranker.current.clone(), started: started_tx, release: Mutex::new(release_rx), calls: AtomicUsize::new(0), gate_at });
+        ranker.current = Arc::new(GatedCurrent {
+            inner: ranker.current.clone(),
+            started: started_tx,
+            release: Mutex::new(release_rx),
+            calls: AtomicUsize::new(0),
+            gate_at,
+        });
         let token = tokio_util::sync::CancellationToken::new();
         let deadline = std::time::Instant::now() + std::time::Duration::from_secs(2);
         let execution = NeuralCognitiveExecutionV1::with_deadline(deadline, token.clone());
         let worker = std::thread::spawn(move || {
-            let mut items = ["first", "second"].map(|name| CognitiveContextItem { memory_id: name.to_owned(), revision: 1, content: String::new(), content_sha256: digest(name).to_string() });
+            let mut items = ["first", "second"].map(|name| CognitiveContextItem {
+                memory_id: name.to_owned(),
+                revision: 1,
+                content: String::new(),
+                content_sha256: digest(name).to_string(),
+            });
             let before = items.clone();
-            assert!(ranker.rank_with_execution(&owner(), 1, "lemon", &mut items, &execution).is_err());
+            assert!(
+                ranker
+                    .rank_with_execution(&owner(), 1, "lemon", &mut items, &execution)
+                    .is_err()
+            );
             assert_eq!(items, before);
         });
-        started_rx.recv_timeout(std::time::Duration::from_secs(1)).unwrap();
-        if cancel { token.cancel(); } else { std::thread::sleep(deadline.saturating_duration_since(std::time::Instant::now()) + std::time::Duration::from_millis(1)); }
+        started_rx
+            .recv_timeout(std::time::Duration::from_secs(1))
+            .unwrap();
+        if cancel {
+            token.cancel();
+        } else {
+            std::thread::sleep(
+                deadline.saturating_duration_since(std::time::Instant::now())
+                    + std::time::Duration::from_millis(1),
+            );
+        }
         release_tx.send(()).unwrap();
         worker.join().unwrap();
         assert_eq!(port.calls.load(Ordering::SeqCst), gate_at);
@@ -304,15 +333,33 @@ fn expired_or_cancelled_read_at_current_boundaries_never_publishes_late_ranking(
 
 #[test]
 fn cancelled_blocking_queue_keeps_original_execution_window() {
-    let runtime = tokio::runtime::Builder::new_multi_thread().worker_threads(1).max_blocking_threads(1).enable_all().build().unwrap();
-    let port = Arc::new(Port { calls: AtomicUsize::new(0), corrupt: 0 });
+    let runtime = tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(1)
+        .max_blocking_threads(1)
+        .enable_all()
+        .build()
+        .unwrap();
+    let port = Arc::new(Port {
+        calls: AtomicUsize::new(0),
+        corrupt: 0,
+    });
     let (_directory, ranker) = fixture(port.clone());
     let (started_tx, started_rx) = std::sync::mpsc::channel();
     let (release_tx, release_rx) = std::sync::mpsc::channel();
-    let occupied = runtime.spawn_blocking(move || { started_tx.send(()).unwrap(); release_rx.recv_timeout(std::time::Duration::from_secs(2)).unwrap(); });
-    started_rx.recv_timeout(std::time::Duration::from_secs(1)).unwrap();
+    let occupied = runtime.spawn_blocking(move || {
+        started_tx.send(()).unwrap();
+        release_rx
+            .recv_timeout(std::time::Duration::from_secs(2))
+            .unwrap();
+    });
+    started_rx
+        .recv_timeout(std::time::Duration::from_secs(1))
+        .unwrap();
     let cancellation = tokio_util::sync::CancellationToken::new();
-    let execution = NeuralCognitiveExecutionV1::with_deadline(std::time::Instant::now() + std::time::Duration::from_secs(2), cancellation.clone());
+    let execution = NeuralCognitiveExecutionV1::with_deadline(
+        std::time::Instant::now() + std::time::Duration::from_secs(2),
+        cancellation.clone(),
+    );
     let queued = runtime.spawn_blocking(move || {
         ranker.rank_with_execution(&owner(), 1, "lemon", &mut [], &execution)
     });

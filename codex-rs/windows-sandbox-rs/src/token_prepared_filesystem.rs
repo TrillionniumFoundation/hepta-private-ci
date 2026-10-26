@@ -106,7 +106,7 @@ fn require_no_reenableable_privileges(token: BorrowedHandle<'_>) -> Result<()> {
         ensure!(
             (privilege.Luid.LowPart, privilege.Luid.HighPart)
                 == (traverse.LowPart, traverse.HighPart),
-            "filesystem token retained a privilege that a child could reenable"
+            "filesystem token retained a privilege that a child could enable again"
         );
     }
     Ok(())

@@ -49,11 +49,20 @@ impl AgentdState {
         spawn_generation: u64,
         method: crate::AgentdMethod,
     ) -> Result<AgentdResponse, AgentdError> {
-        self.response_with_execution(request_id, spawn_generation, method, &crate::NeuralCognitiveExecutionV1::bounded_read()).await
+        self.response_with_execution(
+            request_id,
+            spawn_generation,
+            method,
+            &crate::NeuralCognitiveExecutionV1::bounded_read(),
+        )
+        .await
     }
 
     pub(crate) async fn response_with_execution(
-        &self, request_id: u64, spawn_generation: u64, method: crate::AgentdMethod,
+        &self,
+        request_id: u64,
+        spawn_generation: u64,
+        method: crate::AgentdMethod,
         execution: &crate::NeuralCognitiveExecutionV1,
     ) -> Result<AgentdResponse, AgentdError> {
         if spawn_generation != self.identity.spawn_generation {

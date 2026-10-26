@@ -32,10 +32,10 @@ use codex_hepta_types::StableId;
 
 use crate::CognitiveContextItem;
 
-#[path = "neural_cognitive_ranker.rs"]
-mod neural;
 #[path = "neural_cognitive_execution.rs"]
 mod execution;
+#[path = "neural_cognitive_ranker.rs"]
+mod neural;
 pub use execution::NeuralCognitiveExecutionV1;
 pub use neural::NeuralCognitiveInferencePortV1;
 pub use neural::NeuralCognitiveObservationV1;
@@ -558,7 +558,13 @@ impl PinnedCognitiveRanker {
         query: &str,
         items: &mut [CognitiveContextItem],
     ) -> Result<CognitiveRankObservation, String> {
-        self.rank_with_execution(owner, generation, query, items, &NeuralCognitiveExecutionV1::bounded_read())
+        self.rank_with_execution(
+            owner,
+            generation,
+            query,
+            items,
+            &NeuralCognitiveExecutionV1::bounded_read(),
+        )
     }
 
     pub(crate) fn rank_with_execution(

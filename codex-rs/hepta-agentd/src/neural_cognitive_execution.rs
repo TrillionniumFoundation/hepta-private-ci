@@ -14,27 +14,40 @@ pub struct NeuralCognitiveExecutionV1 {
 
 impl NeuralCognitiveExecutionV1 {
     pub fn with_deadline(deadline: Instant, cancellation: CancellationToken) -> Self {
-        Self { deadline, cancellation }
+        Self {
+            deadline,
+            cancellation,
+        }
     }
 
     /// Explicit window for a direct controlled/evaluation read, outside the
     /// control connection. Product connections always pass their original one.
     pub fn bounded_read() -> Self {
-        Self::with_deadline(Instant::now() + Duration::from_secs(2), CancellationToken::new())
+        Self::with_deadline(
+            Instant::now() + Duration::from_secs(2),
+            CancellationToken::new(),
+        )
     }
 
-    pub fn deadline(&self) -> Instant { self.deadline }
+    pub fn deadline(&self) -> Instant {
+        self.deadline
+    }
 
     pub fn remaining(&self) -> Result<Duration, String> {
         if self.cancellation.is_cancelled() {
             return Err("neural read execution cancelled".to_owned());
         }
-        self.deadline.checked_duration_since(Instant::now())
+        self.deadline
+            .checked_duration_since(Instant::now())
             .filter(|remaining| !remaining.is_zero())
             .ok_or_else(|| "neural read execution deadline".to_owned())
     }
 
-    pub fn check(&self) -> Result<(), String> { self.remaining().map(|_| ()) }
+    pub fn check(&self) -> Result<(), String> {
+        self.remaining().map(|_| ())
+    }
 
-    pub async fn cancelled(&self) { self.cancellation.cancelled().await }
+    pub async fn cancelled(&self) {
+        self.cancellation.cancelled().await
+    }
 }

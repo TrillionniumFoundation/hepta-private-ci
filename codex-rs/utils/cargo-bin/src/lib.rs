@@ -20,7 +20,9 @@ pub enum CargoBinError {
         #[source]
         source: std::io::Error,
     },
-    #[error("CARGO_BIN_EXE env var {key} resolved to {path:?}, but it does not exist")]
+    #[error(
+        "binary env var {key} resolved to {path:?}, but it is not an available binary location"
+    )]
     ResolvedPathDoesNotExist { key: String, path: PathBuf },
     #[error("could not locate binary {name:?}; tried env vars {env_keys:?}; {fallback}")]
     NotFound {
@@ -34,7 +36,10 @@ pub enum CargoBinError {
 ///
 /// In `cargo test`, `CARGO_BIN_EXE_*` env vars are absolute.
 /// In `bazel test`, `CARGO_BIN_EXE_*` env vars are rlocationpaths, intended to be consumed by `rlocation`.
-/// This helper allows callers to transparently support both.
+/// Nextest exposes remapped archive paths as runtime `NEXTEST_BIN_EXE_*` variables.
+/// Explicit `CARGO_BIN_EXE_*` paths retain precedence, including Bazel runfiles.
+/// A selected environment path that cannot be resolved is an error; another
+/// key or the legacy sibling-directory fallback never masks that error.
 #[allow(deprecated)]
 pub fn cargo_bin(name: &str) -> Result<PathBuf, CargoBinError> {
     let env_keys = cargo_bin_env_keys(name);
@@ -69,13 +74,19 @@ pub fn cargo_bin(name: &str) -> Result<PathBuf, CargoBinError> {
 }
 
 fn cargo_bin_env_keys(name: &str) -> Vec<String> {
-    let mut keys = Vec::with_capacity(2);
+    let mut keys = Vec::with_capacity(4);
     keys.push(format!("CARGO_BIN_EXE_{name}"));
 
     // Cargo replaces dashes in target names when exporting env vars.
     let underscore_name = name.replace('-', "_");
     if underscore_name != name {
         keys.push(format!("CARGO_BIN_EXE_{underscore_name}"));
+    }
+
+    // Keep the exact target name first: nextest 0.9.111 exports hyphenated names.
+    keys.push(format!("NEXTEST_BIN_EXE_{name}"));
+    if underscore_name != name {
+        keys.push(format!("NEXTEST_BIN_EXE_{underscore_name}"));
     }
 
     keys
@@ -87,7 +98,12 @@ pub fn runfiles_available() -> bool {
 
 fn resolve_bin_from_env(key: &str, value: OsString) -> Result<PathBuf, CargoBinError> {
     let raw = PathBuf::from(&value);
-    if runfiles_available() {
+    if key.starts_with("NEXTEST_BIN_EXE_") {
+        // Nextest's contract is an absolute executable path, not a runfile key.
+        if raw.is_absolute() && raw.is_file() {
+            return Ok(raw);
+        }
+    } else if runfiles_available() {
         let runfiles = runfiles::Runfiles::create().map_err(|err| CargoBinError::CurrentExe {
             source: std::io::Error::other(err),
         })?;

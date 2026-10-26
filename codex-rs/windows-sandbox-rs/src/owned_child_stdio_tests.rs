@@ -3,6 +3,7 @@ use crate::process::ConsoleMode;
 use crate::process::StderrMode;
 use crate::process::StdinMode;
 use crate::process::spawn_process_with_pipes;
+use crate::token::LocalSid;
 use crate::token::create_readonly_token_with_caps_from;
 use crate::token::get_current_token_for_restriction;
 use anyhow::Result;
@@ -98,10 +99,13 @@ fn stdio_does_not_inherit_unrelated_sentinel() -> Result<()> {
     ensure!(raw != 0);
     let sentinel = unsafe { OwnedHandle::from_raw_handle(raw as _) };
     let base = unsafe { OwnedHandle::from_raw_handle(get_current_token_for_restriction()? as _) };
+    // Satisfy the diagnostic token's capability precondition without granting
+    // this fixture SID access to the unrelated sentinel or any filesystem ACL.
+    let capability = LocalSid::from_string("S-1-5-21-531-632-733-834")?;
     let token = unsafe {
         OwnedHandle::from_raw_handle(create_readonly_token_with_caps_from(
             base.as_raw_handle() as HANDLE,
-            &[],
+            &[capability.as_ptr()],
         )? as _)
     };
     let executable = std::env::current_exe()?;

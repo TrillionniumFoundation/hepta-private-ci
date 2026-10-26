@@ -319,7 +319,11 @@ fn execute(
     runtime: &NeuralHoldoutRuntimeV1,
     request: NeuralCognitiveRequestV1,
 ) -> Result<([i64; 2], Digest32), String> {
-    let observation = runtime.inference.execute(&request, &runtime.parameters, &crate::NeuralCognitiveExecutionV1::bounded_read())?;
+    let observation = runtime.inference.execute(
+        &request,
+        &runtime.parameters,
+        &crate::NeuralCognitiveExecutionV1::bounded_read(),
+    )?;
     if observation.request != request
         || observation.authority != AuthorityPosture::DENY_ALL
         || observation.execution_receipt_digest.is_zero()

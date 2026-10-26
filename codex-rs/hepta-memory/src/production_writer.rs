@@ -2136,8 +2136,9 @@ pub trait FinalUseProductionOutboxTarget: ProductionOutboxTarget {
                 token,
                 expected,
             } = dispatch;
-            let future =
-                authority.with_verified_use(token, &expected, || self.dispatch(request))?;
+            let final_use_authority: FinalUseAuthority = authority;
+            let future = final_use_authority
+                .with_verified_use(token, &expected, || self.dispatch(request))?;
             Ok(future.await)
         })
     }
