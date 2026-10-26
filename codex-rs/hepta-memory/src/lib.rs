@@ -116,6 +116,7 @@ pub use production_writer::ObjectiveSenderRetainedPosition;
 pub use production_writer::ObjectiveSenderSnapshot;
 pub use production_writer::ObjectiveSenderTicket;
 pub use production_writer::ObjectiveSenderWriterFence;
+pub use production_writer::ProductionNotesTerminalObservation;
 pub use production_writer::ProductionObjectiveSender;
 
 pub use shared_experience::SharedExperienceGrantV1;

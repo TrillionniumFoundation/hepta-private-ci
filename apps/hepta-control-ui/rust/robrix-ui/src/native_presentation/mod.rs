@@ -68,6 +68,24 @@ pub struct NativeApprovalView {
     pub busy: bool,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum NativeNotesModelDecision {
+    Confirm,
+    Decline,
+}
+
+/// Exact owner-generated proposal displayed separately from the composer.
+/// The callback returns only its ID/digest; details are never parsed as an effect.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct NativeNotesModelProposalView {
+    pub proposal_id: String,
+    pub proposal_sha256: String,
+    pub thread_id: String,
+    pub details: String,
+    pub can_confirm: bool,
+    pub can_decline: bool,
+}
+
 /// Original-owner Notes projection beside the sole conversation composer.
 /// Availability is a UI hint, never authority or proof that a write was saved.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
@@ -76,6 +94,7 @@ pub struct NativeNotesView {
     pub can_write: bool,
     pub can_refresh: bool,
     pub can_cancel: bool,
+    pub model_proposal: Option<NativeNotesModelProposalView>,
 }
 
 /// Supplies one existing workspace and nonblocking observations to the original
@@ -137,6 +156,18 @@ pub trait NativeChatComposition {
     /// terminal outcome or treating this as rollback of a possible saved note.
     fn request_notes_cancel(&mut self, _source: RoomKey) -> Result<(), String> {
         Err("No original Notes task is available to cancel".into())
+    }
+    /// Confirm or decline exactly the visible original tool proposal. The
+    /// embedding must recheck its current authenticated thread, proposal digest
+    /// and observation freshness, and queue no replacement payload or retry.
+    fn request_notes_model_decision(
+        &mut self,
+        _source: RoomKey,
+        _proposal_id: &str,
+        _proposal_sha256: &str,
+        _decision: NativeNotesModelDecision,
+    ) -> Result<(), String> {
+        Err("Original model Notes proposal is unavailable".into())
     }
     /// Nonblocking: consume already received observations and evaluate age.
     /// Called outside Draw and without a live mutable workspace borrow.

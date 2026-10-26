@@ -2,6 +2,8 @@
 use super::*;
 use crate::AgentdNotesChannel;
 use crate::AgentdNotesDocumentObserver;
+use crate::notes_ui_wire::NotesModelResult;
+use crate::notes_ui_wire::NotesModelTerminalObservation;
 use codex_hepta_memory::ProductionNotesTarget;
 use pretty_assertions::assert_eq;
 
@@ -133,6 +135,25 @@ async fn notes_objective_previous_receipt_host_reconciles_without_registering_di
         host.writer().status(&queued.occurrence_key).await?,
         LocalOutcomeState::Committed
     );
+    let before_read = writer.recovery_anchor().await?;
+    let terminal = writer
+        .observe_notes_terminal(&queued.occurrence_key)
+        .await?
+        .ok_or("missing original prior terminal")?;
+    let projected =
+        NotesModelTerminalObservation::from_original(&queued.occurrence_key, &terminal)?;
+    assert_eq!(projected.result, NotesModelResult::Applied);
+    assert_eq!(
+        projected.application_receipt_sha256,
+        Sha256Digest::for_bytes(
+            golden["application_response_utf8"]
+                .as_str()
+                .ok_or("fixture receipt")?
+                .as_bytes()
+        )
+        .as_str()
+    );
+    assert_eq!(writer.recovery_anchor().await?, before_read);
     assert!(
         host.dispatch_to_with_grant_provider(&old.destination_id(), queued)
             .await

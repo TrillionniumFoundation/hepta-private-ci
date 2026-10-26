@@ -79,7 +79,10 @@ impl NotesUiQueue {
             end: Instant::now() + ACTION_LIFETIME,
         };
         match &entry.command {
-            ObjectiveCommand::Submit { .. } | ObjectiveCommand::Cancel { .. } => {
+            ObjectiveCommand::Submit { .. }
+            | ObjectiveCommand::Cancel { .. }
+            | ObjectiveCommand::ConfirmModelProposal { .. }
+            | ObjectiveCommand::DeclineModelProposal { .. } => {
                 if state.actions.len() == ACTION_CAPACITY {
                     view.issue = Some(ObjectiveHostIssue::Capacity);
                     return view;
@@ -129,10 +132,22 @@ impl NotesUiQueue {
         }
     }
 
-    pub(crate) fn update(&self, view: ObjectiveObservation) -> Result<(), ()> {
+    pub(crate) fn update(&self, mut view: ObjectiveObservation) -> Result<(), ()> {
         let mut state = self.state.lock().map_err(|_| ())?;
         if let Some(id) = &view.client_intent_id {
             let previous = state.intents.get_mut(id).ok_or(())?;
+            if let Some(terminal) = &previous.notes_terminal {
+                if view
+                    .notes_terminal
+                    .as_ref()
+                    .is_some_and(|observed| observed != terminal)
+                {
+                    return Err(());
+                }
+                // A later transport/cancellation observation cannot erase the
+                // exact original terminal already read under this same ID.
+                view.notes_terminal = Some(terminal.clone());
+            }
             *previous = view;
         } else {
             state.availability = view;
@@ -146,6 +161,22 @@ impl NotesUiQueue {
             Some(id) => state.intents.get(id).cloned().ok_or(()),
             None => Ok(state.availability.clone()),
         }
+    }
+
+    pub(crate) fn publish_model(
+        &self,
+        proposal: Option<NotesModelProposalObservation>,
+    ) -> Result<(), ()> {
+        let mut state = self.state.lock().map_err(|_| ())?;
+        if let Some(proposal) = &proposal
+            && let Some(view) = state.intents.get_mut(&proposal.proposal_id)
+        {
+            view.model_proposal = Some(proposal.clone());
+        }
+        // This updates only a disposable tool preview, never the freshness or
+        // readiness of the independently observed original Notes application.
+        state.availability.model_proposal = proposal;
+        Ok(())
     }
 }
 

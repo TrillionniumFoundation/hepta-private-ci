@@ -178,6 +178,19 @@ impl RendererPresentation {
                     {
                         composition.inner.request_notes_cancel(room)
                     }
+                    ChatIntent::NotesModelDecision(room, id, digest, decision)
+                        if controls.permits_notes_model_decision(
+                            room,
+                            &id,
+                            &digest,
+                            decision,
+                            composition.inner.workspace(),
+                        ) =>
+                    {
+                        composition
+                            .inner
+                            .request_notes_model_decision(room, &id, &digest, decision)
+                    }
                     ChatIntent::Approval(room, id, decision)
                         if controls.permits_approval(
                             room,
@@ -205,6 +218,21 @@ impl RendererPresentation {
                 end -= 1;
             }
             notes.status.truncate(end);
+            if notes.model_proposal.as_ref().is_some_and(|proposal| {
+                proposal.proposal_id.is_empty()
+                    || proposal.proposal_id.len() > 96
+                    || proposal.proposal_sha256.len() != 64
+                    || !proposal
+                        .proposal_sha256
+                        .bytes()
+                        .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+                    || proposal.thread_id.is_empty()
+                    || proposal.thread_id.len() > 128
+                    || proposal.details.len() > 8192
+            }) {
+                // Never truncate the proposal the person is asked to confirm.
+                notes.model_proposal = None;
+            }
         }
         let workspace = composition.inner.workspace();
         let controls = Controls {

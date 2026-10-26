@@ -82,6 +82,26 @@ fn default_notes_port_hides_actions_refuses_callbacks_and_retains_the_original_d
     assert!(client.request_write_note(room).is_err());
     assert!(client.request_notes_refresh(room).is_err());
     assert!(client.request_notes_cancel(room).is_err());
+    assert!(
+        client
+            .request_notes_model_decision(
+                room,
+                "model-original",
+                &"a".repeat(64),
+                NativeNotesModelDecision::Confirm
+            )
+            .is_err()
+    );
+    assert!(
+        client
+            .request_notes_model_decision(
+                room,
+                "model-original",
+                &"a".repeat(64),
+                NativeNotesModelDecision::Decline
+            )
+            .is_err()
+    );
     assert_eq!(client.workspace.draft().text, "unsent original Notes draft");
     assert_eq!(client.workspace.active_id(), room.local_id);
     assert_eq!(client.exits.get(), 0);

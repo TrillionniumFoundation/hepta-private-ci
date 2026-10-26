@@ -19,9 +19,23 @@ pub struct ObjectiveIntent {
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum ObjectiveCommand {
     Availability {},
-    Submit { intent: ObjectiveIntent },
-    Status { client_intent_id: String },
-    Cancel { client_intent_id: String },
+    Submit {
+        intent: ObjectiveIntent,
+    },
+    Status {
+        client_intent_id: String,
+    },
+    Cancel {
+        client_intent_id: String,
+    },
+    ConfirmModelProposal {
+        proposal_id: String,
+        proposal_sha256: String,
+    },
+    DeclineModelProposal {
+        proposal_id: String,
+        proposal_sha256: String,
+    },
 }
 
 impl ObjectiveCommand {
@@ -32,6 +46,8 @@ impl ObjectiveCommand {
             Self::Status { client_intent_id } | Self::Cancel { client_intent_id } => {
                 Some(client_intent_id)
             }
+            Self::ConfirmModelProposal { proposal_id, .. }
+            | Self::DeclineModelProposal { proposal_id, .. } => Some(proposal_id),
         }
     }
 
@@ -47,9 +63,25 @@ impl ObjectiveCommand {
             }
         }
         if let Self::Submit { intent } = self {
-            if intent.text.trim().is_empty() || intent.text.len() > MAX_INTENT_BYTES {
+            if intent.client_intent_id.starts_with("model-")
+                || intent.text.trim().is_empty()
+                || intent.text.len() > MAX_INTENT_BYTES
+            {
                 return Err(ObjectiveHostIssue::InvalidIntent);
             }
+        }
+        if let Self::ConfirmModelProposal {
+            proposal_sha256, ..
+        }
+        | Self::DeclineModelProposal {
+            proposal_sha256, ..
+        } = self
+            && (proposal_sha256.len() != 64
+                || !proposal_sha256
+                    .bytes()
+                    .all(|c| c.is_ascii_digit() || (b'a'..=b'f').contains(&c)))
+        {
+            return Err(ObjectiveHostIssue::InvalidIntent);
         }
         Ok(())
     }
@@ -116,6 +148,86 @@ pub struct NotesDocumentObservation {
     pub receipt_pending: bool,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum NotesModelPhase {
+    ReviewRequired,
+    Retained,
+    ReplyStarted,
+    ReplyObserved,
+    Closed,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum NotesModelResult {
+    Applied,
+    Rejected,
+    Declined,
+    Unknown,
+}
+
+/// Exact original owner evidence, which can arrive after the model already
+/// received an unknown answer. It does not rewrite that earlier tool reply.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct NotesModelTerminalObservation {
+    pub operation_id: String,
+    pub result: NotesModelResult,
+    pub application_receipt_sha256: String,
+    pub terminal_event_id: String,
+    pub terminal_event_sha256: String,
+}
+
+impl NotesModelTerminalObservation {
+    pub(crate) fn from_original(
+        operation_id: &str,
+        terminal: &codex_hepta_memory::ProductionNotesTerminalObservation,
+    ) -> Result<Self, crate::AgentdError> {
+        use codex_hepta_memory::LocalOutcomeState;
+        let result = match terminal.state {
+            LocalOutcomeState::Committed => NotesModelResult::Applied,
+            LocalOutcomeState::Rejected => NotesModelResult::Rejected,
+            _ => {
+                return Err(crate::notes_literal_adapter::invalid(
+                    "Notes owner observation is not an application terminal",
+                ));
+            }
+        };
+        if terminal.operation.operation_id().as_str() != operation_id {
+            return Err(crate::notes_literal_adapter::invalid(
+                "Notes owner terminal operation identity differs",
+            ));
+        }
+        Ok(Self {
+            operation_id: operation_id.to_owned(),
+            result,
+            application_receipt_sha256: terminal.application_receipt_sha256.as_str().to_owned(),
+            terminal_event_id: terminal.terminal_event_id.clone(),
+            terminal_event_sha256: terminal.terminal_event_sha256.as_str().to_owned(),
+        })
+    }
+}
+
+/// Bounded presentation of an actual original tool call. Confirmation refers
+/// only to this owner-generated digest; the UI cannot replace any payload.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct NotesModelProposalObservation {
+    pub proposal_id: String,
+    pub proposal_sha256: String,
+    pub thread_id: String,
+    pub turn_id: String,
+    pub call_id: String,
+    pub text: String,
+    pub reviewed_document: Option<NotesDocumentObservation>,
+    pub phase: NotesModelPhase,
+    pub result: Option<NotesModelResult>,
+    pub application_receipt_sha256: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub owner_terminal: Option<NotesModelTerminalObservation>,
+}
+
 /// Navigation IDs read from the original owner's retained requests. No signed
 /// request, admission, sending permission or effect result is projected here.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -173,6 +285,12 @@ pub struct ObjectiveObservation {
     pub retained_intents: Option<ObjectiveRetainedIntents>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub notes_document: Option<NotesDocumentObservation>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub model_proposal: Option<NotesModelProposalObservation>,
+    /// Original writer observation, independently recoverable by the existing
+    /// client intent ID even when its model callback is no longer replayed.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub notes_terminal: Option<NotesModelTerminalObservation>,
 }
 
 impl ObjectiveObservation {
@@ -192,6 +310,8 @@ impl ObjectiveObservation {
             issue: None,
             retained_intents: None,
             notes_document: None,
+            model_proposal: None,
+            notes_terminal: None,
         }
     }
 }

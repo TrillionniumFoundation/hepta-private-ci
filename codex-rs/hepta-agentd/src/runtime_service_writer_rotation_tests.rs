@@ -3,6 +3,7 @@
 //! efficacy claim follows from this bounded local integration test.
 
 use std::time::Duration;
+use std::time::Instant;
 
 use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationOperationReceipt;
@@ -103,6 +104,7 @@ async fn ask(
 
 #[tokio::test]
 async fn sqlite_writer_rotates_256_times_without_consuming_new_service_identities() {
+    let started_at = Instant::now();
     let directory = tempfile::tempdir().unwrap();
     let root = directory.path().canonicalize().unwrap();
     let fleet = HeptaFleetRoot::parse(root.join("fleet")).unwrap();
@@ -123,6 +125,10 @@ async fn sqlite_writer_rotates_256_times_without_consuming_new_service_identitie
     let original = draft("one durable effect across repeated owner handoff");
     let stop = CancellationToken::new();
     let mut host = RuntimeTasks::new(stop.clone(), Duration::from_secs(2)).unwrap();
+    eprintln!(
+        "writer_rotation initialized elapsed_ms={}",
+        started_at.elapsed().as_millis()
+    );
     for epoch in 1..=256 {
         assert_eq!(store.timer_status().await.unwrap().writer_epoch, epoch);
         let client = attach(&mut host, store.clone(), epoch);
@@ -169,6 +175,12 @@ async fn sqlite_writer_rotates_256_times_without_consuming_new_service_identitie
             );
             store = next;
         }
+        if epoch % 16 == 0 {
+            eprintln!(
+                "writer_rotation completed_epochs={epoch}/256 elapsed_ms={}",
+                started_at.elapsed().as_millis()
+            );
+        }
     }
     assert_eq!(
         store.retire_timer().await.unwrap().phase,
@@ -199,4 +211,8 @@ async fn sqlite_writer_rotates_256_times_without_consuming_new_service_identitie
     assert_eq!(reopened.list_tasks(10).await.unwrap().len(), 1);
     drop(first_writer);
     reopened.close().await;
+    eprintln!(
+        "writer_rotation original_receipt_verified_after_reopen elapsed_ms={}",
+        started_at.elapsed().as_millis()
+    );
 }

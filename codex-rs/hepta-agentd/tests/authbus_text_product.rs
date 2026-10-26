@@ -48,6 +48,9 @@ mod text_approval_product;
 mod text_close_product;
 #[path = "support/text_large_history_product.rs"]
 mod text_large_history_product;
+#[cfg(target_os = "linux")]
+#[path = "support/text_notes_tool_product.rs"]
+mod text_notes_tool_product;
 #[path = "support/text_slow_approval_product.rs"]
 mod text_slow_approval_product;
 #[path = "support/text_snapshot_boundary_product.rs"]

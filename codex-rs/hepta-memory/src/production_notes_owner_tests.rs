@@ -13,6 +13,8 @@ use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
+#[path = "production_notes_observation_tests.rs"]
+mod observation_tests;
 #[path = "production_notes_previous_tests.rs"]
 mod previous_tests;
 #[path = "production_retained_operation_tests.rs"]
@@ -492,6 +494,10 @@ async fn original_final_use_rejection_preserves_notes_no_entry_settlement() -> T
             writer.status(&operation).await?,
             LocalOutcomeState::Rejected
         );
+        let before_read = writer.recovery_anchor().await?;
+        // The original source refusal is not an application terminal receipt.
+        assert!(writer.observe_notes_terminal(&operation).await.is_err());
+        assert_eq!(writer.recovery_anchor().await?, before_read);
         let reason: String = sqlx::query_scalar(
             "SELECT payload_json FROM cognitive_local_events WHERE lease_id = ? AND occurrence_key = ? AND event_kind = 'reconcile_rejected'",
         ).bind(LEASE).bind(&operation).fetch_one(&store.pool).await?;

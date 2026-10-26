@@ -92,11 +92,14 @@ pub fn should_persist_event_msg(ev: &EventMsg, history_mode: ThreadHistoryMode) 
         EventMsg::ItemCompleted(event) => {
             // Paginated rollouts store TurnItems.
             // Legacy rollouts keep only items with no lossless raw ResponseItem or legacy
-            // equivalent.
+            // equivalent. Dynamic tool outputs omit the callback's terminal status,
+            // so retain its canonical completion in both history modes.
             matches!(history_mode, ThreadHistoryMode::Paginated)
                 || matches!(
                     event.item,
-                    TurnItem::Plan(_) | TurnItem::Extension(ExtensionItem::Sleep(_))
+                    TurnItem::Plan(_)
+                        | TurnItem::DynamicToolCall(_)
+                        | TurnItem::Extension(ExtensionItem::Sleep(_))
                 )
                 || matches!(
                     &event.item,

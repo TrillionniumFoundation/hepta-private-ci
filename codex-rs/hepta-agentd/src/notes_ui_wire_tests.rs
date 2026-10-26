@@ -51,3 +51,48 @@ fn original_session_can_decode_private_fields_absent_observation() {
         })
     );
 }
+
+#[test]
+fn notes_model_confirmation_carries_only_the_original_proposal_reference() {
+    let raw = serde_json::json!({
+        "type":"confirm_model_proposal", "proposal_id":"model-original",
+        "proposal_sha256":"a".repeat(64),
+    });
+    let command: ObjectiveCommand = serde_json::from_value(raw.clone()).unwrap();
+    assert_eq!(command.validate(), Ok(()));
+    assert_eq!(serde_json::to_value(command).unwrap(), raw);
+    for key in [
+        "text",
+        "thread_id",
+        "call_id",
+        "target",
+        "expected_revision",
+        "grant",
+    ] {
+        let mut changed = raw.clone();
+        changed[key] = serde_json::json!("renderer substitution");
+        assert!(serde_json::from_value::<ObjectiveCommand>(changed).is_err());
+    }
+    for digest in ["", "a", &"A".repeat(64), &"g".repeat(64)] {
+        let mut changed = raw.clone();
+        changed["proposal_sha256"] = serde_json::json!(digest);
+        let command: ObjectiveCommand = serde_json::from_value(changed).unwrap();
+        assert_eq!(command.validate(), Err(ObjectiveHostIssue::InvalidIntent));
+    }
+    let mut declined = raw;
+    declined["type"] = serde_json::json!("decline_model_proposal");
+    let command: ObjectiveCommand = serde_json::from_value(declined).unwrap();
+    assert_eq!(command.client_intent_id(), Some("model-original"));
+    assert_eq!(command.validate(), Ok(()));
+}
+
+#[test]
+fn literal_submission_cannot_impersonate_a_model_proposal_identity() {
+    let command = ObjectiveCommand::Submit {
+        intent: ObjectiveIntent {
+            client_intent_id: format!("model-{}", "a".repeat(64)),
+            text: "replacement outside review".into(),
+        },
+    };
+    assert_eq!(command.validate(), Err(ObjectiveHostIssue::InvalidIntent));
+}

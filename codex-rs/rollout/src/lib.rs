@@ -142,3 +142,7 @@ pub use state_db::sqlite_telemetry_recorder;
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+#[path = "dynamic_tool_persistence_tests.rs"]
+mod dynamic_tool_persistence_tests;
