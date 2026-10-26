@@ -29,6 +29,15 @@ config.with_root_notes_thread_tools(
 )?;
 ```
 
+The production launcher must then install
+`AgentdNotesSessionLifetime::from_inherited(session_pidfd, &actual_session_peer)`
+with `with_original_notes_thread_session`. It reuses the literal endpoint's exact
+same-UID, held pidfd, boot and birth checks. Model mode requires this guard and
+retains it around the entire required task; Session exit cancels the task even
+while preparation or original control I/O is awaiting a reply. It installs no
+literal UI listener. An already started original effect retains its uncertainty
+and durable sender fence; Session exit does not mint a replacement send.
+
 The builder checks exact Agentd ID/generation/control socket/home, original
 writer pointer, target, Root authority and selected profile. Runtime supervision
 starts a required `notes-original-thread-tools` task. It waits for the existing

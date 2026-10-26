@@ -198,6 +198,23 @@ impl AgentdNotesThreadToolRuntime {
         state: Arc<crate::AgentdState>,
         cancellation: CancellationToken,
     ) -> Result<(), AgentdError> {
+        let session = self.session.take().ok_or_else(|| {
+            invalid("original Notes thread mode requires its held Session lifetime")
+        })?;
+        session.check_alive()?;
+        tokio::select! {
+            biased;
+            _ = cancellation.cancelled() => Ok(()),
+            _ = session.readable() => Err(invalid("original Notes Session lifetime ended")),
+            result = self.run_bound(state, cancellation) => result,
+        }
+    }
+
+    async fn run_bound(
+        mut self,
+        state: Arc<crate::AgentdState>,
+        cancellation: CancellationToken,
+    ) -> Result<(), AgentdError> {
         tokio::select! {
             _ = cancellation.cancelled() => return Ok(()),
             ready = tokio::time::timeout(Duration::from_secs(10), state.wait_original_app_server_ready()) => {

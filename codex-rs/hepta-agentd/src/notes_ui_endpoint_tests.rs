@@ -85,3 +85,56 @@ async fn notes_ui_rejects_wrong_pidfd_and_non_listener_before_accepting_bytes()
     assert!(NotesUiEndpoint::from_inherited(stream.into(), pidfd, peer).is_err());
     Ok(())
 }
+
+#[tokio::test]
+async fn shared_session_lifetime_rejects_wrong_birth_and_observes_actual_child_exit()
+-> Result<(), Box<dyn Error>> {
+    let (_directory, _listener, pidfd, mut peer) = listener_and_identity()?;
+    peer.process_start_ticks += 1;
+    assert!(AgentdNotesSessionLifetime::from_inherited(pidfd, &peer).is_err());
+    let (_directory, _listener, _pidfd, peer) = listener_and_identity()?;
+    assert!(
+        AgentdNotesSessionLifetime::from_inherited(File::open("/dev/null")?.into(), &peer).is_err()
+    );
+
+    // This is an actual child lifetime, not a real Notes Session or authority.
+    let mut child = tokio::process::Command::new("sleep")
+        .arg("60")
+        .kill_on_drop(true)
+        .spawn()?;
+    let pid = child.id().ok_or("child PID")?;
+    // SAFETY: the live child PID and zero flags create one held pidfd.
+    let number = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, 0) };
+    if number < 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    // SAFETY: the successful syscall returned this new owned descriptor.
+    let pidfd = unsafe { OwnedFd::from_raw_fd(number as libc::c_int) };
+    let stat = std::fs::read_to_string(format!("/proc/{pid}/stat"))?;
+    let process_start_ticks = stat
+        .rsplit_once(") ")
+        .ok_or("child stat")?
+        .1
+        .split_whitespace()
+        .nth(19)
+        .ok_or("child birth")?
+        .parse()?;
+    let peer = AgentdNotesUiPeer {
+        uid: std::fs::metadata(format!("/proc/{pid}"))?.uid(),
+        pid,
+        process_start_ticks,
+        boot_id: std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?
+            .trim()
+            .into(),
+    };
+    let lifetime = AgentdNotesSessionLifetime::from_inherited(pidfd, &peer)?;
+    lifetime.check_alive()?;
+    child.kill().await?;
+    child.wait().await?;
+    let _ready = tokio::time::timeout(Duration::from_secs(1), lifetime.readable()).await??;
+    assert!(
+        lifetime.check_alive().is_err(),
+        "the held descriptor never follows a reused PID"
+    );
+    Ok(())
+}

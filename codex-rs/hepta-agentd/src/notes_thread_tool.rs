@@ -76,6 +76,7 @@ struct StatusArguments {
 pub struct AgentdNotesThreadToolRuntime {
     adapter: AgentdNotesLiteralAdapter,
     route: AgentdTextSessionConfig,
+    session: Option<crate::AgentdNotesSessionLifetime>,
 }
 
 impl AgentdConfig {
@@ -114,11 +115,27 @@ impl AgentdConfig {
         adapter: AgentdNotesLiteralAdapter,
         route: AgentdTextSessionConfig,
     ) -> AgentdNotesThreadToolRuntime {
-        AgentdNotesThreadToolRuntime { adapter, route }
+        AgentdNotesThreadToolRuntime {
+            adapter,
+            route,
+            session: None,
+        }
     }
 }
 
 impl AgentdNotesThreadToolRuntime {
+    pub(crate) fn install_session(
+        &mut self,
+        session: crate::AgentdNotesSessionLifetime,
+    ) -> Result<(), AgentdError> {
+        if self.session.is_some() {
+            return Err(invalid("original Notes Session is already held"));
+        }
+        session.check_alive()?;
+        self.session = Some(session);
+        Ok(())
+    }
+
     pub(crate) fn validate_for(&self, config: &AgentdConfig) -> Result<(), AgentdError> {
         let writer = config
             .production_writer_host()

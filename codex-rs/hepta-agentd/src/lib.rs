@@ -471,6 +471,8 @@ pub use notes_thread_tool::AgentdNotesThreadToolRuntime;
 #[cfg(target_os = "linux")]
 pub use notes_thread_tool::original_notes_thread_tools;
 #[cfg(target_os = "linux")]
+pub use notes_ui_endpoint::AgentdNotesSessionLifetime;
+#[cfg(target_os = "linux")]
 pub use notes_ui_endpoint::AgentdNotesUiPeer;
 pub use objective_runtime::authbus_objective_claims;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;

@@ -443,6 +443,20 @@ impl AgentdConfig {
         Ok(self)
     }
 
+    /// Hold the actual Session for the required original-thread worker. The
+    /// original inherited pidfd and birth validation must precede installation.
+    #[cfg(target_os = "linux")]
+    pub fn with_original_notes_thread_session(
+        mut self,
+        session: crate::AgentdNotesSessionLifetime,
+    ) -> Result<Self, AgentdError> {
+        let runtime = self.notes_thread_tools.as_mut().ok_or_else(|| {
+            AgentdError::Invalid("original Notes thread mode is not installed".into())
+        })?;
+        runtime.install_session(session)?;
+        Ok(self)
+    }
+
     #[cfg(target_os = "linux")]
     pub(crate) fn take_original_notes_thread_tools(
         &mut self,
