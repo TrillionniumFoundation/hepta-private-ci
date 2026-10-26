@@ -2,8 +2,20 @@
 import {execOwned as execFileSync} from './owned-artifact-lease.mjs';
 import {createHash} from 'node:crypto';
 import {cp,mkdir,readFile,rm,writeFile,lstat} from 'node:fs/promises';
-import {join} from 'node:path';
+import {join,resolve} from 'node:path';
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+// The generated workspace has a different parent. Keep repository patches
+// bound to their original source while member paths still refer to our copies.
+export function relocateWorkspacePatches(manifest,workspace){
+ let patchSection=false;
+ return manifest.split('\n').map(line=>{
+  const header=line.trim();
+  if(header.startsWith('['))patchSection=header==='[patch.crates-io]';
+  if(!patchSection||header.startsWith('#'))return line;
+  return line.replace(/\bpath\s*=\s*"([^"\\]+)"/g,(_match,path)=>
+   `path = ${JSON.stringify(resolve(workspace,path))}`);
+ }).join('\n');
+}
 export async function preparePlatform(workspace,makepadRoot,revision){
  const generated=join(workspace,'target/robrix-build');
  const platform=join(generated,'makepad-platform');
@@ -79,7 +91,7 @@ export async function preparePlatform(workspace,makepadRoot,revision){
  await mkdir(app,{recursive:true});
  for(const name of ['core','web','robrix-ui']) {await rm(join(app,name),{recursive:true,force:true});await cp(join(workspace,name),join(app,name),{recursive:true});}
  await cp(join(workspace,'Cargo.lock'),join(app,'Cargo.lock'));
- const sourceManifest=await readFile(join(workspace,'Cargo.toml'),'utf8');
+ const sourceManifest=relocateWorkspacePatches(await readFile(join(workspace,'Cargo.toml'),'utf8'),workspace);
  await writeFile(join(app,'Cargo.toml'),sourceManifest+'\n[patch."https://github.com/kevinaboos/makepad"]\nmakepad-platform = { path = "../makepad-platform" }\nmakepad-draw = { path = "../makepad-draw" }\n');
  return {workspace:app,identity,layoutIdentity,imeIdentity,drawIdentity,consumerIdentity,platformManifestSha256:sha(manifest),drawManifestSha256:sha(drawManifest)};
 }
