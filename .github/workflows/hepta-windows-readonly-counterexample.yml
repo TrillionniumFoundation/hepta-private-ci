@@ -1,0 +1,65 @@
+name: Observe original Windows readonly ambient identity counterexample
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-windows-readonly-counterexample.yml"
+      - ".github/scripts/windows_readonly_counterexample.py"
+      - ".github/scripts/windows_readonly_counterexample.rs"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-windows-readonly-counterexample-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  RUSTUP_TOOLCHAIN: 1.96.0
+  CARGO_BUILD_JOBS: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_TERM_COLOR: never
+  PYTHONUTF8: "1"
+
+jobs:
+  readonly-identity-counterexample:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout the exact observation head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install the pinned compiler
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+      - name: Install repository test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Record original source and add the bounded disposable counterexample
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force "$env:RUNNER_TEMP/readonly-counterexample" | Out-Null
+          python .github/scripts/windows_readonly_counterexample.py prepare --output "$env:RUNNER_TEMP/readonly-counterexample"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Execute original readonly factory under broad ambient identity ACLs
+        shell: pwsh
+        run: |
+          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "original-readonly-counterexample-target"
+          python .github/scripts/windows_readonly_counterexample.py run --output "$env:RUNNER_TEMP/readonly-counterexample"
+          exit $LASTEXITCODE
+      - name: Extract native facts and restore every original test byte
+        if: always()
+        shell: pwsh
+        run: |
+          python .github/scripts/windows_readonly_counterexample.py collect --output "$env:RUNNER_TEMP/readonly-counterexample"
+          exit $LASTEXITCODE
+      - name: Retain exact observations and original failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: original-readonly-counterexample-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/readonly-counterexample/
+          retention-days: 14
