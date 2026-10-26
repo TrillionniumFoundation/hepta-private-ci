@@ -1,0 +1,40 @@
+{
+  "candidate_or_protocol_changed": false,
+  "implication": "For actual same-recording pairs the two raw CNN observations are identical deterministic measurements. A Kronecker product of single-digit conditional likelihoods does not model that dependence. This is a concrete limit of the registered factorization approximation, not proof that it caused any observed calibration failure.",
+  "no_repaired_candidate_qualification_claimed": true,
+  "quality_results_read": false,
+  "roles": {
+    "confirmation": {
+      "identical_original_WAV_within_pair_count": 11,
+      "pair_count": 170,
+      "pair_indices": [
+        32,
+        42,
+        50,
+        67,
+        80,
+        99,
+        123,
+        127,
+        130,
+        145,
+        147
+      ],
+      "within_pair_public_order_does_not_change_identity_equality": true
+    },
+    "qualification_id": {
+      "identical_original_WAV_within_pair_count": 4,
+      "pair_count": 40,
+      "pair_indices": [
+        2,
+        22,
+        29,
+        39
+      ],
+      "within_pair_public_order_does_not_change_identity_equality": true
+    }
+  },
+  "schema": "hepta.advance.metadata-pair-evidence-dependence.v1",
+  "source_allocation_sha256": "42d0c47056dda930cb851c9ae59f330747de8bb863f18b79c47eea830f69b262",
+  "source_bytes_or_models_opened": false
+}

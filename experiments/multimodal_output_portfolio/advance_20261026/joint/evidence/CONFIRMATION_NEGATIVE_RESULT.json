@@ -1,0 +1,42 @@
+{
+  "all_eight_branches_and_three_selected_seeds_preserved": true,
+  "candidate_changed_after_confirmation": false,
+  "completion": "Full immutable registered study completed and mandatory audit passed",
+  "failed_old_Brier_panel_reselected": false,
+  "interpretation": "The registered selected NLL repair did not establish CE superiority or zero-margin strict-success noninferiority versus canonical_no_training. Neither significant inferiority nor equivalence is established by these intervals. Descriptive renderer or failed-Brier gains do not replace the primary result.",
+  "primary_gate": {
+    "CE_superiority": false,
+    "bootstrap_replicates": 10000,
+    "bootstrap_seed": 240809,
+    "cluster_unit": "Matched image writer and unique speech speaker; routes/pairs/seeds retained together",
+    "evaluated": true,
+    "interval_confidence": 0.9833333333333333,
+    "paired_cluster_percentile_intervals": {
+      "CE": [
+        -0.019598945430578905,
+        0.024036800146675974
+      ],
+      "strict_success": [
+        -0.01225490196078427,
+        0.015196078431372459
+      ]
+    },
+    "passed": false,
+    "scope": "Fixed three-seed panel and fixed generated-task census; not universal model or observer-family generalization",
+    "strict_success_noninferiority": false,
+    "strict_success_noninferiority_margin": 0.0
+  },
+  "primary_point_difference": {
+    "CE": 0.0015802910999455078,
+    "mean_utility": 0.0009803921568627416,
+    "strict_success": 0.0009803921568627416
+  },
+  "prior_registry_unchanged": {
+    "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/joint/NEGATIVE_AND_NONSELECTION_REGISTRY.json",
+    "sha256": "379cda5133ea688717218eba777acca2deb1b88ae727049c7a654029003cb284"
+  },
+  "protocol_sha256": "b118cdf44764408f9ee1906545159092093a2a48023343a3851f73970dac17fb",
+  "recorded_unix_ns": 1792994479697136523,
+  "results_sha256": "ad1dc4be99bc526ed1ad657ca7352de31e643cf0086db82a8719f83878ce788f",
+  "schema": "hepta.advance.joint-confirmation-negative-result.v1"
+}
