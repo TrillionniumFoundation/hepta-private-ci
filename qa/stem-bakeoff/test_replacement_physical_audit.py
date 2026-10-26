@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import unittest
 
+from test_replacement_parameter_identity import receipt
 from replacement_gate import EXPECTED, SPLITS, score_rows
 from replacement_physical_audit import assess, audit_arm
 
@@ -39,7 +40,7 @@ def fake(name):
                        original_position_buffer_valid=False,
                        original_rope_cache_valid=False,
                        max_position_embeddings=8192, rope_dim=64, rope_theta=160000,
-                       production_qualified=False)
+                       production_qualified=False, loaded_parameter_identity=receipt())
                    if name == "arctic_305m" else None)
     return dict(schema="hepta.neuron.replacement-physical-shadow.v1",
                 candidate=name, checkpoint=dict(
