@@ -5,7 +5,7 @@ fn request(instance: RootAdminInstance) -> RootAdminRequest {
     RootAdminRequest {
         schema_version: 1,
         expected_instance: instance,
-        action: RootAdminAction::Observe,
+        action: RootAdminAction::Observe {},
     }
 }
 

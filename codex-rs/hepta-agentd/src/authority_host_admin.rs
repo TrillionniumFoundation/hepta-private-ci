@@ -19,6 +19,10 @@ use std::time::Instant;
 mod protocol;
 pub use protocol::*;
 
+#[path = "authority_host_admin_deadline.rs"]
+mod deadline;
+pub(crate) use deadline::checked_step;
+
 struct Lifetime {
     serving: AtomicBool,
     closed: AtomicBool,
@@ -203,8 +207,9 @@ impl RootAdminRuntime {
             )?;
             service.check_admin_lifetime()
         };
-        check()?;
-        let response = service.admin_request(&self.life.instance, &pending.request.action)?;
+        let response = checked_step(pending.end, &check, || {
+            service.admin_request(&self.life.instance, &pending.request.action)
+        })?;
         check()?;
         let raw = serde_json::to_vec(&response).map_err(io::Error::other)?;
         if raw.len() > ROOT_ADMIN_FRAME_BOUND {

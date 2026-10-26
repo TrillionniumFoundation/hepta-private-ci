@@ -26,7 +26,7 @@ pub struct RootAdminRequest {
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum RootAdminAction {
-    Observe,
+    Observe {},
     RevokeWriter {
         expected_revision: u64,
         reason_sha256: [u8; 32],

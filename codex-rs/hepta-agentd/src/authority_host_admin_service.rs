@@ -85,7 +85,7 @@ impl HostAuthorityService {
             .ok_or_else(|| io::Error::other("registered writer required"))?;
         let original = &writer.registration.authority_lease;
         match action {
-            RootAdminAction::Observe => {
+            RootAdminAction::Observe {} => {
                 let before = registry.frontier().map_err(io::Error::other)?;
                 let head = self.issuer.revocations()?;
                 let lease = registry
