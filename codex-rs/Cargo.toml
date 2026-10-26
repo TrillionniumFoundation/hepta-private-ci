@@ -654,6 +654,13 @@ strip = false
 # Balance parallel release code generation against binary size.
 codegen-units = 4
 
+[profile.product-linux]
+inherits = "release"
+# Explicit size candidate for the bounded Linux product archive. Preserve
+# thin LTO, unwind semantics, features, and the packaging symbol transform.
+opt-level = "s"
+codegen-units = 1
+
 [profile.profiling]
 inherits = "release"
 debug = "full"
