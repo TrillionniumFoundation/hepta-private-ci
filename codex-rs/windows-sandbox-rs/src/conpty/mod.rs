@@ -9,6 +9,7 @@
 use crate::desktop::LaunchDesktop;
 use crate::proc_thread_attr::ProcThreadAttributeList;
 use crate::process::PreparedProcessContext;
+use crate::process::PreparedFilesystemOwners;
 use crate::winutil::format_last_error;
 use crate::winutil::quote_windows_arg;
 use crate::winutil::to_wide;
@@ -19,6 +20,7 @@ use codex_utils_pty::PsuedoCon;
 use codex_utils_pty::RawConPty;
 use std::collections::HashMap;
 use std::ffi::c_void;
+use std::os::windows::io::AsHandle;
 use std::os::windows::io::AsRawHandle;
 use std::os::windows::io::IntoRawHandle;
 use std::path::Path;
@@ -43,6 +45,31 @@ pub struct ConptyInstance {
     output_read: HANDLE,
     job: Option<Arc<JobObject>>,
     _desktop: Option<LaunchDesktop>,
+}
+
+/// Local prepared ownership; the legacy ConPTY transport stays independently Send.
+/// Pipe extraction never extracts this transport or its original proof owners.
+pub(crate) struct PreparedConptyInstance {
+    transport: ConptyInstance,
+    _owners: Box<PreparedFilesystemOwners>,
+}
+
+impl PreparedConptyInstance {
+    pub(crate) fn raw_handle(&self) -> Option<HANDLE> {
+        self.transport.raw_handle()
+    }
+
+    pub(crate) fn take_input_write(&mut self) -> HANDLE {
+        self.transport.take_input_write()
+    }
+
+    pub(crate) fn take_output_read(&mut self) -> HANDLE {
+        self.transport.take_output_read()
+    }
+
+    pub(crate) fn job(&self) -> Option<Arc<JobObject>> {
+        self.transport.job()
+    }
 }
 
 impl Drop for ConptyInstance {
@@ -112,35 +139,55 @@ pub fn spawn_conpty_process_as_user(
 ) -> Result<(PROCESS_INFORMATION, ConptyInstance)> {
     let desktop = LaunchDesktop::prepare(h_token, use_private_desktop, logs_base_dir)?;
     let job = Arc::new(JobObject::create().context("create process job")?);
-    spawn_on_desktop(h_token, argv, cwd, env_map, desktop, job)
-}
-
-/// ConPTY launch for the qualified owner, with atomic non-breakaway containment.
-pub fn spawn_conpty_process_prepared(
-    context: PreparedProcessContext,
-    argv: &[String],
-    cwd: &Path,
-    env_map: &HashMap<String, String>,
-) -> Result<(PROCESS_INFORMATION, ConptyInstance)> {
-    let (token, desktop, job) = context.into_parts()?;
-    spawn_on_desktop(
-        token.as_raw_handle() as HANDLE,
+    let (pi, transport, ()) = spawn_on_desktop(
+        h_token,
         argv,
         cwd,
         env_map,
         desktop,
         job,
-    )
+        /*owners*/ (),
+    )?;
+    Ok((pi, transport))
 }
 
-fn spawn_on_desktop(
+/// ConPTY launch retaining prepared owners with atomic non-breakaway containment.
+/// This mechanism does not provide production admission or terminal proof.
+pub(crate) fn spawn_conpty_process_prepared(
+    context: PreparedProcessContext,
+    argv: &[String],
+    cwd: &Path,
+    env_map: &HashMap<String, String>,
+) -> Result<(PROCESS_INFORMATION, PreparedConptyInstance)> {
+    let (owners, desktop, job) = context.into_parts()?;
+    let h_token = owners.as_handle().as_raw_handle() as HANDLE;
+    let (pi, transport, owners) = spawn_on_desktop(
+        h_token,
+        argv,
+        cwd,
+        env_map,
+        desktop,
+        job,
+        owners,
+    )?;
+    Ok((
+        pi,
+        PreparedConptyInstance {
+            transport,
+            _owners: owners,
+        },
+    ))
+}
+
+fn spawn_on_desktop<Owners>(
     h_token: HANDLE,
     argv: &[String],
     cwd: &Path,
     env_map: &HashMap<String, String>,
     desktop: LaunchDesktop,
     job: Arc<JobObject>,
-) -> Result<(PROCESS_INFORMATION, ConptyInstance)> {
+    owners: Owners,
+) -> Result<(PROCESS_INFORMATION, ConptyInstance, Owners)> {
     let cmdline_str = argv
         .iter()
         .map(|arg| quote_windows_arg(arg))
@@ -199,5 +246,5 @@ fn spawn_on_desktop(
         );
         return Err(std::io::Error::from_raw_os_error(err)).context(message);
     }
-    Ok((pi, conpty))
+    Ok((pi, conpty, owners))
 }

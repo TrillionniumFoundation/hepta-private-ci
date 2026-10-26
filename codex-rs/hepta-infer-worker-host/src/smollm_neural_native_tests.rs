@@ -259,6 +259,62 @@ fn run_original_native_case(input: NativeInput, route: NativeRoute) -> Result<()
     assert_eq!(observed.authority, AuthorityPosture::DENY_ALL);
     let measured_forward_id =
         measured::forwarded(&port, &observed, actual_ready_digest, &input.output)?;
+    // Reuse this actual completed forward for read-only join negatives. These
+    // checks issue no additional model query, claim, settlement or load.
+    let actual_payload: Digest32 = control
+        .lock()
+        .unwrap()
+        .get(&measured_forward_id)
+        .unwrap()
+        .request
+        .payload_digest
+        .parse()?;
+    // Full positive: actual settled load output and retained forward join the
+    // same original journal, in addition to execute's pre-return verification.
+    port.with_measurements(|load, forward| {
+        super::super::settled::verify(
+            &port.context,
+            super::super::settled::ReadSource::Evaluated(&request),
+            actual_payload,
+            observed.execution_receipt_digest,
+            load,
+            forward,
+        )
+    })??;
+    let journal_before_join_controls = fs::read(&journal_path)?;
+    let claims_before_join_controls = issuer.bindings.lock().unwrap().len();
+    for changed in 0..4 {
+        let mut mixed = request.clone();
+        let mut payload = actual_payload;
+        let mut receipt = observed.execution_receipt_digest;
+        match changed {
+            0 => payload = Digest32::of_bytes(b"wrong actual control payload"),
+            1 => receipt = Digest32::of_bytes(b"wrong actual response receipt"),
+            2 => mixed.body_generation += 1,
+            _ => {
+                mixed.query.push_str(" changed");
+                mixed.query_digest = Digest32::of_bytes(mixed.query.as_bytes());
+            }
+        }
+        assert!(
+            port.with_measurements(|load, forward| {
+                super::super::settled::verify(
+                    &port.context,
+                    super::super::settled::ReadSource::Evaluated(&mixed),
+                    payload,
+                    receipt,
+                    load,
+                    forward,
+                )
+            })?
+            .is_err()
+        );
+    }
+    assert_eq!(fs::read(&journal_path)?, journal_before_join_controls);
+    assert_eq!(
+        issuer.bindings.lock().unwrap().len(),
+        claims_before_join_controls
+    );
     assert!(port.with_measurements(|_, _| port.with_measurements(|_, _| ()).is_err())?);
     assert!(port.with_measurements(|_, _| port.first_exchange_failure().is_err())?);
     assert!(port.with_measurements(|_, _| {

@@ -431,3 +431,10 @@ impl PreparedFilesystemAclContext {
         Ok(())
     }
 }
+
+#[path = "prepared_filesystem_existing.rs"]
+mod existing;
+
+#[cfg(test)]
+#[path = "prepared_filesystem_readback_tests.rs"]
+mod readback_tests;

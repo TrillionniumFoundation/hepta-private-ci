@@ -38,6 +38,7 @@ pub struct SmolLmMeasuredLoadV1 {
     generation: u64,
     sources: BTreeMap<String, Digest32>,
     load_ids: Option<(String, String)>,
+    settled_load_output: Option<Digest32>,
 }
 
 /// Last actual forward that passed the original admission and terminal settle.
@@ -90,6 +91,11 @@ impl SmolLmMeasuredLoadV1 {
         self.load_ids
             .as_ref()
             .map(|(request, reservation)| (request.as_str(), reservation.as_str()))
+    }
+
+    // Original load settlement output, not the independent Ready JSON digest.
+    pub(in crate::smollm_neural_read) fn settled_load_output_digest(&self) -> Option<Digest32> {
+        self.settled_load_output
     }
 
     /// Check code-fixed roots against actual Ready values, not supplied pins.
@@ -188,6 +194,7 @@ impl Measurements {
             generation: ready.generation,
             sources,
             load_ids: None,
+            settled_load_output: None,
         });
         Ok(())
     }
@@ -199,6 +206,29 @@ impl Measurements {
             ready.load_ids = Some((admitted.request_id.clone(), admitted.reservation_id.clone()));
             self.available = true;
         }
+    }
+
+    // Only the successful original load-settlement consumer supplies this
+    // output. Keep it in one private slot alongside the original load IDs.
+    pub(in crate::smollm_neural_read) fn settle_load_output(
+        &mut self,
+        admitted: &Admitted,
+        observed: Digest32,
+    ) -> Result<(), String> {
+        self.settle_load(admitted);
+        let ready = self.ready.as_mut().ok_or("original Ready is unavailable")?;
+        if !self.available
+            || ready.control_load_ids()
+                != Some((
+                    admitted.request_id.as_str(),
+                    admitted.reservation_id.as_str(),
+                ))
+            || ready.settled_load_output.is_some()
+        {
+            return Err("original load settlement output cannot be rebound".to_owned());
+        }
+        ready.settled_load_output = Some(observed);
+        Ok(())
     }
 
     pub(in crate::smollm_neural_read) fn clear_forward(&mut self) {

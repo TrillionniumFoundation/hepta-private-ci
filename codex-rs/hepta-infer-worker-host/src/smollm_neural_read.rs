@@ -42,6 +42,8 @@ use driver::Mailbox;
 
 #[path = "smollm_neural_query.rs"]
 mod query;
+#[path = "smollm_neural_settled_read.rs"]
+mod settled;
 pub use driver::SmolLmCellStartOwnerV1;
 use driver::SmolLmDriver;
 pub use driver::SmolLmFirstExchangeFailureV1;
@@ -517,7 +519,7 @@ impl SmolLmNeuralReadPortV1 {
             .lock()
             .map_err(|_| "neural exchange poisoned")?
             .measurements
-            .settle_load(&admitted);
+            .settle_load_output(&admitted, observed)?;
         Ok(Self {
             pin,
             model_id,

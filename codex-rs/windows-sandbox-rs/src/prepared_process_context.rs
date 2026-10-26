@@ -1,30 +1,46 @@
 //! Native launch resources, without filesystem or loader admission authority.
 use crate::desktop::DesktopCapability;
 use crate::desktop::LaunchDesktop;
+use crate::prepared_filesystem::PreparedFilesystemAclContext;
+use crate::token::PreparedFilesystemToken;
 use anyhow::Context;
 use anyhow::Result;
 use anyhow::ensure;
 use codex_utils_pty::JobObject;
+use std::os::windows::io::AsHandle;
 use std::os::windows::io::AsRawHandle;
 use std::os::windows::io::BorrowedHandle;
-use std::os::windows::io::FromRawHandle;
-use std::os::windows::io::OwnedHandle;
 use std::path::Path;
 use std::sync::Arc;
-use windows_sys::Win32::Foundation::DuplicateHandle;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Security::GetTokenInformation;
-use windows_sys::Win32::Security::TOKEN_ASSIGN_PRIMARY;
-use windows_sys::Win32::Security::TOKEN_DUPLICATE;
-use windows_sys::Win32::Security::TOKEN_QUERY;
 use windows_sys::Win32::Security::TOKEN_STATISTICS;
 use windows_sys::Win32::Security::TokenStatistics;
-use windows_sys::Win32::System::Threading::GetCurrentProcess;
+
+/// Retains the original source token, output token, root handles and session role.
+/// It grants no loader, production-launch or terminal-reconciliation authority.
+pub(crate) struct PreparedFilesystemOwners {
+    token: PreparedFilesystemToken,
+    filesystem: PreparedFilesystemAclContext,
+    capability: DesktopCapability,
+}
+
+impl PreparedFilesystemOwners {
+    fn revalidate(&mut self) -> Result<()> {
+        self.token.revalidate(&mut self.filesystem)
+    }
+}
+
+impl AsHandle for PreparedFilesystemOwners {
+    fn as_handle(&self) -> BorrowedHandle<'_> {
+        self.token.as_handle()
+    }
+}
 
 /// A one-use private desktop, exact token instance, and non-breakaway owner.
 /// This value is neither serializable nor constructible from setup wire fields.
 pub struct PreparedProcessContext {
-    token: OwnedHandle,
+    owners: Box<PreparedFilesystemOwners>,
     version: [u32; 4],
     desktop: LaunchDesktop,
     job: Arc<JobObject>,
@@ -32,53 +48,49 @@ pub struct PreparedProcessContext {
 
 impl PreparedProcessContext {
     /// An internal mechanism, not production admission. Its eventual caller must
-    /// supply the separate filesystem, loader and lifetime qualification first.
+    /// supply the separate loader and lifetime qualification first. Consuming
+    /// these owners does not itself provide that production admission.
     pub(crate) fn prepare(
-        token: BorrowedHandle<'_>,
-        capability: &DesktopCapability,
+        token: PreparedFilesystemToken,
+        filesystem: PreparedFilesystemAclContext,
+        capability: DesktopCapability,
         logs_base_dir: Option<&Path>,
     ) -> Result<Self> {
-        let raw = token.as_raw_handle() as HANDLE;
+        let mut owners = PreparedFilesystemOwners {
+            token,
+            filesystem,
+            capability,
+        };
+        owners.revalidate()?;
+        let raw = owners.token.as_handle().as_raw_handle() as HANDLE;
         let version = token_version(raw)?;
-        let desktop = LaunchDesktop::prepare_for_capability(raw, capability, logs_base_dir)?;
+        let desktop =
+            LaunchDesktop::prepare_for_capability(raw, &owners.capability, logs_base_dir)?;
         let job = Arc::new(
             JobObject::create_without_breakaway().context("create controlled process job")?,
         );
-        let mut duplicate = 0;
+        owners.revalidate()?;
         ensure!(
-            unsafe {
-                DuplicateHandle(
-                    GetCurrentProcess(),
-                    raw,
-                    GetCurrentProcess(),
-                    &mut duplicate,
-                    TOKEN_QUERY | TOKEN_ASSIGN_PRIMARY | TOKEN_DUPLICATE,
-                    /*binherithandle*/ 0,
-                    /*dwoptions*/ 0,
-                )
-            } != 0,
-            "retain controlled process token: {}",
-            std::io::Error::last_os_error()
-        );
-        let token = unsafe { OwnedHandle::from_raw_handle(duplicate as _) };
-        ensure!(
-            token_version(token.as_raw_handle() as HANDLE)? == version,
+            token_version(raw)? == version,
             "process token changed while preparing launch"
         );
         Ok(Self {
-            token,
+            owners: Box::new(owners),
             version,
             desktop,
             job,
         })
     }
 
-    pub(crate) fn into_parts(self) -> Result<(OwnedHandle, LaunchDesktop, Arc<JobObject>)> {
+    pub(crate) fn into_parts(
+        mut self,
+    ) -> Result<(Box<PreparedFilesystemOwners>, LaunchDesktop, Arc<JobObject>)> {
+        self.owners.revalidate()?;
         ensure!(
-            token_version(self.token.as_raw_handle() as HANDLE)? == self.version,
+            token_version(self.owners.token.as_handle().as_raw_handle() as HANDLE)? == self.version,
             "prepared process token changed before launch"
         );
-        Ok((self.token, self.desktop, self.job))
+        Ok((self.owners, self.desktop, self.job))
     }
 }
 

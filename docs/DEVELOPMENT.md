@@ -1328,6 +1328,48 @@ Err-drop, a new deadline or late cleanup cannot establish observed exit or
 recycle authority. The original twenty native groups and broad-identity/legacy
 failures remain required; no detached reaper or second registry is introduced.
 
+The same existing item now includes the private query-only root observer in
+`prepared_filesystem_existing.rs` and six controls in
+`prepared_filesystem_readback_tests.rs`. It consumes the same held root, actual
+read-role token and bounded descriptor; it queries existing grants without
+requesting `WRITE_DAC`, creating roots or repairing ACLs. Missing or excessive
+roles, changed identity, inheritance-only grants and uncertain readback refuse.
+This is a finite root proof, not whole-filesystem read, loader admission or
+production launch authority. The three reviewed source stages are integrated
+into the existing local candidate; all six Windows controls and the complete
+Windows package compile remain NOT_RUN. Keep every original native group and
+deletion failure, the eight-second cutoff and the existing resource limits.
+
+The parent startup path now consumes that observer using only the actual
+`CreateProcessWithLogonW` process and its held token. It validates the original
+request/role plan before birth, retains the query context in the original
+managed-process owner, and revalidates it around existing token/liveness
+readback during the pipe handshake. Missing or broad setup grants can refuse
+early; no ACL is repaired. These parent-local handles do not cross IPC or
+establish a child capability, loader or complete-lifetime handoff. The existing
+`into_files` handoff still ends this startup owner. All guards and original
+Windows failures remain; this source step has not been compiled or run natively.
+
+The next source slice repairs terminal facts in the original command runner.
+Both its first wait and its existing post-termination wait now require a
+signalled original process handle and a successful exit-code query on that same
+handle. A failed wait, failed query or unexpected wait result cannot publish an
+`Exit` frame or preserve descendants. Timeout UI code 192 is emitted only after
+that actual root exit is observed; a real signalled exit code 259 remains valid.
+The request timeout conversion and the existing 5000ms termination wait are
+unchanged. Three added native test sources use actual owned children and reduced
+views of their original handles, retaining the eight-second child deadline.
+The four-lane diagnostic explicitly selects the runner binary for those three
+cases. Its separate `result-v3.json` requires the original twenty groups, all
+six query-existing controls and all three terminal controls; the original
+receipts remain intact. These new native controls have not been compiled or
+executed. Security-authority and runtime-control still own the complete
+production handoff: an error return or Job close does not
+retain all owners on Unknown or prove resource return. The fixed prebirth slot,
+parent-death/error custody, loader and original twenty-group/four-lane native
+acceptance remain open, including both original deletion failures. All guards,
+ambient-read behavior and existing assertions stay unchanged.
+
 The following are implementation slices of that same PN0 item, not a second
 roadmap. The read-only volume and live-principal observation APIs below are
 implemented mechanisms. Create-only namespace and protected-directory

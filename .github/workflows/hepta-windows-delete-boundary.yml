@@ -8,6 +8,7 @@ on:
       - codex-rs/hepta-contracts/**
       - codex-rs/hepta-prompt-registry/**
       - scripts/test_hepta_windows_boundary_receipts.py
+      - scripts/test_hepta_windows_terminal_receipts.py
       - .github/workflows/hepta-windows-delete-boundary.yml
 
 permissions:
@@ -60,6 +61,8 @@ jobs:
           test ! -e "$RUNNER_TEMP/windows-delete-boundary"
           mkdir -p "$RUNNER_TEMP/windows-delete-boundary"
           printf 'Three existing native Windows deletion-boundary regressions, four native private-state mechanism probes, all 40 private-state library controls including the original five owner-descriptor controls, four native owner-lock process controls, all eight current ACL unit controls, a test-only full-restriction token candidate, four read-only same-handle local-NTFS controls, four live effective-token continuity controls, seven original FinalUse and held-stage controls, three original Registry controls, and three retained same-plan restrictive RX observations. The latter provide query-only root observations, not a prepared sandbox launch context. Real remote-device rejection remains a C2b acceptance gap. AccessCheck output is diagnostic; original deletion assertions determine success. Candidate success does not admit a production sandbox. Mechanism and descriptor control success does not establish Windows private-state owner support, parent or volume admission, power-loss durability, whole-project or PoN qualification.\n' > "$RUNNER_TEMP/windows-delete-boundary/SCOPE.txt"
+          printf 'The additional query-existing-readback receipt requires all six named existing-grant controls. result-v2.json also requires every original twenty receipt; result.json retains its original scope. Query observations do not prove descendants, legacy full-read availability, loader initialization or production sandbox admission.\n' >> "$RUNNER_TEMP/windows-delete-boundary/SCOPE.txt"
+          printf 'The command-runner-terminal receipt adds exactly three original-process wait/query controls. result-v3.json requires the original twenty receipts AND six query controls AND these three controls, with current retained log hashes. These wait facts do not establish Unknown custody, complete process-tree retirement or production sandbox admission.\n' >> "$RUNNER_TEMP/windows-delete-boundary/SCOPE.txt"
           git config --global core.autocrlf false
           git config --global core.longpaths true
           printf 'CARGO_TARGET_DIR=%s/windows-delete-boundary-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
@@ -212,6 +215,103 @@ jobs:
               ),
               **{name: (selector,) for name, (selector, _) in probes.items()},
           }
+          query_existing_selectors = (
+              'prepared_filesystem::readback_tests::existing_readv3_grants_keep_query_handles_and_same_path_read_write_roles',
+              'prepared_filesystem::readback_tests::existing_read_ancestor_and_write_descendants_keep_their_original_role_masks',
+              'prepared_filesystem::readback_tests::existing_write_role_requires_effective_complete_root_grant_without_repair',
+              'prepared_filesystem::readback_tests::existing_roles_reject_cross_root_write_and_read_mutation_even_with_overlap',
+              'prepared_filesystem::readback_tests::existing_readback_keeps_descriptor_registry_and_base_token_refusal_sticky',
+              'prepared_filesystem::readback_tests::existing_role_containment_rejects_registry_bound_parent_directory_aliases',
+          )
+          def extended_query_result(original, query):
+              original_tests = original.get("tests", {})
+              original_ok = (type(original_tests) is dict and set(original_tests) == set(required)
+                             and original.get("status") == "passed"
+                             and all(type(row) is dict and row.get("status") == "passed" for row in original_tests.values()))
+              query_ok = (type(query) is dict and query.get("schema") == "hepta-windows-query-existing-receipt-v1"
+                          and query.get("status") == "passed"
+                          and type(query.get("returncode")) is int and query["returncode"] == 0
+                          and type(query.get("logging_returncode")) is int and query["logging_returncode"] == 0
+                          and isinstance(query.get("log_sha256"), str) and re.fullmatch(r"[0-9a-f]{64}", query["log_sha256"]) is not None
+                          and all(type(query.get(key)) is int and query[key] == expected for key, expected in (
+                              ("minimum_tests", 6), ("observed_passed_tests", 6), ("observed_failed_tests", 0)))
+                          and query.get("required_test_names") == list(query_existing_selectors)
+                          and type(query.get("observed_passed_test_names")) is list
+                          and len(query["observed_passed_test_names"]) == 6
+                          and all(type(name) is str for name in query["observed_passed_test_names"])
+                          and set(query["observed_passed_test_names"]) == set(query_existing_selectors))
+              return {"schema": "hepta-windows-delete-boundary-extended-v2",
+                      "original_twenty_required": list(required),
+                      "required": [*required, "query-existing-readback"],
+                      "original_twenty_status": "passed" if original_ok else "failed",
+                      "query_existing_readback": query, "source": original.get("source"),
+                      "status": "passed" if original_ok and query_ok else "failed",
+                      "production_sandbox_admitted": False, "windows_private_state_owners_supported": False,
+                      "descendant_acl_qualified": False, "legacy_full_read_qualified": False,
+                      "power_loss_qualified": False, "whole_unit_qualified": False}
+          terminal_selectors = (
+              "win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query",
+              "win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit",
+              "win::process_observation::tests::actual_live_child_is_pending_until_original_stdin_closes",
+          )
+          def terminal_receipt(raw, minimum, code, log_code):
+              text = re.sub(r"\x1b\[[0-9;]*m", "", raw.decode("utf-8", errors="replace"))
+              passed, failed = observed_test_counts(text)
+              names = re.findall(r"^test (.+?) \.\.\. ok\s*$", text, re.MULTILINE)
+              summaries = re.findall(r"^[ \t]*Summary\b[^\n]*?(\d+) tests? run:", text, re.MULTILINE)
+              ok = (all(type(value) is int for value in (minimum, code, log_code))
+                    and minimum == passed == 3 and code == log_code == failed == 0
+                    and len(re.findall(r"^[ \t]*Summary\b", text, re.MULTILINE)) == 1
+                    and summaries == ["3"] and len(names) == 3 and set(names) == set(terminal_selectors))
+              return {"schema": "hepta-windows-command-runner-terminal-receipt-v1",
+                      "returncode": code, "logging_returncode": log_code, "minimum_tests": minimum,
+                      "observed_passed_tests": passed, "observed_failed_tests": failed,
+                      "required_test_names": list(terminal_selectors), "observed_passed_test_names": names,
+                      "log_sha256": hashlib.sha256(raw).hexdigest(), "status": "passed" if ok else "failed"}
+          def terminal_result(original, query, extended, terminal, raw, logs):
+              def current_log(row, value):
+                  return (type(row) is dict and type(value) is bytes
+                          and all(type(row.get(key)) is int for key in ("returncode", "logging_returncode", "minimum_tests", "observed_passed_tests", "observed_failed_tests"))
+                          and row["returncode"] == row["logging_returncode"] == row["observed_failed_tests"] == 0
+                          and row["observed_passed_tests"] >= row["minimum_tests"] >= 1
+                          and row.get("log_sha256") == hashlib.sha256(value).hexdigest())
+              prior = (type(original) is dict and type(query) is dict and type(extended) is dict and type(logs) is dict
+                       and extended.get("schema") == "hepta-windows-delete-boundary-extended-v2"
+                       and extended.get("status") == "passed" and extended.get("query_log_sha256_matches_receipt") is True
+                       and extended_query_result(original, query)["status"] == "passed"
+                       and all(current_log(original["tests"][name], logs.get(name)) for name in required)
+                       and current_log(query, logs.get("query-existing-readback")))
+              terminal_ok = (current_log(terminal, raw) and terminal == terminal_receipt(
+                  raw, terminal["minimum_tests"], terminal["returncode"], terminal["logging_returncode"]))
+              return {"schema": "hepta-windows-delete-boundary-terminal-v3",
+                      "original_v2_status": "passed" if prior else "failed", "terminal": terminal,
+                      "status": "passed" if prior and terminal_ok and terminal["status"] == "passed" else "failed",
+                      "production_sandbox_admitted": False, "whole_unit_qualified": False}
+          if sys.argv[1] == "tests" and sys.argv[2] == "command-runner-terminal":
+              minimum = int(sys.argv[3])
+              code, log_code = map(int, sys.argv[4].split())
+              receipt = terminal_receipt((out / "command-runner-terminal.log").read_bytes(), minimum, code, log_code)
+              save("command-runner-terminal.json", receipt)
+              sys.exit(0 if receipt["status"] == "passed" else 1)
+          if sys.argv[1] == "tests" and sys.argv[2] == "query-existing-readback":
+              name, minimum = sys.argv[2], int(sys.argv[3])
+              code, log_code = map(int, sys.argv[4].split())
+              raw = (out / (name + ".log")).read_bytes()
+              text = re.sub(r"\x1b\[[0-9;]*m", "", raw.decode("utf-8", errors="replace"))
+              passed, failed = observed_test_counts(text)
+              names = re.findall(r"^test (.+?) \.\.\. ok\s*$", text, re.MULTILINE)
+              runs = re.findall(r"Summary[^\n]*?(\d+) tests? run:", text)
+              ok = (code == log_code == 0 and minimum == passed == len(query_existing_selectors)
+                    and failed == 0 and runs == ["6"] and len(names) == 6
+                    and set(names) == set(query_existing_selectors))
+              save(name + ".json", {"schema": "hepta-windows-query-existing-receipt-v1",
+                  "returncode": code, "logging_returncode": log_code, "minimum_tests": minimum,
+                  "observed_passed_tests": passed, "observed_failed_tests": failed,
+                  "required_test_names": list(query_existing_selectors), "observed_passed_test_names": names,
+                  "log_sha256": hashlib.sha256(raw).hexdigest(), "status": "passed" if ok else "failed",
+                  "production_sandbox_admitted": False, "descendant_acl_qualified": False,
+                  "legacy_full_read_qualified": False, "whole_unit_qualified": False})
+              sys.exit(0 if ok else 1)
           if sys.argv[1] == "tests":
               name, minimum = sys.argv[2], int(sys.argv[3])
               assert name in required, "unknown native test receipt"
@@ -325,6 +425,10 @@ jobs:
           if phase == "before":
               for name in required:
                   (out / (name + ".json")).unlink(missing_ok=True)
+              (out / "query-existing-readback.json").unlink(missing_ok=True)
+              (out / "result-v2.json").unlink(missing_ok=True)
+              for name in ("command-runner-terminal.json", "command-runner-terminal.log", "result-v3.json"):
+                  (out / name).unlink(missing_ok=True)
           assert os.name == "nt", "this evidence requires native Windows execution"
           native = native_identity(os.environ["HEPTA_CI_RUNNER"], os.environ["HEPTA_CI_TARGET"], os.environ["RUNNER_OS"], os.environ["RUNNER_ARCH"], (out / "rustc.txt").read_text().splitlines())
           assert re.fullmatch(r"just 1\.51\.0\s*", (out / "just.txt").read_text())
@@ -370,7 +474,32 @@ jobs:
               result["tests"] = {name: json.loads((out / (name + ".json")).read_text()) for name in required}
               result["status"] = "passed" if all(value["status"] == "passed" for value in result["tests"].values()) else "failed"
           save("result.json", result)
+          if phase == "after":
+              query_path = out / "query-existing-readback.json"
+              query = json.loads(query_path.read_text()) if query_path.is_file() else {"status": "not_run"}
+              extended = extended_query_result(result, query)
+              query_log = out / "query-existing-readback.log"
+              log_matches = (type(query) is dict and query_log.is_file()
+                             and hashlib.sha256(query_log.read_bytes()).hexdigest() == query.get("log_sha256"))
+              extended["query_log_sha256_matches_receipt"] = log_matches
+              if not log_matches:
+                  extended["status"] = "failed"
+              extended["original_result_sha256"] = hashlib.sha256((out / "result.json").read_bytes()).hexdigest()
+              extended["query_receipt_sha256"] = hashlib.sha256(query_path.read_bytes()).hexdigest() if query_path.is_file() else None
+              save("result-v2.json", extended)
+              terminal_path, terminal_log = out / "command-runner-terminal.json", out / "command-runner-terminal.log"
+              terminal = json.loads(terminal_path.read_text()) if terminal_path.is_file() else None
+              raw = terminal_log.read_bytes() if terminal_log.is_file() else None
+              logs = {name: (out / (name + ".log")).read_bytes() if (out / (name + ".log")).is_file() else None
+                      for name in (*required, "query-existing-readback")}
+              combined = terminal_result(result, query, extended, terminal, raw, logs)
+              combined["original_v2_sha256"] = hashlib.sha256((out / "result-v2.json").read_bytes()).hexdigest()
+              combined["terminal_receipt_sha256"] = hashlib.sha256(terminal_path.read_bytes()).hexdigest() if terminal_path.is_file() else None
+              save("result-v3.json", combined)
+              assert extended["status"] != "failed"
           assert result["status"] != "failed"
+          if phase == "after":
+              assert combined["status"] != "failed"
           PY
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" source before
       - name: Run all 40 current private-state controls including the five original descriptors
@@ -533,6 +662,22 @@ jobs:
           codes="${PIPESTATUS[*]}"
           set -e
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests controlled-job 2 "$codes"
+      - name: Observe all six existing-grant query controls without replacing the original twenty groups
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set +e
+          just test --locked -p codex-windows-sandbox --lib -E 'test(/^prepared_filesystem::readback_tests::/)' --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-delete-boundary/query-existing-readback.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests query-existing-readback 6 "$codes"
+      - name: Observe the three actual command-runner wait-fact controls
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set +e
+          just test --locked -p codex-windows-sandbox --bin codex-command-runner -E 'test(/^win::process_observation::tests::/)' --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-delete-boundary/command-runner-terminal.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests command-runner-terminal 3 "$codes"
       - name: Require unchanged source and all twenty completed Windows result receipts
         if: ${{ always() && steps.source.outcome == 'success' }}
         run: python "$RUNNER_TEMP/windows-delete-boundary/check.py" source after

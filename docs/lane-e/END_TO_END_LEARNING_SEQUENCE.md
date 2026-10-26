@@ -557,3 +557,30 @@ are separate and cannot replace any of them.
 Reorg, withdrawal, lost acknowledgement, stale generation, restart after route
 publication and unavailable replicas must preserve one logical operation,
 reject revoked bytes and reconcile Unknown effects before any unsafe retry.
+
+The same evaluated physical read now verifies its completed load and forward
+against the original control journal before returning its observation. A private
+single-assignment slot retains the actual successful load-settlement output;
+this is distinct from the Ready JSON digest. The read joins the original
+request, reservation, assignment, terminal digest and actual worker frame under
+the original owner locks. It creates no new journal, grant, nonce or model call.
+The cold-reopen control first requires a second live writer to refuse, releases
+all original journal owners, then opens the same retained records again.
+These source checks and additional controls are not compiled or executed model
+qualification. The original nine model cases remain NOT_RUN; the earlier CLI
+build and host-library compiler failure are retained and their original
+900-second allocation is not restarted. Ordinary Agentd/AppServer provenance
+propagation, selected installation, next-task readback and three rounds remain
+open, with unchanged evaluated-selection gates and original time limits.
+
+The initial-only query now uses the same private completed-record checker before
+returning its existing observation. A borrowed source variant selects the exact
+initial load domain rather than the evaluated load domain; the original query
+payload remains on the executing stack. Missing, busy or inconsistent original
+load/forward records close admission without another model call, nonce claim or
+deadline. The original selected-owner association, CURRENT checks and read-only
+callback remain unchanged. Added journal/wire controls are explicit fixtures
+with no execution authority; neither they nor this uncompiled source step prove
+model execution. The original allocation and nine NOT_RUN cases remain intact.
+This prerequisite does not supply ordinary ContextV2/AppServer provenance, I10
+installation or three-round acceptance.
