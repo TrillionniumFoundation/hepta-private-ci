@@ -2,14 +2,18 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
-    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
+    "commit": "0e313ae7a738b23d8279e808547ae92ab2d0031f",
+    "tree": "eca04dd4be3bf161e4c14cdcbde90488b2f477af"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
   "sourceMaturity": "native_durable_taskflow_execution_boundary",
-  "declaredRoots": ["codex-rs/hepta-automation"],
-  "resolvedRoots": ["codex-rs/hepta-automation"],
+  "declaredRoots": [
+    "codex-rs/hepta-automation"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-automation"
+  ],
   "stateOwnerDisposition": "Owns durable legacy and Calendar V2 schedule revisions, deterministic occurrence identity, claim, TaskFlow run/step orchestration, provider-attempt/reconciliation evidence, and terminal occurrence projection without owning downstream domain effects.",
   "terminalObserverDisposition": "Agentd observes the existing App Server persisted-turn terminal state for Codex activity; registered external effect owners supply their own terminal/reconciliation receipts through the final-use-authorized durable step seam.",
   "operations": [
@@ -223,10 +227,12 @@
   "owner": "automation-platform",
   "deputy": "agent-runtime",
   "technicalGuide": "docs/modules/automation.taskflow/TECHNICAL.md",
-  "sourceRoot": ["codex-rs/hepta-automation"],
+  "sourceRoot": [
+    "codex-rs/hepta-automation"
+  ],
   "observedAtHead": {
-    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
-    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
+    "commit": "0e313ae7a738b23d8279e808547ae92ab2d0031f",
+    "tree": "eca04dd4be3bf161e4c14cdcbde90488b2f477af"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -290,7 +296,10 @@
   ],
   "sourceObservationRequirements": {
     "policy": "candidate_or_exact_observation_v1",
-    "rustWorkspaceBuildInputs": ["codex-rs/Cargo.toml", "codex-rs/Cargo.lock"],
+    "rustWorkspaceBuildInputs": [
+      "codex-rs/Cargo.toml",
+      "codex-rs/Cargo.lock"
+    ],
     "verifier": "scripts/hepta-implementation-maps.py::verify_source_identity",
     "regression": "scripts/test_hepta_module_source_roots.py::SourceRootTests::test_exact_rust_observation_requires_workspace_manifest_and_lock",
     "semantics": "Any strict exact observation whose resolved source roots enter codex-rs must include the root Cargo workspace manifest and lockfile; omission is a verification failure."
@@ -310,7 +319,7 @@
   "sourceObjects": [
     {
       "path": "CALLERS.toml",
-      "object": "a9f08f8729bf81a078ae3c4277e3a97ff2a564f4"
+      "object": "a7cf67c4e6e197e7bd1b3b2ce3f3a53edfe1ddc9"
     },
     {
       "path": "codex-rs/Cargo.lock",
@@ -362,7 +371,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "cb4221b11f598f514ba513e8c64bc68129579743"
+      "object": "3f71e689d81577eab93ce2a15ac741357c1e0247"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",

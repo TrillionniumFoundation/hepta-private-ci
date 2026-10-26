@@ -2,16 +2,20 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
-    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
+    "commit": "0e313ae7a738b23d8279e808547ae92ab2d0031f",
+    "tree": "eca04dd4be3bf161e4c14cdcbde90488b2f477af"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
   "owner": "cognitive-platform",
   "deputy": "agent-runtime",
   "technicalGuide": "docs/modules/cognitive.read/TECHNICAL.md",
-  "declaredRoots": ["codex-rs/hepta-cognitive-read"],
-  "resolvedRoots": ["codex-rs/hepta-cognitive-read"],
+  "declaredRoots": [
+    "codex-rs/hepta-cognitive-read"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-cognitive-read"
+  ],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "composed_local_host",
@@ -23,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-cognitive-read/src/ids.rs",
       "state": "source_implemented_product_composed",
       "authority": "none",
-      "tests": ["codex-rs/hepta-cognitive-read/src/ids_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/ids_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "read_ids",
       "mappingClass": "owner_native",
@@ -39,7 +45,9 @@
       "sourcePath": "codex-rs/hepta-cognitive-read/src/v2.rs",
       "state": "source_implemented_compatibility_library",
       "authority": "none",
-      "tests": ["codex-rs/hepta-cognitive-read/src/v2_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "bounded_compatibility_projection",
       "mappingClass": "owner_native",
@@ -52,7 +60,9 @@
       "sourcePath": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
       "state": "source_implemented_compatibility_library",
       "authority": "none",
-      "tests": ["codex-rs/hepta-cognitive-read/src/authoritative_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "compatibility_authoritative_provider",
       "mappingClass": "owner_native",
@@ -65,7 +75,9 @@
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
       "state": "source_implemented_product_composed",
       "authority": "none",
-      "tests": ["codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "acquire_snapshot",
       "mappingClass": "existing_owner_adapter",
@@ -105,7 +117,9 @@
       "sourcePath": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
       "state": "source_implemented_shadow_only_not_product_composed",
       "authority": "none",
-      "tests": ["codex-rs/hepta-cognitive-read/src/authoritative_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "canonical_authoritative_read_shadow",
       "mappingClass": "owner_native",
@@ -144,7 +158,9 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": ["codex-rs/hepta-cognitive-read"],
+  "sourceRoot": [
+    "codex-rs/hepta-cognitive-read"
+  ],
   "observedImplementationBase": {
     "commit": "a74246c4d7657d4c6b09fc50c41f1d715ace5e0e",
     "interpretation": "latest reviewed main base for this rebased closure candidate; sourceBase remains repository-wide generated-map baseline while exact production source objects bind current candidate bytes"
@@ -181,7 +197,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
-      "object": "a9e4cd73db49551c6e95b343c87c5f001ea24ab7"
+      "object": "ec4837dc71424b9dc08730e491281f556c0d5916"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
@@ -189,7 +205,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "cb4221b11f598f514ba513e8c64bc68129579743"
+      "object": "3f71e689d81577eab93ce2a15ac741357c1e0247"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
@@ -312,8 +328,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
-    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
+    "commit": "0e313ae7a738b23d8279e808547ae92ab2d0031f",
+    "tree": "eca04dd4be3bf161e4c14cdcbde90488b2f477af"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",

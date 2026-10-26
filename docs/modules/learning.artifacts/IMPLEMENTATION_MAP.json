@@ -2,16 +2,20 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
-    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
+    "commit": "0e313ae7a738b23d8279e808547ae92ab2d0031f",
+    "tree": "eca04dd4be3bf161e4c14cdcbde90488b2f477af"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
   "owner": "learning-platform",
   "deputy": "durability-kernel",
   "technicalGuide": "docs/modules/learning.artifacts/TECHNICAL.md",
-  "declaredRoots": ["codex-rs/hepta-learning-artifacts"],
-  "resolvedRoots": ["codex-rs/hepta-learning-artifacts"],
+  "declaredRoots": [
+    "codex-rs/hepta-learning-artifacts"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-learning-artifacts"
+  ],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "explicit_read_and_writer_service_composed",
@@ -376,7 +380,9 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": ["codex-rs/hepta-learning-artifacts"],
+  "sourceRoot": [
+    "codex-rs/hepta-learning-artifacts"
+  ],
   "productCallerBindings": [
     {
       "operation": "load_pinned_candidate",
@@ -434,7 +440,7 @@
   "sourceObjects": [
     {
       "path": "CALLERS.toml",
-      "object": "a9f08f8729bf81a078ae3c4277e3a97ff2a564f4"
+      "object": "a7cf67c4e6e197e7bd1b3b2ce3f3a53edfe1ddc9"
     },
     {
       "path": "codex-rs/Cargo.lock",
@@ -450,7 +456,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
-      "object": "a9e4cd73db49551c6e95b343c87c5f001ea24ab7"
+      "object": "ec4837dc71424b9dc08730e491281f556c0d5916"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
@@ -458,7 +464,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "cb4221b11f598f514ba513e8c64bc68129579743"
+      "object": "3f71e689d81577eab93ce2a15ac741357c1e0247"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
@@ -526,8 +532,8 @@
     }
   ],
   "observedAtHead": {
-    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
-    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
+    "commit": "0e313ae7a738b23d8279e808547ae92ab2d0031f",
+    "tree": "eca04dd4be3bf161e4c14cdcbde90488b2f477af"
   },
   "sourceObservationScope": "Current source navigation was independently re-observed at sourceBase. Source objects and observed paths bind that source snapshot; this observation does not renew historical execution, acceptance, activation or release evidence.",
   "observedSourcePaths": [

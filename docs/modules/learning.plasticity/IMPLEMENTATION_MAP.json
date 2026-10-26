@@ -2,16 +2,20 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
-    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
+    "commit": "0e313ae7a738b23d8279e808547ae92ab2d0031f",
+    "tree": "eca04dd4be3bf161e4c14cdcbde90488b2f477af"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "learning.plasticity",
   "owner": "learning-platform",
   "deputy": "architecture",
   "technicalGuide": "docs/modules/learning.plasticity/TECHNICAL.md",
-  "declaredRoots": ["codex-rs/hepta-plasticity"],
-  "resolvedRoots": ["codex-rs/hepta-plasticity"],
+  "declaredRoots": [
+    "codex-rs/hepta-plasticity"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-plasticity"
+  ],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "agentd_process_bootstrap_and_state_held_runtime_handle_source_composed_test_only_learning_submission_adapter_product_trigger_not_composed_or_target_host_qualified",
@@ -638,7 +642,9 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": ["codex-rs/hepta-plasticity"],
+  "sourceRoot": [
+    "codex-rs/hepta-plasticity"
+  ],
   "productCallers": [
     {
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
@@ -722,7 +728,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence-eval",
-      "object": "24b2c715c92c69b014bf30f55bb6cf198d7a1b32"
+      "object": "e52cc1558bd15a850016a97c50356c988d306646"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
@@ -822,8 +828,8 @@
     }
   ],
   "observedAtHead": {
-    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
-    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
+    "commit": "0e313ae7a738b23d8279e808547ae92ab2d0031f",
+    "tree": "eca04dd4be3bf161e4c14cdcbde90488b2f477af"
   },
   "sourceObservationScope": "Current source navigation was independently re-observed at sourceBase. Source objects and observed paths bind that source snapshot; this observation does not renew historical execution, acceptance, activation or release evidence.",
   "observedSourcePaths": [

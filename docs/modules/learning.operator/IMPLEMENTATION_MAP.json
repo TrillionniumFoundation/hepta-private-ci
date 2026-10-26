@@ -2,16 +2,20 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
-    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
+    "commit": "0e313ae7a738b23d8279e808547ae92ab2d0031f",
+    "tree": "eca04dd4be3bf161e4c14cdcbde90488b2f477af"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
   "owner": "learning-platform",
   "deputy": "qualification-plane",
   "technicalGuide": "docs/modules/learning.operator/TECHNICAL.md",
-  "declaredRoots": ["codex-rs/hepta-bellman-operator"],
-  "resolvedRoots": ["codex-rs/hepta-bellman-operator"],
+  "declaredRoots": [
+    "codex-rs/hepta-bellman-operator"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-bellman-operator"
+  ],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "explicit_read_consumer_composed_default_learning_loop_absent",
@@ -285,11 +289,13 @@
     "defaultProductLoopWired": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": ["codex-rs/hepta-bellman-operator"],
+  "sourceRoot": [
+    "codex-rs/hepta-bellman-operator"
+  ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
-    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
+    "commit": "0e313ae7a738b23d8279e808547ae92ab2d0031f",
+    "tree": "eca04dd4be3bf161e4c14cdcbde90488b2f477af"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -324,7 +330,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
-      "object": "a9e4cd73db49551c6e95b343c87c5f001ea24ab7"
+      "object": "ec4837dc71424b9dc08730e491281f556c0d5916"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
@@ -332,7 +338,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "cb4221b11f598f514ba513e8c64bc68129579743"
+      "object": "3f71e689d81577eab93ce2a15ac741357c1e0247"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",

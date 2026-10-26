@@ -2,14 +2,18 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "cd949fa5d27a3b3a659d1b52c11d4ae82b518486",
-    "tree": "f8802d0526e05276ae5616c3973f8cb548fb4065"
+    "commit": "0e313ae7a738b23d8279e808547ae92ab2d0031f",
+    "tree": "eca04dd4be3bf161e4c14cdcbde90488b2f477af"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
   "sourceMaturity": "native_composition_host",
-  "declaredRoots": ["codex-rs/hepta-agentd"],
-  "resolvedRoots": ["codex-rs/hepta-agentd"],
+  "declaredRoots": [
+    "codex-rs/hepta-agentd"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-agentd"
+  ],
   "stateOwnerDisposition": "Owns only ephemeral run admission, immutable snapshot references, and runtime-health composition state.",
   "terminalObserverDisposition": "Agentd preserves dispatch-boundary uncertainty and accepts terminal state only from the delegated execution/effect owner.",
   "operations": [
@@ -306,7 +310,9 @@
   "owner": "agent-runtime",
   "deputy": "runtime-control",
   "technicalGuide": "docs/modules/runtime.agentd/TECHNICAL.md",
-  "sourceRoot": ["codex-rs/hepta-agentd"],
+  "sourceRoot": [
+    "codex-rs/hepta-agentd"
+  ],
   "currentSourceEvidence": {
     "commit": "cbb3cee084a4caf4702dd4e575cae5504486c176",
     "tree": "e22806b086240bb2015344dfb545734342c7fdb3",
@@ -338,7 +344,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "8d1942e402b40e4750283b6c243d370e634948f5"
+      "object": "8c9d4d6c2677b62b10777e3f60468faa3ad64948"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
@@ -374,7 +380,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "cb4221b11f598f514ba513e8c64bc68129579743"
+      "object": "3f71e689d81577eab93ce2a15ac741357c1e0247"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",

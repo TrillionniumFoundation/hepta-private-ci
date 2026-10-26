@@ -2,16 +2,20 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "b5b9379bedaf0065f8f3b373c5da59228f8d9539",
-    "tree": "2e9edf3eeaa49b22e8a9135774b3ee12638af9ea"
+    "commit": "0e313ae7a738b23d8279e808547ae92ab2d0031f",
+    "tree": "eca04dd4be3bf161e4c14cdcbde90488b2f477af"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.eval",
   "owner": "learning-platform",
   "deputy": "qualification-plane",
   "technicalGuide": "docs/modules/learning.eval/TECHNICAL.md",
-  "declaredRoots": ["codex-rs/hepta-intelligence-eval"],
-  "resolvedRoots": ["codex-rs/hepta-intelligence-eval"],
+  "declaredRoots": [
+    "codex-rs/hepta-intelligence-eval"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-intelligence-eval"
+  ],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "product_qualification_receipt_consumed_by_evaluated_shadow",
@@ -23,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-intelligence-eval/src/ope.rs",
       "state": "source_implemented",
       "authority": "deny_all",
-      "tests": ["codex-rs/hepta-intelligence-eval/src/ope_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/ope_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "estimate_ope",
       "mappingClass": "owner_native",
@@ -35,7 +41,9 @@
       "sourcePath": "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
       "state": "source_implemented_sealed_receipt",
       "authority": "deny_all",
-      "tests": ["codex-rs/hepta-intelligence-eval/src/ope_confidence_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/ope_confidence_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "estimate_cluster_intervals",
       "mappingClass": "owner_native",
@@ -52,7 +60,9 @@
       "sourcePath": "codex-rs/hepta-intelligence-eval/src/sequential.rs",
       "state": "source_implemented",
       "authority": "deny_all",
-      "tests": ["codex-rs/hepta-intelligence-eval/src/sequential_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/sequential_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "estimate_sequential",
       "mappingClass": "owner_native",
@@ -87,7 +97,9 @@
       "sourcePath": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
       "state": "source_product_composition_implemented",
       "authority": "deny_all",
-      "tests": ["codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "freeze_product_evaluation_plan_v1",
       "mappingClass": "owner_native",
@@ -104,7 +116,9 @@
       "sourcePath": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
       "state": "source_product_composition_implemented",
       "authority": "deny_all",
-      "tests": ["codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "product_temporal_comparison",
       "mappingClass": "owner_native",
@@ -129,7 +143,9 @@
       "sourcePath": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
       "state": "source_product_composition_implemented",
       "authority": "deny_all",
-      "tests": ["codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "product_signed_qualification",
       "mappingClass": "owner_native",
@@ -154,7 +170,9 @@
       "sourcePath": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
       "state": "source_implemented",
       "authority": "deny_all",
-      "tests": ["codex-rs/hepta-intelligence-eval/src/fenced_holdout_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/fenced_holdout_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "fenced_final_holdout_consume",
       "mappingClass": "owner_native",
@@ -185,7 +203,9 @@
       "sourcePath": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs",
       "state": "source_implemented_low_level_signed_admission",
       "authority": "deny_all",
-      "tests": ["codex-rs/hepta-intelligence-eval/src/closure_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/closure_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "signed_v2_admission",
       "mappingClass": "owner_native",
@@ -248,7 +268,9 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": ["codex-rs/hepta-intelligence-eval"],
+  "sourceRoot": [
+    "codex-rs/hepta-intelligence-eval"
+  ],
   "sourceBaseStatus": "historical_registry_generation_baseline_not_current_candidate_identity",
   "currentQualificationTruth": {
     "productionContract": "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md",
@@ -261,7 +283,10 @@
   "exactCandidateIdentitySource": {
     "workflow": ".github/workflows/hepta-lane-e-gap-closure.yml",
     "artifactSchema": "hepta.learning-eval.qualification-evidence.v1",
-    "requiredStates": ["exact_head_pass", "ordered_parent_synthetic_merge_pass"]
+    "requiredStates": [
+      "exact_head_pass",
+      "ordered_parent_synthetic_merge_pass"
+    ]
   },
   "productCallers": [
     {
@@ -273,7 +298,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-intelligence-eval",
-      "object": "24b2c715c92c69b014bf30f55bb6cf198d7a1b32"
+      "object": "e52cc1558bd15a850016a97c50356c988d306646"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
@@ -285,11 +310,11 @@
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
-      "object": "d496f6865d39e98d7b92ed62ebf130945cd8266c"
+      "object": "79db6bfe6ba3c644ed67c985c7eb6e778a42608e"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs",
-      "object": "90fd2edbc0d9cc4ce0dd85b553eb0a383fe0ec23"
+      "object": "9abe3f56f60838ce7fad78f112d664788770af2c"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_tests.rs",
