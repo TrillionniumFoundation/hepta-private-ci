@@ -88,6 +88,21 @@ impl RegisteredWriter {
         notes.matches_writer(&self.registration, &self.proof)
     }
 
+    pub(super) fn human_text(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        identity: &AgentdIdentity,
+        request: crate::deployment_issuer::RootHumanTextRequest<'_>,
+    ) -> io::Result<crate::AuthBusTextIngress> {
+        issuer.registered_writer_human_text(
+            identity,
+            request,
+            &self.registration,
+            &self.leases,
+            &self.proof,
+        )
+    }
+
     pub(super) fn exchange_consumer(
         &self,
         issuer: &DeploymentFinalUseIssuer,

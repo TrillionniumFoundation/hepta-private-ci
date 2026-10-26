@@ -35,6 +35,8 @@ use consumers::RegisteredConsumers;
 #[path = "authority_host_text_ui.rs"]
 mod text_ui;
 pub use text_ui::HostAuthorityTextUiRegistration;
+#[path = "authority_host_human_text.rs"]
+mod human_text;
 
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
@@ -60,6 +62,7 @@ pub struct HostAuthorityService {
     root_registry: Option<Arc<codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry>>,
     checkpoint: Option<RegisteredCheckpoint>,
     consumers: Option<RegisteredConsumers>,
+    human_text: Option<(HostAuthorityTextUiRegistration, OwnedFd)>,
 }
 
 impl HostAuthorityService {
@@ -80,6 +83,7 @@ impl HostAuthorityService {
             root_registry: None,
             checkpoint: None,
             consumers: None,
+            human_text: None,
         })
     }
 
@@ -310,6 +314,22 @@ impl HostAuthorityService {
     fn issue(&self, bytes: &[u8]) -> Result<Vec<u8>, HostIssuerTransportError> {
         let request: IssuerRequest = decode(bytes)?;
         match request {
+            IssuerRequest::VerifyHumanText {
+                schema_version: 1,
+                ingress,
+            } => {
+                let owner = self.verify_original_human_text(&ingress)?;
+                encode_bounded(
+                    &serde_json::json!({
+                        "schema_version":1,
+                        "operation":"runtime.authbus.human_text.verified.v1",
+                        "ingress_sha256":codex_hepta_types::Digest32::of_bytes(&serde_json::to_vec(&ingress).map_err(|_| HostIssuerTransportError::InvalidRequest)?).to_string(),
+                        "owner":owner,
+                    }),
+                    16 * 1024,
+                )
+            }
+            IssuerRequest::VerifyHumanText { .. } => Err(HostIssuerTransportError::InvalidRequest),
             IssuerRequest::FinalUse {
                 schema_version,
                 binding,
@@ -423,6 +443,11 @@ struct ObservationResponse<'a> {
 #[derive(Deserialize)]
 #[serde(tag = "operation", deny_unknown_fields)]
 enum IssuerRequest {
+    #[serde(rename = "runtime.authbus.human_text.verify.v1")]
+    VerifyHumanText {
+        schema_version: u32,
+        ingress: crate::AuthBusTextIngress,
+    },
     #[serde(rename = "runtime.authbus.text.v1")]
     Text {
         schema_version: u32,

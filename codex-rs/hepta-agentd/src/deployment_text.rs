@@ -11,6 +11,11 @@ use codex_hepta_types::Digest32;
 
 const MAX_TEXT_SIGNATURES: usize = 32;
 
+#[path = "deployment_text_human.rs"]
+mod human;
+pub(crate) use human::RootHumanTextRequest;
+pub(crate) use human::TextHumanBinding;
+
 #[path = "deployment_text_retirement.rs"]
 mod retirement;
 pub(crate) use retirement::VerifiedTextRetirement;
@@ -42,6 +47,10 @@ pub(super) struct RetainedTextSignature {
     // reconstructed from guessed text or re-signed.
     #[serde(default)]
     body: Option<AuthBusTextBody>,
+    // Only the authenticated original UI lane supplies this value. It commits
+    // atomically with the same original signature; legacy entries stay None.
+    #[serde(default)]
+    human_binding: Option<TextHumanBinding>,
 }
 
 impl DeploymentFinalUseIssuer {
@@ -123,7 +132,7 @@ impl DeploymentFinalUseIssuer {
         if self.lease.is_some() {
             return Err(io::Error::other("registered writer entry required"));
         }
-        self.text_until(identity, request_id, body, operation, None)
+        self.text_until(identity, request_id, body, operation, None, None)
     }
 
     pub(crate) fn registered_writer_text(
@@ -152,6 +161,7 @@ impl DeploymentFinalUseIssuer {
                 body,
                 operation,
                 Some(&registration.authority_lease),
+                None,
             )
         })
     }
@@ -163,6 +173,7 @@ impl DeploymentFinalUseIssuer {
         mut body: AuthBusTextBody,
         operation: TextIssuerOperation,
         lease: Option<&AuthorityLease>,
+        human: Option<&TextHumanBinding>,
     ) -> io::Result<AuthBusTextIngress> {
         if request_id.is_empty()
             || request_id.len() > 192
@@ -216,6 +227,9 @@ impl DeploymentFinalUseIssuer {
             let bytes = crate::authbus_ingress::payload(&body).map_err(io::Error::other)?;
             if retained.agent_id != identity.agent_id.as_str()
                 || retained.payload_sha256 != *Digest32::of_bytes(&bytes).as_array()
+                || (operation == TextIssuerOperation::Sign
+                    && human.is_some()
+                    && retained.human_binding.as_ref() != human)
             {
                 return Err(io::Error::other("text request identity conflict"));
             }
@@ -237,6 +251,7 @@ impl DeploymentFinalUseIssuer {
         }
         if body.spawn_generation != identity.spawn_generation
             || state.text_signatures.len() >= MAX_TEXT_SIGNATURES
+            || human.is_some_and(|binding| now >= binding.expires_at_ms)
         {
             return Err(io::Error::other(
                 "text generation or retained capacity unavailable",
@@ -262,7 +277,11 @@ impl DeploymentFinalUseIssuer {
                 .min(lease.map_or(u64::MAX, |lease| lease.expires_at_unix_ms)),
             signature_hex: "0".repeat(128),
             body: Some(body.clone()),
+            human_binding: human.cloned(),
         };
+        if let Some(human) = human {
+            retained.expires_at_ms = retained.expires_at_ms.min(human.expires_at_ms);
+        }
         next.text_signatures.push(retained.clone());
         // Exact total encoded record budget, checked BEFORE signing or CAS.
         // 32 is an entry cap, not a promise of 32 maximum-sized text inputs.

@@ -206,6 +206,7 @@ impl PreparedHostAuthoritySession {
                 ));
             }
             text.validate(&service)?;
+            let service = service.with_live_human_text(text.clone(), ui_pidfd.try_clone()?)?;
             if [
                 &config.sockets.observation,
                 &config.sockets.issuer,
