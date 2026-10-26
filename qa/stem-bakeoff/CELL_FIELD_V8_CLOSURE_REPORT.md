@@ -151,13 +151,15 @@ future 幅度仅 **4/16** 通过，old 幅度 **6/8**，成本 **4/8**。field �
 
 复现还依赖既有 V5、V6 与 V7/V7b 原始输入和证据档案；V8 包不能单独替代这些先决数据。源码使用固定 Git commit；原始 JSON/NPZ/log/XML 不因在 Git 出现就省略。封存的完整输出按原有 expected map 校验，中断尝试明确以部分输出身份保留。归档工具和独立 reader 只处理证据，不执行候选、不增加样本、不授予科学准入。[归档说明][archive]
 
+完整 V8 本地归档已生成并读回验证：15 个目录、11,105 个证据文件与一个内嵌清单，压缩后 318,805,867 字节。归档 SHA 为 `af02493df470aa28fd91970164f2c79acef3cd09caed740d4ac832d7f32fa524`，外部清单 SHA 为 `e344fc9d230a6ae18fb09d4ebb4666b7f99cace9c51b5cd3085cdbad8fe7050f`。完整成员、旧与新增保存身份、先决资料、唯一构建缓存排除和下载／保存状态见 [归档收尾报告][archive-report]。
+
 ## 8. 剩余处置
 
 本候选族在已冻结开发规则下的结果已经确定：**不进入新的确认实验，不晋升真实 native owner**。后续若研究新机制，应重新提出与本次失败相对应的假设、预先固定协议和进入规则；不能继续修改当前门槛后仍沿用本轮确认身份。
 
 科学上的剩余问题是外部效用、保留泛化和可接受实际成本能否同时成立。本轮没有回答“成立”，而是提供完整反例与适用边界。原生工程路径已经具备限定承接能力，仍等待未来科学合格、来源匹配且经过真实审阅的候选。
 
-将含私有组织代码、研究输出和模型参数的证据包保存到 ChatGPT Library，曾被自动审批拒绝；理由是缺少针对这个目的地的明确授权。包、清单和回执准备完成后，需要单独获得该保存动作的批准。此项存储审批不改变上述研究拒绝或原生资格结论。
+将含私有组织代码、研究输出和模型参数的证据包保存到 ChatGPT Library，曾被自动审批拒绝；理由是缺少针对这个目的地的明确授权。V8 与 V7/V7b 的本地包、清单和回执现在均已准备并验证完成，仍需要单独获得该保存动作的批准。此项存储审批不改变上述研究拒绝或原生资格结论。
 
 [grid]: ./reviews/cell-field-v8-development/GRID_DEVELOPMENT_REPORT.md
 [grid-audit]: ./reviews/cell-field-v8-development/audit.json
@@ -171,3 +173,4 @@ future 幅度仅 **4/16** 通过，old 幅度 **6/8**，成本 **4/8**。field �
 [native-pr]: https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4008
 [native-qualification]: https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b899e46a07571a0cbc2b1f8487a1df3001e30313/qualification/trained-cell-v8/qualification.json
 [archive]: ./evidence_archive_v8/README.md
+[archive-report]: ./reviews/cell-field-v8-evidence-archive/ARCHIVE_REPORT.md
