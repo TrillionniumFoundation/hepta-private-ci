@@ -1,0 +1,180 @@
+{
+  "insufficient_old_units_for_FAR_bound_not_relaxed": true,
+  "new_source_candidate_admitted": false,
+  "new_sources_opened": false,
+  "old_calibration": {
+    "Brier": 0.07934343642672854,
+    "ECE_ID": 5.729220991274736e-07,
+    "ECE_all": 4.974374109126564e-07,
+    "ID_acceptance": 0.9749375,
+    "OOD_FAR": 0.0,
+    "OOD_false_units": 0,
+    "OOD_upper95": 0.04572970233076245,
+    "by_horizon_action": {
+      "H1:couple": {
+        "ECE_ID": 4.3625839349298663e-07,
+        "ID_acceptance": 1.0,
+        "rows": 2560
+      },
+      "H1:refine_image": {
+        "ECE_ID": 5.443652629482515e-07,
+        "ID_acceptance": 1.0,
+        "rows": 2560
+      },
+      "H1:refine_semantic": {
+        "ECE_ID": 6.16074629113594e-07,
+        "ID_acceptance": 1.0,
+        "rows": 2560
+      },
+      "H1:refine_text": {
+        "ECE_ID": 6.995286806863507e-07,
+        "ID_acceptance": 1.0,
+        "rows": 2560
+      },
+      "H1:stop": {
+        "ECE_ID": 7.427880257181337e-07,
+        "ID_acceptance": 1.0,
+        "rows": 2560
+      },
+      "H2:couple": {
+        "ECE_ID": 5.675803064117065e-07,
+        "ID_acceptance": 1.0,
+        "rows": 640
+      },
+      "H2:refine_image": {
+        "ECE_ID": 2.858130096046463e-07,
+        "ID_acceptance": 1.0,
+        "rows": 640
+      },
+      "H2:refine_semantic": {
+        "ECE_ID": 2.360204934685403e-07,
+        "ID_acceptance": 0.6859375,
+        "rows": 640
+      },
+      "H2:refine_text": {
+        "ECE_ID": 3.6680436160535514e-07,
+        "ID_acceptance": 1.0,
+        "rows": 640
+      },
+      "H2:stop": {
+        "ECE_ID": 6.398075579824858e-07,
+        "ID_acceptance": 0.6875,
+        "rows": 640
+      }
+    },
+    "independent_units": 64,
+    "ood_units": 64,
+    "rows": 19200,
+    "unit_is_writer": false
+  },
+  "old_feasibility_gates": {
+    "old_split_nonvacuity": true,
+    "old_split_point_ECE": false,
+    "old_split_zero_OOD_false_source_pairs": true
+  },
+  "old_verification": {
+    "Brier": 0.10616383866736458,
+    "ECE_ID": 0.04650782886887028,
+    "ECE_all": 0.03880862739188939,
+    "ID_acceptance": 0.96975,
+    "OOD_FAR": 0.0,
+    "OOD_false_units": 0,
+    "OOD_upper95": 0.04572970233076245,
+    "by_horizon_action": {
+      "H1:couple": {
+        "ECE_ID": 0.056873480582159776,
+        "ID_acceptance": 1.0,
+        "rows": 2560
+      },
+      "H1:refine_image": {
+        "ECE_ID": 0.05496778825566766,
+        "ID_acceptance": 1.0,
+        "rows": 2560
+      },
+      "H1:refine_semantic": {
+        "ECE_ID": 0.042477965278524155,
+        "ID_acceptance": 1.0,
+        "rows": 2560
+      },
+      "H1:refine_text": {
+        "ECE_ID": 0.05656037795453213,
+        "ID_acceptance": 1.0,
+        "rows": 2560
+      },
+      "H1:stop": {
+        "ECE_ID": 0.042674960591024116,
+        "ID_acceptance": 1.0,
+        "rows": 2560
+      },
+      "H2:couple": {
+        "ECE_ID": 0.033309964072638525,
+        "ID_acceptance": 1.0,
+        "rows": 640
+      },
+      "H2:refine_image": {
+        "ECE_ID": 0.024447137530886995,
+        "ID_acceptance": 1.0,
+        "rows": 640
+      },
+      "H2:refine_semantic": {
+        "ECE_ID": 0.019161653187716052,
+        "ID_acceptance": 0.621875,
+        "rows": 640
+      },
+      "H2:refine_text": {
+        "ECE_ID": 0.05695275279396787,
+        "ID_acceptance": 1.0,
+        "rows": 640
+      },
+      "H2:stop": {
+        "ECE_ID": 0.01896566100021601,
+        "ID_acceptance": 0.621875,
+        "rows": 640
+      }
+    },
+    "independent_units": 64,
+    "ood_units": 64,
+    "rows": 19200,
+    "unit_is_writer": false
+  },
+  "planned_1000writer_zero_error_upper95": 0.0029912495450953314,
+  "predictor_sha256": "4e1de44ab9d4edced5741641d4fc0420474230cdab689caa0d29ec57a7176173",
+  "production_authority": false,
+  "registration_sha256": "d6761d0d75b78a39fdf53c1c7275147fd506a4447a8a5cd1269f122e6bbfceed",
+  "schema": "hepta.next.native-h2-old-development.v1",
+  "selected_diagnostic_is_not_independent_qualification": true,
+  "selected_policy_calibration": {
+    "correctness": {
+      "ECE": 0.04657802488038268,
+      "by_horizon": {
+        "1": {
+          "ECE": 0.07020314814814818,
+          "steps": 810
+        },
+        "2": {
+          "ECE": 0.03162775156249978,
+          "steps": 1280
+        }
+      },
+      "scope": "actual old counterfactual tree visited by this admission-masked policy",
+      "selected_steps": 2090
+    },
+    "ndu": {
+      "ECE": 0.05108927563805086,
+      "by_horizon": {
+        "1": {
+          "ECE": 0.063980976,
+          "steps": 875
+        },
+        "2": {
+          "ECE": 0.04227658984374987,
+          "steps": 1280
+        }
+      },
+      "scope": "actual old counterfactual tree visited by this admission-masked policy",
+      "selected_steps": 2155
+    }
+  },
+  "status": "completed",
+  "wall_ns": 4028472323
+}
