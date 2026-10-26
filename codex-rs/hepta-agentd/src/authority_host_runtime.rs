@@ -50,7 +50,7 @@ pub use writer_rotation::rotate_host_writer_authorization;
 const CLOCK_OWNER: &str = "root-authority-clock-v1";
 const LEASE_OWNER: &str = "root-authority-leases-v1";
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct HostAuthorityBootstrap {
     pub schema_version: u32,
