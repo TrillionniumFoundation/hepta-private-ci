@@ -4,6 +4,7 @@ use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::ObjectiveSenderWriterFence;
 use codex_hepta_paths::HeptaFleetRoot;
 use pretty_assertions::assert_eq;
+use std::os::unix::fs::DirBuilderExt;
 use std::os::unix::fs::PermissionsExt;
 use std::process::Child;
 use std::process::Command;
@@ -120,8 +121,17 @@ struct Fixture {
     new: Publisher,
 }
 
+enum FixtureMaterial {
+    LogicalOnly,
+    Physical,
+}
+
 impl Fixture {
     async fn new() -> Self {
+        Self::with_material(FixtureMaterial::LogicalOnly).await
+    }
+
+    async fn with_material(material: FixtureMaterial) -> Self {
         let root = std::env::var_os("HEPTA_CHECKPOINT_TEST_ROOT")
             .expect("explicit root-owned data-bind qualification root required");
         let temp = tempfile::tempdir_in(root).unwrap();
@@ -154,12 +164,32 @@ impl Fixture {
             peer_lifetime: old.retained.lifetime.clone(),
         };
         let clock = Arc::new(Clock::default());
-        let backend = HostCognitiveCheckpoint::initialize_fresh(
-            directory.clone(),
-            old_registration.clone(),
-            cut,
-            clock.clone(),
-        )
+        let backend = match material {
+            FixtureMaterial::LogicalOnly => HostCognitiveCheckpoint::initialize_fresh(
+                directory.clone(),
+                old_registration.clone(),
+                cut,
+                clock.clone(),
+            ),
+            FixtureMaterial::Physical => {
+                let material_root = temp.path().join("physical-material");
+                std::fs::DirBuilder::new()
+                    .mode(0o700)
+                    .create(&material_root)
+                    .unwrap();
+                HostCognitiveCheckpoint::initialize_fresh_with_material(
+                    directory.clone(),
+                    old_registration.clone(),
+                    cut,
+                    clock.clone(),
+                    RootMaterialProfile {
+                        layout,
+                        root: material_root,
+                        deadline: Duration::from_secs(5),
+                    },
+                )
+            }
+        }
         .unwrap();
         let head = backend.load().unwrap();
         let previous = CognitiveCheckpointReceipt {
@@ -580,3 +610,6 @@ async fn root_retired_adoption_post_cas_clock_error_is_unknown_and_exactly_recon
     assert_eq!(head.last_current, f.previous.head.last_current);
     assert_eq!(head.peer_lifetime, f.new.retained.lifetime);
 }
+
+#[path = "authority_host_checkpoint_material_tests.rs"]
+mod physical_material;
