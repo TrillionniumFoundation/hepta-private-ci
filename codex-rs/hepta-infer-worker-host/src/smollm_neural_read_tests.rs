@@ -585,7 +585,7 @@ fn passive_failure_snapshot_survives_closed_admission_but_refuses_busy_and_poiso
     let mailbox = Arc::new(Mutex::new(Default::default()));
     let driver = SmolLmDriver::new(
         config,
-        pin.clone(),
+        (&pin).into(),
         vec![],
         mailbox.clone(),
         runtime.handle().clone(),
@@ -603,7 +603,7 @@ fn passive_failure_snapshot_survives_closed_admission_but_refuses_busy_and_poiso
         model_digest: digest.to_string(),
     };
     let port = SmolLmNeuralReadPortV1 {
-        pin,
+        pin: Some(pin),
         model_id: "not-loaded".to_owned(),
         worker: Mutex::new(
             InferenceWorker::new(
