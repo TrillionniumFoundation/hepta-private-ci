@@ -86,3 +86,20 @@ Authoritative platform contracts:
 [128-bit file identity](https://learn.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-file_id_info),
 [handle security](https://learn.microsoft.com/en-us/windows/win32/api/aclapi/nf-aclapi-getsecurityinfo),
 [actual flushing](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-flushfilebuffers).
+
+
+## Shared artifact I/O backend
+
+Complete Windows identity and security facts are owned by `codex-utils-path`;
+State's small identity/security facades preserve the original complete snapshot
+comparisons and map all failed inspection to the same indeterminate result.
+Recovery guard ordering, retained sources, identity checks and original tests
+remain in State. Output creation and directory sync now call the shared retained
+private-artifact backend also consumed by Operator and Shadow. It uses an actual
+read/write directory handle and performs real file and directory barriers; an
+unsafe existing directory is refused without ACL repair. This is an I/O backend
+change, not an acknowledged-history or recovery-schema migration.
+
+See [shared backend development, API and native limits](../utils/path-utils/PRIVATE_ARTIFACTS_WINDOWS.md).
+The original directory diagnostic's missing source-after facts remain missing;
+a new exact-source original-case run is required for this implementation.

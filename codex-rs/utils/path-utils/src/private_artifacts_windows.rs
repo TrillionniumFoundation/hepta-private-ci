@@ -450,3 +450,7 @@ fn same_ancestors(a: &[(File, WindowsFileId)], b: &[(File, WindowsFileId)]) -> i
     }
     Ok(true)
 }
+
+#[cfg(test)]
+#[path = "private_artifacts_windows_tests.rs"]
+mod tests;
