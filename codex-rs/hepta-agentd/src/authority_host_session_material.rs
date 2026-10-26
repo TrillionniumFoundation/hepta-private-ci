@@ -32,6 +32,14 @@ impl PreparedHostAuthoritySession {
     /// Root can concurrently serialize its actual material observations. This
     /// creates no second authority owner and retains all original lane checks.
     pub fn serve_retained(&self) -> io::Result<()> {
+        if self.root_admin.is_none() {
+            return listeners::serve_lanes(
+                &self.service,
+                &self.config,
+                &self.registration,
+                &self.owner_pidfd,
+            );
+        }
         let serve = || {
             listeners::serve_lanes_with_ready(
                 &self.service,
@@ -40,7 +48,7 @@ impl PreparedHostAuthoritySession {
                 &self.owner_pidfd,
                 || {
                     if let Some(admin) = &self.root_admin {
-                        admin.activate();
+                        admin.activate()?;
                     }
                     Ok(())
                 },

@@ -337,7 +337,7 @@ impl PreparedHostAuthoritySession {
             let ready = || {
                 ready()?;
                 if let Some(admin) = &root_admin {
-                    admin.activate();
+                    admin.activate()?;
                 }
                 Ok(())
             };
@@ -380,7 +380,7 @@ impl PreparedHostAuthoritySession {
                     || {
                         ready()?;
                         if let Some(admin) = &root_admin {
-                            admin.activate();
+                            admin.activate()?;
                         }
                         Ok(())
                     },

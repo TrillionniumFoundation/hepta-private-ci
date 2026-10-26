@@ -13,11 +13,13 @@ borrows the final original service, registration and held owner pidfd; it checks
 the actual Root UID, current Root boot/PID/birth/episode nonce, original owner
 credentials/birth/pidfd, original physical login, registered native UI and all
 original issuer/writer/human expiry bounds before and after each operation.
-It becomes inactive before serving returns, including unwinding. Holding a
+It becomes permanently inactive before serving returns, including unwinding;
+the same capability cannot be reactivated by another retained serve call. Holding a
 capability cannot extend the service or its authorization lifetime.
 
 Requests are at most 16 KiB, schema 1, strict typed JSON with an exact expected
-instance. The one-request deadline is at most the original exchange timeout
+instance. The caller supplies the same absolute deadline used for its transport; the
+one-request deadline is clamped to that deadline, the original exchange timeout
 and one second. There are no retries. A timeout after a revoke is an unknown
 outcome: inspect the original registry instead of resending a mutation.
 

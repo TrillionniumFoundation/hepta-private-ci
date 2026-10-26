@@ -14,6 +14,7 @@ fn capability() -> io::Result<(RootAdminRuntime, RootAdminCapability)> {
     instance.episode_nonce = [17; 32];
     let life = Arc::new(Lifetime {
         serving: AtomicBool::new(false),
+        closed: AtomicBool::new(false),
         instance: instance.clone(),
     });
     let (sender, receiver) = mpsc::sync_channel(1);
@@ -36,7 +37,7 @@ fn capability_does_not_retain_dropped_or_inactive_original_runtime() -> io::Resu
     let (runtime, capability) = capability()?;
     let request = request(capability.instance.clone());
     assert!(capability.request_lifetime(&request).is_err());
-    runtime.activate();
+    runtime.activate()?;
     assert!(capability.request_lifetime(&request).is_ok());
     drop(runtime);
     assert!(capability.lifetime.upgrade().is_none());
@@ -47,7 +48,7 @@ fn capability_does_not_retain_dropped_or_inactive_original_runtime() -> io::Resu
 #[test]
 fn live_route_rejects_each_changed_root_lifetime_and_nonce() -> io::Result<()> {
     let (runtime, capability) = capability()?;
-    runtime.activate();
+    runtime.activate()?;
     for field in 0..4 {
         let mut other = capability.instance.clone();
         match field {
@@ -100,8 +101,11 @@ fn strict_admin_schema_rejects_duplicate_unknown_and_oversized_inputs()
 #[test]
 fn paused_or_ended_route_cannot_be_reactivated_by_capability() -> io::Result<()> {
     let (runtime, capability) = capability()?;
-    runtime.activate();
-    runtime.life.serving.store(false, Ordering::Release);
+    runtime.activate()?;
+    let stopping = AtomicBool::new(false);
+    drop(Stop(&runtime.life, &stopping));
+    assert!(stopping.load(Ordering::Acquire));
+    assert!(runtime.activate().is_err());
     assert!(
         capability
             .request_lifetime(&request(capability.instance.clone()))

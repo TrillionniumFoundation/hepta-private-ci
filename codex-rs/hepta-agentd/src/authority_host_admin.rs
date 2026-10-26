@@ -21,6 +21,7 @@ pub use protocol::*;
 
 struct Lifetime {
     serving: AtomicBool,
+    closed: AtomicBool,
     instance: RootAdminInstance,
 }
 
@@ -47,12 +48,16 @@ impl RootAdminCapability {
 
     /// One bounded request, with no retries. A timeout after a mutation remains
     /// unknown; the caller must observe the original registry, never resend.
-    pub fn exchange(&self, raw: &[u8]) -> io::Result<Vec<u8>> {
+    pub fn exchange(&self, raw: &[u8], before: Instant) -> io::Result<Vec<u8>> {
         actual_root()?;
         let request = decode(raw)?;
         let life = self.request_lifetime(&request)?;
         self.instance.verify_current()?;
-        let end = Instant::now() + self.timeout;
+        let end = before.min(Instant::now() + self.timeout);
+        let remaining = end
+            .checked_duration_since(Instant::now())
+            .filter(|left| !left.is_zero())
+            .ok_or_else(ended)?;
         let (reply, receive) = mpsc::sync_channel(1);
         self.sender
             .try_send(Pending {
@@ -61,7 +66,7 @@ impl RootAdminCapability {
                 reply,
             })
             .map_err(|_| io::Error::other("original Root admin is busy or ended"))?;
-        let result = receive.recv_timeout(self.timeout).map_err(|_| {
+        let result = receive.recv_timeout(remaining).map_err(|_| {
             io::Error::other("original Root admin outcome unavailable; never retry a mutation")
         })??;
         if !life.serving.load(Ordering::Acquire) || Instant::now() >= end {
@@ -73,7 +78,8 @@ impl RootAdminCapability {
 
     fn request_lifetime(&self, request: &RootAdminRequest) -> io::Result<Arc<Lifetime>> {
         let life = self.lifetime.upgrade().ok_or_else(ended)?;
-        if !life.serving.load(Ordering::Acquire)
+        if life.closed.load(Ordering::Acquire)
+            || !life.serving.load(Ordering::Acquire)
             || request.expected_instance != self.instance
             || life.instance != self.instance
         {
@@ -98,6 +104,7 @@ impl RootAdminRuntime {
         }
         let life = Arc::new(Lifetime {
             serving: AtomicBool::new(false),
+            closed: AtomicBool::new(false),
             instance: instance.clone(),
         });
         let (sender, receiver) = mpsc::sync_channel(1);
@@ -116,8 +123,15 @@ impl RootAdminRuntime {
         ))
     }
 
-    pub(crate) fn activate(&self) {
-        self.life.serving.store(true, Ordering::Release);
+    pub(crate) fn activate(&self) -> io::Result<()> {
+        if self.life.closed.load(Ordering::Acquire) {
+            return Err(ended());
+        }
+        self.life
+            .serving
+            .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+            .map_err(|_| ended())?;
+        Ok(())
     }
 
     /// The scoped worker borrows all original objects. The capability owns
@@ -130,6 +144,9 @@ impl RootAdminRuntime {
         owner: &OwnedFd,
         serve: impl FnOnce() -> io::Result<()>,
     ) -> io::Result<()> {
+        if self.life.closed.load(Ordering::Acquire) {
+            return Err(ended());
+        }
         let stopping = AtomicBool::new(false);
         std::thread::scope(|scope| {
             let worker = scope.spawn(|| {
@@ -150,14 +167,7 @@ impl RootAdminRuntime {
                 }
                 Ok::<(), io::Error>(())
             });
-            struct Stop<'a>(&'a AtomicBool, &'a AtomicBool);
-            impl Drop for Stop<'_> {
-                fn drop(&mut self) {
-                    self.0.store(false, Ordering::Release);
-                    self.1.store(true, Ordering::Release);
-                }
-            }
-            let guard = Stop(&self.life.serving, &stopping);
+            let guard = Stop(&self.life, &stopping);
             let result = serve();
             drop(guard);
             worker
@@ -207,6 +217,16 @@ impl RootAdminRuntime {
 impl Drop for RootAdminRuntime {
     fn drop(&mut self) {
         self.life.serving.store(false, Ordering::Release);
+        self.life.closed.store(true, Ordering::Release);
+    }
+}
+
+struct Stop<'a>(&'a Lifetime, &'a AtomicBool);
+impl Drop for Stop<'_> {
+    fn drop(&mut self) {
+        self.0.closed.store(true, Ordering::Release);
+        self.0.serving.store(false, Ordering::Release);
+        self.1.store(true, Ordering::Release);
     }
 }
 

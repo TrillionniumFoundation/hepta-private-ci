@@ -86,6 +86,8 @@ impl HostAuthorityService {
         let original = &writer.registration.authority_lease;
         match action {
             RootAdminAction::Observe => {
+                let before = registry.frontier().map_err(io::Error::other)?;
+                let head = self.issuer.revocations()?;
                 let lease = registry
                     .read_lease(&original.lease_id)
                     .map_err(io::Error::other)?
@@ -110,13 +112,22 @@ impl HostAuthorityService {
                 } else {
                     None
                 };
+                let after = registry.frontier().map_err(io::Error::other)?;
+                if before != after
+                    || lease.store_revision != before.store_revision
+                    || self.issuer.revocations()? != head
+                {
+                    return Err(io::Error::other(
+                        "original Root control frontier changed during observation",
+                    ));
+                }
                 Ok(RootAdminResponse::Observed {
                     observation: RootAdminObservation {
                         instance: instance.clone(),
                         writer: lease,
                         writer_revocation: revoked,
-                        lease_frontier: registry.frontier().map_err(io::Error::other)?,
-                        final_use_head: self.issuer.revocations()?,
+                        lease_frontier: after,
+                        final_use_head: head,
                         physical_current,
                     },
                 })
