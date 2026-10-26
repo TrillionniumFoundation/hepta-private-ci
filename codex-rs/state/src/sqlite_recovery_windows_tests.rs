@@ -6,6 +6,9 @@ use std::os::windows::fs::OpenOptionsExt;
 use windows_sys::Win32::Security::ACE_HEADER;
 use windows_sys::Win32::Security::*;
 
+#[path = "sqlite_recovery_windows_namespace_tests.rs"]
+mod namespace;
+
 struct Fixture {
     root: std::path::PathBuf,
     home: std::path::PathBuf,
@@ -209,16 +212,63 @@ fn retained_windows_rejects_parent_junction_and_replacement() -> anyhow::Result<
         redirected.bind_existing_recovery_database(&alias.join("original.sqlite3")),
         Err(SqliteRecoveryError::Indeterminate)
     ));
-    let guard = fixture
-        .sqlite
-        .bind_existing_recovery_database(&fixture.path)?;
-    std::fs::rename(&fixture.home, fixture.root.join("retained-home"))?;
-    std::fs::create_dir(&fixture.home)?;
-    std::fs::write(&fixture.path, b"original database bytes")?;
+    // NTFS refuses MoveFileExW on a directory with an open child even when
+    // every handle shares DELETE. Replace the real local namespace instead;
+    // the original database and parent handles remain retained throughout.
+    let replacement = Fixture::new()?;
+    let mut namespace = namespace::DriveNamespace::create(&fixture.root)?;
+    let home = namespace.home();
+    let path = home.join("original.sqlite3");
+    let sqlite = super::super::SqliteConfig::new_for_testing(home.as_path().abs());
+    let guard = sqlite.bind_existing_recovery_database(&path)?;
+    guard.verify_inspection_unchanged()?;
+    let retained_id = identity::file_id(&guard.inner.database.descriptor)?;
+    let original_basic = basic(&guard.inner.database.descriptor)?;
+    let original_parent = basic(&guard.inner.parent.descriptor)?;
+    let destination = std::fs::OpenOptions::new()
+        .access_mode(FILE_WRITE_ATTRIBUTES | FILE_READ_ATTRIBUTES | READ_CONTROL)
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+        .open(&replacement.path)?;
+    set_basic(&destination, &original_basic)?;
+    let directory = std::fs::OpenOptions::new()
+        .access_mode(FILE_WRITE_ATTRIBUTES | FILE_READ_ATTRIBUTES | READ_CONTROL)
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+        .open(&replacement.home)?;
+    set_basic(&directory, &original_parent)?;
+    assert_eq!(
+        basic_tuple(&basic(&destination)?),
+        basic_tuple(&original_basic)
+    );
+    assert_eq!(
+        basic_tuple(&basic(&directory)?),
+        basic_tuple(&original_parent)
+    );
+    assert_eq!(
+        security::private_security(&directory)?,
+        security::private_security(&guard.inner.parent.descriptor)?
+    );
+    assert_eq!(
+        security::private_security(&destination)?,
+        security::private_security(&guard.inner.database.descriptor)?
+    );
+    assert_ne!(
+        identity::file_id(&directory)?,
+        identity::file_id(&guard.inner.parent.descriptor)?
+    );
+    namespace.replace(&replacement.root)?;
+    let actual = File::open(&path)?;
+    assert_eq!(std::fs::read(&path)?, b"original database bytes");
+    assert_ne!(identity::file_id(&actual)?, retained_id);
+    assert_eq!(
+        identity::file_id(&guard.inner.database.descriptor)?,
+        retained_id
+    );
     assert!(matches!(
         guard.verify_inspection_unchanged(),
         Err(SqliteRecoveryError::Indeterminate)
     ));
+    namespace.close()?;
     Ok(())
 }
 
