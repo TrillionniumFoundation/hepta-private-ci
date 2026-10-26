@@ -48,9 +48,8 @@ fn windows_git_wrapper_lifetime_fixture() {
         return;
     }
 
-    let child_pid_file = std::path::PathBuf::from(
-        std::env::var_os("CHILD_PID_FILE").expect("child PID path"),
-    );
+    let child_pid_file =
+        std::path::PathBuf::from(std::env::var_os("CHILD_PID_FILE").expect("child PID path"));
     let release_wrapper_file = std::path::PathBuf::from(
         std::env::var_os("RELEASE_WRAPPER_FILE").expect("wrapper release path"),
     );
