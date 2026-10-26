@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.next.source-independent-audit.v1",
+  "allocation_sha256": "6ad7fef099626d8ea1f4f6c123610016adfeca9aa828765f185f62d92afdb27e",
+  "writer_count": 228,
+  "individual_digits": 1920,
+  "unique_pixel_hashes": 1920,
+  "pair_count": 960,
+  "cross_role_writer_overlap": 0,
+  "cross_role_digit_overlap": 0,
+  "cross_role_pixel_overlap": 0,
+  "old_source_and_writer_exclusion": "Verified by register against all 60000 QMNIST train plus first10000 QMNIST test extended labels. Original pixels also checked against all 70000 manifest identities.",
+  "training_role": [
+    "native_calibration"
+  ],
+  "confirmation_roles": [
+    "control",
+    "native",
+    "media",
+    "joint"
+  ],
+  "statistical_unit": "Writer; not number of source pairs or emitted variants",
+  "unallocated_new_writers": 10,
+  "no_prior_qmnist_references_in_available_repository": true,
+  "unknown_external_use_attested": false,
+  "outcomes_accessed_by_audit": false
+}
