@@ -112,6 +112,14 @@ without these details cannot establish that a particular clock, freshness bound,
 thread scheduler or transport caused the refusal. A later Root peer error alone
 cannot establish which side first became unavailable.
 
+The native Root launcher also labels the original initialization, ownership
+handoff, writer registration, consumer-frontier creation and bootstrap capture
+errors. Authority initialization labels protected clock and original lease
+stages. These are static operation names attached to existing errors; they
+carry no policy, signing key or authority payload and never retry a failed step.
+A generic pre-service refusal from an earlier artifact remains unclassified
+until a corrected, source-bound artifact actually executes.
+
 The diagnostic stage changes no 500 ms bound, authority proof, policy, lease,
 cache recovery rule or effect retry rule. Source review and host regressions do
 not turn a failed native run into a success; the corrected evidence-bearing

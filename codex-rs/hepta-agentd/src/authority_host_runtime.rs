@@ -95,8 +95,9 @@ pub fn initialize_host_authority(
     .sync_all()?;
     let root = RootAuthorityDirectory::open(state).map_err(io::Error::other)?;
     let clock = Arc::new(
-        HostAuthorityClock::initialize(root.clone(), CLOCK_OWNER.into())
-            .map_err(io::Error::other)?,
+        HostAuthorityClock::initialize(root.clone(), CLOCK_OWNER.into()).map_err(|error| {
+            io::Error::other(format!("initialize protected Root clock: {error}"))
+        })?,
     );
     let frontier = Arc::new(
         HostAuthorityFrontierStore::initialize(
@@ -104,7 +105,9 @@ pub fn initialize_host_authority(
             LEASE_OWNER.into(),
             AuthorityLeaseFrontier::for_empty_epoch(1).map_err(io::Error::other)?,
         )
-        .map_err(io::Error::other)?,
+        .map_err(|error| {
+            io::Error::other(format!("initialize original lease frontier: {error}"))
+        })?,
     );
     let lease_path = state.join("leases");
     std::fs::DirBuilder::new().mode(0o700).create(&lease_path)?;
@@ -115,8 +118,10 @@ pub fn initialize_host_authority(
         clock.clone(),
         frontier,
     )
-    .map_err(io::Error::other)?;
-    let now = clock.now_unix_ms().map_err(io::Error::other)?;
+    .map_err(|error| io::Error::other(format!("open original lease registry: {error}")))?;
+    let now = clock
+        .now_unix_ms()
+        .map_err(|error| io::Error::other(format!("read protected Root clock: {error}")))?;
     let expiry = now
         .checked_add(bootstrap.lease_lifetime_ms)
         .ok_or_else(|| io::Error::other("lease expiry overflow"))?;
@@ -133,7 +138,7 @@ pub fn initialize_host_authority(
             },
             0,
         )
-        .map_err(io::Error::other)?;
+        .map_err(|error| io::Error::other(format!("publish original initial lease: {error}")))?;
     let issuer = DeploymentFinalUseIssuer::create_protected(
         &state.join("issuer"),
         bootstrap.signer_id.clone(),

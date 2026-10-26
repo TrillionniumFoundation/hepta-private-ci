@@ -282,32 +282,41 @@ async fn both_original_frontiers_finish_before_new_head_is_published() {
     })
     .await
     .unwrap();
-    let before = std::time::Instant::now();
-    assert!(
-        session
-            .verifier()
-            .verify(&session.authority(), &session.authority().agent_id)
-            .is_err()
-    );
-    assert!(before.elapsed() < Duration::from_millis(30));
-    assert_eq!(first.commits.load(Ordering::Acquire), 1);
-    assert_eq!(second.commits.load(Ordering::Acquire), 0);
+    let verification = session
+        .verifier()
+        .verify(&session.authority(), &session.authority().agent_id);
+    let first_commits = first.commits.load(Ordering::Acquire);
+    let second_commits = second.commits.load(Ordering::Acquire);
     second.wait.store(false, Ordering::Release);
-    tokio::time::timeout(Duration::from_millis(300), async {
+    let synchronized = tokio::time::timeout(Duration::from_millis(300), async {
         while session.revocations().is_err() {
             tokio::time::sleep(Duration::from_millis(2)).await;
         }
     })
-    .await
-    .unwrap();
-    let current = session.revocations().unwrap();
-    assert_eq!(current.revision, 2);
-    assert_eq!(device.revocation_head().unwrap(), current);
-    assert_eq!(notes.revocation_head().unwrap(), current);
-    assert_eq!(second.commits.load(Ordering::Acquire), 1);
+    .await;
+    let current = session.revocations();
+    let device_head = device.revocation_head();
+    let notes_head = notes.revocation_head();
+    let final_second_commits = second.commits.load(Ordering::Acquire);
     drop(session);
     tokio::time::sleep(Duration::from_millis(20)).await;
     peer.join().unwrap();
+    // The caller must finish while the second original frontier is blocked,
+    // specifically on the update barrier, not after a timeout or stale fence.
+    // This checks the state dependency without a host-scheduling 30ms bound.
+    assert!(
+        verification
+            .unwrap_err()
+            .contains("root writer revocation synchronization is incomplete")
+    );
+    assert_eq!(first_commits, 1);
+    assert_eq!(second_commits, 0);
+    synchronized.unwrap();
+    let current = current.unwrap();
+    assert_eq!(current.revision, 2);
+    assert_eq!(device_head.unwrap(), current);
+    assert_eq!(notes_head.unwrap(), current);
+    assert_eq!(final_second_commits, 1);
 }
 #[tokio::test]
 async fn uncertain_original_consumer_update_fences_even_with_fresh_root_responses() {

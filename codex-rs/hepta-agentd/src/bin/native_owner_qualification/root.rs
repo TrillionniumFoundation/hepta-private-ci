@@ -1,4 +1,5 @@
 use super::common::*;
+use anyhow::Context;
 use codex_hepta_agentd::*;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
@@ -127,9 +128,9 @@ pub fn run(boot: Boot) -> Result<()> {
     })?;
     drop(runtime);
     println!("HEPTA_NATIVE_GENESIS_COMPLETE original_sqlite=true");
-    handoff_fresh(Path::new(DATA))?;
-    handoff_fresh(Path::new(LOCAL))?;
-    let owner_pidfd = pidfd(boot.agent_pid)?;
+    handoff_fresh(Path::new(DATA)).context("native Root data ownership handoff")?;
+    handoff_fresh(Path::new(LOCAL)).context("native Root consumer ownership handoff")?;
+    let owner_pidfd = pidfd(boot.agent_pid).context("native Root Agentd lifetime descriptor")?;
     let deadline = Instant::now() + Duration::from_secs(60);
     loop {
         let status = std::fs::read_to_string(format!("/proc/{}/status", boot.agent_pid))?;
@@ -152,7 +153,10 @@ pub fn run(boot: Boot) -> Result<()> {
         .open("/dev/hepta-control")?;
     let native =
         AgentdHos2Device::from_bootstrap(control, &boot.bytes).map_err(anyhow::Error::msg)?;
-    let initial_usage = native.read_usage(1).map_err(anyhow::Error::msg)?;
+    let initial_usage = native
+        .read_usage(1)
+        .map_err(anyhow::Error::msg)
+        .context("native Root initial HOS2 observation")?;
     let expected_revision = initial_revision(&initial_usage, &boot.bytes)?;
     drop(native);
     let requested = Hos2InstallBudgetV1 {
@@ -187,7 +191,8 @@ pub fn run(boot: Boot) -> Result<()> {
         }),
         0o600,
     )?;
-    let initialized = initialize_host_authority(Path::new(STATE), &bootstrap_path)?;
+    let initialized = initialize_host_authority(Path::new(STATE), &bootstrap_path)
+        .context("native Root fresh authority initialization")?;
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)?
         .as_millis() as u64;
@@ -231,8 +236,10 @@ pub fn run(boot: Boot) -> Result<()> {
     let registration_path = admin.join("registered.json");
     write_json(&config_path, &config, 0o600)?;
     write_json(&registration_path, &registration, 0o600)?;
-    register_host_writer_authorization(&config_path)?;
-    initialize_host_authority_owners(&config_path, &registration_path, cut)?;
+    register_host_writer_authorization(&config_path)
+        .context("native Root original writer registration")?;
+    initialize_host_authority_owners(&config_path, &registration_path, cut)
+        .context("native Root original owner frontier initialization")?;
     let bundle = capture_host_authority_bootstrap(
         &config_path,
         &registration_path,
@@ -240,7 +247,8 @@ pub fn run(boot: Boot) -> Result<()> {
             device: Path::new(LOCAL).join("device"),
             notes: Path::new(LOCAL).join("notes"),
         },
-    )?;
+    )
+    .context("native Root original bootstrap capture")?;
     // Exact original request bytes, selected by Root from its native read.
     // This is a qualification handoff, not a grant or a replacement ledger.
     let intent_path = Path::new(RUN).join("native-intent.json");

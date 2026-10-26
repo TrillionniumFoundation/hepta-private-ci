@@ -11,6 +11,24 @@ path = "junit.xml"
 [profile.local]
 inherits = "default"
 
+# These scenarios seal/revalidate real child ELF bundles before lifecycle
+# assertions. A measured dev-small five-pair run reached ten healthy children
+# at ~55s, before the five full immutable-bundle adoption checks. Preserve all
+# sealing and product deadlines, serialize the two real process fixtures, and
+# bound only the larger test's outer watchdog to 120s. Full debug ELF runs are
+# separately recorded and are not qualified by this small-artifact profile.
+[test-groups.hepta_paired_process_product]
+max-threads = 1
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-supervisor) & test(five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash)'
+test-group = 'hepta_paired_process_product'
+slow-timeout = { period = "30s", terminate-after = 4 }
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-supervisor) & test(two_real_pairs_restart_one_without_peer_pid_churn)'
+test-group = 'hepta_paired_process_product'
+
 [test-groups.app_server_protocol_codegen]
 max-threads = 1
 
