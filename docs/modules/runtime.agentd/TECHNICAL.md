@@ -805,3 +805,81 @@ switching back to the original strict rights parser. The separate ignored
 Root test checks the empty-file/read-only boundary and irreversible seals;
 it must use the same isolated ordinary-user-built ELF workflow. These checks
 are component evidence, not a claim of completed native G2 or product launch.
+
+### Retained same-boot Notes recovery
+
+`PreparedHostNotesRecovery` composes the existing Root writer rotation,
+protected clean-Current adoption and Notes policy replacement. It creates no
+issuer, lease, Registry, checkpoint, consumer store or recovery ledger. The
+original Agentd factory and writer remain the only runtime/effect owners. This
+is a typed trusted-launcher entry; `serve-session` and `serve-fresh-session`
+retain their existing CLI meanings and do not call this recovery entry.
+
+`HostNotesRecoveryPredecessor` carries the original writer registration, signed
+writer proof, protected checkpoint receipt, exact prior Notes target and full
+policy lifetime. It has no deserialization entry. A local SQLite digest, peer
+JSON, surviving pathname or caller assertion of process death cannot replace
+these inputs. The public `open` reads the original Root0600 service config and
+registration, verifies the real required mount/source device and inode, opens
+the existing original clock/Registry/issuer, and pins the actual successor
+publisher. Its lease must already have been authorized by the original
+administrator; absent inputs are errors, never fixture defaults.
+
+| Stage | Required observation and allowed change |
+|---|---|
+| `open` | Exact protected `Current`, old signed proof and writer tuple, expired old local lease, actual same-boot predecessor retirement, live original successor lease, existing two consumer frontiers. No writer, Current or policy mutation. |
+| `reserve_session` | One real staged Session packet on Root's original pair; the original credential/pidfd/profile/memfd checks apply. Retains actual target, nonce, birth and deadline. A second reservation cannot replace them. |
+| `advance` preflight | Under the canonical successor Registry fence and original issuer lock, validate the complete old/new policy with the original grant validation and require the unique exact old slot. An invalid lifetime or wrong prior target must be rejected before rotation. |
+| `advance` mutations | Original writer authorization rotation, original exact Current adoption, then original Notes policy CAS. These are three bounded administrative boundaries, not one atomic transaction. Each retains its original owner and fence; Current adoption is enclosed in the successor's original live fence. |
+| `finish` | Only after a successful `advance` and repeated actual publisher/Session checks, seal and read back the original deployment memfd. Returns the same retained `PreparedHostAuthoritySession`, without fresh-filesystem entitlement. |
+| Caller continuation | Seal the original five-lane bootstrap against existing peer-owned consumer paths, perform the original late Root handoff and serve those retained owners. Only the recovered Agentd factory may send Activate and attach the real Notes channels. |
+
+An error from `advance` may follow a durable CAS. Keep the **same in-memory
+attempt** and its same original reservation; do not allocate another successor,
+target, lease or generation. The original rotation reconciles the exact retained
+proof. Current reconciliation accepts only the originally captured predecessor
+or the exact successor computed from that capture; reading an exact successor
+does not advance its counter again. The retained policy check permits only the
+same old or exact next policy, with the same writer and lifetime. A fresh capture
+cannot use that retry allowance. Successful repetition must leave the complete
+issuer state, Current, Registry frontier and both consumer frontiers unchanged.
+
+`finish` consumes the attempt. A sealing, readback or post-seal process failure
+is terminal for that attempt even if the earlier CAS completed. A partial memfd
+is never reset or blindly rewritten. This API does not recover arbitrary stages
+after losing the Root process or its retained attempt, migrate across boots,
+promote `Dirty`/`Publishing`/`Fenced`, or initialize fresh state as a recovery
+fallback. It does not issue a new clean-cut publication/terminal ACK merely by
+handing off an adopted Current. Unknown application effects still require the
+original writer's exact reconciliation and terminal-retirement path.
+
+The implementation is in
+[`root_notes_recovery.rs`](../../../codex-rs/hepta-agentd/src/root_notes_recovery.rs),
+[`authority_host_notes_recovery.rs`](../../../codex-rs/hepta-agentd/src/authority_host_notes_recovery.rs),
+[`authority_host_checkpoint_recovery.rs`](../../../codex-rs/hepta-agentd/src/authority_host_checkpoint_recovery.rs)
+and [`deployment_notes_recovery.rs`](../../../codex-rs/hepta-agentd/src/deployment_notes_recovery.rs).
+The original sealed deployment, FinalUse, CognitiveStore and lane schemas are
+unchanged. Use the [development gates](../../DEVELOPMENT.md#notes-recovery-development-and-qualification)
+for the exact component scopes.
+
+The retained-owner fixtures exercise real protected Root stores and pidfds,
+including rejected policy preflight, revoked successor, post-CAS uncertainty,
+exact repeat and changed/dirty successor refusal. Their publisher children are
+explicit test processes. The separate staged-Session fixtures use the public
+`open`/`reserve_session`/`advance`/`finish` APIs, real Root-owned files and bind,
+and pinned companion Session/App under a private display. They compare the
+actual reservation and process birth with the sealed deployment, repeat without
+mutation, and kill/reap the actual Session before admission to prove refusal
+without mutation. They stop before Activate, application descriptor delivery,
+five-lane consumer connection or any effect; a sleep publisher is still not a
+real Agentd runtime. These fixtures use disposable test authority and must never
+be promoted into production input material or described as a new release pair.
+
+Production still needs the original independently provisioned authority bundle,
+predecessor evidence and authorized successor; actual Fleet/Agentd/Session
+descriptor custody; original AuthBus trust/replay checkpoint and finite literal
+bindings; and an actual trusted-launcher caller retaining this attempt through
+uncertain results. The subsequent original Agentd recovery, five live lanes,
+Activate/Offer/Attached, admitted literal operation, durable application receipt,
+protected Current and terminal retirement must be exercised together. Source
+availability or a component receipt establishes none of those missing stages.

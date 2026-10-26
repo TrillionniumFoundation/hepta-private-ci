@@ -580,6 +580,48 @@ The Engineering Control Plane consumes the work-package DAG, team skills/capacit
 
 The Development DAG permits contract-first parallel work. The Activation DAG is stricter and governs integration, registration, runtime attachment and authority. The Evidence DAG prevents source, tests, semantics, causality, real model use, longitudinal efficacy, biomimicry, operator acceptance, promotion and release from collapsing into one boolean.
 
+### Notes recovery development and qualification
+
+The `runtime.agentd` same-boot Notes recovery work uses the
+[canonical retained-attempt contract](modules/runtime.agentd/TECHNICAL.md#retained-same-boot-notes-recovery).
+Implementations must keep the original writer, issuer, Registry, protected
+Current and two consumer owners. Do not enable a recovery CLI by routing it
+through fresh publication, injecting a service fixture or resetting a journal.
+Keep changes to public composition, original state transitions, actual process
+fixtures and trusted-launcher integration reviewable as separate stages.
+
+Compile and run ordinary tests as the ordinary build account through `just test`:
+
+```text
+just test --locked -p codex-hepta-agentd --lib -E 'test(deployment_issuer::writer::tests::) | test(deployment_issuer::notes::tests::) | test(authority_host_runtime::session::notes_startup::)'
+```
+
+Ignored Root tests use that exact prebuilt library ELF and its original Cargo
+and nextest binaries metadata. The Root worker uses private mount fixtures,
+an absolute fresh JUnit path and the original `just test --run-ignored only`
+runner; it never performs a Root Cargo build. Retain source/tree and tool/ELF
+hashes before and after, actual exits, raw logs and each required test exactly
+once with no failed, skipped or retried case.
+
+| Gate | Selection and scope |
+|---|---|
+| Retained owners | `test(authority_host_checkpoint::adoption::tests::) - test(staged_session::)`; eighteen original Current/adoption and Notes CAS cases. `HEPTA_CHECKPOINT_TEST_ROOT` must be an isolated protected Root0700 ancestry. |
+| Public loader and actual Session | `test(staged_session::)`; `root_notes_recovery_public_loader_actual_session_seals_exact_reservation` and `root_notes_recovery_public_loader_dead_session_preserves_all_original_state`. Supply the real private bind/source, pinned ordinary-built Session/App copies, isolated Xvfb and dedicated fixture UID/GID 60001. |
+
+The Session worker requires `HEPTA_NOTES_RECOVERY_BIND` and
+`HEPTA_NOTES_RECOVERY_BIND_SOURCE` with actual matching mount identity;
+`HEPTA_NOTES_SESSION_BIN`, `HEPTA_NOTES_SESSION_SHA256` and
+`HEPTA_NOTES_APP_SHA256` for the exact companion files; and the operator's
+isolated display, runtime root and fresh evidence directory. These are explicit
+test inputs, not a production authority profile. Missing inputs must fail the
+test; do not substitute fabricated packets, a Direct bootstrap or a fake Activate.
+
+Finish with the original scoped `just fmt`/`just fix` workflow. Report baseline
+dependency lint failures separately; do not add blanket warning allowances.
+An actual Session startup receipt proves its declared boundary only. The
+trusted production launcher and original Agentd five-lane/effect/terminal
+integration remain separate work and require the original production inputs.
+
 Every package declares exact paths, predecessors, exit criteria, stop conditions and authority delta. Valid stop outcomes are `PACKAGE_CLOSED_CANDIDATE`, `BASE_DRIFT`, `BLOCKED_UPSTREAM`, `BLOCKED_EXTERNAL`, `STOP_CONDITION` and `RESUME_REQUIRED`.
 
 ## 19. Delivery roadmap

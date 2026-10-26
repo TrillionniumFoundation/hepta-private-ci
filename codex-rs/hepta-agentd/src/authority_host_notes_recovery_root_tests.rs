@@ -24,6 +24,14 @@ use std::os::fd::AsRawFd;
 use std::os::unix::fs::MetadataExt;
 use std::path::Path;
 
+#[path = "root_notes_recovery_session_tests.rs"]
+mod staged_session;
+
+enum FixtureLayout {
+    Component,
+    OriginalHostBind(HostAuthorityBindIdentity),
+}
+
 struct OriginalFixture {
     _root: tempfile::TempDir,
     _old: Publisher,
@@ -38,6 +46,7 @@ struct OriginalFixture {
     previous: CognitiveCheckpointReceipt,
     old_target: NotesTargetIdentity,
     new_target: NotesTargetIdentity,
+    lease_owner: &'static str,
 }
 
 fn private(path: &Path) {
@@ -47,22 +56,40 @@ fn private(path: &Path) {
 
 impl OriginalFixture {
     async fn new() -> Self {
-        let root = tempfile::tempdir_in(
-            std::env::var_os("HEPTA_CHECKPOINT_TEST_ROOT")
-                .expect("explicit root-owned data-bind qualification root required"),
-        )
-        .unwrap();
+        Self::with_layout(FixtureLayout::Component).await
+    }
+
+    async fn with_layout(fixture_layout: FixtureLayout) -> Self {
+        let (parent, clock_owner, lease_owner) = match &fixture_layout {
+            FixtureLayout::Component => (
+                std::path::PathBuf::from(
+                    std::env::var_os("HEPTA_CHECKPOINT_TEST_ROOT")
+                        .expect("explicit root-owned data-bind qualification root required"),
+                ),
+                "fixture-clock",
+                "fixture-leases",
+            ),
+            FixtureLayout::OriginalHostBind(bind) => {
+                bind.verify().unwrap();
+                (
+                    bind.mountpoint.clone(),
+                    "root-authority-clock-v1",
+                    "root-authority-leases-v1",
+                )
+            }
+        };
+        let root = tempfile::tempdir_in(parent).unwrap();
         std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
         let state = root.path().join("state");
         private(&state);
         let directory = RootAuthorityDirectory::open(&state).unwrap();
         let clock = Arc::new(
-            HostAuthorityClock::initialize(directory.clone(), "fixture-clock".into()).unwrap(),
+            HostAuthorityClock::initialize(directory.clone(), clock_owner.into()).unwrap(),
         );
         let frontier = Arc::new(
             HostAuthorityFrontierStore::initialize(
                 directory,
-                "fixture-leases".into(),
+                lease_owner.into(),
                 AuthorityLeaseFrontier::for_empty_epoch(1).unwrap(),
             )
             .unwrap(),
@@ -72,7 +99,7 @@ impl OriginalFixture {
         let registry = Arc::new(
             AuthorityLeaseRegistry::open_state_dir_with_trust(
                 &lease_path,
-                "fixture-leases".into(),
+                lease_owner.into(),
                 clock.clone(),
                 frontier,
             )
@@ -256,12 +283,15 @@ impl OriginalFixture {
         let config = HostAuthorityServiceConfig {
             schema_version: 1,
             state_dir: state,
-            // This component fixture does not invoke the production mount loader.
-            required_bind: HostAuthorityBindIdentity {
-                mountpoint: root.path().into(),
-                source_path: root.path().into(),
-                device: metadata.dev(),
-                inode: metadata.ino(),
+            required_bind: match fixture_layout {
+                // This original component profile does not invoke the mount loader.
+                FixtureLayout::Component => HostAuthorityBindIdentity {
+                    mountpoint: root.path().into(),
+                    source_path: root.path().into(),
+                    device: metadata.dev(),
+                    inode: metadata.ino(),
+                },
+                FixtureLayout::OriginalHostBind(bind) => bind,
             },
             signer_id: key.key_id,
             expected_verifying_key: key.verifying_key,
@@ -321,6 +351,7 @@ impl OriginalFixture {
             previous,
             old_target,
             new_target,
+            lease_owner,
         }
     }
 
@@ -355,43 +386,59 @@ impl OriginalFixture {
         AuthorityLeaseFrontier,
         Vec<FinalUseFrontier>,
     ) {
-        let issuer = HostAuthorityFrontierStore::<serde_json::Value>::open(
-            RootAuthorityDirectory::open(&self.config.state_dir.join("issuer")).unwrap(),
-            "local-final-use-issuer".into(),
-        )
-        .unwrap()
-        .load("local-final-use-issuer")
-        .unwrap();
-        let checkpoint = HostAuthorityFrontierStore::open(
-            RootAuthorityDirectory::open(self.config.checkpoint_state_dir.as_ref().unwrap())
-                .unwrap(),
-            STORE_OWNER.into(),
-        )
-        .unwrap()
-        .load(STORE_OWNER)
-        .unwrap();
-        let consumers = self.config.consumers.as_ref().unwrap();
-        let frontiers = [&consumers.device, &consumers.notes]
-            .into_iter()
-            .map(|slot| {
-                HostAuthorityFrontierStore::open(
-                    RootAuthorityDirectory::open(&slot.state_dir).unwrap(),
-                    slot.owner_id.clone(),
-                )
-                .unwrap()
-                .load(&slot.owner_id)
-                .unwrap()
-            })
-            .collect();
-        (
-            issuer,
-            checkpoint,
-            self.registry.frontier().unwrap(),
-            frontiers,
-        )
+        snapshot_original(&self.config, self.lease_owner)
     }
 }
 
+fn snapshot_original(
+    config: &HostAuthorityServiceConfig,
+    lease_owner: &str,
+) -> (
+    serde_json::Value,
+    CognitiveCheckpointHead,
+    AuthorityLeaseFrontier,
+    Vec<FinalUseFrontier>,
+) {
+    let issuer = HostAuthorityFrontierStore::<serde_json::Value>::open(
+        RootAuthorityDirectory::open(&config.state_dir.join("issuer")).unwrap(),
+        "local-final-use-issuer".into(),
+    )
+    .unwrap()
+    .load("local-final-use-issuer")
+    .unwrap();
+    let checkpoint = HostAuthorityFrontierStore::open(
+        RootAuthorityDirectory::open(config.checkpoint_state_dir.as_ref().unwrap()).unwrap(),
+        STORE_OWNER.into(),
+    )
+    .unwrap()
+    .load(STORE_OWNER)
+    .unwrap();
+    let consumers = config.consumers.as_ref().unwrap();
+    let frontiers = [&consumers.device, &consumers.notes]
+        .into_iter()
+        .map(|slot| {
+            HostAuthorityFrontierStore::open(
+                RootAuthorityDirectory::open(&slot.state_dir).unwrap(),
+                slot.owner_id.clone(),
+            )
+            .unwrap()
+            .load(&slot.owner_id)
+            .unwrap()
+        })
+        .collect();
+    (
+        issuer,
+        checkpoint,
+        HostAuthorityFrontierStore::open(
+            RootAuthorityDirectory::open(&config.state_dir).unwrap(),
+            lease_owner.into(),
+        )
+        .unwrap()
+        .load(lease_owner)
+        .unwrap(),
+        frontiers,
+    )
+}
 #[tokio::test]
 #[ignore = "explicit root-owned data-bind qualification"]
 async fn root_notes_recovery_original_policy_refusals_preserve_writer_current_and_frontiers() {

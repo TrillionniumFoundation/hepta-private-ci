@@ -258,6 +258,13 @@ record the original helper/receiver/signature deployment, source-bound Runtime
 peer, actual Root writer/human policy and the exact native effect plus retained
 terminal. Missing external inputs remain explicit startup/qualification errors.
 
+For an existing same-boot clean Current, the typed `PreparedHostNotesRecovery`
+composition and its retained-attempt/failure rules are defined in the
+[canonical runtime.agentd recovery contract](../../docs/modules/runtime.agentd/TECHNICAL.md#retained-same-boot-notes-recovery).
+The existing CLI commands keep their meanings; the typed API is not an
+already-wired production recovery launcher. Follow the linked development
+gates and preserve their component-only qualification scope.
+
 ## Development verification
 
 Use the repository's `just test` entry, with separate scopes for the layers:
