@@ -1,0 +1,346 @@
+{
+  "schema": "independent-original-Hepta-merge-source-and-original900-window-review-v1",
+  "recorded_utc": "2026-10-26T13:41:25.019259+00:00",
+  "reviewed_actual_merge": "78d2edf99885329bc9793b6075c2c46bda44fd3c",
+  "merge_ordered_parents": [
+    "fbacb3633cc8065abf41acff5b226f0b5fc7af75",
+    "2c301ec0b7c90d12a02a3f1d04500f0268197fb8"
+  ],
+  "tree": "71c4b52cef9068263f22cc9435e5db182179d612",
+  "root_snapshot_may_advance_after_review": true,
+  "code_verdict": "PASS_STATIC_ONLY: all original code/assertion/resource bytes preserved apart from one nonduplicate macro import; fixture wholefile exact rootfbac and scope matches production construction",
+  "source_macro_only": true,
+  "fixture_sha256": "1ed659459e0cc3af3f4066b6b83c09332989d89533a075eb4a6d155b58af4b0e",
+  "old_automatic_duplicate_fixture_archive": {
+    "path": "work/ci-follow/root-Hepta-preserve-ROG-four-commit-integration-20261026-001/semantic-auto-merge-duplicate-fields-original.rs",
+    "sha256": "6dd5a2ad4be47b2c847e6322f9b1c89f80348766419fbeefb14efdc73542b27b"
+  },
+  "four_original_ROG_commits_intact_and_ancestors_of_actual_merge": [
+    {
+      "sha": "fa0ce3e02766e0c9703a205622df6fa5c0226452",
+      "tree": "41e8d920610158bdc777d4a7a3ca2b3352ae4b66",
+      "ordered_parents": [
+        "155264e3b5d3dcdafa244cd0c31c336ab25a207f"
+      ],
+      "raw_sha256": "741f22ac30cb5430ae07f0e7cb719d7e47c703684f45c088491cd3b844687960"
+    },
+    {
+      "sha": "a4a2a1c8ed2ab9e13eaa98d697155e176153b12e",
+      "tree": "3311d74cb3eb4def6628d74a2682688afa7c46c3",
+      "ordered_parents": [
+        "fa0ce3e02766e0c9703a205622df6fa5c0226452"
+      ],
+      "raw_sha256": "d4176905151d6690a0a42ff43fab7b874a4d19da0294980a6bd55856f35f9743"
+    },
+    {
+      "sha": "db0684867b1f4af5f74e114ca058b1b87cb7f2c2",
+      "tree": "f5916d482dc00ddbd5cfe1ee19668877841372af",
+      "ordered_parents": [
+        "a4a2a1c8ed2ab9e13eaa98d697155e176153b12e"
+      ],
+      "raw_sha256": "c5f9abc96ec3c37229aa36f3f3df853a7904999ed4244fecae12b9e3961a90c9"
+    },
+    {
+      "sha": "2c301ec0b7c90d12a02a3f1d04500f0268197fb8",
+      "tree": "d955d121439ade5ea790d6fe0e58e94b0beffede",
+      "ordered_parents": [
+        "db0684867b1f4af5f74e114ca058b1b87cb7f2c2"
+      ],
+      "raw_sha256": "4150271ecd61087f6b156758eb80b427571f98964162db9516a5e557b8316dc7"
+    }
+  ],
+  "docs_verdict": "Historical155 compile101/fa0ce uncompiled/nineNOT_RUN remain explicit, all execution/release false. One existing strict mapped-source drift must be rebound by real generator after this merge; not qualification PASS.",
+  "maps_at_merge": [
+    {
+      "module": "inference.worker",
+      "sourceBase": {
+        "commit": "a4a2a1c8ed2ab9e13eaa98d697155e176153b12e",
+        "tree": "3311d74cb3eb4def6628d74a2682688afa7c46c3"
+      },
+      "observedAtHead": {
+        "commit": "a4a2a1c8ed2ab9e13eaa98d697155e176153b12e",
+        "tree": "3311d74cb3eb4def6628d74a2682688afa7c46c3"
+      },
+      "mapped_path_changes_at_real_merge": [
+        "codex-rs/hepta-infer-worker-host/src/smollm_neural_read_tests.rs"
+      ],
+      "all_declared_sourceObjects_match_own_historical_anchor": true,
+      "claimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "repositoryControlledDocumentationGapsClosed": true,
+        "repositoryControlledMappingGapsClosed": true,
+        "repositoryControlledSourceBoundaryGapsClosed": false,
+        "productExecutionComplete": false,
+        "deploymentQualificationComplete": false,
+        "independentAcceptanceComplete": false,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "sourceObservationScope": null,
+      "currentSourceEvidenceScope": null,
+      "headAttestationScope": null
+    },
+    {
+      "module": "learning.ledger",
+      "sourceBase": {
+        "commit": "db0684867b1f4af5f74e114ca058b1b87cb7f2c2",
+        "tree": "f5916d482dc00ddbd5cfe1ee19668877841372af"
+      },
+      "observedAtHead": {
+        "commit": "db0684867b1f4af5f74e114ca058b1b87cb7f2c2",
+        "tree": "f5916d482dc00ddbd5cfe1ee19668877841372af"
+      },
+      "mapped_path_changes_at_real_merge": [],
+      "all_declared_sourceObjects_match_own_historical_anchor": true,
+      "claimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "durableRunStartJournalSourceImplemented": true,
+        "authenticatedProductRunStartComposition": false,
+        "implementedOperationMappingComplete": true
+      },
+      "sourceObservationScope": "Current source navigation was independently re-observed at sourceBase. Source objects and observed paths bind that source snapshot; this observation does not renew historical execution, acceptance, activation or release evidence.",
+      "currentSourceEvidenceScope": "The unchanged currentSourceEvidence and sourceEvidencePolicy fields retain the historical cbb3cee durable-run-start observation and its original no-drift policy. They do not claim absence of later source/test changes or current execution. Current navigation is independently bound by sourceBase, observedAtHead and sourceObjects.",
+      "headAttestationScope": null
+    },
+    {
+      "module": "memory.federation",
+      "sourceBase": {
+        "commit": "db0684867b1f4af5f74e114ca058b1b87cb7f2c2",
+        "tree": "f5916d482dc00ddbd5cfe1ee19668877841372af"
+      },
+      "observedAtHead": {
+        "commit": "db0684867b1f4af5f74e114ca058b1b87cb7f2c2",
+        "tree": "f5916d482dc00ddbd5cfe1ee19668877841372af"
+      },
+      "mapped_path_changes_at_real_merge": [],
+      "all_declared_sourceObjects_match_own_historical_anchor": true,
+      "claimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "sourceObservationScope": "Current source navigation was independently re-observed at sourceBase. Source objects and observed paths bind that source snapshot; this observation does not renew historical execution, acceptance, activation or release evidence.",
+      "currentSourceEvidenceScope": null,
+      "headAttestationScope": "The unchanged headAttestation object records its historical candidate branch, base, head, tree and pending execution status. Its headMeaning and evidence paths are historical descriptions, not an attestation or execution receipt for the current sourceBase."
+    }
+  ],
+  "required_existing_cli": {
+    "clean_real_merge_first": true,
+    "command": [
+      "python3",
+      "-B",
+      "scripts/hepta-implementation-maps.py",
+      "migrate",
+      "--module",
+      "inference.worker"
+    ],
+    "expected_only_map": "docs/modules/inference.worker/IMPLEMENTATION_MAP.json",
+    "no_schema_policy_or_positive_execution_change": true,
+    "derived_check_commands": [
+      [
+        "python3",
+        "-B",
+        "scripts/hepta-module-docs.py",
+        "refresh-indexes",
+        "--check"
+      ],
+      [
+        "python3",
+        "-B",
+        "scripts/hepta-module-docs.py",
+        "refresh-derived",
+        "--check"
+      ]
+    ],
+    "dependent_maps": "Do not mechanically rebind learning.ledger/memory.federation: no mapped drift presently. Only if a separate TECHNICAL/index edit actually changes MODULE_DOCS, first commit that real snapshot, then migrate the two dependent maps from clean source. Final clean docs commit qualification verify is source/navigation only."
+  },
+  "original_new_model900": {
+    "source_H": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+    "original_900_absolute_monotonic_deadline_ns": 85759885333815,
+    "original_declared_total_seconds": 900,
+    "go_recorded_started_wall_ns": 1793016872094466284,
+    "pipeline_result_finished_wall_ns": 1793017456333830982,
+    "recorded_start_to_pipeline_result_wall_interval_seconds": "584.239364698",
+    "recorded_interval_is_not_exact_whole_owner_monotonic_elapsed": true,
+    "exact_whole_owner_monotonic_elapsed": "UNAVAILABLE: original outer terminal/result do not record monotonic terminal timestamp or elapsed; includes neither precise post-result file close nor outer terminal publication bound. Do not fabricate.",
+    "recorded_wall_start_utc": "2026-10-26T12:14:32.094466+00:00",
+    "recorded_pipeline_result_utc": "2026-10-26T12:24:16.333831+00:00",
+    "actual_cli_build_seconds": 360.86242942399986,
+    "actual_host_compile_seconds": 220.78508032200625,
+    "cli_build_exit": 0,
+    "host_compile_exit": 101,
+    "runtime_tests_executed": 0,
+    "outer_timeout": false,
+    "outer_returncode": 1,
+    "current_ROG_observed_utc": "2026-10-26T13:37:47.819167+00:00",
+    "current_ROG_monotonic_ns": 89855605696595,
+    "current_ROG_boot_id": "51431760-e144-490f-8e00-66f1ba9ec388",
+    "current_monotonic_minus_original_deadline_seconds": "4095.72036278",
+    "original_run_boot_id_not_recorded": true,
+    "arithmetic_900_minus_recorded_wall_interval_seconds": "315.760635302",
+    "arithmetic_residual_is_NOT_reusable_budget": true,
+    "legal_remaining_window_for_new_justtest_seconds": 0,
+    "reason": "Original source owner used an absolute monotonic900s single window with restart count0. That original absolute deadline is past at current ROG observation; no continuation was kept alive inside the oldwindow. Exact wholeowner monotonic was not instrumented, and oldboot linkage unavailable, neither grants newauthority. No fresh900/600, no borrow/reset or new run.",
+    "separate_old_budgets": [
+      "Original Hepta supervisor900.233 exceeded900 FAIL unchanged",
+      "Root worker scoped600 timeout/exit124 unchanged; separate diagnostic not credit"
+    ],
+    "no_test_no_fmt_no_build_no_commit_no_Git_or_root_source_mutation": true
+  },
+  "task_complete": false,
+  "merge_ready": false,
+  "source_qualification_not_pass_due_required_map_refresh": true,
+  "original_members": [
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/merge-78d-raw-commit.txt",
+      "bytes": 884,
+      "sha256": "a0308a72a16ef8de1f3c800bef120f77d0a556ba311f62b0c4fb41e50a29361a"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/merge-code-against-fbac.diff",
+      "bytes": 557,
+      "sha256": "f72f34c86c035d23175ad4b6f1e7fd99f7cf3cf9a422a677aac0db36c3d4e3b6"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/raw-fa0ce3e02766e0c9703a205622df6fa5c0226452.txt",
+      "bytes": 271,
+      "sha256": "741f22ac30cb5430ae07f0e7cb719d7e47c703684f45c088491cd3b844687960"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/raw-a4a2a1c8ed2ab9e13eaa98d697155e176153b12e.txt",
+      "bytes": 286,
+      "sha256": "d4176905151d6690a0a42ff43fab7b874a4d19da0294980a6bd55856f35f9743"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/raw-db0684867b1f4af5f74e114ca058b1b87cb7f2c2.txt",
+      "bytes": 290,
+      "sha256": "c5f9abc96ec3c37229aa36f3f3df853a7904999ed4244fecae12b9e3961a90c9"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/raw-2c301ec0b7c90d12a02a3f1d04500f0268197fb8.txt",
+      "bytes": 282,
+      "sha256": "4150271ecd61087f6b156758eb80b427571f98964162db9516a5e557b8316dc7"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/inference.worker-map-at-merge.json",
+      "bytes": 11443,
+      "sha256": "e21b03fbd3d9f4894a44e65a9d9076f8108d049f582bde45a4127f078bbb9100"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/learning.ledger-map-at-merge.json",
+      "bytes": 24679,
+      "sha256": "633c919b3d38e5226a3bcb92522b65fb1bdc6a16de5e5f8d6bfe76db0b321b79"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/memory.federation-map-at-merge.json",
+      "bytes": 13959,
+      "sha256": "e29a4a2140cc3a15135dace36d1bd0ccf02da92b0b947fa1bad4ba0546b4db06"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/TECHNICAL.md",
+      "bytes": 28216,
+      "sha256": "79a4b631f6655dbec1e6efcba235673d5dc9661f5c7da9bd77c8d92efc1814b0"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/END_TO_END_LEARNING_SEQUENCE.md",
+      "bytes": 40035,
+      "sha256": "ae072de00bc13804cd2d60097d0df4b51479461a2bfea59e7cbf876bb29b45f3"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/ROG-00-validate-once.py",
+      "bytes": 29222,
+      "sha256": "58ad1c93b011411c1b876d7078a6f43b57bb08d716a49381be0eaab81eaf3a60"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/ROG-01-whole-pipeline.log",
+      "bytes": 124309,
+      "sha256": "48508115146011151708ff7338280e8129c749afd9dac6f27711f24abee6df1d"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/ROG-02-stage-00.log",
+      "bytes": 71986,
+      "sha256": "b35bf263174ec55d9b5d0fff5536799fd20a8acc78d0e25d92f5e005e7e2539f"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/ROG-03-actual-source-cli.json",
+      "bytes": 2327,
+      "sha256": "383ef0eb549c179e0f6f5006b49456abf1c94450202b5868668fe99e515058e4"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/ROG-04-chain-export-readback.json",
+      "bytes": 94681,
+      "sha256": "7125e4ed536b1a9b686d8fab9b9bd6499541ab18daf127dfaf355be24728b308"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/ROG-05-go-consumed.json",
+      "bytes": 74661,
+      "sha256": "17c8a73bb4cec4af5fffe58b8b53809f4a2dada358221d5ba4bcebfaf6cb884f"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/ROG-06-old-cli-absent-immediately-before-build.json",
+      "bytes": 774,
+      "sha256": "0acc521654985b47b554b4b9fa88dff5b447bfbded52c8ee4a516d00db6f3250"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/ROG-07-old-cli-absent-not-backed-up.json",
+      "bytes": 774,
+      "sha256": "0acc521654985b47b554b4b9fa88dff5b447bfbded52c8ee4a516d00db6f3250"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/ROG-08-outer-resource-envelope.json",
+      "bytes": 485,
+      "sha256": "9d42095db9bd66ac2c22a2d9ef0766e40d58d941a14fab3f35e1c0ab95295449"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/ROG-09-outer-terminal.json",
+      "bytes": 510,
+      "sha256": "1fb4ac5460a6095194333952935f6195c462b515ff75fc9eb0903ca02900d6a6"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/ROG-10-pipeline-started-once.json",
+      "bytes": 65,
+      "sha256": "8a800cd70ddc580c3432d5bd73acc21b33ed76237ec7d3460d6c10e67e90fd82"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/ROG-11-result.json",
+      "bytes": 1476,
+      "sha256": "63b49e28b668988a6e6b9fcbad69205f2910020f9a58c0760b43684829f44317"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/ROG-12-stage-00-result.json",
+      "bytes": 1060,
+      "sha256": "ffebf1bff5e22555cb127c042c615b52e4567b77ee048bb00394430d945d55f8"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/ROG-13-stage-00-started.json",
+      "bytes": 576,
+      "sha256": "9808854b4fab58fb83aad14b685cba870645347fa7f3aa76b8b1f4b1f3b002a9"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/ROG-14-stage-01-result.json",
+      "bytes": 1050,
+      "sha256": "d639e62967bf371e4a73b0a836dd7d853973dcb883955cb832f81031522d0289"
+    },
+    {
+      "path": "work/ci-follow/independent-Hepta-staged-merge-and-original900-budget-20261026-001/review-originals/ROG-15-stage-01-started.json",
+      "bytes": 564,
+      "sha256": "b350ad7df2238ec0585abb9fa7e5e4f7144f24c4e50e4ef862033197378a9f89"
+    }
+  ]
+}
