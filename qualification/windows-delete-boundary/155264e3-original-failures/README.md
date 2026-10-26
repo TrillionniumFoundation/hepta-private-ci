@@ -7,3 +7,6 @@ Four original ZIPs match the official SHA256 digests, each49 original members. F
 Read ZIP contents as data. No archive content was executed. receipt.json binds original paths, digests, native targets, exact ordered parents, failure excerpts, source increment review and cancellation boundaries. Source records/case logs inside ZIPs are original data; summaries are derived observations. This is not a new sandbox, kernel or whole-owner qualification.
 
 The public pair snapshot is non-atomic, observed11:33–11:41UTC2026-10-26:Chain53fb and Hepta155. Old4c8/de133 results are not inherited. Later root local commits are not published/tested by this packet. No CI dispatch/rerun/cancel/push, source edit, product test/model/build or service change was performed. All necessary checks and merge readiness remainNO_GO.
+
+
+Storage note: the original artifacts listed in the PN0 source-history index remain in immutable source ancestor `9d88e3e5acdd65272581b32735af8a08cfb65dbc`, with exact path/blob/SHA256/length. See `qualification/pn0-ci/SOURCE_HISTORY_EVIDENCE.md` from the repository root before replaying the original manifests. These manifests and failures retain their original pinned9d scope; this is not current-head qualification.

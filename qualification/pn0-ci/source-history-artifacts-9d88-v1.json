@@ -1,0 +1,734 @@
+{
+  "schema": "hepta.audit.source-history-artifact-index.v1",
+  "schemaVersion": 1,
+  "scope": "Original historical raw data only; no new execution, qualification, success or authority",
+  "retentionPolicy": {
+    "kind": "source_history_ancestor",
+    "pinnedEvidenceMustBeAncestorOfSource": true,
+    "mutableBranchIsNotEvidenceAnchor": true,
+    "existingSourcePattern": "scripts/hepta-paper-evidence.py verify_retained_commit and verify_source; this audit index is not a paper evidence binding"
+  },
+  "evidenceCommit": "9d88e3e5acdd65272581b32735af8a08cfb65dbc",
+  "evidenceParentCommit": "3e1afb5d3e199abf4fccab78f6812ffaf64f77ea",
+  "evidenceTree": "90bfff72ff58144b5f098ef49244b82916c35fc8",
+  "artifacts": [
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/ROG-01-whole-pipeline.log",
+      "gitBlobSha": "29b834fda87dc3329dc086c253dea18abd92b9f7",
+      "sha256": "48508115146011151708ff7338280e8129c749afd9dac6f27711f24abee6df1d",
+      "bytes": 124309,
+      "kind": "original_historical_bytes",
+      "availableAt": "9d88e3e5acdd65272581b32735af8a08cfb65dbc:evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/ROG-01-whole-pipeline.log"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/ROG-02-stage-00.log",
+      "gitBlobSha": "c54bf55d20d83630b9ad238ab106f19c985324b9",
+      "sha256": "b35bf263174ec55d9b5d0fff5536799fd20a8acc78d0e25d92f5e005e7e2539f",
+      "bytes": 71986,
+      "kind": "original_historical_bytes",
+      "availableAt": "9d88e3e5acdd65272581b32735af8a08cfb65dbc:evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/ROG-02-stage-00.log"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/original-logs/job-121613021780.decoded-full.log",
+      "gitBlobSha": "e7497221aa68608b4e4a1b64d2e8fbf8f1766598",
+      "sha256": "803a1299dbfba9795a4793b9ead9c4e3574e27e655cdbb57b714f5a54ec50fa5",
+      "bytes": 196665,
+      "kind": "original_historical_bytes",
+      "availableAt": "9d88e3e5acdd65272581b32735af8a08cfb65dbc:qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/original-logs/job-121613021780.decoded-full.log"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/original-logs/job-121613022912.decoded-full.log",
+      "gitBlobSha": "2a946ccfd118d18bbdb53cc86bdb8979b8d38035",
+      "sha256": "af3da538771d8ba96af194692b7edc565ddaadd52653bc5cebee62ce335ea62f",
+      "bytes": 861933,
+      "kind": "original_historical_bytes",
+      "availableAt": "9d88e3e5acdd65272581b32735af8a08cfb65dbc:qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/original-logs/job-121613022912.decoded-full.log"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/original-logs/job-121613022949.decoded-full.log",
+      "gitBlobSha": "65b41bcb48d0dc454689d64a85538e5c30a841d4",
+      "sha256": "405a6f4e6f95662534171e438945f486641fcb8b92340e3e2ff6f5a73cccc8bf",
+      "bytes": 861283,
+      "kind": "original_historical_bytes",
+      "availableAt": "9d88e3e5acdd65272581b32735af8a08cfb65dbc:qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/original-logs/job-121613022949.decoded-full.log"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/original-logs/job-121613023005.decoded-full.log",
+      "gitBlobSha": "8cc1d692e5386476004881bbe88e108f863ced2c",
+      "sha256": "2165a4e5f8f7db60b3a2554c56c0d777476dbfc93f41fb25a0c9df127b5f53f4",
+      "bytes": 696957,
+      "kind": "original_historical_bytes",
+      "availableAt": "9d88e3e5acdd65272581b32735af8a08cfb65dbc:qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/original-logs/job-121613023005.decoded-full.log"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/original-logs/job-121613023226.decoded-full.log",
+      "gitBlobSha": "26508151a455a27f4c083e2b8fff61b0b36bff4a",
+      "sha256": "dfa9625c1dbc0f128a91ca9d893db5f3c65aff1dfc1e88e4cdbc517da31c07fe",
+      "bytes": 1121885,
+      "kind": "original_historical_bytes",
+      "availableAt": "9d88e3e5acdd65272581b32735af8a08cfb65dbc:qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/original-logs/job-121613023226.decoded-full.log"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-dependency-migration-and-original-timeouts-20261026/original-source-controls-and-failures.tar.gz",
+      "gitBlobSha": "e95fd4d6e3b41cb91e65536ab3419406b7580081",
+      "sha256": "ea87d96ef74b1c816ce83472753f0b9753c8bb04d3fea9d3632abd61f1923009",
+      "bytes": 5320883,
+      "kind": "original_historical_bytes",
+      "availableAt": "9d88e3e5acdd65272581b32735af8a08cfb65dbc:qualification/pn0-ci/155264e3-dependency-migration-and-original-timeouts-20261026/original-source-controls-and-failures.tar.gz"
+    },
+    {
+      "path": "qualification/pn0-ci/linux-real-platform-binding-20261026/independent-final-source-review.json",
+      "gitBlobSha": "f9ccb344d4bbedd20f3956f74d6b825774e2dba6",
+      "sha256": "1d02fa07777ee79482dd4447a7671e8c8f20c52f1495cda2622327bbf81b7df7",
+      "bytes": 20261,
+      "kind": "original_historical_bytes",
+      "availableAt": "9d88e3e5acdd65272581b32735af8a08cfb65dbc:qualification/pn0-ci/linux-real-platform-binding-20261026/independent-final-source-review.json"
+    },
+    {
+      "path": "qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/original-host-first-RED.tar.gz",
+      "gitBlobSha": "86f442789d95533bbe1b88bf35ac2e05fca3d866",
+      "sha256": "ed77000b94b0f8a25855282ba88b8b931ee13c9d791f721fefb65825a6505ca7",
+      "bytes": 1129912,
+      "kind": "original_historical_bytes",
+      "availableAt": "9d88e3e5acdd65272581b32735af8a08cfb65dbc:qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/original-host-first-RED.tar.gz"
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures/121535241216.full-original.log",
+      "gitBlobSha": "206dde95dd53f85e6d95fd5daf40eba3ec2efe2b",
+      "sha256": "8f9cad00c773ce2333987046c927f88f157719d053152bfed3d87c10073de6f1",
+      "bytes": 1825397,
+      "kind": "original_historical_bytes",
+      "availableAt": "9d88e3e5acdd65272581b32735af8a08cfb65dbc:qualification/windows-delete-boundary/155264e3-original-failures/121535241216.full-original.log"
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures/121535241448.full-original.log",
+      "gitBlobSha": "4144b8fca02209896f458e33710a6e39ce746593",
+      "sha256": "0f45177514b96662a59c090d49165ec144fe765d1101ca5d238d2c5a5f5d92b5",
+      "bytes": 1824426,
+      "kind": "original_historical_bytes",
+      "availableAt": "9d88e3e5acdd65272581b32735af8a08cfb65dbc:qualification/windows-delete-boundary/155264e3-original-failures/121535241448.full-original.log"
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures/121535241484.full-original.log",
+      "gitBlobSha": "05ad216a27358c466eda3c087a9b38904296ba02",
+      "sha256": "a7de1524b6c0d408d5a13aa379becdf8cbbba871feecf3a1017d2752b404aad8",
+      "bytes": 1826162,
+      "kind": "original_historical_bytes",
+      "availableAt": "9d88e3e5acdd65272581b32735af8a08cfb65dbc:qualification/windows-delete-boundary/155264e3-original-failures/121535241484.full-original.log"
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures/121535242058.full-original.log",
+      "gitBlobSha": "2bc952543eae12fe555de4ef0e310583946e7741",
+      "sha256": "ef27f30a5cbcefea7db719d83f76bbfed6757cfcb4d2b9346835f23392ef42ee",
+      "bytes": 1824176,
+      "kind": "original_historical_bytes",
+      "availableAt": "9d88e3e5acdd65272581b32735af8a08cfb65dbc:qualification/windows-delete-boundary/155264e3-original-failures/121535242058.full-original.log"
+    }
+  ],
+  "authorityFlags": {
+    "execution": false,
+    "installation": false,
+    "promotion": false,
+    "budgetRefund": false,
+    "qualification": false
+  },
+  "originalManifests": "Unchanged original manifests/receipts describe the original pinned commit layout. Materialize selected original paths before replaying their original verification. Missing ancestor/blob or wrong bytes must refuse.",
+  "sourcePolicy": "No cap or allowlist or scanner change. Only already-published9d artifacts are referenced; this is not a route to stage future hidden large assets.",
+  "originalPackages": [
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure",
+      "gitTreeSha": "3a10549e7161ebf68fa68c60997f17b1e9d5f665",
+      "files": 19
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair",
+      "gitTreeSha": "04c4ad95b8abdff7afabb487eac2c63f7490fbbb",
+      "files": 24
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-dependency-migration-and-original-timeouts-20261026",
+      "gitTreeSha": "972e1657480924072da3333e32f4b7d5c9223d10",
+      "files": 9
+    },
+    {
+      "path": "qualification/pn0-ci/linux-real-platform-binding-20261026",
+      "gitTreeSha": "a81eb04bfb881867f4e17a7979bbc8efe2023f3b",
+      "files": 6
+    },
+    {
+      "path": "qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026",
+      "gitTreeSha": "64810b9ee7a1db0b10da047169b81561be3e9b3e",
+      "files": 8
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures",
+      "gitTreeSha": "b2a098f522ba39455075e4f7eb4f5120d23cb9d1",
+      "files": 14
+    }
+  ],
+  "recoveryFiles": [
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/README.md",
+      "gitBlobSha": "16cbc6b6d92d01bda3679bd369ce8311119c4b3f",
+      "sha256": "29e7ed11b54aa333f0ff28fc2083e7b7fe355bca25102dacb766db5d637000f5",
+      "bytes": 1299,
+      "gitMode": "100644"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/ROG-00-validate-once.py",
+      "gitBlobSha": "98536ff5da0ea4bc40a6340738cd406e1fdfa0d9",
+      "sha256": "58ad1c93b011411c1b876d7078a6f43b57bb08d716a49381be0eaab81eaf3a60",
+      "bytes": 29222,
+      "gitMode": "100644"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/ROG-01-whole-pipeline.log",
+      "gitBlobSha": "29b834fda87dc3329dc086c253dea18abd92b9f7",
+      "sha256": "48508115146011151708ff7338280e8129c749afd9dac6f27711f24abee6df1d",
+      "bytes": 124309,
+      "gitMode": "100644"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/ROG-02-stage-00.log",
+      "gitBlobSha": "c54bf55d20d83630b9ad238ab106f19c985324b9",
+      "sha256": "b35bf263174ec55d9b5d0fff5536799fd20a8acc78d0e25d92f5e005e7e2539f",
+      "bytes": 71986,
+      "gitMode": "100644"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/ROG-03-actual-source-cli.json",
+      "gitBlobSha": "6c07c7a79151b7ad92a026ff058d148cdc11876a",
+      "sha256": "383ef0eb549c179e0f6f5006b49456abf1c94450202b5868668fe99e515058e4",
+      "bytes": 2327,
+      "gitMode": "100644"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/ROG-06-old-cli-absent-immediately-before-build.json",
+      "gitBlobSha": "ab03594bdfe0fb272422fa8998c0d4bdd32f55e5",
+      "sha256": "0acc521654985b47b554b4b9fa88dff5b447bfbded52c8ee4a516d00db6f3250",
+      "bytes": 774,
+      "gitMode": "100644"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/ROG-07-old-cli-absent-not-backed-up.json",
+      "gitBlobSha": "ab03594bdfe0fb272422fa8998c0d4bdd32f55e5",
+      "sha256": "0acc521654985b47b554b4b9fa88dff5b447bfbded52c8ee4a516d00db6f3250",
+      "bytes": 774,
+      "gitMode": "100644"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/ROG-08-outer-resource-envelope.json",
+      "gitBlobSha": "370d19760259d658620954d189049d14aff03689",
+      "sha256": "9d42095db9bd66ac2c22a2d9ef0766e40d58d941a14fab3f35e1c0ab95295449",
+      "bytes": 485,
+      "gitMode": "100644"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/ROG-09-outer-terminal.json",
+      "gitBlobSha": "990584d21c9a5e595c115ca041dd012e07d3ab9c",
+      "sha256": "1fb4ac5460a6095194333952935f6195c462b515ff75fc9eb0903ca02900d6a6",
+      "bytes": 510,
+      "gitMode": "100644"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/ROG-10-pipeline-started-once.json",
+      "gitBlobSha": "c3e3539875f837fad4ec54b96ff9f0c06f8ac071",
+      "sha256": "8a800cd70ddc580c3432d5bd73acc21b33ed76237ec7d3460d6c10e67e90fd82",
+      "bytes": 65,
+      "gitMode": "100644"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/ROG-11-result.json",
+      "gitBlobSha": "bc09f2564c1cec96655cf131424085a8475be6c5",
+      "sha256": "63b49e28b668988a6e6b9fcbad69205f2910020f9a58c0760b43684829f44317",
+      "bytes": 1476,
+      "gitMode": "100644"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/ROG-12-stage-00-result.json",
+      "gitBlobSha": "e84d21653e2426cbb51b25cb1bf54a8c67107ba2",
+      "sha256": "ffebf1bff5e22555cb127c042c615b52e4567b77ee048bb00394430d945d55f8",
+      "bytes": 1060,
+      "gitMode": "100644"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/ROG-13-stage-00-started.json",
+      "gitBlobSha": "0923beb559fedc298cea5066aff941110f60c96e",
+      "sha256": "9808854b4fab58fb83aad14b685cba870645347fa7f3aa76b8b1f4b1f3b002a9",
+      "bytes": 576,
+      "gitMode": "100644"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/ROG-14-stage-01-result.json",
+      "gitBlobSha": "5ee8c86c1d63ca0f86c0ba9c93f5f7d26ed3b111",
+      "sha256": "d639e62967bf371e4a73b0a836dd7d853973dcb883955cb832f81031522d0289",
+      "bytes": 1050,
+      "gitMode": "100644"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/ROG-15-stage-01-started.json",
+      "gitBlobSha": "5294a6987b9205281cc24f2f0d813d638b9c3629",
+      "sha256": "b350ad7df2238ec0585abb9fa7e5e4f7144f24c4e50e4ef862033197378a9f89",
+      "bytes": 564,
+      "gitMode": "100644"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/actual-merge-receipt.json",
+      "gitBlobSha": "b5a49027f79cb08d8490300fc06d713d19d74201",
+      "sha256": "796ec333656687b63703bdc88145e2fff41f21e3f9f6a1411d82b4f25aede6a4",
+      "bytes": 762,
+      "gitMode": "100644"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/independent-review-freeze.json",
+      "gitBlobSha": "28737b1b98757d823ec68333495270d1eecfa1d7",
+      "sha256": "2941199daedb8c7256dfbe7c7831317bdfd02c0818ba4fb952fc4483170a6fab",
+      "bytes": 17541,
+      "gitMode": "100644"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/manifest.json",
+      "gitBlobSha": "b3d4dcb56fc5bba6c1b26d06974894b15a3ac4fc",
+      "sha256": "10808cd46d71928add06ccbdfb6bc4c76a1be5ae3e68b4511670e2876207e8ee",
+      "bytes": 5566,
+      "gitMode": "100644"
+    },
+    {
+      "path": "evidence/pon-upgrade-implementation-20261018/native-rounds/155-model-compile-original-failure/semantic-merge-resolution.json",
+      "gitBlobSha": "5edc37c23de0672f5687ee01e6fb025fc6665cf7",
+      "sha256": "7b47536194c63d4aba833006abbbaa5e66543f688dbeb5b4708fc323283d3c4a",
+      "bytes": 707,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/README.md",
+      "gitBlobSha": "5bda17a1e9826508db47b525c2ab2e55415339fa",
+      "sha256": "d188d3022770f5f1100fe5079596062bb0775e4c8d5c7d1d8b14f383848774e9",
+      "bytes": 1797,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/local-original-and-after/after-2-stderr.log",
+      "gitBlobSha": "4210c74f218aef8e0092c123374a708980e95a0a",
+      "sha256": "70b5d78a8f94715e2ecdff0d5ca4ffa74cd6cc264eecb1205d9ad02817675d16",
+      "bytes": 116,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/local-original-and-after/after-2-stdout.log",
+      "gitBlobSha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/local-original-and-after/after-apply-receipt.json",
+      "gitBlobSha": "1fa065aae4e16f069105990a84dd24f0bc2c0e48",
+      "sha256": "ee26deda1b3f1f9cc3ec68b8a1ce42d01a160805a32a543c9dea208502c82ee1",
+      "bytes": 2023,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/local-original-and-after/baseline-0-stderr.log",
+      "gitBlobSha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/local-original-and-after/baseline-0-stdout.log",
+      "gitBlobSha": "b9c1b405207bc8ef4b6100441ba7771493c6f8f2",
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "bytes": 48,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/local-original-and-after/baseline-1-stderr.log",
+      "gitBlobSha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/local-original-and-after/baseline-1-stdout.log",
+      "gitBlobSha": "1f9ebc2e6ff220b483f51cb1cb80f7e360c2d0d7",
+      "sha256": "31afee59885532188a826f881fc49c8c7cfffaea4f06372b7e08058089706c57",
+      "bytes": 16026,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/local-original-and-after/baseline-2-stderr.log",
+      "gitBlobSha": "6ebdb22cfbf1ba8d16dcce7532ce623e3f4444e1",
+      "sha256": "0e6e8fb9607110215645c21d4292ac4a51fbb4e8eb444eee90405a5897298a3a",
+      "bytes": 1874,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/local-original-and-after/baseline-2-stdout.log",
+      "gitBlobSha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/local-original-and-after/baseline-receipt.json",
+      "gitBlobSha": "5f10d7bb8a9eb451262f825fe2158c31587b9555",
+      "sha256": "6c78d128ee6376571d20cb03e96532f72461be57e10a2889b4c5424e4e0f70b3",
+      "bytes": 2233,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/local-original-and-after/final-fmt-receipt.json",
+      "gitBlobSha": "61eb585f0aef651c828e67c80721094744b60f7e",
+      "sha256": "ed9398a2996731d74f1800fa53d44c844c6b9629ff5c070896f02f15a021682c",
+      "bytes": 437,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/local-original-and-after/fmt.stderr",
+      "gitBlobSha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/local-original-and-after/fmt.stdout",
+      "gitBlobSha": "3c392c1e9260334291874d1c0eaad4cb4d7c054e",
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+      "bytes": 73,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/original-independent-receipt.json",
+      "gitBlobSha": "e0442f027aad3ee48d715a296eb46a0ed58aca40",
+      "sha256": "729ffa3af0b3a0b99850a41a57bfdb6ce7138b7ccb8f16f0f9d6c21df7983969",
+      "bytes": 5291,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/original-logs/job-121613021761.decoded-full.log",
+      "gitBlobSha": "e2304851f80c37565df93582769de7fc1f4b4e07",
+      "sha256": "91002b5a5b8370a0df3ece2d0506b121daf0212d5e2a81243001d6222f550f0a",
+      "bytes": 86742,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/original-logs/job-121613021780.decoded-full.log",
+      "gitBlobSha": "e7497221aa68608b4e4a1b64d2e8fbf8f1766598",
+      "sha256": "803a1299dbfba9795a4793b9ead9c4e3574e27e655cdbb57b714f5a54ec50fa5",
+      "bytes": 196665,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/original-logs/job-121613022912.decoded-full.log",
+      "gitBlobSha": "2a946ccfd118d18bbdb53cc86bdb8979b8d38035",
+      "sha256": "af3da538771d8ba96af194692b7edc565ddaadd52653bc5cebee62ce335ea62f",
+      "bytes": 861933,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/original-logs/job-121613022949.decoded-full.log",
+      "gitBlobSha": "65b41bcb48d0dc454689d64a85538e5c30a841d4",
+      "sha256": "405a6f4e6f95662534171e438945f486641fcb8b92340e3e2ff6f5a73cccc8bf",
+      "bytes": 861283,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/original-logs/job-121613023005.decoded-full.log",
+      "gitBlobSha": "8cc1d692e5386476004881bbe88e108f863ced2c",
+      "sha256": "2165a4e5f8f7db60b3a2554c56c0d777476dbfc93f41fb25a0c9df127b5f53f4",
+      "bytes": 696957,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/original-logs/job-121613023226.decoded-full.log",
+      "gitBlobSha": "26508151a455a27f4c083e2b8fff61b0b36bff4a",
+      "sha256": "dfa9625c1dbc0f128a91ca9d893db5f3c65aff1dfc1e88e4cdbc517da31c07fe",
+      "bytes": 1121885,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/repair-receipt.json",
+      "gitBlobSha": "d7a5019ed8f83bdc1098b6aabce591d4a627302e",
+      "sha256": "5a8ca999199340fbf4c1cb95bd9482cfb29f0ba13f87a2ce1eeadc4eebcd8e23",
+      "bytes": 5371,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/review/candidate.patch",
+      "gitBlobSha": "b1ea78b7210a8461007583d4567238878e6053d4",
+      "sha256": "fe73df4a3e9c49019a3d44c806f8b72614085b0f6ab9333cf777191c8cd09041",
+      "bytes": 746,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/review/role-review.json",
+      "gitBlobSha": "2ae603f5e6aea0da66f8dcd69c9dca21a34dc8d9",
+      "sha256": "4bd4e173c863fdd1d9c1fc41b48f8e1f85aeca48b4445a85e2f6e96325863b2c",
+      "bytes": 3681,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-dependency-migration-and-original-timeouts-20261026/README.md",
+      "gitBlobSha": "0117a44c939a6a093a9f2a7e1f24ccfda5ab0123",
+      "sha256": "f7dc8bcbef30e7f55add182d14630e2a6f312aba09ade9b605ce2621cb365d8b",
+      "bytes": 7558,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-dependency-migration-and-original-timeouts-20261026/members.json",
+      "gitBlobSha": "eb61576d5d75ff949c30e6224a3e3d61f152b2ea",
+      "sha256": "851851ef044a7a18a180640714f6d9b002997c476034fb9e697ce902fe6dbdfe",
+      "bytes": 116421,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-dependency-migration-and-original-timeouts-20261026/original-source-controls-and-failures.tar.gz",
+      "gitBlobSha": "e95fd4d6e3b41cb91e65536ab3419406b7580081",
+      "sha256": "ea87d96ef74b1c816ce83472753f0b9753c8bb04d3fea9d3632abd61f1923009",
+      "bytes": 5320883,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-dependency-migration-and-original-timeouts-20261026/pre-commit-final-fmt-members.json",
+      "gitBlobSha": "fdccde490a16e81477172abc85ba80dc8cfcabc7",
+      "sha256": "bbe9c7cc7f68cf41e9ade3cbddc836b9c8a09492677067fa06f315066c0d8b3f",
+      "bytes": 837,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-dependency-migration-and-original-timeouts-20261026/pre-commit-final-fmt-receipt.json",
+      "gitBlobSha": "17493f63ecf5ba6bcd7f9fb83f295074f65e468d",
+      "sha256": "fcfcdd3c15e0b299bcb5d5788c480ec8bc1e28e70fd90aeb90a0e9d16938df6c",
+      "bytes": 324,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-dependency-migration-and-original-timeouts-20261026/pre-commit-final-fmt.stderr",
+      "gitBlobSha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-dependency-migration-and-original-timeouts-20261026/pre-commit-final-fmt.stdout",
+      "gitBlobSha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-dependency-migration-and-original-timeouts-20261026/zstd-real-http-consumer-original.tar.gz",
+      "gitBlobSha": "e783bbf3e564138d48913c4c6aa2624faac94860",
+      "sha256": "f7712c7bccf5e7240bdb1a800ecb11ce49298431ed2be411471d3d4354771de9",
+      "bytes": 7855,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/155264e3-dependency-migration-and-original-timeouts-20261026/zstd-real-http-consumer.members.json",
+      "gitBlobSha": "45efa928a7091ef5f899ab375ac7c547e103a716",
+      "sha256": "84604d869f728b9f1553603c72bca21079ee533c366838952fc9bdbe888e24a5",
+      "bytes": 2158,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/linux-real-platform-binding-20261026/README.md",
+      "gitBlobSha": "5f94dd4e1ec7742f5d1166781f5c2ad81c7018f0",
+      "sha256": "62d1d8c252bda2ffbb63df4ea2bfb15c28a27a492e76a897c5a7e67407a6d8f1",
+      "bytes": 2870,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/linux-real-platform-binding-20261026/final-fmt-receipt.json",
+      "gitBlobSha": "eb6d79fc7aff5cb64c4166584969797a2d449ed6",
+      "sha256": "df4d17388ae3e4b5dbd09f0dd5bc5d3f521db7f00f513ee5d9b5133f936d8ad1",
+      "bytes": 356,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/linux-real-platform-binding-20261026/independent-final-review-inputs.json",
+      "gitBlobSha": "28d4ebedfb898530aac506f2a013c84849fbf232",
+      "sha256": "25cc45b1f13789743c0f6773f43f04222d2cb0ecaadd4b0b8bb4f36b210727a4",
+      "bytes": 5341,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/linux-real-platform-binding-20261026/independent-final-source-review.json",
+      "gitBlobSha": "f9ccb344d4bbedd20f3956f74d6b825774e2dba6",
+      "sha256": "1d02fa07777ee79482dd4447a7671e8c8f20c52f1495cda2622327bbf81b7df7",
+      "bytes": 20261,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/linux-real-platform-binding-20261026/members.json",
+      "gitBlobSha": "e6776334671d59a44450ed41777ff749f387c20d",
+      "sha256": "e052ef968be433ebfb8d67dde449ab481e5c028bb12d9f80aa0baffc3f4ff4fc",
+      "bytes": 14270,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/linux-real-platform-binding-20261026/original-source-and-routing-controls.tar.gz",
+      "gitBlobSha": "0ccb8a1f22d4f8129b185bf404aa987487ba9a56",
+      "sha256": "f3e8ddad5558f6e9aa46c6010d595552696bb07056707686ecc2f5534938a2e8",
+      "bytes": 311853,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/README.md",
+      "gitBlobSha": "1c9bb58ec267b052ee26c28c6190ff7b6ec04b7c",
+      "sha256": "31cba3e770bafdf531620e93126f16e44110fdbedce1ced6ad55a3c561cfccf8",
+      "bytes": 3096,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/independent-review-receipt.json",
+      "gitBlobSha": "de4b1bc3efd0d7814501bef3bef4dfb9aa0a3765",
+      "sha256": "f23010a3bad662c1e8bde88ecc833f01fe34be69247ad805697b168f7cecb205",
+      "bytes": 30853,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/original-host-first-RED.tar.gz",
+      "gitBlobSha": "86f442789d95533bbe1b88bf35ac2e05fca3d866",
+      "sha256": "ed77000b94b0f8a25855282ba88b8b931ee13c9d791f721fefb65825a6505ca7",
+      "bytes": 1129912,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/original-host-manifest.json",
+      "gitBlobSha": "dd8b85f3f320d0a39b899510e36b0c22110a3062",
+      "sha256": "923a8bb5044e084b0a87cbfbafd61330a8b4e968447223490abb2aa27f6a691b",
+      "bytes": 8281,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/original-host-receipt.json",
+      "gitBlobSha": "00c2a9d3085078525ac81425a951603f738555be",
+      "sha256": "b8cdd0e81d765ed195a92e827e7bea2907359f13455270f75e0cf9b1821c5929",
+      "bytes": 4308,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/source-map-final-PASS-receipt.json",
+      "gitBlobSha": "d5d3e80861655c6b2be885f0511a93b2a5b1aa42",
+      "sha256": "0f4a18fc18b1de3fc6689f3818e423a8c066fc64cbc2b0c790e8d8edcdd9ca1c",
+      "bytes": 894,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/source-map-first-FAIL-receipt.json",
+      "gitBlobSha": "01b0daf3c07e0ffee0e7f26fcba041388a72f569",
+      "sha256": "d1dc78bf85a6ad923f565976c7125342e5789f45b02633e1a4344ccb617a4f21",
+      "bytes": 919,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/source-map-second-FAIL-receipt.json",
+      "gitBlobSha": "d11b7c07333dacfa74d12d56cb245f1fcd43f2f0",
+      "sha256": "bb2696b55f6c86c0c9d888f3d89328c607fbb31e4ca2c480484c721e72e0c1b3",
+      "bytes": 832,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures/121535241216.full-original.log",
+      "gitBlobSha": "206dde95dd53f85e6d95fd5daf40eba3ec2efe2b",
+      "sha256": "8f9cad00c773ce2333987046c927f88f157719d053152bfed3d87c10073de6f1",
+      "bytes": 1825397,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures/121535241448.full-original.log",
+      "gitBlobSha": "4144b8fca02209896f458e33710a6e39ce746593",
+      "sha256": "0f45177514b96662a59c090d49165ec144fe765d1101ca5d238d2c5a5f5d92b5",
+      "bytes": 1824426,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures/121535241484.full-original.log",
+      "gitBlobSha": "05ad216a27358c466eda3c087a9b38904296ba02",
+      "sha256": "a7de1524b6c0d408d5a13aa379becdf8cbbba871feecf3a1017d2752b404aad8",
+      "bytes": 1826162,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures/121535242058.full-original.log",
+      "gitBlobSha": "2bc952543eae12fe555de4ef0e310583946e7741",
+      "sha256": "ef27f30a5cbcefea7db719d83f76bbfed6757cfcb4d2b9346835f23392ef42ee",
+      "bytes": 1824176,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures/12645314535.zip",
+      "gitBlobSha": "d6677e1f67b1fae94cd766ba864270103b905f1c",
+      "sha256": "295751144efa9bcf487da216a5ab8505069c8828ba61917e500a4711887eada1",
+      "bytes": 73985,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures/12645413630.zip",
+      "gitBlobSha": "e09e27bcb4760fc591e4224dc24057a58a69183c",
+      "sha256": "79c09228228803ab1171d3ea2f82efa74ba963e8ae4267bf6431b96d752e403d",
+      "bytes": 73902,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures/12645643016.zip",
+      "gitBlobSha": "e3fbeb93e4729108d60f3075026778ba9fa6bac0",
+      "sha256": "c470f7ac06e62406c31fd3f9b4893c704f40734ba29f25fd3583d1c29f2c60e8",
+      "bytes": 73908,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures/12646505709.zip",
+      "gitBlobSha": "060f797709b9681b58f143f9fb50f31ea1abc2f0",
+      "sha256": "af2e67092a5ef7dd38d6371708c977c1c9d71b5129cde4b5089a6afd56bf6098",
+      "bytes": 73928,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures/README.md",
+      "gitBlobSha": "4f99d4fe226d67046d6a5dfe29b95373e6bf4256",
+      "sha256": "8c09707d079a64c1036847636691d15b44b51e7b316004f351d67f0b41bdc409",
+      "bytes": 1707,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures/all80-original-case-log-hashes.json",
+      "gitBlobSha": "dec630dc4e343112d008cbfdecff16365a2874d6",
+      "sha256": "0b47f027e3edf86608c78ab2b1b625534da9f851bacb6df0196cef13c0181d3f",
+      "bytes": 26719,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures/manifest.json",
+      "gitBlobSha": "133fba673c5bffcc6889c9ea69ee727efc5008e2",
+      "sha256": "3fbe4646370a56698493d46ebbc979e197c45d3092d4333f901341c270c9ace1",
+      "bytes": 3223,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures/public-pair-snapshot.json",
+      "gitBlobSha": "deb4e0ba7d8a42aac5d920b3ff5283903c4c8a96",
+      "sha256": "6507068e1d2c3f2af6ff90b9162133cc83950e278f279caedeea368f8b76839b",
+      "bytes": 25111,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures/receipt.json",
+      "gitBlobSha": "aadf8c88f501c0f78999e5a1984c61c2d272437c",
+      "sha256": "ba36cb8092d54c6b8374dc1fc16b01e17f98f2caa4df170ee5d912ec1e46b5dc",
+      "bytes": 67151,
+      "gitMode": "100644"
+    },
+    {
+      "path": "qualification/windows-delete-boundary/155264e3-original-failures/retention-index.json",
+      "gitBlobSha": "ad25f4139afd12da0b9905781f3cfbe1be6afcbf",
+      "sha256": "3c4b490c206944144b0a714322d6f06a4b67b903530f8cb85e3b5de06212189c",
+      "bytes": 4857,
+      "gitMode": "100644"
+    }
+  ],
+  "recoveryFileCount": 80,
+  "recoveryBytes": 18840968,
+  "recoveryScope": "Complete original six packages at pinned9d, including all original manifests/receipts and unmoved siblings; file modes are recorded as Git provenance, recovered data are private non-execution copies."
+}

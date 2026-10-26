@@ -42,3 +42,6 @@ The original broad-identity-delete and legacy-delete-boundary failures, whole pa
 The archive excludes live source copies, target trees, Bazel output bases and caches. It includes the original upstream crate, authored and formatting patches, official advisories, all original validation logs, both failed DPoP revisions, generated Bazel readbacks, complete hosted timeout logs and independent reviews. This ordinary historical evidence archive is not an experiment input package, fresh prepared state, storage/network budget proof or native qualification. No original raw result is overwritten by a later adjudication.
 
 Additional real HTTP consumer validation is retained byte-for-byte in `zstd-real-http-consumer-original.tar.gz` with `zstd-real-http-consumer.members.json`. This was the previously unresolved zstd consumer check, not a repeat or renewal of any expired DPoP/SDK/model/W1 window. All 76 candidate source files remained exact.
+
+
+Storage note: the original artifacts listed in the PN0 source-history index remain in immutable source ancestor `9d88e3e5acdd65272581b32735af8a08cfb65dbc`, with exact path/blob/SHA256/length. See `qualification/pn0-ci/SOURCE_HISTORY_EVIDENCE.md` from the repository root before replaying the original manifests. These manifests and failures retain their original pinned9d scope; this is not current-head qualification.

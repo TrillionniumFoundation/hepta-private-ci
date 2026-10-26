@@ -11,3 +11,6 @@ Actual GNU/musl toolchain resolution, std/sysroot/C++/V8 ABI, remote-execution c
 The pinned actual repository/toolchain source and parser checks establish a reviewable route only. No prebuilt artifact substitution, security ignore, original assertion, runner increase, target deletion, deadline extension or old timeout relabel occurred. Original Windows native twenty groups and all pair steps are untouched. `task_complete=false`, `merge_ready=false`, **NO_GO**.
 
 `members.json` pins the historical source/primary evidence, original source-generator helper errors, exact proposal, new controls and RED/PASS logs. Every archive member was read back. This ordinary archive is not a fresh prepared package, native or resource qualification.
+
+
+Storage note: the original artifacts listed in the PN0 source-history index remain in immutable source ancestor `9d88e3e5acdd65272581b32735af8a08cfb65dbc`, with exact path/blob/SHA256/length. See `qualification/pn0-ci/SOURCE_HISTORY_EVIDENCE.md` from the repository root before replaying the original manifests. These manifests and failures retain their original pinned9d scope; this is not current-head qualification.
