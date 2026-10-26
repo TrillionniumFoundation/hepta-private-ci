@@ -1,6 +1,35 @@
 //! Explicit trusted-launcher rotation in the one canonical issuer frontier.
 use super::*;
 
+impl HostAuthorityWriterRegistration {
+    /// Non-authorizing shape check shared by original rotation and Root's
+    /// pre-CAS administration. Canonical authority leases must be distinct;
+    /// the original local durable writer lease deliberately retains its ID.
+    pub(crate) fn validate_successor(&self, successor: &Self) -> io::Result<()> {
+        self.validate()?;
+        successor.validate()?;
+        if self.authority_lease.lease_id == successor.authority_lease.lease_id
+            || self.registered_agent_id != successor.registered_agent_id
+            || self.local_lease_id != successor.local_lease_id
+            || self.local_lease_generation.checked_add(1) != Some(successor.local_lease_generation)
+            || self.spawn_generation >= successor.spawn_generation
+            || self.owner_epoch >= successor.owner_epoch
+            || self.authority_lease.binding.principal_id
+                != successor.authority_lease.binding.principal_id
+            || self.authority_lease.binding.operation_class
+                != successor.authority_lease.binding.operation_class
+            || self.authority_lease.binding.destination_id
+                != successor.authority_lease.binding.destination_id
+            || self.authority_lease.binding.scope_sha256
+                != successor.authority_lease.binding.scope_sha256
+            || self.authority_lease.authority_epoch != successor.authority_lease.authority_epoch
+        {
+            return Err(io::Error::other("invalid writer successor"));
+        }
+        Ok(())
+    }
+}
+
 impl DeploymentFinalUseIssuer {
     /// Replace exactly one retained writer after its original registry lease
     /// is retired and the complete successor is live under the same owner.
@@ -30,27 +59,7 @@ impl DeploymentFinalUseIssuer {
             .as_ref()
             .ok_or_else(|| io::Error::other("protected issuer required"))?
             .verifier;
-        predecessor.validate()?;
-        successor.validate()?;
-        if predecessor.registered_agent_id != successor.registered_agent_id
-            || predecessor.local_lease_id != successor.local_lease_id
-            || predecessor.local_lease_generation.checked_add(1)
-                != Some(successor.local_lease_generation)
-            || predecessor.spawn_generation >= successor.spawn_generation
-            || predecessor.owner_epoch >= successor.owner_epoch
-            || predecessor.authority_lease.binding.principal_id
-                != successor.authority_lease.binding.principal_id
-            || predecessor.authority_lease.binding.operation_class
-                != successor.authority_lease.binding.operation_class
-            || predecessor.authority_lease.binding.destination_id
-                != successor.authority_lease.binding.destination_id
-            || predecessor.authority_lease.binding.scope_sha256
-                != successor.authority_lease.binding.scope_sha256
-            || predecessor.authority_lease.authority_epoch
-                != successor.authority_lease.authority_epoch
-        {
-            return Err(io::Error::other("invalid writer successor"));
-        }
+        predecessor.validate_successor(successor)?;
         let lease = &successor.authority_lease;
         let token = verifier
             .verify_use(&lease.lease_id, lease.revision, &lease.binding)

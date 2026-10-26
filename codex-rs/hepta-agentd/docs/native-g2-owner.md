@@ -79,6 +79,11 @@ actually expire. The entry's explicitly provisioned finite writer TTL is 20 s,
 so this handoff can occur inside the unchanged 30 s native recovery grace; it
 never extends the watchdog, grace, grant, guest timeout or exchange deadlines.
 
+The local durable writer retains its lease ID and increments its generation.
+The canonical successor authority lease uses a distinct ID at revision one; the
+original expired authority lease remains intact. The shared original successor
+validation runs before Root can write the new canonical lease.
+
 Root rotates only the exact old registration/proof into the actual successor
 Starting generation using the existing issuer/key/counter. A lost rotation
 reply may reconcile that exact already retained successor through the original

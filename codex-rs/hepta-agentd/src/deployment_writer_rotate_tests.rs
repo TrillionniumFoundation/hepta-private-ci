@@ -26,6 +26,52 @@ fn rotate(
 }
 
 #[test]
+fn same_canonical_lease_id_is_refused_before_any_predecessor_replacement()
+-> Result<(), Box<dyn std::error::Error>> {
+    fn bytes(
+        root: &std::path::Path,
+    ) -> io::Result<std::collections::BTreeMap<std::path::PathBuf, Vec<u8>>> {
+        let mut result = std::collections::BTreeMap::new();
+        for entry in std::fs::read_dir(root)? {
+            let entry = entry?;
+            if entry.file_type()?.is_dir() {
+                result.extend(bytes(&entry.path())?);
+            } else {
+                result.insert(entry.path(), std::fs::read(entry.path())?);
+            }
+        }
+        Ok(result)
+    }
+    let f = Fixture::new();
+    let old = f
+        .issuer
+        .register_writer_authorization(&f.writer, &f.registry.verifier())?;
+    let before = f.registry.read_lease(&f.writer.authority_lease.lease_id)?;
+    let original_bytes = bytes(f.root.path())?;
+    let mut wrong = f.writer.clone();
+    wrong.spawn_generation += 2;
+    wrong.owner_epoch += 1;
+    wrong.local_lease_generation += 1;
+    wrong.authority_lease.revision += 1;
+    wrong.authority_lease.expires_at_unix_ms = 40_000;
+    assert!(f.writer.validate_successor(&wrong).is_err());
+    assert!(rotate(&f, &old, &wrong).is_err());
+    assert_eq!(
+        f.registry.read_lease(&f.writer.authority_lease.lease_id)?,
+        before
+    );
+    assert_eq!(f.sequence(), 1);
+    assert_eq!(f.issuer.retained_writer_authorization(&f.writer)?, old);
+    // Compare actual protected lease/frontier, issuer/key/head and reserved
+    // counter files byte-for-byte, without printing private fixture key bytes.
+    assert!(
+        bytes(f.root.path())? == original_bytes,
+        "same-ID rejection must leave all original owner files byte-identical"
+    );
+    Ok(())
+}
+
+#[test]
 fn original_revocation_allows_one_rotation_and_exact_lost_ack_reconcile() {
     let f = Fixture::new();
     let old = f

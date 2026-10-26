@@ -37,11 +37,13 @@ pub(super) fn rotate(
         .local_lease_generation
         .checked_add(1)
         .ok_or("local generation exhausted")?;
-    successor.authority_lease.revision = predecessor
-        .authority_lease
-        .revision
-        .checked_add(1)
-        .ok_or("authority revision exhausted")?;
+    // Canonical registry leases are distinct, even though the LOCAL durable
+    // writer lease retains its original ID and increments exactly once.
+    successor.authority_lease.lease_id = format!(
+        "native-g2-original-writer-authority-spawn-{}",
+        record.lifecycle.generation
+    );
+    successor.authority_lease.revision = 1;
     successor.authority_lease.issued_at_unix_ms = now;
     successor.authority_lease.expires_at_unix_ms = now
         .checked_add(provision::WRITER_LIFETIME_MS)

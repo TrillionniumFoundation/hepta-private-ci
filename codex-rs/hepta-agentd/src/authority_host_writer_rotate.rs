@@ -21,6 +21,9 @@ pub fn rotate_host_writer_authorization(
         .writer
         .as_ref()
         .ok_or_else(|| io::Error::other("registered successor writer required"))?;
+    // Run the ORIGINAL successor constraints before any canonical lease CAS;
+    // invalid same-ID input must not overwrite the expired predecessor.
+    predecessor.validate_successor(successor)?;
     let (clock, leases, issuer) = open_registered_issuer(&config)?;
     let now = clock.now_unix_ms().map_err(io::Error::other)?;
     if now < predecessor.authority_lease.expires_at_unix_ms
@@ -38,7 +41,6 @@ pub fn rotate_host_writer_authorization(
     // lease is not reconstructed from the serialized historical proof.
     if let Some(old) = old.as_ref()
         && old.lease != predecessor.authority_lease
-        && old.lease != successor.authority_lease
     {
         return Err(io::Error::other("original predecessor lease changed"));
     }
@@ -47,15 +49,7 @@ pub fn rotate_host_writer_authorization(
         .map_err(io::Error::other)?;
     match existing {
         Some(existing) if existing.lease == successor.authority_lease => {}
-        Some(existing) if existing.lease == predecessor.authority_lease => {
-            leases
-                .put_lease(
-                    successor.authority_lease.clone(),
-                    predecessor.authority_lease.revision,
-                )
-                .map_err(io::Error::other)?;
-        }
-        None if predecessor.authority_lease.lease_id != successor.authority_lease.lease_id => {
+        None => {
             leases
                 .put_lease(
                     successor.authority_lease.clone(),
@@ -63,7 +57,7 @@ pub fn rotate_host_writer_authorization(
                 )
                 .map_err(io::Error::other)?;
         }
-        Some(_) | None => {
+        Some(_) => {
             return Err(io::Error::other(
                 "exact original successor lease CAS is unavailable",
             ));
