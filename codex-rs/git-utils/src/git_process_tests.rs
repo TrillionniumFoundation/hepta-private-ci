@@ -44,7 +44,10 @@ fn windows_git_child_lifetime_fixture() {
 async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     wrapper_lifetime: GitWrapperLifetime,
 ) {
-    let temp_dir = tempfile::tempdir().expect("create temp dir");
+    let temp_dir = tempfile::Builder::new()
+        .prefix("git-process-[literal]-")
+        .tempdir()
+        .expect("create temp dir");
     let child_pid_file = temp_dir.path().join("child.pid");
     let child_ready_file = temp_dir.path().join("child-ready");
     let release_child_file = temp_dir.path().join("release-child");
@@ -77,7 +80,7 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         let lifecycle = match wrapper_lifetime {
             GitWrapperLifetime::WaitForChild => "$child.WaitForExit()",
             GitWrapperLifetime::ExitBeforeTimeout => {
-                "while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) { Start-Sleep -Milliseconds 25 }"
+                "while (-not (Test-Path -LiteralPath $env:RELEASE_WRAPPER_FILE)) { Start-Sleep -Milliseconds 25 }"
             }
         };
         let wrapper_command = format!(
