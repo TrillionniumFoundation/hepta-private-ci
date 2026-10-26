@@ -17,6 +17,21 @@ use serde::de::DeserializeOwned;
 use tokio_util::sync::CancellationToken;
 
 use super::*;
+use crate::notes_literal_adapter::recorded::RecordedNotesLookup;
+use crate::notes_literal_adapter::recorded::RecordedNotesUnknownReason;
+
+fn recorded_unknown(
+    route: &AgentdTextSessionConfig,
+    params: &DynamicToolCallParams,
+    reason: impl serde::Serialize,
+    operation_id: Option<String>,
+) -> serde_json::Value {
+    json!({"status":"unknown", "source_domain":"original_protected_sender_reference",
+        "reason":reason,"operation_id":operation_id,"original_reference":null,
+        "callback":{"thread_id":route.thread_id,"app_server_session_id":route.app_server_session_id,
+            "turn_id":params.turn_id,"call_id":params.call_id},
+        "instruction":"No exact original result was verified. Do not repeat the effect or infer a new original identity."})
+}
 
 #[derive(Clone, Copy)]
 enum OriginalItemSelection<'a> {
@@ -358,7 +373,17 @@ impl AgentdNotesThreadToolRuntime {
                         serde_json::from_value(call.arguments().clone())?;
                     let original = match navigation {
                         StatusArguments::Exact(navigation) => {
-                            let item = connection.original_item(&navigation.turn_id, &navigation.call_id).await?;
+                            let item = match connection.original_item(&navigation.turn_id, &navigation.call_id).await {
+                                Ok(item) => item,
+                                Err(_) => match self.adapter.recorded_thread_operation(&self.route, &navigation.turn_id, &navigation.call_id).await? {
+                                    RecordedNotesLookup::Found(recorded) => {
+                                        original_reference = Some(self.recorded_provenance(&recorded));
+                                        operation_id = Some(recorded.run_id().into());
+                                        return self.observe_recorded(&recorded).await;
+                                    }
+                                    RecordedNotesLookup::Unknown { reason, operation_id } => return Ok(recorded_unknown(&self.route, &params, reason, operation_id)),
+                                },
+                            };
                             let original = VerifiedNotesThreadOperation::from_original_item(
                                 &self.route, &navigation.turn_id, &navigation.call_id, &item,
                             )?;
@@ -369,7 +394,44 @@ impl AgentdNotesThreadToolRuntime {
                             original
                         }
                         StatusArguments::Selected(status::SelectedStatusArguments {selector:status::StatusSelector {kind: status::StatusSelectorKind::LatestOriginalReplace}}) => {
-                            match status::discover_latest_original_replace(&self.route, &mut connection).await? {
+                            let core = status::discover_latest_original_replace(&self.route, &mut connection).await?;
+                            let recorded = self.adapter.latest_recorded_thread_operation(&self.route).await?;
+                            if let RecordedNotesLookup::Found(recorded) = &recorded {
+                                let use_recorded = match &core {
+                                    status::StatusDiscovery::Unknown(_) => true,
+                                    status::StatusDiscovery::Found(core) => {
+                                        let item = core.original_item();
+                                        let turn = item.turn_intent_id(&self.route)?;
+                                        let run = self.adapter.run_id(&turn)?;
+                                        if run == recorded.run_id() {
+                                            if item.call_id() != recorded.reference().call_id { return Err(invalid("Core first-write and recorded source call differ")); }
+                                            false
+                                        } else {
+                                            // A newer unsent Core attempt remains unknown. An
+                                            // older retained Core item must not hide a newer
+                                            // protected effect whose Core append was lost.
+                                            self.adapter.retained_thread_request_sha256(&turn, &item.intent_id(&self.route)?).await?.is_some()
+                                        }
+                                    }
+                                };
+                                if use_recorded {
+                                    original_reference = Some(self.recorded_provenance(recorded));
+                                    operation_id = Some(recorded.run_id().into());
+                                    let mut value = self.observe_recorded(recorded).await?;
+                                    value["selection_scope"] = json!("latest_retained_original_operation");
+                                    return Ok(value);
+                                }
+                            }
+                            if let RecordedNotesLookup::Unknown { reason, operation_id: recorded_id } = recorded {
+                                let core_matches_legacy = match &core {
+                                    status::StatusDiscovery::Found(core) => recorded_id.as_deref() == Some(self.adapter.run_id(&core.original_item().turn_intent_id(&self.route)?)?.as_str()),
+                                    _ => false,
+                                };
+                                if reason != RecordedNotesUnknownReason::OriginalRequestNotObserved && !core_matches_legacy {
+                                    return Ok(recorded_unknown(&self.route, &params, reason, recorded_id));
+                                }
+                            }
+                            match core {
                                 status::StatusDiscovery::Found(original) => original,
                                 status::StatusDiscovery::Unknown(reason) => return Ok(json!({
                                     "status":"unknown", "reason":reason, "thread_id":self.route.thread_id,

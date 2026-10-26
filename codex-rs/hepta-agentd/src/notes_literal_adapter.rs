@@ -41,6 +41,8 @@ mod read;
 pub use read::AgentdNotesRetainedIntents;
 #[path = "notes_literal_history.rs"]
 mod history;
+#[path = "notes_thread_recorded.rs"]
+pub(crate) mod recorded;
 #[path = "notes_ui_runtime.rs"]
 mod ui_runtime;
 pub use ui_runtime::AgentdNotesUiRuntime;
@@ -98,6 +100,7 @@ pub(crate) enum NotesAdapterProfile {
 struct ThreadPreparation<'a> {
     expected_revision: u64,
     original_call_id: &'a str,
+    original_reference: codex_hepta_memory::OriginalNotesThreadReference,
     human: &'a crate::notes_thread_tool::human::VerifiedHumanTurn,
 }
 
@@ -361,6 +364,7 @@ impl AgentdNotesLiteralAdapter {
         &mut self,
         client_intent_id: &str,
         original_call_id: &str,
+        original_reference: codex_hepta_memory::OriginalNotesThreadReference,
         text: &str,
         expected_revision: u64,
         human: &crate::notes_thread_tool::human::VerifiedHumanTurn,
@@ -369,6 +373,16 @@ impl AgentdNotesLiteralAdapter {
             return Err(invalid(
                 "model tool cannot use the no-model literal profile",
             ));
+        }
+        let (turn, call) =
+            recorded::reference_ids(&original_reference, self.identity.agent_id.as_str())?;
+        if turn != client_intent_id
+            || call != original_call_id
+            || original_reference.thread_id != human.route().thread_id
+            || original_reference.app_server_session_id != human.route().app_server_session_id
+            || !recorded::callback_matches(&original_reference, text, expected_revision)?
+        {
+            return Err(invalid("original Notes raw callback reference differs"));
         }
         let current_human = self
             .verify_original_human_text(human.ingress(), human.route())
@@ -388,6 +402,7 @@ impl AgentdNotesLiteralAdapter {
                 Some(ThreadPreparation {
                     expected_revision,
                     original_call_id,
+                    original_reference,
                     human,
                 }),
                 end,
@@ -597,7 +612,10 @@ impl AgentdNotesLiteralAdapter {
                 "Notes signed ingress expired or differs from frozen issuer",
             ));
         }
-        let origin = self.next_origin()?;
+        let mut origin = self.next_origin()?;
+        origin.original_notes_thread = thread
+            .as_ref()
+            .map(|binding| binding.original_reference.clone());
         let request =
             ObjectiveSenderRequest::from_original(serde_json::to_string(&signed)?, origin)
                 .map_err(|error| invalid(&error.to_string()))?;

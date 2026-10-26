@@ -25,6 +25,18 @@ impl std::ops::Deref for VerifiedNotesThreadCall {
 }
 
 impl VerifiedNotesThreadCall {
+    pub(super) fn recorded_reference(
+        &self,
+        route: &AgentdTextSessionConfig,
+    ) -> codex_hepta_memory::OriginalNotesThreadReference {
+        codex_hepta_memory::OriginalNotesThreadReference {
+            app_server_session_id: route.app_server_session_id.clone(),
+            thread_id: route.thread_id.clone(),
+            turn_id: self.turn_id().into(),
+            call_id: self.call_id().into(),
+            callback_sha256: self.callback_digest().to_string(),
+        }
+    }
     pub(super) fn from_original_item(
         route: &AgentdTextSessionConfig,
         params: &DynamicToolCallParams,

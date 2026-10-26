@@ -29,6 +29,7 @@ mod proof;
 mod runtime;
 #[path = "notes_thread_status.rs"]
 mod status;
+use crate::notes_literal_adapter::recorded::RecordedNotesThreadOperation;
 use human::VerifiedHumanTurn;
 use proof::OriginalNotesThreadItem;
 use proof::VerifiedNotesThreadCall;
@@ -52,7 +53,7 @@ pub fn original_notes_thread_tools() -> Vec<DynamicToolSpec> {
                 "expected_revision":{"type":"integer", "minimum":0}
             }, "required":["text","expected_revision"], "additionalProperties":false
         })),
-        (STATUS_TOOL, "Read only an original hepta_notes_replace result in this same thread. Supply its original turn_id and call_id, or selector {kind: latest_original_replace} when a lost reply or compacted context hid those IDs. Discovery checks at most 16 original turns and returns the first write of the latest matching turn, never a retry call. Unknown/window_exhausted means do not repeat the effect. Original receipt/target and current_document are separate. This never prepares, signs, sends, or repeats an effect.", json!({
+        (STATUS_TOOL, "Read only an original hepta_notes_replace result in this same thread. Supply its original turn_id and call_id, or selector {kind: latest_original_replace} when a lost reply or compacted context hid those IDs. Discovery checks at most 16 original turns and returns the first write of the latest matching turn, never a retry call. Unknown/window_exhausted means do not repeat the effect. The complete protected sender cut can recover lost Core identities; source_domain and selection_scope distinguish that retained result. Original receipt/target and current_document are separate. Legacy missing references remain unknown. This never prepares, signs, sends, or repeats an effect.", json!({
             "type":"object", "properties":{
                 "turn_id":{"type":"string","maxLength":128},
                 "call_id":{"type":"string","maxLength":128},
@@ -129,6 +130,22 @@ impl AgentdConfig {
 }
 
 impl AgentdNotesThreadToolRuntime {
+    pub(crate) async fn latest_recovery_operation(
+        &self,
+        previous: &codex_hepta_memory::NotesTargetIdentity,
+    ) -> Result<String, AgentdError> {
+        self.seed
+            .as_ref()
+            .ok_or_else(|| invalid("original seed absent during recorded recovery"))?
+            .verify_persisted()?;
+        self.session
+            .as_ref()
+            .ok_or_else(|| invalid("original Session absent during recorded recovery"))?
+            .check_alive()?;
+        self.adapter
+            .latest_recorded_recovery_operation(&self.route, previous)
+            .await
+    }
     pub(crate) fn install_seed(
         &mut self,
         seed: crate::NotesThreadSeedReceipt,
@@ -235,6 +252,7 @@ impl AgentdNotesThreadToolRuntime {
             .prepare_thread(
                 &request_id,
                 &original_call_id,
+                call.recorded_reference(&self.route),
                 &arguments.text,
                 arguments.expected_revision,
                 human,
@@ -272,6 +290,46 @@ impl AgentdNotesThreadToolRuntime {
     ) -> Result<Value, AgentdError> {
         let request_id = call.turn_intent_id(&self.route)?;
         let original_call_id = call.intent_id(&self.route)?;
+        self.observe_original_reference(
+            &request_id,
+            &original_call_id,
+            self.provenance(call),
+            sender_observation_retained,
+        )
+        .await
+    }
+
+    fn recorded_provenance(&self, original: &RecordedNotesThreadOperation) -> Value {
+        let reference = original.reference();
+        json!({"kind":"original_protected_sender_reference", "thread_id":reference.thread_id,
+            "app_server_session_id":reference.app_server_session_id,"turn_id":reference.turn_id,
+            "call_id":reference.call_id,"callback_sha256":reference.callback_sha256,
+            "model_tuple_sha256":self.adapter.bindings.model_tuple_digest.to_string()})
+    }
+
+    async fn observe_recorded(
+        &self,
+        original: &RecordedNotesThreadOperation,
+    ) -> Result<Value, AgentdError> {
+        let mut value = self
+            .observe_original_reference(
+                original.turn_intent_id(),
+                original.call_intent_id(),
+                self.recorded_provenance(original),
+                None,
+            )
+            .await?;
+        value["selection_scope"] = json!("retained_original_operation");
+        Ok(value)
+    }
+
+    async fn observe_original_reference(
+        &self,
+        request_id: &str,
+        original_call_id: &str,
+        provenance: Value,
+        sender_observation_retained: Option<bool>,
+    ) -> Result<Value, AgentdError> {
         let run_id = self.adapter.run_id(&request_id)?;
         let original = self
             .adapter
@@ -305,7 +363,7 @@ impl AgentdNotesThreadToolRuntime {
         // verified immutable source receipt. Report freshness separately.
         let document = self.observe_document().await.ok();
         Ok(json!({
-            "provenance":self.provenance(call), "operation_id":run_id,
+            "source_domain":provenance["kind"], "provenance":provenance, "operation_id":run_id,
             "semantic_sha256":original.operation.semantic_digest().to_string(),
             "exact_request_sha256":request_sha256,
             "sender_observation_retained":sender_observation_retained,

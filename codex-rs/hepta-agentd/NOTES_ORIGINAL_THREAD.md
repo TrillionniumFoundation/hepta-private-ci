@@ -250,3 +250,34 @@ actual original thread/turn/call, Root registration and human session, model
 provenance, operation ID, signed request hash, complete retained receipt and
 application readback from the final source and package. The launcher's binding
 and actual run remain part of the product acceptance, not a protocol fixture.
+
+## Protected original reference when Core history is unavailable
+
+The verified original write callback also supplies bounded raw navigation data
+for `ObjectiveSenderOrigin.original_notes_thread`. It is recorded with the same
+signed request and protected sender binding before the original checkpoint ACK
+and first send. It grants no authority. This covers the case where best-effort
+Core rollout I/O failed but its live item was observable before Notes saved.
+Normal successful Core appends already await a file flush before tool execution;
+that flush must not be described as an fsync/power-loss guarantee.
+
+Status first reads original Core items and also checks a complete original-owner
+sender cut (one read-only SQLite snapshot, at most 1024 requests / 32 MiB, five
+seconds). Only the selected reference/result is returned, never that history.
+Matching Notes records are ordered by the original adapter's existing
+`(spawn_generation, request_id)` counter, never request SHA, rowid or a new clock.
+The installed thread runtime owns one non-cloneable adapter; configuration
+refuses a second Notes mode, and only the verified write path produces matching
+raw references. Duplicate order values still return explicit ambiguous Unknown.
+An incomplete/failed cut cannot establish a latest result.
+
+A lost later Core item must not make an older retained Core item appear latest.
+The result labels `source_domain` as `original_core_dynamic_tool` or
+`original_protected_sender_reference`; fallback selection explicitly describes
+`latest_retained_original_operation`. The independent recorded-source proof
+checks raw IDs against the original signed request ID, turn-derived operation,
+agent, principal/model tuple, all frozen provenance, exact Notes operation and
+callback digest. It never fabricates a Core item or enters write preparation.
+An exact reference may use the same protected read when its old Core item is
+unavailable. Legacy `None` without a verifiable Core item remains Unknown. The
+original receipt/target and current document stay separate.
