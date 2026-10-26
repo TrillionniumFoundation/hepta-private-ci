@@ -4,33 +4,36 @@ Status: source recovery protocol and qualification plan. This document does not 
 
 ## 1. Automatic restart policy
 
-The native supervisor applies one bounded automatic restart policy to the main agent process and the optional Matrix companion:
+The native supervisor bounds restarts for the main agent process and the optional Matrix companion. The default main-agent configuration and the Matrix policy use:
 
 - recovery window: 300 seconds;
 - automatic restart attempt budget: 3;
 - exponential delay: 250 ms, 500 ms, 1 s for attempts 1-3;
-- the delay function is capped at 30 seconds if the fixed budget is changed in a future reviewed revision;
-- a fourth restart request inside the active window is not executed. The main agent records `AutomaticRestartBudgetExhausted`; Matrix records `MatrixRestartBudgetExhausted` and remains degraded;
-- explicit operator restart/new release start resets the recovery budget for that release;
+- a fourth restart request inside the active window is not executed. The main-agent path returns `SupervisorError::RestartBudgetExhausted(agent_id)`, which `tick()` reports as an `AgentFault` and records as `DriverFault` with the same error message. Matrix records `MatrixRestartBudgetExhausted` and remains degraded;
+- a main-agent restart claim records `RestartQueued`; the attempt count and pending intent are owned by the durable main budget. `AutomaticRestartQueued` and `AutomaticRestartBudgetExhausted` remain enum variants but are not emitted by the current main-agent path;
+- explicit main-agent restart consumes the same durable budget. Starting a process or changing release does not erase consumed main-agent attempts; the next claim resets the count only after the configured recovery window expires;
 - explicit stop/kill never schedules an automatic restart;
-- an unexpected main-process exit while Starting/AwaitingHealth or Running schedules restart; a health-deadline failure schedules restart after the failed child exits;
-- a missing/rejected live child discovered during supervisor recovery enters the same bounded restart path;
+- an unexpected main-process exit schedules a fresh automatic claim when the runtime is Running, is not fenced, and has no release transition or restart already pending. Startup and health-deadline failures do not independently enter this Running-exit path;
+- daemon recovery restores an already published pending main claim. A missing runtime is queued against that same attempt; an adopted replacement satisfies the existing claim without another spawn;
 - Matrix readiness recovery does not immediately zero the flap counter, preventing short healthy intervals from bypassing the fixed budget.
+
+These main-agent event and fault semantics were introduced together with behavior tests in commit [`de9a048d87d2`](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/de9a048d87d2252ae2230784c75a79549d9e1653). The crash-boundary ordering was tightened in [`f73a1e308dbd`](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/f73a1e308dbd00a410d5be6edc30db3a5769f194). Qualification must observe the durable counter, pending state, process count and error outcome rather than require the older automatic-event variants.
 
 ### Durable restart counter
 
-The restart counter is persisted in the agent run root as `supervisor-restart-budget.json`. The journal:
+The restart counter is persisted in the agent run root as `supervisor-restart-budget.json`. The canonical schema-2 record has separate `main` and `companion` fields, written through one owner codec. The record:
 
-- is bound to the exact `agent_id` and active `release_id`;
-- stores independent main-agent and Matrix restart windows;
+- stores the main-agent budget for that run root independently of the companion journal, which is bound to the exact `agent_id` and active `release_id`;
+- preserves each restart domain when the other domain is updated;
+- stores `main.attempts`, `main.pending` and the wall-clock `main.next_eligible_unix_ms` deadline. A successful claim is published before lifecycle/lease exit finalization, and healthy completion clears pending state without resetting the attempt count;
 - is bounded in size and digest-protected;
 - is written to a same-directory staging file, file-synchronized, and atomically published with a durable same-directory replacement;
-- is restored before daemon recovery decides whether a missing/rejected live child may consume another automatic attempt;
-- is reset when an explicit start/restart begins a new operator-directed recovery sequence or when the active release identity changes;
-- treats wall-clock rollback conservatively: rollback cannot buy additional attempts and restores the affected window as exhausted;
+- restores a pending main claim with its remaining delay. Replaying that claim consumes no additional attempt, and recovery of a healthy replacement preserves the completed attempt count for its next failure;
+- does not let a companion release change overwrite the main budget;
+- treats wall-clock rollback conservatively: a new main claim fails if the clock precedes its recorded window origin; companion recovery restores the affected window as exhausted;
 - fails safe on journal persistence failure: the automatic retry is disabled/exhausted rather than proceeding without a durable counter witness.
 
-The restart-attempt count therefore survives supervisord process restart. The exact pending retry timer is intentionally not a durable command queue: a supervisord crash may lose a future retry deadline and therefore perform **fewer** automatic restarts, but it must not gain an additional attempt. Target-host SIGKILL/fault-injection evidence is still required before claiming this behavior is deployment-qualified.
+The restart-attempt count and pending eligibility deadline therefore survive supervisord process restart. Recovery reconstructs a monotonic deadline from the persisted wall-clock deadline; it does not promise an identical elapsed delay if the wall clock changes. The shared record and preservation rules were consolidated in commit [`ba97f175566c`](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/ba97f175566cdb0d31b0b5fe034ca0e98d8ba969). Target-host SIGKILL/fault-injection evidence is still required before claiming this behavior is deployment-qualified.
 
 ## 2. Signed production mutation effect boundary
 
@@ -156,7 +159,8 @@ Repository-controlled verification for this change includes at least:
 
 - `restart_policy` unit tests for exponential delay, fixed budget and window reset;
 - `restart_journal` unit tests for durable round-trip and conservative clock rollback handling;
-- `tests/restart_budget.rs` for real supervisor crash/restart scheduling behavior inside one daemon lifetime;
+- `tests/restart_budget.rs` for supervisor crash/restart scheduling with a controlled process driver inside one daemon lifetime: exact durable attempts and pending state, 250/500/1000 ms backoff, four total spawns and the complete budget-exhaustion fault;
+- `tests/restart_budget_recovery.rs` for the same budget and timing invariants across three daemon recoveries around an admitted release and adopted live children;
 - `tests/signed_intent_recovery.rs` for fail-closed unresolved intent and exact-digest abort terminalization;
 - the existing release-transition, Matrix companion, lease/adoption, daemon protocol and production-authority tests.
 
