@@ -21,6 +21,8 @@ codex_rust_crate(
         "tests/fixtures/notes-target-v1.json",
         "tests/fixtures/notes-model-v1.json",
     ],
+    # Match the Agentd Cargo default on both the library and product binaries.
+    crate_features = ["production-cognitive-write"],
     crate_name = "codex_hepta_agentd",
     integration_test_timeout = "long",
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
