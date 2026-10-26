@@ -55,7 +55,8 @@ required_boundary_ids = [
   "notes_original_pending_call_proof",
   "notes_original_operation_observation_proof",
   "notes_original_thread_prepare",
-  "notes_original_writer_terminal_receipt"
+  "notes_original_writer_terminal_receipt",
+  "memory_original_owner_current_publication"
 ]
 
 [[boundary]]
@@ -673,4 +674,19 @@ forbidden = ["AllowVerifier", "permit_all"]
 [[protected_file]]
 path = "codex-rs/hepta-objective/src/notes_thread_source.rs"
 required = ["organ.notes.thread-tool.v1", "notes.original-thread.profile", "decode_admission_profile_json_v1", "literal_notes_admission_profile_json_v1"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+# Source API only: no product caller is wired until a separately reviewed entry exists.
+[[boundary]]
+id = "memory_original_owner_current_publication"
+symbol = "ProductionDurableWriter::acknowledge_current"
+call_pattern = '(?:\.\s*acknowledge_current\s*\(\s*\)|ProductionDurableWriter\s*::\s*acknowledge_current\s*\()'
+definition_path = "codex-rs/hepta-memory/src/production_owner_publication.rs"
+definition_markers = ["pub async fn acknowledge_current(&self)", "self.verify_authority().await?", "if !self.store.commit_gate.is_managed()", "begin_checkpoint_barrier()", "self.acknowledge_bound_owner_transaction(&mut transaction)"]
+product_callers = []
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-memory/src/production_owner_publication.rs"
+required = ["pub async fn acknowledge_current(&self)", "self.verify_authority().await?", "if !self.store.commit_gate.is_managed()", "begin_checkpoint_barrier()", "require_current_transaction(transaction)", "bound_owner_publication()", "if acknowledged != cut", "attempt.acknowledge()", "self.retirement_live_check()?"]
 forbidden = ["AllowVerifier", "permit_all"]
