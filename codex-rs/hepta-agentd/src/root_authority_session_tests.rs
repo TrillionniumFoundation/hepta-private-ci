@@ -260,7 +260,10 @@ async fn exact_original_consumers_activate_writer_and_drop_fences_retained_clone
     tokio::time::sleep(Duration::from_millis(20)).await;
     peer.join().unwrap();
 }
-#[tokio::test]
+// Opening both original durable owners performs synchronous filesystem I/O.
+// Match the production multi-worker runtime so that initialization cannot
+// starve the unchanged 100 ms Root feed past its 500 ms observation fence.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn both_original_frontiers_finish_before_new_head_is_published() {
     let (session, head, peer, key) = connected().await;
     let (device, first, _device_dir) = owner(&session, key);

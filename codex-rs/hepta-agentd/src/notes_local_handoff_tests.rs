@@ -298,9 +298,13 @@ impl ColdFixture {
 #[tokio::test]
 async fn notes_local_handoff_real_clock_preserves_unknown_with_distinct_spawn_and_lease_generations()
 -> Result<(), Box<dyn Error>> {
-    let (directory, config, cut, expiry) = ColdFixture::new(3).await?.stop().await?;
+    // Real SQLite setup/flushes must finish while the synthetic first grant
+    // is valid. The old 3 s fixture expired during initial retention under
+    // load. This changes only that fixture grant and the wait for its actual
+    // expiry; the original 2 s I/O/checkpoint deadlines stay unchanged.
+    let (directory, config, cut, expiry) = ColdFixture::new(10).await?.stop().await?;
     let _directory = directory;
-    let deadline = tokio::time::Instant::now() + Duration::from_secs(8);
+    let deadline = tokio::time::Instant::now() + Duration::from_secs(12);
     while now() < expiry {
         assert!(
             tokio::time::Instant::now() < deadline,
