@@ -55,6 +55,57 @@ pub struct NotesThreadSeedReceipt {
     pub session_meta_sha256: String,
 }
 
+impl NotesThreadSeedReceipt {
+    /// Canonical observed model/provider tuple, bound to this original catalog
+    /// and immutable first SessionMeta line. Public metadata, never authority.
+    pub fn model_tuple_digest(&self) -> Result<Digest32, AgentdError> {
+        self.validate_shape()?;
+        Ok(Digest32::of_bytes(&serde_json::to_vec(&(
+            "hepta.notes.original-model-tuple.v1",
+            &self.model,
+            &self.model_provider,
+            &self.catalog_sha256,
+            &self.session_meta_sha256,
+        ))?))
+    }
+
+    fn validate_shape(&self) -> Result<(), AgentdError> {
+        if self.schema_version != 1
+            || self.thread_id.is_empty()
+            || self.thread_id.len() > 128
+            || self.app_server_session_id.is_empty()
+            || self.app_server_session_id.len() > 256
+            || self.model.is_empty()
+            || self.model.len() > 256
+            || self.model_provider.is_empty()
+            || self.model_provider.len() > 128
+            || self.model.contains('\0')
+            || self.model_provider.contains('\0')
+            || !self.codex_home.is_absolute()
+            || !self.rollout_path.starts_with(&self.codex_home)
+            || self.catalog_sha256
+                != Digest32::of_bytes(&serde_json::to_vec(&original_notes_thread_tools())?)
+                    .to_string()
+            || self
+                .session_meta_sha256
+                .parse::<Digest32>()
+                .map_err(|_| invalid("invalid original seed metadata digest"))?
+                .is_zero()
+        {
+            return Err(invalid("original seed receipt shape mismatch"));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn verify_persisted(&self) -> Result<(), AgentdError> {
+        self.validate_shape()?;
+        if inspect_metadata(self)? != self.session_meta_sha256 {
+            return Err(invalid("original persisted seed metadata changed"));
+        }
+        Ok(())
+    }
+}
+
 fn request_id(action: &str) -> Result<RequestId, AgentdError> {
     let sequence = NEXT_REQUEST
         .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |value| {
@@ -164,14 +215,7 @@ pub async fn verify_original_notes_thread_seed(
     receipt: &NotesThreadSeedReceipt,
 ) -> Result<(), AgentdError> {
     require_home(client, &receipt.codex_home)?;
-    if receipt.schema_version != 1
-        || receipt.thread_id.is_empty()
-        || receipt.thread_id.len() > 128
-        || receipt.app_server_session_id.is_empty()
-        || receipt.app_server_session_id.len() > 256
-    {
-        return Err(invalid("original seed receipt shape mismatch"));
-    }
+    receipt.validate_shape()?;
     let actual = resume(client, &receipt.thread_id).await?;
     if actual.thread.ephemeral
         || actual.thread.id != receipt.thread_id

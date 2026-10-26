@@ -122,6 +122,16 @@ impl PreparedHostAuthoritySession {
             .interaction
             .validate_for(&self.registration.registered_identity.identity()?)
             .map_err(io::Error::other)?;
+        profile
+            .interaction
+            .validate_model_tuple(
+                profile
+                    .bindings
+                    .model_tuple_digest
+                    .parse::<Digest32>()
+                    .map_err(io::Error::other)?,
+            )
+            .map_err(io::Error::other)?;
         validate_empty_deployment(&deployment)?;
         let (startup_release, session) = reservation::receive(
             bootstrap,

@@ -132,6 +132,9 @@ pub(super) fn read(
         prompt_registry_digest: digest(&bindings.prompt_registry_digest)?,
         artifact_set_digest: digest(&bindings.artifact_set_digest)?,
     };
+    value
+        .interaction
+        .validate_model_tuple(frozen.model_tuple_digest)?;
     let previous_recovery = value
         .previous_recovery
         .map(|previous| {

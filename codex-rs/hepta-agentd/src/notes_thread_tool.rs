@@ -80,6 +80,7 @@ pub struct AgentdNotesThreadToolRuntime {
     adapter: AgentdNotesLiteralAdapter,
     route: AgentdTextSessionConfig,
     session: Option<crate::AgentdNotesSessionLifetime>,
+    seed: Option<crate::NotesThreadSeedReceipt>,
 }
 
 impl AgentdConfig {
@@ -122,11 +123,30 @@ impl AgentdConfig {
             adapter,
             route,
             session: None,
+            seed: None,
         }
     }
 }
 
 impl AgentdNotesThreadToolRuntime {
+    pub(crate) fn install_seed(
+        &mut self,
+        seed: crate::NotesThreadSeedReceipt,
+    ) -> Result<(), AgentdError> {
+        if self.seed.is_some()
+            || seed.codex_home != self.route.codex_home
+            || seed.thread_id != self.route.thread_id
+            || seed.app_server_session_id != self.route.app_server_session_id
+            || seed.model_tuple_digest()? != self.adapter.bindings.model_tuple_digest
+        {
+            return Err(invalid(
+                "original Notes seed differs from the retained model route",
+            ));
+        }
+        seed.verify_persisted()?;
+        self.seed = Some(seed);
+        Ok(())
+    }
     pub(crate) fn install_session(
         &mut self,
         session: crate::AgentdNotesSessionLifetime,

@@ -43,6 +43,33 @@ fn persisted_seed_metadata_requires_exact_original_identity_and_catalog() {
         inspect_metadata(&receipt).unwrap(),
         receipt.session_meta_sha256
     );
+    receipt.verify_persisted().unwrap();
+    let tuple = receipt.model_tuple_digest().unwrap();
+    let route = crate::text_session::AgentdTextSessionConfig {
+        control_socket: receipt.codex_home.join("control.sock"),
+        agent_id: codex_hepta_contracts::AgentId::parse("seed-fixture").unwrap(),
+        spawn_generation: 1,
+        thread_id: receipt.thread_id.clone(),
+        app_server_session_id: receipt.app_server_session_id.clone(),
+        codex_home: receipt.codex_home.clone(),
+    };
+    assert!(
+        serde_json::from_value::<crate::notes_launch_mode::NotesLaunchMode>(serde_json::json!({
+            "kind":"original_thread_tool_v1", "route": &route,
+        }))
+        .is_err(),
+        "model mode has no default or missing seed compatibility"
+    );
+    let mut changed_seed = receipt.clone();
+    changed_seed.model_provider = "another-provider".into();
+    let mode = crate::notes_launch_mode::NotesLaunchMode::OriginalThreadToolV1 {
+        route,
+        seed: changed_seed,
+    };
+    assert!(
+        mode.validate_model_tuple(tuple).is_err(),
+        "a different provider cannot retain the frozen tuple digest"
+    );
     receipt.app_server_session_id = "different-session".into();
     assert!(inspect_metadata(&receipt).is_err());
     receipt.app_server_session_id = meta.session_id.to_string();

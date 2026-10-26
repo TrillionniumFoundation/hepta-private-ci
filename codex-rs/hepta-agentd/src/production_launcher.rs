@@ -297,7 +297,10 @@ impl AgentdProductionLaunch {
                         )?;
                         config = config.with_original_notes_ui(runtime)?;
                     }
-                    crate::notes_launch_mode::NotesLaunchMode::OriginalThreadToolV1 { route } => {
+                    crate::notes_launch_mode::NotesLaunchMode::OriginalThreadToolV1 {
+                        route,
+                        seed,
+                    } => {
                         let lifetime = crate::AgentdNotesSessionLifetime::from_inherited(
                             session_pidfd,
                             &peer,
@@ -309,6 +312,7 @@ impl AgentdProductionLaunch {
                                 route,
                                 Duration::from_secs(10),
                             )?
+                            .with_original_notes_thread_seed(seed)?
                             .with_original_notes_thread_session(lifetime)?;
                         // The explicit model profile admits no literal UI
                         // endpoint. Root retains pathname cleanup custody.

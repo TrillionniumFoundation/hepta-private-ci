@@ -13,8 +13,6 @@ use codex_app_server_protocol::ServerRequest;
 use codex_app_server_protocol::SortDirection;
 use codex_app_server_protocol::ThreadItemsListParams;
 use codex_app_server_protocol::ThreadItemsListResponse;
-use codex_app_server_protocol::ThreadResumeParams;
-use codex_app_server_protocol::ThreadResumeResponse;
 use serde::de::DeserializeOwned;
 use tokio_util::sync::CancellationToken;
 
@@ -34,7 +32,10 @@ struct OriginalConnection {
 }
 
 impl OriginalConnection {
-    async fn connect(route: AgentdTextSessionConfig) -> Result<Self, AgentdError> {
+    async fn connect(
+        route: AgentdTextSessionConfig,
+        seed: &crate::NotesThreadSeedReceipt,
+    ) -> Result<Self, AgentdError> {
         let control = crate::AgentdClient::new(
             route.control_socket.clone(),
             route.agent_id.clone(),
@@ -65,30 +66,14 @@ impl OriginalConnection {
                 "original Notes tool connected to another Codex home",
             ));
         }
-        let mut connection = Self {
+        // The same actual connection must resume and verify the original
+        // model/provider/catalog/meta tuple before observing any tool event.
+        crate::verify_original_notes_thread_seed(&client, seed).await?;
+        let connection = Self {
             client,
             route,
             next_request: 1,
         };
-        let thread_id = connection.route.thread_id.clone();
-        let response: ThreadResumeResponse = connection
-            .call(|request_id| ClientRequest::ThreadResume {
-                request_id,
-                params: ThreadResumeParams {
-                    thread_id,
-                    exclude_turns: true,
-                    ..Default::default()
-                },
-            })
-            .await?;
-        if response.thread.id != connection.route.thread_id
-            || response.thread.session_id != connection.route.app_server_session_id
-            || response.thread.ephemeral
-        {
-            return Err(invalid(
-                "original Notes tool resumed a different thread/session",
-            ));
-        }
         Ok(connection)
     }
 
@@ -306,9 +291,12 @@ impl AgentdNotesThreadToolRuntime {
                 ready.map_err(|_| invalid("original App Server readiness deadline elapsed"))??;
             }
         }
+        let seed = self.seed.as_ref().ok_or_else(|| {
+            invalid("original Notes model mode requires its sealed Start receipt")
+        })?;
         let mut connection = tokio::time::timeout(
             Duration::from_secs(10),
-            OriginalConnection::connect(self.route.clone()),
+            OriginalConnection::connect(self.route.clone(), seed),
         )
         .await
         .map_err(|_| invalid("original Notes thread connection deadline elapsed"))??;

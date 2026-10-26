@@ -457,6 +457,22 @@ impl AgentdConfig {
         Ok(self)
     }
 
+    /// Retain only the mandatory original Start receipt bound to the installed
+    /// model tool profile. It is reverified on the final actual connection.
+    #[cfg(target_os = "linux")]
+    pub fn with_original_notes_thread_seed(
+        mut self,
+        seed: crate::NotesThreadSeedReceipt,
+    ) -> Result<Self, AgentdError> {
+        self.notes_thread_tools
+            .as_mut()
+            .ok_or_else(|| {
+                AgentdError::Invalid("original Notes tool runtime is not installed".into())
+            })?
+            .install_seed(seed)?;
+        Ok(self)
+    }
+
     #[cfg(target_os = "linux")]
     pub(crate) fn take_original_notes_thread_tools(
         &mut self,
