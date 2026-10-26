@@ -262,8 +262,8 @@ Normal successful Core appends already await a file flush before tool execution;
 that flush must not be described as an fsync/power-loss guarantee.
 
 Status first reads original Core items and also checks a complete original-owner
-sender cut (one read-only SQLite snapshot, at most 1024 requests / 32 MiB, five
-seconds). Only the selected reference/result is returned, never that history.
+sender cut (one read-only SQLite snapshot, at most 1024 requests / 32 MiB).
+Core navigation, the cut and reference selection share one five-second deadline. Only the selected reference/result is returned, never that history.
 Matching Notes records are ordered by the original adapter's existing
 `(spawn_generation, request_id)` counter, never request SHA, rowid or a new clock.
 The installed thread runtime owns one non-cloneable adapter; configuration
@@ -281,3 +281,9 @@ callback digest. It never fabricates a Core item or enters write preparation.
 An exact reference may use the same protected read when its old Core item is
 unavailable. Legacy `None` without a verifiable Core item remains Unknown. The
 original receipt/target and current document stay separate.
+
+Core `window_exhausted` or `deadline_elapsed` stays primary Unknown, with null
+original reference/operation and a failed dynamic response. If remaining budget
+allows an older protected observation, it is nested only as
+`last_known_retained_observation`, never reported as the latest Core write.
+An expired Core lookup cannot restart a new protected-source lookup budget.

@@ -87,13 +87,13 @@ pub(super) enum StatusDiscovery {
 pub(super) async fn discover_latest_original_replace(
     route: &AgentdTextSessionConfig,
     history: &mut impl OriginalStatusHistory,
+    end: tokio::time::Instant,
 ) -> Result<StatusDiscovery, AgentdError> {
     const TURNS: usize = 16;
     const PAGE_ITEMS: usize = 64;
     const TURN_PAGES: usize = 4;
     const TOTAL_ITEMS: usize = 1024;
     const RPCS: usize = 64;
-    let end = tokio::time::Instant::now() + Duration::from_secs(5);
     let turns = tokio::time::timeout_at(
         end,
         history.turns(ThreadTurnsListParams {
@@ -200,6 +200,20 @@ pub(super) async fn discover_latest_original_replace(
     } else {
         StatusUnknownReason::OriginalReplaceNotObserved
     }))
+}
+
+/// A known older receipt does not complete a truncated Core history scan.
+pub(super) fn preserve_incomplete_navigation(
+    mut unknown: serde_json::Value,
+    mut observed: serde_json::Value,
+) -> serde_json::Value {
+    unknown["status"] = json!("unknown");
+    unknown["source_domain"] = json!("original_core_navigation");
+    unknown["operation_id"] = serde_json::Value::Null;
+    unknown["original_reference"] = serde_json::Value::Null;
+    observed["selection_scope"] = json!("last_known_retained_observation");
+    unknown["last_known_retained_observation"] = observed;
+    unknown
 }
 
 #[cfg(test)]

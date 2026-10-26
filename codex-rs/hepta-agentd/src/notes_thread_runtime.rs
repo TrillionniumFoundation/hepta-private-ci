@@ -371,12 +371,14 @@ impl AgentdNotesThreadToolRuntime {
                 if call.tool() == STATUS_TOOL {
                     let navigation: StatusArguments =
                         serde_json::from_value(call.arguments().clone())?;
+                    let end = tokio::time::Instant::now() + Duration::from_secs(5);
                     let original = match navigation {
                         StatusArguments::Exact(navigation) => {
-                            let item = match connection.original_item(&navigation.turn_id, &navigation.call_id).await {
-                                Ok(item) => item,
-                                Err(_) => match self.adapter.recorded_thread_operation(&self.route, &navigation.turn_id, &navigation.call_id).await? {
+                            let item = match tokio::time::timeout_at(end, connection.original_item(&navigation.turn_id, &navigation.call_id)).await {
+                                Ok(Ok(item)) => item,
+                                _ => match tokio::time::timeout_at(end, self.adapter.recorded_thread_operation(&self.route, &navigation.turn_id, &navigation.call_id, end)).await.map_err(|_| invalid("original Notes shared navigation deadline elapsed"))?? {
                                     RecordedNotesLookup::Found(recorded) => {
+                                        if !crate::notes_literal_adapter::recorded::lookup_budget_available(end) { return Ok(recorded_unknown(&self.route, &params, status::StatusUnknownReason::DeadlineElapsed, None)); }
                                         original_reference = Some(self.recorded_provenance(&recorded));
                                         operation_id = Some(recorded.run_id().into());
                                         return self.observe_recorded(&recorded).await;
@@ -387,16 +389,26 @@ impl AgentdNotesThreadToolRuntime {
                             let original = VerifiedNotesThreadOperation::from_original_item(
                                 &self.route, &navigation.turn_id, &navigation.call_id, &item,
                             )?;
-                            let first = connection.first_original_replace(&navigation.turn_id).await?;
+                            let first = tokio::time::timeout_at(end, connection.first_original_replace(&navigation.turn_id)).await.map_err(|_| invalid("original Notes navigation deadline elapsed"))??;
                             if first.original_item().call_id() != original.original_item().call_id() {
                                 return Err(invalid("status must name the original turn's first Notes write"));
                             }
                             original
                         }
                         StatusArguments::Selected(status::SelectedStatusArguments {selector:status::StatusSelector {kind: status::StatusSelectorKind::LatestOriginalReplace}}) => {
-                            let core = status::discover_latest_original_replace(&self.route, &mut connection).await?;
-                            let recorded = self.adapter.latest_recorded_thread_operation(&self.route).await?;
+                            let core = status::discover_latest_original_replace(&self.route, &mut connection, end).await?;
+                            let recorded = self.adapter.latest_recorded_thread_operation(&self.route, end).await?;
+                            if !crate::notes_literal_adapter::recorded::lookup_budget_available(end) {
+                                return Ok(recorded_unknown(&self.route, &params, status::StatusUnknownReason::DeadlineElapsed, None));
+                            }
                             if let RecordedNotesLookup::Found(recorded) = &recorded {
+                                if let status::StatusDiscovery::Unknown(reason) = &core
+                                    && !matches!(reason, status::StatusUnknownReason::OriginalReplaceNotObserved)
+                                {
+                                    let unknown = recorded_unknown(&self.route, &params, reason, None);
+                                    let observed = self.observe_recorded(recorded).await?;
+                                    return Ok(status::preserve_incomplete_navigation(unknown, observed));
+                                }
                                 let use_recorded = match &core {
                                     status::StatusDiscovery::Unknown(_) => true,
                                     status::StatusDiscovery::Found(core) => {
@@ -410,11 +422,12 @@ impl AgentdNotesThreadToolRuntime {
                                             // A newer unsent Core attempt remains unknown. An
                                             // older retained Core item must not hide a newer
                                             // protected effect whose Core append was lost.
-                                            self.adapter.retained_thread_request_sha256(&turn, &item.intent_id(&self.route)?).await?.is_some()
+                                            tokio::time::timeout_at(end, self.adapter.retained_thread_request_sha256(&turn, &item.intent_id(&self.route)?)).await.map_err(|_| invalid("original Notes shared navigation deadline elapsed"))??.is_some()
                                         }
                                     }
                                 };
                                 if use_recorded {
+                                    if !crate::notes_literal_adapter::recorded::lookup_budget_available(end) { return Ok(recorded_unknown(&self.route, &params, status::StatusUnknownReason::DeadlineElapsed, None)); }
                                     original_reference = Some(self.recorded_provenance(recorded));
                                     operation_id = Some(recorded.run_id().into());
                                     let mut value = self.observe_recorded(recorded).await?;
@@ -443,6 +456,7 @@ impl AgentdNotesThreadToolRuntime {
                             }
                         }
                     };
+                    if !crate::notes_literal_adapter::recorded::lookup_budget_available(end) { return Ok(recorded_unknown(&self.route, &params, status::StatusUnknownReason::DeadlineElapsed, None)); }
                     original_reference = Some(self.provenance(original.original_item()));
                     operation_id = Some(self.adapter.run_id(&original.original_item().turn_intent_id(&self.route)?)?);
                     return self.observe_retained(&original).await;
@@ -471,6 +485,7 @@ impl AgentdNotesThreadToolRuntime {
                     value["human_input"] = json!(human_observation);
                     let success = value["write_admission"]
                         != "refused_later_replace_in_original_turn"
+                        && value["status"] != "unknown"
                         && (params.tool == READ_TOOL
                             || (value["state"] == "Committed"
                                 && value["receipt_utf8"].is_string()));

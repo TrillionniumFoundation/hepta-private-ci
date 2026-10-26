@@ -57,6 +57,7 @@ struct History {
     turns: Option<ThreadTurnsListResponse>,
     pages: VecDeque<(String, ThreadItemsListResponse)>,
     calls: usize,
+    delay: Option<Duration>,
 }
 impl History {
     fn new(turns: &[&str], pages: Vec<(&str, ThreadItemsListResponse)>) -> Self {
@@ -83,6 +84,7 @@ impl History {
                 .map(|(turn, page)| (turn.into(), page))
                 .collect(),
             calls: 0,
+            delay: None,
         }
     }
 }
@@ -95,6 +97,9 @@ impl OriginalStatusHistory for History {
         assert_eq!(params.sort_direction, Some(SortDirection::Desc));
         assert_eq!(params.items_view, Some(TurnItemsView::NotLoaded));
         self.calls += 1;
+        if let Some(delay) = self.delay {
+            tokio::time::sleep(delay).await;
+        }
         Ok(self.turns.take().unwrap())
     }
     async fn items(
@@ -135,10 +140,13 @@ async fn discovery_recovers_first_original_identity_without_tool_reply_or_model_
             ),
         ],
     );
-    let StatusDiscovery::Found(found) = discover_latest_original_replace(&route(), &mut history)
-        .await
-        .unwrap()
-    else {
+    let StatusDiscovery::Found(found) = discover_latest_original_replace(
+        &route(),
+        &mut history,
+        tokio::time::Instant::now() + Duration::from_secs(5),
+    )
+    .await
+    .unwrap() else {
         panic!("original item must remain observable")
     };
     assert_eq!(
@@ -174,17 +182,25 @@ async fn absent_original_items_cannot_be_replaced_by_model_result_text() {
         vec![("new-status", page("new-status", vec![invented], None))],
     );
     assert!(matches!(
-        discover_latest_original_replace(&route(), &mut history)
-            .await
-            .unwrap(),
+        discover_latest_original_replace(
+            &route(),
+            &mut history,
+            tokio::time::Instant::now() + Duration::from_secs(5)
+        )
+        .await
+        .unwrap(),
         StatusDiscovery::Unknown(StatusUnknownReason::OriginalReplaceNotObserved)
     ));
     let mut history = History::new(&[], vec![]);
     history.turns.as_mut().unwrap().next_cursor = Some("older-turns".into());
     assert!(matches!(
-        discover_latest_original_replace(&route(), &mut history)
-            .await
-            .unwrap(),
+        discover_latest_original_replace(
+            &route(),
+            &mut history,
+            tokio::time::Instant::now() + Duration::from_secs(5)
+        )
+        .await
+        .unwrap(),
         StatusDiscovery::Unknown(StatusUnknownReason::WindowExhausted)
     ));
 }
@@ -207,9 +223,13 @@ async fn incomplete_newer_turn_never_falls_back_to_an_older_write() {
             .collect(),
     );
     assert!(matches!(
-        discover_latest_original_replace(&route(), &mut history)
-            .await
-            .unwrap(),
+        discover_latest_original_replace(
+            &route(),
+            &mut history,
+            tokio::time::Instant::now() + Duration::from_secs(5)
+        )
+        .await
+        .unwrap(),
         StatusDiscovery::Unknown(StatusUnknownReason::WindowExhausted)
     ));
     assert_eq!(history.calls, 5);
@@ -221,9 +241,13 @@ async fn incomplete_newer_turn_never_falls_back_to_an_older_write() {
         )],
     );
     assert!(
-        discover_latest_original_replace(&route(), &mut history)
-            .await
-            .is_err()
+        discover_latest_original_replace(
+            &route(),
+            &mut history,
+            tokio::time::Instant::now() + Duration::from_secs(5)
+        )
+        .await
+        .is_err()
     );
 }
 
@@ -251,5 +275,42 @@ fn selector_and_exact_references_are_exclusive_and_cannot_supply_authority() {
             .unwrap()
             .validate()
             .is_err()
+    );
+}
+
+#[tokio::test]
+async fn slow_core_cannot_restart_the_recorded_lookup_budget() {
+    let mut history = History::new(&[], vec![]);
+    history.delay = Some(Duration::from_millis(20));
+    let end = tokio::time::Instant::now() + Duration::from_millis(5);
+    assert!(matches!(
+        discover_latest_original_replace(&route(), &mut history, end)
+            .await
+            .unwrap(),
+        StatusDiscovery::Unknown(StatusUnknownReason::DeadlineElapsed)
+    ));
+    assert!(!crate::notes_literal_adapter::recorded::lookup_budget_available(end));
+    assert_eq!(history.calls, 1);
+}
+
+#[test]
+fn incomplete_core_with_committed_older_receipt_remains_unknown() {
+    let value = preserve_incomplete_navigation(
+        json!({"status":"unknown", "reason":"window_exhausted", "callback":{"turn_id":"current-status","call_id":"status-call"}}),
+        json!({"state":"Committed", "receipt_utf8":"old receipt", "operation_id":"old-operation", "original_reference":{"turn_id":"old-turn","call_id":"old-call"}}),
+    );
+    assert_eq!(value["status"], "unknown");
+    assert!(value["operation_id"].is_null());
+    assert!(value["original_reference"].is_null());
+    assert!(value.get("state").is_none());
+    assert!(value.get("receipt_utf8").is_none());
+    assert_eq!(value["callback"]["turn_id"], "current-status");
+    assert_eq!(
+        value["last_known_retained_observation"]["operation_id"],
+        "old-operation"
+    );
+    assert_eq!(
+        value["last_known_retained_observation"]["selection_scope"],
+        "last_known_retained_observation"
     );
 }

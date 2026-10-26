@@ -46,6 +46,10 @@ pub(crate) enum RecordedNotesLookup {
     },
 }
 
+pub(crate) fn lookup_budget_available(end: tokio::time::Instant) -> bool {
+    tokio::time::Instant::now() < end
+}
+
 pub(super) fn reference_ids(
     reference: &OriginalNotesThreadReference,
     agent_id: &str,
@@ -114,7 +118,14 @@ impl AgentdNotesLiteralAdapter {
         route: &crate::text_session::AgentdTextSessionConfig,
         turn_id: &str,
         call_id: &str,
+        end: tokio::time::Instant,
     ) -> Result<RecordedNotesLookup, AgentdError> {
+        if !lookup_budget_available(end) {
+            return Ok(RecordedNotesLookup::Unknown {
+                reason: RecordedNotesUnknownReason::DeadlineElapsed,
+                operation_id: None,
+            });
+        }
         self.check_available()?;
         let intent = Digest32::of_bytes(&serde_json::to_vec(&(
             "hepta.notes.original-thread-turn.v1",
@@ -155,8 +166,14 @@ impl AgentdNotesLiteralAdapter {
     pub(crate) async fn latest_recorded_thread_operation(
         &self,
         route: &crate::text_session::AgentdTextSessionConfig,
+        end: tokio::time::Instant,
     ) -> Result<RecordedNotesLookup, AgentdError> {
-        let end = tokio::time::Instant::now() + Duration::from_secs(5);
+        if !lookup_budget_available(end) {
+            return Ok(RecordedNotesLookup::Unknown {
+                reason: RecordedNotesUnknownReason::DeadlineElapsed,
+                operation_id: None,
+            });
+        }
         match tokio::time::timeout_at(end, async {
             self.check_available()?;
             let requests = self
@@ -235,7 +252,13 @@ impl AgentdNotesLiteralAdapter {
         route: &crate::text_session::AgentdTextSessionConfig,
         previous_target: &codex_hepta_memory::NotesTargetIdentity,
     ) -> Result<String, AgentdError> {
-        match self.latest_recorded_thread_operation(route).await? {
+        match self
+            .latest_recorded_thread_operation(
+                route,
+                tokio::time::Instant::now() + Duration::from_secs(5),
+            )
+            .await?
+        {
             RecordedNotesLookup::Found(original)
                 if original.target == *previous_target
                     && matches!(
