@@ -122,6 +122,16 @@ Unknown-without-replay behavior remain in force.
 
 ## Development and verification
 
+The checkpoint lane's final lease validation reads the actual protected current
+time after checkpoint I/O. It does not publish a future clock projection, so it
+uses the original current-time API: complete protected load, actual post-I/O
+sample, and only the original single renewal when needed. The separate forced
+projection API still performs its durable CAS, and observation v2 still requires
+its fixed 500ms remaining window. The one-second ceiling, 10ms sample bound,
+lease epoch, half-open lease expiry and unknown-without-replay gates are unchanged.
+Controlled-store clock tests cover a valid short window, slow load/CAS, rollback
+and errors; they do not establish protected fsync or native IPC performance.
+
 Build the owning library, `codex-hepta-agentd` and `hepta-authority-host` binaries
 with the locked dependency graph. Run `just test -p codex-hepta-agentd --lib` and
 the checkpoint/Objective tests in `codex-hepta-memory`; run applicable

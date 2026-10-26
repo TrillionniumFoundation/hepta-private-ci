@@ -4,6 +4,7 @@
 use super::*;
 use pretty_assertions::assert_eq;
 use std::collections::VecDeque;
+use std::sync::atomic::AtomicU64;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
@@ -16,6 +17,8 @@ struct Store {
     writes: AtomicUsize,
     load_error: Mutex<Option<AuthorityTrustError>>,
     write_error: Mutex<Option<AuthorityTrustError>>,
+    load_delay_ns: AtomicU64,
+    cas_delay_ns: AtomicU64,
 }
 impl AuthorityFrontierStore<ClockRecord> for Store {
     fn load(&self, owner: &str) -> Result<ClockRecord, AuthorityTrustError> {
@@ -24,7 +27,11 @@ impl AuthorityFrontierStore<ClockRecord> for Store {
         if let Some(error) = self.load_error.lock().unwrap().take() {
             return Err(error);
         }
-        Ok(self.record.lock().unwrap().clone())
+        let record = self.record.lock().unwrap().clone();
+        std::thread::sleep(Duration::from_nanos(
+            self.load_delay_ns.load(Ordering::SeqCst),
+        ));
+        Ok(record)
     }
     fn compare_and_set(
         &self,
@@ -42,6 +49,10 @@ impl AuthorityFrontierStore<ClockRecord> for Store {
             return Err(AuthorityTrustError::Conflict);
         }
         *record = next.clone();
+        drop(record);
+        std::thread::sleep(Duration::from_nanos(
+            self.cas_delay_ns.load(Ordering::SeqCst),
+        ));
         Ok(())
     }
 }
@@ -61,6 +72,8 @@ fn fixture(initial: ClockRecord) -> (HostAuthorityClock, Arc<Store>) {
         writes: AtomicUsize::new(0),
         load_error: Mutex::new(None),
         write_error: Mutex::new(None),
+        load_delay_ns: AtomicU64::new(0),
+        cas_delay_ns: AtomicU64::new(0),
     });
     let clock = HostAuthorityClock {
         store: store.clone(),
@@ -345,6 +358,103 @@ fn forced_refresh_keeps_its_real_os_sample_and_always_performs_one_cas() {
             observation.projection.anchor_unix_ms,
             retained.unix_ns / 1_000_000
         );
+    }
+}
+
+fn past_real_record(age_ns: u64) -> ClockRecord {
+    let mut record = initial_record(sample_os_clock().unwrap()).unwrap();
+    record.boottime_ns = record.boottime_ns.checked_sub(age_ns).unwrap();
+    record.unix_ns = record.unix_ns.checked_sub(age_ns).unwrap();
+    record.wall_ns = record.wall_ns.checked_sub(age_ns).unwrap();
+    record.ceiling_ns = record.ceiling_ns.checked_sub(age_ns).unwrap();
+    record
+}
+
+#[test]
+fn current_time_reuses_a_valid_short_window_while_explicit_refresh_still_persists() {
+    let initial = past_real_record(/*age_ns*/ 600_000_000);
+    let (clock, store) = fixture(initial.clone());
+    let now = clock.now_unix_ms().unwrap();
+    assert_eq!(store.writes.load(Ordering::SeqCst), 0);
+    assert_eq!(*store.record.lock().unwrap(), initial);
+    assert!(now <= initial.ceiling_ns / 1_000_000);
+    assert!(initial.ceiling_ns / 1_000_000 - now < 500);
+
+    let refreshed = clock.refresh_projection().unwrap();
+    assert!(refreshed.observed_unix_ms >= now);
+    assert_eq!(store.loads.load(Ordering::SeqCst), 2);
+    assert_eq!(store.writes.load(Ordering::SeqCst), 1);
+    assert!(store.record.lock().unwrap().ceiling_ns > initial.ceiling_ns);
+}
+
+#[test]
+fn current_time_samples_after_slow_load_and_renews_once_instead_of_returning_old_time() {
+    let initial = past_real_record(/*age_ns*/ 0);
+    let (clock, store) = fixture(initial.clone());
+    store.load_delay_ns.store(1_100_000_000, Ordering::SeqCst);
+    let now = clock.now_unix_ms().unwrap();
+    assert!(now * 1_000_000 > initial.ceiling_ns);
+    assert_eq!(store.loads.load(Ordering::SeqCst), 1);
+    assert_eq!(store.writes.load(Ordering::SeqCst), 1);
+    let retained = store.record.lock().unwrap().clone();
+    assert!(now <= retained.ceiling_ns / 1_000_000);
+}
+
+#[test]
+fn current_time_and_forced_refresh_reject_slow_cas_without_a_second_renewal() {
+    for read in [
+        HostAuthorityClock::now_unix_ms,
+        |clock: &HostAuthorityClock| {
+            clock
+                .refresh_projection()
+                .map(|observation| observation.observed_unix_ms)
+        },
+    ] {
+        let initial = past_real_record(/*age_ns*/ 1_100_000_000);
+        let (clock, store) = fixture(initial);
+        store.cas_delay_ns.store(1_100_000_000, Ordering::SeqCst);
+        assert_eq!(read(&clock), Err(AuthorityTrustError::Unavailable));
+        assert_eq!(store.loads.load(Ordering::SeqCst), 1);
+        assert_eq!(store.writes.load(Ordering::SeqCst), 1);
+    }
+}
+
+#[test]
+fn current_time_and_forced_refresh_preserve_rollback_and_store_error_refusals() {
+    for read in [
+        HostAuthorityClock::now_unix_ms,
+        |clock: &HostAuthorityClock| {
+            clock
+                .refresh_projection()
+                .map(|observation| observation.observed_unix_ms)
+        },
+    ] {
+        let mut future = past_real_record(/*age_ns*/ 0);
+        future.unix_ns += 3_600_000_000_000;
+        future.wall_ns += 3_600_000_000_000;
+        future.ceiling_ns += 3_600_000_000_000;
+        let (clock, store) = fixture(future);
+        assert_eq!(read(&clock), Err(AuthorityTrustError::Invalid));
+        assert_eq!(store.writes.load(Ordering::SeqCst), 0);
+        for error in [
+            AuthorityTrustError::Invalid,
+            AuthorityTrustError::Unavailable,
+            AuthorityTrustError::Conflict,
+        ] {
+            let (clock, store) = fixture(past_real_record(/*age_ns*/ 0));
+            *store.load_error.lock().unwrap() = Some(error);
+            assert_eq!(read(&clock), Err(error));
+            assert_eq!(store.loads.load(Ordering::SeqCst), 1);
+            assert_eq!(store.writes.load(Ordering::SeqCst), 0);
+
+            let initial = past_real_record(/*age_ns*/ 1_100_000_000);
+            let (clock, store) = fixture(initial.clone());
+            *store.write_error.lock().unwrap() = Some(error);
+            assert_eq!(read(&clock), Err(error));
+            assert_eq!(store.loads.load(Ordering::SeqCst), 1);
+            assert_eq!(store.writes.load(Ordering::SeqCst), 1);
+            assert_eq!(*store.record.lock().unwrap(), initial);
+        }
     }
 }
 

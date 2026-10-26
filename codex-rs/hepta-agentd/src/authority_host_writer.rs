@@ -60,10 +60,11 @@ impl RegisteredWriter {
                 }
                 let response = backend.exchange(bytes).map_err(io::Error::other)?;
                 let head = issuer.revocations()?;
-                let now = clock
-                    .refresh_projection()
-                    .map_err(io::Error::other)?
-                    .observed_unix_ms;
+                // A checkpoint reply needs actual post-I/O lease validation,
+                // not publication of a new future clock projection. The original
+                // current-time API reloads the protected record and renews it
+                // once only when that actual post-I/O reading requires renewal.
+                let now = clock.now_unix_ms().map_err(io::Error::other)?;
                 validate_observation_lease(&self.registration.authority_lease, &head, now)?;
                 Ok(response)
             })

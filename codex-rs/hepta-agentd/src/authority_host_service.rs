@@ -399,3 +399,7 @@ fn unavailable(_: impl std::fmt::Display) -> HostIssuerTransportError {
 #[cfg(test)]
 #[path = "authority_host_service_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "authority_host_checkpoint_clock_tests.rs"]
+mod checkpoint_clock_tests;
