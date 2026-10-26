@@ -11,7 +11,6 @@ use std::path::Path;
 
 use chrono::TimeZone;
 use pretty_assertions::assert_eq;
-use tempfile::TempDir;
 use time::Duration;
 use time::OffsetDateTime;
 use time::PrimitiveDateTime;
@@ -127,7 +126,7 @@ async fn insert_state_db_thread(
 
 #[tokio::test]
 async fn find_thread_path_falls_back_when_db_path_is_stale() {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
     let uuid = Uuid::from_u128(302);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -162,7 +161,7 @@ async fn find_thread_path_falls_back_when_db_path_is_stale() {
 
 #[tokio::test]
 async fn filesystem_lookup_distinguishes_thread_ids_from_rollout_ids() {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
     let thread_uuid = Uuid::from_u128(401);
     let rollout_uuid = Uuid::from_u128(402);
@@ -208,7 +207,7 @@ async fn filesystem_lookup_distinguishes_thread_ids_from_rollout_ids() {
 
 #[tokio::test]
 async fn read_thread_item_from_rollout_rejects_unknown_canonical_history_mode() {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
     let uuid = Uuid::from_u128(303);
     let ts = "2025-01-03T12-00-00";
@@ -243,7 +242,7 @@ async fn read_thread_item_from_rollout_rejects_unknown_canonical_history_mode() 
 
 #[tokio::test]
 async fn find_thread_path_falls_back_when_db_path_points_to_another_thread() {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
     let uuid = Uuid::from_u128(304);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -288,7 +287,7 @@ async fn find_thread_path_falls_back_when_db_path_points_to_another_thread() {
 
 #[tokio::test]
 async fn find_thread_path_repairs_missing_db_row_after_filesystem_fallback() {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
     let uuid = Uuid::from_u128(303);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -324,7 +323,7 @@ async fn find_thread_path_repairs_missing_db_row_after_filesystem_fallback() {
 
 #[tokio::test]
 async fn find_thread_path_accepts_existing_state_db_path_without_canonical_filename() {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
     let uuid = Uuid::from_u128(305);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -645,7 +644,7 @@ fn write_session_file_with_meta_payload(
 
 #[tokio::test]
 async fn test_list_conversations_latest_first() {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
 
     // Fixed UUIDs for deterministic expectations
@@ -795,7 +794,7 @@ async fn test_list_conversations_latest_first() {
 
 #[tokio::test]
 async fn test_pagination_cursor() {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
 
     // Fixed UUIDs for deterministic expectations
@@ -1060,7 +1059,7 @@ async fn test_pagination_cursor() {
 
 #[tokio::test]
 async fn test_list_threads_scans_past_head_for_user_event() {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
 
     let uuid = Uuid::from_u128(99);
@@ -1088,7 +1087,7 @@ async fn test_list_threads_scans_past_head_for_user_event() {
 
 #[tokio::test]
 async fn test_list_threads_uses_goal_objective_as_preview() {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
 
     let uuid = Uuid::from_u128(100);
@@ -1125,7 +1124,7 @@ async fn test_list_threads_uses_goal_objective_as_preview() {
 
 #[tokio::test]
 async fn test_goal_first_thread_reads_later_user_message() {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
 
     let uuid = Uuid::from_u128(101);
@@ -1165,7 +1164,7 @@ async fn test_goal_first_thread_reads_later_user_message() {
 
 #[tokio::test]
 async fn test_get_thread_contents() {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
 
     let uuid = Uuid::new_v4();
@@ -1261,7 +1260,7 @@ async fn test_get_thread_contents() {
 
 #[tokio::test]
 async fn test_base_instructions_missing_in_meta_defaults_to_null() {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
 
     let ts = "2025-04-02T10-30-00";
@@ -1303,7 +1302,7 @@ async fn test_base_instructions_missing_in_meta_defaults_to_null() {
 
 #[tokio::test]
 async fn test_base_instructions_present_in_meta_is_preserved() {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
 
     let ts = "2025-04-03T10-30-00";
@@ -1348,7 +1347,7 @@ async fn test_base_instructions_present_in_meta_is_preserved() {
 
 #[tokio::test]
 async fn read_head_for_summary_omits_harness_metadata() {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let rollout_path = temp.path().join("rollout.jsonl");
     let response_item = ResponseItem::Message {
         id: None,
@@ -1381,7 +1380,7 @@ async fn read_head_for_summary_omits_harness_metadata() {
 
 #[tokio::test]
 async fn test_created_at_sort_uses_file_mtime_for_updated_at() -> Result<()> {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
 
     let ts = "2025-06-01T08-00-00";
@@ -1435,7 +1434,7 @@ async fn test_created_at_sort_uses_file_mtime_for_updated_at() -> Result<()> {
 
 #[tokio::test]
 async fn test_updated_at_uses_file_mtime() -> Result<()> {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
 
     let ts = "2025-06-01T08-00-00";
@@ -1542,7 +1541,7 @@ async fn test_updated_at_uses_file_mtime() -> Result<()> {
 
 #[tokio::test]
 async fn test_timestamp_only_cursor_skips_same_second_filesystem_ties() {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
 
     let ts = "2025-07-01T00-00-00";
@@ -1682,7 +1681,7 @@ async fn test_timestamp_only_cursor_skips_same_second_filesystem_ties() {
 
 #[tokio::test]
 async fn test_source_filter_excludes_non_matching_sessions() {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
 
     let interactive_id = Uuid::from_u128(42);
@@ -1757,7 +1756,7 @@ async fn test_source_filter_excludes_non_matching_sessions() {
 
 #[tokio::test]
 async fn test_model_provider_filter_selects_only_matching_sessions() -> Result<()> {
-    let temp = TempDir::new().unwrap();
+    let temp = crate::test_support::private_temp_dir().unwrap();
     let home = temp.path();
 
     let openai_id = Uuid::from_u128(1);

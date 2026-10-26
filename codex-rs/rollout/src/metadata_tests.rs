@@ -22,12 +22,11 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
-use tempfile::tempdir;
 use uuid::Uuid;
 
 #[tokio::test]
 async fn extract_metadata_from_rollout_uses_session_meta() {
-    let dir = tempdir().expect("tempdir");
+    let dir = crate::test_support::private_temp_dir().expect("tempdir");
     let uuid = Uuid::new_v4();
     let id = ThreadId::from_string(&uuid.to_string()).expect("thread id");
     let path = dir
@@ -89,7 +88,7 @@ async fn extract_metadata_from_rollout_uses_session_meta() {
 
 #[tokio::test]
 async fn extract_metadata_from_rollout_rejects_unknown_history_mode() {
-    let dir = tempdir().expect("tempdir");
+    let dir = crate::test_support::private_temp_dir().expect("tempdir");
     let uuid = Uuid::new_v4();
     let id = ThreadId::from_string(&uuid.to_string()).expect("thread id");
     let path = dir
@@ -125,7 +124,7 @@ async fn extract_metadata_from_rollout_rejects_unknown_history_mode() {
 
 #[tokio::test]
 async fn extract_metadata_from_rollout_returns_latest_memory_mode() {
-    let dir = tempdir().expect("tempdir");
+    let dir = crate::test_support::private_temp_dir().expect("tempdir");
     let uuid = Uuid::new_v4();
     let id = ThreadId::from_string(&uuid.to_string()).expect("thread id");
     let path = dir
@@ -199,7 +198,7 @@ async fn extract_metadata_from_rollout_returns_latest_memory_mode() {
 
 #[test]
 fn builder_from_items_falls_back_to_filename() {
-    let dir = tempdir().expect("tempdir");
+    let dir = crate::test_support::private_temp_dir().expect("tempdir");
     let uuid = Uuid::new_v4();
     let path = dir
         .path()
@@ -232,7 +231,7 @@ fn builder_from_items_falls_back_to_filename() {
 
 #[tokio::test]
 async fn backfill_sessions_resumes_from_watermark_and_marks_complete() {
-    let dir = tempdir().expect("tempdir");
+    let dir = crate::test_support::private_temp_dir().expect("tempdir");
     let codex_home = dir.path().to_path_buf();
     let first_uuid = Uuid::new_v4();
     let second_uuid = Uuid::new_v4();
@@ -304,7 +303,7 @@ async fn backfill_sessions_resumes_from_watermark_and_marks_complete() {
 
 #[tokio::test]
 async fn backfill_sessions_preserves_existing_git_branch_and_fills_missing_git_fields() {
-    let dir = tempdir().expect("tempdir");
+    let dir = crate::test_support::private_temp_dir().expect("tempdir");
     let codex_home = dir.path().to_path_buf();
     let thread_uuid = Uuid::new_v4();
     let rollout_path = write_rollout_in_sessions(
@@ -355,7 +354,7 @@ async fn backfill_sessions_preserves_existing_git_branch_and_fills_missing_git_f
 
 #[tokio::test]
 async fn backfill_sessions_preserves_existing_paginated_memory_mode() {
-    let dir = tempdir().expect("tempdir");
+    let dir = crate::test_support::private_temp_dir().expect("tempdir");
     let codex_home = dir.path().to_path_buf();
     let thread_uuid = Uuid::new_v4();
     let rollout_path = write_rollout_in_sessions_with_cwd(
@@ -404,7 +403,7 @@ async fn backfill_sessions_preserves_existing_paginated_memory_mode() {
 
 #[tokio::test]
 async fn backfill_sessions_normalizes_cwd_before_upsert() {
-    let dir = tempdir().expect("tempdir");
+    let dir = crate::test_support::private_temp_dir().expect("tempdir");
     let codex_home = dir.path().to_path_buf();
     let thread_uuid = Uuid::new_v4();
     let session_cwd = codex_home.join(".");
