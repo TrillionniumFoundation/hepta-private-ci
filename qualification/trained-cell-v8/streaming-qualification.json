@@ -1,0 +1,227 @@
+{
+  "expected_sha256": "b819beb764fb6bf1f97d5e1aa38b50601c0c96b98ef13bed20681ad364157265",
+  "header_sha256": "5cf09378f458f28a20a988c83ff3512e0b051734bfe6bd79c2e6591b94bab70f",
+  "logical_reference_bytes": 16896000,
+  "logical_vectors_bytes": 67584000,
+  "owner_opened": false,
+  "scientific_acceptance": false,
+  "scope": "SYNTHETIC full-stream mechanics",
+  "self_rehashed_numeric_tail_rejected": true,
+  "tail_byte_tamper_rejected": true,
+  "truncated_final_vector_rejected": true,
+  "vectors_sha256": "32f255e4977106b37f55bdd6ddf8b036eca87db2344f0128f31712d91c4ebe04",
+  "versions": [
+    {
+      "all_heads": 12,
+      "argmax_predictions_checked": 132000,
+      "cases": [
+        {
+          "blocks": 20,
+          "cell_id": "agnews-linear-seed7",
+          "reference_case_sha256": "b45068b1a4d3dd12f3cc6e83cd214879508760f91d319fbe380e81fef79a2999",
+          "rows_inferred": 20000,
+          "task_stream_sha256": "cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"
+        },
+        {
+          "blocks": 20,
+          "cell_id": "agnews-linear-seed17",
+          "reference_case_sha256": "b45068b1a4d3dd12f3cc6e83cd214879508760f91d319fbe380e81fef79a2999",
+          "rows_inferred": 20000,
+          "task_stream_sha256": "cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"
+        },
+        {
+          "blocks": 20,
+          "cell_id": "agnews-linear-seed29",
+          "reference_case_sha256": "b45068b1a4d3dd12f3cc6e83cd214879508760f91d319fbe380e81fef79a2999",
+          "rows_inferred": 20000,
+          "task_stream_sha256": "cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"
+        },
+        {
+          "blocks": 20,
+          "cell_id": "agnews-gated-seed7",
+          "reference_case_sha256": "b45068b1a4d3dd12f3cc6e83cd214879508760f91d319fbe380e81fef79a2999",
+          "rows_inferred": 20000,
+          "task_stream_sha256": "cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"
+        },
+        {
+          "blocks": 20,
+          "cell_id": "agnews-gated-seed17",
+          "reference_case_sha256": "b45068b1a4d3dd12f3cc6e83cd214879508760f91d319fbe380e81fef79a2999",
+          "rows_inferred": 20000,
+          "task_stream_sha256": "cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"
+        },
+        {
+          "blocks": 20,
+          "cell_id": "agnews-gated-seed29",
+          "reference_case_sha256": "b45068b1a4d3dd12f3cc6e83cd214879508760f91d319fbe380e81fef79a2999",
+          "rows_inferred": 20000,
+          "task_stream_sha256": "cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"
+        },
+        {
+          "blocks": 2,
+          "cell_id": "dbpedia-linear-seed7",
+          "reference_case_sha256": "1368dd9d31cff4c9b9d5077fc072acac9363c6a8a5bfc06f89567652bd4c7411",
+          "rows_inferred": 2000,
+          "task_stream_sha256": "d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"
+        },
+        {
+          "blocks": 2,
+          "cell_id": "dbpedia-linear-seed17",
+          "reference_case_sha256": "1368dd9d31cff4c9b9d5077fc072acac9363c6a8a5bfc06f89567652bd4c7411",
+          "rows_inferred": 2000,
+          "task_stream_sha256": "d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"
+        },
+        {
+          "blocks": 2,
+          "cell_id": "dbpedia-linear-seed29",
+          "reference_case_sha256": "1368dd9d31cff4c9b9d5077fc072acac9363c6a8a5bfc06f89567652bd4c7411",
+          "rows_inferred": 2000,
+          "task_stream_sha256": "d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"
+        },
+        {
+          "blocks": 2,
+          "cell_id": "dbpedia-gated-seed7",
+          "reference_case_sha256": "1368dd9d31cff4c9b9d5077fc072acac9363c6a8a5bfc06f89567652bd4c7411",
+          "rows_inferred": 2000,
+          "task_stream_sha256": "d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"
+        },
+        {
+          "blocks": 2,
+          "cell_id": "dbpedia-gated-seed17",
+          "reference_case_sha256": "1368dd9d31cff4c9b9d5077fc072acac9363c6a8a5bfc06f89567652bd4c7411",
+          "rows_inferred": 2000,
+          "task_stream_sha256": "d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"
+        },
+        {
+          "blocks": 2,
+          "cell_id": "dbpedia-gated-seed29",
+          "reference_case_sha256": "1368dd9d31cff4c9b9d5077fc072acac9363c6a8a5bfc06f89567652bd4c7411",
+          "rows_inferred": 2000,
+          "task_stream_sha256": "d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"
+        }
+      ],
+      "chunk_rows": 1024,
+      "class_nlls_checked": 528000,
+      "header_sha256": "5cf09378f458f28a20a988c83ff3512e0b051734bfe6bd79c2e6591b94bab70f",
+      "labels_read": false,
+      "logits_checked": 528000,
+      "maximum_absolute_logit_error": 0.0,
+      "maximum_absolute_probability_error": 0.0,
+      "maximum_all_class_nll_error": 0.0,
+      "prediction_rows": 132000,
+      "probabilities_checked": 528000,
+      "production_authority": false,
+      "raw_buffer_bytes": 3145728,
+      "reference_buffer_bytes": 65536,
+      "row_subsampling": false,
+      "schema": "hepta.native-stream-parity-result.v8",
+      "version": "predecessor"
+    },
+    {
+      "all_heads": 12,
+      "argmax_predictions_checked": 132000,
+      "cases": [
+        {
+          "blocks": 20,
+          "cell_id": "agnews-linear-seed7",
+          "reference_case_sha256": "9a2697c4b609c4740326174bd2dd1004bbe84a2f25aeab599d2a5f4dd4c849f4",
+          "rows_inferred": 20000,
+          "task_stream_sha256": "cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"
+        },
+        {
+          "blocks": 20,
+          "cell_id": "agnews-linear-seed17",
+          "reference_case_sha256": "9a2697c4b609c4740326174bd2dd1004bbe84a2f25aeab599d2a5f4dd4c849f4",
+          "rows_inferred": 20000,
+          "task_stream_sha256": "cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"
+        },
+        {
+          "blocks": 20,
+          "cell_id": "agnews-linear-seed29",
+          "reference_case_sha256": "9a2697c4b609c4740326174bd2dd1004bbe84a2f25aeab599d2a5f4dd4c849f4",
+          "rows_inferred": 20000,
+          "task_stream_sha256": "cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"
+        },
+        {
+          "blocks": 20,
+          "cell_id": "agnews-gated-seed7",
+          "reference_case_sha256": "9a2697c4b609c4740326174bd2dd1004bbe84a2f25aeab599d2a5f4dd4c849f4",
+          "rows_inferred": 20000,
+          "task_stream_sha256": "cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"
+        },
+        {
+          "blocks": 20,
+          "cell_id": "agnews-gated-seed17",
+          "reference_case_sha256": "9a2697c4b609c4740326174bd2dd1004bbe84a2f25aeab599d2a5f4dd4c849f4",
+          "rows_inferred": 20000,
+          "task_stream_sha256": "cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"
+        },
+        {
+          "blocks": 20,
+          "cell_id": "agnews-gated-seed29",
+          "reference_case_sha256": "9a2697c4b609c4740326174bd2dd1004bbe84a2f25aeab599d2a5f4dd4c849f4",
+          "rows_inferred": 20000,
+          "task_stream_sha256": "cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"
+        },
+        {
+          "blocks": 2,
+          "cell_id": "dbpedia-linear-seed7",
+          "reference_case_sha256": "9a14ca6cd1a024caddc45f6a808eb308183b65063b9c4836fe36f4a8b46da2ec",
+          "rows_inferred": 2000,
+          "task_stream_sha256": "d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"
+        },
+        {
+          "blocks": 2,
+          "cell_id": "dbpedia-linear-seed17",
+          "reference_case_sha256": "9a14ca6cd1a024caddc45f6a808eb308183b65063b9c4836fe36f4a8b46da2ec",
+          "rows_inferred": 2000,
+          "task_stream_sha256": "d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"
+        },
+        {
+          "blocks": 2,
+          "cell_id": "dbpedia-linear-seed29",
+          "reference_case_sha256": "9a14ca6cd1a024caddc45f6a808eb308183b65063b9c4836fe36f4a8b46da2ec",
+          "rows_inferred": 2000,
+          "task_stream_sha256": "d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"
+        },
+        {
+          "blocks": 2,
+          "cell_id": "dbpedia-gated-seed7",
+          "reference_case_sha256": "9a14ca6cd1a024caddc45f6a808eb308183b65063b9c4836fe36f4a8b46da2ec",
+          "rows_inferred": 2000,
+          "task_stream_sha256": "d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"
+        },
+        {
+          "blocks": 2,
+          "cell_id": "dbpedia-gated-seed17",
+          "reference_case_sha256": "9a14ca6cd1a024caddc45f6a808eb308183b65063b9c4836fe36f4a8b46da2ec",
+          "rows_inferred": 2000,
+          "task_stream_sha256": "d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"
+        },
+        {
+          "blocks": 2,
+          "cell_id": "dbpedia-gated-seed29",
+          "reference_case_sha256": "9a14ca6cd1a024caddc45f6a808eb308183b65063b9c4836fe36f4a8b46da2ec",
+          "rows_inferred": 2000,
+          "task_stream_sha256": "d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"
+        }
+      ],
+      "chunk_rows": 1024,
+      "class_nlls_checked": 528000,
+      "header_sha256": "5cf09378f458f28a20a988c83ff3512e0b051734bfe6bd79c2e6591b94bab70f",
+      "labels_read": false,
+      "logits_checked": 528000,
+      "maximum_absolute_logit_error": 0.0,
+      "maximum_absolute_probability_error": 0.0,
+      "maximum_all_class_nll_error": 0.0,
+      "prediction_rows": 132000,
+      "probabilities_checked": 528000,
+      "production_authority": false,
+      "raw_buffer_bytes": 3145728,
+      "reference_buffer_bytes": 65536,
+      "row_subsampling": false,
+      "schema": "hepta.native-stream-parity-result.v8",
+      "version": "candidate"
+    }
+  ]
+}

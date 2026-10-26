@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="12" skipped="0" failures="1" errors="0" uuid="3428bc18-5a16-467d-b198-b2a99e48bcd8" timestamp="2026-10-26T14:27:34.288+08:00" time="120.316">
+    <testsuite name="hepta-profile-admission-v8" tests="12" skipped="0" errors="0" failures="1">
+        <testcase name="tests::complete_metric_report_cannot_admit_a_midplan_native_payload" classname="hepta-profile-admission-v8" timestamp="2026-10-26T14:27:34.289+08:00" time="0.252"/>
+        <testcase name="tests::self_rehashed_missing_execution_does_not_become_a_complete_census" classname="hepta-profile-admission-v8" timestamp="2026-10-26T14:27:34.292+08:00" time="0.279"/>
+        <testcase name="tests::changed_audit_profile_and_unknown_controller_schema_stay_closed" classname="hepta-profile-admission-v8" timestamp="2026-10-26T14:27:34.289+08:00" time="0.302"/>
+        <testcase name="tests::source_change_or_uninstalled_profile_cannot_reach_owner" classname="hepta-profile-admission-v8" timestamp="2026-10-26T14:27:34.541+08:00" time="0.223"/>
+        <testcase name="tests::exact_task_boundary_rejects_before_owner_or_signing_proposal" classname="hepta-profile-admission-v8" timestamp="2026-10-26T14:27:34.289+08:00" time="0.536"/>
+        <testcase name="tests::honest_incomplete_candidate_is_an_unavailable_gate_and_no_owner_write" classname="hepta-profile-admission-v8" timestamp="2026-10-26T14:27:34.289+08:00" time="0.576"/>
+        <testcase name="tests::self_rehashed_controller_stride_change_cannot_replace_the_external_contract" classname="hepta-profile-admission-v8" timestamp="2026-10-26T14:27:34.288+08:00" time="0.583"/>
+        <testcase name="tests::stream_tests::v8_incomplete_terminal_and_altered_external_stream_pin_reject_before_owner" classname="hepta-profile-admission-v8" timestamp="2026-10-26T14:27:34.764+08:00" time="0.391"/>
+        <testcase name="tests::fixed_scientific_family_supports_three_or_seven_registered_policies_without_profile_forks" classname="hepta-profile-admission-v8" timestamp="2026-10-26T14:27:34.288+08:00" time="0.969"/>
+        <testcase name="tests::full_format_synthetic_report_reaches_exact_signed_owner_and_idempotent_reopen" classname="hepta-profile-admission-v8" timestamp="2026-10-26T14:27:34.289+08:00" time="2.981"/>
+        <testcase name="tests::stream_tests::explicit_v8_report_and_stream_reach_signed_owner_reopen_and_rollback" classname="hepta-profile-admission-v8" timestamp="2026-10-26T14:27:34.591+08:00" time="3.310"/>
+        <testcase name="tests::stream_tests::complete_stream_exceeds_both_old_limits_and_checks_every_numeric_tail_row" classname="hepta-profile-admission-v8" timestamp="2026-10-26T14:27:34.571+08:00" time="60.007">
+            <failure type="test timeout"/>
+            <rerunFailure timestamp="2026-10-26T14:28:34.599+08:00" time="60.004" type="test timeout">
+                <system-out>
+running 1 test
+</system-out>
+                <system-err></system-err>
+            </rerunFailure>
+            <system-out>
+running 1 test
+</system-out>
+            <system-err></system-err>
+        </testcase>
+    </testsuite>
+</testsuites>

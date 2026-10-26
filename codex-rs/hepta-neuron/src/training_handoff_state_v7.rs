@@ -21,7 +21,7 @@ fn count(value: &Value, field: &str) -> Result<u64, TrainingHandoffErrorV7> {
         .ok_or(TrainingHandoffErrorV7::State)
 }
 
-pub(super) fn tensor_digest(shape: &[usize], values: &[f64]) -> Digest32 {
+pub(crate) fn tensor_digest(shape: &[usize], values: &[f64]) -> Digest32 {
     let shape = shape
         .iter()
         .map(usize::to_string)
@@ -44,6 +44,7 @@ pub(super) fn validate(
     serving: &TrainedCellBundleV5,
     protocol: Digest32,
     checkpoints: &[CellTrainingCheckpointV7],
+    controller_version: ControllerVersion,
 ) -> Result<(), TrainingHandoffErrorV7> {
     let theta = serving_theta(serving)?;
     for ((head, checkpoint), theta) in serving.heads().iter().zip(checkpoints).zip(theta) {
@@ -129,6 +130,7 @@ pub(super) fn validate(
             hash(&metadata["bindings"], "protocol_sha256")?,
             head.training_state_digest(),
             clock,
+            controller_version,
         )?;
     }
     Ok(())
@@ -140,6 +142,7 @@ fn controller(
     optimizer_origin_protocol: Digest32,
     state_digest: Digest32,
     optimizer_clock: u64,
+    controller_version: ControllerVersion,
 ) -> Result<(), TrainingHandoffErrorV7> {
     let value: Value = serde_json::from_slice(&checkpoint.controller_metadata_json)
         .map_err(|_| TrainingHandoffErrorV7::Controller)?;
@@ -160,7 +163,7 @@ fn controller(
     let original: Value =
         serde_json::from_str(source).map_err(|_| TrainingHandoffErrorV7::Controller)?;
     let registered = count(&value, "registered_steps")?;
-    if value["schema"] != "hepta.cell-controller-handoff.v7"
+    if value["schema"] != controller_version.wrapper_schema()
         || value["resume_boundary"] != "committed-state-with-frozen-plan"
         || hash(&value, "protocol_sha256")? != protocol
         || hash(&value, "optimizer_origin_protocol_sha256")? != optimizer_origin_protocol
@@ -186,7 +189,7 @@ fn controller(
             != optimizer_origin_protocol
         || hash(&original["contract"], "controller_source_sha256")?
             != hash(&value, "controller_source_sha256")?
-        || original["schema"] != "hepta.cell-field-controller.v7"
+        || original["schema"] != controller_version.source_schema()
         || original["authority"] != "DENY_ALL"
         || original["production_authority"] != false
         || original["absolute_step"] != step
@@ -218,6 +221,18 @@ fn controller(
         if value[field] != original[field] {
             return Err(TrainingHandoffErrorV7::Controller);
         }
+    }
+    if controller_version == ControllerVersion::V8 {
+        crate::training_handoff_controller_v8::validate(
+            &value,
+            &original,
+            &checkpoint.planned_actions,
+            p,
+            step,
+            origin,
+            cursor,
+            registered,
+        )?;
     }
     Ok(())
 }

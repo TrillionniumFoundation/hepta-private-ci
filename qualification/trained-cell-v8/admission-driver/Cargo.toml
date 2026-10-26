@@ -1,0 +1,32 @@
+[package]
+name = "hepta-profile-admission-v8"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[workspace]
+
+[dependencies]
+hepta-handoff-recovery-v7 = { path = "../../trained-cell-v7/recovery-driver" }
+codex-hepta-learning-artifacts = { path = "../../../codex-rs/hepta-learning-artifacts" }
+codex-hepta-neuron = { path = "../../../codex-rs/hepta-neuron" }
+codex-hepta-types = { path = "../../../codex-rs/hepta-types" }
+ed25519-dalek = { version = "=2.2.0", features = ["pkcs8"] }
+serde_json = { version = "=1.0.149", features = ["float_roundtrip", "raw_value"] }
+
+[dev-dependencies]
+pretty_assertions = "=1.4.1"
+sha2 = "=0.10.9"
+
+[profile.dev]
+debug = 0
+incremental = false
+
+[profile.dev.package.codex-hepta-neuron]
+opt-level = 2
+
+[profile.dev.package.codex-hepta-types]
+opt-level = 2
+
+[profile.dev.package.sha2]
+opt-level = 2

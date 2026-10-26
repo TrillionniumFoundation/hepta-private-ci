@@ -1,0 +1,50 @@
+{
+  "execution": "approved_escalated_local_qualification",
+  "network": false,
+  "scientific_cost_includes_this": false,
+  "commands": [
+    {
+      "log": "18-recovery-final-fix.log",
+      "command": [
+        "just",
+        "fix",
+        "--manifest-path",
+        "../qualification/trained-cell-v7/recovery-driver/Cargo.toml",
+        "--offline"
+      ],
+      "cwd": "/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs",
+      "returncode": 0
+    },
+    {
+      "log": "19-adapter-final-fix.log",
+      "command": [
+        "just",
+        "fix",
+        "--manifest-path",
+        "../qualification/trained-cell-v8/admission-driver/Cargo.toml",
+        "--offline"
+      ],
+      "cwd": "/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs",
+      "returncode": 0
+    },
+    {
+      "log": "20-final-fmt.log",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "cwd": "/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs",
+      "returncode": 0
+    },
+    {
+      "log": "21-bazel-lock-update.log",
+      "command": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "cwd": "/workspace/scratch/60f94d809f44/hepta-native-v8",
+      "returncode": 127
+    }
+  ],
+  "tests_rerun_after_final_fix_fmt": false
+}

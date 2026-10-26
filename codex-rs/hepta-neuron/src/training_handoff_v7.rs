@@ -19,6 +19,33 @@ use crate::TrainedCellErrorV5;
 mod codec;
 #[path = "training_handoff_state_v7.rs"]
 mod state;
+pub(crate) use state::tensor_digest;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum ControllerVersion {
+    V7,
+    V8,
+}
+impl ControllerVersion {
+    pub(crate) fn magic(self) -> &'static [u8; 8] {
+        match self {
+            Self::V7 => b"HPTHOF07",
+            Self::V8 => b"HPTHOF08",
+        }
+    }
+    pub(crate) fn source_schema(self) -> &'static str {
+        match self {
+            Self::V7 => "hepta.cell-field-controller.v7",
+            Self::V8 => "hepta.cell-field-controller.v8",
+        }
+    }
+    pub(crate) fn wrapper_schema(self) -> &'static str {
+        match self {
+            Self::V7 => "hepta.cell-controller-handoff.v7",
+            Self::V8 => "hepta.cell-controller-handoff.v8",
+        }
+    }
+}
 
 pub const MAX_TRAINING_HANDOFF_BYTES_V7: usize = 8 * 1024 * 1024;
 pub(super) const MAX_CHECKPOINT_METADATA: usize = 64 * 1024;
@@ -102,6 +129,7 @@ impl CellTrainingCheckpointV7 {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct TrainingHandoffBundleV7 {
+    controller_version: ControllerVersion,
     serving: TrainedCellBundleV5,
     protocol_digest: Digest32,
     predecessor_digest: Option<Digest32>,
@@ -116,14 +144,31 @@ impl TrainingHandoffBundleV7 {
         predecessor_digest: Option<Digest32>,
         checkpoints: Vec<CellTrainingCheckpointV7>,
     ) -> Result<Self, TrainingHandoffErrorV7> {
+        Self::new_versioned(
+            serving,
+            protocol_digest,
+            predecessor_digest,
+            checkpoints,
+            ControllerVersion::V7,
+        )
+    }
+
+    pub(crate) fn new_versioned(
+        serving: TrainedCellBundleV5,
+        protocol_digest: Digest32,
+        predecessor_digest: Option<Digest32>,
+        checkpoints: Vec<CellTrainingCheckpointV7>,
+        controller_version: ControllerVersion,
+    ) -> Result<Self, TrainingHandoffErrorV7> {
         if protocol_digest.is_zero()
             || predecessor_digest.is_some_and(codex_hepta_types::Digest32::is_zero)
             || checkpoints.len() != serving.heads().len()
         {
             return Err(TrainingHandoffErrorV7::Binding);
         }
-        state::validate(&serving, protocol_digest, &checkpoints)?;
+        state::validate(&serving, protocol_digest, &checkpoints, controller_version)?;
         let mut bundle = Self {
+            controller_version,
             serving,
             protocol_digest,
             predecessor_digest,
@@ -199,4 +244,4 @@ impl From<TrainedCellErrorV5> for TrainingHandoffErrorV7 {
 
 #[cfg(test)]
 #[path = "training_handoff_v7_tests.rs"]
-mod tests;
+pub(crate) mod tests;

@@ -3,8 +3,10 @@
 pub mod census;
 pub mod handoff_dump;
 mod handoff_pair;
+pub mod handoff_version;
 pub mod owner;
 pub mod parity;
+pub mod parity_profile;
 #[path = "../../../trained-cell-v5/actual-review-driver/src/payload.rs"]
 pub mod payload;
 pub mod positive;
@@ -14,6 +16,8 @@ pub mod report;
 #[path = "../../../trained-cell-v5/actual-review-driver/src/serve.rs"]
 pub mod serve;
 mod serve_handoff;
+#[path = "../../../trained-cell-v8/streaming_parity_v8.rs"]
+pub mod streaming_parity;
 mod terminal_review;
 use codex_hepta_learning_artifacts::*;
 use codex_hepta_neuron::TrainedCellBundleV5;

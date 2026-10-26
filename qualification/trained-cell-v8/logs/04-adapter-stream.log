@@ -1,0 +1,224 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling serde_json v1.0.149
+   Compiling codex-hepta-infer-core v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs/hepta-infer-core)
+   Compiling codex-hepta-neuron v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs/hepta-neuron)
+   Compiling hepta-handoff-recovery-v7 v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver)
+warning: unused import: `parity`
+ --> /workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/../../../trained-cell-v8/streaming_header_v8.rs:3:29
+  |
+3 | use crate::{Result, ensure, parity, report};
+  |                             ^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `reject` is never used
+   --> /workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/../../../trained-cell-v5/actual-review-driver/src/owner.rs:162:8
+    |
+162 | pub fn reject(inputs: &Inputs, root: &Path, now: u64) -> Result<Value> {
+    |        ^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `hepta-handoff-recovery-v7` (lib) generated 2 warnings (run `cargo fix --lib -p hepta-handoff-recovery-v7` to apply 1 suggestion)
+   Compiling hepta-profile-admission-v8 v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver)
+warning: unused import: `TASKS`
+ --> src/payload.rs:4:31
+  |
+4 | use crate::profile::{Profile, TASKS, family};
+  |                               ^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `hepta-profile-admission-v8` (lib) generated 1 warning (run `cargo fix --lib -p hepta-profile-admission-v8` to apply 1 suggestion)
+error[E0659]: `assert_eq` is ambiguous
+ --> src/stream_tests.rs:9:5
+  |
+9 |     assert_eq!(profile.version(),8);
+  |     ^^^^^^^^^ ambiguous name
+  |
+  = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+ --> src/stream_tests.rs:1:5
+  |
+1 | use super::*;
+  |     ^^^^^^^^
+  = help: consider adding an explicit import of `assert_eq` to disambiguate
+  = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+ --> /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> src/stream_tests.rs:14:5
+   |
+14 |     assert_eq!(receipt["candidate_published"],json!(true));
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> src/stream_tests.rs:1:5
+   |
+ 1 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> src/stream_tests.rs:15:5
+   |
+15 |     assert_eq!(receipt["roundtrip"]["candidate"]["prediction_rows"],json!(48));
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> src/stream_tests.rs:1:5
+   |
+ 1 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> src/stream_tests.rs:16:5
+   |
+16 |     assert_eq!(receipt["roundtrip"]["owner_bytes_unchanged_during_serving_and_rollback"],json!(true));
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> src/stream_tests.rs:1:5
+   |
+ 1 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> src/stream_tests.rs:18:5
+   |
+18 |     assert_eq!(dump["schema"],json!("hepta.native-full-checkpoint-dump.v8"));
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> src/stream_tests.rs:1:5
+   |
+ 1 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> src/stream_tests.rs:21:5
+   |
+21 |     assert_eq!(inventory(&f.output.join("owner")),before);
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> src/stream_tests.rs:1:5
+   |
+ 1 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> src/stream_tests.rs:44:5
+   |
+44 |     assert_eq!(inputs.header_digest,header_digest);
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> src/stream_tests.rs:1:5
+   |
+ 1 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> src/stream_tests.rs:49:5
+   |
+49 |     assert_eq!(first["prediction_rows"],json!(132000));
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> src/stream_tests.rs:1:5
+   |
+ 1 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> src/stream_tests.rs:50:5
+   |
+50 |     assert_eq!(second["prediction_rows"],json!(132000));
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> src/stream_tests.rs:1:5
+   |
+ 1 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> src/stream_tests.rs:51:5
+   |
+51 |     assert_eq!(first["class_nlls_checked"],json!(528000));
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> src/stream_tests.rs:1:5
+   |
+ 1 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> src/stream_tests.rs:52:5
+   |
+52 |     assert_eq!(second["argmax_predictions_checked"],json!(132000));
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> src/stream_tests.rs:1:5
+   |
+ 1 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/prelude/mod.rs:162:12
+
+For more information about this error, try `rustc --explain E0659`.
+warning: `hepta-profile-admission-v8` (lib test) generated 1 warning (1 duplicate)
+error: could not compile `hepta-profile-admission-v8` (lib test) due to 11 previous errors; 1 warning emitted
+error: command `/tmp/hepta-native-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo '--color=auto' test --manifest-path ../qualification/trained-cell-v8/admission-driver/Cargo.toml --no-run --message-format json-render-diagnostics --offline` exited with code 101
+error: recipe `test` failed on line 89 with exit code 101

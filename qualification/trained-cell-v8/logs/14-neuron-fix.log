@@ -1,0 +1,15 @@
+cargo clippy --fix --tests --allow-dirty {args}
+    Checking codex-hepta-neuron v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs/hepta-neuron)
+       Fixed hepta-neuron/src/training_handoff_controller_v8.rs (1 fix)
+warning: this function has too many arguments (8/7)
+  --> hepta-neuron/src/training_handoff_controller_v8.rs:34:1
+   |
+34 | / pub(crate) fn validate(wrapper:&Value, source:&Value, resolved:&[Vec<f64>], p:usize,
+35 | |     step:u64, origin:u64, cursor:u64, registered:u64) -> Result<(),Error> {
+   | |_________________________________________________________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#too_many_arguments
+   = note: `#[warn(clippy::too_many_arguments)]` on by default
+
+warning: `codex-hepta-neuron` (lib test) generated 1 warning
+    Finished `dev` profile [unoptimized] target(s) in 6.68s

@@ -126,15 +126,27 @@ pub fn run(
     let [replay, statistics, conversion, parity_root] = paths;
     let audits = evidence(protocol, inputs, gate, replay, statistics, conversion)?;
     terminal_review::verify(inputs, gate, conversion, replay, statistics)?;
-    let parity_inputs = parity::Inputs::load(parity_root)?;
-    parity_inputs.verify_family(&inputs.policy.protocol_digest.to_string(), report::TASKS)?;
+    let parity_inputs = parity_profile::Inputs::load(parity_root)?;
     ensure(
-        parity_inputs.payloads == handoff_pair::serving_payloads(inputs)?,
+        matches!(&parity_inputs, parity_profile::Inputs::Legacy(_))
+            || (inputs.predecessor.starts_with(b"HPTHOF08")
+                && inputs.candidate.starts_with(b"HPTHOF08")),
+        "streaming scientific publication requires explicit V8 envelopes",
+    )?;
+    let conversion_bytes = read(conversion)?;
+    ensure(
+        Digest32::of_bytes(&conversion_bytes) == audits[2]
+            && &serde_json::from_slice::<Value>(&conversion_bytes)? == parity_inputs.manifest(),
+        "parity reader observed a different audited conversion manifest",
+    )?;
+    parity_inputs.verify_family(&inputs.policy.protocol_digest.to_string())?;
+    ensure(
+        *parity_inputs.payloads() == handoff_pair::serving_payloads(inputs)?,
         "parity input payload differs",
     )?;
     let preflight = [
-        parity::compare_unpublished(&parity_inputs, 0)?,
-        parity::compare_unpublished(&parity_inputs, 1)?,
+        parity_inputs.compare_unpublished(0)?,
+        parity_inputs.compare_unpublished(1)?,
     ];
     let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
     if mode == "prepare" {
@@ -228,19 +240,27 @@ pub fn run(
         "research publication gained authority",
     )?;
     drop(publisher);
-    let roundtrip = if inputs.candidate.starts_with(b"HPTHOF07") {
-        serve_handoff::roundtrip
+    let served = if handoff_version::Handoff::recognizes(&inputs.candidate) {
+        serve_handoff::roundtrip(
+            context.config,
+            required_head,
+            context.baseline,
+            context.candidate,
+            &parity_inputs,
+            now,
+        )?
+    } else if let parity_profile::Inputs::Legacy(ref legacy) = parity_inputs {
+        serve::roundtrip(
+            context.config,
+            required_head,
+            context.baseline,
+            context.candidate,
+            legacy,
+            now,
+        )?
     } else {
-        serve::roundtrip
+        return Err("legacy serving payload cannot use a V8 streaming profile".into());
     };
-    let served = roundtrip(
-        context.config,
-        required_head,
-        context.baseline,
-        context.candidate,
-        &parity_inputs,
-        now,
-    )?;
     let result = json!({"schema":"hepta.signed-research-native-publication.v7","status":"completed","scope":"local-research-only",
         "proposal_sha256":Digest32::of_bytes(&proposal_bytes).to_string(),"review_sha256":receipt.review_digest.to_string(),
         "policy_sha256":receipt.policy_digest.to_string(),"registry_head_sha256":receipt.publication.registry_head_digest.to_string(),

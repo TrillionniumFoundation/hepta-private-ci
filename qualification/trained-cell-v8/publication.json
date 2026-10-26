@@ -1,0 +1,753 @@
+{
+  "all_stages": 13,
+  "base_commit": "d2f8a56c5219718f1841b4e9f92d2ad6dbb8fd49",
+  "final_source_count": 227,
+  "final_source_map_sha256": "d98ba136fd6d185aa07179082711545a137c734f9cfdab0971fbbfd79035f34e",
+  "local_root": "/workspace/scratch/60f94d809f44/hepta-native-v8",
+  "notes": [
+    "Root publishes only; agent did not push or merge.",
+    "Use each local_path, including two temporary scaffolds; subsequent stages restore exact final content.",
+    "Every complex stage<500 changed lines; lockfiles/receipts/logs are mechanical.",
+    "No production trust, installed actual profile or genuine scientific approval.",
+    "Local isolated codex-rs/Cargo.toml and Cargo.lock are NOT publication paths."
+  ],
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta.native-publication-stages.v8",
+  "source_stages": 11,
+  "stages": [
+    {
+      "all_changed_lines": 422,
+      "complex_changed_lines": 422,
+      "depends_on": null,
+      "files": [
+        {
+          "changed_lines": 6,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs/hepta-neuron/src/lib.rs",
+          "mechanical": false,
+          "path": "codex-rs/hepta-neuron/src/lib.rs",
+          "sha256": "cadeff3ec0d34aaab23dea2535f0e474680bd9f62fb69944571159e9af304e86",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 22,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs/hepta-neuron/src/training_handoff_codec_v7.rs",
+          "mechanical": false,
+          "path": "codex-rs/hepta-neuron/src/training_handoff_codec_v7.rs",
+          "sha256": "443154546b2623d9a0a622edd3db339c17e4e595edfca5c63fe898c65cf24056",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 21,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs/hepta-neuron/src/training_handoff_state_v7.rs",
+          "mechanical": false,
+          "path": "codex-rs/hepta-neuron/src/training_handoff_state_v7.rs",
+          "sha256": "8f00bbfd6941b2560f70b6e01ae9d05d20f15e78d7ec8065be5b0ad39ad81a88",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 49,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs/hepta-neuron/src/training_handoff_v7.rs",
+          "mechanical": false,
+          "path": "codex-rs/hepta-neuron/src/training_handoff_v7.rs",
+          "sha256": "760065e182909dc03ec355890a13d7d1c4ab0f8d7e49cd33c087b065060f6e2a",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 79,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8-stage-inputs/01_explicit_v8_core/codex-rs/hepta-neuron/src/training_handoff_v8.rs",
+          "mechanical": false,
+          "path": "codex-rs/hepta-neuron/src/training_handoff_v8.rs",
+          "sha256": "4487b5bc067425279eb2eabc0f5555808a0e60a8a9a715fcc7abde60467605e7",
+          "temporary_scaffold": true
+        },
+        {
+          "changed_lines": 245,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs/hepta-neuron/src/training_handoff_controller_v8.rs",
+          "mechanical": false,
+          "path": "codex-rs/hepta-neuron/src/training_handoff_controller_v8.rs",
+          "sha256": "e42db5f3bb3aef63cb3f453ad78ef89cd9907b5e67b75c25ade959b8b71387f5",
+          "temporary_scaffold": false
+        }
+      ],
+      "name": "01_explicit_v8_core"
+    },
+    {
+      "all_changed_lines": 223,
+      "complex_changed_lines": 223,
+      "depends_on": "01_explicit_v8_core",
+      "files": [
+        {
+          "changed_lines": 218,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs/hepta-neuron/src/training_handoff_v8_tests.rs",
+          "mechanical": false,
+          "path": "codex-rs/hepta-neuron/src/training_handoff_v8_tests.rs",
+          "sha256": "93d7f1a9c8f851829aa17a477d7cde6401b27e2c7e9603dc64dbe58180d1d03b",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 2,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs/hepta-neuron/src/training_handoff_v7_tests.rs",
+          "mechanical": false,
+          "path": "codex-rs/hepta-neuron/src/training_handoff_v7_tests.rs",
+          "sha256": "19436bd1197d2382342b7d1ce33f571263a1909498f28179d746eee797a263ba",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 3,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs/hepta-neuron/src/training_handoff_v8.rs",
+          "mechanical": false,
+          "path": "codex-rs/hepta-neuron/src/training_handoff_v8.rs",
+          "sha256": "14dd5b04b58c5c4fdd955089ec56703934ed0b6eb60b55a8991d9cb41238d50e",
+          "temporary_scaffold": false
+        }
+      ],
+      "name": "02_v8_transport_regressions"
+    },
+    {
+      "all_changed_lines": 400,
+      "complex_changed_lines": 400,
+      "depends_on": "02_v8_transport_regressions",
+      "files": [
+        {
+          "changed_lines": 244,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/streaming_header_v8.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/streaming_header_v8.rs",
+          "sha256": "830755b881cc063b9d1769be9e34e6e188121362cacc22f30bc0a21e1f45ed65",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 156,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/streaming_parity_v8.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/streaming_parity_v8.rs",
+          "sha256": "bb5d505e67f802ada81ad5a348e55a848143657f08831c568b934e8edb4d2ca5",
+          "temporary_scaffold": false
+        }
+      ],
+      "name": "03_bounded_full_stream"
+    },
+    {
+      "all_changed_lines": 298,
+      "complex_changed_lines": 297,
+      "depends_on": "03_bounded_full_stream",
+      "files": [
+        {
+          "changed_lines": 1,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/Cargo.toml",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v7/recovery-driver/Cargo.toml",
+          "sha256": "d6a7042b41a50fee3c4adaf9ba576da122aac4159a4867dabdb577c62b64179d",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 1,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/Cargo.lock",
+          "mechanical": true,
+          "path": "qualification/trained-cell-v7/recovery-driver/Cargo.lock",
+          "sha256": "586251987d0a70dbc864e196696bdc380ebf46ff610c1355a32d840a0ec88f3e",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 4,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/lib.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v7/recovery-driver/src/lib.rs",
+          "sha256": "450c708ed3e7d8fd86c8249694e6c737a0e390802db5161570dd9a2d09e0bb73",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 89,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/handoff_version.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v7/recovery-driver/src/handoff_version.rs",
+          "sha256": "9d310c5b87dee8bb89764a795b7665c1eb0c8537f4fa3be363f442e672274032",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 67,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/parity_profile.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v7/recovery-driver/src/parity_profile.rs",
+          "sha256": "c2e342f9be56bf7a037bf3cc1f6f21e1609acb85838d2fecebd0431f8b0f63be",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 11,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/handoff_dump.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v7/recovery-driver/src/handoff_dump.rs",
+          "sha256": "822bd3dc20a514d6200b4626180410a5d648191840703cffdad4015053a8eba3",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 7,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/handoff_pair.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v7/recovery-driver/src/handoff_pair.rs",
+          "sha256": "b0019ce7fcab2172a15847fea303a9cf2635a9c5ff4226d1cf67d7d6e16697a5",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 9,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/owner.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v7/recovery-driver/src/owner.rs",
+          "sha256": "b11657640a9d746d5756727231d6362e5b2e5cf41654c9b9b78bcfa70cb1a8e2",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 2,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/parity.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v7/recovery-driver/src/parity.rs",
+          "sha256": "57e2841827fda5b0d9d9991982263fc0b89a01bb1fddbfb8ef045bf54922bb97",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 54,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/positive.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v7/recovery-driver/src/positive.rs",
+          "sha256": "79ebaac60107896ea9ec7e3fd3e5cc1a6354ac4b88cc7b88e6a343b57a2757aa",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 21,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/serve_handoff.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v7/recovery-driver/src/serve_handoff.rs",
+          "sha256": "6c537abad6c71213645fbe1c8c0726a9173fa09b753e6bd51677710b293e6d1a",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 32,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/terminal_review.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v7/recovery-driver/src/terminal_review.rs",
+          "sha256": "b163453fd40156251078069e32c0c3051fda00388208813a5f88e7dff70cd1b8",
+          "temporary_scaffold": false
+        }
+      ],
+      "name": "04_owner_version_and_stream_dispatch"
+    },
+    {
+      "all_changed_lines": 425,
+      "complex_changed_lines": 425,
+      "depends_on": "04_owner_version_and_stream_dispatch",
+      "files": [
+        {
+          "changed_lines": 185,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver/src/profile.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/admission-driver/src/profile.rs",
+          "sha256": "800b95305a832db0d480a41ecf605674a3a93349df265279364c21b8432b7169",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 114,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver/src/report.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/admission-driver/src/report.rs",
+          "sha256": "7ddec918ae13c7558777b1b1e37bd36e966e5e86ff87c7cf72efb812a6153bb0",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 126,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver/src/census.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/admission-driver/src/census.rs",
+          "sha256": "813a846f7490f48ae77b4d20bbe87d719396aa65397e98c33e89bbe2cc7d6732",
+          "temporary_scaffold": false
+        }
+      ],
+      "name": "05_host_profile_report_census"
+    },
+    {
+      "all_changed_lines": 386,
+      "complex_changed_lines": 386,
+      "depends_on": "05_host_profile_report_census",
+      "files": [
+        {
+          "changed_lines": 206,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver/src/measurements.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/admission-driver/src/measurements.rs",
+          "sha256": "c4363e57929586417a0928c44b0e5d4a63269b9aec495c7e85640a67489276fd",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 180,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver/src/payload.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/admission-driver/src/payload.rs",
+          "sha256": "439c16de33f61ae2b72c969558a098e5047aab7b9e9d384ebaf92ead2d645712",
+          "temporary_scaffold": false
+        }
+      ],
+      "name": "06_frozen_metrics_and_payload_binding"
+    },
+    {
+      "all_changed_lines": 700,
+      "complex_changed_lines": 275,
+      "depends_on": "06_frozen_metrics_and_payload_binding",
+      "files": [
+        {
+          "changed_lines": 19,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8-stage-inputs/07_buildable_admission_cli/qualification/trained-cell-v8/admission-driver/src/lib.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/admission-driver/src/lib.rs",
+          "sha256": "2ec2d6a2b6729c1e75fffc091e9f496ba114a6ca137d141755945267d0e376fe",
+          "temporary_scaffold": true
+        },
+        {
+          "changed_lines": 62,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver/src/admission.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/admission-driver/src/admission.rs",
+          "sha256": "720a849f519e5055244f2323d7e0e01e83f72d8086b2297ddf1e177f8fc54d54",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 86,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver/src/main.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/admission-driver/src/main.rs",
+          "sha256": "17d31722eba694b3fe61f4a4949cb95cdddb1fa4efac75dc1a5b54ee698dd9e8",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 34,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver/src/bin/handoff-profile-check.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/admission-driver/src/bin/handoff-profile-check.rs",
+          "sha256": "69bfe44da87089a470829781f29b37478e2fb881499cb873f5b28ae009149fa3",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 31,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver/src/bin/streaming-parity-check.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/admission-driver/src/bin/streaming-parity-check.rs",
+          "sha256": "c562fbfe97390b5d491391d2e1e2a88b201a43ac262d34d0f4815aab739e10b3",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 32,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver/Cargo.toml",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/admission-driver/Cargo.toml",
+          "sha256": "832b4db78f7663991e1a5a3040c6b067cde438cc7275629e4a1e6038a025e181",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 425,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver/Cargo.lock",
+          "mechanical": true,
+          "path": "qualification/trained-cell-v8/admission-driver/Cargo.lock",
+          "sha256": "ce2888505609eaf989537822913e0faaa0e012a3e9cb610996183671ee714eb3",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 11,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/nextest.toml",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/nextest.toml",
+          "sha256": "6c1ace2aa02a9cd06496c140902b921c937fd56dcb4ca7be50182bb6cbe4b034",
+          "temporary_scaffold": false
+        }
+      ],
+      "name": "07_buildable_admission_cli"
+    },
+    {
+      "all_changed_lines": 397,
+      "complex_changed_lines": 397,
+      "depends_on": "07_buildable_admission_cli",
+      "files": [
+        {
+          "changed_lines": 331,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver/src/adapter_fixtures.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/admission-driver/src/adapter_fixtures.rs",
+          "sha256": "9d0081abcb4d4f33909b0ad175b727d1e9c1768ad5204dfd0bedb0f008ab60df",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 66,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver/src/adapter_v8_fixtures.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/admission-driver/src/adapter_v8_fixtures.rs",
+          "sha256": "e30b4c1ee9b1c9c0930030fab34f7c89349ebdd93451edc6c52fab86bb5243e7",
+          "temporary_scaffold": false
+        }
+      ],
+      "name": "08_full_state_report_fixtures"
+    },
+    {
+      "all_changed_lines": 308,
+      "complex_changed_lines": 308,
+      "depends_on": "08_full_state_report_fixtures",
+      "files": [
+        {
+          "changed_lines": 108,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver/src/stream_fixtures.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/admission-driver/src/stream_fixtures.rs",
+          "sha256": "08c760d0abaf636ec7ffce21b73cef69ebb7c195dd675d58bef0214c240d27eb",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 146,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver/src/stream_tests.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/admission-driver/src/stream_tests.rs",
+          "sha256": "34d1d8577a48cfa3a6b2878be8b31548871a0f5c4e92b05d8b74652b6837458a",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 54,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver/src/audit_binding_tests.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/admission-driver/src/audit_binding_tests.rs",
+          "sha256": "0e1e90f7e132e93dfec500b6e30bf1b5d77b41ef6a9235fb4f21e5a49c740d05",
+          "temporary_scaffold": false
+        }
+      ],
+      "name": "09_stream_and_audit_fixtures"
+    },
+    {
+      "all_changed_lines": 314,
+      "complex_changed_lines": 314,
+      "depends_on": "09_stream_and_audit_fixtures",
+      "files": [
+        {
+          "changed_lines": 298,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver/src/adapter_tests.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/admission-driver/src/adapter_tests.rs",
+          "sha256": "df0908749302741f2eeed14a08d123d26df19e43343392a5aefec66091c1f061",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 16,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver/src/lib.rs",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/admission-driver/src/lib.rs",
+          "sha256": "50f8aad4eec33b1775044085c5cd58994b8189b8a0788c940db4971acd3f6cb6",
+          "temporary_scaffold": false
+        }
+      ],
+      "name": "10_wire_admission_regressions"
+    },
+    {
+      "all_changed_lines": 431,
+      "complex_changed_lines": 431,
+      "depends_on": "10_wire_admission_regressions",
+      "files": [
+        {
+          "changed_lines": 124,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/handoff_profile.py",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/handoff_profile.py",
+          "sha256": "6118e5f6c5ab5d092297e5bb3d1f862b604394391a763e8c4749599a2f988829",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 155,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/qualify_handoff_profile.py",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/qualify_handoff_profile.py",
+          "sha256": "9fd70f93b4157cdf9312aa873eedc6e3a1946e9e6af57e29b8f0e5965a421d3f",
+          "temporary_scaffold": false
+        },
+        {
+          "changed_lines": 152,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/README.md",
+          "mechanical": false,
+          "path": "qualification/trained-cell-v8/README.md",
+          "sha256": "df2c880e0916caa430d831fdc75397b0d892da2216c117490d6add23272a4ba5",
+          "temporary_scaffold": false
+        }
+      ],
+      "name": "11_research_loader_bridge"
+    },
+    {
+      "depends_on": "11_research_loader_bridge",
+      "files": [
+        {
+          "bytes": 25208,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/source-base.json",
+          "path": "qualification/trained-cell-v8/source-base.json",
+          "sha256": "9faa820af889c5f79cae944e1897c198e171438a9e2d84957fc4ceb65784cbb2"
+        },
+        {
+          "bytes": 29293,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/source-tested.json",
+          "path": "qualification/trained-cell-v8/source-tested.json",
+          "sha256": "38db4244408a9f31aba288bc7dde9f3b99ea0e84ddc036be079a5ba82b1a8c2a"
+        },
+        {
+          "bytes": 31193,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/source-final.json",
+          "path": "qualification/trained-cell-v8/source-final.json",
+          "sha256": "9b01d36a6675759080ac1b2250953c8a81be3f4a5ebee3213e540c26bd9838ef"
+        },
+        {
+          "bytes": 3107,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/source-scope-audit.json",
+          "path": "qualification/trained-cell-v8/source-scope-audit.json",
+          "sha256": "5a3885d2535b6bfefb6db18f7443538afa3baf81b82433a02fdae8e258316070"
+        },
+        {
+          "bytes": 2227,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/qualification-controller-source.json",
+          "path": "qualification/trained-cell-v8/qualification-controller-source.json",
+          "sha256": "fee016377edf92d22f0dafe1981b21dc0aa99117873f841779b9ec08bdcb9ce8"
+        },
+        {
+          "bytes": 9582,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/qualification.json",
+          "path": "qualification/trained-cell-v8/qualification.json",
+          "sha256": "35f25ad9deee37640b3275723c8df2defbb26b50b10d877fd4713e306949faf1"
+        },
+        {
+          "bytes": 19805,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/numerical-qualification.json",
+          "path": "qualification/trained-cell-v8/numerical-qualification.json",
+          "sha256": "ef8194c096f0efee1c63f3a129b48d587f5d7332cda768f547ac95047fe2ab40"
+        },
+        {
+          "bytes": 9893,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/streaming-qualification.json",
+          "path": "qualification/trained-cell-v8/streaming-qualification.json",
+          "sha256": "4f12ec905001c084e5da972e33861c6d23873c38b3f016007a5792fb6ad844c0"
+        },
+        {
+          "bytes": 18454,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/preserved-tools.json",
+          "path": "qualification/trained-cell-v8/preserved-tools.json",
+          "sha256": "819d3f2747a30b52bfa920071191995dabb515fff5c954b68d5613a92c2dda2a"
+        }
+      ],
+      "mechanical": true,
+      "name": "12_mechanical_qualification_receipts"
+    },
+    {
+      "depends_on": "12_mechanical_qualification_receipts",
+      "files": [
+        {
+          "bytes": 2649,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/01-test-initial.log",
+          "path": "qualification/trained-cell-v8/logs/01-test-initial.log",
+          "sha256": "3a19f71c51ab35f78747288b50a25189604637e26389d25398f3fedefdd0749b"
+        },
+        {
+          "bytes": 3016,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/02-test.log",
+          "path": "qualification/trained-cell-v8/logs/02-test.log",
+          "sha256": "de20c4e0d523b91bfca67db86a1b85b802ae1b490a67ff66d4aac8833830904c"
+        },
+        {
+          "bytes": 16495,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/03-neuron-v8.log",
+          "path": "qualification/trained-cell-v8/logs/03-neuron-v8.log",
+          "sha256": "ff5bdfb47d24142eba43a379400d135a55f7290329f51277ec5ef13be0a3e244"
+        },
+        {
+          "bytes": 10675,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/04-adapter-stream.log",
+          "path": "qualification/trained-cell-v8/logs/04-adapter-stream.log",
+          "sha256": "3a82ac1666f64c7ab4ed143e60d81dd0c2ffdb2038d92229c3a60c3070ad4483"
+        },
+        {
+          "bytes": 9653,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/05-adapter-stream.log",
+          "path": "qualification/trained-cell-v8/logs/05-adapter-stream.log",
+          "sha256": "ff51139b6ff6e8aaeb7be9e50b617356bbf79c2654ad210f8cdf85ac69601957"
+        },
+        {
+          "bytes": 17174,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/06-adapter-stream.log",
+          "path": "qualification/trained-cell-v8/logs/06-adapter-stream.log",
+          "sha256": "9f3d9110a1724a22c9d9eeb264a0780e9fb221579f7be9aed4497110a0797514"
+        },
+        {
+          "bytes": 1998,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/07-final-filter-core.log",
+          "path": "qualification/trained-cell-v8/logs/07-final-filter-core.log",
+          "sha256": "453aed71d2ecfe2a1b4639e22d7291e346fbf2fa9d7f22bc57c08fd854966148"
+        },
+        {
+          "bytes": 1479,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/08-profile-bin-build.log",
+          "path": "qualification/trained-cell-v8/logs/08-profile-bin-build.log",
+          "sha256": "cdf4e04360d450514aa08b44b77d6e7dfcdec627a15ebce76cddef04355492ce"
+        },
+        {
+          "bytes": 0,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/09-numerical-handoff.log",
+          "path": "qualification/trained-cell-v8/logs/09-numerical-handoff.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "bytes": 3300,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/10-recovery-dispatch.log",
+          "path": "qualification/trained-cell-v8/logs/10-recovery-dispatch.log",
+          "sha256": "888f0481142ecebf9381772052ccb04c2e0875bac75474c62251c124691c9bfb"
+        },
+        {
+          "bytes": 35,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/11-numerical-handoff-r2.log",
+          "path": "qualification/trained-cell-v8/logs/11-numerical-handoff-r2.log",
+          "sha256": "5b5219954d38b8245d6083467c9471169a66e4dd94a1a76bacdbdf21758a9ee6"
+        },
+        {
+          "bytes": 111,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/12-numerical-handoff-r3.log",
+          "path": "qualification/trained-cell-v8/logs/12-numerical-handoff-r3.log",
+          "sha256": "0b9dfebb9a2cf3e431c78aa8766de20f847cccc9c64aa52bda4f24a300d97637"
+        },
+        {
+          "bytes": 2917,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/13-recovery-dispatch-r2.log",
+          "path": "qualification/trained-cell-v8/logs/13-recovery-dispatch-r2.log",
+          "sha256": "2413d94e5d8f4e59c6e67c97e3c86da5c06dbbe6b590ea4e46d745e1205ea2e9"
+        },
+        {
+          "bytes": 919,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/14-neuron-fix.log",
+          "path": "qualification/trained-cell-v8/logs/14-neuron-fix.log",
+          "sha256": "0b85b2371d125b7b57baca9e5927253b6b4875b88af0bb1b3382b2f5848f7631"
+        },
+        {
+          "bytes": 1246,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/15-recovery-fix.log",
+          "path": "qualification/trained-cell-v8/logs/15-recovery-fix.log",
+          "sha256": "8c816616f673188afe8a1d235827f9d05587a15d17000bc3ef227a5761959be1"
+        },
+        {
+          "bytes": 2265,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/16-adapter-fix.log",
+          "path": "qualification/trained-cell-v8/logs/16-adapter-fix.log",
+          "sha256": "0082678804bd8620c5415da60ca5a1de75141b7dbed4ccb4f15158c981279117"
+        },
+        {
+          "bytes": 2506,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/17-audit-binding-regression.log",
+          "path": "qualification/trained-cell-v8/logs/17-audit-binding-regression.log",
+          "sha256": "cb33a70414003f97a74d5aac717ab3412d27749b4aacfd68fd1b6d0c000dfbb4"
+        },
+        {
+          "bytes": 699,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/18-recovery-final-fix.log",
+          "path": "qualification/trained-cell-v8/logs/18-recovery-final-fix.log",
+          "sha256": "4d93d89d90c2e927ffaafe3d483106ecc6f3cfe4907e48fed06befe12ef3ec05"
+        },
+        {
+          "bytes": 1484,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/19-adapter-final-fix.log",
+          "path": "qualification/trained-cell-v8/logs/19-adapter-final-fix.log",
+          "sha256": "870c17acf5f6465d7218c56c6a1806e0f21659e282756108fceda4533c450a87"
+        },
+        {
+          "bytes": 0,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/20-final-fmt.log",
+          "path": "qualification/trained-cell-v8/logs/20-final-fmt.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "bytes": 149,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/21-bazel-lock-update.log",
+          "path": "qualification/trained-cell-v8/logs/21-bazel-lock-update.log",
+          "sha256": "5353ddecebdb07719f4dfc7f6043039635de102b541209c7b3dd4e70431ba303"
+        },
+        {
+          "bytes": 919,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/22-final-cli-build.log",
+          "path": "qualification/trained-cell-v8/logs/22-final-cli-build.log",
+          "sha256": "2bc63ca3acec777749d0a772d5101ed0b8a8d1914cfa122fbd5a10cf180d5858"
+        },
+        {
+          "bytes": 3151,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/final-adapter-junit.xml",
+          "path": "qualification/trained-cell-v8/logs/final-adapter-junit.xml",
+          "sha256": "e0c1113982261d6965513bb5f0aa3ecae25740854850b71cbc747e485e2340ef"
+        },
+        {
+          "bytes": 1253,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/final-format-execution.json",
+          "path": "qualification/trained-cell-v8/logs/final-format-execution.json",
+          "sha256": "ae9092936f37f13fa8bd4d852646812498838bc44ceb1c389e6218f6858f8522"
+        },
+        {
+          "bytes": 20841,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/final-nextest-junit.xml",
+          "path": "qualification/trained-cell-v8/logs/final-nextest-junit.xml",
+          "sha256": "c4dc00fca6a511ba1243735ade63cd4ec2d45f85c416fb6b650d3f10111d03e8"
+        },
+        {
+          "bytes": 2578,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/final-recovery-junit.xml",
+          "path": "qualification/trained-cell-v8/logs/final-recovery-junit.xml",
+          "sha256": "a6903218cb1816fca43799c03aba9f81c8f1f69f242a2b7b002d8825b8feb8c0"
+        },
+        {
+          "bytes": 830,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/fix-execution.json",
+          "path": "qualification/trained-cell-v8/logs/fix-execution.json",
+          "sha256": "5e2fbf7ef8bdcc0f35eab2162bbb612805a5279ec0af4739b85a164ed7a1f006"
+        },
+        {
+          "bytes": 3470,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/numerical-r3-execution.json",
+          "path": "qualification/trained-cell-v8/logs/numerical-r3-execution.json",
+          "sha256": "91e2cfc4876ddbd6a9373117e245f878304e55d36623cc65f22f44b0958217bc"
+        },
+        {
+          "bytes": 2041,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/rebuildable-test-cache-cleanup.json",
+          "path": "qualification/trained-cell-v8/logs/rebuildable-test-cache-cleanup.json",
+          "sha256": "57ef28296d8b19f138e7b05f9ba3c73caa92edd1289223cbe54dbf04cce89465"
+        },
+        {
+          "bytes": 5201,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/stale-old-worktree-library-cleanup.json",
+          "path": "qualification/trained-cell-v8/logs/stale-old-worktree-library-cleanup.json",
+          "sha256": "8edef6ca56b2c071a759046208aa30b361381ea7d5886e125b142ca1557e588e"
+        },
+        {
+          "bytes": 915,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/timed-out-stream-fixtures/cleanup.json",
+          "path": "qualification/trained-cell-v8/logs/timed-out-stream-fixtures/cleanup.json",
+          "sha256": "9947d6da761dad9bba88186990ab766d00d3fa2c835fab1c421486559ecd1cc6"
+        },
+        {
+          "bytes": 348,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/timed-out-stream-fixtures/hepta-v5-external-review-unit-128-1-manifest.json",
+          "path": "qualification/trained-cell-v8/logs/timed-out-stream-fixtures/hepta-v5-external-review-unit-128-1-manifest.json",
+          "sha256": "0bad9c61ce95a96d3460250ae3f258c197fdc7c3ca99bd4e66a11a50a378cb9c"
+        },
+        {
+          "bytes": 12457,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/timed-out-stream-fixtures/hepta-v5-external-review-unit-128-1-parity-header.json",
+          "path": "qualification/trained-cell-v8/logs/timed-out-stream-fixtures/hepta-v5-external-review-unit-128-1-parity-header.json",
+          "sha256": "5cf09378f458f28a20a988c83ff3512e0b051734bfe6bd79c2e6591b94bab70f"
+        },
+        {
+          "bytes": 348,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/timed-out-stream-fixtures/hepta-v5-external-review-unit-134-1-manifest.json",
+          "path": "qualification/trained-cell-v8/logs/timed-out-stream-fixtures/hepta-v5-external-review-unit-134-1-manifest.json",
+          "sha256": "0bad9c61ce95a96d3460250ae3f258c197fdc7c3ca99bd4e66a11a50a378cb9c"
+        },
+        {
+          "bytes": 12457,
+          "local_path": "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/logs/timed-out-stream-fixtures/hepta-v5-external-review-unit-134-1-parity-header.json",
+          "path": "qualification/trained-cell-v8/logs/timed-out-stream-fixtures/hepta-v5-external-review-unit-134-1-parity-header.json",
+          "sha256": "5cf09378f458f28a20a988c83ff3512e0b051734bfe6bd79c2e6591b94bab70f"
+        }
+      ],
+      "mechanical": true,
+      "name": "13_mechanical_command_logs"
+    }
+  ]
+}

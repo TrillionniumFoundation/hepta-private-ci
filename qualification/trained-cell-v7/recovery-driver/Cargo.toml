@@ -12,6 +12,7 @@ codex-hepta-neuron = { path = "../../../codex-rs/hepta-neuron" }
 codex-hepta-types = { path = "../../../codex-rs/hepta-types" }
 ed25519-dalek = { version = "=2.2.0", features = ["pkcs8"] }
 serde_json = { version = "=1.0.149", features = ["float_roundtrip"] }
+sha2 = "=0.10.9"
 
 [dev-dependencies]
 pretty_assertions = "=1.4.1"

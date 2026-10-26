@@ -1,0 +1,88 @@
+{
+  "additional_modules": [
+    "feature_shard",
+    "teacher_forward",
+    "teacher_media_seal"
+  ],
+  "feature_entry_boundary": {
+    "function": "extract",
+    "local_import_lines": [
+      25,
+      26,
+      27,
+      28,
+      29
+    ],
+    "not_called_by_mechanical_or_grid_loader": true,
+    "source": "cell_field_features.py"
+  },
+  "grid_encoder_calls": 0,
+  "grid_path": [
+    "cell_field_development_run_v8.execute",
+    "cell_field_development_data_v7.load_development",
+    "cell_field_io_v4.load_task",
+    "cell_field_features.load_features",
+    "numpy.load of sealed feature cache"
+  ],
+  "guards": {
+    "real_encoder.FrozenRealEncoder.encode_records": "requires candidate embeddinggemma2_740m before local teacher imports; no caller in these mechanical/grid paths",
+    "shared_feature_extract.SharedFeatureEncoder.extract_records": "requires candidate embeddinggemma2_740m before local teacher imports; no caller in these mechanical/grid paths",
+    "teacher_forward.run_forward": "local feature_shard import only when feature_output_dir is not None; teacher forward is not called"
+  },
+  "import_edges": [
+    {
+      "line": 250,
+      "scope": [
+        "FrozenRealEncoder",
+        "encode_records"
+      ],
+      "source": "real_encoder.py",
+      "statement": "from teacher_forward import validate_records"
+    },
+    {
+      "line": 251,
+      "scope": [
+        "FrozenRealEncoder",
+        "encode_records"
+      ],
+      "source": "real_encoder.py",
+      "statement": "from teacher_media_seal import sealed_media_inputs"
+    },
+    {
+      "line": 23,
+      "scope": [],
+      "source": "teacher_forward.py",
+      "statement": "from teacher_media_seal import MAX_MEDIA_BATCH_BYTES, TeacherMediaSealError, sealed_media_inputs"
+    },
+    {
+      "line": 345,
+      "scope": [
+        "run_forward"
+      ],
+      "source": "teacher_forward.py",
+      "statement": "from feature_shard import write_shard"
+    },
+    {
+      "line": 95,
+      "scope": [
+        "SharedFeatureEncoder",
+        "extract_records"
+      ],
+      "source": "shared_feature_extract.py",
+      "statement": "from teacher_forward import validate_records"
+    },
+    {
+      "line": 96,
+      "scope": [
+        "SharedFeatureEncoder",
+        "extract_records"
+      ],
+      "source": "shared_feature_extract.py",
+      "statement": "from teacher_media_seal import sealed_media_inputs"
+    }
+  ],
+  "interpretation": "24 is a conservative static declared closure;21 entries match the117 development closure. Three optional media/export helpers were included by scanning uncalled local-import bodies; their omission from the executed grid closure is not a demonstrated runtime gap. No historical dynamic-import trace is claimed.",
+  "mechanical_entry": "qualify_handoff_profile.run creates NumPy fixtures; executes execute_policy/resume_policy and checkpoint save/load; does not call feature extraction or teacher forward",
+  "method": "read-only static import/call-path audit of exact pinned source; not a historical sys.modules trace",
+  "schema": "hepta.native-mechanical-source-scope-audit.v8"
+}

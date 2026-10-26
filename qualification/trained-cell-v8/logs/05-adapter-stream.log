@@ -1,0 +1,189 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: unused import: `parity`
+ --> /workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/../../../trained-cell-v8/streaming_header_v8.rs:3:29
+  |
+3 | use crate::{Result, ensure, parity, report};
+  |                             ^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `reject` is never used
+   --> /workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/../../../trained-cell-v5/actual-review-driver/src/owner.rs:162:8
+    |
+162 | pub fn reject(inputs: &Inputs, root: &Path, now: u64) -> Result<Value> {
+    |        ^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `hepta-handoff-recovery-v7` (lib) generated 2 warnings (run `cargo fix --lib -p hepta-handoff-recovery-v7` to apply 1 suggestion)
+warning: unused import: `TASKS`
+ --> src/payload.rs:4:31
+  |
+4 | use crate::profile::{Profile, TASKS, family};
+  |                               ^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `hepta-profile-admission-v8` (lib) generated 1 warning (run `cargo fix --lib -p hepta-profile-admission-v8` to apply 1 suggestion)
+   Compiling hepta-profile-admission-v8 v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver)
+warning: function `verify` is never used
+  --> src/../../../trained-cell-v7/recovery-driver/src/terminal_review.rs:72:15
+   |
+72 | pub(crate) fn verify(
+   |               ^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `prepare` is never used
+   --> src/../../../trained-cell-v5/actual-review-driver/src/positive_fixtures.rs:203:12
+    |
+ 43 | impl Fixture {
+    | ------------ method in this implementation
+...
+203 |     pub fn prepare(&self) -> Result<Value> {
+    |            ^^^^^^^
+
+warning: function `wrap` is never used
+  --> src/../../../trained-cell-v7/recovery-driver/src/handoff_fixtures.rs:16:8
+   |
+16 | pub fn wrap(f: &mut Fixture) -> Result<()> {
+   |        ^^^^
+
+warning: `hepta-profile-admission-v8` (lib test) generated 4 warnings (1 duplicate)
+    Finished `test` profile [unoptimized] target(s) in 1.44s
+────────────
+ Nextest run ID 3428bc18-5a16-467d-b198-b2a99e48bcd8 with nextest profile: local
+    Starting 12 tests across 4 binaries
+        PASS [   0.252s] ( 1/12) hepta-profile-admission-v8 tests::complete_metric_report_cannot_admit_a_midplan_native_payload
+        PASS [   0.279s] ( 2/12) hepta-profile-admission-v8 tests::self_rehashed_missing_execution_does_not_become_a_complete_census
+        PASS [   0.302s] ( 3/12) hepta-profile-admission-v8 tests::changed_audit_profile_and_unknown_controller_schema_stay_closed
+        PASS [   0.223s] ( 4/12) hepta-profile-admission-v8 tests::source_change_or_uninstalled_profile_cannot_reach_owner
+        PASS [   0.536s] ( 5/12) hepta-profile-admission-v8 tests::exact_task_boundary_rejects_before_owner_or_signing_proposal
+        PASS [   0.576s] ( 6/12) hepta-profile-admission-v8 tests::honest_incomplete_candidate_is_an_unavailable_gate_and_no_owner_write
+        PASS [   0.583s] ( 7/12) hepta-profile-admission-v8 tests::self_rehashed_controller_stride_change_cannot_replace_the_external_contract
+        PASS [   0.391s] ( 8/12) hepta-profile-admission-v8 tests::stream_tests::v8_incomplete_terminal_and_altered_external_stream_pin_reject_before_owner
+        PASS [   0.969s] ( 9/12) hepta-profile-admission-v8 tests::fixed_scientific_family_supports_three_or_seven_registered_policies_without_profile_forks
+        PASS [   2.981s] (10/12) hepta-profile-admission-v8 tests::full_format_synthetic_report_reaches_exact_signed_owner_and_idempotent_reopen
+        PASS [   3.310s] (11/12) hepta-profile-admission-v8 tests::stream_tests::explicit_v8_report_and_stream_reach_signed_owner_reopen_and_rollback
+        SLOW [> 30.000s] (─────) hepta-profile-admission-v8 tests::stream_tests::complete_stream_exceeds_both_old_limits_and_checks_every_numeric_tail_row
+TRY 1 TRMNTG [> 60.000s] (─────) hepta-profile-admission-v8 tests::stream_tests::complete_stream_exceeds_both_old_limits_and_checks_every_numeric_tail_row
+   TRY 1 TMT [  60.007s] (─────) hepta-profile-admission-v8 tests::stream_tests::complete_stream_exceeds_both_old_limits_and_checks_every_numeric_tail_row
+  stdout ───
+
+    running 1 test
+
+    (test timed out)
+
+  TRY 2 SLOW [> 30.000s] (─────) hepta-profile-admission-v8 tests::stream_tests::complete_stream_exceeds_both_old_limits_and_checks_every_numeric_tail_row
+TRY 2 TRMNTG [> 60.000s] (─────) hepta-profile-admission-v8 tests::stream_tests::complete_stream_exceeds_both_old_limits_and_checks_every_numeric_tail_row
+   TRY 2 TMT [  60.004s] (12/12) hepta-profile-admission-v8 tests::stream_tests::complete_stream_exceeds_both_old_limits_and_checks_every_numeric_tail_row
+  stdout ───
+
+    running 1 test
+
+    (test timed out)
+
+────────────
+     Summary [ 120.316s] 12 tests run: 11 passed, 1 timed out, 0 skipped
+        PASS [   0.252s] ( 1/12) hepta-profile-admission-v8 tests::complete_metric_report_cannot_admit_a_midplan_native_payload
+  stdout ───
+
+    running 1 test
+    test tests::complete_metric_report_cannot_admit_a_midplan_native_payload ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.25s
+
+
+        PASS [   0.279s] ( 2/12) hepta-profile-admission-v8 tests::self_rehashed_missing_execution_does_not_become_a_complete_census
+  stdout ───
+
+    running 1 test
+    test tests::self_rehashed_missing_execution_does_not_become_a_complete_census ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.27s
+
+
+        PASS [   0.302s] ( 3/12) hepta-profile-admission-v8 tests::changed_audit_profile_and_unknown_controller_schema_stay_closed
+  stdout ───
+
+    running 1 test
+    test tests::changed_audit_profile_and_unknown_controller_schema_stay_closed ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.29s
+
+
+        PASS [   0.223s] ( 4/12) hepta-profile-admission-v8 tests::source_change_or_uninstalled_profile_cannot_reach_owner
+  stdout ───
+
+    running 1 test
+    test tests::source_change_or_uninstalled_profile_cannot_reach_owner ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.22s
+
+
+        PASS [   0.536s] ( 5/12) hepta-profile-admission-v8 tests::exact_task_boundary_rejects_before_owner_or_signing_proposal
+  stdout ───
+
+    running 1 test
+    test tests::exact_task_boundary_rejects_before_owner_or_signing_proposal ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.53s
+
+
+        PASS [   0.576s] ( 6/12) hepta-profile-admission-v8 tests::honest_incomplete_candidate_is_an_unavailable_gate_and_no_owner_write
+  stdout ───
+
+    running 1 test
+    test tests::honest_incomplete_candidate_is_an_unavailable_gate_and_no_owner_write ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.57s
+
+
+        PASS [   0.583s] ( 7/12) hepta-profile-admission-v8 tests::self_rehashed_controller_stride_change_cannot_replace_the_external_contract
+  stdout ───
+
+    running 1 test
+    test tests::self_rehashed_controller_stride_change_cannot_replace_the_external_contract ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.58s
+
+
+        PASS [   0.391s] ( 8/12) hepta-profile-admission-v8 tests::stream_tests::v8_incomplete_terminal_and_altered_external_stream_pin_reject_before_owner
+  stdout ───
+
+    running 1 test
+    test tests::stream_tests::v8_incomplete_terminal_and_altered_external_stream_pin_reject_before_owner ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.39s
+
+
+        PASS [   0.969s] ( 9/12) hepta-profile-admission-v8 tests::fixed_scientific_family_supports_three_or_seven_registered_policies_without_profile_forks
+  stdout ───
+
+    running 1 test
+    test tests::fixed_scientific_family_supports_three_or_seven_registered_policies_without_profile_forks ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.97s
+
+
+        PASS [   2.981s] (10/12) hepta-profile-admission-v8 tests::full_format_synthetic_report_reaches_exact_signed_owner_and_idempotent_reopen
+  stdout ───
+
+    running 1 test
+    test tests::full_format_synthetic_report_reaches_exact_signed_owner_and_idempotent_reopen ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 2.97s
+
+
+        PASS [   3.310s] (11/12) hepta-profile-admission-v8 tests::stream_tests::explicit_v8_report_and_stream_reach_signed_owner_reopen_and_rollback
+  stdout ───
+
+    running 1 test
+    test tests::stream_tests::explicit_v8_report_and_stream_reach_signed_owner_reopen_and_rollback ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 3.30s
+
+
+   TRY 2 TMT [  60.004s] (12/12) hepta-profile-admission-v8 tests::stream_tests::complete_stream_exceeds_both_old_limits_and_checks_every_numeric_tail_row
+error: test run failed
+error: recipe `test` failed on line 89 with exit code 100

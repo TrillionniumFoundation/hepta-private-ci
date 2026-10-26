@@ -1,7 +1,7 @@
 //! Bind the candidate's original controller anchors to its immutable predecessor.
 
+use crate::handoff_version::Handoff;
 use crate::*;
-use codex_hepta_neuron::TrainingHandoffBundleV7;
 
 pub fn serving_payloads(inputs: &report::Inputs) -> Result<[Vec<u8>; 2]> {
     let payloads = [&inputs.predecessor, &inputs.candidate];
@@ -10,11 +10,12 @@ pub fn serving_payloads(inputs: &report::Inputs) -> Result<[Vec<u8>; 2]> {
         // A future V7 frozen-profile validator must require the V7 envelope.
         return Ok([inputs.predecessor.clone(), inputs.candidate.clone()]);
     }
-    let baseline = TrainingHandoffBundleV7::decode(payloads[0], Digest32::of_bytes(payloads[0]))?;
-    let candidate = TrainingHandoffBundleV7::decode(payloads[1], Digest32::of_bytes(payloads[1]))?;
+    let baseline = Handoff::decode(payloads[0], Digest32::of_bytes(payloads[0]))?;
+    let candidate = Handoff::decode(payloads[1], Digest32::of_bytes(payloads[1]))?;
     ensure(
         baseline.protocol_digest() == inputs.policy.protocol_digest
             && candidate.protocol_digest() == inputs.policy.protocol_digest
+            && baseline.compatibility_digest() == candidate.compatibility_digest()
             && baseline.predecessor_digest().is_none()
             && candidate.predecessor_digest() == Some(baseline.content_digest())
             && Some(candidate.generation().get()) == baseline.generation().get().checked_add(1)

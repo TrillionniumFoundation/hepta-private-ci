@@ -1,0 +1,50 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: function `reject` is never used
+   --> /workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/../../../trained-cell-v5/actual-review-driver/src/owner.rs:162:8
+    |
+162 | pub fn reject(inputs: &Inputs, root: &Path, now: u64) -> Result<Value> {
+    |        ^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `hepta-handoff-recovery-v7` (lib) generated 1 warning
+   Compiling hepta-profile-admission-v8 v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver)
+warning: function `verify` is never used
+  --> src/../../../trained-cell-v7/recovery-driver/src/terminal_review.rs:72:15
+   |
+72 | pub(crate) fn verify(
+   |               ^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `prepare` is never used
+   --> src/../../../trained-cell-v5/actual-review-driver/src/positive_fixtures.rs:203:12
+    |
+ 43 | impl Fixture {
+    | ------------ method in this implementation
+...
+203 |     pub fn prepare(&self) -> Result<Value> {
+    |            ^^^^^^^
+
+warning: function `wrap` is never used
+  --> src/../../../trained-cell-v7/recovery-driver/src/handoff_fixtures.rs:16:8
+   |
+16 | pub fn wrap(f: &mut Fixture) -> Result<()> {
+   |        ^^^^
+
+warning: `hepta-profile-admission-v8` (lib test) generated 3 warnings
+    Finished `test` profile [unoptimized] target(s) in 1.38s
+────────────
+ Nextest run ID 94f3eae0-53b2-4fe8-b0ac-740249cd2191 with nextest profile: local
+    Starting 9 tests across 2 binaries
+        PASS [   0.369s] (1/9) hepta-profile-admission-v8 tests::complete_metric_report_cannot_admit_a_midplan_native_payload
+        PASS [   0.381s] (2/9) hepta-profile-admission-v8 tests::self_rehashed_controller_stride_change_cannot_replace_the_external_contract
+        PASS [   0.399s] (3/9) hepta-profile-admission-v8 tests::changed_audit_profile_and_unknown_controller_schema_stay_closed
+        PASS [   0.406s] (4/9) hepta-profile-admission-v8 tests::self_rehashed_missing_execution_does_not_become_a_complete_census
+        PASS [   0.407s] (5/9) hepta-profile-admission-v8 tests::honest_incomplete_candidate_is_an_unavailable_gate_and_no_owner_write
+        PASS [   0.432s] (6/9) hepta-profile-admission-v8 tests::exact_task_boundary_rejects_before_owner_or_signing_proposal
+        PASS [   0.253s] (7/9) hepta-profile-admission-v8 tests::source_change_or_uninstalled_profile_cannot_reach_owner
+        PASS [   0.854s] (8/9) hepta-profile-admission-v8 tests::fixed_scientific_family_supports_three_or_seven_registered_policies_without_profile_forks
+        PASS [   2.800s] (9/9) hepta-profile-admission-v8 tests::full_format_synthetic_report_reaches_exact_signed_owner_and_idempotent_reopen
+────────────
+     Summary [   2.802s] 9 tests run: 9 passed, 0 skipped
