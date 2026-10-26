@@ -6,7 +6,6 @@ use crate::cognitive_store::CognitiveStoreOpenGuard;
 use crate::cognitive_store::publish_active_database;
 use crate::cognitive_store::recovered_database_filename;
 use std::io::Write;
-use std::os::fd::AsRawFd;
 
 /// Retains the original exclusive store lock and Root custody until the trusted
 /// launcher finishes its ORIGINAL Current adoption and releases its exact UID.
@@ -180,17 +179,17 @@ fn preserve_pointer(root: &Path, digest: &Sha256Digest) -> Result<(), CognitiveR
 }
 
 fn require_root() -> Result<(), CognitiveRecoveryError> {
-    // SAFETY: these functions read actual process credentials only.
-    if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 {
+    if !rustix::process::getuid().is_root() || !rustix::process::geteuid().is_root() {
         return Err(invalid("physical installation requires actual Root"));
     }
     Ok(())
 }
 
 fn change_owner(file: &File, uid: u32, gid: u32) -> Result<(), CognitiveRecoveryError> {
-    // SAFETY: fchown receives a live retained descriptor and validated UID/GID.
-    if unsafe { libc::fchown(file.as_raw_fd(), uid, gid) } != 0 {
-        return Err(unavailable(std::io::Error::last_os_error()));
-    }
-    Ok(())
+    rustix::fs::fchown(
+        file,
+        Some(rustix::fs::Uid::from_raw(uid)),
+        Some(rustix::fs::Gid::from_raw(gid)),
+    )
+    .map_err(unavailable)
 }

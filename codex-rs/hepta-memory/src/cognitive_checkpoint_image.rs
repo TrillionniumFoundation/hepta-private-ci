@@ -67,8 +67,7 @@ impl CognitiveStore {
         expected: &CognitiveRecoveryAnchor,
         expected_sha256: &Sha256Digest,
     ) -> Result<CognitiveCheckpointImage, CognitiveRecoveryError> {
-        // SAFETY: geteuid reads this process's actual credential.
-        let owner = unsafe { libc::geteuid() };
+        let owner = rustix::process::geteuid().as_raw();
         let _directory = private_directory(
             path.parent()
                 .ok_or_else(|| invalid("missing material parent"))?,
@@ -138,8 +137,7 @@ impl CognitiveStore {
         let parent = destination
             .parent()
             .ok_or_else(|| invalid("missing image parent"))?;
-        // SAFETY: geteuid reads the current kernel credential and takes no pointers.
-        let owner = unsafe { libc::geteuid() };
+        let owner = rustix::process::geteuid().as_raw();
         let directory = private_directory(parent, owner)?;
         let image = OpenOptions::new()
             .read(true)
