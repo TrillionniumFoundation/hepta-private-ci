@@ -481,6 +481,20 @@ SystemLongitudinal child; a Qualification comparison or an unselected trained
 generation cannot supply that initial parent. Any genesis material prerequisite
 must prove the actual fixed upstream roots and zero-effect parameters without
 granting evaluation, selection or installation authority by itself.
+The existing Chain PN3 plan now includes an explicit trainable-working-copy V2
+preparation component (`scripts/llm_initial_trainable_setup_v2.py`). Copying the
+canonical A=B=positive-zero parent otherwise leaves both LoRA factor gradients
+zero. The component reads back that original parent, then restores the caller's
+captured seeded A with B still positive zero; thirteen real small CPU Torch/PEFT
+controls pass without skips, with the original nine tests and V1 assertions
+preserved. Negative-zero-only A, overlapping factors/base/buffers, operator drift
+and compiled dispatch are rejected before mutation. Its seed is caller-declared;
+setup hash changes and algebraic B-zero preservation do not prove learning,
+useful gain or full-model numeric preservation. The original runtime owner must
+still bind this explicit recipe/source and actual predecessor into the same
+training/evaluation budget and lineage, validate the full 135M model, and perform
+ordinary installation and next-task readback. These controls grant no selection,
+CURRENT, FinalUse, reward or three-round acceptance.
 The separate fresh native host raw-U observation still fails its original
 eight-second cutoff; its post-deadline 4,096-byte kernel charge is diagnostic,
 with the same original owner retained. Funded resource return remains open.
