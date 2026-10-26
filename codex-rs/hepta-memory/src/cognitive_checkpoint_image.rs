@@ -205,11 +205,10 @@ async fn validate_image(
     expected: &CognitiveRecoveryAnchor,
 ) -> Result<(), CognitiveRecoveryError> {
     for suffix in ["-wal", "-shm", "-journal"] {
-        if PathBuf::from(format!("{}{suffix}", path.display()))
-            .symlink_metadata()
-            .is_ok()
-        {
-            return Err(invalid("physical checkpoint image must be self-contained"));
+        match PathBuf::from(format!("{}{suffix}", path.display())).symlink_metadata() {
+            Ok(_) => return Err(invalid("physical checkpoint image must be self-contained")),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => return Err(unavailable(error)),
         }
     }
     let config = SqliteConfig::from_sqlite_home(
