@@ -1262,7 +1262,10 @@ url = "ws://127.0.0.1:8765"
             .update_selections(std::slice::from_ref(&selection), &test_environment_config());
         let snapshot_task = tokio::spawn({
             let environments = Arc::clone(&environments);
-            async move { environments.snapshot().await }
+            // A spawned task does not inherit this test's thread-local tracing
+            // subscriber. Carry it across task polls so the real snapshot span
+            // and its nested wait span remain visible to the assertions below.
+            async move { environments.snapshot().await }.with_current_subscriber()
         });
         tokio::task::yield_now().await;
         assert!(!snapshot_task.is_finished());
