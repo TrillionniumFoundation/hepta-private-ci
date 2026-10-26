@@ -484,8 +484,15 @@ scores through the original signed control, FinalUse and nonce owners, with the
 original two-second read window. A read-only callback sees historical evidence;
 later failure cannot retract copied values or authorize ordinary-task effects.
 The evaluated neural trait remains closed to this initial port. Its nine
-original/new real-model cases are not yet qualified: local preflight stopped
-before build when the prior target's entire debug directory was absent.
+original/new real-model cases are not yet qualified. After the retained missing
+debug-directory preflight failure, the first original allocation built the full
+current CLI from `155264e3b5` in 360.862 seconds, then failed host-library
+compilation: seven ambiguous assertion references and one observer fixture missing
+physical identity/scope. No test executed. The four-line source successor
+`fa0ce3e02` preserves every assertion and supplies the existing fixture identity;
+it is formatted but has not been recompiled or run. Both failures remain, the
+original allocation is not restarted, and all nine cases and strict checks
+remain NOT_RUN. This does not close model, Windows, ordinary-task or CI gates.
 Agent-runtime must still compose the ordinary task context and exercise the
 unchanged eligible-child, CURRENT, cold-recovery and three-round upgrade owners.
 

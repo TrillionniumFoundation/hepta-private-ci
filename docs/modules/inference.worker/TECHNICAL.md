@@ -148,10 +148,18 @@ load and forward checks bind the observed scores to the exact initial material.
 The callback receives historical observations: a later error cannot retract
 values it copied and grants no ordinary-task authority. Errors keep material
 unavailable and retain the original session for cleanup. The evaluated trait
-still rejects this initial port. This source candidate has not yet compiled or
-run its nine original/new real-model cases; its local validation stopped before
-build because the prior target's entire debug directory was missing. Agentd
-composition, selection, installation and next-task acceptance remain open.
+still rejects this initial port. The first source-bound validation on
+`155264e3b5d3dcdafa244cd0c31c336ab25a207f` built the full current CLI in a fresh
+target in 360.862 seconds. The host library then failed compilation with seven
+ambiguous `assert_eq` references and one observer fixture missing its physical
+identity and scope; no library or real-model test executed. The original missing
+debug-directory preflight failure and this compile failure are both retained.
+The four-line successor `fa0ce3e02` explicitly imports the existing assertion
+macro and supplies those fixture fields from its existing pin/digest, preserving
+all assertions. Formatting passes; the successor has not been recompiled or
+qualified. The original 900-second allocation is not restarted. All nine
+original/new real-model cases and the remaining strict checks stay NOT_RUN.
+Agentd composition, selection, installation and next-task acceptance remain open.
 
 The selected-initial owner retains one cleanup task across cancellation of an
 await; a later await consumes that exact result. An uncertain driver unload keeps
