@@ -162,6 +162,13 @@ impl TrustAnchor {
             ));
         }
 
+        crate::sshsig_strict::verify_ed25519_sshsig(
+            statement,
+            signature_bytes,
+            &self.allowed_signers_bytes,
+            &self.binding.principal,
+            SSHSIG_NAMESPACE,
+        )?;
         let allowed_signers = InheritedPipe::new(&self.allowed_signers_bytes)?;
         let signature = InheritedPipe::new(signature_bytes)?;
         let mut child = Command::new(SSH_KEYGEN)

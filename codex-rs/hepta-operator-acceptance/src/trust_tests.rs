@@ -207,12 +207,16 @@ impl TrustFixture {
     }
 
     fn sign(&self, statement: &[u8], namespace: &str, name: &str) -> PathBuf {
+        self.sign_hash(statement, namespace, name, "sha512")
+    }
+
+    fn sign_hash(&self, statement: &[u8], namespace: &str, name: &str, hash: &str) -> PathBuf {
         let statement_path = self.root.join(name);
         write_private(&statement_path, statement);
         let signed = Command::new("/usr/bin/ssh-keygen")
             .args(["-Y", "sign", "-f"])
             .arg(&self.key)
-            .args(["-n", namespace])
+            .args(["-n", namespace, "-O", &format!("hashalg={hash}")])
             .arg(&statement_path)
             .status()
             .expect("start SSHSIG signer for test fixture");
@@ -252,3 +256,7 @@ fn set_private_permissions(path: &Path) {
             .expect("secure test signature permissions");
     }
 }
+
+#[cfg(unix)]
+#[path = "sshsig_differential_tests.rs"]
+mod differential;

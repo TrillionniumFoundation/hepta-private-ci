@@ -841,6 +841,13 @@ fn verify_sshsig_bytes(
     principal: &str,
     namespace: &str,
 ) -> Result<(), AcceptanceError> {
+    crate::sshsig_strict::verify_ed25519_sshsig(
+        statement,
+        signature_bytes,
+        allowed_signers_bytes,
+        principal,
+        namespace,
+    )?;
     #[cfg(unix)]
     {
         let allowed_signers = G5InheritedPipe::new(allowed_signers_bytes)?;
