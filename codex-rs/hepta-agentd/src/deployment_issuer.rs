@@ -419,10 +419,16 @@ impl DeploymentFinalUseIssuer {
         if let RevocationExpectation::Exact { before, .. } = &expectation {
             original_grant::require_before(*before)?;
         }
-        let _guard = self
-            .request_lock
-            .lock()
-            .map_err(|_| io::Error::other("issuer fenced"))?;
+        let _guard = match &expectation {
+            RevocationExpectation::Current => self
+                .request_lock
+                .lock()
+                .map_err(|_| io::Error::other("issuer fenced"))?,
+            RevocationExpectation::Exact { .. } => self
+                .request_lock
+                .try_lock()
+                .map_err(|_| io::Error::other("original issuer busy or fenced"))?,
+        };
         if grant_id.is_empty()
             || grant_id.len() > 128
             || !grant_id

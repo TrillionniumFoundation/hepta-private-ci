@@ -30,6 +30,9 @@ use std::sync::Mutex;
 #[path = "authority_lease_windows.rs"]
 mod windows;
 
+#[path = "authority_lease_revoke.rs"]
+mod revoke;
+
 #[path = "authority_lease_pair_boundary.rs"]
 mod pair_boundary;
 pub use pair_boundary::AuthorityLeaseRetirement;
@@ -465,52 +468,13 @@ impl AuthorityLeaseRegistry {
         expected_revision: u64,
         reason_sha256: [u8; 32],
     ) -> Result<RevocationReceipt, AuthorityLeaseError> {
-        if !identifier(lease_id) || reason_sha256 == [0; 32] {
-            return Err(AuthorityLeaseError::InvalidRevocation);
-        }
-        let revoked_at_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
-        if revoked_at_unix_ms == 0 {
-            return Err(AuthorityLeaseError::InvalidRevocation);
-        }
-        let mut state = self.lock_state()?;
-        if let Some(existing) = state.revocations.get(lease_id) {
-            if existing.lease_revision == expected_revision.saturating_add(1)
-                && existing.reason_sha256 == reason_sha256
-            {
-                return Ok(receipt(existing, expected_revision));
-            }
-            return Err(AuthorityLeaseError::Revoked);
-        }
-        if state.revocations.len() >= MAX_CAPABILITY_REVOCATIONS {
-            return Err(AuthorityLeaseError::CapacityExceeded);
-        }
-        let current = state
-            .leases
-            .get(lease_id)
-            .cloned()
-            .ok_or(AuthorityLeaseError::LeaseNotFound)?;
-        if current.revision != expected_revision {
-            return Err(AuthorityLeaseError::RevisionMismatch);
-        }
-        let lease_revision = next_revision(current.revision)?;
-        let mut next = state.clone();
-        next.store_revision = next_revision(next.store_revision)?;
-        let mut revoked_lease = current;
-        revoked_lease.revision = lease_revision;
-        next.leases.insert(lease_id.to_owned(), revoked_lease);
-        let revocation = CapabilityRevocation {
-            schema_version: LEASE_SCHEMA_VERSION,
-            lease_id: lease_id.to_owned(),
-            authority_epoch: next.authority_epoch,
-            lease_revision,
-            store_revision: next.store_revision,
+        revoke::selected(
+            self,
+            lease_id,
+            expected_revision,
             reason_sha256,
-            revoked_at_unix_ms,
-        };
-        next.revocations
-            .insert(lease_id.to_owned(), revocation.clone());
-        self.persist_or_fence(&mut state, next)?;
-        Ok(receipt(&revocation, expected_revision))
+            revoke::Deadline::Unbounded,
+        )
     }
 
     /// Remove expired, unrevoked leases in a bounded online batch. Revocation

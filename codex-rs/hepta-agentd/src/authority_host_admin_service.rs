@@ -200,7 +200,12 @@ impl HostAuthorityService {
                     || context.check_for(self),
                     || {
                         registry
-                            .revoke(&original.lease_id, *expected_revision, *reason_sha256)
+                            .revoke_before(
+                                &original.lease_id,
+                                *expected_revision,
+                                *reason_sha256,
+                                context.before(),
+                            )
                             .map_err(io::Error::other)
                     },
                 )?;

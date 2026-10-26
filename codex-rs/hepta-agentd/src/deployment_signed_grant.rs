@@ -11,7 +11,7 @@ impl DeploymentFinalUseIssuer {
         require_before(before)?;
         let _guard = self
             .request_lock
-            .lock()
+            .try_lock()
             .map_err(|_| io::Error::other("issuer fenced"))?;
         let state = self.store.load(STATE_OWNER).map_err(io::Error::other)?;
         let bytes = signed.grant.signing_bytes().map_err(io::Error::other)?;

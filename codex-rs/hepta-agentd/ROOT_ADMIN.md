@@ -96,3 +96,12 @@ old check-then-operation sequence both late checks entered both original CAS
 methods and advanced the frontier/head; the corrected sequence must make zero
 CAS calls and preserve the actual JSON state bytes. These negative fixtures
 confer no actual-Root qualification.
+
+Both administrative lease paths use the original registry's `revoke_before`.
+It rejects a busy original state mutex rather than waiting beyond authorization,
+and rechecks the same absolute end after clock reads, after obtaining state and
+immediately before its original persistence boundary. Bounded issuer signature
+and exact-head operations similarly try the same original request mutex. The
+existing unbounded owner revoke API retains its previous semantics. Durable IO
+begun while authorized may finish after the deadline; its outcome is Unknown
+rather than compensated.

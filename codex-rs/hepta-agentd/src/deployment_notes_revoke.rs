@@ -126,7 +126,12 @@ impl<'a> PreparedNotesGrantRevocation<'a> {
         let receipt = self
             .notes
             .registry
-            .revoke(&self.lease_id, self.expected_revision, self.reason)
+            .revoke_before(
+                &self.lease_id,
+                self.expected_revision,
+                self.reason,
+                self.before,
+            )
             .map_err(root::lease_error)?;
         actual_root_before(self.before)?;
         Ok(EffectLeaseRevoked {
