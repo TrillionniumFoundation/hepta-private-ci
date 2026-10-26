@@ -212,13 +212,31 @@ fn retained_windows_rejects_parent_junction_and_replacement() -> anyhow::Result<
     let guard = fixture
         .sqlite
         .bind_existing_recovery_database(&fixture.path)?;
-    std::fs::rename(&fixture.home, fixture.root.join("retained-home"))?;
-    std::fs::create_dir(&fixture.home)?;
-    std::fs::write(&fixture.path, b"original database bytes")?;
-    assert!(matches!(
-        guard.verify_inspection_unchanged(),
-        Err(SqliteRecoveryError::Indeterminate)
-    ));
+    let renamed = fixture.root.join("retained-home");
+    match std::fs::rename(&fixture.home, &renamed) {
+        Ok(()) => {
+            // If the kernel permits replacement, the pinned identity must
+            // still detect it rather than accepting an identical byte copy.
+            std::fs::create_dir(&fixture.home)?;
+            std::fs::write(&fixture.path, b"original database bytes")?;
+            assert!(matches!(
+                guard.verify_inspection_unchanged(),
+                Err(SqliteRecoveryError::Indeterminate)
+            ));
+        }
+        Err(error) if error.raw_os_error() == Some(5) => {
+            // Windows may itself prevent moving a directory while the
+            // retained database handle is open. Prove this is live-handle
+            // protection, not a fixture that could never be renamed.
+            guard.verify_inspection_unchanged()?;
+            assert!(fixture.home.exists());
+            assert!(!renamed.exists());
+            drop(guard);
+            std::fs::rename(&fixture.home, &renamed)?;
+            assert!(renamed.join("original.sqlite3").is_file());
+        }
+        Err(error) => return Err(error.into()),
+    }
     Ok(())
 }
 
