@@ -4,6 +4,28 @@ use super::*;
 use crate::authority_host_checkpoint::RootMaterialProfile;
 
 impl PreparedHostAuthoritySession {
+    /// Recover only the actual protected predecessor Current into this already
+    /// registered successor. Root reads the independent material itself; callers
+    /// supply no Current, digest, image path, reset flag or replacement grant.
+    /// Existing consumer journals and original fencing rules remain in force.
+    pub fn recover_with_physical_material(
+        config_file: &Path,
+        registration_file: &Path,
+        owner_pidfd: OwnedFd,
+    ) -> io::Result<Self> {
+        let config = read_root_json(config_file)?;
+        let registration = read_root_json(registration_file)?;
+        let service = open_registered_writer(&config, &registration, &owner_pidfd)?
+            .recover_material_from_registered(&config, &registration, &owner_pidfd)?;
+        Ok(Self {
+            config,
+            registration,
+            owner_pidfd,
+            service,
+            fresh_filesystem: false,
+        })
+    }
+
     /// Publish the genuinely fresh original DB and its independent Root0600
     /// image before Current genesis. The same retained Root service then owns
     /// runtime Current images. The original fresh witness holds the original

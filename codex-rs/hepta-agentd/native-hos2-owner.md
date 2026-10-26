@@ -84,6 +84,38 @@ the original publisher object. Dirty/Publishing/Fenced are never promoted by
 material lookup. `open_with_physical_material` reopens only the existing live
 registration and verifies existing material; it cannot repair a missing image.
 
-These source changes have not yet been compiled in the final combined source
-or executed with actual Root/Agentd credentials. They do not yet expose a
-restore/install permission and do not establish a completed native G2 product.
+`recover_with_physical_material(config_file, registration_file, owner_pidfd)`
+is an explicit Root ceremony for an already registered successor. It reads the
+actual old protected Current, obtains actual same-boot kernel retirement of the
+old publisher, requires its original lease expired and the actual successor
+alive, and validates the original adoption's exact epoch/generation/grant rules
+before changing filesystem custody. The same original Registry dispatch fence
+and retained writer proof cover restoration and adoption. It accepts no image,
+digest, cut, new lease, reset flag or manager-computed recovery identity.
+
+The original Root0600 writer lock and the original exclusive CognitiveStore
+lock are retained during installation. Root temporarily takes custody of only
+the exact registered cognitive directory. Installation reads the retained
+independent image descriptor, verifies its physical digest and full original
+cut, and creates a new original-format generation in that directory. Old DB,
+WAL and journal generations remain intact; old pointer bytes are retained and
+the original atomic active-pointer publisher selects the new generation.
+
+Original Current adoption then carries the old cut byte-for-byte to the real
+successor, with an immutable new candidate record referencing the same retained
+image. No live capture occurs during this ceremony. Existing original consumer
+frontiers reopen without initialization. Only the installed generation, new
+pointer and registered directory are released to the original dedicated UID.
+The opaque installation retains the exclusive store lock until that release.
+An error keeps partial material and Root custody available for diagnosis;
+retrying the fresh constructor is forbidden. The successor still needs the
+original Agentd authority/recovery admission before it can write.
+
+The first combined typecheck found the memory crate's `forbid(unsafe_code)`
+correctly rejected raw credential reads. Those reads and installation ownership
+changes now use safe workspace rustix APIs; the prohibition remains intact.
+The dependency is Linux-only, Cargo.lock binds the existing rustix version,
+and an actual `just bazel-lock-update` completed without MODULE lock changes.
+Final combined typecheck, original-owner regressions and actual Root/native
+execution are still required. Source availability establishes none of them and
+does not establish a completed native G2 product.

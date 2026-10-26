@@ -22,6 +22,9 @@ pub use fresh::FreshHostCognitiveState;
 #[path = "authority_host_fresh_publish.rs"]
 mod fresh_publish;
 
+#[path = "authority_host_material_recovery.rs"]
+mod material_recovery;
+
 pub(super) struct RegisteredWriter {
     pub(super) registration: HostAuthorityWriterRegistration,
     leases: AuthorityLeaseVerifier,
