@@ -17,10 +17,14 @@ fn persisted_seed_metadata_requires_exact_original_identity_and_catalog() {
         dynamic_tools: Some(catalog.clone()),
         ..Default::default()
     };
-    let mut encoded = serde_json::to_vec(&RolloutItem::SessionMeta(SessionMetaLine {
-        meta: meta.clone(),
-        git: None,
-    }))
+    let mut encoded = serde_json::to_vec(&RolloutLine {
+        timestamp: "2026-10-26T00:00:00.000Z".into(),
+        ordinal: None,
+        item: RolloutItem::SessionMeta(SessionMetaLine {
+            meta: meta.clone(),
+            git: None,
+        }),
+    })
     .unwrap();
     encoded.push(b'\n');
     std::fs::write(&path, &encoded).unwrap();
@@ -44,10 +48,14 @@ fn persisted_seed_metadata_requires_exact_original_identity_and_catalog() {
     receipt.app_server_session_id = meta.session_id.to_string();
     let mut changed = meta;
     changed.dynamic_tools.as_mut().unwrap().pop();
-    let mut changed = serde_json::to_vec(&RolloutItem::SessionMeta(SessionMetaLine {
-        meta: changed,
-        git: None,
-    }))
+    let mut changed = serde_json::to_vec(&RolloutLine {
+        timestamp: "2026-10-26T00:00:00.000Z".into(),
+        ordinal: None,
+        item: RolloutItem::SessionMeta(SessionMetaLine {
+            meta: changed,
+            git: None,
+        }),
+    })
     .unwrap();
     changed.push(b'\n');
     std::fs::write(&path, changed).unwrap();

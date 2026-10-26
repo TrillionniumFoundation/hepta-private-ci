@@ -16,7 +16,8 @@ use codex_app_server_protocol::ThreadResumeResponse;
 use codex_app_server_protocol::ThreadStartParams;
 use codex_app_server_protocol::ThreadStartResponse;
 use codex_hepta_types::Digest32;
-use codex_protocol::protocol::RolloutItem;
+use codex_history::RolloutItem;
+use codex_history::RolloutLine;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -237,7 +238,7 @@ fn inspect_metadata(receipt: &NotesThreadSeedReceipt) -> Result<String, AgentdEr
             "original seed SessionMeta line is absent or exceeds its bound",
         ));
     }
-    let RolloutItem::SessionMeta(meta) = serde_json::from_slice::<RolloutItem>(&line)? else {
+    let RolloutItem::SessionMeta(meta) = serde_json::from_slice::<RolloutLine>(&line)?.item else {
         return Err(invalid(
             "original seed rollout does not begin with SessionMeta",
         ));
