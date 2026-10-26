@@ -22,6 +22,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 use std::collections::BTreeSet;
 use std::error::Error;
 use std::fs;
