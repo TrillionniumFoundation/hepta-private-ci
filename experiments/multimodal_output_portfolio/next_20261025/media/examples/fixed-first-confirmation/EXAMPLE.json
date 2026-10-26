@@ -1,0 +1,89 @@
+{
+  "actual_artifacts_location": "/tmp/hepta-ndu-next-media-examples/fixed-first-confirmation",
+  "actual_clock": {
+    "audio_samples": 32000,
+    "duration_ns": 4000000000,
+    "events": [
+      {
+        "audio_sample": 0,
+        "slot": 0,
+        "time_ns": 0,
+        "video_frame": 0
+      },
+      {
+        "audio_sample": 16000,
+        "slot": 1,
+        "time_ns": 2000000000,
+        "video_frame": 10
+      }
+    ],
+    "sample_rate": 8000,
+    "video_fps": 5,
+    "video_frames": 20
+  },
+  "actual_score": {
+    "expected_after_observation": [
+      1,
+      6
+    ],
+    "joint_success": true,
+    "primary_observer": "consensus_or_single_v3",
+    "secondary_audio_by_model": {
+      "base.en": true,
+      "small.en": true
+    },
+    "secondary_audio_success": true,
+    "secondary_observer": "base.en",
+    "success": {
+      "audio": true,
+      "image": true,
+      "text": true,
+      "video": true
+    }
+  },
+  "additional_independent_sample_claimed": false,
+  "copied_completed_actual_bytes_without_editing_or_regeneration": true,
+  "expected_after_observation": [
+    1,
+    6
+  ],
+  "files": {
+    "audio": {
+      "bytes": 64044,
+      "original_path": "/tmp/hepta-ndu-next-media-cache/repair-confirmation-001/case-000-image/audio.wav",
+      "path": "/tmp/hepta-ndu-next-media-examples/fixed-first-confirmation/audio.wav",
+      "sha256": "ee3569dbef96b4c479eb1d8a5149331fa01bfc64a747202df2a0a2feec89760b"
+    },
+    "image": {
+      "bytes": 745,
+      "original_path": "/tmp/hepta-ndu-next-media-cache/repair-confirmation-001/case-000-image/image.png",
+      "path": "/tmp/hepta-ndu-next-media-examples/fixed-first-confirmation/image.png",
+      "sha256": "cd00b7b7d9805ec45e3e52353938128b7e19f80c15ef9ff6dc670c6bfe8b7ab6"
+    },
+    "text": {
+      "bytes": 28,
+      "original_path": "/tmp/hepta-ndu-next-media-cache/repair-confirmation-001/case-000-image/caption.txt",
+      "path": "/tmp/hepta-ndu-next-media-examples/fixed-first-confirmation/caption.txt",
+      "sha256": "4d2525704c36097218d88643248ee3edb29b23cc883c15a81006415bd88c76de"
+    },
+    "video": {
+      "bytes": 48409,
+      "original_path": "/tmp/hepta-ndu-next-media-cache/repair-confirmation-001/case-000-image/video.mp4",
+      "path": "/tmp/hepta-ndu-next-media-examples/fixed-first-confirmation/video.mp4",
+      "sha256": "0bf3f9495ec7f0831e63faeafd6cea4fd119eed0d7825eb8892b089afc87f62c"
+    }
+  },
+  "metadata_updated_unix_ns": 1792985798858485586,
+  "recorded_unix_ns": 1792985520982129278,
+  "repository_contains_binary_artifacts": false,
+  "route": "image",
+  "schema": "hepta.media.fixed-first-confirmation-example.v1",
+  "scope": "Ten digit classes, canonical teacher-distilled speech, and constructed moving digit video; no arbitrary natural audiovisual generation.",
+  "selection": "Fixed first confirmation source index 0, image route; no selection by observed performance.",
+  "source_index": 0,
+  "speech_speakers": [
+    "5170b77f",
+    "5170b77f"
+  ],
+  "writer": 597
+}

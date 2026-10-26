@@ -1,0 +1,73 @@
+{
+  "evidence_sha256": {
+    "/tmp/hepta-ndu-next-native-h2/confirm-001/AUDIT.json": "bbae2ec2f3132c852a57af05c1dcf4473d0e3aa20264d1ea9645025612c10e5b",
+    "/tmp/hepta-ndu-next-native-h2/confirm-001/correctness/state/control.jsonl": "db5a97d8f36adc54ea69b142d18d0572de9625071a856da85b389f3a9bb88a5d",
+    "/tmp/hepta-ndu-next-native-h2/confirm-001/ndu/state/control.jsonl": "e27cc634d48e1627f16fc55bbeef25a5aa0e8ffab3ea061961281765b6cac47b",
+    "/tmp/hepta-ndu-next-native-h2/confirm-001/public-rollouts.jsonl": "c7b70f40d268b11076e34ca05cc8cbdadba52a61e6580f7f8a93fca3e797d3d6",
+    "/tmp/hepta-ndu-next-native-h2/confirm-001/results.json": "e867b366404136ef77d5763f31cc72571bc50d549bad2257f5045a0f9e5337b4"
+  },
+  "inference_boundary": {
+    "counterfactual_stream_reorder_or_independent_stream_repetitions_observed": false,
+    "independent_writer_owner_restart_design": false,
+    "numeric_NDU_projection_feedback_benefit_separately_identified": false,
+    "observed_no_extra_exclusion_does_not_certify_all_history_or_order_invariance": true,
+    "reported_intervals": "Original nominal paired writer-bootstrap intervals for the fixed ordered streams; numerical endpoints unchanged.",
+    "universal_causal_cost_effect_claimed": false
+  },
+  "model_or_native_rerun": false,
+  "original_data_protocols_intervals_and_gates_changed": false,
+  "policies": {
+    "correctness": {
+      "all_logged_steps_inherit_last_actual_modulator_without_episode_reset": true,
+      "candidate_admission_differs_from_confidence_and_ood_gates": [],
+      "candidate_ticks": 1740,
+      "decisions": 348,
+      "episodes": 256,
+      "observed_extra_state_or_resource_exclusions": 0,
+      "single_bootstrap_across_all_episodes": true,
+      "writer_boundary_transitions_in_observed_order": 63
+    },
+    "ndu": {
+      "all_logged_steps_inherit_last_actual_modulator_without_episode_reset": true,
+      "candidate_admission_differs_from_confidence_and_ood_gates": [
+        {
+          "action": "stop",
+          "admitted": false,
+          "native_sequence": 546,
+          "probability_gates_pass": true
+        }
+      ],
+      "candidate_ticks": 1800,
+      "decisions": 360,
+      "episodes": 256,
+      "observed_extra_state_or_resource_exclusions": 1,
+      "single_bootstrap_across_all_episodes": true,
+      "writer_boundary_transitions_in_observed_order": 63
+    }
+  },
+  "schema": "hepta.next.native-h2-persistent-stream-addendum.v1",
+  "source_sha256": {
+    "/tmp/hepta-ndu-next-native-h2/build-001/src/agentd_owner.rs": "4d56cc99d0edb1018734aebf70dc715de8df7846a2a9c4f2edb4230a0fc87faf",
+    "/tmp/hepta-ndu-next-native-h2/stream_state_addendum.py": "a8514f2a3e8409e94ce16b89a4c2c9acdf83955a46c6ea6db4fd385a20812d77",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/episodes.rs": "974e1ae0d1131d1be8e7ddfa19436b001ba8e48c89714aab493939c1bea7ee58",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/online.rs": "4a659246086f2b57b1e3cfddd71edf62d3d9754083ddfb300f40157088a14395",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/online_bootstrap.rs": "552e042fd1ebeeb71b1238ed5160ef8647af86222ef9442f5ebb8584a44b0ed8",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/online_port.rs": "1db22521b8da3fe25bfcaf50451ce0445dd255a002fb7565691df6cbda0cd148",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/run_v2.py": "4b3b1cd0795493d4a5139e0bdabe4abc00e6ccc7bc5bd1fb6b3b4b9e510c62b2",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/native/upstream/codex-rs/hepta-neuron/src/runtime.rs": "bace4a3c36a2a4199a975aeac73041011ed487b2d308c75c4e062b25e6451fad",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/native/upstream/codex-rs/hepta-neuron/src/runtime_types.rs": "754e5b324af9762bab507ff9543484a91f2e67c8fbc88f9505a1d2bf194cba3b",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/native/upstream/codex-rs/hepta-neuron/src/sparse.rs": "bc5a1f64ddfda4e603e590d62b0ed01fa5b0b3cd54f1d1d4407477af5bed2810"
+  },
+  "static_source_facts": {
+    "actual_result_changes_H1_through_public_frame_and_encoder": true,
+    "fixed_numeric_drive": "[Q24_one, 32 zeros] for every candidate",
+    "generator_public_state_initialized_per_episode": true,
+    "native_gate_reads_active_fraction_projection_count_sequence_and_measured_resources": true,
+    "native_owner_created_once_per_policy_outside_case_loop": true,
+    "native_temporal_activity_threshold_eligibility_and_projection_reset_per_episode": false,
+    "ndu_modulator_bound_to_request_and_journal": true,
+    "ndu_modulator_numerically_applied_to_head_or_plasticity": false,
+    "teacher_and_correctness_numeric_heads_read_current_public_features_only": true
+  },
+  "status": "completed_read_only"
+}

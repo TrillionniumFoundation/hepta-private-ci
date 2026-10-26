@@ -1,0 +1,34 @@
+{
+  "all_checks_passed": true,
+  "audit_source_sha256": "03cea3cd0d988e3d245372ea7b88cbbd2972c02fd62412b95a93b77f2a81e898",
+  "cpu_ns": 7972962486,
+  "fresh_XNIST_outcomes_read": false,
+  "old_calibration_mtime_ns": 1792983037298403482,
+  "old_calibrator_persisted_before_validation": true,
+  "phases": {
+    "calibration": {
+      "actual_outputs": 20000,
+      "complete_causal_census": true,
+      "earliest_commit_ns": 1792982949792991783,
+      "latest_observation_ns": 1792983037172131073,
+      "media_files_sha256_checked": 40000,
+      "registered_sources_match": true,
+      "source_pairs": 400
+    },
+    "validation": {
+      "actual_outputs": 20000,
+      "complete_causal_census": true,
+      "earliest_commit_ns": 1792983037308110215,
+      "latest_observation_ns": 1792983128765396312,
+      "media_files_sha256_checked": 40000,
+      "registered_sources_match": true,
+      "source_pairs": 400
+    }
+  },
+  "protocol_sha256": "893625ee94b3549c5f91ceb9c91815148b3fb1bb0278b0f4142fe592ee056cf4",
+  "registration_sha256": "85b5132e5fa077b163a34dba2268fc198564f7c09bf0dbb21ee6b262ebbc7a1c",
+  "result_sha256": "d3169aae879b5c228ec2f902815592cf9a65bceeda4a102224dc7915d1b84cd0",
+  "schema": "hepta.next.native-h2-expanded-old-structural-audit.v1",
+  "scope": "Actual retained bytes, registered sources, causal commits and complete census; no rescoring or model inference",
+  "wall_ns": 11210199714
+}

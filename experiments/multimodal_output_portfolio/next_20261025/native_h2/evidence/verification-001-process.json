@@ -1,0 +1,47 @@
+{
+  "cgroup_after": {
+    "current": 8356536320,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3835355,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8491220992,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3833593,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 0.346973,
+  "child_user_seconds": 3.812972,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-B",
+    "-m",
+    "experiments.multimodal_output_portfolio.next_20261025.native_h2.prospective_v2",
+    "verify",
+    "--calibration",
+    "/tmp/hepta-ndu-next-native-h2/calibrator-001/calibration.json",
+    "--directory",
+    "/tmp/hepta-ndu-next-native-h2/qualification-001",
+    "--output",
+    "/tmp/hepta-ndu-next-native-h2/qualification-001/verification.json"
+  ],
+  "context": "Frozen1000writer qualification statistics and selected-policy diagnostics after full structural audit; no model inference",
+  "exit_code": 0,
+  "log_sha256": "48ad7ff0b7094b9b17d2d9c87867403d74762dead0b5451e11f6c47c5f4e900a",
+  "peak_rss_bytes": 339230720,
+  "registration_sha256": "a422cb91a133c0504a15f9f39abebb17d4eef5f4103e13a2abbb785a87d1fb0e",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 3189935229,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}

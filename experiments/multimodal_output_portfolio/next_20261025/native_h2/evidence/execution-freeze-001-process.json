@@ -1,0 +1,48 @@
+{
+  "cgroup_after": {
+    "current": 8577974272,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3850132,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8589934592,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3849994,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 0.024075,
+  "child_user_seconds": 0.27960399999999996,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-B",
+    "-m",
+    "experiments.multimodal_output_portfolio.next_20261025.native_h2.freeze_execution",
+    "--binary",
+    "/tmp/hepta-ndu-next-native-h2/build-001/hepta-native-ndu-online",
+    "--package",
+    "/tmp/hepta-ndu-next-native-h2/model-001/package.json",
+    "--smoke",
+    "/tmp/hepta-ndu-next-native-h2/smoke-001",
+    "--output",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/NATIVE_PROTOCOL.json"
+  ],
+  "context": "Freeze independent64writer native execution after actual qualified owner smoke and recovery; no competing model jobs",
+  "exit_code": 0,
+  "log_sha256": "47b0ec1281009583de32a4fb335cfa057a761f0d22045c35e29454928a61abb2",
+  "peak_rss_bytes": 18030592,
+  "registration_sha256": "39d837b0d02e935e6a6d41648b9f9607e670cac7125357b03cf05a5136970081",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 306041900,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}

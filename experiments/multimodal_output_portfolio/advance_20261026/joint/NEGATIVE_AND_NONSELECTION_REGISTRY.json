@@ -1,0 +1,123 @@
+{
+  "current_confirmation_status": "Running under immutable protocol; result will be recorded separately without replacing these entries.",
+  "entries": [
+    {
+      "id": "previous_five_component_risk_training",
+      "kind": "completed_negative_independent_result",
+      "preservation": "Original six models, actual outputs, processes and failed V2 guard retained by the complete linked prior archive; no old file changed",
+      "quality_claim_eligible": false,
+      "receipt": {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/joint/RESULT.json",
+        "sha256": "4012b8c08099b778c49a1660dfb5f0281511a3ec2004b78ae33f6fa29633f73e"
+      },
+      "registered_gates": {
+        "CE_superiority": false,
+        "joint_success_noninferiority": false
+      },
+      "risk_minus_mean_CE": {
+        "estimate": -0.0068529660661583724,
+        "interval": [
+          -0.014722981775785215,
+          -0.0011904477158238666
+        ]
+      }
+    },
+    {
+      "all_six_models_retained": true,
+      "eligible": false,
+      "id": "advance_brier_paired_profiles",
+      "kind": "completed_negative_old_development_selection",
+      "paired_parameter_equivalence": {
+        "17": true,
+        "29": true,
+        "43": true
+      },
+      "profile_metrics": {
+        "entropic": {
+          "CE": 0.6805773371977906,
+          "mean_utility": 0.8600260416666666,
+          "strict_success": 0.8600260416666666
+        },
+        "mean": {
+          "CE": 0.6805773371977906,
+          "mean_utility": 0.8600260416666666,
+          "strict_success": 0.8600260416666666
+        }
+      },
+      "receipt": {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/joint/evidence/BRIER_RESULTS.json",
+        "sha256": "cb5434b59bb1f9d46c58da8d099328d45d81e38b4769aef9b51cd1518c70efb8"
+      },
+      "selected_profile": "canonical_no_training"
+    },
+    {
+      "claim": "Binary U at equal static action cost makes mean and entropic profiles affine-equivalent. No independent risk-training superiority may be claimed.",
+      "id": "binary_static_risk_equivalence",
+      "kind": "measured_structural_nonidentifiability",
+      "receipt": {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/joint/evidence/ENDPOINT_AUDIT.json",
+        "sha256": "20484037ef308ea7b2cd49d24361b2344d55ee28c9d077a4324169e2ce7f4f79"
+      }
+    },
+    {
+      "id": "first_nll_clipped_log_draft",
+      "kind": "unexecuted_pre_run_correction",
+      "model_outcomes_opened_under_this_recipe": false,
+      "protocol": {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/joint/NLL_REPAIR_PROTOCOL.json",
+        "sha256": "edba40f521813c67c1b9c22dbac51a21f45945e40ade2ecad3d8921506ccd411"
+      },
+      "reason": "Clipping target probability would truncate proper-log-score gradients in extreme tails; corrected V2 was separately registered before execution.",
+      "source": {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/joint/train_nll.py",
+        "sha256": "ef59ba4f4d1b9aaff76e5d8baf785f6fdd06d3fcf969c9dda0fcbdaaf685d19b"
+      }
+    },
+    {
+      "all_three_models_retained": true,
+      "id": "nll_bound2_not_selected",
+      "kind": "completed_nonselected_old_development_candidate",
+      "not_misreported_as_failed_primary": true,
+      "panel": {
+        "CE": 0.6928230579203382,
+        "mean_utility": 0.8671875,
+        "strict_success": 0.8671875
+      },
+      "receipt": {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/joint/evidence/NLL_RESULTS.json",
+        "sha256": "65399f69184336311349b54acc9ef196de92c6222383010341d2360b0adf91c6"
+      }
+    },
+    {
+      "fixed_native_seed": 17,
+      "id": "nll_bound8_old_development_choice",
+      "kind": "selected_candidate_not_yet_confirmed",
+      "no_confirmation_conclusion_in_this_registry": true,
+      "panel": {
+        "CE": 0.6950579672070268,
+        "mean_utility": 0.8684895833333334,
+        "strict_success": 0.8684895833333334
+      },
+      "receipt": {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/joint/evidence/NLL_RESULTS.json",
+        "sha256": "65399f69184336311349b54acc9ef196de92c6222383010341d2360b0adf91c6"
+      },
+      "scope": "Combined repair changes objective, data, steps and bound; not an isolated loss-function causal comparison."
+    },
+    {
+      "id": "untouched_source_inventory",
+      "kind": "metadata_resource_limit",
+      "no_current_panel_reassignment": true,
+      "receipt": {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/joint/evidence/METADATA_INVENTORY.json",
+        "sha256": "4b4cc8a975e85ddc85a134532bcd81de75833198d52b64ed9c57d3b079dd604f"
+      },
+      "remaining_unallocated_xnist_writers": 0,
+      "remaining_usable_unique_recording_SC_speakers": 88
+    }
+  ],
+  "no_live_confirmation_quality_results_read": true,
+  "no_source_role_modified": true,
+  "recorded_unix_ns": 1792992331818670450,
+  "schema": "hepta.advance.joint-negative-nonselected-registry.v1"
+}

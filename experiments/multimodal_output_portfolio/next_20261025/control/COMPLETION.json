@@ -1,0 +1,50 @@
+{
+  "completed_unix_ns": 1792979868081883087,
+  "cpu_ns": 2127601032427,
+  "failures": 0,
+  "files_sha256": {
+    "commitments.jsonl.gz": "4adfde5111317287fb0ac56f7ba90ecd60e63f06961c30f800ce0ddfffcbd054",
+    "media.bin": "c266a8b7fecefb259a1abea0cc9c9b111c694798bff782109690b8246aca83c4",
+    "registration.json": "512f22886e74615967ae47e97cf9a70c34d69d661aaedfd49cf341e6fa3a3a6f",
+    "requests.jsonl.gz": "06bff308ce6bdbfdbc91ce90bb4b7a784a96a4fdbe74a0d345817887b7b6799a",
+    "scored.jsonl.gz": "b966ca8fd7711079f60b73ace649093c775fcea52da4b79b32e8c48304b6f48c"
+  },
+  "model_loads": [
+    {
+      "compile_and_save_wall_ns": 1118401473,
+      "graph_sha256": {
+        "heads.pt": "46675be83092b0ff74894bdf0339e7936b92778007f48b4841e3cf6eb27e3a52",
+        "readers.pt": "eb9d8d36b9ca306d1c3aa0daaccb4edc487b36fa80e6aef776eed25aa561b5f5",
+        "summary.pt": "ee7ade49019224546ebe718500618561c3f0c3d45149db967637d469c4d49e56"
+      },
+      "seed": 17,
+      "wall_ns": 1134458149
+    },
+    {
+      "compile_and_save_wall_ns": 522730554,
+      "graph_sha256": {
+        "heads.pt": "27b11700847a3c760747ef1fe4b06eb5b0e000a113d48924ff60ca8e1477bde4",
+        "readers.pt": "a373d81b084fb587002157cc4b72e1ffc2d90c8881a0e32d43a76bf0957eda99",
+        "summary.pt": "f3f612180b2e19a379fdc6a4c5490ab7d69ff984d6fa1cfbab40b194034d9d82"
+      },
+      "seed": 29,
+      "wall_ns": 551378750
+    },
+    {
+      "compile_and_save_wall_ns": 317885423,
+      "graph_sha256": {
+        "heads.pt": "cc72605b2dc2f5ce06c23373000b19bce41c3a2efcb7eeb0e213112c74761f2a",
+        "readers.pt": "168041f33e9fcf9b17e44819fb72a91fb9a44ac1afdd4a7c831c823d6fc1f4c8",
+        "summary.pt": "30839db9714e90f9a628f04c023419bce934eff0722f04f71cfb2be27aceee42"
+      },
+      "seed": 43,
+      "wall_ns": 643109688
+    }
+  ],
+  "new_source_pairs": 512,
+  "requests": 147456,
+  "scoring_wall_ns": 284852071022,
+  "source_pairs": 512,
+  "status": "completed",
+  "wall_ns": 2507768264161
+}

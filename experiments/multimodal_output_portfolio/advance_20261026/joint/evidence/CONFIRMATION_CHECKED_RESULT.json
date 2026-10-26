@@ -1,0 +1,29 @@
+{
+  "audit_passed": true,
+  "audit_sha256": "966b6c762fe28975ba1b1cffe7d99a035d593423c1fc20038c7629be1078a9bf",
+  "passed": false,
+  "primary_gate": {
+    "CE_superiority": false,
+    "bootstrap_replicates": 10000,
+    "bootstrap_seed": 240809,
+    "cluster_unit": "Matched image writer and unique speech speaker; routes/pairs/seeds retained together",
+    "evaluated": true,
+    "interval_confidence": 0.9833333333333333,
+    "paired_cluster_percentile_intervals": {
+      "CE": [
+        -0.019598945430578905,
+        0.024036800146675974
+      ],
+      "strict_success": [
+        -0.01225490196078427,
+        0.015196078431372459
+      ]
+    },
+    "passed": false,
+    "scope": "Fixed three-seed panel and fixed generated-task census; not universal model or observer-family generalization",
+    "strict_success_noninferiority": false,
+    "strict_success_noninferiority_margin": 0.0
+  },
+  "results_sha256": "ad1dc4be99bc526ed1ad657ca7352de31e643cf0086db82a8719f83878ce788f",
+  "schema": "hepta.advance.joint-audited-verdict.v1"
+}

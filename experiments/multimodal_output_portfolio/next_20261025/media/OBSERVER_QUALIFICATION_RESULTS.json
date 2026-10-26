@@ -1,0 +1,133 @@
+{
+  "bootstrap": {
+    "method": "Resample the 98 speaker clusters with replacement and recompute recording-weighted accuracy; descriptive percentile intervals, not qualification gates",
+    "repetitions": 5000,
+    "seed": 23919
+  },
+  "candidate_changed": false,
+  "models": {
+    "base.en": {
+      "abstentions": 56,
+      "accuracy": 0.8133333333333334,
+      "confusion": {
+        "0": {
+          "0": 26,
+          "abstain": 4
+        },
+        "1": {
+          "1": 26,
+          "abstain": 4
+        },
+        "2": {
+          "2": 27,
+          "abstain": 3
+        },
+        "3": {
+          "3": 24,
+          "abstain": 6
+        },
+        "4": {
+          "4": 23,
+          "abstain": 7
+        },
+        "5": {
+          "5": 23,
+          "abstain": 7
+        },
+        "6": {
+          "6": 19,
+          "abstain": 11
+        },
+        "7": {
+          "7": 25,
+          "abstain": 5
+        },
+        "8": {
+          "8": 25,
+          "abstain": 5
+        },
+        "9": {
+          "9": 26,
+          "abstain": 4
+        }
+      },
+      "correct": 244,
+      "eligible": false,
+      "speaker_cluster_percentile_95": [
+        0.7559322033898305,
+        0.8679245283018868
+      ],
+      "total": 300,
+      "wrong_digit": 0
+    },
+    "small.en": {
+      "abstentions": 56,
+      "accuracy": 0.8133333333333334,
+      "confusion": {
+        "0": {
+          "0": 25,
+          "abstain": 5
+        },
+        "1": {
+          "1": 28,
+          "abstain": 2
+        },
+        "2": {
+          "2": 19,
+          "abstain": 11
+        },
+        "3": {
+          "3": 29,
+          "abstain": 1
+        },
+        "4": {
+          "4": 25,
+          "abstain": 5
+        },
+        "5": {
+          "5": 23,
+          "abstain": 7
+        },
+        "6": {
+          "6": 20,
+          "abstain": 10
+        },
+        "7": {
+          "7": 26,
+          "abstain": 4
+        },
+        "8": {
+          "8": 24,
+          "abstain": 6
+        },
+        "9": {
+          "9": 25,
+          "abstain": 5
+        }
+      },
+      "correct": 244,
+      "eligible": false,
+      "speaker_cluster_percentile_95": [
+        0.7558528428093646,
+        0.8619631901840491
+      ],
+      "total": 300,
+      "wrong_digit": 0
+    }
+  },
+  "new_media_confirmation_opened": false,
+  "original_point_gate": 0.85,
+  "paired_outcomes": {
+    "base=0,small=0": 40,
+    "base=0,small=1": 16,
+    "base=1,small=0": 16,
+    "base=1,small=1": 228
+  },
+  "phase": "postqualification_descriptive_only",
+  "schema": "hepta.next.media-observer-qualification-analysis.v1",
+  "source_summary_path": "/tmp/hepta-ndu-next-media-cache/event-qualification-002/summary.json",
+  "source_summary_sha256": "d3f278a4348cea7edb41a11d61d43d21f8ac15a7902aca8280be5d819487711e",
+  "sources": 300,
+  "speakers": 98,
+  "statistical_unit": "speaker"
+}

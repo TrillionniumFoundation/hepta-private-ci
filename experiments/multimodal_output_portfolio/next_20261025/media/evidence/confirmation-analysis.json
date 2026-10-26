@@ -1,0 +1,104 @@
+{
+  "schema": "hepta.next.media-repair-analysis.v1",
+  "outputs": 640,
+  "source_tasks": 128,
+  "independent_writer_speaker_clusters": 32,
+  "per_mode": {
+    "image": {
+      "strict_joint_correct": 127,
+      "tasks": 128,
+      "component_correct": {
+        "text": 127,
+        "image": 127,
+        "audio": 127,
+        "video": 127
+      },
+      "secondary_audio_correct": 110,
+      "writer_bootstrap_95_interval": [
+        0.9765625,
+        1.0
+      ],
+      "mean_execution_ms": 238.3327777578125,
+      "mean_audit_included_ms": 409.124487734375
+    },
+    "text": {
+      "strict_joint_correct": 128,
+      "tasks": 128,
+      "component_correct": {
+        "text": 128,
+        "image": 128,
+        "audio": 128,
+        "video": 128
+      },
+      "secondary_audio_correct": 110,
+      "writer_bootstrap_95_interval": [
+        1.0,
+        1.0
+      ],
+      "mean_execution_ms": 241.28087134375,
+      "mean_audit_included_ms": 408.3291435234375
+    },
+    "audio": {
+      "strict_joint_correct": 114,
+      "tasks": 128,
+      "component_correct": {
+        "text": 114,
+        "image": 114,
+        "audio": 114,
+        "video": 114
+      },
+      "secondary_audio_correct": 99,
+      "writer_bootstrap_95_interval": [
+        0.8203125,
+        0.953125
+      ],
+      "mean_execution_ms": 243.47843696875,
+      "mean_audit_included_ms": 410.90851678125
+    },
+    "video": {
+      "strict_joint_correct": 117,
+      "tasks": 128,
+      "component_correct": {
+        "text": 117,
+        "image": 117,
+        "audio": 117,
+        "video": 117
+      },
+      "secondary_audio_correct": 101,
+      "writer_bootstrap_95_interval": [
+        0.8515625,
+        0.9609375
+      ],
+      "mean_execution_ms": 240.9417015703125,
+      "mean_audit_included_ms": 409.523575859375
+    },
+    "audio_video": {
+      "strict_joint_correct": 125,
+      "tasks": 128,
+      "component_correct": {
+        "text": 125,
+        "image": 125,
+        "audio": 125,
+        "video": 125
+      },
+      "secondary_audio_correct": 107,
+      "writer_bootstrap_95_interval": [
+        0.953125,
+        1.0
+      ],
+      "mean_execution_ms": 242.9380186640625,
+      "mean_audit_included_ms": 412.193126046875
+    }
+  },
+  "tasks_successful_in_all_five_routes": 105,
+  "actual_artifact_sha256_checks": 3072,
+  "all_hashes_matched": true,
+  "bootstrap": {
+    "resamples": 5000,
+    "seed": 23917,
+    "unit": "matched image-writer/audio-speaker cluster",
+    "intervals": "Descriptive per-route percentile95, not simultaneous lower-bound gates"
+  },
+  "all_original_numeric_sample_gates_pass": true,
+  "human_naturalness_or_foundation_model_claim": false
+}

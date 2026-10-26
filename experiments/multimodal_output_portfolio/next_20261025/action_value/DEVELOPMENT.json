@@ -1,0 +1,1183 @@
+{
+  "completed_unix_ns": 1792980185035075625,
+  "config": {
+    "batch": 256,
+    "fold_steps": 600,
+    "folds": 2,
+    "lr": 0.002,
+    "steps": 1200,
+    "weight_decay": 0.0001,
+    "widths": [
+      32,
+      128
+    ]
+  },
+  "cpu_ns": 61709274303,
+  "fresh_source_outcomes_used": false,
+  "input_sha256": {
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc3-runs/controllers-001/seed-17/output_ndu/controller.pt": "af83aa182ed037f8a0792093f69c19c8ddd51f0622f5851ef037277113a561ce",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc3-runs/controllers-001/seed-29/output_ndu/controller.pt": "b83c7ba135c869b10f275ff0007b467e129256a5c0772acbf38458eb1ac31bd7",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc3-runs/controllers-001/seed-43/output_ndu/controller.pt": "42650d9ed2f073623f2b3027be40daf32e510684a4ff7d19371a415d62e5cf5d",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc4-control-runs/development-001/seed-17/fit/data.pt": "5a01bde7946110030e0fabf30c1008830b053f337eb4b25a32aa62a5eaa30f8c",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc4-control-runs/development-001/seed-17/selection/data.pt": "5ce003835c39699471f317e42dd9a1407f9f871ff80d3544801db470d5dd9e01",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc4-control-runs/development-001/seed-29/fit/data.pt": "4e19ac32bea6720a471f82060e37ff08c0f440724727ac7607d05a7727320e6d",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc4-control-runs/development-001/seed-29/selection/data.pt": "a6416ae6541766c149e137f731d3fbd42e4034316c0ddc92e0966ff9628c51ee",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc4-control-runs/development-001/seed-43/fit/data.pt": "723a7d35d642ad9e87c2cea6dd9b2b9b1572b337126c8ad9e890a0c0538c0118",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc4-control-runs/development-001/seed-43/selection/data.pt": "9f749990e90c895a3507daa06b05f614b321efc1b1835d21e6c1299e98e4b79e"
+  },
+  "records": [
+    {
+      "candidates": [
+        {
+          "checkpoint": "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-17-width-32.pt",
+          "checkpoint_sha256": "5d9cf3e9f9283e75188440452fee2da89126845b28454003b1035ab8470b0d3c",
+          "diagnostics": {
+            "feasible_H1_action_difference_MSE": 0.2993181347846985,
+            "nonstop_H1_actual_moment_difference": -0.028521467000246048,
+            "nonstop_H1_bins": [
+              {
+                "actual": -0.08532895892858505,
+                "n": 471,
+                "prediction": -0.2742002308368683,
+                "range": [
+                  -10.0,
+                  -0.1
+                ]
+              },
+              {
+                "actual": -0.005073899403214455,
+                "n": 345,
+                "prediction": -0.05663206800818443,
+                "range": [
+                  -0.1,
+                  -0.025
+                ]
+              },
+              {
+                "actual": 0.052993450313806534,
+                "n": 229,
+                "prediction": -0.012798024341464043,
+                "range": [
+                  -0.025,
+                  0.0
+                ]
+              },
+              {
+                "actual": null,
+                "n": 0,
+                "prediction": null,
+                "range": [
+                  0.0,
+                  10.0
+                ]
+              }
+            ],
+            "nonstop_H1_count": 1045,
+            "nonstop_H1_prediction_bias": -0.11656668037176132,
+            "old_teacher_difference_MSE_on_same_public_nodes": 0.2905799448490143,
+            "scope": "Historical selection diagnostics only; actual paired samples, not conditional-optimal labels or a uniform calibration certificate",
+            "selected_H1_count": 1427,
+            "selected_H1_prediction_bias": -0.08536242693662643,
+            "selected_H2_prediction_bias": -0.3037460446357727,
+            "zero_difference_MSE": 0.29989200830459595
+          },
+          "eligible_for_development_admission": false,
+          "fit": {
+            "H1_OOF_all_action_difference_MSE": 0.23597553372383118,
+            "H1_OOF_zero_baseline_MSE": 0.22223596274852753,
+            "audit_files_sha256": {
+              "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-17-width-32-audit/backups.pt": "6dae5e583cc7a5358d984f1581693f9b430912bc353e9d301bd02008f06fb7de",
+              "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-17-width-32-audit/fold-0.pt": "20907e633fb295c8cd73a215bea52084d367480b0beb0e3d15745ceec06142a5",
+              "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-17-width-32-audit/fold-1.pt": "3a3fc1020091d4d6d623bbe15073f4e92e4e879f31d4cac317056331f25e6312"
+            },
+            "backup": "Other-source-fold H1 choice followed by actual held-source result, including first-action cost; paired against actual root stop",
+            "folds": [
+              {
+                "fit_source_pairs": 128,
+                "held_fold": 0,
+                "held_source_pairs": 128,
+                "trace": [
+                  {
+                    "MSE": 0.39144808053970337,
+                    "step": 1
+                  },
+                  {
+                    "MSE": 0.26686641573905945,
+                    "step": 200
+                  },
+                  {
+                    "MSE": 0.24088193476200104,
+                    "step": 400
+                  },
+                  {
+                    "MSE": 0.16397026181221008,
+                    "step": 600
+                  }
+                ]
+              },
+              {
+                "fit_source_pairs": 128,
+                "held_fold": 1,
+                "held_source_pairs": 128,
+                "trace": [
+                  {
+                    "MSE": 0.36976245045661926,
+                    "step": 1
+                  },
+                  {
+                    "MSE": 0.20541679859161377,
+                    "step": 200
+                  },
+                  {
+                    "MSE": 0.24354389309883118,
+                    "step": 400
+                  },
+                  {
+                    "MSE": 0.22084063291549683,
+                    "step": 600
+                  }
+                ]
+              }
+            ],
+            "one_trace": [
+              {
+                "MSE": 0.3123783767223358,
+                "step": 1
+              },
+              {
+                "MSE": 0.16952574253082275,
+                "step": 200
+              },
+              {
+                "MSE": 0.2923737168312073,
+                "step": 400
+              },
+              {
+                "MSE": 0.2834336459636688,
+                "step": 600
+              },
+              {
+                "MSE": 0.1962423473596573,
+                "step": 800
+              },
+              {
+                "MSE": 0.24933528900146484,
+                "step": 1000
+              },
+              {
+                "MSE": 0.24917469918727875,
+                "step": 1200
+              }
+            ],
+            "scope": "One approximate source-cross-fitted backup. Final refit H1 differs from fold heads; no Bellman/global/conditional error certificate.",
+            "two_trace": [
+              {
+                "MSE": 0.3824959993362427,
+                "step": 1
+              },
+              {
+                "MSE": 0.4026307165622711,
+                "step": 200
+              },
+              {
+                "MSE": 0.2879529595375061,
+                "step": 400
+              },
+              {
+                "MSE": 0.15133029222488403,
+                "step": 600
+              },
+              {
+                "MSE": 0.19383162260055542,
+                "step": 800
+              },
+              {
+                "MSE": 0.15758661925792694,
+                "step": 1000
+              },
+              {
+                "MSE": 0.18934035301208496,
+                "step": 1200
+              }
+            ],
+            "width": 32
+          },
+          "selection_outcome": {
+            "action_cost_CE": 0.16890334789474704,
+            "mean_continuation_actions": 1.20703125,
+            "raw_CE": 0.17157149291047702,
+            "success": 0.55419921875
+          },
+          "width": 32
+        },
+        {
+          "checkpoint": "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-17-width-128.pt",
+          "checkpoint_sha256": "936920a009c548bb9d036bf182bab1cb96e07e38d583d08de228c2d37d50c024",
+          "diagnostics": {
+            "feasible_H1_action_difference_MSE": 0.3057236075401306,
+            "nonstop_H1_actual_moment_difference": -0.03776451572775841,
+            "nonstop_H1_bins": [
+              {
+                "actual": -0.06418467313051224,
+                "n": 674,
+                "prediction": -0.26286402344703674,
+                "range": [
+                  -10.0,
+                  -0.1
+                ]
+              },
+              {
+                "actual": -0.01719987578690052,
+                "n": 438,
+                "prediction": -0.059139810502529144,
+                "range": [
+                  -0.1,
+                  -0.025
+                ]
+              },
+              {
+                "actual": 0.016555706039071083,
+                "n": 162,
+                "prediction": -0.012509881518781185,
+                "range": [
+                  -0.025,
+                  0.0
+                ]
+              },
+              {
+                "actual": null,
+                "n": 0,
+                "prediction": null,
+                "range": [
+                  0.0,
+                  10.0
+                ]
+              }
+            ],
+            "nonstop_H1_count": 1274,
+            "nonstop_H1_prediction_bias": -0.1232246533036232,
+            "old_teacher_difference_MSE_on_same_public_nodes": 0.2905799448490143,
+            "scope": "Historical selection diagnostics only; actual paired samples, not conditional-optimal labels or a uniform calibration certificate",
+            "selected_H1_count": 1684,
+            "selected_H1_prediction_bias": -0.09322340041399002,
+            "selected_H2_prediction_bias": -0.39849263429641724,
+            "zero_difference_MSE": 0.29989200830459595
+          },
+          "eligible_for_development_admission": false,
+          "fit": {
+            "H1_OOF_all_action_difference_MSE": 0.2389269769191742,
+            "H1_OOF_zero_baseline_MSE": 0.22223596274852753,
+            "audit_files_sha256": {
+              "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-17-width-128-audit/backups.pt": "9ab6ff8eeb308c5b8426a3e3081c8d809dfc020eb002b11bad1aeb89d5c61d82",
+              "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-17-width-128-audit/fold-0.pt": "0f506e073e9f1b5b4761a286c884a01ec79355c96028fad545a90ce6bd526512",
+              "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-17-width-128-audit/fold-1.pt": "c577160aeaca4bdefda47c094ca18d35b163bf923716956c84d3337715b22684"
+            },
+            "backup": "Other-source-fold H1 choice followed by actual held-source result, including first-action cost; paired against actual root stop",
+            "folds": [
+              {
+                "fit_source_pairs": 128,
+                "held_fold": 0,
+                "held_source_pairs": 128,
+                "trace": [
+                  {
+                    "MSE": 0.3794718086719513,
+                    "step": 1
+                  },
+                  {
+                    "MSE": 0.2667354941368103,
+                    "step": 200
+                  },
+                  {
+                    "MSE": 0.22746054828166962,
+                    "step": 400
+                  },
+                  {
+                    "MSE": 0.16028442978858948,
+                    "step": 600
+                  }
+                ]
+              },
+              {
+                "fit_source_pairs": 128,
+                "held_fold": 1,
+                "held_source_pairs": 128,
+                "trace": [
+                  {
+                    "MSE": 0.35147055983543396,
+                    "step": 1
+                  },
+                  {
+                    "MSE": 0.2012699544429779,
+                    "step": 200
+                  },
+                  {
+                    "MSE": 0.24165113270282745,
+                    "step": 400
+                  },
+                  {
+                    "MSE": 0.22274088859558105,
+                    "step": 600
+                  }
+                ]
+              }
+            ],
+            "one_trace": [
+              {
+                "MSE": 0.3075372576713562,
+                "step": 1
+              },
+              {
+                "MSE": 0.1668538749217987,
+                "step": 200
+              },
+              {
+                "MSE": 0.2922751009464264,
+                "step": 400
+              },
+              {
+                "MSE": 0.28028738498687744,
+                "step": 600
+              },
+              {
+                "MSE": 0.19175249338150024,
+                "step": 800
+              },
+              {
+                "MSE": 0.25161033868789673,
+                "step": 1000
+              },
+              {
+                "MSE": 0.2514621615409851,
+                "step": 1200
+              }
+            ],
+            "scope": "One approximate source-cross-fitted backup. Final refit H1 differs from fold heads; no Bellman/global/conditional error certificate.",
+            "two_trace": [
+              {
+                "MSE": 0.3804253041744232,
+                "step": 1
+              },
+              {
+                "MSE": 0.3857105076313019,
+                "step": 200
+              },
+              {
+                "MSE": 0.27089959383010864,
+                "step": 400
+              },
+              {
+                "MSE": 0.12678010761737823,
+                "step": 600
+              },
+              {
+                "MSE": 0.11924643814563751,
+                "step": 800
+              },
+              {
+                "MSE": 0.07768309116363525,
+                "step": 1000
+              },
+              {
+                "MSE": 0.057760003954172134,
+                "step": 1200
+              }
+            ],
+            "width": 128
+          },
+          "selection_outcome": {
+            "action_cost_CE": 0.1781060981143483,
+            "mean_continuation_actions": 1.4443359375,
+            "raw_CE": 0.1808662293638692,
+            "success": 0.556640625
+          },
+          "width": 128
+        }
+      ],
+      "cpu_ns": 21829057869,
+      "development_admitted": false,
+      "seed": 17,
+      "selected_index": 1,
+      "selected_width": 128,
+      "teacher": {
+        "action_cost_CE": 0.18013846757388796,
+        "mean_continuation_actions": 1.1591796875,
+        "raw_CE": 0.18260586501777532,
+        "success": 0.54833984375
+      },
+      "wall_ns": 22147982505
+    },
+    {
+      "candidates": [
+        {
+          "checkpoint": "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-29-width-32.pt",
+          "checkpoint_sha256": "6d969e0622b401ea25cdd8885691db594e608badf322c109dd22552c6893fbc3",
+          "diagnostics": {
+            "feasible_H1_action_difference_MSE": 0.2876494228839874,
+            "nonstop_H1_actual_moment_difference": -0.03724619001150131,
+            "nonstop_H1_bins": [
+              {
+                "actual": -0.08210558444261551,
+                "n": 521,
+                "prediction": -0.3119570314884186,
+                "range": [
+                  -10.0,
+                  -0.1
+                ]
+              },
+              {
+                "actual": -0.007787300273776054,
+                "n": 345,
+                "prediction": -0.057076118886470795,
+                "range": [
+                  -0.1,
+                  -0.025
+                ]
+              },
+              {
+                "actual": 0.033387091010808945,
+                "n": 187,
+                "prediction": -0.012774419970810413,
+                "range": [
+                  -0.025,
+                  0.0
+                ]
+              },
+              {
+                "actual": null,
+                "n": 0,
+                "prediction": null,
+                "range": [
+                  0.0,
+                  10.0
+                ]
+              }
+            ],
+            "nonstop_H1_count": 1053,
+            "nonstop_H1_prediction_bias": -0.13807165622711182,
+            "old_teacher_difference_MSE_on_same_public_nodes": 0.2686828076839447,
+            "scope": "Historical selection diagnostics only; actual paired samples, not conditional-optimal labels or a uniform calibration certificate",
+            "selected_H1_count": 1443,
+            "selected_H1_prediction_bias": -0.1007549911737442,
+            "selected_H2_prediction_bias": -0.26726579666137695,
+            "zero_difference_MSE": 0.2753189206123352
+          },
+          "eligible_for_development_admission": false,
+          "fit": {
+            "H1_OOF_all_action_difference_MSE": 0.23376712203025818,
+            "H1_OOF_zero_baseline_MSE": 0.21882224082946777,
+            "audit_files_sha256": {
+              "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-29-width-32-audit/backups.pt": "2b7ebafa5307a6b89977360363b49c32c65b8a4ad4b0b511c91ef5a2950625db",
+              "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-29-width-32-audit/fold-0.pt": "dc09ffe3e1211fe8e429cb9afc0fec904d798d92e67e9f3779fedb9c5c47328c",
+              "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-29-width-32-audit/fold-1.pt": "477bab70090b19f13aafdf957760ce40b866af4f957ea0d9f32abd75802ab343"
+            },
+            "backup": "Other-source-fold H1 choice followed by actual held-source result, including first-action cost; paired against actual root stop",
+            "folds": [
+              {
+                "fit_source_pairs": 128,
+                "held_fold": 0,
+                "held_source_pairs": 128,
+                "trace": [
+                  {
+                    "MSE": 0.23446407914161682,
+                    "step": 1
+                  },
+                  {
+                    "MSE": 0.2719285488128662,
+                    "step": 200
+                  },
+                  {
+                    "MSE": 0.2241424173116684,
+                    "step": 400
+                  },
+                  {
+                    "MSE": 0.15248842537403107,
+                    "step": 600
+                  }
+                ]
+              },
+              {
+                "fit_source_pairs": 128,
+                "held_fold": 1,
+                "held_source_pairs": 128,
+                "trace": [
+                  {
+                    "MSE": 0.27467218041419983,
+                    "step": 1
+                  },
+                  {
+                    "MSE": 0.25979140400886536,
+                    "step": 200
+                  },
+                  {
+                    "MSE": 0.20066912472248077,
+                    "step": 400
+                  },
+                  {
+                    "MSE": 0.21100056171417236,
+                    "step": 600
+                  }
+                ]
+              }
+            ],
+            "one_trace": [
+              {
+                "MSE": 0.2728344202041626,
+                "step": 1
+              },
+              {
+                "MSE": 0.1580207794904709,
+                "step": 200
+              },
+              {
+                "MSE": 0.22376735508441925,
+                "step": 400
+              },
+              {
+                "MSE": 0.1781185269355774,
+                "step": 600
+              },
+              {
+                "MSE": 0.187900111079216,
+                "step": 800
+              },
+              {
+                "MSE": 0.11449028551578522,
+                "step": 1000
+              },
+              {
+                "MSE": 0.138301819562912,
+                "step": 1200
+              }
+            ],
+            "scope": "One approximate source-cross-fitted backup. Final refit H1 differs from fold heads; no Bellman/global/conditional error certificate.",
+            "two_trace": [
+              {
+                "MSE": 0.26496586203575134,
+                "step": 1
+              },
+              {
+                "MSE": 0.28450876474380493,
+                "step": 200
+              },
+              {
+                "MSE": 0.2087831050157547,
+                "step": 400
+              },
+              {
+                "MSE": 0.1931944489479065,
+                "step": 600
+              },
+              {
+                "MSE": 0.16506294906139374,
+                "step": 800
+              },
+              {
+                "MSE": 0.16225729882717133,
+                "step": 1000
+              },
+              {
+                "MSE": 0.12547336518764496,
+                "step": 1200
+              }
+            ],
+            "width": 32
+          },
+          "selection_outcome": {
+            "action_cost_CE": 0.17760062830474777,
+            "mean_continuation_actions": 1.21875,
+            "raw_CE": 0.1798496256010944,
+            "success": 0.55078125
+          },
+          "width": 32
+        },
+        {
+          "checkpoint": "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-29-width-128.pt",
+          "checkpoint_sha256": "3aac150a4cad2595cfa56e2973f687215c8bd876cbd02460bff696894e0d09b2",
+          "diagnostics": {
+            "feasible_H1_action_difference_MSE": 0.2993299663066864,
+            "nonstop_H1_actual_moment_difference": -0.009946167469024658,
+            "nonstop_H1_bins": [
+              {
+                "actual": -0.013159715570509434,
+                "n": 755,
+                "prediction": -0.340069979429245,
+                "range": [
+                  -10.0,
+                  -0.1
+                ]
+              },
+              {
+                "actual": -0.010626393370330334,
+                "n": 381,
+                "prediction": -0.05696094036102295,
+                "range": [
+                  -0.1,
+                  -0.025
+                ]
+              },
+              {
+                "actual": 0.004648356698453426,
+                "n": 184,
+                "prediction": -0.012760943733155727,
+                "range": [
+                  -0.025,
+                  0.0
+                ]
+              },
+              {
+                "actual": null,
+                "n": 0,
+                "prediction": null,
+                "range": [
+                  0.0,
+                  10.0
+                ]
+              }
+            ],
+            "nonstop_H1_count": 1320,
+            "nonstop_H1_prediction_bias": -0.20278336107730865,
+            "old_teacher_difference_MSE_on_same_public_nodes": 0.2686828076839447,
+            "scope": "Historical selection diagnostics only; actual paired samples, not conditional-optimal labels or a uniform calibration certificate",
+            "selected_H1_count": 1726,
+            "selected_H1_prediction_bias": -0.15508344769477844,
+            "selected_H2_prediction_bias": -0.4376162886619568,
+            "zero_difference_MSE": 0.2753189206123352
+          },
+          "eligible_for_development_admission": false,
+          "fit": {
+            "H1_OOF_all_action_difference_MSE": 0.24664774537086487,
+            "H1_OOF_zero_baseline_MSE": 0.21882224082946777,
+            "audit_files_sha256": {
+              "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-29-width-128-audit/backups.pt": "ce3dddfc4322f880ecd3957aaf89369ea9571bdcc4ab44249269dfa30a4d403d",
+              "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-29-width-128-audit/fold-0.pt": "8dd407786564b1c7cd47e0fc1939ae17d903028b2dbdaf9341883589b9cd6cff",
+              "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-29-width-128-audit/fold-1.pt": "90887df01a5bd0cffbcd9ebb8ee6471528b55665b93de6e199c064680daa772a"
+            },
+            "backup": "Other-source-fold H1 choice followed by actual held-source result, including first-action cost; paired against actual root stop",
+            "folds": [
+              {
+                "fit_source_pairs": 128,
+                "held_fold": 0,
+                "held_source_pairs": 128,
+                "trace": [
+                  {
+                    "MSE": 0.2410174310207367,
+                    "step": 1
+                  },
+                  {
+                    "MSE": 0.2673775553703308,
+                    "step": 200
+                  },
+                  {
+                    "MSE": 0.2193613052368164,
+                    "step": 400
+                  },
+                  {
+                    "MSE": 0.15638910233974457,
+                    "step": 600
+                  }
+                ]
+              },
+              {
+                "fit_source_pairs": 128,
+                "held_fold": 1,
+                "held_source_pairs": 128,
+                "trace": [
+                  {
+                    "MSE": 0.2723218500614166,
+                    "step": 1
+                  },
+                  {
+                    "MSE": 0.2640710771083832,
+                    "step": 200
+                  },
+                  {
+                    "MSE": 0.18676473200321198,
+                    "step": 400
+                  },
+                  {
+                    "MSE": 0.18838615715503693,
+                    "step": 600
+                  }
+                ]
+              }
+            ],
+            "one_trace": [
+              {
+                "MSE": 0.2949504256248474,
+                "step": 1
+              },
+              {
+                "MSE": 0.1584596335887909,
+                "step": 200
+              },
+              {
+                "MSE": 0.21909785270690918,
+                "step": 400
+              },
+              {
+                "MSE": 0.17389217019081116,
+                "step": 600
+              },
+              {
+                "MSE": 0.1713120937347412,
+                "step": 800
+              },
+              {
+                "MSE": 0.10782629996538162,
+                "step": 1000
+              },
+              {
+                "MSE": 0.14267949759960175,
+                "step": 1200
+              }
+            ],
+            "scope": "One approximate source-cross-fitted backup. Final refit H1 differs from fold heads; no Bellman/global/conditional error certificate.",
+            "two_trace": [
+              {
+                "MSE": 0.2672036290168762,
+                "step": 1
+              },
+              {
+                "MSE": 0.2486124336719513,
+                "step": 200
+              },
+              {
+                "MSE": 0.16902780532836914,
+                "step": 400
+              },
+              {
+                "MSE": 0.11815598607063293,
+                "step": 600
+              },
+              {
+                "MSE": 0.07348997890949249,
+                "step": 800
+              },
+              {
+                "MSE": 0.04529194161295891,
+                "step": 1000
+              },
+              {
+                "MSE": 0.03261104226112366,
+                "step": 1200
+              }
+            ],
+            "width": 128
+          },
+          "selection_outcome": {
+            "action_cost_CE": 0.16856617984084332,
+            "mean_continuation_actions": 1.4873046875,
+            "raw_CE": 0.17119962547227763,
+            "success": 0.55859375
+          },
+          "width": 128
+        }
+      ],
+      "cpu_ns": 18930017109,
+      "development_admitted": false,
+      "seed": 29,
+      "selected_index": 0,
+      "selected_width": 32,
+      "teacher": {
+        "action_cost_CE": 0.1821378095579158,
+        "mean_continuation_actions": 1.125,
+        "raw_CE": 0.18425014110247062,
+        "success": 0.55419921875
+      },
+      "wall_ns": 18938844316
+    },
+    {
+      "candidates": [
+        {
+          "checkpoint": "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-43-width-32.pt",
+          "checkpoint_sha256": "cbe1e4517afb95354cefcc870deab082607f4937ca82abc20da426abd35bdd61",
+          "diagnostics": {
+            "feasible_H1_action_difference_MSE": 0.30820730328559875,
+            "nonstop_H1_actual_moment_difference": -0.037202976644039154,
+            "nonstop_H1_bins": [
+              {
+                "actual": -0.08511614799499512,
+                "n": 544,
+                "prediction": -0.29255008697509766,
+                "range": [
+                  -10.0,
+                  -0.1
+                ]
+              },
+              {
+                "actual": -0.010986306704580784,
+                "n": 425,
+                "prediction": -0.05723927542567253,
+                "range": [
+                  -0.1,
+                  -0.025
+                ]
+              },
+              {
+                "actual": 0.032856572419404984,
+                "n": 213,
+                "prediction": -0.012248164974153042,
+                "range": [
+                  -0.025,
+                  0.0
+                ]
+              },
+              {
+                "actual": null,
+                "n": 0,
+                "prediction": null,
+                "range": [
+                  0.0,
+                  10.0
+                ]
+              }
+            ],
+            "nonstop_H1_count": 1182,
+            "nonstop_H1_prediction_bias": -0.12022748589515686,
+            "old_teacher_difference_MSE_on_same_public_nodes": 0.2953723967075348,
+            "scope": "Historical selection diagnostics only; actual paired samples, not conditional-optimal labels or a uniform calibration certificate",
+            "selected_H1_count": 1461,
+            "selected_H1_prediction_bias": -0.0972682312130928,
+            "selected_H2_prediction_bias": -0.29048919677734375,
+            "zero_difference_MSE": 0.2926343083381653
+          },
+          "eligible_for_development_admission": true,
+          "fit": {
+            "H1_OOF_all_action_difference_MSE": 0.24088314175605774,
+            "H1_OOF_zero_baseline_MSE": 0.2303813397884369,
+            "audit_files_sha256": {
+              "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-43-width-32-audit/backups.pt": "4692dd0ee3344b19edb0512191002dd5d974140419bfbd34af8bd4d558936ca0",
+              "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-43-width-32-audit/fold-0.pt": "2565fc95a92a4a78e0b1f3eaf8fc6d359c6e75e3a53c9d48ce904d86ebad45ba",
+              "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-43-width-32-audit/fold-1.pt": "a93fa79bd31dc5ecec819ada1e1f5ea2f33e93de08e52e80c954c6d586da28cc"
+            },
+            "backup": "Other-source-fold H1 choice followed by actual held-source result, including first-action cost; paired against actual root stop",
+            "folds": [
+              {
+                "fit_source_pairs": 128,
+                "held_fold": 0,
+                "held_source_pairs": 128,
+                "trace": [
+                  {
+                    "MSE": 0.32832303643226624,
+                    "step": 1
+                  },
+                  {
+                    "MSE": 0.184610515832901,
+                    "step": 200
+                  },
+                  {
+                    "MSE": 0.19160497188568115,
+                    "step": 400
+                  },
+                  {
+                    "MSE": 0.2209363579750061,
+                    "step": 600
+                  }
+                ]
+              },
+              {
+                "fit_source_pairs": 128,
+                "held_fold": 1,
+                "held_source_pairs": 128,
+                "trace": [
+                  {
+                    "MSE": 0.3146442174911499,
+                    "step": 1
+                  },
+                  {
+                    "MSE": 0.26425379514694214,
+                    "step": 200
+                  },
+                  {
+                    "MSE": 0.1985742598772049,
+                    "step": 400
+                  },
+                  {
+                    "MSE": 0.20622843503952026,
+                    "step": 600
+                  }
+                ]
+              }
+            ],
+            "one_trace": [
+              {
+                "MSE": 0.26274189352989197,
+                "step": 1
+              },
+              {
+                "MSE": 0.2638028562068939,
+                "step": 200
+              },
+              {
+                "MSE": 0.2435457706451416,
+                "step": 400
+              },
+              {
+                "MSE": 0.2776114344596863,
+                "step": 600
+              },
+              {
+                "MSE": 0.20997647941112518,
+                "step": 800
+              },
+              {
+                "MSE": 0.24915024638175964,
+                "step": 1000
+              },
+              {
+                "MSE": 0.18000689148902893,
+                "step": 1200
+              }
+            ],
+            "scope": "One approximate source-cross-fitted backup. Final refit H1 differs from fold heads; no Bellman/global/conditional error certificate.",
+            "two_trace": [
+              {
+                "MSE": 0.5184029340744019,
+                "step": 1
+              },
+              {
+                "MSE": 0.30711010098457336,
+                "step": 200
+              },
+              {
+                "MSE": 0.2890813946723938,
+                "step": 400
+              },
+              {
+                "MSE": 0.24541565775871277,
+                "step": 600
+              },
+              {
+                "MSE": 0.18047240376472473,
+                "step": 800
+              },
+              {
+                "MSE": 0.21138903498649597,
+                "step": 1000
+              },
+              {
+                "MSE": 0.1364123821258545,
+                "step": 1200
+              }
+            ],
+            "width": 32
+          },
+          "selection_outcome": {
+            "action_cost_CE": 0.18525710140761653,
+            "mean_continuation_actions": 1.29052734375,
+            "raw_CE": 0.18810766776180854,
+            "success": 0.5595703125
+          },
+          "width": 32
+        },
+        {
+          "checkpoint": "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-43-width-128.pt",
+          "checkpoint_sha256": "fd03f8c086000f3aa7c142d6a246af13b9680be1632db1857e131cb50a01931c",
+          "diagnostics": {
+            "feasible_H1_action_difference_MSE": 0.3118913471698761,
+            "nonstop_H1_actual_moment_difference": -0.010737325064837933,
+            "nonstop_H1_bins": [
+              {
+                "actual": -0.033512528985738754,
+                "n": 736,
+                "prediction": -0.3092518746852875,
+                "range": [
+                  -10.0,
+                  -0.1
+                ]
+              },
+              {
+                "actual": 0.02467694692313671,
+                "n": 433,
+                "prediction": -0.06244311109185219,
+                "range": [
+                  -0.1,
+                  -0.025
+                ]
+              },
+              {
+                "actual": -0.002933132229372859,
+                "n": 183,
+                "prediction": -0.013274732045829296,
+                "range": [
+                  -0.025,
+                  0.0
+                ]
+              },
+              {
+                "actual": null,
+                "n": 0,
+                "prediction": null,
+                "range": [
+                  0.0,
+                  10.0
+                ]
+              }
+            ],
+            "nonstop_H1_count": 1352,
+            "nonstop_H1_prediction_bias": -0.17940804362297058,
+            "old_teacher_difference_MSE_on_same_public_nodes": 0.2953723967075348,
+            "scope": "Historical selection diagnostics only; actual paired samples, not conditional-optimal labels or a uniform calibration certificate",
+            "selected_H1_count": 1732,
+            "selected_H1_prediction_bias": -0.14004601538181305,
+            "selected_H2_prediction_bias": -0.48863062262535095,
+            "zero_difference_MSE": 0.2926343083381653
+          },
+          "eligible_for_development_admission": false,
+          "fit": {
+            "H1_OOF_all_action_difference_MSE": 0.25001123547554016,
+            "H1_OOF_zero_baseline_MSE": 0.2303813397884369,
+            "audit_files_sha256": {
+              "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-43-width-128-audit/backups.pt": "d02dc26e48a482edad769c3906ba7e58bdc6fc66f00cb4e87d3aaa7a077a21db",
+              "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-43-width-128-audit/fold-0.pt": "e6e3611e1c5201ac713752f924be98107bafa508c9750af54b26b0449958e2ac",
+              "/workspace/scratch/87e43aa872f5/ndu-runs/action-value-development-001/seed-43-width-128-audit/fold-1.pt": "24c837a81caf60558dbbcdc5595d07052a5e96143e2e567ef4e6bf621a3e2b00"
+            },
+            "backup": "Other-source-fold H1 choice followed by actual held-source result, including first-action cost; paired against actual root stop",
+            "folds": [
+              {
+                "fit_source_pairs": 128,
+                "held_fold": 0,
+                "held_source_pairs": 128,
+                "trace": [
+                  {
+                    "MSE": 0.32246455550193787,
+                    "step": 1
+                  },
+                  {
+                    "MSE": 0.18978330492973328,
+                    "step": 200
+                  },
+                  {
+                    "MSE": 0.19153398275375366,
+                    "step": 400
+                  },
+                  {
+                    "MSE": 0.21670496463775635,
+                    "step": 600
+                  }
+                ]
+              },
+              {
+                "fit_source_pairs": 128,
+                "held_fold": 1,
+                "held_source_pairs": 128,
+                "trace": [
+                  {
+                    "MSE": 0.3075154721736908,
+                    "step": 1
+                  },
+                  {
+                    "MSE": 0.27020615339279175,
+                    "step": 200
+                  },
+                  {
+                    "MSE": 0.19922024011611938,
+                    "step": 400
+                  },
+                  {
+                    "MSE": 0.19556939601898193,
+                    "step": 600
+                  }
+                ]
+              }
+            ],
+            "one_trace": [
+              {
+                "MSE": 0.3054632544517517,
+                "step": 1
+              },
+              {
+                "MSE": 0.26127567887306213,
+                "step": 200
+              },
+              {
+                "MSE": 0.23700830340385437,
+                "step": 400
+              },
+              {
+                "MSE": 0.2694322466850281,
+                "step": 600
+              },
+              {
+                "MSE": 0.20821084082126617,
+                "step": 800
+              },
+              {
+                "MSE": 0.23814016580581665,
+                "step": 1000
+              },
+              {
+                "MSE": 0.15723876655101776,
+                "step": 1200
+              }
+            ],
+            "scope": "One approximate source-cross-fitted backup. Final refit H1 differs from fold heads; no Bellman/global/conditional error certificate.",
+            "two_trace": [
+              {
+                "MSE": 0.4980115294456482,
+                "step": 1
+              },
+              {
+                "MSE": 0.280573308467865,
+                "step": 200
+              },
+              {
+                "MSE": 0.2642144560813904,
+                "step": 400
+              },
+              {
+                "MSE": 0.18243065476417542,
+                "step": 600
+              },
+              {
+                "MSE": 0.09536506235599518,
+                "step": 800
+              },
+              {
+                "MSE": 0.09253175556659698,
+                "step": 1000
+              },
+              {
+                "MSE": 0.04632600396871567,
+                "step": 1200
+              }
+            ],
+            "width": 128
+          },
+          "selection_outcome": {
+            "action_cost_CE": 0.16292629268318004,
+            "mean_continuation_actions": 1.505859375,
+            "raw_CE": 0.16595795930961543,
+            "success": 0.5625
+          },
+          "width": 128
+        }
+      ],
+      "cpu_ns": 20336906114,
+      "development_admitted": true,
+      "seed": 43,
+      "selected_index": 0,
+      "selected_width": 32,
+      "teacher": {
+        "action_cost_CE": 0.1653758028003911,
+        "mean_continuation_actions": 1.08642578125,
+        "raw_CE": 0.1674869034746722,
+        "success": 0.55517578125
+      },
+      "wall_ns": 20342504918
+    }
+  ],
+  "source_sha256": {
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/action_value/__init__.py": "56b5564b4f855bdfca4461b7d06b0726741e19f9e5e4c44c2e6e2416a14e8407",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/action_value/analyze.py": "5647a15def80f980f8ddcb5c547febe542983d187e06438a92eba480c420ad29",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/action_value/audit_fit.py": "3f43f600ce0b0427ecc3a8e72eb3dae2dec77301da8fa0ad895e5763553f3d38",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/action_value/develop.py": "3dcbe3f3af9ce10f3c19df80be179b0410a060f4010faf1e637f6bed69099230",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/action_value/evaluate.py": "353d6a306a35ac09dd871c8c9b22f73756d3fee6b16d7526596cfef852d0d2f6",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/action_value/model.py": "9c578bdb9721da06b50de50bc8a06262a77d3cd17ea49593cfc01c27d71cce03",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/action_value/process.py": "a965808af9ae3c3a6a7b5680b903374bffcabd265d31b8fd12cc221fb690e280",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/action_value/register.py": "74da8d3d3802eb0cc726462c3e4e6c7acb99b5f3c786e274499daa2167b2b351",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/action_value/smoke.py": "ecfa7f103d704d5c509e6a5432c262c1519279378c3f849dcfcc279bb7b9b702"
+  },
+  "status": "completed",
+  "wall_ns": 62218947614
+}

@@ -1,0 +1,73 @@
+{
+  "asset_pins": {
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/media/evidence/refine-001/video.pt": "ed36d81190d2dfec3d907b3ef0be08b4924dbf2aade0866e02cf75d8f18a2dbf",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/media/evidence/training-001/video_input.pt": "54fdfee08aab3ee2da263b9eb8a78c0ba4b8e6553caf432d51cf7d3ee405fc82",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc2-runs/base-recovery-001/reward-observer.pt": "8cfca1b0cd0a69bcfcc6a9d34d0a672c07c28f3342823ef8a3f6763e9430a003",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc2-runs/source-recovery-001/source-manifest.json": "60c24d44e12eb3defb3b1b8146d91879b84918b057e0524117137d7e4f793058",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc2-runs/training-001/seed-17/output_ndu/model.pt": "2f766c9356333d86f7c78c1cb18e8c67e776019c1071ff7af4b112f294518549",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc2-runs/training-001/seed-29/output_ndu/model.pt": "c990bd7c3121954b2f847496690af4bee3cea65cef840a9a42f78e44940ea140",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc2-runs/training-001/seed-43/output_ndu/model.pt": "2833b3501f311aa026e5f673e24eb7d48a37dc2627859c8e373b68da01dbdcd3",
+    "/workspace/scratch/87e43aa872f5/ndu-next-runs/media/audio-ingress-001/audio-input.pt": "174dddad0db36ac09cc768a1a488401aa073499d407bfa97b1e5da7a3ae888e4",
+    "/workspace/scratch/87e43aa872f5/ndu-next-runs/media/waveform-student-001/training-targets.pt": "b34c565d74081bb5d11794aad5dbdab4642233049654d005bd37eb5202e17de8",
+    "/workspace/scratch/87e43aa872f5/ndu-next-runs/media/waveform-student-001/waveform-student.pt": "5dc512d4b8d1c9a91a4660cd7383fd2db136df72bc84054d98c4d99f6afc9756",
+    "experiments/multimodal_output_portfolio/next_20261025/media/AUDIO_SOURCE_ALLOCATION.json": "35862507212b97bc02bc1506070a31863f830e3c9e7747e5f3187ab2e6702fe5"
+  },
+  "auditors_used_for_gradient": false,
+  "batch": 4,
+  "constant_utility_center": 0.75,
+  "formal_sources_opened": false,
+  "gamma": 2.0,
+  "gradient": "Pathwise continuous outputs plus exact categorical score-function term; fixed constant baseline",
+  "input_manifest_sha256": "60c24d44e12eb3defb3b1b8146d91879b84918b057e0524117137d7e4f793058",
+  "input_routes": [
+    "image",
+    "text",
+    "audio",
+    "video"
+  ],
+  "learning_rates": {
+    "audio_input": 5e-05,
+    "core": 0.0001,
+    "motion": 3e-05,
+    "speech": 3e-06,
+    "video_input": 5e-05
+  },
+  "limitation": "Continuous pre-codec training proxies, constructed digit tasks and pretrained finite waveform teacher; no foundation-model or globally-optimal claim",
+  "paired_initialization_and_exogenous_randomness": true,
+  "profiles": [
+    "mean",
+    "entropic"
+  ],
+  "registered_unix_ns": 1792977993118232585,
+  "reward": "Equal image probability, sampled strict text correctness, actual waveform fidelity, emitted video semantics/motion",
+  "schema": "hepta.next.joint-training.v1",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "source_pins": {
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/coherent.py": "3ceb4e2c404b18c6d96b63b1d74a0cb126c9d8d07ce3f0cd998fee296cad69e8",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/network.py": "4c19c137845e754bdd5efa383a42fe71400d8e6b6132fbf48a1703ab6166bbed",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/sources.py": "75df721bb891cb39b5200def8581ea79b1134a96c718e67c086c673bac05460e",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/train.py": "83f34b85452d0f4f3a49e4267ce7c94075c74be3dcf70d8bbe2dc5597e85d43a",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/joint/model.py": "fc06290a2a1fa5573db4ad206bd9753c36e260b44509ca13ec1a66d31b714ff7",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/joint/train.py": "cd5458791259d4474bffb6b40ad7af1b531ccfece0a2644923e29a62eb921113",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/audio_sources.py": "82b4aba5b547fa6c0c56c9e75a2f0b8d5020052169aed028457e7007ba4bfb10",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/waveform.py": "51f464774531efbc3a99a193965271068e60383f8bbe3be28e06946539476bf4",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v6/data.py": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v6/neural.py": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v6/observer.py": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7/data.py": "41892eb63420a6288121b39f577597067c3e168d3c7467c868230c64ed092cb9",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7/evaluation.py": "9f229b3b1092cfc8f89b8376375a8bb5d7efe9c7bb91979026ee5f32182c79da",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7/model.py": "156aa5c73c7e9192ebefecafdc568cbbae3e906e7d1bbb2bf50f7535bd2d8fca",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7/snapshot.py": "01655335b9807a09005bde0ae11d9fbe1a0665bd0113d9f28e38310f1f4bb474",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7/sources.py": "b6b27b86ba71a4bafd9c2abe4af033e7cfe73079296bdd2ed1addad045881e9f",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7_media/corpus.py": "92eb9bc2306c811e94f4d43c8f4f014871252d8dbee9e4f18cbe4e2d09893913",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7_media/models.py": "69c1a9c809178c50de65eab3286c9e0b808c89d478e8b425ea429d03dc01d46c"
+  },
+  "steps": 320,
+  "training_audio_role": "fit",
+  "training_image_role": "train",
+  "waveform_fidelity_anchor_weight": 0.005
+}

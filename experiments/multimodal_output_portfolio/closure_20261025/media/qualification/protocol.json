@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.closure.independent-waveform-observer-qualification.v1",
+  "seed": 17300,
+  "real_speech_role": "validation",
+  "real_recordings": 300,
+  "real_pairing": "Seeded permutation of all 300 original validation recordings, consecutive pairs; each one-second recording padded to the two-second event clock",
+  "conditional_pairs": "All ten digit values as first event; second event (digit+1) mod 10",
+  "primary": "Frozen target-free Whisper word-event predictions",
+  "secondary": "Unrestricted target-free Vosk, retain literal words and errors, no homophone relabeling",
+  "negative_controls": ["silence", "swapped_events", "wrong_digit", "missing_second_event", "excised_first_digit_word"],
+  "negative_baseline": "Successful generated [0,1] bundle; if it fails, all negative-control claims are unqualified",
+  "word_excision": "Remove the first actual Whisper-observed digit-word interval and 80ms margin from real PCM; keep carrier and complete sample clock",
+  "real_audio_min": 0.85,
+  "generated_profile_min": 0.85,
+  "qualification_scopes": "Report general real-speech ASR eligibility and bounded canonical-output-profile eligibility separately; neither substitutes for the other",
+  "heldout_test_opened": false,
+  "training_updates": 0
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.closure.canonical-voice-prior-repair.v1",
+  "seed": 17293,
+  "threads": 1,
+  "trigger": "Qualified independent mel observer: real/GriffinLim/aligned training-source controls 30/30; VAE prior 2/10; 60-record posterior 71.7% versus zero-prior 20%, posterior std mean 0.0271",
+  "reward_role": "reward",
+  "generator_role": "generator",
+  "canonical_voice": "jackson",
+  "generator_recordings": 300,
+  "voice_alignment": "Label-free energy 1% voice interval in actual log spectrum; interpolate time to 81 frames, add ten silent frames at each end",
+  "steps": {"reward": 2000, "acoustic": 1800},
+  "batch_size": 20,
+  "learning_rate": 0.0007,
+  "reward_model": "New MelSpeech trained only on original reward-role recordings, no audit/validation/test gradients",
+  "acoustic_initialization": "Fresh AcousticDecoder; retain all failed previous checkpoint files",
+  "loss": "0.5 posterior spectral L1 + 0.5 explicit zero-prior spectral L1 + 0.005 KL + 0.05 frozen reward CE on actual differentiable four-iteration GriffinLim reconstruction of zero-prior output",
+  "inference": "Zero latent, current predicted condition, 24-iteration GriffinLim; never retrieve a source recording",
+  "scope": "Prospective canonical-voice training repair, not proof of unseen-speaker generation or four-modal end-to-end NDU optimization",
+  "gates": "Unchanged primary protocol; independent MelSpeech audit remains frozen and absent from this trainer",
+  "test_opened": false
+}

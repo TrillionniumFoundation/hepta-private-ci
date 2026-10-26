@@ -1,0 +1,28 @@
+{
+  "child_cpu_ns": 536888023000,
+  "child_pid": 16,
+  "command": [
+    "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+    "-B",
+    "-u",
+    "-m",
+    "experiments.multimodal_output_portfolio.closure_20261025.factorial.evaluate",
+    "run",
+    "--assets",
+    "/workspace/scratch/2b3c256bef7d",
+    "--runs",
+    "/workspace/scratch/87e43aa872f5/ndu-runs/factorial",
+    "--allocation",
+    "experiments/multimodal_output_portfolio/closure_20261025/SOURCE_ALLOCATION.json",
+    "--protocol",
+    "experiments/multimodal_output_portfolio/closure_20261025/factorial/PROTOCOL.json",
+    "--output",
+    "/workspace/scratch/87e43aa872f5/ndu-runs/factorial/final-001"
+  ],
+  "exit_code": 0,
+  "log_sha256": "1598befdef33819359f0a710ebb47f02d78f7a1f4b405a9be4f596b45b8be370",
+  "peak_rss_bytes_linux": 557088768,
+  "registration_sha256": "5e2ec1190fc1317b523fb15f229f39566466e5a950104d0d365a0e10bca2fda9",
+  "waited_pid": 16,
+  "wall_ns": 536750205343
+}

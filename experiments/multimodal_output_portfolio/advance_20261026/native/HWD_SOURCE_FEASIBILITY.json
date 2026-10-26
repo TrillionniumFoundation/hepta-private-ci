@@ -1,0 +1,280 @@
+{
+  "data_compatibility": {
+    "combined_array_size_bytes": 85662896,
+    "full_payload_integrity_verified": false,
+    "image_dtype": "little-endian float64",
+    "image_fortran_order": false,
+    "image_shape": [
+      13580,
+      28,
+      28
+    ],
+    "metadata_dtype": "little-endian int32",
+    "metadata_fortran_order": false,
+    "metadata_shape": [
+      13580,
+      9
+    ],
+    "paper_preprocessing": "Scanned grayscale; high-intensity pixels set to white. Images are not centered, size normalized, or rotated; lower resolution uses OpenCV.",
+    "pixel_values_accessed": false,
+    "prospective_requirement": "A source adapter and polarity/range/preprocessing rule must be frozen from documentation and old development before new-source model access. Do not select transforms by fresh-source accuracy. This is a domain shift from QMNIST."
+  },
+  "execution_scope": {
+    "documentation_pdfs_downloaded": 2,
+    "image_arrays_downloaded": 0,
+    "login_or_credentials_used": false,
+    "messages_to_authors_sent": 0,
+    "models_run": 0,
+    "network": "Read-only unauthenticated public HTTPS; initial sandbox-denied request retained, normal reviewed public GETs then succeeded.",
+    "new_source_allocations": 0,
+    "numpy_headers_read": 2,
+    "pixel_bytes_read": 0,
+    "writer_array_complete_downloaded": false
+  },
+  "files": [
+    {
+      "actual_bytes": 185040,
+      "http_status": 200,
+      "id": "1keeFlpavCr9VEl0KyvvFvwJO1oU8V8FW",
+      "mime_type": "application/pdf",
+      "name": "Datasheet.pdf",
+      "payload_downloaded": true,
+      "payload_sha256": "46a9ad1a4dd5f402ad395a5c5fdeb1879cab2163e544077247cfd84922560839",
+      "public_download_entry": "https://drive.usercontent.google.com/download?id=1keeFlpavCr9VEl0KyvvFvwJO1oU8V8FW&export=download",
+      "public_view_url": "https://drive.google.com/file/d/1keeFlpavCr9VEl0KyvvFvwJO1oU8V8FW/view",
+      "reported_size_bytes": 185040
+    },
+    {
+      "download_confirmation": "The public Drive form was followed only for a Range bytes=0-127 header request; no authentication or full-array download.",
+      "full_payload_sha256": null,
+      "header_payload_boundary": 128,
+      "header_read_bytes": 128,
+      "header_sha256": "8a5f098e1d277b026c5a1c50805ea6163f26d04dc7a7dc1711fb089d745cbc10",
+      "id": "1qBkt85sT-R0HMla4s8t6AtDSYDjaeZ6i",
+      "mime_type": "application/octet-stream",
+      "name": "Images(28x28).npy",
+      "npy_header": {
+        "descr": "<f8",
+        "fortran_order": false,
+        "shape": [
+          13580,
+          28,
+          28
+        ]
+      },
+      "payload_downloaded": false,
+      "pixel_bytes_read": 0,
+      "public_download_entry": "https://drive.usercontent.google.com/download?id=1qBkt85sT-R0HMla4s8t6AtDSYDjaeZ6i&export=download",
+      "public_view_url": "https://drive.google.com/file/d/1qBkt85sT-R0HMla4s8t6AtDSYDjaeZ6i/view",
+      "reported_size_bytes": 85173888,
+      "verified_http_range": "bytes 0-127/85173888"
+    },
+    {
+      "id": "1CInd1YOC0lsEq4_q089SVb7PkhxtrwyE",
+      "mime_type": "application/octet-stream",
+      "name": "Images(500x500).npy",
+      "payload_downloaded": false,
+      "public_download_entry": "https://drive.usercontent.google.com/download?id=1CInd1YOC0lsEq4_q089SVb7PkhxtrwyE&export=download",
+      "public_view_url": "https://drive.google.com/file/d/1CInd1YOC0lsEq4_q089SVb7PkhxtrwyE/view",
+      "reported_size_bytes": 3395000128
+    },
+    {
+      "actual_bytes": 18998,
+      "http_status": 200,
+      "id": "102-k2jiK5y6CwS-Q-KDPLIb1t4B8nCTg",
+      "mime_type": "application/pdf",
+      "name": "ReadMe.pdf",
+      "payload_downloaded": true,
+      "payload_sha256": "06fcf4ef8af1fe16f9dc511a96a16e74726dc07042381813f46a3b5de596a3c1",
+      "public_download_entry": "https://drive.usercontent.google.com/download?id=102-k2jiK5y6CwS-Q-KDPLIb1t4B8nCTg&export=download",
+      "public_view_url": "https://drive.google.com/file/d/102-k2jiK5y6CwS-Q-KDPLIb1t4B8nCTg/view",
+      "reported_size_bytes": 18998
+    },
+    {
+      "full_payload_sha256": null,
+      "header_payload_boundary": 128,
+      "header_read_bytes": 256,
+      "header_sha256": "0402fdc432469d29cf82a119cc7cc9ded179fc167b32befc1889542f1e5edc04",
+      "id": "1xAy5eAdM0mRTjlrmo1PIMqTp4DUCJpY0",
+      "mime_type": "application/octet-stream",
+      "name": "WriterInfo.npy",
+      "npy_header": {
+        "descr": "<i4",
+        "fortran_order": false,
+        "shape": [
+          13580,
+          9
+        ]
+      },
+      "payload_downloaded": false,
+      "public_download_entry": "https://drive.usercontent.google.com/download?id=1xAy5eAdM0mRTjlrmo1PIMqTp4DUCJpY0&export=download",
+      "public_view_url": "https://drive.google.com/file/d/1xAy5eAdM0mRTjlrmo1PIMqTp4DUCJpY0/view",
+      "reported_size_bytes": 489008,
+      "source_metadata_values_not_aggregated": true
+    }
+  ],
+  "folder_receipt": {
+    "bytes": 355133,
+    "http_status": 200,
+    "path": "/tmp/hepta-ndu-advance-native/hwd-feasibility-001/PUBLIC_FOLDER.html",
+    "sha256": "3761ee972687fced53a827293eba2355d6922b4b221fef54296f5f6f24ea943c",
+    "unauthenticated": true
+  },
+  "future_fresh_split_power": {
+    "constraint": "Any calibration, development, qualification, and final confirmation split consumes the same 97 source-local groups; a split cannot simultaneously give every role 97 fresh groups.",
+    "iid_assumption_is_not_established": true,
+    "iid_zero_error_trials_required_for_upper_at_most_0_004999": 598,
+    "illustrative_zero_error_95_upper_if_one_iid_bernoulli_per_writer_and_all_97_evaluation": 0.03041180403693111,
+    "independence_unit": "writer; 14 digit repetitions or multiple views do not create additional independent writer groups",
+    "interpretation": "Even all 97 writers cannot alone establish the registered 0.004999 false-accept bound under that illustrative one-trial-per-writer IID model. HWD+ does not replace separately designed missing-request/OOD evidence. Grouped efficacy and calibration precision need prospective power assessment after the intended effect and split are specified; this review supplies no power claim.",
+    "maximum_source_local_writer_groups_before_splitting": 97,
+    "split_status": "No roles, IDs, seeds, or counts assigned; candidate remains untouched by any model."
+  },
+  "license": {
+    "article_license_is_not_dataset_license": true,
+    "author_use_statement": "Publicly distributed for described research uses; author requests citation of the corresponding paper.",
+    "copyright_holder": "C\u00e9dric Beaulac",
+    "formal_dataset_license": "None according to author Datasheet section 6 Distribution",
+    "not_established": [
+      "CC/BSD/MIT or another standardized grant",
+      "Unrestricted redistribution or commercial-use rights"
+    ]
+  },
+  "local_evidence_receipts": [
+    {
+      "bytes": 185040,
+      "path": "/tmp/hepta-ndu-advance-native/hwd-feasibility-001/Datasheet.pdf",
+      "sha256": "46a9ad1a4dd5f402ad395a5c5fdeb1879cab2163e544077247cfd84922560839"
+    },
+    {
+      "bytes": 657,
+      "path": "/tmp/hepta-ndu-advance-native/hwd-feasibility-001/Datasheet.pdf.fetch.json",
+      "sha256": "34f8dcc427cf18131721d23c2a32f5d81709513fdcdf2ce9f32271bacf193dd9"
+    },
+    {
+      "bytes": 16205,
+      "path": "/tmp/hepta-ndu-advance-native/hwd-feasibility-001/Datasheet.txt",
+      "sha256": "bd653e912ec4ad483a1d8e1917a8268f7a1a8a357e33995cfe3e95664201a796"
+    },
+    {
+      "bytes": 186,
+      "path": "/tmp/hepta-ndu-advance-native/hwd-feasibility-001/FETCH_FAILURE.json",
+      "sha256": "d09dfc400ea41476858d2872facfe44d9945351160ee6a6b0e9bff865747c878"
+    },
+    {
+      "bytes": 1233,
+      "path": "/tmp/hepta-ndu-advance-native/hwd-feasibility-001/FILES.json",
+      "sha256": "eda0ce7ab2db0561b77342dc86d0ebb4620be1f0f32ba9e1a3dc434abfb46f7f"
+    },
+    {
+      "bytes": 128,
+      "path": "/tmp/hepta-ndu-advance-native/hwd-feasibility-001/Images28.CONFIRMED_HEADER.bin",
+      "sha256": "8a5f098e1d277b026c5a1c50805ea6163f26d04dc7a7dc1711fb089d745cbc10"
+    },
+    {
+      "bytes": 821,
+      "path": "/tmp/hepta-ndu-advance-native/hwd-feasibility-001/Images28.CONFIRMED_HEADER.fetch.json",
+      "sha256": "7283ffaec7b781c6d7cb54a99e3261000efd98744924285eb71b0e52ea654378"
+    },
+    {
+      "bytes": 2459,
+      "path": "/tmp/hepta-ndu-advance-native/hwd-feasibility-001/Images28.DOWNLOAD_GATE.html",
+      "sha256": "f18a30e003e022ed1bf237810acfc6c07901d3c8697eacd57df298e1206621dc"
+    },
+    {
+      "bytes": 256,
+      "path": "/tmp/hepta-ndu-advance-native/hwd-feasibility-001/Images28.header",
+      "sha256": "68772c25eb503dd0e1e5063aa46e777298fea12523738bd799d313a293bb0127"
+    },
+    {
+      "bytes": 529,
+      "path": "/tmp/hepta-ndu-advance-native/hwd-feasibility-001/Images28.header.fetch.json",
+      "sha256": "1982be221ddc52664d9c3ad4c9c18f1c25b58d460352d4d57581d903e1a15a13"
+    },
+    {
+      "bytes": 355133,
+      "path": "/tmp/hepta-ndu-advance-native/hwd-feasibility-001/PUBLIC_FOLDER.html",
+      "sha256": "3761ee972687fced53a827293eba2355d6922b4b221fef54296f5f6f24ea943c"
+    },
+    {
+      "bytes": 18998,
+      "path": "/tmp/hepta-ndu-advance-native/hwd-feasibility-001/ReadMe.pdf",
+      "sha256": "06fcf4ef8af1fe16f9dc511a96a16e74726dc07042381813f46a3b5de596a3c1"
+    },
+    {
+      "bytes": 653,
+      "path": "/tmp/hepta-ndu-advance-native/hwd-feasibility-001/ReadMe.pdf.fetch.json",
+      "sha256": "e83b64bb9017128a4a5c78941a413a0ae79adfc1db34ebad798053a798993a83"
+    },
+    {
+      "bytes": 2337,
+      "path": "/tmp/hepta-ndu-advance-native/hwd-feasibility-001/ReadMe.txt",
+      "sha256": "a9ec5f9d1de1d92f4878cd25d3a0ecf63c2b3450fcd3d8be63b06e8fbd4e3f38"
+    },
+    {
+      "bytes": 256,
+      "path": "/tmp/hepta-ndu-advance-native/hwd-feasibility-001/WriterInfo.header",
+      "sha256": "0402fdc432469d29cf82a119cc7cc9ded179fc167b32befc1889542f1e5edc04"
+    },
+    {
+      "bytes": 695,
+      "path": "/tmp/hepta-ndu-advance-native/hwd-feasibility-001/WriterInfo.header.fetch.json",
+      "sha256": "108ab4b8bade07db85d39567dece1519ccf718389795be35f9acdea0ca5e6d97"
+    }
+  ],
+  "next_stage_requirements_if_parent_registers_new_study": [
+    "Fix rights/use scope and attribution; do not upload the raw arrays as if openly licensed.",
+    "Freeze exact full-array hashes, validate shape/row correspondence and writer/digit counts without model scoring.",
+    "Register source-local writer-disjoint roles, all preprocessing, repeated-clip alias rules, estimands, tests, and power limits before fresh predictions.",
+    "Keep the current frozen model, all qualification failures, and 85-writer confirmation unchanged."
+  ],
+  "official_sources": [
+    {
+      "role": "author_paper",
+      "url": "https://arxiv.org/html/2011.07946v3"
+    },
+    {
+      "role": "journal_record",
+      "url": "https://doi.org/10.1007/s42979-022-01494-2"
+    },
+    {
+      "role": "author_publications",
+      "url": "https://cedricbeaulac.github.io/publications/"
+    },
+    {
+      "role": "author_linked_public_folder",
+      "url": "https://drive.google.com/drive/folders/1f2o1kjXLvcxRgtmMMuDkA2PQ5Zato4Or?usp=sharing"
+    }
+  ],
+  "review_date_utc": "2026-10-26",
+  "schema": "hepta.advance.source-feasibility.hwd.v1",
+  "scope": "Prospective-source metadata feasibility only. No current registration, model, calibration, candidate, qualification, allocation, or confirmation change.",
+  "status": "Author-linked public download technically available; credible source-local writer grouping; no formal dataset license; prospective use not allocated or evaluated.",
+  "writer_provenance": {
+    "collection": "New volunteer handwriting collected by the first author, standardized paper and pens, anonymous at collection, physical pages associated with writer ID before image extraction.",
+    "grouping_support": "The author datasheet explicitly recommends writer-axis splits for most tasks; these IDs are designed to link actual writer replications, unlike unreliable user IDs in an unrelated crowdsourced corpus.",
+    "labels_schema_from_author_readme": [
+      "Digit",
+      "ID",
+      "Age",
+      "Gender",
+      "Height(cm)",
+      "Language",
+      "Hand",
+      "Education level",
+      "Writing Medium"
+    ],
+    "limits": [
+      "No full WriterInfo values have been aggregated; the 97 unique values and 140 rows per writer are author-reported, not independently recounted in this review.",
+      "Authors describe a nonrandom, nonrepresentative volunteer sample.",
+      "Anonymous source-local IDs cannot prove that no natural person participated in another anonymous dataset; no re-identification was attempted.",
+      "Separate collection provenance and source-local IDs do not by themselves establish statistical independence or population representativeness."
+    ],
+    "metadata_minimization": "Only Digit and ID would be needed for prospective construction and grouped offline evaluation. Other personal attributes are unnecessary and should not enter the model or matching rule.",
+    "paper_and_datasheet_reported_writers": 97,
+    "readme_count_discrepancy": "ReadMe says 13,350 rows, while actual NPY header is 13,580 x 9, payload length is exactly 128+13580*9*4, and paper/datasheet report 13,580. Retain this documentary discrepancy.",
+    "reported_digits": 10,
+    "reported_images": 13580,
+    "reported_repetitions_per_digit_per_writer": 14
+  }
+}

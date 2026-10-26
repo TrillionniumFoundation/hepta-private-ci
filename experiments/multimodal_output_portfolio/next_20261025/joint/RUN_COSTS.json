@@ -1,0 +1,46 @@
+{
+  "actual_event_asr_calls": 60,
+  "actual_event_cache_hits": 1476,
+  "fixed_arm_order": true,
+  "host_scope": "Observed shared research host; no deployment SLA or dedicated-machine latency claim",
+  "phases": {
+    "confirmation_internal": {
+      "codec_child_cpu_seconds": 304.017048,
+      "python_cpu_seconds": 352.16215566,
+      "record_sha256": "047d3454c74c58830aed530241561b5f9ba52c8cca83baf2a0d5dc3ad32f33a3",
+      "scope": "Internal execution, overlaps whole-child cost; do not add to whole-child totals",
+      "wall_seconds": 569.666583458
+    },
+    "confirmation_whole_child": {
+      "cpu_seconds": 661.772195,
+      "peak_rss_bytes": 1405755392,
+      "record_sha256": "cfa4637f701da7d243e8d9296013a8b2f5a351f01d86d9ffa0e6d94446cfacad",
+      "scope": "Whole Python child including imports and waited codec children; RSS is peak, not summed process RSS",
+      "wall_seconds": 574.25379513
+    },
+    "independent_audit": {
+      "cpu_seconds": null,
+      "internal_seconds": 5.269652304,
+      "peak_rss_bytes": null,
+      "record_sha256": "f44ba74f144e1a928b6502b78d92de28d7b80ac0b8443ed5f267f3ef763c82e2",
+      "scope": "Separate read-only audit; exec-tool wall and internal audit clocks; no CPU/RSS measurement claimed",
+      "wall_seconds": 5.367945893
+    },
+    "primary_analysis_whole_child": {
+      "cpu_seconds": 3.519267,
+      "peak_rss_bytes": 37298176,
+      "record_sha256": "7c33d2d152292d7f284216cca1a1c2f31369000d130e9a5743c49397f39300c0",
+      "scope": "One whole analysis subprocess; no model or ASR rerun",
+      "wall_seconds": 4.231607265
+    },
+    "training_record": {
+      "cpu_seconds": 112.767941624,
+      "peak_rss_bytes": 590389248,
+      "record_sha256": "015708c6573519220a6305a40c44ac417d73a7943b78da784e93fd2671b713d7",
+      "scope": "Recorded training main, including source preparation and six arms; imports before main excluded",
+      "wall_seconds": 113.656009169
+    }
+  },
+  "schema": "hepta.next.joint-separated-execution-costs.v1",
+  "speed_causal_claim": false
+}

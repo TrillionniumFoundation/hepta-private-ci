@@ -1,0 +1,209 @@
+{
+  "arms": {
+    "17/entropic": {
+      "checkpoint": "/tmp/hepta-ndu-next-joint/training-001/seed-17/entropic/model.pt",
+      "checkpoint_sha256": "4524eea128b63fd2ac267fa2389e3ae46c20d88aa8b3c9719c0ce118b6ef17a9",
+      "component_after": {
+        "audio_input": "5726bc3396447ecd64268f13737029d80ae932392e7ad4c807404df8b4d4e1a1",
+        "core": "b9118cc830ad1f5cfb95f15ec093f80187d99167a59506988694c00ad432c438",
+        "motion": "a84a6308518ececd9ea7af70ba71fd95e256d1a33b538a57df6ce289ddcccf76",
+        "speech": "e8ff8502612ba9af17a46f23200e11fd7928ae85a214ca8d44e7f90cb442702f",
+        "video_input": "40bb060ae192f94291580fce32884aecc76745cfd3348f681063a1820f2ef37c"
+      },
+      "component_before": {
+        "audio_input": "657eb28fd4514462f120366d01ee3a0446a2fecf5e12bd98ecba9ee8247572f7",
+        "core": "5dba7ba9d044f4a28e8965fdb5de8f40c757cea331bafce010fc002cad6bbb29",
+        "motion": "19a09ea6872c94ffbbdbeb1aa8bad06f0c274b9cdecf31653afe049c82a924f9",
+        "speech": "b8ba753358e1b5c208d91a93280c3e4f1a9500b0e177fceb340b659e4229e5ab",
+        "video_input": "fb5e6b8481596f652865ba81f37fed369567a328ce2bbb6238f76beb79ee993c"
+      },
+      "cpu_ns": 19611322455,
+      "final_sha256": "f5bfea91cf18d5ada956401457dc9a2dadec70136b1418ca12009284b544e962",
+      "gradient_abs_sum_max": {
+        "audio_input": 5952.667454838753,
+        "core": 3944.967571584275,
+        "motion": 3.405499253422022,
+        "speech": 8.548596858978271,
+        "video_input": 1447.5699878335
+      },
+      "initial_sha256": "ded11bac2bf97a8f100c6534504a1488a09d85410221a174a6574771138731ff",
+      "last_80_mean_utility": 0.9056884072721004,
+      "profile": "entropic",
+      "schedule_sha256": "d9668d7aab4695c9e609c6474e482a40f07af9b3b4c1b7542cf374fb187b3a32",
+      "seed": 17,
+      "wall_ns": 19615775963
+    },
+    "17/mean": {
+      "checkpoint": "/tmp/hepta-ndu-next-joint/training-001/seed-17/mean/model.pt",
+      "checkpoint_sha256": "2b88853941cd139cce0edb732ccc0206b5c6e8f004b47e0a22c72a851d4eecc4",
+      "component_after": {
+        "audio_input": "fb25b66a5f4ff4b189691de56b66c61ee46415e06396651daf2ee82d05c197a7",
+        "core": "bffb0901a24e2272e6c3176a634e277f24404818e71699a674046c9a28b31788",
+        "motion": "6a20004a0c16f168893ce802678c0a04cee6dad4ef651e52b732548e5b878e47",
+        "speech": "7172e1e729dced3447e18b50a8a13f33aef3c7823e98c9675949565dc4dc05be",
+        "video_input": "b3853e890491fcdbc179898927ca280fcfdf794a507f72f249a6aca12db95fcb"
+      },
+      "component_before": {
+        "audio_input": "657eb28fd4514462f120366d01ee3a0446a2fecf5e12bd98ecba9ee8247572f7",
+        "core": "5dba7ba9d044f4a28e8965fdb5de8f40c757cea331bafce010fc002cad6bbb29",
+        "motion": "19a09ea6872c94ffbbdbeb1aa8bad06f0c274b9cdecf31653afe049c82a924f9",
+        "speech": "b8ba753358e1b5c208d91a93280c3e4f1a9500b0e177fceb340b659e4229e5ab",
+        "video_input": "fb5e6b8481596f652865ba81f37fed369567a328ce2bbb6238f76beb79ee993c"
+      },
+      "cpu_ns": 17597426547,
+      "final_sha256": "de13dadabb5395a2642d679880e6e222936cebcb45908711d5c2aae6da661981",
+      "gradient_abs_sum_max": {
+        "audio_input": 3612.6606345772743,
+        "core": 2245.165176920593,
+        "motion": 1.6726038940250874,
+        "speech": 2.6001907140016556,
+        "video_input": 1120.569562792778
+      },
+      "initial_sha256": "ded11bac2bf97a8f100c6534504a1488a09d85410221a174a6574771138731ff",
+      "last_80_mean_utility": 0.9109634947031736,
+      "profile": "mean",
+      "schedule_sha256": "d9668d7aab4695c9e609c6474e482a40f07af9b3b4c1b7542cf374fb187b3a32",
+      "seed": 17,
+      "wall_ns": 17697391798
+    },
+    "29/entropic": {
+      "checkpoint": "/tmp/hepta-ndu-next-joint/training-001/seed-29/entropic/model.pt",
+      "checkpoint_sha256": "af77a7f65c7736b12ee2a338a16c89c5aec982ada0abf0053893cb88f3b559b7",
+      "component_after": {
+        "audio_input": "a103f5253a5ae686a2f70c62ff266f2c73a1fc6dbedc7d56c395385507233575",
+        "core": "64413e543fc317c5ef5588d07875b1bcfbced32a613bc621a4c4ed7006533bd5",
+        "motion": "19d3d177db1d0bb7de46b293f551dd6e0f5f75b3a687de6164d69871a7848d58",
+        "speech": "ef7732734fb441bba6f763725c982d47d8e8124653d150566e1d4e32343e4e78",
+        "video_input": "c72f2b164f3461af2252475dec7fb951ed40bae13f928c500a92195d528f896b"
+      },
+      "component_before": {
+        "audio_input": "657eb28fd4514462f120366d01ee3a0446a2fecf5e12bd98ecba9ee8247572f7",
+        "core": "6e3d139dd4fc499cd03a8a82d2cafa25884290d6dfab2b63122e3dc28d8a87b3",
+        "motion": "19a09ea6872c94ffbbdbeb1aa8bad06f0c274b9cdecf31653afe049c82a924f9",
+        "speech": "b8ba753358e1b5c208d91a93280c3e4f1a9500b0e177fceb340b659e4229e5ab",
+        "video_input": "fb5e6b8481596f652865ba81f37fed369567a328ce2bbb6238f76beb79ee993c"
+      },
+      "cpu_ns": 16895917844,
+      "final_sha256": "0807b96538e72358e13331fc38005c8a618108a711b42acfe562630208038251",
+      "gradient_abs_sum_max": {
+        "audio_input": 4714.148175418377,
+        "core": 3393.275953687262,
+        "motion": 3.0936881117522717,
+        "speech": 7.435999274253845,
+        "video_input": 8728.022782802582
+      },
+      "initial_sha256": "c5afec59e9e51aa582dea974533b4fbf1b8d11223add2b4362e437295e91696c",
+      "last_80_mean_utility": 0.897796307504177,
+      "profile": "entropic",
+      "schedule_sha256": "bf7b50b4d5f063a7ac84c6ef20bd3daa98ecc353e1c2c3383461120674a787a8",
+      "seed": 29,
+      "wall_ns": 16897903515
+    },
+    "29/mean": {
+      "checkpoint": "/tmp/hepta-ndu-next-joint/training-001/seed-29/mean/model.pt",
+      "checkpoint_sha256": "8769742b6e884ca90ccd5f9c73edb535de040c2ebdf66ea8ff2c82d29b7c394c",
+      "component_after": {
+        "audio_input": "772d57da816c52925dfa459fbaaa400422e75b07e5e8bd4529d4f34216fdf329",
+        "core": "c0f0729493542076cd661b9f1d64165405e53804997f221d3d6beca54c9be1e8",
+        "motion": "37badd4938f8cf10097999bddc9372881daa388a6b136d06e8316018eb445e71",
+        "speech": "846f824f86bf57824e834c7a5d7073b362f6b23b7602bfaf4d85c23632104fd0",
+        "video_input": "dbaebba892f2d3afbabde825f9f38cd96027438e30639154ff27080ff4eeb580"
+      },
+      "component_before": {
+        "audio_input": "657eb28fd4514462f120366d01ee3a0446a2fecf5e12bd98ecba9ee8247572f7",
+        "core": "6e3d139dd4fc499cd03a8a82d2cafa25884290d6dfab2b63122e3dc28d8a87b3",
+        "motion": "19a09ea6872c94ffbbdbeb1aa8bad06f0c274b9cdecf31653afe049c82a924f9",
+        "speech": "b8ba753358e1b5c208d91a93280c3e4f1a9500b0e177fceb340b659e4229e5ab",
+        "video_input": "fb5e6b8481596f652865ba81f37fed369567a328ce2bbb6238f76beb79ee993c"
+      },
+      "cpu_ns": 18813639874,
+      "final_sha256": "a9103d48fccb371ea4367b1a6afc9b72b0efaecfca2472be88b3cb6da70aa097",
+      "gradient_abs_sum_max": {
+        "audio_input": 5111.720411539078,
+        "core": 1080.9941095896065,
+        "motion": 1.9413878358900547,
+        "speech": 2.509008675813675,
+        "video_input": 1286.8712063729763
+      },
+      "initial_sha256": "c5afec59e9e51aa582dea974533b4fbf1b8d11223add2b4362e437295e91696c",
+      "last_80_mean_utility": 0.8994754888117313,
+      "profile": "mean",
+      "schedule_sha256": "bf7b50b4d5f063a7ac84c6ef20bd3daa98ecc353e1c2c3383461120674a787a8",
+      "seed": 29,
+      "wall_ns": 18814516129
+    },
+    "43/entropic": {
+      "checkpoint": "/tmp/hepta-ndu-next-joint/training-001/seed-43/entropic/model.pt",
+      "checkpoint_sha256": "feee0b23657b4602d68aaecb9c11c67fb96b34c532e7b303cb7acded6b96ce2b",
+      "component_after": {
+        "audio_input": "51e637837b31cd3e3f40d2f3b607eaf60e3b6f44c12a084e6ebb515f7cff4b90",
+        "core": "08dfaf1182ef12a874d8d8d883221f63a7d98bfb2cf13518731148a9b3f8b0a5",
+        "motion": "d5ede29031a0262d856387859f2c65ab99aefd26d218dfa7fc313e405f6b9b78",
+        "speech": "a620a41e139a5d4d83d752ffc9d75a780cd831ffacacc3df01c2b2897f48e25f",
+        "video_input": "52b65cf47ab83204e0bd1aaac7b3c3988f2dc82e0d486745ae3c7cc5bdb912c5"
+      },
+      "component_before": {
+        "audio_input": "657eb28fd4514462f120366d01ee3a0446a2fecf5e12bd98ecba9ee8247572f7",
+        "core": "2dcaa848466a2c0f264299903364f3c352d327dc65c7eaec070fe9ffdae0381b",
+        "motion": "19a09ea6872c94ffbbdbeb1aa8bad06f0c274b9cdecf31653afe049c82a924f9",
+        "speech": "b8ba753358e1b5c208d91a93280c3e4f1a9500b0e177fceb340b659e4229e5ab",
+        "video_input": "fb5e6b8481596f652865ba81f37fed369567a328ce2bbb6238f76beb79ee993c"
+      },
+      "cpu_ns": 17347139989,
+      "final_sha256": "3cbbf490a5706fdd9b790a7ebf7932fb61415ed585bae45089fdef4a8d8f541b",
+      "gradient_abs_sum_max": {
+        "audio_input": 27956.44708108902,
+        "core": 2464.5383414551616,
+        "motion": 2.098224164918065,
+        "speech": 11.015504479408264,
+        "video_input": 3307.348396420479
+      },
+      "initial_sha256": "08dbd934e8c5bcbfc88bce93cbf7c829ff7a7caf1dcf3f2a4e25ee7be1be156f",
+      "last_80_mean_utility": 0.9077137559652328,
+      "profile": "entropic",
+      "schedule_sha256": "04f17ce5a2525f614021a59ed25b144ba9cb421847850f197f6a8e05d28ea45b",
+      "seed": 43,
+      "wall_ns": 17349028600
+    },
+    "43/mean": {
+      "checkpoint": "/tmp/hepta-ndu-next-joint/training-001/seed-43/mean/model.pt",
+      "checkpoint_sha256": "f02d027a2450c093f82c303a35cac84186dd325ee7e7ae9fda10e79b5a739c52",
+      "component_after": {
+        "audio_input": "71dbc263f8312c0bdb70869e26f50f04d81fed0dfa44ad9b3028cee7f86116fe",
+        "core": "0aaf62be7a0638683641c478fdc45ec4fdd584d3e89446e9c6a96e8b94126107",
+        "motion": "74682ff745c1ee0de1e0710e07d92af9a2382f5ed52e82cc27586c20a945380c",
+        "speech": "bf984f839e8bc484fac85db1e0c2af9b267c08c95cc07bf87c476cc5c21d3f2f",
+        "video_input": "08a8f5e80dc5bd5496300cab918da4bcca9aba746f203d204b395d89a6b86405"
+      },
+      "component_before": {
+        "audio_input": "657eb28fd4514462f120366d01ee3a0446a2fecf5e12bd98ecba9ee8247572f7",
+        "core": "2dcaa848466a2c0f264299903364f3c352d327dc65c7eaec070fe9ffdae0381b",
+        "motion": "19a09ea6872c94ffbbdbeb1aa8bad06f0c274b9cdecf31653afe049c82a924f9",
+        "speech": "b8ba753358e1b5c208d91a93280c3e4f1a9500b0e177fceb340b659e4229e5ab",
+        "video_input": "fb5e6b8481596f652865ba81f37fed369567a328ce2bbb6238f76beb79ee993c"
+      },
+      "cpu_ns": 16571131980,
+      "final_sha256": "6af933e72659f389e716550f0291df36dc9e6eeccbd8eaef6ad80ec07261b09f",
+      "gradient_abs_sum_max": {
+        "audio_input": 8873.07869040966,
+        "core": 1227.7440379353648,
+        "motion": 2.119512425735593,
+        "speech": 3.3251393884420395,
+        "video_input": 1901.215804219246
+      },
+      "initial_sha256": "08dbd934e8c5bcbfc88bce93cbf7c829ff7a7caf1dcf3f2a4e25ee7be1be156f",
+      "last_80_mean_utility": 0.9066522341221571,
+      "profile": "mean",
+      "schedule_sha256": "04f17ce5a2525f614021a59ed25b144ba9cb421847850f197f6a8e05d28ea45b",
+      "seed": 43,
+      "wall_ns": 16571865911
+    }
+  },
+  "cpu_ns": 112767941624,
+  "new_evaluation_sources_opened": false,
+  "peak_rss_bytes": 590389248,
+  "registration_sha256": "891e925433b1ebb35b72cece9110d1b0b9b8d345a38b76393c2ebd22b113ba16",
+  "reward_observer_unchanged": true,
+  "status": "completed",
+  "wall_ns": 113656009169
+}

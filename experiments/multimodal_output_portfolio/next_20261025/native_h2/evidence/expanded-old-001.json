@@ -1,0 +1,190 @@
+{
+  "actual_outputs": 40000,
+  "cpu_ns": 174492590583,
+  "new_source_candidate_admitted": true,
+  "new_source_roles_and_gates_unchanged": true,
+  "new_sources_opened": false,
+  "old_calibration": {
+    "Brier": 0.05488919734007735,
+    "ECE_ID": 4.916999999229454e-07,
+    "ECE_all": 3.2584999996147193e-07,
+    "ID_acceptance": 0.6398,
+    "OOD_FAR": 0.0,
+    "OOD_false_units": 0,
+    "OOD_upper95": 0.007461355528799602,
+    "by_horizon_action": {
+      "H1:couple": {
+        "ECE_ID": 5.312499999701042e-07,
+        "ID_acceptance": 0.61,
+        "rows": 1600
+      },
+      "H1:refine_image": {
+        "ECE_ID": 6.137499997593832e-07,
+        "ID_acceptance": 0.62375,
+        "rows": 1600
+      },
+      "H1:refine_semantic": {
+        "ECE_ID": 7.199999999715766e-07,
+        "ID_acceptance": 0.6575,
+        "rows": 1600
+      },
+      "H1:refine_text": {
+        "ECE_ID": 4.974999998785812e-07,
+        "ID_acceptance": 0.62,
+        "rows": 1600
+      },
+      "H1:stop": {
+        "ECE_ID": 1.5500000011645088e-07,
+        "ID_acceptance": 0.65375,
+        "rows": 1600
+      },
+      "H2:couple": {
+        "ECE_ID": 3.17500000009685e-07,
+        "ID_acceptance": 1.0,
+        "rows": 400
+      },
+      "H2:refine_image": {
+        "ECE_ID": 6.125000000176128e-07,
+        "ID_acceptance": 0.5975,
+        "rows": 400
+      },
+      "H2:refine_semantic": {
+        "ECE_ID": 1.9999999989472886e-07,
+        "ID_acceptance": 0.56,
+        "rows": 400
+      },
+      "H2:refine_text": {
+        "ECE_ID": 4.775000000359352e-07,
+        "ID_acceptance": 0.6125,
+        "rows": 400
+      },
+      "H2:stop": {
+        "ECE_ID": 6.149999999510713e-07,
+        "ID_acceptance": 0.565,
+        "rows": 400
+      }
+    },
+    "independent_units": 400,
+    "ood_units": 400,
+    "rows": 20000,
+    "unit_is_writer": false
+  },
+  "old_calibration_only_not_deployable": true,
+  "old_feasibility_gates": {
+    "old_split_nonvacuity": true,
+    "old_split_point_ECE": true,
+    "old_split_zero_OOD_false_source_pairs": true
+  },
+  "old_source_pairs": 800,
+  "old_verification": {
+    "Brier": 0.060393049937561,
+    "ECE_ID": 0.017188309600000028,
+    "ECE_all": 0.008944074800000014,
+    "ID_acceptance": 0.6256,
+    "OOD_FAR": 0.0,
+    "OOD_false_units": 0,
+    "OOD_upper95": 0.007461355528799602,
+    "by_horizon_action": {
+      "H1:couple": {
+        "ECE_ID": 0.02708885124999999,
+        "ID_acceptance": 0.60125,
+        "rows": 1600
+      },
+      "H1:refine_image": {
+        "ECE_ID": 0.03291081000000021,
+        "ID_acceptance": 0.6125,
+        "rows": 1600
+      },
+      "H1:refine_semantic": {
+        "ECE_ID": 0.018649839999999997,
+        "ID_acceptance": 0.639375,
+        "rows": 1600
+      },
+      "H1:refine_text": {
+        "ECE_ID": 0.012729950624999983,
+        "ID_acceptance": 0.595,
+        "rows": 1600
+      },
+      "H1:stop": {
+        "ECE_ID": 0.021923557500000062,
+        "ID_acceptance": 0.645625,
+        "rows": 1600
+      },
+      "H2:couple": {
+        "ECE_ID": 0.039917420000000155,
+        "ID_acceptance": 1.0,
+        "rows": 400
+      },
+      "H2:refine_image": {
+        "ECE_ID": 0.005345814999999933,
+        "ID_acceptance": 0.5575,
+        "rows": 400
+      },
+      "H2:refine_semantic": {
+        "ECE_ID": 0.015214080000000086,
+        "ID_acceptance": 0.56,
+        "rows": 400
+      },
+      "H2:refine_text": {
+        "ECE_ID": 0.03114371749999999,
+        "ID_acceptance": 0.5725,
+        "rows": 400
+      },
+      "H2:stop": {
+        "ECE_ID": 0.01848254500000002,
+        "ID_acceptance": 0.575,
+        "rows": 400
+      }
+    },
+    "independent_units": 400,
+    "ood_units": 400,
+    "rows": 20000,
+    "unit_is_writer": false
+  },
+  "predictor_sha256": "2ea073f7de0cf0a134c94cb0a683e3924733dd7206cf619264e370bbce2f37f8",
+  "previous_64_64_candidates_remain_failed": true,
+  "production_authority": false,
+  "registration_sha256": "85b5132e5fa077b163a34dba2268fc198564f7c09bf0dbb21ee6b262ebbc7a1c",
+  "schema": "hepta.next.native-h2-expanded-old-development.v1",
+  "selected_diagnostic_is_not_independent_qualification": true,
+  "selected_policy_calibration": {
+    "correctness": {
+      "ECE_ID": 0.08547681496062991,
+      "by_horizon": {
+        "1": {
+          "ECE_ID": 0.08057252777777782,
+          "steps": 108
+        },
+        "2": {
+          "ECE_ID": 0.08680097249999989,
+          "steps": 400
+        }
+      },
+      "prediction_target": "immediate emitted output at the visited state; not eventual terminal truth",
+      "scope": "Python teacher and calibrated-confidence policy; no native resource gate substitution",
+      "selected_steps": 508,
+      "source_pairs": 400,
+      "unit_is_writer": false
+    },
+    "ndu": {
+      "ECE_ID": 0.05717862325581397,
+      "by_horizon": {
+        "1": {
+          "ECE_ID": 0.029394559183673407,
+          "steps": 245
+        },
+        "2": {
+          "ECE_ID": 0.07419636250000011,
+          "steps": 400
+        }
+      },
+      "prediction_target": "immediate emitted output at the visited state; not eventual terminal truth",
+      "scope": "Python teacher and calibrated-confidence policy; no native resource gate substitution",
+      "selected_steps": 645,
+      "source_pairs": 400,
+      "unit_is_writer": false
+    }
+  },
+  "status": "completed",
+  "wall_ns": 181208997647
+}

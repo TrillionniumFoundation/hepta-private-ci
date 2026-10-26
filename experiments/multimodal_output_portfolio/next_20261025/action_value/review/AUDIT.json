@@ -1,0 +1,87 @@
+{
+  "H1_nodes": 18396,
+  "H1_semantic_actual_stop_media_identity_verified": 18396,
+  "actual_media_references_verified": 190284,
+  "audit_source_sha256": "164a256445f15326b41defdf00739b76fa2485472c4ca1c04e751b3f1edf0b8c",
+  "closed_inputs_sha256": {
+    "analysis.json": "2953631be1151d49692e6c56c24798c983c18af748c6b4064a50483035422ad5",
+    "commitments.jsonl.gz": "135980edf2d0598e5ba9d6b5b5e33042229226c7a8b4d11c40a0756be5ee2bb7",
+    "completion.json": "b6a6f9e05a05250bead35445046ccd4fcd299dd6068e7d8b94a0409939410dec",
+    "counterfactual-scored.jsonl.gz": "bc9506349948e0cefda59f3382934d3b6407935691cefa642c7a0b3048834c85",
+    "counterfactuals.jsonl.gz": "860ccefbd00d83ab4e4c75ceaefe0f3cdd6d3dd6cdceb4c11b83cf5ca8260a27",
+    "diagnostic-commitments.jsonl.gz": "20361d4c93edc1521a4eba7c73f1ae9f4d9c0d3bc15d2e14b0099a6d33bd1b2b",
+    "media.bin": "92a7d1154d8d0890989904f33fa947b5f1d9f565d9c12ddfbc30c97d03cf9eea",
+    "registration.json": "5dc80d6008506a6e771c8ac16d09c34b4b4f272e2cf1b45d38cdafed068c6173",
+    "requests.jsonl.gz": "6fe4b3cecd9813532c294cf44c38cc23b5e1aa6be750db3e9c80408a6234c991",
+    "scored.jsonl.gz": "cb668aadfa61b9d6fc3dcc56142974556cec76ebb151de103502666620cea295"
+  },
+  "maximum_independent_arithmetic_error": 5.551115123125783e-17,
+  "offline_future_action_commitments_verified": 73584,
+  "per_seed_descriptive": {
+    "cached_teacher": {
+      "17": {
+        "mean_continuation_actions": 1.1536865234375,
+        "mean_wall_ms": 12.0758354420166,
+        "raw_CE": 0.19099895635038733,
+        "success": 0.559326171875
+      },
+      "29": {
+        "mean_continuation_actions": 1.1435546875,
+        "mean_wall_ms": 10.019261213989259,
+        "raw_CE": 0.18800780428445885,
+        "success": 0.5660400390625
+      },
+      "43": {
+        "mean_continuation_actions": 1.100830078125,
+        "mean_wall_ms": 10.244640951660156,
+        "raw_CE": 0.1902116600912993,
+        "success": 0.5721435546875
+      }
+    },
+    "rich_paired": {
+      "17": {
+        "mean_continuation_actions": 1.424560546875,
+        "mean_wall_ms": 12.718079797485352,
+        "raw_CE": 0.1867134550556353,
+        "success": 0.5625
+      },
+      "29": {
+        "mean_continuation_actions": 1.272705078125,
+        "mean_wall_ms": 10.214746239868164,
+        "raw_CE": 0.18862366480980342,
+        "success": 0.560302734375
+      },
+      "43": {
+        "mean_continuation_actions": 1.2547607421875,
+        "mean_wall_ms": 10.640074880126953,
+        "raw_CE": 0.18949673443047743,
+        "success": 0.5716552734375
+      }
+    }
+  },
+  "recomputed_action_value_MSE": {
+    "candidate_MSE": 0.3129568680367506,
+    "teacher_MSE": 0.2982182607608537,
+    "zero_MSE": 0.30369646280038537
+  },
+  "recomputed_policies": {
+    "cached_teacher": {
+      "mean_wall_ms": 10.779912535888672,
+      "raw_CE": 0.1897378702449397,
+      "success": 0.5658365885416666
+    },
+    "rich_paired": {
+      "mean_wall_ms": 11.19096697249349,
+      "raw_CE": 0.1882766001272025,
+      "success": 0.5648193359375
+    }
+  },
+  "requests": 49152,
+  "same_actual_root_pairs": 24576,
+  "same_path_actual_media_pairs": 3468,
+  "schema": "hepta.next.action-value-independent-audit.v1",
+  "scope": "Independent byte, identity, journal and arithmetic checks. Offline causal ordering also relies on frozen owner code; this audit does not convert finite realized regret into a deployable policy or certify bootstrap coverage.",
+  "status": "passed",
+  "unique_physical_media_blocks_verified": 171888,
+  "writers": 256
+}

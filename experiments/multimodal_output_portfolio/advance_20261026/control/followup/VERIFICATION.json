@@ -1,0 +1,45 @@
+{
+  "alias_posterior": {
+    "0": 0.888888888888889,
+    "1": 0.0,
+    "10": 0.0,
+    "11": 0.11111111111111112
+  },
+  "checks": [
+    "arrival forecast leaves prior unchanged",
+    "unobserved alias integrated",
+    "normalized sequential and batch posteriors",
+    "duplicate receipts idempotent",
+    "alias event counted once",
+    "contradictory event or slot rejected atomically",
+    "zero-support arrival rejected atomically",
+    "invalid law or alias support rejected",
+    "no joint law inferred from marginals",
+    "two explicit coupling counterexamples"
+  ],
+  "frozen_candidate_modified": false,
+  "initial_alias_probability": 0.5,
+  "model_or_new_source_execution": false,
+  "production_authority": false,
+  "same_marginal_joint_success": [
+    0.9,
+    0.8
+  ],
+  "same_marginal_opposite_posteriors": [
+    {
+      "H0": 1.0,
+      "H1": 0.0
+    },
+    {
+      "H0": 0.0,
+      "H1": 1.0
+    }
+  ],
+  "schema": "hepta.followup.finite-evidence-identity-verification.v1",
+  "scope": "Synthetic analytic probability identities only; no learned joint law or qualification claim",
+  "source_sha256": {
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/control/followup/unique_evidence.py": "9d66946ae21d407e002e77d3ad2c514a811e78c3750ac66e3f9483496c0020b7",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/control/followup/verify_unique_evidence.py": "b4a3cc6547554067c4786846a0d63398007e7d26b33f1226a05b8a6d6155c4fa"
+  },
+  "status": "passed"
+}

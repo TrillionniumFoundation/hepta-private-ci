@@ -1,0 +1,41 @@
+{
+  "cgroup_after": {
+    "current": 8372113408,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 4040303,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8580415488,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 4033176,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 0.5948129999999999,
+  "child_user_seconds": 2.988042,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-m",
+    "experiments.multimodal_output_portfolio.advance_20261026.control.audio_likelihood",
+    "--output",
+    "/tmp/hepta-ndu-advance-control/likelihood-001"
+  ],
+  "context": "Fixed alpha 0.5 old-source audio likelihood; single-thread whole process; no advance source roles",
+  "exit_code": 0,
+  "log_sha256": "5d3bb0414599e28a3229c2bd6c60e5043a34859a05f3911dabd72ba5ed649138",
+  "peak_rss_bytes": 390238208,
+  "registration_sha256": "5990c213c5e46f275b56c8d211003ddd12680431fc0b16a1808f4a69e4e934ef",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 4168748608,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}

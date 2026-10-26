@@ -1,0 +1,78 @@
+{
+  "ID_rows": 320,
+  "IID_addendum": "The registered source cohort uses deterministic hash ordering and disjoint sampling without replacement. IID Bernoulli requests are a hypothetical interpretation condition for the nominal bound, not a demonstrated property of those identities. Repeated deterministic all-missing numerical inputs/states add no input-space coverage. This supports the exact structural missing-input scope and cannot certify natural OOD robustness.",
+  "actual_media_sha_checks": 960,
+  "audit_source_sha256": "3420c24fd06672738c9f67aa4d8cbbcca00eaec0b60859d72498323340bd75b9",
+  "audit_violations": [],
+  "census_and_lifecycle_consistent": true,
+  "engineering_complete": true,
+  "execution_errors_retained": 0,
+  "gate_scope": "engineering_complete is a separate execution audit; it is not retroactively represented as an original statistical gate and never changes the original study_qualified result.",
+  "input_sha256": {
+    "/tmp/hepta-ndu-advance-native/frozen-001/QUALIFICATION_SPEC.json": "6bbe126f86efbf87404e79a1f02ffaa4341e59de4c88d66688bf68431608c1fa",
+    "/tmp/hepta-ndu-advance-native/qualification-001/MISSING_ROWS.json": "939f09500d1e7cac9761f3d723f2b540f35863541ae2da3da79e315c2c7c23cd",
+    "/tmp/hepta-ndu-advance-native/qualification-001/RECOVERED_REPORT.json": "c67a741fb7629c7b5abe6315a8bda1fd7bd143ed93a427b0a70b0153c9a9f7ac",
+    "/tmp/hepta-ndu-advance-native/qualification-001/ROWS.json": "8408f3185ec01491a24e6b60a200ee04918725c0735ece066e185b25333b146d",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/SOURCE_ALLOCATION.json": "42d0c47056dda930cb851c9ae59f330747de8bb863f18b79c47eea830f69b262"
+  },
+  "missing_rows": 1200,
+  "models_or_source_role_loaders_called": false,
+  "numerical_results_without_new_gates": {
+    "dynamic": {
+      "false_acceptances": 0,
+      "independently_recomputed_gates": {
+        "ID_request_coverage": true,
+        "all_missing_false_acceptance": true,
+        "pooled_ece": true,
+        "selected_action_ece": false
+      },
+      "initial_selected_ECE": 0.03735423966942141,
+      "nominal_one_sided_95_bound_under_iid_trial_model": 0.004980443380361299,
+      "original_numerical_gates": {
+        "ID_request_coverage": true,
+        "all_missing_false_acceptance": true,
+        "pooled_ece": true,
+        "selected_action_ece": false
+      },
+      "original_study_qualified_preserved": false,
+      "pooled_endpoint_ECE": 0.0011878900625,
+      "request_coverage": 0.75625,
+      "unique_RNG_states": 1,
+      "unique_actual_native_inputs": 1,
+      "unique_numeric_initial_states": 1,
+      "unique_numeric_public_inputs": 1,
+      "unique_source_speakers": 600
+    },
+    "fixed_late": {
+      "false_acceptances": 0,
+      "independently_recomputed_gates": {
+        "ID_request_coverage": true,
+        "all_missing_false_acceptance": true,
+        "pooled_ece": true,
+        "selected_action_ece": true
+      },
+      "initial_selected_ECE": 0.029514636363636392,
+      "nominal_one_sided_95_bound_under_iid_trial_model": 0.004980443380361299,
+      "original_numerical_gates": {
+        "ID_request_coverage": true,
+        "all_missing_false_acceptance": true,
+        "pooled_ece": true,
+        "selected_action_ece": true
+      },
+      "original_study_qualified_preserved": true,
+      "pooled_endpoint_ECE": 0.0011878900625,
+      "request_coverage": 0.75625,
+      "unique_RNG_states": 1,
+      "unique_actual_native_inputs": 1,
+      "unique_numeric_initial_states": 1,
+      "unique_numeric_public_inputs": 1,
+      "unique_source_speakers": 600
+    }
+  },
+  "original_outer_process_returncode": 1,
+  "phase": "qualification",
+  "recorded_ns": 1792991252051460745,
+  "report_serialization_recovered": true,
+  "schema": "hepta.advance.independent-native-census-audit.v1",
+  "source_or_candidate_modified": false
+}

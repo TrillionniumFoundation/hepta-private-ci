@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.closure.media-development-refinement.v1",
+  "seed": 17292,
+  "threads": 1,
+  "trigger": "Development-002 audit accuracy 0.80 below unchanged 0.85; ingress pair accuracy 7/12; independent video pixels confuse 3 and 8 during motion",
+  "steps": {"audit": 2000, "audio_input": 2000, "video": 500},
+  "batch_size": 24,
+  "learning_rate": 0.0007,
+  "cosine_minimum_fraction": 0.1,
+  "auditory_front_end": "Fixed 40-bin mel power; energy threshold 1% of observed peak; voice interval resized to 64 frames; no labels in transform",
+  "auditory_training": "Separate original audit or generator recording role; random time roll +/-4, Gaussian noise 0.025, four-bin frequency/time masks; AdamW, clipping 5, dropout 0.1",
+  "image_training_role": "train",
+  "video_training": "Learn per-event recurrent spatial displacement from actual image reconstruction MSE; fixed training target moves continuously -2 to +2 pixels across ten distinct frames",
+  "video_inference": "Apply learned spatial fields to the same emitted neural image panels, using only predicted shared semantic conditions and public event clock",
+  "preserved_controls": ["development-001 original spectral/temporal decoder failure", "development-002 independent recurrent pixel decoder", "same-state hard/soft comparison"],
+  "unchanged": ["original source roles", "0.85 acoustic observer and ingress thresholds", "0.8 conditional audio threshold", "0.9 conditional video threshold", "0.75 per-mode joint success", "6 distinct output frames per event"],
+  "test_opened": false,
+  "scope": "Bounded learned image-to-video spatial motion, not natural video generation; same six speakers across disjoint recording roles"
+}

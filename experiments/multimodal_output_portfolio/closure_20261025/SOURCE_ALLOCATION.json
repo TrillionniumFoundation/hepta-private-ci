@@ -1,0 +1,56 @@
+{
+  "allocator_source_sha256": "d7c3da87364ddfcf49ea82e8425aeea0787c142d20f0237a3bd92be80791fbd1",
+  "catalog_matches": [
+    {
+      "matched_ids": 1600,
+      "path": "abc2-runs/source-recovery-001/source-manifest.json",
+      "sha256": "60c24d44e12eb3defb3b1b8146d91879b84918b057e0524117137d7e4f793058"
+    }
+  ],
+  "manifest_file_sha256": "60c24d44e12eb3defb3b1b8146d91879b84918b057e0524117137d7e4f793058",
+  "metadata_tree_sha256": "66a8d608b229bfbe19ea9298ab63c0222019a0c126684e5539afa5107f6e4304",
+  "origin_role": "unallocated_train",
+  "original_guards_modified": false,
+  "outcomes_opened": false,
+  "pairing": "adjacent individual IDs in immutable original role order",
+  "recorded_prior_uses_outside_catalog": 0,
+  "registered_unix_ns": 1792942708378775182,
+  "remaining_unassigned": {
+    "pair_end_exclusive": 800,
+    "pair_start": 640
+  },
+  "roles": {
+    "control": {
+      "pair_count": 256,
+      "pair_end_exclusive": 512,
+      "pair_start": 256,
+      "role": "closure_control",
+      "source_ids_sha256": "3af56938336fb7e088550d3cf1820e04b403016d072b0746d0054ce0d8fa69a2"
+    },
+    "factorial": {
+      "pair_count": 256,
+      "pair_end_exclusive": 256,
+      "pair_start": 0,
+      "role": "closure_factorial",
+      "source_ids_sha256": "1f39acf61c127b3bd8c4e16135e9b1f97691c2a3816b3019600123a366b98762"
+    },
+    "media": {
+      "pair_count": 64,
+      "pair_end_exclusive": 640,
+      "pair_start": 576,
+      "role": "closure_media",
+      "source_ids_sha256": "6c9b255bd254b6c45f9907ae9a03c5abeefc9d73e3211e29956d68f2262b051b"
+    },
+    "native": {
+      "pair_count": 64,
+      "pair_end_exclusive": 576,
+      "pair_start": 512,
+      "role": "closure_native",
+      "source_ids_sha256": "7a31fe38207efbc6ea1b20e48f31d6d0ad906db239440226edb2df5271ca6bbd"
+    }
+  },
+  "scanned_bytes": 2157737663,
+  "scanned_files": 30977,
+  "schema": "hepta.closure.source-allocation.v1",
+  "scope": "Available code and text execution records; unknown external use not attested"
+}

@@ -1,0 +1,63 @@
+{
+  "ASR_cost_mode": "Verified exact-event cache; original cold ASR cost is retained in observer-load.json",
+  "all_media_sample_gates_pass": true,
+  "asr_actual_event_calls": 0,
+  "asr_event_cache_hits": 1308,
+  "codec_child_cpu_seconds": 301.747639,
+  "conditional_head_census": {
+    "audio_accuracy": 1.0,
+    "audio_digit_correct": 20,
+    "audio_digit_count": 20,
+    "audio_gate_min": 0.8,
+    "conditional_cases": 10,
+    "independent_sources_added": 0,
+    "pass": true,
+    "video_accuracy": 1.0,
+    "video_frame_correct": 200,
+    "video_frame_count": 200,
+    "video_gate_min": 0.9
+  },
+  "cost_scope": "Includes source checks/model load/input construction/actual output generation/codec readback/verified ASR cache lookups/physical negatives; cold ASR cost is separate in observer-load.json; excludes imports before main and final summary write",
+  "gates": {
+    "audio_ingress_min_085": true,
+    "complete_codec_clock": true,
+    "conditional_audio_min_080": true,
+    "conditional_video_min_090": true,
+    "nonvacuous_physical_controls": true,
+    "per_mode_strict_joint_min_075": true
+  },
+  "independent_audio_speakers": 32,
+  "independent_image_writers": 32,
+  "ingress_gate_accuracy": 0.91,
+  "ingress_gate_phase": "independent_qualification",
+  "negative_controls": {
+    "all_rejected": true,
+    "baseline_index": 0,
+    "baseline_mode": "image",
+    "mutations": {
+      "missing_modality": true,
+      "repeated_video_frames": true,
+      "silence": true,
+      "swapped_audio_events": true,
+      "swapped_video_events": true
+    },
+    "nonvacuous": true
+  },
+  "outputs": 640,
+  "pairs": 128,
+  "phase": "confirmation",
+  "preserves_input_handwriting_style": false,
+  "primary_observer": "consensus_or_single_v3",
+  "python_cpu_ns": 17235690719,
+  "scope": "Finite digit semantics, constructed moving-image video, deterministic teacher-distilled speech; no human naturalness or general foundation-model certificate",
+  "status": "completed",
+  "strict_joint_by_input": {
+    "audio": 0.890625,
+    "audio_video": 0.9765625,
+    "image": 0.9921875,
+    "text": 1.0,
+    "video": 0.9140625
+  },
+  "version": "repair-v2",
+  "wall_ns": 324235423130
+}

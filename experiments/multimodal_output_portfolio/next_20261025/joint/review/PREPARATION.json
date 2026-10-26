@@ -1,0 +1,30 @@
+{
+  "audit_source_sha256": "f43937c74a06a45adaefa8696f06397d1cdee0e11d20134e2b353800d40087b3",
+  "constraints": [
+    "No model, ASR, codec or primary analysis rerun",
+    "Original candidate/protocol/thresholds unchanged",
+    "Original image/video prediction and clock records remain the frozen observation evidence, not independently rerun classifications"
+  ],
+  "execution_requires_completed_child_and_primary": true,
+  "imports": [
+    "collections",
+    "pathlib",
+    "argparse",
+    "gzip",
+    "hashlib",
+    "json",
+    "math",
+    "re",
+    "struct",
+    "time",
+    "traceback",
+    "wave",
+    "numpy"
+  ],
+  "new_confirmation_outcomes_read_during_preparation": false,
+  "no_original_metrics_imported": true,
+  "prepared_unix_ns": 1792985963478229859,
+  "protocol_sha256": "6a305d92578da4d6e41ebc104101b7af58ebc02306ea6c54d9e73ae724222f08",
+  "schema": "hepta.next.joint-independent-audit-preparation.v1",
+  "statistics": "Independent histogram sufficient statistics, math.fsum/log/exp, separate linear quantile; NumPy only provides registered resampling draws and an independent MT check"
+}

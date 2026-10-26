@@ -1,0 +1,26 @@
+{
+  "child_cpu_ns": 10186940000,
+  "child_peak_rss_bytes_linux": 214278144,
+  "child_pid": 9,
+  "exit_code": 0,
+  "log_sha256": "07d9d6bd30f1bfa81a2bb5a9dd7f5617be69ef2e6657161c3f949a3809b312ad",
+  "parent_pid": 2,
+  "registration_sha256": "95c16dbc866c29825f15cb7379506c63ef3d40052b46e0fe7e66919da56fe7c0",
+  "resource_after": {
+    "filesystem_total_free_bytes": 2721431552,
+    "filesystem_unprivileged_available_bytes": 986669056,
+    "host_cgroup": {
+      "cpu.max": "800000 100000",
+      "memory.current": "8332685312",
+      "memory.events": "low 0\nhigh 0\nmax 3704643\noom 12\noom_kill 3\noom_group_kill 0",
+      "memory.max": "8589934592",
+      "memory.peak": "8591986688"
+    },
+    "scope": "Shared host cgroup and filesystem, not child-exclusive resource use",
+    "unix_ns": 1792981789940285492
+  },
+  "schema": "hepta.next.exact-child-receipt.v1",
+  "scope": "Entire child launch/imports/work/output/exit and log fsync; shared Linux host, excludes this receipt write",
+  "wall_ns": 6345161493,
+  "wrapper_cpu_ns": 698548
+}

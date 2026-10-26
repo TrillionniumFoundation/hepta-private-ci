@@ -1,0 +1,1279 @@
+{
+  "audit_observer_used": false,
+  "scores": {
+    "common_allocation": [
+      {
+        "ce": 0.3800229065738817,
+        "mean": 0.5916039164090762,
+        "mode": "full",
+        "path": [],
+        "space": "common_allocation"
+      },
+      {
+        "ce": 0.38254786907221194,
+        "mean": 0.589571296704933,
+        "mode": "full",
+        "path": [
+          "refine_image"
+        ],
+        "space": "common_allocation"
+      },
+      {
+        "ce": 0.37127945630196146,
+        "mean": 0.5856976664090763,
+        "mode": "full",
+        "path": [
+          "refine_text"
+        ],
+        "space": "common_allocation"
+      },
+      {
+        "ce": 0.38219490456513083,
+        "mean": 0.591031113323057,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_image"
+        ],
+        "space": "common_allocation"
+      },
+      {
+        "ce": 0.37374291087645783,
+        "mean": 0.5836650467049331,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_text"
+        ],
+        "space": "common_allocation"
+      },
+      {
+        "ce": 0.37374291087645783,
+        "mean": 0.5836650467049331,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_image"
+        ],
+        "space": "common_allocation"
+      },
+      {
+        "ce": 0.3819159487546878,
+        "mean": 0.5954164164090763,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_text"
+        ],
+        "space": "common_allocation"
+      },
+      {
+        "ce": 0.37199231917052655,
+        "mean": 0.5791876744243782,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_image",
+          "refine_image"
+        ],
+        "space": "common_allocation"
+      },
+      {
+        "ce": 0.373366497507465,
+        "mean": 0.5851248633230571,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_image",
+          "refine_text"
+        ],
+        "space": "common_allocation"
+      },
+      {
+        "ce": 0.373366497507465,
+        "mean": 0.5851248633230571,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_text",
+          "refine_image"
+        ],
+        "space": "common_allocation"
+      },
+      {
+        "ce": 0.38449947684285135,
+        "mean": 0.5933837967049331,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_text",
+          "refine_text"
+        ],
+        "space": "common_allocation"
+      },
+      {
+        "ce": 0.373366497507465,
+        "mean": 0.5851248633230571,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_image",
+          "refine_image"
+        ],
+        "space": "common_allocation"
+      },
+      {
+        "ce": 0.38449947684285135,
+        "mean": 0.5933837967049331,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_image",
+          "refine_text"
+        ],
+        "space": "common_allocation"
+      },
+      {
+        "ce": 0.38449947684285135,
+        "mean": 0.5933837967049331,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_text",
+          "refine_image"
+        ],
+        "space": "common_allocation"
+      },
+      {
+        "ce": 0.37083398932212464,
+        "mean": 0.5895101664090763,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_text",
+          "refine_text"
+        ],
+        "space": "common_allocation"
+      }
+    ],
+    "fixed": [
+      {
+        "ce": 0.3800229065738817,
+        "mean": 0.5916039164090762,
+        "mode": "full",
+        "path": [],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37700369634105657,
+        "mean": 0.5840760688694426,
+        "mode": "full",
+        "path": [
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.38254786907221194,
+        "mean": 0.589571296704933,
+        "mode": "full",
+        "path": [
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37127945630196146,
+        "mean": 0.5856976664090763,
+        "mode": "full",
+        "path": [
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37837466095981576,
+        "mean": 0.5821521951573668,
+        "mode": "full",
+        "path": [
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3765998166009128,
+        "mean": 0.5827604375816882,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37154946048388726,
+        "mean": 0.5812490002260311,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3733122084849354,
+        "mean": 0.5812948188694427,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3736023253243623,
+        "mean": 0.579690054435283,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3757747737593723,
+        "mean": 0.5835957469252171,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.38219490456513083,
+        "mean": 0.591031113323057,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37374291087645783,
+        "mean": 0.5836650467049331,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3780440604447173,
+        "mean": 0.5808965871991822,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3733116624569156,
+        "mean": 0.5812950819011311,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37374291087645783,
+        "mean": 0.5836650467049331,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3819159487546878,
+        "mean": 0.5954164164090763,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3763745387966876,
+        "mean": 0.5801505301912548,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3736038676270398,
+        "mean": 0.5796866070836549,
+        "mode": "full",
+        "path": [
+          "couple",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37195648142509663,
+        "mean": 0.578942350525991,
+        "mode": "full",
+        "path": [
+          "couple",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37637466095981575,
+        "mean": 0.5801521951573668,
+        "mode": "full",
+        "path": [
+          "couple",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.38738405887691885,
+        "mean": 0.5875002008347074,
+        "mode": "full",
+        "path": [
+          "couple",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.36831004670087464,
+        "mean": 0.5771167472933885,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "refine_semantic",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.36872756259901407,
+        "mean": 0.5736736076474189,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "refine_semantic",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3745998166009128,
+        "mean": 0.5807604375816882,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "refine_semantic",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3804579634189674,
+        "mean": 0.5842231188170846,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "refine_semantic",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.36872897903564383,
+        "mean": 0.5736767859370449,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "refine_image",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.36948146231773216,
+        "mean": 0.5791842776086413,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "refine_image",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.36786957882899685,
+        "mean": 0.5784677502260311,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "refine_image",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.382261853261597,
+        "mean": 0.579596560817794,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "refine_image",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3704367621157342,
+        "mean": 0.5772446557382355,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "refine_text",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.36786957882899685,
+        "mean": 0.5784677502260311,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "refine_text",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3814477151981919,
+        "mean": 0.5894510688694427,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "refine_text",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3716024192373534,
+        "mean": 0.5776880105664023,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "refine_text",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37455660281219905,
+        "mean": 0.5771889372551815,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "couple",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37609843585124025,
+        "mean": 0.5776418077029521,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "couple",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3716023253243623,
+        "mean": 0.577690054435283,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "couple",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3829848608754326,
+        "mean": 0.5838582448629895,
+        "mode": "full",
+        "path": [
+          "refine_semantic",
+          "couple",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3687308805302365,
+        "mean": 0.573680189699866,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_semantic",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3737070820553141,
+        "mean": 0.5815309172290144,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_semantic",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3678703092660077,
+        "mean": 0.578470746925217,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_semantic",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3822621677131012,
+        "mean": 0.5795989589908859,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_semantic",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37625757023726203,
+        "mean": 0.5830962891484378,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_image",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37199231917052655,
+        "mean": 0.5791876744243782,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_image",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.373366497507465,
+        "mean": 0.5851248633230571,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_image",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37559662642780833,
+        "mean": 0.5815721555814379,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_image",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.36994855090355194,
+        "mean": 0.5808151120783296,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_text",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.373366497507465,
+        "mean": 0.5851248633230571,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_text",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.38449947684285135,
+        "mean": 0.5933837967049331,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_text",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3756554393864756,
+        "mean": 0.5816290197775233,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "refine_text",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3822630733936486,
+        "mean": 0.5795950441327877,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "couple",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3776885355270959,
+        "mean": 0.5823525526587618,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "couple",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3760440604447173,
+        "mean": 0.5788965871991822,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "couple",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.383074572665415,
+        "mean": 0.5815602113461356,
+        "mode": "full",
+        "path": [
+          "refine_image",
+          "couple",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37043511059180734,
+        "mean": 0.5772441294624004,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_semantic",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37127019519679083,
+        "mean": 0.5792497117390157,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_semantic",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.38358322518004984,
+        "mean": 0.5917950819011313,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_semantic",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3716004350658271,
+        "mean": 0.5776879169131862,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_semantic",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.36994855090355194,
+        "mean": 0.5808151120783296,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_image",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.373366497507465,
+        "mean": 0.5851248633230571,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_image",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.38449947684285135,
+        "mean": 0.5933837967049331,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_image",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3756554393864756,
+        "mean": 0.5816290197775233,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_image",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.386200082041947,
+        "mean": 0.5933575717700879,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_text",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.38449947684285135,
+        "mean": 0.5933837967049331,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_text",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37083398932212464,
+        "mean": 0.5895101664090763,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_text",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37105793180767577,
+        "mean": 0.5789299007997616,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "refine_text",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3777074043066393,
+        "mean": 0.5796372361478861,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "couple",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3699569607986619,
+        "mean": 0.5769409564728849,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "couple",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3706147723418869,
+        "mean": 0.5781505301912548,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "couple",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3853822390031616,
+        "mean": 0.585494958603289,
+        "mode": "full",
+        "path": [
+          "refine_text",
+          "couple",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37455748702887626,
+        "mean": 0.5771851038179593,
+        "mode": "full",
+        "path": [
+          "couple",
+          "refine_semantic",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37609969163994594,
+        "mean": 0.5776382282548584,
+        "mode": "full",
+        "path": [
+          "couple",
+          "refine_semantic",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3716038676270398,
+        "mean": 0.577686607083655,
+        "mode": "full",
+        "path": [
+          "couple",
+          "refine_semantic",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.38298636455794877,
+        "mean": 0.583855767111294,
+        "mode": "full",
+        "path": [
+          "couple",
+          "refine_semantic",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37610021378592073,
+        "mean": 0.5776404235364172,
+        "mode": "full",
+        "path": [
+          "couple",
+          "refine_image",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.37156835674896915,
+        "mean": 0.580397256635246,
+        "mode": "full",
+        "path": [
+          "couple",
+          "refine_image",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.36995648142509663,
+        "mean": 0.5769423505259911,
+        "mode": "full",
+        "path": [
+          "couple",
+          "refine_image",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.38134161922422893,
+        "mean": 0.5807789960175288,
+        "mode": "full",
+        "path": [
+          "couple",
+          "refine_image",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3716018959289531,
+        "mean": 0.5776864141776459,
+        "mode": "full",
+        "path": [
+          "couple",
+          "refine_text",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.36995648142509663,
+        "mean": 0.5769423505259911,
+        "mode": "full",
+        "path": [
+          "couple",
+          "refine_text",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3706149583665731,
+        "mean": 0.5781521951573668,
+        "mode": "full",
+        "path": [
+          "couple",
+          "refine_text",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3853824021013369,
+        "mean": 0.5854973027422093,
+        "mode": "full",
+        "path": [
+          "couple",
+          "refine_text",
+          "couple"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.38785859357070973,
+        "mean": 0.5865873075990239,
+        "mode": "full",
+        "path": [
+          "couple",
+          "couple",
+          "refine_semantic"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3853484201901757,
+        "mean": 0.5854648811594816,
+        "mode": "full",
+        "path": [
+          "couple",
+          "couple",
+          "refine_image"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.38538405887691884,
+        "mean": 0.5855002008347074,
+        "mode": "full",
+        "path": [
+          "couple",
+          "couple",
+          "refine_text"
+        ],
+        "space": "fixed"
+      },
+      {
+        "ce": 0.3962838769438153,
+        "mean": 0.5932077152128332,
+        "mode": "full",
+        "path": [
+          "couple",
+          "couple",
+          "couple"
+        ],
+        "space": "fixed"
+      }
+    ],
+    "historical_allocation": [
+      {
+        "ce": 0.37480356904263223,
+        "mean": 0.5810602086916333,
+        "mode": "allocation",
+        "path": [],
+        "space": "historical_allocation"
+      },
+      {
+        "ce": 0.3874724344904943,
+        "mean": 0.5895740142576398,
+        "mode": "allocation",
+        "path": [
+          "refine_image"
+        ],
+        "space": "historical_allocation"
+      },
+      {
+        "ce": 0.37912006373434204,
+        "mean": 0.5845289586916333,
+        "mode": "allocation",
+        "path": [
+          "refine_text"
+        ],
+        "space": "historical_allocation"
+      },
+      {
+        "ce": 0.3836942253284126,
+        "mean": 0.583997381191235,
+        "mode": "allocation",
+        "path": [
+          "refine_image",
+          "refine_image"
+        ],
+        "space": "historical_allocation"
+      },
+      {
+        "ce": 0.39198121914371287,
+        "mean": 0.5930427642576397,
+        "mode": "allocation",
+        "path": [
+          "refine_image",
+          "refine_text"
+        ],
+        "space": "historical_allocation"
+      },
+      {
+        "ce": 0.39198121914371287,
+        "mean": 0.5930427642576397,
+        "mode": "allocation",
+        "path": [
+          "refine_text",
+          "refine_image"
+        ],
+        "space": "historical_allocation"
+      },
+      {
+        "ce": 0.37236142352559576,
+        "mean": 0.5825289586916333,
+        "mode": "allocation",
+        "path": [
+          "refine_text",
+          "refine_text"
+        ],
+        "space": "historical_allocation"
+      },
+      {
+        "ce": 0.40354897585068406,
+        "mean": 0.5830842152701226,
+        "mode": "allocation",
+        "path": [
+          "refine_image",
+          "refine_image",
+          "refine_image"
+        ],
+        "space": "historical_allocation"
+      },
+      {
+        "ce": 0.38818412072549313,
+        "mean": 0.587466131191235,
+        "mode": "allocation",
+        "path": [
+          "refine_image",
+          "refine_image",
+          "refine_text"
+        ],
+        "space": "historical_allocation"
+      },
+      {
+        "ce": 0.38818412072549313,
+        "mean": 0.587466131191235,
+        "mode": "allocation",
+        "path": [
+          "refine_image",
+          "refine_text",
+          "refine_image"
+        ],
+        "space": "historical_allocation"
+      },
+      {
+        "ce": 0.3850770699369551,
+        "mean": 0.5910427642576397,
+        "mode": "allocation",
+        "path": [
+          "refine_image",
+          "refine_text",
+          "refine_text"
+        ],
+        "space": "historical_allocation"
+      },
+      {
+        "ce": 0.38818412072549313,
+        "mean": 0.587466131191235,
+        "mode": "allocation",
+        "path": [
+          "refine_text",
+          "refine_image",
+          "refine_image"
+        ],
+        "space": "historical_allocation"
+      },
+      {
+        "ce": 0.3850770699369551,
+        "mean": 0.5910427642576397,
+        "mode": "allocation",
+        "path": [
+          "refine_text",
+          "refine_image",
+          "refine_text"
+        ],
+        "space": "historical_allocation"
+      },
+      {
+        "ce": 0.3850770699369551,
+        "mean": 0.5910427642576397,
+        "mode": "allocation",
+        "path": [
+          "refine_text",
+          "refine_text",
+          "refine_image"
+        ],
+        "space": "historical_allocation"
+      },
+      {
+        "ce": 0.3728703949688985,
+        "mean": 0.5820914586916334,
+        "mode": "allocation",
+        "path": [
+          "refine_text",
+          "refine_text",
+          "refine_text"
+        ],
+        "space": "historical_allocation"
+      }
+    ]
+  },
+  "selected": {
+    "strong_common_allocation_ce": {
+      "mode": "full",
+      "path": [
+        "refine_image",
+        "refine_text",
+        "refine_text"
+      ],
+      "space": "common_allocation"
+    },
+    "strong_common_allocation_mean": {
+      "mode": "full",
+      "path": [
+        "refine_text",
+        "refine_text"
+      ],
+      "space": "common_allocation"
+    },
+    "strong_fixed_ce": {
+      "mode": "full",
+      "path": [
+        "couple",
+        "couple",
+        "couple"
+      ],
+      "space": "fixed"
+    },
+    "strong_fixed_mean": {
+      "mode": "full",
+      "path": [
+        "refine_text",
+        "refine_text"
+      ],
+      "space": "fixed"
+    },
+    "strong_historical_allocation_ce": {
+      "mode": "allocation",
+      "path": [
+        "refine_image",
+        "refine_image",
+        "refine_image"
+      ],
+      "space": "historical_allocation"
+    },
+    "strong_historical_allocation_mean": {
+      "mode": "allocation",
+      "path": [
+        "refine_image",
+        "refine_text"
+      ],
+      "space": "historical_allocation"
+    }
+  },
+  "selection_target": "reward observer utility minus .002 continuation depth",
+  "tie_rule": "first candidate in depth then declared action order"
+}

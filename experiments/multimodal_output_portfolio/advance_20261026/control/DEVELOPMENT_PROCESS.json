@@ -1,0 +1,41 @@
+{
+  "cgroup_after": {
+    "current": 8344072192,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3960651,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8589287424,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3958499,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 0.558542,
+  "child_user_seconds": 8.582946,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-m",
+    "experiments.multimodal_output_portfolio.advance_20261026.control.develop",
+    "--output",
+    "/tmp/hepta-ndu-advance-control/development-001"
+  ],
+  "context": "Registered old-source constrained paired value fitting; exclusive single-thread model window; no new source roles",
+  "exit_code": 0,
+  "log_sha256": "2b9d9e45fe93eb898a97ffc2e285b906e60984da8655315c1e65090c0cfdb562",
+  "peak_rss_bytes": 403832832,
+  "registration_sha256": "cb90653b32e846abb8ea26b867894402d57a624e0629362fb3d34c5d78ce2b87",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 3081563152,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}

@@ -1,0 +1,48 @@
+{
+  "cgroup_after": {
+    "current": 8323457024,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3846795,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8244346880,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3846795,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 0.18875899999999998,
+  "child_user_seconds": 2.468426,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-B",
+    "-m",
+    "experiments.multimodal_output_portfolio.next_20261025.native_h2.model_package",
+    "--predictor",
+    "/tmp/hepta-ndu-next-native-h2/development-002/predictor.json",
+    "--calibration",
+    "/tmp/hepta-ndu-next-native-h2/calibrator-001/calibration.json",
+    "--verification",
+    "/tmp/hepta-ndu-next-native-h2/qualification-001/verification.json",
+    "--output",
+    "/tmp/hepta-ndu-next-native-h2/model-001"
+  ],
+  "context": "Create actual newly-qualified H2 package; ASR exited; no production authority",
+  "exit_code": 0,
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "peak_rss_bytes": 247934976,
+  "registration_sha256": "73c08488cc3da696cbfc7153906b06379d0d585de78ae6027a754d6506da747b",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 1986172006,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}

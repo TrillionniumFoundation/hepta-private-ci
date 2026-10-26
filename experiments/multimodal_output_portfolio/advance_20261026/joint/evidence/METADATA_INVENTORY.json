@@ -1,0 +1,52 @@
+{
+  "all_qmnist_writer_count": 1074,
+  "already_used_speech_speakers": 2430,
+  "completely_unassigned_speech_speakers": 89,
+  "eligible_digit_rule": "Official label <=9 and duplicate marker column6 ==0, identical to existing advance allocator",
+  "existing_declared_remaining_speakers": 88,
+  "metadata_rows_read": {
+    "qmnist-test-labels-idx2-int.gz": 60000,
+    "qmnist-train-labels-idx2-int.gz": 60000,
+    "xnist-labels-idx2-int.xz": 402953
+  },
+  "no_allocation_modified": true,
+  "no_current_outcomes_read": true,
+  "parent_cpu_ns": 559781542,
+  "peak_rss_bytes": 43548672,
+  "pixels_audio_models_opened": false,
+  "previous_source_allocation_sha256": {
+    "ACTION_VALUE_ALLOCATION.json": "7675debf5142f07d3f4150d8e986b3827e5cf764547d704520895fc8241a474c",
+    "NATIVE_H2_ALLOCATION.json": "66aa5e30c26dc72736d8d4af2fac2de53cb9d5aa6fc7b514d56d0b06f5e60b7e",
+    "SOURCE_ALLOCATION.json": "6ad7fef099626d8ea1f4f6c123610016adfeca9aa828765f185f62d92afdb27e",
+    "XNIST_QUALIFICATION_ALLOCATION.json": "c997590bb6c1a95a91d1ba469f6a8f1219764422d572b16f77175cd5e252252f",
+    "media/AUDIO_SOURCE_ALLOCATION.json": "35862507212b97bc02bc1506070a31863f830e3c9e7747e5f3187ab2e6702fe5",
+    "media/ENSEMBLE_QUALIFICATION_SOURCES_V3.json": "df08fa48f9627ab8d828d267599b9bcebb59470d020e4f70a7caff9dfaddb67c",
+    "media/EVENT_QUALIFICATION_SOURCES.json": "2c9aa271394402a21dea81a34f6df4fd3afb9e86bd213f9b2dbd1de1ddabba75"
+  },
+  "recorded_unix_ns": 1792991496878996223,
+  "remaining_at_least_four_digit_writers": 0,
+  "remaining_eligible_speech_recordings": 537,
+  "remaining_three_digit_writers": 0,
+  "remaining_two_digit_writers": 0,
+  "remaining_writer_count_by_eligible_digit_count": {},
+  "remaining_xnist_writer_count_any_metadata": 0,
+  "schema": "hepta.advance.metadata-only-unallocated-inventory.v1",
+  "small_writer_pixel_identity_exclusions_verified": false,
+  "small_writer_scope": "Metadata availability upper bound; no pixels checked and no cohort or role allocated",
+  "source_identity_sha256": {
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/SOURCE_ALLOCATION.json": "42d0c47056dda930cb851c9ae59f330747de8bb863f18b79c47eea830f69b262",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/joint/metadata_inventory.py": "5a99bb8564a9d52a5b068863bf9eb11eacc412d4bc1e7c23793d4752bdafdc3f",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/media/new-assets/speech-commands-v002-digits/manifest.json": "4460edd64b8a8fa9ed168f0555c973e4321d416983467330dc229ef75f5e67c8",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/qmnist/qmnist-test-labels-idx2-int.gz": "9fbcbe594c3766fdf4f0b15c5165dc0d1e57ac604e01422608bb72c906030d06",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/qmnist/qmnist-train-labels-idx2-int.gz": "2c05dc77f6b916b38e455e97ab129a42a444f3dbef09b278a366f82904e0dd9f",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/qmnist/xnist-labels-idx2-int.xz": "db042968723ec2b7aed5f1beac25d2b6e983b9286d4f4bf725f1086e5ae55c4f"
+  },
+  "speech_manifest_digit_speakers": 2519,
+  "total_excluded_writer_count": 3579,
+  "two_or_three_digit_metadata_candidates": {},
+  "unassigned_speaker_identity_set_sha256": "30262980e665e3c88f9c96d95df176cfb2f933b40a284c294127e334cdd42271",
+  "unassigned_speakers_with_unique_eligible_WAV_identity": 88,
+  "unassigned_without_unique_eligible_WAV_identity": 1,
+  "wall_ns": 685922251,
+  "writer_exclusion": "All QMNIST train/test writers, every prior allocated or reserved writer, and all advance allocated writers"
+}

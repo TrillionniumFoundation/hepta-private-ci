@@ -1,0 +1,931 @@
+{
+  "all_raw_failures_and_timing_outliers_retained": true,
+  "analysis_cpu_ns": 16618858386,
+  "analysis_wall_ns": 14920685885,
+  "cluster_scope": "Held-out QMNIST writer, all pairs/views/draws and fixed seed panel remain together",
+  "compiled_exact_pairs": 24576,
+  "contrasts": {
+    "cached_teacher_minus_fixed_allocation": {
+      "cpu_price_curve": [
+        {
+          "estimate": 0.018561539986436726,
+          "price": 0.0,
+          "simultaneous_lower": 0.01203525398353647,
+          "simultaneous_upper": 0.02508782598933698
+        },
+        {
+          "estimate": 0.021489906233453704,
+          "price": 0.001,
+          "simultaneous_lower": 0.014963620230553448,
+          "simultaneous_upper": 0.02801619223635396
+        },
+        {
+          "estimate": 0.024415676693404054,
+          "price": 0.002,
+          "simultaneous_lower": 0.017889390690503798,
+          "simultaneous_upper": 0.03094196269630431
+        },
+        {
+          "estimate": 0.033207459843009546,
+          "price": 0.005,
+          "simultaneous_lower": 0.02668117384010929,
+          "simultaneous_upper": 0.0397337458459098
+        }
+      ],
+      "mean_cpu_ms": {
+        "estimate": -2.80892825052897,
+        "lower": -2.898777942270407,
+        "nominal_level": 0.975,
+        "upper": -2.7188266744155913
+      },
+      "mean_wall_ms": {
+        "estimate": -2.975329945068358,
+        "lower": -3.2235626973434446,
+        "nominal_level": 0.975,
+        "upper": -2.690630732242322
+      },
+      "original_replacement_family_pass": true,
+      "quality_superiority_family_pass": true,
+      "raw_CE": {
+        "estimate": 0.018561539986436726,
+        "lower": 0.011217793456475885,
+        "nominal_level": 0.975,
+        "upper": 0.025769088680269274
+      },
+      "secondary_CE": {
+        "estimate": 0.01969565616613611,
+        "lower": 0.011857801437790074,
+        "nominal_level": 0.975,
+        "upper": 0.02739448528302572
+      },
+      "success": {
+        "estimate": 0.01005045572916663,
+        "lower": 0.005615234375000331,
+        "nominal_level": 0.975,
+        "upper": 0.014363606770833265
+      },
+      "wall_price_curve": [
+        {
+          "estimate": 0.018561539986436726,
+          "price": 0.0,
+          "simultaneous_lower": -1.9738537788871484,
+          "simultaneous_upper": 2.0109768588600216
+        },
+        {
+          "estimate": 0.021759588958471632,
+          "price": 0.001,
+          "simultaneous_lower": -1.9706557299151135,
+          "simultaneous_upper": 2.0141749078320568
+        },
+        {
+          "estimate": 0.022791253335672224,
+          "price": 0.002,
+          "simultaneous_lower": -1.969624065537913,
+          "simultaneous_upper": 2.0152065722092574
+        },
+        {
+          "estimate": -1.9561292011914713,
+          "price": 0.005,
+          "simultaneous_lower": -3.9485445200650564,
+          "simultaneous_upper": 0.03628611768211387
+        }
+      ]
+    },
+    "cached_teacher_minus_strong_nonfeedback": {
+      "cpu_price_curve": [
+        {
+          "estimate": 0.01685087237242433,
+          "price": 0.0,
+          "simultaneous_lower": -0.6491808548925762,
+          "simultaneous_upper": 0.6828825996374248
+        },
+        {
+          "estimate": 0.0186405254266232,
+          "price": 0.001,
+          "simultaneous_lower": -0.6473912018383773,
+          "simultaneous_upper": 0.6846722526916237
+        },
+        {
+          "estimate": 0.02118351617848402,
+          "price": 0.002,
+          "simultaneous_lower": -0.6448482110865165,
+          "simultaneous_upper": 0.6872152434434845
+        },
+        {
+          "estimate": 0.6925956815761358,
+          "price": 0.005,
+          "simultaneous_lower": 0.02656395431113534,
+          "simultaneous_upper": 1.3586274088411363
+        }
+      ],
+      "mean_cpu_ms": {
+        "estimate": -1.7419990362548816,
+        "lower": -1.9313937971084587,
+        "nominal_level": 0.975,
+        "upper": -1.5957651925933845
+      },
+      "mean_wall_ms": {
+        "estimate": -1.8769077263997378,
+        "lower": -2.270221384039805,
+        "nominal_level": 0.975,
+        "upper": -1.5450867048436525
+      },
+      "original_replacement_family_pass": true,
+      "quality_superiority_family_pass": true,
+      "raw_CE": {
+        "estimate": 0.01685087237242433,
+        "lower": 0.009681914224364709,
+        "nominal_level": 0.975,
+        "upper": 0.023929145914822127
+      },
+      "secondary_CE": {
+        "estimate": 0.016878290399460205,
+        "lower": 0.009230517935642252,
+        "nominal_level": 0.975,
+        "upper": 0.024233918867900873
+      },
+      "success": {
+        "estimate": 0.01078287760416663,
+        "lower": 0.006713358561197595,
+        "nominal_level": 0.975,
+        "upper": 0.014811197916666522
+      },
+      "wall_price_curve": [
+        {
+          "estimate": 0.01685087237242433,
+          "price": 0.0,
+          "simultaneous_lower": -7.208785255196748,
+          "simultaneous_upper": 7.242486999941596
+        },
+        {
+          "estimate": 0.020491160488337656,
+          "price": 0.001,
+          "simultaneous_lower": -7.205144967080834,
+          "simultaneous_upper": 7.24612728805751
+        },
+        {
+          "estimate": 0.24135271159015126,
+          "price": 0.002,
+          "simultaneous_lower": -6.984283415979021,
+          "simultaneous_upper": 7.466988839159323
+        },
+        {
+          "estimate": 5.264931742354969,
+          "price": 0.005,
+          "simultaneous_lower": -1.9607043852142025,
+          "simultaneous_upper": 12.490567869924142
+        }
+      ]
+    },
+    "compiled_teacher_minus_cached_teacher": {
+      "cpu_price_curve": [
+        {
+          "estimate": 0.0,
+          "price": 0.0,
+          "simultaneous_lower": -236.29117890650977,
+          "simultaneous_upper": 236.29117890650977
+        },
+        {
+          "estimate": -42.57546010815949,
+          "price": 0.001,
+          "simultaneous_lower": -278.86663901466926,
+          "simultaneous_upper": 193.71571879835028
+        },
+        {
+          "estimate": -91.004305998291,
+          "price": 0.002,
+          "simultaneous_lower": -327.2954849048008,
+          "simultaneous_upper": 145.28687290821875
+        },
+        {
+          "estimate": -236.2906754003956,
+          "price": 0.005,
+          "simultaneous_lower": -472.58185430690537,
+          "simultaneous_upper": 0.0005035061141711594
+        }
+      ],
+      "mean_cpu_ms": {
+        "estimate": 1.8847190471191393,
+        "lower": -0.12961659752705837,
+        "nominal_level": 0.975,
+        "upper": 7.802661098799637
+      },
+      "mean_wall_ms": {
+        "estimate": 2.364437160115557,
+        "lower": -0.34344506639913647,
+        "nominal_level": 0.975,
+        "upper": 9.924735546956388
+      },
+      "original_replacement_family_pass": false,
+      "quality_superiority_family_pass": false,
+      "raw_CE": {
+        "estimate": 0.0,
+        "lower": 0.0,
+        "nominal_level": 0.975,
+        "upper": 0.0
+      },
+      "secondary_CE": {
+        "estimate": 0.0,
+        "lower": 0.0,
+        "nominal_level": 0.975,
+        "upper": 0.0
+      },
+      "success": {
+        "estimate": 0.0,
+        "lower": 0.0,
+        "nominal_level": 0.975,
+        "upper": 0.0
+      },
+      "wall_price_curve": [
+        {
+          "estimate": 0.0,
+          "price": 0.0,
+          "simultaneous_lower": -302.85304080594267,
+          "simultaneous_upper": 302.85304080594267
+        },
+        {
+          "estimate": -55.89581708473496,
+          "price": 0.001,
+          "simultaneous_lower": -358.74885789067764,
+          "simultaneous_upper": 246.9572237212077
+        },
+        {
+          "estimate": -117.64265209072799,
+          "price": 0.002,
+          "simultaneous_lower": -420.4956928966707,
+          "simultaneous_upper": 185.21038871521466
+        },
+        {
+          "estimate": -300.8967748123454,
+          "price": 0.005,
+          "simultaneous_lower": -603.749815618288,
+          "simultaneous_upper": 1.956265993597242
+        }
+      ]
+    },
+    "fresh_feedback_minus_stale_feedback": {
+      "cpu_price_curve": [
+        {
+          "estimate": 0.0026694550456509702,
+          "price": 0.0,
+          "simultaneous_lower": -0.0010301380844204068,
+          "simultaneous_upper": 0.006369048175722347
+        },
+        {
+          "estimate": 0.0027505961820112335,
+          "price": 0.001,
+          "simultaneous_lower": -0.0009489969480601435,
+          "simultaneous_upper": 0.00645018931208261
+        },
+        {
+          "estimate": 0.0028412602129499476,
+          "price": 0.002,
+          "simultaneous_lower": -0.0008583329171214294,
+          "simultaneous_upper": 0.006540853343021324
+        },
+        {
+          "estimate": 0.003833147925502045,
+          "price": 0.005,
+          "simultaneous_lower": 0.00013355479543066808,
+          "simultaneous_upper": 0.007532741055573422
+        }
+      ],
+      "mean_cpu_ms": {
+        "estimate": -0.01958271769205666,
+        "lower": -0.10025585947418517,
+        "nominal_level": 0.975,
+        "upper": 0.049577838837174384
+      },
+      "mean_wall_ms": {
+        "estimate": 0.00142074291992067,
+        "lower": -0.1762035449239062,
+        "nominal_level": 0.975,
+        "upper": 0.1571083228607172
+      },
+      "original_replacement_family_pass": false,
+      "quality_superiority_family_pass": false,
+      "raw_CE": {
+        "estimate": 0.0026694550456509702,
+        "lower": -0.0008107428910664233,
+        "nominal_level": 0.975,
+        "upper": 0.0060028166379676425
+      },
+      "secondary_CE": {
+        "estimate": 0.0029427089233440284,
+        "lower": -0.0008316895139054339,
+        "nominal_level": 0.975,
+        "upper": 0.006682488370562004
+      },
+      "success": {
+        "estimate": 0.0022379557291666297,
+        "lower": 0.0006917317708333689,
+        "nominal_level": 0.975,
+        "upper": 0.0037434895833333703
+      },
+      "wall_price_curve": [
+        {
+          "estimate": 0.0026694550456509702,
+          "price": 0.0,
+          "simultaneous_lower": -0.01991400649541031,
+          "simultaneous_upper": 0.025252916586712252
+        },
+        {
+          "estimate": 0.002650683000087528,
+          "price": 0.001,
+          "simultaneous_lower": -0.019932778540973754,
+          "simultaneous_upper": 0.02523414454114881
+        },
+        {
+          "estimate": 0.0025872428449730256,
+          "price": 0.002,
+          "simultaneous_lower": -0.019996218696088256,
+          "simultaneous_upper": 0.025170704386034307
+        },
+        {
+          "estimate": 0.012934206029200812,
+          "price": 0.005,
+          "simultaneous_lower": -0.00964925551186047,
+          "simultaneous_upper": 0.03551766757026209
+        }
+      ]
+    }
+  },
+  "failures": 0,
+  "feedback_equal_access_decisions": 82636,
+  "feedback_shared_initial_pairs": 24576,
+  "finite_sample_coverage_guaranteed": false,
+  "new_source_pairs": 512,
+  "nominal_intervals": true,
+  "policies": {
+    "cached_teacher": {
+      "CE": 0.18198211603327685,
+      "mean_cpu_ms": 10.915443743530275,
+      "mean_wall_ms": 12.773831914428712,
+      "per_seed": {
+        "17": {
+          "CE": 0.17281299076729217,
+          "mean_wall_ms": 12.332677985107422,
+          "success": 0.552978515625
+        },
+        "29": {
+          "CE": 0.19014031103053797,
+          "mean_wall_ms": 12.226003313232422,
+          "success": 0.554443359375
+        },
+        "43": {
+          "CE": 0.18314518274923364,
+          "mean_wall_ms": 13.76281444494629,
+          "success": 0.55859375
+        }
+      },
+      "secondary_CE": 0.17831582597195217,
+      "selected_H1_calibration": {
+        "MSE": 0.20577811502988222,
+        "bins": [
+          {
+            "n": 2972,
+            "predicted": -0.2623706526608077,
+            "range": [
+              -10.0,
+              -0.1
+            ],
+            "realized": -0.08632012503538948
+          },
+          {
+            "n": 4922,
+            "predicted": -0.05364783140022742,
+            "range": [
+              -0.1,
+              -0.025
+            ],
+            "realized": -0.0016589871912956807
+          },
+          {
+            "n": 3612,
+            "predicted": -0.012219791167548724,
+            "range": [
+              -0.025,
+              0.0
+            ],
+            "realized": -0.0003028280202602816
+          },
+          {
+            "n": 5236,
+            "predicted": 0.0,
+            "range": [
+              0.0,
+              10.0
+            ],
+            "realized": 0.0
+          }
+        ],
+        "n": 16742,
+        "nonstop_n": 11506,
+        "prediction_bias": -0.04910735456857669,
+        "realized_action_minus_stop_moment": {
+          "estimate": -0.015876404334602495,
+          "lower": -0.024435243495425786,
+          "nominal_level": 0.975,
+          "upper": -0.007533414773675143
+        },
+        "scope": "Selected H1 action versus actual same-state stop, after durable choice; outcome-noise diagnostics, no uniform conditional guarantee. Hindsight regret uses private realized outcomes and is not attainable online.",
+        "two_action_hindsight_moment_regret": 0.05770826082224
+      },
+      "success": 0.5553385416666666,
+      "wall_p50_p95_p99_max_ms": [
+        11.7801215,
+        20.14527275,
+        28.83790675,
+        1579.94324
+      ],
+      "work": {
+        "bernoulli_sample_calls": 49944,
+        "categorical_sample_calls": 349570,
+        "committed_image_examples": 42962,
+        "committed_text_examples": 41885,
+        "couple_calls": 34903,
+        "discarded_image_examples": 6982,
+        "discarded_text_examples": 8059,
+        "draft_pixel_encoder_calls": 34438,
+        "draft_pixel_encoder_panel_examples": 68876,
+        "emission_calls": 49944,
+        "encoder_calls": 24576,
+        "encoder_examples": 24576,
+        "exact_pixel_cache_examples": 6880,
+        "exact_pixel_cache_hits": 6880,
+        "input_pixel_encoder_panel_examples": 49152,
+        "pixel_decoder_calls": 49944,
+        "pixel_decoder_panel_examples": 99888,
+        "public_draft_sensor_calls": 34438,
+        "public_draft_sensor_panel_examples": 68876,
+        "public_feature_calls": 41318,
+        "public_feature_examples": 41318,
+        "public_input_sensor_calls": 24576,
+        "public_input_sensor_panel_examples": 49152,
+        "refine_image_calls": 8059,
+        "refine_semantic_calls": 27456,
+        "refine_text_calls": 6982,
+        "sampled_bernoulli_variables": 78312192,
+        "sampled_categorical_variables": 349570,
+        "state_transition_calls": 77400,
+        "state_transition_examples": 77400,
+        "teacher_calls": 41318,
+        "text_decoder_example_steps": 349608,
+        "text_decoder_step_calls": 349608,
+        "token_onehot_examples": 41318,
+        "token_projection_example_steps": 349608
+      }
+    },
+    "compiled_teacher": {
+      "CE": 0.18198211603327685,
+      "mean_cpu_ms": 12.800162790649415,
+      "mean_wall_ms": 15.138269074544269,
+      "per_seed": {
+        "17": {
+          "CE": 0.17281299076729217,
+          "mean_wall_ms": 19.790644936279296,
+          "success": 0.552978515625
+        },
+        "29": {
+          "CE": 0.19014031103053797,
+          "mean_wall_ms": 12.170314836914063,
+          "success": 0.554443359375
+        },
+        "43": {
+          "CE": 0.18314518274923364,
+          "mean_wall_ms": 13.45384745043945,
+          "success": 0.55859375
+        }
+      },
+      "secondary_CE": 0.17831582597195217,
+      "success": 0.5553385416666666,
+      "wall_p50_p95_p99_max_ms": [
+        11.645169,
+        19.85485875,
+        29.545465999999998,
+        61762.059463
+      ],
+      "work": {
+        "bernoulli_sample_calls": 49944,
+        "categorical_sample_calls": 349570,
+        "committed_image_examples": 42962,
+        "committed_text_examples": 41885,
+        "compiled_teacher_calls": 41318,
+        "compiled_visual_pair_calls": 34438,
+        "couple_calls": 34903,
+        "discarded_image_examples": 6982,
+        "discarded_text_examples": 8059,
+        "draft_pixel_encoder_calls": 34438,
+        "draft_pixel_encoder_panel_examples": 68876,
+        "emission_calls": 49944,
+        "encoder_calls": 24576,
+        "encoder_examples": 24576,
+        "exact_pixel_cache_examples": 6880,
+        "exact_pixel_cache_hits": 6880,
+        "input_pixel_encoder_panel_examples": 49152,
+        "near_tie_original_fallbacks": 20,
+        "pixel_decoder_calls": 49944,
+        "pixel_decoder_panel_examples": 99888,
+        "public_draft_sensor_calls": 34438,
+        "public_draft_sensor_panel_examples": 68876,
+        "public_feature_calls": 41318,
+        "public_feature_examples": 41318,
+        "public_input_sensor_calls": 24576,
+        "public_input_sensor_panel_examples": 49152,
+        "refine_image_calls": 8059,
+        "refine_semantic_calls": 27456,
+        "refine_text_calls": 6982,
+        "sampled_bernoulli_variables": 78312192,
+        "sampled_categorical_variables": 349570,
+        "state_transition_calls": 77400,
+        "state_transition_examples": 77400,
+        "text_decoder_example_steps": 349608,
+        "text_decoder_step_calls": 349608,
+        "token_onehot_examples": 41318,
+        "token_projection_example_steps": 349608
+      }
+    },
+    "fixed_allocation": {
+      "CE": 0.16342057604684013,
+      "mean_cpu_ms": 13.724371994059245,
+      "mean_wall_ms": 15.74916185949707,
+      "per_seed": {
+        "17": {
+          "CE": 0.15974894059039868,
+          "mean_wall_ms": 15.023721375732421,
+          "success": 0.5389404296875
+        },
+        "29": {
+          "CE": 0.16841639553845655,
+          "mean_wall_ms": 15.40849668774414,
+          "success": 0.5477294921875
+        },
+        "43": {
+          "CE": 0.16213643171168046,
+          "mean_wall_ms": 16.815267515014646,
+          "success": 0.5491943359375
+        }
+      },
+      "secondary_CE": 0.15862016980581606,
+      "success": 0.5452880859375,
+      "wall_p50_p95_p99_max_ms": [
+        14.4893965,
+        22.260762749999998,
+        33.2326545,
+        614.717046
+      ],
+      "work": {
+        "bernoulli_sample_calls": 73728,
+        "categorical_sample_calls": 516044,
+        "committed_image_examples": 49152,
+        "committed_text_examples": 49152,
+        "couple_calls": 24576,
+        "discarded_image_examples": 24576,
+        "discarded_text_examples": 24576,
+        "draft_pixel_encoder_calls": 49152,
+        "draft_pixel_encoder_panel_examples": 98304,
+        "emission_calls": 73728,
+        "encoder_calls": 24576,
+        "encoder_examples": 24576,
+        "input_pixel_encoder_panel_examples": 49152,
+        "pixel_decoder_calls": 73728,
+        "pixel_decoder_panel_examples": 147456,
+        "public_draft_sensor_calls": 49152,
+        "public_draft_sensor_panel_examples": 98304,
+        "public_feature_calls": 49152,
+        "public_feature_examples": 49152,
+        "public_input_sensor_calls": 24576,
+        "public_input_sensor_panel_examples": 49152,
+        "refine_image_calls": 24576,
+        "refine_semantic_calls": 24576,
+        "refine_text_calls": 24576,
+        "sampled_bernoulli_variables": 115605504,
+        "sampled_categorical_variables": 516044,
+        "state_transition_calls": 98304,
+        "state_transition_examples": 98304,
+        "text_decoder_example_steps": 516096,
+        "text_decoder_step_calls": 516096,
+        "token_onehot_examples": 49152,
+        "token_projection_example_steps": 516096
+      }
+    },
+    "fresh_feedback": {
+      "CE": 0.18198211603327685,
+      "mean_cpu_ms": 11.162591783772788,
+      "mean_wall_ms": 12.921482744628905,
+      "per_seed": {
+        "17": {
+          "CE": 0.17281299076729217,
+          "mean_wall_ms": 12.247151144287109,
+          "success": 0.552978515625
+        },
+        "29": {
+          "CE": 0.19014031103053797,
+          "mean_wall_ms": 12.538528454345702,
+          "success": 0.554443359375
+        },
+        "43": {
+          "CE": 0.18314518274923364,
+          "mean_wall_ms": 13.978768635253907,
+          "success": 0.55859375
+        }
+      },
+      "secondary_CE": 0.17831582597195217,
+      "selected_H1_calibration": {
+        "MSE": 0.20577811502988222,
+        "bins": [
+          {
+            "n": 2972,
+            "predicted": -0.2623706526608077,
+            "range": [
+              -10.0,
+              -0.1
+            ],
+            "realized": -0.08632012503538948
+          },
+          {
+            "n": 4922,
+            "predicted": -0.05364783140022742,
+            "range": [
+              -0.1,
+              -0.025
+            ],
+            "realized": -0.0016589871912956807
+          },
+          {
+            "n": 3612,
+            "predicted": -0.012219791167548724,
+            "range": [
+              -0.025,
+              0.0
+            ],
+            "realized": -0.0003028280202602816
+          },
+          {
+            "n": 5236,
+            "predicted": 0.0,
+            "range": [
+              0.0,
+              10.0
+            ],
+            "realized": 0.0
+          }
+        ],
+        "n": 16742,
+        "nonstop_n": 11506,
+        "prediction_bias": -0.04910735456857669,
+        "realized_action_minus_stop_moment": {
+          "estimate": -0.015876404334602495,
+          "lower": -0.024435243495425786,
+          "nominal_level": 0.975,
+          "upper": -0.007533414773675143
+        },
+        "scope": "Selected H1 action versus actual same-state stop, after durable choice; outcome-noise diagnostics, no uniform conditional guarantee. Hindsight regret uses private realized outcomes and is not attainable online.",
+        "two_action_hindsight_moment_regret": 0.05770826082224
+      },
+      "success": 0.5553385416666666,
+      "wall_p50_p95_p99_max_ms": [
+        11.985533,
+        20.768236,
+        31.384948,
+        434.772892
+      ],
+      "work": {
+        "bernoulli_sample_calls": 49944,
+        "categorical_sample_calls": 349570,
+        "committed_image_examples": 42962,
+        "committed_text_examples": 41885,
+        "couple_calls": 34903,
+        "discarded_image_examples": 6982,
+        "discarded_text_examples": 8059,
+        "draft_pixel_encoder_calls": 34438,
+        "draft_pixel_encoder_panel_examples": 68876,
+        "emission_calls": 49944,
+        "encoder_calls": 24576,
+        "encoder_examples": 24576,
+        "exact_pixel_cache_examples": 6880,
+        "exact_pixel_cache_hits": 6880,
+        "input_pixel_encoder_panel_examples": 49152,
+        "pixel_decoder_calls": 49944,
+        "pixel_decoder_panel_examples": 99888,
+        "public_draft_sensor_calls": 34438,
+        "public_draft_sensor_panel_examples": 68876,
+        "public_feature_calls": 41318,
+        "public_feature_examples": 41318,
+        "public_input_sensor_calls": 24576,
+        "public_input_sensor_panel_examples": 49152,
+        "refine_image_calls": 8059,
+        "refine_semantic_calls": 27456,
+        "refine_text_calls": 6982,
+        "sampled_bernoulli_variables": 78312192,
+        "sampled_categorical_variables": 349570,
+        "state_transition_calls": 77400,
+        "state_transition_examples": 77400,
+        "teacher_calls": 82636,
+        "text_decoder_example_steps": 349608,
+        "text_decoder_step_calls": 349608,
+        "token_onehot_examples": 41318,
+        "token_projection_example_steps": 349608
+      }
+    },
+    "stale_feedback": {
+      "CE": 0.17931266098762588,
+      "mean_cpu_ms": 11.182174501464845,
+      "mean_wall_ms": 12.920062001708985,
+      "per_seed": {
+        "17": {
+          "CE": 0.1722215217370311,
+          "mean_wall_ms": 12.253148973999023,
+          "success": 0.553466796875
+        },
+        "29": {
+          "CE": 0.18411420730198835,
+          "mean_wall_ms": 12.5249523236084,
+          "success": 0.5509033203125
+        },
+        "43": {
+          "CE": 0.18168135984932365,
+          "mean_wall_ms": 13.982084707519531,
+          "success": 0.554931640625
+        }
+      },
+      "secondary_CE": 0.17537311704860814,
+      "selected_H1_calibration": {
+        "MSE": 0.2711826416187491,
+        "bins": [
+          {
+            "n": 3664,
+            "predicted": -0.2878350009328348,
+            "range": [
+              -10.0,
+              -0.1
+            ],
+            "realized": -0.04581393105722342
+          },
+          {
+            "n": 4870,
+            "predicted": -0.053421583477966106,
+            "range": [
+              -0.1,
+              -0.025
+            ],
+            "realized": -0.001672449105176966
+          },
+          {
+            "n": 3438,
+            "predicted": -0.012043283841615503,
+            "range": [
+              -0.025,
+              0.0
+            ],
+            "realized": 0.0015584349504008123
+          },
+          {
+            "n": 4770,
+            "predicted": 0.0,
+            "range": [
+              0.0,
+              10.0
+            ],
+            "realized": 0.0
+          }
+        ],
+        "n": 16742,
+        "nonstop_n": 11972,
+        "prediction_bias": -0.07081269822163871,
+        "realized_action_minus_stop_moment": {
+          "estimate": -0.010192878459945074,
+          "lower": -0.019144187420477337,
+          "nominal_level": 0.975,
+          "upper": -0.0014053434420589833
+        },
+        "scope": "Selected H1 action versus actual same-state stop, after durable choice; outcome-noise diagnostics, no uniform conditional guarantee. Hindsight regret uses private realized outcomes and is not attainable online.",
+        "two_action_hindsight_moment_regret": 0.07323199555970854
+      },
+      "success": 0.5531005859375,
+      "wall_p50_p95_p99_max_ms": [
+        12.041035,
+        20.58077925,
+        29.77290575,
+        810.288721
+      ],
+      "work": {
+        "bernoulli_sample_calls": 50410,
+        "categorical_sample_calls": 352829,
+        "committed_image_examples": 43140,
+        "committed_text_examples": 42620,
+        "couple_calls": 35350,
+        "discarded_image_examples": 7270,
+        "discarded_text_examples": 7790,
+        "draft_pixel_encoder_calls": 34438,
+        "draft_pixel_encoder_panel_examples": 68876,
+        "emission_calls": 50410,
+        "encoder_calls": 24576,
+        "encoder_examples": 24576,
+        "exact_pixel_cache_examples": 6880,
+        "exact_pixel_cache_hits": 6880,
+        "input_pixel_encoder_panel_examples": 49152,
+        "pixel_decoder_calls": 50410,
+        "pixel_decoder_panel_examples": 100820,
+        "public_draft_sensor_calls": 34438,
+        "public_draft_sensor_panel_examples": 68876,
+        "public_feature_calls": 41318,
+        "public_feature_examples": 41318,
+        "public_input_sensor_calls": 24576,
+        "public_input_sensor_panel_examples": 49152,
+        "refine_image_calls": 7790,
+        "refine_semantic_calls": 27456,
+        "refine_text_calls": 7270,
+        "sampled_bernoulli_variables": 79042880,
+        "sampled_categorical_variables": 352829,
+        "state_transition_calls": 77866,
+        "state_transition_examples": 77866,
+        "teacher_calls": 82636,
+        "text_decoder_example_steps": 352870,
+        "text_decoder_step_calls": 352870,
+        "token_onehot_examples": 41318,
+        "token_projection_example_steps": 352870
+      }
+    },
+    "strong_nonfeedback": {
+      "CE": 0.16513124366085252,
+      "mean_cpu_ms": 12.657442779785157,
+      "mean_wall_ms": 14.65073964082845,
+      "per_seed": {
+        "17": {
+          "CE": 0.15974894059039868,
+          "mean_wall_ms": 15.51988399963379,
+          "success": 0.5389404296875
+        },
+        "29": {
+          "CE": 0.17080774439727553,
+          "mean_wall_ms": 13.017660325439453,
+          "success": 0.5452880859375
+        },
+        "43": {
+          "CE": 0.16489827475642338,
+          "mean_wall_ms": 15.414674597412109,
+          "success": 0.5494384765625
+        }
+      },
+      "secondary_CE": 0.16143753557249196,
+      "success": 0.5445556640625,
+      "wall_p50_p95_p99_max_ms": [
+        13.3166685,
+        20.718750749999998,
+        31.03281675,
+        2541.224569
+      ],
+      "work": {
+        "bernoulli_sample_calls": 68214,
+        "categorical_sample_calls": 477436,
+        "committed_image_examples": 39960,
+        "committed_text_examples": 55352,
+        "couple_calls": 27098,
+        "discarded_image_examples": 28254,
+        "discarded_text_examples": 12862,
+        "draft_pixel_encoder_calls": 35798,
+        "draft_pixel_encoder_panel_examples": 71596,
+        "emission_calls": 68214,
+        "encoder_calls": 24576,
+        "encoder_examples": 24576,
+        "exact_pixel_cache_examples": 12472,
+        "exact_pixel_cache_hits": 12472,
+        "input_pixel_encoder_panel_examples": 49152,
+        "pixel_decoder_calls": 68214,
+        "pixel_decoder_panel_examples": 136428,
+        "public_draft_sensor_calls": 35798,
+        "public_draft_sensor_panel_examples": 71596,
+        "public_feature_calls": 48270,
+        "public_feature_examples": 48270,
+        "public_input_sensor_calls": 24576,
+        "public_input_sensor_panel_examples": 49152,
+        "refine_image_calls": 12862,
+        "refine_semantic_calls": 27038,
+        "refine_text_calls": 28254,
+        "route_head_calls": 8192,
+        "sampled_bernoulli_variables": 106959552,
+        "sampled_categorical_variables": 477436,
+        "state_transition_calls": 95252,
+        "state_transition_examples": 95252,
+        "text_decoder_example_steps": 477498,
+        "text_decoder_step_calls": 477498,
+        "token_onehot_examples": 48270,
+        "token_projection_example_steps": 477498
+      }
+    }
+  },
+  "protocol_sha256": "d3e3e259b178056a6646d131f36ceb25bb1f0e597f29c3aab87d03bd1987d240",
+  "registration_sha256": "512f22886e74615967ae47e97cf9a70c34d69d661aaedfd49cf341e6fa3a3a6f",
+  "requests": 147456,
+  "schema": "hepta.next.exact-control-analysis.v1",
+  "seed_scope": "Conditional on this fixed trained-seed panel; not independent observations or training-seed population inference",
+  "source_pairs": 512,
+  "status": "completed",
+  "training_seeds": [
+    17,
+    29,
+    43
+  ],
+  "writer_clusters": 128
+}

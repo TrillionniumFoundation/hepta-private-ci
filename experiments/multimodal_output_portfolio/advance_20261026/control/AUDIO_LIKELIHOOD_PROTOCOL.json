@@ -1,0 +1,25 @@
+{
+  "alpha": 0.5,
+  "counts_axis": "observed argmax label, true source label",
+  "environment_threads": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "factorization": "Pair observation law is the Kronecker product of digit laws; conditional error independence is an assumption, not established for same-speaker pairs",
+  "fixed_candidate_count": 1,
+  "input_sha256": {
+    "/tmp/hepta-ndu-next-media-cache/repair-training-001/audio-input.pt": "5c10b1ca0830879464f5d29219236fe88cb9422f7f630cb8dc7cc7b5844b3bbb",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/control/audio_likelihood.py": "543d90ecd70efaa0c8008dec5ecc593cd628ee0a1360139dc171cc5a1e258590",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/coherent.py": "3ceb4e2c404b18c6d96b63b1d74a0cb126c9d8d07ce3f0cd998fee296cad69e8",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/AUDIO_SOURCE_ALLOCATION.json": "35862507212b97bc02bc1506070a31863f830e3c9e7747e5f3187ab2e6702fe5",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/audio_sources.py": "82b4aba5b547fa6c0c56c9e75a2f0b8d5020052169aed028457e7007ba4bfb10",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/model.py": "2b3b76c10411f93c8b2ffa2189e3a0f53874fc33a9b841afd1371bf4c51b6615",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7_media/corpus.py": "92eb9bc2306c811e94f4d43c8f4f014871252d8dbee9e4f18cbe4e2d09893913"
+  },
+  "registered_ns": 1792989165614122430,
+  "schema": "hepta.advance.audio-likelihood-development-registration.v1",
+  "selection_history": "These 300 sources were previously used to select the frozen audio CNN",
+  "source_recordings": 300,
+  "source_role": "old qualification reused as development; not independent"
+}

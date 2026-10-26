@@ -1,0 +1,94 @@
+{
+  "aggregation_rules": [
+    "Do not sum nested timing intervals as disjoint costs.",
+    "Retain cold initialization, actual cache hits, failures, rejected requests, and all emitted files.",
+    "Report image/video paired costs separately from audio/text functional coverage.",
+    "Keep aggregate hardware/runtime counts separate from assumed utility-price conversion.",
+    "No output observation is reused as target truth evidence.",
+    "No source WAV is decoded for the late evidence event before the native acquire decision commits."
+  ],
+  "frozen_wall_cost_sensitivity": {
+    "scope": "Original frozen descriptive sensitivity only; no post-outcome rate selection or replacement primary.",
+    "utility_cost_per_actual_second": [
+      0,
+      0.0001,
+      0.001,
+      0.01,
+      0.1,
+      1
+    ]
+  },
+  "launch_plan": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/native/FORMAL_LAUNCH_PLAN.json",
+  "launch_plan_sha256": "60cb3082acaa6eff7e7daf6583f8b74d760f0e94f4779625a07bf52e5874bafa",
+  "no_new_model_execution": true,
+  "per_request_existing_fields": {
+    "actual_encoder_wall_ns": "Actual frozen initial encoder call.",
+    "audit_wall_ns": "Actual output observer call.",
+    "input_video_receipt": "Actual source-video encode/decode preparation where recorded.",
+    "native_execution_us": "Retain every original per-candidate timing, including refusals.",
+    "observed_ns_minus_generation_started_ns": "Actual combined generation/acquisition and public observation interval; do not invent a separate unrecorded decoder/codec split.",
+    "owner_execution_us": "Sum of measured original owner tick times.",
+    "owner_peak_bytes": "Recorded owner accounting peak; not whole Python RSS.",
+    "planning_us": "Sum of recorded native decision planning calls.",
+    "registered_cost": "0.002 times acquire_attempts plus emit_attempts; fixed utility penalty, not measured currency.",
+    "source_CNN_wall_ns": "Actual late source loading/spectrum/CNN work after the acquire commit; source_acquisition_cached stays false.",
+    "speech.events.historical_asr_wall_ns": "Historical cache provenance only, not this-run CPU or wall spend.",
+    "speech.request_wall_ns": "Actual this-run cached or cold observation request latency.",
+    "whole_episode_wall_ns": "Native creation/encoding/decisions/acquisition/rendering/audit/commit/owner close; excludes prepare_task.",
+    "whole_execution_wall_ns": "Input preparation through completed attempt, including failures and closure. Offline score-writing and final study analysis are outside this timer."
+  },
+  "schema": "hepta.advance.native-formal-cost-ledger-plan.v1",
+  "separate_noninference_ledgers": {
+    "HWD_public_metadata_review": "Separate feasibility access receipts, no model execution.",
+    "archive_compression_and_readback": "Separate sealing-process receipt.",
+    "independent_qualification": "/tmp/hepta-ndu-advance-native/qualification-001.PROCESS.json",
+    "native_builds": "Existing build-001..005 receipts, including the failed first build.",
+    "old_development_and_calibration": "Retain existing calibration attempts and old-source evidence; do not charge them as a fresh inference timing.",
+    "postrun_independent_audit": "Separate audit-process receipt.",
+    "root_verified_reclaim_002": "Root-owned shared maintenance receipt; not native inference cost. Parent reports 35.096 s maintenance, kept outside efficacy timing."
+  },
+  "status": "prepared_not_measured",
+  "whole_process": {
+    "cgroup_files": [
+      "memory.current",
+      "memory.peak",
+      "memory.max",
+      "memory.events"
+    ],
+    "cgroup_scope": "Aggregate shared environment counters, with explicit before/after OOM and OOM-kill counts; not attributable standalone model memory.",
+    "completion_record_fields": [
+      "schema",
+      "command",
+      "started_unix_ns",
+      "finished_unix_ns",
+      "wall_ns",
+      "returncode",
+      "child_user_cpu_s",
+      "child_system_cpu_s",
+      "child_peak_rss_bytes",
+      "cgroup_before",
+      "cgroup_after",
+      "disk_free_before_bytes",
+      "disk_free_after_bytes",
+      "stdout_sha256",
+      "stderr_sha256"
+    ],
+    "launch_record_fields": [
+      "schema",
+      "command",
+      "cwd",
+      "thread_env",
+      "started_unix_ns",
+      "process_pid",
+      "binary_sha256",
+      "protocol_sha256",
+      "launch_plan_sha256",
+      "git_HEAD_at_launch",
+      "cgroup_before",
+      "disk_free_before_bytes"
+    ],
+    "measurement": "Outer stdlib supervisor around the exact command. Use perf_counter_ns for wall duration, time_ns for UTC receipt times, and Linux RUSAGE_CHILDREN before/after for CPU totals. No model imports in the supervisor.",
+    "peak_RSS_scope": "Linux waited-child ru_maxrss is the largest reported process peak, converted from KiB to bytes; it is not a measured simultaneous process-tree peak. Evaluator self peak remains separately reported.",
+    "wall_scope": "Includes child interpreter startup, closure verification, cold model initialization, input preparation, all owner/media episodes, scoring, fixed analysis, final closure verification, and report writing."
+  }
+}

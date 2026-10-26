@@ -1,0 +1,254 @@
+{
+  "actual_outputs_generated_and_reopened": 516096,
+  "baselines": [
+    {
+      "base": "supervised",
+      "policy": "strong_fixed",
+      "seed": 17
+    },
+    {
+      "base": "supervised",
+      "policy": "allocation",
+      "seed": 17
+    },
+    {
+      "base": "supervised",
+      "policy": "private_realized_oracle",
+      "seed": 17
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "policy": "strong_fixed",
+      "seed": 17
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "policy": "allocation",
+      "seed": 17
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "policy": "private_realized_oracle",
+      "seed": 17
+    },
+    {
+      "base": "supervised",
+      "policy": "strong_fixed",
+      "seed": 29
+    },
+    {
+      "base": "supervised",
+      "policy": "allocation",
+      "seed": 29
+    },
+    {
+      "base": "supervised",
+      "policy": "private_realized_oracle",
+      "seed": 29
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "policy": "strong_fixed",
+      "seed": 29
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "policy": "allocation",
+      "seed": 29
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "policy": "private_realized_oracle",
+      "seed": 29
+    },
+    {
+      "base": "supervised",
+      "policy": "strong_fixed",
+      "seed": 43
+    },
+    {
+      "base": "supervised",
+      "policy": "allocation",
+      "seed": 43
+    },
+    {
+      "base": "supervised",
+      "policy": "private_realized_oracle",
+      "seed": 43
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "policy": "strong_fixed",
+      "seed": 43
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "policy": "allocation",
+      "seed": 43
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "policy": "private_realized_oracle",
+      "seed": 43
+    }
+  ],
+  "cells": [
+    {
+      "base": "supervised",
+      "dynamic": false,
+      "gate": "mean",
+      "seed": 17
+    },
+    {
+      "base": "supervised",
+      "dynamic": true,
+      "gate": "mean",
+      "seed": 17
+    },
+    {
+      "base": "supervised",
+      "dynamic": false,
+      "gate": "entropic",
+      "seed": 17
+    },
+    {
+      "base": "supervised",
+      "dynamic": true,
+      "gate": "entropic",
+      "seed": 17
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "dynamic": false,
+      "gate": "mean",
+      "seed": 17
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "dynamic": true,
+      "gate": "mean",
+      "seed": 17
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "dynamic": false,
+      "gate": "entropic",
+      "seed": 17
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "dynamic": true,
+      "gate": "entropic",
+      "seed": 17
+    },
+    {
+      "base": "supervised",
+      "dynamic": false,
+      "gate": "mean",
+      "seed": 29
+    },
+    {
+      "base": "supervised",
+      "dynamic": true,
+      "gate": "mean",
+      "seed": 29
+    },
+    {
+      "base": "supervised",
+      "dynamic": false,
+      "gate": "entropic",
+      "seed": 29
+    },
+    {
+      "base": "supervised",
+      "dynamic": true,
+      "gate": "entropic",
+      "seed": 29
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "dynamic": false,
+      "gate": "mean",
+      "seed": 29
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "dynamic": true,
+      "gate": "mean",
+      "seed": 29
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "dynamic": false,
+      "gate": "entropic",
+      "seed": 29
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "dynamic": true,
+      "gate": "entropic",
+      "seed": 29
+    },
+    {
+      "base": "supervised",
+      "dynamic": false,
+      "gate": "mean",
+      "seed": 43
+    },
+    {
+      "base": "supervised",
+      "dynamic": true,
+      "gate": "mean",
+      "seed": 43
+    },
+    {
+      "base": "supervised",
+      "dynamic": false,
+      "gate": "entropic",
+      "seed": 43
+    },
+    {
+      "base": "supervised",
+      "dynamic": true,
+      "gate": "entropic",
+      "seed": 43
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "dynamic": false,
+      "gate": "mean",
+      "seed": 43
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "dynamic": true,
+      "gate": "mean",
+      "seed": 43
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "dynamic": false,
+      "gate": "entropic",
+      "seed": 43
+    },
+    {
+      "base": "terminal_entropic_ndu",
+      "dynamic": true,
+      "gate": "entropic",
+      "seed": 43
+    }
+  ],
+  "cpu_ns": 534431812294,
+  "independent_source_pairs": 256,
+  "observers": [
+    "primary",
+    "secondary"
+  ],
+  "policy_selected_rows": 98304,
+  "protocol_sha256": "b2db7f5f1621d8bf900ff2692844f87b37809e21d778ec5e818545adb2e4377d",
+  "schema": "hepta.closure.factorial.completion.v1",
+  "selected_sha256": "7033fba8a3cf1b2ae42800cc09c3d77cffafd23b01a649b9f7d55acabcc46c2a",
+  "source_ids_sha256": "1f39acf61c127b3bd8c4e16135e9b1f97691c2a3816b3019600123a366b98762",
+  "status": "complete",
+  "wall_ns": 534866586558
+}
