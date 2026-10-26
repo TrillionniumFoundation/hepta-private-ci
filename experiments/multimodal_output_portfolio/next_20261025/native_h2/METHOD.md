@@ -27,6 +27,15 @@ comparison uses a correctness-argmax policy with the same native admission and
 resource rules. The independent control study's positive unrestricted-teacher
 result does not transfer to this comparison.
 
+The original H2 backup minimizes the cross-fitted H1 moments over the original
+action set, with only its H1 semantic-dominance mask. It was fitted before the
+new correctness admission head and does not back up this owner's future
+admission set, resource failures or terminal rejection utility of -1. Applying
+the new gate at each decision therefore does not solve the Bellman equation for
+the newly constrained problem, even if the original moment head is numerically
+reproduced. The present experiment evaluates that explicitly defined masked
+teacher; it does not establish a constraint-aware or globally optimal portfolio.
+
 ## New correctness candidate and ABI
 
 The first development candidate uses two 32→5 logistic heads on frozen teacher
@@ -109,6 +118,22 @@ tick. Recovery probes interrupt the native owner with a pending H2 decision and
 restart it after a committed H2 result before H1. The original journal frontiers,
 NDU projection and the new episode continuation must all agree.
 
+The generator public state is initialized separately for each episode, but the
+native owner is not. One owner per policy persists across the complete ordered
+panel. Its checkpoint sequence, temporal state, activity, thresholds, eligibility
+and selected NDU projection survive episode and writer boundaries; the two
+restarts resume this state. Original admission reads active-fraction and
+projection-count gates, the sequence window and measured resources. There is no
+separate metabolic subsystem in the original owner adapter exercised here.
+
+In this fixed port, the numerical native drive is always one Q24 unit followed
+by 32 zeros. The moment and correctness heads read current public features; the
+modulator digest binds the request and journal but is not applied numerically to
+either head or a plasticity update. The actual generated result affects H1
+through the public frame and encoder. Persistence of the NDU digest alone does
+not demonstrate a numerical NDU-feedback benefit or a change to later writers'
+predicted values. See `PERSISTENT_STREAM_ADDENDUM.md` for source and log evidence.
+
 Online feedback uses the **existing deployable public sensor**, not the private
 audit classifier. The bounded observable proxy is
 `1 - invalid_caption - image_text_disagreement`. It can reward a consistently
@@ -142,6 +167,16 @@ public request cost are also reported. Paired bootstrap uses 4,096 draws with
 seed 261026909, resampling writers and retaining both pairs and every policy and
 view together. Numerical value parity, native mechanism execution and statistical
 effectiveness are distinct results.
+
+Those original bootstrap endpoints are retained as **nominal writer-resampling
+intervals for the fixed observed ordered streams**. Disjoint writer identities
+do not turn a continuous stateful owner stream into 64 independently restarted
+policy experiments. The bootstrap does not replay counterfactual histories when
+it resamples writer rows; neither stream-order invariance nor population interval
+coverage was established. This is particularly material for measured execution
+cost and resource-dependent admission. The observed cost difference must not be
+promoted to a universal causal cost effect. No new stream, source or alternative
+statistical procedure was added after seeing the results.
 
 Public request cost includes initialization, both encoders, all actual candidate
 owner ticks, generation, output persistence/readback, public observation, numeric
