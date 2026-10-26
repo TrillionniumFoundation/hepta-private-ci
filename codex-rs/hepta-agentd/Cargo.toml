@@ -43,6 +43,11 @@ required-features = ["qualification-cognitive-write"]
 [lints]
 workspace = true
 
+[[bin]]
+name = "hepta-g2-native-owner"
+path = "src/bin/hepta-g2-native-owner.rs"
+test = false
+
 [dependencies]
 anyhow = { workspace = true }
 base64 = { workspace = true }
@@ -81,6 +86,7 @@ codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
 codex-hepta-memory = { workspace = true }
 codex-hepta-memory-retrieval = { path = "../hepta-memory-retrieval" }
 codex-hepta-memory-extension = { workspace = true }
+codex-hepta-operations = { workspace = true }
 codex-hepta-paths = { workspace = true }
 codex-model-provider = { workspace = true }
 codex-hepta-plasticity = { path = "../hepta-plasticity" }
@@ -116,7 +122,6 @@ libc = { workspace = true }
 
 [dev-dependencies]
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
-codex-hepta-operations = { workspace = true }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 app_test_support = { workspace = true }
