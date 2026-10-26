@@ -4,9 +4,9 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
 
+use crate::test_support::PrivateTempDir;
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
-use tempfile::TempDir;
 
 use super::SSHSIG_NAMESPACE;
 use super::TRUST_POLICY_SCHEMA;
@@ -111,7 +111,7 @@ fn weak_ed25519_public_key_is_rejected_before_openssh() {
 }
 
 struct TrustFixture {
-    _temporary: TempDir,
+    _temporary: PrivateTempDir,
     allowed_signers: PathBuf,
     key: PathBuf,
     policy: PathBuf,
@@ -249,11 +249,11 @@ fn write_private(path: &Path, bytes: &[u8]) {
     file.write_all(bytes).expect("write private test file");
 }
 
-fn set_private_permissions(path: &Path) {
+fn set_private_permissions(_path: &Path) {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
+        std::fs::set_permissions(_path, std::fs::Permissions::from_mode(0o600))
             .expect("secure test signature permissions");
     }
 }

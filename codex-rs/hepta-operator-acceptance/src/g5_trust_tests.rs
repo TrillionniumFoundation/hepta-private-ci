@@ -2,8 +2,8 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
 
+use crate::test_support::PrivateTempDir;
 use pretty_assertions::assert_eq;
-use tempfile::TempDir;
 
 use super::G5_ASSESSMENT_SCHEMA;
 use super::G5_REVOCATION_SCHEMA;
@@ -255,7 +255,7 @@ fn read_assessment(path: &Path) -> (G5Assessment, Vec<u8>) {
 }
 
 struct TrustFixture {
-    _temporary: TempDir,
+    _temporary: PrivateTempDir,
     allowed_signers: PathBuf,
     key: PathBuf,
     policy: PathBuf,
@@ -384,11 +384,11 @@ impl TrustFixture {
     }
 }
 
-fn set_private_permissions(path: &Path) {
+fn set_private_permissions(_path: &Path) {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
+        std::fs::set_permissions(_path, std::fs::Permissions::from_mode(0o600))
             .expect("private signature permissions");
     }
 }

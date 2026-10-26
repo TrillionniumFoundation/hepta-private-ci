@@ -2,8 +2,8 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
 
+use crate::test_support::PrivateTempDir;
 use pretty_assertions::assert_eq;
-use tempfile::TempDir;
 
 use super::VerifiedManifest;
 use super::parse_manifest;
@@ -59,7 +59,7 @@ fn verified_manifest_rejects_symlinks() {
 }
 
 struct Fixture {
-    _temporary: TempDir,
+    _temporary: PrivateTempDir,
     root: std::path::PathBuf,
 }
 

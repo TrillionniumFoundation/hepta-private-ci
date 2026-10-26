@@ -6,7 +6,7 @@ use crate::durable::secure_read;
 
 #[test]
 fn hardlinked_artifacts_are_rejected_before_reading_or_hashing() {
-    let temporary = tempfile::tempdir().expect("temporary artifact directory");
+    let temporary = crate::test_support::private_tempdir("temporary artifact directory");
     let artifact = temporary.path().join("artifact");
     std::fs::write(&artifact, b"sealed").expect("write artifact");
     std::fs::hard_link(&artifact, temporary.path().join("alias")).expect("create hardlink");
@@ -17,7 +17,7 @@ fn hardlinked_artifacts_are_rejected_before_reading_or_hashing() {
 
 #[test]
 fn hardlinks_added_after_open_are_rejected() {
-    let temporary = tempfile::tempdir().expect("temporary artifact directory");
+    let temporary = crate::test_support::private_tempdir("temporary artifact directory");
     let artifact = temporary.path().join("artifact");
     std::fs::write(&artifact, b"sealed").expect("write artifact");
     let file = open_without_following(&artifact).expect("open artifact");
@@ -29,7 +29,7 @@ fn hardlinks_added_after_open_are_rejected() {
 
 #[test]
 fn path_replacement_after_open_is_rejected() {
-    let temporary = tempfile::tempdir().expect("temporary artifact directory");
+    let temporary = crate::test_support::private_tempdir("temporary artifact directory");
     let artifact = temporary.path().join("artifact");
     std::fs::write(&artifact, b"sealed").expect("write artifact");
     let file = open_without_following(&artifact).expect("open artifact");
