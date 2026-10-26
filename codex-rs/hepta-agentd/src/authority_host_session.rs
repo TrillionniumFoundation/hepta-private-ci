@@ -7,6 +7,7 @@ mod filesystem;
 
 #[path = "root_notes_startup.rs"]
 mod notes_startup;
+pub use notes_startup::RootNotesPolicyPredecessor;
 
 #[path = "authority_host_session_material.rs"]
 mod material;

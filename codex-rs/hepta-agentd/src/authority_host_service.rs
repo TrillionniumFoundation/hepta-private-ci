@@ -39,6 +39,8 @@ pub use text_ui::HostAuthorityTextUiRegistration;
 mod human_text;
 #[path = "authority_host_logind.rs"]
 mod logind;
+#[path = "authority_host_notes_successor.rs"]
+mod notes_successor;
 
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]

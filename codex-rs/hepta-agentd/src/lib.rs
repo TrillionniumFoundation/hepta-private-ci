@@ -120,6 +120,7 @@ pub use authority_host_runtime::HostAuthorityBootstrap;
 pub use authority_host_runtime::HostAuthorityInitialized;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::PreparedHostAuthoritySession;
+pub use authority_host_runtime::RootNotesPolicyPredecessor;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::initialize_host_authority;
 #[cfg(target_os = "linux")]

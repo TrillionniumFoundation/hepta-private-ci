@@ -42,6 +42,7 @@ pub(crate) use listeners::validate_runtime_lanes;
 #[path = "authority_host_session.rs"]
 mod session;
 pub use session::PreparedHostAuthoritySession;
+pub use session::RootNotesPolicyPredecessor;
 
 #[path = "authority_host_writer_rotate.rs"]
 mod writer_rotation;
