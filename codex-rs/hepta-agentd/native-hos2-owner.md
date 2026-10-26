@@ -28,9 +28,13 @@ operation lifetime. `read_usage` returns the actual kernel observation;
 `install_request` only constructs the original canonical request before K/D
 is persisted. Its sequence must be allocated by the original operation owner.
 It neither dispatches that request nor issues a FinalUse grant. Callers use
-the original host's normal grant-bound dispatch, then its original writer's
-`acknowledge_current`, and independently observe the authenticated protected
-Current receipt before reporting a source terminal.
+the original host's normal grant-bound dispatch. `acknowledge_current_receipt`
+then delegates to the original writer's `acknowledge_current` and independently
+reads the authenticated protected Current DTO before a source terminal can be
+reported. It returns the actual observed cut; concurrent authorized work can
+invalidate Current and this call grants no continuing exclusive access. It
+does not reconstruct a token, reopen a fenced writer, create a physical backup
+or infer an effect's result from Current alone.
 
 This module is a composition component, not an execution receipt or a complete
 native boot entry. A complete product still needs a tracked compact Root/owner

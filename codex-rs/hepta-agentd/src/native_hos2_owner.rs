@@ -10,6 +10,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use codex_hepta_cognitive_store::ProductionDurableWriter;
+use codex_hepta_memory::CognitiveCheckpointReceipt;
 use codex_hepta_memory::Hos2DeliveryId;
 use codex_hepta_memory::Hos2InstallBudgetV1;
 use codex_hepta_memory::Hos2RetirementObservation;
@@ -55,6 +56,26 @@ impl AgentdG2NativeOperationHost {
     /// The original durable writer; no raw database or new lease is opened.
     pub fn writer(&self) -> Arc<ProductionDurableWriter> {
         self.host.writer()
+    }
+
+    /// Publish through the original owner barrier, then independently read the
+    /// actual authenticated Current receipt. No token or head is reconstructed.
+    /// Concurrent authorized work may invalidate Current; this is an actual
+    /// observed cut, not a promise that Current remains exclusive afterwards.
+    /// Neither publication nor readback clears an existing permanent fence.
+    pub async fn acknowledge_current_receipt(
+        &self,
+    ) -> Result<CognitiveCheckpointReceipt, AgentdError> {
+        self.host
+            .writer()
+            .acknowledge_current()
+            .await
+            .map_err(|error| AgentdError::Protocol(format!("original owner Current: {error}")))?;
+        self.root
+            .checkpoint
+            .observed_current_receipt()
+            .await
+            .map_err(|error| AgentdError::Protocol(format!("original Current readback: {error}")))
     }
 
     /// Query the actual observer slot in this process's kernel image.
