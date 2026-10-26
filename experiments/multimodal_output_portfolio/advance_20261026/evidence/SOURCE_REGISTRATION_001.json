@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-m",
+    "experiments.multimodal_output_portfolio.advance_20261026.sources",
+    "--cache",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/qmnist",
+    "--old-manifest",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc2-runs/source-recovery-001/source-manifest.json",
+    "--audio-root",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/media/new-assets/speech-commands-v002-digits",
+    "--output",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/SOURCE_ALLOCATION.json"
+  ],
+  "exit_code": 0,
+  "wall_ns": 3879984666,
+  "cpu_seconds": 3.6801310000000003,
+  "peak_rss_bytes": 213278720,
+  "stdout": "{\"allocation_sha256\": \"42d0c47056dda930cb851c9ae59f330747de8bb863f18b79c47eea830f69b262\", \"roles\": {\"confirmation\": {\"writer_count\": 85, \"pair_count\": 170}, \"qualification_id\": {\"writer_count\": 10, \"pair_count\": 40}, \"qualification_ood\": {\"speaker_count\": 600}}}\n",
+  "stderr": "",
+  "models_executed": false
+}
