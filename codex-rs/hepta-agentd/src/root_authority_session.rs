@@ -13,7 +13,9 @@ use crate::root_observation_cache::MAX_AGE_NS;
 use crate::root_observation_cache::ObservationReadError;
 use crate::root_observation_cache::RootObservationCache;
 use crate::root_observation_cache::boottime_ns;
+use crate::root_observation_diagnostic::AttachStage;
 use crate::root_observation_diagnostic::ObservationFailure;
+use crate::root_observation_diagnostic::RefreshEvent;
 use crate::root_observation_stream::RootObservationStream;
 use crate::root_observation_stream::check_lifetime_diagnosed;
 use crate::root_writer_proof::VerifiedRootWriterProof;
@@ -207,7 +209,13 @@ impl AgentdRootAuthoritySession {
         let worker = tokio::spawn(async move {
             let _fence = FenceOnDrop(Arc::clone(&background));
             loop {
+                background.cache.diagnostics.refresh(RefreshEvent::Sleeping);
                 tokio::time::sleep_until(next_refresh_at).await;
+                // Diagnostic-only endpoint: failure is ignored and this value
+                // never supplies an authority sample or changes a deadline.
+                background.cache.diagnostics.refresh(RefreshEvent::Woke {
+                    boottime_ns: boottime_ns().ok(),
+                });
                 next_refresh_at = match refresh(&background, &stream).await {
                     Ok(next) => next,
                     Err(_) => return,
@@ -215,6 +223,9 @@ impl AgentdRootAuthoritySession {
             }
         });
         Ok(Self { live, worker })
+    }
+    pub(crate) fn diagnose_attach(&self, stage: AttachStage) {
+        self.live.cache.diagnostics.attach(stage);
     }
     pub fn clock(&self) -> Arc<dyn AuthorityClock> {
         self.live.clone()
@@ -319,6 +330,7 @@ async fn refresh(
     live: &Arc<LiveRoot>,
     stream: &RootObservationStream,
 ) -> Result<tokio::time::Instant, AgentdRootAuthorityError> {
+    live.cache.diagnostics.refresh(RefreshEvent::WaitingSerial);
     let _serial = live.serial.lock().await;
     // Schedule from the actual serialized request start, not its completion.
     // Slow work starts one next request immediately; each request re-anchors
@@ -331,6 +343,9 @@ async fn refresh(
             ..Default::default()
         });
     })?;
+    live.cache
+        .diagnostics
+        .refresh(RefreshEvent::Started(started));
     let observation: HostAuthorityObservationResponseV2 = stream
         .read(&HostAuthorityObservationRequestV2 {
             schema_version: 2,
@@ -351,6 +366,7 @@ async fn refresh(
             ..Default::default()
         });
     })?;
+    live.cache.diagnostics.refresh(RefreshEvent::Replied(ended));
     live.proof
         .matches_observation(&observation)
         .inspect_err(|_| {
@@ -368,13 +384,18 @@ async fn refresh(
     }
     // Validate and stage the complete response while the public cache is
     // paused, then advance each original consumer before releasing the barrier.
+    live.cache.diagnostics.refresh(RefreshEvent::Accepting);
     live.cache.accept(observation, started, ended)?;
+    live.cache.diagnostics.refresh(RefreshEvent::Accepted);
     if changed {
         let consumers = live
             .consumers
             .lock()
             .map_err(|_| AgentdRootAuthorityError::Unavailable)?
             .clone();
+        live.cache
+            .diagnostics
+            .refresh(RefreshEvent::SynchronizingConsumers);
         synchronize_consumers(consumers, head, started)
             .await
             .inspect_err(|_| {
@@ -388,6 +409,7 @@ async fn refresh(
         live.cache.end_update();
     }
     live.validate_refresh()?;
+    live.cache.diagnostics.refresh(RefreshEvent::Validated);
     Ok(next_refresh_at)
 }
 async fn synchronize_consumers(
@@ -444,3 +466,7 @@ async fn synchronize_consumers(
 #[cfg(test)]
 #[path = "root_authority_session_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "root_authority_progress_tests.rs"]
+mod progress_tests;

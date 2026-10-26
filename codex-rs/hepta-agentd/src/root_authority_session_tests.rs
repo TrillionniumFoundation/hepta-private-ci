@@ -78,7 +78,7 @@ fn owner(
     .unwrap();
     (authority, frontier, directory)
 }
-async fn connected() -> (
+pub(super) async fn connected() -> (
     AgentdRootAuthoritySession,
     Arc<AtomicU64>,
     std::thread::JoinHandle<()>,

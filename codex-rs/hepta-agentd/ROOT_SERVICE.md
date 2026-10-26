@@ -69,6 +69,22 @@ also pass the original one-vCPU native profile and unchanged authority gates.
 
 ## Whole-owner SQLite and Objective sender
 
+Observation failures retain a bounded diagnostic snapshot of the last feed
+phase, request sequence, current/previous independent request start/reply-end
+samples, accepted/validated request starts, and the authority-attachment stage.
+Updates and capture use try-lock only; missing/contended diagnostics never
+authorize, retry, or change the original refusal. One optional wake-boottime
+sample separates timer/poll delay from subsequent serial-lock wait; its failure
+only records None and it never enters a trusted-clock formula. A lost
+event marks the snapshot incomplete. The first fatal snapshot remains frozen
+through later worker exit or shutdown. Known fatal runtime owners add only a
+static task label while retaining the original authority error variant.
+
+These fields distinguish an unpolled next request from an in-flight reply or
+consumer synchronization. A controlled single-worker blocking fixture checks
+that stale authority stays fenced; it does not establish native scheduling or
+Root filesystem timing. Preserve each failed native attempt separately.
+
 `AgentdProductionWriterHost::open_with_protected_recovery` verifies the root's
 Current receipt against the exact original owner, spawn, lease and authority
 before recovering the authenticated cut. It binds the checkpoint while the

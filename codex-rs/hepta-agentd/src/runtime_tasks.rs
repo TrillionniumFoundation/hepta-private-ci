@@ -320,12 +320,24 @@ impl RuntimeTasks {
             self.retired_names.insert(entry.name);
             return Ok(());
         }
-        let error = match result {
+        let mut error = match result {
             Ok(()) => {
                 AgentdError::Protocol(format!("{} exited before agentd shutdown", entry.name))
             }
             Err(error) => error,
         };
+        if let AgentdError::ProductionWriter(
+            codex_hepta_memory::ProductionWriterError::AuthorityRejected(reason),
+        ) = &mut error
+        {
+            let task = match entry.name.as_str() {
+                "production-operation-reconciler" => "production-operation-reconciler",
+                "codex-app-server" => "codex-app-server",
+                "generation-monitor" => "generation-monitor",
+                _ => "other-runtime-task",
+            };
+            *reason = format!("runtime_task={task}: {reason}");
+        }
         if matches!(
             error,
             AgentdError::GenerationFenced(_)
@@ -502,3 +514,7 @@ mod failure_latch_tests;
 #[cfg(test)]
 #[path = "runtime_task_outcome_tests.rs"]
 mod outcome_tests;
+
+#[cfg(test)]
+#[path = "root_observation_task_label_tests.rs"]
+mod observation_task_label_tests;

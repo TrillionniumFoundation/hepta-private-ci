@@ -37,6 +37,7 @@ use crate::AgentdUnixCognitiveCheckpointTransport;
 use crate::AgentdUnixFinalUseGrantProvider;
 use crate::HOST_AUTHORITY_BOOTSTRAP_V1;
 use crate::HostAuthorityPublicBootstrapV1;
+use crate::root_observation_diagnostic::AttachStage;
 use crate::root_writer_proof::VerifiedRootWriterProof;
 
 /// Fixed-purpose lanes. There is no path-based reconnect or lane selection.
@@ -170,6 +171,7 @@ pub async fn attach_root_production_host(
     )
     .await
     .map_err(protocol)?;
+    session.diagnose_attach(AttachStage::Connected);
     if session.authority() != *bootstrap_proof.authority()
         || session.revocations().map_err(protocol)? != bundle.revocations
     {
@@ -221,6 +223,7 @@ pub async fn attach_root_production_host(
     let key = FinalUseIssuerTrustKey::from(bundle.issuer_key.clone());
     let revocations = bundle.revocations.clone();
     let clock = session.clock();
+    session.diagnose_attach(AttachStage::OpeningFrontiers);
     let owners = tokio::task::spawn_blocking(move || {
         let mut owners = Vec::with_capacity(2);
         for (slot, frontier) in [consumers.device, consumers.notes]
@@ -251,10 +254,12 @@ pub async fn attach_root_production_host(
     let [device, notes]: [FinalUseAuthority; 2] = owners
         .try_into()
         .map_err(|_| refused("incomplete original FinalUse consumers"))?;
+    session.diagnose_attach(AttachStage::ActivatingOwners);
     session
         .activate_final_use_owners(vec![device.clone(), notes.clone()])
         .await
         .map_err(protocol)?;
+    session.diagnose_attach(AttachStage::ReadingCurrent);
     let current_receipt = read_original_current(&transport, &bundle).await?;
     let authority = session.authority();
     let verifier = session.verifier();
@@ -273,6 +278,7 @@ pub async fn attach_root_production_host(
         inputs.reconcile_interval,
     );
     operations.validate_for(config)?;
+    session.diagnose_attach(AttachStage::OpeningWriter);
     let (host, checkpoint) = AgentdProductionWriterHost::open_with_protected_recovery(
         config,
         authority,
@@ -287,6 +293,7 @@ pub async fn attach_root_production_host(
     )
     .await?;
     let host = Arc::new(host);
+    session.diagnose_attach(AttachStage::InstallingWriter);
     let result = async {
         operations.validate_recovered_host(&host).await?;
         config.install_production_hosts(Arc::clone(&host), operations)
@@ -299,6 +306,7 @@ pub async fn attach_root_production_host(
             .await?;
         return Err(error);
     }
+    session.diagnose_attach(AttachStage::Attached);
     Ok(AgentdRootProductionAttachment {
         session,
         host,
