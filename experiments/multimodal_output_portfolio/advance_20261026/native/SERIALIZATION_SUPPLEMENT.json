@@ -1,0 +1,39 @@
+{
+  "NumPy_boolean_and_integer_exact_value_preserved": true,
+  "NumPy_float64_IEEE754_bytes_preserved": true,
+  "model_executions_for_supplement": 0,
+  "new_confirmation_sources_opened": false,
+  "old_frozen_closure_retained": true,
+  "original_error_log_sha256": "e759529ca66b41886578803608cf1115294b894c55aef0861d1eaf5ff76da4c7",
+  "original_qualification_process_sha256": "31865b11aa3b1a3abb1406a55fe9e66cbfa80fe01d51ef10f1e93accb5a8a395",
+  "qualification_failures_relabelled": false,
+  "recovered_report_sha256": "c67a741fb7629c7b5abe6315a8bda1fd7bd143ed93a427b0a70b0153c9a9f7ac",
+  "registered_unix_ns": 1792991288315112654,
+  "schema": "hepta.advance.JSON-serialization-only-supplement.v1",
+  "scope": "Only evaluator module-local write and JSON facade normalize NumPy scalar types. Frozen model, host, native IPC, policy, source reader and analysis bytecode/source are unchanged.",
+  "standard_JSON_equivalence": {
+    "MISSING_ROWS.json": {
+      "input_sha256": "939f09500d1e7cac9761f3d723f2b540f35863541ae2da3da79e315c2c7c23cd",
+      "unchanged_standard_JSON_bytes": true
+    },
+    "ROWS.json": {
+      "input_sha256": "8408f3185ec01491a24e6b60a200ee04918725c0735ece066e185b25333b146d",
+      "unchanged_standard_JSON_bytes": true
+    }
+  },
+  "threshold_changes": false,
+  "unchanged_frozen_source_sha256": {
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/native/analysis.py": "0595c64f784451407f41b63d0e35e1c9795533d9857fad9ae9def1966132a768",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/native/client.py": "2ffdf5bce8136c29336cbd3889ac24c10ea019db140a042bfb0b124a37e43091",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/native/common.py": "813b47732b2c0cd053150f111b0b724911d8bd320b6760f572faa1dfefea383b",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/native/control.rs": "3cfdf90f7a231b14fc98cc453876a2cdd81f3069296a1dadd194796016f760d4",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/native/episode.py": "0042b0aa86961bc5e4f1835d3378597df42231f5c700e62e981e8fa23f11dbca",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/native/evaluate.py": "66fe62f83824e0a769de7e9a790ad43bb1ed317ed5a5856f572ee6acb568c445",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/native/host.py": "3b5df866c33ef2c2a842c950a23be4ecaf1936a3673b8f5ed2d09decf3dcd4db",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/native/online.rs": "b90c546f3002f40230e81a2ca75999f4d054af149735cf477d9a4ed025f4309d",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/native/online_port.rs": "544252cc68089a27a79eb30060c31b9b92e63a0a0086edb483bf83477891c08f",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/native/qualification.rs": "8e4fefc3a69628cb98dc25a9f423b13f3759ef2322f196bf8b6f0158004e62ce"
+  },
+  "wrapper_path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/native/evaluate_json_safe.py",
+  "wrapper_sha256": "48811827b00b3a769eccaa5672a0dd2fe44e027d69241f050f5a7b9ce0eb2bee"
+}
