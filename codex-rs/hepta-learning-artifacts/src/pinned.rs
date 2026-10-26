@@ -171,7 +171,9 @@ impl VerifiedCurrentRegistryViewV1 {
         self.trust_digest
     }
 
-    pub(crate) fn registry(&self) -> &ArtifactRegistry {
+    /// Inspect the authenticated registry without granting mutation or publication.
+    #[must_use]
+    pub fn registry(&self) -> &ArtifactRegistry {
         &self.registry
     }
 }
