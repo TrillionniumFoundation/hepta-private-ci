@@ -120,6 +120,14 @@ carry no policy, signing key or authority payload and never retry a failed step.
 A generic pre-service refusal from an earlier artifact remains unclassified
 until a corrected, source-bound artifact actually executes.
 
+The native Agentd entry binds the process Codex home to the original registered
+layout before creating its runtime, as the normal Agentd entry does. The
+AppServer's required-SQLite-home comparison and shared original connection gate
+remain active. If the original daemon finishes before readiness, qualification
+awaits its actual result and retains at most 4096 diagnostic characters rather
+than dropping the startup error. An earlier generic exit does not by itself
+prove that home resolution was its first cause.
+
 The diagnostic stage changes no 500 ms bound, authority proof, policy, lease,
 cache recovery rule or effect retry rule. Source review and host regressions do
 not turn a failed native run into a success; the corrected evidence-bearing

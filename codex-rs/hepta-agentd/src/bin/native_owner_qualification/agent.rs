@@ -109,14 +109,20 @@ pub fn run(boot: Boot) -> Result<()> {
     let checkpoint = connect(&bundle.sockets.checkpoint)?;
     let device_frontier = connect(&bundle.sockets.device_frontier)?;
     let notes_frontier = connect(&bundle.sockets.notes_frontier)?;
+    let fleet =
+        codex_hepta_paths::HeptaFleetRoot::parse(bundle.registered_identity.fleet_root.clone())?;
+    let layout = fleet.layout().agent(&bundle.registered_identity.agent_id);
+    // Match the original Agentd entry point before any AppServer/config task
+    // starts. Its required SQLite home remains the registered owner's home.
+    let codex_home =
+        codex_utils_absolute_path::AbsolutePathBuf::from_absolute_path(layout.home_root())?;
+    codex_utils_home_dir::set_process_codex_home_override(codex_home)?;
     let runtime = tokio::runtime::Builder::new_multi_thread()
         .worker_threads(2)
         .enable_all()
         .build()?;
     runtime.block_on(async move {
         let registered = &bundle.registered_identity;
-        let fleet = codex_hepta_paths::HeptaFleetRoot::parse(registered.fleet_root.clone())?;
-        let layout = fleet.layout().agent(&registered.agent_id);
         let mut config = AgentdConfig::load(registered.fleet_root.clone(), registered.agent_id.clone(), registered.spawn_generation,
             layout.home_root().to_owned(), layout.run_root().to_owned(), layout.home_root().to_owned(), registered.workspace.clone())?;
         let identity = config.identity().clone();
@@ -142,7 +148,14 @@ pub fn run(boot: Boot) -> Result<()> {
         let client = AgentdClient::new(identity.control_socket.clone(),identity.agent_id.clone(),identity.spawn_generation)?;
         let deadline = tokio::time::Instant::now() + Duration::from_secs(60);
         loop {
-            anyhow::ensure!(!daemon.is_finished(), "original Agentd exited before readiness");
+            if daemon.is_finished() {
+                let failure = match daemon.await {
+                    Ok(Ok(())) => "original Agentd stopped before readiness without an error".to_owned(),
+                    Ok(Err(error)) => format!("original Agentd failed before readiness: {error}"),
+                    Err(error) => format!("original Agentd task failed before readiness: {error}"),
+                };
+                return Err(anyhow::anyhow!(failure.chars().take(4096).collect::<String>()));
+            }
             if let Ok(health) = client.health().await
                 && health.promotion_ready { break; }
             anyhow::ensure!(tokio::time::Instant::now() < deadline, "original Agentd readiness deadline");
