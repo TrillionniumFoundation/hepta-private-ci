@@ -1,0 +1,1364 @@
+{
+  "admission_qualification": {
+    "calibration_actual_outputs": 5760,
+    "calibration_independent_writers": 12,
+    "calibration_pairs": 96,
+    "event_field_all_actions_independently_qualified_interpretation": "All five actions were actually evaluated on independent sources and the preregistered pooled gate passed; NOT five separate ECE<=.03 guarantees",
+    "independent_qualification_actual_outputs": 10000,
+    "independent_qualification_pairs": 1000,
+    "independent_qualification_writers": 1000,
+    "old_qualification_inherited": false,
+    "per_action_independent_audit": {
+      "couple": {
+        "ECE_ID": 0.040181354999999946,
+        "ECE_all": 0.021090677499999974,
+        "ID_acceptance": 0.955
+      },
+      "refine_image": {
+        "ECE_ID": 0.026886740000000194,
+        "ECE_all": 0.013443370000000097,
+        "ID_acceptance": 0.94
+      },
+      "refine_semantic": {
+        "ECE_ID": 0.02274399900000016,
+        "ECE_all": 0.01137199950000008,
+        "ID_acceptance": 0.929
+      },
+      "refine_text": {
+        "ECE_ID": 0.04588433600000004,
+        "ECE_all": 0.02294216800000002,
+        "ID_acceptance": 0.946
+      },
+      "stop": {
+        "ECE_ID": 0.0253792990000001,
+        "ECE_all": 0.01268964950000005,
+        "ID_acceptance": 0.929
+      }
+    },
+    "population_ECE_bound_claimed": false,
+    "post_selection_calibration_guarantee_claimed": false,
+    "qualified_scope": "Pooled five-action point ECE and complete-absence OOD; fixed H1 digit-domain prefix",
+    "verification": {
+      "Brier": 0.05227627783598911,
+      "ECE_ID": 0.028905291799999976,
+      "ECE_all": 0.014652645899999987,
+      "ID_acceptance": 0.9398,
+      "OOD_FAR": 0.0,
+      "OOD_false_writers": 0,
+      "OOD_upper95": 0.0029912495450952954,
+      "by_action": {
+        "0": {
+          "ECE": 0.01268964950000005,
+          "acceptance": 0.929
+        },
+        "1": {
+          "ECE": 0.01137199950000008,
+          "acceptance": 0.929
+        },
+        "2": {
+          "ECE": 0.013443370000000097,
+          "acceptance": 0.94
+        },
+        "3": {
+          "ECE": 0.02294216800000002,
+          "acceptance": 0.946
+        },
+        "4": {
+          "ECE": 0.021090677499999974,
+          "acceptance": 0.955
+        }
+      },
+      "calibration_sha256": "45842c13f46e0f312b1ecd78160234dc574f1207e69f0dd701c43e7fbb7f5bba",
+      "data_sha256": "4e84246b2f67f68b347bb254ffe4bd62cc7d9c7dd38d9d860fa83fdf8e7c01a7",
+      "gates": {
+        "calibration_and_verification_id_nonvacuity": true,
+        "calibration_and_verification_point_ece": true,
+        "calibration_and_verification_point_far": true,
+        "verification_ood_writer_upper95": true
+      },
+      "native_measured_ece_ppm": 28906,
+      "native_measured_false_acceptance_ppm": 0,
+      "old_qualification_inherited": false,
+      "ood_writers": 1000,
+      "production_authority": false,
+      "rows": 10000,
+      "schema": "hepta.next.native-admission-verification.v1",
+      "study_qualified": true,
+      "writers": 1000
+    }
+  },
+  "architecture": {
+    "H1_semantic_strictly_dominated_and_excluded_from_choice": true,
+    "actual_action_order": [
+      "stop",
+      "refine_semantic",
+      "refine_image",
+      "refine_text",
+      "couple"
+    ],
+    "continuation_action_cost_in_teacher_targets": 0.002,
+    "frozen_teacher_hidden_width": 32,
+    "gamma": 2,
+    "initial_prefix": "initialize then refine_image",
+    "model_service_transport": "Persistent Python research process and native JSON request transport; no production Generator service",
+    "native_minimizes_actual_conditional_entropic_moment": true,
+    "new_offline_admission_parameters": 165,
+    "null_action_is_rejection_not_successful_stop": true,
+    "online_trainable_parameter_updates": 0,
+    "public_encoder_python_compute_included_in_observed_cost": true,
+    "public_input_Q24_width": 511,
+    "qualified_horizon": 1,
+    "stop_outputs_current_real_draft": true
+  },
+  "audit": {
+    "all_read_only_assertions_pass": true,
+    "path": "/workspace/scratch/87e43aa872f5/ndu-runs/next-native/audit-001/audit.json",
+    "scorer_network_reexecuted": false,
+    "script_sha256": "bc39ae91797310e8d0655e57da39023d967293df86862cdfbd24665b481a4e6a",
+    "sha256": "6c08d26ff6b83a7d2b2734ad10b14b0ba67a1af071ff6fc27d1ba3d084bd8766"
+  },
+  "builds": {
+    "build-001": {
+      "binary_sha256": "c6dd1956c30632b799ae818966770365a59e5544781ffa847ef2608e335c612c",
+      "build_receipt_sha256": "b3ea18624a9c45577921dd1cf49a0c486733ec5794a873ebfd7c00c77089c545",
+      "returncodes": [
+        0,
+        0
+      ],
+      "wall_ns": 3462610187
+    },
+    "build-002": {
+      "binary_sha256": "478a0caf8491d82fe015148ff840dec91f324611119fac98f59f2313964b013f",
+      "build_receipt_sha256": "0a40482cf382cdd92a39c24603c49d8715187e66a7cf1564441b39fafb82be63",
+      "returncodes": [
+        0,
+        0
+      ],
+      "wall_ns": 3455088293
+    },
+    "build-003": {
+      "binary_sha256": "6dd380aab1ae6c6d637e6f12923ed5ed9accc35fef8c9c74939f445fcd209d5b",
+      "build_receipt_sha256": "263f6495589b98c971faa8ffddb302dbd26a0af335503751408682569e4a388d",
+      "returncodes": [
+        0,
+        0
+      ],
+      "wall_ns": 2808375381
+    },
+    "build-004": {
+      "binary_sha256": "c8e72fc651102c4d61a9d9a4f8741cd4179d3cd632cea1febeb756867a815610",
+      "build_receipt_sha256": "7ad3f911692798a89f6721da72db8a6754b1158b76d691a51eed4c621771c6d3",
+      "returncodes": [
+        0,
+        0
+      ],
+      "wall_ns": 3186513867
+    },
+    "build-005": {
+      "binary_sha256": "09fd64c226cff3c87f4b2e06a52e12cd0b819cb707667fb22c624846d963ff5a",
+      "build_receipt_sha256": "1d6ce38a3bf667eeb137372f243cf28180fb61e3236efc1b0f53c96098d34d30",
+      "returncodes": [
+        0,
+        0
+      ],
+      "wall_ns": 2544046656
+    }
+  },
+  "claim_boundaries": {
+    "NDU_selection_beats_same_admission_correctness_argmax": false,
+    "authority": "deny_all",
+    "dynamic_NDU_online_learning_demonstrated": false,
+    "install_activation_applied_update": false,
+    "native_NDU_execution_in_authentic_owner": true,
+    "pooled_defined_admission_gates_pass": true,
+    "production_identity_or_trust_root_fabricated": false,
+    "quality_gain_covers_control_cost": false,
+    "whole_daemon_or_production_remote_model_service_deployed": false
+  },
+  "execution": {
+    "actual_continuation_generations": 216,
+    "actual_emitted_outputs": 247,
+    "actual_policy_requests": 576,
+    "actual_stop_outputs": 31,
+    "exact_recoveries": 6,
+    "formal_process_status": {
+      "correctness": [
+        {
+          "anchor": "1d8d42494edfee6ad2f20839244529e0d01d6377d724f311c1b97883c7fc1fe0",
+          "authority": "deny_all",
+          "daemon_deployment": false,
+          "history_digest": "b09fec842dffb29eefacb88f0e2c74cb751b00579a6e099eab05cb4dd9f002e3",
+          "model_forwards_in_process": 5,
+          "modulator": "59097530e2dd9fefbc26bae74f0741290dec5f5323d0d0983954d4520db5866d",
+          "native_resource_summary": {
+            "maximum_checkpoint_bytes": 1568,
+            "maximum_transient_allocation_bytes": 1623,
+            "maximum_write_amplification_ppm": 530613,
+            "p95_execution_micros": 575,
+            "p99_execution_micros": 575,
+            "pilot_ceiling_passed_for_supplied_samples": true,
+            "sample_count": 5,
+            "sample_set_digest": "6cd34fa4b73b6e3c6bca43795a0ba1594741b3342473bf6cac95e00f90467e7b"
+          },
+          "native_resource_summary_passed": true,
+          "native_sequence": 5,
+          "native_value_layers_loaded": true,
+          "objective_digest": "49bab08f34513ec929e734a3b7cc1c44da9ad756b6a24903ec0290c1ca126cc9",
+          "outcomes": 0,
+          "pending": [
+            "next.case.0.0.correctness",
+            "b09fec842dffb29eefacb88f0e2c74cb751b00579a6e099eab05cb4dd9f002e3",
+            "refine_text"
+          ],
+          "requests": 1,
+          "selection": "correctness",
+          "ticks_in_process": 5,
+          "training_steps": 0,
+          "weights_decoded_in_process": 1,
+          "whole_owner_peak_bytes": 17529
+        },
+        {
+          "anchor": "2e735326b9291d8363387204f6abe4f0e188a882faae66af97f084f5d4e1b563",
+          "authority": "deny_all",
+          "daemon_deployment": false,
+          "history_digest": "93566a8c14946f8b7cd0b7a1ef0bb8174108c1f9833f875a7ecd0e4fcc8960ab",
+          "model_forwards_in_process": 475,
+          "modulator": "597c8109d4abdc68a11d41899d5abd2850d6b5ab4b10f771fa7a9c667cc463c7",
+          "native_resource_summary": {
+            "maximum_checkpoint_bytes": 1568,
+            "maximum_transient_allocation_bytes": 1623,
+            "maximum_write_amplification_ppm": 530613,
+            "p95_execution_micros": 744,
+            "p99_execution_micros": 2268,
+            "pilot_ceiling_passed_for_supplied_samples": true,
+            "sample_count": 475,
+            "sample_set_digest": "8770059cf14c01d7fb43b20eed49583651a0f6e563302326ffa15d16de95846c"
+          },
+          "native_resource_summary_passed": true,
+          "native_sequence": 480,
+          "native_value_layers_loaded": true,
+          "objective_digest": "49bab08f34513ec929e734a3b7cc1c44da9ad756b6a24903ec0290c1ca126cc9",
+          "outcomes": 46,
+          "pending": null,
+          "requests": 96,
+          "selection": "correctness",
+          "ticks_in_process": 475,
+          "training_steps": 0,
+          "weights_decoded_in_process": 1,
+          "whole_owner_peak_bytes": 36241
+        },
+        {
+          "anchor": "c7fc69f048616097fcc04cc1b3e5150fd870c83d128d338952307369a50d5dde",
+          "authority": "deny_all",
+          "daemon_deployment": false,
+          "history_digest": "0953694a6d107513d5f32766fbc739973a60d78d0d486fac85ca7bd42f24fe82",
+          "model_forwards_in_process": 480,
+          "modulator": "aebfd14f8a7ecb9830fe5c4ffa31cf94bffb42c9ee3a99d77083b4b7066b5507",
+          "native_resource_summary": {
+            "maximum_checkpoint_bytes": 1568,
+            "maximum_transient_allocation_bytes": 1621,
+            "maximum_write_amplification_ppm": 530613,
+            "p95_execution_micros": 762,
+            "p99_execution_micros": 2623,
+            "pilot_ceiling_passed_for_supplied_samples": true,
+            "sample_count": 480,
+            "sample_set_digest": "82080a99bfddae592fa6d9ce3a268f60b9b92f0202ce25d79dd3233f67acf785"
+          },
+          "native_resource_summary_passed": true,
+          "native_sequence": 960,
+          "native_value_layers_loaded": true,
+          "objective_digest": "49bab08f34513ec929e734a3b7cc1c44da9ad756b6a24903ec0290c1ca126cc9",
+          "outcomes": 92,
+          "pending": null,
+          "requests": 192,
+          "selection": "correctness",
+          "ticks_in_process": 480,
+          "training_steps": 0,
+          "weights_decoded_in_process": 1,
+          "whole_owner_peak_bytes": 36244
+        }
+      ],
+      "legacy_correctness": [
+        {
+          "anchor": "225fadf6ee7f6ea5bb218feedfed2dbec3932fc4d3269b8e159ae9d8b2346e3a",
+          "authority": "deny_all",
+          "daemon_deployment": false,
+          "history_digest": "0e52cc172a1771202c2aa5137c20261d60a92a30586112f491f3de97fdf6a644",
+          "model_forwards_in_process": 6,
+          "modulator": "7c06c1bda9b6a13492ceef1276236c05e336fa9dcacd8657bc9fe7a032080b5d",
+          "native_resource_summary": {
+            "maximum_checkpoint_bytes": 1568,
+            "maximum_transient_allocation_bytes": 13016,
+            "maximum_write_amplification_ppm": 530613,
+            "p95_execution_micros": 770,
+            "p99_execution_micros": 770,
+            "pilot_ceiling_passed_for_supplied_samples": true,
+            "sample_count": 6,
+            "sample_set_digest": "850cc9ea2cb84688532a85a00bd87f8732998eee19d5d6152eafc5718255ccc0"
+          },
+          "native_resource_summary_passed": true,
+          "native_sequence": 6,
+          "objective_digest": "4e6830068c2d95c84e67fa7b23e0b98cdde0092c47ac86702de181f7951fd127",
+          "outcomes": 0,
+          "pending": [
+            "next.case.1.0.legacy_correctness",
+            "0e52cc172a1771202c2aa5137c20261d60a92a30586112f491f3de97fdf6a644",
+            "couple"
+          ],
+          "requests": 3,
+          "ticks_in_process": 6,
+          "training_steps": 0,
+          "weights_decoded_in_process": 1,
+          "whole_owner_peak_bytes": 24174
+        },
+        {
+          "anchor": "dfdff8e25b431da4beb37b7610411c9036194fa0bc04e3c8e42e335eca7a524f",
+          "authority": "deny_all",
+          "daemon_deployment": false,
+          "history_digest": "7c28ef4ef581997b5244ca0a0dac445c8e7a339c99955177abb3bfb66e9d8cb3",
+          "model_forwards_in_process": 186,
+          "modulator": "77503677ec17f832a68066f853fcb18c20d864147b9d5aa94120658e946d15fb",
+          "native_resource_summary": {
+            "maximum_checkpoint_bytes": 1568,
+            "maximum_transient_allocation_bytes": 13016,
+            "maximum_write_amplification_ppm": 530613,
+            "p95_execution_micros": 1039,
+            "p99_execution_micros": 1688,
+            "pilot_ceiling_passed_for_supplied_samples": true,
+            "sample_count": 186,
+            "sample_set_digest": "7f62191e19142e52b901e568ef0c63ee053545b5305ef768df12feb376f8a9ef"
+          },
+          "native_resource_summary_passed": true,
+          "native_sequence": 192,
+          "objective_digest": "4e6830068c2d95c84e67fa7b23e0b98cdde0092c47ac86702de181f7951fd127",
+          "outcomes": 30,
+          "pending": null,
+          "requests": 96,
+          "ticks_in_process": 186,
+          "training_steps": 0,
+          "weights_decoded_in_process": 1,
+          "whole_owner_peak_bytes": 36075
+        },
+        {
+          "anchor": "6d7564458781d92570fa665ae0e78792b35de7d3c193db3aeaa1e722be65d6a7",
+          "authority": "deny_all",
+          "daemon_deployment": false,
+          "history_digest": "78768accefe33f4a6a2537b9953be22bcfd5a8dc9b3a941b8d7b956e7012e12b",
+          "model_forwards_in_process": 192,
+          "modulator": "a7e00d479c86558ae919b8041c21502e2dce482cfe6fe409e26c112e89766181",
+          "native_resource_summary": {
+            "maximum_checkpoint_bytes": 1568,
+            "maximum_transient_allocation_bytes": 13016,
+            "maximum_write_amplification_ppm": 530613,
+            "p95_execution_micros": 809,
+            "p99_execution_micros": 1654,
+            "pilot_ceiling_passed_for_supplied_samples": true,
+            "sample_count": 192,
+            "sample_set_digest": "4d44ee788983307d4948f93a6fcd322412e1327733c007bf359cfb1c4335b69d"
+          },
+          "native_resource_summary_passed": true,
+          "native_sequence": 384,
+          "objective_digest": "4e6830068c2d95c84e67fa7b23e0b98cdde0092c47ac86702de181f7951fd127",
+          "outcomes": 63,
+          "pending": null,
+          "requests": 192,
+          "ticks_in_process": 192,
+          "training_steps": 0,
+          "weights_decoded_in_process": 1,
+          "whole_owner_peak_bytes": 36075
+        }
+      ],
+      "ndu": [
+        {
+          "anchor": "a0783b4c7e8a99023512729eadce85809b5994aaf7fcc381dc8e75ac4c353c46",
+          "authority": "deny_all",
+          "daemon_deployment": false,
+          "history_digest": "bd85a3e81cee9d59cb5fe7531f540d4c71d8a871afe01582b29c8135b00229ae",
+          "model_forwards_in_process": 5,
+          "modulator": "cfeb391be84dc3d2bc0ccb7469a6eacba260ffbcf5315fb765288a890ae4c1f4",
+          "native_resource_summary": {
+            "maximum_checkpoint_bytes": 1568,
+            "maximum_transient_allocation_bytes": 1639,
+            "maximum_write_amplification_ppm": 530613,
+            "p95_execution_micros": 531,
+            "p99_execution_micros": 531,
+            "pilot_ceiling_passed_for_supplied_samples": true,
+            "sample_count": 5,
+            "sample_set_digest": "872ee1ea46ee6e1360260c0c11c60b8be33d4dd50f4e746f969b99d54e28b413"
+          },
+          "native_resource_summary_passed": true,
+          "native_sequence": 5,
+          "native_value_layers_loaded": true,
+          "objective_digest": "a8bdd7872055cb0579e7e2680a9caf186fee7415fc7e1694eeab8d93f948116d",
+          "outcomes": 0,
+          "pending": [
+            "next.case.0.0.ndu",
+            "bd85a3e81cee9d59cb5fe7531f540d4c71d8a871afe01582b29c8135b00229ae",
+            "stop"
+          ],
+          "requests": 1,
+          "selection": "ndu",
+          "ticks_in_process": 5,
+          "training_steps": 0,
+          "weights_decoded_in_process": 1,
+          "whole_owner_peak_bytes": 17513
+        },
+        {
+          "anchor": "32807f60434522289be4a0bd7afcdcf4a86bd87d0d8a273ee9cbb8de067321f3",
+          "authority": "deny_all",
+          "daemon_deployment": false,
+          "history_digest": "e041fbdd09ed51e596025c4b66758af84757c0d2b5da5228d5323fa27ea5ddb8",
+          "model_forwards_in_process": 475,
+          "modulator": "166ecc62a6a351f61df0ecd392a96e4aedb16556079c683b616039463793c63d",
+          "native_resource_summary": {
+            "maximum_checkpoint_bytes": 1568,
+            "maximum_transient_allocation_bytes": 1639,
+            "maximum_write_amplification_ppm": 530613,
+            "p95_execution_micros": 845,
+            "p99_execution_micros": 1844,
+            "pilot_ceiling_passed_for_supplied_samples": true,
+            "sample_count": 475,
+            "sample_set_digest": "2073738d71a94debbb49cd8b4b777d8675b7d0e2ea2f9ef6dc22525f36a1c950"
+          },
+          "native_resource_summary_passed": true,
+          "native_sequence": 480,
+          "native_value_layers_loaded": true,
+          "objective_digest": "a8bdd7872055cb0579e7e2680a9caf186fee7415fc7e1694eeab8d93f948116d",
+          "outcomes": 46,
+          "pending": null,
+          "requests": 96,
+          "selection": "ndu",
+          "ticks_in_process": 475,
+          "training_steps": 0,
+          "weights_decoded_in_process": 1,
+          "whole_owner_peak_bytes": 36233
+        },
+        {
+          "anchor": "9e7734b8d2599b6b7b2c7f6c4fab6c6ebde5e2d92ee40cb9c2ee23b5ea4935ae",
+          "authority": "deny_all",
+          "daemon_deployment": false,
+          "history_digest": "ac71eedbbadc3dd8289417def928b7a0391cf105226ed7b991a795d64f285a67",
+          "model_forwards_in_process": 480,
+          "modulator": "ef03f0e454d135b246dda29c5679f9af17c709be9090b64e570ed20b95043ed3",
+          "native_resource_summary": {
+            "maximum_checkpoint_bytes": 1568,
+            "maximum_transient_allocation_bytes": 1637,
+            "maximum_write_amplification_ppm": 530613,
+            "p95_execution_micros": 766,
+            "p99_execution_micros": 2313,
+            "pilot_ceiling_passed_for_supplied_samples": true,
+            "sample_count": 480,
+            "sample_set_digest": "a0bea94a5b965375e271d86ff27f145467995a42784e0728fdda64b1a2cf5a2a"
+          },
+          "native_resource_summary_passed": true,
+          "native_sequence": 960,
+          "native_value_layers_loaded": true,
+          "objective_digest": "a8bdd7872055cb0579e7e2680a9caf186fee7415fc7e1694eeab8d93f948116d",
+          "outcomes": 92,
+          "pending": null,
+          "requests": 192,
+          "selection": "ndu",
+          "ticks_in_process": 480,
+          "training_steps": 0,
+          "weights_decoded_in_process": 1,
+          "whole_owner_peak_bytes": 36236
+        }
+      ]
+    },
+    "independent_writers": 24,
+    "matched_prefix_cases": 192,
+    "native_numpy_admission_raw_max_error": 2.220446049250313e-16,
+    "native_numpy_moment_max_error": 8.881784197001252e-16,
+    "native_original_teacher_max_error": 6.161028429652049e-07,
+    "native_resources": {
+      "correctness": {
+        "all_process_resource_summaries_pass": true,
+        "native_checkpoint_bytes": {
+          "maximum": 1568,
+          "mean": 1568.0,
+          "p95": 1568.0,
+          "p99": 1568.0
+        },
+        "native_execution_micros": {
+          "maximum": 61749,
+          "mean": 527.784375,
+          "p95": 754.0,
+          "p99": 2369.0
+        },
+        "native_transient_bytes": {
+          "maximum": 1623,
+          "mean": 1610.0083333333334,
+          "p95": 1621.0,
+          "p99": 1623.0
+        },
+        "native_write_amplification_ppm": {
+          "maximum": 530613,
+          "mean": 530613.0,
+          "p95": 530613.0,
+          "p99": 530613.0
+        },
+        "owner_micros": {
+          "maximum": 62100,
+          "mean": 850.5614583333333,
+          "p95": 1322.0,
+          "p99": 3765.0
+        },
+        "owner_peak_bytes": {
+          "maximum": 36244,
+          "mean": 17701.538541666665,
+          "p95": 17531.0,
+          "p99": 22928.0
+        },
+        "processes": 3,
+        "ticks": 960
+      },
+      "legacy_correctness": {
+        "all_process_resource_summaries_pass": true,
+        "native_checkpoint_bytes": {
+          "maximum": 1568,
+          "mean": 1568.0,
+          "p95": 1568.0,
+          "p99": 1568.0
+        },
+        "native_execution_micros": {
+          "maximum": 29107,
+          "mean": 595.2526041666666,
+          "p95": 858.0,
+          "p99": 1654.0
+        },
+        "native_transient_bytes": {
+          "maximum": 13016,
+          "mean": 13016.0,
+          "p95": 13016.0,
+          "p99": 13016.0
+        },
+        "native_write_amplification_ppm": {
+          "maximum": 530613,
+          "mean": 530613.0,
+          "p95": 530613.0,
+          "p99": 530613.0
+        },
+        "owner_micros": {
+          "maximum": 29857,
+          "mean": 951.6484375,
+          "p95": 1674.0,
+          "p99": 2749.0
+        },
+        "owner_peak_bytes": {
+          "maximum": 36075,
+          "mean": 24263.752604166668,
+          "p95": 24176.0,
+          "p99": 24176.0
+        },
+        "processes": 3,
+        "ticks": 384
+      },
+      "ndu": {
+        "all_process_resource_summaries_pass": true,
+        "native_checkpoint_bytes": {
+          "maximum": 1568,
+          "mean": 1568.0,
+          "p95": 1568.0,
+          "p99": 1568.0
+        },
+        "native_execution_micros": {
+          "maximum": 14748,
+          "mean": 447.62083333333334,
+          "p95": 819.0,
+          "p99": 1844.0
+        },
+        "native_transient_bytes": {
+          "maximum": 1639,
+          "mean": 1626.0083333333334,
+          "p95": 1637.0,
+          "p99": 1639.0
+        },
+        "native_write_amplification_ppm": {
+          "maximum": 530613,
+          "mean": 530613.0,
+          "p95": 530613.0,
+          "p99": 530613.0
+        },
+        "owner_micros": {
+          "maximum": 15093,
+          "mean": 779.2958333333333,
+          "p95": 1410.0,
+          "p99": 3002.0
+        },
+        "owner_peak_bytes": {
+          "maximum": 36236,
+          "mean": 17685.663541666665,
+          "p95": 17515.0,
+          "p99": 22920.0
+        },
+        "processes": 3,
+        "ticks": 960
+      }
+    },
+    "negative_checks": 50,
+    "new_sources_used_to_train": false,
+    "original_teacher_action_parity": {
+      "matches": 192,
+      "total": 192
+    },
+    "projection_journals": {
+      "correctness": {
+        "entries": 186,
+        "journal_sha256": "c900dde68165484fe8530c1eee5668e8b2106309db13c1fe4f2968ad4de1be80",
+        "utility_outcomes": 92
+      },
+      "legacy_correctness": {
+        "entries": 128,
+        "journal_sha256": "eb61328a1f17bc86a0bdd71abe9aa067294654447003a69ab787f7b4e1ebfb59",
+        "utility_outcomes": 63
+      },
+      "ndu": {
+        "entries": 186,
+        "journal_sha256": "ea8c1579fa3b74fe8f1ed22252c2e61d8729de6874b588075fe138ca94a18c57",
+        "utility_outcomes": 92
+      }
+    },
+    "same_action_actual_output_pairwise_matches": 43,
+    "source_pairs": 96,
+    "total_actual_owner_ticks": 2304
+  },
+  "execution_identity_notes": [
+    {
+      "current_code_difference": "Only nonexistent prospective module qualification_sources import replaced by actual xnist_sources before independent qualification",
+      "exact_executed_snapshot": "/workspace/scratch/87e43aa872f5/ndu-runs/next-native/calibration-001/executed-source/collect_qualification.py",
+      "historical_protocol_preserved": true,
+      "kind": "calibration_collector_import_path",
+      "snapshot_sha256": "7ad1a5aea42a8f97021e1d51d5acbee248bc0a3010090523149f755a1a54a3d3"
+    },
+    {
+      "change": "165 newly trained offline admission parameters instead of inherited zero; no numerical weight or function change",
+      "corrected_package": "model-002",
+      "kind": "model_metadata",
+      "original_package": "model-001"
+    }
+  ],
+  "failures_retained": [
+    {
+      "all_original_logs_and_binary_retained": true,
+      "cause": "serde_json f64 value serialization can change one ULP after parsing",
+      "exit_code": 1,
+      "failure": "Controller history digest or sequence mismatch during pending decision recovery",
+      "fix": "Committed numeric NDU/probability fields use round-trip decimal strings; native math remains f64",
+      "run": "smoke-001"
+    },
+    {
+      "failure": "Original p95 native resource gate failed:7272us>3000us",
+      "failure_not_erased_by_later_pass": true,
+      "later_formal_all_process_resource_gates_pass": true,
+      "policy": "legacy_correctness",
+      "process": 0,
+      "run": "smoke-002"
+    }
+  ],
+  "process_costs": {
+    "calibration-001-process.json": {
+      "child_pid": 8,
+      "child_system_seconds": 2.099629,
+      "child_user_seconds": 35.98597,
+      "command": [
+        "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+        "-B",
+        "-m",
+        "experiments.multimodal_output_portfolio.next_20261025.native.collect_qualification",
+        "--study",
+        "native_calibration",
+        "--cache",
+        "/workspace/scratch/87e43aa872f5/ndu-next-assets/qmnist",
+        "--allocation",
+        "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/SOURCE_ALLOCATION.json",
+        "--protocol",
+        "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native/CALIBRATION_PROTOCOL.json",
+        "--predictor",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/next-native/predictor-001/predictor.json",
+        "--output",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/next-native/calibration-001"
+      ],
+      "cost_scope": "Python child including waited native subprocesses; Linux wait4 ru_maxrss is peak, not sum",
+      "exit_code": 0,
+      "log_sha256": "bc250623b7ecc75435c656e5a23bccb6ffb81407b99837035a3514f04f70fe4e",
+      "peak_rss_bytes": 349995008,
+      "registration_sha256": "7685d0a601d780102dc4fc7d779d063044a63cf7f6023b778c0d6babfff70dfa",
+      "schema": "hepta.next.native-process-cost.v1",
+      "waited_pid": 8,
+      "wall_ns": 40771048271,
+      "wrapper_cpu_ns": 500745
+    },
+    "confirm-001-process.json": {
+      "child_pid": 8,
+      "child_system_seconds": 1.406236,
+      "child_user_seconds": 11.86117,
+      "command": [
+        "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+        "-B",
+        "-m",
+        "experiments.multimodal_output_portfolio.next_20261025.native.run",
+        "--binary",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/next-native/build-005/hepta-native-ndu-online",
+        "--package",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/next-native/model-002/package.json",
+        "--mode",
+        "confirm",
+        "--count",
+        "96",
+        "--protocol",
+        "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native/NATIVE_PROTOCOL.json",
+        "--output",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/next-native/confirm-001"
+      ],
+      "cost_scope": "Python child including waited native subprocesses; Linux wait4 ru_maxrss is peak, not sum",
+      "exit_code": 0,
+      "log_sha256": "7388b145deb0bd47c0018a11754031506a27762b34fd005dde1f2f7bbb136acd",
+      "peak_rss_bytes": 377909248,
+      "registration_sha256": "5c0fe25fe7894d043a6773dbde2df0a3229b1d9cc12b3fc1af59d6e75c4d66d7",
+      "schema": "hepta.next.native-process-cost.v1",
+      "waited_pid": 8,
+      "wall_ns": 15982880702,
+      "wrapper_cpu_ns": 509518
+    },
+    "qualification-001-process.json": {
+      "child_pid": 8,
+      "child_system_seconds": 25.45486,
+      "child_user_seconds": 69.499357,
+      "command": [
+        "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+        "-B",
+        "-m",
+        "experiments.multimodal_output_portfolio.next_20261025.native.collect_qualification",
+        "--study",
+        "native_qualification",
+        "--cache",
+        "/workspace/scratch/87e43aa872f5/ndu-next-assets/qmnist",
+        "--allocation",
+        "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/XNIST_QUALIFICATION_ALLOCATION.json",
+        "--protocol",
+        "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native/QUALIFICATION_PROTOCOL.json",
+        "--predictor",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/next-native/predictor-001/predictor.json",
+        "--output",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/next-native/qualification-001"
+      ],
+      "cost_scope": "Python child including waited native subprocesses; Linux wait4 ru_maxrss is peak, not sum",
+      "exit_code": 0,
+      "log_sha256": "dea34008366b7e4b96dc383daa91618cd31eed581b4a613a121576873b3dd4c2",
+      "peak_rss_bytes": 1075101696,
+      "registration_sha256": "536b189c468ff8a51eaca02b68dd7c81e5590c049c78c8f749218678a92d2d18",
+      "schema": "hepta.next.native-process-cost.v1",
+      "waited_pid": 8,
+      "wall_ns": 111024912014,
+      "wrapper_cpu_ns": 1540351
+    },
+    "smoke-001-process.json": {
+      "child_pid": 8,
+      "child_system_seconds": 0.270736,
+      "child_user_seconds": 2.9412849999999997,
+      "command": [
+        "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+        "-B",
+        "-m",
+        "experiments.multimodal_output_portfolio.next_20261025.native.run",
+        "--binary",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/next-native/build-002/hepta-native-ndu-online",
+        "--package",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/next-native/model-001/package.json",
+        "--mode",
+        "smoke",
+        "--count",
+        "16",
+        "--output",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/next-native/smoke-001"
+      ],
+      "cost_scope": "Python child including waited native subprocesses; Linux wait4 ru_maxrss is peak, not sum",
+      "exit_code": 1,
+      "log_sha256": "0736e110d19f9ac3b058b492aa2e5bf67810850cb9595c813234adc601ef0c92",
+      "peak_rss_bytes": 380317696,
+      "registration_sha256": "839264f9a4e723f3e41528bb1e3d7c18bd12aa6050c26e1035c784197c7f5ea6",
+      "schema": "hepta.next.native-process-cost.v1",
+      "waited_pid": 8,
+      "wall_ns": 2846317421,
+      "wrapper_cpu_ns": 516429
+    },
+    "smoke-002-process.json": {
+      "child_pid": 8,
+      "child_system_seconds": 0.7166739999999999,
+      "child_user_seconds": 4.893091,
+      "command": [
+        "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+        "-B",
+        "-m",
+        "experiments.multimodal_output_portfolio.next_20261025.native.run",
+        "--binary",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/next-native/build-004/hepta-native-ndu-online",
+        "--package",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/next-native/model-002/package.json",
+        "--mode",
+        "smoke",
+        "--count",
+        "16",
+        "--output",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/next-native/smoke-002"
+      ],
+      "cost_scope": "Python child including waited native subprocesses; Linux wait4 ru_maxrss is peak, not sum",
+      "exit_code": 0,
+      "log_sha256": "45774378e533046a9ac173549e289da4c0fde950c6a624ba205755140a499acb",
+      "peak_rss_bytes": 373911552,
+      "registration_sha256": "5b9266adcc4ae1a672bbd2bc29eb031b817849948d08af48f0df3a6795904ff7",
+      "schema": "hepta.next.native-process-cost.v1",
+      "waited_pid": 8,
+      "wall_ns": 5970002760,
+      "wrapper_cpu_ns": 539422
+    }
+  },
+  "protocols": {
+    "CALIBRATION_PROTOCOL.json": "d3053107ffc9d94db2248e196672e97f72e064689de66ebbc0cc4f62ab9476a0",
+    "NATIVE_PROTOCOL.json": "b8fcdfdcab8e39f7f00ab33b51c1a34a936d8ba10246343299631759367d508d",
+    "QUALIFICATION_PROTOCOL.json": "e27a2bcd16d6e8694e713c7e5662b45adb791058c3fd4474d8d5865b1843c0d9"
+  },
+  "provenance": {
+    "dependency_source_commit": "9595221c21f1fe0775295a9c8756a1ba4d69ea49",
+    "final_repository_formatter": "just fmt before build-005 and native formal freeze",
+    "formal_binary": "/workspace/scratch/87e43aa872f5/ndu-runs/next-native/build-005/hepta-native-ndu-online",
+    "formal_binary_sha256": "09fd64c226cff3c87f4b2e06a52e12cd0b819cb707667fb22c624846d963ff5a",
+    "native_core_crates_rebuilt": 22,
+    "owner_source_commit": "985a52e84cdaed7c8d4c363f30bc8841c5e3730c",
+    "owner_source_modified": false,
+    "owner_source_sha256": "4d56cc99d0edb1018734aebf70dc715de8df7846a2a9c4f2edb4230a0fc87faf",
+    "upstream_source_files_restored_and_SHA_checked": 428,
+    "whole_agentd_daemon_built": false
+  },
+  "schema": "hepta.next.native-summary.v1",
+  "statistics": {
+    "inference": {
+      "bootstrap_replicates": 4096,
+      "interval": "descriptive 95% percentile; no policy superiority or NI claimed from point estimate alone",
+      "paired_resamples": true,
+      "pairs_per_writer": 4,
+      "seed": 261025909,
+      "source_pairs_are_not_independent_writers": true,
+      "unit": "writer",
+      "writers": 24
+    },
+    "scope": {
+      "ID": {
+        "comparisons": {
+          "ndu_minus_correctness": {
+            "CE_gamma2_action_cost_0002": {
+              "estimate": -0.019802996162854913,
+              "writer_cluster_95CI": [
+                -0.09056021699149651,
+                0.014377577325384729
+              ]
+            },
+            "coverage": {
+              "estimate": 0.0,
+              "writer_cluster_95CI": [
+                0.0,
+                0.0
+              ]
+            },
+            "instrumented_ms": {
+              "estimate": 0.6304786875000055,
+              "writer_cluster_95CI": [
+                -1.6584653294270817,
+                3.538598842447918
+              ]
+            },
+            "joint_correct": {
+              "estimate": 0.0,
+              "writer_cluster_95CI": [
+                -0.0625,
+                0.05208333333333337
+              ]
+            },
+            "stage_ms": {
+              "estimate": 0.472380885416662,
+              "writer_cluster_95CI": [
+                -2.08354413020834,
+                3.479182949218749
+              ]
+            },
+            "utility": {
+              "estimate": -0.011267548714143594,
+              "writer_cluster_95CI": [
+                -0.05295609387685547,
+                0.02450598273620315
+              ]
+            }
+          },
+          "ndu_minus_legacy_correctness": {
+            "CE_gamma2_action_cost_0002": {
+              "estimate": 0.848277624230247,
+              "writer_cluster_95CI": [
+                0.5213805717497418,
+                1.2819230143176132
+              ]
+            },
+            "coverage": {
+              "estimate": 0.30208333333333337,
+              "writer_cluster_95CI": [
+                0.17708333333333337,
+                0.42708333333333337
+              ]
+            },
+            "instrumented_ms": {
+              "estimate": 7.756203666666664,
+              "writer_cluster_95CI": [
+                5.578847158854166,
+                10.331075378906249
+              ]
+            },
+            "joint_correct": {
+              "estimate": 0.25,
+              "writer_cluster_95CI": [
+                0.125,
+                0.375
+              ]
+            },
+            "stage_ms": {
+              "estimate": 9.055586135416664,
+              "writer_cluster_95CI": [
+                6.958485830729162,
+                11.591788674479163
+              ]
+            },
+            "utility": {
+              "estimate": 0.5674145759937044,
+              "writer_cluster_95CI": [
+                0.3251442255840329,
+                0.8201006072359937
+              ]
+            }
+          }
+        },
+        "policies": {
+          "correctness": {
+            "CE_gamma2_action_cost_0002": {
+              "estimate": 0.3805441194259678,
+              "writer_cluster_95CI": [
+                0.08593013077655923,
+                0.881622563480937
+              ]
+            },
+            "actions": {
+              "couple": 7,
+              "refine_image": 11,
+              "refine_text": 72,
+              "reject": 4,
+              "stop": 2
+            },
+            "coverage": {
+              "estimate": 0.9583333333333334,
+              "writer_cluster_95CI": [
+                0.90625,
+                1.0
+              ]
+            },
+            "instrumented_ms": {
+              "estimate": 28.556109229166662,
+              "writer_cluster_95CI": [
+                26.674107085937504,
+                30.8405685078125
+              ]
+            },
+            "joint_correct": {
+              "estimate": 0.8645833333333334,
+              "writer_cluster_95CI": [
+                0.8020833333333334,
+                0.9270833333333334
+              ]
+            },
+            "rows": 96,
+            "selected_action_ECE_is_new_qualification": false,
+            "selected_action_point_ECE": 0.0939509782608696,
+            "stage_ms": {
+              "estimate": 25.28634813541667,
+              "writer_cluster_95CI": [
+                23.518302342447917,
+                27.43192582552083
+              ]
+            },
+            "utility": {
+              "estimate": 0.8526215367484838,
+              "writer_cluster_95CI": [
+                0.7518302065630754,
+                0.9307032987446291
+              ]
+            }
+          },
+          "legacy_correctness": {
+            "CE_gamma2_action_cost_0002": {
+              "estimate": -0.4875365009671342,
+              "writer_cluster_95CI": [
+                -0.634228635512337,
+                -0.282496342054998
+              ]
+            },
+            "actions": {
+              "couple": 36,
+              "refine_text": 27,
+              "reject": 33
+            },
+            "coverage": {
+              "estimate": 0.65625,
+              "writer_cluster_95CI": [
+                0.53125,
+                0.78125
+              ]
+            },
+            "instrumented_ms": {
+              "estimate": 21.430384250000003,
+              "writer_cluster_95CI": [
+                19.86516820833333,
+                23.035904328125
+              ]
+            },
+            "joint_correct": {
+              "estimate": 0.6145833333333334,
+              "writer_cluster_95CI": [
+                0.4895833333333333,
+                0.7395833333333334
+              ]
+            },
+            "rows": 96,
+            "selected_action_ECE_is_new_qualification": false,
+            "selected_action_point_ECE": 0.06916526984126983,
+            "stage_ms": {
+              "estimate": 16.703142885416668,
+              "writer_cluster_95CI": [
+                15.207399828125,
+                18.22535712890625
+              ]
+            },
+            "utility": {
+              "estimate": 0.2739394120406359,
+              "writer_cluster_95CI": [
+                0.02648419252655004,
+                0.5162722132450046
+              ]
+            }
+          },
+          "ndu": {
+            "CE_gamma2_action_cost_0002": {
+              "estimate": 0.36074112326311286,
+              "writer_cluster_95CI": [
+                0.07831132358771231,
+                0.8036129547637243
+              ]
+            },
+            "actions": {
+              "couple": 21,
+              "refine_image": 34,
+              "refine_text": 8,
+              "reject": 4,
+              "stop": 29
+            },
+            "coverage": {
+              "estimate": 0.9583333333333334,
+              "writer_cluster_95CI": [
+                0.90625,
+                1.0
+              ]
+            },
+            "instrumented_ms": {
+              "estimate": 29.186587916666667,
+              "writer_cluster_95CI": [
+                26.735908602864583,
+                32.10318617317709
+              ]
+            },
+            "joint_correct": {
+              "estimate": 0.8645833333333334,
+              "writer_cluster_95CI": [
+                0.7916666666666666,
+                0.9270833333333334
+              ]
+            },
+            "rows": 96,
+            "selected_action_ECE_is_new_qualification": false,
+            "selected_action_point_ECE": 0.03941054347826091,
+            "stage_ms": {
+              "estimate": 25.758729020833332,
+              "writer_cluster_95CI": [
+                23.626651585937495,
+                28.44098857942708
+              ]
+            },
+            "utility": {
+              "estimate": 0.8413539880343402,
+              "writer_cluster_95CI": [
+                0.7381489111566529,
+                0.9226471988590979
+              ]
+            }
+          }
+        }
+      },
+      "all_source_with_null_utility_minus_one": {
+        "comparisons": {
+          "ndu_minus_correctness": {
+            "CE_gamma2_action_cost_0002": {
+              "estimate": -0.0011997444610893915,
+              "writer_cluster_95CI": [
+                -0.00382686131507233,
+                0.000761059715572443
+              ]
+            },
+            "coverage": {
+              "estimate": 0.0,
+              "writer_cluster_95CI": [
+                0.0,
+                0.0
+              ]
+            },
+            "instrumented_ms": {
+              "estimate": -0.18631265104166417,
+              "writer_cluster_95CI": [
+                -1.6064395996093723,
+                1.0408102291666683
+              ]
+            },
+            "joint_correct": {
+              "estimate": 0.0,
+              "writer_cluster_95CI": [
+                -0.03125,
+                0.026041666666666685
+              ]
+            },
+            "stage_ms": {
+              "estimate": -0.22873008333333544,
+              "writer_cluster_95CI": [
+                -1.8481438990885435,
+                1.1053896406250017
+              ]
+            },
+            "utility": {
+              "estimate": -0.005633774357071783,
+              "writer_cluster_95CI": [
+                -0.02647804693842773,
+                0.01225299136810155
+              ]
+            }
+          },
+          "ndu_minus_legacy_correctness": {
+            "CE_gamma2_action_cost_0002": {
+              "estimate": 0.12145717483722163,
+              "writer_cluster_95CI": [
+                0.07447763801644366,
+                0.16750454397125902
+              ]
+            },
+            "coverage": {
+              "estimate": 0.15104166666666669,
+              "writer_cluster_95CI": [
+                0.08854166666666669,
+                0.21354166666666669
+              ]
+            },
+            "instrumented_ms": {
+              "estimate": 5.779621187499998,
+              "writer_cluster_95CI": [
+                4.4489397552083325,
+                7.190917601562505
+              ]
+            },
+            "joint_correct": {
+              "estimate": 0.125,
+              "writer_cluster_95CI": [
+                0.0625,
+                0.1875
+              ]
+            },
+            "stage_ms": {
+              "estimate": 7.278571906249997,
+              "writer_cluster_95CI": [
+                6.0088821575520805,
+                8.706953580078123
+              ]
+            },
+            "utility": {
+              "estimate": 0.2837072879968522,
+              "writer_cluster_95CI": [
+                0.16257211279201636,
+                0.41005030361799677
+              ]
+            }
+          }
+        },
+        "policies": {
+          "correctness": {
+            "CE_gamma2_action_cost_0002": {
+              "estimate": -0.6840788069488597,
+              "writer_cluster_95CI": [
+                -0.7073894570107799,
+                -0.6648979532753765
+              ]
+            },
+            "actions": {
+              "couple": 7,
+              "refine_image": 11,
+              "refine_text": 72,
+              "reject": 100,
+              "stop": 2
+            },
+            "coverage": {
+              "estimate": 0.4791666666666667,
+              "writer_cluster_95CI": [
+                0.453125,
+                0.5
+              ]
+            },
+            "instrumented_ms": {
+              "estimate": 24.970092432291665,
+              "writer_cluster_95CI": [
+                23.116113759114583,
+                27.263949888671874
+              ]
+            },
+            "joint_correct": {
+              "estimate": 0.4322916666666667,
+              "writer_cluster_95CI": [
+                0.4010416666666667,
+                0.4635416666666667
+              ]
+            },
+            "rows": 192,
+            "selected_action_ECE_is_new_qualification": false,
+            "selected_action_point_ECE": 0.0939509782608696,
+            "stage_ms": {
+              "estimate": 21.82781353125,
+              "writer_cluster_95CI": [
+                20.129220123046878,
+                24.01362859765625
+              ]
+            },
+            "utility": {
+              "estimate": -0.0736892316257581,
+              "writer_cluster_95CI": [
+                -0.12408489671846232,
+                -0.03464835062768543
+              ]
+            }
+          },
+          "legacy_correctness": {
+            "CE_gamma2_action_cost_0002": {
+              "estimate": -0.8067357262471707,
+              "writer_cluster_95CI": [
+                -0.8498412589687762,
+                -0.7602208843082366
+              ]
+            },
+            "actions": {
+              "couple": 36,
+              "refine_text": 27,
+              "reject": 129
+            },
+            "coverage": {
+              "estimate": 0.328125,
+              "writer_cluster_95CI": [
+                0.265625,
+                0.390625
+              ]
+            },
+            "instrumented_ms": {
+              "estimate": 19.004158593750002,
+              "writer_cluster_95CI": [
+                17.904879117187498,
+                20.11620029557292
+              ]
+            },
+            "joint_correct": {
+              "estimate": 0.3072916666666667,
+              "writer_cluster_95CI": [
+                0.24479166666666666,
+                0.3697916666666667
+              ]
+            },
+            "rows": 192,
+            "selected_action_ECE_is_new_qualification": false,
+            "selected_action_point_ECE": 0.06916526984126983,
+            "stage_ms": {
+              "estimate": 14.320511541666669,
+              "writer_cluster_95CI": [
+                13.352669659505207,
+                15.323668123046874
+              ]
+            },
+            "utility": {
+              "estimate": -0.36303029397968206,
+              "writer_cluster_95CI": [
+                -0.48675790373672495,
+                -0.2418638933774976
+              ]
+            }
+          },
+          "ndu": {
+            "CE_gamma2_action_cost_0002": {
+              "estimate": -0.6852785514099491,
+              "writer_cluster_95CI": [
+                -0.708174259729861,
+                -0.6668092004428356
+              ]
+            },
+            "actions": {
+              "couple": 21,
+              "refine_image": 34,
+              "refine_text": 8,
+              "reject": 100,
+              "stop": 29
+            },
+            "coverage": {
+              "estimate": 0.4791666666666667,
+              "writer_cluster_95CI": [
+                0.453125,
+                0.5
+              ]
+            },
+            "instrumented_ms": {
+              "estimate": 24.78377978125,
+              "writer_cluster_95CI": [
+                23.17282679817708,
+                26.600739072916667
+              ]
+            },
+            "joint_correct": {
+              "estimate": 0.4322916666666667,
+              "writer_cluster_95CI": [
+                0.3958333333333333,
+                0.4635416666666667
+              ]
+            },
+            "rows": 192,
+            "selected_action_ECE_is_new_qualification": false,
+            "selected_action_point_ECE": 0.03941054347826091,
+            "stage_ms": {
+              "estimate": 21.599083447916666,
+              "writer_cluster_95CI": [
+                20.23696587174479,
+                23.203990358723953
+              ]
+            },
+            "utility": {
+              "estimate": -0.07932300598282989,
+              "writer_cluster_95CI": [
+                -0.13092554442167362,
+                -0.038676400570451124
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "status": "actual_native_NDU_execution_completed; isolated_policy_net_benefit_not_established; production_activation_not_authorized",
+  "unclosed": [
+    "NDU isolated quality/cost superiority is not supported by the matched strong-control comparison.",
+    "Per-action ID and selected-action ECE do not all pass .03; pooled gate must not be generalized.",
+    "H2 full portfolio and audio/video native model interfaces are outside this H1 digit experiment.",
+    "Full Agentd daemon and production model-service transport remain unexecuted.",
+    "Production Dataset/Generator/Observer/Evaluator identities, trust material, authorized resolver admission and activation require authentic external inputs."
+  ]
+}
