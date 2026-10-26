@@ -1,0 +1,46 @@
+{
+  "contract": "hepta.notes.model.v1",
+  "provenance": "Canonical interoperability contract owned by Hepta memory; byte-identical Desktop and Agentd copies are reviewed together. This fixture supplies no authority.",
+  "target": {
+    "session_instance": "11111111111111111111111111111111",
+    "task_id": 1,
+    "incarnation": "22222222222222222222222222222222"
+  },
+  "destination_id": "trill.notes:11111111111111111111111111111111:1:22222222222222222222222222222222",
+  "scope_sha256": "85a4511e2d28dcd2b43d0c5ca76b59b291615c7fd31eda59e7820cdf089c43e5",
+  "predecessor_sha256": "40764bdef0e0653d04447c4803934692da440972f439666f01c36a335121fabb",
+  "wire": {
+    "schema_version": 1,
+    "topic": "trill.notes.replace.v1",
+    "request_utf8": "{\"schema_version\":1,\"action\":\"replace_note\",\"operation_id\":\"notes-model-contract-v1\",\"destination_id\":\"trill.notes:11111111111111111111111111111111:1:22222222222222222222222222222222\",\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"task_id\":1,\"incarnation\":\"22222222222222222222222222222222\"},\"expected_revision\":0,\"text\":\"Shared Notes / 中文\"}",
+    "payload_sha256": "69abb57f8e2f984f4fb32976ea166d1f5efed2678267500f643620d7309428a3",
+    "response_utf8": "{\"schema_version\":1,\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"task_id\":1,\"incarnation\":\"22222222222222222222222222222222\"},\"operation_id\":\"notes-model-contract-v1\",\"payload_sha256\":\"69abb57f8e2f984f4fb32976ea166d1f5efed2678267500f643620d7309428a3\",\"result\":{\"status\":\"applied\",\"previous_revision\":0,\"revision\":1,\"text_sha256\":\"599f03364180e4796a2df2a0fd555a94d3169fc1653ece2ed876d38c21556cc6\"}}"
+  },
+  "checkpoint": {
+    "format": "trill.notes.checkpoint",
+    "schema_version": 2,
+    "legacy_schema_version": 1,
+    "legacy_utf8": "{\"schema_version\":1,\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"task_id\":1,\"incarnation\":\"22222222222222222222222222222222\"},\"text\":\"Shared Notes / 中文\",\"revision\":1,\"pending_receipt\":{\"schema_version\":1,\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"task_id\":1,\"incarnation\":\"22222222222222222222222222222222\"},\"operation_id\":\"notes-model-contract-v1\",\"payload_sha256\":\"69abb57f8e2f984f4fb32976ea166d1f5efed2678267500f643620d7309428a3\",\"result\":{\"status\":\"applied\",\"previous_revision\":0,\"revision\":1,\"text_sha256\":\"599f03364180e4796a2df2a0fd555a94d3169fc1653ece2ed876d38c21556cc6\"}},\"retired_receipt\":null}",
+    "current_utf8": "{\"format\":\"trill.notes.checkpoint\",\"schema_version\":2,\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"task_id\":1,\"incarnation\":\"22222222222222222222222222222222\"},\"text\":\"Shared Notes / 中文\",\"revision\":1,\"pending_receipt\":{\"schema_version\":1,\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"task_id\":1,\"incarnation\":\"22222222222222222222222222222222\"},\"operation_id\":\"notes-model-contract-v1\",\"payload_sha256\":\"69abb57f8e2f984f4fb32976ea166d1f5efed2678267500f643620d7309428a3\",\"result\":{\"status\":\"applied\",\"previous_revision\":0,\"revision\":1,\"text_sha256\":\"599f03364180e4796a2df2a0fd555a94d3169fc1653ece2ed876d38c21556cc6\"}},\"retired_receipt\":null}"
+  },
+  "bootstrap": {
+    "schema_version": 2,
+    "descriptor_order": [
+      "effect_stream",
+      "recovery_datagram"
+    ],
+    "offer_utf8": "{\"schema_version\":2,\"action\":\"offer_notes_target\",\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"task_id\":1,\"incarnation\":\"22222222222222222222222222222222\"},\"destination_id\":\"trill.notes:11111111111111111111111111111111:1:22222222222222222222222222222222\"}",
+    "ack_utf8": "{\"schema_version\":2,\"action\":\"notes_target_registration\",\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"task_id\":1,\"incarnation\":\"22222222222222222222222222222222\"},\"destination_id\":\"trill.notes:11111111111111111111111111111111:1:22222222222222222222222222222222\",\"status\":\"attached\"}"
+  },
+  "startup": {
+    "schema_version": 1,
+    "reservation_utf8": "{\"schema_version\":1,\"action\":\"notes_target_reserved\",\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"task_id\":1,\"incarnation\":\"22222222222222222222222222222222\"},\"destination_id\":\"trill.notes:11111111111111111111111111111111:1:22222222222222222222222222222222\",\"nonce\":\"33333333333333333333333333333333\"}",
+    "activation_utf8": "{\"schema_version\":1,\"action\":\"activate_notes_bootstrap\",\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"task_id\":1,\"incarnation\":\"22222222222222222222222222222222\"},\"destination_id\":\"trill.notes:11111111111111111111111111111111:1:22222222222222222222222222222222\",\"nonce\":\"33333333333333333333333333333333\"}"
+  },
+  "migration": {
+    "legacy_read": "without_rewrite",
+    "next_state_changing_commit": "checkpoint_v2",
+    "saved_copy": "fresh_target_text_only",
+    "authority_and_receipts_transfer": false
+  }
+}

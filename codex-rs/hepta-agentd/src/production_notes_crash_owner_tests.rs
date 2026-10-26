@@ -183,10 +183,29 @@ fn read_document(path: &Path) -> Result<serde_json::Value, Box<dyn Error>> {
     Ok(serde_json::from_slice(&bytes)?)
 }
 
+#[derive(Clone, Copy)]
+enum CheckpointInput {
+    CurrentV2,
+    LegacyV1,
+}
+
 #[tokio::test]
 #[ignore = "requires explicitly isolated Xvfb and pinned durable Session/App/recovery binaries"]
 async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()
 -> Result<(), Box<dyn Error>> {
+    run_original_owner_checkpoint_recovery(CheckpointInput::CurrentV2).await
+}
+
+#[tokio::test]
+#[ignore = "requires explicitly isolated Xvfb and pinned durable Session/App/recovery binaries"]
+async fn notes_actual_app_legacy_checkpoint_original_owner_reopen_and_helper_ack_restart()
+-> Result<(), Box<dyn Error>> {
+    run_original_owner_checkpoint_recovery(CheckpointInput::LegacyV1).await
+}
+
+async fn run_original_owner_checkpoint_recovery(
+    checkpoint_input: CheckpointInput,
+) -> Result<(), Box<dyn Error>> {
     let started = Instant::now();
     let stage = |name: &str| {
         eprintln!(
@@ -289,6 +308,30 @@ async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()
     }
     kill_and_observe_reap(&old_session, app_pidfd)?;
     stage("actual_app_killed_and_reaped");
+    let mut checkpoint = read_document(&old_document)?;
+    assert_eq!(checkpoint["format"], "trill.notes.checkpoint");
+    assert_eq!(checkpoint["schema_version"], 2);
+    let legacy_bytes = if matches!(checkpoint_input, CheckpointInput::LegacyV1) {
+        // The actual App is dead. Reproduce only the historical file envelope;
+        // original text, revision, target and exact receipts remain unchanged.
+        checkpoint
+            .as_object_mut()
+            .ok_or("checkpoint object")?
+            .remove("format");
+        checkpoint["schema_version"] = serde_json::json!(1);
+        let bytes = serde_json::to_vec(&checkpoint)?;
+        let mut file = fs::OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .open(&old_document)?;
+        std::io::Write::write_all(&mut file, &bytes)?;
+        file.sync_all()?;
+        fs::File::open(old_document.parent().ok_or("checkpoint directory")?)?.sync_all()?;
+        stage("historical_checkpoint_envelope_prepared");
+        Some(bytes)
+    } else {
+        None
+    };
     assert_eq!(effect_probe.effect_attempts.load(Ordering::SeqCst), 1);
     assert_eq!(effect_probe.complete_fault_writes.load(Ordering::SeqCst), 1);
     let issuer_requests = issuer.requests.load(Ordering::SeqCst);
@@ -366,6 +409,13 @@ async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()
         .await?;
     process.start()?;
     stage("previous_recovery_helper_started");
+    if let Some(bytes) = &legacy_bytes {
+        assert_eq!(
+            fs::read(&old_document)?,
+            *bytes,
+            "opening legacy data must not rewrite it"
+        );
+    }
     assert_eq!(
         host.destination_count(),
         1,
@@ -388,6 +438,8 @@ async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()
     stage("original_operation_reconciled_and_committed");
     assert!(traffic.dropped.load(Ordering::SeqCst));
     let retired = read_document(&old_document)?;
+    assert_eq!(retired["format"], "trill.notes.checkpoint");
+    assert_eq!(retired["schema_version"], 2);
     assert!(retired["pending_receipt"].is_null());
     assert_eq!(retired["retired_receipt"]["operation_id"], operation_id);
     assert_eq!(retired["revision"], 1);
@@ -453,6 +505,8 @@ async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()
             .is_err()
     );
     let evidence = serde_json::json!({"schema_version":1,"profile":"test-authority-original-sqlite-owner-real-notes-crash",
+        "checkpoint_input":if matches!(checkpoint_input, CheckpointInput::LegacyV1) {"legacy_v1"} else {"current_v2"},
+        "checkpoint_schema_after_retirement":2,"legacy_checkpoint_open_preserved_bytes":legacy_bytes.is_some(),
         "production_authority":false,"native_kernel_qualified":false,"power_loss_qualified":false,"pixels_qualified":false,
         "session_sha256":session_sha.as_str(),"app_sha256":app_sha.as_str(),"recovery_helper_sha256":helper_sha.as_str(),
         "old_target":old,"current_target":current,"operation_id":operation_id,

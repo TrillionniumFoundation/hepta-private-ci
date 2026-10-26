@@ -521,3 +521,7 @@ fn lower_hex(value: &str, length: usize) -> bool {
 #[cfg(test)]
 #[path = "production_notes_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "production_notes_model_tests.rs"]
+mod model_tests;
