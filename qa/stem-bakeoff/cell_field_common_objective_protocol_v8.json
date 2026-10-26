@@ -1,0 +1,81 @@
+{
+  "schema": "hepta.common-terminal-diagnostic.v8",
+  "revision": "common-terminal-j32-20261026",
+  "status": "FROZEN",
+  "scope": "Historical planning-only mechanism diagnostic. Freeze remotely before any of the 24 real fits execute.",
+  "scientific_acceptance": false,
+  "production_authority": false,
+  "selection_labels_accessed": false,
+  "new_sources_accessed": false,
+  "versions": [
+    "v5",
+    "v6"
+  ],
+  "tasks": [
+    "agnews",
+    "dbpedia"
+  ],
+  "head_modes": [
+    "linear",
+    "gated"
+  ],
+  "seeds": [
+    7,
+    17,
+    29
+  ],
+  "registered_fits": 24,
+  "registered_outputs": 144,
+  "execution_order": "version, task, head, seed; six branches in the exact declared order",
+  "base_inputs": {
+    "source_commit": "147a67868afb68511a5152f7f944fb26df34843b",
+    "protocol_sha256": "e1827b6a0a4de9a083fca5c9401751b6063e63b447617a90719e64a089b4da7d",
+    "executed_source_sha256": "1a112e348eeaa06645896f1121c2ceab3f73e36caa967d1abda72bc462c7f110",
+    "seal_sha256": "e3ad867157e293e0c80eee6a2985583688e851fee9ff98c68323f6fa83af6131",
+    "planning_index_sha256": "fee97efebd8b20ef2a996cecc3ccc97e901b1272fceecde8e4671749000a0b26"
+  },
+  "mechanism": {
+    "horizon": 32,
+    "dt": 0.02,
+    "effort_price": 0.03,
+    "action_bound": 4.0,
+    "current_mean_weight": 1.0,
+    "old_mean_weight": 0.25,
+    "current_dispersion_weight": 0.0,
+    "continuation": "zero_control",
+    "safety_filter": false
+  },
+  "branches": [
+    "zero32",
+    "myopic_h1_zero_tail",
+    "full32_one_action",
+    "full32_eight_actions",
+    "field32_eight_actions",
+    "loss2_32_eight_actions"
+  ],
+  "proposal": {
+    "reference": "Original complete warmup plus 32 exact full-batch Adam updates with zero parameter intervention.",
+    "action_box": "Every coordinate of u is in [-4/sqrt(p),4/sqrt(p)]; physical increment is dt*u after Adam.",
+    "local_problem": "Linearized weighted terminal loss plus (dt*rho/2)*sum(u^2), solved by coordinate clipping with no old hard constraint.",
+    "myopic_scope": "Only the first action is free and uses the one-step loss gradient. This is not the historical V7 constrained-and-repaired myopic policy.",
+    "common_scope": "The Full32 one-action and three eight-action proposals all use the same step-32 endpoint, weights, price and zero-control continuation.",
+    "no_adaptation": "No safety filter, line search, selection labels, Full-risk fallback, or outcome-dependent replacement action. All 32 actual updates run even if old bounds are violated."
+  },
+  "attribution": {
+    "endpoint": "Compare myopic_h1_zero_tail with full32_one_action: same one free action and actual J32 score, different proposal endpoint.",
+    "action_freedom": "Compare full32_one_action with full32_eight_actions: same terminal objective and Full tangent model, different number of free actions.",
+    "forecast": "Compare Full, field and Loss2 maps on every identical actual action sequence, reporting panel and priced-J32 actual-minus-tangent errors.",
+    "nonlinear": "A better tangent objective need not improve true J32; retain both values and separate terminal risk from physical intervention effort.",
+    "generalization": "Planning-panel results cannot identify why an independently sampled future outcome worsened, establish population retention, or satisfy the original scientific gate."
+  },
+  "field_scope": "The exact local finite-window field shrinks 264 to 8 coordinates, exceeding the 108/156-dimensional optimizer state at its start. Full state supplies all coefficients; no compactness or speed claim.",
+  "retention_record": "Four original warmup old-panel anchors; save every per-step loss and violation, initial excess, terminal excess, complete state digest and receipt. Violations never abort this unguarded diagnostic.",
+  "failure_record": "All 144 slots retained. Exceptions remain explicit unavailable/error outcomes; no zero-action substitution and no claim of global infeasibility.",
+  "cost_scope": "Charge shared reference and coefficient preparation separately, then all six actual rollouts and runner work. This shared-preparation diagnostic is not a per-policy CPU<=3 gate benchmark.",
+  "runtime": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "record_versions": true
+  },
+  "freeze_contract": "The host publishes this protocol with status FROZEN and the executed source closure, then supplies exact protocol/source hashes and source commit to the runner. Hashes are local identity commitments, not independent authentication."
+}
