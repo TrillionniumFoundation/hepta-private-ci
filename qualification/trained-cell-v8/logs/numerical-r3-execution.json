@@ -1,0 +1,39 @@
+{
+  "scope": "same-process repeat cleanup of byte-verified old library intermediates after mount replay; preserved all executables and earlier failed runs",
+  "removed_paths": [
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_neuron-7310266c603fc5a9.rmeta",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_learning_artifacts-1c22ebc7f900c1d4.rlib",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_learning_artifacts-1c22ebc7f900c1d4.rmeta",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_learning_artifacts-d9178229f4a05e42.rlib",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_learning_artifacts-d9178229f4a05e42.rmeta",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_neuron-00873d72333c1c41.rlib",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_neuron-00873d72333c1c41.rmeta",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_learning_artifacts-02658fc792ab61af.rmeta",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_types-1a1b2fa578935372.rlib",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_types-1a1b2fa578935372.rmeta",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_neuron-e040e17b719d5a26.rmeta",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_learning_artifacts-0704d74fe85aac9a.rmeta",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_types-094cf4d2bbeed874.rmeta",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_types-58709a59eeedcbf0.rlib",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_types-58709a59eeedcbf0.rmeta",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_infer_core-a5a6cec66c6f7a32.rlib",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_infer_core-a5a6cec66c6f7a32.rmeta",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_types-f3cc5ce8fa585aa4.rmeta",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/deps/libcodex_hepta_infer_core-48274b126b3840ff.rmeta"
+  ],
+  "free_before_bytes": 49369088,
+  "free_after_bytes": 46862336,
+  "command": [
+    "/workspace/scratch/60f94d809f44/pft-venv/bin/python",
+    "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/qualify_handoff_profile.py",
+    "--code",
+    "/workspace/scratch/60f94d809f44/pft-native-controller-v8-code",
+    "--closure",
+    "/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/qualification-controller-source.json",
+    "--native",
+    "/workspace/scratch/60f94d809f44/native-qualification/codex-rs/target/debug/handoff-profile-check",
+    "--output",
+    "/workspace/scratch/60f94d809f44/pft-native-controller-handoff-v8-r3"
+  ],
+  "returncode": 0
+}

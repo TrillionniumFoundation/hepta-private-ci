@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="11" skipped="0" failures="0" errors="0" uuid="00fc2c06-7c88-4bdc-bc71-f970682160d8" timestamp="2026-10-26T14:38:54.145+08:00" time="11.306">
+    <testsuite name="hepta-handoff-recovery-v7" tests="11" skipped="0" errors="0" failures="0">
+        <testcase name="positive::tests::failed_actual_gate_cannot_prepare_even_with_present_audit_envelopes" classname="hepta-handoff-recovery-v7" timestamp="2026-10-26T14:38:54.145+08:00" time="0.007"/>
+        <testcase name="census::tests::aggregate_cpu_ratio_must_equal_raw_paired_timings" classname="hepta-handoff-recovery-v7" timestamp="2026-10-26T14:38:54.145+08:00" time="0.013"/>
+        <testcase name="census::tests::candidate_stopping_at24_is_unavailable_and_forged_completion_flags_reject" classname="hepta-handoff-recovery-v7" timestamp="2026-10-26T14:38:54.145+08:00" time="0.017"/>
+        <testcase name="census::tests::complete_fixed_census_and_stopped_nonrequired_diagnostic_remain_distinct" classname="hepta-handoff-recovery-v7" timestamp="2026-10-26T14:38:54.145+08:00" time="0.026"/>
+        <testcase name="census::tests::missing_or_duplicated_fixed_family_members_cannot_pass" classname="hepta-handoff-recovery-v7" timestamp="2026-10-26T14:38:54.145+08:00" time="0.027"/>
+        <testcase name="positive::tests::self_consistently_rehashed_wrong_terminal_state_review_cannot_touch_owner" classname="hepta-handoff-recovery-v7" timestamp="2026-10-26T14:38:54.152+08:00" time="0.181"/>
+        <testcase name="positive::tests::valid_mid17_transport_cannot_borrow_terminal32_science_before_any_owner_write" classname="hepta-handoff-recovery-v7" timestamp="2026-10-26T14:38:54.158+08:00" time="0.186"/>
+        <testcase name="positive::tests::wrong_external_key_or_changed_independent_evidence_cannot_publish" classname="hepta-handoff-recovery-v7" timestamp="2026-10-26T14:38:54.162+08:00" time="0.185"/>
+        <testcase name="positive::tests::changed_proposal_or_payload_cannot_recover_another_operation" classname="hepta-handoff-recovery-v7" timestamp="2026-10-26T14:38:54.145+08:00" time="0.312"/>
+        <testcase name="positive::tests::external_signature_synthetic_fixture_publishes_reopens_serves_and_rolls_back" classname="hepta-handoff-recovery-v7" timestamp="2026-10-26T14:38:54.145+08:00" time="0.981"/>
+        <testcase name="positive::tests::publication_crash_matrix_recovers_exact_signed_operation" classname="hepta-handoff-recovery-v7" timestamp="2026-10-26T14:38:54.145+08:00" time="11.305"/>
+    </testsuite>
+</testsuites>

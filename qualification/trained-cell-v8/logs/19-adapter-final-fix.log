@@ -1,0 +1,31 @@
+cargo clippy --fix --tests --allow-dirty {args}
+    Checking hepta-handoff-recovery-v7 v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver)
+warning: function `reject` is never used
+   --> /workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/../../../trained-cell-v5/actual-review-driver/src/owner.rs:162:8
+    |
+162 | pub fn reject(inputs: &Inputs, root: &Path, now: u64) -> Result<Value> {
+    |        ^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `hepta-handoff-recovery-v7` (lib) generated 1 warning
+    Checking hepta-profile-admission-v8 v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver)
+warning: method `prepare` is never used
+   --> src/../../../trained-cell-v5/actual-review-driver/src/positive_fixtures.rs:203:12
+    |
+ 43 | impl Fixture {
+    | ------------ method in this implementation
+...
+203 |     pub fn prepare(&self) -> Result<Value> {
+    |            ^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `wrap` is never used
+  --> src/../../../trained-cell-v7/recovery-driver/src/handoff_fixtures.rs:16:8
+   |
+16 | pub fn wrap(f: &mut Fixture) -> Result<()> {
+   |        ^^^^
+
+warning: `hepta-profile-admission-v8` (lib test) generated 2 warnings
+    Finished `dev` profile [unoptimized] target(s) in 2.15s

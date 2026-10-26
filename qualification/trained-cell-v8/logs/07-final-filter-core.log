@@ -1,0 +1,18 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.149` which wasn't produced by cargo metadata
+   Compiling codex-hepta-neuron v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs/hepta-neuron)
+    Finished `test` profile [unoptimized] target(s) in 3.94s
+────────────
+ Nextest run ID ca48a474-ed5b-4810-a2bd-e2eea24d5bc5 with nextest profile: local
+    Starting 3 tests across 1 binary (113 tests skipped)
+        PASS [   0.033s] (1/3) codex-hepta-neuron training_handoff_v8::tests::old_wire_cannot_be_relabelled_as_v8_and_v8_cannot_be_relabelled_as_v7
+        PASS [   0.067s] (2/3) codex-hepta-neuron training_handoff_v8::tests::self_rehashed_forecast_prefix_counter_and_safety_claim_substitutions_reject
+        PASS [   0.339s] (3/3) codex-hepta-neuron training_handoff_v8::tests::all_stride_and_head_modes_keep_forecast_separate_from_pending_prefix
+────────────
+     Summary [   0.340s] 3 tests run: 3 passed, 113 skipped

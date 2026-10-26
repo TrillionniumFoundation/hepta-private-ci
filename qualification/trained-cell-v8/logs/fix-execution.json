@@ -1,0 +1,40 @@
+{
+  "execution": "approved_escalated_local_qualification",
+  "network": false,
+  "scientific_cost_includes_this": false,
+  "commands": [
+    {
+      "log": "14-neuron-fix.log",
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-neuron",
+        "--offline"
+      ],
+      "returncode": 0
+    },
+    {
+      "log": "15-recovery-fix.log",
+      "command": [
+        "just",
+        "fix",
+        "--manifest-path",
+        "../qualification/trained-cell-v7/recovery-driver/Cargo.toml",
+        "--offline"
+      ],
+      "returncode": 0
+    },
+    {
+      "log": "16-adapter-fix.log",
+      "command": [
+        "just",
+        "fix",
+        "--manifest-path",
+        "../qualification/trained-cell-v8/admission-driver/Cargo.toml",
+        "--offline"
+      ],
+      "returncode": 0
+    }
+  ]
+}

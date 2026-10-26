@@ -1,0 +1,186 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling sha2 v0.10.9
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs/hepta-types)
+   Compiling codex-hepta-infer-core v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs/hepta-infer-core)
+   Compiling ed25519-dalek v2.2.0
+   Compiling codex-hepta-learning-artifacts v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs/hepta-learning-artifacts)
+   Compiling codex-hepta-neuron v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs/hepta-neuron)
+   Compiling hepta-handoff-recovery-v7 v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver)
+warning: unused import: `parity`
+ --> /workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/../../../trained-cell-v8/streaming_header_v8.rs:3:29
+  |
+3 | use crate::{Result, ensure, parity, report};
+  |                             ^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `reject` is never used
+   --> /workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/../../../trained-cell-v5/actual-review-driver/src/owner.rs:162:8
+    |
+162 | pub fn reject(inputs: &Inputs, root: &Path, now: u64) -> Result<Value> {
+    |        ^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `hepta-handoff-recovery-v7` (lib) generated 2 warnings (run `cargo fix --lib -p hepta-handoff-recovery-v7` to apply 1 suggestion)
+   Compiling hepta-profile-admission-v8 v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver)
+warning: unused import: `TASKS`
+ --> src/payload.rs:4:31
+  |
+4 | use crate::profile::{Profile, TASKS, family};
+  |                               ^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `hepta-profile-admission-v8` (lib) generated 1 warning (run `cargo fix --lib -p hepta-profile-admission-v8` to apply 1 suggestion)
+warning: function `verify` is never used
+  --> src/../../../trained-cell-v7/recovery-driver/src/terminal_review.rs:72:15
+   |
+72 | pub(crate) fn verify(
+   |               ^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `prepare` is never used
+   --> src/../../../trained-cell-v5/actual-review-driver/src/positive_fixtures.rs:203:12
+    |
+ 43 | impl Fixture {
+    | ------------ method in this implementation
+...
+203 |     pub fn prepare(&self) -> Result<Value> {
+    |            ^^^^^^^
+
+warning: function `wrap` is never used
+  --> src/../../../trained-cell-v7/recovery-driver/src/handoff_fixtures.rs:16:8
+   |
+16 | pub fn wrap(f: &mut Fixture) -> Result<()> {
+   |        ^^^^
+
+warning: `hepta-profile-admission-v8` (lib test) generated 4 warnings (1 duplicate)
+    Finished `test` profile [unoptimized] target(s) in 19.99s
+────────────
+ Nextest run ID 95778ec1-e6a0-47b1-bac4-16666fac0838 with nextest profile: local
+    Starting 12 tests across 4 binaries
+        PASS [   0.111s] ( 1/12) hepta-profile-admission-v8 tests::changed_audit_profile_and_unknown_controller_schema_stay_closed
+        PASS [   0.111s] ( 2/12) hepta-profile-admission-v8 tests::complete_metric_report_cannot_admit_a_midplan_native_payload
+        PASS [   0.111s] ( 3/12) hepta-profile-admission-v8 tests::exact_task_boundary_rejects_before_owner_or_signing_proposal
+        PASS [   0.128s] ( 4/12) hepta-profile-admission-v8 tests::self_rehashed_missing_execution_does_not_become_a_complete_census
+        PASS [   0.131s] ( 5/12) hepta-profile-admission-v8 tests::honest_incomplete_candidate_is_an_unavailable_gate_and_no_owner_write
+        PASS [   0.158s] ( 6/12) hepta-profile-admission-v8 tests::self_rehashed_controller_stride_change_cannot_replace_the_external_contract
+        PASS [   0.075s] ( 7/12) hepta-profile-admission-v8 tests::source_change_or_uninstalled_profile_cannot_reach_owner
+        PASS [   0.253s] ( 8/12) hepta-profile-admission-v8 tests::fixed_scientific_family_supports_three_or_seven_registered_policies_without_profile_forks
+        PASS [   0.149s] ( 9/12) hepta-profile-admission-v8 tests::stream_tests::v8_incomplete_terminal_and_altered_external_stream_pin_reject_before_owner
+        PASS [   2.030s] (10/12) hepta-profile-admission-v8 tests::full_format_synthetic_report_reaches_exact_signed_owner_and_idempotent_reopen
+        PASS [   2.085s] (11/12) hepta-profile-admission-v8 tests::stream_tests::explicit_v8_report_and_stream_reach_signed_owner_reopen_and_rollback
+        PASS [   8.588s] (12/12) hepta-profile-admission-v8 tests::stream_tests::complete_stream_exceeds_both_old_limits_and_checks_every_numeric_tail_row
+────────────
+     Summary [   8.701s] 12 tests run: 12 passed, 0 skipped
+        PASS [   0.111s] ( 1/12) hepta-profile-admission-v8 tests::changed_audit_profile_and_unknown_controller_schema_stay_closed
+  stdout ───
+
+    running 1 test
+    test tests::changed_audit_profile_and_unknown_controller_schema_stay_closed ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.10s
+
+
+        PASS [   0.111s] ( 2/12) hepta-profile-admission-v8 tests::complete_metric_report_cannot_admit_a_midplan_native_payload
+  stdout ───
+
+    running 1 test
+    test tests::complete_metric_report_cannot_admit_a_midplan_native_payload ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.11s
+
+
+        PASS [   0.111s] ( 3/12) hepta-profile-admission-v8 tests::exact_task_boundary_rejects_before_owner_or_signing_proposal
+  stdout ───
+
+    running 1 test
+    test tests::exact_task_boundary_rejects_before_owner_or_signing_proposal ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.10s
+
+
+        PASS [   0.128s] ( 4/12) hepta-profile-admission-v8 tests::self_rehashed_missing_execution_does_not_become_a_complete_census
+  stdout ───
+
+    running 1 test
+    test tests::self_rehashed_missing_execution_does_not_become_a_complete_census ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.12s
+
+
+        PASS [   0.131s] ( 5/12) hepta-profile-admission-v8 tests::honest_incomplete_candidate_is_an_unavailable_gate_and_no_owner_write
+  stdout ───
+
+    running 1 test
+    test tests::honest_incomplete_candidate_is_an_unavailable_gate_and_no_owner_write ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.13s
+
+
+        PASS [   0.158s] ( 6/12) hepta-profile-admission-v8 tests::self_rehashed_controller_stride_change_cannot_replace_the_external_contract
+  stdout ───
+
+    running 1 test
+    test tests::self_rehashed_controller_stride_change_cannot_replace_the_external_contract ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.15s
+
+
+        PASS [   0.075s] ( 7/12) hepta-profile-admission-v8 tests::source_change_or_uninstalled_profile_cannot_reach_owner
+  stdout ───
+
+    running 1 test
+    test tests::source_change_or_uninstalled_profile_cannot_reach_owner ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.07s
+
+
+        PASS [   0.253s] ( 8/12) hepta-profile-admission-v8 tests::fixed_scientific_family_supports_three_or_seven_registered_policies_without_profile_forks
+  stdout ───
+
+    running 1 test
+    test tests::fixed_scientific_family_supports_three_or_seven_registered_policies_without_profile_forks ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.25s
+
+
+        PASS [   0.149s] ( 9/12) hepta-profile-admission-v8 tests::stream_tests::v8_incomplete_terminal_and_altered_external_stream_pin_reject_before_owner
+  stdout ───
+
+    running 1 test
+    test tests::stream_tests::v8_incomplete_terminal_and_altered_external_stream_pin_reject_before_owner ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.14s
+
+
+        PASS [   2.030s] (10/12) hepta-profile-admission-v8 tests::full_format_synthetic_report_reaches_exact_signed_owner_and_idempotent_reopen
+  stdout ───
+
+    running 1 test
+    test tests::full_format_synthetic_report_reaches_exact_signed_owner_and_idempotent_reopen ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 2.02s
+
+
+        PASS [   2.085s] (11/12) hepta-profile-admission-v8 tests::stream_tests::explicit_v8_report_and_stream_reach_signed_owner_reopen_and_rollback
+  stdout ───
+
+    running 1 test
+    test tests::stream_tests::explicit_v8_report_and_stream_reach_signed_owner_reopen_and_rollback ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 2.07s
+
+
+        PASS [   8.588s] (12/12) hepta-profile-admission-v8 tests::stream_tests::complete_stream_exceeds_both_old_limits_and_checks_every_numeric_tail_row
+  stdout ───
+
+    running 1 test
+    {"expected_sha256":"b819beb764fb6bf1f97d5e1aa38b50601c0c96b98ef13bed20681ad364157265","header_sha256":"5cf09378f458f28a20a988c83ff3512e0b051734bfe6bd79c2e6591b94bab70f","logical_reference_bytes":16896000,"logical_vectors_bytes":67584000,"owner_opened":false,"scientific_acceptance":false,"scope":"SYNTHETIC full-stream mechanics","self_rehashed_numeric_tail_rejected":true,"tail_byte_tamper_rejected":true,"truncated_final_vector_rejected":true,"vectors_sha256":"32f255e4977106b37f55bdd6ddf8b036eca87db2344f0128f31712d91c4ebe04","versions":[{"all_heads":12,"argmax_predictions_checked":132000,"cases":[{"blocks":20,"cell_id":"agnews-linear-seed7","reference_case_sha256":"b45068b1a4d3dd12f3cc6e83cd214879508760f91d319fbe380e81fef79a2999","rows_inferred":20000,"task_stream_sha256":"cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"},{"blocks":20,"cell_id":"agnews-linear-seed17","reference_case_sha256":"b45068b1a4d3dd12f3cc6e83cd214879508760f91d319fbe380e81fef79a2999","rows_inferred":20000,"task_stream_sha256":"cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"},{"blocks":20,"cell_id":"agnews-linear-seed29","reference_case_sha256":"b45068b1a4d3dd12f3cc6e83cd214879508760f91d319fbe380e81fef79a2999","rows_inferred":20000,"task_stream_sha256":"cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"},{"blocks":20,"cell_id":"agnews-gated-seed7","reference_case_sha256":"b45068b1a4d3dd12f3cc6e83cd214879508760f91d319fbe380e81fef79a2999","rows_inferred":20000,"task_stream_sha256":"cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"},{"blocks":20,"cell_id":"agnews-gated-seed17","reference_case_sha256":"b45068b1a4d3dd12f3cc6e83cd214879508760f91d319fbe380e81fef79a2999","rows_inferred":20000,"task_stream_sha256":"cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"},{"blocks":20,"cell_id":"agnews-gated-seed29","reference_case_sha256":"b45068b1a4d3dd12f3cc6e83cd214879508760f91d319fbe380e81fef79a2999","rows_inferred":20000,"task_stream_sha256":"cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"},{"blocks":2,"cell_id":"dbpedia-linear-seed7","reference_case_sha256":"1368dd9d31cff4c9b9d5077fc072acac9363c6a8a5bfc06f89567652bd4c7411","rows_inferred":2000,"task_stream_sha256":"d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"},{"blocks":2,"cell_id":"dbpedia-linear-seed17","reference_case_sha256":"1368dd9d31cff4c9b9d5077fc072acac9363c6a8a5bfc06f89567652bd4c7411","rows_inferred":2000,"task_stream_sha256":"d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"},{"blocks":2,"cell_id":"dbpedia-linear-seed29","reference_case_sha256":"1368dd9d31cff4c9b9d5077fc072acac9363c6a8a5bfc06f89567652bd4c7411","rows_inferred":2000,"task_stream_sha256":"d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"},{"blocks":2,"cell_id":"dbpedia-gated-seed7","reference_case_sha256":"1368dd9d31cff4c9b9d5077fc072acac9363c6a8a5bfc06f89567652bd4c7411","rows_inferred":2000,"task_stream_sha256":"d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"},{"blocks":2,"cell_id":"dbpedia-gated-seed17","reference_case_sha256":"1368dd9d31cff4c9b9d5077fc072acac9363c6a8a5bfc06f89567652bd4c7411","rows_inferred":2000,"task_stream_sha256":"d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"},{"blocks":2,"cell_id":"dbpedia-gated-seed29","reference_case_sha256":"1368dd9d31cff4c9b9d5077fc072acac9363c6a8a5bfc06f89567652bd4c7411","rows_inferred":2000,"task_stream_sha256":"d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"}],"chunk_rows":1024,"class_nlls_checked":528000,"header_sha256":"5cf09378f458f28a20a988c83ff3512e0b051734bfe6bd79c2e6591b94bab70f","labels_read":false,"logits_checked":528000,"maximum_absolute_logit_error":0.0,"maximum_absolute_probability_error":0.0,"maximum_all_class_nll_error":0.0,"prediction_rows":132000,"probabilities_checked":528000,"production_authority":false,"raw_buffer_bytes":3145728,"reference_buffer_bytes":65536,"row_subsampling":false,"schema":"hepta.native-stream-parity-result.v8","version":"predecessor"},{"all_heads":12,"argmax_predictions_checked":132000,"cases":[{"blocks":20,"cell_id":"agnews-linear-seed7","reference_case_sha256":"9a2697c4b609c4740326174bd2dd1004bbe84a2f25aeab599d2a5f4dd4c849f4","rows_inferred":20000,"task_stream_sha256":"cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"},{"blocks":20,"cell_id":"agnews-linear-seed17","reference_case_sha256":"9a2697c4b609c4740326174bd2dd1004bbe84a2f25aeab599d2a5f4dd4c849f4","rows_inferred":20000,"task_stream_sha256":"cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"},{"blocks":20,"cell_id":"agnews-linear-seed29","reference_case_sha256":"9a2697c4b609c4740326174bd2dd1004bbe84a2f25aeab599d2a5f4dd4c849f4","rows_inferred":20000,"task_stream_sha256":"cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"},{"blocks":20,"cell_id":"agnews-gated-seed7","reference_case_sha256":"9a2697c4b609c4740326174bd2dd1004bbe84a2f25aeab599d2a5f4dd4c849f4","rows_inferred":20000,"task_stream_sha256":"cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"},{"blocks":20,"cell_id":"agnews-gated-seed17","reference_case_sha256":"9a2697c4b609c4740326174bd2dd1004bbe84a2f25aeab599d2a5f4dd4c849f4","rows_inferred":20000,"task_stream_sha256":"cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"},{"blocks":20,"cell_id":"agnews-gated-seed29","reference_case_sha256":"9a2697c4b609c4740326174bd2dd1004bbe84a2f25aeab599d2a5f4dd4c849f4","rows_inferred":20000,"task_stream_sha256":"cc46047e24f6cc05512e845cb39f2b346b031be3bad8deb6d44fdeef0aade68d"},{"blocks":2,"cell_id":"dbpedia-linear-seed7","reference_case_sha256":"9a14ca6cd1a024caddc45f6a808eb308183b65063b9c4836fe36f4a8b46da2ec","rows_inferred":2000,"task_stream_sha256":"d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"},{"blocks":2,"cell_id":"dbpedia-linear-seed17","reference_case_sha256":"9a14ca6cd1a024caddc45f6a808eb308183b65063b9c4836fe36f4a8b46da2ec","rows_inferred":2000,"task_stream_sha256":"d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"},{"blocks":2,"cell_id":"dbpedia-linear-seed29","reference_case_sha256":"9a14ca6cd1a024caddc45f6a808eb308183b65063b9c4836fe36f4a8b46da2ec","rows_inferred":2000,"task_stream_sha256":"d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"},{"blocks":2,"cell_id":"dbpedia-gated-seed7","reference_case_sha256":"9a14ca6cd1a024caddc45f6a808eb308183b65063b9c4836fe36f4a8b46da2ec","rows_inferred":2000,"task_stream_sha256":"d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"},{"blocks":2,"cell_id":"dbpedia-gated-seed17","reference_case_sha256":"9a14ca6cd1a024caddc45f6a808eb308183b65063b9c4836fe36f4a8b46da2ec","rows_inferred":2000,"task_stream_sha256":"d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"},{"blocks":2,"cell_id":"dbpedia-gated-seed29","reference_case_sha256":"9a14ca6cd1a024caddc45f6a808eb308183b65063b9c4836fe36f4a8b46da2ec","rows_inferred":2000,"task_stream_sha256":"d96e091d755678837d0ca2a1af421e0a59da2d1141ba85cd195478ed04a3bdd6"}],"chunk_rows":1024,"class_nlls_checked":528000,"header_sha256":"5cf09378f458f28a20a988c83ff3512e0b051734bfe6bd79c2e6591b94bab70f","labels_read":false,"logits_checked":528000,"maximum_absolute_logit_error":0.0,"maximum_absolute_probability_error":0.0,"maximum_all_class_nll_error":0.0,"prediction_rows":132000,"probabilities_checked":528000,"production_authority":false,"raw_buffer_bytes":3145728,"reference_buffer_bytes":65536,"row_subsampling":false,"schema":"hepta.native-stream-parity-result.v8","version":"candidate"}]}
+    test tests::stream_tests::complete_stream_exceeds_both_old_limits_and_checks_every_numeric_tail_row ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 8.58s
+
+

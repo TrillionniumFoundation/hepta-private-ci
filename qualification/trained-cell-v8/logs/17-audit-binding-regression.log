@@ -1,0 +1,41 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling codex-hepta-neuron v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/codex-rs/hepta-neuron)
+   Compiling hepta-handoff-recovery-v7 v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver)
+warning: function `reject` is never used
+   --> /workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v7/recovery-driver/src/../../../trained-cell-v5/actual-review-driver/src/owner.rs:162:8
+    |
+162 | pub fn reject(inputs: &Inputs, root: &Path, now: u64) -> Result<Value> {
+    |        ^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `hepta-handoff-recovery-v7` (lib) generated 1 warning
+   Compiling hepta-profile-admission-v8 v0.0.0 (/workspace/scratch/60f94d809f44/hepta-native-v8/qualification/trained-cell-v8/admission-driver)
+warning: method `prepare` is never used
+   --> src/../../../trained-cell-v5/actual-review-driver/src/positive_fixtures.rs:203:12
+    |
+ 43 | impl Fixture {
+    | ------------ method in this implementation
+...
+203 |     pub fn prepare(&self) -> Result<Value> {
+    |            ^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `wrap` is never used
+  --> src/../../../trained-cell-v7/recovery-driver/src/handoff_fixtures.rs:16:8
+   |
+16 | pub fn wrap(f: &mut Fixture) -> Result<()> {
+   |        ^^^^
+
+warning: `hepta-profile-admission-v8` (lib test) generated 2 warnings
+    Finished `test` profile [unoptimized] target(s) in 14.99s
+────────────
+ Nextest run ID 745e3adc-6db0-45b2-a535-c3d39e50dd50 with nextest profile: local
+    Starting 4 tests across 4 binaries (10 tests skipped)
+        PASS [   0.210s] (1/4) hepta-profile-admission-v8 tests::audit_binding_tests::profile_audit_read_cannot_use_uncommitted_bytes_with_valid_profile_fields
+        PASS [   0.275s] (2/4) hepta-profile-admission-v8 tests::audit_binding_tests::terminal_reads_revalidate_exact_conversion_and_both_audit_bytes
+        PASS [   1.780s] (3/4) hepta-profile-admission-v8 tests::full_format_synthetic_report_reaches_exact_signed_owner_and_idempotent_reopen
+        PASS [   2.048s] (4/4) hepta-profile-admission-v8 tests::stream_tests::explicit_v8_report_and_stream_reach_signed_owner_reopen_and_rollback
+────────────
+     Summary [   2.048s] 4 tests run: 4 passed, 10 skipped
