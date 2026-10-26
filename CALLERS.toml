@@ -109,7 +109,12 @@ required_boundary_ids = [
   "root_original_two_descriptor_send",
   "root_original_two_descriptor_receive",
   "native_original_writer_terminal_observation",
-  "native_original_writer_next_delivery_observation"
+  "native_original_writer_next_delivery_observation",
+  "root_notes_original_startup_before",
+  "root_notes_recovered_successor_startup_before",
+  "root_notes_original_reserved_session_binding",
+  "root_notes_registered_successor_policy_replace",
+  "root_notes_original_issuer_policy_cas"
 ]
 
 [[boundary]]
@@ -658,7 +663,7 @@ forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/deployment_notes.rs"
-required = ["writer_token", "effect_token", "writer.validate()?", "RevisionMismatch", "retired Notes lease cannot be recreated", "AuthorityLeaseRegistry", "put_lease"]
+required = ["writer_token", "effect_token", "writer.validate()?", "RevisionMismatch", "retired Notes lease cannot be recreated", "AuthorityLeaseRegistry", "put_lease", "registration.with_live(verifier", "self.retained_writer_authorization(registration)?", "state.writer_authorization.as_ref() != Some(&proof)", "if state.policies[slot] == next", "if state.policies[slot] != previous", "changed.policies[slot] = next", ".compare_and_set(STATE_OWNER, &state, &changed)", "writer::validate_writer_time(registration, state.head.authority_epoch, after)"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
@@ -1035,7 +1040,7 @@ id = "root_material_current_observation_chain"
 symbol = "PreparedHostAuthoritySession/HostCognitiveCheckpoint::observe_physical_current"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_session_material.rs"
 definition_markers = ["pub fn observe_physical_current(", "verify_pinned_process(", "self.service.observe_registered_physical_current()?"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_material_recovery.rs", "codex-rs/hepta-agentd/src/native_g2_entry/cycle.rs", "codex-rs/hepta-agentd/src/native_g2_entry/recovery.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_material_recovery.rs", "codex-rs/hepta-agentd/src/native_g2_entry/cycle.rs", "codex-rs/hepta-agentd/src/native_g2_entry/recovery.rs", "codex-rs/hepta-agentd/src/root_notes_startup.rs"]
 caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)observe_physical_current\\s*\\("
 
@@ -1352,4 +1357,60 @@ forbidden = ["AllowVerifier", "permit_all"]
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/root_production_handoff.rs"
 required = ["const FRAME: &[u8] = b\"HEPTA_ROOT_PRODUCTION_INPUTS_V1\"", "descriptors.len() != 2", "libc::MSG_TRUNC | libc::MSG_CTRUNC", "libc::MSG_CMSG_CLOEXEC", "&bytes[..FRAME.len()] != FRAME", "peer.uid != 0", "inherited unnamed Root datagram pair required", "crate::authority_host_bootstrap_seal::validate_sealed(file, size)?", "crate::root_observation_stream::check_lifetime(root)"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[boundary]]
+id = "root_notes_original_startup_before"
+symbol = "PreparedHostAuthoritySession::with_notes_startup_from_session_before"
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)with_notes_startup_from_session_before\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/root_notes_startup.rs"
+definition_markers = ["pub fn with_notes_startup_from_session_before(", "self.with_notes_startup_selected(", "/*previous*/ None,"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "root_notes_recovered_successor_startup_before"
+symbol = "PreparedHostAuthoritySession::with_notes_recovery_startup_from_session_before"
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)with_notes_recovery_startup_from_session_before\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/root_notes_startup.rs"
+definition_markers = ["pub fn with_notes_recovery_startup_from_session_before(", "previous: RootNotesPolicyPredecessor", "self.with_notes_startup_selected(", "Some(previous),"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "root_notes_original_reserved_session_binding"
+symbol = "PreparedHostAuthoritySession::with_registered_notes_from_session"
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)with_registered_notes_from_session\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_session.rs"
+definition_markers = ["pub fn with_registered_notes_from_session(", "verify_pinned_process(", ".with_notes_from_original_session(target, lifetime_ms)?"]
+product_callers = ["codex-rs/hepta-agentd/src/root_notes_startup.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_notes_registered_successor_policy_replace"
+symbol = "HostAuthorityService::replace_notes_policy_for_registered_successor"
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)replace_notes_policy_for_registered_successor\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_notes_successor.rs"
+definition_markers = ["pub(crate) fn replace_notes_policy_for_registered_successor(", "libc::getuid()", "libc::geteuid()", "self.notes.is_some()", "writer.registration.local_lease_generation <= 1", "self.issuer.replace_registered_notes_policy("]
+product_callers = ["codex-rs/hepta-agentd/src/root_notes_startup.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_notes_original_issuer_policy_cas"
+symbol = "DeploymentFinalUseIssuer::replace_registered_notes_policy"
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)replace_registered_notes_policy\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/deployment_notes.rs"
+definition_markers = ["pub fn replace_registered_notes_policy(", "libc::geteuid()", "self.replace_notes_policy(", "registration.with_live(verifier", "self.retained_writer_authorization(registration)?", "state.writer_authorization.as_ref() != Some(&proof)", "if state.policies[slot] != previous", ".compare_and_set(STATE_OWNER, &state, &changed)", "writer::validate_writer_time(registration, state.head.authority_epoch, after)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_notes_successor.rs"]
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_notes_startup.rs"
+required = ["pub fn with_notes_startup_from_session_before(", "/*previous*/ None,", "pub fn with_notes_recovery_startup_from_session_before(", "Some(previous),", "fn with_notes_startup_selected(", "reservation::remaining(end)?", "validate_profile(&profile, &self.config.signer_id)?", ".validate_model_tuple(", "validate_empty_deployment(&deployment)?", "reservation::receive(", "&session_pidfd", "self.config.peer_uid", "self.config.peer_gid", "validate_recovery_policy(&profile, &previous, &startup_release.target)?", "writer.local_lease_generation <= 1 || self.fresh_filesystem", "self.observe_physical_current()?", "self.service.replace_notes_policy_for_registered_successor(", "self.with_registered_notes_from_session(", "seal_deployment(deployment, &bytes)?", "owner_alive(&session_pidfd, end)?", "previous.target == target", ".is_none_or(|old| old.previous_target != *previous.target)", "previous.grant_lifetime_ms == 0", "profile.grant_lifetime_ms", "metadata.nlink() != 0", "metadata.uid() != 0", "metadata.len() != 0", "metadata.mode() & 0o7777 != 0o600"]
+forbidden = ["AllowVerifier", "permit_all"]
+required_order = [["reservation::receive(", "validate_recovery_policy(&profile, &previous, &startup_release.target)?", "self.observe_physical_current()?", ".replace_notes_policy_for_registered_successor(", "self.with_registered_notes_from_session("]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_notes_successor.rs"
+required = ["libc::getuid()", "libc::geteuid()", "self.notes.is_some()", "writer.registration.local_lease_generation <= 1", "self.issuer.replace_registered_notes_policy("]
 forbidden = ["AllowVerifier", "permit_all"]
