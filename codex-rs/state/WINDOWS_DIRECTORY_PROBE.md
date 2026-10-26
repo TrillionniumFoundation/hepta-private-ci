@@ -38,3 +38,11 @@ the unchanged State sync result. Unsupported modes remain explicit failures in
 the trace. A missing capability keeps the diagnostic job red. Even a supported
 mode grants no product authority or sudden-power-loss qualification. A shared
 backend and unchanged original case runs are subsequent work.
+
+The first actual run40412971928 collected native read/write flush support, but
+its wrapper failed because Nextest printed singular `Starting 1 test`. The raw
+failed receipt and absent source/tool-after records remain unchanged. The exact
+stdout excerpt and archive provenance under `.github/fixtures/windows-directory-probe/`
+regress both singular/plural grammar and exact terminal identity. The collector
+now retains actual after facts in a finally path on failure; it never invents
+them from source-before. This parser repair does not rerun or qualify the old job.

@@ -8,12 +8,13 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import shutil
 import subprocess
 import sys
+import time
 
-from windows_current_ci import execute_groups, git, source, valid_source
-from windows_final_safety import assess_exact
+from windows_current_ci import ANSI, git, source, valid_source
 
 TEST = "sqlite_recovery::windows::tests::directory_probe::records_native_directory_flush_capability"
 GROUP = {
@@ -29,6 +30,29 @@ MODES = [
     "backup-read-write",
     "backup-read-write-reparse",
 ]
+
+
+def assess_collector(returncode, log):
+    """Require the one exact collector; Nextest uses singular for one test."""
+    text = ANSI.sub("", log)
+    starts = re.findall(r"^\s*Starting (\d+) tests? across", text, re.MULTILINE)
+    terminal = re.findall(
+        r"^\s*(PASS|FAIL|TIMEOUT|EXECFAIL|LEAK|SKIP)\s+\[[^\]\n]+\]\s+"
+        r"(?:\(\s*\d+/\d+\)\s+)?(\S+)\s+(\S+)\s*$",
+        text,
+        re.MULTILINE,
+    )
+    expected = [("PASS", GROUP["package"], TEST)]
+    return {
+        "id": GROUP["id"],
+        "package": GROUP["package"],
+        "exitCode": returncode,
+        "expectedTestCount": 1,
+        "selectedTestCount": int(starts[0]) if len(starts) == 1 else None,
+        "observedTests": [name for _, _, name in terminal],
+        "terminalCount": len(terminal),
+        "passed": returncode == 0 and starts == ["1"] and terminal == expected,
+    }
 
 
 def valid_facts(row):
@@ -120,6 +144,8 @@ def main():
     if output.exists() or output.is_relative_to(root):
         raise ValueError("fresh diagnostic output outside source required")
     output.mkdir(parents=True)
+    before, binaries, hashes = None, {}, {}
+    collected, supported = False, False
     try:
         if sys.platform != "win32" or os.environ.get("GITHUB_RUN_ATTEMPT") != "1":
             raise ValueError("one actual native Windows attempt required")
@@ -181,55 +207,54 @@ def main():
             output / "native-probe.json"
         )
 
-        def invoke(command):
-            # The new manual diagnostic is ignored in ordinary State suites.
-            # Explicitly execute this exact ignored collector here; no old case
-            # is skipped, relabelled or given a changed expectation.
-            command.extend(["--run-ignored", "only"])
+        command = [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            GROUP["package"],
+            "--lib",
+            "--cargo-profile",
+            "dev-small",
+            "-E",
+            GROUP["filter"],
+            "--test-threads",
+            "1",
+            "--no-tests",
+            "fail",
+            "--retries",
+            "0",
+            "--run-ignored",
+            "only",
+        ]
+        started = time.monotonic()
+        log_path = output / "native-directory-probe.log"
+        with log_path.open("x", encoding="utf-8") as stream:
             process = subprocess.run(
-                command, cwd=root / "codex-rs", capture_output=True, text=True
+                command,
+                cwd=root / "codex-rs",
+                stdout=stream,
+                stderr=subprocess.STDOUT,
+                check=False,
             )
-            return process.returncode, process.stdout + process.stderr
-
-        groups = execute_groups(root, output, [GROUP], invoke=invoke)
-        receipt["groups"] = groups
-        if len(groups) != 1 or not groups[0]["passed"]:
-            raise ValueError("exact one native collector test did not pass")
-        strict = assess_exact(
-            GROUP,
-            groups[0]["exitCode"],
-            (output / "native-directory-probe.log").read_text(),
+        strict = assess_collector(process.returncode, log_path.read_text())
+        strict.update(
+            command=command, durationSeconds=round(time.monotonic() - started, 3)
         )
+        receipt["groups"] = [strict]
+        (output / "groups.json").write_text(json.dumps([strict], indent=2) + "\n")
         receipt["strictCollectorAssessment"] = strict
         if not strict["passed"]:
             raise ValueError("native collector terminal identity set differs")
         trace = json.loads((output / "native-probe.json").read_text())
         modes, supported = capability(trace)
-        after = source(root)
-        clean = git(root, "status", "--porcelain", "--untracked-files=all")
-        intact = valid_source(args.expected_head, before, after) and not clean
-        tools_intact = all(
-            hashlib.sha256(path.read_bytes()).hexdigest() == hashes[name]
-            for name, path in binaries.items()
-        )
         receipt.update(
-            sourceAfter=after,
-            sourceStatusAfter=clean,
-            sourceUnchanged=intact,
-            toolFilesUnchanged=tools_intact,
             nativeModeAssessments=modes,
-            diagnosticCollectionSucceeded=intact and tools_intact,
-            retainedDirectoryCapabilitySupported=supported and intact and tools_intact,
             nativeTraceSha256=hashlib.sha256(
                 (output / "native-probe.json").read_bytes()
             ).hexdigest(),
         )
-        if intact and tools_intact:
-            receipt["status"] = (
-                "CAPABILITY_SUPPORTED_DIAGNOSTIC_ONLY"
-                if supported
-                else "FAIL_NO_RETAINED_DIRECTORY_FLUSH_CAPABILITY"
-            )
+        collected = True
     except (
         OSError,
         ValueError,
@@ -238,6 +263,37 @@ def main():
         subprocess.SubprocessError,
     ) as error:
         receipt["error"] = str(error)
+    finally:
+        # Retain actual after facts even when strict collection fails. Failure
+        # remains failure; missing facts are never inferred from the before.
+        try:
+            if before is not None:
+                after = source(root)
+                clean = git(root, "status", "--porcelain", "--untracked-files=all")
+                receipt.update(
+                    sourceAfter=after,
+                    sourceStatusAfter=clean,
+                    sourceUnchanged=valid_source(args.expected_head, before, after)
+                    and not clean,
+                )
+            receipt["toolFilesUnchanged"] = len(binaries) == len(hashes) == 4 and all(
+                hashlib.sha256(path.read_bytes()).hexdigest() == hashes[name]
+                for name, path in binaries.items()
+            )
+        except (OSError, ValueError, subprocess.SubprocessError) as error:
+            receipt["afterCollectionError"] = str(error)
+    intact = (
+        receipt.get("sourceUnchanged") is True
+        and receipt.get("toolFilesUnchanged") is True
+    )
+    receipt["diagnosticCollectionSucceeded"] = collected and intact
+    receipt["retainedDirectoryCapabilitySupported"] = collected and intact and supported
+    if collected and intact:
+        receipt["status"] = (
+            "CAPABILITY_SUPPORTED_DIAGNOSTIC_ONLY"
+            if supported
+            else "FAIL_NO_RETAINED_DIRECTORY_FLUSH_CAPABILITY"
+        )
     receipt["finishedAt"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
     (output / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
     print(json.dumps(receipt), flush=True)

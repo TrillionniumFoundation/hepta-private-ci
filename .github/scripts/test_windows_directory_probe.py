@@ -1,8 +1,9 @@
 import copy
 import hashlib
+from pathlib import Path
 import unittest
 
-from windows_directory_probe import MODES, capability
+from windows_directory_probe import MODES, capability, assess_collector
 
 
 def native_facts():
@@ -46,6 +47,35 @@ def collector_trace():
 
 
 class NativeCapabilityAssessmentTests(unittest.TestCase):
+    def test_actual_native_singleton_stdout_is_an_exact_collector_pass(self):
+        actual = (
+            Path(__file__).resolve().parents[1]
+            / "fixtures/windows-directory-probe/actual-singleton-nextest.txt"
+        ).read_text()
+        self.assertTrue(assess_collector(0, actual)["passed"])
+        self.assertEqual(assess_collector(0, actual)["selectedTestCount"], 1)
+        self.assertFalse(assess_collector(1, actual)["passed"])
+
+    def test_collector_keeps_exact_terminal_and_single_run_requirements(self):
+        actual = (
+            Path(__file__).resolve().parents[1]
+            / "fixtures/windows-directory-probe/actual-singleton-nextest.txt"
+        ).read_text()
+        self.assertTrue(
+            assess_collector(0, actual.replace("1 test across", "1 tests across"))[
+                "passed"
+            ]
+        )
+        for text in (
+            actual + actual,
+            actual.replace("PASS [", "SKIP ["),
+            actual.replace("codex-state ", "other-package "),
+            actual.replace(
+                "records_native_directory_flush_capability", "different_test"
+            ),
+        ):
+            self.assertFalse(assess_collector(0, text)["passed"])
+
     def test_collector_success_does_not_mask_native_failures(self):
         for key in ("open", "rustSyncAll", "flushFileBuffers"):
             trace = collector_trace()
