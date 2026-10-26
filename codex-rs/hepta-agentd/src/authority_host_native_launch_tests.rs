@@ -26,6 +26,11 @@ fn native_resources_and_private_draft_paths_are_required_without_loader_override
     // SAFETY: geteuid only observes the fixture process UID.
     let uid = unsafe { libc::geteuid() };
     validate_environment(&environment, uid)?;
+    environment.insert("XMODIFIERS".into(), "@im=ibus".into());
+    validate_environment(&environment, uid)?;
+    environment.insert("XMODIFIERS".into(), "@im=unregistered-selector".into());
+    assert!(validate_environment(&environment, uid).is_err());
+    environment.remove("XMODIFIERS");
     std::fs::set_permissions(state.path(), std::fs::Permissions::from_mode(0o770))?;
     assert!(validate_environment(&environment, uid).is_err());
     std::fs::set_permissions(state.path(), std::fs::Permissions::from_mode(0o700))?;

@@ -172,6 +172,7 @@ fn validate_environment(environment: &BTreeMap<String, String>, uid: u32) -> io:
         "XDG_RUNTIME_DIR",
         "DBUS_SESSION_BUS_ADDRESS",
         "XAUTHORITY",
+        "XMODIFIERS",
         "HOME",
         "LANG",
         "LC_ALL",
@@ -186,6 +187,14 @@ fn validate_environment(environment: &BTreeMap<String, String>, uid: u32) -> io:
     {
         return Err(io::Error::other(
             "native environment must contain only bounded display/resource/draft inputs",
+        ));
+    }
+    if environment
+        .get("XMODIFIERS")
+        .is_some_and(|value| value != "@im=ibus")
+    {
+        return Err(io::Error::other(
+            "the native XIM selector must be the original IBus session",
         ));
     }
     if environment
