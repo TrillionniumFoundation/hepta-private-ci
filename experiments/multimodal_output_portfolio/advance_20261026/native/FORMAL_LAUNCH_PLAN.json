@@ -1,0 +1,89 @@
+{
+  "analysis": {
+    "bootstrap_replicates": 10000,
+    "bootstrap_seed": 46117,
+    "efficacy_gate": "Registered interval lower bound > 0, subject to independent census and lifecycle audit.",
+    "gamma": 2,
+    "primary_contrast": "dynamic minus fixed_late",
+    "qualification_retained": "Dynamic remains qualification_collection after its original selected-ECE failure; efficacy cannot retroactively qualify it.",
+    "utility": "actual utility minus 0.002 per admitted acquire attempt and 0.002 per admitted emit attempt",
+    "writer_cluster_CI_level": 0.9833333333333333
+  },
+  "candidate_model_policy_threshold_or_analysis_changes": false,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-m",
+    "experiments.multimodal_output_portfolio.advance_20261026.native.evaluate_json_safe",
+    "--phase",
+    "confirmation",
+    "--binary",
+    "/tmp/hepta-ndu-advance-native/build-005/hepta-native-semantic-online",
+    "--templates",
+    "/tmp/hepta-ndu-advance-native/promotion-001/TEMPLATES.json",
+    "--protocol",
+    "/tmp/hepta-ndu-advance-native/formal-002/CONFIRMATION_SPEC.json",
+    "--settings",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/joint/INPUTS.json",
+    "--cache",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/qmnist",
+    "--allocation",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/SOURCE_ALLOCATION.json",
+    "--audio-root",
+    "/workspace/scratch/87e43aa872f5/ndu-advance-assets/speech-commands-v002-digits",
+    "--output",
+    "/tmp/hepta-ndu-advance-native/confirmation-001"
+  ],
+  "created_unix_ns": 1792993100974265945,
+  "cwd": "/workspace/scratch/87e43aa872f5/hepta-ndu",
+  "exception_rule": "Preserve every refusal and request error. Keep a nonzero collector exit and partial census intact; no hidden rerun or candidate change.",
+  "execution_prerequisites": [
+    "Parent explicitly grants the exclusive model window after joint confirmation and its audit.",
+    "No other Torch model, ASR process, training run, or native study collector is active.",
+    "Output and the four sibling process-record paths do not exist; never overwrite an attempt.",
+    "Frozen protocol and input identities still match; evaluate performs its complete prospective validation before opening image pixels.",
+    "Parent has confirmed enough disk for generated raw files and subsequent full evidence seal."
+  ],
+  "expected_census": {
+    "all_missing_requests": 0,
+    "all_policy_episodes": 1020,
+    "dynamic_only_audio_text_functional_episodes": 340,
+    "paired_image_video_cases": 340,
+    "primary_policy_episodes": 680,
+    "source_pairs": 170,
+    "writer_speaker_clusters": 85
+  },
+  "explicit_input_sha256": {
+    "/tmp/hepta-ndu-advance-native/build-005/hepta-native-semantic-online": "d4477ba67f94bb53bcee6ba5748aa82d780a972550a7c9219a3fb79d5c83170a",
+    "/tmp/hepta-ndu-advance-native/formal-002/CONFIRMATION_SPEC.json": "0b4d0bc62697b23f915b347d690847e0ef0555f9ed9dd9180a3ea2e2abb28737",
+    "/tmp/hepta-ndu-advance-native/promotion-001/TEMPLATES.json": "a52a316617dfb74eb95e3108543fa5126cc0d3dda18c52f12509fc95e9cd20ce",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/SOURCE_ALLOCATION.json": "42d0c47056dda930cb851c9ae59f330747de8bb863f18b79c47eea830f69b262",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/joint/INPUTS.json": "208bd553029ed1dd777678b90ed376ee994bc8671fede082fe9161400e448529",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/native/SERIALIZATION_SUPPLEMENT.json": "c753a59499822ad7f7305c692b736b11f658968464f7b7499c5a68b36d74b21c",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/native/evaluate_json_safe.py": "48811827b00b3a769eccaa5672a0dd2fe44e027d69241f050f5a7b9ce0eb2bee"
+  },
+  "full_closure": {
+    "count": 5561,
+    "mapping": "frozen_candidate_sha256",
+    "path": "/tmp/hepta-ndu-advance-native/formal-002/CONFIRMATION_SPEC.json",
+    "sha256": "0b4d0bc62697b23f915b347d690847e0ef0555f9ed9dd9180a3ea2e2abb28737"
+  },
+  "output_absent_at_planning": true,
+  "policy_modes": {
+    "dynamic": "qualification_collection",
+    "fixed_late": "qualified"
+  },
+  "process_records": {
+    "LAUNCH.json": "/tmp/hepta-ndu-advance-native/confirmation-001.LAUNCH.json",
+    "PROCESS.json": "/tmp/hepta-ndu-advance-native/confirmation-001.PROCESS.json",
+    "stderr.log": "/tmp/hepta-ndu-advance-native/confirmation-001.stderr.log",
+    "stdout.log": "/tmp/hepta-ndu-advance-native/confirmation-001.stdout.log"
+  },
+  "progress_rule": "Forward original stdout progress every 5 source pairs; retain stdout/stderr verbatim.",
+  "schema": "hepta.advance.native-formal-launch-plan.v1",
+  "status": "prepared_not_launched",
+  "thread_env": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  }
+}
