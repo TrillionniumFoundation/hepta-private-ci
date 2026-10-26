@@ -1,0 +1,608 @@
+{
+  "archive": {
+    "bytes": 302191376,
+    "full_compressed_hash_rechecked": true,
+    "manifest_sha256": "7329d72bec90199e09e4aa2da9a4ec33c47b19b72842c1d428219af88e5ff82f",
+    "path": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-media-runs-20261025.tar.gz",
+    "selected_members_read_without_extraction": true,
+    "sha256": "53cb30f96e03ced895dd98576b00f147d13c3748b6acdc6418580320a4525e15"
+  },
+  "boundaries": [
+    "Original 411-pin qualification did omit these local helpers; this audit does not retroactively claim otherwise.",
+    "Matching historical byte identities and current files establish recorded source continuity, not a forensic trace of every byte executed in process memory.",
+    "Local Git timestamps and filesystem metadata are not independently trusted timestamp authorities.",
+    "This closure covers statically imported repository Python sources; third-party interpreter, packages and native libraries are not an entire reproducible operating-system image.",
+    "No threshold, model, parser, cohort, generator or scoring choice changes in this addendum."
+  ],
+  "created_unix_ns": 1792983647194079202,
+  "evidence_counts": {
+    "original_qualification_pin": 21,
+    "pre_execution_archive_member": 2,
+    "pre_execution_git_blob": 12,
+    "pre_execution_protocol_pin": 11
+  },
+  "frozen_evidence_sha256": {
+    "/tmp/hepta-ndu-next-media-cache/repair-qualification-001-process/started.json": "fc8e85a61ef07982b8c57fe94f14019eea49d189f149f1fd14add43cdc19aebd",
+    "/tmp/hepta-ndu-next-media-cache/repair-qualification-001/registration.json": "2c66542d86f9febbdbabfd633e3ecdbde8d9c1a44f584d8fdb807400da6d3afc",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/EVIDENCE_RECEIPT.json": "01c7f2a631c075204b2a31c1b15e3f6c99c57f4eef5f1b178617c88851b340e3",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/FINAL_PROTOCOL.json": "66db720064d45fc2e38cc9f8123767f51bfb82029767a093062971e05aff3a34",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/control/PROTOCOL.json": "d3e3e259b178056a6646d131f36ceb25bb1f0e597f29c3aab87d03bd1987d240",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/CONTROL_IMPORT_CLOSURE_REVIEW.json": "47327973ab6cb757ad872a9d9e6b242eb6cd8cc46da7a52bd78fc680e1093199",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/QUALIFICATION_PROTOCOL.json": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+  },
+  "frozen_guard_sha256": {
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/dependency_continuity/__init__.py": "2d0b19b198772d88aa831bb7ca65d1512c9ac4bbbdfa0cd9670e2d602e47fd6c",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/dependency_continuity/build.py": "c67d599124bcb87b534b9ba8d5edeb24226239bfac2fe629cc51e243c1f23799",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/dependency_continuity/guard.py": "cd39d9c4b1a9f4e82cee57418d7ef1756415aadb1a34aab9bd6883c838fb887f"
+  },
+  "historical_commit_unix_seconds": 1792981813,
+  "historical_revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc",
+  "qualification_child_start_unix_ns": 1792983209150729180,
+  "qualification_outcome_values_read_for_this_audit": false,
+  "qualification_output": "/tmp/hepta-ndu-next-media-cache/repair-qualification-001",
+  "qualification_process_receipt": "/tmp/hepta-ndu-next-media-cache/repair-qualification-001-process/receipt.json",
+  "qualification_process_start": "/tmp/hepta-ndu-next-media-cache/repair-qualification-001-process/started.json",
+  "qualification_protocol": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/QUALIFICATION_PROTOCOL.json",
+  "qualification_protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114",
+  "qualification_registered_unix_ns": 1792982678129936989,
+  "schema": "hepta.next.media-dependency-continuity.v1",
+  "scope": "Retrospective identity continuity audit, with a prospective formal execution guard; the original qualification protocol was not amended",
+  "source_closure": [
+    {
+      "historical_evidence": {
+        "git_blob": "c6e928ce67eb2fe67e7c193303f41054ff183a0d",
+        "kind": "pre_execution_git_blob",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942232308241474,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/abc_next/__init__.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/abc_next/__init__.py",
+      "sha256": "7403e696dc0a60cc7a5a5640ce06060318986f6e6cfac288eff1fa1b7751981c"
+    },
+    {
+      "historical_evidence": {
+        "git_blob": "76c9052c565531d8d34085e9022a46245cda04d9",
+        "kind": "pre_execution_git_blob",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942232334864885,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/abc_next/temporal/__init__.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/abc_next/temporal/__init__.py",
+      "sha256": "247bb9ed131b9e06875eaa0af4bce1241157e8cd77e8fdbc1056a14616009b63"
+    },
+    {
+      "historical_evidence": {
+        "git_blob": "78398dbe28dbc1b12941e204457831f7da22a275",
+        "kind": "pre_execution_git_blob",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942232334864885,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/abc_next/temporal/external.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/abc_next/temporal/external.py",
+      "sha256": "5d373cbb613a95affccf10449e8a4c181b21a28f0b5bc928cff8621dd6361292"
+    },
+    {
+      "historical_evidence": {
+        "git_blob": "0866f68f70004149a9abba11a8f7bf7198033989",
+        "kind": "pre_execution_git_blob",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942232342235382,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/abc_next/temporal/speech.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/abc_next/temporal/speech.py",
+      "sha256": "eca5e7c4a19a79a92fa329436a8fad9df614373e8167e739ca01c0340dfe7e4d"
+    },
+    {
+      "historical_evidence": {
+        "git_blob": "eb4a3b09395a86e3bc6c153d8eaf601f1743b087",
+        "kind": "pre_execution_git_blob",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942594364815019,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/__init__.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/closure_20261025/__init__.py",
+      "sha256": "f14cccc8c69bd5912570e3caaab286f5dbb7809e433f85fa32d392fe67f97003"
+    },
+    {
+      "historical_evidence": {
+        "git_blob": "0f03a8225faf77a3d09225448040096f965dac62",
+        "kind": "pre_execution_git_blob",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942355976222481,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/__init__.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/closure_20261025/media/__init__.py",
+      "sha256": "2cecdd4fbf96f24c3cf341853f0739d60ccdfd250e3081aeccf58b9871a01f58"
+    },
+    {
+      "historical_evidence": {
+        "git_blob": "937064ff1455486cbccb08347269cf70f8be0d6d",
+        "kind": "pre_execution_git_blob",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792945052879738532,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/carrier_media.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/closure_20261025/media/carrier_media.py",
+      "sha256": "466a164c787295a219720103346276354288d92a595043a3fc56849bae750f7c"
+    },
+    {
+      "historical_evidence": {
+        "git_blob": "3dd8429b07fb5ceb349632974957b19c5017788c",
+        "kind": "pre_execution_git_blob",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792944079511346925,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/coherent.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/closure_20261025/media/coherent.py",
+      "sha256": "3ceb4e2c404b18c6d96b63b1d74a0cb126c9d8d07ce3f0cd998fee296cad69e8"
+    },
+    {
+      "historical_evidence": {
+        "git_blob": "7877f0ca4071e2acc4873a7ecc84540039f1a81e",
+        "kind": "pre_execution_git_blob",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942494965492152,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/network.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/closure_20261025/media/network.py",
+      "sha256": "4c19c137845e754bdd5efa383a42fe71400d8e6b6132fbf48a1703ab6166bbed"
+    },
+    {
+      "historical_evidence": {
+        "git_blob": "87b280cb8222d384d44f7abc9f9647d7e57c34ef",
+        "kind": "pre_execution_git_blob",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942686192506430,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/sources.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/closure_20261025/media/sources.py",
+      "sha256": "75df721bb891cb39b5200def8581ea79b1134a96c718e67c086c673bac05460e"
+    },
+    {
+      "historical_evidence": {
+        "git_blob": "8d459b65b9b87008cf3cda4b3bff0a2e6bc9a670",
+        "kind": "pre_execution_git_blob",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792976932055672035,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/__init__.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/__init__.py",
+      "sha256": "fa2e47c8f850bbf6763fd402bc979056157151e056d30ff89368a25926fe7a5d"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792976825132079481,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/__init__.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/__init__.py",
+      "sha256": "2df204f85ff077510da3f26710cd033afede86ecdea9ae47e5c03881d19dedc8"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792977096459071903,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/audio_sources.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/audio_sources.py",
+      "sha256": "82b4aba5b547fa6c0c56c9e75a2f0b8d5020052169aed028457e7007ba4bfb10"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792980068436108367,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/ensemble_event.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/ensemble_event.py",
+      "sha256": "671c93468a02b036c806630f8c22beaeff2181d22437b7d3ad08403fd65abc58"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792977471237703978,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/event_observer.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/event_observer.py",
+      "sha256": "87a1a48870508cdd3cd37c651737271bab581e67db72c87fa5a52dc4a468c39e"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792976827452070496,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/observers.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/observers.py",
+      "sha256": "b1cd74fc48f69e4e16823d7a77924196d471ff10ae336088884d92c1706c1554"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792980387754944579,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/qualify_ensemble_v31.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/qualify_ensemble_v31.py",
+      "sha256": "523471d953b1f41352db34ce5b79538887c053de54921c21e270528000da2525"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792980935740898255,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/__init__.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/repair/__init__.py",
+      "sha256": "e39f4599adbe738a6758d883e682e5e9e9dc96fa79928252105a165c5d3854f7"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792982510295094257,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/__init__.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/__init__.py",
+      "sha256": "e2c58c7c818c1a80f375bef1babc22dd5bc65dab2fe68f962957675e940f8089"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792982511917988610,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/evaluate.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/evaluate.py",
+      "sha256": "4d447f3504d3d1fbce4caa7af4e49092de1b74adbcaff557221a0650c8094571"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792982511918229026,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/freeze.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/freeze.py",
+      "sha256": "72b208a362b312335a68b766ce9f80dd47647492054d882c079d55950e793c8c"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792982511918092774,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/freeze_qualification.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/freeze_qualification.py",
+      "sha256": "c9fb098dd1ec50d5aa507a282384187b415155889871d3b087e66c1332a46b7e"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792982511463090343,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/ingress.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/ingress.py",
+      "sha256": "fe191d8e71980ef5112eea4f64a08bfa95452d920193293f31267d3baf704c0a"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792982511918161156,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/qualify.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/qualify.py",
+      "sha256": "19679d5ba912e33efeb1d2bde33a5c64e1fd33848adf9f3265f34fd21197b0a7"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792981049464479402,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/cache_audit.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/repair/cache_audit.py",
+      "sha256": "ffbe9edd958befd107961ee5f4c064f5d5a9f238dc809965dcb20bfa5b092d02"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792981045822051996,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/conditional.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/repair/conditional.py",
+      "sha256": "293c21f3bd78910291f986075555d20885fd057a89a5f122e4361bed57229b5e"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792980936956889515,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/model.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/repair/model.py",
+      "sha256": "2b3b76c10411f93c8b2ffa2189e3a0f53874fc33a9b841afd1371bf4c51b6615"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792981045822403717,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/negatives.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/repair/negatives.py",
+      "sha256": "4ca31d1b3d0f68734c6c5fe6b5b78858cd12b74feee6a30a73d43ba326546079"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792980939300880175,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/runtime.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/repair/runtime.py",
+      "sha256": "6d8393831ef93438b05af70070c9a48c2cbd17f6e6f2c32a0ceb5931bad37af3"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792977207946688880,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/runtime.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/runtime.py",
+      "sha256": "032aea2fcd90f05974c7655c0bb0a73009665d9a43ed4e20ced3f6024163d76a"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792977907840138798,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/selected_event.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/selected_event.py",
+      "sha256": "80e01cc48ca87bb20279c27b8970e3d4534c268dfc037c731d2429f90786909f"
+    },
+    {
+      "historical_evidence": {
+        "kind": "original_qualification_pin",
+        "protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+      },
+      "observed_mtime_ns": 1792976826296074942,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/waveform.py",
+      "qualification_pinned": true,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/media/waveform.py",
+      "sha256": "51f464774531efbc3a99a193965271068e60383f8bbe3be28e06946539476bf4"
+    },
+    {
+      "historical_evidence": {
+        "git_blob": "a59ef43434da9cae0f7236362de0191ca60bb32e",
+        "kind": "pre_execution_git_blob",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792976933435667498,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/sources.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/next_20261025/sources.py",
+      "sha256": "332c3565703ad52283e01cdb7f0320e242ccee37d4d6c95620683ec31eafb445"
+    },
+    {
+      "historical_evidence": {
+        "anchor": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/control/PROTOCOL.json",
+        "anchor_sha256": "d3e3e259b178056a6646d131f36ceb25bb1f0e597f29c3aab87d03bd1987d240",
+        "kind": "pre_execution_protocol_pin",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942232390945062,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v6/conditioned.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/v6/conditioned.py",
+      "sha256": "ccb5f9a78e58d6f1d1511a95f50de3602e1f39e7254fce5566e97a994d5b4cba"
+    },
+    {
+      "historical_evidence": {
+        "anchor": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/FINAL_PROTOCOL.json",
+        "anchor_sha256": "66db720064d45fc2e38cc9f8123767f51bfb82029767a093062971e05aff3a34",
+        "kind": "pre_execution_protocol_pin",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942232390945062,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v6/data.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/v6/data.py",
+      "sha256": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29"
+    },
+    {
+      "historical_evidence": {
+        "anchor": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/FINAL_PROTOCOL.json",
+        "anchor_sha256": "66db720064d45fc2e38cc9f8123767f51bfb82029767a093062971e05aff3a34",
+        "kind": "pre_execution_protocol_pin",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942232390945062,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v6/neural.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/v6/neural.py",
+      "sha256": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742"
+    },
+    {
+      "historical_evidence": {
+        "anchor": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/FINAL_PROTOCOL.json",
+        "anchor_sha256": "66db720064d45fc2e38cc9f8123767f51bfb82029767a093062971e05aff3a34",
+        "kind": "pre_execution_protocol_pin",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942232390945062,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v6/observer.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/v6/observer.py",
+      "sha256": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e"
+    },
+    {
+      "historical_evidence": {
+        "anchor": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/FINAL_PROTOCOL.json",
+        "anchor_sha256": "66db720064d45fc2e38cc9f8123767f51bfb82029767a093062971e05aff3a34",
+        "kind": "pre_execution_protocol_pin",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942232409026953,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7/data.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/v7/data.py",
+      "sha256": "41892eb63420a6288121b39f577597067c3e168d3c7467c868230c64ed092cb9"
+    },
+    {
+      "historical_evidence": {
+        "anchor": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/FINAL_PROTOCOL.json",
+        "anchor_sha256": "66db720064d45fc2e38cc9f8123767f51bfb82029767a093062971e05aff3a34",
+        "kind": "pre_execution_protocol_pin",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942232409026953,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7/model.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/v7/model.py",
+      "sha256": "156aa5c73c7e9192ebefecafdc568cbbae3e906e7d1bbb2bf50f7535bd2d8fca"
+    },
+    {
+      "historical_evidence": {
+        "anchor": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/FINAL_PROTOCOL.json",
+        "anchor_sha256": "66db720064d45fc2e38cc9f8123767f51bfb82029767a093062971e05aff3a34",
+        "kind": "pre_execution_protocol_pin",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942232410235182,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7/snapshot.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/v7/snapshot.py",
+      "sha256": "01655335b9807a09005bde0ae11d9fbe1a0665bd0113d9f28e38310f1f4bb474"
+    },
+    {
+      "historical_evidence": {
+        "anchor": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/FINAL_PROTOCOL.json",
+        "anchor_sha256": "66db720064d45fc2e38cc9f8123767f51bfb82029767a093062971e05aff3a34",
+        "kind": "pre_execution_protocol_pin",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942232410235182,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7/sources.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/v7/sources.py",
+      "sha256": "b6b27b86ba71a4bafd9c2abe4af033e7cfe73079296bdd2ed1addad045881e9f"
+    },
+    {
+      "historical_evidence": {
+        "anchor": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/FINAL_PROTOCOL.json",
+        "anchor_sha256": "66db720064d45fc2e38cc9f8123767f51bfb82029767a093062971e05aff3a34",
+        "kind": "pre_execution_protocol_pin",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942232414693432,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7_media/corpus.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/v7_media/corpus.py",
+      "sha256": "92eb9bc2306c811e94f4d43c8f4f014871252d8dbee9e4f18cbe4e2d09893913"
+    },
+    {
+      "historical_evidence": {
+        "anchor": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/FINAL_PROTOCOL.json",
+        "anchor_sha256": "66db720064d45fc2e38cc9f8123767f51bfb82029767a093062971e05aff3a34",
+        "kind": "pre_execution_protocol_pin",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942232414693432,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7_media/media.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/v7_media/media.py",
+      "sha256": "f23a4a90a5c6831f98bf4466515fb5d0c0dc19f3c36df408ff7de41108aaa244"
+    },
+    {
+      "historical_evidence": {
+        "anchor": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/FINAL_PROTOCOL.json",
+        "anchor_sha256": "66db720064d45fc2e38cc9f8123767f51bfb82029767a093062971e05aff3a34",
+        "kind": "pre_execution_protocol_pin",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942232414693432,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7_media/models.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/v7_media/models.py",
+      "sha256": "69c1a9c809178c50de65eab3286c9e0b808c89d478e8b425ea429d03dc01d46c"
+    },
+    {
+      "historical_evidence": {
+        "archive_sha256": "53cb30f96e03ced895dd98576b00f147d13c3748b6acdc6418580320a4525e15",
+        "kind": "pre_execution_archive_member",
+        "manifest_sha256": "7329d72bec90199e09e4aa2da9a4ec33c47b19b72842c1d428219af88e5ff82f",
+        "member": "repo_source/experiments/multimodal_output_portfolio/v7_media/motion.py",
+        "receipt": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/EVIDENCE_RECEIPT.json",
+        "receipt_sha256": "01c7f2a631c075204b2a31c1b15e3f6c99c57f4eef5f1b178617c88851b340e3",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942232414693432,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7_media/motion.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/v7_media/motion.py",
+      "sha256": "20b55c583c6f5d407db691831bc016012e8f4229d8d414eeca90f7f113a2ad62"
+    },
+    {
+      "historical_evidence": {
+        "archive_sha256": "53cb30f96e03ced895dd98576b00f147d13c3748b6acdc6418580320a4525e15",
+        "kind": "pre_execution_archive_member",
+        "manifest_sha256": "7329d72bec90199e09e4aa2da9a4ec33c47b19b72842c1d428219af88e5ff82f",
+        "member": "repo_source/experiments/multimodal_output_portfolio/v7_media/piper_decoder.py",
+        "receipt": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/EVIDENCE_RECEIPT.json",
+        "receipt_sha256": "01c7f2a631c075204b2a31c1b15e3f6c99c57f4eef5f1b178617c88851b340e3",
+        "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc"
+      },
+      "observed_mtime_ns": 1792942232414693432,
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7_media/piper_decoder.py",
+      "qualification_pinned": false,
+      "relative_path": "experiments/multimodal_output_portfolio/v7_media/piper_decoder.py",
+      "sha256": "cc8abbfdbe000718d8642efa07ca65bcea88c617c38ef70b230b54b809d32e42"
+    }
+  ],
+  "static_entrypoints": [
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/qualify.py",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/evaluate.py",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/freeze.py",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/freeze_qualification.py"
+  ]
+}

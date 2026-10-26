@@ -1,0 +1,458 @@
+{
+  "schema": "hepta.bridge-v2-independent-static-closure-review.v1",
+  "qualification_protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114",
+  "prequalification_revision": "dd03d071eb8d68e4a68000ecdd818811d8374091",
+  "prequalification_commit_metadata": "dd03d071eb8d68e4a68000ecdd818811d8374091 1792982785",
+  "entrypoints": [
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/qualify.py",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/evaluate.py",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/freeze.py",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/freeze_qualification.py"
+  ],
+  "local_python_files": 46,
+  "new_sources_or_model_imported": false,
+  "dynamic_import_calls": [],
+  "files": [
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/abc_next/__init__.py",
+      "sha256": "7403e696dc0a60cc7a5a5640ce06060318986f6e6cfac288eff1fa1b7751981c",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": "7403e696dc0a60cc7a5a5640ce06060318986f6e6cfac288eff1fa1b7751981c",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/abc_next/temporal/__init__.py",
+      "sha256": "247bb9ed131b9e06875eaa0af4bce1241157e8cd77e8fdbc1056a14616009b63",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": "247bb9ed131b9e06875eaa0af4bce1241157e8cd77e8fdbc1056a14616009b63",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/abc_next/temporal/external.py",
+      "sha256": "5d373cbb613a95affccf10449e8a4c181b21a28f0b5bc928cff8621dd6361292",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": "5d373cbb613a95affccf10449e8a4c181b21a28f0b5bc928cff8621dd6361292",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/abc_next/temporal/speech.py",
+      "sha256": "eca5e7c4a19a79a92fa329436a8fad9df614373e8167e739ca01c0340dfe7e4d",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": "eca5e7c4a19a79a92fa329436a8fad9df614373e8167e739ca01c0340dfe7e4d",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/__init__.py",
+      "sha256": "f14cccc8c69bd5912570e3caaab286f5dbb7809e433f85fa32d392fe67f97003",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": "f14cccc8c69bd5912570e3caaab286f5dbb7809e433f85fa32d392fe67f97003",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/__init__.py",
+      "sha256": "2cecdd4fbf96f24c3cf341853f0739d60ccdfd250e3081aeccf58b9871a01f58",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": "2cecdd4fbf96f24c3cf341853f0739d60ccdfd250e3081aeccf58b9871a01f58",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/carrier_media.py",
+      "sha256": "466a164c787295a219720103346276354288d92a595043a3fc56849bae750f7c",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": "466a164c787295a219720103346276354288d92a595043a3fc56849bae750f7c",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/coherent.py",
+      "sha256": "3ceb4e2c404b18c6d96b63b1d74a0cb126c9d8d07ce3f0cd998fee296cad69e8",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": "3ceb4e2c404b18c6d96b63b1d74a0cb126c9d8d07ce3f0cd998fee296cad69e8",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/network.py",
+      "sha256": "4c19c137845e754bdd5efa383a42fe71400d8e6b6132fbf48a1703ab6166bbed",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": "4c19c137845e754bdd5efa383a42fe71400d8e6b6132fbf48a1703ab6166bbed",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/sources.py",
+      "sha256": "75df721bb891cb39b5200def8581ea79b1134a96c718e67c086c673bac05460e",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": "75df721bb891cb39b5200def8581ea79b1134a96c718e67c086c673bac05460e",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/__init__.py",
+      "sha256": "fa2e47c8f850bbf6763fd402bc979056157151e056d30ff89368a25926fe7a5d",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": "fa2e47c8f850bbf6763fd402bc979056157151e056d30ff89368a25926fe7a5d",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/__init__.py",
+      "sha256": "2df204f85ff077510da3f26710cd033afede86ecdea9ae47e5c03881d19dedc8",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": "2df204f85ff077510da3f26710cd033afede86ecdea9ae47e5c03881d19dedc8",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/audio_sources.py",
+      "sha256": "82b4aba5b547fa6c0c56c9e75a2f0b8d5020052169aed028457e7007ba4bfb10",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": "82b4aba5b547fa6c0c56c9e75a2f0b8d5020052169aed028457e7007ba4bfb10",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/ensemble_event.py",
+      "sha256": "671c93468a02b036c806630f8c22beaeff2181d22437b7d3ad08403fd65abc58",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": "671c93468a02b036c806630f8c22beaeff2181d22437b7d3ad08403fd65abc58",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/event_observer.py",
+      "sha256": "87a1a48870508cdd3cd37c651737271bab581e67db72c87fa5a52dc4a468c39e",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": "87a1a48870508cdd3cd37c651737271bab581e67db72c87fa5a52dc4a468c39e",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/observers.py",
+      "sha256": "b1cd74fc48f69e4e16823d7a77924196d471ff10ae336088884d92c1706c1554",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": "b1cd74fc48f69e4e16823d7a77924196d471ff10ae336088884d92c1706c1554",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/qualify_ensemble_v31.py",
+      "sha256": "523471d953b1f41352db34ce5b79538887c053de54921c21e270528000da2525",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": "523471d953b1f41352db34ce5b79538887c053de54921c21e270528000da2525",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/__init__.py",
+      "sha256": "e39f4599adbe738a6758d883e682e5e9e9dc96fa79928252105a165c5d3854f7",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/__init__.py",
+      "sha256": "e2c58c7c818c1a80f375bef1babc22dd5bc65dab2fe68f962957675e940f8089",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/evaluate.py",
+      "sha256": "4d447f3504d3d1fbce4caa7af4e49092de1b74adbcaff557221a0650c8094571",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/freeze.py",
+      "sha256": "72b208a362b312335a68b766ce9f80dd47647492054d882c079d55950e793c8c",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/freeze_qualification.py",
+      "sha256": "c9fb098dd1ec50d5aa507a282384187b415155889871d3b087e66c1332a46b7e",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/ingress.py",
+      "sha256": "fe191d8e71980ef5112eea4f64a08bfa95452d920193293f31267d3baf704c0a",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/qualify.py",
+      "sha256": "19679d5ba912e33efeb1d2bde33a5c64e1fd33848adf9f3265f34fd21197b0a7",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/cache_audit.py",
+      "sha256": "ffbe9edd958befd107961ee5f4c064f5d5a9f238dc809965dcb20bfa5b092d02",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/conditional.py",
+      "sha256": "293c21f3bd78910291f986075555d20885fd057a89a5f122e4361bed57229b5e",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/model.py",
+      "sha256": "2b3b76c10411f93c8b2ffa2189e3a0f53874fc33a9b841afd1371bf4c51b6615",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/negatives.py",
+      "sha256": "4ca31d1b3d0f68734c6c5fe6b5b78858cd12b74feee6a30a73d43ba326546079",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/runtime.py",
+      "sha256": "6d8393831ef93438b05af70070c9a48c2cbd17f6e6f2c32a0ceb5931bad37af3",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/runtime.py",
+      "sha256": "032aea2fcd90f05974c7655c0bb0a73009665d9a43ed4e20ced3f6024163d76a",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": "032aea2fcd90f05974c7655c0bb0a73009665d9a43ed4e20ced3f6024163d76a",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/selected_event.py",
+      "sha256": "80e01cc48ca87bb20279c27b8970e3d4534c268dfc037c731d2429f90786909f",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": "80e01cc48ca87bb20279c27b8970e3d4534c268dfc037c731d2429f90786909f",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/waveform.py",
+      "sha256": "51f464774531efbc3a99a193965271068e60383f8bbe3be28e06946539476bf4",
+      "qualification_pinned": true,
+      "qualification_sha256_matches": true,
+      "prequalification_git_sha256": "51f464774531efbc3a99a193965271068e60383f8bbe3be28e06946539476bf4",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/sources.py",
+      "sha256": "332c3565703ad52283e01cdb7f0320e242ccee37d4d6c95620683ec31eafb445",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": "332c3565703ad52283e01cdb7f0320e242ccee37d4d6c95620683ec31eafb445",
+      "matches_prequalification_git": true
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v6/conditioned.py",
+      "sha256": "ccb5f9a78e58d6f1d1511a95f50de3602e1f39e7254fce5566e97a994d5b4cba",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v6/data.py",
+      "sha256": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v6/neural.py",
+      "sha256": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v6/observer.py",
+      "sha256": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7/data.py",
+      "sha256": "41892eb63420a6288121b39f577597067c3e168d3c7467c868230c64ed092cb9",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7/model.py",
+      "sha256": "156aa5c73c7e9192ebefecafdc568cbbae3e906e7d1bbb2bf50f7535bd2d8fca",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7/snapshot.py",
+      "sha256": "01655335b9807a09005bde0ae11d9fbe1a0665bd0113d9f28e38310f1f4bb474",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7/sources.py",
+      "sha256": "b6b27b86ba71a4bafd9c2abe4af033e7cfe73079296bdd2ed1addad045881e9f",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7_media/corpus.py",
+      "sha256": "92eb9bc2306c811e94f4d43c8f4f014871252d8dbee9e4f18cbe4e2d09893913",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7_media/media.py",
+      "sha256": "f23a4a90a5c6831f98bf4466515fb5d0c0dc19f3c36df408ff7de41108aaa244",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7_media/models.py",
+      "sha256": "69c1a9c809178c50de65eab3286c9e0b808c89d478e8b425ea429d03dc01d46c",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7_media/motion.py",
+      "sha256": "20b55c583c6f5d407db691831bc016012e8f4229d8d414eeca90f7f113a2ad62",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/v7_media/piper_decoder.py",
+      "sha256": "cc8abbfdbe000718d8642efa07ca65bcea88c617c38ef70b230b54b809d32e42",
+      "qualification_pinned": false,
+      "qualification_sha256_matches": null,
+      "prequalification_git_sha256": null,
+      "matches_prequalification_git": null
+    }
+  ],
+  "qualification_registered_unix_ns_decimal": "1792982678129936989",
+  "qualification_child_start_reported_unix_ns_decimal": "1792983209150729180",
+  "timestamp_source": "Protocol registration read from the frozen JSON; child start supplied by media_next and to be bound by its execution receipt.",
+  "review_phase": "Dependency enumeration and historical identity comparison, before formal guard implementation.",
+  "earlier_git_anchor": {
+    "revision": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc",
+    "commit": "7f10e250fada53c63c3e78b1b4817b8e7f1a81fc 1792981813",
+    "files": [
+      {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/abc_next/__init__.py",
+        "sha256": "7403e696dc0a60cc7a5a5640ce06060318986f6e6cfac288eff1fa1b7751981c",
+        "matches": true
+      },
+      {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/abc_next/temporal/__init__.py",
+        "sha256": "247bb9ed131b9e06875eaa0af4bce1241157e8cd77e8fdbc1056a14616009b63",
+        "matches": true
+      },
+      {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/abc_next/temporal/external.py",
+        "sha256": "5d373cbb613a95affccf10449e8a4c181b21a28f0b5bc928cff8621dd6361292",
+        "matches": true
+      },
+      {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/abc_next/temporal/speech.py",
+        "sha256": "eca5e7c4a19a79a92fa329436a8fad9df614373e8167e739ca01c0340dfe7e4d",
+        "matches": true
+      },
+      {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/__init__.py",
+        "sha256": "f14cccc8c69bd5912570e3caaab286f5dbb7809e433f85fa32d392fe67f97003",
+        "matches": true
+      },
+      {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/__init__.py",
+        "sha256": "2cecdd4fbf96f24c3cf341853f0739d60ccdfd250e3081aeccf58b9871a01f58",
+        "matches": true
+      },
+      {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/carrier_media.py",
+        "sha256": "466a164c787295a219720103346276354288d92a595043a3fc56849bae750f7c",
+        "matches": true
+      },
+      {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/coherent.py",
+        "sha256": "3ceb4e2c404b18c6d96b63b1d74a0cb126c9d8d07ce3f0cd998fee296cad69e8",
+        "matches": true
+      },
+      {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/network.py",
+        "sha256": "4c19c137845e754bdd5efa383a42fe71400d8e6b6132fbf48a1703ab6166bbed",
+        "matches": true
+      },
+      {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/media/sources.py",
+        "sha256": "75df721bb891cb39b5200def8581ea79b1134a96c718e67c086c673bac05460e",
+        "matches": true
+      },
+      {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/__init__.py",
+        "sha256": "fa2e47c8f850bbf6763fd402bc979056157151e056d30ff89368a25926fe7a5d",
+        "matches": true
+      },
+      {
+        "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/sources.py",
+        "sha256": "332c3565703ad52283e01cdb7f0320e242ccee37d4d6c95620683ec31eafb445",
+        "matches": true
+      }
+    ]
+  },
+  "original_protocol_unchanged": true,
+  "code_modified": false,
+  "import_enumeration": "Python stdlib ast.parse; recursive Import and ImportFrom resolution under repository root, including parent __init__.py; four entrypoints; no code imports or model loads."
+}

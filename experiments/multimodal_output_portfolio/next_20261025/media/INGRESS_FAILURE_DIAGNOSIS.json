@@ -1,0 +1,199 @@
+{
+  "scope": "Match prior qualification predictions to exactly the same SHA speech records used in old development; does not rerun or change a model",
+  "rows": [
+    {
+      "index": 0,
+      "expected": [
+        9,
+        2
+      ],
+      "original_ingress_prediction_before_codec": [
+        9,
+        2
+      ],
+      "final_neural_semantic_prediction": [
+        9,
+        2
+      ],
+      "matches_expected_input": true
+    },
+    {
+      "index": 1,
+      "expected": [
+        7,
+        4
+      ],
+      "original_ingress_prediction_before_codec": [
+        7,
+        4
+      ],
+      "final_neural_semantic_prediction": [
+        7,
+        4
+      ],
+      "matches_expected_input": true
+    },
+    {
+      "index": 2,
+      "expected": [
+        3,
+        8
+      ],
+      "original_ingress_prediction_before_codec": [
+        3,
+        3
+      ],
+      "final_neural_semantic_prediction": [
+        3,
+        3
+      ],
+      "matches_expected_input": false
+    },
+    {
+      "index": 3,
+      "expected": [
+        3,
+        4
+      ],
+      "original_ingress_prediction_before_codec": [
+        3,
+        4
+      ],
+      "final_neural_semantic_prediction": [
+        3,
+        4
+      ],
+      "matches_expected_input": true
+    },
+    {
+      "index": 4,
+      "expected": [
+        8,
+        0
+      ],
+      "original_ingress_prediction_before_codec": [
+        8,
+        2
+      ],
+      "final_neural_semantic_prediction": [
+        8,
+        2
+      ],
+      "matches_expected_input": false
+    },
+    {
+      "index": 5,
+      "expected": [
+        2,
+        3
+      ],
+      "original_ingress_prediction_before_codec": [
+        8,
+        3
+      ],
+      "final_neural_semantic_prediction": [
+        8,
+        3
+      ],
+      "matches_expected_input": false
+    },
+    {
+      "index": 6,
+      "expected": [
+        5,
+        3
+      ],
+      "original_ingress_prediction_before_codec": [
+        5,
+        3
+      ],
+      "final_neural_semantic_prediction": [
+        5,
+        3
+      ],
+      "matches_expected_input": true
+    },
+    {
+      "index": 7,
+      "expected": [
+        3,
+        0
+      ],
+      "original_ingress_prediction_before_codec": [
+        3,
+        0
+      ],
+      "final_neural_semantic_prediction": [
+        3,
+        0
+      ],
+      "matches_expected_input": true
+    },
+    {
+      "index": 8,
+      "expected": [
+        3,
+        6
+      ],
+      "original_ingress_prediction_before_codec": [
+        3,
+        8
+      ],
+      "final_neural_semantic_prediction": [
+        3,
+        8
+      ],
+      "matches_expected_input": false
+    },
+    {
+      "index": 9,
+      "expected": [
+        4,
+        6
+      ],
+      "original_ingress_prediction_before_codec": [
+        4,
+        6
+      ],
+      "final_neural_semantic_prediction": [
+        4,
+        6
+      ],
+      "matches_expected_input": true
+    },
+    {
+      "index": 10,
+      "expected": [
+        0,
+        2
+      ],
+      "original_ingress_prediction_before_codec": [
+        0,
+        2
+      ],
+      "final_neural_semantic_prediction": [
+        0,
+        2
+      ],
+      "matches_expected_input": true
+    },
+    {
+      "index": 11,
+      "expected": [
+        0,
+        1
+      ],
+      "original_ingress_prediction_before_codec": [
+        0,
+        1
+      ],
+      "final_neural_semantic_prediction": [
+        0,
+        1
+      ],
+      "matches_expected_input": true
+    }
+  ],
+  "raw_input_pair_correct": 8,
+  "n": 12
+}
