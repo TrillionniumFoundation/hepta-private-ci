@@ -10,6 +10,8 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use codex_hepta_cognitive_store::ProductionDurableWriter;
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseFrontier;
 use codex_hepta_memory::CognitiveCheckpointReceipt;
 use codex_hepta_memory::Hos2DeliveryId;
 use codex_hepta_memory::Hos2InstallBudgetV1;
@@ -40,9 +42,29 @@ pub struct AgentdG2NativeOperationHost {
     host: Arc<AgentdProductionWriterHost>,
     native: Arc<AgentdHos2Device>,
     target: Arc<ProductionHos2Target>,
+    device: FinalUseAuthority,
+    notes: FinalUseAuthority,
 }
 
 impl AgentdG2NativeOperationHost {
+    /// Read both already activated original consumers. These clones share the
+    /// exact original owners; no new local journal or nonce ledger is opened.
+    pub async fn consumer_frontiers(
+        &self,
+    ) -> Result<(FinalUseFrontier, FinalUseFrontier), AgentdError> {
+        self.host.writer().verify_current_authority().await?;
+        let device = self
+            .device
+            .frontier()
+            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+        let notes = self
+            .notes
+            .frontier()
+            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+        self.host.writer().verify_current_authority().await?;
+        Ok((device, notes))
+    }
+
     /// The retained authenticated Root feed/checkpoint and original consumers.
     pub fn root(&self) -> &AgentdRootProductionAttachment {
         &self.root
@@ -141,6 +163,8 @@ pub async fn attach_g2_native_operation_host(
         .map_err(AgentdError::Protocol)?,
     );
     let target = Arc::new(ProductionHos2Target::new(native.clone()));
+    let device = inputs.device.clone();
+    let notes = inputs.notes.clone();
     let root = crate::attach_root_production_operation_host(
         config,
         inputs,
@@ -157,5 +181,7 @@ pub async fn attach_g2_native_operation_host(
         host,
         native,
         target,
+        device,
+        notes,
     })
 }
