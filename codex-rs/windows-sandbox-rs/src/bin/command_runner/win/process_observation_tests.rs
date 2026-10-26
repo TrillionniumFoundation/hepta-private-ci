@@ -11,6 +11,7 @@ use std::os::windows::io::AsRawHandle;
 use std::os::windows::io::BorrowedHandle;
 use std::os::windows::io::FromRawHandle;
 use std::os::windows::io::OwnedHandle;
+use std::os::windows::process::CommandExt as _;
 use std::process::Child;
 use std::process::Command;
 use std::process::Stdio;
@@ -27,7 +28,7 @@ fn command(script: &str) -> Result<Command> {
     let shell = std::path::PathBuf::from(std::env::var_os("SystemRoot").context("SystemRoot")?)
         .join("System32/cmd.exe");
     let mut command = Command::new(shell);
-    command.args(["/D", "/C", script]);
+    command.args(["/D", "/C"]).raw_arg(script);
     command
         .stdin(Stdio::piped())
         .stdout(Stdio::null())
