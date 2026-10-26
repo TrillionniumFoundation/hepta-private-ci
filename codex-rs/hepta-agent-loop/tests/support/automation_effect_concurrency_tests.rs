@@ -164,11 +164,14 @@ async fn overlapping_recovery_settles_before_original_dispatch_future_is_dropped
 async fn tool_completion_and_cancellation_have_one_cursor_winner() {
     // Directed controls cover both outcomes; join adds a real competing-CAS schedule.
     for schedule in ["cancel-first", "tool-first", "concurrent"] {
+        let started = std::time::Instant::now();
+        phase_timing(&format!("cursor_race.{schedule}.begin"), started);
         let fixture = Fixture::new();
         let (store, fence, frame) = fixture.native().await;
         let other = AutomationStore::open(&fixture.layout)
             .await
             .expect("second connection");
+        phase_timing("cursor_race.second_store_opened", started);
         let intent = prepare_effect(&store, &fence, &frame).await;
         let (authority, grant) = fixture.authority(&intent);
         let provider = FileProvider::new(fixture.temp.path());
@@ -186,6 +189,7 @@ async fn tool_completion_and_cancellation_have_one_cursor_winner() {
         else {
             panic!("terminal status")
         };
+        phase_timing("cursor_race.effect_completed", started);
         let mut tool_owner = TaskFlowTurnOwner::open(
             &store,
             fence.clone(),
@@ -206,6 +210,7 @@ async fn tool_completion_and_cancellation_have_one_cursor_winner() {
         )
         .await
         .expect("cancel cursor owner");
+        phase_timing("cursor_race.owners_ready", started);
         let completion = Transition::ToolCompleted {
             operation_key: key,
             output: status,
@@ -235,6 +240,7 @@ async fn tool_completion_and_cancellation_have_one_cursor_winner() {
             .await
             .expect("bounded cursor race"),
         };
+        phase_timing("cursor_race.commits_complete", started);
         assert_eq!(
             usize::from(tool.is_ok()) + usize::from(cancel.is_ok()),
             1,
@@ -275,10 +281,12 @@ async fn tool_completion_and_cancellation_have_one_cursor_winner() {
             StopObservation::Unresolved
         );
         assert_eq!(provider.dispatches.load(Ordering::SeqCst), 1);
+        phase_timing("cursor_race.assertions_complete", started);
         drop(effects);
         drop(tool_owner);
         drop(cancel_owner);
         store.close().await;
         other.close().await;
+        phase_timing("cursor_race.closed", started);
     }
 }
