@@ -1,0 +1,54 @@
+name: Windows public fixture SSHSIG contract diagnostic only
+
+on:
+  push:
+    branches:
+      - codex/windows-native-contract-probe-20261027
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  RUSTUP_TOOLCHAIN: 1.96.0
+  CARGO_BUILD_JOBS: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_TERM_COLOR: never
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+
+jobs:
+  public-fixture-native-contract:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: windows-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Verify strict bounded diagnostic rejection controls
+        shell: pwsh
+        run: |
+          python -m unittest discover -s .github/scripts -p test_windows_openssh_contract_probe.py
+          exit $LASTEXITCODE
+      - name: Collect unmodified public signature modes and exact original junction assertion
+        shell: pwsh
+        run: |
+          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "hepta-openssh-contract-target"
+          python .github/scripts/windows_openssh_contract_probe.py --expected-head "${{ github.sha }}" --output "$env:RUNNER_TEMP/hepta-openssh-contract-probe"
+          exit $LASTEXITCODE
+      - name: Preserve all observations without production qualification
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-openssh-contract-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-openssh-contract-probe/
+          if-no-files-found: error
+          retention-days: 14
