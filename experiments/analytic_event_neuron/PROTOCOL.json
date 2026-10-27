@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.analytic-event-neuron.protocol.v1",
+  "base_commit": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+  "event_mode": "terminal",
+  "event_order": ["put", "neutral", "call"],
+  "thresholds": [-0.6, 0.6],
+  "horizons": [0.5, 1.0, 2.0],
+  "training_seeds": [11, 23, 37, 53, 71],
+  "rows": {"train": 384, "development": 128, "confirmation": 256, "each_mismatch": 256},
+  "laws": {"training": "gaussian", "primary": "gaussian", "mismatch": ["drift_shift", "student_t"]},
+  "control": {
+    "terminal_horizon": 2.0,
+    "wait_duration": 1.0,
+    "wait_cost": 0.07,
+    "wait_observation_variance": 0.64,
+    "repair_cost": 0.12,
+    "repair_observation_variance": 0.04,
+    "utility": "1 - squared_terminal_prediction_error - paid_action_costs",
+    "severe_loss_threshold": -2.0
+  },
+  "primary_contrasts": [
+    {"id": "analytic_vs_history", "candidate": "analytic", "baseline": "history"},
+    {"id": "pulse_vs_probability", "candidate": "pulse", "baseline": "analytic"},
+    {"id": "analytic_vs_native", "candidate": "analytic", "baseline": "native"}
+  ],
+  "reference_contrasts": ["analytic_vs_equivalent_gaussian", "analytic_vs_fixed", "analytic_vs_known_law_oracle"],
+  "statistics": {
+    "unit": "independent_training_seed_and_whole_environment_trajectory",
+    "paired_environment": true,
+    "family_alpha": 0.05,
+    "primary_family_size": 3,
+    "bootstrap_replicates": 4000,
+    "bootstrap_seed": 80827,
+    "interval": "two_stage_paired_seed_and_trajectory_percentile_bonferroni",
+    "minimum_useful_net_utility_gain": 0.01,
+    "superiority": "family_adjusted_lower_endpoint > 0.01 AND every_training_seed_mean_difference > 0",
+    "mismatch_noninferiority_margin": 0.02,
+    "multiple_horizons_are_independent": false
+  },
+  "execution": {
+    "freeze_protocol_and_executable_sources_before_confirmation": true,
+    "retain_all_model_and_seed_results": true,
+    "no_confirmation_tuning": true,
+    "observe_from_actual_readback": true,
+    "score_submitted_artifact_after_delivery": true,
+    "native_kernel_must_be_compiled_from_verified_original_sources": true,
+    "known_law_oracle_is_privileged": true,
+    "original_blockers_relabelled_as_closed": false,
+    "production_selection": false
+  }
+}
