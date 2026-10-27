@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.protocol-fixture-repair-preflight.v1",
+  "upstream_run_id": 40486573394,
+  "failure_log_sha256": "e26e4a831bf8f687c247362fe988e2bb1e11b9afa5807163dabcc5b09a3d9582",
+  "observed_failed_cases": [
+    "json_schema_fixtures_match_generated",
+    "stable_precomputed_exports_match_schema_fixtures",
+    "experimental_precomputed_exports_match_generated"
+  ],
+  "observed_mismatch": "TurnRecoverResponse JSON lacks completed in SubAgentActivityKind; embedded TypeScript lacks existing Hepta evidence, queue-reconcile and additional protocol exports.",
+  "production_type_changes": false,
+  "test_assertions_changed": false,
+  "repair_method": "Run just write-app-server-schema and just write-app-server-schema --experimental on the exact bound candidate, export only generated artifacts, run unchanged full codex-app-server-protocol regressions.",
+  "local_guard_tests": {
+    "total": 11,
+    "passed": 11,
+    "new_scope_guard_tests": 3,
+    "actual_remote_rust_execution": "pending"
+  },
+  "inputs": {
+    "scripts/ndu_protocol_fixture_candidate.py": {
+      "sha256": "0d4aea168100648ef0676d632b87c42956bb3baaa96c267f8d4269f965df61b1",
+      "bytes": 5566
+    },
+    "scripts/test_ndu_protocol_fixture_candidate.py": {
+      "sha256": "0564020c56b768959cf6c4772dc459475c430b68e2b06e853a8fd5e95da6ec6a",
+      "bytes": 2241
+    },
+    ".github/workflows/ndu-tls-lock-candidate.yml": {
+      "sha256": "d7870171ecffe7eefe7f9bb98062b5c938aea781b1e4cc0e9204c5c9b2eadba6",
+      "bytes": 8003
+    }
+  },
+  "promotion_eligible": false,
+  "format_only_ast_unchanged": true,
+  "formatted_source": {
+    "scripts/ndu_protocol_fixture_candidate.py": {
+      "sha256": "53c5eb75e4e27f3cd594291a602550b9583c239324923e63a182bd9b934eb2d5",
+      "ast_sha256": "b59f6f7cb90819889f4c51d1b68d94a5ab4f8a2068fa58b00966e5ff80599b24"
+    },
+    "scripts/test_ndu_protocol_fixture_candidate.py": {
+      "sha256": "ff381cd71f6edfe012d10f4ec7b1098a0c14f05c369978a848aa68426f93b985",
+      "ast_sha256": "5d3ba88eef29f454a671949d8160a8582f9af0eee47954ad4f5dc51cf1eb99e5"
+    }
+  },
+  "followup_peer_issue": "A later policy mutation could leave the recorded policy-preserved flag stale; it now updates before raising. Failed generators retain partial schema snapshots.",
+  "followup_guard_tests": {
+    "total": 4,
+    "passed": 4,
+    "scope": "New protocol tests after the peer fix; the eight shared candidate tests previously passed, and all twelve run again in remote CI."
+  }
+}
