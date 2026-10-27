@@ -80,6 +80,18 @@ impl CognitiveTestHost {
     ) -> TestResult<Self> {
         validate_config_scalar(model, "model")?;
         validate_config_scalar(provider_base_url, "provider base URL")?;
+        // Callers link core_test_support, which installs the original arg0 helper
+        // dispatch for their test executable, including the Linux sandbox entry.
+        let codex_self_exe = std::env::current_exe()?;
+        #[cfg(target_os = "linux")]
+        let codex_linux_sandbox_exe = Some(codex_self_exe.clone());
+        #[cfg(not(target_os = "linux"))]
+        let codex_linux_sandbox_exe = None;
+        let arg0_paths = Arg0DispatchPaths {
+            codex_self_exe: Some(codex_self_exe),
+            codex_linux_sandbox_exe,
+            ..Arg0DispatchPaths::default()
+        };
         std::fs::create_dir_all(&root)?;
         let root = root.canonicalize()?;
         let fleet_path = root.join("fleet");
@@ -133,7 +145,7 @@ impl CognitiveTestHost {
         let control_task = tokio::spawn(control.run());
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            arg0_paths,
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,
