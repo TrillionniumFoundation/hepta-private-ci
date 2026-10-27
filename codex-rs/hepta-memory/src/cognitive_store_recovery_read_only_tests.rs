@@ -199,7 +199,10 @@ async fn crash_reopen_refuses_pending_wal() {
             "cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal",
             "--nocapture",
         ])
-        .env(CHILD_ROOT, temp.path().join("fleet"))
+        .env(
+            CHILD_ROOT,
+            std::fs::canonicalize(temp.path().join("fleet")).expect("canonical child fleet root"),
+        )
         .status()
         .expect("child process");
     assert_eq!(status.code(), Some(73));
