@@ -1,0 +1,107 @@
+{
+  "schema": "hepta.port-failed-qualification.v1",
+  "recorded_utc": "2026-10-27T12:06:25.991045+00:00",
+  "run_id": 40497632113,
+  "attempt": 1,
+  "driver_source_commit": "1e4f8b5c37474c61a5b58a655d5885dced887bf9",
+  "status": "failed",
+  "qualification_passed": false,
+  "production_promotion_allowed": false,
+  "parts": [
+    {
+      "name": "producer",
+      "job_id": 122166998487,
+      "result_sha256": "a6a371e34914b156c7a4f4e9511387fc1668e502755fc4f9d4d79cc9db08dff3",
+      "source_commit": "1e4f8b5c37474c61a5b58a655d5885dced887bf9",
+      "driver_source_commit": null,
+      "toolchain": "1.96.0",
+      "recipe_sha256": "4efd3f67e272cd86f93d2a221c6584248118767ec5d2fdb88685885cffde6aae",
+      "command_count": 11,
+      "passed_command_count": 10,
+      "failures": [
+        {
+          "command": [
+            "cargo",
+            "update",
+            "--manifest-path",
+            "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/Cargo.toml",
+            "--package",
+            "zip",
+            "--precise",
+            "9.1.2"
+          ],
+          "exit_code": 101,
+          "log": "10-cargo-update-0.log",
+          "log_sha256": "c2d81a3b1e630b07cda11ca8ce211233693bb04cd519832e93e52f63794a66a1"
+        }
+      ],
+      "artifact_id": 12730983231,
+      "archive_bytes": 465005,
+      "archive_sha256": "6af6277e81a949a87608af3835c7ea11a9acc76e738d2145a6f8016e23a52f8d",
+      "all_command_log_bytes_and_hashes_verified": true
+    },
+    {
+      "name": "old-matrix",
+      "job_id": 122166998773,
+      "result_sha256": "b0bc870b61aef66f1e651a7207696fbe77794f34c2af784e249f57430caf1541",
+      "source_commit": "6215cb6a87f29623d4beaad24cdf7bcb6bb4fb2c",
+      "driver_source_commit": "1e4f8b5c37474c61a5b58a655d5885dced887bf9",
+      "toolchain": "1.95.0",
+      "recipe_sha256": "4efd3f67e272cd86f93d2a221c6584248118767ec5d2fdb88685885cffde6aae",
+      "command_count": 14,
+      "passed_command_count": 13,
+      "failures": [
+        {
+          "command": [
+            "cargo",
+            "nextest",
+            "list",
+            "--manifest-path",
+            "/home/runner/work/hepta-private-ci/hepta-private-ci/baseline/codex-rs/Cargo.toml",
+            "--locked",
+            "--cargo-profile",
+            "ci-test",
+            "-p",
+            "codex-hepta-matrix-sdk",
+            "--test",
+            "store_version_migration",
+            "--tool-config-file",
+            "hepta-port:/home/runner/work/_temp/ndu-matrix-018-fixture/nextest-store.toml",
+            "--list-type",
+            "binaries-only",
+            "--message-format",
+            "json"
+          ],
+          "exit_code": 101,
+          "log": "13-prepare_old_version_fixture-binaries.log",
+          "log_sha256": "3a6ad969c1c412d155df9353141d171348d97cd27d4b6c565d53988930b4c929"
+        }
+      ],
+      "artifact_id": 12731982590,
+      "archive_bytes": 30421442,
+      "archive_sha256": "6544ea2fc066618a4bb42dce69c10feedaf44fd1d8b2963e931f22a2a6cd36ac",
+      "all_command_log_bytes_and_hashes_verified": true
+    }
+  ],
+  "diagnosis": {
+    "producer": "Matrix store-encryption 0.19.1 requires blake3 ^1.8.7; Starlark 0.14.2 pins =1.8.2. Whole-graph resolution failed in the first typed Cargo update before any downstream tests. Independent subsequent audit found pagable 0.4.1 also pins =1.8.2; official 0.4.2 fixes that constraint.",
+    "old_matrix": "The fixture attempted to serialize DeviceKey directly; its type has no Serialize implementation. E0277 stopped binary compilation, so no actual old DB or successful migration phase exists for this attempt."
+  },
+  "prepared_fixes": {
+    "fixture_v2_patch_sha256": "e2dfb517cd07278eef6b0fced8c7e61db3b0e6fd3ffde61da717301116721027",
+    "fixture_v2_report_sha256": "9ab931c2152eb94cf921ae3889a27d15fd54cd75053565f9b649d24901212262",
+    "fixture_v2_peer_sha256": "1cf5cd59dc4507529ead3a44c75c6867281fa9c096649b28bc4658122807022e",
+    "starlark_and_pagable": "Separate candidate under preparation; no new complete resolved graph is claimed."
+  },
+  "retention": {
+    "archive_name": "hepta_ci_port_failure_increment_20261027_003.tar.gz",
+    "archive_sha256": "43ad55085a8874e722e40644c35c0a62f83fae828ad1d8b9873e403fabd4d951",
+    "library_file_id": "libfile_d828a3ba01b481919a8013c8a71bb7e5",
+    "actual_restore_verified": true
+  },
+  "boundaries": [
+    "No downstream consumer skipped because the producer failed is counted as passed.",
+    "The fixture source repair and independent API review are not a successful real migration.",
+    "The old frozen policy and all failed artifacts remain intact."
+  ]
+}
