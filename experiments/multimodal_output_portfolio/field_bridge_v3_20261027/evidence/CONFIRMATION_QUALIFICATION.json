@@ -1,0 +1,34 @@
+{
+  "allowed_profiles": [],
+  "authority": "DENY_ALL",
+  "combined_scope_qualified": false,
+  "frozen_only_fallback_qualified": false,
+  "frozen_runtime_qualification_sha256": "f45b2a45852fec2f456224abc9ccacb788231b3e610d28879e7dbd56e4173889",
+  "native_owner_integration": false,
+  "no_audit_driven_refit_or_retry": true,
+  "passed": false,
+  "primary_evaluation_started": false,
+  "protocol_sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7",
+  "reason": "Neither registered route qualifies: learning development failed and the independently registered frozen runtime audit failed.",
+  "requires_calibration": true,
+  "retention_evaluation_started": false,
+  "runtime_profile_qualified": {
+    "field": null,
+    "frozen": false,
+    "ordinary": null
+  },
+  "schema": "hepta.field-bridge.v3.confirmation-qualification.1",
+  "source_manifest_sha256": "9bfcb279d5efdc7bd6c14af41c64c04a78fc97f7827f7464280d8997d8fead41",
+  "threshold_or_sample_changes": false,
+  "training_qualification_sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da",
+  "training_qualified": false,
+  "unrun_primary_contrasts": [
+    "B-A",
+    "C-B",
+    "D-A",
+    "E-C",
+    "E-G",
+    "E-F"
+  ],
+  "unrun_primary_contrasts_status": "not executed; not established; not a new 0/6 completed confirmation result"
+}
