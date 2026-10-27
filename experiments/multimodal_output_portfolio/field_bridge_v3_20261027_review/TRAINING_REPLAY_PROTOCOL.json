@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.field-bridge.v3.prespecified-training-replay.1",
+  "status": "REGISTERED_BEFORE_BANK_OUTCOMES",
+  "scientific_source_commit": "a450ce26edf02b861a7e900ae632b7e35769f584",
+  "sample": {
+    "seed": 17,
+    "trajectory": 0,
+    "start_step": 0,
+    "candidate_action_indices": [0, 1, 2, 3],
+    "terminal_step": 288,
+    "candidate_block_steps": 48,
+    "remaining_policy": "the reference action frozen before the bank, with the same common guard",
+    "selected_prefix": "the prescheduled trajectory-0 action at decision-0, independently executed for 48 steps"
+  },
+  "scope": {
+    "all_rows": "complete inventory and SHA256, source/panel identities, terminal value arithmetic, recorded clone/prefix/optimizer continuity, decision chronology, exact gradient and observation counters",
+    "sampled_execution": "four full terminal-reference branches plus one selected prefix; no other execution sample selected after outcomes",
+    "fitting": "all retained whole-trajectory CV and full-fit coefficients, normalizers, projection matrices, alpha choices and candidate counts checked independently when available"
+  },
+  "allowed_source_roles": ["fit_gradient", "fit_rehearsal", "fit_probe", "fit_guard"],
+  "access_rule": "Do not load actual V3 roles until all three banks are complete and root supplies the matching authorized bank freeze",
+  "execution_limit": "One replay execution. Preserve a failed attempt; any infrastructure continuation requires an explicit receipt and cannot change the sample.",
+  "parameter_and_optimizer_hash_tolerance": "exact",
+  "hard_output_byte_hash_tolerance": "exact",
+  "guard_value_tolerance": 0.0,
+  "feature_absolute_tolerance": 1e-07,
+  "coefficient_absolute_tolerance": 1e-08,
+  "coefficient_relative_tolerance": 1e-08,
+  "arithmetic_absolute_tolerance": 1e-12,
+  "source_ids_must_match_exactly": true,
+  "decision_must_precede_outcome": true,
+  "replay_resources_are_verification_only": true,
+  "replay_outputs_cannot_select_or_refit_any_controller": true,
+  "model_or_policy_changes_authorized": false
+}
