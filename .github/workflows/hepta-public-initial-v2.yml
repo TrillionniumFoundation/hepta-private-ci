@@ -95,6 +95,13 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}/hepta
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
+      - name: Build the first-party binary required by the existing native host test
+        run: |
+          set -euo pipefail
+          unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/required-cli-build.json" --timeout-seconds 3600 --minimum-tests 0 -- cargo build --manifest-path codex-rs/Cargo.toml --locked -p codex-cli --bin codex
+          sha256sum "$CARGO_TARGET_DIR/debug/codex" > "$RUNNER_TEMP/hepta-public-initial-v2/codex-binary.sha256"
+          printf 'CARGO_BIN_EXE_codex=%s/debug/codex\n' "$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
       - name: Execute the complete three changed Rust packages
         run: |
           set -euo pipefail
