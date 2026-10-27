@@ -226,7 +226,7 @@ mod windows_impl {
                     )
                 },
             )?;
-            let (pipe_write, mut pipe_read) = transport.into_files();
+            let (pipe_write, mut pipe_read, mut process) = transport.into_parts();
             let cancel_writer = spawn_cancel_writer(&pipe_write, cancellation)?;
 
             let mut stdout = Vec::new();
@@ -265,7 +265,18 @@ mod windows_impl {
                 let _ = cancel_handle.join();
             }
             drop(pipe_write);
-            let (exit_code, timed_out) = result?;
+            let (exit_code, timed_out) = match result {
+                Ok((exit_code, timed_out)) => {
+                    process.wait_for_exit(exit_code)?;
+                    (exit_code, timed_out)
+                }
+                Err(error) => {
+                    if let Err(cleanup) = process.terminate_and_wait() {
+                        return Err(error.context(format!("runner cleanup also failed: {cleanup}")));
+                    }
+                    return Err(error);
+                }
+            };
 
             if exit_code == 0 {
                 log_success(&command, logs_base_dir);

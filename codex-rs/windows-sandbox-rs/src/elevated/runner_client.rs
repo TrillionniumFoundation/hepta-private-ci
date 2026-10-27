@@ -21,6 +21,7 @@ use std::ffi::c_void;
 use std::fs::File;
 use std::os::windows::io::AsRawHandle;
 use std::os::windows::io::FromRawHandle;
+use std::os::windows::io::OwnedHandle;
 use std::path::Path;
 use std::ptr;
 use std::sync::mpsc;
@@ -43,8 +44,11 @@ use windows_sys::Win32::System::Threading::GetCurrentProcess;
 use windows_sys::Win32::System::Threading::GetCurrentThread;
 use windows_sys::Win32::System::Threading::PROCESS_INFORMATION;
 use windows_sys::Win32::System::Threading::STARTUPINFOW;
-use windows_sys::Win32::System::Threading::TerminateProcess;
 use windows_sys::Win32::System::Threading::WaitForSingleObject;
+
+#[path = "runner_process.rs"]
+mod runner_process;
+pub(crate) use runner_process::RunnerProcess;
 
 const RUNNER_SPAWN_READY_TIMEOUT: Duration = Duration::from_secs(15);
 const RUNNER_PIPE_CONNECT_TIMEOUT: Duration = Duration::from_secs(15);
@@ -95,6 +99,7 @@ impl std::error::Error for RunnerStartupError {}
 pub(crate) struct RunnerTransport {
     pipe_write: File,
     pipe_read: File,
+    process: RunnerProcess,
 }
 
 fn is_refreshable_windows_error(code: u32) -> bool {
@@ -169,8 +174,8 @@ impl RunnerTransport {
         }
     }
 
-    pub(crate) fn into_files(self) -> (File, File) {
-        (self.pipe_write, self.pipe_read)
+    pub(crate) fn into_parts(self) -> (File, File, RunnerProcess) {
+        (self.pipe_write, self.pipe_read, self.process)
     }
 }
 
@@ -375,6 +380,12 @@ pub(crate) fn spawn_runner_transport(
         return Err(RunnerLogonError { code: err }.into());
     }
     let expected_runner_pid = pi.dwProcessId;
+    // SAFETY: this successful CreateProcessWithLogonW call transferred one live
+    // process HANDLE to us. Only RunnerProcess owns and closes it from here.
+    let mut process = RunnerProcess::new(
+        unsafe { OwnedHandle::from_raw_handle(pi.hProcess as _) },
+        expected_runner_pid,
+    );
 
     let connect_result = (|| -> Result<()> {
         connect_pipe_with_timeout(h_pipe_in, expected_runner_pid, "pipe-in")?;
@@ -390,15 +401,11 @@ pub(crate) fn spawn_runner_transport(
 
     if let Err(err) = connect_result {
         unsafe {
-            // Keep the process handle alive until the pipe handshake finishes. If the handshake
-            // fails after the runner process has already launched, we still need a way to stop
-            // that child instead of leaking a stray `codex-command-runner.exe`.
-            if pi.hProcess != 0 {
-                let _ = TerminateProcess(pi.hProcess, 1);
-                CloseHandle(pi.hProcess);
-            }
             CloseHandle(h_pipe_in);
             CloseHandle(h_pipe_out);
+        }
+        if let Err(cleanup) = process.terminate_and_wait() {
+            return Err(err.context(format!("runner cleanup also failed: {cleanup}")));
         }
         return Err(err);
     }
@@ -408,6 +415,7 @@ pub(crate) fn spawn_runner_transport(
         // From here on, the `RunnerTransport` owns closing the pipes on every success/error path.
         pipe_write: unsafe { File::from_raw_handle(h_pipe_in as _) },
         pipe_read: unsafe { File::from_raw_handle(h_pipe_out as _) },
+        process,
     };
     let startup_result = (|| -> Result<()> {
         // Keep the runner process HANDLE alive until the *entire* startup handshake finishes.
@@ -418,23 +426,10 @@ pub(crate) fn spawn_runner_transport(
         Ok(())
     })();
     if let Err(err) = startup_result {
-        unsafe {
-            if pi.hProcess != 0 {
-                let _ = TerminateProcess(pi.hProcess, 1);
-                CloseHandle(pi.hProcess);
-            }
+        if let Err(cleanup) = transport.process.terminate_and_wait() {
+            return Err(err.context(format!("runner cleanup also failed: {cleanup}")));
         }
-        drop(transport);
         return Err(err);
-    }
-
-    unsafe {
-        if pi.hProcess != 0 {
-            // The runner has now connected both pipes *and* acknowledged the spawn request, so
-            // startup is complete. At that point the transport pipes become the only lifetime
-            // anchor we need to keep the session alive.
-            CloseHandle(pi.hProcess);
-        }
     }
 
     Ok(transport)

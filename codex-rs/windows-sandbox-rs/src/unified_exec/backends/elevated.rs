@@ -187,7 +187,7 @@ pub(crate) async fn spawn_windows_sandbox_session_elevated_for_permission_profil
         proxy_settings_mode,
     };
     let transport = spawn_runner_transport_task(sandbox_creds, request).await?;
-    let (pipe_write, pipe_read) = transport.into_files();
+    let (pipe_write, pipe_read, process) = transport.into_parts();
 
     let (writer_tx, writer_rx) = mpsc::channel::<Vec<u8>>(128);
     let (stdout_tx, stdout_rx) = broadcast::channel::<Vec<u8>>(256);
@@ -214,6 +214,7 @@ pub(crate) async fn spawn_windows_sandbox_session_elevated_for_permission_profil
 
     start_runner_stdout_reader(
         pipe_read,
+        process,
         stdout_tx,
         stderr_rx.as_ref().map(|(tx, _rx)| tx.clone()),
         exit_tx,

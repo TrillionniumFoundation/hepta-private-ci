@@ -7,6 +7,7 @@ use crate::ipc_framed::ResizePayload;
 use crate::ipc_framed::StdinPayload;
 use crate::ipc_framed::decode_bytes;
 use crate::ipc_framed::encode_bytes;
+use crate::runner_client::RunnerProcess;
 use anyhow::Result;
 use codex_utils_pty::ProcessDriver;
 use codex_utils_pty::SpawnedProcess;
@@ -79,68 +80,71 @@ pub(crate) fn start_runner_stdin_writer(
 
 pub(crate) fn start_runner_stdout_reader(
     mut pipe_read: File,
+    mut process: RunnerProcess,
     stdout_tx: broadcast::Sender<Vec<u8>>,
     stderr_tx: Option<broadcast::Sender<Vec<u8>>>,
     exit_tx: oneshot::Sender<i32>,
 ) {
     std::thread::spawn(move || {
-        loop {
-            let msg = match crate::ipc_framed::read_frame(&mut pipe_read) {
-                Ok(Some(v)) => v,
-                Ok(None) => {
-                    send_runner_error(
-                        "runner pipe closed before exit",
-                        &stdout_tx,
-                        stderr_tx.as_ref(),
-                    );
-                    let _ = exit_tx.send(-1);
-                    break;
-                }
-                Err(err) => {
-                    send_runner_error(
-                        &format!("runner read failed: {err}"),
-                        &stdout_tx,
-                        stderr_tx.as_ref(),
-                    );
-                    let _ = exit_tx.send(-1);
-                    break;
-                }
-            };
+        let result = (|| -> Result<i32> {
+            loop {
+                let msg = match crate::ipc_framed::read_frame(&mut pipe_read) {
+                    Ok(Some(v)) => v,
+                    Ok(None) => {
+                        break Err(anyhow::anyhow!("runner pipe closed before exit"));
+                    }
+                    Err(err) => {
+                        break Err(err.context("runner read failed"));
+                    }
+                };
 
-            match msg.message {
-                Message::Output { payload } => {
-                    if let Ok(data) = decode_bytes(&payload.data_b64) {
-                        match payload.stream {
-                            OutputStream::Stdout => {
-                                let _ = stdout_tx.send(data);
-                            }
-                            OutputStream::Stderr => {
-                                if let Some(stderr_tx) = stderr_tx.as_ref() {
-                                    let _ = stderr_tx.send(data);
-                                } else {
+                match msg.message {
+                    Message::Output { payload } => {
+                        if let Ok(data) = decode_bytes(&payload.data_b64) {
+                            match payload.stream {
+                                OutputStream::Stdout => {
                                     let _ = stdout_tx.send(data);
+                                }
+                                OutputStream::Stderr => {
+                                    if let Some(stderr_tx) = stderr_tx.as_ref() {
+                                        let _ = stderr_tx.send(data);
+                                    } else {
+                                        let _ = stdout_tx.send(data);
+                                    }
                                 }
                             }
                         }
                     }
+                    Message::Exit { payload } => {
+                        process.wait_for_exit(payload.exit_code)?;
+                        break Ok(payload.exit_code);
+                    }
+                    Message::Error { payload } => {
+                        break Err(anyhow::anyhow!(payload.message));
+                    }
+                    Message::SpawnReady { .. }
+                    | Message::Stdin { .. }
+                    | Message::CloseStdin { .. }
+                    | Message::Resize { .. }
+                    | Message::SpawnRequest { .. }
+                    | Message::Terminate { .. } => {}
                 }
-                Message::Exit { payload } => {
-                    let _ = exit_tx.send(payload.exit_code);
-                    break;
-                }
-                Message::Error { payload } => {
-                    send_runner_error(&payload.message, &stdout_tx, stderr_tx.as_ref());
-                    let _ = exit_tx.send(-1);
-                    break;
-                }
-                Message::SpawnReady { .. }
-                | Message::Stdin { .. }
-                | Message::CloseStdin { .. }
-                | Message::Resize { .. }
-                | Message::SpawnRequest { .. }
-                | Message::Terminate { .. } => {}
             }
-        }
+        })();
+        let exit_code = match result {
+            Ok(exit_code) => exit_code,
+            Err(error) => {
+                let cleanup = process.terminate_and_wait();
+                let message = match cleanup {
+                    Ok(()) => error.to_string(),
+                    Err(cleanup) => format!("{error}; runner cleanup failed: {cleanup}"),
+                };
+                send_runner_error(&message, &stdout_tx, stderr_tx.as_ref());
+                -1
+            }
+        };
+        drop(pipe_read);
+        let _ = exit_tx.send(exit_code);
     });
 }
 
