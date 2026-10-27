@@ -1,0 +1,154 @@
+{
+  "schema": "hepta-ci-records-byte-pack-v1",
+  "source_sha": "f75bf1ac902ed73905e4daa49f9396df028a4254",
+  "chain_sha": "c96022b897c1235fdbdbfcfa32764403511c6aab",
+  "source_tree": "a8052cd850dcbe6bb6dec4e434bae051cecc7b4c",
+  "run_id": 40492138476,
+  "job_id": 122148432828,
+  "original_workflow_conclusion": "failure",
+  "original_records_zip": {
+    "artifact_id": 12730179885,
+    "bytes": 114661707,
+    "sha256": "a6674acfd78bc4172eb0cb2dbd7e39e1bf6506e50fbca30b04b6db19c7f6c276"
+  },
+  "original_checkpoints_zip": {
+    "artifact_id": 12730991407,
+    "bytes": 2175707854,
+    "sha256": "f0be7ec34123a2ce2d89716168608e50bec8c7cbc6a1b8bbc071cb5436adc4a9",
+    "locally_downloaded": false,
+    "checkpoint_bytes_included": false
+  },
+  "algorithm": "retain original ZIP local headers, raw compressed payloads, descriptors and central directory in source order; split each region at 256KiB; share byte-equal SHA256 chunks; no decompression/recompression",
+  "source_zip_recompressed": false,
+  "duplicate_chunks_compared_byte_for_byte": true,
+  "maximum_chunk_bytes": 262144,
+  "maximum_pack_bytes": 4194304,
+  "segments": 23181,
+  "unique_chunks": 17063,
+  "packs": [
+    {
+      "file": "records-000.pack",
+      "bytes": 4113178,
+      "sha256": "cd624ba5444c22c3e0a48d2d7f40719da7e4ded6d2c6911fe9e8414fd0eca41d"
+    },
+    {
+      "file": "records-001.pack",
+      "bytes": 4194304,
+      "sha256": "dace17d342d07a47acdb39faf43bdd025ce02a0d27bea54e5ed9c54d75fe4ecd"
+    },
+    {
+      "file": "records-002.pack",
+      "bytes": 4194304,
+      "sha256": "59073d59c45133ea3ac284914d5d7bbf1cc0fa210db5ae5d3639da4cb51ffe4c"
+    },
+    {
+      "file": "records-003.pack",
+      "bytes": 4194304,
+      "sha256": "ffa90f5a9128630d39dfa3c30210a79e2694ad0da8c0aca9e0da7879434d26af"
+    },
+    {
+      "file": "records-004.pack",
+      "bytes": 4194304,
+      "sha256": "9e31e6666acaebc3b0a432e9065c753409d9844200c5ed2be1297b7ffdcece16"
+    },
+    {
+      "file": "records-005.pack",
+      "bytes": 4194304,
+      "sha256": "5fb0dabd338d8ec459b6825d6f081119832922c257a860498f46e9fe1db8899e"
+    },
+    {
+      "file": "records-006.pack",
+      "bytes": 4192999,
+      "sha256": "af55de90cf8f5160d3a3b6ec9e4a8754f1336f30182581a4a447ddd22669d711"
+    },
+    {
+      "file": "records-007.pack",
+      "bytes": 4183976,
+      "sha256": "735a5ecc5d2ee39dbf9a7f16ba44cfa119b55284d6215d65028dc0a0330ac2fd"
+    },
+    {
+      "file": "records-008.pack",
+      "bytes": 4190702,
+      "sha256": "20958cb3309b0bff0b85f5b8857f1e4b8a34b37b964b251b066faceffad27762"
+    },
+    {
+      "file": "records-009.pack",
+      "bytes": 4190050,
+      "sha256": "9328a47294af2d859ea23a15cc4ec248ada7634e67110f59bbad8fcf874f6243"
+    },
+    {
+      "file": "records-010.pack",
+      "bytes": 4194106,
+      "sha256": "80f8974820657f4152d8c6db8c0673626cd703d96bfe34b2edcf48699a262f3c"
+    },
+    {
+      "file": "records-011.pack",
+      "bytes": 4193614,
+      "sha256": "a308328c2701b1d01d824820c519424ae88870621f1df827106e382788027b56"
+    },
+    {
+      "file": "records-012.pack",
+      "bytes": 4193745,
+      "sha256": "f74fbe4e23fd2850686622c7c6a25a187877e9926c626e7b095fa081dfc2d7fc"
+    },
+    {
+      "file": "records-013.pack",
+      "bytes": 4000776,
+      "sha256": "c17c1402a6fbd8595c7771d4a176e6afd7332545cec3bfb3dbb086f9c5a2dd38"
+    },
+    {
+      "file": "records-014.pack",
+      "bytes": 1390215,
+      "sha256": "23d5c5febb615a323ccaea88cdb02961912f969138cb0831f7b0b867a85fed22"
+    }
+  ],
+  "recipe": {
+    "file": "records.recipe.json.gz",
+    "bytes": 842755,
+    "expanded_bytes": 2110519,
+    "sha256": "d6865efb16b2efa7d9eb253a746239ff6b37334fd28a4d634f55f908729a4f0c"
+  },
+  "evidence_index_sha256": "bea0af1187ed5e7be548412c3487388b4c2f57a1652f59f9033d564423b80878",
+  "records_expanded_bytes": 193733440,
+  "separate_checkpoint_members": [
+    "descendant-diagnostics/round-1/actual-current-incumbent-input/artifact.safetensors",
+    "descendant-diagnostics/round-1/candidate-evaluation-input/artifact.safetensors",
+    "descendant-diagnostics/round-1/train-budget-matched-full-tune/artifact.safetensors",
+    "descendant-diagnostics/round-1/train-candidate/execution/artifact.safetensors",
+    "descendant-diagnostics/round-1/train-candidate/execution/setup-artifact.safetensors",
+    "descendant-diagnostics/round-1/train-fresh-budget-matched-lora/artifact.safetensors",
+    "descendant-diagnostics/round-1/train-randomized-rank-matched-lora/artifact.safetensors",
+    "descendant-diagnostics/round-2/actual-current-incumbent-input/artifact.safetensors",
+    "descendant-diagnostics/round-2/candidate-evaluation-input/artifact.safetensors",
+    "descendant-diagnostics/round-2/train-budget-matched-full-tune/artifact.safetensors",
+    "descendant-diagnostics/round-2/train-candidate/execution/artifact.safetensors",
+    "descendant-diagnostics/round-2/train-fresh-budget-matched-lora/artifact.safetensors",
+    "descendant-diagnostics/round-2/train-randomized-rank-matched-lora/artifact.safetensors",
+    "descendant-diagnostics/round-3/actual-current-incumbent-input/artifact.safetensors",
+    "descendant-diagnostics/round-3/candidate-evaluation-input/artifact.safetensors",
+    "descendant-diagnostics/round-3/train-budget-matched-full-tune/artifact.safetensors",
+    "descendant-diagnostics/round-3/train-candidate/execution/artifact.safetensors",
+    "descendant-diagnostics/round-3/train-fresh-budget-matched-lora/artifact.safetensors",
+    "descendant-diagnostics/round-3/train-randomized-rank-matched-lora/artifact.safetensors",
+    "genesis/artifact.safetensors",
+    "n/ordinary-selected-initial/session/artifact.safetensors",
+    "n/p/round-1/candidate-evaluation-input/artifact.safetensors",
+    "n/p/round-1/train-budget-matched-full-tune/artifact.safetensors",
+    "n/p/round-1/train-candidate/execution/artifact.safetensors",
+    "n/p/round-1/train-candidate/execution/setup-artifact.safetensors",
+    "n/p/round-1/train-fresh-budget-matched-lora/artifact.safetensors",
+    "n/p/round-1/train-randomized-rank-matched-lora/artifact.safetensors",
+    "n/public-loop-session-0/session/artifact.safetensors",
+    "n/public-loop-session-1/session/artifact.safetensors"
+  ],
+  "product_qualification": false,
+  "installed_children": 0,
+  "full_job_log": {
+    "path": "job-api-decoded.log.gz",
+    "decoded_bytes": 1186420,
+    "decoded_sha256": "d1b84b6c8ecf07b90b85dcfe12959fc1a3970796cf1ad6179e71e686f93de1c7",
+    "gzip_bytes": 162944,
+    "gzip_sha256": "63d4a25c3a4c87b7dae10548417f0e504bbf59b009d542167ad4ff6dcff5a35b",
+    "encoding_scope": "UTF-8 API-decoded job text with terminal newline normalization; original wrapper-log bytes remain in the reconstructed ZIP"
+  }
+}
