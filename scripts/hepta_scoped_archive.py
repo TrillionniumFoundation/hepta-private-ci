@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
-"""Validate complete frozen-scope archive/replay evidence."""
+"""CI-only archive/replay of the frozen original dependency-impact scope."""
 
+import argparse
 import hashlib
+import importlib
 import json
 import os
 from pathlib import Path
+import shutil
+import subprocess
+import sys
 import xml.etree.ElementTree as ET
 
 SOURCE = "4223fc77944e9beb5651df063158b22ae1a4f701"
 TREE = "7c19c9903d4e82baf3a61111214ff3fe46605cef"
 BASE = "de0ddaa41bd91c4f46a2f1b6034d25fa84c4469c"
 SHARDS = 4
+ARCHIVE_LIMIT = 8 * 1024**3
 JSON_LIMIT = 64 * 1024**2
+HELPERS = ("codex-linux-sandbox", "codex-execve-wrapper")
 
 
 def require(condition, message):
@@ -34,6 +41,132 @@ def save(path, value):
     with path.open("x") as stream:
         json.dump(value, stream, indent=2, sort_keys=True)
         stream.write("\n")
+
+
+def output(command, root):
+    return subprocess.check_output(command, cwd=root, text=True, timeout=60).strip()
+
+
+def identity(root):
+    require(os.geteuid() != 0, "ordinary scoped tests must not run as Root")
+    require(output(["git", "rev-parse", "HEAD"], root) == SOURCE, "wrong source SHA")
+    require(
+        output(["git", "rev-parse", "HEAD^{tree}"], root) == TREE, "wrong source tree"
+    )
+    require(not output(["git", "status", "--porcelain"], root), "dirty product source")
+    target = Path(os.environ["CARGO_TARGET_DIR"]).resolve()
+    require(
+        target == Path(os.environ["RUNNER_TEMP"]) / "hepta-scoped-4223/target",
+        "unexpected target path",
+    )
+    versions = {
+        name: output(args, root / "codex-rs")
+        for name, args in {
+            "rustc": ["rustc", "-vV"],
+            "cargo": ["cargo", "--version"],
+            "nextest": ["cargo", "nextest", "--version"],
+            "just": ["just", "--version"],
+        }.items()
+    }
+    require("release: 1.96.0" in versions["rustc"].splitlines(), "wrong compiler")
+    require(versions["cargo"].startswith("cargo 1.96.0 "), "wrong Cargo")
+    require(versions["nextest"].startswith("cargo-nextest 0.9.103 "), "wrong nextest")
+    require(versions["just"] == "just 1.51.0", "wrong just")
+    implementation = Path(__file__).resolve().parents[1]
+    require(
+        output(["git", "rev-parse", "HEAD"], implementation)
+        == os.environ["WORKFLOW_SHA"],
+        "wrong workflow implementation",
+    )
+    return {
+        "source_sha": SOURCE,
+        "source_tree": TREE,
+        "base_sha": BASE,
+        "source_path": str(root),
+        "target_path": str(target),
+        "tools": versions,
+        "workflow_sha": os.environ["WORKFLOW_SHA"],
+        "qualification_helper_sha256": digest(Path(__file__).resolve()),
+        "run_id": os.environ["GITHUB_RUN_ID"],
+        "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+        "inputs": {
+            p: digest(root / p)
+            for p in (
+                "codex-rs/Cargo.lock",
+                "codex-rs/rust-toolchain.toml",
+                "codex-rs/.config/nextest.toml",
+                "justfile",
+                "scripts/run-nextest.py",
+                "scripts/hepta_ci_dependencies.py",
+            )
+        },
+    }
+
+
+def recorded(root, out, name, command, seconds, minimum=0):
+    record = out / f"{name}.json"
+    subprocess.run(
+        [
+            sys.executable,
+            str(root / "scripts/hepta_ci_exec.py"),
+            "--output",
+            str(record),
+            "--timeout-seconds",
+            str(seconds),
+            "--minimum-tests",
+            str(minimum),
+            "--",
+            *command,
+        ],
+        cwd=root / "codex-rs",
+        check=True,
+    )
+    value = load(record)
+    require(
+        value["status"] == "passed"
+        and value["exit_code"] == 0
+        and value["tested_sha"] == SOURCE
+        and not value["timed_out"],
+        "command did not pass",
+    )
+    return value
+
+
+def capture(root, path, command):
+    with path.open("xb") as stream, path.with_suffix(".stderr").open("xb") as errors:
+        subprocess.run(
+            command,
+            cwd=root / "codex-rs",
+            stdout=stream,
+            stderr=errors,
+            timeout=600,
+            check=True,
+        )
+    return load(path)
+
+
+def native_command(root, plan):
+    require(
+        plan["base_sha"] == BASE and plan["tested_sha"] == SOURCE,
+        "wrong impact comparison",
+    )
+    require(
+        plan["full_workspace"] is False
+        and len(plan["packages"]) == 124
+        and len(set(plan["packages"])) == 124,
+        "unexpected frozen scope",
+    )
+    sys.path.insert(0, str(root))
+    original = importlib.import_module("scripts.hepta_ci_dependencies")
+    require(
+        Path(original.__file__).resolve() == root / "scripts/hepta_ci_dependencies.py",
+        "wrong planner",
+    )
+    command = original.execution_command(plan, "test")
+    require(
+        command[:3] == ["just", "test", "--locked"], "changed original test entrypoint"
+    )
+    return command
 
 
 def inventory(document, packages, partition=False):
@@ -111,6 +244,244 @@ def junit_passes(path, expected):
                 retried.append((*key, attempts))
     require(observed == expected, "JUnit identities differ from selected inventory")
     return sorted(retried)
+
+
+def archive_arguments(root, artifact):
+    target = Path(os.environ["CARGO_TARGET_DIR"])
+    target.parent.mkdir(parents=True, exist_ok=True)
+    # Let nextest restore binaries and its archived libdir on every invocation.
+    # Its binaries-only JSON still contains producer paths in version 0.9.103.
+    return [
+        "--archive-file",
+        str(artifact / "tests.tar.zst"),
+        "--extract-to",
+        str(target.parent),
+        "--extract-overwrite",
+        "--workspace-remap",
+        str(root / "codex-rs"),
+    ]
+
+
+def prepare(root, out):
+    out.mkdir(parents=True, exist_ok=False)
+    save(out / "identity.json", identity(root))
+    save(
+        out / "resources.json",
+        {
+            "cpu_count": os.cpu_count(),
+            "disk": shutil.disk_usage(out)._asdict(),
+            "meminfo": Path("/proc/meminfo").read_text(),
+            "build_jobs": os.environ["CARGO_BUILD_JOBS"],
+            "test_threads": 2,
+            "archive_command_seconds": 7200,
+            "replay_command_seconds": 3600,
+            "archive_bytes_limit": ARCHIVE_LIMIT,
+        },
+    )
+    recorded(
+        root,
+        out,
+        "plan-command",
+        [
+            sys.executable,
+            str(root / "scripts/hepta_ci_dependencies.py"),
+            "--root",
+            str(root),
+            "--base",
+            BASE,
+            "--tested",
+            SOURCE,
+            "--output",
+            str(out / "plan.json"),
+        ],
+        600,
+    )
+    save(out / "original-command.json", native_command(root, load(out / "plan.json")))
+
+
+def archive(root, out, artifact):
+    require(identity(root) == load(out / "identity.json"), "prepared identity changed")
+    artifact.mkdir(parents=True, exist_ok=False)
+    command = native_command(root, load(out / "plan.json"))
+    # Build the two original helpers first: archive construction then leaves
+    # any helper included by the complete feature graph at its final bytes.
+    recorded(
+        root,
+        out,
+        "helper-command",
+        [
+            "cargo",
+            "build",
+            "--locked",
+            "-p",
+            "codex-linux-sandbox",
+            "--bin",
+            HELPERS[0],
+            "-p",
+            "codex-shell-escalation",
+            "--bin",
+            HELPERS[1],
+        ],
+        1200,
+    )
+    recorded(
+        root,
+        out,
+        "archive-command",
+        [
+            "cargo",
+            "nextest",
+            "archive",
+            *command[2:],
+            "--archive-file",
+            str(artifact / "tests.tar.zst"),
+        ],
+        7200,
+    )
+    require(
+        (artifact / "tests.tar.zst").stat().st_size <= ARCHIVE_LIMIT,
+        "archive exceeds declared 8 GiB budget",
+    )
+    for name in HELPERS:
+        source = Path(os.environ["CARGO_TARGET_DIR"]) / "debug" / name
+        require(source.stat().st_size <= 256 * 1024**2, "runtime helper exceeds budget")
+        shutil.copyfile(source, artifact / name)
+    reuse = archive_arguments(root, artifact)
+    full = capture(
+        root,
+        out / "inventory.json",
+        ["cargo", "nextest", "list", *reuse, "--message-format", "json"],
+    )
+    for name in HELPERS:
+        require(
+            digest(Path(os.environ["CARGO_TARGET_DIR"]) / "debug" / name)
+            == digest(artifact / name),
+            "archive/helper bytes differ",
+        )
+    all_tests, selected, ignored = inventory(full, load(out / "plan.json")["packages"])
+    require(
+        identity(root) == load(out / "identity.json"), "archive changed source identity"
+    )
+    for name in ("identity.json", "plan.json", "inventory.json"):
+        shutil.copyfile(out / name, artifact / name)
+    manifest = {
+        "status": "built",
+        "identity": load(out / "identity.json"),
+        "files": {
+            p.name: {"sha256": digest(p), "bytes": p.stat().st_size}
+            for p in artifact.iterdir()
+        },
+        "all_tests": len(all_tests),
+        "runnable_tests": len(selected),
+        "ignored_tests": len(ignored),
+        "records": {
+            name: digest(out / name)
+            for name in (
+                "plan-command.json",
+                "archive-command.json",
+                "helper-command.json",
+            )
+        },
+    }
+    save(out / "manifest.json", manifest)
+    save(artifact / "manifest.json", manifest)
+
+
+def replay(root, out, artifact, shard):
+    require(1 <= shard <= SHARDS, "invalid shard")
+    out.mkdir(parents=True, exist_ok=False)
+    manifest = load(artifact / "manifest.json")
+    require(
+        manifest["status"] == "built" and manifest["identity"] == identity(root),
+        "archive/source identity mismatch",
+    )
+    require(
+        set(manifest["files"])
+        == {"tests.tar.zst", *HELPERS, "identity.json", "plan.json", "inventory.json"},
+        "archive inputs differ",
+    )
+    for name, expected in manifest["files"].items():
+        path = artifact / name
+        require(
+            path.stat().st_size == expected["bytes"]
+            and digest(path) == expected["sha256"],
+            "artifact bytes changed",
+        )
+    target = Path(os.environ["CARGO_TARGET_DIR"])
+    require(not target.exists(), "replay target is not fresh")
+    reuse = archive_arguments(root, artifact)
+    partition = ["--partition", f"hash:{shard}/{SHARDS}"]
+    (target / "debug").mkdir(parents=True)
+    for name in HELPERS:
+        path = target / "debug" / name
+        shutil.copyfile(artifact / name, path)
+        path.chmod(0o755)
+        os.environ[f"CARGO_BIN_EXE_{name}"] = str(path)
+        os.environ[f"CARGO_BIN_EXE_{name.replace('-', '_')}"] = str(path)
+    listed = capture(
+        root,
+        out / "inventory.json",
+        ["cargo", "nextest", "list", *reuse, *partition, "--message-format", "json"],
+    )
+    for name in HELPERS:
+        require(
+            digest(target / "debug" / name) == digest(artifact / name),
+            "extracted runtime helper differs",
+        )
+    packages = load(artifact / "plan.json")["packages"]
+    all_tests, selected, ignored = inventory(listed, packages, partition=True)
+    full_all, full_selected, full_ignored = inventory(
+        load(artifact / "inventory.json"), packages
+    )
+    require(
+        all_tests == full_all and ignored == full_ignored and selected <= full_selected,
+        "replay inventory changed",
+    )
+    junit = out / "junit.xml"
+    reporting = out / "reporting.toml"
+    reporting.write_text(
+        "[profile.local.junit]\npath = " + json.dumps(str(junit)) + "\n"
+    )
+    recorded(
+        root,
+        out,
+        "test-command",
+        [
+            "just",
+            "test",
+            *reuse,
+            *partition,
+            "--test-threads",
+            "2",
+            "--tool-config-file",
+            f"hepta-scoped:{reporting}",
+        ],
+        3600,
+        minimum=len(selected),
+    )
+    retried = junit_passes(junit, selected)
+    for name in HELPERS:
+        require(
+            digest(target / "debug" / name) == digest(artifact / name),
+            "runtime helper changed",
+        )
+    require(identity(root) == manifest["identity"], "tests changed source identity")
+    save(
+        out / "result.json",
+        {
+            "status": "passed",
+            "shard": shard,
+            "manifest_sha256": digest(artifact / "manifest.json"),
+            "selected": sorted(selected),
+            "junit_sha256": digest(junit),
+            "inventory_sha256": digest(out / "inventory.json"),
+            "record_sha256": digest(out / "test-command.json"),
+            "retried": retried,
+            "ignored_not_qualified": len(ignored),
+            "partition_excluded": len(full_selected - selected),
+            "missing": 0,
+        },
+    )
 
 
 def summarize(out, build, shards, needs):
@@ -250,3 +621,69 @@ def summarize(out, build, shards, needs):
             "replaces_required_gate": False,
         },
     )
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("action", choices=("prepare", "archive", "replay", "summarize"))
+    parser.add_argument("--source", type=Path)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--artifact", type=Path)
+    parser.add_argument("--shard", type=int)
+    parser.add_argument("--build", type=Path)
+    parser.add_argument("--shards", type=Path)
+    args = parser.parse_args()
+    if args.source:
+        source = args.source.resolve(strict=True)
+        require(
+            not args.output.resolve().is_relative_to(source),
+            "evidence must be outside frozen source",
+        )
+        if args.artifact:
+            require(
+                not args.artifact.resolve().is_relative_to(source),
+                "artifacts must be outside frozen source",
+            )
+    try:
+        if args.action == "summarize":
+            summarize(
+                args.output, args.build, args.shards, json.loads(os.environ["NEEDS"])
+            )
+        else:
+            root = args.source.resolve(strict=True)
+            os.environ.update(
+                SOURCE_SHA=SOURCE,
+                TESTED_SHA=SOURCE,
+                BASE_SHA=BASE,
+                HEPTA_CI_LANE="source-head",
+                NEXTEST_PROFILE="local",
+                RUST_MIN_STACK="8388608",
+                CODEX_REPO_ROOT=str(root),
+                CARGO_TARGET_DIR=str(
+                    Path(os.environ["RUNNER_TEMP"]) / "hepta-scoped-4223/target"
+                ),
+            )
+            if args.action == "prepare":
+                prepare(root, args.output)
+            elif args.action == "archive":
+                archive(root, args.output, args.artifact)
+            else:
+                replay(root, args.output, args.artifact, args.shard)
+    except (
+        OSError,
+        ValueError,
+        KeyError,
+        TypeError,
+        ET.ParseError,
+        subprocess.SubprocessError,
+    ) as error:
+        args.output.mkdir(parents=True, exist_ok=True)
+        save(
+            args.output / "failure.json",
+            {"status": "failed", "stage": args.action, "error": str(error)},
+        )
+        raise SystemExit(str(error)) from error
+
+
+if __name__ == "__main__":
+    main()
