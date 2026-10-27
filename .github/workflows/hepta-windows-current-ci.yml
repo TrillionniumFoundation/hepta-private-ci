@@ -9,6 +9,8 @@ on:
       - ".github/scripts/windows_final_safety.py"
       - ".github/scripts/windows_private_artifacts.py"
       - ".github/scripts/test_windows_private_artifacts.py"
+      - ".github/scripts/windows_real_test_helpers.py"
+      - ".github/scripts/test_windows_real_test_helpers.py"
       - ".github/scripts/test_windows_final_safety.py"
       - ".github/fixtures/windows-current-ci-scope.json"
       - "codex-rs/git-utils/src/git_process_tests.rs"
@@ -63,7 +65,17 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -m unittest discover -s .github/scripts -p test_windows_private_artifacts.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m unittest discover -s .github/scripts -p test_windows_real_test_helpers.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build the real native sandbox helper targets
+        id: real_helpers
+        shell: pwsh
+        run: |
+          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "hepta-windows-current-target"
+          python .github/scripts/windows_real_test_helpers.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --output "$env:RUNNER_TEMP/hepta-windows-real-test-helpers"
+          exit $LASTEXITCODE
       - name: Run the original process, transport and backend regressions
+        if: success() || steps.real_helpers.outcome == 'failure'
         shell: pwsh
         run: |
           $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "hepta-windows-current-target"
@@ -83,6 +95,13 @@ jobs:
           $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "hepta-windows-current-target"
           python .github/scripts/windows_private_artifacts.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --output "$env:RUNNER_TEMP/hepta-windows-private-artifacts"
           exit $LASTEXITCODE
+      - name: Verify original helper binaries and compiler stayed fixed after all scopes
+        if: always()
+        shell: pwsh
+        run: |
+          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "hepta-windows-current-target"
+          python .github/scripts/windows_real_test_helpers.py --verify-after --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --output "$env:RUNNER_TEMP/hepta-windows-real-test-helpers"
+          exit $LASTEXITCODE
       - name: Retain every result with exact source identity
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -92,5 +111,6 @@ jobs:
             ${{ runner.temp }}/hepta-windows-current-ci/
             ${{ runner.temp }}/hepta-windows-final-safety/
             ${{ runner.temp }}/hepta-windows-private-artifacts/
+            ${{ runner.temp }}/hepta-windows-real-test-helpers/
           if-no-files-found: error
           retention-days: 14
