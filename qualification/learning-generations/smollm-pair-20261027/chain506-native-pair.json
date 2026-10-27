@@ -1,0 +1,23 @@
+{
+  "schema": "chain506-native-actual-pair-verification-v1",
+  "result": "PASS",
+  "head": "0c804e9f5bcf6e972bbb4524c744d4b3c8801c34",
+  "base": "57c1ed545d067937cbd7aaa7570d5f22123265e6",
+  "actual_github_merge": "e22045b22fcda846d826243210c998a97d4559a3",
+  "tree": "ebd3545aac5815260ec1f94a2b9a2f383e8dd051",
+  "original_same_tree": "c4a2bc4e45a7317df5bff831f9615761605d8e09",
+  "ordered_merge_parents": [
+    "57c1ed545d067937cbd7aaa7570d5f22123265e6",
+    "0c804e9f5bcf6e972bbb4524c744d4b3c8801c34"
+  ],
+  "native_git_merge_tree_matches": true,
+  "blocked_M06_old_mapped_ancestor": false,
+  "ancestry_exclusion_method": "enumerate complete fetched head ancestry; do not require excluded unreachable object to be fetched",
+  "readback_utc": "2026-10-27T10:44:34.298573+00:00",
+  "production_activation": false,
+  "ci_acceptance": false,
+  "prior_verification_attempt": {
+    "result": "ERROR",
+    "reason": "The first attempt used merge-base on excluded unreachable M06 mapped commit, absent locally. Git attempted a denied lazy fetch and returned128; assertion rejected it. No successful receipt was produced by that attempt."
+  }
+}
