@@ -254,6 +254,37 @@ impl FleetRegistry {
     /// Cost depends on this Agent's retained lifecycle/release history, not on
     /// fleet size. History compaction is a separate owner-controlled operation.
     pub fn load_agent(&self, agent_id: &AgentId) -> Result<AgentRecord, FleetRegistryError> {
+        self.load_agent_with_spawn(agent_id)
+            .map(|(record, _)| record)
+    }
+
+    /// Read the original complete lifecycle history and require its latest
+    /// Starting transition to be this exact spawn. Running, Draining and exit
+    /// transitions advance the lifecycle generation without creating a spawn.
+    /// A later Starting transition, missing history or corrupt transition is
+    /// refused, including when that later process has already stopped.
+    ///
+    /// This read creates no process/lease and proves no process retirement.
+    /// A recovery caller must independently observe the actual old lifetime;
+    /// the original Supervisor still owns any subsequent reconciliation.
+    pub fn load_agent_for_spawn(
+        &self,
+        agent_id: &AgentId,
+        spawn_generation: u64,
+    ) -> Result<AgentRecord, FleetRegistryError> {
+        let (record, latest_spawn) = self.load_agent_with_spawn(agent_id)?;
+        if spawn_generation == 0 || latest_spawn != Some(spawn_generation) {
+            return Err(FleetRegistryError::Invalid(format!(
+                "agent {agent_id} original spawn {spawn_generation} differs from its latest Starting transition"
+            )));
+        }
+        Ok(record)
+    }
+
+    fn load_agent_with_spawn(
+        &self,
+        agent_id: &AgentId,
+    ) -> Result<(AgentRecord, Option<u64>), FleetRegistryError> {
         let layout = self.layout.agent(agent_id);
         for directory in [
             layout.agent_root(),
@@ -281,14 +312,17 @@ impl FleetRegistry {
                 manifest.agent_id
             )));
         }
-        let lifecycle = load_lifecycle(layout.run_root(), agent_id)?;
+        let (lifecycle, latest_spawn) = load_lifecycle(layout.run_root(), agent_id)?;
         let release_state = load_release_state(layout.releases_root(), agent_id)?;
-        Ok(AgentRecord {
-            manifest,
-            lifecycle,
-            release_state,
-            layout,
-        })
+        Ok((
+            AgentRecord {
+                manifest,
+                lifecycle,
+                release_state,
+                layout,
+            },
+            latest_spawn,
+        ))
     }
 }
 
@@ -325,7 +359,7 @@ fn publish_lifecycle(
 fn load_lifecycle(
     run_root: &Path,
     agent_id: &AgentId,
-) -> Result<AgentLifecycleState, FleetRegistryError> {
+) -> Result<(AgentLifecycleState, Option<u64>), FleetRegistryError> {
     let mut states = BTreeMap::new();
     for entry in std::fs::read_dir(run_root)? {
         let entry = entry?;
@@ -354,6 +388,7 @@ fn load_lifecycle(
         states.insert(generation, state);
     }
     let mut previous: Option<AgentLifecycleState> = None;
+    let mut latest_spawn = None;
     for (expected, (generation, state)) in states.iter().enumerate() {
         if *generation != expected as u64 {
             return Err(FleetRegistryError::Corrupt(
@@ -372,9 +407,13 @@ fn load_lifecycle(
                 "agent lifecycle history contains an invalid transition".to_string(),
             ));
         }
+        if state.lifecycle == AgentLifecycle::Starting {
+            latest_spawn = Some(state.generation);
+        }
         previous = Some(state.clone());
     }
     previous
+        .map(|state| (state, latest_spawn))
         .ok_or_else(|| FleetRegistryError::Corrupt("agent lifecycle state is missing".to_string()))
 }
 

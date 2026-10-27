@@ -199,3 +199,54 @@ async fn physical_material_never_promotes_actual_dirty_current_predecessor() {
         2
     );
 }
+
+#[tokio::test]
+#[ignore = "explicit root-owned data-bind qualification"]
+async fn interrupted_install_resumes_same_original_current_cas_without_republication() {
+    let mut f = Fixture::with_material(FixtureMaterial::Physical).await;
+    f.retire_for_material_recovery();
+    let installed = f.observe_recovery().unwrap().install().unwrap();
+    let root = f.material_profile().layout.cognitive_root().to_path_buf();
+    let pointer = root.join(".cognitive-active-v1");
+    let pointer_bytes = std::fs::read(&pointer).unwrap();
+    let database = root.join(std::str::from_utf8(&pointer_bytes).unwrap().trim());
+    let identity = |path: &std::path::Path| {
+        let value = path.metadata().unwrap();
+        (
+            value.dev(),
+            value.ino(),
+            value.uid(),
+            value.mode(),
+            value.nlink(),
+        )
+    };
+    let original_files = (identity(&database), identity(&pointer));
+    assert_eq!(f.backend.load().unwrap(), f.previous.head);
+    // This lost handle leaves the original predecessor Current unchanged.
+    // The separate memory qualification kills an actual installer here.
+    drop(installed);
+
+    let retry = f.observe_recovery().unwrap().install().unwrap();
+    assert_eq!(f.backend.load().unwrap(), f.previous.head);
+    assert_eq!((identity(&database), identity(&pointer)), original_files);
+    assert_eq!(std::fs::read(&pointer).unwrap(), pointer_bytes);
+    let (adopted, installed) = retry.adopt().unwrap();
+    assert_eq!(installed.path(), database);
+    let mut expected = f.previous.head.clone();
+    expected.publisher_epoch = f.registration.publisher_epoch;
+    expected.counter += 1;
+    expected.last_mutation_sequence = 0;
+    expected.last_request = None;
+    expected.writer_binding = f.registration.writer_binding.clone();
+    expected.peer_lifetime = f.registration.peer_lifetime.clone();
+    assert_eq!(adopted.current_for_handoff().unwrap(), expected);
+    assert_eq!((identity(&database), identity(&pointer)), original_files);
+    assert_eq!(
+        f.observe_recovery().err(),
+        Some(AuthorityTrustError::Conflict)
+    );
+    installed
+        .release_to_registered_owner(/*uid*/ 60001, /*gid*/ 60001)
+        .unwrap();
+    assert_eq!(adopted.current_for_handoff().unwrap(), expected);
+}
