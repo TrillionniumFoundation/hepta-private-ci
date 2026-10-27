@@ -32,12 +32,50 @@ permuting compatible nodes measure actual dependency on composition.
 
 ## Freeze and evaluation
 
-`PROTOCOL.json` declares the five formal seeds, six bounded candidate models,
+`PROTOCOL.json` declares the five formal seeds, eight bounded candidate models,
 all quality thresholds, comparison arms and denominator rules. Formal execution
 must wait for a remote source commit and a `FREEZE.json` binding the exact source
 files, protocol, held seal and candidate-selection procedure. Only training and
 selection data may choose a candidate or rejection threshold. The entire `held`
 directory is already sealed and must not be reformatted or edited.
+
+The original six-candidate development run and the two-candidate negative-family
+revision both failed the required coverage/risk tradeoff. Their complete actual
+fits, raw predictions and source snapshots are retained in the two `evidence/`
+archives. `DEVELOPMENT_ROUTING.md` explains those results and the bounded revision;
+`V5B_PREDECLARATION.md` records the mechanism before the four additional fits.
+No third candidate family was added to this increment.
+
+After final source formatting and remote source delivery, the reproducible order is:
+
+```bash
+python -m maintenance.freeze source --commit <verified-source-commit>
+# Commit and verify FREEZE.json remotely before formal training.
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 \
+  python train_routing.py --output results/formal/routing \
+  --seeds 1019 1021 1031 1033 1039 --source-commit <verified-source-commit>
+python -m maintenance.freeze selection --training results/formal/routing
+# Commit and verify SELECTED_MODELS.json and selected model artifacts remotely.
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 \
+  python evaluate_joint.py --routers ROUTERS.json --assets assets \
+  --held held/queries.en.json --output results/formal/joint --freeze FREEZE.json
+```
+
+The evaluator validates the selected artifacts against the complete eight-candidate
+selection receipts and the declared selection rule before it opens held language.
+The saved directory map is local to an execution; a relocated copy must regenerate
+that map while retaining the same model file identities. A replay after publication
+is a reproduction of this fixed held corpus, not another independent test.
+
+Restore a delivered evidence archive into a new directory with:
+
+```bash
+python maintenance/evidence.py unpack --source evidence/v5a-development \
+  --destination /tmp/v5a-evidence-restored
+```
+
+The utility verifies every part, the concatenated archive and every extracted file.
+Archive transport is not claimed as an improvement in the parameter-memory system.
 
 The development seeds are 8011 and 8017. Formal seeds are 1019, 1021, 1031, 1033
 and 1039. Fresh processes receive only utterance/entity/date inputs and saved

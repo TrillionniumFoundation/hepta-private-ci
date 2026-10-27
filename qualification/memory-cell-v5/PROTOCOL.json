@@ -1,10 +1,31 @@
 {
   "schema": "hepta.memory.v5.targeted-protocol.v1",
   "study": "Independently authored language addressing over recovered parameter memories",
-  "formal_seeds": [1019, 1021, 1031, 1033, 1039],
-  "development_seeds": [8011, 8017],
-  "domains": ["co2", "temperature", "sunspots", "unemployment"],
-  "intents": ["at", "previous", "change", "mean3", "range3", "peak3"],
+  "formal_seeds": [
+    1019,
+    1021,
+    1031,
+    1033,
+    1039
+  ],
+  "development_seeds": [
+    8011,
+    8017
+  ],
+  "domains": [
+    "co2",
+    "temperature",
+    "sunspots",
+    "unemployment"
+  ],
+  "intents": [
+    "at",
+    "previous",
+    "change",
+    "mean3",
+    "range3",
+    "peak3"
+  ],
   "main_held": {
     "file": "held/queries.en.json",
     "sha256": "d48195b3bc3a4f639db31a7a400a3e6eb79b3d879e7ba19ae96217224aeaacbf",
@@ -31,15 +52,41 @@
   },
   "routing": {
     "candidate_specification": "v5/config.py",
-    "candidates": ["word-lr-c1", "word-lr-c4", "mixed-svm-c0.5", "mixed-svm-c2", "char4096-lr-c4", "unigram2048-lr-c4"],
+    "candidates": [
+      "word-lr-c1",
+      "word-lr-c4",
+      "mixed-svm-c0.5",
+      "mixed-svm-c2",
+      "char4096-lr-c4",
+      "unigram2048-lr-c4",
+      "word-lr-c4-negative-families",
+      "mixed-svm-c2-negative-families"
+    ],
     "primary_selection": "Train/selection partitions only, following the declared candidate and confidence/margin grids",
     "no_new_candidates_after_formal_start": true,
     "no_pretrained_encoder": true,
     "learned_parameters": "Actual fitted TF-IDF state and linear classifier coefficients",
-    "inference_fields": ["utterance", "series_name", "date"],
+    "inference_fields": [
+      "utterance",
+      "series_name",
+      "date"
+    ],
     "explicit_entity_and_date_slots": true,
     "keyword_dispatch_for_primary": false,
-    "new_held_training_or_selection": false
+    "new_held_training_or_selection": false,
+    "development_revision": {
+      "name": "V5b",
+      "predeclaration": "V5B_PREDECLARATION.md",
+      "additional_candidates": 2,
+      "reason": "V5a risk-feasible calibration collapsed known coverage on development; test heterogeneous negative decision boundaries.",
+      "negative_families_source": "Five pre-existing V5a training row groups, no held content",
+      "sample_weights": "Preserve original seven-class balanced per-example weights, including equal weights across all negative subgroups",
+      "training_corpus_changed": false,
+      "selection_or_development_corpus_changed": false,
+      "held_opened_before_revision": false,
+      "prior_v5a_results_retained": true,
+      "third_revision_before_formal": false
+    }
   },
   "graph_and_memory": {
     "original_v3_code_commit": "ddd2ec4f9167c5ccf22adb63f4ce7402ebd7ae19",
@@ -65,7 +112,10 @@
     "process_isolation_is_not_os_or_filesystem_isolation": true,
     "candidate_training_and_serialized_state_costs_retained": true,
     "decoded_array_bytes_reported_separately_from_compressed_files": true,
-    "post_formal_tuning_or_reselection": false
+    "post_formal_tuning_or_reselection": false,
+    "training_requires_verified_source_freeze": true,
+    "selected_models_and_selection_receipts_sealed_before_held": true,
+    "source_and_selected_seals_committed_remotely_before_held": true
   },
   "interpretation": {
     "historical_v4_results_are_not_paired_new_corpus_comparators": true,
