@@ -1,3 +1,4 @@
+use super::durable_history::persisted_response_items;
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -28,6 +29,7 @@ use core_test_support::responses;
 use core_test_support::skip_if_no_network;
 use core_test_support::test_codex::test_codex;
 use core_test_support::wait_for_event;
+use core_test_support::wait_for_event_match;
 use core_test_support::wait_for_mcp_server;
 use pretty_assertions::assert_eq;
 use serde_json::Value;
@@ -265,20 +267,65 @@ async fn responses_lite_prepares_images() -> Result<()> {
             },
         ]))
         .await?;
-    wait_for_event(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_))
+    let turn_id = wait_for_event_match(&test.codex, |event| match event {
+        EventMsg::TurnComplete(event) => Some(event.turn_id.clone()),
+        _ => None,
     })
     .await;
 
+    let history = persisted_response_items(&test.codex).await?;
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.image", "images.preparation_error"]));
-    let user_content = request
-        .input()
-        .into_iter()
+    assert_eq!(
+        request.body_json()["client_metadata"]["turn_id"].as_str(),
+        Some(turn_id.as_str())
+    );
+    let input = request.input();
+    assert!(input.iter().all(|item| {
+        item.get("internal_chat_message_metadata_passthrough")
+            .is_none()
+    }));
+    let user_message = input
+        .iter()
         .rev()
         .find(|item| item.get("role").and_then(Value::as_str) == Some("user"))
-        .and_then(|item| item.get("content").and_then(Value::as_array).cloned())
-        .context("request should contain user content")?;
+        .context("request should contain the image user message")?;
+    let user_item_id = user_message["id"]
+        .as_str()
+        .context("image user message should retain its original item ID")?;
+    assert_eq!(
+        input
+            .iter()
+            .filter(|item| item["id"].as_str() == Some(user_item_id))
+            .count(),
+        1
+    );
+    let persisted_matches = history
+        .iter()
+        .filter(|item| item["id"].as_str() == Some(user_item_id))
+        .collect::<Vec<_>>();
+    assert_eq!(persisted_matches.len(), 1);
+    let persisted_user_message = persisted_matches[0];
+    assert_eq!(
+        persisted_user_message["internal_chat_message_metadata_passthrough"]["turn_id"].as_str(),
+        Some(turn_id.as_str())
+    );
+    assert_eq!(
+        persisted_user_message["internal_chat_message_metadata_passthrough"]["content_item_kinds"],
+        serde_json::json!(["user.image", "images.preparation_error"])
+    );
+    assert_eq!(persisted_user_message["content"][0]["detail"], "original");
+    let mut expected_wire = responses::strip_metadata_from_json(persisted_user_message.clone());
+    // Lite removes image detail only on its request copy; retain the original
+    // prepared item and its annotations in durable history.
+    expected_wire["content"][0]
+        .as_object_mut()
+        .context("persisted image content should be an object")?
+        .remove("detail");
+    assert_eq!(&expected_wire, user_message);
+    let user_content = user_message["content"]
+        .as_array()
+        .context("request should contain user content")?
+        .clone();
     assert_eq!(
         user_content,
         vec![

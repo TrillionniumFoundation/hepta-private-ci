@@ -1,3 +1,4 @@
+use super::durable_history::persisted_response_items;
 use codex_config::test_support::CloudConfigBundleFixture;
 use codex_config::types::AuthCredentialsStoreMode;
 use codex_core::ModelClient;
@@ -106,20 +107,6 @@ const TEST_INSTALLATION_ID: &str = "11111111-1111-4111-8111-111111111111";
 
 fn rollout_response_item(item: ResponseItem) -> RolloutItem {
     RolloutItem::ResponseItem(item.into())
-}
-
-async fn persisted_response_items(test: &TestCodex) -> anyhow::Result<Vec<serde_json::Value>> {
-    test.codex.flush_rollout().await?;
-    let history = test.codex.load_history(/*include_archived*/ false).await?;
-    Ok(history
-        .items
-        .into_iter()
-        .filter_map(|item| match item {
-            RolloutItem::ResponseItem(envelope) => Some(envelope.item),
-            _ => None,
-        })
-        .map(serde_json::to_value)
-        .collect::<Result<_, _>>()?)
 }
 
 fn test_turn_responses_metadata(
@@ -234,9 +221,9 @@ async fn stateless_responses_preserve_durable_item_turn_metadata_across_turns() 
     let test = test_codex().build(&server).await.unwrap();
 
     test.submit_turn("turn one").await.unwrap();
-    let first_history = persisted_response_items(&test).await.unwrap();
+    let first_history = persisted_response_items(&test.codex).await.unwrap();
     test.submit_turn("turn two").await.unwrap();
-    let second_history = persisted_response_items(&test).await.unwrap();
+    let second_history = persisted_response_items(&test.codex).await.unwrap();
 
     let requests = response_mock.requests();
     assert_eq!(requests.len(), 2);
@@ -419,7 +406,7 @@ async fn sends_audio_urls_to_responses() {
     })
     .await;
 
-    let history = persisted_response_items(&test).await.unwrap();
+    let history = persisted_response_items(&test.codex).await.unwrap();
     let request = response_mock.single_request();
     assert!(request.input().iter().all(|item| {
         item.get("internal_chat_message_metadata_passthrough")
@@ -480,7 +467,7 @@ async fn sends_local_audio_to_responses() -> anyhow::Result<()> {
     })
     .await;
 
-    let history = persisted_response_items(&test).await?;
+    let history = persisted_response_items(&test.codex).await?;
     let request = response_mock.single_request();
     assert!(request.input().iter().all(|item| {
         item.get("internal_chat_message_metadata_passthrough")
