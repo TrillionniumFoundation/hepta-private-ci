@@ -21,7 +21,6 @@ jobs:
     timeout-minutes: 50
     env:
       PYTHONDONTWRITEBYTECODE: '1'
-      TLS_REPAIR_OUTPUT: ${{ runner.temp }}/memory-cell-v5-tls-output
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -32,12 +31,12 @@ jobs:
           target: x86_64-unknown-linux-gnu
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
       - name: Resolve exact TLS targets, refresh locks, compile consumers and retain advisory failure
-        run: python3 -B qualification/memory-cell-v5-ci/tls_repair.py --output "$TLS_REPAIR_OUTPUT"
+        run: python3 -B qualification/memory-cell-v5-ci/tls_repair.py --output "$RUNNER_TEMP/memory-cell-v5-tls-output"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: memory-cell-v5-tls-candidate-${{ github.sha }}
-          path: ${{ env.TLS_REPAIR_OUTPUT }}/
+          path: ${{ runner.temp }}/memory-cell-v5-tls-output/
           if-no-files-found: error
           retention-days: 14
   codespell:

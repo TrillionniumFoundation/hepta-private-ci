@@ -1,0 +1,13 @@
+{
+  "cargo_or_compiler_executed_in_prior_run": false,
+  "finding": "runner context is unavailable in job-level env; step with accepts it and the run shell supplies RUNNER_TEMP.",
+  "fix": "Remove the job-level derived output variable and resolve the output path in run and upload steps.",
+  "helper_sha256_unchanged": "2b6df7ffbc77074bcc592670aafbc913f62018e102aa998bda5f925a5e1962d7",
+  "primary_source": "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#context-availability",
+  "prior_commit": "72b1f0f5e3eb04c9535e70ec0c5f5a40ddf45d1c",
+  "prior_run_id": 40477507511,
+  "prior_run_started_jobs": 0,
+  "schema": "hepta.memory.tls.workflow-context-fix.v1",
+  "server_annotation_retrieved": false,
+  "workflow_after_sha256": "54b28a8c9fd595145c3bb5108f4cf077e574ae9ac125907be167b226af4eb821"
+}
