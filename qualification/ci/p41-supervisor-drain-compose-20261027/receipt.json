@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.p41-supervisor-drain-fixture-composed-review.v1",
+  "observed_at_utc": "2026-10-27",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "authority": "DENY_ALL",
+  "mode": "SHADOW_ONLY",
+  "decision": "HOLD_NO_GO",
+  "parent_pr": 4108,
+  "parent_source_head": "492c520a64d3667e9bf0cb7a1ef0cb422549e3b4",
+  "original_target": "codex-rs/hepta-supervisor/tests/paired_process_product.rs",
+  "original_blob": "77131d5bcc5c7e1c4484ed1123ca4cd8fefc3154",
+  "donor": {
+    "pr": 4077,
+    "head": "62be9b15067663603faa56b79493a3a3740d4a2a",
+    "blob": "e5b669cfb8fffa50d13ad307c2b3e2c33be855a8",
+    "run": 40488884094,
+    "job": 122137519280,
+    "result": "1 selected real-pair drain test PASS on donor Linux; 2 not selected"
+  },
+  "source_patch_commit": "4a61ff37dda03052a30ed8ef9395f3bfe064322b",
+  "source_patch_blob": "63bc588cb1871ecd6f02d1de62325f7fd52fcd51",
+  "scope": "Only imports and controlled Agentd child test fixture's Health/Drain response. Preserve parent canonical fixture executable path and all original test assertions. No production source touched.",
+  "observed_original": {
+    "source_pr": 4065,
+    "source_sha": "cdd28f8a52b88c0436efa09df95310c24759c8b3",
+    "run": 40488922363,
+    "job": 122138013582,
+    "platform": "macos-15 aarch64",
+    "test1": "two_real_pairs_restart_one_without_peer_pid_churn",
+    "failure1": "Agentd drain request did not return a drain acknowledgement",
+    "test2": "five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash",
+    "failure2": "peer process pair changed; more validation required",
+    "native_job": "cancelled after concrete FAIL output"
+  },
+  "static_source_check": "The candidate equals #4077 donor source with exactly the existing parent's fixture_binary .canonicalize()? retained; unchanged earlier body.",
+  "validation": {
+    "owning_parent_macOS": "PENDING",
+    "complete_native": "OPEN",
+    "full_required": "OPEN"
+  },
+  "original_windows_DELETE": "OPEN",
+  "appserver_TTL": "OPEN",
+  "RustSec": "OPEN",
+  "policy_learning": "OPEN_NO_AUTHENTIC_OWNER_EPISODES",
+  "target_device_p95_p99_energy": "OPEN",
+  "p39_frozen_screen": "CLOSED_FOR_DECLARED_SOURCE_PAIRING_RESEARCH_TASK",
+  "no_production_permission_change": true
+}
