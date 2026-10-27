@@ -1888,3 +1888,20 @@ finished; the cancelled result remains a failure observation without a restart
 or longer limit. All existing PN0–PN6 exits, four native lanes, original twenty
 groups, pair steps, resources, historical failures, model/release/WAN requirements
 and NO_GO remain; task_complete=false and merge_ready=false.
+
+
+PN0's next [exact paired source input](../qualification/pn0-ci/paired-source-c96022b-20261027/source-input-binding.json)
+now binds published Chain `c96022b897c1235fdbdbfcfa32764403511c6aab`
+to main `9fedf7ecbbe07177069c030592b4e03dcffebb81` through qualification
+object `b5cee4e071c633e77c7317d2c6259d5dd7e0be14`, ordered main then source.
+The [actual Git object readback](../qualification/pn0-ci/paired-source-c96022b-20261027/actual-source-and-preview-identities.json)
+separately binds PR328 preview `bbf666833c1e136df84c555f2ba0a7f97fdde038`
+to its own base/source parents; both trees are
+`4d49d614c7f0f81b861f359a872d014de21ca0a2`. Only the three source/qualification
+hash occurrences changed in the pair workflow. All original56 steps,112 commands
+per Linux lane,9 Windows-ledger steps, assertions and resource limits remain.
+These are source identities, not new-source execution receipts. Retain the
+previous bd/0c results as history; no old PASS qualifies this new tuple. Publication
+must preserve every still-active original run. All PN0–PN6 acceptance gates,
+Windows isolation, paid identities, real model rounds, release/custody and WAN
+requirements remain unchanged; task_complete=false, merge_ready=false, NO_GO.
