@@ -259,15 +259,15 @@ async fn real_public_initial_three_rounds_hold_and_read_original_current() -> Te
         report["completed_rounds"] = serde_json::json!(round);
         fs::write(&report_path, serde_json::to_vec_pretty(&report)?)?;
     }
-    assert_eq!(report["completed_rounds"], 3);
-    assert_eq!(
+    std::assert_eq!(report["completed_rounds"], 3);
+    std::assert_eq!(
         report["ordinary_sessions"]
             .as_array()
             .ok_or("session report array")?
             .len(),
         4
     );
-    assert_eq!(
+    std::assert_eq!(
         fixture
             .service
             .current_registry_view(initial_now_seconds()?)?
