@@ -1,0 +1,236 @@
+{
+  "claim_limits": [
+    "Fresh relative to every pixel in the complete original recorded source pool, including its unused prefixes.",
+    "Not a global cross-repository exposure registry, new-writer claim, or guarantee about unknown pretraining corpora.",
+    "The new allocation reserves identities only; it does not open output-scoring access or confer scientific acceptance.",
+    "Three recovered model seeds remain fixed historical models."
+  ],
+  "expanded_manifest": {
+    "conflicting_pixel_identities_excluded": 0,
+    "cross_split_duplicate_pixel_identities": 0,
+    "dataset": "MNIST",
+    "manifest_sha256": "82b1f8923e5973c04da1ed065ec9a9e747b37b5acb804b872f6f817cf74c6909",
+    "neural_modalities": [
+      "text",
+      "image"
+    ],
+    "schema": "hepta.ndu-v6.mnist-source-manifest.v1",
+    "source_files": [
+      {
+        "bytes": 9912422,
+        "md5": "f68b3c2dcbeaaa9fbdd348bbdeb94873",
+        "name": "train-images-idx3-ubyte.gz",
+        "sha256": "440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609",
+        "url": "https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz"
+      },
+      {
+        "bytes": 28881,
+        "md5": "d53e105ee54ea40749a09fcbcd1e9432",
+        "name": "train-labels-idx1-ubyte.gz",
+        "sha256": "3552534a0a558bbed6aed32b30c495cca23d567ec52cac8be1a0730e8010255c",
+        "url": "https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz"
+      },
+      {
+        "bytes": 1648877,
+        "md5": "9fb629c4189551a2d022fa330f9573f3",
+        "name": "t10k-images-idx3-ubyte.gz",
+        "sha256": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6",
+        "url": "https://ossci-datasets.s3.amazonaws.com/mnist/t10k-images-idx3-ubyte.gz"
+      },
+      {
+        "bytes": 4542,
+        "md5": "ec29112dd5afa0611ce80d1b7f02629c",
+        "name": "t10k-labels-idx1-ubyte.gz",
+        "sha256": "f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6",
+        "url": "https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz"
+      }
+    ],
+    "split_seed": 271828,
+    "splits": {
+      "evaluator": {
+        "count": 10000,
+        "identity_sha256": "dc609816e12d2d44b55b85c3bc39a7f9c5473807a27f560e88b72109cb9c36d8",
+        "official_partition": "train",
+        "pixel_set_sha256": "ee1bc91c41ad1f96d2a73472f482246ac825f250921eb1df86f9515e7a7ee2f0"
+      },
+      "retention": {
+        "count": 3000,
+        "identity_sha256": "3dd17ca066708c2d3c8c4cfca8e75fbedcd2fe0475ff0b1d0d039d31da44c799",
+        "official_partition": "train",
+        "pixel_set_sha256": "bdafed7927d8c66f2d3dd1d00dedbcbbb3c7d803a5ce218cd34f908c167e2129"
+      },
+      "test": {
+        "count": 4000,
+        "identity_sha256": "71ca688cd9bddd7f142557df3267b538224ec4153a74a014885e0389ce57af89",
+        "official_partition": "test",
+        "pixel_set_sha256": "ce7f8e25da86bb718b44340ffc0c470dc828717edb2bf1df8c9f9ea3a7ecd8eb"
+      },
+      "train": {
+        "count": 10000,
+        "identity_sha256": "c2e6d3b551ba9051820a9260eca7066f7e19dd34c896960c68e917ce52fcc64e",
+        "official_partition": "train",
+        "pixel_set_sha256": "5fc72af0275d77cf7ad6581834db54de0bea42267a4a70fb5be9a133d4288ff9"
+      },
+      "validation": {
+        "count": 2000,
+        "identity_sha256": "11acb2ba3061b0180915ac81a06ecc02dd4ceecb60d1ffc62d785c3ef318252d",
+        "official_partition": "train",
+        "pixel_set_sha256": "4598c776169fc70f07aabc24284592ac597faef66868c9b99c3181053ee78c93"
+      }
+    },
+    "task": "constructed handwritten pair reconstruction and relation caption",
+    "unsupported_neural_modalities": [
+      "audio",
+      "video"
+    ]
+  },
+  "expanded_unique_images": 29000,
+  "loader_source_sha256": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29",
+  "loader_uses_labels_for_duplicate_conflict_filter": true,
+  "models_or_observers_loaded": 0,
+  "new_role_model_outputs_scored": 0,
+  "old_registry_unique_images": 25000,
+  "original_manifest": {
+    "conflicting_pixel_identities_excluded": 0,
+    "cross_split_duplicate_pixel_identities": 0,
+    "dataset": "MNIST",
+    "manifest_sha256": "224911f36aa829245ad5a0fbe8ee0c971147150ee848183404781279592f1f39",
+    "neural_modalities": [
+      "text",
+      "image"
+    ],
+    "schema": "hepta.ndu-v6.mnist-source-manifest.v1",
+    "source_files": [
+      {
+        "bytes": 9912422,
+        "md5": "f68b3c2dcbeaaa9fbdd348bbdeb94873",
+        "name": "train-images-idx3-ubyte.gz",
+        "sha256": "440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609",
+        "url": "https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz"
+      },
+      {
+        "bytes": 28881,
+        "md5": "d53e105ee54ea40749a09fcbcd1e9432",
+        "name": "train-labels-idx1-ubyte.gz",
+        "sha256": "3552534a0a558bbed6aed32b30c495cca23d567ec52cac8be1a0730e8010255c",
+        "url": "https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz"
+      },
+      {
+        "bytes": 1648877,
+        "md5": "9fb629c4189551a2d022fa330f9573f3",
+        "name": "t10k-images-idx3-ubyte.gz",
+        "sha256": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6",
+        "url": "https://ossci-datasets.s3.amazonaws.com/mnist/t10k-images-idx3-ubyte.gz"
+      },
+      {
+        "bytes": 4542,
+        "md5": "ec29112dd5afa0611ce80d1b7f02629c",
+        "name": "t10k-labels-idx1-ubyte.gz",
+        "sha256": "f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6",
+        "url": "https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz"
+      }
+    ],
+    "split_seed": 271828,
+    "splits": {
+      "evaluator": {
+        "count": 10000,
+        "identity_sha256": "dc609816e12d2d44b55b85c3bc39a7f9c5473807a27f560e88b72109cb9c36d8",
+        "official_partition": "train",
+        "pixel_set_sha256": "ee1bc91c41ad1f96d2a73472f482246ac825f250921eb1df86f9515e7a7ee2f0"
+      },
+      "retention": {
+        "count": 1000,
+        "identity_sha256": "697d79024c9d35e4cc6ed20f9be6c44ec2aa08ea861480028f0843b6e6671fb3",
+        "official_partition": "train",
+        "pixel_set_sha256": "8bb6b3b0c1b1b7a222e49a973ac3b97eff2113c6ba40a237f93766c9a6e502bd"
+      },
+      "test": {
+        "count": 2000,
+        "identity_sha256": "20168c4dcba782f77d5f3568c450cd776a6ef7043017d524ff4210538574f4c0",
+        "official_partition": "test",
+        "pixel_set_sha256": "fdc360ac65486bf1ce858b11a8d9520526ed2daa7813702b146a40b50cc39de2"
+      },
+      "train": {
+        "count": 10000,
+        "identity_sha256": "c2e6d3b551ba9051820a9260eca7066f7e19dd34c896960c68e917ce52fcc64e",
+        "official_partition": "train",
+        "pixel_set_sha256": "5fc72af0275d77cf7ad6581834db54de0bea42267a4a70fb5be9a133d4288ff9"
+      },
+      "validation": {
+        "count": 2000,
+        "identity_sha256": "11acb2ba3061b0180915ac81a06ecc02dd4ceecb60d1ffc62d785c3ef318252d",
+        "official_partition": "train",
+        "pixel_set_sha256": "4598c776169fc70f07aabc24284592ac597faef66868c9b99c3181053ee78c93"
+      }
+    },
+    "task": "constructed handwritten pair reconstruction and relation caption",
+    "unsupported_neural_modalities": [
+      "audio",
+      "video"
+    ]
+  },
+  "prefix_checks": {
+    "evaluator": {
+      "expanded_count": 10000,
+      "expanded_identity_sha256": "dc609816e12d2d44b55b85c3bc39a7f9c5473807a27f560e88b72109cb9c36d8",
+      "old_count": 10000,
+      "old_identity_sha256": "dc609816e12d2d44b55b85c3bc39a7f9c5473807a27f560e88b72109cb9c36d8",
+      "original_prefix_unchanged": true
+    },
+    "retention": {
+      "expanded_count": 3000,
+      "expanded_identity_sha256": "3dd17ca066708c2d3c8c4cfca8e75fbedcd2fe0475ff0b1d0d039d31da44c799",
+      "old_count": 1000,
+      "old_identity_sha256": "697d79024c9d35e4cc6ed20f9be6c44ec2aa08ea861480028f0843b6e6671fb3",
+      "original_prefix_unchanged": true
+    },
+    "test": {
+      "expanded_count": 4000,
+      "expanded_identity_sha256": "71ca688cd9bddd7f142557df3267b538224ec4153a74a014885e0389ce57af89",
+      "old_count": 2000,
+      "old_identity_sha256": "20168c4dcba782f77d5f3568c450cd776a6ef7043017d524ff4210538574f4c0",
+      "original_prefix_unchanged": true
+    },
+    "train": {
+      "expanded_count": 10000,
+      "expanded_identity_sha256": "c2e6d3b551ba9051820a9260eca7066f7e19dd34c896960c68e917ce52fcc64e",
+      "old_count": 10000,
+      "old_identity_sha256": "c2e6d3b551ba9051820a9260eca7066f7e19dd34c896960c68e917ce52fcc64e",
+      "original_prefix_unchanged": true
+    },
+    "validation": {
+      "expanded_count": 2000,
+      "expanded_identity_sha256": "11acb2ba3061b0180915ac81a06ecc02dd4ceecb60d1ffc62d785c3ef318252d",
+      "old_count": 2000,
+      "old_identity_sha256": "11acb2ba3061b0180915ac81a06ecc02dd4ceecb60d1ffc62d785c3ef318252d",
+      "original_prefix_unchanged": true
+    }
+  },
+  "primary_retention_pixel_intersection": 0,
+  "reserved_roles": {
+    "primary_test": {
+      "identity_sha256": "da957b2f80462746ea506a67e6293a58d681d714cd54e1499e370bb184020314",
+      "intersection_with_entire_old_registry": 0,
+      "pair_count": 512,
+      "pair_offset": 1000,
+      "pixel_set_sha256": "ca4104f1a7f9155988af399196413171381ae3fa1739e37e64f33bc9ce0bf468",
+      "source_image_count": 1024,
+      "split": "test"
+    },
+    "retention_test": {
+      "identity_sha256": "116d5c5b96fb6d33b05d591b43d21bd70a6e4914a07bd8950e7a3e17e58e7e5f",
+      "intersection_with_entire_old_registry": 0,
+      "pair_count": 512,
+      "pair_offset": 500,
+      "pixel_set_sha256": "e49c655b87373a3c55253856d3fe116d0007aff83aaffccd1fa9db8ca6ce719e",
+      "source_image_count": 1024,
+      "split": "retention"
+    }
+  },
+  "schema": "hepta.field-bridge.v2.source-allocation.v1",
+  "script_sha256": "d95111916e81e4bf763fbf5fe07e2707fd625d265f7836052d1e229e8a74d688",
+  "source_identity_file": "SOURCE_IDENTITIES.json",
+  "source_identity_file_bytes": 5288316,
+  "source_identity_file_sha256": "c574b21f216deabe1dc3f90ab9d57276c9e54aea75dcc781d317435ebcdeb1ef",
+  "target_labels_inspected_by_allocation_helper": false
+}
