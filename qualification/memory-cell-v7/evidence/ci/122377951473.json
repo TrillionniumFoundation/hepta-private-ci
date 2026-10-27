@@ -1,0 +1,98 @@
+{
+  "schema": "hepta.memory.v7.provider-job-evidence.v1",
+  "run_id": 40557617321,
+  "job_id": 122377951473,
+  "group": "population",
+  "status": "completed",
+  "conclusion": "success",
+  "source_commit": "2eb615fe8e75ee548004d8823a1ddf2d7f548aec",
+  "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40557617321/job/122377951473",
+  "receipt": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--lib",
+      "-p",
+      "codex-hepta-neuron",
+      "-p",
+      "codex-hepta-plasticity"
+    ],
+    "commands": [
+      [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-plasticity"
+      ]
+    ],
+    "complete_workspace_test": false,
+    "executions": [
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--lib",
+          "-p",
+          "codex-hepta-neuron",
+          "-p",
+          "codex-hepta-plasticity"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 27.61523361900001
+      }
+    ],
+    "exit_code": 0,
+    "final_tracked_changes": "",
+    "group": "population",
+    "initial_tracked_changes": "",
+    "lock_after": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "lock_before": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "log": {
+      "bytes": 32894,
+      "sha256": "f5046db6ccdc54f5fb790b6534ff4dc53b4ab79c0eb59852e31c7c1637b94b3b"
+    },
+    "mode": "test",
+    "passed": true,
+    "production_manifests_modified_for_test": false,
+    "request": {
+      "attempt": 4,
+      "groups": [
+        "population",
+        "daemon"
+      ],
+      "schema": "hepta.memory.v7.product-verification-request.v1",
+      "stage": "typed-memory-model-context-consumer",
+      "tests_before_final_fix_and_format": true
+    },
+    "schema": "hepta.memory.v7.product-ci-receipt.v1",
+    "source_commit": "2eb615fe8e75ee548004d8823a1ddf2d7f548aec",
+    "source_tree": "3a6f91dc1197b54d9b78e94f1128cd83f1b2d25e",
+    "wall_seconds": 27.615333215000007
+  },
+  "test_summaries": [
+    "     Summary [   0.627s] 149 tests run: 149 passed, 0 skipped"
+  ],
+  "test_counts": {
+    "run": 149,
+    "passed": 149,
+    "skipped": 0
+  },
+  "provider_log": {
+    "name": "122377951473.log",
+    "bytes": 137810,
+    "sha256": "0b81fceac0c45062e831f82905fe94eb6ba6f3ad85e072565add2960faac09cb"
+  },
+  "log_representation": "Exact UTF-8 encoding of decoded provider job log, preserving ANSI, BOM, line endings and final newline; distinct from execution.log whose identity is in the CI receipt."
+}
