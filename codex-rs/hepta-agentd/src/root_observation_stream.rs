@@ -31,6 +31,7 @@ pub struct AgentdRootAuthorityPeer {
 /// can consume a late reply or obtain another connection. All Future polls use
 /// nonblocking I/O, including observation of the original root process lifetime.
 pub(crate) struct RootObservationStream {
+    exchange: tokio::sync::Semaphore,
     stream: Mutex<Option<tokio::net::UnixStream>>,
     root: Arc<AsyncFd<OwnedFd>>,
     timeout: Duration,
@@ -105,6 +106,7 @@ impl RootObservationStream {
                 .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
         check_lifetime(root.get_ref())?;
         Ok(Self {
+            exchange: tokio::sync::Semaphore::new(1),
             stream: Mutex::new(Some(stream)),
             root: Arc::new(root),
             timeout,
@@ -128,6 +130,12 @@ impl RootObservationStream {
         if request.is_empty() || request.len() > 16_384 {
             return Err(AgentdRootAuthorityError::Refused);
         }
+        // Competing requests fail before touching the slot. This permit has
+        // no payload and stays live through complete validation and restore.
+        let _exchange = self
+            .exchange
+            .try_acquire()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
         let mut stream = {
             let mut slot = self
                 .stream
@@ -158,10 +166,11 @@ impl RootObservationStream {
         }
         // The empty slot is the exclusive token for the complete exchange.
         // Its mutex only protects synchronous take/restore, never I/O or an
-        // await. Concurrent readers observe None and cannot consume a reply.
+        // await. The original exchange permit excludes every other slot user,
+        // so restoring the same stream requires no synchronous lock wait.
         *self
             .stream
-            .lock()
+            .try_lock()
             .map_err(|_| AgentdRootAuthorityError::Unavailable)? = Some(stream);
         Ok(parsed)
     }
