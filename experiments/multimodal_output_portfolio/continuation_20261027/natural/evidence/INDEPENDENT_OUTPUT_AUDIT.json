@@ -1,0 +1,127 @@
+{
+  "audited_ns": 1793087146331742291,
+  "cache_mechanism": {
+    "actual_forced_continue_episodes": 48,
+    "correct_encoder_and_decoder_counts": true,
+    "development_mechanism_only": true,
+    "encoder_hash_equality": true,
+    "paired_text_equality": true,
+    "registered_code_hashes_match_current_unchanged_files": true
+  },
+  "cascade": {
+    "batch_audit": {
+      "actual_expensive_call_budget_reconciled": true,
+      "batches": 12,
+      "matched_budget_scope": "Acquisition-call count; not exact CPU, FLOPs, or response latency",
+      "maximum_cost_reconciliation_error": 0
+    },
+    "complete_unique_grid": true,
+    "deliveries_reopened": 576,
+    "independent_test_speakers": 16,
+    "private_scoring_after_delivery": true,
+    "rescored": {
+      "fixed_base": {
+        "WER": 0.08309990662931839,
+        "errors": 89,
+        "words": 1071
+      },
+      "fixed_tiny": {
+        "WER": 0.10737628384687208,
+        "errors": 115,
+        "words": 1071
+      },
+      "learned_budget": {
+        "WER": 0.10737628384687208,
+        "errors": 115,
+        "words": 1071
+      },
+      "matched_random_budget": {
+        "WER": 0.10737628384687208,
+        "errors": 115,
+        "words": 1071
+      }
+    },
+    "snapshot_audit": {
+      "registered_ns": 1793086235637298180,
+      "registration_sha256": "0a6037653c6a223fd3a08928ffa7f993215a30679682971f01f8bd6bb517b5ce",
+      "source_files_rehashed": 13
+    }
+  },
+  "document": {
+    "JSON_JPEG_pairs_reopened_and_rehashed": 192,
+    "actual_OCR_call_counts_reconciled": true,
+    "complete_unique_grid": true,
+    "field_exact_definition": "Macro mean of each document's observed-field fraction; all test fields observed here",
+    "independent_char_quality_recomputed": true,
+    "snapshot_audit": {
+      "registered_ns": 1793085675305781399,
+      "registration_sha256": "254c792fb84c158f1ee498e2dfae863e09fc65380237845384ac2ec81972b434",
+      "source_files_rehashed": 11
+    }
+  },
+  "schema": "hepta.ndu.natural.independent-output-audit.v1",
+  "scoring_implementation_imports_experiment_scorers": false,
+  "sources": {
+    "broader_parent_company_template_deduplication_proven": false,
+    "cascade_new_test_speakers_disjoint_from_previous_and_development": true,
+    "fully_decoded_FLAC_sources": 132,
+    "hashed_source_files": 538,
+    "recorded_merchant_strings_disjoint": true,
+    "reopened_receipt_images": 60,
+    "speech_fit_test_historical_speaker_disjoint": true
+  },
+  "speech": {
+    "batch_audit": null,
+    "complete_unique_grid": true,
+    "deliveries_reopened": 432,
+    "independent_test_speakers": 12,
+    "private_scoring_after_delivery": true,
+    "rescored": {
+      "cached_continuation": {
+        "WER": 0.05922551252847381,
+        "errors": 52,
+        "words": 878
+      },
+      "fixed_beam5": {
+        "WER": 0.05808656036446469,
+        "errors": 51,
+        "words": 878
+      },
+      "fixed_greedy": {
+        "WER": 0.05922551252847381,
+        "errors": 52,
+        "words": 878
+      },
+      "reencoded_continuation": {
+        "WER": 0.05922551252847381,
+        "errors": 52,
+        "words": 878
+      }
+    },
+    "snapshot_audit": {
+      "registered_ns": 1793085174653474586,
+      "registration_sha256": "c35c8d1db4779354e3f71299789f1e364cbfdc0c0e6f0f164053f216eac19847",
+      "source_files_rehashed": 6
+    }
+  },
+  "status": "passed",
+  "video": {
+    "actual_changed_mixer_checkpoint_verified": true,
+    "batch_audit": {
+      "actual_expensive_call_budget_reconciled": true,
+      "batches": 36,
+      "matched_budget_scope": "Acquisition-call count; not exact CPU, FLOPs, or response latency",
+      "maximum_cost_reconciliation_error": 0
+    },
+    "canonical_source_PNGs_reconstructed_from_videos": 270,
+    "complete_unique_grid": true,
+    "delivered_PNGs_reopened_rehashed_independently_rescored": 432,
+    "every_source_target_endpoint_intersection_empty": true,
+    "snapshot_audit": {
+      "registered_ns": 1793086943062691709,
+      "registration_sha256": "4a2fa24edf3f9f824eaeb9659e4bf7b2d4027f69ce99a091fe2063cebd592f38",
+      "source_files_rehashed": 17
+    },
+    "source_clusters": 3
+  }
+}

@@ -1,0 +1,214 @@
+{
+  "cluster_CI_scope": "Conditional delivered outcomes of this frozen cohort allocation; bootstrap does not reallocate a new cohort",
+  "comparisons": {
+    "fixed_base": {
+      "CE": {
+        "CI95": [
+          -0.0335605974143893,
+          0.007504494081077312
+        ],
+        "difference": -0.01275513556468022
+      },
+      "CPU": {
+        "CI95": [
+          -1.0735379112699661,
+          -0.9496422895534847
+        ],
+        "difference": -1.0085692249097236
+      },
+      "WER": {
+        "CI95": [
+          0.005539910897787763,
+          0.045261227753058964
+        ],
+        "difference": 0.02427637721755369
+      },
+      "return": {
+        "CI95": [
+          -0.027812008481343495,
+          0.006125600210806592
+        ],
+        "difference": -0.010805584357999122
+      },
+      "strong_fixed_acceptance_passed": false,
+      "wall": {
+        "CI95": [
+          -0.5405710774945596,
+          -0.47611771527578084
+        ],
+        "difference": -0.5065569252429769
+      }
+    },
+    "fixed_tiny": {
+      "CE": {
+        "CI95": [
+          -0.0011077227409296482,
+          -0.0003792064581540077
+        ],
+        "difference": -0.0007358034958491189
+      },
+      "CPU": {
+        "CI95": [
+          0.04422426871111232,
+          0.11243042182517203
+        ],
+        "difference": 0.07967410121527588
+      },
+      "WER": {
+        "CI95": [
+          0.0,
+          0.0
+        ],
+        "difference": 0.0
+      },
+      "return": {
+        "CI95": [
+          -0.001124304218251728,
+          -0.00044224268711113906
+        ],
+        "difference": -0.0007967410121527616
+      },
+      "strong_fixed_acceptance_passed": false,
+      "wall": {
+        "CI95": [
+          0.02427462896372763,
+          0.06171607394278449
+        ],
+        "difference": 0.04395578032654152
+      }
+    },
+    "matched_random_budget": {
+      "CE": {
+        "CI95": [
+          -0.0009362626673253992,
+          -0.00033320631459849705
+        ],
+        "difference": -0.00060792285844391
+      },
+      "CPU": {
+        "CI95": [
+          0.03689592893107726,
+          0.09549070968696573
+        ],
+        "difference": 0.06479077463888709
+      },
+      "WER": {
+        "CI95": [
+          0.0,
+          0.0
+        ],
+        "difference": 0.0
+      },
+      "return": {
+        "CI95": [
+          -0.0009549070968696491,
+          -0.0003689592893107697
+        ],
+        "difference": -0.0006479077463888659
+      },
+      "strong_fixed_acceptance_passed": false,
+      "wall": {
+        "CI95": [
+          0.017397710822357706,
+          0.052039329270711365
+        ],
+        "difference": 0.0343129804793231
+      }
+    }
+  },
+  "fitted_predictor_parameters": 5,
+  "gate": {
+    "candidates": [
+      {
+        "fraction": 0,
+        "validation_CE": 0.8801382248490148
+      },
+      {
+        "fraction": 0.125,
+        "validation_CE": 0.866505323598826
+      },
+      {
+        "fraction": 0.25,
+        "validation_CE": 0.869599908228444
+      },
+      {
+        "fraction": 0.375,
+        "validation_CE": 0.8750624911868157
+      },
+      {
+        "fraction": 0.5,
+        "validation_CE": 0.8796998124335256
+      },
+      {
+        "fraction": 0.75,
+        "validation_CE": 0.8743228732588514
+      },
+      {
+        "fraction": 1,
+        "validation_CE": 0.871527359871664
+      }
+    ],
+    "fraction": 0,
+    "frozen_ns": 1793086402961904444,
+    "test_not_started": true
+  },
+  "model_load_wall_seconds": 0.4434134930052096,
+  "neural_generator_weights_updated": false,
+  "original_Hepta_neuron_integrated": false,
+  "schema": "hepta.ndu.continuation.natural.cascade.result.v1",
+  "status": "completed",
+  "summary": {
+    "fixed_base": {
+      "base_calls_per_repetition": 48,
+      "entropic_CE": 0.9070593827181899,
+      "independent_speakers": 16,
+      "mean_cpu_seconds": 1.9523091720833339,
+      "mean_return": 0.9230877635300109,
+      "mean_wall_seconds": 0.9411193710347004,
+      "micro_WER": 0.08309990662931839,
+      "reference_words": 1071,
+      "tiny_calls_per_repetition": 0,
+      "utterances": 48,
+      "word_errors": 89
+    },
+    "fixed_tiny": {
+      "base_calls_per_repetition": 0,
+      "entropic_CE": 0.8950400506493588,
+      "independent_speakers": 16,
+      "mean_cpu_seconds": 0.8640658459583345,
+      "mean_return": 0.9130789201841644,
+      "mean_wall_seconds": 0.3906066654651821,
+      "micro_WER": 0.10737628384687208,
+      "reference_words": 1071,
+      "tiny_calls_per_repetition": 48,
+      "utterances": 48,
+      "word_errors": 115
+    },
+    "learned_budget": {
+      "base_calls_per_repetition": 0,
+      "entropic_CE": 0.8943042471535096,
+      "independent_speakers": 16,
+      "mean_cpu_seconds": 0.9437399471736102,
+      "mean_return": 0.9122821791720117,
+      "mean_wall_seconds": 0.43456244579172365,
+      "micro_WER": 0.10737628384687208,
+      "reference_words": 1071,
+      "tiny_calls_per_repetition": 48,
+      "utterances": 48,
+      "word_errors": 115
+    },
+    "matched_random_budget": {
+      "base_calls_per_repetition": 0,
+      "entropic_CE": 0.8949121700119536,
+      "independent_speakers": 16,
+      "mean_cpu_seconds": 0.8789491725347233,
+      "mean_return": 0.9129300869184004,
+      "mean_wall_seconds": 0.4002494653124005,
+      "micro_WER": 0.10737628384687208,
+      "reference_words": 1071,
+      "tiny_calls_per_repetition": 48,
+      "utterances": 48,
+      "word_errors": 115
+    }
+  }
+}

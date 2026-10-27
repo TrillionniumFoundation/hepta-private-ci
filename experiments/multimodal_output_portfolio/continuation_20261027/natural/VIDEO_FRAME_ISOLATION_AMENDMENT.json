@@ -1,0 +1,12 @@
+{
+  "schema": "hepta.ndu.video.frame-isolation.pretest-amendment.v1",
+  "recorded_ns": 1793086894516159916,
+  "original_protocol_sha256": "9a2657b916c9300022c7099ad952b58656950663fa3faf7349ccfca9db617a28",
+  "amended_protocol_sha256": "94c4d1222462e9741bb266f42518c1725de9648cae0443e4ac6c2ab3db363db5",
+  "reason": "Independent code review identified cross-sample target/endpoint overlap under rounded equal spacing in the 36-frame realshort source. Choose global target residues {2,3} modulo4 and public endpoint residues {0,1} to prevent even batch-level target pixels entering public features. Apply identically to all source clips and development roles.",
+  "video_training_started": false,
+  "video_generated_outputs_before_amendment": 0,
+  "source_frame_preprocessing_started": false,
+  "source_bytes_and_model_controller_choices_unchanged": true,
+  "original_source_manifest_sha256": "0ac081885b38445b76ec8e288c5878fda0deb8d1f999b758fe6579554159dae2"
+}

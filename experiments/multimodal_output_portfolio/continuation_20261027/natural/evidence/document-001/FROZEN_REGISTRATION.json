@@ -1,0 +1,93 @@
+{
+  "OCR_engine_sha256": "9f831cab7525c3dab04af41bda35182af7ea1df9dceeaaa2f3bf207ac45c06a5",
+  "OCR_language_sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2",
+  "OCR_version": "tesseract 5.3.4",
+  "asset_manifest_sha256": "d9d23a26b40780946d001020c59289917b055513fd7d05c68f06e6aecad4e44a",
+  "heldout_scoring_not_started": true,
+  "protocol": {
+    "acceptance": "Over all-refine: lower CPU and wall CI upper differences below0 and utility-quality CI lower difference >=-0.02; over learned-base: positive cost-adjusted quality-return CI lower difference; report exact field accuracy separately",
+    "base_OCR": {
+      "psm": 3,
+      "scale": 1
+    },
+    "confidence_intervals": "95 percent paired merchant-cluster bootstrap, 4000 resamples, seed2712; repetitions averaged within source",
+    "dataset": "jsdnrs/ICDAR2019-SROIE",
+    "decoder": {
+      "architecture": "One shared two-layer tanh score regressor over frozen lexical/layout features and field indicators",
+      "hidden": 24,
+      "inference": "Highest predicted quality candidate for each field; for refinement keep original if its predicted score is no lower",
+      "learning_rate": 0.01,
+      "loss": "Per-document/per-field balanced MSE to 0.5 exact match + 0.5 normalized edit similarity of candidate against training reference",
+      "seed": 2711,
+      "steps": 800
+    },
+    "fields": [
+      "company",
+      "date",
+      "address",
+      "total"
+    ],
+    "fit_gate_objective": "Validation mean four-field (0.5 exact match + 0.5 normalized edit similarity) minus 0.01 times process+child CPU seconds, lower-threshold tie break",
+    "gate_rule": "Refine a field if its predicted quality is below the validation-selected threshold; each refinement is a real additional OCR call",
+    "gates": [
+      0,
+      0.35,
+      0.5,
+      0.65,
+      0.8,
+      1.01
+    ],
+    "primary_comparisons": [
+      "learned_selective versus learned_base",
+      "learned_selective versus learned_all_refine",
+      "learned_base versus original_rules"
+    ],
+    "quality_noninferiority_margin": 0.02,
+    "refined_OCR": {
+      "psm": 6,
+      "region": "Selected base candidate bounding box padded by max(6 pixels, 15 percent height); no reference box",
+      "scale": 2
+    },
+    "revision": "bffe40c26759f3376ec2b3ae9031dbba54cd587c",
+    "schema": "hepta.ndu.continuation.natural.document.protocol.v1",
+    "scope": "Trainable bounded structured-text decoder over actual OCR evidence, paired image/text generation and compute control; no general visual reasoning, full multimodal LLM or natural speech/video synthesis claim",
+    "selection": {
+      "exclude_historical_merchants": true,
+      "fit_merchants": 24,
+      "group": "Uppercase ASCII alphanumeric normalized annotated company, first row per new group; all three sets and previous study disjoint at this level",
+      "test_merchants": 24,
+      "test_window": [
+        100,
+        347
+      ],
+      "train_window": [
+        100,
+        626
+      ],
+      "validation_merchants": 12
+    },
+    "stopping_rule": "One fixed split, fitting and validation; all held-out arms retained with no post-test retuning",
+    "task": "Generate four receipt-field answers and a corresponding annotated image from a real scanned receipt, with source-held-out learned field selection and targeted region refinement",
+    "test_arms": [
+      "original_rules",
+      "learned_base",
+      "learned_all_refine",
+      "learned_selective"
+    ],
+    "timing_repetitions": 2
+  },
+  "registered_ns": 1793085492975124403,
+  "source_sha256": {
+    "DOCUMENT_PROTOCOL.json": "f5fec69d0ebea5cd6a2533db438cdb70d6ca446896166f08c1ed558a1e0555cd",
+    "__init__.py": "f11cce5ae299963fed8544b65c66340a451b5f3a99aa13f24a4dab62549cd0af",
+    "common.py": "1af93b66f5c3c88a83cfb5aa36bbe4747ab7db4eed5cc10dbfe75f1ea56def38",
+    "document_decoder.py": "962f107ce370f842745946386af0ff28d22a34ef918be5f9cc6d191334729f31",
+    "document_engine.py": "ae45597a0126da997ef76eed0d7df1fc84efeabb2a5e8a94e8c3f4fb6b7fb30a",
+    "document_study.py": "c84504e55bffe346f1b11052aef36e9b79ea4703a2f59851619f30fe91b067ad",
+    "fetch_document.py": "f6e172a9411d6d7166b754f98d0a0d4b7e22afd6c9414180796736c5b9f42186",
+    "fetch_speech.py": "841ba744a1282de817151292180950ad329ec2b0f3c4c9287e7e1724e2be16cd",
+    "speech_engine.py": "4b806fdc7e0bab3b6faf5e87f5c0e5133a62159da6a617981d1b7a85e7a0be36",
+    "speech_study.py": "77d2567b6300b8a1f8c72a7417c8b81f7b77299bb523a11593e777b393eb586e"
+  },
+  "source_snapshot": "/workspace/scratch/95988d8d3ab1/natural-continuation-runs/document-001/executed-source"
+}

@@ -1,0 +1,80 @@
+{
+  "asset_manifest_sha256": "2c8be8501f34412bb1acb7e09fa01b5f4ef142052e2225183e0decfb91b0eab0",
+  "heldout_scoring_not_started": true,
+  "protocol": {
+    "CI": "95 percent paired speaker-cluster bootstrap,4000resamples,seed2714; repeats averaged withinutterance; allspeakerclusterrows jointlyresampled",
+    "CPU_cost_coefficient": 0.01,
+    "all_costs": "Count every actual firststage and continuation encoding/decoding, publicdelivery/readback, controller feature/scoring/sorting, finaldelivery; record load and fitting separately",
+    "arms": [
+      "fixed_tiny",
+      "fixed_base",
+      "learned_budget",
+      "matched_random_budget"
+    ],
+    "base_beam": 5,
+    "base_model": "Systran/faster-whisper-base.en",
+    "base_revision": "3d3d5dee26484f91867d81cb899cfcf72b96be6c",
+    "controller": {
+      "allocation": "TopK predicted quality improvements, K=round(frozen_fraction*batch_count), stable input-index tie break",
+      "budget_fractions": [
+        0,
+        0.125,
+        0.25,
+        0.375,
+        0.5,
+        0.75,
+        1
+      ],
+      "features": [
+        "intercept",
+        "tiny_avg_logprob",
+        "tiny_no_speech_probability",
+        "log1p_generated_token_count",
+        "log1p_duration_seconds"
+      ],
+      "selection": "On validation choose budgetfraction maximizing entropic certainty equivalent of actual terminal quality minus0.01actualCPU, gamma2; lower budgettie break",
+      "training": "Ridge regression with lambda1 on train-speaker targets clippedWERtiny-clippedWERbase; standardize nonintercept features on training only"
+    },
+    "cpu_threads": 2,
+    "dataset": "openslr/librispeech_asr",
+    "dataset_revision": "71cacbfb7e2354c4226d01e70d77d5fca3d04ba1",
+    "mode": "Offline batch portfolio: all first-stage public transcripts are delivered before budgeted second-stage allocation. This is not online low-latency streaming.",
+    "primary_acceptance": "Against strongfixedbase, WERdiffCIupper<=0.01 and bothwholeCPU/wallcostdiffCIupper<0; also report cost-adjusted entropicCE and pairedreturn versus matchedrandom",
+    "quality_noninferiority_margin_absolute_WER": 0.01,
+    "random_order": "SHA256 of fixed literal natural-cascade-2713 and source id, then choose sameK as learned; no target or futurebase output",
+    "reason": "First new same-model beam continuation study selected no continuation; retain its negative result. This separate study gives actions genuinely different neural capacities and uses new source groups.",
+    "risk_gamma": 2,
+    "schema": "hepta.ndu.continuation.natural.speech.cascade.protocol.v1",
+    "scope": "Actual natural speech-to-text generation by two frozen neuralmodels with a trained allocation head; no generatorweightupdates, speechsynthesis or originalHeptaneuron integration",
+    "selection": {
+      "exclude": "All historical prior-study and first-continuation speaker groups from new validation/test; all roles disjoint",
+      "maximum_seconds": 29,
+      "test": "First8new test/clean and8new test/other speaker groups in row order",
+      "train": "Reuse the 8 fit speakers from the first continuation study, never its12test speakers",
+      "utterances_per_speaker": 3,
+      "validation": "First4new validation/clean and4new validation/other speaker groups in row order"
+    },
+    "stopping_rule": "One frozen new-source study; no heldout-driven quota/parameter/metric changes; preserve all failures",
+    "timing_repetitions": 3,
+    "tiny_beam": 1,
+    "tiny_model": "Systran/faster-whisper-tiny.en",
+    "tiny_revision": "0d3d19a32d3338f10357c0889762bd8d64bbdeba"
+  },
+  "registered_ns": 1793086235637298180,
+  "source_sha256": {
+    "CASCADE_PROTOCOL.json": "29a3b6403f2dfa8c72bebdcc704ba5602ab79f21ef2904e0d91b11aff46cdf5d",
+    "__init__.py": "f11cce5ae299963fed8544b65c66340a451b5f3a99aa13f24a4dab62549cd0af",
+    "cache_mechanism.py": "39d68685a5a7e58c97730af4189e94bd30d1315a2dd9c8c08a5d1e8709575160",
+    "cascade_study.py": "0e6538c21443eea6965341b9886ab9b086dfe75ece9388e27cc31339dc6b3183",
+    "common.py": "1af93b66f5c3c88a83cfb5aa36bbe4747ab7db4eed5cc10dbfe75f1ea56def38",
+    "document_decoder.py": "6d2fc226e89a9c89c0317ad916f8c325cceb3c7dee9efe06cf5d21167f477b34",
+    "document_engine.py": "ae45597a0126da997ef76eed0d7df1fc84efeabb2a5e8a94e8c3f4fb6b7fb30a",
+    "document_study.py": "2b0aaa2f29fa0fb08c2ecb3c62ebe398475b27f3f5dae60a7f43f43d388c4517",
+    "fetch_cascade.py": "c8c38ef9b3105865bc515fde8185887ff956f683db9409bf771956f83b1dad01",
+    "fetch_document.py": "f6e172a9411d6d7166b754f98d0a0d4b7e22afd6c9414180796736c5b9f42186",
+    "fetch_speech.py": "841ba744a1282de817151292180950ad329ec2b0f3c4c9287e7e1724e2be16cd",
+    "speech_engine.py": "4b806fdc7e0bab3b6faf5e87f5c0e5133a62159da6a617981d1b7a85e7a0be36",
+    "speech_study.py": "77d2567b6300b8a1f8c72a7417c8b81f7b77299bb523a11593e777b393eb586e"
+  },
+  "source_snapshot": "/workspace/scratch/95988d8d3ab1/natural-continuation-runs/cascade-001/executed-source"
+}

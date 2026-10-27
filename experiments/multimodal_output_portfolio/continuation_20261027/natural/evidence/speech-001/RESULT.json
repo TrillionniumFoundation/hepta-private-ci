@@ -1,0 +1,251 @@
+{
+  "comparisons": {
+    "fixed_beam5": {
+      "acceptance_passed": false,
+      "delta_WER_CI95": [
+        -0.015194097972492139,
+        0.013566250358886018
+      ],
+      "delta_cpu_CI95": [
+        -0.1474384806141204,
+        -0.0687157690229167
+      ],
+      "delta_cpu_seconds_per_utterance": -0.10737123637962966,
+      "delta_micro_WER": 0.0011389521640091116,
+      "delta_wall_CI95": [
+        -0.0695629874611111,
+        -0.03727325000833333
+      ],
+      "delta_wall_seconds_per_utterance": -0.05334479923148148
+    },
+    "reencoded_continuation": {
+      "acceptance_passed": false,
+      "delta_WER_CI95": [
+        0.0,
+        0.0
+      ],
+      "delta_cpu_CI95": [
+        -0.004475498538425944,
+        0.056368894149537045
+      ],
+      "delta_cpu_seconds_per_utterance": 0.02220817998148147,
+      "delta_micro_WER": 0.0,
+      "delta_wall_CI95": [
+        -0.007150951399074067,
+        0.02196915038032408
+      ],
+      "delta_wall_seconds_per_utterance": 0.006849150314814818
+    }
+  },
+  "gate": {
+    "candidates": [
+      {
+        "objective": 0.13965306866930777,
+        "threshold": -1000
+      },
+      {
+        "objective": 0.13965306866930777,
+        "threshold": -1.5
+      },
+      {
+        "objective": 0.13965306866930777,
+        "threshold": -1.2
+      },
+      {
+        "objective": 0.13965306866930777,
+        "threshold": -1.0
+      },
+      {
+        "objective": 0.13965306866930777,
+        "threshold": -0.8
+      },
+      {
+        "objective": 0.13965306866930777,
+        "threshold": -0.6
+      },
+      {
+        "objective": 0.13976009288347443,
+        "threshold": -0.4
+      },
+      {
+        "objective": 0.14315125681230212,
+        "threshold": -0.2
+      },
+      {
+        "objective": 0.14150711133334787,
+        "threshold": 1000
+      }
+    ],
+    "fit_speakers": [
+      116,
+      777,
+      1988,
+      2035,
+      2086,
+      3660,
+      6455,
+      8288
+    ],
+    "fitted_parameters": 1,
+    "fitting_complete_ns": 1793085192197582953,
+    "heldout_scoring_not_started": true,
+    "neural_parameters_updated": false,
+    "selected_threshold": -1000,
+    "test_speakers": [
+      260,
+      1320,
+      2094,
+      3080,
+      3575,
+      4198,
+      5639,
+      5764,
+      7018,
+      7127,
+      7902,
+      8280
+    ]
+  },
+  "general_multimodal_generation_proven": false,
+  "model_load_wall_seconds": 0.216837887,
+  "neural_parameters_updated": false,
+  "original_Hepta_neuron_integrated": false,
+  "same_policy_transcripts_identical": true,
+  "schema": "hepta.ndu.continuation.natural.speech.result.v1",
+  "status": "completed",
+  "summary": {
+    "cached_continuation": {
+      "decoder_calls_per_repetition": 36,
+      "encoder_calls_per_repetition": 36,
+      "independent_speakers": 12,
+      "mean_whole_cpu_seconds_per_utterance": 1.5483581867407405,
+      "mean_whole_wall_seconds_per_utterance": 0.4444851394537037,
+      "micro_WER": 0.05922551252847381,
+      "reference_words": 878,
+      "utterances": 36,
+      "word_errors": 52
+    },
+    "fixed_beam5": {
+      "decoder_calls_per_repetition": 36,
+      "encoder_calls_per_repetition": 36,
+      "independent_speakers": 12,
+      "mean_whole_cpu_seconds_per_utterance": 1.6557294231203703,
+      "mean_whole_wall_seconds_per_utterance": 0.4978299386851852,
+      "micro_WER": 0.05808656036446469,
+      "reference_words": 878,
+      "utterances": 36,
+      "word_errors": 51
+    },
+    "fixed_greedy": {
+      "decoder_calls_per_repetition": 36,
+      "encoder_calls_per_repetition": 36,
+      "independent_speakers": 12,
+      "mean_whole_cpu_seconds_per_utterance": 1.5353962377500001,
+      "mean_whole_wall_seconds_per_utterance": 0.439467652175926,
+      "micro_WER": 0.05922551252847381,
+      "reference_words": 878,
+      "utterances": 36,
+      "word_errors": 52
+    },
+    "reencoded_continuation": {
+      "decoder_calls_per_repetition": 36,
+      "encoder_calls_per_repetition": 36,
+      "independent_speakers": 12,
+      "mean_whole_cpu_seconds_per_utterance": 1.5261500067592593,
+      "mean_whole_wall_seconds_per_utterance": 0.43763598913888885,
+      "micro_WER": 0.05922551252847381,
+      "reference_words": 878,
+      "utterances": 36,
+      "word_errors": 52
+    }
+  },
+  "warmup": {
+    "arm": "fixed_greedy",
+    "decoder_calls": 1,
+    "delivered_before_private_scoring_ns": 1793085175414910992,
+    "encoded_bytes": 2304000,
+    "encoder_calls": 1,
+    "encodings": [
+      {
+        "audio_samples": 144320,
+        "cpu_seconds": 1.320408001,
+        "encoded_bytes": 2304000,
+        "encoded_sha256": "6d76f6dfbd496cf6a103c54f650095fd78818616a2de0305c90d8c1d219e01e7",
+        "encoded_shape": [
+          1,
+          1500,
+          384
+        ],
+        "feature_shape": [
+          80,
+          3000
+        ],
+        "wall_seconds": 0.386904925
+      }
+    ],
+    "gate": {
+      "continue": false,
+      "cpu_seconds": 1.913e-06,
+      "observed_confidence": -0.07618220996212315,
+      "threshold": -1000,
+      "wall_seconds": 1.833e-06
+    },
+    "generations": [
+      {
+        "beam": 1,
+        "confidence": -0.07618220996212315,
+        "cpu_seconds": 0.312151436,
+        "no_speech_probability": 0.02787940390408039,
+        "output_path": "/workspace/scratch/95988d8d3ab1/natural-continuation-runs/speech-001/warmup/FIRST.txt",
+        "private_reference_received": false,
+        "score": -0.07829838246107101,
+        "tokens": [
+          1375,
+          373,
+          1440,
+          812,
+          4697,
+          621,
+          314,
+          284,
+          307,
+          1654,
+          290,
+          550,
+          1775,
+          517,
+          286,
+          262,
+          995,
+          13,
+          887,
+          314,
+          373,
+          257,
+          2933,
+          290,
+          673,
+          373,
+          257,
+          2576,
+          290,
+          314,
+          581,
+          4714,
+          607,
+          10192,
+          5642,
+          13
+        ],
+        "transcript": "She was four years older than I to be sure and had seen more of the world. But I was a boy and she was a girl and I resented her protecting manner.",
+        "wall_seconds": 0.15669497
+      }
+    ],
+    "output_path": "/workspace/scratch/95988d8d3ab1/natural-continuation-runs/speech-001/warmup/DELIVERED.txt",
+    "output_sha256": "20be03fe6315fa74c64b72cd3450f1d5713eabf0667178fc63199c0026cb6e93",
+    "private_reference_received": false,
+    "transcript": "She was four years older than I to be sure and had seen more of the world. But I was a boy and she was a girl and I resented her protecting manner.",
+    "whole_cpu_seconds": 1.633157245,
+    "whole_wall_seconds": 0.544210194
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.ndu.continuation.natural.document.protocol.v1",
+  "task": "Generate four receipt-field answers and a corresponding annotated image from a real scanned receipt, with source-held-out learned field selection and targeted region refinement",
+  "dataset": "jsdnrs/ICDAR2019-SROIE",
+  "revision": "bffe40c26759f3376ec2b3ae9031dbba54cd587c",
+  "selection": {
+    "fit_merchants": 24,
+    "validation_merchants": 12,
+    "test_merchants": 24,
+    "train_window": [
+      100,
+      626
+    ],
+    "test_window": [
+      100,
+      347
+    ],
+    "exclude_historical_merchants": true,
+    "group": "Uppercase ASCII alphanumeric normalized annotated company, first row per new group; all three sets and previous study disjoint at this level"
+  },
+  "fields": [
+    "company",
+    "date",
+    "address",
+    "total"
+  ],
+  "base_OCR": {
+    "psm": 3,
+    "scale": 1
+  },
+  "refined_OCR": {
+    "psm": 6,
+    "scale": 2,
+    "region": "Selected base candidate bounding box padded by max(6 pixels, 15 percent height); no reference box"
+  },
+  "decoder": {
+    "architecture": "One shared two-layer tanh score regressor over frozen lexical/layout features and field indicators",
+    "hidden": 24,
+    "steps": 800,
+    "learning_rate": 0.01,
+    "seed": 2711,
+    "loss": "Per-document/per-observed-field balanced MSE to 0.5 exact match + 0.5 normalized edit similarity; missing references masked",
+    "inference": "Highest predicted quality candidate for each field; for refinement keep original if its predicted score is no lower"
+  },
+  "gates": [
+    0,
+    0.35,
+    0.5,
+    0.65,
+    0.8,
+    1.01
+  ],
+  "gate_rule": "Refine a field if its predicted quality is below the validation-selected threshold; each refinement is a real additional OCR call",
+  "fit_gate_objective": "Validation mean per-document observed-field (0.5 exact match + 0.5 normalized edit similarity) minus 0.01 times process+child CPU seconds, lower-threshold tie break",
+  "test_arms": [
+    "original_rules",
+    "learned_base",
+    "learned_all_refine",
+    "learned_selective"
+  ],
+  "timing_repetitions": 2,
+  "primary_comparisons": [
+    "learned_selective versus learned_base",
+    "learned_selective versus learned_all_refine",
+    "learned_base versus original_rules"
+  ],
+  "confidence_intervals": "95 percent paired merchant-cluster bootstrap, 4000 resamples, seed2712; repetitions averaged within source",
+  "quality_noninferiority_margin": 0.02,
+  "acceptance": "Over all-refine: lower CPU and wall CI upper differences below0 and utility-quality CI lower difference >=-0.02; over learned-base: positive cost-adjusted quality-return CI lower difference; report exact field accuracy separately",
+  "scope": "Trainable bounded structured-text decoder over actual OCR evidence, paired image/text generation and compute control; no general visual reasoning, full multimodal LLM or natural speech/video synthesis claim",
+  "stopping_rule": "One fixed split, fitting and validation; all held-out arms retained with no post-test retuning",
+  "missing_reference_policy": "None or empty reference fields are unobserved; exclude them from training and per-document scoring denominators, report observed counts. Four-field exact-document success requires all four labels observed and all four correct."
+}
