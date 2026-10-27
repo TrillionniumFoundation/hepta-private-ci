@@ -1,0 +1,1984 @@
+{
+  "accounting_scope": "All 21 completed registered V3 scientific jobs, 42 explicitly unqualified downstream jobs, and all 18 specified actual independent verification receipts. Synthetic implementation tests, source-allocation preflight contracts, dependency/environment restoration and native compilation are outside this default execution ledger and retain their own receipts. No omitted timer is estimated.",
+  "ledger_source_commit": "19d51b8218816f62c13b28f66e22430e4b5ee20a",
+  "nonstudy_start_files": [],
+  "operational_timing": null,
+  "protocol": {
+    "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/PROTOCOL.json",
+    "sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7"
+  },
+  "run_root": "/tmp/hepta-field-v3-run",
+  "schema": "hepta.field-bridge.v3.execution-index.1",
+  "source_root": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio",
+  "stages": [
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/reference/17/COMPLETE.json",
+        "sha256": "5acb1cea51a7f99d5f36a6cab2150680aeee6ab978c4d769862337a347182e37"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/REFERENCE_FREEZE.json",
+        "sha256": "27010d424b35edadad406dc4a9546394d645f4c0215474540e453784f223fe88"
+      },
+      "id": "training:reference:17",
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/reference/17/START.json",
+        "sha256": "aedcbcd9d9fe510d0b303c76901f4e389e22adf53f9927dfd7e42c39582c38f4"
+      },
+      "status": "complete"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/bank/17/COMPLETE.json",
+        "sha256": "603a629538f99ce62566ff4b03f61b26125ed36410238a57880ca31a2daca9bf"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/BANK_FREEZE.json",
+        "sha256": "1d238c2451216fa5051192cfa36566e89769451d02f38166296d3671476c6ee8"
+      },
+      "id": "training:bank:17",
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/bank/17/START.json",
+        "sha256": "d593d598a1b253c81e5226f078fda97691e8404faa8eb5c606770a692817631c"
+      },
+      "status": "complete"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/fit/17/COMPLETE.json",
+        "sha256": "68788e82b7d9a474bed49f16ea39066d071539ee719ae6fe087c17526e0076c6"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/FIT_FREEZE.json",
+        "sha256": "1a87d3b246e6582f271f89411a0309b07661a45a98a65d95b68f3e71a832af1c"
+      },
+      "id": "training:fit:17",
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/fit/17/START.json",
+        "sha256": "f24f0dd4fcb5a81a31634f5d155a24940dc77944905ee81d26442040e2edc735"
+      },
+      "status": "complete"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/development/17/COMPLETE.json",
+        "sha256": "bbb60fc1a43c2aca55b9b3210ca017b8b0a80b9390a8edb7240010581e041dbc"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/DEVELOPMENT_FREEZE.json",
+        "sha256": "f6742f2ee89648b688fd89f0cccbbda30bf14fada3ba150f9a06fa177ee43d62"
+      },
+      "id": "training:development:17",
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/development/17/START.json",
+        "sha256": "709fb5107cf1add3208482a3b78f78030bea9f47dcedd4e6c55773afed92855b"
+      },
+      "status": "complete"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "training:audit:17",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "training:final:17",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/runtime/bank/17-frozen/COMPLETE.json",
+        "sha256": "a15d0ba48ada6ec79e565bf27db87b25688718ad6d6ff587a6250f8a21954516"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/RUNTIME_BANK_FREEZE.json",
+        "sha256": "6bd7ae7397e3fa13e7abceb81b290cd5388757ff564a047ee1f674ac58182ce1"
+      },
+      "id": "runtime:bank:17:frozen",
+      "native": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_native_final/libhepta_field_bridge_stream.so",
+        "sha256": "253fb6a5d2115283148f99c83007363aa09ef3c66dcaf51e172563b0891d2a00"
+      },
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/runtime/bank/17-frozen/START.json",
+        "sha256": "f22ea1d0de98f761f77f9322663f95ded4154aed9bbfab21b0b136c9f2258487"
+      },
+      "status": "complete"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/runtime/fit/17-frozen/COMPLETE.json",
+        "sha256": "c4943da3747c29b469e63d2d94274f7188714be9f062c7b88a3ef6a08626c95a"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/RUNTIME_FIT_FREEZE.json",
+        "sha256": "d0519dd8b9572dd106ea3e564b1e64899c1cf83cd28dce3d4f5b9c098c8284aa"
+      },
+      "id": "runtime:fit:17:frozen",
+      "native": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_native_final/libhepta_field_bridge_stream.so",
+        "sha256": "253fb6a5d2115283148f99c83007363aa09ef3c66dcaf51e172563b0891d2a00"
+      },
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/runtime/fit/17-frozen/START.json",
+        "sha256": "f22b7b7469fdb2824659209504ba73be598b1f12f5f6c72877f9c41e1f0ff122"
+      },
+      "status": "complete"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/runtime/audit/17-frozen/COMPLETE.json",
+        "sha256": "e09894c39b4131a0db545287fb86c93a91ee8a8a2e79adcd44c5fde1cf052a60"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/RUNTIME_AUDIT_FREEZE.json",
+        "sha256": "4eb4b0ee0824951e27dae401317c1a9b7833ad2571371f336ae9a7fbe3473a2a"
+      },
+      "id": "runtime:audit:17:frozen",
+      "native": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_native_final/libhepta_field_bridge_stream.so",
+        "sha256": "253fb6a5d2115283148f99c83007363aa09ef3c66dcaf51e172563b0891d2a00"
+      },
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/runtime/audit/17-frozen/START.json",
+        "sha256": "d8fda35336bf134474dcfcfe869a80f7d4a534ed4c7b3dffe2d0f5c0ab2857d7"
+      },
+      "status": "complete"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/CONFIRMATION_QUALIFICATION.json",
+        "sha256": "ac47ff0661def0092a7674d6e99a146e2b76421c0741b8e42502ab72feea4075"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:confirm:17:frozen:primary",
+      "reason": "Frozen-runtime and combined qualification did not authorize reserved primary/retention evaluation.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/CONFIRMATION_QUALIFICATION.json",
+        "sha256": "ac47ff0661def0092a7674d6e99a146e2b76421c0741b8e42502ab72feea4075"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:confirm:17:frozen:retention",
+      "reason": "Frozen-runtime and combined qualification did not authorize reserved primary/retention evaluation.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:bank:17:ordinary",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:fit:17:ordinary",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:audit:17:ordinary",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:confirm:17:ordinary:primary",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:confirm:17:ordinary:retention",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:bank:17:field",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:fit:17:field",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:audit:17:field",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:confirm:17:field:primary",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:confirm:17:field:retention",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/reference/29/COMPLETE.json",
+        "sha256": "a7e0c339508de686382c72bc92a7241f71cf41a158b485176e38f1fc828f8760"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/REFERENCE_FREEZE.json",
+        "sha256": "27010d424b35edadad406dc4a9546394d645f4c0215474540e453784f223fe88"
+      },
+      "id": "training:reference:29",
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/reference/29/START.json",
+        "sha256": "35e722335f454b7a6934ff3caf6b7d07f21cdc9964485848d99a0f3eb79421d2"
+      },
+      "status": "complete"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/bank/29/COMPLETE.json",
+        "sha256": "26e0ffbc54c5cbc3757c664680b63f64173e778ac8775d06d100ff18b1dff8ac"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/BANK_FREEZE.json",
+        "sha256": "1d238c2451216fa5051192cfa36566e89769451d02f38166296d3671476c6ee8"
+      },
+      "id": "training:bank:29",
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/bank/29/START.json",
+        "sha256": "dd4920c7f1e0b9142772b115a7a0df2d7fed981cfc43ac76213a696cfa3245cf"
+      },
+      "status": "complete"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/fit/29/COMPLETE.json",
+        "sha256": "726b831cd4a70c68090ad994ee4fde613af71283444bbe32d71de0f5732548bd"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/FIT_FREEZE.json",
+        "sha256": "1a87d3b246e6582f271f89411a0309b07661a45a98a65d95b68f3e71a832af1c"
+      },
+      "id": "training:fit:29",
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/fit/29/START.json",
+        "sha256": "e2188045a01d5adca5e33989c797e24483abf276a0954cb4b725b0818cf657ad"
+      },
+      "status": "complete"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/development/29/COMPLETE.json",
+        "sha256": "f6791ee1031359abb318500ce800fa6b5b25a4219467ee7d0e1ce600490e794a"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/DEVELOPMENT_FREEZE.json",
+        "sha256": "f6742f2ee89648b688fd89f0cccbbda30bf14fada3ba150f9a06fa177ee43d62"
+      },
+      "id": "training:development:29",
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/development/29/START.json",
+        "sha256": "7f434a482265a6e8b13cd0fac4d26a66c75687fa50c74fcded014c63e9448ef8"
+      },
+      "status": "complete"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "training:audit:29",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "training:final:29",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/runtime/bank/29-frozen/COMPLETE.json",
+        "sha256": "24cae5b0a99efaa729701e586a4094e32ee9cb49050cda113011927418673b18"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/RUNTIME_BANK_FREEZE.json",
+        "sha256": "6bd7ae7397e3fa13e7abceb81b290cd5388757ff564a047ee1f674ac58182ce1"
+      },
+      "id": "runtime:bank:29:frozen",
+      "native": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_native_final/libhepta_field_bridge_stream.so",
+        "sha256": "253fb6a5d2115283148f99c83007363aa09ef3c66dcaf51e172563b0891d2a00"
+      },
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/runtime/bank/29-frozen/START.json",
+        "sha256": "83f1976f63b2b935f29c3b4eeb41085dc86ec1df71e555da1dd37a3e4590d748"
+      },
+      "status": "complete"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/runtime/fit/29-frozen/COMPLETE.json",
+        "sha256": "4b6afc20b45d3dd1a2d16bc4745e05cb94a21d36efb372421e285608c0d4497e"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/RUNTIME_FIT_FREEZE.json",
+        "sha256": "d0519dd8b9572dd106ea3e564b1e64899c1cf83cd28dce3d4f5b9c098c8284aa"
+      },
+      "id": "runtime:fit:29:frozen",
+      "native": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_native_final/libhepta_field_bridge_stream.so",
+        "sha256": "253fb6a5d2115283148f99c83007363aa09ef3c66dcaf51e172563b0891d2a00"
+      },
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/runtime/fit/29-frozen/START.json",
+        "sha256": "432d91d064dfac7e6cf88f5addbfc40d1f41173aaa7a5d3657300ee2fee97387"
+      },
+      "status": "complete"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/runtime/audit/29-frozen/COMPLETE.json",
+        "sha256": "a8cd6f5aae56316efdc548e743a06e76a6279d25ecf8fc11a30de5c8e9cb9422"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/RUNTIME_AUDIT_FREEZE.json",
+        "sha256": "4eb4b0ee0824951e27dae401317c1a9b7833ad2571371f336ae9a7fbe3473a2a"
+      },
+      "id": "runtime:audit:29:frozen",
+      "native": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_native_final/libhepta_field_bridge_stream.so",
+        "sha256": "253fb6a5d2115283148f99c83007363aa09ef3c66dcaf51e172563b0891d2a00"
+      },
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/runtime/audit/29-frozen/START.json",
+        "sha256": "6b3adc912e2cdcf47296af81f86534f37509de4b1e8ade1e2ddf8f043db61a1f"
+      },
+      "status": "complete"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/CONFIRMATION_QUALIFICATION.json",
+        "sha256": "ac47ff0661def0092a7674d6e99a146e2b76421c0741b8e42502ab72feea4075"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:confirm:29:frozen:primary",
+      "reason": "Frozen-runtime and combined qualification did not authorize reserved primary/retention evaluation.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/CONFIRMATION_QUALIFICATION.json",
+        "sha256": "ac47ff0661def0092a7674d6e99a146e2b76421c0741b8e42502ab72feea4075"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:confirm:29:frozen:retention",
+      "reason": "Frozen-runtime and combined qualification did not authorize reserved primary/retention evaluation.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:bank:29:ordinary",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:fit:29:ordinary",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:audit:29:ordinary",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:confirm:29:ordinary:primary",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:confirm:29:ordinary:retention",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:bank:29:field",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:fit:29:field",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:audit:29:field",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:confirm:29:field:primary",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:confirm:29:field:retention",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/reference/43/COMPLETE.json",
+        "sha256": "461e2c781951b8b6ba0fc2cda7e7020512793eca3c567fd18c86a6b5e6c1e787"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/REFERENCE_FREEZE.json",
+        "sha256": "27010d424b35edadad406dc4a9546394d645f4c0215474540e453784f223fe88"
+      },
+      "id": "training:reference:43",
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/reference/43/START.json",
+        "sha256": "d21c5c98179ff02c5197b9b39cc2abc5055f846b9bdb4af56a388412b936ab4a"
+      },
+      "status": "complete"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/bank/43/COMPLETE.json",
+        "sha256": "1425450a9ed47291d736a030a8416b918a1bd8bdf32c1e9c0fa08061bc5798fc"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/BANK_FREEZE.json",
+        "sha256": "1d238c2451216fa5051192cfa36566e89769451d02f38166296d3671476c6ee8"
+      },
+      "id": "training:bank:43",
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/bank/43/START.json",
+        "sha256": "f50e58893e3dd921ddd8014dad9fb246c64376b0a3e7bedfe6779b5003245ac6"
+      },
+      "status": "complete"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/fit/43/COMPLETE.json",
+        "sha256": "fdf66eb900b7ec0859975ce404e96ef04e8be85619a41342e78ad6037c48ba4d"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/FIT_FREEZE.json",
+        "sha256": "1a87d3b246e6582f271f89411a0309b07661a45a98a65d95b68f3e71a832af1c"
+      },
+      "id": "training:fit:43",
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/fit/43/START.json",
+        "sha256": "d14af3d455eee331d80dbdc86f41c3cf107cf6bdc9696bdbfa3004db59903552"
+      },
+      "status": "complete"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/development/43/COMPLETE.json",
+        "sha256": "7caa8205436105b042ae3748f5f668c8adf3a747e7aca174a380d96e2c0c4788"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/DEVELOPMENT_FREEZE.json",
+        "sha256": "f6742f2ee89648b688fd89f0cccbbda30bf14fada3ba150f9a06fa177ee43d62"
+      },
+      "id": "training:development:43",
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/development/43/START.json",
+        "sha256": "e229f842375cf4f1831656c52e733a5b4ca69a291a8eb0e61ddae689a4524eac"
+      },
+      "status": "complete"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "training:audit:43",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "training:final:43",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/runtime/bank/43-frozen/COMPLETE.json",
+        "sha256": "fea96b709f3da9f121556cc25d6d1103880fd0bf68dae8970ec4b7957c5a0fa7"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/RUNTIME_BANK_FREEZE.json",
+        "sha256": "6bd7ae7397e3fa13e7abceb81b290cd5388757ff564a047ee1f674ac58182ce1"
+      },
+      "id": "runtime:bank:43:frozen",
+      "native": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_native_final/libhepta_field_bridge_stream.so",
+        "sha256": "253fb6a5d2115283148f99c83007363aa09ef3c66dcaf51e172563b0891d2a00"
+      },
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/runtime/bank/43-frozen/START.json",
+        "sha256": "9cf8455286ca6a43fba384891f844e183a8406795d4c70d81f609e8f187249d8"
+      },
+      "status": "complete"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/runtime/fit/43-frozen/COMPLETE.json",
+        "sha256": "78ba7cdee13a4932c961057f2ae70a3f610916d0d274cec11dad6356b88dec74"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/RUNTIME_FIT_FREEZE.json",
+        "sha256": "d0519dd8b9572dd106ea3e564b1e64899c1cf83cd28dce3d4f5b9c098c8284aa"
+      },
+      "id": "runtime:fit:43:frozen",
+      "native": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_native_final/libhepta_field_bridge_stream.so",
+        "sha256": "253fb6a5d2115283148f99c83007363aa09ef3c66dcaf51e172563b0891d2a00"
+      },
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/runtime/fit/43-frozen/START.json",
+        "sha256": "67feb012e463664bff0d2ee95ca0f0d2efe5135d657b3a755fd99ff9c9935f02"
+      },
+      "status": "complete"
+    },
+    {
+      "complete": {
+        "path": "/tmp/hepta-field-v3-run/runtime/audit/43-frozen/COMPLETE.json",
+        "sha256": "274406cf159aaaab9fd36b5d258f88eb59fe29cfbf0b1b83ed3d66521551e86b"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/RUNTIME_AUDIT_FREEZE.json",
+        "sha256": "4eb4b0ee0824951e27dae401317c1a9b7833ad2571371f336ae9a7fbe3473a2a"
+      },
+      "id": "runtime:audit:43:frozen",
+      "native": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_native_final/libhepta_field_bridge_stream.so",
+        "sha256": "253fb6a5d2115283148f99c83007363aa09ef3c66dcaf51e172563b0891d2a00"
+      },
+      "start": {
+        "path": "/tmp/hepta-field-v3-run/runtime/audit/43-frozen/START.json",
+        "sha256": "908c77e03ed88c6eaff05188c359635b2417852412ff4caffb6857176db6d389"
+      },
+      "status": "complete"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/CONFIRMATION_QUALIFICATION.json",
+        "sha256": "ac47ff0661def0092a7674d6e99a146e2b76421c0741b8e42502ab72feea4075"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:confirm:43:frozen:primary",
+      "reason": "Frozen-runtime and combined qualification did not authorize reserved primary/retention evaluation.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/CONFIRMATION_QUALIFICATION.json",
+        "sha256": "ac47ff0661def0092a7674d6e99a146e2b76421c0741b8e42502ab72feea4075"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:confirm:43:frozen:retention",
+      "reason": "Frozen-runtime and combined qualification did not authorize reserved primary/retention evaluation.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:bank:43:ordinary",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:fit:43:ordinary",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:audit:43:ordinary",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:confirm:43:ordinary:primary",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:confirm:43:ordinary:retention",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:bank:43:field",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:fit:43:field",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:audit:43:field",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:confirm:43:field:primary",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    },
+    {
+      "decision": {
+        "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+        "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+      },
+      "decision_field": [
+        "passed"
+      ],
+      "decision_value": false,
+      "id": "runtime:confirm:43:field:retention",
+      "reason": "Failed registered training qualification did not authorize a fresh learning audit, final adapted models or their runtime stages.",
+      "status": "skipped_unqualified"
+    }
+  ],
+  "terminal_disposition_and_qualifications": {
+    "CONFIRMATION_QUALIFICATION.json": {
+      "path": "/tmp/hepta-field-v3-run/CONFIRMATION_QUALIFICATION.json",
+      "sha256": "ac47ff0661def0092a7674d6e99a146e2b76421c0741b8e42502ab72feea4075"
+    },
+    "RUNTIME_QUALIFICATION-frozen.json": {
+      "path": "/tmp/hepta-field-v3-run/RUNTIME_QUALIFICATION-frozen.json",
+      "sha256": "f45b2a45852fec2f456224abc9ccacb788231b3e610d28879e7dbd56e4173889"
+    },
+    "STUDY_DISPOSITION.json": {
+      "path": "/tmp/hepta-field-v3-run/STUDY_DISPOSITION.json",
+      "sha256": "56a973140854352afab83c769916197d9352f82e8aad73e76281c805b6f834a7"
+    },
+    "TRAINING_QUALIFICATION.json": {
+      "path": "/tmp/hepta-field-v3-run/TRAINING_QUALIFICATION.json",
+      "sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da"
+    }
+  },
+  "verification": [
+    {
+      "artifacts": [
+        {
+          "path": "/tmp/hepta-field-v3-run/reference/17/COMPLETE.json",
+          "sha256": "5acb1cea51a7f99d5f36a6cab2150680aeee6ab978c4d769862337a347182e37"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/reference/17/REFERENCE.json",
+          "sha256": "96565d1cdc10b607a6741c92d319f1e950e8ee9e4c96b2574b9754512584a16a"
+        }
+      ],
+      "id": "training-reference-audit-17",
+      "kind": "training_metadata",
+      "receipt": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_review/REFERENCE_AUDIT_17.json",
+        "sha256": "c29ca395d25945da33a929dea01012f77bf2dbb9b841691a72f913f3e9ef5f8b"
+      },
+      "sources": [
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_audit_common.py",
+          "sha256": "42c4136ae29e94d0e4ddd55e12d9678fc6776e837f5c25bdb35ad37a3c5cbeba"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_evidence_audit.py",
+          "sha256": "dcf7ae4f3c9919c2a80c85c15077df06b70676873754fa9a1102f23a7824f4fd"
+        }
+      ],
+      "status": "complete"
+    },
+    {
+      "artifacts": [
+        {
+          "path": "/tmp/hepta-field-v3-run/reference/29/COMPLETE.json",
+          "sha256": "a7e0c339508de686382c72bc92a7241f71cf41a158b485176e38f1fc828f8760"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/reference/29/REFERENCE.json",
+          "sha256": "9f1e2597bcf802b1f5d04cfa8d492d1a7ba8c686f3a3c6def94f5b8fb71da555"
+        }
+      ],
+      "id": "training-reference-audit-29",
+      "kind": "training_metadata",
+      "receipt": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_review/REFERENCE_AUDIT_29.json",
+        "sha256": "321995c5e3f1ee6074ef112ce2edd21fb7765be6ed1c0d921b031e9de7620dff"
+      },
+      "sources": [
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_audit_common.py",
+          "sha256": "42c4136ae29e94d0e4ddd55e12d9678fc6776e837f5c25bdb35ad37a3c5cbeba"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_evidence_audit.py",
+          "sha256": "dcf7ae4f3c9919c2a80c85c15077df06b70676873754fa9a1102f23a7824f4fd"
+        }
+      ],
+      "status": "complete"
+    },
+    {
+      "artifacts": [
+        {
+          "path": "/tmp/hepta-field-v3-run/reference/43/COMPLETE.json",
+          "sha256": "461e2c781951b8b6ba0fc2cda7e7020512793eca3c567fd18c86a6b5e6c1e787"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/reference/43/REFERENCE.json",
+          "sha256": "e3c4e013e79e34bec46312d72d18e0b7030604434ba69098c347ffa525e7265d"
+        }
+      ],
+      "id": "training-reference-audit-43",
+      "kind": "training_metadata",
+      "receipt": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_review/REFERENCE_AUDIT_43.json",
+        "sha256": "c383e561fc55abb4a0c525babc9e1256e209b2cea818a5759dfb8084d1ba22af"
+      },
+      "sources": [
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_audit_common.py",
+          "sha256": "42c4136ae29e94d0e4ddd55e12d9678fc6776e837f5c25bdb35ad37a3c5cbeba"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_evidence_audit.py",
+          "sha256": "dcf7ae4f3c9919c2a80c85c15077df06b70676873754fa9a1102f23a7824f4fd"
+        }
+      ],
+      "status": "complete"
+    },
+    {
+      "artifacts": [
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/17/BANK.json",
+          "sha256": "c85d2253b3ccbf05b1a4f3e5da57cf012549a57bf1aaf6b5706784fa35d96a8f"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/17/COMPLETE.json",
+          "sha256": "603a629538f99ce62566ff4b03f61b26125ed36410238a57880ca31a2daca9bf"
+        }
+      ],
+      "id": "training-bank-audit-17",
+      "kind": "training_metadata",
+      "receipt": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_review/BANK_AUDIT_17.json",
+        "sha256": "4c602af506d370d4f2954dad1a481c4042f51a73a05297c99dced6116e64f3a7"
+      },
+      "sources": [
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_audit_common.py",
+          "sha256": "42c4136ae29e94d0e4ddd55e12d9678fc6776e837f5c25bdb35ad37a3c5cbeba"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_evidence_audit.py",
+          "sha256": "dcf7ae4f3c9919c2a80c85c15077df06b70676873754fa9a1102f23a7824f4fd"
+        }
+      ],
+      "status": "complete"
+    },
+    {
+      "artifacts": [
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/29/BANK.json",
+          "sha256": "8ee6976dacb3ffdd0271b43c3c125b06d1221d39c729fd1fa3268cd9bec2ef57"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/29/COMPLETE.json",
+          "sha256": "26e0ffbc54c5cbc3757c664680b63f64173e778ac8775d06d100ff18b1dff8ac"
+        }
+      ],
+      "id": "training-bank-audit-29",
+      "kind": "training_metadata",
+      "receipt": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_review/BANK_AUDIT_29.json",
+        "sha256": "c7971e5c34eae119d277097133f91fc4cc7bc67896afe9c480e7b64912f24202"
+      },
+      "sources": [
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_audit_common.py",
+          "sha256": "42c4136ae29e94d0e4ddd55e12d9678fc6776e837f5c25bdb35ad37a3c5cbeba"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_evidence_audit.py",
+          "sha256": "dcf7ae4f3c9919c2a80c85c15077df06b70676873754fa9a1102f23a7824f4fd"
+        }
+      ],
+      "status": "complete"
+    },
+    {
+      "artifacts": [
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/43/BANK.json",
+          "sha256": "f87666fc1b15505b43d686257050c9b821366da26bd98b139fd642075e3e1445"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/43/COMPLETE.json",
+          "sha256": "1425450a9ed47291d736a030a8416b918a1bd8bdf32c1e9c0fa08061bc5798fc"
+        }
+      ],
+      "id": "training-bank-audit-43",
+      "kind": "training_metadata",
+      "receipt": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_review/BANK_AUDIT_43.json",
+        "sha256": "a02e056c65720aea02d4a51720c1e89148cffa49ad082c322de49f847f274baa"
+      },
+      "sources": [
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_audit_common.py",
+          "sha256": "42c4136ae29e94d0e4ddd55e12d9678fc6776e837f5c25bdb35ad37a3c5cbeba"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_evidence_audit.py",
+          "sha256": "dcf7ae4f3c9919c2a80c85c15077df06b70676873754fa9a1102f23a7824f4fd"
+        }
+      ],
+      "status": "complete"
+    },
+    {
+      "artifacts": [
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/17/BANK.json",
+          "sha256": "c85d2253b3ccbf05b1a4f3e5da57cf012549a57bf1aaf6b5706784fa35d96a8f"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/fit/17/COMPLETE.json",
+          "sha256": "68788e82b7d9a474bed49f16ea39066d071539ee719ae6fe087c17526e0076c6"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/fit/17/CONTROLLERS.json",
+          "sha256": "f750695fef1f7f7d9f20e7abdbd6547845c8ce59e5fd77788b85a5be1548a1e5"
+        }
+      ],
+      "id": "training-fit-audit-17",
+      "kind": "training_fit",
+      "receipt": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_review/FIT_AUDIT_17.json",
+        "sha256": "652a885a8458ba515f630cde08ec1fef84a7a610e5e11d6ec2638ad19ee94efb"
+      },
+      "sources": [
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_audit_common.py",
+          "sha256": "42c4136ae29e94d0e4ddd55e12d9678fc6776e837f5c25bdb35ad37a3c5cbeba"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_fit_audit.py",
+          "sha256": "d76b84d7eb8023aa8b3bf676862e7ae3e4a0787a3ec70490741379d386c4b20b"
+        }
+      ],
+      "status": "complete"
+    },
+    {
+      "artifacts": [
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/29/BANK.json",
+          "sha256": "8ee6976dacb3ffdd0271b43c3c125b06d1221d39c729fd1fa3268cd9bec2ef57"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/fit/29/COMPLETE.json",
+          "sha256": "726b831cd4a70c68090ad994ee4fde613af71283444bbe32d71de0f5732548bd"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/fit/29/CONTROLLERS.json",
+          "sha256": "98c93a2a1b6a765eb3c422a1255c95d3efb489ba691ebb2b583c1bfb60c488a3"
+        }
+      ],
+      "id": "training-fit-audit-29",
+      "kind": "training_fit",
+      "receipt": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_review/FIT_AUDIT_29.json",
+        "sha256": "b3f9ea0679ccfadf43ad5fd3a5c454a7d68ef079924f40371ad320921d7aab44"
+      },
+      "sources": [
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_audit_common.py",
+          "sha256": "42c4136ae29e94d0e4ddd55e12d9678fc6776e837f5c25bdb35ad37a3c5cbeba"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_fit_audit.py",
+          "sha256": "d76b84d7eb8023aa8b3bf676862e7ae3e4a0787a3ec70490741379d386c4b20b"
+        }
+      ],
+      "status": "complete"
+    },
+    {
+      "artifacts": [
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/43/BANK.json",
+          "sha256": "f87666fc1b15505b43d686257050c9b821366da26bd98b139fd642075e3e1445"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/fit/43/COMPLETE.json",
+          "sha256": "fdf66eb900b7ec0859975ce404e96ef04e8be85619a41342e78ad6037c48ba4d"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/fit/43/CONTROLLERS.json",
+          "sha256": "9efa768f3de6d7913a9cf3447659d329bb9a8e6b7f63644d70832df46ca49215"
+        }
+      ],
+      "id": "training-fit-audit-43",
+      "kind": "training_fit",
+      "receipt": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_review/FIT_AUDIT_43.json",
+        "sha256": "60821dd4600bd6033865c44ed5c73ac7cdf504bf3c69ecc72a3a5e8e5bf40648"
+      },
+      "sources": [
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_audit_common.py",
+          "sha256": "42c4136ae29e94d0e4ddd55e12d9678fc6776e837f5c25bdb35ad37a3c5cbeba"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_fit_audit.py",
+          "sha256": "d76b84d7eb8023aa8b3bf676862e7ae3e4a0787a3ec70490741379d386c4b20b"
+        }
+      ],
+      "status": "complete"
+    },
+    {
+      "artifacts": [
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/17/BANK.json",
+          "sha256": "c85d2253b3ccbf05b1a4f3e5da57cf012549a57bf1aaf6b5706784fa35d96a8f"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/17/COMPLETE.json",
+          "sha256": "603a629538f99ce62566ff4b03f61b26125ed36410238a57880ca31a2daca9bf"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/17/decisions-and-outcomes.jsonl.gz",
+          "sha256": "f7855fc7afc65b706ee5a5f3697e8ab5858e9752c1d1c56696b5b2e02262c54c"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/17/trajectory-0-step-0-action-0-terminal.npz",
+          "sha256": "02210d118e7b4c58aee840afb277b02cc20d1fd2b4e0083056d7a4858257bc92"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/17/trajectory-0-step-0-action-1-terminal.npz",
+          "sha256": "02210d118e7b4c58aee840afb277b02cc20d1fd2b4e0083056d7a4858257bc92"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/17/trajectory-0-step-0-action-2-terminal.npz",
+          "sha256": "f160f3f5c941bc134a1c43fe26fc549bef2029b445f7759372fd63d61a55b27a"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/17/trajectory-0-step-0-action-3-terminal.npz",
+          "sha256": "02210d118e7b4c58aee840afb277b02cc20d1fd2b4e0083056d7a4858257bc92"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/17/trajectory-0-step-0-current.npz",
+          "sha256": "d579e4b03537094a38d5cdb6c89b047e2b609e593e47670cc8aecbfecafa9dca"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/17/trajectory-0-step-0-state.pt",
+          "sha256": "8f0bf5fcb2063389ca67680bdaf5ac27f713824d50f98393ac75ffa182c9e08d"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/29/COMPLETE.json",
+          "sha256": "26e0ffbc54c5cbc3757c664680b63f64173e778ac8775d06d100ff18b1dff8ac"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/bank/43/COMPLETE.json",
+          "sha256": "1425450a9ed47291d736a030a8416b918a1bd8bdf32c1e9c0fa08061bc5798fc"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/TRAINING_REPLAY_PROTOCOL.json",
+          "sha256": "f911a26a63b6a909b0a9d95bfd26fbf89296197765ab767dd807584911993013"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/BANK_FREEZE.json",
+          "sha256": "1d238c2451216fa5051192cfa36566e89769451d02f38166296d3671476c6ee8"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_review/prespecified-bank-replay/replayed-blocks.jsonl.gz",
+          "sha256": "4d6deca15bee1a0a7a9d85cf57b242a287de9c550c8e971ee93a04b8bed5f3ab"
+        }
+      ],
+      "id": "prespecified-bank-replay",
+      "kind": "bank_replay",
+      "receipt": {
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_review/prespecified-bank-replay/REPLAY.json",
+        "sha256": "6a935a31ef9f341f26b64049d2057a0ed047c86be66e7a717cedd687bc556c45"
+      },
+      "sources": [
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_replay.py",
+          "sha256": "5fc4857b8f05e54d06ef3c966791c6e92c2b0e8b7125fbb7ccd6f639330919b9"
+        }
+      ],
+      "status": "complete"
+    },
+    {
+      "artifacts": [
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/17-frozen/runtime_fit/COMPLETE.json",
+          "sha256": "7b8d6982b23d2a93ad142c1f59223b4083bd5d88dfcb285d35b68346f711cb94"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/17-frozen/runtime_fit/bank.npz",
+          "sha256": "bf2cc60160008b7f0a858d6a81798e3321992b9032831b041c8a395b6a9e8671"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/17-frozen/runtime_select/COMPLETE.json",
+          "sha256": "3c1eea1b16d06a6565f590aeef989bb13224fffd7d8bd95a13c4f848af882e71"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/17-frozen/runtime_select/bank.npz",
+          "sha256": "a7c59a257b1b32d0e1de1f522901c4e3f38168bfa8f9f70de7966275d2a2593d"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/29-frozen/runtime_fit/COMPLETE.json",
+          "sha256": "e30a38b34b0df56c9669b5b80d99135ab2a4ed4cac50c8cd615efc9faa1dfada"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/29-frozen/runtime_fit/bank.npz",
+          "sha256": "ef8c46844652013293e5938e17b5dc611c787b9338d6146a5f1243971805d65f"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/29-frozen/runtime_select/COMPLETE.json",
+          "sha256": "f01dde7e0472372378368702478d51dc1a90f8f93720ac8a141be510742c129d"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/29-frozen/runtime_select/bank.npz",
+          "sha256": "70be781d104565eba4671a3835bd7add3983e659e3d10538201b326c7282672c"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/43-frozen/runtime_fit/COMPLETE.json",
+          "sha256": "28a66f2ef96d3732d8d7b963f9fac8385011c8b110f8886a7f26da100743f96d"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/43-frozen/runtime_fit/bank.npz",
+          "sha256": "6f852184d3a68d1071e1fea992b0ab73947808d2348c58bd8b0830e0c4f40e28"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/43-frozen/runtime_select/COMPLETE.json",
+          "sha256": "9ddf59d6665090b8b3029d4ec0e9b9b93ac6532f41a2a0ff644a4b130d71e21e"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/43-frozen/runtime_select/bank.npz",
+          "sha256": "5e0740a28b0d9afb6d6f5c5ad5a7f6adbd5b46adaf2c7be33caf6d0f4ec82a0e"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/17-frozen/COMPLETE.json",
+          "sha256": "c4943da3747c29b469e63d2d94274f7188714be9f062c7b88a3ef6a08626c95a"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/17-frozen/READOUTS.json",
+          "sha256": "65f1bf3b2dd3e09dee5efdfbdbbfc965ccc79a74f983be6d7d5f5c78689ebf46"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/17-frozen/features.npz",
+          "sha256": "009918d4aa8f6459c9527bd208a2f0c8836501192d2418d802e303685526f50b"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/29-frozen/COMPLETE.json",
+          "sha256": "4b6afc20b45d3dd1a2d16bc4745e05cb94a21d36efb372421e285608c0d4497e"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/29-frozen/READOUTS.json",
+          "sha256": "04e27e29e7b09e8d811cdafe794d9ac10f145604cc25755ada8cd2d07b92f1cc"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/29-frozen/features.npz",
+          "sha256": "cbdb2cd486a391b6b2d4bf200cc577b16fd249bed5633340057dd5a312d0e432"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/43-frozen/COMPLETE.json",
+          "sha256": "78ba7cdee13a4932c961057f2ae70a3f610916d0d274cec11dad6356b88dec74"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/43-frozen/READOUTS.json",
+          "sha256": "ae2b76da23e7547f68cf408fabb3d3b259bd19d29737dab9cb66d55ed02a7e2a"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/43-frozen/features.npz",
+          "sha256": "a95d1bf8ac32dd9084acf18e7b83c47c17a3bff5f3e26d49c78b4d7829c5eff4"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/PROTOCOL.json",
+          "sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/RUNTIME_FIT_FREEZE.json",
+          "sha256": "d0519dd8b9572dd106ea3e564b1e64899c1cf83cd28dce3d4f5b9c098c8284aa"
+        }
+      ],
+      "id": "runtime-fit-audit-frozen",
+      "kind": "runtime_fit",
+      "receipt": {
+        "path": "/tmp/hepta-field-v3-run/INDEPENDENT_RUNTIME_FIT_AUDIT-frozen.json",
+        "sha256": "faff77d2608411eb0dd14c11b1570ec6c2fe4c0effaa8b187f02cf20c976c166"
+      },
+      "sources": [
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/native_session_audit.py",
+          "sha256": "ada35145fb075a1d5f1c1fc9a05d2f2768f83af5f5b554c7d0c265aa2acf7757"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_fit_audit.py",
+          "sha256": "82631745e9836e5f0f9bad60939d6fa908fa550d024481c8c8e7c54859cad6c1"
+        }
+      ],
+      "status": "complete"
+    },
+    {
+      "artifacts": [
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/17-frozen/COMPLETE.json",
+          "sha256": "a15d0ba48ada6ec79e565bf27db87b25688718ad6d6ff587a6250f8a21954516"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/17-frozen/runtime_fit/COMPLETE.json",
+          "sha256": "7b8d6982b23d2a93ad142c1f59223b4083bd5d88dfcb285d35b68346f711cb94"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/17-frozen/runtime_fit/bank.npz",
+          "sha256": "bf2cc60160008b7f0a858d6a81798e3321992b9032831b041c8a395b6a9e8671"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/17-frozen/runtime_select/COMPLETE.json",
+          "sha256": "3c1eea1b16d06a6565f590aeef989bb13224fffd7d8bd95a13c4f848af882e71"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/17-frozen/runtime_select/bank.npz",
+          "sha256": "a7c59a257b1b32d0e1de1f522901c4e3f38168bfa8f9f70de7966275d2a2593d"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/29-frozen/COMPLETE.json",
+          "sha256": "24cae5b0a99efaa729701e586a4094e32ee9cb49050cda113011927418673b18"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/29-frozen/runtime_fit/COMPLETE.json",
+          "sha256": "e30a38b34b0df56c9669b5b80d99135ab2a4ed4cac50c8cd615efc9faa1dfada"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/29-frozen/runtime_fit/bank.npz",
+          "sha256": "ef8c46844652013293e5938e17b5dc611c787b9338d6146a5f1243971805d65f"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/29-frozen/runtime_select/COMPLETE.json",
+          "sha256": "f01dde7e0472372378368702478d51dc1a90f8f93720ac8a141be510742c129d"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/29-frozen/runtime_select/bank.npz",
+          "sha256": "70be781d104565eba4671a3835bd7add3983e659e3d10538201b326c7282672c"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/43-frozen/COMPLETE.json",
+          "sha256": "fea96b709f3da9f121556cc25d6d1103880fd0bf68dae8970ec4b7957c5a0fa7"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/43-frozen/runtime_fit/COMPLETE.json",
+          "sha256": "28a66f2ef96d3732d8d7b963f9fac8385011c8b110f8886a7f26da100743f96d"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/43-frozen/runtime_fit/bank.npz",
+          "sha256": "6f852184d3a68d1071e1fea992b0ab73947808d2348c58bd8b0830e0c4f40e28"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/43-frozen/runtime_select/COMPLETE.json",
+          "sha256": "9ddf59d6665090b8b3029d4ec0e9b9b93ac6532f41a2a0ff644a4b130d71e21e"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/bank/43-frozen/runtime_select/bank.npz",
+          "sha256": "5e0740a28b0d9afb6d6f5c5ad5a7f6adbd5b46adaf2c7be33caf6d0f4ec82a0e"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/PROTOCOL.json",
+          "sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/RUNTIME_BANK_FREEZE.json",
+          "sha256": "6bd7ae7397e3fa13e7abceb81b290cd5388757ff564a047ee1f674ac58182ce1"
+        }
+      ],
+      "id": "runtime-bank-media-frozen",
+      "kind": "runtime_bank_media",
+      "receipt": {
+        "path": "/tmp/hepta-field-v3-run/INDEPENDENT_RUNTIME_BANK_MEDIA-frozen.json",
+        "sha256": "1983cf15a80e7cfd00cefda02097d2b212acb5f1fb720b8804d58bf788d87ecd"
+      },
+      "sources": [
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/feedback_evidence.py",
+          "sha256": "e0e2b472d4427dfc163c4a42903b55380e297412bc06ef4f358fa4d551d61686"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_audit_support.py",
+          "sha256": "54cffe180ee2fef003a3489803124e180e0faf08ca4d877efece4b85cdda8867"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_bank_media_audit.py",
+          "sha256": "01377f5c7596299f1eaef06791936fec5a0d89d6a090d3c39178e5f79a73190b"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_media_context.py",
+          "sha256": "969d535244cbfdd0423208395874154aad2316bb26f1c304286f245ebc503215"
+        }
+      ],
+      "status": "complete"
+    },
+    {
+      "artifacts": [
+        {
+          "path": "/tmp/hepta-field-v3-run/NATIVE_SESSION_AUDIT-frozen.json",
+          "sha256": "4678c4d3d91fbfdffc8294d4ac1465f14317875061467a22c12a04843bc104f0"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/17-frozen/COMPLETE.json",
+          "sha256": "e09894c39b4131a0db545287fb86c93a91ee8a8a2e79adcd44c5fde1cf052a60"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/17-frozen/selected/COMPLETE.json",
+          "sha256": "4ec68ff4bce7114ebc3015ce1b66de32209635369e9da410bdf0a87d1d3fe744"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/29-frozen/COMPLETE.json",
+          "sha256": "a8cd6f5aae56316efdc548e743a06e76a6279d25ecf8fc11a30de5c8e9cb9422"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/29-frozen/selected/COMPLETE.json",
+          "sha256": "77d979cd85c81b07a462ca944f9954689d69a0081fd79e3742b64c8e64eac4f5"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/43-frozen/COMPLETE.json",
+          "sha256": "274406cf159aaaab9fd36b5d258f88eb59fe29cfbf0b1b83ed3d66521551e86b"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/43-frozen/selected/COMPLETE.json",
+          "sha256": "216cc7998f224d13b015e76a2781ec0926b16133a9bb12d15a4d455eb726d317"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/17-frozen/COMPLETE.json",
+          "sha256": "c4943da3747c29b469e63d2d94274f7188714be9f062c7b88a3ef6a08626c95a"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/17-frozen/READOUTS.json",
+          "sha256": "65f1bf3b2dd3e09dee5efdfbdbbfc965ccc79a74f983be6d7d5f5c78689ebf46"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/29-frozen/COMPLETE.json",
+          "sha256": "4b6afc20b45d3dd1a2d16bc4745e05cb94a21d36efb372421e285608c0d4497e"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/29-frozen/READOUTS.json",
+          "sha256": "04e27e29e7b09e8d811cdafe794d9ac10f145604cc25755ada8cd2d07b92f1cc"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/43-frozen/COMPLETE.json",
+          "sha256": "78ba7cdee13a4932c961057f2ae70a3f610916d0d274cec11dad6356b88dec74"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/43-frozen/READOUTS.json",
+          "sha256": "ae2b76da23e7547f68cf408fabb3d3b259bd19d29737dab9cb66d55ed02a7e2a"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/PROTOCOL.json",
+          "sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/RUNTIME_AUDIT_FREEZE.json",
+          "sha256": "4eb4b0ee0824951e27dae401317c1a9b7833ad2571371f336ae9a7fbe3473a2a"
+        }
+      ],
+      "id": "runtime-selected-media-frozen",
+      "kind": "runtime_selected_media",
+      "receipt": {
+        "path": "/tmp/hepta-field-v3-run/INDEPENDENT_RUNTIME_MEDIA-frozen.json",
+        "sha256": "d7a2a784665db9e8271d8a793c7aeccb7e035c96d4b48284b759208e5d3f39aa"
+      },
+      "sources": [
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/feedback_evidence.py",
+          "sha256": "e0e2b472d4427dfc163c4a42903b55380e297412bc06ef4f358fa4d551d61686"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_audit_support.py",
+          "sha256": "54cffe180ee2fef003a3489803124e180e0faf08ca4d877efece4b85cdda8867"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_bank_media_audit.py",
+          "sha256": "01377f5c7596299f1eaef06791936fec5a0d89d6a090d3c39178e5f79a73190b"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_media_audit.py",
+          "sha256": "21b4ebecd36af6fc3cb6ef5d896715a7769a468c358ef7bcd24234928973b3ff"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_media_context.py",
+          "sha256": "969d535244cbfdd0423208395874154aad2316bb26f1c304286f245ebc503215"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_media_trace.py",
+          "sha256": "321424b8f92f5deb9021f1024a52728b0920344656cc5a87fabcd048dc1b50c3"
+        }
+      ],
+      "status": "complete"
+    },
+    {
+      "artifacts": [
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/17-frozen/COMPLETE.json",
+          "sha256": "e09894c39b4131a0db545287fb86c93a91ee8a8a2e79adcd44c5fde1cf052a60"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/17-frozen/selected/COMPLETE.json",
+          "sha256": "4ec68ff4bce7114ebc3015ce1b66de32209635369e9da410bdf0a87d1d3fe744"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/29-frozen/COMPLETE.json",
+          "sha256": "a8cd6f5aae56316efdc548e743a06e76a6279d25ecf8fc11a30de5c8e9cb9422"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/29-frozen/selected/COMPLETE.json",
+          "sha256": "77d979cd85c81b07a462ca944f9954689d69a0081fd79e3742b64c8e64eac4f5"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/43-frozen/COMPLETE.json",
+          "sha256": "274406cf159aaaab9fd36b5d258f88eb59fe29cfbf0b1b83ed3d66521551e86b"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/43-frozen/selected/COMPLETE.json",
+          "sha256": "216cc7998f224d13b015e76a2781ec0926b16133a9bb12d15a4d455eb726d317"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/17-frozen/COMPLETE.json",
+          "sha256": "c4943da3747c29b469e63d2d94274f7188714be9f062c7b88a3ef6a08626c95a"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/17-frozen/READOUTS.json",
+          "sha256": "65f1bf3b2dd3e09dee5efdfbdbbfc965ccc79a74f983be6d7d5f5c78689ebf46"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/29-frozen/COMPLETE.json",
+          "sha256": "4b6afc20b45d3dd1a2d16bc4745e05cb94a21d36efb372421e285608c0d4497e"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/29-frozen/READOUTS.json",
+          "sha256": "04e27e29e7b09e8d811cdafe794d9ac10f145604cc25755ada8cd2d07b92f1cc"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/43-frozen/COMPLETE.json",
+          "sha256": "78ba7cdee13a4932c961057f2ae70a3f610916d0d274cec11dad6356b88dec74"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/43-frozen/READOUTS.json",
+          "sha256": "ae2b76da23e7547f68cf408fabb3d3b259bd19d29737dab9cb66d55ed02a7e2a"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/PROTOCOL.json",
+          "sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/RUNTIME_AUDIT_FREEZE.json",
+          "sha256": "4eb4b0ee0824951e27dae401317c1a9b7833ad2571371f336ae9a7fbe3473a2a"
+        }
+      ],
+      "id": "runtime-results-frozen",
+      "kind": "runtime_statistics",
+      "receipt": {
+        "path": "/tmp/hepta-field-v3-run/INDEPENDENT_RUNTIME_RESULTS-frozen.json",
+        "sha256": "d876b1767f887682d6b06b55698f6361783822b4adfa044932b862729cb775f7"
+      },
+      "sources": [
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/analysis_contract.py",
+          "sha256": "3bd14691fb73ba8cc6892aa514536f69dce471be38fca90c577022b567962317"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_audit_support.py",
+          "sha256": "54cffe180ee2fef003a3489803124e180e0faf08ca4d877efece4b85cdda8867"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_results_audit.py",
+          "sha256": "10f9575b8b2dbdda4e2673f40caae5641de3ddadf27f8e078d52734718e0eb07"
+        }
+      ],
+      "status": "complete"
+    },
+    {
+      "artifacts": [
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/17-frozen/COMPLETE.json",
+          "sha256": "e09894c39b4131a0db545287fb86c93a91ee8a8a2e79adcd44c5fde1cf052a60"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/17-frozen/selected/COMPLETE.json",
+          "sha256": "4ec68ff4bce7114ebc3015ce1b66de32209635369e9da410bdf0a87d1d3fe744"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/29-frozen/COMPLETE.json",
+          "sha256": "a8cd6f5aae56316efdc548e743a06e76a6279d25ecf8fc11a30de5c8e9cb9422"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/29-frozen/selected/COMPLETE.json",
+          "sha256": "77d979cd85c81b07a462ca944f9954689d69a0081fd79e3742b64c8e64eac4f5"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/43-frozen/COMPLETE.json",
+          "sha256": "274406cf159aaaab9fd36b5d258f88eb59fe29cfbf0b1b83ed3d66521551e86b"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/43-frozen/selected/COMPLETE.json",
+          "sha256": "216cc7998f224d13b015e76a2781ec0926b16133a9bb12d15a4d455eb726d317"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/17-frozen/COMPLETE.json",
+          "sha256": "c4943da3747c29b469e63d2d94274f7188714be9f062c7b88a3ef6a08626c95a"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/17-frozen/READOUTS.json",
+          "sha256": "65f1bf3b2dd3e09dee5efdfbdbbfc965ccc79a74f983be6d7d5f5c78689ebf46"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/29-frozen/COMPLETE.json",
+          "sha256": "4b6afc20b45d3dd1a2d16bc4745e05cb94a21d36efb372421e285608c0d4497e"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/29-frozen/READOUTS.json",
+          "sha256": "04e27e29e7b09e8d811cdafe794d9ac10f145604cc25755ada8cd2d07b92f1cc"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/43-frozen/COMPLETE.json",
+          "sha256": "78ba7cdee13a4932c961057f2ae70a3f610916d0d274cec11dad6356b88dec74"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/fit/43-frozen/READOUTS.json",
+          "sha256": "ae2b76da23e7547f68cf408fabb3d3b259bd19d29737dab9cb66d55ed02a7e2a"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/PROTOCOL.json",
+          "sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/RUNTIME_AUDIT_FREEZE.json",
+          "sha256": "4eb4b0ee0824951e27dae401317c1a9b7833ad2571371f336ae9a7fbe3473a2a"
+        }
+      ],
+      "id": "native-session-frozen",
+      "kind": "native_session",
+      "receipt": {
+        "path": "/tmp/hepta-field-v3-run/NATIVE_SESSION_AUDIT-frozen.json",
+        "sha256": "4678c4d3d91fbfdffc8294d4ac1465f14317875061467a22c12a04843bc104f0"
+      },
+      "sources": [
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/native_session_audit.py",
+          "sha256": "ada35145fb075a1d5f1c1fc9a05d2f2768f83af5f5b554c7d0c265aa2acf7757"
+        }
+      ],
+      "status": "complete"
+    },
+    {
+      "artifacts": [
+        {
+          "path": "/tmp/hepta-field-v3-run/DEVELOPMENT_SELECTION.json",
+          "sha256": "a7d9604ad2de6f71fa02ad543d02e121fe3071d7eb62a650e0fae7473c8474ef"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/17/COMPLETE.json",
+          "sha256": "bbb60fc1a43c2aca55b9b3210ca017b8b0a80b9390a8edb7240010581e041dbc"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/17/ENDPOINTS.npz",
+          "sha256": "bc708f54093598e302a19f371dc311d12332ac21be2e39d5c1d168bd2b27e4bb"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/29/COMPLETE.json",
+          "sha256": "f6791ee1031359abb318500ce800fa6b5b25a4219467ee7d0e1ce600490e794a"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/29/ENDPOINTS.npz",
+          "sha256": "751851494f31fd03094e72491286531a3f878351e9a84394fe11ad35d9c9661c"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/43/COMPLETE.json",
+          "sha256": "7caa8205436105b042ae3748f5f668c8adf3a747e7aca174a380d96e2c0c4788"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/43/ENDPOINTS.npz",
+          "sha256": "861b740183f8e320544e926a42ff6a18b5283be2c629e3e75c8af7bb5d9ebb67"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/PROTOCOL.json",
+          "sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/DEVELOPMENT_FREEZE.json",
+          "sha256": "f6742f2ee89648b688fd89f0cccbbda30bf14fada3ba150f9a06fa177ee43d62"
+        }
+      ],
+      "id": "development-endpoint-audit",
+      "kind": "training_endpoint",
+      "receipt": {
+        "path": "/tmp/hepta-field-v3-run/INDEPENDENT_DEVELOPMENT_ENDPOINT_AUDIT.json",
+        "sha256": "28f727de261179a7f2b7df47395347dc4b3b00e949538634569b86f6e25ceeae"
+      },
+      "sources": [
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/analysis_contract.py",
+          "sha256": "3bd14691fb73ba8cc6892aa514536f69dce471be38fca90c577022b567962317"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/endpoint_arrays.py",
+          "sha256": "570ca1872e4f60150e1a7a5558e81f9fa6ae9ae6806bc13606e62992f1aaa3c1"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_endpoint_audit.py",
+          "sha256": "b4ccc79839282ad298bc1683bbe5db1f56caee191cf4da75a48f9c4899341823"
+        }
+      ],
+      "status": "complete"
+    },
+    {
+      "artifacts": [
+        {
+          "path": "/tmp/hepta-field-v3-run/development/17/ASSET_IDENTITIES.json",
+          "sha256": "d987e9985d11f392ab62604e0c5251acc527f3e857d7c4c015370b6078fea96a"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/17/COMPLETE.json",
+          "sha256": "bbb60fc1a43c2aca55b9b3210ca017b8b0a80b9390a8edb7240010581e041dbc"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/17/ENDPOINTS.npz",
+          "sha256": "bc708f54093598e302a19f371dc311d12332ac21be2e39d5c1d168bd2b27e4bb"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/17/ENDPOINT_IDENTITIES.json",
+          "sha256": "b58d442073a59fa83fce96fca6b73f17860fcbe691cd5a6fdf41f19708b666ca"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/29/ASSET_IDENTITIES.json",
+          "sha256": "46672021f97921ef642606e3ec39c37f9669b2d85babcdad2b7e185c6ad5facd"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/29/COMPLETE.json",
+          "sha256": "f6791ee1031359abb318500ce800fa6b5b25a4219467ee7d0e1ce600490e794a"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/29/ENDPOINTS.npz",
+          "sha256": "751851494f31fd03094e72491286531a3f878351e9a84394fe11ad35d9c9661c"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/29/ENDPOINT_IDENTITIES.json",
+          "sha256": "f4053a191af88eede03c603bc56f620b85d429103ca386c15415affb68833779"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/43/ASSET_IDENTITIES.json",
+          "sha256": "adc302122f84ef711a3cad93d9adfea75b70a2c0d969408e436efa84c4189048"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/43/COMPLETE.json",
+          "sha256": "7caa8205436105b042ae3748f5f668c8adf3a747e7aca174a380d96e2c0c4788"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/43/ENDPOINTS.npz",
+          "sha256": "861b740183f8e320544e926a42ff6a18b5283be2c629e3e75c8af7bb5d9ebb67"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/43/ENDPOINT_IDENTITIES.json",
+          "sha256": "4e00b7b5dd1a300cdff917dc17de0ac5eaf8be2757f5146d8cd140985a4886dd"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/17-frozen/ASSET_IDENTITIES.json",
+          "sha256": "d987e9985d11f392ab62604e0c5251acc527f3e857d7c4c015370b6078fea96a"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/29-frozen/ASSET_IDENTITIES.json",
+          "sha256": "46672021f97921ef642606e3ec39c37f9669b2d85babcdad2b7e185c6ad5facd"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/runtime/audit/43-frozen/ASSET_IDENTITIES.json",
+          "sha256": "adc302122f84ef711a3cad93d9adfea75b70a2c0d969408e436efa84c4189048"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/PROTOCOL.json",
+          "sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/DEVELOPMENT_FREEZE.json",
+          "sha256": "f6742f2ee89648b688fd89f0cccbbda30bf14fada3ba150f9a06fa177ee43d62"
+        }
+      ],
+      "id": "development-hard-score-audit",
+      "kind": "training_hard_scores",
+      "receipt": {
+        "path": "/tmp/hepta-field-v3-run/INDEPENDENT_TRAINING_HARD_SCORE_AUDIT-development.json",
+        "sha256": "0265f8a7d26ed56caf61d074bb67516ab5a7cdfb320e26709d64f8ac93bb0045"
+      },
+      "sources": [
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/native_session_audit.py",
+          "sha256": "ada35145fb075a1d5f1c1fc9a05d2f2768f83af5f5b554c7d0c265aa2acf7757"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_hard_score_audit.py",
+          "sha256": "499019346e827a9acac2c9af3586a4c4bb28fe7ccb19de76c26954d9ee0d7b32"
+        }
+      ],
+      "status": "complete"
+    },
+    {
+      "artifacts": [
+        {
+          "path": "/tmp/hepta-field-v3-run/INDEPENDENT_DEVELOPMENT_ENDPOINT_AUDIT.json",
+          "sha256": "28f727de261179a7f2b7df47395347dc4b3b00e949538634569b86f6e25ceeae"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/INDEPENDENT_TRAINING_HARD_SCORE_AUDIT-development.json",
+          "sha256": "0265f8a7d26ed56caf61d074bb67516ab5a7cdfb320e26709d64f8ac93bb0045"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/17/COMPLETE.json",
+          "sha256": "bbb60fc1a43c2aca55b9b3210ca017b8b0a80b9390a8edb7240010581e041dbc"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/17/ENDPOINTS.npz",
+          "sha256": "bc708f54093598e302a19f371dc311d12332ac21be2e39d5c1d168bd2b27e4bb"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/29/COMPLETE.json",
+          "sha256": "f6791ee1031359abb318500ce800fa6b5b25a4219467ee7d0e1ce600490e794a"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/29/ENDPOINTS.npz",
+          "sha256": "751851494f31fd03094e72491286531a3f878351e9a84394fe11ad35d9c9661c"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/43/COMPLETE.json",
+          "sha256": "7caa8205436105b042ae3748f5f668c8adf3a747e7aca174a380d96e2c0c4788"
+        },
+        {
+          "path": "/tmp/hepta-field-v3-run/development/43/ENDPOINTS.npz",
+          "sha256": "861b740183f8e320544e926a42ff6a18b5283be2c629e3e75c8af7bb5d9ebb67"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/PROTOCOL.json",
+          "sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_freezes/DEVELOPMENT_FREEZE.json",
+          "sha256": "f6742f2ee89648b688fd89f0cccbbda30bf14fada3ba150f9a06fa177ee43d62"
+        }
+      ],
+      "id": "development-audit-join",
+      "kind": "metadata_join",
+      "receipt": {
+        "path": "/tmp/hepta-field-v3-run/DEVELOPMENT_AUDIT_JOIN.json",
+        "sha256": "f1664b4af4bb4301aa240309a7d193abef679190a172a803abe1b07b2e11834d"
+      },
+      "source_binding_scope": "The two bound input-auditor producers; the existing join is an inline metadata operation with explicit zero model calls and no separately measured wall/CPU timer.",
+      "sources": [
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/analysis_contract.py",
+          "sha256": "3bd14691fb73ba8cc6892aa514536f69dce471be38fca90c577022b567962317"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/endpoint_arrays.py",
+          "sha256": "570ca1872e4f60150e1a7a5558e81f9fa6ae9ae6806bc13606e62992f1aaa3c1"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/native_session_audit.py",
+          "sha256": "ada35145fb075a1d5f1c1fc9a05d2f2768f83af5f5b554c7d0c265aa2acf7757"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_endpoint_audit.py",
+          "sha256": "b4ccc79839282ad298bc1683bbe5db1f56caee191cf4da75a48f9c4899341823"
+        },
+        {
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_hard_score_audit.py",
+          "sha256": "499019346e827a9acac2c9af3586a4c4bb28fe7ccb19de76c26954d9ee0d7b32"
+        }
+      ],
+      "status": "complete"
+    }
+  ]
+}
