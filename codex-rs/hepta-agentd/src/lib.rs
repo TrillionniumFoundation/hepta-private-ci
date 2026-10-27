@@ -12,6 +12,8 @@ pub use native_hos2_owner::AgentdG2NativeImage;
 #[cfg(target_os = "linux")]
 pub use native_hos2_owner::AgentdG2NativeOperationHost;
 #[cfg(target_os = "linux")]
+pub use native_hos2_owner::attach_g2_native_cpu_policy_host;
+#[cfg(target_os = "linux")]
 pub use native_hos2_owner::attach_g2_native_operation_host;
 #[cfg(target_os = "linux")]
 mod root_bound_socket;
