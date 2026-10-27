@@ -24,13 +24,15 @@ struct MemoryStore {
 }
 
 impl MemoryStore {
-    fn credential(&self, service: &str, account: &str) -> Arc<MockCredential> {
-        let mut credentials = self.credentials.lock().expect("credential map lock");
-        Arc::clone(
+    fn credential(&self, service: &str, account: &str) -> keyring::Result<Arc<MockCredential>> {
+        let mut credentials = self.credentials.lock().map_err(|_| {
+            Error::NoStorageAccess(Box::new(io::Error::other("credential map lock poisoned")))
+        })?;
+        Ok(Arc::clone(
             credentials
                 .entry((service.to_owned(), account.to_owned()))
                 .or_default(),
-        )
+        ))
     }
 }
 
@@ -51,13 +53,15 @@ impl CredentialBuilderApi for MemoryBuilder {
             .0
             .next_build_error
             .lock()
-            .expect("builder error lock")
+            .map_err(|_| {
+                Error::NoStorageAccess(Box::new(io::Error::other("builder error lock poisoned")))
+            })?
             .take()
         {
             return Err(error);
         }
         Ok(Box::new(SharedCredential(
-            self.0.credential(service, account),
+            self.0.credential(service, account)?,
         )))
     }
 
@@ -176,7 +180,9 @@ fn default_store_preserves_entry_identity_values_and_error_contract() {
         Some("other service".to_owned())
     );
 
-    let credential = memory.credential(service, other_account);
+    let credential = memory
+        .credential(service, other_account)
+        .expect("controlled credential");
     let operations = [
         ("load", Operation::Load),
         ("save", Operation::Save),
