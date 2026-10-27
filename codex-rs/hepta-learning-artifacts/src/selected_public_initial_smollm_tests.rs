@@ -1,5 +1,6 @@
 //! Real selection/CURRENT byte checks; no model or product qualification.
 use super::*;
+use pretty_assertions::assert_eq;
 
 #[test]
 fn public_initial_admission_rejects_profile_crossing_and_changed_factors() {

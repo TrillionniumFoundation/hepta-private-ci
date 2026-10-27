@@ -14,6 +14,7 @@ use codex_hepta_memory::MemoryLifecycleState;
 use codex_hepta_memory::MemoryRevisionDraft;
 use codex_hepta_memory::MemoryVerification;
 use codex_hepta_memory::SourceDraft;
+use pretty_assertions::assert_eq;
 use std::collections::BTreeSet;
 use std::time::Duration;
 

@@ -4,6 +4,7 @@
 use super::agentd_tests::ordinary_session;
 use super::agentd_tests::seed_actions;
 use super::*;
+use pretty_assertions::assert_eq;
 use std::os::unix::process::CommandExt;
 use std::process::Child;
 use std::process::Command;
