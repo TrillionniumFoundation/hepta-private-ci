@@ -12,6 +12,11 @@
       "stage": "network-enabled helper launch"
     }
   ],
+  "continuation_retry_review": {
+    "reason": "The generic continuation does not explicitly approve these two files and the Library destination. No further upload retry or alternative destination will be attempted without explicit authorization.",
+    "result": "automatic approval rejected before process creation",
+    "user_reply": "全量冲下一步，直到所有blocker全部闭合"
+  },
   "files": [
     {
       "bytes": 550161476,
