@@ -280,6 +280,10 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
             RUNNER.with_name("hepta_ci_module_paths.py"),
             self.repo / "scripts/hepta_ci_module_paths.py",
         )
+        shutil.copyfile(
+            RUNNER.with_name("hepta_ci_native_binaries.py"),
+            self.repo / "scripts/hepta_ci_native_binaries.py",
+        )
         (self.repo / "codex-rs/Cargo.toml").write_text(
             '[workspace]\nmembers=["one", "two", "unrelated"]\n'
         )
@@ -308,6 +312,11 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
                 "import json, os, pathlib, sys\n"
                 "with open(os.environ['CALLS'], 'a') as stream:\n"
                 "    stream.write(json.dumps(sys.argv) + '\\n')\n"
+                "if sys.argv[1:2] == ['test-planned-binaries']:\n"
+                "    target = pathlib.Path(os.environ['RUNNER_TEMP']).resolve()\n"
+                "    payload = {'rust-build-meta': {'target-directory': str(target), 'non-test-binaries': {}}, 'rust-binaries': {}}\n"
+                "    pathlib.Path(sys.argv[2]).write_text(json.dumps(payload))\n"
+                "    raise SystemExit(0)\n"
                 "raise SystemExit(17 if os.environ.get('FAIL_TOOL') == pathlib.Path(sys.argv[0]).name else 0)\n"
             )
             command.chmod(0o755)
