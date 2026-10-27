@@ -1,0 +1,418 @@
+{
+  "baseline_commit": "74ebc1ed6947a4cd913ee162c88a81ac3677474f",
+  "claim_limits": [
+    "Qualification screen on three fixed historical small multimodal models, not an LLM-scale benchmark.",
+    "Four update schedules measure within-model training variation; they are not four independent models.",
+    "Fourteen retained calibration values supplement the readout. No claim of a context-free 12-dimensional Markov sufficient state.",
+    "Source disjointness covers the complete recorded V2/V3/V4 identities, not unknown pretraining or writers.",
+    "The fixed V3 Q_ref targets refer to the frozen reference continuation, not the eventual adaptive policy or an optimal value function.",
+    "Final/runtime/production and original substantive B03-B07 claims remain unestablished without their own evidence."
+  ],
+  "failure_policy": {
+    "all_failed_and_partial_records_retained": true,
+    "failed_formal_comparison": "Terminal failure for this candidate qualification; retain each result and do not open final or new runtime holdout.",
+    "infrastructure_failure": "Record exact progress and partial evidence; do not silently rerun a consumed outcome or discard failed paths. Any recovery requires an independently audited, prospectively documented state-identical continuation.",
+    "negative_evidence_scope": "Failure to pass is lack of established gain under this contract, not an automatic refutation of the parameter-field theory.",
+    "no_endpoint_resampling_or_sample_size_enlargement": true,
+    "no_method_or_comparator_substitution_after_outcomes": true,
+    "no_same_evaluation_retry_until_success": true,
+    "no_threshold_ridge_or_field_retuning_after_outcomes": true,
+    "single_registered_candidate": true
+  },
+  "frozen_v3_learning_artifacts": {
+    "17": {
+      "bank/17/BANK.json": {
+        "bytes": 247649,
+        "sha256": "c85d2253b3ccbf05b1a4f3e5da57cf012549a57bf1aaf6b5706784fa35d96a8f"
+      },
+      "fit/17/CONTROLLERS.json": {
+        "bytes": 1482994,
+        "sha256": "f750695fef1f7f7d9f20e7abdbd6547845c8ce59e5fd77788b85a5be1548a1e5"
+      },
+      "reference/17/REFERENCE.json": {
+        "bytes": 11449,
+        "sha256": "96565d1cdc10b607a6741c92d319f1e950e8ee9e4c96b2574b9754512584a16a"
+      }
+    },
+    "29": {
+      "bank/29/BANK.json": {
+        "bytes": 248261,
+        "sha256": "8ee6976dacb3ffdd0271b43c3c125b06d1221d39c729fd1fa3268cd9bec2ef57"
+      },
+      "fit/29/CONTROLLERS.json": {
+        "bytes": 1483070,
+        "sha256": "98c93a2a1b6a765eb3c422a1255c95d3efb489ba691ebb2b583c1bfb60c488a3"
+      },
+      "reference/29/REFERENCE.json": {
+        "bytes": 11380,
+        "sha256": "9f1e2597bcf802b1f5d04cfa8d492d1a7ba8c686f3a3c6def94f5b8fb71da555"
+      }
+    },
+    "43": {
+      "bank/43/BANK.json": {
+        "bytes": 247022,
+        "sha256": "f87666fc1b15505b43d686257050c9b821366da26bd98b139fd642075e3e1445"
+      },
+      "fit/43/CONTROLLERS.json": {
+        "bytes": 1481779,
+        "sha256": "9efa768f3de6d7913a9cf3447659d329bb9a8e6b7f63644d70832df46ca49215"
+      },
+      "reference/43/REFERENCE.json": {
+        "bytes": 11401,
+        "sha256": "e3c4e013e79e34bec46312d72d18e0b7030604434ba69098c347ffa525e7265d"
+      }
+    }
+  },
+  "historical_boundary": {
+    "historical_v2_shared_panel_clause_cannot_be_rewritten": true,
+    "new_success_updates_new_scope_only": true,
+    "v1_v2_v3_sources_and_results_immutable": true,
+    "v3_failure_policy": {
+      "never_mark_scientific_success_for_engineering_completion": true,
+      "next_study_requires_new_protocol_and_unused_sources": true,
+      "no_audit_retry": true,
+      "no_primary_resampling_until_success": true,
+      "no_threshold_or_feature_selection_after_audit": true,
+      "preserve_all_candidates_and_failed_gates": true
+    },
+    "v3_final_confirmation_executed": false,
+    "v3_frozen_runtime_gate_passed": false,
+    "v3_training_gate_passed": false
+  },
+  "native_authority": {
+    "authority": "DENY_ALL",
+    "native_owner_integration": false,
+    "new_native_ticks": 0,
+    "requires_calibration": true
+  },
+  "numerics_and_resources": {
+    "accounting": "All attempted/rejected/zero blocks, gradient and directional work, generator/teacher/observer work, complete optimizer transactions, calibration and policy CPU/wall, storage and verification costs are retained. Logical work is not FLOP or wall-time equivalence.",
+    "clean_conditions": [
+      "clean"
+    ],
+    "clean_pairs": 1024,
+    "complete_paths": 108,
+    "directional_state_measurements": 648,
+    "endpoint_logical_outputs": 340992,
+    "endpoint_observer_digit_examples": 1363968,
+    "endpoint_output_storage": "Lossless uint8 generated pixels, exact UTF-8 captions, output hashes, source IDs and both observer utility arrays for all paths and original baselines; no mean-only replacement.",
+    "generator_and_adapter_dtype": "original float32 CPU",
+    "new_controller_fits": 0,
+    "policy_and_bootstrap_dtype": "NumPy float64",
+    "scheduled_gradient_examples": 2985984,
+    "scheduled_gradient_microsteps": 31104,
+    "task_conditions": [
+      "heavy_noise",
+      "missing",
+      "occlusion",
+      "clean"
+    ],
+    "task_pairs": 512,
+    "torch_deterministic_algorithms": true,
+    "torch_num_interop_threads": 1,
+    "torch_num_threads": 2
+  },
+  "old_training_protocol_sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7",
+  "panel_origin": {
+    "all_adaptive_comparators_receive_same_baseline_information": true,
+    "calibration_context_float64_payload_bytes": 112,
+    "calibration_context_values": 14,
+    "context_scope": "Readonly per seed/panel/path calibration in addition to the 12-dimensional readout; not a claim of an unconditioned 12-dimensional Markov sufficient state.",
+    "formula": "x_prime[I] = x[I] - (observed_initial[I] - frozen_fit_initial[I]); x_prime[not I] = x[not I]",
+    "frozen_fit_initial": "Each seed BANK.json step-zero states; all four trajectories must match exactly on I. No averaging or new-panel fitting.",
+    "name": "initial_panel_translation_H12",
+    "no_new_head_fit_or_ridge_selection": true,
+    "observed_initial": "Exactly one pre-update measurement from the new phase authorized probe/guard inputs. Reuse the already scheduled step-zero raw measurement when possible. Never use qualification endpoint task/clean outcomes.",
+    "raw_state_dimension": 30,
+    "same_baseline_measurement_accounting_for_all_methods": true,
+    "single_intervention": true,
+    "storage_accounting": "112 bytes is the active 14-coordinate float64 calibration array only. Full raw30/fit30 audit metadata, repeated journals, Python containers, temporary vectors and frozen heads are separately retained and measured; 112 bytes is not total memory or storage.",
+    "translated_indices": [
+      0,
+      1,
+      2,
+      3,
+      12,
+      13,
+      14,
+      15,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29
+    ],
+    "unchanged": [
+      "V3 selected heads and normalizers",
+      "V3 ridges and reference policies",
+      "four training multipliers",
+      "rank8 trainable capacity",
+      "288 steps and 48-step blocks",
+      "learning rate, momentum, clipping, rehearsal and teacher anchor",
+      "raw clean guard, full optimizer rollback and zero-action accounting",
+      "fixed training deployment action and hard scoring"
+    ]
+  },
+  "paper_revision": "f8df0a6075f58f3ab9431a889b773cdf8d6e771d",
+  "phase_access": {
+    "adaptation_roles": [
+      "qualification_gradient",
+      "qualification_rehearsal",
+      "qualification_probe",
+      "qualification_guard"
+    ],
+    "endpoint_observers": [
+      "reward",
+      "audit"
+    ],
+    "endpoint_roles": [
+      "qualification_task",
+      "qualification_clean"
+    ],
+    "no_new_head_fit": true,
+    "no_new_ridge_selection": true,
+    "no_old_failed_gate_override": true,
+    "old_stage_runner_not_used": true,
+    "order": [
+      "register code, sources, protocol and all old controller inputs",
+      "train all 108 paths without task/clean endpoint tensors or audit observer",
+      "freeze all 108 checkpoints and complete trace inventories",
+      "independent seal validation and external endpoint freeze",
+      "evaluate all 108 retained paths plus three original-model baselines",
+      "one fixed six-comparison qualification decision"
+    ],
+    "train_observers": [
+      "reward"
+    ]
+  },
+  "proposal_sha256": "c6d8cc4b67189de4e82a05ca5f387f33b03197eb18dfc8054d906cf8030351aa",
+  "qualification": {
+    "adaptive_comparator": "origin_richer",
+    "adaptive_selection_source": "Released V3 richer30 selection, given the same legal initial-panel calibration information; no V4 reselection.",
+    "all_methods_retained": true,
+    "bootstrap_samples": 4000,
+    "bootstrap_seed": 271042,
+    "clean_ci_lower_strict_min": -0.01,
+    "clean_noninferiority_candidates": [
+      "ordinary",
+      "origin_field",
+      "origin_richer"
+    ],
+    "clean_noninferiority_reference": "frozen",
+    "clean_rule": "All three corrected interval lower bounds strictly above -0.01 under both observers.",
+    "comparison_family": 6,
+    "diagnostic_only_contrasts": [
+      "origin_field-raw_field",
+      "origin_field-origin_generic",
+      "origin_field-origin_h7"
+    ],
+    "diagnostic_only_methods": [
+      "raw_field",
+      "origin_generic",
+      "origin_h7",
+      "unselected ordinary constants"
+    ],
+    "family_alpha": 0.05,
+    "formal_gain_contrasts": [
+      "ordinary-frozen",
+      "origin_field-ordinary",
+      "origin_field-origin_richer"
+    ],
+    "gain_ci_lower_strict_min": 0.0,
+    "gain_each_fixed_model_mean_strict_min": 0.0,
+    "gain_rule": "All three corrected interval lower bounds strictly above zero, and each of the three fixed model means strictly positive, under both observers.",
+    "max_outcome_looks": 1,
+    "method_semantics": {
+      "ordinary_0": "constant multiplier 0.0",
+      "ordinary_1": "constant multiplier 0.25",
+      "ordinary_2": "constant multiplier 1.0",
+      "ordinary_3": "constant multiplier 2.0",
+      "origin_field": "frozen H12 on origin-translated states",
+      "origin_generic": "frozen generic12 on the same translated states",
+      "origin_h7": "frozen H7 on the same translated states",
+      "origin_richer": "frozen richer30 on the same translated states",
+      "raw_field": "unchanged V3 H12 on raw states"
+    },
+    "methods": [
+      "ordinary_0",
+      "ordinary_1",
+      "ordinary_2",
+      "ordinary_3",
+      "raw_field",
+      "origin_field",
+      "origin_generic",
+      "origin_richer",
+      "origin_h7"
+    ],
+    "observers": [
+      "reward",
+      "audit"
+    ],
+    "old_training_protocol_sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7",
+    "ordinary_action_indices": {
+      "17": 2,
+      "29": 3,
+      "43": 3
+    },
+    "ordinary_selection_source": "Released V3 selection fixed before any V4 model outcomes; these are gradient multiplier indices, not deployment actions.",
+    "passed_means": "Eligible to prepare a separately registered independent final. Does not establish runtime, Hepta-specific representation, two-layer synergy, LLM-scale or production claims.",
+    "per_observer_two_sided_coverage": 0.9916666666666667,
+    "quantile": "numpy.quantile(method=linear); equal-tail two-sided interval, alpha/6 per observer",
+    "resampling": "Each of 4000 draws: sample 4 paired rollout IDs independently within each fixed model, shared across methods/observers/task-clean; one shared task source-pair draw across all methods/models/conditions, then a separate shared clean source-pair draw. Equal fixed-model and condition weights. Models are not resampled.",
+    "retention_margin": 0.01,
+    "schedule_ids": [
+      14000,
+      14001,
+      14002,
+      14003
+    ],
+    "single_outcome_look": true
+  },
+  "registration_rule": "Execution requires an external source freeze binding this exact protocol and its executable dependency closure to a published Git commit before the first new-model call. This file alone is not an execution receipt.",
+  "runtime_boundary": {
+    "new_runtime_holdout_opened": false,
+    "reason": "All six fixed stage-split pilot comparisons were negative on released development data; no new runtime experiment is registered by this protocol.",
+    "runtime_candidate_qualified": false
+  },
+  "schema": "hepta.field-bridge.v4.panel-origin-protocol.1",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "source_allocation_sha256": "0b5cc7213f7c635195b85c580cb92a72b08d9d200b9c3211dfef89a2887b79fb",
+  "source_manifest_sha256": "12fd285712a2c2d241c016a495b1eefd3995e02e6a1bcbff1fa3fce85141ae1f",
+  "source_registry_gzip_sha256": "4dc43625c90a7d2b8ff5c93f6ef4c4e4f9b688dd37d5f15c41aae84c3e3ca88f",
+  "status": "LOCKED_FOR_PRE_OUTCOME_REGISTRATION",
+  "study_id": "hepta.field-bridge.v4.panel-origin-qualification.20261027.1",
+  "training": {
+    "adapt_batch_size": 64,
+    "adapter_modules": [
+      "pixel_decoder.0",
+      "text_initial",
+      "text_projection",
+      "fuse.0",
+      "initial_image",
+      "initial_text",
+      "coupling_cell.0",
+      "digit_head"
+    ],
+    "adapter_rank": 8,
+    "audit_schedule_ids": [
+      8000,
+      8001,
+      8002,
+      8003
+    ],
+    "batch_seed_offset": 1600000,
+    "candidate_mode": "field",
+    "clean_loss_weight": 0.5,
+    "conditions": [
+      "heavy_noise",
+      "missing",
+      "occlusion",
+      "clean"
+    ],
+    "development_schedule_ids": [
+      6000,
+      6001,
+      6002,
+      6003
+    ],
+    "exploration_paths": [
+      [
+        0,
+        1,
+        2,
+        3,
+        0,
+        1
+      ],
+      [
+        1,
+        2,
+        3,
+        0,
+        1,
+        2
+      ],
+      [
+        2,
+        3,
+        0,
+        1,
+        2,
+        3
+      ],
+      [
+        3,
+        0,
+        1,
+        2,
+        3,
+        0
+      ]
+    ],
+    "feature_dimension": {
+      "field": 12,
+      "generic": 12,
+      "h7": 7,
+      "richer": 30
+    },
+    "feature_modes": [
+      "field",
+      "generic",
+      "richer",
+      "h7"
+    ],
+    "final_schedule_id": 10000,
+    "fit_ridge_selection": "whole-trajectory leave-one-out prediction MSE, fit-only normalization, listed-alpha tie break",
+    "fit_schedule_ids": [
+      5000,
+      5001,
+      5002,
+      5003
+    ],
+    "fixed_actions": {
+      "17": 0,
+      "29": 3,
+      "43": 0
+    },
+    "fixed_actions_source": "V2 frozen PILOT_SUMMARY.json original-model winners; no V3 outcome selection",
+    "forward_seed_offset": 1107,
+    "generic_projection_seed": 271031,
+    "gradient_clip": 1.0,
+    "guard_failure": "restore full parameter and SGD state; advance schedule clock; charge all work",
+    "guard_min_delta": 0.0,
+    "hard_forward_seed_offset": 191027,
+    "init_seed_offset": 271027,
+    "learning_rate": 0.2,
+    "macro_steps": 48,
+    "momentum": 0.9,
+    "multipliers": [
+      0.0,
+      0.25,
+      1.0,
+      2.0
+    ],
+    "ordinary_clean_min_delta": -0.01,
+    "panel_batch_size": 128,
+    "panel_seed_offset": 1812027,
+    "probe_forward_seed_offset": 171027,
+    "reference_clean_min_delta": 0.0,
+    "reference_schedule_id": 4000,
+    "refinement_charge": 0.002,
+    "rehearsal_batch_size": 32,
+    "rehearsal_seed_offset": 2600000,
+    "ridges": [
+      0.0001,
+      0.01,
+      1.0
+    ],
+    "steps": 288,
+    "teacher_anchor": 0.1,
+    "value_target": "Q_ref terminal hard utility after candidate48-step block followed by frozen reference policy to288; not optimal Q or deployed-policy value",
+    "zero_action": "compute and charge gradients; do not step or modify parameters/momentum"
+  }
+}
