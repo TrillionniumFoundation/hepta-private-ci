@@ -2,6 +2,7 @@
 //! date cases test the host transport profile, not the classifier held split.
 
 use super::*;
+use pretty_assertions::assert_eq;
 use crate::MEMORY_CELL_TIME_VIEW_PROFILE_V1;
 use crate::memory_cell_training_test_support::publish;
 
