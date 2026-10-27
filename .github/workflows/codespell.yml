@@ -25,6 +25,9 @@ jobs:
         uses: codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579 # v2.2
         with:
           ignore_words_file: .codespellignore
+          # The immutable evidence pack is binary; keep spelling checks on all text sources.
+          # This explicit action input takes precedence over .codespellrc's skip setting.
+          skip: ./.git,./qualification/public-initial-v2/ci-008-f75bf1ac/records-011.pack
 
       - name: Check for a clean worktree
         if: always() && !cancelled()
