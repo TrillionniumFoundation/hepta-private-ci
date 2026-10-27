@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.p41-windows-core-turn-admission-repair.v1",
+  "observation_date_utc": "2026-10-27",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "exact_parent": "d4d979815122a669f9c862c1da32b4afef940be2",
+  "parent_tree": "f376400aa5ccf833babc975abf4a43d90b1878fc",
+  "file": "codex-rs/core/tests/responses_headers.rs",
+  "preimage_blob": "a07b20d0daa54c997bc320c981c19b1462273dab",
+  "postimage_blob": "56cabf827c7748be0174fae2d3c1d22be612c506",
+  "original_native_failure": {
+    "run": 40562460900,
+    "job": 122396008792,
+    "platform": "windows-latest",
+    "target": "//codex-rs/core:core-responses_headers-test",
+    "test": "responses_stream_includes_turn_metadata_header_for_git_workspace_e2e",
+    "result": "FAIL",
+    "error": "submit post-git turn prompt: NotIdle"
+  },
+  "donor": {
+    "pr": 3374,
+    "head": "8917470534e9c1137225abf7c3d75cd834b83603",
+    "hunk": "bounded observe_admission_fences_until before next submit"
+  },
+  "limits": {
+    "source_candidate_only": true,
+    "owning_windows_pass": false,
+    "full_blocking_ci_pass": false,
+    "not_production_authority": true
+  },
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "release": "HOLD_NO_GO"
+}
