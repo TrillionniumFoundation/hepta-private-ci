@@ -114,3 +114,18 @@ path requires a `SystemLongitudinal` product qualification, including genuine
 temporally ordered observations, multiple windows, native statistical evidence,
 and the original signing and artifact owners. The single-window controlled
 neural comparison provider and static six-arm scores cannot mint this receipt.
+
+The ten-step match is **per round only**. Diagnostic descendants inherit the
+previous candidate's ten or twenty training steps, while fresh LoRA and full
+tuning restart from the common checkpoint for ten steps each round. Reports
+therefore retain each arm's measured steps, tokens, supervised tokens, actual
+parent lineage and ancestor receipt hashes, and distinguish cumulative schedules
+from this-round schedules. Later descendants carry `CumulativeBudgetMismatch`.
+`cumulative_budget_matched` and `budget_matched_gain_proven` remain false: neither
+equal step counts nor profiler-supported FLOPs prove equal total resource cost.
+Shared upstream pretraining cost is unknown and is not recorded as zero. These
+score differences cannot show that descendants overcome controls at the same
+cumulative budget. That separate experiment requires additional fresh and full
+tuning controls at twenty and thirty steps, while retaining the existing ten-step
+controls and original source records; this diagnostic does not silently change
+their training plans.

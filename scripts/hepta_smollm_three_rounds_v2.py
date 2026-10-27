@@ -170,6 +170,41 @@ def run(args):
         require(
             parent["contract"] == incumbent["contract"], "same frozen target contract"
         )
+    lineage = getattr(args, "proposal_training_lineage", [])
+    count_fields = ("steps", "tokens", "supervised_tokens")
+    inherited_counts = dict.fromkeys(count_fields, 0)
+    previous = incumbent
+    for entry in lineage:
+        require(
+            entry["parent"] == previous
+            and entry["child"]["generation"] == previous["generation"] + 1,
+            "training lineage skips its actual parent",
+        )
+        receipt_pin = entry["training_receipt"]
+        require(
+            runtime.file_sha(receipt_pin["path"]) == receipt_pin["sha256"],
+            "ancestor training receipt changed",
+        )
+        ancestor = runtime.read_json(receipt_pin["path"])
+        require(
+            ancestor["outcome"] == "success"
+            and ancestor["parent_readback"] == previous["adapter"]
+            and ancestor["candidate"]
+            == {key: entry["child"][key] for key in ("adapter", "file_sha256")},
+            "ancestor receipt does not bind this actual candidate",
+        )
+        for key in count_fields:
+            require(
+                type(ancestor["training"][key]) is int
+                and ancestor["training"][key] >= 0,
+                "ancestor measured schedule",
+            )
+            inherited_counts[key] += ancestor["training"][key]
+        previous = entry["child"]
+    require(
+        previous == parent and parent["generation"] == len(lineage) + 1,
+        "complete measured post-genesis lineage required",
+    )
     plan_raw = (PROFILES / "smollm2-public-initial-v2.plan.json").read_bytes()
     plan = runtime.validate_plan(json.loads(plan_raw))
     manifest, _ = runtime.verify_materials(args.materials)
@@ -183,6 +218,7 @@ def run(args):
         round=args.round,
         parent=parent,
         actual_current_incumbent=incumbent,
+        candidate_training_lineage=lineage,
         diagnostic_unadmitted_lineage=diagnostic,
         current_snapshot_only=True,
         actual_parent_readback=hashlib.sha256(readback_raw).hexdigest(),
@@ -327,6 +363,9 @@ def run(args):
         runtime.save(output / "candidate-parent-material.json", next_parent)
         artifacts = {"candidate": candidate["adapter"]}
         training = {"candidate": trained["training"]}
+        training_receipts = {
+            "candidate": candidate_output / "execution/actual-receipt.json"
+        }
         for role in runtime.CONTROLS:
             receipt = phase("train", role)
             require(
@@ -334,6 +373,7 @@ def run(args):
             )
             artifacts[role] = receipt["artifact"]
             training[role] = receipt["training"]
+            training_receipts[role] = output / ("train-" + role) / "actual-receipt.json"
         trained_roles = [
             "candidate",
             "fresh-budget-matched-lora",
@@ -366,6 +406,53 @@ def run(args):
                 actual_parent["backbone"],
             )
             artifacts["actual-current-incumbent"] = incumbent["adapter"]
+        history = {}
+        for role in artifacts:
+            counts = {
+                key: training[role][key] if role in training else 0
+                for key in count_fields
+            }
+            prior = (
+                inherited_counts
+                if role == "candidate"
+                else dict.fromkeys(count_fields, 0)
+            )
+            history[role] = dict(
+                artifact=artifacts[role],
+                per_round=counts,
+                inherited_campaign=prior,
+                cumulative_campaign={
+                    key: prior[key] + counts[key] for key in count_fields
+                },
+                parameter_parent=parent
+                if role == "candidate"
+                else incumbent
+                if role == "actual-current-incumbent"
+                else dict(
+                    source_weight_sha256=runtime.WEIGHT_SHA, campaign_adaptation_steps=0
+                ),
+                inherited_training_receipts=[
+                    entry["training_receipt"] for entry in lineage
+                ]
+                if role == "candidate"
+                else [],
+            )
+        cumulative_schedule_matched = (
+            len(
+                {
+                    tuple(
+                        history[role]["cumulative_campaign"][key]
+                        for key in count_fields
+                    )
+                    for role in trained_roles
+                }
+            )
+            == 1
+        )
+        training_receipts = {
+            role: dict(path=str(path), sha256=runtime.file_sha(path))
+            for role, path in training_receipts.items()
+        }
         roster = dict(
             experiment=runtime.identity(plan),
             contract=parent["contract"],
@@ -447,6 +534,15 @@ def run(args):
             calibration_selected_control=selected,
             all_required_controls_executed=True,
             training_budget_matched_by_steps_and_token_schedule=True,
+            training_budget_match_horizon="per-round-only",
+            cumulative_trainable_schedule_matched=cumulative_schedule_matched,
+            cumulative_budget_matched=False,
+            budget_matched_gain_proven=False,
+            training_history=history,
+            training_receipts=training_receipts,
+            training_count_scope="post-genesis-campaign-gradient-steps-and-token-schedule-only",
+            upstream_pretraining_cost="unknown-common-source-checkpoint",
+            non_gradient_costs_excluded_from_schedule=True,
             actual_consumption_not_assumed_equal=True,
             candidate_actual_parent_readback=trained["parent_readback"],
             decision="hold-no-positive-gain"
@@ -477,7 +573,10 @@ def run(args):
                 incumbent_evaluation_has_gradient_steps=False,
                 candidate_generation_is_registry_admitted=False,
                 current_snapshot_only=True,
+                control_gain_scope="descriptive-public-task-scores-not-cumulative-budget-evidence",
             )
+            if not cumulative_schedule_matched:
+                assessment["blockers"].append("CumulativeBudgetMismatch")
         runtime.save(output / "assessment.json", assessment)
         if not diagnostic:
             require(

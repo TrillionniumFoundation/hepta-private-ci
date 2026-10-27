@@ -58,6 +58,7 @@ def run(args):
         candidate_ordinals_are_registry_generations=False,
         completed_rounds=0,
         rounds=[],
+        candidate_training_lineage=[],
         installed_children=0,
         product_qualification=False,
         three_installed_upgrades_proven=False,
@@ -89,6 +90,7 @@ def run(args):
                     round=number,
                     proposal_parent=parent,
                     proposal_parent_sha256=hashlib.sha256(parent_raw).hexdigest(),
+                    proposal_training_lineage=campaign["candidate_training_lineage"],
                 )
             )
             rounds.require(
@@ -101,6 +103,21 @@ def run(args):
             campaign["rounds"].append(result)
             campaign["completed_rounds"] = number
             parent = args.output / f"round-{number}" / "candidate-parent-material.json"
+            child_raw = parent.read_bytes()
+            child = json.loads(child_raw)
+            rounds.require(
+                child == result["candidate_parent_material"],
+                "saved actual candidate descriptor",
+            )
+            campaign["candidate_training_lineage"].append(
+                dict(
+                    parent=descriptor,
+                    parent_descriptor_sha256=hashlib.sha256(parent_raw).hexdigest(),
+                    child=child,
+                    child_descriptor_sha256=hashlib.sha256(child_raw).hexdigest(),
+                    training_receipt=result["training_receipts"]["candidate"],
+                )
+            )
             save(report, campaign)
         campaign["status"] = "diagnostic-completed-installation-blocked"
         save(report, campaign)
