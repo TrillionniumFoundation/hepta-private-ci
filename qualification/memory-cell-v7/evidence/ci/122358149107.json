@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.memory.v7.provider-job-evidence.v1",
+  "run_id": 40552007265,
+  "job_id": 122358149107,
+  "group": "daemon",
+  "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40552007265/job/122358149107",
+  "receipt": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--lib",
+      "-p",
+      "codex-hepta-agent-protocol",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    "complete_workspace_test": false,
+    "exit_code": 101,
+    "final_tracked_changes": "",
+    "group": "daemon",
+    "initial_tracked_changes": "",
+    "lock_after": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "lock_before": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "log": {
+      "bytes": 117149,
+      "sha256": "c132e64e5b00264beeaa598a790d81e9f5fee7a1e970d2a4b2ee273cc9953010"
+    },
+    "mode": "test",
+    "passed": false,
+    "production_manifests_modified_for_test": false,
+    "request": {
+      "attempt": 2,
+      "groups": [
+        "release-owner",
+        "daemon"
+      ],
+      "schema": "hepta.memory.v7.product-verification-request.v1",
+      "stage": "release-owner-and-daemon",
+      "tests_before_final_fix_and_format": true
+    },
+    "schema": "hepta.memory.v7.product-ci-receipt.v1",
+    "source_commit": "ad808194314fe87009e966f53324c7f185119f3b",
+    "source_tree": "41018de94dc2023f8605af7acdaa222d17bdf8be",
+    "wall_seconds": 465.69688458499996
+  },
+  "test_summaries": [
+    "error[E0599]: no method named `map_err` found for struct `Sha256Digest` in the current scope"
+  ],
+  "log_representation": "Exact UTF-8 decoded provider job log; distinct from the execution.log whose identity is in the CI receipt."
+}
