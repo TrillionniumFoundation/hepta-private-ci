@@ -1,0 +1,327 @@
+{
+  "adapter_modules": [
+    "pixel_decoder.0",
+    "text_initial",
+    "text_projection",
+    "fuse.0",
+    "initial_image",
+    "initial_text",
+    "coupling_cell.0",
+    "digit_head"
+  ],
+  "adapter_rank": 8,
+  "asset_sha256": "ddbdf10b4397c8538183df8fa7c16f08c5fba226a304ff7cb55574ddb97e951e",
+  "batch_size": 64,
+  "bootstrap_samples": 4000,
+  "bootstrap_seed": 271031,
+  "budget": "Share the full original fit exploration bank once across training approaches. Report audit qualification cost separately, predictor fit cost, ordinary four-endpoint development selection, each actually executed final gradient/teacher/probe/value/margin call, runtime bank generation, all432 head fits, native ticks and deployment. Equal final update horizon and measurements are not a claim of equal total FLOPs or latency.",
+  "canonical_arms": {
+    "A_frozen_fixed": [
+      "frozen",
+      "fixed"
+    ],
+    "B_ordinary_fixed": [
+      "ordinary",
+      "fixed"
+    ],
+    "C_field_fixed": [
+      "field",
+      "fixed"
+    ],
+    "D_frozen_native": [
+      "frozen",
+      "native"
+    ],
+    "E_field_native": [
+      "field",
+      "native"
+    ],
+    "F_field_history": [
+      "field",
+      "history"
+    ]
+  },
+  "clean_probe": {
+    "conditions": [
+      "clean"
+    ],
+    "offset": 3328,
+    "pairs": 128,
+    "split": "train"
+  },
+  "corpus_manifest": "82b1f8923e5973c04da1ed065ec9a9e747b37b5acb804b872f6f817cf74c6909",
+  "deployment": "Run only the selected action on each reserved test/retention example. Commit choice before generating/reading its delivered PNG and UTF8 outputs. Independently score exact delivered bytes with frozen reward and audit observers. No full counterfactual action bank on primary or retention data.",
+  "deployment_storage": "Preserve exact delivered PNG/UTF8 bytes in content-addressed ZIP entries keyed by their SHA256, with lossless duplicate references; store one selected-output observation per row in gzip JSONL with byte hashes and archive identity. Independent byte reread validates equivalent delivered artifacts; storage deduplication does not change inference or scoring.",
+  "directional_repair_active": false,
+  "directional_repair_policy": "H7 passed all original development gates; the condition for fresh D1 audit trajectories 16..23 is false. D1 is not a primary treatment.",
+  "evaluation_batch_size": 32,
+  "expected_selected_output_rows": 84480,
+  "failure_policy": "Complete and preserve all registered arms and outcomes. A failed or null primary contrast remains failed/null; no threshold relaxation, successful-subgroup replacement, oracle selection or positive theory conclusion. Production owner policy remains DENY_ALL.",
+  "family_alpha": 0.05,
+  "field_features": [
+    "current_hard_value",
+    "adapt_image_bce",
+    "adapt_text_ce",
+    "clean_joint_loss",
+    "effective_operator_displacement",
+    "momentum_rms",
+    "normalized_learning_time"
+  ],
+  "fixed_development_offset": 300,
+  "fixed_development_pairs": 256,
+  "fixed_policy": "Reuse the seed-specific five-action winner already selected by the actuator pilot on the original model validation offset300/count256. The action is identical for frozen and all adapted fixed-policy arms, and supplies every training value/probe. No post-training fixed-action reselection.",
+  "gain_acceptance": "positive family-adjusted lower endpoint and positive difference for each fixed seed, for both primary reward and independent audit scorer; candidate must also retain versus A",
+  "generic_field": "Frozen seed271028 QR7 projection of the same train-standardized25 diagnostics; frozen fit-only controller selection identical to H7 candidate search",
+  "gradient_clip": 1.0,
+  "gradient_source_count": 6000,
+  "independence": "paired disjoint base-image pairs within held-out split; conditions and seeds remain paired in bootstrap; intervals conditional on three fixed historical models",
+  "initial_profile": "terminal_entropic_ndu",
+  "interaction": [
+    "E_field_native",
+    "C_field_fixed",
+    "D_frozen_native",
+    "A_frozen_fixed"
+  ],
+  "interaction_inference": "descriptive difference-in-differences with paired 95% interval; no multiplicity-controlled interaction claim",
+  "learning_rate": 0.2,
+  "macro_steps": 8,
+  "microbatch_schedule": "seed*100003 + 600000 + microstep; fixed_output noise seed107+microstep; four conditions cycle in registered order; identical schedules for ordinary/field/generic/richer",
+  "momentum": 0.9,
+  "multipliers": [
+    0.0,
+    0.25,
+    1.0,
+    2.0
+  ],
+  "native_library_sha256": "bfad6ca9d91d958296fa47c7f8ace4414b7ddf659e079ae5394c37bd104ceac3",
+  "optimizer_start": "new local adaptation problem initializes SGD momentum at zero explicitly; original pretraining optimizer continuation is not claimed",
+  "ordinary_checkpoint_reuse": "Reuse fit trajectories0..3 only after verifying source, recipe, original asset identity, initial local/optimizer hashes, all36 schedule/action/continuation records and terminal local/optimizer hashes. Preserve complete momentum state. Reuse incurs no new gradient work; its actual measured bank cost remains counted once in the shared exploration ledger.",
+  "ordinary_clean_margin": 0.01,
+  "ordinary_probe_accounting": "Constant-path bank traces already contain the same H25 boundary measurements as final controllers. Include their actual common probe costs inside shared exploration once and expose the selected ordinary path logical cost separately; do not invent a fresh execution or double-count reused gradients.",
+  "ordinary_selection": "For each fixed seed, score the four complete constant-multiplier schedule0 endpoints on the existing pilot development panel under the original fixed deployment action. Keep candidates whose clean-condition net-utility change versus the original model is >= -0.01. Choose highest four-condition mean; lowest action index breaks exact ties. Zero is an eligible no-update candidate.",
+  "ordinary_selection_panel": {
+    "conditions": [
+      "heavy_noise",
+      "missing",
+      "occlusion",
+      "clean"
+    ],
+    "offset": 300,
+    "pairs": 256,
+    "split": "validation"
+  },
+  "original_corpus_manifest": "224911f36aa829245ad5a0fbe8ee0c971147150ee848183404781279592f1f39",
+  "paper_revision": "revision_2026-09-26-r45",
+  "paper_source": "f8df0a6075f58f3ab9431a889b773cdf8d6e771d",
+  "parent_fit_source_commit": "2bbb8450b479828c8a32299d3177cda08e1d9657",
+  "parent_pilot_result_sha256": "11e3b0a53d6e99bbff7a0ddd6fab3b109a8fe19e1dbec8fcc8f43b759b69f164",
+  "parent_v1_commit": "e8ce0f538857f8bd869e275aa7fd258aa7989113",
+  "planning_horizon": 1,
+  "population_scope": "Historical public MNIST constructed text-image task. New held-out pixel identities are disjoint from the complete recorded original25000-image pool and each other; not a global exposure registry, newly trained model or new-writer claim.",
+  "pretest_freeze": "After final training and runtime development selection, commit exact protocol/source, models/complete optimizer, readouts, original fixed actions, native binary and asset identities. Only then open reserved output-scoring access. No primary/retention outcome can alter any fit, hyperparameter, action family, fallback or stopping choice.",
+  "primary_contrasts": [
+    [
+      "B_ordinary_fixed",
+      "A_frozen_fixed"
+    ],
+    [
+      "C_field_fixed",
+      "B_ordinary_fixed"
+    ],
+    [
+      "D_frozen_native",
+      "A_frozen_fixed"
+    ],
+    [
+      "E_field_native",
+      "C_field_fixed"
+    ],
+    [
+      "E_field_native",
+      "G_ordinary_native"
+    ],
+    [
+      "E_field_native",
+      "F_field_history"
+    ]
+  ],
+  "primary_intervals": "paired source-pair cluster bootstrap, common sampled pairs across seeds/conditions/arms; two-sided Bonferroni six-contrast family",
+  "primary_objective": "mean hard UTF8/8-bit-PNG reward-observer utility minus 0.002 per actual refinement; common first couple is charged",
+  "production_owner_integration": false,
+  "purpose": "Prospective selected-output evaluation of the qualified H7 training controller and equally searched native/history runtime readouts on reserved source suffixes",
+  "qualification": {
+    "AUDIT_REPLAY_AUDIT.json": "a8e053263efb3698d900e0bcc7713ff6b43739758562db3b0b67d85e7941446e",
+    "FULL_INTEGRITY_AUDIT.json": "d7761ec93e7feb1c894f4508fe83452c72b0d1ab72363069618dc3143d671425",
+    "H7_GATE_RESULT.json": "d52c3727e7adb791172c5c76ca25f159062e489742f226bd6790161ed42186be"
+  },
+  "qualification_rule": "Recompute the original immutable H7 sensitivity, prediction and decision gates. Require the registered complete-bank integrity and replay receipts. Gate audit values cannot choose/refit predictors or final training hyperparameters.",
+  "readout_development_offset": 600,
+  "readout_development_pairs": 256,
+  "readout_ridges": [
+    0.0001,
+    0.01,
+    1.0
+  ],
+  "recipe": {
+    "learning_rate": 0.2,
+    "modules": "upstream",
+    "name": "upstream_r8_288_lr02",
+    "rank": 8,
+    "steps": 288
+  },
+  "refinement_charge": 0.002,
+  "reserved_roles": {
+    "primary_test": {
+      "identity_sha256": "da957b2f80462746ea506a67e6293a58d681d714cd54e1499e370bb184020314",
+      "intersection_with_entire_old_registry": 0,
+      "pair_count": 512,
+      "pair_offset": 1000,
+      "pixel_set_sha256": "ca4104f1a7f9155988af399196413171381ae3fa1739e37e64f33bc9ce0bf468",
+      "source_image_count": 1024,
+      "split": "test"
+    },
+    "retention_test": {
+      "identity_sha256": "116d5c5b96fb6d33b05d591b43d21bd70a6e4914a07bd8950e7a3e17e58e7e5f",
+      "intersection_with_entire_old_registry": 0,
+      "pair_count": 512,
+      "pair_offset": 500,
+      "pixel_set_sha256": "e49c655b87373a3c55253856d3fe116d0007aff83aaffccd1fa9db8ca6ce719e",
+      "source_image_count": 1024,
+      "split": "retention"
+    }
+  },
+  "response_panel": {
+    "conditions": [
+      "heavy_noise",
+      "missing",
+      "occlusion",
+      "clean"
+    ],
+    "offset": 3200,
+    "pairs": 128,
+    "split": "train"
+  },
+  "retention_conditions": [
+    "clean"
+  ],
+  "retention_family": [
+    "B_ordinary_fixed",
+    "C_field_fixed",
+    "D_frozen_native",
+    "E_field_native",
+    "F_field_history",
+    "G_ordinary_native",
+    "H_frozen_history",
+    "J_generic_fixed",
+    "K_richer_fixed"
+  ],
+  "retention_intervals": "separate nine-comparison Bonferroni family versus A_frozen_fixed; no test-retention selection",
+  "retention_margin": 0.01,
+  "retention_offset": 500,
+  "retention_pairs": 512,
+  "richer_field": "All25 frozen diagnostics, including H7, digit/clean losses, eight module displacements and six hard-output margins; frozen fit-only controller selection identical to H7 candidate search",
+  "runtime_conditions": [
+    "heavy_noise",
+    "missing",
+    "occlusion",
+    "clean"
+  ],
+  "runtime_families": {
+    "history": [
+      "original_history40",
+      "raw16_rff24"
+    ],
+    "native": [
+      "pure_native40",
+      "raw16_native24"
+    ]
+  },
+  "runtime_fixed_fallback": false,
+  "runtime_fixed_reference": "Report development-best fixed action and oracle descriptively beside the24-candidate searches. Neither is silently added to native/history policy families or substituted after retention outcomes.",
+  "runtime_history_features": "Original40 history features or original16 untransformed x0/x1 plus24 RFF coordinates. RFF uses training-only standardized transformed history, one fixed16x12 normal matrix divided by sqrt16,12 cosine and12 sine coordinates divided by sqrt12, seed271029 shared across seeds/profiles.",
+  "runtime_native_features": "Actual native FFI fixed20-unit state, top4 selection, sparse_tick. Hybrid retains the original16 untransformed x0/x1 values and24 native coordinates selected by training-only variance with index tie break. Pure and hybrid outcomes are separately retained.",
+  "runtime_normalization": "Shared raw/k1/k2/k4 preprocessing fitted on training x0+x1 only. Identical train-only head centering/scaling and ridge alpha grid for native/history. Development outcomes select only among the24 registered candidates of each representation; no refit or expansion after selection.",
+  "runtime_profiles": [
+    "frozen",
+    "ordinary",
+    "field"
+  ],
+  "runtime_reset_diagnostic": "I uses the field/native selected readout and identical preprocessing but resets native state immediately before the second event; it receives no independent fitted head or selection. If native hybrid is selected, its raw16 residual is retained unchanged.",
+  "runtime_rff_seed": 271029,
+  "runtime_seed_schedule": "V1 bank_set: training seed; development seed+701; condition index and batch offsets follow the unchanged bank_set helper",
+  "runtime_selection": "For each of nine profile/seed checkpoints and each representation, select highest mean development hard net utility among its24 candidates, listed-order exact-tie break. Preserve all432 fitted40-dimensional/205-coefficient heads and train/development feature/action/value banks.",
+  "runtime_train_offset": 3500,
+  "runtime_train_pairs": 512,
+  "runtime_transforms": [
+    {
+      "k": null,
+      "name": "raw"
+    },
+    {
+      "k": 1,
+      "name": "common_standardization_k1"
+    },
+    {
+      "k": 2,
+      "name": "common_standardization_k2"
+    },
+    {
+      "k": 4,
+      "name": "common_standardization_k4"
+    }
+  ],
+  "schedule_id": 0,
+  "schema": "hepta.parameter-field-neuron-bridge.v2.primary.1",
+  "secondary_ce": "one global log-mean-exp over the frozen seed/pair/corruption cohort, not average conditional CE",
+  "secondary_ce_gamma": 2.0,
+  "secondary_observer": "independently trained frozen audit observer; never used for fitting or selection",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "source_allocation_sha256": "b61eefce432905dd57521e52c99cdf9fe6dc40d3a1be4abd79fd15152447a2eb",
+  "source_base": "63f198ad85cfa2aa579032256355f446cfe793a0",
+  "steps": 288,
+  "supplementary_arms": {
+    "G_ordinary_native": [
+      "ordinary",
+      "native"
+    ],
+    "H_frozen_history": [
+      "frozen",
+      "history"
+    ],
+    "I_field_reset": [
+      "field",
+      "reset"
+    ],
+    "J_generic_fixed": [
+      "generic",
+      "fixed"
+    ],
+    "K_richer_fixed": [
+      "richer",
+      "fixed"
+    ]
+  },
+  "supplementary_interpretation": "J versus C checks whether generic equal-dimension summaries suffice; K versus C checks whether richer measurements improve control. I tests native memory dependence. These are descriptive supplements; the original six primary contrasts and nine retention comparisons are unchanged.",
+  "teacher_anchor": 0.1,
+  "test_conditions": [
+    "clean",
+    "occlusion",
+    "missing",
+    "heavy_noise"
+  ],
+  "test_offset": 1000,
+  "test_pairs": 512,
+  "training_conditions": [
+    "heavy_noise",
+    "missing",
+    "occlusion",
+    "clean"
+  ],
+  "training_controller": "Use the pre-audit frozen H7, generic7 or richer25 predictor; at each8-step boundary greedily maximize predicted post-block hard fixed-policy value. Lowest action index breaks ties. Commit state, complete optimizer hash, predictions, choice and future batch schedule before executing the selected block. No branch outcomes are computed for online choice.",
+  "training_output": "Save all final local adapter tensors, complete SGD optimizer, source/recipe/base/controller/schedule hashes, every before-update decision and after-update state hash; no best-step selection.",
+  "training_value": "Actual hard decoded reward-observer utility on the same registered training response panel under the fixed original deployment action; no label oracle maximization and no audit-observer fitting."
+}
