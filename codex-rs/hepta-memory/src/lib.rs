@@ -31,6 +31,8 @@ mod local_policy;
 mod local_turn_binding;
 mod logical_turn_registry;
 mod memory_admission;
+mod memory_cell_owner;
+mod memory_cell_write;
 mod model_receipt;
 mod neuron_proposal;
 mod operation_claims;
@@ -53,6 +55,13 @@ pub use lane_c_snapshot::DurableCognitiveSnapshotPage;
 pub use lane_c_snapshot::MAX_LANE_C_PAGE_ANCESTRY_REVISIONS;
 pub use lane_c_snapshot::MAX_LANE_C_PAGE_CITATIONS;
 pub use lane_c_snapshot::MAX_LANE_C_SNAPSHOT_PAGE_HEADS;
+
+pub use memory_cell_owner::MAX_MEMORY_CELL_OWNER_HEADS;
+pub use memory_cell_owner::MemoryCellAddressV1;
+pub use memory_cell_owner::MemoryCellOwnerRecordV1;
+pub use memory_cell_owner::MemoryCellOwnerSnapshotV1;
+pub use memory_cell_owner::MemoryCellRecordV1;
+pub use memory_cell_write::MemoryCellWriteModeV1;
 
 pub use codex_hepta_memory_retrieval::RetrievalCandidateIdentityV1;
 pub use cognitive_compact::COGNITIVE_COMPACT_HOOK_NAMESPACE;
@@ -442,6 +451,10 @@ mod cognitive_federation_tests;
 #[cfg(test)]
 #[path = "cognitive_memory_store_tests.rs"]
 mod cognitive_memory_store_tests;
+
+#[cfg(test)]
+#[path = "memory_cell_owner_tests.rs"]
+mod memory_cell_owner_tests;
 
 #[cfg(test)]
 #[path = "cognitive_kg_store_tests.rs"]
