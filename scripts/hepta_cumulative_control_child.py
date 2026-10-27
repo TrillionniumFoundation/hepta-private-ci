@@ -23,6 +23,7 @@ def run(args):
         request["schema"] == "hepta-cumulative-control-input-v1"
         and request["plan"] == plan
         and request["child_source_sha256"] == runtime.file_sha(__file__)
+        and request["helper_source_sha256"] == runtime.file_sha(campaign.__file__)
         and request["authority"] == campaign.NO_AUTHORITY,
         "frozen cumulative control context",
     )
