@@ -389,3 +389,144 @@ def check_toolchain(runner, version):
     runner.run("just-version", ["just", "--version"])
 
 
+def validate_graph(root, recipe, metadata):
+    locked = tomllib.loads((root / LOCKS[0]).read_text())["package"]
+    forbidden = set(recipe["forbidden_packages"])
+    if forbidden & {package["name"] for package in locked}:
+        raise ValueError("A forbidden package remains in the resolved lock")
+    if forbidden & {package["name"] for package in metadata["packages"]}:
+        raise ValueError("A forbidden package remains in Cargo metadata")
+    nodes = {node["id"]: node for node in metadata["resolve"]["nodes"]}
+    for expected in recipe["expected_packages"]:
+        found = [package for package in locked if package["name"] == expected["name"]]
+        details = [
+            package
+            for package in metadata["packages"]
+            if package["name"] == expected["name"]
+        ]
+        if (
+            len(found) != 1
+            or len(details) != 1
+            or found[0]["version"] != expected["version"]
+            or details[0]["version"] != expected["version"]
+        ):
+            raise ValueError(
+                f"Expected one exact package: {expected['name']} {expected['version']}"
+            )
+        sources = [found[0].get("source"), details[0].get("source")]
+        if expected["source"] == "path" and any(sources):
+            raise ValueError(
+                f"Reviewed path source was not selected: {expected['name']}"
+            )
+        if expected["source"] == "path":
+            producer_root = Path(metadata["workspace_root"]).parent
+            try:
+                selected_path = (
+                    Path(details[0]["manifest_path"])
+                    .relative_to(producer_root)
+                    .as_posix()
+                )
+            except ValueError as error:
+                raise ValueError(
+                    "Selected path package lies outside the producing workspace"
+                ) from error
+            if selected_path not in {
+                directory + "/Cargo.toml" for directory in recipe["vendor_dirs"]
+            }:
+                raise ValueError(
+                    f"Selected path package is outside the sealed vendor set: {expected['name']}"
+                )
+        if expected["source"] == "registry" and not all(
+            isinstance(x, str) and x.startswith("registry+") for x in sources
+        ):
+            raise ValueError(f"Registry source was not selected: {expected['name']}")
+        if not set(expected.get("required_features", [])) <= set(
+            nodes.get(details[0]["id"], {}).get("features", [])
+        ):
+            raise ValueError(f"Required effective features missing: {expected['name']}")
+
+
+def verify_tree(runner, record, recipe):
+    if (
+        runner.text("verify-head", ["git", "rev-parse", "HEAD"])
+        != record["source_commit"]
+    ):
+        raise ValueError("Candidate HEAD changed")
+    runner.record["original_dependency_policy_unchanged"] = False
+    runner.save()
+    unchanged = describe(runner.root, POLICIES) == record["policy_inputs"]
+    runner.record["original_dependency_policy_unchanged"] = unchanged
+    if not unchanged:
+        raise ValueError("The original dependency policy or scan scope changed")
+    if checksum(runner.root / RECIPE) != record["recipe_sha256"]:
+        raise ValueError("Candidate recipe changed")
+    verify_vendor(runner.root, recipe)
+    if describe(runner.root, record["files"], allow_missing=True) != record["files"]:
+        raise ValueError("Source or lock files differ from the sealed candidate")
+    changed = changed_paths(runner)
+    if changed != set(record["changed_paths"]) or not changed <= set(
+        (*recipe["allowed_paths"], *LOCKS)
+    ):
+        raise ValueError("Candidate changed an unapproved path")
+
+
+def load_candidate(runner, artifact, expected_result, expected_source):
+    if (
+        not HEX256.fullmatch(expected_result)
+        or checksum(artifact / "RESULT.json") != expected_result
+    ):
+        raise ValueError("Candidate RESULT differs from the producer job hash")
+    record = json.loads((artifact / "RESULT.json").read_text())
+    if record.get("schema") != SCHEMA or record.get("status") != "candidate_generated":
+        raise ValueError("Artifact is not a successful port candidate")
+    if (
+        record["source_commit"] != expected_source
+        or record.get("original_dependency_policy_unchanged") is not True
+    ):
+        raise ValueError("Candidate source or policy attestation differs")
+    for key in ("github_run_id", "github_run_attempt"):
+        if os.environ.get(key.upper()) and record.get(key) != os.environ[key.upper()]:
+            raise ValueError("Candidate came from a different workflow run/attempt")
+    recipe = load_recipe(runner.root)
+    if checksum(runner.root / RECIPE) != record["recipe_sha256"]:
+        raise ValueError("Producer and consumer recipe bytes differ")
+    expected_files = set((*recipe["allowed_paths"], *LOCKS))
+    if (
+        set(record["files"]) != expected_files
+        or not set(record["changed_paths"]) <= expected_files
+    ):
+        raise ValueError("Candidate snapshot/path set differs from the recipe")
+    if (
+        describe(artifact / "files", record["files"], allow_missing=True)
+        != record["files"]
+    ):
+        raise ValueError("Downloaded candidate snapshots were modified")
+    if describe(artifact, record["artifacts"]) != record["artifacts"]:
+        raise ValueError("Downloaded candidate artifacts were modified")
+    if record["artifacts"]["source.patch"]["sha256"] != recipe["patch_sha256"]:
+        raise ValueError("Exported source patch differs from recipe")
+    return record, recipe
+
+
+def restore_candidate(runner, artifact, expected_result, expected_source):
+    check_checkout(runner, expected_source)
+    record, recipe = load_candidate(runner, artifact, expected_result, expected_source)
+    if describe(runner.root, POLICIES) != record["policy_inputs"]:
+        raise ValueError("Producer and consumer original policy differ")
+    patch = artifact / "candidate.patch"
+    if patch_paths(runner, patch) != set(record["changed_paths"]):
+        raise ValueError("Binary patch path set differs from sealed candidate")
+    runner.run(
+        "check-candidate-patch", ["git", "apply", "--check", "--index", str(patch)]
+    )
+    runner.run("apply-candidate-patch", ["git", "apply", "--index", str(patch)])
+    verify_tree(runner, record, recipe)
+    validate_graph(
+        runner.root, recipe, json.loads((artifact / "metadata.json").read_text())
+    )
+    runner.record.update(
+        candidate_result_sha256=expected_result,
+        recipe_sha256=record["recipe_sha256"],
+        candidate_patch_sha256=record["artifacts"]["candidate.patch"]["sha256"],
+    )
+    return record, recipe
