@@ -1,0 +1,62 @@
+{
+  "schema": "hepta-public-initial-ci-observation-v1",
+  "source_sha": "45d382fe18610ee885c4f36bc73e923c49a913e2",
+  "source_tree": "932f8442b8f424c7c88f5ecda9f85cfcd0a04474",
+  "chain_sha": "c96022b897c1235fdbdbfcfa32764403511c6aab",
+  "run_id": 40499847935,
+  "job_id": 122174489838,
+  "run_attempt": 1,
+  "workflow_conclusion": "failure",
+  "original_records_zip": {
+    "file": "original-records.zip",
+    "artifact_id": 12733368720,
+    "bytes": 31526,
+    "sha256": "428200b17d0738f9f087ca18448828880da9333b31e0137f909e60660620b9e6"
+  },
+  "record_members_verified": 11,
+  "evidence_index_sha256": "29f66d8d81afa7349d6e218048f78805b5c7eebf72490a136d04db64758cfd70",
+  "decoded_job_log": {
+    "file": "job-api-decoded.log.gz",
+    "scope": "UTF-8 content decoded by the GitHub connector; not original transport bytes",
+    "characters": 513335,
+    "bytes": 513417,
+    "sha256": "a9073238556cf7a28a9313730dbb3b3157befe4215b835c5b3db9b889fdf2f2d",
+    "line_feeds": 5809,
+    "carriage_returns": 0
+  },
+  "actual_cli_exit_code": 101,
+  "actual_scoped_rust_exit_code": 101,
+  "actual_native_passes": 0,
+  "actual_native_test_failures_observed": 0,
+  "native_failure_phase": "compilation E0616 private AppServerDrainHandle identity fields at lib.rs:577-578",
+  "model_target": {
+    "schema": "hepta-built-model-test-target-v1",
+    "available": false,
+    "targets": [],
+    "state": "unavailable-after-scoped-build",
+    "actual_model_executed": false
+  },
+  "required_outcomes": {
+    "schema": "hepta-public-initial-required-outcomes-v2",
+    "outcomes": {
+      "REQUIRED_CLI_OUTCOME": "failure",
+      "SCOPED_RUST_OUTCOME": "failure",
+      "COLD_RUNTIME_OUTCOME": "skipped",
+      "MATERIALS_OUTCOME": "skipped",
+      "ORDINARY_OUTCOME": "skipped",
+      "PROPOSAL_ROUNDS_OUTCOME": "skipped",
+      "DESCENDANTS_OUTCOME": "skipped",
+      "LINT_OUTCOME": "failure"
+    },
+    "model_target_available": false,
+    "all_required_outcomes_passed": false,
+    "original_full_rust_gate_required": true,
+    "product_qualification": false,
+    "three_installed_upgrades_proven": false
+  },
+  "ordinary_forwards": 0,
+  "training_rounds": 0,
+  "installed_children": 0,
+  "product_qualification": false,
+  "step_conclusion_success_is_not_execution_success": true
+}

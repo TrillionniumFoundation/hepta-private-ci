@@ -1,0 +1,96 @@
+import hashlib,json,stat,zipfile
+from pathlib import Path,PurePosixPath
+archive=Path('/workspace/scratch/20f5e808bfa5/hepta-cumulative-40501186161/original-records.zip')
+with archive.open('rb') as f: archive_sha=hashlib.file_digest(f,'sha256').hexdigest()
+assert archive.stat().st_size==117865750 and archive_sha=='9e9ff51116ad1e6b51500212f4fb57e0bfd6911f4833b14613a1ecd03609d05c'
+inventory={}
+with zipfile.ZipFile(archive) as z:
+ infos=z.infolist()
+ assert 0<len(infos)<=50000
+ assert sum(i.file_size for i in infos)<=512*1024*1024
+ for info in infos:
+  name=info.filename; p=PurePosixPath(name)
+  assert name and not p.is_absolute() and p.as_posix()==name and all(c not in ('','..','.') for c in p.parts)
+  assert '\\' not in name and '\0' not in name and not name.startswith('/')
+  assert name not in inventory and not info.is_dir()
+  assert stat.S_IFMT(info.external_attr>>16) in (0,stat.S_IFREG) and not (info.flag_bits&1)
+  assert 0<=info.file_size<=256*1024*1024
+  h=hashlib.sha256(); size=0
+  with z.open(info) as f:
+   while True:
+    b=f.read(1048576)
+    if not b:break
+    size+=len(b); h.update(b)
+    assert size<=info.file_size
+  assert size==info.file_size
+  inventory[name]=dict(bytes=size,sha256=h.hexdigest())
+ def load(name):
+  assert inventory[name]['bytes']<=16*1024*1024
+  return json.loads(z.read(name))
+ top=load('evidence-index.json'); pin=load('source-pin.json')
+ inherited=load('reference/original/evidence-index.json')
+ assert top['source']=='6ba1a5b352568250edcec5975972d7d67d30e295' and top['chain']=='c96022b897c1235fdbdbfcfa32764403511c6aab' and top['product_qualification'] is False
+ assert pin['source_sha']=='f75bf1ac902ed73905e4daa49f9396df028a4254'
+ assert inventory['reference/original/evidence-index.json']['sha256']==pin['evidence_index_sha256']
+ assert inherited['source']==pin['source_sha'] and inherited['chain']==top['chain']
+ unindexed=set(inventory)-set(top['files'])
+ assert unindexed=={'evidence-index.json','reference/original/evidence-index.json'},sorted(unindexed)
+ for name in set(inventory)&set(top['files']):
+  assert inventory[name]==top['files'][name],name
+ missing=set(top['files'])-set(inventory)
+ assert missing and all(name.endswith('.safetensors') for name in missing),sorted(missing)
+ inherited_members=0
+ for name,meta in inventory.items():
+  prefix='reference/original/'
+  if name.startswith(prefix) and name!=prefix+'evidence-index.json':
+   relative=name[len(prefix):]
+   assert relative in inherited['files'] and meta==inherited['files'][relative],name
+   inherited_members+=1
+ campaign=load('campaign/campaign.json'); outcomes=load('required-outcomes.json')
+ assert campaign['completed_rounds']==3 and campaign['status']=='completed-diagnostic-no-installation'
+ assert campaign['source_sha']==pin['source_sha'] and campaign['source_pin_sha256']==inventory['source-pin.json']['sha256']
+ assert outcomes['actual_diagnostic_completed'] is True and all(v=='success' for v in outcomes['outcomes'].values())
+ assert campaign['installed_children']==0 and campaign['total_resource_cost_matched'] is False
+ assert all(v is False for v in campaign['authority'].values())
+ assert campaign['source_required_outcomes']['all_required_outcomes_passed'] is False
+ rows=[]; previous={}
+ for row in campaign['rounds']:
+  n=row['round']; expected=dict(steps=10*n,tokens=526*n,supervised_tokens=40*n)
+  assert row['candidate']['cumulative_campaign']==expected and row['cumulative_post_genesis_step_token_schedule_matched'] is True
+  controls={}
+  for label,item in row['cumulative_controls'].items():
+   parent=item['parent']; assert parent['round']==n and parent['cumulative_campaign']==expected and len(parent['history'])==n
+   history=[]
+   totals=dict(steps=0,tokens=0,supervised_tokens=0)
+   for ordinal,entry in enumerate(parent['history'],1):
+    host_path=entry['receipt_path']
+    marker='/hepta-cumulative/'
+    assert host_path.count(marker)==1,host_path
+    relative=host_path.split(marker,1)[1]
+    assert inventory[relative]['sha256']==entry['receipt_sha256']
+    receipt=load(relative)
+    assert receipt['outcome']=='success' and receipt['role']==parent['role']
+    artifact=receipt['artifact'] if ordinal==1 else receipt['artifact']['artifact']
+    assert artifact==entry['artifact']
+    counts={k:receipt['training'][k] for k in totals}
+    assert counts==entry['counts']==dict(steps=10,tokens=526,supervised_tokens=40)
+    if ordinal>1:
+     assert receipt['actual_parent_readback']==history[-1]['artifact']
+     assert receipt['optimizer_reset_each_round'] is True and receipt['optimizer_state_resumed'] is False
+    history.append(dict(ordinal=ordinal,artifact=artifact,receipt=relative,counts=counts))
+    for k in totals:totals[k]+=counts[k]
+   assert totals==expected and history[-1]['artifact']==parent['artifact']
+   entry_record=dict(artifact=parent['artifact'],counts=expected,scores=item['scores'],history=history)
+   if n>1:
+    train_name=f'campaign/round-{n}-train-{label}/actual-receipt.json'
+    eval_name=f'campaign/round-{n}-evaluate-{label}/actual-receipt.json'
+    train=load(train_name); evaluation=load(eval_name)
+    assert train['actual_parent_readback']==previous[label]
+    assert inventory[train_name]['sha256']==item['receipt_sha256']
+    assert inventory[eval_name]['sha256']==item['evaluation_receipt_sha256']
+    assert evaluation['outcome']=='success' and evaluation['forward_executed'] is True and evaluation['artifact']==parent['artifact'] and evaluation['role']==parent['role']
+    entry_record.update(actual_parent_readback=train['actual_parent_readback'],evaluation_forward_executed=evaluation['forward_executed'])
+   previous[label]=parent['artifact']; controls[label]=entry_record
+  rows.append(dict(round=n,candidate={k:row['candidate'][k] for k in ('artifact','actual_parent_readback','cumulative_campaign','scores')},controls=controls,gain_vs_cumulative_controls=row['gain_vs_cumulative_controls'],blockers=row['blockers']))
+ summary=dict(schema='hepta-cumulative-records-local-verification-v1',source=top['source'],chain=top['chain'],run_id=40501186161,archive_bytes=archive.stat().st_size,archive_sha256=archive_sha,zip_members=len(inventory),expanded_bytes=sum(v['bytes'] for v in inventory.values()),all_zip_member_crc_and_sha256_checked=True,all_record_bytes_match_top_index=True,top_index=inventory['evidence-index.json'],inherited_index=inventory['reference/original/evidence-index.json'],inherited_records_checked=inherited_members,expected_checkpoint_members_not_locally_downloaded={name:top['files'][name] for name in sorted(missing)},checkpoint_bytes_independently_verified=False,required_outcomes=outcomes,source_required_outcomes=campaign['source_required_outcomes'],rounds=rows)
+ print(json.dumps(summary,separators=(',',':')))

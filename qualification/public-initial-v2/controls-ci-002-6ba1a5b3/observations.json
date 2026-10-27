@@ -1,0 +1,1544 @@
+{
+  "required_outcomes": {
+    "schema": "hepta-cumulative-required-outcomes-v1",
+    "outcomes": {
+      "CONTROLS_OUTCOME": "success",
+      "ORIGINAL_OUTCOME": "success",
+      "COLD_RUNTIME_OUTCOME": "success",
+      "MATERIALS_OUTCOME": "success",
+      "CAMPAIGN_OUTCOME": "success",
+      "FORMATTING_OUTCOME": "success"
+    },
+    "actual_diagnostic_completed": true,
+    "installed_children": 0,
+    "product_qualification": false,
+    "total_resource_cost_matched": false,
+    "original_native_gates_replaced": false,
+    "campaign_report_error": null
+  },
+  "campaign": {
+    "authority": {
+      "current_write": false,
+      "installation": false,
+      "product_qualification": false,
+      "public_reward": false,
+      "selection": false
+    },
+    "budget_matched_gain_proven": false,
+    "chain_sha": "c96022b897c1235fdbdbfcfa32764403511c6aab",
+    "comparison_scope": "public repeated tasks; independent runs with exact frozen runtime/data recipe",
+    "completed_rounds": 3,
+    "evaluation_entry_sha256": "cb59036cb8e121baa2ad2453021c6065e0baf1d8263d2422b69c2e25b89e8cb7",
+    "helper_sha256": "6969222dc65a5ac6858a63a3ea09f629ecf05ff2e44ad6c9668e627aeb19f2ce",
+    "independent_future_quality": false,
+    "installed_children": 0,
+    "original_plan_unchanged": true,
+    "original_six_arms_preserved": true,
+    "rounds": [
+      {
+        "blockers": [
+          "MissingSystemLongitudinalEvidence",
+          "TotalResourceCostUnmatched"
+        ],
+        "candidate": {
+          "actual_parent_readback": "3b3128293a86570a47a72c7bf081f898de1682ed1118c5a440ad7478c0f22e42",
+          "artifact": "64cbb9c06fbddc11cb5ac8b8c1d531ff82982a9425deb5ad38fa81081c4bedb6",
+          "cumulative_campaign": {
+            "steps": 10,
+            "supervised_tokens": 40,
+            "tokens": 526
+          },
+          "file_sha256": "2a1c51e820c6f3d93477e11d3d91317a2aa0addcc08696e841d5d7d120c516c4",
+          "per_round": {
+            "flop_scope": "profiler-supported-operators-only-not-total-work",
+            "loss": [
+              "3.96016216278",
+              "3.62071847916",
+              "1.08996760845",
+              "1.42350840569",
+              "0.81425756216",
+              "0.438867360353",
+              "0.286466747522",
+              "0.614643573761",
+              "0.488372832537",
+              "0.269330829382"
+            ],
+            "steps": 10,
+            "supervised_tokens": 40,
+            "supported_profile_flops": 289144351496,
+            "tokens": 526
+          },
+          "receipt_sha256": "d0a21eeb303afadaf871f4b5dbea9c53ba4371296d60f67d6d43e2192d08267e",
+          "scores": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          }
+        },
+        "cumulative_controls": {
+          "cumulative-full-tune": {
+            "origin": "original-actual-round-one-control",
+            "parent": {
+              "artifact": "d9fd41fcade29792992c7f6b9b05f0a932e5183f5cf62fcfd99b5a38c824d811",
+              "contract_path": "/home/runner/work/_temp/hepta-cumulative/reference/original/genesis/target-contract.json",
+              "contract_sha256": "ebc8ac84999a91acb823d1bf8959a7dbc61fe20d7ba137f11affe426605d9852",
+              "cumulative_campaign": {
+                "steps": 10,
+                "supervised_tokens": 40,
+                "tokens": 526
+              },
+              "directory": "/home/runner/work/_temp/hepta-cumulative/reference/original/descendant-diagnostics/round-1/train-budget-matched-full-tune",
+              "file_sha256": "e02c2d1b50860fa7b88f3f2f166de645bee8c7ad21012862398366ce8a50d151",
+              "history": [
+                {
+                  "artifact": "d9fd41fcade29792992c7f6b9b05f0a932e5183f5cf62fcfd99b5a38c824d811",
+                  "counts": {
+                    "steps": 10,
+                    "supervised_tokens": 40,
+                    "tokens": 526
+                  },
+                  "receipt_path": "/home/runner/work/_temp/hepta-cumulative/reference/original/descendant-diagnostics/round-1/train-budget-matched-full-tune/actual-receipt.json",
+                  "receipt_sha256": "ab6ac4c7b40188dcfe8a1500428340985e353ce64e0211ddb1998d237d49f045"
+                }
+              ],
+              "metadata_sha256": "5dc16e16226c44b52b5973b9545153d93037215295990e14bff9b2926d4d3362",
+              "role": "budget-matched-full-tune",
+              "round": 1
+            },
+            "reexecuted": false,
+            "scores": {
+              "calibration": [
+                1,
+                2
+              ],
+              "evaluation": [
+                1,
+                2
+              ]
+            }
+          },
+          "cumulative-lora": {
+            "origin": "original-actual-round-one-control",
+            "parent": {
+              "artifact": "321edb8a9bc734114a6d909fff0fdf8aebbbb46ff3f2b4654e63898f1a788caa",
+              "contract_path": "/home/runner/work/_temp/hepta-cumulative/reference/original/genesis/target-contract.json",
+              "contract_sha256": "ebc8ac84999a91acb823d1bf8959a7dbc61fe20d7ba137f11affe426605d9852",
+              "cumulative_campaign": {
+                "steps": 10,
+                "supervised_tokens": 40,
+                "tokens": 526
+              },
+              "directory": "/home/runner/work/_temp/hepta-cumulative/reference/original/descendant-diagnostics/round-1/train-fresh-budget-matched-lora",
+              "file_sha256": "7e1df3f1747e7580e4df43b1bdb43fff8ce2af3bc37d73b740a8a606e3c10ab8",
+              "history": [
+                {
+                  "artifact": "321edb8a9bc734114a6d909fff0fdf8aebbbb46ff3f2b4654e63898f1a788caa",
+                  "counts": {
+                    "steps": 10,
+                    "supervised_tokens": 40,
+                    "tokens": 526
+                  },
+                  "receipt_path": "/home/runner/work/_temp/hepta-cumulative/reference/original/descendant-diagnostics/round-1/train-fresh-budget-matched-lora/actual-receipt.json",
+                  "receipt_sha256": "2430cb222b70773947ce3a05bc43ccd2d466652f24a66da4a2a6fefc0653f36f"
+                }
+              ],
+              "metadata_sha256": "eeb7ce997bd4215ef6e1d3b0633473cee764ec2308111e757592e2e5b0baf0f9",
+              "role": "fresh-budget-matched-lora",
+              "round": 1
+            },
+            "reexecuted": false,
+            "scores": {
+              "calibration": [
+                1,
+                2
+              ],
+              "evaluation": [
+                1,
+                2
+              ]
+            }
+          }
+        },
+        "cumulative_post_genesis_step_token_schedule_matched": true,
+        "gain_scope": "descriptive public-task scores; not equal-time/FLOPs or product quality",
+        "gain_vs_cumulative_controls": [
+          0,
+          1
+        ],
+        "original_six_arm_scores": {
+          "actual-current-incumbent": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          },
+          "budget-matched-full-tune": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "candidate": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "current-backbone": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          },
+          "fresh-budget-matched-lora": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "randomized-rank-matched-lora": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          }
+        },
+        "round": 1,
+        "source_assessment_sha256": "7475fa8e3dfd3abf5f2f98c972102d3d9bb9c7c54180d52573293144c8e53e56",
+        "total_resource_cost_matched": false
+      },
+      {
+        "blockers": [
+          "MissingSystemLongitudinalEvidence",
+          "TotalResourceCostUnmatched"
+        ],
+        "candidate": {
+          "actual_parent_readback": "64cbb9c06fbddc11cb5ac8b8c1d531ff82982a9425deb5ad38fa81081c4bedb6",
+          "artifact": "97e0ed84fb640c5653b0dfa8f11af05194d96e66c70dee016dc7ded8186112ec",
+          "cumulative_campaign": {
+            "steps": 20,
+            "supervised_tokens": 80,
+            "tokens": 1052
+          },
+          "file_sha256": "300cc55c0a87f8cb436ae9a29a4982090d73877dbe63b31f62e7fa85a8e5e0f0",
+          "per_round": {
+            "flop_scope": "profiler-supported-operators-only-not-total-work",
+            "loss": [
+              "0.100925028324",
+              "1.5352036953",
+              "0.0360281802714",
+              "0.326768428087",
+              "0.311752259731",
+              "0.078570716083",
+              "0.0932426601648",
+              "0.808565199375",
+              "0.755929410458",
+              "0.471448153257"
+            ],
+            "steps": 10,
+            "supervised_tokens": 40,
+            "supported_profile_flops": 289144351496,
+            "tokens": 526
+          },
+          "receipt_sha256": "d86a1ce6b69b8836f7fe6e11266c001dd59d10573f1bbd5b2e878d3323136981",
+          "scores": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          }
+        },
+        "cumulative_controls": {
+          "cumulative-full-tune": {
+            "evaluation_receipt_sha256": "ba4e456134a64c0d79f6dc60a5c73af9a10bca4ea55fac896f35a16dcf09d5cf",
+            "evaluation_supervisor": {
+              "budget": {
+                "rss_bytes": 8589934592,
+                "wall_seconds": 600
+              },
+              "child_cpu_ns": 57654541000,
+              "child_spawned": true,
+              "cleanup_method": "wait4",
+              "cpu_scope": "Exact owned-child Linux wait4 user-plus-system CPU; includes inherited waited-descendant accounting",
+              "exit_code": 0,
+              "memory_scope": "sampled_peak_rss_bytes is direct-child 50ms RSS; waited_child_peak_rss_bytes is exact owned-child Linux wait4 ru_maxrss in KiB times 1024, a maximum single-process high-water with inherited waited-descendant accounting; neither is simultaneous process-tree RSS",
+              "observed_wall_ns": 25313410815,
+              "observer_cpu_ns": 268985762,
+              "outcome": "success",
+              "owned_child_echild_observed": false,
+              "owned_child_exit_observed": true,
+              "owned_child_reap_resolved": true,
+              "rss_observation_gaps": [
+                {
+                  "after": {
+                    "error": "pidfd-coordinate-unavailable",
+                    "owned_pid": 3403,
+                    "parent_nspid": [
+                      3268
+                    ],
+                    "pidfd_nspid": [
+                      -1
+                    ],
+                    "pidfd_ready": true,
+                    "pidfd_visible_pid": -1
+                  },
+                  "at_wall_ns": 25300288995,
+                  "before": {
+                    "child": {
+                      "NSpid": "3403",
+                      "PPid": "3268",
+                      "Pid": "3403",
+                      "State": "Z (zombie)",
+                      "Threads": "2",
+                      "VmRSS": null,
+                      "VmSize": null
+                    },
+                    "exit_cleanup_proof": {
+                      "kernel_release": "6.17.0-1022-azure",
+                      "observed_at_monotonic_ns": 544220888236,
+                      "owned_pid": 3403,
+                      "pidfd_nspid": [
+                        3403
+                      ],
+                      "pidfd_visible_pid": 3403,
+                      "rss_sample_produced": false,
+                      "schema": "linux-owned-thread-group-exit-cleanup-v1",
+                      "threads": [
+                        {
+                          "flags": 4227084,
+                          "start_time_ticks": 51891,
+                          "state": "Z",
+                          "tid": 3403
+                        },
+                        {
+                          "flags": 4195404,
+                          "start_time_ticks": 53232,
+                          "state": "R",
+                          "tid": 3432
+                        }
+                      ]
+                    },
+                    "owned_pid": 3403,
+                    "owned_threads": [
+                      {
+                        "NSpid": "3403",
+                        "NStgid": "3403",
+                        "PPid": "3268",
+                        "Pid": "3403",
+                        "State": "Z (zombie)",
+                        "Tgid": "3403",
+                        "VmRSS": null,
+                        "VmSize": null
+                      },
+                      {
+                        "NSpid": "3432",
+                        "NStgid": "3403",
+                        "PPid": "3268",
+                        "Pid": "3432",
+                        "State": "R (running)",
+                        "Tgid": "3403",
+                        "VmRSS": null,
+                        "VmSize": null
+                      }
+                    ],
+                    "parent_nspid": [
+                      3268
+                    ],
+                    "pidfd_identity_changed_during_read": false,
+                    "pidfd_nspid": [
+                      3403
+                    ],
+                    "pidfd_ready": false,
+                    "pidfd_visible_pid": 3403
+                  },
+                  "reconciliation": {
+                    "absolute_wall_deadline_ns": 1118918851385,
+                    "elapsed_ns": 11147500,
+                    "exit_cleanup_proof": {
+                      "kernel_release": "6.17.0-1022-azure",
+                      "observed_at_monotonic_ns": 544221953917,
+                      "owned_pid": 3403,
+                      "pidfd_nspid": [
+                        3403
+                      ],
+                      "pidfd_visible_pid": 3403,
+                      "rss_sample_produced": false,
+                      "schema": "linux-owned-thread-group-exit-cleanup-v1",
+                      "threads": [
+                        {
+                          "flags": 4227084,
+                          "start_time_ticks": 51891,
+                          "state": "Z",
+                          "tid": 3403
+                        },
+                        {
+                          "flags": 4195404,
+                          "start_time_ticks": 53232,
+                          "state": "R",
+                          "tid": 3432
+                        }
+                      ]
+                    },
+                    "initial_reap": "live",
+                    "mode": "kernel-exit-cleanup",
+                    "pidfd_ready_after_wait": true,
+                    "terminal_reap": "terminal",
+                    "wait_deadline_ns": 1118918851385,
+                    "wait_polls": 1
+                  }
+                }
+              ],
+              "sample_interval_ms": 50,
+              "sampled_peak_rss_bytes": 1541537792,
+              "stop_reason": null,
+              "terminal_reconciliation_profile": "linux-held-pidfd-irreversible-exit-v1",
+              "waited_child_observation_error": null,
+              "waited_child_peak_rss_bytes": 1541156864,
+              "waited_child_reaped": true
+            },
+            "origin": "actual-cumulative-continuation",
+            "parent": {
+              "artifact": "f3fe79a883b2e44f69144b53143fa51c94a393b95f25876b3bf3f8723d2d763f",
+              "contract_path": "/home/runner/work/_temp/hepta-cumulative/campaign/round-2-train-cumulative-full-tune/target-contract.json",
+              "contract_sha256": "ebc8ac84999a91acb823d1bf8959a7dbc61fe20d7ba137f11affe426605d9852",
+              "cumulative_campaign": {
+                "steps": 20,
+                "supervised_tokens": 80,
+                "tokens": 1052
+              },
+              "directory": "/home/runner/work/_temp/hepta-cumulative/campaign/round-2-train-cumulative-full-tune",
+              "file_sha256": "83b1171712a3ad6d2234e9fa659657d449a80c8def81ecc85681e738ff18141a",
+              "history": [
+                {
+                  "artifact": "d9fd41fcade29792992c7f6b9b05f0a932e5183f5cf62fcfd99b5a38c824d811",
+                  "counts": {
+                    "steps": 10,
+                    "supervised_tokens": 40,
+                    "tokens": 526
+                  },
+                  "receipt_path": "/home/runner/work/_temp/hepta-cumulative/reference/original/descendant-diagnostics/round-1/train-budget-matched-full-tune/actual-receipt.json",
+                  "receipt_sha256": "ab6ac4c7b40188dcfe8a1500428340985e353ce64e0211ddb1998d237d49f045"
+                },
+                {
+                  "artifact": "f3fe79a883b2e44f69144b53143fa51c94a393b95f25876b3bf3f8723d2d763f",
+                  "counts": {
+                    "steps": 10,
+                    "supervised_tokens": 40,
+                    "tokens": 526
+                  },
+                  "receipt_path": "/home/runner/work/_temp/hepta-cumulative/campaign/round-2-train-cumulative-full-tune/actual-receipt.json",
+                  "receipt_sha256": "9e103b6b5713f94217fc1208293b3e83fcd0df8e64b5e79db496e26a08ced501"
+                }
+              ],
+              "metadata_sha256": "15ebb2fb6980c4bad2b2088e24b4133128231faef7f4023e10067fb11750a96d",
+              "role": "budget-matched-full-tune",
+              "round": 2
+            },
+            "receipt_sha256": "9e103b6b5713f94217fc1208293b3e83fcd0df8e64b5e79db496e26a08ced501",
+            "scores": {
+              "calibration": [
+                1,
+                2
+              ],
+              "evaluation": [
+                1,
+                2
+              ]
+            },
+            "token_schedule_sha256": "9585800ae96ae656cd174d3d6505df729bf92c7f027cbb597c2206736c44f654",
+            "training_supervisor": {
+              "budget": {
+                "rss_bytes": 17179869184,
+                "wall_seconds": 1800
+              },
+              "child_cpu_ns": 79313607000,
+              "child_spawned": true,
+              "cleanup_method": "wait4",
+              "cpu_scope": "Exact owned-child Linux wait4 user-plus-system CPU; includes inherited waited-descendant accounting",
+              "exit_code": 0,
+              "memory_scope": "sampled_peak_rss_bytes is direct-child 50ms RSS; waited_child_peak_rss_bytes is exact owned-child Linux wait4 ru_maxrss in KiB times 1024, a maximum single-process high-water with inherited waited-descendant accounting; neither is simultaneous process-tree RSS",
+              "observed_wall_ns": 53185319831,
+              "observer_cpu_ns": 564440922,
+              "outcome": "success",
+              "owned_child_echild_observed": false,
+              "owned_child_exit_observed": true,
+              "owned_child_reap_resolved": true,
+              "rss_observation_gaps": [
+                {
+                  "after": {
+                    "error": "pidfd-coordinate-unavailable",
+                    "owned_pid": 3360,
+                    "parent_nspid": [
+                      3268
+                    ],
+                    "pidfd_nspid": [
+                      -1
+                    ],
+                    "pidfd_ready": true,
+                    "pidfd_visible_pid": -1
+                  },
+                  "at_wall_ns": 53018207844,
+                  "before": {
+                    "child": {
+                      "NSpid": "3360",
+                      "PPid": "3268",
+                      "Pid": "3360",
+                      "State": "Z (zombie)",
+                      "Threads": "2",
+                      "VmRSS": null,
+                      "VmSize": null
+                    },
+                    "exit_cleanup_proof": {
+                      "kernel_release": "6.17.0-1022-azure",
+                      "observed_at_monotonic_ns": 515475370400,
+                      "owned_pid": 3360,
+                      "pidfd_nspid": [
+                        3360
+                      ],
+                      "pidfd_visible_pid": 3360,
+                      "rss_sample_produced": false,
+                      "schema": "linux-owned-thread-group-exit-cleanup-v1",
+                      "threads": [
+                        {
+                          "flags": 4227084,
+                          "start_time_ticks": 46245,
+                          "state": "Z",
+                          "tid": 3360
+                        },
+                        {
+                          "flags": 4195404,
+                          "start_time_ticks": 47660,
+                          "state": "R",
+                          "tid": 3389
+                        }
+                      ]
+                    },
+                    "owned_pid": 3360,
+                    "owned_threads": [
+                      {
+                        "NSpid": "3360",
+                        "NStgid": "3360",
+                        "PPid": "3268",
+                        "Pid": "3360",
+                        "State": "Z (zombie)",
+                        "Tgid": "3360",
+                        "VmRSS": null,
+                        "VmSize": null
+                      },
+                      {
+                        "NSpid": "3389",
+                        "NStgid": "3360",
+                        "PPid": "3268",
+                        "Pid": "3389",
+                        "State": "R (running)",
+                        "Tgid": "3360",
+                        "VmRSS": null,
+                        "VmSize": null
+                      }
+                    ],
+                    "parent_nspid": [
+                      3268
+                    ],
+                    "pidfd_identity_changed_during_read": false,
+                    "pidfd_nspid": [
+                      3360
+                    ],
+                    "pidfd_ready": false,
+                    "pidfd_visible_pid": 3360
+                  },
+                  "reconciliation": {
+                    "absolute_wall_deadline_ns": 2262455392940,
+                    "elapsed_ns": 165012555,
+                    "exit_cleanup_proof": {
+                      "kernel_release": "6.17.0-1022-azure",
+                      "observed_at_monotonic_ns": 515476450488,
+                      "owned_pid": 3360,
+                      "pidfd_nspid": [
+                        3360
+                      ],
+                      "pidfd_visible_pid": 3360,
+                      "rss_sample_produced": false,
+                      "schema": "linux-owned-thread-group-exit-cleanup-v1",
+                      "threads": [
+                        {
+                          "flags": 4227084,
+                          "start_time_ticks": 46245,
+                          "state": "Z",
+                          "tid": 3360
+                        },
+                        {
+                          "flags": 4195404,
+                          "start_time_ticks": 47660,
+                          "state": "R",
+                          "tid": 3389
+                        }
+                      ]
+                    },
+                    "initial_reap": "live",
+                    "mode": "kernel-exit-cleanup",
+                    "pidfd_ready_after_wait": true,
+                    "terminal_reap": "terminal",
+                    "wait_deadline_ns": 2262455392940,
+                    "wait_polls": 4
+                  }
+                }
+              ],
+              "sample_interval_ms": 50,
+              "sampled_peak_rss_bytes": 6151213056,
+              "stop_reason": null,
+              "terminal_reconciliation_profile": "linux-held-pidfd-irreversible-exit-v1",
+              "waited_child_observation_error": null,
+              "waited_child_peak_rss_bytes": 6151036928,
+              "waited_child_reaped": true
+            }
+          },
+          "cumulative-lora": {
+            "evaluation_receipt_sha256": "cdef4e1910dd11488525d8eb51762c16e9b2a5f4fe214bff7fa18a574a3006e8",
+            "evaluation_supervisor": {
+              "budget": {
+                "rss_bytes": 8589934592,
+                "wall_seconds": 600
+              },
+              "child_cpu_ns": 58869307000,
+              "child_spawned": true,
+              "cleanup_method": "wait4",
+              "cpu_scope": "Exact owned-child Linux wait4 user-plus-system CPU; includes inherited waited-descendant accounting",
+              "exit_code": 0,
+              "memory_scope": "sampled_peak_rss_bytes is direct-child 50ms RSS; waited_child_peak_rss_bytes is exact owned-child Linux wait4 ru_maxrss in KiB times 1024, a maximum single-process high-water with inherited waited-descendant accounting; neither is simultaneous process-tree RSS",
+              "observed_wall_ns": 25481408624,
+              "observer_cpu_ns": 270097019,
+              "outcome": "success",
+              "owned_child_echild_observed": false,
+              "owned_child_exit_observed": true,
+              "owned_child_reap_resolved": true,
+              "rss_observation_gaps": [],
+              "sample_interval_ms": 50,
+              "sampled_peak_rss_bytes": 1025880064,
+              "stop_reason": null,
+              "terminal_reconciliation_profile": "linux-held-pidfd-irreversible-exit-v1",
+              "waited_child_observation_error": null,
+              "waited_child_peak_rss_bytes": 1154494464,
+              "waited_child_reaped": true
+            },
+            "origin": "actual-cumulative-continuation",
+            "parent": {
+              "artifact": "d2db4d2626a4fcc7057c450adf4d94987c83b7956933ead4b08c3f4be7ed784d",
+              "contract_path": "/home/runner/work/_temp/hepta-cumulative/campaign/round-2-train-cumulative-lora/target-contract.json",
+              "contract_sha256": "ebc8ac84999a91acb823d1bf8959a7dbc61fe20d7ba137f11affe426605d9852",
+              "cumulative_campaign": {
+                "steps": 20,
+                "supervised_tokens": 80,
+                "tokens": 1052
+              },
+              "directory": "/home/runner/work/_temp/hepta-cumulative/campaign/round-2-train-cumulative-lora",
+              "file_sha256": "cfaeba1e8a74a2521d9bcdb815f4fa41feac7acadae52558ad8a6ef7f1823516",
+              "history": [
+                {
+                  "artifact": "321edb8a9bc734114a6d909fff0fdf8aebbbb46ff3f2b4654e63898f1a788caa",
+                  "counts": {
+                    "steps": 10,
+                    "supervised_tokens": 40,
+                    "tokens": 526
+                  },
+                  "receipt_path": "/home/runner/work/_temp/hepta-cumulative/reference/original/descendant-diagnostics/round-1/train-fresh-budget-matched-lora/actual-receipt.json",
+                  "receipt_sha256": "2430cb222b70773947ce3a05bc43ccd2d466652f24a66da4a2a6fefc0653f36f"
+                },
+                {
+                  "artifact": "d2db4d2626a4fcc7057c450adf4d94987c83b7956933ead4b08c3f4be7ed784d",
+                  "counts": {
+                    "steps": 10,
+                    "supervised_tokens": 40,
+                    "tokens": 526
+                  },
+                  "receipt_path": "/home/runner/work/_temp/hepta-cumulative/campaign/round-2-train-cumulative-lora/actual-receipt.json",
+                  "receipt_sha256": "a49374eab52adfaff1ea83536d67d598a29127b7b763b7fb6e5aaff177d39702"
+                }
+              ],
+              "metadata_sha256": "8b8071671d3d423ff1597c92f6128dc1a3aecf25c9683b55cf3a2eef0b9a50e5",
+              "role": "fresh-budget-matched-lora",
+              "round": 2
+            },
+            "receipt_sha256": "a49374eab52adfaff1ea83536d67d598a29127b7b763b7fb6e5aaff177d39702",
+            "scores": {
+              "calibration": [
+                1,
+                2
+              ],
+              "evaluation": [
+                1,
+                2
+              ]
+            },
+            "token_schedule_sha256": "9585800ae96ae656cd174d3d6505df729bf92c7f027cbb597c2206736c44f654",
+            "training_supervisor": {
+              "budget": {
+                "rss_bytes": 17179869184,
+                "wall_seconds": 1800
+              },
+              "child_cpu_ns": 59320377000,
+              "child_spawned": true,
+              "cleanup_method": "wait4",
+              "cpu_scope": "Exact owned-child Linux wait4 user-plus-system CPU; includes inherited waited-descendant accounting",
+              "exit_code": 0,
+              "memory_scope": "sampled_peak_rss_bytes is direct-child 50ms RSS; waited_child_peak_rss_bytes is exact owned-child Linux wait4 ru_maxrss in KiB times 1024, a maximum single-process high-water with inherited waited-descendant accounting; neither is simultaneous process-tree RSS",
+              "observed_wall_ns": 45158492933,
+              "observer_cpu_ns": 462296694,
+              "outcome": "success",
+              "owned_child_echild_observed": false,
+              "owned_child_exit_observed": true,
+              "owned_child_reap_resolved": true,
+              "rss_observation_gaps": [
+                {
+                  "after": {
+                    "error": "pidfd-coordinate-unavailable",
+                    "owned_pid": 3286,
+                    "parent_nspid": [
+                      3268
+                    ],
+                    "pidfd_nspid": [
+                      -1
+                    ],
+                    "pidfd_ready": true,
+                    "pidfd_visible_pid": -1
+                  },
+                  "at_wall_ns": 45064712102,
+                  "before": {
+                    "child": {
+                      "NSpid": "3286",
+                      "PPid": "3268",
+                      "Pid": "3286",
+                      "State": "Z (zombie)",
+                      "Threads": "2",
+                      "VmRSS": null,
+                      "VmSize": null
+                    },
+                    "exit_cleanup_proof": {
+                      "kernel_release": "6.17.0-1022-azure",
+                      "observed_at_monotonic_ns": 427720477237,
+                      "owned_pid": 3286,
+                      "pidfd_nspid": [
+                        3286
+                      ],
+                      "pidfd_visible_pid": 3286,
+                      "rss_sample_produced": false,
+                      "schema": "linux-owned-thread-group-exit-cleanup-v1",
+                      "threads": [
+                        {
+                          "flags": 4227084,
+                          "start_time_ticks": 38265,
+                          "state": "Z",
+                          "tid": 3286
+                        },
+                        {
+                          "flags": 4195404,
+                          "start_time_ticks": 39586,
+                          "state": "R",
+                          "tid": 3315
+                        }
+                      ]
+                    },
+                    "owned_pid": 3286,
+                    "owned_threads": [
+                      {
+                        "NSpid": "3286",
+                        "NStgid": "3286",
+                        "PPid": "3268",
+                        "Pid": "3286",
+                        "State": "Z (zombie)",
+                        "Tgid": "3286",
+                        "VmRSS": null,
+                        "VmSize": null
+                      },
+                      {
+                        "NSpid": "3315",
+                        "NStgid": "3286",
+                        "PPid": "3268",
+                        "Pid": "3315",
+                        "State": "R (running)",
+                        "Tgid": "3286",
+                        "VmRSS": null,
+                        "VmSize": null
+                      }
+                    ],
+                    "parent_nspid": [
+                      3268
+                    ],
+                    "pidfd_identity_changed_during_read": false,
+                    "pidfd_nspid": [
+                      3286
+                    ],
+                    "pidfd_ready": false,
+                    "pidfd_visible_pid": 3286
+                  },
+                  "reconciliation": {
+                    "absolute_wall_deadline_ns": 2182653877940,
+                    "elapsed_ns": 91564723,
+                    "exit_cleanup_proof": {
+                      "kernel_release": "6.17.0-1022-azure",
+                      "observed_at_monotonic_ns": 427721537577,
+                      "owned_pid": 3286,
+                      "pidfd_nspid": [
+                        3286
+                      ],
+                      "pidfd_visible_pid": 3286,
+                      "rss_sample_produced": false,
+                      "schema": "linux-owned-thread-group-exit-cleanup-v1",
+                      "threads": [
+                        {
+                          "flags": 4227084,
+                          "start_time_ticks": 38265,
+                          "state": "Z",
+                          "tid": 3286
+                        },
+                        {
+                          "flags": 4195404,
+                          "start_time_ticks": 39586,
+                          "state": "R",
+                          "tid": 3315
+                        }
+                      ]
+                    },
+                    "initial_reap": "live",
+                    "mode": "kernel-exit-cleanup",
+                    "pidfd_ready_after_wait": true,
+                    "terminal_reap": "terminal",
+                    "wait_deadline_ns": 2182653877940,
+                    "wait_polls": 2
+                  }
+                }
+              ],
+              "sample_interval_ms": 50,
+              "sampled_peak_rss_bytes": 3111825408,
+              "stop_reason": null,
+              "terminal_reconciliation_profile": "linux-held-pidfd-irreversible-exit-v1",
+              "waited_child_observation_error": null,
+              "waited_child_peak_rss_bytes": 3111333888,
+              "waited_child_reaped": true
+            }
+          }
+        },
+        "cumulative_post_genesis_step_token_schedule_matched": true,
+        "gain_scope": "descriptive public-task scores; not equal-time/FLOPs or product quality",
+        "gain_vs_cumulative_controls": [
+          0,
+          1
+        ],
+        "original_six_arm_scores": {
+          "actual-current-incumbent": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          },
+          "budget-matched-full-tune": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "candidate": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "current-backbone": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          },
+          "fresh-budget-matched-lora": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "randomized-rank-matched-lora": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          }
+        },
+        "round": 2,
+        "source_assessment_sha256": "94251ff90426cd9166fe9ff86fc9f0209b1feb46bc76fcdadd6ba1880fa5b43f",
+        "total_resource_cost_matched": false
+      },
+      {
+        "blockers": [
+          "MissingSystemLongitudinalEvidence",
+          "TotalResourceCostUnmatched"
+        ],
+        "candidate": {
+          "actual_parent_readback": "97e0ed84fb640c5653b0dfa8f11af05194d96e66c70dee016dc7ded8186112ec",
+          "artifact": "af41d7c10d1a61f547c634ab5dc83ef939f01482898f4166ff29fdad870d3050",
+          "cumulative_campaign": {
+            "steps": 30,
+            "supervised_tokens": 120,
+            "tokens": 1578
+          },
+          "file_sha256": "4e3dfd7f06b3e7d76caf5576ec5d80ad2e792907f35f6012db9220f5c8f92358",
+          "per_round": {
+            "flop_scope": "profiler-supported-operators-only-not-total-work",
+            "loss": [
+              "0.323057442904",
+              "0.337924540043",
+              "0.0670328363776",
+              "0.213973850012",
+              "0.489623785019",
+              "0.0523725897074",
+              "0.145898669958",
+              "0.99490237236",
+              "0.909188330173",
+              "0.368618398905"
+            ],
+            "steps": 10,
+            "supervised_tokens": 40,
+            "supported_profile_flops": 289144351496,
+            "tokens": 526
+          },
+          "receipt_sha256": "30e59f6f2570f1571bb7e6c503c7d3ca2409f90086869922c984d63c6370ccc7",
+          "scores": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          }
+        },
+        "cumulative_controls": {
+          "cumulative-full-tune": {
+            "evaluation_receipt_sha256": "198df73ab2c0ea6f8b3e5cc53f61ea169bc4921076a815733f80f1af6610643d",
+            "evaluation_supervisor": {
+              "budget": {
+                "rss_bytes": 8589934592,
+                "wall_seconds": 600
+              },
+              "child_cpu_ns": 57760000000,
+              "child_spawned": true,
+              "cleanup_method": "wait4",
+              "cpu_scope": "Exact owned-child Linux wait4 user-plus-system CPU; includes inherited waited-descendant accounting",
+              "exit_code": 0,
+              "memory_scope": "sampled_peak_rss_bytes is direct-child 50ms RSS; waited_child_peak_rss_bytes is exact owned-child Linux wait4 ru_maxrss in KiB times 1024, a maximum single-process high-water with inherited waited-descendant accounting; neither is simultaneous process-tree RSS",
+              "observed_wall_ns": 25409930113,
+              "observer_cpu_ns": 262358565,
+              "outcome": "success",
+              "owned_child_echild_observed": false,
+              "owned_child_exit_observed": true,
+              "owned_child_reap_resolved": true,
+              "rss_observation_gaps": [],
+              "sample_interval_ms": 50,
+              "sampled_peak_rss_bytes": 1541701632,
+              "stop_reason": null,
+              "terminal_reconciliation_profile": "linux-held-pidfd-irreversible-exit-v1",
+              "waited_child_observation_error": null,
+              "waited_child_peak_rss_bytes": 1541435392,
+              "waited_child_reaped": true
+            },
+            "origin": "actual-cumulative-continuation",
+            "parent": {
+              "artifact": "cfca5d57c545f88df5e02bd068f1e5a59083f0b09377e83b3f9fa6a0fb23f67f",
+              "contract_path": "/home/runner/work/_temp/hepta-cumulative/campaign/round-3-train-cumulative-full-tune/target-contract.json",
+              "contract_sha256": "ebc8ac84999a91acb823d1bf8959a7dbc61fe20d7ba137f11affe426605d9852",
+              "cumulative_campaign": {
+                "steps": 30,
+                "supervised_tokens": 120,
+                "tokens": 1578
+              },
+              "directory": "/home/runner/work/_temp/hepta-cumulative/campaign/round-3-train-cumulative-full-tune",
+              "file_sha256": "cf5c77374060159688d2f1072ac41af43a8fcb9a4bb12f6dcfda1692732aa820",
+              "history": [
+                {
+                  "artifact": "d9fd41fcade29792992c7f6b9b05f0a932e5183f5cf62fcfd99b5a38c824d811",
+                  "counts": {
+                    "steps": 10,
+                    "supervised_tokens": 40,
+                    "tokens": 526
+                  },
+                  "receipt_path": "/home/runner/work/_temp/hepta-cumulative/reference/original/descendant-diagnostics/round-1/train-budget-matched-full-tune/actual-receipt.json",
+                  "receipt_sha256": "ab6ac4c7b40188dcfe8a1500428340985e353ce64e0211ddb1998d237d49f045"
+                },
+                {
+                  "artifact": "f3fe79a883b2e44f69144b53143fa51c94a393b95f25876b3bf3f8723d2d763f",
+                  "counts": {
+                    "steps": 10,
+                    "supervised_tokens": 40,
+                    "tokens": 526
+                  },
+                  "receipt_path": "/home/runner/work/_temp/hepta-cumulative/campaign/round-2-train-cumulative-full-tune/actual-receipt.json",
+                  "receipt_sha256": "9e103b6b5713f94217fc1208293b3e83fcd0df8e64b5e79db496e26a08ced501"
+                },
+                {
+                  "artifact": "cfca5d57c545f88df5e02bd068f1e5a59083f0b09377e83b3f9fa6a0fb23f67f",
+                  "counts": {
+                    "steps": 10,
+                    "supervised_tokens": 40,
+                    "tokens": 526
+                  },
+                  "receipt_path": "/home/runner/work/_temp/hepta-cumulative/campaign/round-3-train-cumulative-full-tune/actual-receipt.json",
+                  "receipt_sha256": "581969e9f8a032dfd83a3782468e84b16639ebb1ef48b41ffd98cd09d8d880be"
+                }
+              ],
+              "metadata_sha256": "523534a7f0efed6eec873fe78d452b807124d7cf268151377723238cdb14c1eb",
+              "role": "budget-matched-full-tune",
+              "round": 3
+            },
+            "receipt_sha256": "581969e9f8a032dfd83a3782468e84b16639ebb1ef48b41ffd98cd09d8d880be",
+            "scores": {
+              "calibration": [
+                1,
+                2
+              ],
+              "evaluation": [
+                1,
+                2
+              ]
+            },
+            "token_schedule_sha256": "9585800ae96ae656cd174d3d6505df729bf92c7f027cbb597c2206736c44f654",
+            "training_supervisor": {
+              "budget": {
+                "rss_bytes": 17179869184,
+                "wall_seconds": 1800
+              },
+              "child_cpu_ns": 79386405000,
+              "child_spawned": true,
+              "cleanup_method": "wait4",
+              "cpu_scope": "Exact owned-child Linux wait4 user-plus-system CPU; includes inherited waited-descendant accounting",
+              "exit_code": 0,
+              "memory_scope": "sampled_peak_rss_bytes is direct-child 50ms RSS; waited_child_peak_rss_bytes is exact owned-child Linux wait4 ru_maxrss in KiB times 1024, a maximum single-process high-water with inherited waited-descendant accounting; neither is simultaneous process-tree RSS",
+              "observed_wall_ns": 53338673174,
+              "observer_cpu_ns": 563719311,
+              "outcome": "success",
+              "owned_child_echild_observed": false,
+              "owned_child_exit_observed": true,
+              "owned_child_reap_resolved": true,
+              "rss_observation_gaps": [
+                {
+                  "after": {
+                    "error": "pidfd-coordinate-unavailable",
+                    "owned_pid": 3519,
+                    "parent_nspid": [
+                      3268
+                    ],
+                    "pidfd_nspid": [
+                      -1
+                    ],
+                    "pidfd_ready": true,
+                    "pidfd_visible_pid": -1
+                  },
+                  "at_wall_ns": 53157159328,
+                  "before": {
+                    "child": {
+                      "NSpid": "3519",
+                      "PPid": "3268",
+                      "Pid": "3519",
+                      "State": "Z (zombie)",
+                      "Threads": "2",
+                      "VmRSS": null,
+                      "VmSize": null
+                    },
+                    "exit_cleanup_proof": {
+                      "kernel_release": "6.17.0-1022-azure",
+                      "observed_at_monotonic_ns": 683752543759,
+                      "owned_pid": 3519,
+                      "pidfd_nspid": [
+                        3519
+                      ],
+                      "pidfd_visible_pid": 3519,
+                      "rss_sample_produced": false,
+                      "schema": "linux-owned-thread-group-exit-cleanup-v1",
+                      "threads": [
+                        {
+                          "flags": 4227084,
+                          "start_time_ticks": 63059,
+                          "state": "Z",
+                          "tid": 3519
+                        },
+                        {
+                          "flags": 4195404,
+                          "start_time_ticks": 64471,
+                          "state": "R",
+                          "tid": 3549
+                        }
+                      ]
+                    },
+                    "owned_pid": 3519,
+                    "owned_threads": [
+                      {
+                        "NSpid": "3519",
+                        "NStgid": "3519",
+                        "PPid": "3268",
+                        "Pid": "3519",
+                        "State": "Z (zombie)",
+                        "Tgid": "3519",
+                        "VmRSS": null,
+                        "VmSize": null
+                      },
+                      {
+                        "NSpid": "3549",
+                        "NStgid": "3519",
+                        "PPid": "3268",
+                        "Pid": "3549",
+                        "State": "R (running)",
+                        "Tgid": "3519",
+                        "VmRSS": null,
+                        "VmSize": null
+                      }
+                    ],
+                    "parent_nspid": [
+                      3268
+                    ],
+                    "pidfd_identity_changed_during_read": false,
+                    "pidfd_nspid": [
+                      3519
+                    ],
+                    "pidfd_ready": false,
+                    "pidfd_visible_pid": 3519
+                  },
+                  "reconciliation": {
+                    "absolute_wall_deadline_ns": 2430594064123,
+                    "elapsed_ns": 179895502,
+                    "exit_cleanup_proof": {
+                      "kernel_release": "6.17.0-1022-azure",
+                      "observed_at_monotonic_ns": 683753329968,
+                      "owned_pid": 3519,
+                      "pidfd_nspid": [
+                        3519
+                      ],
+                      "pidfd_visible_pid": 3519,
+                      "rss_sample_produced": false,
+                      "schema": "linux-owned-thread-group-exit-cleanup-v1",
+                      "threads": [
+                        {
+                          "flags": 4227084,
+                          "start_time_ticks": 63059,
+                          "state": "Z",
+                          "tid": 3519
+                        },
+                        {
+                          "flags": 4195404,
+                          "start_time_ticks": 64471,
+                          "state": "R",
+                          "tid": 3549
+                        }
+                      ]
+                    },
+                    "initial_reap": "live",
+                    "mode": "kernel-exit-cleanup",
+                    "pidfd_ready_after_wait": true,
+                    "terminal_reap": "terminal",
+                    "wait_deadline_ns": 2430594064123,
+                    "wait_polls": 4
+                  }
+                }
+              ],
+              "sample_interval_ms": 50,
+              "sampled_peak_rss_bytes": 6156988416,
+              "stop_reason": null,
+              "terminal_reconciliation_profile": "linux-held-pidfd-irreversible-exit-v1",
+              "waited_child_observation_error": null,
+              "waited_child_peak_rss_bytes": 6156820480,
+              "waited_child_reaped": true
+            }
+          },
+          "cumulative-lora": {
+            "evaluation_receipt_sha256": "9338e619f36271c422c70f536c9ff8adff92f3b41ffcb1be2ccec3dd8362e930",
+            "evaluation_supervisor": {
+              "budget": {
+                "rss_bytes": 8589934592,
+                "wall_seconds": 600
+              },
+              "child_cpu_ns": 58975608000,
+              "child_spawned": true,
+              "cleanup_method": "wait4",
+              "cpu_scope": "Exact owned-child Linux wait4 user-plus-system CPU; includes inherited waited-descendant accounting",
+              "exit_code": 0,
+              "memory_scope": "sampled_peak_rss_bytes is direct-child 50ms RSS; waited_child_peak_rss_bytes is exact owned-child Linux wait4 ru_maxrss in KiB times 1024, a maximum single-process high-water with inherited waited-descendant accounting; neither is simultaneous process-tree RSS",
+              "observed_wall_ns": 25594733224,
+              "observer_cpu_ns": 266129187,
+              "outcome": "success",
+              "owned_child_echild_observed": false,
+              "owned_child_exit_observed": true,
+              "owned_child_reap_resolved": true,
+              "rss_observation_gaps": [],
+              "sample_interval_ms": 50,
+              "sampled_peak_rss_bytes": 1005547520,
+              "stop_reason": null,
+              "terminal_reconciliation_profile": "linux-held-pidfd-irreversible-exit-v1",
+              "waited_child_observation_error": null,
+              "waited_child_peak_rss_bytes": 1153888256,
+              "waited_child_reaped": true
+            },
+            "origin": "actual-cumulative-continuation",
+            "parent": {
+              "artifact": "371dc396c38a187335d39f945307510790c51ad580bb3c0e59f5b60c4ff55e07",
+              "contract_path": "/home/runner/work/_temp/hepta-cumulative/campaign/round-3-train-cumulative-lora/target-contract.json",
+              "contract_sha256": "ebc8ac84999a91acb823d1bf8959a7dbc61fe20d7ba137f11affe426605d9852",
+              "cumulative_campaign": {
+                "steps": 30,
+                "supervised_tokens": 120,
+                "tokens": 1578
+              },
+              "directory": "/home/runner/work/_temp/hepta-cumulative/campaign/round-3-train-cumulative-lora",
+              "file_sha256": "5a4e6692153e27aa11709b9c1b3974e40cb3da7b214037e311304e399f394580",
+              "history": [
+                {
+                  "artifact": "321edb8a9bc734114a6d909fff0fdf8aebbbb46ff3f2b4654e63898f1a788caa",
+                  "counts": {
+                    "steps": 10,
+                    "supervised_tokens": 40,
+                    "tokens": 526
+                  },
+                  "receipt_path": "/home/runner/work/_temp/hepta-cumulative/reference/original/descendant-diagnostics/round-1/train-fresh-budget-matched-lora/actual-receipt.json",
+                  "receipt_sha256": "2430cb222b70773947ce3a05bc43ccd2d466652f24a66da4a2a6fefc0653f36f"
+                },
+                {
+                  "artifact": "d2db4d2626a4fcc7057c450adf4d94987c83b7956933ead4b08c3f4be7ed784d",
+                  "counts": {
+                    "steps": 10,
+                    "supervised_tokens": 40,
+                    "tokens": 526
+                  },
+                  "receipt_path": "/home/runner/work/_temp/hepta-cumulative/campaign/round-2-train-cumulative-lora/actual-receipt.json",
+                  "receipt_sha256": "a49374eab52adfaff1ea83536d67d598a29127b7b763b7fb6e5aaff177d39702"
+                },
+                {
+                  "artifact": "371dc396c38a187335d39f945307510790c51ad580bb3c0e59f5b60c4ff55e07",
+                  "counts": {
+                    "steps": 10,
+                    "supervised_tokens": 40,
+                    "tokens": 526
+                  },
+                  "receipt_path": "/home/runner/work/_temp/hepta-cumulative/campaign/round-3-train-cumulative-lora/actual-receipt.json",
+                  "receipt_sha256": "efb184a4034f66930a01a2b4fc26e071a8f0870e0291a1181d6d34e57d12f7f6"
+                }
+              ],
+              "metadata_sha256": "6972852146f822a72804920a57c5705eee101c1acff7cb4d654275dc862f840e",
+              "role": "fresh-budget-matched-lora",
+              "round": 3
+            },
+            "receipt_sha256": "efb184a4034f66930a01a2b4fc26e071a8f0870e0291a1181d6d34e57d12f7f6",
+            "scores": {
+              "calibration": [
+                1,
+                2
+              ],
+              "evaluation": [
+                1,
+                2
+              ]
+            },
+            "token_schedule_sha256": "9585800ae96ae656cd174d3d6505df729bf92c7f027cbb597c2206736c44f654",
+            "training_supervisor": {
+              "budget": {
+                "rss_bytes": 17179869184,
+                "wall_seconds": 1800
+              },
+              "child_cpu_ns": 59577459000,
+              "child_spawned": true,
+              "cleanup_method": "wait4",
+              "cpu_scope": "Exact owned-child Linux wait4 user-plus-system CPU; includes inherited waited-descendant accounting",
+              "exit_code": 0,
+              "memory_scope": "sampled_peak_rss_bytes is direct-child 50ms RSS; waited_child_peak_rss_bytes is exact owned-child Linux wait4 ru_maxrss in KiB times 1024, a maximum single-process high-water with inherited waited-descendant accounting; neither is simultaneous process-tree RSS",
+              "observed_wall_ns": 45294631671,
+              "observer_cpu_ns": 468173968,
+              "outcome": "success",
+              "owned_child_echild_observed": false,
+              "owned_child_exit_observed": true,
+              "owned_child_reap_resolved": true,
+              "rss_observation_gaps": [
+                {
+                  "after": {
+                    "error": "pidfd-coordinate-unavailable",
+                    "owned_pid": 3438,
+                    "parent_nspid": [
+                      3268
+                    ],
+                    "pidfd_nspid": [
+                      -1
+                    ],
+                    "pidfd_ready": true,
+                    "pidfd_visible_pid": -1
+                  },
+                  "at_wall_ns": 45212936462,
+                  "before": {
+                    "child": {
+                      "NSpid": "3438",
+                      "PPid": "3268",
+                      "Pid": "3438",
+                      "State": "Z (zombie)",
+                      "Threads": "2",
+                      "VmRSS": null,
+                      "VmSize": null
+                    },
+                    "exit_cleanup_proof": {
+                      "kernel_release": "6.17.0-1022-azure",
+                      "observed_at_monotonic_ns": 595775480001,
+                      "owned_pid": 3438,
+                      "pidfd_nspid": [
+                        3438
+                      ],
+                      "pidfd_visible_pid": 3438,
+                      "rss_sample_produced": false,
+                      "schema": "linux-owned-thread-group-exit-cleanup-v1",
+                      "threads": [
+                        {
+                          "flags": 4227084,
+                          "start_time_ticks": 55056,
+                          "state": "Z",
+                          "tid": 3438
+                        },
+                        {
+                          "flags": 4195404,
+                          "start_time_ticks": 56381,
+                          "state": "R",
+                          "tid": 3470
+                        }
+                      ]
+                    },
+                    "owned_pid": 3438,
+                    "owned_threads": [
+                      {
+                        "NSpid": "3438",
+                        "NStgid": "3438",
+                        "PPid": "3268",
+                        "Pid": "3438",
+                        "State": "Z (zombie)",
+                        "Tgid": "3438",
+                        "VmRSS": null,
+                        "VmSize": null
+                      },
+                      {
+                        "NSpid": "3470",
+                        "NStgid": "3438",
+                        "PPid": "3268",
+                        "Pid": "3470",
+                        "State": "R (running)",
+                        "Tgid": "3438",
+                        "VmRSS": null,
+                        "VmSize": null
+                      }
+                    ],
+                    "parent_nspid": [
+                      3268
+                    ],
+                    "pidfd_identity_changed_during_read": false,
+                    "pidfd_nspid": [
+                      3438
+                    ],
+                    "pidfd_ready": false,
+                    "pidfd_visible_pid": 3438
+                  },
+                  "reconciliation": {
+                    "absolute_wall_deadline_ns": 2350561190731,
+                    "elapsed_ns": 80039505,
+                    "exit_cleanup_proof": {
+                      "kernel_release": "6.17.0-1022-azure",
+                      "observed_at_monotonic_ns": 595776279154,
+                      "owned_pid": 3438,
+                      "pidfd_nspid": [
+                        3438
+                      ],
+                      "pidfd_visible_pid": 3438,
+                      "rss_sample_produced": false,
+                      "schema": "linux-owned-thread-group-exit-cleanup-v1",
+                      "threads": [
+                        {
+                          "flags": 4227084,
+                          "start_time_ticks": 55056,
+                          "state": "Z",
+                          "tid": 3438
+                        },
+                        {
+                          "flags": 4195404,
+                          "start_time_ticks": 56381,
+                          "state": "R",
+                          "tid": 3470
+                        }
+                      ]
+                    },
+                    "initial_reap": "live",
+                    "mode": "kernel-exit-cleanup",
+                    "pidfd_ready_after_wait": true,
+                    "terminal_reap": "terminal",
+                    "wait_deadline_ns": 2350561190731,
+                    "wait_polls": 2
+                  }
+                }
+              ],
+              "sample_interval_ms": 50,
+              "sampled_peak_rss_bytes": 3111325696,
+              "stop_reason": null,
+              "terminal_reconciliation_profile": "linux-held-pidfd-irreversible-exit-v1",
+              "waited_child_observation_error": null,
+              "waited_child_peak_rss_bytes": 3110809600,
+              "waited_child_reaped": true
+            }
+          }
+        },
+        "cumulative_post_genesis_step_token_schedule_matched": true,
+        "gain_scope": "descriptive public-task scores; not equal-time/FLOPs or product quality",
+        "gain_vs_cumulative_controls": [
+          0,
+          1
+        ],
+        "original_six_arm_scores": {
+          "actual-current-incumbent": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          },
+          "budget-matched-full-tune": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "candidate": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "current-backbone": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          },
+          "fresh-budget-matched-lora": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "randomized-rank-matched-lora": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          }
+        },
+        "round": 3,
+        "source_assessment_sha256": "9589795a2d083e6cc33d21226a99e968334f9207263cfb3e8ede93185a257483",
+        "total_resource_cost_matched": false
+      }
+    ],
+    "runner_sha256": "37e890e64ec6eeca8ea32f5d47b374f15f649ed2b0d5afba92c390a4347fe853",
+    "schema": "hepta-cumulative-control-campaign-v1",
+    "source_candidate_training_reexecuted": false,
+    "source_pin_sha256": "21558033564d26454fc285eae228cfbb199ba02627138b8d56d50882c1423269",
+    "source_required_outcomes": {
+      "all_required_outcomes_passed": false,
+      "model_target_available": true,
+      "original_full_rust_gate_required": true,
+      "outcomes": {
+        "COLD_RUNTIME_OUTCOME": "success",
+        "DESCENDANTS_OUTCOME": "success",
+        "LINT_OUTCOME": "skipped",
+        "MATERIALS_OUTCOME": "success",
+        "ORDINARY_OUTCOME": "success",
+        "PROPOSAL_ROUNDS_OUTCOME": "failure",
+        "REQUIRED_CLI_OUTCOME": "success",
+        "SCOPED_RUST_OUTCOME": "success"
+      },
+      "product_qualification": false,
+      "schema": "hepta-public-initial-required-outcomes-v2",
+      "three_installed_upgrades_proven": false
+    },
+    "source_run_id": 40492138476,
+    "source_sha": "f75bf1ac902ed73905e4daa49f9396df028a4254",
+    "status": "completed-diagnostic-no-installation",
+    "total_resource_cost_matched": false
+  },
+  "source_archive_sha256_verified": true,
+  "separate_checkpoint_archive_downloaded_locally": false,
+  "installed_children": 0,
+  "product_qualification": false
+}

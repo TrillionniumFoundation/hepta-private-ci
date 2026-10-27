@@ -1,0 +1,271 @@
+{
+  "required_outcomes": {
+    "schema": "hepta-cumulative-required-outcomes-v1",
+    "outcomes": {
+      "CONTROLS_OUTCOME": "success",
+      "ORIGINAL_OUTCOME": "success",
+      "COLD_RUNTIME_OUTCOME": "success",
+      "MATERIALS_OUTCOME": "success",
+      "CAMPAIGN_OUTCOME": "failure",
+      "FORMATTING_OUTCOME": "success"
+    },
+    "actual_diagnostic_completed": false,
+    "installed_children": 0,
+    "product_qualification": false,
+    "total_resource_cost_matched": false,
+    "original_native_gates_replaced": false,
+    "campaign_report_error": null
+  },
+  "campaign": {
+    "authority": {
+      "current_write": false,
+      "installation": false,
+      "product_qualification": false,
+      "public_reward": false,
+      "selection": false
+    },
+    "budget_matched_gain_proven": false,
+    "chain_sha": "c96022b897c1235fdbdbfcfa32764403511c6aab",
+    "comparison_scope": "public repeated tasks; independent runs with exact frozen runtime/data recipe",
+    "error_type": "ValueError",
+    "helper_sha256": "6969222dc65a5ac6858a63a3ea09f629ecf05ff2e44ad6c9668e627aeb19f2ce",
+    "independent_future_quality": false,
+    "installed_children": 0,
+    "original_plan_unchanged": true,
+    "original_six_arms_preserved": true,
+    "reason": "cumulative evaluation supervisor",
+    "rounds": [
+      {
+        "blockers": [
+          "MissingSystemLongitudinalEvidence",
+          "TotalResourceCostUnmatched"
+        ],
+        "candidate": {
+          "actual_parent_readback": "3b3128293a86570a47a72c7bf081f898de1682ed1118c5a440ad7478c0f22e42",
+          "artifact": "64cbb9c06fbddc11cb5ac8b8c1d531ff82982a9425deb5ad38fa81081c4bedb6",
+          "cumulative_campaign": {
+            "steps": 10,
+            "supervised_tokens": 40,
+            "tokens": 526
+          },
+          "file_sha256": "2a1c51e820c6f3d93477e11d3d91317a2aa0addcc08696e841d5d7d120c516c4",
+          "per_round": {
+            "flop_scope": "profiler-supported-operators-only-not-total-work",
+            "loss": [
+              "3.96016216278",
+              "3.62071847916",
+              "1.08996760845",
+              "1.42350840569",
+              "0.81425756216",
+              "0.438867360353",
+              "0.286466747522",
+              "0.614643573761",
+              "0.488372832537",
+              "0.269330829382"
+            ],
+            "steps": 10,
+            "supervised_tokens": 40,
+            "supported_profile_flops": 289144351496,
+            "tokens": 526
+          },
+          "receipt_sha256": "d0a21eeb303afadaf871f4b5dbea9c53ba4371296d60f67d6d43e2192d08267e",
+          "scores": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          }
+        },
+        "cumulative_controls": {
+          "cumulative-full-tune": {
+            "origin": "original-actual-round-one-control",
+            "parent": {
+              "artifact": "d9fd41fcade29792992c7f6b9b05f0a932e5183f5cf62fcfd99b5a38c824d811",
+              "contract_path": "/home/runner/work/_temp/hepta-cumulative/reference/original/genesis/target-contract.json",
+              "contract_sha256": "ebc8ac84999a91acb823d1bf8959a7dbc61fe20d7ba137f11affe426605d9852",
+              "cumulative_campaign": {
+                "steps": 10,
+                "supervised_tokens": 40,
+                "tokens": 526
+              },
+              "directory": "/home/runner/work/_temp/hepta-cumulative/reference/original/descendant-diagnostics/round-1/train-budget-matched-full-tune",
+              "file_sha256": "e02c2d1b50860fa7b88f3f2f166de645bee8c7ad21012862398366ce8a50d151",
+              "history": [
+                {
+                  "artifact": "d9fd41fcade29792992c7f6b9b05f0a932e5183f5cf62fcfd99b5a38c824d811",
+                  "counts": {
+                    "steps": 10,
+                    "supervised_tokens": 40,
+                    "tokens": 526
+                  },
+                  "receipt_path": "/home/runner/work/_temp/hepta-cumulative/reference/original/descendant-diagnostics/round-1/train-budget-matched-full-tune/actual-receipt.json",
+                  "receipt_sha256": "ab6ac4c7b40188dcfe8a1500428340985e353ce64e0211ddb1998d237d49f045"
+                }
+              ],
+              "metadata_sha256": "5dc16e16226c44b52b5973b9545153d93037215295990e14bff9b2926d4d3362",
+              "role": "budget-matched-full-tune",
+              "round": 1
+            },
+            "reexecuted": false,
+            "scores": {
+              "calibration": [
+                1,
+                2
+              ],
+              "evaluation": [
+                1,
+                2
+              ]
+            }
+          },
+          "cumulative-lora": {
+            "origin": "original-actual-round-one-control",
+            "parent": {
+              "artifact": "321edb8a9bc734114a6d909fff0fdf8aebbbb46ff3f2b4654e63898f1a788caa",
+              "contract_path": "/home/runner/work/_temp/hepta-cumulative/reference/original/genesis/target-contract.json",
+              "contract_sha256": "ebc8ac84999a91acb823d1bf8959a7dbc61fe20d7ba137f11affe426605d9852",
+              "cumulative_campaign": {
+                "steps": 10,
+                "supervised_tokens": 40,
+                "tokens": 526
+              },
+              "directory": "/home/runner/work/_temp/hepta-cumulative/reference/original/descendant-diagnostics/round-1/train-fresh-budget-matched-lora",
+              "file_sha256": "7e1df3f1747e7580e4df43b1bdb43fff8ce2af3bc37d73b740a8a606e3c10ab8",
+              "history": [
+                {
+                  "artifact": "321edb8a9bc734114a6d909fff0fdf8aebbbb46ff3f2b4654e63898f1a788caa",
+                  "counts": {
+                    "steps": 10,
+                    "supervised_tokens": 40,
+                    "tokens": 526
+                  },
+                  "receipt_path": "/home/runner/work/_temp/hepta-cumulative/reference/original/descendant-diagnostics/round-1/train-fresh-budget-matched-lora/actual-receipt.json",
+                  "receipt_sha256": "2430cb222b70773947ce3a05bc43ccd2d466652f24a66da4a2a6fefc0653f36f"
+                }
+              ],
+              "metadata_sha256": "eeb7ce997bd4215ef6e1d3b0633473cee764ec2308111e757592e2e5b0baf0f9",
+              "role": "fresh-budget-matched-lora",
+              "round": 1
+            },
+            "reexecuted": false,
+            "scores": {
+              "calibration": [
+                1,
+                2
+              ],
+              "evaluation": [
+                1,
+                2
+              ]
+            }
+          }
+        },
+        "cumulative_post_genesis_step_token_schedule_matched": true,
+        "gain_scope": "descriptive public-task scores; not equal-time/FLOPs or product quality",
+        "gain_vs_cumulative_controls": [
+          0,
+          1
+        ],
+        "original_six_arm_scores": {
+          "actual-current-incumbent": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          },
+          "budget-matched-full-tune": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "candidate": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "current-backbone": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          },
+          "fresh-budget-matched-lora": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "randomized-rank-matched-lora": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          }
+        },
+        "round": 1,
+        "source_assessment_sha256": "7475fa8e3dfd3abf5f2f98c972102d3d9bb9c7c54180d52573293144c8e53e56",
+        "total_resource_cost_matched": false
+      }
+    ],
+    "runner_sha256": "0dc9c76a038b9e52a26b2c0d95d9e1709a3878c78ff07eef166143e9e1e39e31",
+    "schema": "hepta-cumulative-control-campaign-v1",
+    "source_candidate_training_reexecuted": false,
+    "source_pin_sha256": "21558033564d26454fc285eae228cfbb199ba02627138b8d56d50882c1423269",
+    "source_required_outcomes": {
+      "all_required_outcomes_passed": false,
+      "model_target_available": true,
+      "original_full_rust_gate_required": true,
+      "outcomes": {
+        "COLD_RUNTIME_OUTCOME": "success",
+        "DESCENDANTS_OUTCOME": "success",
+        "LINT_OUTCOME": "skipped",
+        "MATERIALS_OUTCOME": "success",
+        "ORDINARY_OUTCOME": "success",
+        "PROPOSAL_ROUNDS_OUTCOME": "failure",
+        "REQUIRED_CLI_OUTCOME": "success",
+        "SCOPED_RUST_OUTCOME": "success"
+      },
+      "product_qualification": false,
+      "schema": "hepta-public-initial-required-outcomes-v2",
+      "three_installed_upgrades_proven": false
+    },
+    "source_run_id": 40492138476,
+    "source_sha": "f75bf1ac902ed73905e4daa49f9396df028a4254",
+    "status": "execution-failed",
+    "total_resource_cost_matched": false
+  },
+  "source_archive_sha256_verified": true,
+  "separate_checkpoint_archive_downloaded_locally": false,
+  "installed_children": 0,
+  "product_qualification": false
+}

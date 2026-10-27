@@ -1,0 +1,21 @@
+{
+  "original_zip_bytes_verified": 117757882,
+  "original_zip_sha256": "b53e83d157c07a713fc566087b32b48fd42c0ac388628e5835071207de942b36",
+  "original_record_members_verified": 11498,
+  "top_level_index_member_verified": true,
+  "nested_original_index_verified": true,
+  "base_commit_pin": "82b4c06add08c5e8e96871831eb6f80464d15968",
+  "base_manifest_sha256_verified": "f874ff5d9715413803daf9d097a6e85e9b69924bfe356945519493a5e7749a34",
+  "original_workflow_conclusion": "failure",
+  "separate_safetensors_checkpoint_archive_included": false,
+  "safetensors_checkpoint_members_reconstructed": 0,
+  "installed_children": 0,
+  "product_qualification": false,
+  "output_written": false,
+  "verification_status": "success",
+  "verification_method": "independent reader reconstructed a seekable original-byte stream from immutable base and incremental chunks; full SHA and every retained index/member checked",
+  "reader_sha256": "1485e3342680fa47f1cd4db4346afb4afa60468f7fc5c36773c87ac8228e1961",
+  "negative_controls_passed": 7,
+  "negative_controls_command": "python -I -B qualification/public-initial-v2/test_incremental_records.py",
+  "git_commit_resolution_performed": false
+}

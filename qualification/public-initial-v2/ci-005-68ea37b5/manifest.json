@@ -1,0 +1,100 @@
+{
+  "actual_model_load": {
+    "ready": {
+      "actions": [
+        {
+          "action_id": "memory-82aaf7382d0b835b69cb7508f53ff8c4d18d25f25ae9e9437f928ab5c70860a8",
+          "completion": "yes"
+        },
+        {
+          "action_id": "memory-9b91d44953ed21ffd72efd3798d8b396aaaf285be044c44ee8f40cb6919f678c",
+          "completion": "no"
+        }
+      ],
+      "actual_loaded_parent": "3b3128293a86570a47a72c7bf081f898de1682ed1118c5a440ad7478c0f22e42",
+      "authority": {
+        "hepta_final_use": false,
+        "independent_accepted": false,
+        "installation_authorized": false,
+        "prospective_accepted": false,
+        "public_reward_eligible": false,
+        "selection_authorized": false
+      },
+      "backbone": "c320c094769446c21d7e4a33795d7f9310b5e4c8ca5a6fecca40207b1f735b7c",
+      "contract": "c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f",
+      "file_sha256": "1c5af7b5a7144a619dfac83b14bd83ae77f1e2227b18a6a9c5dcb214889a0cba",
+      "generation": 1,
+      "observed_rss_bytes": 1156067328,
+      "schema": "hepta-smollm-neural-read-worker-v1",
+      "source_pins": {
+        "llm_adapter_contract.py": "e46311a08584ad7becfc56cd0b699d9bc6921adcfe39319e50aa14faa984ced5",
+        "llm_inherited_runtime.py": "1c356c4e8e9a114ac7b6348cac4bed9a6fc72d53ce71ce00139c3deed8733596",
+        "llm_parent_material.py": "5396d72c4730aea2d271b55a8404f6eaba64dc57f91343537710c28f7686b43c",
+        "llm_runtime_pilot.py": "65ccc6454befd96fa5ce1f5bdde2c56cb6cbb741cf495b8d24a758039f99f755",
+        "model-family-smollm2-135m-v1.json": "0837bbfb31f3f2b9a8731545c9f742aee1ebd32daed392a936a3ec9719537e52"
+      },
+      "tokenizer": "a1883207efeacecee399f4dc699d2b547eb2d6ddb7500522933ed76c1521fb93",
+      "worker_source": "791fbe67ae7d2b2e0551e5f9f6fd77797ed9f8c210e7ca47f9acb6ac02895769"
+    },
+    "ready_member": "native/ordinary-selected-initial/session/session/worker/ready.json",
+    "supervisor_member": "native/ordinary-selected-initial/session/session/worker/supervisor.json"
+  },
+  "artifact_index": "artifact-members.json",
+  "attempt": 5,
+  "chain_sha": "c96022b897c1235fdbdbfcfa32764403511c6aab",
+  "cold_runtime": {
+    "hash_locked_wheels": 31,
+    "public_material_files": 7,
+    "python": "3.12.3",
+    "torch": "2.9.1+cpu"
+  },
+  "complete_native_packages": {
+    "elapsed_seconds": 523.285607794,
+    "failed": 0,
+    "passed": 519,
+    "skipped": 24
+  },
+  "conclusion": "failure",
+  "full_job_log": {
+    "decoded_bytes": 982086,
+    "decoded_sha256": "33da39df2ea204848d5b9bfb5f91a9b0187b07438cc3888c2e75097d15608c21",
+    "encoding_scope": "UTF-8 encoding of GitHub tool decoded job text; ZIP wrapper logs retain original bytes",
+    "gzip_bytes": 137318,
+    "gzip_sha256": "09f322e9b9827944118b06fca67c6193de339c6d60a775882cdc8029d97a6570",
+    "path": "job-api-decoded.log.gz"
+  },
+  "installed_children": 0,
+  "job_id": 122126640974,
+  "ordinary_context_forwards": 0,
+  "ordinary_failure": {
+    "reason": "bind agentd control socket: path must be shorter than SUN_LEN",
+    "socket_bytes": 125,
+    "wrapper_exit": 100
+  },
+  "original_outcomes": {
+    "all_required_outcomes_passed": false,
+    "model_target_available": true,
+    "original_full_rust_gate_required": true,
+    "outcomes": {
+      "COLD_RUNTIME_OUTCOME": "success",
+      "DESCENDANTS_OUTCOME": "skipped",
+      "LINT_OUTCOME": "skipped",
+      "MATERIALS_OUTCOME": "success",
+      "ORDINARY_OUTCOME": "failure",
+      "PROPOSAL_ROUNDS_OUTCOME": "skipped",
+      "REQUIRED_CLI_OUTCOME": "success",
+      "SCOPED_RUST_OUTCOME": "success"
+    },
+    "product_qualification": false,
+    "schema": "hepta-public-initial-required-outcomes-v2",
+    "three_installed_upgrades_proven": false
+  },
+  "product_qualification": false,
+  "run_id": 40485646277,
+  "schema": "hepta-public-initial-ci-attempt-v1",
+  "source_identity_applies_only_to_this_run": true,
+  "source_sha": "68ea37b526b3f28681ef064053bd89ab4b81ac0b",
+  "source_tree": "d74a843c48fba2334dc38102cab3c536a5d5f035",
+  "three_installed_upgrades_proven": false,
+  "training_rounds": 0
+}

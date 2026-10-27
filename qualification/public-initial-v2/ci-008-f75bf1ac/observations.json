@@ -1,0 +1,852 @@
+{
+  "records_zip_sha256": "a6674acfd78bc4172eb0cb2dbd7e39e1bf6506e50fbca30b04b6db19c7f6c276",
+  "required_outcomes": {
+    "schema": "hepta-public-initial-required-outcomes-v2",
+    "outcomes": {
+      "REQUIRED_CLI_OUTCOME": "success",
+      "SCOPED_RUST_OUTCOME": "success",
+      "COLD_RUNTIME_OUTCOME": "success",
+      "MATERIALS_OUTCOME": "success",
+      "ORDINARY_OUTCOME": "success",
+      "PROPOSAL_ROUNDS_OUTCOME": "failure",
+      "DESCENDANTS_OUTCOME": "success",
+      "LINT_OUTCOME": "skipped"
+    },
+    "model_target_available": true,
+    "all_required_outcomes_passed": false,
+    "original_full_rust_gate_required": true,
+    "product_qualification": false,
+    "three_installed_upgrades_proven": false
+  },
+  "native_packages": {
+    "source_sha": "f75bf1ac902ed73905e4daa49f9396df028a4254",
+    "status": "passed",
+    "observed_passed_tests": 519,
+    "observed_failed_tests": 0,
+    "elapsed_seconds": 406.41175163300005
+  },
+  "actual_worker_ready_records": [
+    "n/ordinary-selected-initial/session/session/worker/ready.json",
+    "n/public-loop-session-0/session/session/worker/ready.json",
+    "n/public-loop-session-1/session/session/worker/ready.json"
+  ],
+  "ordinary_result": {
+    "beneficial_releases": 0,
+    "codex_executable": "/home/runner/work/_temp/hepta-public-target/debug/codex",
+    "cold_runtime_installed": false,
+    "controlled_test_issuer": true,
+    "current": {
+      "file_digest": "9e2e1ae48ee3b8a42e56b2e11df20aa18c44bdbdbfea7bd15a44247aee42343d",
+      "head_digest": "aa205f5717850c0719873138aafbf6812a4f3f70d3be65b31606e07bbe358d17",
+      "record_count": 1
+    },
+    "home_root": "/home/runner/work/_temp/hepta-public-initial-v2/n/o/b/fleet/agents/00000000-0000-4000-8000-000000000219/home",
+    "observations": [
+      {
+        "actual_logits": "03093dfbe6e942b033ecd3c4d02bfbaaffcc2a09dd8039b9a050cf605eb42ce0",
+        "actual_parameter": "1c5af7b5a7144a619dfac83b14bd83ae77f1e2227b18a6a9c5dcb214889a0cba",
+        "actual_ready": "c57db10e7ca11d345738d9f9168cd471ab794a5e95d57bddca293c26f90d18da",
+        "forward_control": [
+          "neural-1793099699270-2",
+          "reservation-neural-1793099699270-2"
+        ],
+        "forward_response": "ed317e45c9b9e4bf1fbe747c6dfe373fe2abe1e9bb272e74e88bae21e6a09584",
+        "read": 0,
+        "read_digest": "dea980b6a338de48a822c625387d53d6f9acb54e8779a9dd762d616d49c126c5"
+      },
+      {
+        "actual_logits": "03093dfbe6e942b033ecd3c4d02bfbaaffcc2a09dd8039b9a050cf605eb42ce0",
+        "actual_parameter": "1c5af7b5a7144a619dfac83b14bd83ae77f1e2227b18a6a9c5dcb214889a0cba",
+        "actual_ready": "c57db10e7ca11d345738d9f9168cd471ab794a5e95d57bddca293c26f90d18da",
+        "forward_control": [
+          "neural-1793099699456-3",
+          "reservation-neural-1793099699456-3"
+        ],
+        "forward_response": "5765fee2562642b1b609be4461b9c4adfdbc913d954219716040ef802b64aa29",
+        "read": 1,
+        "read_digest": "dea980b6a338de48a822c625387d53d6f9acb54e8779a9dd762d616d49c126c5"
+      },
+      {
+        "actual_logits": "03093dfbe6e942b033ecd3c4d02bfbaaffcc2a09dd8039b9a050cf605eb42ce0",
+        "actual_parameter": "1c5af7b5a7144a619dfac83b14bd83ae77f1e2227b18a6a9c5dcb214889a0cba",
+        "actual_ready": "c57db10e7ca11d345738d9f9168cd471ab794a5e95d57bddca293c26f90d18da",
+        "forward_control": [
+          "neural-1793099699622-4",
+          "reservation-neural-1793099699622-4"
+        ],
+        "forward_response": "a65d94ff7ded7a355d33d8006f485ac1e5fccc4cde03eee7ae93b25fd527073a",
+        "read": 2,
+        "read_digest": "dea980b6a338de48a822c625387d53d6f9acb54e8779a9dd762d616d49c126c5"
+      }
+    ],
+    "ordinary_context_reads": 3,
+    "parent": {
+      "adapter": "3b3128293a86570a47a72c7bf081f898de1682ed1118c5a440ad7478c0f22e42",
+      "backbone": "c320c094769446c21d7e4a33795d7f9310b5e4c8ca5a6fecca40207b1f735b7c",
+      "contract": "c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f",
+      "generation": 1,
+      "parameter_sha256": "1c5af7b5a7144a619dfac83b14bd83ae77f1e2227b18a6a9c5dcb214889a0cba",
+      "tokenizer": "a1883207efeacecee399f4dc699d2b547eb2d6ddb7500522933ed76c1521fb93"
+    },
+    "product_qualification_issued": false,
+    "public_network_ready": false,
+    "schema": "hepta-controlled-ordinary-public-initial-session-v2",
+    "selection_digest": "833168c6994834792cf79559cab74124ae4b8b231e3a66b7fa26134f629b8f75",
+    "spawn_generation": 1,
+    "training_rounds": 0,
+    "withdrawal_refused": true
+  },
+  "three_round_loop": {
+    "completed_rounds": 0,
+    "ordinary_sessions": 1,
+    "current_before_after": [
+      {
+        "before": {
+          "file_digest": "fbbcf7e4b3ef669381480709151146e5c6e3cafd9611a9de78ec2bbdad3b1cbd",
+          "head_digest": "f3c9f449800e0389e9cf9db5d3aefdefc649c585612b2370bb738938a3835e9c",
+          "record_count": 1,
+          "signed_head_generation": 1
+        },
+        "after": {
+          "file_digest": "fbbcf7e4b3ef669381480709151146e5c6e3cafd9611a9de78ec2bbdad3b1cbd",
+          "head_digest": "f3c9f449800e0389e9cf9db5d3aefdefc649c585612b2370bb738938a3835e9c",
+          "record_count": 1,
+          "signed_head_generation": 1
+        }
+      }
+    ],
+    "original_current": {
+      "file_digest": "fbbcf7e4b3ef669381480709151146e5c6e3cafd9611a9de78ec2bbdad3b1cbd",
+      "head_digest": "f3c9f449800e0389e9cf9db5d3aefdefc649c585612b2370bb738938a3835e9c",
+      "record_count": 1
+    },
+    "decisions": [],
+    "installed_children": 0
+  },
+  "descendant_campaign": {
+    "status": "diagnostic-completed-installation-blocked",
+    "completed_rounds": 3,
+    "installed_children": 0,
+    "rounds": [
+      {
+        "round": 1,
+        "scores": {
+          "actual-current-incumbent": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          },
+          "budget-matched-full-tune": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "candidate": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "current-backbone": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          },
+          "fresh-budget-matched-lora": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "randomized-rank-matched-lora": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          }
+        },
+        "blockers": [
+          "NoGain",
+          "MissingSystemLongitudinalEvidence"
+        ],
+        "training_history": {
+          "actual-current-incumbent": {
+            "artifact": "3b3128293a86570a47a72c7bf081f898de1682ed1118c5a440ad7478c0f22e42",
+            "cumulative_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_training_receipts": [],
+            "parameter_parent": {
+              "adapter": "3b3128293a86570a47a72c7bf081f898de1682ed1118c5a440ad7478c0f22e42",
+              "contract": "c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f",
+              "directory": "/home/runner/work/_temp/hepta-public-initial-v2/genesis",
+              "file_sha256": "1c5af7b5a7144a619dfac83b14bd83ae77f1e2227b18a6a9c5dcb214889a0cba",
+              "generation": 1,
+              "operation_id": "public-v2-material-derivation-no-execution",
+              "schema": "hepta-smollm-parent-material-v1"
+            },
+            "per_round": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            }
+          },
+          "budget-matched-full-tune": {
+            "artifact": "d9fd41fcade29792992c7f6b9b05f0a932e5183f5cf62fcfd99b5a38c824d811",
+            "cumulative_campaign": {
+              "steps": 10,
+              "supervised_tokens": 40,
+              "tokens": 526
+            },
+            "inherited_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_training_receipts": [],
+            "parameter_parent": {
+              "campaign_adaptation_steps": 0,
+              "source_weight_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+            },
+            "per_round": {
+              "steps": 10,
+              "supervised_tokens": 40,
+              "tokens": 526
+            }
+          },
+          "candidate": {
+            "artifact": "64cbb9c06fbddc11cb5ac8b8c1d531ff82982a9425deb5ad38fa81081c4bedb6",
+            "cumulative_campaign": {
+              "steps": 10,
+              "supervised_tokens": 40,
+              "tokens": 526
+            },
+            "inherited_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_training_receipts": [],
+            "parameter_parent": {
+              "adapter": "3b3128293a86570a47a72c7bf081f898de1682ed1118c5a440ad7478c0f22e42",
+              "contract": "c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f",
+              "directory": "/home/runner/work/_temp/hepta-public-initial-v2/genesis",
+              "file_sha256": "1c5af7b5a7144a619dfac83b14bd83ae77f1e2227b18a6a9c5dcb214889a0cba",
+              "generation": 1,
+              "operation_id": "public-v2-material-derivation-no-execution",
+              "schema": "hepta-smollm-parent-material-v1"
+            },
+            "per_round": {
+              "steps": 10,
+              "supervised_tokens": 40,
+              "tokens": 526
+            }
+          },
+          "current-backbone": {
+            "artifact": "c320c094769446c21d7e4a33795d7f9310b5e4c8ca5a6fecca40207b1f735b7c",
+            "cumulative_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_training_receipts": [],
+            "parameter_parent": {
+              "campaign_adaptation_steps": 0,
+              "source_weight_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+            },
+            "per_round": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            }
+          },
+          "fresh-budget-matched-lora": {
+            "artifact": "321edb8a9bc734114a6d909fff0fdf8aebbbb46ff3f2b4654e63898f1a788caa",
+            "cumulative_campaign": {
+              "steps": 10,
+              "supervised_tokens": 40,
+              "tokens": 526
+            },
+            "inherited_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_training_receipts": [],
+            "parameter_parent": {
+              "campaign_adaptation_steps": 0,
+              "source_weight_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+            },
+            "per_round": {
+              "steps": 10,
+              "supervised_tokens": 40,
+              "tokens": 526
+            }
+          },
+          "randomized-rank-matched-lora": {
+            "artifact": "593828ff798d4ef162484dde2392447f9a05b38777990403daf9ff362c65596d",
+            "cumulative_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_training_receipts": [],
+            "parameter_parent": {
+              "campaign_adaptation_steps": 0,
+              "source_weight_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+            },
+            "per_round": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            }
+          }
+        },
+        "candidate": {
+          "adapter": "64cbb9c06fbddc11cb5ac8b8c1d531ff82982a9425deb5ad38fa81081c4bedb6",
+          "contract": "c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f",
+          "directory": "/home/runner/work/_temp/hepta-public-initial-v2/descendant-diagnostics/round-1/candidate-evaluation-input",
+          "file_sha256": "2a1c51e820c6f3d93477e11d3d91317a2aa0addcc08696e841d5d7d120c516c4",
+          "generation": 2,
+          "operation_id": "67a36e0daada4142cd2031b590955879cc87a425a67dbd47024fc37802bc28c9",
+          "schema": "hepta-smollm-parent-material-v1"
+        }
+      },
+      {
+        "round": 2,
+        "scores": {
+          "actual-current-incumbent": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          },
+          "budget-matched-full-tune": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "candidate": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "current-backbone": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          },
+          "fresh-budget-matched-lora": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "randomized-rank-matched-lora": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          }
+        },
+        "blockers": [
+          "ParentNotCurrent",
+          "NoGain",
+          "MissingSystemLongitudinalEvidence",
+          "CumulativeBudgetMismatch"
+        ],
+        "training_history": {
+          "actual-current-incumbent": {
+            "artifact": "3b3128293a86570a47a72c7bf081f898de1682ed1118c5a440ad7478c0f22e42",
+            "cumulative_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_training_receipts": [],
+            "parameter_parent": {
+              "adapter": "3b3128293a86570a47a72c7bf081f898de1682ed1118c5a440ad7478c0f22e42",
+              "contract": "c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f",
+              "directory": "/home/runner/work/_temp/hepta-public-initial-v2/genesis",
+              "file_sha256": "1c5af7b5a7144a619dfac83b14bd83ae77f1e2227b18a6a9c5dcb214889a0cba",
+              "generation": 1,
+              "operation_id": "public-v2-material-derivation-no-execution",
+              "schema": "hepta-smollm-parent-material-v1"
+            },
+            "per_round": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            }
+          },
+          "budget-matched-full-tune": {
+            "artifact": "d9fd41fcade29792992c7f6b9b05f0a932e5183f5cf62fcfd99b5a38c824d811",
+            "cumulative_campaign": {
+              "steps": 10,
+              "supervised_tokens": 40,
+              "tokens": 526
+            },
+            "inherited_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_training_receipts": [],
+            "parameter_parent": {
+              "campaign_adaptation_steps": 0,
+              "source_weight_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+            },
+            "per_round": {
+              "steps": 10,
+              "supervised_tokens": 40,
+              "tokens": 526
+            }
+          },
+          "candidate": {
+            "artifact": "97e0ed84fb640c5653b0dfa8f11af05194d96e66c70dee016dc7ded8186112ec",
+            "cumulative_campaign": {
+              "steps": 20,
+              "supervised_tokens": 80,
+              "tokens": 1052
+            },
+            "inherited_campaign": {
+              "steps": 10,
+              "supervised_tokens": 40,
+              "tokens": 526
+            },
+            "inherited_training_receipts": [
+              {
+                "path": "/home/runner/work/_temp/hepta-public-initial-v2/descendant-diagnostics/round-1/train-candidate/execution/actual-receipt.json",
+                "sha256": "d0a21eeb303afadaf871f4b5dbea9c53ba4371296d60f67d6d43e2192d08267e"
+              }
+            ],
+            "parameter_parent": {
+              "adapter": "64cbb9c06fbddc11cb5ac8b8c1d531ff82982a9425deb5ad38fa81081c4bedb6",
+              "contract": "c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f",
+              "directory": "/home/runner/work/_temp/hepta-public-initial-v2/descendant-diagnostics/round-1/candidate-evaluation-input",
+              "file_sha256": "2a1c51e820c6f3d93477e11d3d91317a2aa0addcc08696e841d5d7d120c516c4",
+              "generation": 2,
+              "operation_id": "67a36e0daada4142cd2031b590955879cc87a425a67dbd47024fc37802bc28c9",
+              "schema": "hepta-smollm-parent-material-v1"
+            },
+            "per_round": {
+              "steps": 10,
+              "supervised_tokens": 40,
+              "tokens": 526
+            }
+          },
+          "current-backbone": {
+            "artifact": "c320c094769446c21d7e4a33795d7f9310b5e4c8ca5a6fecca40207b1f735b7c",
+            "cumulative_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_training_receipts": [],
+            "parameter_parent": {
+              "campaign_adaptation_steps": 0,
+              "source_weight_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+            },
+            "per_round": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            }
+          },
+          "fresh-budget-matched-lora": {
+            "artifact": "321edb8a9bc734114a6d909fff0fdf8aebbbb46ff3f2b4654e63898f1a788caa",
+            "cumulative_campaign": {
+              "steps": 10,
+              "supervised_tokens": 40,
+              "tokens": 526
+            },
+            "inherited_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_training_receipts": [],
+            "parameter_parent": {
+              "campaign_adaptation_steps": 0,
+              "source_weight_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+            },
+            "per_round": {
+              "steps": 10,
+              "supervised_tokens": 40,
+              "tokens": 526
+            }
+          },
+          "randomized-rank-matched-lora": {
+            "artifact": "593828ff798d4ef162484dde2392447f9a05b38777990403daf9ff362c65596d",
+            "cumulative_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_training_receipts": [],
+            "parameter_parent": {
+              "campaign_adaptation_steps": 0,
+              "source_weight_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+            },
+            "per_round": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            }
+          }
+        },
+        "candidate": {
+          "adapter": "97e0ed84fb640c5653b0dfa8f11af05194d96e66c70dee016dc7ded8186112ec",
+          "contract": "c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f",
+          "directory": "/home/runner/work/_temp/hepta-public-initial-v2/descendant-diagnostics/round-2/candidate-evaluation-input",
+          "file_sha256": "300cc55c0a87f8cb436ae9a29a4982090d73877dbe63b31f62e7fa85a8e5e0f0",
+          "generation": 3,
+          "operation_id": "f50ad83c2554966e3cdf615370479f9bc4369aa31b12ea013af566fac40f98cc",
+          "schema": "hepta-smollm-parent-material-v1"
+        }
+      },
+      {
+        "round": 3,
+        "scores": {
+          "actual-current-incumbent": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          },
+          "budget-matched-full-tune": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "candidate": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "current-backbone": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          },
+          "fresh-budget-matched-lora": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "randomized-rank-matched-lora": {
+            "calibration": [
+              0,
+              1
+            ],
+            "evaluation": [
+              0,
+              1
+            ]
+          }
+        },
+        "blockers": [
+          "ParentNotCurrent",
+          "NoGain",
+          "MissingSystemLongitudinalEvidence",
+          "CumulativeBudgetMismatch"
+        ],
+        "training_history": {
+          "actual-current-incumbent": {
+            "artifact": "3b3128293a86570a47a72c7bf081f898de1682ed1118c5a440ad7478c0f22e42",
+            "cumulative_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_training_receipts": [],
+            "parameter_parent": {
+              "adapter": "3b3128293a86570a47a72c7bf081f898de1682ed1118c5a440ad7478c0f22e42",
+              "contract": "c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f",
+              "directory": "/home/runner/work/_temp/hepta-public-initial-v2/genesis",
+              "file_sha256": "1c5af7b5a7144a619dfac83b14bd83ae77f1e2227b18a6a9c5dcb214889a0cba",
+              "generation": 1,
+              "operation_id": "public-v2-material-derivation-no-execution",
+              "schema": "hepta-smollm-parent-material-v1"
+            },
+            "per_round": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            }
+          },
+          "budget-matched-full-tune": {
+            "artifact": "d9fd41fcade29792992c7f6b9b05f0a932e5183f5cf62fcfd99b5a38c824d811",
+            "cumulative_campaign": {
+              "steps": 10,
+              "supervised_tokens": 40,
+              "tokens": 526
+            },
+            "inherited_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_training_receipts": [],
+            "parameter_parent": {
+              "campaign_adaptation_steps": 0,
+              "source_weight_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+            },
+            "per_round": {
+              "steps": 10,
+              "supervised_tokens": 40,
+              "tokens": 526
+            }
+          },
+          "candidate": {
+            "artifact": "af41d7c10d1a61f547c634ab5dc83ef939f01482898f4166ff29fdad870d3050",
+            "cumulative_campaign": {
+              "steps": 30,
+              "supervised_tokens": 120,
+              "tokens": 1578
+            },
+            "inherited_campaign": {
+              "steps": 20,
+              "supervised_tokens": 80,
+              "tokens": 1052
+            },
+            "inherited_training_receipts": [
+              {
+                "path": "/home/runner/work/_temp/hepta-public-initial-v2/descendant-diagnostics/round-1/train-candidate/execution/actual-receipt.json",
+                "sha256": "d0a21eeb303afadaf871f4b5dbea9c53ba4371296d60f67d6d43e2192d08267e"
+              },
+              {
+                "path": "/home/runner/work/_temp/hepta-public-initial-v2/descendant-diagnostics/round-2/train-candidate/execution/actual-receipt.json",
+                "sha256": "d86a1ce6b69b8836f7fe6e11266c001dd59d10573f1bbd5b2e878d3323136981"
+              }
+            ],
+            "parameter_parent": {
+              "adapter": "97e0ed84fb640c5653b0dfa8f11af05194d96e66c70dee016dc7ded8186112ec",
+              "contract": "c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f",
+              "directory": "/home/runner/work/_temp/hepta-public-initial-v2/descendant-diagnostics/round-2/candidate-evaluation-input",
+              "file_sha256": "300cc55c0a87f8cb436ae9a29a4982090d73877dbe63b31f62e7fa85a8e5e0f0",
+              "generation": 3,
+              "operation_id": "f50ad83c2554966e3cdf615370479f9bc4369aa31b12ea013af566fac40f98cc",
+              "schema": "hepta-smollm-parent-material-v1"
+            },
+            "per_round": {
+              "steps": 10,
+              "supervised_tokens": 40,
+              "tokens": 526
+            }
+          },
+          "current-backbone": {
+            "artifact": "c320c094769446c21d7e4a33795d7f9310b5e4c8ca5a6fecca40207b1f735b7c",
+            "cumulative_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_training_receipts": [],
+            "parameter_parent": {
+              "campaign_adaptation_steps": 0,
+              "source_weight_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+            },
+            "per_round": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            }
+          },
+          "fresh-budget-matched-lora": {
+            "artifact": "321edb8a9bc734114a6d909fff0fdf8aebbbb46ff3f2b4654e63898f1a788caa",
+            "cumulative_campaign": {
+              "steps": 10,
+              "supervised_tokens": 40,
+              "tokens": 526
+            },
+            "inherited_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_training_receipts": [],
+            "parameter_parent": {
+              "campaign_adaptation_steps": 0,
+              "source_weight_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+            },
+            "per_round": {
+              "steps": 10,
+              "supervised_tokens": 40,
+              "tokens": 526
+            }
+          },
+          "randomized-rank-matched-lora": {
+            "artifact": "593828ff798d4ef162484dde2392447f9a05b38777990403daf9ff362c65596d",
+            "cumulative_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_campaign": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            },
+            "inherited_training_receipts": [],
+            "parameter_parent": {
+              "campaign_adaptation_steps": 0,
+              "source_weight_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+            },
+            "per_round": {
+              "steps": 0,
+              "supervised_tokens": 0,
+              "tokens": 0
+            }
+          }
+        },
+        "candidate": {
+          "adapter": "af41d7c10d1a61f547c634ab5dc83ef939f01482898f4166ff29fdad870d3050",
+          "contract": "c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f",
+          "directory": "/home/runner/work/_temp/hepta-public-initial-v2/descendant-diagnostics/round-3/candidate-evaluation-input",
+          "file_sha256": "4e3dfd7f06b3e7d76caf5576ec5d80ad2e792907f35f6012db9220f5c8f92358",
+          "generation": 4,
+          "operation_id": "436f894889aeab51c02b0c136ef83f80cf6745fbfc8744b754cd35e6073ad83d",
+          "schema": "hepta-smollm-parent-material-v1"
+        }
+      }
+    ]
+  },
+  "retained_failures": {
+    "n/p/ordinary-1/ordinary-failure.json": {
+      "archive": null,
+      "issuer": null,
+      "model_shutdown": null,
+      "ordinary": "ordinary Agentd exited before readiness",
+      "product_qualification_issued": false,
+      "runtime_stop": "ordinary runtime did not return the original generation fence: Err(Protocol(\"prompt pipeline durable owners failed to open: RuntimeOpen(StateLocked)\"))",
+      "schema": "hepta-ordinary-initial-session-failure-v2"
+    }
+  },
+  "product_qualification": false,
+  "installed_generation_count_must_not_be_inferred_from_sessions_or_candidate_ordinals": true,
+  "first_five_arm_training_round_completed": true,
+  "complete_ordinary_training_readback_rounds": 0,
+  "source_workflow_conclusion": "failure",
+  "failure_scope": "first held training round completed; next ordinary incarnation refused because prior runtime owner remained locked"
+}

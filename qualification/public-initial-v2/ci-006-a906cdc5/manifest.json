@@ -1,0 +1,130 @@
+{
+  "actual_model_load": {
+    "child_cpu_ns": 11961159000,
+    "exit_rss_gaps_preserved": 1,
+    "no_process_tree_capacity_qualification": true,
+    "observed_wall_ns": 11346926588,
+    "ready": {
+      "actions": [
+        {
+          "action_id": "memory-82aaf7382d0b835b69cb7508f53ff8c4d18d25f25ae9e9437f928ab5c70860a8",
+          "completion": "yes"
+        },
+        {
+          "action_id": "memory-9b91d44953ed21ffd72efd3798d8b396aaaf285be044c44ee8f40cb6919f678c",
+          "completion": "no"
+        }
+      ],
+      "actual_loaded_parent": "3b3128293a86570a47a72c7bf081f898de1682ed1118c5a440ad7478c0f22e42",
+      "authority": {
+        "hepta_final_use": false,
+        "independent_accepted": false,
+        "installation_authorized": false,
+        "prospective_accepted": false,
+        "public_reward_eligible": false,
+        "selection_authorized": false
+      },
+      "backbone": "c320c094769446c21d7e4a33795d7f9310b5e4c8ca5a6fecca40207b1f735b7c",
+      "contract": "c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f",
+      "file_sha256": "1c5af7b5a7144a619dfac83b14bd83ae77f1e2227b18a6a9c5dcb214889a0cba",
+      "generation": 1,
+      "observed_rss_bytes": 1154580480,
+      "schema": "hepta-smollm-neural-read-worker-v1",
+      "source_pins": {
+        "llm_adapter_contract.py": "e46311a08584ad7becfc56cd0b699d9bc6921adcfe39319e50aa14faa984ced5",
+        "llm_inherited_runtime.py": "1c356c4e8e9a114ac7b6348cac4bed9a6fc72d53ce71ce00139c3deed8733596",
+        "llm_parent_material.py": "5396d72c4730aea2d271b55a8404f6eaba64dc57f91343537710c28f7686b43c",
+        "llm_runtime_pilot.py": "65ccc6454befd96fa5ce1f5bdde2c56cb6cbb741cf495b8d24a758039f99f755",
+        "model-family-smollm2-135m-v1.json": "0837bbfb31f3f2b9a8731545c9f742aee1ebd32daed392a936a3ec9719537e52"
+      },
+      "tokenizer": "a1883207efeacecee399f4dc699d2b547eb2d6ddb7500522933ed76c1521fb93",
+      "worker_source": "791fbe67ae7d2b2e0551e5f9f6fd77797ed9f8c210e7ca47f9acb6ac02895769"
+    },
+    "ready_member": "n/ordinary-selected-initial/session/session/worker/ready.json",
+    "supervisor_member": "n/ordinary-selected-initial/session/session/worker/supervisor.json",
+    "waited_child_peak_rss_bytes": 1154580480
+  },
+  "artifact_index": "artifact-members.json",
+  "attempt": 6,
+  "chain_sha": "c96022b897c1235fdbdbfcfa32764403511c6aab",
+  "complete_native_packages": {
+    "elapsed_seconds": 504.275075681,
+    "failed": 0,
+    "passed": 519,
+    "skipped": 24
+  },
+  "conclusion": "failure",
+  "full_job_log": {
+    "decoded_bytes": 982912,
+    "decoded_sha256": "d855d3da1d1baa2e6661cbe017fba8c6323e9aa7d69ff3b519954b89fa5488ea",
+    "encoding_scope": "UTF-8 API-decoded job text with terminal newline normalization; ZIP wrapper logs retain original bytes",
+    "gzip_bytes": 137329,
+    "gzip_sha256": "652c793ed1e5654b679a1a0857cfbbb9f3ab722f24753fbc4a1662083b360e2b",
+    "path": "job-api-decoded.log.gz"
+  },
+  "installed_children": 0,
+  "job_id": 122135248036,
+  "ordinary_context_forwards": 0,
+  "ordinary_failure": {
+    "archive": null,
+    "issuer": null,
+    "model_shutdown": null,
+    "ordinary": "ordinary Agentd exited before readiness",
+    "product_qualification_issued": false,
+    "runtime_stop": "ordinary runtime did not return the original generation fence: Err(Io(Custom { kind: InvalidInput, error: AgentdIoContext { operation: \"run Codex App Server unix socket transport\", path: \"/home/runner/work/_temp/hepta-public-initial-v2/n/o/b/fleet/run/aaaaaaaaaabaabaaaaaaaaaacde.app\", source: Custom { kind: InvalidInput, error: \"Codex executable path is not configured\" } } }))",
+    "schema": "hepta-ordinary-initial-session-failure-v2"
+  },
+  "original_outcomes": {
+    "all_required_outcomes_passed": false,
+    "model_target_available": true,
+    "original_full_rust_gate_required": true,
+    "outcomes": {
+      "COLD_RUNTIME_OUTCOME": "success",
+      "DESCENDANTS_OUTCOME": "skipped",
+      "LINT_OUTCOME": "skipped",
+      "MATERIALS_OUTCOME": "success",
+      "ORDINARY_OUTCOME": "failure",
+      "PROPOSAL_ROUNDS_OUTCOME": "skipped",
+      "REQUIRED_CLI_OUTCOME": "success",
+      "SCOPED_RUST_OUTCOME": "success"
+    },
+    "product_qualification": false,
+    "schema": "hepta-public-initial-required-outcomes-v2",
+    "three_installed_upgrades_proven": false
+  },
+  "product_qualification": false,
+  "run_id": 40487402118,
+  "schema": "hepta-public-initial-ci-attempt-v1",
+  "socket_preflight": [
+    {
+      "bytes": 95,
+      "path": "/home/runner/work/_temp/hepta-public-initial-v2/n/o/b/fleet/run/aaaaaaaaaabaabaaaaaaaaaacde.ctl"
+    },
+    {
+      "bytes": 94,
+      "path": "/home/runner/work/_temp/hepta-public-initial-v2/n/o/b/fleet/run/aaaaaaaaaabaabaaaaaaaaaacde.mx"
+    },
+    {
+      "bytes": 95,
+      "path": "/home/runner/work/_temp/hepta-public-initial-v2/n/o/b/fleet/run/aaaaaaaaaabaabaaaaaaaaaacde.app"
+    },
+    {
+      "bytes": 97,
+      "path": "/home/runner/work/_temp/hepta-public-initial-v2/n/p/o/b/fleet/run/aaaaaaaaaabaabaaaaaaaaaacde.ctl"
+    },
+    {
+      "bytes": 96,
+      "path": "/home/runner/work/_temp/hepta-public-initial-v2/n/p/o/b/fleet/run/aaaaaaaaaabaabaaaaaaaaaacde.mx"
+    },
+    {
+      "bytes": 97,
+      "path": "/home/runner/work/_temp/hepta-public-initial-v2/n/p/o/b/fleet/run/aaaaaaaaaabaabaaaaaaaaaacde.app"
+    }
+  ],
+  "source_identity_applies_only_to_this_run": true,
+  "source_runtime_same_as_ci007_but_independent_execution": true,
+  "source_sha": "a906cdc532ecdc78dcf520f3a7c3cc9faf8045af",
+  "source_tree": "69db9e38ce8448aab6d7c99c250b02fb32896d50",
+  "three_installed_upgrades_proven": false,
+  "training_rounds": 0
+}

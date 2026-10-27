@@ -1,0 +1,445 @@
+{
+  "schema": "hepta-cumulative-records-local-verification-v1",
+  "source": "6ba1a5b352568250edcec5975972d7d67d30e295",
+  "chain": "c96022b897c1235fdbdbfcfa32764403511c6aab",
+  "run_id": 40501186161,
+  "archive_bytes": 117865750,
+  "archive_sha256": "9e9ff51116ad1e6b51500212f4fb57e0bfd6911f4833b14613a1ecd03609d05c",
+  "zip_members": 11544,
+  "expanded_bytes": 209925814,
+  "all_zip_member_crc_and_sha256_checked": true,
+  "all_record_bytes_match_top_index": true,
+  "top_index": {
+    "bytes": 3268893,
+    "sha256": "3ea8f8df5bbb394338ed3670bb074d69e8ca2b8afe7bcde5f7ff10f5e1186380"
+  },
+  "inherited_index": {
+    "bytes": 3041609,
+    "sha256": "bea0af1187ed5e7be548412c3487388b4c2f57a1652f59f9033d564423b80878"
+  },
+  "inherited_records_checked": 11464,
+  "expected_checkpoint_members_not_locally_downloaded": {
+    "campaign/round-2-train-cumulative-full-tune/artifact.safetensors": {
+      "sha256": "83b1171712a3ad6d2234e9fa659657d449a80c8def81ecc85681e738ff18141a",
+      "bytes": 538090376
+    },
+    "campaign/round-2-train-cumulative-lora/artifact.safetensors": {
+      "sha256": "cfaeba1e8a74a2521d9bcdb815f4fa41feac7acadae52558ad8a6ef7f1823516",
+      "bytes": 933544
+    },
+    "campaign/round-3-train-cumulative-full-tune/artifact.safetensors": {
+      "sha256": "cf5c77374060159688d2f1072ac41af43a8fcb9a4bb12f6dcfda1692732aa820",
+      "bytes": 538090376
+    },
+    "campaign/round-3-train-cumulative-lora/artifact.safetensors": {
+      "sha256": "5a4e6692153e27aa11709b9c1b3974e40cb3da7b214037e311304e399f394580",
+      "bytes": 933544
+    },
+    "genesis/artifact.safetensors": {
+      "sha256": "1c5af7b5a7144a619dfac83b14bd83ae77f1e2227b18a6a9c5dcb214889a0cba",
+      "bytes": 933664
+    },
+    "reference/original/descendant-diagnostics/round-1/candidate-evaluation-input/artifact.safetensors": {
+      "sha256": "2a1c51e820c6f3d93477e11d3d91317a2aa0addcc08696e841d5d7d120c516c4",
+      "bytes": 933544
+    },
+    "reference/original/descendant-diagnostics/round-1/train-budget-matched-full-tune/artifact.safetensors": {
+      "sha256": "e02c2d1b50860fa7b88f3f2f166de645bee8c7ad21012862398366ce8a50d151",
+      "bytes": 538090376
+    },
+    "reference/original/descendant-diagnostics/round-1/train-fresh-budget-matched-lora/artifact.safetensors": {
+      "sha256": "7e1df3f1747e7580e4df43b1bdb43fff8ce2af3bc37d73b740a8a606e3c10ab8",
+      "bytes": 933544
+    },
+    "reference/original/descendant-diagnostics/round-2/candidate-evaluation-input/artifact.safetensors": {
+      "sha256": "300cc55c0a87f8cb436ae9a29a4982090d73877dbe63b31f62e7fa85a8e5e0f0",
+      "bytes": 933544
+    },
+    "reference/original/descendant-diagnostics/round-3/candidate-evaluation-input/artifact.safetensors": {
+      "sha256": "4e3dfd7f06b3e7d76caf5576ec5d80ad2e792907f35f6012db9220f5c8f92358",
+      "bytes": 933544
+    }
+  },
+  "checkpoint_bytes_independently_verified": false,
+  "required_outcomes": {
+    "schema": "hepta-cumulative-required-outcomes-v1",
+    "outcomes": {
+      "CONTROLS_OUTCOME": "success",
+      "ORIGINAL_OUTCOME": "success",
+      "COLD_RUNTIME_OUTCOME": "success",
+      "MATERIALS_OUTCOME": "success",
+      "CAMPAIGN_OUTCOME": "success",
+      "FORMATTING_OUTCOME": "success"
+    },
+    "actual_diagnostic_completed": true,
+    "installed_children": 0,
+    "product_qualification": false,
+    "total_resource_cost_matched": false,
+    "original_native_gates_replaced": false,
+    "campaign_report_error": null
+  },
+  "source_required_outcomes": {
+    "all_required_outcomes_passed": false,
+    "model_target_available": true,
+    "original_full_rust_gate_required": true,
+    "outcomes": {
+      "COLD_RUNTIME_OUTCOME": "success",
+      "DESCENDANTS_OUTCOME": "success",
+      "LINT_OUTCOME": "skipped",
+      "MATERIALS_OUTCOME": "success",
+      "ORDINARY_OUTCOME": "success",
+      "PROPOSAL_ROUNDS_OUTCOME": "failure",
+      "REQUIRED_CLI_OUTCOME": "success",
+      "SCOPED_RUST_OUTCOME": "success"
+    },
+    "product_qualification": false,
+    "schema": "hepta-public-initial-required-outcomes-v2",
+    "three_installed_upgrades_proven": false
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "candidate": {
+        "artifact": "64cbb9c06fbddc11cb5ac8b8c1d531ff82982a9425deb5ad38fa81081c4bedb6",
+        "actual_parent_readback": "3b3128293a86570a47a72c7bf081f898de1682ed1118c5a440ad7478c0f22e42",
+        "cumulative_campaign": {
+          "steps": 10,
+          "supervised_tokens": 40,
+          "tokens": 526
+        },
+        "scores": {
+          "calibration": [
+            1,
+            2
+          ],
+          "evaluation": [
+            1,
+            2
+          ]
+        }
+      },
+      "controls": {
+        "cumulative-full-tune": {
+          "artifact": "d9fd41fcade29792992c7f6b9b05f0a932e5183f5cf62fcfd99b5a38c824d811",
+          "counts": {
+            "steps": 10,
+            "tokens": 526,
+            "supervised_tokens": 40
+          },
+          "scores": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "history": [
+            {
+              "ordinal": 1,
+              "artifact": "d9fd41fcade29792992c7f6b9b05f0a932e5183f5cf62fcfd99b5a38c824d811",
+              "receipt": "reference/original/descendant-diagnostics/round-1/train-budget-matched-full-tune/actual-receipt.json",
+              "counts": {
+                "steps": 10,
+                "tokens": 526,
+                "supervised_tokens": 40
+              }
+            }
+          ]
+        },
+        "cumulative-lora": {
+          "artifact": "321edb8a9bc734114a6d909fff0fdf8aebbbb46ff3f2b4654e63898f1a788caa",
+          "counts": {
+            "steps": 10,
+            "tokens": 526,
+            "supervised_tokens": 40
+          },
+          "scores": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "history": [
+            {
+              "ordinal": 1,
+              "artifact": "321edb8a9bc734114a6d909fff0fdf8aebbbb46ff3f2b4654e63898f1a788caa",
+              "receipt": "reference/original/descendant-diagnostics/round-1/train-fresh-budget-matched-lora/actual-receipt.json",
+              "counts": {
+                "steps": 10,
+                "tokens": 526,
+                "supervised_tokens": 40
+              }
+            }
+          ]
+        }
+      },
+      "gain_vs_cumulative_controls": [
+        0,
+        1
+      ],
+      "blockers": [
+        "MissingSystemLongitudinalEvidence",
+        "TotalResourceCostUnmatched"
+      ]
+    },
+    {
+      "round": 2,
+      "candidate": {
+        "artifact": "97e0ed84fb640c5653b0dfa8f11af05194d96e66c70dee016dc7ded8186112ec",
+        "actual_parent_readback": "64cbb9c06fbddc11cb5ac8b8c1d531ff82982a9425deb5ad38fa81081c4bedb6",
+        "cumulative_campaign": {
+          "steps": 20,
+          "supervised_tokens": 80,
+          "tokens": 1052
+        },
+        "scores": {
+          "calibration": [
+            1,
+            2
+          ],
+          "evaluation": [
+            1,
+            2
+          ]
+        }
+      },
+      "controls": {
+        "cumulative-full-tune": {
+          "artifact": "f3fe79a883b2e44f69144b53143fa51c94a393b95f25876b3bf3f8723d2d763f",
+          "counts": {
+            "steps": 20,
+            "tokens": 1052,
+            "supervised_tokens": 80
+          },
+          "scores": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "history": [
+            {
+              "ordinal": 1,
+              "artifact": "d9fd41fcade29792992c7f6b9b05f0a932e5183f5cf62fcfd99b5a38c824d811",
+              "receipt": "reference/original/descendant-diagnostics/round-1/train-budget-matched-full-tune/actual-receipt.json",
+              "counts": {
+                "steps": 10,
+                "tokens": 526,
+                "supervised_tokens": 40
+              }
+            },
+            {
+              "ordinal": 2,
+              "artifact": "f3fe79a883b2e44f69144b53143fa51c94a393b95f25876b3bf3f8723d2d763f",
+              "receipt": "campaign/round-2-train-cumulative-full-tune/actual-receipt.json",
+              "counts": {
+                "steps": 10,
+                "tokens": 526,
+                "supervised_tokens": 40
+              }
+            }
+          ],
+          "actual_parent_readback": "d9fd41fcade29792992c7f6b9b05f0a932e5183f5cf62fcfd99b5a38c824d811",
+          "evaluation_forward_executed": true
+        },
+        "cumulative-lora": {
+          "artifact": "d2db4d2626a4fcc7057c450adf4d94987c83b7956933ead4b08c3f4be7ed784d",
+          "counts": {
+            "steps": 20,
+            "tokens": 1052,
+            "supervised_tokens": 80
+          },
+          "scores": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "history": [
+            {
+              "ordinal": 1,
+              "artifact": "321edb8a9bc734114a6d909fff0fdf8aebbbb46ff3f2b4654e63898f1a788caa",
+              "receipt": "reference/original/descendant-diagnostics/round-1/train-fresh-budget-matched-lora/actual-receipt.json",
+              "counts": {
+                "steps": 10,
+                "tokens": 526,
+                "supervised_tokens": 40
+              }
+            },
+            {
+              "ordinal": 2,
+              "artifact": "d2db4d2626a4fcc7057c450adf4d94987c83b7956933ead4b08c3f4be7ed784d",
+              "receipt": "campaign/round-2-train-cumulative-lora/actual-receipt.json",
+              "counts": {
+                "steps": 10,
+                "tokens": 526,
+                "supervised_tokens": 40
+              }
+            }
+          ],
+          "actual_parent_readback": "321edb8a9bc734114a6d909fff0fdf8aebbbb46ff3f2b4654e63898f1a788caa",
+          "evaluation_forward_executed": true
+        }
+      },
+      "gain_vs_cumulative_controls": [
+        0,
+        1
+      ],
+      "blockers": [
+        "MissingSystemLongitudinalEvidence",
+        "TotalResourceCostUnmatched"
+      ]
+    },
+    {
+      "round": 3,
+      "candidate": {
+        "artifact": "af41d7c10d1a61f547c634ab5dc83ef939f01482898f4166ff29fdad870d3050",
+        "actual_parent_readback": "97e0ed84fb640c5653b0dfa8f11af05194d96e66c70dee016dc7ded8186112ec",
+        "cumulative_campaign": {
+          "steps": 30,
+          "supervised_tokens": 120,
+          "tokens": 1578
+        },
+        "scores": {
+          "calibration": [
+            1,
+            2
+          ],
+          "evaluation": [
+            1,
+            2
+          ]
+        }
+      },
+      "controls": {
+        "cumulative-full-tune": {
+          "artifact": "cfca5d57c545f88df5e02bd068f1e5a59083f0b09377e83b3f9fa6a0fb23f67f",
+          "counts": {
+            "steps": 30,
+            "tokens": 1578,
+            "supervised_tokens": 120
+          },
+          "scores": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "history": [
+            {
+              "ordinal": 1,
+              "artifact": "d9fd41fcade29792992c7f6b9b05f0a932e5183f5cf62fcfd99b5a38c824d811",
+              "receipt": "reference/original/descendant-diagnostics/round-1/train-budget-matched-full-tune/actual-receipt.json",
+              "counts": {
+                "steps": 10,
+                "tokens": 526,
+                "supervised_tokens": 40
+              }
+            },
+            {
+              "ordinal": 2,
+              "artifact": "f3fe79a883b2e44f69144b53143fa51c94a393b95f25876b3bf3f8723d2d763f",
+              "receipt": "campaign/round-2-train-cumulative-full-tune/actual-receipt.json",
+              "counts": {
+                "steps": 10,
+                "tokens": 526,
+                "supervised_tokens": 40
+              }
+            },
+            {
+              "ordinal": 3,
+              "artifact": "cfca5d57c545f88df5e02bd068f1e5a59083f0b09377e83b3f9fa6a0fb23f67f",
+              "receipt": "campaign/round-3-train-cumulative-full-tune/actual-receipt.json",
+              "counts": {
+                "steps": 10,
+                "tokens": 526,
+                "supervised_tokens": 40
+              }
+            }
+          ],
+          "actual_parent_readback": "f3fe79a883b2e44f69144b53143fa51c94a393b95f25876b3bf3f8723d2d763f",
+          "evaluation_forward_executed": true
+        },
+        "cumulative-lora": {
+          "artifact": "371dc396c38a187335d39f945307510790c51ad580bb3c0e59f5b60c4ff55e07",
+          "counts": {
+            "steps": 30,
+            "tokens": 1578,
+            "supervised_tokens": 120
+          },
+          "scores": {
+            "calibration": [
+              1,
+              2
+            ],
+            "evaluation": [
+              1,
+              2
+            ]
+          },
+          "history": [
+            {
+              "ordinal": 1,
+              "artifact": "321edb8a9bc734114a6d909fff0fdf8aebbbb46ff3f2b4654e63898f1a788caa",
+              "receipt": "reference/original/descendant-diagnostics/round-1/train-fresh-budget-matched-lora/actual-receipt.json",
+              "counts": {
+                "steps": 10,
+                "tokens": 526,
+                "supervised_tokens": 40
+              }
+            },
+            {
+              "ordinal": 2,
+              "artifact": "d2db4d2626a4fcc7057c450adf4d94987c83b7956933ead4b08c3f4be7ed784d",
+              "receipt": "campaign/round-2-train-cumulative-lora/actual-receipt.json",
+              "counts": {
+                "steps": 10,
+                "tokens": 526,
+                "supervised_tokens": 40
+              }
+            },
+            {
+              "ordinal": 3,
+              "artifact": "371dc396c38a187335d39f945307510790c51ad580bb3c0e59f5b60c4ff55e07",
+              "receipt": "campaign/round-3-train-cumulative-lora/actual-receipt.json",
+              "counts": {
+                "steps": 10,
+                "tokens": 526,
+                "supervised_tokens": 40
+              }
+            }
+          ],
+          "actual_parent_readback": "d2db4d2626a4fcc7057c450adf4d94987c83b7956933ead4b08c3f4be7ed784d",
+          "evaluation_forward_executed": true
+        }
+      },
+      "gain_vs_cumulative_controls": [
+        0,
+        1
+      ],
+      "blockers": [
+        "MissingSystemLongitudinalEvidence",
+        "TotalResourceCostUnmatched"
+      ]
+    }
+  ]
+}
