@@ -1,0 +1,89 @@
+{
+  "actual_media_files_rehashed": 1136,
+  "binary_sha256": "a6a5dee7a7f2280462192da531346a210d23384ed489f7e4de4811e811657141",
+  "build_preservation": "/workspace/scratch/95988d8d3ab1/native_owner_run001_build_preservation_20261027",
+  "consequential_feedback_cases": [
+    {
+      "budget": 2,
+      "cue": 0,
+      "expires": 7,
+      "fault": 0,
+      "numeric_repair": false,
+      "return_difference_by_target": [
+        0.12,
+        0.12,
+        0.12
+      ],
+      "zero_repair": true
+    },
+    {
+      "budget": 2,
+      "cue": 1,
+      "expires": 7,
+      "fault": 0,
+      "numeric_repair": false,
+      "return_difference_by_target": [
+        0.12,
+        0.12,
+        0.12
+      ],
+      "zero_repair": true
+    },
+    {
+      "budget": 2,
+      "cue": 2,
+      "expires": 7,
+      "fault": 0,
+      "numeric_repair": false,
+      "return_difference_by_target": [
+        0.12,
+        0.12,
+        0.12
+      ],
+      "zero_repair": true
+    },
+    {
+      "budget": 2,
+      "cue": 3,
+      "expires": 7,
+      "fault": 0,
+      "numeric_repair": false,
+      "return_difference_by_target": [
+        0.12,
+        0.12,
+        0.12
+      ],
+      "zero_repair": true
+    }
+  ],
+  "cost_scope_limit": "This run prices16 actual owner.tick calls but omits12 original journal replay kernel steps per episode. Its exact prediction/execution cost match is relative to that incomplete old pricing contract. Run002 separately prices both the old replay work and the new event-ledger validation.",
+  "durable_event_guard_executed_in_this_run": false,
+  "exact_unique_aggregate_grid": 80,
+  "exact_unique_episode_grid": 240,
+  "frozen_sources_all_match": true,
+  "identity_files": {
+    "/workspace/scratch/95988d8d3ab1/native_owner_audit_20261027_001/AUDIT.json": "aa5e74da21dcdf5de162454f260e294f708dd24233a2879fa34d88d4c8af18b7",
+    "/workspace/scratch/95988d8d3ab1/native_owner_run001_build_preservation_20261027/PRESERVATION.json": "e8b97967da507df69b5d405a5b2df959d9a57ceffe3ed3ace2336e1ac9b3d7a2",
+    "/workspace/scratch/95988d8d3ab1/native_owner_run_20261027_001/FROZEN.json": "92e7e5eda14fe048d673b38ab89c098625b2fa001f6d2a1d5b4f441e1bed5205",
+    "/workspace/scratch/95988d8d3ab1/native_owner_run_20261027_001/RESULT.json": "18f92f72f80827346fe5b0a5154bae7c5ce78945ce8e8ec93c0a89eaf3a2f535",
+    "/workspace/scratch/95988d8d3ab1/native_owner_run_20261027_001/ROWS.json": "ec74bfb8b82663176514a190d16c522526605256011632fd0f6428616100ed5c"
+  },
+  "maximum_cost_error": 0,
+  "maximum_entropic_moment_error": 4.547473508864641e-13,
+  "maximum_mean_return_error": 1.1102230246251565e-16,
+  "maximum_terminal_utility_error": 8.881784197001252e-16,
+  "native_tick_invocations_counted": 3840,
+  "numeric_minus_zero_mean_return": 0.036375000000000005,
+  "numeric_zero_common_roots_verified": true,
+  "paired_numeric_zero_cases": 48,
+  "pairs_with_different_executed_repair": 4,
+  "pairs_with_different_late_eligibility": 48,
+  "preserved_build_file_count": 93,
+  "preserved_build_files_all_match": true,
+  "production_semantic_qualification": false,
+  "reviewed_utc": "2026-10-27T07:36:37.564065+00:00",
+  "run": "/workspace/scratch/95988d8d3ab1/native_owner_run_20261027_001",
+  "same_information_history_return_advantage": 0.0,
+  "schema": "hepta.ndu.peer-control-run001-review.v1",
+  "scope": "Read-only exact-grid, file-identity, transcript-count and recorded-byte-readback arithmetic cross-check; the existing independent auditor separately decoded video/audio/image bytes and replayed original owner. This run predates durable event dedup."
+}

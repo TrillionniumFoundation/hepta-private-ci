@@ -1,0 +1,237 @@
+{
+  "all_joint_acceptance_gates_passed": false,
+  "comparisons": [
+    {
+      "ce_difference": 0.1172764666139523,
+      "comparison": "joint_risk-frozen",
+      "fixed_seeds": [
+        17,
+        29,
+        43
+      ],
+      "paired_97_5_interval": [
+        0.09838574582300562,
+        0.13651617574555427
+      ],
+      "per_seed_ce_differences": [
+        0.09385419779968451,
+        0.12916637535382036,
+        0.1288088266883518
+      ],
+      "source_pairs": 512,
+      "split": "test"
+    },
+    {
+      "ce_difference": -0.01719475944673865,
+      "comparison": "joint_risk-joint_uniform",
+      "fixed_seeds": [
+        17,
+        29,
+        43
+      ],
+      "paired_97_5_interval": [
+        -0.026918797935186967,
+        -0.00802735180532918
+      ],
+      "per_seed_ce_differences": [
+        -0.01794744840635132,
+        -0.011873973770396562,
+        -0.02176285616346796
+      ],
+      "source_pairs": 512,
+      "split": "test"
+    },
+    {
+      "ce_difference": 0.13447122606069095,
+      "comparison": "joint_uniform-frozen",
+      "fixed_seeds": [
+        17,
+        29,
+        43
+      ],
+      "paired_97_5_interval": [
+        0.11540241121788203,
+        0.15332831074937517
+      ],
+      "per_seed_ce_differences": [
+        0.11180164620603583,
+        0.14104034912421692,
+        0.15057168285181977
+      ],
+      "source_pairs": 512,
+      "split": "test"
+    },
+    {
+      "ce_difference": 0.03177223671283347,
+      "comparison": "joint_risk-frozen",
+      "fixed_seeds": [
+        17,
+        29,
+        43
+      ],
+      "paired_97_5_interval": [
+        0.008441791925694267,
+        0.05612064129107493
+      ],
+      "per_seed_ce_differences": [
+        0.03716633840821215,
+        0.03991240200348167,
+        0.018237969726806358
+      ],
+      "source_pairs": 512,
+      "split": "retention"
+    },
+    {
+      "ce_difference": -0.0005586422576678851,
+      "comparison": "joint_risk-joint_uniform",
+      "fixed_seeds": [
+        17,
+        29,
+        43
+      ],
+      "paired_97_5_interval": [
+        -0.013353261302758587,
+        0.012102167222572487
+      ],
+      "per_seed_ce_differences": [
+        -0.0019309548820669598,
+        0.0019450571059699273,
+        -0.001690028996907178
+      ],
+      "source_pairs": 512,
+      "split": "retention"
+    },
+    {
+      "ce_difference": 0.03233087897050135,
+      "comparison": "joint_uniform-frozen",
+      "fixed_seeds": [
+        17,
+        29,
+        43
+      ],
+      "paired_97_5_interval": [
+        0.008765524020542368,
+        0.0574368376823409
+      ],
+      "per_seed_ce_differences": [
+        0.03909729329027911,
+        0.037967344897511746,
+        0.019927998723713536
+      ],
+      "source_pairs": 512,
+      "split": "retention"
+    }
+  ],
+  "distinct_source_pixels_across_test_and_retention": 2048,
+  "exact_delivered_row_grid": 23040,
+  "exact_oracle_candidate_grid": 98304,
+  "exact_oracle_row_grid": 6144,
+  "existing_independent_audit": {
+    "delivered_bundles_reopened": 23040,
+    "maximum_independent_delivered_utility_error": 2.220446049250313e-16,
+    "maximum_independent_oracle_utility_error": 2.220446049250313e-16,
+    "maximum_independent_statistic_error": 6.175615574477433e-16,
+    "oracle_candidate_bundles_reopened": 98304,
+    "passed": true,
+    "reported_ce_intervals_and_acceptance_reconstructed": true,
+    "result_sha256": "baa4091915c4ff173250c1d178782238d66caa7190c3ed209b1a64018d286369",
+    "rows_sha256": "bda63e15ff23001693fefd22bb61345f09230579bfa2c9bc007b20961cd7d9ed",
+    "schema": "hepta.ndu.joint-independent-audit.v1",
+    "scope": "independent parser/arithmetic and same fixed audit recognizer; not human judgment or OS-isolated truth",
+    "source_overlap_with_restored_original_corpus": 0
+  },
+  "fixed_seeds": [
+    17,
+    29,
+    43
+  ],
+  "generator_attribution": {
+    "attribution_gate_passed": true,
+    "ce_difference": 0.05434292988585698,
+    "comparison": "joint_risk-original_16_plan_privileged_oracle",
+    "oracle_ce": 0.7077343481369093,
+    "paired_97_5_interval": [
+      0.036803751253088324,
+      0.07222749248849995
+    ],
+    "per_seed_ce_differences": [
+      0.029385912131316694,
+      0.07413262919639707,
+      0.059510248329857074
+    ],
+    "same_budget_deployed_baseline": false
+  },
+  "generator_update_gate_passed": true,
+  "identities": {
+    "/workspace/scratch/95988d8d3ab1/ndu-joint-continuation/development-full-001/SELECTIONS.json": "f449a0b783f378780f2c73d9f3357bb9edbfa1776cd46841739220da96dc6e7d",
+    "/workspace/scratch/95988d8d3ab1/ndu-joint-continuation/qualification-001/INDEPENDENT_AUDIT.json": "b284b833141beed428a4d00cfc5f3715d6c13f5c771d8a606afbe625ecca15ea",
+    "/workspace/scratch/95988d8d3ab1/ndu-joint-continuation/qualification-001/ORACLE_RECEIPT.json": "154f37c7f027d0a19fcb3ae5ba2383d99dc1168d5a42c54c9f50ed09850d4181",
+    "/workspace/scratch/95988d8d3ab1/ndu-joint-continuation/qualification-001/QUALIFICATION_SEAL.json": "fe48e68159cceaa6dbf46e2b6cc2ddf9d0346995e59c05d9f7ad792561651807",
+    "/workspace/scratch/95988d8d3ab1/ndu-joint-continuation/qualification-001/RESULT.json": "baa4091915c4ff173250c1d178782238d66caa7190c3ed209b1a64018d286369"
+  },
+  "matched_training_gate_passed": false,
+  "matched_update_budgets": [
+    {
+      "schedule_sha256": "d420b6feb3a65798b171c6983c655cc43d47d0c628dfdfbdcab00a5f45ee4f80",
+      "seed": 17,
+      "training_counts": {
+        "actual_png_roundtrips": 76800,
+        "examples": 19200,
+        "model_decodes": 153600,
+        "model_encodes": 19200,
+        "model_transitions": 153600,
+        "observer_digit_examples": 153600,
+        "teacher_decodes": 76800,
+        "teacher_encodes": 19200,
+        "teacher_transitions": 153600
+      }
+    },
+    {
+      "schedule_sha256": "8fe39ca796876b56b9fccc9c221b3e4b167ad55563d75ed54d6f65722eb07edc",
+      "seed": 29,
+      "training_counts": {
+        "actual_png_roundtrips": 76800,
+        "examples": 19200,
+        "model_decodes": 153600,
+        "model_encodes": 19200,
+        "model_transitions": 153600,
+        "observer_digit_examples": 153600,
+        "teacher_decodes": 76800,
+        "teacher_encodes": 19200,
+        "teacher_transitions": 153600
+      }
+    },
+    {
+      "schedule_sha256": "e8155261ed5832e476c201213760cc21640564e26d760af504196dc4376dc91e",
+      "seed": 43,
+      "training_counts": {
+        "actual_png_roundtrips": 76800,
+        "examples": 19200,
+        "model_decodes": 153600,
+        "model_encodes": 19200,
+        "model_transitions": 153600,
+        "observer_digit_examples": 153600,
+        "teacher_decodes": 76800,
+        "teacher_encodes": 19200,
+        "teacher_transitions": 153600
+      }
+    }
+  ],
+  "maximum_direct_CE_or_difference_error": 2.220446049250313e-16,
+  "qualification_interpretation": "Both updated generators improve on the original within this two-modality finite task and common NDU-controller family. Joint-risk also exceeds the privileged original-generator 16-plan oracle. Risk-weighted generator proxy underperforms the same-information/same-schedule uniform generator update; no claim that risk-neutral control is superior is licensed because both arms share an NDU controller.",
+  "reference_and_selected_checkpoints_match_seals": true,
+  "reviewed_utc": "2026-10-27T07:42:34.789052+00:00",
+  "schema": "hepta.ndu.peer-joint-qualification-review.v1",
+  "scope": "Read-only identity and recorded-utility arithmetic audit; no new model outputs, image scoring, bootstrap tuning or gate change.",
+  "scope_limits": [
+    "Retention concerns the registered fresh clean paired-digit task, not all foundation-model capabilities.",
+    "The three seeds are fixed replicates; pixel-pair bootstrap does not establish writer-population or seed-population generalization.",
+    "Generator gradients are supervised proxies with detached self-normalized minibatch weights, not exact gradients of discrete delivered utility.",
+    "Oracle is a privileged within-family attribution bound, not a deployable matched-compute comparator."
+  ],
+  "sealed_source_hashes_valid": true,
+  "source_pairs": {
+    "retention": 512,
+    "test": 512
+  }
+}
