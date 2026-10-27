@@ -7,9 +7,9 @@ use std::ffi::OsStr;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io;
+use std::os::windows::ffi::OsStrExt;
 use std::os::windows::fs::OpenOptionsExt;
 use std::os::windows::io::AsRawHandle;
-use std::os::windows::process::CommandExt;
 use std::path::Path;
 use std::ptr;
 use windows_sys::Win32::Security::DACL_SECURITY_INFORMATION;
@@ -17,6 +17,11 @@ use windows_sys::Win32::Security::GetKernelObjectSecurity;
 use windows_sys::Win32::Security::OWNER_SECURITY_INFORMATION;
 use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_BACKUP_SEMANTICS;
 use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT;
+use windows_sys::Win32::Storage::FileSystem::FILE_ID_INFO;
+use windows_sys::Win32::Storage::FileSystem::FileIdInfo;
+use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandleEx;
+use windows_sys::Win32::Storage::FileSystem::MAXIMUM_REPARSE_DATA_BUFFER_SIZE;
+use windows_sys::Win32::System::IO::DeviceIoControl;
 
 fn root() -> (
     tempfile::TempDir,
@@ -288,32 +293,133 @@ fn native_directory_acl_change_invalidates_original_custody() {
 fn native_reparse_directory_is_refused_before_child_effect() {
     let (outer, path, directory) = root();
     let junction = outer.path().join("junction");
-    let system = std::env::var_os("SystemRoot").expect("Windows system root");
-    let paths = [&junction, &path].map(|path| {
-        let text = dunce::simplified(path)
-            .to_str()
-            .expect("own Win32 scratch path");
-        assert!(text.as_bytes().get(1) == Some(&b':') && !text[2..].contains(':'));
-        assert!(
-            text.chars()
-                .all(|character| character.is_ascii_alphanumeric()
-                    || matches!(character, '\\' | '/' | ':' | ' ' | '.' | '_' | '-'))
+    // Windows SDK: CTL_CODE(FILE_DEVICE_FILE_SYSTEM, 41/42, METHOD_BUFFERED,
+    // FILE_ANY_ACCESS), and IO_REPARSE_TAG_MOUNT_POINT. These test-local
+    // constants use the existing System::IO feature without adding a dependency.
+    const FSCTL_SET_REPARSE_POINT: u32 = (9 << 16) | (41 << 2);
+    const FSCTL_GET_REPARSE_POINT: u32 = (9 << 16) | (42 << 2);
+    const IO_REPARSE_TAG_MOUNT_POINT: u32 = 0xa000_0003;
+    drop(RetainedPrivateDirectory::create_new(&junction).expect("exclusive private fixture"));
+    let junction_file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+        .open(&junction)
+        .expect("open our empty directory without traversing a reparse point");
+    let original_security = descriptor(&junction_file);
+    let held_id = || {
+        // SAFETY: FILE_ID_INFO is plain output storage for the same held handle.
+        let mut identity: FILE_ID_INFO = unsafe { std::mem::zeroed() };
+        assert_ne!(
+            unsafe {
+                GetFileInformationByHandleEx(
+                    junction_file.as_raw_handle() as _,
+                    FileIdInfo,
+                    (&mut identity as *mut FILE_ID_INFO).cast(),
+                    std::mem::size_of::<FILE_ID_INFO>() as u32,
+                )
+            },
+            0,
+            "native full junction identity: {}",
+            io::Error::last_os_error()
         );
-        text
-    });
-    let [junction_arg, target_arg] = paths;
-    let output = std::process::Command::new(Path::new(&system).join("System32/cmd.exe"))
-        .args(["/d", "/s", "/c"])
-        // cmd /c parses command text, not the C-runtime argv quoting used by arg.
-        // Only these two strictly checked owned scratch paths enter fixed syntax.
-        .raw_arg(format!(r#""mklink /J "{junction_arg}" "{target_arg}"""#))
-        .output()
-        .expect("create own fixture junction");
-    assert!(
-        output.status.success(),
-        "{}",
-        String::from_utf8_lossy(&output.stderr)
+        (identity.VolumeSerialNumber, identity.FileId.Identifier)
+    };
+    let original_id = held_id();
+    let target = path.canonicalize().expect("actual original target");
+    let target_units: Vec<_> = target.as_os_str().encode_wide().collect();
+    let dos_prefix = [
+        u16::from(b'\\'),
+        u16::from(b'\\'),
+        u16::from(b'?'),
+        u16::from(b'\\'),
+    ];
+    assert!(target_units.starts_with(&dos_prefix));
+    let mut substitute: Vec<_> = r"\??\".encode_utf16().collect();
+    substitute.extend_from_slice(&target_units[dos_prefix.len()..]);
+    let print_name: Vec<_> = dunce::simplified(&target)
+        .as_os_str()
+        .encode_wide()
+        .collect();
+    let substitute_length = u16::try_from(substitute.len() * 2).expect("bounded NT target");
+    let print_offset = u16::try_from((substitute.len() + 1) * 2).expect("bounded print offset");
+    let print_length = u16::try_from(print_name.len() * 2).expect("bounded print target");
+    let names: Vec<_> = substitute
+        .into_iter()
+        .chain([0])
+        .chain(print_name)
+        .chain([0])
+        .flat_map(u16::to_le_bytes)
+        .collect();
+    let data_length = u16::try_from(8 + names.len()).expect("bounded mount-point data");
+    let mut reparse = Vec::new();
+    reparse.extend(IO_REPARSE_TAG_MOUNT_POINT.to_le_bytes());
+    reparse.extend(data_length.to_le_bytes());
+    reparse.extend(0u16.to_le_bytes()); // Reserved.
+    reparse.extend(0u16.to_le_bytes()); // SubstituteNameOffset in PathBuffer.
+    reparse.extend(substitute_length.to_le_bytes());
+    reparse.extend(print_offset.to_le_bytes());
+    reparse.extend(print_length.to_le_bytes());
+    reparse.extend(names);
+    assert!(reparse.len() <= MAXIMUM_REPARSE_DATA_BUFFER_SIZE as usize);
+    let mut returned = 0;
+    // SAFETY: this is our newly created empty directory, opened without
+    // traversal. The complete SDK mount-point buffer lives for this sync call.
+    let set = unsafe {
+        DeviceIoControl(
+            junction_file.as_raw_handle() as _,
+            FSCTL_SET_REPARSE_POINT,
+            reparse.as_ptr().cast(),
+            reparse.len() as u32,
+            ptr::null_mut(),
+            0,
+            &mut returned,
+            ptr::null_mut(),
+        )
+    };
+    assert_ne!(
+        set,
+        0,
+        "native junction creation: {}",
+        io::Error::last_os_error()
     );
+    let mut observed = vec![0u8; MAXIMUM_REPARSE_DATA_BUFFER_SIZE as usize];
+    // SAFETY: same held directory handle and a bounded writable SDK-size buffer.
+    let get = unsafe {
+        DeviceIoControl(
+            junction_file.as_raw_handle() as _,
+            FSCTL_GET_REPARSE_POINT,
+            ptr::null(),
+            0,
+            observed.as_mut_ptr().cast(),
+            observed.len() as u32,
+            &mut returned,
+            ptr::null_mut(),
+        )
+    };
+    assert_ne!(
+        get,
+        0,
+        "native junction readback: {}",
+        io::Error::last_os_error()
+    );
+    assert!(returned as usize <= observed.len());
+    observed.truncate(returned as usize);
+    // Actual kernel readback must contain the exact mount-point tag, offsets,
+    // lengths and UTF-16 target, not a symbolic link or an unverified path.
+    assert_eq!(observed, reparse);
+    assert_eq!(held_id(), original_id);
+    assert_eq!(descriptor(&junction_file), original_security);
+    assert_eq!(
+        junction.canonicalize().expect("OS follows real junction"),
+        target
+    );
+    let observed_tag = u32::from_le_bytes(observed[..4].try_into().expect("complete reparse tag"));
+    eprintln!(
+        "owned junction tag={observed_tag:#010x} returned_bytes={returned} \
+         full_id={original_id:?} security={original_security:?} target={target:?}"
+    );
+    drop(junction_file);
     let admitted = RetainedPrivateDirectory::open_existing(&junction);
     let inspection = PrivateFile::open_directory(&junction);
     std::fs::remove_dir(&junction).expect("remove own junction before scratch cleanup");

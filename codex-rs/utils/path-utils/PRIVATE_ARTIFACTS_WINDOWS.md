@@ -85,3 +85,28 @@ This supports the selected native access mode, not a claim that all Operator,
 Shadow, inherited SSHSIG, sandbox helper or power-loss cases pass. Those require
 actual original-case execution on the new exact clean source. Physical power
 loss and hostile administrator isolation are not qualified by these fixtures.
+
+## Junction fixture
+
+`native_reparse_directory_is_refused_before_child_effect` keeps its original
+case identity and all admission, no-child-effect and cleanup assertions. Its
+fixture now creates one absent private scratch directory and uses the native
+`FSCTL_SET_REPARSE_POINT` mount-point contract. The bounded buffer contains the
+actual canonical target in UTF-16, including its NT substitute name. The same
+held handle must return the entire tag/offset/length/target buffer through
+`FSCTL_GET_REPARSE_POINT`, retain the original volume/full 128-bit ID and
+owner/DACL, and resolve through
+the OS to the original target before the admission checks begin. This is a real
+junction, rather than a symbolic link or a mock filesystem observation.
+
+The test-local control codes are the Windows SDK `CTL_CODE` definitions for
+`FILE_DEVICE_FILE_SYSTEM`, functions 41 and 42, `METHOD_BUFFERED`, and
+`FILE_ANY_ACCESS`; the mount-point tag is `IO_REPARSE_TAG_MOUNT_POINT`. Existing
+`windows-sys` features already provide `DeviceIoControl`, so the fixture adds no
+dependency or production API. See Microsoft's [mount-point buffer contract](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/ns-ntifs-_reparse_data_buffer)
+and [setting a reparse point](https://learn.microsoft.com/en-us/windows/win32/api/winioctl/ni-winioctl-fsctl_set_reparse_point).
+
+Prior native runs that failed at `cmd /c mklink` syntax remain failures before
+the backend assertions. Removing that command parser does not establish a
+passing native result: the new exact source still requires the original case
+to execute on Windows. A GNU cross check only checks Rust types and lints.
