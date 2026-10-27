@@ -232,14 +232,21 @@ def prepare(args):
 def main():
     os.umask(0o077)
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("phase", choices=("prepare",))
+    parser.add_argument("phase", choices=("prepare", "verify"))
     parser.add_argument("--chain", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--materials", type=Path)
     args = parser.parse_args()
     require(args.output.is_absolute(), "absolute observation directory required")
-    require(args.materials is not None, "material output path required")
-    prepare(args)
+    if args.phase == "prepare":
+        require(args.materials is not None, "material output path required")
+        prepare(args)
+    else:
+        if __package__:
+            from .hepta_ci_smollm_readback import verify
+        else:
+            from hepta_ci_smollm_readback import verify
+        verify(args)
 
 
 if __name__ == "__main__":
