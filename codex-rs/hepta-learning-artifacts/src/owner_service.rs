@@ -138,6 +138,28 @@ impl LearningArtifactOwnerService {
         self.recovery_required.as_ref()
     }
 
+    /// Preview the exact registry head to be independently signed for a new
+    /// publication. This uses the normal fenced registration rules on a clone;
+    /// it writes no checkpoint, payload, registry, witness or CURRENT pointer.
+    pub fn preview_publish_registry_head(
+        &self,
+        operation_id: StableId,
+        admission: WithdrawalBoundArtifactAdmissionV3,
+        expected_registry_predecessor_head: Digest32,
+        now: u64,
+    ) -> Result<Digest32, LearningArtifactOwnerServiceError> {
+        if let Some(blocked) = &self.recovery_required {
+            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(blocked.clone()));
+        }
+        let transaction = ArtifactPublicationTransactionV1::begin(
+            operation_id, admission, &self.withdrawal_registry, &self.registry,
+            expected_registry_predecessor_head, now,
+        )?;
+        let mut staged = self.registry.clone();
+        self.host.stage_compatibility_registration(&transaction, &mut staged, now)?;
+        Ok(staged.snapshot().head_digest)
+    }
+
     /// Install an authenticated newer withdrawal frontier. The service accepts
     /// only an exact monotonic prefix extension in the same scope.
     pub fn install_withdrawal_frontier(

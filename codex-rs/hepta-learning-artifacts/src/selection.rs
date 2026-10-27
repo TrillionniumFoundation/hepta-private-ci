@@ -131,6 +131,7 @@ pub struct VerifiedArtifactSelectionV1 {
     issued_at: u64,
     expires_at: u64,
     trust_digest: Digest32,
+    current_owner_trust_digest: Digest32,
     authority: AuthorityPosture,
 }
 
@@ -156,8 +157,25 @@ impl VerifiedArtifactSelectionV1 {
     }
 
     #[must_use]
+    pub const fn current_owner_trust_digest(&self) -> Digest32 {
+        self.current_owner_trust_digest
+    }
+
+    #[must_use]
     pub const fn authority(&self) -> AuthorityPosture {
         self.authority
+    }
+
+    /// Retained selection evidence expires with either its signature window or
+    /// the credential that authenticated it. This check grants no currentness.
+    #[must_use]
+    pub const fn valid_at(&self, now: u64) -> bool {
+        self.issued_at <= now && now <= self.expires_at
+    }
+
+    #[must_use]
+    pub const fn expires_at(&self) -> u64 {
+        self.expires_at
     }
 }
 
@@ -170,6 +188,11 @@ pub struct ArtifactSelectionVerifierV1 {
 }
 
 impl ArtifactSelectionVerifierV1 {
+    #[must_use]
+    pub const fn owner_trust_digest(&self) -> Digest32 {
+        self.artifact_owner_trust_digest
+    }
+
     pub fn new(
         mut trust: ArtifactSelectionTrustV1,
         artifact_owner_trust: &ArtifactOwnerTrustV1,
@@ -340,8 +363,11 @@ impl ArtifactSelectionVerifierV1 {
             selector_credential_digest: signed.selector_credential_digest,
             authority_epoch: signed.authority_epoch,
             issued_at: signed.issued_at,
-            expires_at: signed.expires_at,
+            expires_at: signed.expires_at.min(selector.expires_at).min(
+                selector.revoked_at.map_or(u64::MAX, |at| at.saturating_sub(1)),
+            ),
             trust_digest: self.trust_digest,
+            current_owner_trust_digest: current.trust_digest(),
             authority: AuthorityPosture::DENY_ALL,
         })
     }
