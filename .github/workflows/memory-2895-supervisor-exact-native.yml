@@ -5,6 +5,7 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - '.github/workflows/memory-2895-supervisor-exact-native.yml'
+      - 'codex-rs/hepta-supervisor/tests/restart_budget.rs'
 
 permissions:
   contents: read
@@ -15,7 +16,7 @@ jobs:
       github.event_name == 'pull_request' &&
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
-      github.event.pull_request.head.ref == 'automation/memory-2895-exact-supervisor-native-20261025'
+      github.event.pull_request.head.ref == 'automation/memory-3853-legacy-restart-exhaustion-20261027-v1'
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     env:
@@ -42,14 +43,19 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
           test "$(git merge-base "$SOURCE_SHA" HEAD)" = "$SOURCE_SHA"
           test "$(git rev-parse "HEAD:codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs")" = "$TEST_BLOB"
+          test "$(git rev-parse "$SOURCE_SHA:codex-rs/hepta-supervisor/tests/restart_budget.rs")" = "eefe955d392c6a2e0d0ecabfdd4c9a67df0502ab"
+          test "$(git rev-parse "HEAD:codex-rs/hepta-supervisor/tests/restart_budget.rs")" = "651ead434e554efb944b44bbd1934202270c5391"
           test "$(git rev-parse "HEAD:codex-rs/Cargo.lock")" = "$(git rev-parse "$SOURCE_SHA:codex-rs/Cargo.lock")"
           test "$(git rev-parse "HEAD:MODULE.bazel")" = "$(git rev-parse "$SOURCE_SHA:MODULE.bazel")"
           test "$(git rev-parse "HEAD:MODULE.bazel.lock")" = "$(git rev-parse "$SOURCE_SHA:MODULE.bazel.lock")"
           changed="$(git diff --name-only "$SOURCE_SHA" HEAD)"
-          test "$changed" = ".github/workflows/memory-2895-supervisor-exact-native.yml"
+          expected="$(printf '%s\n' \
+            '.github/workflows/memory-2895-supervisor-exact-native.yml' \
+            'codex-rs/hepta-supervisor/tests/restart_budget.rs')"
+          test "$changed" = "$expected"
           git diff --check "$SOURCE_SHA" HEAD
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
-          echo "Isolated workflow only; supervisor test, manifest and locks match source: $SOURCE_SHA"
+          echo "Only the audited sibling regression and dedicated workflow differ from source: $SOURCE_SHA"
 
       - name: Install pinned native test runners
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
@@ -69,6 +75,12 @@ jobs:
         timeout-minutes: 75
         run: |
           just test --locked -p codex-hepta-supervisor --no-tests=fail --retries 0 --test restart_budget_recovery -E 'test(=restart_budget_survives_repeated_supervisord_recovery)' --test-threads 1
+
+      - name: Run exact legacy crash-budget regression with no retries
+        working-directory: codex-rs
+        timeout-minutes: 15
+        run: |
+          just test --locked -p codex-hepta-supervisor --no-tests=fail --retries 0 --test restart_budget -E 'test(=unexpected_agent_crashes_back_off_and_stop_after_three_restarts)' --test-threads 1
 
       - name: Run complete Supervisor crate without retries
         working-directory: codex-rs
