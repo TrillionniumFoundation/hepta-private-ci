@@ -2242,6 +2242,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                 raise ValueError(
                     "baseline uses a different conformance execution profile"
                 )
+            if args.conformance_profile == VENDOR_PROFILE:
+                # A hand-edited input must satisfy the same preservation rules
+                # as a newly extracted baseline before any product starts.
+                _compact_regression_baseline(baseline_report)
         except (OSError, ValueError) as exc:
             print(f"error: invalid baseline report: {exc}", file=sys.stderr)
             return 2

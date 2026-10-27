@@ -8,6 +8,7 @@ from types import SimpleNamespace
 import pytest
 
 import conformance_profiles as profiles
+import run_codex_compliance as runner
 from run_codex_compliance import (
     _compact_regression_baseline,
     _evaluate_regression_gate,
@@ -128,6 +129,77 @@ def test_cli_rejects_a_cross_profile_baseline_before_starting_conformance(
         == 2
     )
     assert "different conformance execution profile" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "missing_old_pass",
+        "missing_fixed_pass",
+        "missing_case",
+        "missing_scenario",
+        "new_failure",
+        "missing_known_failure",
+        "cross_profile",
+    ],
+)
+def test_vendor_input_baseline_is_strictly_checked_before_any_product_process(
+    mutation,
+    tmp_path,
+    monkeypatch,
+    capsys,
+) -> None:
+    report = vendor_candidate()
+    if mutation == "missing_old_pass":
+        report["checks"]["passing"].remove(
+            profiles.legacy_baseline()["checks"]["passing"][0]
+        )
+    elif mutation == "missing_fixed_pass":
+        report["checks"]["passing"].remove(profiles.required_fixed_checks()[0])
+    elif mutation == "missing_case":
+        report["checks"]["passing"] = [
+            record
+            for record in report["checks"]["passing"]
+            if not (record["mode"] == "2025-06-18" and record["transport"] == "stdio")
+        ]
+    elif mutation == "missing_scenario":
+        report["officialConformance"]["scenarios"]["2026-07-28"].pop()
+    elif mutation == "new_failure":
+        record = deepcopy(report["checks"]["failing"][0])
+        record["check_id"] += "-unreviewed"
+        report["checks"]["failing"].append(record)
+    elif mutation == "missing_known_failure":
+        report["checks"]["failing"].pop()
+    else:
+        report = profiles.legacy_baseline()
+    baseline = tmp_path / "baseline.json"
+    baseline.write_text(json.dumps(report), encoding="utf-8")
+    marker = tmp_path / "product-started"
+    binary = executable(tmp_path)
+    binary.write_text(
+        f"#!/bin/sh\nprintf started > '{marker}'\nexit 99\n", encoding="utf-8"
+    )
+
+    def unexpected_verification(*_args, **_kwargs):
+        raise AssertionError(
+            "an invalid baseline must fail before executing any verification or product child"
+        )
+
+    monkeypatch.setattr(runner, "verify_execution", unexpected_verification)
+    assert (
+        main(
+            [
+                str(binary),
+                "--conformance-profile",
+                profiles.VENDOR_PROFILE,
+                "--baseline-report",
+                str(baseline),
+            ]
+        )
+        == 2
+    )
+    assert "invalid baseline report" in capsys.readouterr().err
+    assert not marker.exists()
 
 
 def test_vendor_baseline_preserves_every_legacy_pass_and_requires_the_ten_repairs() -> (

@@ -21,25 +21,26 @@ pnpm install --frozen-lockfile
 cargo build --locked --manifest-path codex-rs/Cargo.toml -p codex-cli --bin codex
 ```
 
-To run the historical pinned bootstrap and its original regression baseline:
+To run the installed, verified vendor and its separately measured regression baseline:
 
 ```bash
 python3 scripts/mcp_conformance/run_codex_compliance.py \
   codex-rs/target/debug/codex \
-  --conformance-profile legacy491 \
-  --baseline-report scripts/mcp_conformance/regression-baseline-v1.json \
+  --conformance-profile vendor-c37-sdk132-v1 \
+  --conformance-cli third_party/mcp-conformance/dist/index.js \
+  --baseline-report scripts/mcp_conformance/regression-baseline-c37-sdk132-v1.json \
   --report /tmp/codex-mcp-conformance.json
 ```
 
 The positional executable can also point to an already built Codex binary.
-For the installed vendor, explicitly select `vendor-c37-sdk132-v1` and supply
-`--conformance-cli third_party/mcp-conformance/dist/index.js`. Its source,
-dependencies, and rebuilt output are checked before and after execution; it
-cannot use a historical baseline as an implicit cross-profile comparison.
+The vendor's source, dependencies, and rebuilt output are checked before and
+after execution. To run the historical pinned bootstrap, explicitly choose
+`--conformance-profile legacy491`, omit the CLI override, and select the original
+`regression-baseline-v1.json`. The profiles cannot share a baseline implicitly.
 
 ## What the baseline means
 
-`regression-baseline-v1.json` is a compact, reviewed snapshot of the upstream
+Each regression baseline is a compact, reviewed snapshot of its upstream
 revision, required protocol versions, HTTP and stdio transports, enabled modern
 feature, OAuth coverage, and individual passing and failing check identities.
 
@@ -62,12 +63,12 @@ the upstream suite again:
 ```bash
 python3 scripts/mcp_conformance/run_codex_compliance.py \
   /absolute/path/to/codex \
-  --conformance-profile legacy491 \
+  --conformance-profile vendor-c37-sdk132-v1 \
   --baseline-report /absolute/path/to/full-conformance-report.json \
-  --extract-baseline /tmp/mcp-conformance-regression-baseline-v1.json
+  --extract-baseline /tmp/mcp-conformance-regression-baseline-c37-sdk132-v1.json
 ```
 
-Alternatively, add `--write-baseline /tmp/mcp-conformance-regression-baseline-v1.json`
+Alternatively, add `--write-baseline /tmp/mcp-conformance-regression-baseline-c37-sdk132-v1.json`
 to a complete conformance run. Review every baseline change; do not regenerate
 it to conceal a regression.
 

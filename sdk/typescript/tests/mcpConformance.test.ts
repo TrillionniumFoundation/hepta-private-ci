@@ -48,7 +48,7 @@ describe("MCP client conformance", () => {
       );
       const codexBinary = requireFile(codexExecPath, "built Codex binary");
       const baseline = requireFile(
-        path.join(directory, "regression-baseline-v1.json"),
+        path.join(directory, "regression-baseline-c37-sdk132-v1.json"),
         "committed regression baseline",
       );
       const reportDirectory = process.env.RUNNER_TEMP ?? os.tmpdir();
@@ -58,6 +58,8 @@ describe("MCP client conformance", () => {
         [
           path.join(directory, "run_codex_compliance.py"),
           codexBinary,
+          "--conformance-profile",
+          "vendor-c37-sdk132-v1",
           "--mode",
           "all",
           "--transport",
