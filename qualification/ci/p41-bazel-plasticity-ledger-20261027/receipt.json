@@ -27,7 +27,7 @@
   "verification": {
     "source_preimage_checked": true,
     "matching_macro_replacements_checked": true,
-    "native_compilation": "PENDING",
+    "native_compilation": "PENDING_LATEST_HEAD_CI",
     "bazel_lock_update": "NOT_RUN_NO_CARGO_OR_BAZEL_MANIFEST_CHANGE",
     "cargo_deny": "PENDING_GITHUB_CI",
     "native_windows": "PENDING",
@@ -38,5 +38,42 @@
   },
   "mode": "SHADOW_ONLY",
   "authority": "DENY_ALL",
-  "promotion": "HOLD_NO_GO"
+  "promotion": "HOLD_NO_GO",
+  "followup_20261027": {
+    "inspected_head": "51400ae4720c34a9a7bc7b714466edc6c05b561a",
+    "inspected_base": "48f5a675e8ecddc1095858b2900b85422cafb599",
+    "native_architecture": {
+      "run": 40475155762,
+      "source_job": 122091464044,
+      "merge_job": 122091463479,
+      "required_job": 122103707586,
+      "terminal": "SUCCESS_FOR_INSPECTED_SOURCE_ONLY"
+    },
+    "native_blocking": {
+      "run": 40475155849,
+      "observed": "IN_PROGRESS_WITH_COMPLETED_FAILURES",
+      "repo_fmt_job": 122091770891,
+      "repo_fmt": "FAILURE_BUILDIFIER_REFORMAT_codex-rs/hepta-agentd/BUILD.bazel",
+      "sdk_job": 122091770781,
+      "sdk_failure": "rustc_linux_x86_64_1_95_0 fetched pinned Ubuntu zlib1g_1.3.dfsg-3.1ubuntu2.1_amd64.deb; snapshot 503 and archive 404; toolchain unavailable, not proof of compiler regression",
+      "cargo_deny_job": 122091770660,
+      "cargo_deny": "FAILURE_UNCHANGED_EXISTING_POLICY_NO_EXEMPTION"
+    },
+    "format_candidate": {
+      "commit": "94f1af85d0176cb9a1d7768bc25c6b8637609f56",
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "operation": "move newly added integration_test_dependency_replacements before integration_test_timeout in macro keyword argument list",
+      "other_test_or_product_code_changed": false,
+      "owning_buildifier_result": "PENDING",
+      "native_plasticity_owning_result": "PENDING",
+      "conclusion": "SOURCE_ONLY_CANDIDATE_NOT_BLOCKER_CLOSED"
+    },
+    "boundaries": [
+      "No change to original positive/negative assertions",
+      "No Cargo manifest or lock change",
+      "No bypass of cargo-deny or required gates",
+      "No source-pairing research plan or weights altered",
+      "Keep SHADOW_ONLY/DENY_ALL/HOLD_NO_GO"
+    ]
+  }
 }
