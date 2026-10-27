@@ -7,6 +7,7 @@ import importlib
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -204,6 +205,48 @@ def inventory(document, packages, partition=False):
         "empty/incomplete test inventory",
     )
     return all_tests, selected, ignored
+
+
+def runtime_binaries(document, target):
+    """Bind Cargo's runtime lookup names to every native archived executable."""
+    metadata = document["rust-build-meta"]
+    require(
+        metadata["target-directory"] == str(target)
+        and metadata["base-output-directories"] == ["debug"],
+        "runtime binary target/profile differs",
+    )
+    files, environment = {}, {}
+    for binaries in metadata["non-test-binaries"].values():
+        for binary in binaries:
+            name = binary["name"]
+            require(
+                isinstance(name, str)
+                and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", name)
+                and binary["kind"] == "bin-exe"
+                and binary["path"] == f"debug/{name}",
+                "invalid native runtime binary metadata",
+            )
+            path = target / binary["path"]
+            require(
+                path.is_file() and path.resolve() == path and os.access(path, os.X_OK),
+                f"missing/non-executable native runtime binary: {path}",
+            )
+            entry = {
+                "path": str(path),
+                "bytes": path.stat().st_size,
+                "sha256": digest(path),
+            }
+            require(name not in files or files[name] == entry, "binary name collision")
+            files[name] = entry
+            for suffix in {name, name.replace("-", "_")}:
+                key = f"CARGO_BIN_EXE_{suffix}"
+                require(
+                    key not in environment or environment[key] == str(path),
+                    "runtime binary environment alias collision",
+                )
+                environment[key] = str(path)
+    require(files, "empty runtime binary inventory")
+    return {"files": files, "environment": environment}
 
 
 def junit_passes(path, expected):
@@ -437,6 +480,16 @@ def replay(root, out, artifact, shard):
         all_tests == full_all and ignored == full_ignored and selected <= full_selected,
         "replay inventory changed",
     )
+    runtime = runtime_binaries(listed, target)
+    require(
+        listed["rust-build-meta"]["non-test-binaries"]
+        == load(artifact / "inventory.json")["rust-build-meta"]["non-test-binaries"],
+        "runtime binary metadata changed",
+    )
+    for key, value in runtime["environment"].items():
+        require(os.environ.get(key, value) == value, "foreign runtime binary binding")
+    os.environ.update(runtime["environment"])
+    save(out / "runtime-binaries.json", runtime)
     junit = out / "junit.xml"
     reporting = out / "reporting.toml"
     reporting.write_text(
@@ -460,6 +513,7 @@ def replay(root, out, artifact, shard):
         minimum=len(selected),
     )
     retried = junit_passes(junit, selected)
+    require(runtime_binaries(listed, target) == runtime, "runtime binaries changed")
     for name in HELPERS:
         require(
             digest(target / "debug" / name) == digest(artifact / name),
@@ -476,6 +530,7 @@ def replay(root, out, artifact, shard):
             "junit_sha256": digest(junit),
             "inventory_sha256": digest(out / "inventory.json"),
             "record_sha256": digest(out / "test-command.json"),
+            "runtime_binaries_sha256": digest(out / "runtime-binaries.json"),
             "retried": retried,
             "ignored_not_qualified": len(ignored),
             "partition_excluded": len(full_selected - selected),
@@ -554,6 +609,7 @@ def summarize(out, build, shards, needs):
             ("junit.xml", "junit_sha256"),
             ("inventory.json", "inventory_sha256"),
             ("test-command.json", "record_sha256"),
+            ("runtime-binaries.json", "runtime_binaries_sha256"),
         ):
             require(digest(directory / name) == result[key], "shard evidence changed")
         shard_all, selected, shard_ignored = inventory(

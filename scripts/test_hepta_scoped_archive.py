@@ -111,6 +111,71 @@ class EvidenceTests(unittest.TestCase):
             with self.subTest(text=text), self.assertRaises(ValueError):
                 q.junit_passes(path, expected)
 
+    def test_runtime_binary_environment_covers_every_package_entry(self):
+        target = self.root / "target"
+        (target / "debug").mkdir(parents=True)
+        bins = {}
+        files, environment = {}, {}
+        for package, names in {"p1": ["app-server", "host"], "p2": ["fixture"]}.items():
+            bins[package] = []
+            for name in names:
+                path = target / "debug" / name
+                path.write_text(name)
+                path.chmod(0o755)
+                bins[package].append(
+                    {"name": name, "kind": "bin-exe", "path": f"debug/{name}"}
+                )
+                files[name] = {
+                    "path": str(path),
+                    "bytes": len(name),
+                    "sha256": q.digest(path),
+                }
+                for suffix in {name, name.replace("-", "_")}:
+                    environment[f"CARGO_BIN_EXE_{suffix}"] = str(path)
+        document = {
+            "rust-build-meta": {
+                "target-directory": str(target),
+                "base-output-directories": ["debug"],
+                "non-test-binaries": bins,
+            }
+        }
+        self.assertEqual(
+            q.runtime_binaries(document, target),
+            {"files": files, "environment": environment},
+        )
+        for bad in ("/outside/app-server", "debug/../app-server"):
+            changed = copy.deepcopy(document)
+            changed["rust-build-meta"]["non-test-binaries"]["p1"][0]["path"] = bad
+            with self.subTest(path=bad), self.assertRaises(ValueError):
+                q.runtime_binaries(changed, target)
+        path.unlink()
+        with self.assertRaises(ValueError):
+            q.runtime_binaries(document, target)
+
+    def test_runtime_binary_alias_collision_and_symlink_refuse(self):
+        target = self.root / "target"
+        (target / "debug").mkdir(parents=True)
+        entries = []
+        for name in ("app-server", "app_server"):
+            path = target / "debug" / name
+            path.write_text(name)
+            path.chmod(0o755)
+            entries.append({"name": name, "kind": "bin-exe", "path": f"debug/{name}"})
+        document = {
+            "rust-build-meta": {
+                "target-directory": str(target),
+                "base-output-directories": ["debug"],
+                "non-test-binaries": {"pkg": entries},
+            }
+        }
+        with self.assertRaises(ValueError):
+            q.runtime_binaries(document, target)
+        document["rust-build-meta"]["non-test-binaries"]["pkg"] = entries[:1]
+        (target / "debug/app-server").unlink()
+        (target / "debug/app-server").symlink_to(target / "debug/app_server")
+        with self.assertRaises(ValueError):
+            q.runtime_binaries(document, target)
+
     def make_evidence(self, groups=None, bad_record=False):
         build, shards = self.root / "build", self.root / "shards"
         build.mkdir()
@@ -162,6 +227,9 @@ class EvidenceTests(unittest.TestCase):
             directory.mkdir()
             q.save(directory / "inventory.json", listing(group))
             (directory / "junit.xml").write_text(xml(group))
+            q.save(
+                directory / "runtime-binaries.json", {"files": {}, "environment": {}}
+            )
             before = {"commit": q.SOURCE, "tree": q.TREE, "dirty": False}
             q.save(
                 directory / "test-command.json",
@@ -192,6 +260,9 @@ class EvidenceTests(unittest.TestCase):
                     "junit_sha256": q.digest(directory / "junit.xml"),
                     "inventory_sha256": q.digest(directory / "inventory.json"),
                     "record_sha256": q.digest(directory / "test-command.json"),
+                    "runtime_binaries_sha256": q.digest(
+                        directory / "runtime-binaries.json"
+                    ),
                 },
             )
         return build, shards
