@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.p41-windows-ledger-lock-followup.v1",
+  "date_utc": "2026-10-27",
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "release": "HOLD_NO_GO",
+  "draft_pr": 4119,
+  "base_pr": 4109,
+  "pre_fix_source_sha": "c8628deababb496c4af3b6d9bc8c5b4c483a7b72",
+  "correction_source_commit": "cb5e2e9bd05d0728a1db1705b9f3716260506f45",
+  "edited_file": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+  "native_failure": {
+    "run": 40545418189,
+    "job": 122337885717,
+    "platform": "windows-latest",
+    "target": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+    "result": "77 PASS / 1 FAIL",
+    "failure": "Windows file truncation from an independent handle succeeded even while cooperating ledger owner held its file lock; donor test incorrectly asserted this must return OS 5/32/33"
+  },
+  "formatter_failure": {
+    "run": 40545418189,
+    "job": 122337884987,
+    "issue": "rustfmt requested multi-line OpenOptions call at evaluated_shadow_tests.rs:169"
+  },
+  "scope_and_invariant": {
+    "documented_owner_contract": "codex-rs/hepta-learning-ledger/src/durable.rs: locks fence cooperating independent handles, not hostile or privileged writers",
+    "now_asserted": "the second DurableLedger::recover on an independent handle returns DurableLedgerError::Busy while the owner is live",
+    "independently_asserted_after_owner_close": "actual truncation then DurableLedger::recover returns MissingHeader",
+    "retained": [
+      "capacity/conflict rejection and append unchanged",
+      "Unix live-owner corrupt/poison negative case",
+      "original Windows outside-root DELETE positive and negative tests unchanged"
+    ],
+    "not_claimed": [
+      "Windows host ACL protects this file against hostile writers",
+      "current Windows test passed on this new commit",
+      "full CI passed",
+      "release qualified"
+    ]
+  },
+  "qualification": {
+    "static_source_read": "PASS",
+    "rustfmt_expected_fix": "NOT_LOCALLY_EXECUTED",
+    "owning_windows_check": "PENDING_NEW_SHA",
+    "full_blocking_ci": "PENDING_NEW_SHA"
+  },
+  "blocked_on": [
+    "current-source native owning PASS",
+    "outside-root DELETE",
+    "AppServer plugin TTL",
+    "cargo-deny RustSec",
+    "full policy episodes",
+    "target-device p95/p99 and energy"
+  ]
+}
