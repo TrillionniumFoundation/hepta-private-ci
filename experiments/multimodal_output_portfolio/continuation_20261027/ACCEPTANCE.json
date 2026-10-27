@@ -1,0 +1,186 @@
+{
+  "schema": "hepta.ndu.six-workstreams-acceptance.v1",
+  "date": "2026-10-27",
+  "baseline_commit": "63f198ad85cfa2aa579032256355f446cfe793a0",
+  "all_six_scientific_goals_fully_passed": false,
+  "production_deployment": false,
+  "items": [
+    {
+      "id": "P0_joint_evidence",
+      "status": "partially_established",
+      "implemented": [
+        "event/alias single-factor evidence update",
+        "shared-marginal joint likelihood",
+        "separate cue-conditioned joint target prior"
+      ],
+      "passed": [
+        "4000 WAV identity audit",
+        "67200 delivered text outputs rescored",
+        "240 actual alias checks",
+        "controlled correlated-target prior output gains"
+      ],
+      "not_passed": [
+        "new-speaker observation coupling NLL advantage",
+        "new-speaker observation coupling actual-output advantage"
+      ],
+      "independent_test_unit": "8 heldout speakers",
+      "report": "evidence/README.md",
+      "evidence": [
+        "evidence/RESULTS.json",
+        "evidence/INDEPENDENT_AUDIT.json"
+      ]
+    },
+    {
+      "id": "P0_actual_continuation",
+      "status": "bounded_execution_alignment_passed",
+      "implemented": [
+        "unchanged original AgentdNeuronOwner/runtime/journal/witness",
+        "restored same-policy future branches",
+        "owner expiry and host resource refusal",
+        "actual retained or repaired final output",
+        "all 40 kernel invocations per episode priced"
+      ],
+      "passed": [
+        "240 complete actual episodes",
+        "all realized states match forecasts",
+        "zero finite-census moment/success/cost prediction discrepancy",
+        "durable duplicate/conflict/cold-restore/fork checks"
+      ],
+      "not_established": [
+        "production semantic calibration",
+        "native generation authority",
+        "full daemon integration",
+        "unknown real-world transition-law prediction"
+      ],
+      "native_authority_grants": 0,
+      "report": "control/README.md",
+      "evidence": [
+        "control/evidence/RUN002_RESULT.json",
+        "control/evidence/RUN002_AUDIT.json",
+        "control/evidence/DURABLE_GUARD_RESULT.json",
+        "control/evidence/COST_ACCOUNTING_ADDENDUM.json"
+      ]
+    },
+    {
+      "id": "P0_identifiable_risk",
+      "status": "bounded_risk_identification_passed",
+      "implemented": [
+        "different actual action loss laws",
+        "different transport tail damage",
+        "actual initial/repair/refusal/control costs"
+      ],
+      "passed": [
+        "mean and entropic-risk root actions differ in 3 of 16 contexts"
+      ],
+      "not_established": [
+        "risk policy dominates mean utility",
+        "risk policy improves strict semantic success",
+        "natural-world calibrated tail probabilities"
+      ],
+      "report": "control/README.md",
+      "evidence": [
+        "control/PROTOCOL.json",
+        "control/evidence/RUN002_RESULT.json"
+      ]
+    },
+    {
+      "id": "P0_post_delivery_feedback",
+      "status": "bounded_causal_chain_passed",
+      "implemented": [
+        "real first delivery and readback",
+        "numeric feedback into original neuron",
+        "zero-new-drive hold",
+        "later eligibility readout",
+        "actual controllable repair after feedback"
+      ],
+      "passed": [
+        "48 paired state changes",
+        "16 changed proposals",
+        "4 changed actual repair deliveries",
+        "12 avoided refused repair attempts",
+        "weighted external-return gain 0.036375 versus zero intervention"
+      ],
+      "not_established": [
+        "strict semantic-quality improvement",
+        "advantage versus same-information history policy",
+        "natural multimodal generator update from original owner"
+      ],
+      "same_information_history_return_difference": 0,
+      "report": "control/README.md",
+      "evidence": [
+        "control/evidence/RUN002_RESULT.json",
+        "control/evidence/RUN002_AUDIT.json",
+        "evidence/PEER_CONTROL_RUN002.json"
+      ]
+    },
+    {
+      "id": "P1_joint_generation",
+      "status": "generator_gain_passed_risk_specific_gate_failed",
+      "implemented": [
+        "actual-output exponential-moment controller",
+        "same argmax training/deployment action",
+        "encoder/transition/image/text decoder parameter updates",
+        "clean teacher replay retention",
+        "matched uniform/risk generator updates",
+        "privileged original 16-plan oracle attribution"
+      ],
+      "passed": [
+        "actual test CE gain versus frozen",
+        "clean retention noninferiority",
+        "every fixed seed improves versus frozen",
+        "actual gain beyond original finite oracle"
+      ],
+      "not_passed": [
+        "risk-weighted generator proxy beats matched uniform proxy"
+      ],
+      "all_joint_acceptance_gates_passed": false,
+      "both_updated_arms_use_same_NDU_controller": true,
+      "exact_discrete_delivered_reward_gradient": false,
+      "native_owner_in_generator_network": false,
+      "report": "joint/README.md",
+      "evidence": [
+        "joint/evidence/RESULT.json",
+        "joint/evidence/INDEPENDENT_AUDIT.json",
+        "joint/evidence/DEVELOPMENT_SUMMARY.json"
+      ]
+    },
+    {
+      "id": "P1_natural_tasks_and_cost",
+      "status": "extension_executed_allocation_advantage_failed",
+      "implemented": [
+        "source-separated natural speech transcription",
+        "real receipt answer and annotated image delivery",
+        "real missing-frame RGB generation",
+        "full batch measured allocation cost",
+        "strong fixed and matched-call controls"
+      ],
+      "passed": [
+        "forced-continuation development cache preserves actual outputs and reduces CPU",
+        "1680 actual final records independently rescored",
+        "270 canonical frames reconstructed",
+        "all 48 batch cost totals reconcile"
+      ],
+      "not_passed": [
+        "same-model speech quality noninferiority",
+        "cascade quality versus fixed base",
+        "document quality/cost gate",
+        "video allocation cost advantage"
+      ],
+      "inconclusive": [
+        "video training attribution versus zero-initialized mixer"
+      ],
+      "not_established": [
+        "semantic natural video synthesis",
+        "natural speech generation",
+        "full multimodal foundation-model training"
+      ],
+      "report": "natural/README.md",
+      "evidence": [
+        "natural/evidence/INDEPENDENT_OUTPUT_AUDIT.json",
+        "evidence/PEER_NATURAL_SPEECH.json",
+        "evidence/PEER_NATURAL_VIDEO.json"
+      ]
+    }
+  ],
+  "interpretation": "Implementation, independent audit, causal mechanism, predictive calibration, statistical advantage and general-model claims are separate acceptance dimensions."
+}

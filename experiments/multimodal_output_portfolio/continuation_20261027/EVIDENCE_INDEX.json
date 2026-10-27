@@ -1,0 +1,107 @@
+{
+  "schema": "hepta.ndu.continuation-evidence-index.v1",
+  "baseline_commit": "63f198ad85cfa2aa579032256355f446cfe793a0",
+  "date": "2026-10-27",
+  "artifacts": [
+    {
+      "workstream": "joint_evidence",
+      "receipt": "evidence/RAW_ARCHIVE.json",
+      "artifact": {
+        "access_url": "https://chatgpt.com/library?file_id=libfile_32a94b74d9e48191b154cab8603fbea7&account_id=personal",
+        "actual_outputs": 67200,
+        "bytes": 134024015,
+        "durable_attachment_status": "saved",
+        "file_id": "file_00000000eb5c81f79fdfb5cbb2c15bd5",
+        "file_name": "ndu_evidence_sources_20261027.tar.gz",
+        "includes": [
+          "all official source WAVs and license",
+          "fixed observer checkpoint",
+          "fit-only v1 failure and sources",
+          "frozen v2 models, test, actual outputs, audit and sources",
+          "standalone reports and baseline dependency sources"
+        ],
+        "library_file_id": "libfile_32a94b74d9e48191b154cab8603fbea7",
+        "local_path": "/workspace/scratch/95988d8d3ab1/ndu_evidence_sources_20261027.tar.gz",
+        "new_test_speakers": 8,
+        "schema": "hepta.ndu.evidence.raw-archive.v1",
+        "sha256": "f765a8e6d28c1b95c9f03f9edb5d8790447037515c45c27e4755d726571f2f27",
+        "source_waveforms": 4000,
+        "test_rerun_for_packaging": false,
+        "verified_file_members": 4079
+      }
+    },
+    {
+      "workstream": "actual_owner_feedback",
+      "receipt": "control/evidence/ARTIFACT_INDEX.json",
+      "artifact": {
+        "schema": "hepta.continuation.evidence-artifact-index.v2",
+        "archive_filename": "ndu_actual_owner_continuation_evidence_20261027.tar.gz",
+        "archive_bytes": 15973739,
+        "archive_sha256": "96bbb564667a2673014cf53b2c036e0ff870d242d405a46b6e81021c2011f544",
+        "manifest_sha256": "2e76c2a7d9d0f86612856dff0d605496a5feb0acdf108a7097f493a243195f3b",
+        "manifest_file_count": 19931,
+        "all_archive_members_identity_verified": true,
+        "raw_evidence_bytes": 118119953,
+        "run001_binary_sha256": "a6a5dee7a7f2280462192da531346a210d23384ed489f7e4de4811e811657141",
+        "run002_binary_sha256": "ba5fc96e8139e652fd1d7ae0f9713b66ccd879b12e190e4dcc93bca43426143b",
+        "production_authority": false,
+        "production_semantic_qualification": false,
+        "library_file_id": "libfile_fdc663f2187881918b0ba9509033eceb",
+        "saved_file_id": "file_000000002ee081f5bf42b30a1532d0fa",
+        "saved_url": "https://chatgpt.com/library?file_id=libfile_fdc663f2187881918b0ba9509033eceb&account_id=personal"
+      }
+    },
+    {
+      "workstream": "joint_generation",
+      "receipt": "joint/RAW_ARCHIVE.json",
+      "artifact": {
+        "schema": "hepta.ndu.joint-raw-archive-receipt.v1",
+        "archive_file_name": "ndu_joint_continuation_evidence_20261027.tar.gz",
+        "archive_bytes": 267129187,
+        "archive_sha256": "e404035df1cb1a25bfaacec1dc4fff8fe0f9bd7d2e181c3c6ac817071ab768ae",
+        "manifest_sha256": "065fea82b4cd86ed7893e2b317edf35877bb12ee6ee2d9a1bb6ed69871d30357",
+        "manifest_file_count": 46822,
+        "raw_logical_bytes": 440737578,
+        "all_members_byte_verified": true,
+        "scope": "complete inputs, original and updated checkpoints, pilot/full development, fresh qualification, every delivered/oracle bundle, audit and executed sources; environment dependencies are listed in the accompanying repository report",
+        "library_file_id": "libfile_e84c0392c3b8819182904c11f1c94f59",
+        "saved_file_id": "file_000000009cbc81f5bc9a57e498c5add0",
+        "saved_url": "https://chatgpt.com/library?file_id=libfile_e84c0392c3b8819182904c11f1c94f59&account_id=personal",
+        "runtime_versions": "repository joint/evidence/RUNTIME_ENVIRONMENT.json; original execution manifest includes Python/Torch identities"
+      }
+    },
+    {
+      "workstream": "natural_tasks",
+      "receipt": "natural/RAW_ARCHIVE.json",
+      "artifact": {
+        "schema": "hepta.ndu.natural-raw-archive-receipt.v1",
+        "archive_file_name": "ndu_natural_continuation_20261027.tar.gz",
+        "archive_bytes": 150385580,
+        "archive_sha256": "34dd6b38d047b8d62f19f56c7875a3acd9b6afeeaa50f07c1a26d9a18719cd21",
+        "index_sha256": "8aac1a8af64fa359b95fca85839a3e98196ea33dbf5fbe5cd7b2868488c2482b",
+        "unique_blobs": 7034,
+        "restored_and_reopened_logical_paths": 12206,
+        "raw_logical_bytes": 309637239,
+        "all_logical_paths_byte_verified": true,
+        "external_public_model_bytes_required_for_neural_reexecution": 220754010,
+        "model_recovery": "natural/evidence/MODEL_RECOVERY.json and natural/recover_models.py",
+        "archive_restore_audit": "natural/evidence/ARCHIVE_RESTORE_AUDIT.json",
+        "library_file_id": "libfile_c35d983266108191b27cfb9911a88bf3",
+        "saved_file_id": "file_00000000096c81f5aef882b032bc6c73",
+        "saved_url": "https://chatgpt.com/library?file_id=libfile_c35d983266108191b27cfb9911a88bf3&account_id=personal",
+        "post_archive_peer_and_restore_receipts": "in Git; closure chronology recorded in natural/evidence/PEER_IMPORTS.json"
+      }
+    }
+  ],
+  "all_four_archives_saved": true,
+  "previous_evidence_restored": [
+    "ndu_document_extension_20261026.tar.gz",
+    "ndu_neuron_feedback_evidence_20261026.tar.gz",
+    "ndu_joint_prior_evidence_20261026.tar.gz",
+    "ndu_joint_generation_repair_20261026.tar.gz",
+    "ndu_v6_full002_evidence.tar.gz"
+  ],
+  "raw_results_not_embedded_in_git": true,
+  "peer_diagnostics": "evidence/PEER_REVIEW.json plus PEER_*.json; later than original scientific archive closure where documented",
+  "environment": "joint/evidence/RUNTIME_ENVIRONMENT.json and natural/evidence/RUNTIME.json; native build receipts and archive retain official toolchain/dependency identities"
+}
