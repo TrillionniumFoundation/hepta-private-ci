@@ -9,6 +9,7 @@ those supplied gold values, process isolation, wall clocks or all operating I/O.
 import argparse
 from collections import defaultdict
 import hashlib
+import importlib.util
 import json
 import math
 from pathlib import Path
@@ -17,6 +18,12 @@ import random
 
 OPERATIONS = {"current", "history", "semantic", "procedure", "change", "apply"}
 FULL_ARMS = {"parameter_actual", "exact_same_router"}
+_SPEC = importlib.util.spec_from_file_location(
+    "v6_audit_transport", Path(__file__).with_name("audit_transport.py")
+)
+_TRANSPORT = importlib.util.module_from_spec(_SPEC)
+_SPEC.loader.exec_module(_TRANSPORT)
+TRANSPORT_COUNTS = _TRANSPORT.COUNTS
 
 
 def sha256(payload):
@@ -254,6 +261,7 @@ def audit_records(raw_rows, queries, protocol, execution_plan=None):
             type(row["rpc_bytes"]) is int and type(row["hops"]) is int,
             prefix + "noninteger byte/hop count",
         )
+        row["audit_transport"] = _TRANSPORT.check_row(row, prefix, check)
         value_correct = (
             row["expected_value_digest"] is not None
             and row["actual_value_digest"] == row["expected_value_digest"]
@@ -363,6 +371,12 @@ def audit_records(raw_rows, queries, protocol, execution_plan=None):
             "latency_seconds_sum": sum(row["latency_seconds"] for row in case_rows),
             "rpc_bytes_sum": sum(row["rpc_bytes"] for row in case_rows),
             "hops_sum": sum(row["hops"] for row in case_rows),
+            "transport_totals": {
+                name: sum(row["audit_transport"][name] for row in case_rows)
+                for name in TRANSPORT_COUNTS
+            }
+            if all(row["audit_transport"] is not None for row in case_rows)
+            else None,
         }
         report["joint_gate_all_languages"] = report["overall"]["joint_gate"] and all(
             item["joint_gate"] for item in by_language.values()

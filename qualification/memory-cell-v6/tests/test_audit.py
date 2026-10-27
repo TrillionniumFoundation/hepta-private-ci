@@ -71,6 +71,33 @@ def fixture():
 
 
 class AuditTests(unittest.TestCase):
+    def test_transport_and_final_validation_costs_are_conserved(self):
+        rows, queries, protocol = fixture()
+        for row in rows:
+            active = int(row["accepted"])
+            row["rpc_bytes"] = 32 * active
+            row["transport"] = {
+                "rpc_attempts": 2 * active,
+                "read_attempts": active,
+                "validation_attempts": active,
+                "attempted_request_bytes": 10 * active,
+                "received_response_bytes": 22 * active,
+                "node_count": active,
+                "rpc_bytes": 32 * active,
+            }
+            row["routing_batch_amortized_seconds"] = 0.002
+            row["read_plus_amortized_routing_seconds"] = 0.012
+        clean = AUDIT.audit_records(rows, queries, protocol)
+        self.assertTrue(clean["audit_passed"])
+        self.assertEqual(clean["cases"][0]["transport_totals"]["rpc_attempts"], 2)
+        rows[0]["transport"]["validation_attempts"] = 0
+        rows[0]["read_plus_amortized_routing_seconds"] = 0.01
+        altered = AUDIT.audit_records(rows, queries, protocol)
+        self.assertFalse(altered["audit_passed"])
+        self.assertTrue(
+            any("conservation" in failure for failure in altered["failures"])
+        )
+
     def test_complete_paired_evidence_and_real_failure(self):
         rows, queries, protocol = fixture()
         clean = AUDIT.audit_records(rows, queries, protocol)
