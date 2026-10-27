@@ -173,6 +173,7 @@ impl PreparedRootAgentdConfig {
             ._writer_lock
             .try_lock()
             .map_err(|error| root_error(format!("original writer lock is still owned: {error}")))?;
+        self.config.retain_root_session(&inputs.session)?;
         let record = self.config.registry.load_agent(&identity.agent_id)?;
         require_starting(identity, &record)?;
         verify()?;

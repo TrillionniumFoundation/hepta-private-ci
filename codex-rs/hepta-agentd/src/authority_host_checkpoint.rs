@@ -385,3 +385,7 @@ mod tests;
 #[cfg(test)]
 #[path = "authority_host_checkpoint_fresh_tests.rs"]
 mod fresh_tests;
+
+#[cfg(test)]
+#[path = "authority_host_checkpoint_session_custody_tests.rs"]
+mod session_custody_tests;

@@ -42,6 +42,24 @@ impl ProductionAuthorityVerifier for RegisteredWriterVerifier {
 }
 
 impl AgentdConfig {
+    #[cfg(target_os = "linux")]
+    pub(crate) fn retain_root_session(
+        &self,
+        session: &crate::AgentdRootAuthoritySession,
+    ) -> Result<(), crate::AgentdError> {
+        session
+            .retain_registered_writer(
+                &self.identity().agent_id,
+                self.identity().spawn_generation,
+                &self._writer_lock,
+            )
+            .map_err(|error| {
+                crate::AgentdError::GenerationFenced(format!(
+                    "original Root writer File custody differs: {error}"
+                ))
+            })
+    }
+
     pub(crate) fn retain_production_verifier(
         &self,
         inner: Arc<dyn ProductionAuthorityVerifier>,

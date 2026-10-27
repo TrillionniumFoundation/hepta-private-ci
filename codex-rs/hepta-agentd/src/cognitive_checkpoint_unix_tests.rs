@@ -96,7 +96,7 @@ subprocess.Popen(['/bin/sleep', '0.6'], pass_fds=(stream.fileno(),),
     assert!(transport.exchange(&request()).await.is_err());
 }
 
-fn fixture(timeout: Duration) -> (AgentdUnixCognitiveCheckpointTransport, UnixStream) {
+pub(crate) fn fixture(timeout: Duration) -> (AgentdUnixCognitiveCheckpointTransport, UnixStream) {
     let (client, server) = UnixStream::pair().unwrap();
     // Explicit fixture-only UID. The public production constructor pins UID0.
     let uid = unsafe { libc::geteuid() };

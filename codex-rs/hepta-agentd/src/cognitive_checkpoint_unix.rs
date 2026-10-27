@@ -226,4 +226,4 @@ fn unavailable(_: std::io::Error) -> ObjectiveSenderCheckpointError {
 
 #[cfg(test)]
 #[path = "cognitive_checkpoint_unix_tests.rs"]
-mod tests;
+pub(crate) mod tests;

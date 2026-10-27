@@ -116,6 +116,14 @@ impl VerifiedRootWriterProof {
         Ok(Self { proof, authority })
     }
 
+    /// Static signed registration for private File custody only. This grants
+    /// no authority and deliberately performs no fresh I/O: a postload failure
+    /// must still retain the already acquired original File with this Root.
+    pub(crate) fn matches_registered_process(&self, agent: &AgentId, generation: u64) -> bool {
+        &self.proof.claims.registered_agent_id == agent
+            && self.proof.claims.spawn_generation == generation
+    }
+
     pub(crate) fn authority(&self) -> &ProductionAuthorityLease {
         &self.authority
     }
