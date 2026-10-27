@@ -1,0 +1,44 @@
+{
+  "actual_episodes": 640,
+  "distinct_actual_images_recognized": 160,
+  "distinct_media_paths_reopened": 1456,
+  "feedback_histogram_over_all_arms": {
+    "-1": 250,
+    "0": 65,
+    "1": 325
+  },
+  "independent_scorer_and_observer_class": true,
+  "interpretive_limits": [
+    "Zero intervention is not an independently optimized no-feedback policy",
+    "Same50kernel burden is a budget-matching diagnostic, not cheapest history implementation",
+    "Permutation contrast is conditional on the realized donor graph; cross-pair donor dependence remains",
+    "Native domain qualification is not semantic production calibration; FAR gates fail",
+    "Existing learned recognizer is imperfect; no human or cryptographic isolation claim"
+  ],
+  "maximum_utility_discrepancy": 2.220446049250313e-16,
+  "observer_sha256": "cd560d4ec2f45cef6a0f4db9809b902ea68833c8693798f7597135a83a6e3589",
+  "qualification_seal_sha256": "bf962fea1781f9187fabef05d5e7a7fa3b3d30df4bdb86a50fd7f2b1b8a1381b",
+  "rows_sha256": "94c888c4da091f685a9cc9c79f62bb1b894a55977077bcfdca313248ee99cf0a",
+  "same_information_controls": {
+    "history": true,
+    "linear_memory": true
+  },
+  "semantic_calibration": {
+    "after": {
+      "ECE": 0.009018470425795143,
+      "coverage": 0.609375,
+      "error_among_accepted": 0.11538461538461539,
+      "false_acceptance_per_all": 0.0703125,
+      "strict_point_gate_passed": false
+    },
+    "before": {
+      "ECE": 0.022949218750000017,
+      "coverage": 0.1875,
+      "error_among_accepted": 0.125,
+      "false_acceptance_per_all": 0.0234375,
+      "strict_point_gate_passed": false
+    }
+  },
+  "source_pairs_checked_against_official_MNIST": 128,
+  "status": "passed"
+}

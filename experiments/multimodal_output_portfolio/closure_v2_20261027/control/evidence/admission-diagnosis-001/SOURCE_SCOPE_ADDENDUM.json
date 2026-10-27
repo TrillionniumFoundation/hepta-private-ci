@@ -1,0 +1,8 @@
+{
+  "diagnostic_result_sha256": "ea7b55c722beb7e552ebb5539bf80395a8616a185a9409f30299051a6a1da7e2",
+  "calibration002_ID_source": "historical_corpus.train source pairs3000..3255",
+  "head_source_isolation": "Pixel-hash disjoint from outcome-head fit, outcome-head validation and retired calibration001",
+  "whole_generator_source_isolation": false,
+  "scope": "These calibration inputs come from the original generators historical training pool. Exact exposure of every individual pixel is not claimed, but end-to-end unseen-source calibration of the complete generator is not established.",
+  "causal_interpretation": "Distribution or memorization-related differences between historical calibration and new sources remain possible; the three failures alone do not identify their relative causal contribution. No new filter is fitted."
+}

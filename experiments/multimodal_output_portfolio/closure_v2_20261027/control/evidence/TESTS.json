@@ -1,0 +1,30 @@
+{
+  "actual_admission_preflight": {
+    "episodes": 3,
+    "kernels": 150,
+    "offline_calibration_policy_matches_actual_native_execution": true
+  },
+  "all_behavior_checks_precede_final_repository_formatting": true,
+  "boundary_unittest": {
+    "actual_log_sha256": "7c51fefc86b8c84691c71b5771dcb4f7217861af9407664663468ab6e27d4cb4",
+    "passed": true,
+    "tests": 4
+  },
+  "historical_original_preflight": {
+    "episodes": 60,
+    "kernels": 3000
+  },
+  "negative_version_binding": {
+    "live_state_and_durable_bytes_unchanged": true,
+    "stale_versions_rejected": 8
+  },
+  "positive_guarded_execution": {
+    "actions_bytes_predictions_unchanged": true,
+    "episodes": 3,
+    "kernels": 150
+  },
+  "semantic_tail_promotion_denial": {
+    "live_state_and_durable_bytes_unchanged": true,
+    "rejected": true
+  }
+}

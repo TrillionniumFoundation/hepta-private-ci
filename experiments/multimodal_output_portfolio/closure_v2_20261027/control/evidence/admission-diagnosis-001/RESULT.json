@@ -1,0 +1,253 @@
+{
+  "calibrator_sha256": "e55cff31eaad9308642b1df415c11a7f6737f8fcc2f1c5d7032f92e0b48a2122",
+  "failures": [
+    {
+      "actual_future_state_matches": true,
+      "actual_later_neural_correction": true,
+      "actual_media_paths": {
+        "image": "/workspace/scratch/95988d8d3ab1/native_semantic_20261027/admission-qualification-002/episodes/qualification_id-0045/terminal-host-decision/image.png",
+        "text": "/workspace/scratch/95988d8d3ab1/native_semantic_20261027/admission-qualification-002/episodes/qualification_id-0045/terminal-host-decision/caption.txt"
+      },
+      "actual_media_sha256": {
+        "image": "6361e6c2b7b87e99be54ea040d5bde82daafa24843f86ad42fb5f0e170a8625c",
+        "text": "285edc471e5f3a09d9e57816667aed7990b23fca41a2f07ecab0a75261a174f1"
+      },
+      "arrived_scalar": -1,
+      "audit_image_digits": [
+        3,
+        4
+      ],
+      "calibrated_correctness_probability": 0.9929577464788732,
+      "candidate_caption": "left 3 right 9 relation less",
+      "condition": "missing",
+      "crossmodal_disagreement": 0.5,
+      "eligibility_before_q24": [
+        8388608,
+        0,
+        524288,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "episode_sha256": "819004bf23b9881095b10f845974c700e7c89b8babab87fb9ec382083eef94d1",
+      "generation_budget": 2,
+      "image_fact_error": 0.5,
+      "initial_caption": "left 9 right 3 relation greater",
+      "name": "qualification_id-0045",
+      "native_abstain": false,
+      "native_logit": 3.4062696350349726,
+      "native_refused": false,
+      "owner_cold_state_matches": true,
+      "owner_expiry": 7,
+      "public_features": {
+        "caption_matches_inferred_order": true,
+        "declared_both_missing": false,
+        "feedback": -1,
+        "feedback_known": true,
+        "inferred_order_from_arrived_scalar": [
+          3,
+          9
+        ],
+        "input_contains_private_target": false,
+        "minimum_inferred_digit_probability": 0.9813517928123474,
+        "prediction_role": "post-codec, pre-final-commit semantic probability",
+        "public_image_argmax_agrees": true
+      },
+      "raw_head_probability": 0.8268081075607562,
+      "relation_error": 0.0,
+      "source_ids": [
+        "mnist:test:4093:05a408f6bbeccd698ad96722b103dbd095995fada67fd0c80d9c182764e9958b",
+        "mnist:test:7968:4ec7c3e6c3f9e56acfe6acf30e8bff16a37c6831e7a62482c5ba45efff4b3907"
+      ],
+      "text_fact_error": 0.0
+    },
+    {
+      "actual_future_state_matches": true,
+      "actual_later_neural_correction": false,
+      "actual_media_paths": {
+        "image": "/workspace/scratch/95988d8d3ab1/native_semantic_20261027/admission-qualification-002/episodes/qualification_id-0100/terminal-host-decision/image.png",
+        "text": "/workspace/scratch/95988d8d3ab1/native_semantic_20261027/admission-qualification-002/episodes/qualification_id-0100/terminal-host-decision/caption.txt"
+      },
+      "actual_media_sha256": {
+        "image": "073c3f7b467d5676ddce3a43fa732a30d87d0f33c28c9e6346a67fe263da50f1",
+        "text": "a376d56c253b72f3ca91ddd226110513a22c2089f6e4fa3274106f855c85db9a"
+      },
+      "arrived_scalar": 1,
+      "audit_image_digits": [
+        8,
+        4
+      ],
+      "calibrated_correctness_probability": 0.9929577464788732,
+      "candidate_caption": "left 5 right 4 relation greater",
+      "condition": "occlusion",
+      "crossmodal_disagreement": 0.5,
+      "eligibility_before_q24": [
+        0,
+        8388608,
+        524288,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "episode_sha256": "db15470bc37b9a1deb557f354e492573c2fe8d1d3237ccb75aba369f522ae047",
+      "generation_budget": 1,
+      "image_fact_error": 0.5,
+      "initial_caption": "left 5 right 4 relation greater",
+      "name": "qualification_id-0100",
+      "native_abstain": false,
+      "native_logit": -2.5253919184261058,
+      "native_refused": false,
+      "owner_cold_state_matches": true,
+      "owner_expiry": 7,
+      "public_features": {
+        "caption_matches_inferred_order": true,
+        "declared_both_missing": false,
+        "feedback": 1,
+        "feedback_known": true,
+        "inferred_order_from_arrived_scalar": [
+          5,
+          4
+        ],
+        "input_contains_private_target": false,
+        "minimum_inferred_digit_probability": 0.9899815917015076,
+        "prediction_role": "post-codec, pre-final-commit semantic probability",
+        "public_image_argmax_agrees": true
+      },
+      "raw_head_probability": 0.8864439526083728,
+      "relation_error": 0.0,
+      "source_ids": [
+        "mnist:test:4177:8402d74599ac5b8b21e2ed5efc992c165b9abbbc624c83de1799e79e361c0648",
+        "mnist:test:7818:efc7a7a81be883c1f1687d8c340e1a70185f429ee20c4d230b1493dce6c36527"
+      ],
+      "text_fact_error": 0.0
+    },
+    {
+      "actual_future_state_matches": true,
+      "actual_later_neural_correction": false,
+      "actual_media_paths": {
+        "image": "/workspace/scratch/95988d8d3ab1/native_semantic_20261027/admission-qualification-002/episodes/qualification_id-0240/terminal-host-decision/image.png",
+        "text": "/workspace/scratch/95988d8d3ab1/native_semantic_20261027/admission-qualification-002/episodes/qualification_id-0240/terminal-host-decision/caption.txt"
+      },
+      "actual_media_sha256": {
+        "image": "13cce1791ac7f068787159478db77a763026a56d3eb27bd1ed7bce6b751539f6",
+        "text": "2426b5ab0d4dfddf9f439d0ffdbc6e3ca193b6adb213225f46d5ca46261a6881"
+      },
+      "arrived_scalar": 1,
+      "audit_image_digits": [
+        6,
+        8
+      ],
+      "calibrated_correctness_probability": 0.9929577464788732,
+      "candidate_caption": "left 6 right 5 relation greater",
+      "condition": "clean",
+      "crossmodal_disagreement": 0.5,
+      "eligibility_before_q24": [
+        0,
+        8388608,
+        524288,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "episode_sha256": "f9d2fe12acf9f376928a5237a4507b13f66f483d53cdfdfa07e27d232b5c5314",
+      "generation_budget": 2,
+      "image_fact_error": 0.5,
+      "initial_caption": "left 6 right 5 relation greater",
+      "name": "qualification_id-0240",
+      "native_abstain": false,
+      "native_logit": -2.5253919184261058,
+      "native_refused": false,
+      "owner_cold_state_matches": true,
+      "owner_expiry": 7,
+      "public_features": {
+        "caption_matches_inferred_order": true,
+        "declared_both_missing": false,
+        "feedback": 1,
+        "feedback_known": true,
+        "inferred_order_from_arrived_scalar": [
+          6,
+          5
+        ],
+        "input_contains_private_target": false,
+        "minimum_inferred_digit_probability": 0.9643210768699646,
+        "prediction_role": "post-codec, pre-final-commit semantic probability",
+        "public_image_argmax_agrees": true
+      },
+      "raw_head_probability": 0.7135596546618401,
+      "relation_error": 0.0,
+      "source_ids": [
+        "mnist:test:316:88e9ac7c55a7c0d783897775742361ebe31fdd16190b0021bed64a2d127f59bc",
+        "mnist:test:2291:665bbe827256490d7737b35797deedca378d493a31b210a17ec2b9d1788d235b"
+      ],
+      "text_fact_error": 0.0
+    }
+  ],
+  "interval_scope": "Binomial source-pair event-rate intervals under the declared exchangeability assumption; no writer-population or unknown-distribution guarantee",
+  "mechanism": [
+    "All three selected captions and relations are correct; one late swap follows a negative scalar, two initial candidates are retained after positive scalars.",
+    "Original owner proposal, expiry, budget and cold state are consistent with forecasts; these are semantic image-observation failures rather than future-execution mismatches.",
+    "The public reward recognizer is confident in the intended digits, but the held-out audit recognizer disagrees on one generated image half in each case. The arrived scalar certifies caption order, not the rendered image.",
+    "Seventy calibration successes produce a Jeffreys mean .99296, but the one-sided95% lower correctness bound is only .95811, below the gamma2 commit threshold .98420. The deployed rule used the mean, not that conservative bound.",
+    "ECE averages absolute bin errors across all candidates; it neither bounds the selected conditional failure tail nor weights errors by exponential loss. An incorrect commitment has exp(6) times the exponential contribution of a correct commitment here.",
+    "The heldout realized tail and frozen additional semantic-error gate failed. These finite-sample outcomes do not prove the population expected value, and the failure examples are not used to create a new filter or repeat qualification."
+  ],
+  "new_filter_model_or_threshold_fitted": false,
+  "next_research_boundary": "A better generator/observer and a separately trained, conservative loss-tail model require a new predeclared design and independently reserved data. This candidate is not promoted.",
+  "promotion_recommended": false,
+  "qualification_cohort_expanded_or_repeated": false,
+  "qualification_rows_sha256": "d1d6c1b0f91e71ff25643995dacfdd6a33d810d37f38f3689d6af0c2ed1f98d8",
+  "read_only_postqualification_diagnostic": true,
+  "schema": "hepta.ndu.semantic-tail-readonly-diagnostic.v1",
+  "score_scope": "Strict task semantics according to the frozen held-out audit image recognizer plus exact caption/relation truth; this is not a human image-meaning audit",
+  "selected_frozen_qualification": {
+    "binomial_two_sided_95_interval": [
+      0.9262786948642363,
+      0.9946345316539579
+    ],
+    "empirical_success_rate": 0.9741379310344828,
+    "incorrect_per_ID_case": 0.007075471698113208,
+    "incorrect_per_ID_one_sided_95_upper": 0.01818464090625043,
+    "n": 116,
+    "successes": 113
+  },
+  "selected_historical_calibration": {
+    "binomial_one_sided_95_lower": 0.9581066559331114,
+    "binomial_two_sided_95_interval": [
+      0.9486662028489763,
+      1.0
+    ],
+    "deployed_jeffreys_mean": 0.9929577464788732,
+    "deployed_probability_was_lower_confidence_bound": false,
+    "empirical_success_rate": 1.0,
+    "n": 70,
+    "successes": 70
+  },
+  "terminal_entropic_calculation": {
+    "abstain_utility": 0.0,
+    "actual_qualification_selected_conditional_moment": 1.5500441471074493,
+    "correct_commit_utility": 0.998,
+    "correct_moment": 0.13587770849684613,
+    "deployed_mean_implies_conditional_moment": 0.5209558936584183,
+    "gamma": 2.0,
+    "historical_one_sided_95_lower_implies_conditional_moment": 2.4266519408118525,
+    "minimum_correctness_probability_for_commit": 0.98419705793651,
+    "reported_mean_actual_total_moment": 1.1100875678657496,
+    "reported_mean_predicted_total_moment": 0.9885755720946928,
+    "same_sunk_cost_terminal_abstain_counterfactual_moment": 1.0449830690677202,
+    "wrong_commit_utility": -2.002,
+    "wrong_moment": 54.81698000144017,
+    "wrong_to_correct_moment_ratio": 403.42879349273494
+  }
+}

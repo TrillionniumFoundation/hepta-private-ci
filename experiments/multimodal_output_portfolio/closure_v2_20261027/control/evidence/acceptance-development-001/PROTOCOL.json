@@ -1,0 +1,28 @@
+{
+  "feature_visibility": "Initial actual caption, arrived scalar, actual candidate pixels/text, public missingness",
+  "id_minimum_coverage": 0.25,
+  "legacy_ece_maximum": 0.03,
+  "legacy_ood_false_acceptance_maximum": 0.004999,
+  "legacy_ood_one_sided_95_upper_required": true,
+  "new_incorrect_semantic_commit_rate_maximum": 0.004999,
+  "new_test_outcomes_used": false,
+  "phase": "Historical fitting/validation only; no new qualification source allocated",
+  "predictor_timing": "After candidate codec readback, before final commit and private candidate grade",
+  "private_truth_role": "Training/validation supervision only",
+  "remaining_if_feasible": "Separate source-disjoint probability calibration and then once-only fresh qualification; original failed result remains unchanged",
+  "schema": "hepta.ndu.selective-semantic-acceptance-development.v1",
+  "selection": "Highest validation ID coverage subject to zero incorrect semantic commits, coverage>=.25; ties lower threshold",
+  "semantic_qualification_is_native_production_calibration": false,
+  "threshold_candidates": [
+    0.5,
+    0.7,
+    0.8,
+    0.9,
+    0.95,
+    0.97,
+    0.98,
+    0.99,
+    0.995,
+    0.999
+  ]
+}

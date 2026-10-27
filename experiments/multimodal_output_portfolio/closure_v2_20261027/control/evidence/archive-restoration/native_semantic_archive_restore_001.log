@@ -1,0 +1,12 @@
+actual disk member restoration 5000/49898
+actual disk member restoration 10000/49898
+actual disk member restoration 15000/49898
+actual disk member restoration 20000/49898
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/control/restore_archive.py", line 72, in <module>
+    run(args.archive, args.index, args.output)
+  File "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/control/restore_archive.py", line 45, in run
+    raise ValueError("Actual filesystem restoration differs: " + member.name)
+ValueError: Actual filesystem restoration differs: native_semantic_20261027/admission-qualification-002/episodes/qualification_ood-0316/initial-delivery/caption.txt

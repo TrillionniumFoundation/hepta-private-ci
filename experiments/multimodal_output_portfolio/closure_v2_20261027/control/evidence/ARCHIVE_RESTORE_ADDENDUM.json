@@ -1,0 +1,45 @@
+{
+  "files": [
+    {
+      "bytes": 4575,
+      "path": "archive-restoration/001/RESTORE_FAILURE.json",
+      "sha256": "61e30eca22be26fa44ac5b421f8b63bec6d7ea515052b9d13a0b5bfc0a5896b5"
+    },
+    {
+      "bytes": 3562,
+      "path": "archive-restoration/001/executed-source.py",
+      "sha256": "3a9fb24f9d24585844d0ac43cc02775e8c647c15e83f2a1b44ca65033f7c27cd"
+    },
+    {
+      "bytes": 896,
+      "path": "archive-restoration/001/one-restored-member.bin",
+      "sha256": "babf12120bbfebe0ce734af22458a8cea1c2a8b35746b69f1192bc0cd41c7ebc"
+    },
+    {
+      "bytes": 881,
+      "path": "archive-restoration/002/RESTORE_RECEIPT.json",
+      "sha256": "3a0d078e97c84eb4cf2255d3ec0ba82fd537b7c41f58ffcb19d7bb297c94807d"
+    },
+    {
+      "bytes": 4144,
+      "path": "archive-restoration/002/executed-source.py",
+      "sha256": "777b2cb444f9d69189d7e22180345e13c79a17eb7d79fa84ae4e8b424a9655d6"
+    },
+    {
+      "bytes": 930,
+      "path": "archive-restoration/native_semantic_archive_restore_001.log",
+      "sha256": "a074753efe57e2c55f0bf68a0a6755d137c3071195a6f7978c7656550a5a43a2"
+    },
+    {
+      "bytes": 1237,
+      "path": "archive-restoration/native_semantic_archive_restore_002.log",
+      "sha256": "a7fce51ee261f083a2dc048f5a5c6241ebcc07232c77f647635ea2a461166c64"
+    }
+  ],
+  "main_archive_unchanged": true,
+  "reason_first_attempt_failed": "Reused temporary path reopened as 896-byte witness data while the registered archive member is a 28-byte caption; exact cause not established. Original archive and extracted member hashes remain identical.",
+  "retry_change": "Unique per-member temporary pathname only; each payload written, fsynced, closed, reopened and hashed before deletion.",
+  "scope": "Actual filesystem restoration addendum, no scientific outputs changed",
+  "successful_attempt": "002",
+  "unsuccessful_attempt_retained": "001"
+}
