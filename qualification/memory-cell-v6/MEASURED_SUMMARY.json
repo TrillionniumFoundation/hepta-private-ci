@@ -28,7 +28,8 @@
     "same language templates and deterministic head across repeated seeds/domains",
     "trained-address cell calibration is only a mechanism check",
     "post-search budget admission and projected net benefit; not enforced hardware compute limits",
-    "single-host loopback and explicit replica update; production owner adapters remain unwired"
+    "single-host loopback and explicit replica update; production owner adapters remain unwired",
+    "strong fixed structure baseline intentionally waives model-selection search cost; adaptive is charged all candidate search costs"
   ],
   "no_replay_old_raw": {
     "correct": 111,
@@ -158,6 +159,15 @@
         "split": 5
       }
     }
+  },
+  "structure_baseline_accounting": {
+    "adaptive_all_search_costs_charged": true,
+    "fixed_charged_costs": [
+      "selected model fit",
+      "selected model evaluation",
+      "selected model storage"
+    ],
+    "fixed_model_selection_cost_waived_for_optimistic_baseline": true
   },
   "structure_supplement": {
     "additional_read_work_proxy": 199394,

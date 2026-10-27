@@ -279,7 +279,7 @@ python "$V6_ROOT/run_extensions.py" \
 
 该入口同样要求执行源文件匹配已提交版本，依次运行协议声明的每个 seed；失败会写入对应 `FAILURE.txt` 并保留进度。总账为 `extensions/EXECUTION.json`，各 seed 下分别包含 `learning`、`transfer`、`lifecycle` 目录。
 
-learning 记录实际训练、新写入、修订、撤销、回放与干净重建；no-replay 对照固定输出 catalog，原始参数干扰与支持域拒绝分开计算。结构候选包括固定 K=1/2/4、split、merge、keep 和可重新加载的休眠状态；旧地址 retention、selection 与最终 test 分离。自然成本和同参数字节上限都要检查，完整搜索成本及预声明调用量的回本判断不能由单个候选的读取成绩替代。
+learning 记录实际训练、新写入、修订、撤销、回放与干净重建；no-replay 对照固定输出 catalog，原始参数干扰与支持域拒绝分开计算。结构训练候选包括 refit（K=1）、fixed-2/4、split、merge；另支持来源 frontier 不变时零训练 keep，以及可重新加载的休眠状态。旧地址 retention、selection 与最终 test 分离。自然成本和同参数字节上限都要检查，完整搜索成本及预声明调用量的回本判断不能由单个候选的读取成绩替代。强固定基线有意豁免其模型选择搜索费用，属于乐观对照，详见 RESULTS。
 
 多节点实验使用本机 HTTP 进程、独立文件、真实进程退出／重启、显式来源回放与完整 bundle 重新分发。当前自动分布式撤销、跨主机部署与一致性协议仍需生产实现；尚未接到新版本的独立副本可能继续提供旧的自洽视图，实验会把这一阶段单独记录。
 
