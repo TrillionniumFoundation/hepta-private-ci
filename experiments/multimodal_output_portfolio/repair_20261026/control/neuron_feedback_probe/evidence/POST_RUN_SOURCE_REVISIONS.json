@@ -1,0 +1,28 @@
+{
+  "created_utc_ns": 1793041561964603005,
+  "evaluation_rows_reused_to_tune_parameters": false,
+  "protocol_training_policy_and_score_unchanged": true,
+  "reason_by_file": {
+    "audit.py": "Convert filesystem paths to strings for Python wave reader; restore verified archived binary execute bit before replay.",
+    "native.rs": "Formatting only: imports_granularity=Item after frozen native build; exact original compiled source archived.",
+    "run.py": "copy2 retains executable permission; automatic exact-source snapshot. Manually frozen identical executed sources existed for this run."
+  },
+  "revisions": [
+    {
+      "delivery_source_sha256": "d6ad17acba193f3c54cab1b285f6a0b7f106fce3e3ac0bd8d5844316419de713",
+      "executed_sha256": "e6d4489fa405bf3fd76f37338f38bc2aabd461a70b50c52c89075958502bab8b",
+      "path": "experiments/multimodal_output_portfolio/repair_20261026/control/neuron_feedback_probe/audit.py"
+    },
+    {
+      "delivery_source_sha256": "c910ee49c67147e3ee751e729e68ec0f6c590859d053c47d2c54772511098259",
+      "executed_sha256": "c9652038438bb5078ef1ccf254daf7396c146a45f2e02634a77ad5c0b281da1e",
+      "path": "experiments/multimodal_output_portfolio/repair_20261026/control/neuron_feedback_probe/native.rs"
+    },
+    {
+      "delivery_source_sha256": "e203ee5c49b8ebc0cbe8b3bf9e284c0e04ec9b933dd718f2d3089a4970aaf9d9",
+      "executed_sha256": "e453a7024e50d3e168be9a6c251b4b5a1f059b7d4e440f7aba476a5711cfa874",
+      "path": "experiments/multimodal_output_portfolio/repair_20261026/control/neuron_feedback_probe/run.py"
+    }
+  ],
+  "run_count": 1
+}
