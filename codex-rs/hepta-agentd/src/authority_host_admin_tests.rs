@@ -71,7 +71,7 @@ fn live_route_rejects_each_changed_root_lifetime_and_nonce() -> io::Result<()> {
 fn strict_admin_schema_rejects_duplicate_unknown_and_oversized_inputs()
 -> Result<(), Box<dyn std::error::Error>> {
     let (_, capability) = capability()?;
-    let good = serde_json::to_string(&request(capability.instance.clone()))?;
+    let good = serde_json::to_string(&request(capability.instance))?;
     assert!(decode(good.as_bytes()).is_ok());
     for invalid in [
         good.replace(
