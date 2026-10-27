@@ -357,8 +357,8 @@ async fn real_selected_initial_serves_ordinary_context_then_refuses_revocation()
         SessionCheck::Withdraw(&mut fixture),
     )
     .await?;
-    assert_eq!(report["ordinary_context_reads"], 3);
-    assert_eq!(report["withdrawal_refused"], true);
+    std::assert_eq!(report["ordinary_context_reads"], 3);
+    std::assert_eq!(report["withdrawal_refused"], true);
     fs::write(
         input.output.join("ordinary-initial-context-result.json"),
         serde_json::to_vec_pretty(&report)?,
