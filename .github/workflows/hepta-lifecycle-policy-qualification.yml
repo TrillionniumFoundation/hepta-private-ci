@@ -58,7 +58,9 @@ jobs:
           test "$(git rev-parse HEAD^{tree})" = "$SOURCE_TREE"
           test -z "$(git status --porcelain)"
           export HEPTA_QUALIFICATION_DIR="$RUNNER_TEMP/hepta-lifecycle-policy-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
-          export HEPTA_CHECKPOINT_TEST_ROOT="$RUNNER_TEMP/hepta-checkpoint-fixtures-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          # RootAuthorityDirectory verifies every ancestor, so runner-owned
+          # RUNNER_TEMP cannot host this original Root authority fixture.
+          export HEPTA_CHECKPOINT_TEST_ROOT="/var/lib/hepta-checkpoint-fixtures-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$HEPTA_QUALIFICATION_DIR"
           {
             printf 'TESTED_SHA=%s\n' "$SOURCE_SHA"
@@ -158,6 +160,24 @@ jobs:
           PY
           # Only fixture data, never a service root or an installation prefix.
           sudo -n install -d -o root -g root -m 0700 -- "$HEPTA_CHECKPOINT_TEST_ROOT"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import stat
+
+          root = Path(os.environ["HEPTA_CHECKPOINT_TEST_ROOT"])
+          records = []
+          for path in (*reversed(root.parents), root):
+              entry = path.lstat()
+              records.append({"path": str(path), "uid": entry.st_uid,
+                              "gid": entry.st_gid, "mode": oct(entry.st_mode),
+                              "device": entry.st_dev, "inode": entry.st_ino})
+              if not stat.S_ISDIR(entry.st_mode) or entry.st_uid != 0 or entry.st_mode & 0o022:
+                  raise SystemExit("original Root fixture ancestor custody refused: " + str(path))
+          receipt = Path(os.environ["HEPTA_QUALIFICATION_DIR"]) / "fixture-ancestors.json"
+          receipt.write_text(json.dumps(records, indent=2) + "\n")
+          PY
 
       - name: Format the original changed sources without accepting rewritten bytes
         shell: bash
