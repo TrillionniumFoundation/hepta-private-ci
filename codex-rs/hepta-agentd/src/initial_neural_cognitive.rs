@@ -100,6 +100,14 @@ impl InitialNeuralCognitiveModelV2 {
         {
             return Err("initial cognitive observation differs from its exact request".to_owned());
         }
+        execution.match_settled_read_v1(crate::cognitive_execution::ExpectedNeuralReadV1 {
+            owner: owner_id,
+            body_generation,
+            parameter: request.pin.payload_digest,
+            model_generation: request.pin.generation.get(),
+            response: observed.execution_receipt_digest,
+            source: crate::CognitiveNeuralSourceV1::SelectedInitial,
+        })?;
         Ok(observed.scores_q32)
     }
 }

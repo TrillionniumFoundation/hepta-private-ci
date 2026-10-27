@@ -5,6 +5,7 @@
 mod authbus;
 mod automation_chain_observation;
 mod capabilities;
+mod cognitive_execution;
 mod evidence;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
@@ -25,6 +26,10 @@ pub use capabilities::AgentdCapability;
 pub use capabilities::AgentdCapabilitySet;
 pub use capabilities::NegotiatedAgentdCapabilities;
 pub use capabilities::negotiate_capabilities;
+pub use cognitive_execution::COGNITIVE_CONTEXT_EXECUTION_CAPABILITY_V1;
+pub use cognitive_execution::CognitiveContextExecutionV1;
+pub use cognitive_execution::CognitiveNeuralExecutionV1;
+pub use cognitive_execution::CognitiveNeuralSourceV1;
 pub use evidence::KernelEvidenceAppendIngress;
 pub use evidence::KernelEvidenceCandidateV1;
 pub use evidence::KernelEvidenceQueryV1;
@@ -603,6 +608,10 @@ pub enum AgentdMethod {
         query: String,
         limit: u16,
     },
+    CognitiveContextWithExecutionV1 {
+        query: String,
+        limit: u16,
+    },
     CognitiveContextRevalidate {
         snapshot_digest: String,
         read_digest: String,
@@ -800,6 +809,7 @@ pub enum AgentdPayload {
         conflict_digest: String,
     },
     CognitiveContext(CognitiveContextSnapshot),
+    CognitiveContextWithExecutionV1(CognitiveContextExecutionV1),
     CognitiveContextRevalidated(CognitiveContextRevalidation),
     AuthBusTextStatus(AuthBusTextStatus),
     KernelEvidenceResult(KernelEvidenceResult),

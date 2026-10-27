@@ -1,7 +1,10 @@
 //! Same-owner settlement joins before an initial or evaluated read returns.
-//! This private check reads the existing journal; it grants no new authority,
-//! context binding, installation, CURRENT or terminal-resource qualification.
+//! This private check reads the existing journal. Its historical observation
+//! grants no installation, CURRENT, FinalUse or terminal-resource qualification.
 use super::*;
+use codex_hepta_agentd::CognitiveNeuralExecutionV1;
+use codex_hepta_agentd::CognitiveNeuralSourceV1;
+use codex_hepta_contracts::Sha256Digest;
 
 // Borrowed original-owner inputs only. This is not a selection, receipt or
 // conversion between initial and evaluated admission.
@@ -20,8 +23,8 @@ pub(super) fn verify(
     receipt: Digest32,
     load: &SmolLmMeasuredLoadV1,
     forward: Option<&SmolLmMeasuredForwardV1>,
-) -> Result<(), String> {
-    let (identity, query, load_domain): (_, _, &[u8]) = match source {
+) -> Result<CognitiveNeuralExecutionV1, String> {
+    let (identity, query, load_domain, source): (_, _, &[u8], _) = match source {
         ReadSource::Evaluated(request) => {
             if request.owner_id != context.owner_id
                 || request.body_generation != context.body_generation
@@ -33,6 +36,7 @@ pub(super) fn verify(
                 SmolLmRuntimeIdentityV1::from(&request.pin),
                 request.query.as_str(),
                 b"hepta.smollm-load.v1\0",
+                CognitiveNeuralSourceV1::EvaluatedChild,
             )
         }
         ReadSource::SelectedInitial { identity, query } => {
@@ -43,6 +47,7 @@ pub(super) fn verify(
                 identity.clone(),
                 query,
                 b"hepta.smollm.selected-initial-runtime-load.v1\0",
+                CognitiveNeuralSourceV1::SelectedInitial,
             )
         }
     };
@@ -91,7 +96,33 @@ pub(super) fn verify(
         payload,
         receipt,
         1,
-    )
+    )?;
+    let wire = |digest: Digest32| Sha256Digest::parse(digest.to_string());
+    let observed = CognitiveNeuralExecutionV1 {
+        source,
+        owner_id: context.owner_id.clone(),
+        body_generation: context.body_generation,
+        model_generation: load.generation(),
+        parameter_file_digest: wire(load.parameter_file_digest())?,
+        adapter_digest: wire(load.adapter_digest())?,
+        backbone_digest: wire(load.backbone_digest())?,
+        contract_digest: wire(load.contract_digest())?,
+        ready_digest: wire(load.ready_digest())?,
+        load_request_digest: Sha256Digest::for_bytes(load_ids.0.as_bytes()),
+        load_reservation_digest: Sha256Digest::for_bytes(load_ids.1.as_bytes()),
+        load_output_digest: wire(load_output)?,
+        forward_request_digest: Sha256Digest::for_bytes(forward.control_ids().0.as_bytes()),
+        forward_reservation_digest: Sha256Digest::for_bytes(forward.control_ids().1.as_bytes()),
+        forward_payload_digest: wire(payload)?,
+        input_digest: wire(forward.input_digest())?,
+        response_digest: wire(forward.response_digest())?,
+        logits_digest: wire(forward.logits_digest())?,
+        execution_ns: forward.execution_ns(),
+        input_tokens: u64::try_from(forward.input_tokens()).map_err(|error| error.to_string())?,
+        observed_rss_bytes: forward.observed_rss_bytes(),
+    };
+    observed.validate()?;
+    Ok(observed)
 }
 
 pub(super) fn verify_record(

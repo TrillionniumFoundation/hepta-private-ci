@@ -6,6 +6,7 @@ on:
       - .github/workflows/hepta-public-initial-v2.yml
       - codex-rs/.config/nextest.toml
       - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-agent-protocol/**
       - codex-rs/hepta-infer-worker-host/**
       - codex-rs/hepta-learning-artifacts/**
       - scripts/hepta_smollm_*.py
@@ -104,13 +105,13 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/required-cli-build.json" --timeout-seconds 3600 --minimum-tests 0 -- cargo build --manifest-path codex-rs/Cargo.toml --locked -p codex-cli --bin codex
           sha256sum "$CARGO_TARGET_DIR/debug/codex" > "$RUNNER_TEMP/hepta-public-initial-v2/codex-binary.sha256"
           printf 'CARGO_BIN_EXE_codex=%s/debug/codex\n' "$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
-      - name: Execute the complete three changed Rust packages
+      - name: Execute the complete four changed Rust packages
         id: scoped_rust
         continue-on-error: true
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/scoped-rust.json" --timeout-seconds 3600 --minimum-tests 1 -- just test --locked -p codex-hepta-learning-artifacts -p codex-hepta-agentd -p codex-hepta-infer-worker-host --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/scoped-rust.json" --timeout-seconds 3600 --minimum-tests 1 -- just test --locked -p codex-hepta-agent-protocol -p codex-hepta-learning-artifacts -p codex-hepta-agentd -p codex-hepta-infer-worker-host --no-capture
       - name: Record whether the actual model test target was built
         id: model_target
         run: |
@@ -207,7 +208,7 @@ jobs:
         id: lint
         run: |
           set -euo pipefail
-          just fix --locked -p codex-hepta-learning-artifacts -p codex-hepta-agentd -p codex-hepta-infer-worker-host
+          just fix --locked -p codex-hepta-agent-protocol -p codex-hepta-learning-artifacts -p codex-hepta-agentd -p codex-hepta-infer-worker-host
           just fmt
           git diff --exit-code
       - name: Enforce every original qualification and observation outcome

@@ -69,6 +69,7 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
                 )
             })
             .and_then(std::convert::identity)
+            .and_then(|observed| execution.observe_settled_read_v1(observed))
             .and_then(|()| execution.check());
         if let Err(error) = verified {
             self.admission_closed.store(true, Ordering::SeqCst);
@@ -136,6 +137,7 @@ impl SmolLmNeuralReadPortV1 {
                 )
             })
             .and_then(std::convert::identity)
+            .and_then(|observed| execution.observe_settled_read_v1(observed))
             .and_then(|()| execution.check());
         if let Err(error) = verified {
             self.admission_closed.store(true, Ordering::SeqCst);

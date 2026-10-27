@@ -5,6 +5,7 @@ use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::CognitiveContextItem;
 use codex_hepta_agentd::cognitive_action_id;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::CognitiveStore;
@@ -236,18 +237,39 @@ async fn session(
         let mut forwards = BTreeSet::new();
         let mut observations = Vec::new();
         for index in 0..reads {
-            let response = client.cognitive_context("lemon".to_owned(), /*limit*/ 2).await?;
+            let context = client.cognitive_context_with_execution_v1("lemon".to_owned(), /*limit*/ 2).await?;
+            let response = &context.snapshot;
+            let execution = context.neural.as_ref().ok_or("ordinary neural execution envelope is absent")?;
             if response.items.len() != 2 { return Err("ordinary cognitive response lost seeded actions".into()); }
+            let revalidated = client.revalidate_cognitive_context(response).await?;
+            if revalidated.read_digest != response.read_digest || revalidated.verified_item_count != 2 {
+                return Err("execution envelope changed the original context revalidation".into());
+            }
             let observed = port.with_measurements(|load, forward| {
                 let forward = forward.ok_or("ordinary context did not perform a real forward")?;
                 if load.parameter_file_digest() != parameter || forward.ready_digest() != load.ready_digest()
                     || !forwards.insert(forward.control_ids().0.to_owned()) {
                     return Err("ordinary context differs from actual load or repeats a forward".to_owned());
                 }
+                let ids = load.control_load_ids().ok_or("original load IDs absent")?;
+                if execution.source != codex_hepta_agentd::CognitiveNeuralSourceV1::SelectedInitial
+                    || execution.owner_id != identity.agent_id || execution.body_generation != identity.spawn_generation
+                    || execution.parameter_file_digest.as_str() != load.parameter_file_digest().to_string()
+                    || execution.ready_digest.as_str() != load.ready_digest().to_string()
+                    || execution.load_request_digest != Sha256Digest::for_bytes(ids.0.as_bytes())
+                    || execution.load_reservation_digest != Sha256Digest::for_bytes(ids.1.as_bytes())
+                    || execution.forward_request_digest != Sha256Digest::for_bytes(forward.control_ids().0.as_bytes())
+                    || execution.forward_reservation_digest != Sha256Digest::for_bytes(forward.control_ids().1.as_bytes())
+                    || execution.response_digest.as_str() != forward.response_digest().to_string()
+                    || execution.input_digest.as_str() != forward.input_digest().to_string()
+                    || execution.logits_digest.as_str() != forward.logits_digest().to_string()
+                    || execution.execution_ns != forward.execution_ns() || execution.observed_rss_bytes != forward.observed_rss_bytes() {
+                    return Err("ordinary wire provenance differs from the actual original model execution".to_owned());
+                }
                 Ok(serde_json::json!({"read":index,"read_digest":response.read_digest,
                     "actual_parameter":load.parameter_file_digest().to_string(),"actual_ready":load.ready_digest().to_string(),
                     "forward_control":forward.control_ids(),"forward_response":forward.response_digest().to_string(),
-                    "actual_logits":forward.logits_digest().to_string()}))
+                    "actual_logits":forward.logits_digest().to_string(), "neural_execution_v1":execution}))
             })??;
             observations.push(observed);
         }
@@ -255,7 +277,7 @@ async fn session(
             SessionCheck::Ordinary => false,
             SessionCheck::Withdraw(fixture) => {
                 fixture.withdraw()?;
-                if client.cognitive_context("lemon".to_owned(), /*limit*/ 2).await.is_ok() {
+                if client.cognitive_context_with_execution_v1("lemon".to_owned(), /*limit*/ 2).await.is_ok() {
                     return Err("withdrawn initial selection still served ordinary context".into());
                 }
                 true
