@@ -1,0 +1,281 @@
+{
+  "schema": "hepta.starlark.final-readonly-peer.v1",
+  "recorded_utc": "2026-10-27T12:17:32.967313+00:00",
+  "mode": "Read-only source, artifact and existing result inspection; no implementation execution, build, test or formatting by reviewer.",
+  "owner_packets": {
+    "pipeline-v2/FINAL_BINDING.json": {
+      "bytes": 2897,
+      "sha256": "75c3284ede472ee953735cbebc7b4fb34209505ce5fd0ffc3d2928a0fce327cd"
+    },
+    "pipeline-v2/post-format/SOURCE_SNAPSHOT.json": {
+      "bytes": 3211,
+      "sha256": "d63c7235fd6f999d67e87dad8f1e14943f8f8327a6f8adb88db6f3ee131e57f2"
+    },
+    "pipeline-v2/executed/RESULT.json": {
+      "bytes": 729,
+      "sha256": "58bc954b7a4d3d193adac130a7a640f0e682229175da96470d26087600729fc6"
+    },
+    "pipeline-v2/format/FORMAT_ONLY.json": {
+      "bytes": 4858,
+      "sha256": "46b2ac0020b56ca4cf6dc60895a9da6446b2594e6fe608a01910cfb15e6256f3"
+    },
+    "pipeline-v2/assembly-final/RESULT.json": {
+      "bytes": 37360,
+      "sha256": "d167472b30a19925c9bca67381a309412da5d9e610409ec8da7e4010fe7162b0"
+    },
+    "pipeline-v2/negative-pre-fix/RESULT.json": {
+      "bytes": 628,
+      "sha256": "27907fca00bfab84c3a797487815fd2f151382a0b1d7a631854ef59af68060cb"
+    },
+    "qualification-pagable-001/RESULT.json": {
+      "bytes": 12724,
+      "sha256": "9c948f3e6660fb079c621c9e7651d198a3ed93c66e97274f76fb57a9872ca57d"
+    },
+    "qualification-001/RESULT.json": {
+      "bytes": 21066,
+      "sha256": "b38ed5144f2499aba1a0c4b036f9e2b265321c77019648239643331c5d08e9d2"
+    }
+  },
+  "source_snapshot": {
+    ".github/workflows/ndu-port-candidate.yml": {
+      "bytes": 18704,
+      "sha256": "f3a8fcbbdcaa5373ca7a084bcf0d3dcd394ac6ca6eb99d7a176eb041b83fd020"
+    },
+    "scripts/ndu_port_candidate_common.py": {
+      "bytes": 23594,
+      "sha256": "c260cf29b2681bc99077730bc80b744ff53a28f4d402dbe379a801a20af881dd"
+    },
+    "scripts/ndu_port_candidate.py": {
+      "bytes": 14287,
+      "sha256": "e5413a7413bfbdee4087656620f77d2ff018b2a31a64d9123754202a01a04340"
+    },
+    "scripts/ndu_port_matrix_fixture.py": {
+      "bytes": 16690,
+      "sha256": "21862146157207b82bd9d36777d6afca3afa6c5b167ff84e6aeb21698ee2f5ce"
+    },
+    "scripts/ndu_port_aws_upstream.py": {
+      "bytes": 8904,
+      "sha256": "4c204c6f4d26f314527c0b9ff841d1c276b34e1e32996f78fbfd313f623842ff"
+    },
+    "scripts/test_ndu_port_candidate.py": {
+      "bytes": 19499,
+      "sha256": "cdbfc7e6fe695f3d403a06a5832c56013f4c62d234bcbe13174d4a1d4c623783"
+    },
+    "scripts/test_ndu_port_matrix_fixture.py": {
+      "bytes": 8617,
+      "sha256": "50b138ded403dfbcd24ca60e3d0476e172eed14ab8149959c493c17c58c523ec"
+    },
+    "scripts/test_ndu_port_aws_upstream.py": {
+      "bytes": 3693,
+      "sha256": "16abf09373af6974b1e50e53a126087acbb538bb99962fbd97a772b2c9b7d3d8"
+    },
+    "justfile": {
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    "scripts/just-shell.py": {
+      "bytes": 2030,
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    "scripts/run-nextest.py": {
+      "bytes": 10206,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    "codex-rs/.config/nextest.toml": {
+      "bytes": 5044,
+      "sha256": "78b998d1fcb16dfef6b243a4b18748c1b28ce2d5a28d57f1f477adf0546e5ac6"
+    },
+    "tools/buildifier": {
+      "bytes": 2172,
+      "sha256": "818bfc01e21fceb0d83ddaf4614531418ea763e25499f7f9fd03c7a853948fe6"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.json": {
+      "bytes": 221834,
+      "sha256": "4efd3f67e272cd86f93d2a221c6584248118767ec5d2fdb88685885cffde6aae"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/combined-source.patch": {
+      "bytes": 68011,
+      "sha256": "53905176719cc3d55fa5aeb3c233afbb20d722bf4e1df80929a90d1c0f93ff12"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-fixture-tests-v2.patch": {
+      "bytes": 10732,
+      "sha256": "e2dfb517cd07278eef6b0fced8c7e61db3b0e6fd3ffde61da717301116721027"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v2.json": {
+      "bytes": 336470,
+      "sha256": "1122a85d579ff781fa0941eaa6233aeb72ea881b80a948fd1b24305b59890295"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/combined-source-v2.patch": {
+      "bytes": 68419,
+      "sha256": "123fbb21bbb9ddb6f88bfd1b7e17144317b7b36f887852ec9d863090f734ad22"
+    }
+  },
+  "format_equivalence": {
+    "scripts/ndu_port_candidate_common.py": true,
+    "scripts/ndu_port_candidate.py": true,
+    "scripts/test_ndu_port_candidate.py": true,
+    ".github/workflows/ndu-port-candidate.yml": true,
+    "vendor/BUILD.bazel": true
+  },
+  "vendors": {
+    "codex-rs/third_party/i18n-config-0.4.8": {
+      "files": 14,
+      "bytes": 35877,
+      "all_paths_and_bytes_match_recipe": true
+    },
+    "codex-rs/third_party/serde-saphyr-2.0.0": {
+      "files": 615,
+      "bytes": 3447196,
+      "all_paths_and_bytes_match_recipe": true
+    },
+    "codex-rs/third_party/matrix-sdk-0.19.1": {
+      "files": 212,
+      "bytes": 5715415,
+      "all_paths_and_bytes_match_recipe": true
+    },
+    "codex-rs/third_party/matrix-sdk-sqlite-0.19.1": {
+      "files": 74,
+      "bytes": 571160,
+      "all_paths_and_bytes_match_recipe": true
+    },
+    "codex-rs/third_party/aws-config-1.8.12": {
+      "files": 311,
+      "bytes": 897829,
+      "all_paths_and_bytes_match_recipe": true
+    },
+    "codex-rs/third_party/keyring-3.6.3": {
+      "files": 27,
+      "bytes": 286618,
+      "all_paths_and_bytes_match_recipe": true
+    },
+    "codex-rs/third_party/secret-service-4.0.0": {
+      "files": 29,
+      "bytes": 168505,
+      "all_paths_and_bytes_match_recipe": true
+    },
+    "codex-rs/third_party/starlark-0.14.2": {
+      "files": 689,
+      "bytes": 3659254,
+      "all_paths_and_bytes_match_recipe": true
+    }
+  },
+  "limitations": [
+    "No full Rust 1.96 Cargo graph resolution or workspace build has been established by these small wrapper probes.",
+    "No Bazel build, original cargo-deny gate or Linux Synapse qualification is claimed.",
+    "Readback of existing binary/JUnit/output hashes confirms custody of retained artifacts, not independent rerunning of the test."
+  ],
+  "existing_python_regressions": {
+    "count": 23,
+    "exit_code": 0,
+    "log": {
+      "bytes": 11139,
+      "sha256": "5544f7b7ab4c39f35f951428b831c06ac40976940c5612e4b14e25d9ae190109"
+    },
+    "scope": "23 Python transport, schema, feature and phase regressions using actual Git and controlled command processes; not a real Cargo dependency solve."
+  },
+  "starlark_delta": {
+    "originals": 685,
+    "rust_files_identical": 489,
+    "only_original_change": {
+      "path": "Cargo.toml",
+      "from": "=1.8.2",
+      "to": "=1.8.7"
+    },
+    "five_prior_reviewed_code_or_provenance_files_unchanged": true,
+    "reviewed_documentation_addition": [
+      {
+        "path": "HEPTA_PORT.md",
+        "identity": {
+          "bytes": 2528,
+          "sha256": "4b77b451f528480c153463a1ceecaeb8286018fe3a1bc09c1b620ae49d774257"
+        },
+        "change": "Only added the previously independently verified official pagable 0.4.2 + derive upgrade explanation."
+      }
+    ],
+    "build_features_empty_and_original_build_rs_linked": true
+  },
+  "graph_contract": {
+    "starlark": {
+      "name": "starlark",
+      "version": "0.14.2",
+      "source": "path",
+      "required_features": [],
+      "exact_features": []
+    },
+    "blake3": {
+      "name": "blake3",
+      "version": "1.8.7",
+      "source": "registry",
+      "required_features": [
+        "default",
+        "rayon",
+        "std",
+        "traits-preview"
+      ]
+    },
+    "starlark_derive": {
+      "name": "starlark_derive",
+      "version": "0.14.2",
+      "source": "registry",
+      "required_features": [],
+      "exact_features": []
+    },
+    "starlark_map": {
+      "name": "starlark_map",
+      "version": "0.14.2",
+      "source": "registry",
+      "required_features": [
+        "default",
+        "pagable_dep"
+      ],
+      "exact_features": [
+        "default",
+        "pagable_dep"
+      ]
+    },
+    "starlark_syntax": {
+      "name": "starlark_syntax",
+      "version": "0.14.2",
+      "source": "registry",
+      "required_features": [],
+      "exact_features": []
+    },
+    "pagable": {
+      "name": "pagable",
+      "version": "0.4.2",
+      "source": "registry",
+      "required_features": [
+        "default"
+      ],
+      "exact_features": [
+        "default"
+      ]
+    },
+    "pagable_derive": {
+      "name": "pagable_derive",
+      "version": "0.4.2",
+      "source": "registry",
+      "required_features": [],
+      "exact_features": []
+    },
+    "patch_paths": 29
+  },
+  "existing_pagable_probe": {
+    "executed_tests": 2,
+    "cases_per_arm": 45,
+    "outputs_byte_identical": true,
+    "source_matches_preexecution_copy": true,
+    "binary_and_command_and_junit_hashes_match": true,
+    "output": {
+      "bytes": 1749,
+      "sha256": "5260fd2e6695fd8f9a215014b1f8b3be351aa1412d8ba6a4b2f64a257dcaeab8"
+    },
+    "scope": "Exact pagable 0.4.2 DataKey::compute body with its tuple representation; no derive macros, full module or workspace qualification.",
+    "rustc": "rustc 1.95.0 (59807616e 2026-04-14)"
+  },
+  "initial_comparison": {
+    "bytes": 795,
+    "sha256": "6f222a3b507c756dbb9a579f0adaa6aedf9cd520a57707f0fc62e6c2a7875a3f"
+  },
+  "status": "read_only_binding_verified_remote_gates_pending"
+}

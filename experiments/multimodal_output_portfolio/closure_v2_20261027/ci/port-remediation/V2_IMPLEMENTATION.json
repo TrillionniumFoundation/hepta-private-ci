@@ -1,0 +1,166 @@
+{
+  "status": "ready_for_real_remote_candidate_qualification",
+  "created_at": "2026-10-27T12:17:35.594474+00:00",
+  "production_source_scope": "Complete official Starlark 0.14.2 crate: 685 upstream files, all 489 Rust unchanged; one normalized Cargo.toml pin changed from blake3 =1.8.2 to =1.8.7; four support files added, final vendor 689 files.",
+  "official_dependency_updates": "Use published pagable 0.4.2 and pagable_derive 0.4.2. Peer verified all 25 and 5 Rust source files respectively are byte-identical to 0.4.1; neither is vendored.",
+  "unchanged_features": {
+    "starlark": [],
+    "blake3": [
+      "default",
+      "rayon",
+      "std",
+      "traits-preview"
+    ],
+    "windows_bazel_pure_annotation": "unchanged"
+  },
+  "recipe": {
+    "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v2.json",
+    "bytes": 336470,
+    "sha256": "1122a85d579ff781fa0941eaa6233aeb72ea881b80a948fd1b24305b59890295"
+  },
+  "source_patch": {
+    "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/combined-source-v2.patch",
+    "bytes": 68419,
+    "sha256": "123fbb21bbb9ddb6f88bfd1b7e17144317b7b36f887852ec9d863090f734ad22"
+  },
+  "recipe_counts": {
+    "source_paths": 29,
+    "vendor_directories": 8,
+    "vendor_files": 1971,
+    "expected_packages": 52
+  },
+  "source_files": {
+    "scripts/ndu_port_candidate_common.py": {
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/scripts/ndu_port_candidate_common.py",
+      "bytes": 23594,
+      "sha256": "c260cf29b2681bc99077730bc80b744ff53a28f4d402dbe379a801a20af881dd"
+    },
+    "scripts/ndu_port_candidate.py": {
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/scripts/ndu_port_candidate.py",
+      "bytes": 14287,
+      "sha256": "e5413a7413bfbdee4087656620f77d2ff018b2a31a64d9123754202a01a04340"
+    },
+    "scripts/test_ndu_port_candidate.py": {
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/scripts/test_ndu_port_candidate.py",
+      "bytes": 19499,
+      "sha256": "cdbfc7e6fe695f3d403a06a5832c56013f4c62d234bcbe13174d4a1d4c623783"
+    },
+    ".github/workflows/ndu-port-candidate.yml": {
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/.github/workflows/ndu-port-candidate.yml",
+      "bytes": 18704,
+      "sha256": "f3a8fcbbdcaa5373ca7a084bcf0d3dcd394ac6ca6eb99d7a176eb041b83fd020"
+    }
+  },
+  "vendor_to_integrate": "/workspace/scratch/95988d8d3ab1/ndu-starlark-blake3-candidate/proposed/codex-rs/third_party/starlark-0.14.2",
+  "root_already_integrated_vendor_commit": "ba9b48a98acff559671f197fd7f28e2113f58ac2",
+  "matrix_fixture_v2": {
+    "patch_sha256": "e2dfb517cd07278eef6b0fced8c7e61db3b0e6fd3ffde61da717301116721027",
+    "source_sha256": "bed1d7e870e9cca66518985ebd34ccbc0562216ebbb86e0a95f81a4a08bbbe5c"
+  },
+  "actual_small_tests": {
+    "wrapper": {
+      "passed": 4,
+      "official_vectors": 35,
+      "chunk_sizes": 5,
+      "receipt": {
+        "path": "/workspace/scratch/95988d8d3ab1/ndu-starlark-blake3-candidate/qualification-001/RESULT.json",
+        "bytes": 21066,
+        "sha256": "b38ed5144f2499aba1a0c4b036f9e2b265321c77019648239643331c5d08e9d2"
+      }
+    },
+    "pagable_data_key": {
+      "passed": 2,
+      "application_cases_per_arm": 45,
+      "receipt": {
+        "path": "/workspace/scratch/95988d8d3ab1/ndu-starlark-blake3-candidate/qualification-pagable-001/RESULT.json",
+        "bytes": 12724,
+        "sha256": "9c948f3e6660fb079c621c9e7651d198a3ed93c66e97274f76fb57a9872ca57d"
+      }
+    },
+    "scope": "Actual Rust 1.95 exact hash implementation probes, real repository just test, sealed binaries and JUnit. They do not qualify full Starlark, Matrix, Rust 1.96, cross-platform, or Bazel behavior."
+  },
+  "pipeline_regressions": {
+    "new_negative_cases_failed_on_previous_code": 3,
+    "all_tests_passed_before_format": 23,
+    "receipt": {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-starlark-blake3-candidate/pipeline-v2/executed/RESULT.json",
+      "bytes": 729,
+      "sha256": "58bc954b7a4d3d193adac130a7a640f0e682229175da96470d26087600729fc6"
+    },
+    "negative_receipt": {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-starlark-blake3-candidate/pipeline-v2/negative-pre-fix/RESULT.json",
+      "bytes": 628,
+      "sha256": "27907fca00bfab84c3a797487815fd2f151382a0b1d7a631854ef59af68060cb"
+    },
+    "full_source_before_tests": "/workspace/scratch/95988d8d3ab1/ndu-starlark-blake3-candidate/pipeline-v2/executed/source",
+    "scope": "Actual Git transport and controlled subprocess graphs; no claim that these solve the real Cargo dependency graph."
+  },
+  "format": {
+    "receipt": {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-starlark-blake3-candidate/pipeline-v2/format/FORMAT_ONLY.json",
+      "bytes": 4858,
+      "sha256": "46b2ac0020b56ca4cf6dc60895a9da6446b2594e6fe608a01910cfb15e6256f3"
+    },
+    "prettier_npm_identity": {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-starlark-blake3-candidate/formatter-tools/PRETTIER_IDENTITY.json",
+      "bytes": 403,
+      "sha256": "b72284216d98aa3bbd2f3f09e3a894c3252fbc288b28eb6b6fb8ae59f24adea4"
+    },
+    "full_before_after": "/workspace/scratch/95988d8d3ab1/ndu-starlark-blake3-candidate/pipeline-v2/format",
+    "no_behavior_tests_rerun_after_format": true
+  },
+  "final_binding": {
+    "path": "/workspace/scratch/95988d8d3ab1/ndu-starlark-blake3-candidate/pipeline-v2/FINAL_BINDING.json",
+    "bytes": 2897,
+    "sha256": "75c3284ede472ee953735cbebc7b4fb34209505ce5fd0ffc3d2928a0fce327cd"
+  },
+  "independent_index_reconstruction": {
+    "path": "/workspace/scratch/95988d8d3ab1/ndu-starlark-blake3-candidate/pipeline-v2/assembly-final/RESULT.json",
+    "bytes": 37360,
+    "sha256": "d167472b30a19925c9bca67381a309412da5d9e610409ec8da7e4010fe7162b0"
+  },
+  "frozen_source_snapshots": {
+    "negative": {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-starlark-blake3-candidate/pipeline-v2/negative-pre-fix/SOURCE_SNAPSHOT.json",
+      "bytes": 2768,
+      "sha256": "f199b82e78b7714c278658d3f8492d12f2e0c4a971443b3abf51af519304ac47"
+    },
+    "executed": {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-starlark-blake3-candidate/pipeline-v2/executed/SOURCE_SNAPSHOT.json",
+      "bytes": 3211,
+      "sha256": "e56f6a7e8041deb86f3938e36152e0b10243b9961c5cfacc378ea41477cf19d1"
+    },
+    "final": {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-starlark-blake3-candidate/pipeline-v2/post-format/SOURCE_SNAPSHOT.json",
+      "bytes": 3211,
+      "sha256": "d63c7235fd6f999d67e87dad8f1e14943f8f8327a6f8adb88db6f3ee131e57f2"
+    }
+  },
+  "next_remote_scope": [
+    "source and both lock generation with Rust 1.96",
+    "complete codex-execpolicy package tests plus existing groups",
+    "Bazel Starlark library and first-party execpolicy target plus existing targets",
+    "independent old Matrix source/Rust1.95 fixture preparation then actual new-source reopen",
+    "full original cargo-deny scan",
+    "all 244 original executed AWS provider tests; DNS original ignore only"
+  ],
+  "failed_run": {
+    "id": 40497632113,
+    "attempt": 1,
+    "head": "1e4f8b5c37474c61a5b58a655d5885dced887bf9",
+    "producer": "Actual whole-graph BLAKE3 conflict before candidate locks or tests.",
+    "old_matrix": "Actual E0277 while compiling DeviceKey json serialization; no test binary or DB produced.",
+    "custody_directory": "/workspace/scratch/95988d8d3ab1/ndu-port-remote-1e4f8b5",
+    "producer_audit": {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-port-remote-1e4f8b5/PRODUCER_FAILURE_VERIFICATION.json",
+      "bytes": 2893,
+      "sha256": "f3470a808003ea821c8a9ed9f17a61c5104c0856af227e6cafa93bba758b6753"
+    }
+  },
+  "retained_development_failures": [
+    "withdrawn/ATTEMPT.json: discontinued pagable 0.4.1 local port after official 0.4.2 was confirmed; preparation had stopped on an overstrict text-hit assertion.",
+    "pipeline-v2/assembly-001/FAILURE.json: normal write-tree attempted an unrelated unmaterialized promisor blob; final isolated indexes preserve all unmodified tuples and materially hash every modified blob."
+  ],
+  "promotion_allowed": false,
+  "remaining_gate": "Real remote candidate execution and review; this packet does not claim all blockers closed."
+}
