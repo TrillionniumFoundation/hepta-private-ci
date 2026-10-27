@@ -9,9 +9,18 @@ on:
       - scripts/ndu_port_matrix_fixture.py
       - scripts/ndu_port_aws_upstream.py
       - scripts/test_ndu_port*.py
+      - scripts/ndu_post_qualification*.py
+      - scripts/test_ndu_post_qualification*.py
       - experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/**
       - experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/**
       - codex-rs/third_party/**
+      - codex-rs/keyring-store/tests/store_contract.rs
+      - patches/BUILD.bazel
+      - patches/zstd-sys_2_1_windows_msvc_include_dirs.patch
+      - codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs
+      - codex-rs/hepta-matrixd/tests/fixtures/linux_qualification/**
+      - codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/**
+      - codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse-linux.py
   workflow_dispatch:
 
 permissions:
@@ -46,6 +55,15 @@ jobs:
 
       - name: Test source binding, phase evidence and failure preservation
         run: python3 -m unittest discover -s scripts -p 'test_ndu_port*.py' -v
+
+      - name: Test Linux source and artifact boundaries before candidate generation
+        run: >-
+          python3 -m unittest discover
+          -s codex-rs/hepta-matrixd/tests/fixtures/linux_synapse
+          -t codex-rs/hepta-matrixd/tests/fixtures -p 'test_*.py' -v
+
+      - name: Test post-qualification fix evidence and source separation
+        run: python3 -m unittest discover -s scripts -p 'test_ndu_post_qualification_fix.py' -v
 
       - name: Prepare pinned Bazel tooling
         uses: ./.github/actions/prepare-bazel-ci
@@ -189,12 +207,40 @@ jobs:
           --candidate "$RUNNER_TEMP/ndu-port-candidate" --expected-result-sha256 "$EXPECTED_RESULT_SHA256"
           --group "$TEST_GROUP" --output "$RUNNER_TEMP/ndu-port-tests-$TEST_GROUP"
 
+      - name: Install the candidate compiler's Clippy for changed YAML consumers
+        if: matrix.group == 'yaml'
+        run: rustup component add --toolchain 1.96.0 clippy
+
+      - name: Record scoped YAML Clippy fixes after the original qualification
+        id: fix-yaml
+        if: matrix.group == 'yaml'
+        env:
+          RUSTUP_TOOLCHAIN: 1.96.0
+          EXPECTED_SOURCE: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          EXPECTED_RESULT_SHA256: ${{ needs.generate-reviewable-candidate.outputs.result_sha256 }}
+        run: >-
+          python3 scripts/ndu_post_qualification_fix.py
+          --repository "$GITHUB_WORKSPACE" --expected-source "$EXPECTED_SOURCE"
+          --candidate "$RUNNER_TEMP/ndu-port-candidate" --expected-result-sha256 "$EXPECTED_RESULT_SHA256"
+          --group yaml --test-result "$RUNNER_TEMP/ndu-port-tests-yaml/RESULT.json"
+          --output "$RUNNER_TEMP/ndu-port-fix-yaml"
+
       - name: Retain every attempted regression and failure
         if: always() && !cancelled()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
           name: ndu-port-tests-${{ matrix.group }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/ndu-port-tests-${{ matrix.group }}
+          if-no-files-found: error
+          retention-days: 21
+          include-hidden-files: true
+
+      - name: Retain attempted YAML fixes separately from the original tested source
+        if: always() && (steps.fix-yaml.outcome == 'success' || steps.fix-yaml.outcome == 'failure')
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-port-fix-yaml-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-port-fix-yaml
           if-no-files-found: error
           retention-days: 21
           include-hidden-files: true
@@ -253,12 +299,38 @@ jobs:
           --old-fixture "$RUNNER_TEMP/ndu-matrix-018-fixture" --expected-old-result-sha256 "$EXPECTED_OLD_RESULT_SHA256"
           --output "$RUNNER_TEMP/ndu-port-tests-matrix"
 
+      - name: Install the candidate compiler's Clippy for changed Matrix consumers
+        run: rustup component add --toolchain 1.96.0 clippy
+
+      - name: Record scoped Matrix Clippy fixes after the original migration qualification
+        id: fix-matrix
+        env:
+          RUSTUP_TOOLCHAIN: 1.96.0
+          EXPECTED_SOURCE: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          EXPECTED_RESULT_SHA256: ${{ needs.generate-reviewable-candidate.outputs.result_sha256 }}
+        run: >-
+          python3 scripts/ndu_post_qualification_fix.py
+          --repository "$GITHUB_WORKSPACE" --expected-source "$EXPECTED_SOURCE"
+          --candidate "$RUNNER_TEMP/ndu-port-candidate" --expected-result-sha256 "$EXPECTED_RESULT_SHA256"
+          --group matrix --test-result "$RUNNER_TEMP/ndu-port-tests-matrix/RESULT.json"
+          --output "$RUNNER_TEMP/ndu-port-fix-matrix"
+
       - name: Retain actual regression logs, executable and migrated copy
         if: always() && !cancelled()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
           name: ndu-port-tests-matrix-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/ndu-port-tests-matrix
+          if-no-files-found: error
+          retention-days: 21
+          include-hidden-files: true
+
+      - name: Retain attempted Matrix fixes separately from the original tested source
+        if: always() && (steps.fix-matrix.outcome == 'success' || steps.fix-matrix.outcome == 'failure')
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-port-fix-matrix-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-port-fix-matrix
           if-no-files-found: error
           retention-days: 21
           include-hidden-files: true
@@ -436,6 +508,61 @@ jobs:
         with:
           name: ndu-port-upstream-aws-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/ndu-port-upstream-aws
+          if-no-files-found: error
+          retention-days: 21
+          include-hidden-files: true
+
+  native-arm64-synapse:
+    needs: generate-reviewable-candidate
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 360
+    steps:
+      - name: Check out the exact producer source including the reviewed Linux driver
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          persist-credentials: false
+
+      - name: Download the same source and lock candidate from this run
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ${{ needs.generate-reviewable-candidate.outputs.artifact_name }}
+          path: ${{ runner.temp }}/ndu-port-candidate
+
+      - name: Prepare sealed native inputs then qualify the actual isolated business test
+        timeout-minutes: 300
+        env:
+          EXPECTED_SOURCE: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          EXPECTED_RESULT_SHA256: ${{ needs.generate-reviewable-candidate.outputs.result_sha256 }}
+        run: >-
+          env -u CARGO_PROFILE_DEV_DEBUG -u CARGO_PROFILE_TEST_DEBUG
+          python3 -I codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse-linux.py ci
+          --restored-root "$GITHUB_WORKSPACE"
+          --producer "$RUNNER_TEMP/ndu-port-candidate"
+          --producer-result-sha256 "$EXPECTED_RESULT_SHA256"
+          --source-commit "$EXPECTED_SOURCE"
+          --output "$RUNNER_TEMP/ndu-native-synapse"
+          --docker-socket /var/run/docker.sock
+
+      - name: Reclaim only this qualification's recorded Docker resources
+        if: always()
+        timeout-minutes: 10
+        env:
+          EXPECTED_SOURCE: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+        run: |
+          if [ -f "$RUNNER_TEMP/ndu-native-synapse/BOOTSTRAP_AUTHORITY.json" ]; then
+            env -u CARGO_PROFILE_DEV_DEBUG -u CARGO_PROFILE_TEST_DEBUG \
+              python3 -I codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse-linux.py cleanup-ci \
+              --restored-root "$GITHUB_WORKSPACE" --source-commit "$EXPECTED_SOURCE" \
+              --output "$RUNNER_TEMP/ndu-native-synapse" --docker-socket /var/run/docker.sock
+          fi
+
+      - name: Retain sealed images, seeds, actual binaries, runtime receipts and failures
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-native-synapse-arm64-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-native-synapse
           if-no-files-found: error
           retention-days: 21
           include-hidden-files: true
