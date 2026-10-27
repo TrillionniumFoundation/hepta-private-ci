@@ -165,14 +165,21 @@ async fn train_round(
 #[ignore = "requires actual public V2 weights and three five-arm training/evaluation rounds"]
 async fn real_public_initial_three_rounds_hold_and_read_original_current() -> TestResult<()> {
     let (input, mut worker, bytes) = input_and_worker("public-loop-session-0")?;
-    let root = input.output.join("public-initial-three-rounds");
+    let root = input.output.join("r");
     fs::create_dir(&root)?;
     let fixture = Fixture::with_profile(
-        root.join("original-owner"),
+        root.join("o"),
         &bytes,
         Digest32::of_bytes(SMOLLM_PUBLIC_INITIAL_PROFILE_V2),
     )?;
-    let config = fixture.config("original-body")?;
+    let config = fixture.config("b")?;
+    // Keep the three-round owner at its original artifact root, with a
+    // portable Unix-domain socket path for real Agentd incarnations.
+    #[cfg(unix)]
+    std::assert!(
+        config.identity().control_socket.as_os_str().as_encoded_bytes().len() < 104,
+        "three-round Agentd socket path must fit the shortest supported Unix sun_path"
+    );
     let identity = config.identity().clone();
     let actions = seed_actions(&config, i64::try_from(fixture.now)?).await?;
     worker.action_completions = actions.clone();
