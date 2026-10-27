@@ -1,0 +1,36 @@
+{
+  "schema": "hepta-cumulative-ci-capture-v1",
+  "source": "6ba1a5b352568250edcec5975972d7d67d30e295",
+  "tree": "1e6cc38a6f1bb78ce78a01049dfd1066d11e3a65",
+  "local_source": "eac83f647cb38b44a86902a7ece696c87b62af01",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "run_id": 40501186161,
+  "job_id": 122178977712,
+  "run_attempt": 1,
+  "status": "completed",
+  "conclusion": "success",
+  "workflow_path": ".github/workflows/hepta-cumulative-controls.yml",
+  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40501186161",
+  "artifacts": [
+    {
+      "id": 12733108352,
+      "name": "hepta-cumulative-checkpoints-6ba1a5b352568250edcec5975972d7d67d30e295",
+      "size_in_bytes": 1620808534,
+      "digest": "sha256:c59aa037568af65560e9c5e08e28bac383e959b4af2619d0dba63bef9a5cdc56",
+      "expires_at": "2026-11-10T12:19:15Z",
+      "downloaded_locally": false
+    },
+    {
+      "id": 12733098307,
+      "name": "hepta-cumulative-records-6ba1a5b352568250edcec5975972d7d67d30e295",
+      "size_in_bytes": 117865750,
+      "digest": "sha256:9e9ff51116ad1e6b51500212f4fb57e0bfd6911f4833b14613a1ecd03609d05c",
+      "expires_at": "2026-11-10T12:19:03Z",
+      "downloaded_locally": true
+    }
+  ],
+  "checkpoint_member_bytes_verified_locally": false,
+  "source_original_run": 40492138476,
+  "source_original_commit": "f75bf1ac902ed73905e4daa49f9396df028a4254",
+  "prior_failed_cumulative_run": 40498180354
+}
