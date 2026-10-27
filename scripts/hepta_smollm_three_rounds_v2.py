@@ -30,6 +30,52 @@ def require(condition, reason):
         raise ValueError(reason)
 
 
+def evaluation_input(runtime, source, destination, material, plan, backbone):
+    """Copy verified weights for the original evaluator, without admission."""
+    destination.mkdir(mode=0o700)
+    for name in (
+        "artifact.safetensors",
+        "wrapped-adapter.json",
+        "target-contract.json",
+    ):
+        shutil.copyfile(source / name, destination / name)
+    require(
+        runtime.file_sha(destination / "artifact.safetensors")
+        == material["file_sha256"],
+        "evaluation copy differs from verified material",
+    )
+    runtime.save(
+        destination / "artifact.json",
+        dict(
+            role="candidate",
+            artifact=material["adapter"],
+            contract=material["contract"],
+            kind="lora",
+            source_model=runtime.WEIGHT_SHA,
+            experiment=runtime.identity(plan),
+            parent_backbone=backbone,
+            resulting_backbone=backbone,
+            file_sha256=material["file_sha256"],
+            native_admission_accepted=False,
+            scope="verified-material-for-controlled-evaluation-only",
+        ),
+    )
+
+
+def descendant_blockers(parent, incumbent, gain, incumbent_gain):
+    """Report missing admission evidence; this function grants no authority."""
+    blockers = []
+    if any(
+        parent[key] != incumbent[key]
+        for key in ("generation", "contract", "adapter", "file_sha256")
+    ):
+        blockers.append("ParentNotCurrent")
+    if gain <= 0 or incumbent_gain <= 0:
+        blockers.append("NoGain")
+    blockers.append("MissingSystemLongitudinalEvidence")
+    return blockers
+
+
 def run(args):
     observed_head = subprocess.check_output(
         ["git", "-C", str(args.chain), "rev-parse", "HEAD"], text=True
@@ -76,6 +122,7 @@ def run(args):
     verify_runtime()
     sys.path.insert(0, str(args.chain / "scripts"))
     import llm_inherited_runtime as inherited
+    import llm_runtime_parent_step as parent_step_v1
     import llm_runtime_parent_step_v2 as parent_step
     import llm_runtime_pilot as runtime
 
@@ -108,6 +155,21 @@ def run(args):
         and actual_parent["adapter"] == parent["adapter"],
         "actual loaded parent identity",
     )
+    incumbent = parent
+    proposal_path = getattr(args, "proposal_parent", None)
+    diagnostic = proposal_path is not None
+    if diagnostic:
+        require(proposal_path.is_absolute(), "absolute diagnostic parent path")
+        proposal_raw = proposal_path.read_bytes()
+        require(
+            hashlib.sha256(proposal_raw).hexdigest() == args.proposal_parent_sha256,
+            "diagnostic parent descriptor digest",
+        )
+        parent = inherited.validate_parent(json.loads(proposal_raw))
+        inherited.read_parent(parent)
+        require(
+            parent["contract"] == incumbent["contract"], "same frozen target contract"
+        )
     plan_raw = (PROFILES / "smollm2-public-initial-v2.plan.json").read_bytes()
     plan = runtime.validate_plan(json.loads(plan_raw))
     manifest, _ = runtime.verify_materials(args.materials)
@@ -120,6 +182,9 @@ def run(args):
         schema="hepta-controlled-real-round-freeze-v2",
         round=args.round,
         parent=parent,
+        actual_current_incumbent=incumbent,
+        diagnostic_unadmitted_lineage=diagnostic,
+        current_snapshot_only=True,
         actual_parent_readback=hashlib.sha256(readback_raw).hexdigest(),
         current=readback["current"],
         experiment=runtime.identity(plan),
@@ -148,9 +213,9 @@ def run(args):
     runtime.save(output / "round-freeze.json", freeze)
     phases = []
 
-    def phase(stage, role, artifact=None):
+    def phase(stage, role, artifact=None, label=None):
         verify_runtime()
-        path = output / (stage + "-" + role)
+        path = output / (stage + "-" + (label or role))
         command = [
             sys.executable,
             str(args.chain / "scripts/llm_runtime_pilot.py"),
@@ -183,12 +248,17 @@ def run(args):
     try:
         directory = Path(parent["directory"])
         candidate_output = output / "train-candidate"
-        parent_step.run(
+        initial_setup = (
+            parent["generation"] == 1
+            and parent["file_sha256"] == incumbent["file_sha256"]
+        )
+        trainer = parent_step if initial_setup else parent_step_v1
+        trainer.run(
             SimpleNamespace(
                 operation="train",
-                initial_setup_profile=parent_step.PROFILE,
-                parent_material=str(args.parent),
-                parent_material_sha256=args.parent_sha256,
+                initial_setup_profile=parent_step.PROFILE if initial_setup else None,
+                parent_material=str(args.parent) if initial_setup else None,
+                parent_material_sha256=args.parent_sha256 if initial_setup else None,
                 materials=str(args.materials),
                 plan=str(plan_path),
                 output=str(candidate_output),
@@ -207,7 +277,14 @@ def run(args):
                 expected_candidate_result_sha256=None,
             )
         )
-        completion = runtime.read_json(candidate_output / "parent-step-result-v2.json")
+        completion = runtime.read_json(
+            candidate_output
+            / (
+                "parent-step-result-v2.json"
+                if initial_setup
+                else "parent-step-result.json"
+            )
+        )
         require(
             completion["outcome"] == "success"
             and completion["completion_verified"] is True,
@@ -219,44 +296,35 @@ def run(args):
         trained = runtime.read_json(candidate_output / "execution/actual-receipt.json")
         require(
             trained["parent_readback"] == parent["adapter"]
-            and trained["training_changed_from_setup"] is True,
+            and (
+                trained["training_changed_from_setup"] is True
+                if initial_setup
+                else trained["unchanged_parent"] is False
+            ),
             "actual parent consumption and training",
         )
         candidate = trained["candidate"]
-        # Original parent-step V2 has no evaluator adapter. Copy exact verified
-        # candidate bytes into the existing pilot's input format without making
-        # them selected, installed, signed, or product-qualified artifacts.
+        # Copy the original verifier's exact candidate into the pilot evaluator
+        # without making it selected, installed, signed or product-qualified.
         evaluation_candidate = output / "candidate-evaluation-input"
-        evaluation_candidate.mkdir(mode=0o700)
-        for name in [
-            "artifact.safetensors",
-            "wrapped-adapter.json",
-            "target-contract.json",
-        ]:
-            shutil.copyfile(
-                candidate_output / "execution" / name, evaluation_candidate / name
-            )
-        require(
-            runtime.file_sha(evaluation_candidate / "artifact.safetensors")
-            == candidate["file_sha256"],
-            "candidate copied bytes",
+        next_parent = dict(
+            schema=inherited.PARENT_SCHEMA,
+            generation=parent["generation"] + 1,
+            operation_id=runtime.identity(freeze),
+            directory=str(evaluation_candidate),
+            contract=parent["contract"],
+            **candidate,
         )
-        runtime.save(
-            evaluation_candidate / "artifact.json",
-            dict(
-                role="candidate",
-                artifact=candidate["adapter"],
-                contract=parent["contract"],
-                kind="lora",
-                source_model=runtime.WEIGHT_SHA,
-                experiment=runtime.identity(plan),
-                parent_backbone=actual_parent["backbone"],
-                resulting_backbone=actual_parent["backbone"],
-                file_sha256=candidate["file_sha256"],
-                native_admission_accepted=False,
-                scope="original-verified-parent-step-candidate-for-controlled-evaluation-only",
-            ),
+        evaluation_input(
+            runtime,
+            candidate_output / "execution",
+            evaluation_candidate,
+            next_parent,
+            plan,
+            actual_parent["backbone"],
         )
+        inherited.read_parent(next_parent)
+        runtime.save(output / "candidate-parent-material.json", next_parent)
         artifacts = {"candidate": candidate["adapter"]}
         training = {"candidate": trained["training"]}
         for role in runtime.CONTROLS:
@@ -287,12 +355,26 @@ def run(args):
             ),
             "matched full training schedule",
         )
+        if diagnostic:
+            evaluation_incumbent = output / "actual-current-incumbent-input"
+            evaluation_input(
+                runtime,
+                Path(incumbent["directory"]),
+                evaluation_incumbent,
+                incumbent,
+                plan,
+                actual_parent["backbone"],
+            )
+            artifacts["actual-current-incumbent"] = incumbent["adapter"]
         roster = dict(
             experiment=runtime.identity(plan),
             contract=parent["contract"],
             artifacts=artifacts,
             frozen_before_evaluation=True,
             independent_custody=False,
+            evaluation_protocol_roles={"actual-current-incumbent": "candidate"}
+            if diagnostic
+            else {},
         )
         runtime.save(output / "evaluation-roster.json", roster)
         predictions = {}
@@ -309,8 +391,26 @@ def run(args):
             predictions[role] = runtime.verify_predictions(
                 values, plan, role, artifacts[role], parent["contract"]
             )
+        if diagnostic:
+            receipt = phase(
+                "evaluate",
+                "candidate",
+                evaluation_incumbent,
+                "actual-current-incumbent",
+            )
+            require(
+                receipt["artifact"] == incumbent["adapter"]
+                and receipt["forward_executed"] is True,
+                "actual incumbent reload and forwards required",
+            )
+            values = runtime.read_json(
+                output / "evaluate-actual-current-incumbent/predictions.json"
+            )
+            predictions["actual-current-incumbent"] = runtime.verify_predictions(
+                values, plan, "candidate", incumbent["adapter"], incumbent["contract"]
+            )
         scores = {}
-        for role in runtime.PARTICIPANTS:
+        for role in predictions:
             scores[role] = {}
             for partition in ("calibration", "evaluation"):
                 groups = {}
@@ -339,6 +439,7 @@ def run(args):
             schema="hepta-controlled-real-round-assessment-v2",
             round=args.round,
             parent=parent,
+            candidate_parent_material=next_parent,
             current=readback["current"],
             experiment=runtime.identity(plan),
             scores=scores,
@@ -358,12 +459,33 @@ def run(args):
             public_reward_eligible=False,
             phases=phases,
         )
+        if diagnostic:
+            incumbent_gain = Fraction(*scores["candidate"]["evaluation"]) - Fraction(
+                *scores["actual-current-incumbent"]["evaluation"]
+            )
+            assessment.update(
+                schema="hepta-controlled-six-arm-descendant-assessment-v2",
+                decision="diagnostic-completed-installation-blocked",
+                blockers=descendant_blockers(parent, incumbent, gain, incumbent_gain),
+                actual_current_incumbent=incumbent,
+                actual_current_snapshot=readback["current"],
+                gain_vs_actual_current_incumbent=[
+                    incumbent_gain.numerator,
+                    incumbent_gain.denominator,
+                ],
+                original_five_arms_preserved=True,
+                incumbent_evaluation_has_gradient_steps=False,
+                candidate_generation_is_registry_admitted=False,
+                current_snapshot_only=True,
+            )
         runtime.save(output / "assessment.json", assessment)
-        require(
-            gain <= 0,
-            "positive experimental candidate requires original product qualification; no automatic install",
-        )
+        if not diagnostic:
+            require(
+                gain <= 0,
+                "positive experimental candidate requires original product qualification; no automatic install",
+            )
         print(json.dumps(assessment, sort_keys=True), flush=True)
+        return assessment
     except BaseException as error:
         runtime.save(
             output / "abort.json",

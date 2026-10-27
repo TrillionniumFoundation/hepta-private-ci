@@ -22,7 +22,7 @@ concurrency:
 jobs:
   cold-ordinary-three-rounds:
     runs-on: ubuntu-24.04
-    timeout-minutes: 240
+    timeout-minutes: 360
     defaults:
       run:
         working-directory: hepta
@@ -113,6 +113,7 @@ jobs:
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/material-download-controls.json" --timeout-seconds 60 --minimum-tests 2 -- python3 scripts/test_hepta_smollm_public_initial_v2.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/descendant-boundary-controls.json" --timeout-seconds 60 --minimum-tests 4 -- python3 scripts/test_hepta_smollm_descendant_v2.py -v
           python3 -I -B -m venv "$RUNNER_TEMP/hepta-public-env"
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B -m pip install --require-hashes --only-binary=:all: --no-compile --index-url https://pypi.org/simple --report "$RUNNER_TEMP/hepta-public-initial-v2/pip-install.json" -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B -m pip check
@@ -135,6 +136,7 @@ jobs:
           Path(os.environ["HEPTA_PN3_NEURAL_NATIVE_CONFIG"]).write_text(json.dumps(config, indent=2) + "\n")
           PY
       - name: Require real ordinary inference and independent revocation
+        id: ordinary
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
@@ -146,6 +148,13 @@ jobs:
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/three-rounds-native.json" --timeout-seconds 11100 --minimum-tests 1 -- just test --locked -p codex-hepta-infer-worker-host --lib --profile hepta-public-initial-v2 -E 'test(real_public_initial_three_rounds_hold_and_read_original_current)' --run-ignored only --no-capture
+          "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
+      - name: Execute six-arm candidate descendants and retain typed install blockers
+        if: ${{ !cancelled() && steps.ordinary.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/descendant-execution.json" --timeout-seconds 9000 --minimum-tests 0 -- "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_descendant_v2.py --native-input "$HEPTA_PN3_NEURAL_NATIVE_CONFIG" --ordinary-readback "$RUNNER_TEMP/hepta-public-initial-v2/native/public-initial-three-rounds/ordinary-0/ordinary-session-result.json" --output "$RUNNER_TEMP/hepta-public-initial-v2/descendant-diagnostics"
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
       - name: Finish the scoped lint and formatting gate after tests
         run: |

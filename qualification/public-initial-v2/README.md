@@ -84,3 +84,33 @@ is not proof of successful execution; inspect the terminal records and artifacts
 All signing/FinalUse issuer keys in these tests are controlled test identities.
 Production enrollment, three genuinely qualified installed generations, immutable
 runtime delivery, and independent future quality remain separate acceptance gates.
+
+## Candidate descendants and the actual incumbent
+
+The additional `hepta_smollm_descendant_v2.py` diagnostic executes a real candidate
+lineage with ordinals 2, 3, and 4. The first step uses the original positive-zero
+setup; later steps load the preceding candidate's exact factors through original
+parent-step V1 without reinitialization. Every step preserves all five original
+arms and adds a sixth: the actual ordinary CURRENT incumbent, reloaded from its
+verified parameter bytes. The evaluator's original `candidate` protocol role is
+used for this adapter; the separate directory and frozen roster identify it as
+`actual-current-incumbent`. It never substitutes the unadapted backbone for an
+installed adapted model.
+
+These descendants remain unadmitted. The actual CURRENT snapshot stays at the
+observed initial parent. A completed computation emits typed `ParentNotCurrent`,
+`NoGain`, and `MissingSystemLongitudinalEvidence` blockers as applicable; positive
+public-task scores cannot remove the last blocker. A zero exit status means the
+six-arm diagnostic completed, not that a child qualified or was installed. The
+three ordinary proposals retain their stricter existing failure on an unqualified
+positive score. The extra diagnostic has a separate 9,000-second campaign guard;
+it preserves every original per-phase budget and gradient step. Its evidence is
+a recorded CURRENT snapshot, not a live owner admission or future quality claim.
+
+Real later installed generations must use the existing
+`prepare_smollm_neural_agentd_v1` evaluated-child path, following original
+`ProductEvaluationRunnerV1::qualify_and_persist` and independent selection. That
+path requires a `SystemLongitudinal` product qualification, including genuine
+temporally ordered observations, multiple windows, native statistical evidence,
+and the original signing and artifact owners. The single-window controlled
+neural comparison provider and static six-arm scores cannot mint this receipt.
