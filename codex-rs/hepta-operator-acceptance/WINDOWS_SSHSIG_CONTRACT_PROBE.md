@@ -9,3 +9,20 @@ The new ignored test `trust::tests::windows_contract_probe::records_unmodified_o
 The reparse test retains every original backend rejection/no-effect/target identity assertion. Its only change is `CommandExt::raw_arg` for fixed `cmd /d /s /c mklink /J` syntax with two quoted, strictly checked owned Win32 scratch paths. This addresses cmd command parsing rather than weakening backend admission. The new run does not repeat original91 or claim the complete backend9 scope; only that one exact existing case is selected independently.
 
 The workflow has one branch-specific push registration whose job is skipped, then one explicit diagnostic dispatch on an exact clean commit. Skipped registration is not native execution. Rust 1.96.0 native MSVC, just 1.51.0, nextest 0.9.103, original command deadlines and zero retries are retained. Source, tracked lock, protected original91 driver/scope/limits and tools are checked before and in `finally` after collection, including failed collection. All outputs upload on failure. GNU cross checks and local Python controls do not replace native execution or original functional qualification.
+
+## Subsequent fixture producer
+
+The one native run40444364580 at 773d34e16 established three separate facts:
+raw OpenSSH stdout contains CRLF; an absent filename receives a broad Everyone
+DACL; and a canonically precreated private filename receives the original LF
+signature bytes while retaining its full 128-bit file ID and full owner/DACL.
+Only that third method is used by the subsequent owned test-fixture producer.
+It creates an absent empty private signature, supplies an owned `y` confirmation
+to the real filename signer, then checks the original retained object/security,
+read bound and envelope and performs real file/directory flushes. It never
+normalizes the output or adopts/repairs a foreign file.
+
+This repairs fixture generation only. The same run explicitly showed production
+verification refusing that valid private signature because Unix inherited
+descriptors were required. Rust verification alone does not satisfy the
+independent OpenSSH or G5 authority contract, which remains unqualified on Windows.

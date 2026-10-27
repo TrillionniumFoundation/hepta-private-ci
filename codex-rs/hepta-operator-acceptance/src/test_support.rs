@@ -46,23 +46,14 @@ pub(crate) fn openssh_keygen() -> &'static Path {
 
 /// Generate a new test-only signature with real OpenSSH and private creation.
 /// Windows OpenSSH's filename output grants Everyone access independently of
-/// the parent's private DACL. Never repair/adopt that output or weaken admission.
+/// the parent's private DACL. Its stdout uses CRLF. Create the private file
+/// before filename signing; never repair permissions or normalize signed bytes.
 #[cfg(windows)]
 pub(crate) fn sign_private_fixture(mut signer: std::process::Command, statement: &Path) -> PathBuf {
-    let input = std::fs::File::open(statement).expect("open original fixture statement");
-    let signed = signer
-        .stdin(std::process::Stdio::from(input))
-        .output()
-        .expect("run actual OpenSSH fixture signer on original statement stdin");
-    assert!(
-        signed.status.success(),
-        "OpenSSH fixture signer failed: {}",
-        String::from_utf8_lossy(&signed.stderr)
-    );
-    assert!(
-        !signed.stdout.is_empty() && signed.stdout.len() <= 16 * 1024,
-        "OpenSSH fixture signature exceeds its original bound"
-    );
+    use codex_utils_path::PrivateSecurityIdentity;
+    use codex_utils_path::WindowsFileId;
+    use std::fs::File;
+
     let mut signature = statement.as_os_str().to_os_string();
     signature.push(".sig");
     let signature = PathBuf::from(signature);
@@ -70,12 +61,66 @@ pub(crate) fn sign_private_fixture(mut signer: std::process::Command, statement:
         statement.parent().expect("original private fixture root"),
     )
     .expect("retain original private fixture root without ACL repair");
-    directory
+    let statement_custody = directory
+        .open_child(
+            statement
+                .file_name()
+                .expect("original fixture statement name"),
+        )
+        .expect("retain original statement without concurrent write or replacement");
+    let created = directory
         .write_new_child(
             signature.file_name().expect("new fixture signature name"),
-            &signed.stdout,
+            b"",
         )
-        .expect("create, read back and durably flush the new private signature");
+        .expect("create an absent private signature before invoking OpenSSH");
+    let observer = File::open(&signature).expect("inspect own newly private signature");
+    let identity = WindowsFileId::inspect(&observer).expect("full native signature identity");
+    let security = PrivateSecurityIdentity::inspect(&observer).expect("private owner and DACL");
+    drop(created);
+    let mut confirmation = statement.as_os_str().to_os_string();
+    confirmation.push(".own-signing-confirmation");
+    let confirmation = PathBuf::from(confirmation);
+    directory
+        .write_new_child(confirmation.file_name().unwrap(), b"y\n")
+        .expect("create exclusively owned fixture overwrite confirmation");
+    let signed = signer
+        .arg(statement)
+        .stdin(std::process::Stdio::from(
+            File::open(confirmation).expect("read own fixture confirmation"),
+        ))
+        .output()
+        .expect("run actual OpenSSH filename signer on original statement");
+    assert!(
+        signed.status.success(),
+        "OpenSSH fixture signer failed: {}",
+        String::from_utf8_lossy(&signed.stderr)
+    );
+    statement_custody
+        .verify()
+        .expect("original statement remained unchanged");
+    let retained = directory
+        .lock_existing_child(signature.file_name().unwrap())
+        .expect("retain original private signature without ACL repair");
+    let after = File::open(&signature).expect("inspect original filename output");
+    assert_eq!(WindowsFileId::inspect(&after).unwrap(), identity);
+    assert_eq!(WindowsFileId::inspect(&observer).unwrap(), identity);
+    assert_eq!(PrivateSecurityIdentity::inspect(&after).unwrap(), security);
+    assert_eq!(
+        PrivateSecurityIdentity::inspect(&observer).unwrap(),
+        security
+    );
+    let bytes = retained
+        .read_bounded(16 * 1024)
+        .expect("read unchanged original signature");
+    assert!(bytes.starts_with(b"-----BEGIN SSH SIGNATURE-----\n"));
+    assert!(bytes.ends_with(b"-----END SSH SIGNATURE-----\n"));
+    retained
+        .sync_verified()
+        .expect("flush original signature and retain identity");
+    directory
+        .sync_verified()
+        .expect("flush original private fixture directory");
     signature
 }
 
