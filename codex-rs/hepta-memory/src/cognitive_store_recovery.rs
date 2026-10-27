@@ -150,8 +150,14 @@ impl CognitiveStore {
                     "cognitive recovery root does not exist".to_string(),
                 )
             })?;
-        // The shared identity check already rejects redirected components.
-        // Keep its OS spelling, including Windows drive/UNC verbatim prefixes.
+        // The filesystem check above still rejects redirected components.
+        // SqliteConfig uses AbsolutePathBuf's reviewed Windows spelling. Use
+        // that same spelling for source, candidate, lock and pointer paths;
+        // mixing OS verbatim prefixes with its normalized home fails admission.
+        #[cfg(windows)]
+        let canonical_root = AbsolutePathBuf::try_from(canonical_root)
+            .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?
+            .to_path_buf();
         let exclusive_guard = CognitiveStoreOpenGuard::acquire_exclusive(&canonical_root)
             .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
         let source_path = resolve_active_database_path(&canonical_root)

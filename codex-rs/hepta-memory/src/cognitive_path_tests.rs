@@ -60,6 +60,29 @@ async fn native_and_os_canonical_roots_share_store_identity_and_source_replay() 
     );
 }
 
+#[cfg(windows)]
+#[test]
+fn windows_recovery_root_normalizes_only_the_namespace_spelling() {
+    let temp = TempDir::new().expect("temporary directory");
+    let native = AbsolutePathBuf::from_absolute_path(temp.path())
+        .expect("absolute temporary directory")
+        .canonicalize()
+        .expect("reviewed native directory")
+        .into_path_buf();
+    let os_canonical = canonical_path_without_redirection(&native)
+        .expect("identity and reparse checks")
+        .expect("real directory, not a redirection");
+    assert_ne!(native, os_canonical, "verify Windows verbatim prefix exercise");
+    let normalized = AbsolutePathBuf::try_from(os_canonical.clone())
+        .expect("AbsolutePathBuf Windows spelling")
+        .to_path_buf();
+    assert_eq!(normalized, native);
+    assert_eq!(
+        canonical_path_without_redirection(&normalized).expect("repeat identity check"),
+        Some(os_canonical)
+    );
+}
+
 #[cfg(unix)]
 #[tokio::test]
 async fn symlinked_fleet_and_database_are_rejected() {
