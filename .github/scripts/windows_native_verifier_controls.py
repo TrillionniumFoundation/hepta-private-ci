@@ -19,7 +19,7 @@ import time
 
 
 RUNNER_NAMES = [
-    "elevated::runner_process::tests::" + name
+    "elevated::runner_client::runner_process::tests::" + name
     for name in (
         "native_runner_exit_is_reaped_before_success",
         "native_runner_exit_mismatch_is_refused_after_reaping",
@@ -44,16 +44,48 @@ TRANSPORT_NAMES = [
     )
 ]
 GROUPS = [
-    {"id": "owned-runner-process-four", "package": "codex-windows-sandbox", "names": RUNNER_NAMES, "runIgnored": False},
-    {"id": "dual-sshsig-native-four", "package": "codex-hepta-operator-acceptance", "names": CRYPTO_NAMES, "runIgnored": True},
-    {"id": "real-client-and-connect-timeout-two", "package": "codex-hepta-operator-acceptance", "names": TRANSPORT_NAMES, "runIgnored": True},
+    {
+        "id": "owned-runner-process-four",
+        "package": "codex-windows-sandbox",
+        "names": RUNNER_NAMES,
+        "runIgnored": False,
+    },
+    {
+        "id": "dual-sshsig-native-four",
+        "package": "codex-hepta-operator-acceptance",
+        "names": CRYPTO_NAMES,
+        "runIgnored": True,
+    },
+    {
+        "id": "real-client-and-connect-timeout-two",
+        "package": "codex-hepta-operator-acceptance",
+        "names": TRANSPORT_NAMES,
+        "runIgnored": True,
+    },
 ]
 
 
 def command_for(group):
-    command = ["just", "test", "--locked", "-p", group["package"], "--lib", "--cargo-profile", "dev-small",
-               "-E", " | ".join(f"test(={name})" for name in group["names"]),
-               "--test-threads", "1", "--no-tests", "fail", "--retries", "0", "--success-output", "immediate"]
+    command = [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        group["package"],
+        "--lib",
+        "--cargo-profile",
+        "dev-small",
+        "-E",
+        " | ".join(f"test(={name})" for name in group["names"]),
+        "--test-threads",
+        "1",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--success-output",
+        "immediate",
+    ]
     if group["runIgnored"]:
         command.extend(["--run-ignored", "ignored-only"])
     return command
@@ -61,11 +93,18 @@ def command_for(group):
 
 def assess_exact(group, code, text):
     expected = [[group["package"], name] for name in group["names"]]
-    result = {"id": group["id"], "exitCode": code, "expectedIdentities": expected, "passed": False}
+    result = {
+        "id": group["id"],
+        "exitCode": code,
+        "expectedIdentities": expected,
+        "passed": False,
+    }
     try:
         parsed = parse(text, group["package"], len(expected), expected)
         result.update(parsed)
-        result["passed"] = code == 0 and all(row[0] == "PASS" for row in parsed["actual"])
+        result["passed"] = code == 0 and all(
+            row[0] == "PASS" for row in parsed["actual"]
+        )
     except ValueError as error:
         result["selectionError"] = str(error)
     return result
@@ -78,11 +117,24 @@ def execute_groups(root, output, groups):
         path = output / (group["id"] + ".log")
         started = time.monotonic()
         with path.open("wb") as stream:
-            process = subprocess.run(command, cwd=root / "codex-rs", stdin=subprocess.DEVNULL,
-                                     stdout=stream, stderr=subprocess.STDOUT, check=False)
-        result = assess_exact(group, process.returncode, path.read_text(encoding="utf-8", errors="replace"))
-        result.update(command=command, durationSeconds=round(time.monotonic() - started, 3),
-                      logSha256=hashlib.sha256(path.read_bytes()).hexdigest())
+            process = subprocess.run(
+                command,
+                cwd=root / "codex-rs",
+                stdin=subprocess.DEVNULL,
+                stdout=stream,
+                stderr=subprocess.STDOUT,
+                check=False,
+            )
+        result = assess_exact(
+            group,
+            process.returncode,
+            path.read_text(encoding="utf-8", errors="replace"),
+        )
+        result.update(
+            command=command,
+            durationSeconds=round(time.monotonic() - started, 3),
+            logSha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+        )
         results.append(result)
         (output / "groups.json").write_text(json.dumps(results, indent=2) + "\n")
         print(json.dumps(result), flush=True)
@@ -162,11 +214,14 @@ def main():
                 raise RuntimeError("a pinned test runner executable is missing")
             tool_files[name] = Path(executable).resolve(strict=True)
         import ctypes
+
         system = ctypes.create_unicode_buffer(32768)
         count = ctypes.windll.kernel32.GetSystemDirectoryW(system, len(system))
         if count == 0 or count >= len(system):
             raise RuntimeError("actual system-directory observation failed")
-        tool_files["system32-ssh-keygen"] = (Path(system.value) / "OpenSSH" / "ssh-keygen.exe").resolve(strict=True)
+        tool_files["system32-ssh-keygen"] = (
+            Path(system.value) / "OpenSSH" / "ssh-keygen.exe"
+        ).resolve(strict=True)
         tool_records = {
             name: {
                 "path": str(path),
@@ -175,19 +230,25 @@ def main():
             for name, path in tool_files.items()
         }
         receipt["toolFiles"] = tool_records
-        protected = [root / name for name in (
-            ".github/scripts/windows_current_ci.py", ".github/fixtures/windows-current-ci-scope.json",
-            ".github/scripts/windows_native_verifier_controls.py", ".github/scripts/windows_native_exact_cases.py",
-            "codex-rs/Cargo.lock", "MODULE.bazel.lock",
-            "codex-rs/hepta-operator-acceptance/src/windows_openssh.rs",
-            "codex-rs/hepta-operator-acceptance/src/windows_openssh_identity.rs",
-            "codex-rs/hepta-operator-acceptance/src/windows_openssh_image.rs",
-            "codex-rs/hepta-operator-acceptance/src/windows_openssh_pipe.rs",
-            "codex-rs/hepta-operator-acceptance/src/windows_openssh_tests.rs",
-            "codex-rs/hepta-operator-acceptance/src/windows_openssh_transport_tests.rs",
-            "codex-rs/windows-sandbox-rs/src/elevated/runner_process.rs",
-            "codex-rs/windows-sandbox-rs/src/elevated/runner_process_tests.rs",
-        )]
+        protected = [
+            root / name
+            for name in (
+                ".github/scripts/windows_current_ci.py",
+                ".github/fixtures/windows-current-ci-scope.json",
+                ".github/scripts/windows_native_verifier_controls.py",
+                ".github/scripts/windows_native_exact_cases.py",
+                "codex-rs/Cargo.lock",
+                "MODULE.bazel.lock",
+                "codex-rs/hepta-operator-acceptance/src/windows_openssh.rs",
+                "codex-rs/hepta-operator-acceptance/src/windows_openssh_identity.rs",
+                "codex-rs/hepta-operator-acceptance/src/windows_openssh_image.rs",
+                "codex-rs/hepta-operator-acceptance/src/windows_openssh_pipe.rs",
+                "codex-rs/hepta-operator-acceptance/src/windows_openssh_tests.rs",
+                "codex-rs/hepta-operator-acceptance/src/windows_openssh_transport_tests.rs",
+                "codex-rs/windows-sandbox-rs/src/elevated/runner_process.rs",
+                "codex-rs/windows-sandbox-rs/src/elevated/runner_process_tests.rs",
+            )
+        ]
         hashes = {
             str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest()
             for path in protected
@@ -210,7 +271,11 @@ def main():
         results = []
         for group, row in zip(GROUPS, raw):
             log = output / (group["id"] + ".log")
-            result = assess_exact(group, row["exitCode"], log.read_text(encoding="utf-8", errors="replace"))
+            result = assess_exact(
+                group,
+                row["exitCode"],
+                log.read_text(encoding="utf-8", errors="replace"),
+            )
             result.update(
                 command=row["command"],
                 durationSeconds=row["durationSeconds"],
