@@ -124,7 +124,7 @@ class DockerControl:
         if (
             labels.get("org.opencontainers.image.version")
             != self.contract["synapse"]["version"]
-            or labels.get("org.opencontainers.image.revision")
+            or labels.get("gitsha1")
             != self.contract["synapse"]["revision"]
         ):
             raise ValueError("Actual Synapse OCI labels differ from the original pin")
