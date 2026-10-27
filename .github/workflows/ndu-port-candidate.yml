@@ -558,6 +558,21 @@ jobs:
               --output "$RUNNER_TEMP/ndu-native-synapse" --docker-socket /var/run/docker.sock
           fi
 
+      # The complete sealed archive is larger than the artifact reader limit.
+      # Publish the original command output and all compact command receipts
+      # separately without dropping, altering or relaxing the sealed archive.
+      - name: Retain exact native ARM64 tool probe command diagnostics separately
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-arm64-probe-trace-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/ndu-native-synapse/preparation/controller-commands/*-start-native-tool-probe.stdout
+            ${{ runner.temp }}/ndu-native-synapse/preparation/controller-commands/*-start-native-tool-probe.stderr
+            ${{ runner.temp }}/ndu-native-synapse/preparation/controller-commands/*-END.json
+          if-no-files-found: warn
+          retention-days: 21
+
       - name: Retain sealed images, seeds, actual binaries, runtime receipts and failures
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
