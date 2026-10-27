@@ -1,0 +1,160 @@
+{
+  "all_native_feature_and_action_hashes_match": true,
+  "complete_blocks": 120,
+  "engineering_overhead_improvement_supported": true,
+  "fresh_process": {
+    "ffi": {
+      "first_pair_ns": {
+        "count": 8,
+        "maximum": 187472.0,
+        "mean": 165799.75,
+        "median": 163907.0,
+        "minimum": 143667.0,
+        "p05": 145997.65,
+        "p95": 186399.6
+      },
+      "load_ns": {
+        "count": 8,
+        "maximum": 883672.0,
+        "mean": 784741.25,
+        "median": 761983.5,
+        "minimum": 704191.0,
+        "p05": 712095.4,
+        "p95": 877323.7
+      },
+      "total_ns": {
+        "count": 8,
+        "maximum": 1049942.0,
+        "mean": 950541.0,
+        "median": 930882.5,
+        "minimum": 870442.0,
+        "p05": 873904.9,
+        "p95": 1049034.1
+      }
+    },
+    "legacy": {
+      "first_pair_ns": {
+        "count": 8,
+        "maximum": 1285467.0,
+        "mean": 941185.5,
+        "median": 974118.0,
+        "minimum": 303176.0,
+        "p05": 483799.80000000005,
+        "p95": 1268136.75
+      },
+      "load_ns": {
+        "count": 8,
+        "maximum": 4698971.0,
+        "mean": 1665374.5,
+        "median": 1255962.5,
+        "minimum": 1129322.0,
+        "p05": 1152870.35,
+        "p95": 3513439.099999998
+      },
+      "total_ns": {
+        "count": 8,
+        "maximum": 5002147.0,
+        "mean": 2606560.0,
+        "median": 2318814.0,
+        "minimum": 1948566.0,
+        "p05": 2000100.7,
+        "p95": 4143086.699999999
+      }
+    }
+  },
+  "input_sha256": "cb5685dcc5b3e3a06db10403d4c9815434951ae799fa449fc3c7d260d23e850b",
+  "main_block_original_tick_calls": 12288,
+  "max_fresh_process_error": 0.0,
+  "max_ratio_error": 0.0,
+  "max_summary_error": 0.0,
+  "paired_repeat_units": 24,
+  "paired_runtime_ratios": {
+    "ffi_compact_over_history": {
+      "count": 24,
+      "maximum": 41.954992472050485,
+      "mean": 30.024630976868337,
+      "median": 29.48836971887507,
+      "minimum": 13.168156918950906,
+      "p05": 20.142649738998628,
+      "p95": 37.97036209447106
+    },
+    "ffi_full_record_over_history": {
+      "count": 24,
+      "maximum": 116.02887505821585,
+      "mean": 79.50401325203565,
+      "median": 82.75028513277908,
+      "minimum": 32.87259835936524,
+      "p05": 42.79805421044278,
+      "p95": 109.86192384318875
+    },
+    "legacy_full_record_over_ffi_full_record": {
+      "count": 24,
+      "maximum": 3.758861830595728,
+      "mean": 2.1160561150366246,
+      "median": 1.931590528319667,
+      "minimum": 1.1691454198272824,
+      "p05": 1.4168878786030001,
+      "p95": 2.869451932508045
+    },
+    "legacy_no_record_over_ffi_compact": {
+      "count": 24,
+      "maximum": 5.681534435008469,
+      "mean": 4.277114317990681,
+      "median": 4.14381681076697,
+      "minimum": 2.361450980380393,
+      "p05": 3.002518717850117,
+      "p95": 5.54925941146414
+    }
+  },
+  "per_case_wall_ns": {
+    "ffi_compact": {
+      "count": 24,
+      "maximum": 52804.40625,
+      "mean": 41494.720052083336,
+      "median": 40674.8046875,
+      "minimum": 36919.84375,
+      "p05": 37705.95625,
+      "p95": 51514.21562499999
+    },
+    "ffi_full_record": {
+      "count": 24,
+      "maximum": 164817.40625,
+      "mean": 109443.38932291667,
+      "median": 101963.875,
+      "minimum": 89931.140625,
+      "p05": 94644.69453125,
+      "p95": 145173.36640624996
+    },
+    "history": {
+      "count": 24,
+      "maximum": 2878.078125,
+      "mean": 1468.44921875,
+      "median": 1404.4609375,
+      "minimum": 975.53125,
+      "p05": 1059.86171875,
+      "p95": 2357.262499999999
+    },
+    "legacy_full_record": {
+      "count": 24,
+      "maximum": 399034.78125,
+      "mean": 224753.27864583334,
+      "median": 207915.4765625,
+      "minimum": 173223.828125,
+      "p05": 175061.52421875,
+      "p95": 260066.521875
+    },
+    "legacy_no_record": {
+      "count": 24,
+      "maximum": 219217.65625,
+      "mean": 175065.69205729166,
+      "median": 169840.609375,
+      "minimum": 123000.34375,
+      "p05": 133019.3453125,
+      "p95": 212829.11875
+    }
+  },
+  "schema": "hepta.field-bridge.v2.native-independent-arithmetic.v1",
+  "scientific_benefit_inferred": false,
+  "scope": "Read-only arithmetic and recorded identity checks, not independent rerunning of the native benchmark. Shared-host timing and absence of model generation remain limitations.",
+  "script_sha256": "3b767dccf41ae9279c920a0a6ed4e95bb89bb500b84f57a81d100e0fdd48ba15"
+}

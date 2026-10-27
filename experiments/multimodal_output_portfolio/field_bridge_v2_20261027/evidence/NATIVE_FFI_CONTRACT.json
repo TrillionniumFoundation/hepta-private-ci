@@ -1,0 +1,30 @@
+{
+  "authority": "DENY_ALL",
+  "compact_full_receipt_parity": true,
+  "concurrent_parity_cases": 64,
+  "downstream_frozen_action_parity": true,
+  "feature_matrix_parity": true,
+  "feature_receipt_pairs": 80,
+  "feature_sha256": [
+    "3252fa923bcb5ad6c3ca0049d96e408c520eeafd2f3a090cd7756619cb5cdf95",
+    "3ad88bafff712173c3f58f074b7ea4c8f462391396bfc9e5bfd46768eecdce5d"
+  ],
+  "full_receipt_parity_cases": 512,
+  "legacy_binary_sha256": "a86032964bbab3a28150ffe58474d0d6c7fc7988caf3f0be4ecd46e37985cbd7",
+  "library_sha256": "bfad6ca9d91d958296fa47c7f8ace4414b7ddf659e079ae5394c37bd104ceac3",
+  "native_invalid_cases": 12,
+  "native_invalid_output_unchanged": true,
+  "native_owner_integration": false,
+  "original_ticks_compared": 1024,
+  "passed": true,
+  "python_invalid_cases": 18,
+  "recovery_after_invalid": true,
+  "repeat_parity_cases": 32,
+  "request_bytes": 432,
+  "requires_calibration": true,
+  "response_bytes": 1816,
+  "schema": "hepta.field-bridge-v2.native-ffi-contract.v1",
+  "scientific_effect_estimated": false,
+  "source_commit": "63f198ad85cfa2aa579032256355f446cfe793a0",
+  "wall_ns": 272192244
+}

@@ -1,0 +1,85 @@
+{
+  "allowed_members": [
+    "run/runtime/17-frozen/banks.npz",
+    "run/runtime/29-frozen/banks.npz",
+    "run/runtime/43-frozen/banks.npz"
+  ],
+  "archive_sha256": "5d855b0a9f4cbf273979fe2071837041aed0489cd56aa555e828564b98a56c47",
+  "baselines": [
+    "stop action0",
+    "fixed action selected by training mean then reused on development",
+    "best fixed action selected on development",
+    "row oracle action, diagnostic only"
+  ],
+  "collision_definition": "identical 40D native integer activation/eligibility vectors; compare original two-event 16D public input identity and recorded return vectors without treating rows independent",
+  "common_normalization": {
+    "fit_rows": "concatenate train_x0 and train_x1; common eight-coordinate mean/std",
+    "formula": "u=(clip((x-mean)/(scale*k),-1,1)+1)/2",
+    "frozen_for_development": true,
+    "std_ddof": 0,
+    "std_floor": 1e-06
+  },
+  "created_utc": "2026-10-27T08:25:30.367000+00:00",
+  "excluded": "No V1/V2 test or retention rows; no adaptation or audit observer; no new generated model outputs",
+  "grid": [
+    {
+      "k": null,
+      "name": "raw"
+    },
+    {
+      "k": 1,
+      "name": "common_standardization_k1"
+    },
+    {
+      "k": 2,
+      "name": "common_standardization_k2"
+    },
+    {
+      "k": 4,
+      "name": "common_standardization_k4"
+    }
+  ],
+  "head": {
+    "alpha_order": [
+      0.0001,
+      0.01,
+      1.0
+    ],
+    "candidate_count_per_representation": 12,
+    "coefficient_count": 205,
+    "family": "existing V1 fit_readout ridge, train-only standardization, unpenalized intercept",
+    "selection": "maximize development mean recorded net return; first transform/alpha listed breaks ties; no refit"
+  },
+  "input_keys": [
+    "train_x0",
+    "train_x1",
+    "train_returns",
+    "dev_x0",
+    "dev_x1",
+    "dev_returns"
+  ],
+  "interpretation": "All choices are development diagnostics. Selection optimism and source correlation retained; no p-value, superiority, retention, or production promotion claim.",
+  "metrics": [
+    "train/development mean net return and oracle regret for all candidates",
+    "native channel activation frequencies at both ticks",
+    "constant-column count and centered matrix rank, singular values, participation rank",
+    "raw and normalized input mean/std/range; native feature collisions and observed best-action disagreement",
+    "two-event same-readout structural collision witness with different public histories",
+    "per-condition development decomposition; descriptive actual feature/fit timing"
+  ],
+  "preservation": "Preserve all four transforms and all three alpha candidates for both representations and all three seeds; existing V1/V2 frozen source unchanged",
+  "purpose": "Exploratory training/development-only diagnosis of fixed sparse-kernel channel competition; no heldout efficacy claim",
+  "rank_definition": "center feature matrix; also standardize using training mean and max(std,1e-6); rank at tolerance max(shape)*eps*largest singular value; report singular values",
+  "representation": [
+    "original native sparse_tick through exact FFI; same 20 units and top4; two events; 40D activation/eligibility",
+    "history [u0,u1,u0^2,u1^2,u1-u0] 40D"
+  ],
+  "schema": "hepta.field-bridge-v2.development-normalization-diagnostic.v1",
+  "source_commit": "e8ce0f538857f8bd869e275aa7fd258aa7989113",
+  "transform_order": [
+    "raw",
+    "common_standardization_k1",
+    "common_standardization_k2",
+    "common_standardization_k4"
+  ]
+}
