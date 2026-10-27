@@ -358,6 +358,12 @@ async fn real_selected_initial_serves_ordinary_context_then_refuses_revocation()
         Digest32::of_bytes(SMOLLM_PUBLIC_INITIAL_PROFILE_V2),
     )?;
     let config = fixture.config("b")?;
+    // Regress the original SUN_LEN failure before attempting a real Agentd bind.
+    #[cfg(unix)]
+    std::assert!(
+        config.identity().control_socket.as_os_str().as_encoded_bytes().len() < 104,
+        "ordinary Agentd socket path must fit the shortest supported Unix sun_path"
+    );
     worker.action_completions = seed_actions(&config, i64::try_from(fixture.now)?).await?;
     let (material, current) = fixture.public_material()?;
     let report = session(

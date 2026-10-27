@@ -173,6 +173,12 @@ async fn real_public_initial_three_rounds_hold_and_read_original_current() -> Te
         Digest32::of_bytes(SMOLLM_PUBLIC_INITIAL_PROFILE_V2),
     )?;
     let config = fixture.config("b")?;
+    // The real three-round owner must also use a portable Unix socket path.
+    #[cfg(unix)]
+    std::assert!(
+        config.identity().control_socket.as_os_str().as_encoded_bytes().len() < 104,
+        "three-round Agentd socket path must fit the shortest supported Unix sun_path"
+    );
     let identity = config.identity().clone();
     let actions = seed_actions(&config, i64::try_from(fixture.now)?).await?;
     worker.action_completions = actions.clone();
