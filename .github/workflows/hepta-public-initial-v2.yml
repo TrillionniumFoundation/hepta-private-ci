@@ -96,6 +96,8 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
       - name: Build the first-party binary required by the existing native host test
+        id: required_cli
+        continue-on-error: true
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
@@ -103,11 +105,45 @@ jobs:
           sha256sum "$CARGO_TARGET_DIR/debug/codex" > "$RUNNER_TEMP/hepta-public-initial-v2/codex-binary.sha256"
           printf 'CARGO_BIN_EXE_codex=%s/debug/codex\n' "$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
       - name: Execute the complete three changed Rust packages
+        id: scoped_rust
+        continue-on-error: true
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/scoped-rust.json" --timeout-seconds 3600 --minimum-tests 1 -- just test --locked -p codex-hepta-learning-artifacts -p codex-hepta-agentd -p codex-hepta-infer-worker-host --no-capture
+      - name: Record whether the actual model test target was built
+        id: model_target
+        run: |
+          python3 -I -B - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          targets = []
+          for path in sorted((Path(os.environ["CARGO_TARGET_DIR"]) / "debug/deps").glob("codex_hepta_infer_worker_host-*")):
+              if not path.is_file() or not os.access(path, os.X_OK):
+                  continue
+              with path.open("rb") as handle:
+                  if handle.read(4) != b"\x7fELF":
+                      continue
+                  handle.seek(0)
+                  digest = hashlib.file_digest(handle, "sha256").hexdigest()
+              result = subprocess.run([str(path), "--list"], capture_output=True, text=True, timeout=30)
+              available = result.returncode == 0 and all(name in result.stdout for name in (
+                  "real_selected_initial_serves_ordinary_context_then_refuses_revocation",
+                  "real_public_initial_three_rounds_hold_and_read_original_current"))
+              targets.append(dict(path=str(path), sha256=digest, bytes=path.stat().st_size,
+                  list_exit=result.returncode, model_tests_present=available, stderr=result.stderr[-4096:]))
+          available = any(row["model_tests_present"] for row in targets)
+          record = dict(schema="hepta-built-model-test-target-v1", available=available, targets=targets,
+              state="executable-target-observed" if available else "unavailable-after-scoped-build",
+              actual_model_executed=False)
+          root = Path(os.environ["RUNNER_TEMP"]) / "hepta-public-initial-v2"
+          (root / "model-target.json").write_text(json.dumps(record, indent=2) + "\n")
+          with Path(os.environ["GITHUB_OUTPUT"]).open("a") as output:
+              output.write(f"available={str(available).lower()}\n")
+          PY
       - name: Install the exact CPU wheel closure in a new environment
+        id: cold_runtime
+        if: ${{ success() && steps.model_target.outputs.available == 'true' }}
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
@@ -118,6 +154,8 @@ jobs:
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B -m pip check
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py record --lock ../chain/scripts/ci/model-runtime-cpu-requirements.txt --installation "$RUNNER_TEMP/hepta-public-initial-v2/pip-install.json" --output "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
       - name: Rebuild public V2 from the seven exact upstream files
+        id: materials
+        if: ${{ !cancelled() && steps.cold_runtime.outcome == 'success' }}
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
@@ -136,6 +174,7 @@ jobs:
           PY
       - name: Require real ordinary inference and independent revocation
         id: ordinary
+        if: ${{ !cancelled() && steps.materials.outcome == 'success' }}
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
@@ -143,12 +182,15 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/ordinary-native.json" --timeout-seconds 900 --minimum-tests 1 -- just test --locked -p codex-hepta-infer-worker-host --lib --profile hepta-public-initial-v2 -E 'test(real_selected_initial_serves_ordinary_context_then_refuses_revocation)' --run-ignored only --no-capture
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
       - name: Run three real matched proposal rounds and reread original CURRENT
+        id: proposal_rounds
+        if: ${{ !cancelled() && steps.ordinary.outcome == 'success' }}
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/three-rounds-native.json" --timeout-seconds 11100 --minimum-tests 1 -- just test --locked -p codex-hepta-infer-worker-host --lib --profile hepta-public-initial-v2 -E 'test(real_public_initial_three_rounds_hold_and_read_original_current)' --run-ignored only --no-capture
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
       - name: Execute six-arm candidate descendants and retain typed install blockers
+        id: descendants
         if: ${{ !cancelled() && steps.ordinary.outcome == 'success' }}
         run: |
           set -euo pipefail
@@ -156,11 +198,43 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/descendant-execution.json" --timeout-seconds 9000 --minimum-tests 0 -- "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_descendant_v2.py --native-input "$HEPTA_PN3_NEURAL_NATIVE_CONFIG" --ordinary-readback "$RUNNER_TEMP/hepta-public-initial-v2/native/public-initial-three-rounds/ordinary-0/ordinary-session-result.json" --output "$RUNNER_TEMP/hepta-public-initial-v2/descendant-diagnostics"
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
       - name: Finish the scoped lint and formatting gate after tests
+        id: lint
         run: |
           set -euo pipefail
           just fix --locked -p codex-hepta-learning-artifacts -p codex-hepta-agentd -p codex-hepta-infer-worker-host
           just fmt
           git diff --exit-code
+      - name: Enforce every original qualification and observation outcome
+        if: always()
+        env:
+          REQUIRED_CLI_OUTCOME: ${{ steps.required_cli.outcome }}
+          SCOPED_RUST_OUTCOME: ${{ steps.scoped_rust.outcome }}
+          MODEL_TARGET_AVAILABLE: ${{ steps.model_target.outputs.available }}
+          COLD_RUNTIME_OUTCOME: ${{ steps.cold_runtime.outcome }}
+          MATERIALS_OUTCOME: ${{ steps.materials.outcome }}
+          ORDINARY_OUTCOME: ${{ steps.ordinary.outcome }}
+          PROPOSAL_ROUNDS_OUTCOME: ${{ steps.proposal_rounds.outcome }}
+          DESCENDANTS_OUTCOME: ${{ steps.descendants.outcome }}
+          LINT_OUTCOME: ${{ steps.lint.outcome }}
+        run: |
+          python3 -I -B - <<'PY'
+          import json, os
+          from pathlib import Path
+          names = ("REQUIRED_CLI_OUTCOME", "SCOPED_RUST_OUTCOME", "COLD_RUNTIME_OUTCOME",
+              "MATERIALS_OUTCOME", "ORDINARY_OUTCOME", "PROPOSAL_ROUNDS_OUTCOME",
+              "DESCENDANTS_OUTCOME", "LINT_OUTCOME")
+          outcomes = {name: os.environ.get(name, "unavailable") for name in names}
+          target = os.environ.get("MODEL_TARGET_AVAILABLE") == "true"
+          passed = target and all(value == "success" for value in outcomes.values())
+          record = dict(schema="hepta-public-initial-required-outcomes-v2", outcomes=outcomes,
+              model_target_available=target, all_required_outcomes_passed=passed,
+              original_full_rust_gate_required=True, product_qualification=False,
+              three_installed_upgrades_proven=False)
+          path = Path(os.environ["RUNNER_TEMP"]) / "hepta-public-initial-v2/required-outcomes.json"
+          path.write_text(json.dumps(record, indent=2) + "\n")
+          if not passed:
+              raise SystemExit("at least one required outcome failed, skipped, or was unavailable")
+          PY
       - name: Preserve actual outcome and any formatter patch
         if: always()
         run: |

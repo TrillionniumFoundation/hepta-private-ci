@@ -138,3 +138,12 @@ runner, but do not prove hidden-ancestor limits or available memory. The isolate
 experiment therefore retains `resource_limit_unknown` and does not issue a
 resource-capacity qualification. Earlier immutable host records are preserved
 with their original source and must not be reinterpreted as controlled capacity.
+
+The complete Rust package gate and its required first-party CLI build retain
+their own outcomes. An executable model test target can continue isolated model
+observations after an unrelated package-test failure. The final `always()` gate
+still requires the CLI build, all three complete packages, cold installation,
+ordinary inference, original three rounds, descendant diagnostics and final lint
+to succeed. A failed, skipped or unavailable original gate keeps the job failed;
+model observations never substitute for that gate. Missing compiled model targets
+are recorded explicitly and cannot be counted as executed model experiments.
