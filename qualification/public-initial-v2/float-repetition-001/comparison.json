@@ -1,0 +1,231 @@
+{
+  "schema": "hepta-observed-float-repetition-comparison-v1",
+  "scope": "comparison of existing independently executed CI receipts; no new training and no local download of the omitted safetensors bytes",
+  "runs": [
+    {
+      "run_id": 40498180354,
+      "archive_sha256": "b53e83d157c07a713fc566087b32b48fd42c0ac388628e5835071207de942b36",
+      "receipt_member": "campaign/round-2-train-cumulative-lora/actual-receipt.json",
+      "receipt_sha256": "7321aec7139fdeed0c034fc2d28165c57db5d9bbecb8ae3474761d98da10ab07",
+      "chain_commit": "c96022b897c1235fdbdbfcfa32764403511c6aab",
+      "actual_parent_readback": "321edb8a9bc734114a6d909fff0fdf8aebbbb46ff3f2b4654e63898f1a788caa",
+      "parent_file_sha256": "7e1df3f1747e7580e4df43b1bdb43fff8ce2af3bc37d73b740a8a606e3c10ab8",
+      "request_sha256": "f15ebacf38ffb3ce556c4533a5384f20873f9ed1183e44afbddab4eac9236f3d",
+      "token_schedule_sha256": "9585800ae96ae656cd174d3d6505df729bf92c7f027cbb597c2206736c44f654",
+      "seed": 7,
+      "threads": 4,
+      "device": "cpu",
+      "recipe": {
+        "initialization_seed": 7,
+        "kind": "lora",
+        "learning_rate": "0.001"
+      },
+      "training": {
+        "flop_scope": "profiler-supported-operators-only-not-total-work",
+        "loss": [
+          "0.202991083264",
+          "0.569856464863",
+          "0.0746637433767",
+          "0.131266951561",
+          "0.397501438856",
+          "0.0448840521276",
+          "0.0823507159948",
+          "1.18401300907",
+          "1.00507211685",
+          "0.483505517244"
+        ],
+        "steps": 10,
+        "supervised_tokens": 40,
+        "supported_profile_flops": 289144351496,
+        "tokens": 526
+      },
+      "reported_artifact_root": "35da228e379dcf1f5f830fc3ad7f4c9993b80700b4032f921cf8db2e91656487",
+      "reported_payload_sha256": "e59554ba0120e4d24d6a9d2a5f885001adfa115877f060116ba4801db71e9fba",
+      "host_summary": {
+        "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+        "python": "3.12.3 (main, Sep 26 2024, 18:18:55) [GCC 13.2.0]",
+        "cpu_count": 4,
+        "physical_memory_bytes": 16766414848,
+        "effective_limit_known": false,
+        "resource_scope": "resource_limit_unknown"
+      },
+      "immutable_held_runtime_closure": false,
+      "hepta_source": "60df5f93480e191cea88780d2ff394554182e30b",
+      "original_workflow_conclusion": "failure",
+      "training_outcome": "success",
+      "recorded_helper_sources": {
+        "scripts/hepta_cumulative_campaign.py": "0dc9c76a038b9e52a26b2c0d95d9e1709a3878c78ff07eef166143e9e1e39e31",
+        "scripts/hepta_cumulative_control_child.py": "a91b832a78f6d17394dde5513a1402940b0153bf9a695ffaf3053af8c9989744",
+        "scripts/hepta_cumulative_controls.py": "6969222dc65a5ac6858a63a3ea09f629ecf05ff2e44ad6c9668e627aeb19f2ce",
+        "scripts/hepta_cumulative_source.py": "569df0528f866ae78d7e93535b3c1f5d9a16a9fca85767c46b51e585d0c2b18d",
+        "scripts/test_hepta_cumulative_controls.py": "2fd81397ff614c6788ce73384219ab2a266690ec8dc25cce388a41a9ed0f7172",
+        "scripts/test_hepta_cumulative_source.py": "eb00caa2ace8c155ab856e818cb398fbb6f9de2e72a5cb5fb164a61218665921"
+      },
+      "record_inputs": {
+        "host.json": {
+          "bytes": 4647,
+          "sha256": "69056135244e60997ce8c40c6587111025f7a11e642ece2edb54df0d8c00ff40"
+        },
+        "runtime-snapshot.json": {
+          "bytes": 8508804,
+          "sha256": "0b006415dddf72a0395d87487d6b68e23e1da345eacd0c2c8482a3aa88bac518"
+        },
+        "evidence-index.json": {
+          "bytes": 3260277,
+          "sha256": "6c2dcf9749d98aa3e9a651bd545e44f583087b952394dbe52f65223d2d5c57ae"
+        },
+        "format-scope.json": {
+          "bytes": 1274,
+          "sha256": "48e83bdf885b1a356724a10960562110dd9cfddbfa13d48a58475770e1f44698"
+        },
+        "source-pin.json": {
+          "bytes": 3844,
+          "sha256": "21558033564d26454fc285eae228cfbb199ba02627138b8d56d50882c1423269"
+        }
+      },
+      "record_retention_directory": "../controls-ci-001-60df5f93",
+      "cpu_model_recorded": false,
+      "cpu_microcode_recorded": false,
+      "requirements_sha256": "178b2fe89a7bf58f2d127b195d82e4fa9b5c19d93cb3526d8789edf3df901017",
+      "recorded_wheel_count": 31,
+      "recorded_torch": {
+        "sha256": "7417d8c565f219d3455654cb431c6d892a3eb40246055e14d645422de13b9ea1",
+        "version": "2.9.1+cpu"
+      }
+    },
+    {
+      "run_id": 40501186161,
+      "archive_sha256": "9e9ff51116ad1e6b51500212f4fb57e0bfd6911f4833b14613a1ecd03609d05c",
+      "receipt_member": "campaign/round-2-train-cumulative-lora/actual-receipt.json",
+      "receipt_sha256": "a49374eab52adfaff1ea83536d67d598a29127b7b763b7fb6e5aaff177d39702",
+      "chain_commit": "c96022b897c1235fdbdbfcfa32764403511c6aab",
+      "actual_parent_readback": "321edb8a9bc734114a6d909fff0fdf8aebbbb46ff3f2b4654e63898f1a788caa",
+      "parent_file_sha256": "7e1df3f1747e7580e4df43b1bdb43fff8ce2af3bc37d73b740a8a606e3c10ab8",
+      "request_sha256": "f15ebacf38ffb3ce556c4533a5384f20873f9ed1183e44afbddab4eac9236f3d",
+      "token_schedule_sha256": "9585800ae96ae656cd174d3d6505df729bf92c7f027cbb597c2206736c44f654",
+      "seed": 7,
+      "threads": 4,
+      "device": "cpu",
+      "recipe": {
+        "initialization_seed": 7,
+        "kind": "lora",
+        "learning_rate": "0.001"
+      },
+      "training": {
+        "flop_scope": "profiler-supported-operators-only-not-total-work",
+        "loss": [
+          "0.202988967299",
+          "0.569857597351",
+          "0.0746627673507",
+          "0.131264984608",
+          "0.397497981787",
+          "0.0448860712349",
+          "0.0823498889804",
+          "1.18400430679",
+          "1.00505888462",
+          "0.483497709036"
+        ],
+        "steps": 10,
+        "supervised_tokens": 40,
+        "supported_profile_flops": 289144351496,
+        "tokens": 526
+      },
+      "reported_artifact_root": "d2db4d2626a4fcc7057c450adf4d94987c83b7956933ead4b08c3f4be7ed784d",
+      "reported_payload_sha256": "cfaeba1e8a74a2521d9bcdb815f4fa41feac7acadae52558ad8a6ef7f1823516",
+      "host_summary": {
+        "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+        "python": "3.12.3 (main, Sep 26 2024, 18:18:55) [GCC 13.2.0]",
+        "cpu_count": 4,
+        "physical_memory_bytes": 16766414848,
+        "effective_limit_known": false,
+        "resource_scope": "resource_limit_unknown"
+      },
+      "immutable_held_runtime_closure": false,
+      "hepta_source": "6ba1a5b352568250edcec5975972d7d67d30e295",
+      "original_workflow_conclusion": "success",
+      "training_outcome": "success",
+      "recorded_helper_sources": {
+        "scripts/hepta_cumulative_campaign.py": "37e890e64ec6eeca8ea32f5d47b374f15f649ed2b0d5afba92c390a4347fe853",
+        "scripts/hepta_cumulative_control_child.py": "a91b832a78f6d17394dde5513a1402940b0153bf9a695ffaf3053af8c9989744",
+        "scripts/hepta_cumulative_controls.py": "6969222dc65a5ac6858a63a3ea09f629ecf05ff2e44ad6c9668e627aeb19f2ce",
+        "scripts/hepta_cumulative_pilot_entry.py": "cb59036cb8e121baa2ad2453021c6065e0baf1d8263d2422b69c2e25b89e8cb7",
+        "scripts/hepta_cumulative_source.py": "569df0528f866ae78d7e93535b3c1f5d9a16a9fca85767c46b51e585d0c2b18d",
+        "scripts/test_hepta_cumulative_controls.py": "2fd81397ff614c6788ce73384219ab2a266690ec8dc25cce388a41a9ed0f7172",
+        "scripts/test_hepta_cumulative_pilot_entry.py": "91d6c161123d03d188f8ad58e87ace25bfda22714f7f7d525dfb94e884bbd7fc",
+        "scripts/test_hepta_cumulative_source.py": "eb00caa2ace8c155ab856e818cb398fbb6f9de2e72a5cb5fb164a61218665921"
+      },
+      "record_inputs": {
+        "host.json": {
+          "bytes": 4632,
+          "sha256": "093cce73671000267f4790e3c2c3784f209960a259f9263828c5e3b99eb04b29"
+        },
+        "runtime-snapshot.json": {
+          "bytes": 8508804,
+          "sha256": "c2afa7383f72a7c2c21a0b8867b03d085308fdbfc68ed45832a2c6bd036f0939"
+        },
+        "evidence-index.json": {
+          "bytes": 3268893,
+          "sha256": "3ea8f8df5bbb394338ed3670bb074d69e8ca2b8afe7bcde5f7ff10f5e1186380"
+        },
+        "format-scope.json": {
+          "bytes": 1608,
+          "sha256": "0fe0ac4b5f87d04a88bc193dc6b4c1a9ccbf28d6fbd8feba994f3c8d324f6562"
+        },
+        "source-pin.json": {
+          "bytes": 3844,
+          "sha256": "21558033564d26454fc285eae228cfbb199ba02627138b8d56d50882c1423269"
+        }
+      },
+      "record_retention_directory": "../controls-ci-002-6ba1a5b3",
+      "cpu_model_recorded": false,
+      "cpu_microcode_recorded": false,
+      "requirements_sha256": "178b2fe89a7bf58f2d127b195d82e4fa9b5c19d93cb3526d8789edf3df901017",
+      "recorded_wheel_count": 31,
+      "recorded_torch": {
+        "sha256": "7417d8c565f219d3455654cb431c6d892a3eb40246055e14d645422de13b9ea1",
+        "version": "2.9.1+cpu"
+      }
+    }
+  ],
+  "recorded_runtime_top_fields_equal_except_files": true,
+  "recorded_runtime_files_per_run": [
+    27198,
+    27198
+  ],
+  "recorded_file_digest_differences": 530,
+  "all_recorded_file_differences_are_pyc": true,
+  "recorded_non_pyc_file_digest_maps_equal": true,
+  "reported_loss_absolute_differences": [
+    "0.000002115965",
+    "0.000001132488",
+    "9.760260E-7",
+    "0.000001966953",
+    "0.000003457069",
+    "0.0000020191073",
+    "8.270144E-7",
+    "0.00000870228",
+    "0.00001323223",
+    "0.000007808208"
+  ],
+  "maximum_reported_loss_absolute_difference": "0.00001323223",
+  "reported_artifact_roots_equal": false,
+  "hardware_cause_established": false,
+  "all_environment_variables_and_scheduling_identical_proven": false,
+  "weight_byte_difference_independently_verified_locally": false,
+  "conclusion": "Recorded plan, parent, helper, package pins, seed and thread count did not establish bitwise equal reported results in these two runs. This observation does not prove a specific hardware cause or impossibility of neural consensus.",
+  "whole_hepta_source_identical": false,
+  "changed_campaign_source_scope": "The orchestration script and isolated evaluation entry changed; the recorded training child, controls helper and source validation helper hashes stayed equal.",
+  "recorded_host_differing_fields": [
+    "proc_self_mountinfo"
+  ],
+  "pyc_difference_cause_established": false,
+  "failed_attempt_additional_training_cost": {
+    "run_id": 40498180354,
+    "completed_gradient_steps": 10,
+    "tokens": 526,
+    "supervised_tokens": 40,
+    "included_in_successful_campaign_ledger": false
+  },
+  "new_training_executed_for_this_observation": false,
+  "product_qualification": false
+}
