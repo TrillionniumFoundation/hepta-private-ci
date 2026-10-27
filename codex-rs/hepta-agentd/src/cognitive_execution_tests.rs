@@ -2,7 +2,6 @@ use super::*;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_types::Digest32;
-use pretty_assertions::assert_eq;
 use std::time::Duration;
 use std::time::Instant;
 use tokio_util::sync::CancellationToken;

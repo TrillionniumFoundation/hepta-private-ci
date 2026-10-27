@@ -334,7 +334,7 @@ impl AgentdState {
                 }
                 match result {
                     Ok(snapshot) if with_execution => AgentdPayload::CognitiveContextWithExecutionV1(
-                        execution.context_with_execution_v1(snapshot).map_err(AgentdError::Protocol)?,
+                        Box::new(execution.context_with_execution_v1(snapshot).map_err(AgentdError::Protocol)?),
                     ),
                     Ok(snapshot) => AgentdPayload::CognitiveContext(snapshot),
                     Err(CognitiveContextError::Store(error)) => {

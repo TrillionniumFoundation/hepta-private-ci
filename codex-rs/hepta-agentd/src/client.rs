@@ -207,7 +207,7 @@ impl AgentdClient {
                         "cognitive execution owner mismatch".to_owned(),
                     ));
                 }
-                Ok(context)
+                Ok(*context)
             }
             payload => unexpected(payload),
         }

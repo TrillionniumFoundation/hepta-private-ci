@@ -809,7 +809,7 @@ pub enum AgentdPayload {
         conflict_digest: String,
     },
     CognitiveContext(CognitiveContextSnapshot),
-    CognitiveContextWithExecutionV1(CognitiveContextExecutionV1),
+    CognitiveContextWithExecutionV1(Box<CognitiveContextExecutionV1>),
     CognitiveContextRevalidated(CognitiveContextRevalidation),
     AuthBusTextStatus(AuthBusTextStatus),
     KernelEvidenceResult(KernelEvidenceResult),
