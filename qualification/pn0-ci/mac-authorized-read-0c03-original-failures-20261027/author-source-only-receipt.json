@@ -1,0 +1,157 @@
+{
+  "schema": "PN0-exec-server-Mac-and-remote-source-candidate-v1",
+  "recorded_utc": "2026-10-27T02:44:53.111612+00:00",
+  "candidate_status": "FROZEN_SOURCE_ONLY_UNAPPLIED_NOT_NATIVE_QUALIFIED",
+  "base_root_head": "35ed519707133b544ecf9b7ffe933ff98f8435ba",
+  "public_source": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+  "actual_original_failure_receipt": {
+    "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/independent-seven-terminal-original-receipt.json",
+    "bytes": 31492,
+    "sha256": "8da8a22a148f24b9790d365cbefc576473ce387b1a697b32af49bd5ec7a3d7d2"
+  },
+  "patches": {
+    "remote_only": {
+      "path": "work/ci-follow/Hepta-macOS-authorized-read-source-candidate-20261027-001/remote-sanitized-error-classes.patch",
+      "bytes": 3330,
+      "sha256": "5cd9e7e0296f0b5642f51c2b9392e8a0331f436dddf3d561c240c84c64a03664"
+    },
+    "macOS_alias_separate": {
+      "path": "work/ci-follow/Hepta-macOS-authorized-read-source-candidate-20261027-001/macOS-trusted-system-alias-policy.patch",
+      "bytes": 9887,
+      "sha256": "ebafc75e4d843d7d6aaa8c27041fc399891d9bec48389f1e3a34055dad916a2c"
+    }
+  },
+  "source_files": [
+    {
+      "original": {
+        "path": "work/ci-follow/Hepta-macOS-authorized-read-source-candidate-20261027-001/before/codex-rs/exec-server/src/local_file_system.rs",
+        "bytes": 57668,
+        "sha256": "d03ebdaaeeee2ea66ee716a7e7d4651e7117a6f2b78d8a780609cbdb0dcf57d1"
+      },
+      "root_source_exact_before_match": true,
+      "same_as_public0c_blob": true,
+      "candidate": {
+        "path": "work/ci-follow/Hepta-macOS-authorized-read-source-candidate-20261027-001/candidate/codex-rs/exec-server/src/local_file_system.rs",
+        "bytes": 57440,
+        "sha256": "0fc028dd6bbe810cfab3b2103e8ff3d28ac404dc68f01ede5261d22c8fd84de8"
+      }
+    },
+    {
+      "original": {
+        "path": "work/ci-follow/Hepta-macOS-authorized-read-source-candidate-20261027-001/before/codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs",
+        "bytes": 13917,
+        "sha256": "cbbc67a65b73deffe5798e0f197ade1f9c3e01687a624c19b57cd6fffbb571fd"
+      },
+      "root_source_exact_before_match": true,
+      "same_as_public0c_blob": true,
+      "candidate": {
+        "path": "work/ci-follow/Hepta-macOS-authorized-read-source-candidate-20261027-001/candidate/codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs",
+        "bytes": 13917,
+        "sha256": "cbbc67a65b73deffe5798e0f197ade1f9c3e01687a624c19b57cd6fffbb571fd"
+      }
+    },
+    {
+      "original": {
+        "path": "work/ci-follow/Hepta-macOS-authorized-read-source-candidate-20261027-001/before/codex-rs/exec-server/src/remote_file_system.rs",
+        "bytes": 22105,
+        "sha256": "b2a37a65c1ef55b76b2ef5f55bc573137a02eda095b8d359f157b5d46df1bbeb"
+      },
+      "root_source_exact_before_match": true,
+      "same_as_public0c_blob": true,
+      "candidate": {
+        "path": "work/ci-follow/Hepta-macOS-authorized-read-source-candidate-20261027-001/candidate/codex-rs/exec-server/src/remote_file_system.rs",
+        "bytes": 22845,
+        "sha256": "906dac50b0e5194be9b03e7bf8d65cb9d61234fcec5d6dc530c05db51c67172a"
+      }
+    },
+    {
+      "original": {
+        "path": "work/ci-follow/Hepta-macOS-authorized-read-source-candidate-20261027-001/before/codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs",
+        "bytes": 33894,
+        "sha256": "b7c755fbe11fa0b6e4d41e68e40a66a2f6e2eb93438520a175cf35843e87a23c"
+      },
+      "root_source_exact_before_match": true,
+      "same_as_public0c_blob": true,
+      "candidate": {
+        "path": "work/ci-follow/Hepta-macOS-authorized-read-source-candidate-20261027-001/candidate/codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs",
+        "bytes": 35711,
+        "sha256": "a1c687d25f2bcf8de57b4398d75fafca20949c00ef8af8f48cd2d3d3374eef67"
+      }
+    }
+  ],
+  "new_files": [
+    {
+      "path": "work/ci-follow/Hepta-macOS-authorized-read-source-candidate-20261027-001/candidate/codex-rs/exec-server/src/local_file_system_authorized_policy.rs",
+      "bytes": 4766,
+      "sha256": "5f2ca622039d9ff4873081e8c8ff21c62812c049be3f793c5cdc1a7b010ce7df"
+    },
+    {
+      "path": "work/ci-follow/Hepta-macOS-authorized-read-source-candidate-20261027-001/candidate/codex-rs/exec-server/src/local_file_system_authorized_policy_tests.rs",
+      "bytes": 3359,
+      "sha256": "fb6a7d4eaf0bc4f91b27e5f9c83bb7b983030cd6097d52f790b3ab151c9cf84d"
+    }
+  ],
+  "remote_change": {
+    "exact_sanitized_server_classes": [
+      {
+        "code": -32600,
+        "message": "Permission denied",
+        "client_kind": "PermissionDenied",
+        "client_message": "Permission denied"
+      },
+      {
+        "code": -32603,
+        "message": "authorized file read exceeds bound",
+        "client_kind": "InvalidData",
+        "client_message": "authorized file read exceeds bound"
+      },
+      {
+        "code": -32004,
+        "message": "No such file or directory",
+        "client_kind": "NotFound",
+        "client_message": "No such file or directory"
+      }
+    ],
+    "unknown_codes_or_messages_keep_original_fixed_redaction": true,
+    "exact_matching_only_no_path_or_provider_echo": true,
+    "new_pure_mapping_behavior_cases": 7,
+    "new_cases_execution": "NOT_RUN",
+    "original_redaction_transport_wire_tests_unchanged": true,
+    "definite_source_mismatch": "Original remote mapping converts original sanitized Permission denied to generic rejected string; original remote sandbox assertion rejects that. Original server oversize is internal-32603 and must remain InvalidData atclient.",
+    "historical_Mac_physical_path_trace": "UNKNOWN"
+  },
+  "macOS_alias_change": {
+    "new_private_module_lines": 119,
+    "scope": "Only 3 fixed Darwin top-level aliases /var,/tmp,/etc to exact /private counterparts. No descendant canonicalization.",
+    "trust_checks": [
+      "/ and/private symlink_metadata real directory,uid0,mode&022==0",
+      "logical alias symlink_metadata symlink,uid0",
+      "read_link target exactly absolute or root-relative expectedprivate path",
+      "physical target symlink_metadata real directory,uid0"
+    ],
+    "tmp_1777_explicitly_supported_in_design": "Non-group/other-write mode is checked on / and/private ONLY. Physical/private/tmp target may be1777:protected/private controls its name. Native functionality NOT_RUN.",
+    "denies": "Original ReadDenyMatcher on physical finalpath AND every verified inverse logical alias first; preserves glob (including wildcard alias spelling),missing exact denies,relative globs andoriginal deny-first precedence.",
+    "allows": "Explicit policyroots,SpecialTMPDIR/SlashTmp andcwd normalize top-levelprefix only, without symlink subtree resolution.",
+    "same_inode_nlink_kernel_probe_O_NOFOLLOW_ANY_O_UNIQUE_reopen_and_postread_functions_exact_bytes_unchanged": true,
+    "3_new_policy_mechanism_tests": "NOT_RUN; injected aliases exercise pure policy behavior, not trust/kernel/native proof.",
+    "static_counterexample": "A lexical grant /var/allowed cannot match F_GETPATH /private/var/allowed/data in originalpolicy.can_read_path. Conditional kernelpath assumption; not proved actual historical runnerpath.",
+    "independent_security_review": "PENDING_ROOT",
+    "native_qualification": "NOT_RUN"
+  },
+  "preservation": {
+    "original_stablehandle_unit_tests_bytes_unchanged": true,
+    "all_original_remote_tests_bytes_unchanged_after_removing_only_new_test": true,
+    "original_native_pipeline_functions_exact_bytes_unchanged": true,
+    "original_assertions_caps_resources_deadlines_capability_and_fixture_unchanged": true,
+    "no_unsupported_false_shortcut": true,
+    "no_original_fixture_canonicalization": true,
+    "no_root_source_or_ROG_source_changed": true,
+    "no_tests_Cargo_native_old_budget_reset": true,
+    "scratch_rustfmt_actual_exit": 0,
+    "root_final_just_fmt": "NOT_RUN by author; root integration step ifapplied",
+    "merge_ready": false,
+    "task_complete": false
+  },
+  "host_feasibility": "This localhostLinux; originalDarwin native failures requireDarwin originalCI, Linuxunsupported branch must not close them. New puremapping test should run through just test under new root-authorized scope; not yet executed.",
+  "stop_after_freeze": true
+}

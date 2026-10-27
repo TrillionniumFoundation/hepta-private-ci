@@ -1905,3 +1905,27 @@ previous bd/0c results as history; no old PASS qualifies this new tuple. Publica
 must preserve every still-active original run. All PN0–PN6 acceptance gates,
 Windows isolation, paid identities, real model rounds, release/custody and WAN
 requirements remain unchanged; task_complete=false, merge_ready=false, NO_GO.
+
+
+PN0's [original Mac authorized-read failures and source correction](../qualification/pn0-ci/mac-authorized-read-0c03-original-failures-20261027/manifest.json)
+retain all seven complete job logs. Before its original90-minute cancellation,
+Mac ARM actually failed the authorized-read RPC case and three filesystem cases;
+the separate Mac release job's60-minute deadline is a different observation.
+The remote adapter now preserves only three exact already-sanitized server error
+classes; unknown or provider-bearing messages retain fixed redaction. The Darwin
+policy comparison folds only verified root-owned system aliases and checks every
+equivalent deny spelling first, without resolving mutable descendants. The original
+kernel capability probe, stable handle, unique-link/inode check, secure reopen,
+bound, original tests and assertions remain. The historical runner's actual alias
+spelling is still UNKNOWN. Independent source review and parse/format observations
+do not close the original Mac failures; original native execution remains required.
+This source stage also grants no Windows isolation, model, release or WAN acceptance.
+Keep PN0–PN6, all original limits and failures, and NO_GO.
+
+The [new local mapping check](../qualification/pn0-ci/mac-authorized-read-0c03-original-failures-20261027/actual-local-mapping-test-result.json)
+actually ran through `just test` on Linux: both selected tests passed, with260
+other tests filtered out. The new mapping unit contains seven behavior cases;
+the second test preserves fixed transport-error redaction. This is a separate
+local role, not a reset of prior SDK, supervisor, host, model or PN1 budgets.
+Darwin system-alias policy, original RPC/filesystem failures and Windows native
+isolation remain unqualified; the original native jobs must still execute.

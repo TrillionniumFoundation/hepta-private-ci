@@ -184,6 +184,64 @@ async fn authorized_reads_fail_closed_for_legacy_or_disabled_capability() {
     server.await.expect("recording server should succeed");
 }
 
+#[test]
+fn authorized_read_preserves_only_exact_sanitized_error_classes() {
+    let cases = [
+        (
+            INVALID_REQUEST_ERROR_CODE,
+            "Permission denied",
+            std::io::ErrorKind::PermissionDenied,
+            "Permission denied",
+        ),
+        (
+            -32603,
+            "authorized file read exceeds bound",
+            std::io::ErrorKind::InvalidData,
+            "authorized file read exceeds bound",
+        ),
+        (
+            NOT_FOUND_ERROR_CODE,
+            "No such file or directory",
+            std::io::ErrorKind::NotFound,
+            "No such file or directory",
+        ),
+        (
+            INVALID_REQUEST_ERROR_CODE,
+            "Permission denied: /secret/provider.txt",
+            std::io::ErrorKind::InvalidInput,
+            "remote authorized file read was rejected",
+        ),
+        (
+            -32602,
+            "Permission denied",
+            std::io::ErrorKind::InvalidInput,
+            "remote authorized file read was rejected",
+        ),
+        (
+            -32603,
+            "authorized file read exceeds bound: /secret/provider.txt",
+            std::io::ErrorKind::Other,
+            "remote authorized file read failed",
+        ),
+        (
+            NOT_FOUND_ERROR_CODE,
+            "No such file or directory: /secret/provider.txt",
+            std::io::ErrorKind::NotFound,
+            "remote authorized file is unavailable",
+        ),
+    ];
+    for (code, message, expected_kind, expected_message) in cases {
+        let error = map_authorized_read_remote_error(ExecServerError::Server {
+            code,
+            message: message.to_string(),
+        });
+        assert_eq!(
+            (error.kind(), error.to_string()),
+            (expected_kind, expected_message.to_string()),
+        );
+    }
+}
+
 #[tokio::test]
 async fn authorized_read_redacts_all_remote_server_errors() {
     let cases = [
