@@ -163,59 +163,33 @@ impl StateRuntime {
                 return Err(err);
             }
         };
-        let logs_pool = match sqlite
-            .open_logs_db(&logs_migrator, telemetry_override)
-            .await
+        // The trusted directory and the primary state DB are validated first.
+        // The remaining schemas live in distinct files and have no cross-DB
+        // migration dependencies. Await every result: early cancellation could
+        // otherwise leave another successful pool's connections draining later.
+        let (logs, goals, memories, queue) = tokio::join!(
+            sqlite.open_logs_db(&logs_migrator, telemetry_override),
+            sqlite.open_goals_db(&goals_migrator, telemetry_override),
+            sqlite.open_memories_db(&memories_migrator, telemetry_override),
+            sqlite.open_queue_db(&queue_migrator, telemetry_override),
+        );
+        let independent = [logs, goals, memories, queue];
+        for ((label, path), result) in [
+            ("logs", &logs_path),
+            ("goals", &goals_path),
+            ("memories", &memories_path),
+            ("queue", &queue_path),
+        ]
+        .into_iter()
+        .zip(&independent)
         {
-            Ok(db) => Arc::new(db),
-            Err(err) => {
-                warn!("failed to open logs db at {}: {err}", logs_path.display());
-                close_sqlite_pools(&[pool.as_ref()]).await;
-                return Err(err);
+            if let Err(err) = result {
+                warn!("failed to open {label} db at {}: {err}", path.display());
+                break;
             }
-        };
-        let goals_pool = match sqlite
-            .open_goals_db(&goals_migrator, telemetry_override)
-            .await
-        {
-            Ok(db) => Arc::new(db),
-            Err(err) => {
-                warn!("failed to open goals db at {}: {err}", goals_path.display());
-                close_sqlite_pools(&[pool.as_ref(), logs_pool.as_ref()]).await;
-                return Err(err);
-            }
-        };
-        let memories_pool = match sqlite
-            .open_memories_db(&memories_migrator, telemetry_override)
-            .await
-        {
-            Ok(db) => Arc::new(db),
-            Err(err) => {
-                warn!(
-                    "failed to open memories db at {}: {err}",
-                    memories_path.display()
-                );
-                close_sqlite_pools(&[pool.as_ref(), logs_pool.as_ref(), goals_pool.as_ref()]).await;
-                return Err(err);
-            }
-        };
-        let queue_pool = match sqlite
-            .open_queue_db(&queue_migrator, telemetry_override)
-            .await
-        {
-            Ok(db) => Arc::new(db),
-            Err(err) => {
-                warn!("failed to open queue db at {}: {err}", queue_path.display());
-                close_sqlite_pools(&[
-                    pool.as_ref(),
-                    logs_pool.as_ref(),
-                    goals_pool.as_ref(),
-                    memories_pool.as_ref(),
-                ])
-                .await;
-                return Err(err);
-            }
-        };
+        }
+        let [logs_pool, goals_pool, memories_pool, queue_pool] =
+            finish_independent_pool_initialization(pool.as_ref(), independent).await?;
         let started = Instant::now();
         let backfill_state_result = ensure_backfill_state_row_in_pool(pool.as_ref()).await;
         crate::telemetry::record_init_result(
@@ -341,6 +315,26 @@ impl StateRuntime {
         pool.close().await;
         Ok(true)
     }
+}
+
+/// Preserve the former logs/goals/memories/queue error order after all opens
+/// finish, and retire every owned pool before returning an initialization error.
+async fn finish_independent_pool_initialization(
+    state: &SqlitePool,
+    independent: [anyhow::Result<SqlitePool>; 4],
+) -> anyhow::Result<[Arc<SqlitePool>; 4]> {
+    if independent.iter().any(Result::is_err) {
+        let mut pools = vec![state];
+        pools.extend(independent.iter().filter_map(|result| result.as_ref().ok()));
+        close_sqlite_pools(&pools).await;
+    }
+    let [logs, goals, memories, queue] = independent;
+    Ok([
+        Arc::new(logs?),
+        Arc::new(goals?),
+        Arc::new(memories?),
+        Arc::new(queue?),
+    ])
 }
 
 async fn close_sqlite_pools(pools: &[&SqlitePool]) {
