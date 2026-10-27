@@ -21,9 +21,33 @@ pub struct PreparedHostAuthoritySession {
     owner_pidfd: OwnedFd,
     service: HostAuthorityService,
     fresh_filesystem: bool,
+    root_admin: Option<crate::authority_host_admin::RootAdminRuntime>,
 }
 
 impl PreparedHostAuthoritySession {
+    /// Mint one non-owning administration route into this SAME service. The
+    /// capability stays inactive until original fixed listeners are ready and
+    /// is invalidated before this original serve scope can end.
+    pub fn enable_root_admin(&mut self) -> io::Result<crate::RootAdminCapability> {
+        if self.root_admin.is_some() {
+            return Err(io::Error::other("original Root admin already enabled"));
+        }
+        verify_pinned_process(
+            &self.registration,
+            self.config.peer_uid,
+            self.config.peer_gid,
+            &self.owner_pidfd,
+            Instant::now() + std::time::Duration::from_millis(self.config.timeout_ms),
+        )?;
+        self.service.validate_admin_registration()?;
+        let (runtime, capability) = crate::authority_host_admin::RootAdminRuntime::mint(
+            std::time::Duration::from_millis(self.config.timeout_ms.min(1_000)),
+        )?;
+        self.service.enable_original_notes_observations()?;
+        self.root_admin = Some(runtime);
+        Ok(capability)
+    }
+
     /// Explicit Root startup from the already authorized original config and
     /// actual child registration. Open the original authority owners first,
     /// then prepare/publish the fresh DB under those same owners. No issuer,
@@ -47,6 +71,7 @@ impl PreparedHostAuthoritySession {
             owner_pidfd,
             service,
             fresh_filesystem: true,
+            root_admin: None,
         })
     }
 
@@ -70,6 +95,7 @@ impl PreparedHostAuthoritySession {
             owner_pidfd,
             service,
             fresh_filesystem: true,
+            root_admin: None,
         })
     }
 
@@ -89,6 +115,7 @@ impl PreparedHostAuthoritySession {
             owner_pidfd,
             service,
             fresh_filesystem: false,
+            root_admin: None,
         })
     }
 
@@ -273,6 +300,7 @@ impl PreparedHostAuthoritySession {
             registration,
             owner_pidfd,
             service,
+            root_admin,
             ..
         } = self;
         if text_ui.is_some()
@@ -307,31 +335,62 @@ impl PreparedHostAuthoritySession {
             // A refused one-shot handoff must return before either serving
             // loop starts. All native launch and human registration work is
             // already complete; only the original accept barrier follows.
+            let ready = || {
+                ready()?;
+                if let Some(admin) = &root_admin {
+                    admin.activate()?;
+                }
+                Ok(())
+            };
             let bound = listeners::bind_runtime_lanes(&config, ready)?;
-            std::thread::scope(|scope| {
-                let worker = scope.spawn(|| {
-                    service.serve_text_ui(
-                        &text,
-                        &ui_pidfd,
+            let serve = || {
+                std::thread::scope(|scope| {
+                    let worker = scope.spawn(|| {
+                        service.serve_text_ui(
+                            &text,
+                            &ui_pidfd,
+                            &owner_pidfd,
+                            std::time::Duration::from_millis(config.timeout_ms),
+                            std::time::Duration::from_millis(config.lifetime_ms),
+                        )
+                    });
+                    let original = listeners::serve_bound_lanes(
+                        &service,
+                        &config,
+                        &registration,
                         &owner_pidfd,
-                        std::time::Duration::from_millis(config.timeout_ms),
-                        std::time::Duration::from_millis(config.lifetime_ms),
-                    )
-                });
-                let original = listeners::serve_bound_lanes(
+                        bound,
+                    );
+                    let ui = worker
+                        .join()
+                        .map_err(|_| io::Error::other("text UI lane panicked"))?;
+                    original.and(ui)
+                })
+            };
+            match &root_admin {
+                Some(admin) => admin.run(&service, &config, &registration, &owner_pidfd, serve),
+                None => serve(),
+            }
+        } else {
+            let serve = || {
+                listeners::serve_lanes_with_ready(
                     &service,
                     &config,
                     &registration,
                     &owner_pidfd,
-                    bound,
-                );
-                let ui = worker
-                    .join()
-                    .map_err(|_| io::Error::other("text UI lane panicked"))?;
-                original.and(ui)
-            })
-        } else {
-            listeners::serve_lanes_with_ready(&service, &config, &registration, &owner_pidfd, ready)
+                    || {
+                        ready()?;
+                        if let Some(admin) = &root_admin {
+                            admin.activate()?;
+                        }
+                        Ok(())
+                    },
+                )
+            };
+            match &root_admin {
+                Some(admin) => admin.run(&service, &config, &registration, &owner_pidfd, serve),
+                None => serve(),
+            }
         }
     }
 }

@@ -6,12 +6,13 @@ use crate::RenameThreadSectionParams;
 use crate::StoredThreadSection;
 use crate::ThreadStore;
 use crate::ThreadStoreError;
+use crate::local::test_support::private_home;
 use crate::local::test_support::test_config;
 use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn local_thread_sections_require_sqlite_and_preserve_section_identity() {
-    let home = tempfile::TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let config = test_config(home.path());
     let unsupported_store = LocalThreadStore::new(config.clone(), /*state_db*/ None);
     assert!(!unsupported_store.supports_thread_sections());

@@ -125,6 +125,25 @@ required_boundary_ids = [
   "memory_original_sender_read_only_cut",
   "notes_recorded_original_observation_proof",
   "notes_previous_recovery_typed_resolution",
+  "root_live_admin_enable",
+  "root_live_admin_mint",
+  "root_live_admin_exchange",
+  "root_live_admin_checked_dispatch",
+  "root_live_admin_signed_artifact_verify",
+  "root_live_admin_exact_issuer_head_revoke",
+  "root_live_admin_fixed_notes_revoke_prepare",
+  "root_live_admin_existing_effect_revoke",
+  "root_live_admin_existing_signed_grant_revoke",
+  "root_live_admin_same_service_signed_revoke",
+  "root_live_admin_original_issue_observer_enable",
+  "root_live_admin_original_issue_observation",
+  "root_live_admin_original_bounded_lease_revoke",
+  "root_live_admin_retained_artifact_observe",
+  "root_live_admin_original_effect_state_observe",
+  "root_live_admin_same_service_effect_state_observe",
+  "agentd_original_registered_writer_custody",
+  "agentd_original_recovered_writer_custody_factory",
+  "agentd_original_root_handoff_unique_file",
 ]
 
 [[boundary]]
@@ -424,6 +443,8 @@ caller_markers = ["put_lease"]
 [[boundary]]
 id = "authority_lease_revoke"
 symbol = "AuthorityLeaseRegistry::revoke"
+receiver_type = "AuthorityLeaseRegistry"
+receiver_methods = ["revoke"]
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn revoke(", "RevocationReceipt", "reason_sha256"]
 product_callers = []
@@ -965,7 +986,7 @@ caller_markers = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_session.rs"
-required = ["pub struct PreparedHostAuthoritySession", "owner_pidfd: OwnedFd", "service: HostAuthorityService", "open_registered_writer(&config, &registration, &owner_pidfd)?", "serde_json::to_vec(&self.config)", "serde_json::to_vec(&self.registration)", "native launch changed the retained original Root inputs", "service.with_live_human_text(text.clone(), ui_pidfd.try_clone()?)?", "pub fn launch_native_with_ready(", "pub(crate) fn serve_with_text_and_ready(", "ready: impl FnOnce() -> io::Result<()>", "listeners::serve_lanes_with_ready(&service, &config, &registration, &owner_pidfd, ready)"]
+required = ["pub struct PreparedHostAuthoritySession", "owner_pidfd: OwnedFd", "service: HostAuthorityService", "open_registered_writer(&config, &registration, &owner_pidfd)?", "serde_json::to_vec(&self.config)", "serde_json::to_vec(&self.registration)", "native launch changed the retained original Root inputs", "service.with_live_human_text(text.clone(), ui_pidfd.try_clone()?)?", "pub fn launch_native_with_ready(", "pub(crate) fn serve_with_text_and_ready(", "ready: impl FnOnce() -> io::Result<()>", "listeners::serve_lanes_with_ready(", "admin.run(&service, &config, &registration, &owner_pidfd, serve)", "admin.activate()?"]
 forbidden = ["AllowVerifier", "permit_all"]
 required_function_order = [{function = "fn launch_native(", sequence = ["self.launch_native_with_ready(", "|| Ok(())"]}, {function = "fn launch_native_with_ready(", sequence = ["crate::authority_host_native_launch::inputs(", ".check_logind_binding(&profile.original_human_binding())?", "serde_json::to_vec(&self.config)", "serde_json::to_vec(&self.registration)", "crate::authority_host_native_launch::launch_prepared_native_with_ready("]}, {function = "fn serve_with_text_and_ready(", sequence = ["fn serve_with_text_and_ready(", "self.serve_selected(Some((text_file, ui_pidfd)), ready)"]}, {function = "fn serve_selected(", sequence = ["text.validate(&service)?", "service.with_live_human_text(text.clone(), ui_pidfd.try_clone()?)?", "let bound = listeners::bind_runtime_lanes(&config, ready)?", "service.serve_text_ui(", "listeners::serve_bound_lanes("]}]
 
@@ -1270,7 +1291,7 @@ id = "root_registered_physical_current_observation"
 symbol = "HostAuthorityService::observe_registered_physical_current"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_material_recovery.rs"
 definition_markers = ["pub(crate) fn observe_registered_physical_current(", "writer.registration.with_live(&writer.leases", "retained_writer_authorization(&writer.registration)?", ".observe_physical_current()"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_session_material.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_session_material.rs", "codex-rs/hepta-agentd/src/authority_host_admin_service.rs"]
 caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)observe_registered_physical_current\\s*\\("
 
@@ -1492,7 +1513,7 @@ symbol = "serve_lanes_with_ready"
 call_pattern = "\\bserve_lanes_with_ready\\s*\\("
 definition_path = "codex-rs/hepta-agentd/src/authority_host_listeners.rs"
 definition_markers = ["pub(super) fn serve_lanes_with_ready(", "let bound = bind_runtime_lanes(config, ready)?", "serve_bound_lanes(service, config, registration, owner, bound)"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_session.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_session.rs", "codex-rs/hepta-agentd/src/authority_host_session_material.rs"]
 caller_markers = []
 
 [[protected_file]]
@@ -1597,3 +1618,304 @@ path = "codex-rs/hepta-agentd/src/production_notes_deployment.rs"
 required = ["AgentdNotesRecoverySelector::from_fields(", "previous.operation_id.as_deref()", "previous.selector.as_ref()"]
 forbidden = ["AllowVerifier", "permit_all"]
 required_function_order = [{function = "fn read(", sequence = [".validate_model_tuple(frozen.model_tuple_digest)?", "AgentdNotesRecoverySelector::from_fields(", "previous.operation_id.as_deref()", "previous.selector.as_ref()", "AgentdNotesPreviousRecoveryRequest {", "Sha256Digest::parse(previous.helper_sha256)", "previous_target: previous.previous_target", "selector,"]}]
+
+[[boundary]]
+id = "root_live_admin_enable"
+symbol = "PreparedHostAuthoritySession::enable_root_admin"
+call_pattern = '(?:\.\s*|PreparedHostAuthoritySession\s*::\s*)enable_root_admin\s*\('
+definition_path = "codex-rs/hepta-agentd/src/authority_host_session.rs"
+definition_markers = ["pub fn enable_root_admin(", "self.service.validate_admin_registration()?"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "root_live_admin_mint"
+symbol = "RootAdminRuntime::mint"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_admin.rs"
+definition_markers = ["pub(crate) fn mint(", "actual_root()?", "Arc::downgrade(&life)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_session.rs"]
+caller_markers = ["mint"]
+
+[[boundary]]
+id = "root_live_admin_exchange"
+symbol = "RootAdminCapability::exchange"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_admin.rs"
+definition_markers = ["pub fn exchange(", "actual_root()?", "self.sender", ".try_send(Pending"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "root_live_admin_checked_dispatch"
+symbol = "HostAuthorityService::admin_request"
+call_pattern = '(?:\.\s*|HostAuthorityService\s*::\s*)admin_request\s*\('
+definition_path = "codex-rs/hepta-agentd/src/authority_host_admin_service.rs"
+definition_markers = ["pub(crate) fn admin_request(", "context.check_for(self)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_admin.rs"]
+caller_markers = ["admin_request"]
+
+[[boundary]]
+id = "root_live_admin_signed_artifact_verify"
+symbol = "DeploymentFinalUseIssuer::verify_original_signed_grant"
+call_pattern = '(?:\.\s*|DeploymentFinalUseIssuer\s*::\s*)verify_original_signed_grant\s*\('
+definition_path = "codex-rs/hepta-agentd/src/deployment_signed_grant.rs"
+definition_markers = ["pub(crate) fn verify_original_signed_grant(", ".verify_strict(&bytes, &signature)", "sequence > state.sequence"]
+product_callers = ["codex-rs/hepta-agentd/src/deployment_notes_revoke.rs"]
+caller_markers = ["verify_original_signed_grant"]
+
+[[boundary]]
+id = "root_live_admin_exact_issuer_head_revoke"
+symbol = "DeploymentFinalUseIssuer::revoke_at_observed_head"
+call_pattern = '(?:\.\s*|DeploymentFinalUseIssuer\s*::\s*)revoke_at_observed_head\s*\('
+definition_path = "codex-rs/hepta-agentd/src/deployment_issuer.rs"
+definition_markers = ["pub(crate) fn revoke_at_observed_head(", "RevocationExpectation::Exact", "original issuer revoke head CAS mismatch"]
+product_callers = ["codex-rs/hepta-agentd/src/deployment_notes_revoke.rs"]
+caller_markers = ["revoke_at_observed_head"]
+
+[[boundary]]
+id = "root_live_admin_fixed_notes_revoke_prepare"
+symbol = "RootNotesGrantAdmission::prepare_original_grant_revocation"
+call_pattern = '(?:\.\s*|RootNotesGrantAdmission\s*::\s*)prepare_original_grant_revocation\s*\('
+definition_path = "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs"
+definition_markers = ["pub(crate) fn prepare_original_grant_revocation", "actual_root_before(input.before)?", "self.observe_original_grant_state(issuer, input.signed, input.before)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_admin_effect.rs"]
+caller_markers = ["prepare_original_grant_revocation"]
+
+[[boundary]]
+id = "root_live_admin_existing_effect_revoke"
+symbol = "PreparedNotesGrantRevocation::revoke_effect_lease"
+call_pattern = '(?:\.\s*|PreparedNotesGrantRevocation\s*::\s*)revoke_effect_lease\s*\('
+definition_path = "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs"
+definition_markers = ["pub(crate) fn revoke_effect_lease(", ".revoke_before(", "actual_root_before(self.before)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_admin_effect.rs"]
+caller_markers = ["revoke_effect_lease"]
+
+[[boundary]]
+id = "root_live_admin_existing_signed_grant_revoke"
+symbol = "EffectLeaseRevoked::revoke_original_grant"
+call_pattern = '(?:\.\s*|EffectLeaseRevoked\s*::\s*)revoke_original_grant\s*\('
+definition_path = "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs"
+definition_markers = ["pub(crate) fn revoke_original_grant(", "self.issuer.revoke_at_observed_head("]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_admin_effect.rs"]
+caller_markers = ["revoke_original_grant"]
+
+[[boundary]]
+id = "root_live_admin_same_service_signed_revoke"
+symbol = "HostAuthorityService::revoke_original_notes_grant"
+call_pattern = '(?:\.\s*|HostAuthorityService\s*::\s*)revoke_original_notes_grant\s*\('
+definition_path = "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs"
+definition_markers = ["pub(crate) fn revoke_original_notes_grant(", "context.check_for(self)?", "let revoked = prepared.revoke_effect_lease()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_admin_service.rs"]
+caller_markers = ["revoke_original_notes_grant"]
+
+[[boundary]]
+id = "root_live_admin_original_issue_observer_enable"
+symbol = "RootNotesGrantAdmission::enable_original_issued_observations"
+call_pattern = '(?:\.\s*|RootNotesGrantAdmission\s*::\s*)enable_original_issued_observations\s*\('
+definition_path = "codex-rs/hepta-agentd/src/deployment_notes_observation.rs"
+definition_markers = ["pub(crate) fn enable_original_issued_observations(", "self.observations.is_some()", "issuer.retained_writer_authorization(&self.writer)? != self.proof"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_admin_service.rs"]
+caller_markers = ["enable_original_issued_observations"]
+
+[[boundary]]
+id = "root_live_admin_original_issue_observation"
+symbol = "RootNotesGrantAdmission::observe_original_issued_grant"
+call_pattern = '(?:\.\s*|RootNotesGrantAdmission\s*::\s*)observe_original_issued_grant\s*\('
+definition_path = "codex-rs/hepta-agentd/src/deployment_notes_observation.rs"
+definition_markers = ["pub(crate) fn observe_original_issued_grant(", "original_observation_not_enabled"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_admin_service.rs"]
+caller_markers = ["observe_original_issued_grant"]
+
+[[boundary]]
+id = "root_live_admin_original_bounded_lease_revoke"
+symbol = "AuthorityLeaseRegistry::revoke_before"
+call_pattern = '(?:\.\s*|AuthorityLeaseRegistry\s*::\s*)revoke_before\s*\('
+definition_path = "codex-rs/hepta-contracts/src/authority_lease_revoke.rs"
+definition_markers = ["pub fn revoke_before(", "Deadline::Before(before)", ".try_lock()", "registry.persist_or_fence(&mut state, next)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_admin_service.rs", "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs"]
+caller_markers = ["revoke_before"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_admin.rs"
+required = ["lifetime: Weak<Lifetime>", "sender: mpsc::SyncSender<Pending>", "phase: AtomicU8", "compare_exchange(PREPARED, SERVING", "let _worker_guard = Stop(&self.life, &stopping);", "self.life.phase.store(CLOSED", "std::ptr::eq(service, self.service)", "verify_pinned_process(", "service.check_admin_lifetime(self.end)?", "deadline::require_before(self.end)", "actual_root()?"]
+forbidden = ["impl Clone for RootAdminCapability", "Arc<HostAuthorityService>", "pub fn mint("]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_admin_deadline.rs"
+required = ["check()?;", "require_before(end)?;", "operation()"]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_admin_protocol.rs"
+required = ["#[serde(deny_unknown_fields)]", "#[serde(tag = \"kind\", rename_all = \"snake_case\", deny_unknown_fields)]", "Observe {}", "expected_instance: RootAdminInstance", "expected_effect_lease_revision: u64", "expected_issuer_head_revision: u64"]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_admin_service.rs"
+required = ["context.check_for(self)?", "owner_alive(ui, end)?", "now >= issuer_lease.expires_at_unix_ms", "now >= writer.registration.authority_lease.expires_at_unix_ms", "now >= human.expires_at_ms", ".revoke_before(", "context.before()"]
+forbidden = ["DeploymentFinalUseIssuer::create", "AuthorityLeaseRegistry::open_state_dir"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs"
+required = ["context.check_for(self)?", "notes.prepare_original_grant_revocation(", "let revoked = prepared.revoke_effect_lease()?", "let result = revoked.revoke_original_grant();", "consumers.device.frontier_for_handoff(head)", "consumers.notes.frontier_for_handoff(head)", "self.issuer.revocations().as_ref().ok() != Some(head)", "original_issuer_outcome_unknown", "original_authenticated_consumers_have_not_confirmed"]
+forbidden = ["update_revocations(", "compare_and_set(", "initialize_fresh("]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_signed_grant.rs"
+required = [".try_lock()", "signed.grant.signing_bytes()", ".verify_strict(&bytes, &signature)", "grant.signer_id != state.signer_id", "grant.authority_epoch != state.head.authority_epoch", "sequence > state.sequence", "now < grant.not_before_unix_ms", "now >= grant.expires_at_unix_ms", "require_before(before)?"]
+forbidden = [".sign(", "create_protected("]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs"
+required = ["actual_root_before(input.before)?", "input.expected_effect_revision != 1", "issuer.retained_writer_authorization(&self.writer)? != self.proof", ".revoke_before(", "self.issuer.revoke_at_observed_head(", "issuer.verify_original_signed_grant(input.signed, input.before)?"]
+forbidden = [".sign(", "put_lease(", "create_protected("]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_notes_observation.rs"
+required = ["const MAX_ENTRIES: usize = 16;", "const MAX_BYTES: usize = 64 * 1024;", "const MAX_ENTRY_BYTES: usize = 8 * 1024;", "self.attempts.fetch_add(1", "self.state.try_lock()", "entry.attempt != attempts", "latest_original_issue_observation_was_lost", "delivery_observed: false", "effect_observed: false"]
+forbidden = [".sign(", "put_lease("]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/authority_lease_revoke.rs"
+required = ["pub fn revoke_before(", "Deadline::Before(before)", "registry.0.clock.now_unix_ms()", ".try_lock()", "if state.failed", "registry.persist_or_fence(&mut state, next)?"]
+forbidden = ["pub fn selected("]
+required_function_order = [{ function = "fn selected(", sequence = ["deadline.check()?", "registry.0.clock.now_unix_ms()", "deadline.check()?", "let mut state = match deadline", "deadline.check()?", "let mut next = state.clone()", "deadline.check()?", "registry.persist_or_fence(&mut state, next)?", "deadline.check()?"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_admin.rs"
+required = ["LiveRootAdminRequest", "context.check_for(service)?"]
+forbidden = []
+required_function_order = [{ function = "fn check_for(", sequence = ["actual_root()?", "deadline::require_before(self.end)?", "std::ptr::eq(service, self.service)", "self.life.instance.verify_current()?", "verify_pinned_process(", "service.check_admin_lifetime(self.end)?", "deadline::require_before(self.end)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs"
+required = ["revoke_original_notes_grant"]
+forbidden = []
+required_function_order = [{ function = "fn revoke_original_notes_grant(", sequence = ["context.check_for(self)?", "notes.prepare_original_grant_revocation(", "context.check_for(self)?", "prepared.revoke_effect_lease()?", "context.check_for(self)?", "revoked.revoke_original_grant()", "context.check_for(self)?", "self.observe_original_consumer_synchronization(&head)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_admin_deadline.rs"
+required = ["checked_step"]
+forbidden = []
+required_order = [["require_before(end)?", "check()?", "require_before(end)?", "operation()"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_session.rs"
+required = ["root_admin: Option<crate::authority_host_admin::RootAdminRuntime>", "self.service.validate_admin_registration()?", "root_admin: None", "admin.activate()?"]
+forbidden = []
+required_function_order = [{ function = "fn serve_selected(", sequence = ["let Self {", "root_admin,", "service.with_live_human_text(", "let ready = ||", "ready()?", "admin.activate()?", "listeners::bind_runtime_lanes(&config, ready)?", "listeners::serve_bound_lanes("] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_issuer.rs"
+required = ["RevocationExpectation::Current", "RevocationExpectation::Exact", "original issuer busy or fenced", "original issuer revoke head CAS mismatch"]
+forbidden = []
+required_function_order = [{ function = "fn revoke_selected(", sequence = ["original_grant::require_before(*before)?", "let _guard = match &expectation", ".try_lock()", "self.store.load(STATE_OWNER)", "original_grant::require_before(*before)?", "if &state.head != *head", "original_grant::require_before(*before)?", ".compare_and_set(STATE_OWNER, &state, &next)", "original_grant::require_before(*before)?"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_notes_revoke_observation.rs"
+required = ["binding.subject_id != self.policy.subject_id", "binding.destination_id != self.policy.destination_id", "binding.scope_sha256 != self.policy.scope_sha256", "self.lease_id(binding)?", "current.binding != expected", "signed.grant.expires_at_unix_ms > current.expires_at_unix_ms", "actual_root_before(before)?", "issuer.observe_original_signed_grant(signed, before)?", "issuer.retained_writer_authorization(&self.writer)? != self.proof", "let frontier = self.registry.frontier()", "self.registry.frontier().map_err(root::lease_error)? != frontier", "current.revision != 1", "current.revision != 2", "record.revocation.reason_sha256 == [0; 32]"]
+forbidden = ["put_lease(", ".revoke(", ".revoke_before(", "compare_and_set(", ".sign("]
+
+[[boundary]]
+id = "root_live_admin_retained_artifact_observe"
+symbol = "DeploymentFinalUseIssuer::observe_original_signed_grant"
+call_pattern = '(?:\.\s*|DeploymentFinalUseIssuer\s*::\s*)observe_original_signed_grant\s*\('
+definition_path = "codex-rs/hepta-agentd/src/deployment_signed_grant.rs"
+definition_markers = ["VerificationPurpose::RetainedObservation"]
+product_callers = ["codex-rs/hepta-agentd/src/deployment_notes_revoke_observation.rs"]
+caller_markers = ["observe_original_signed_grant"]
+
+[[boundary]]
+id = "root_live_admin_original_effect_state_observe"
+symbol = "RootNotesGrantAdmission::observe_original_grant_state"
+call_pattern = '(?:\.\s*|RootNotesGrantAdmission\s*::\s*)observe_original_grant_state\s*\('
+definition_path = "codex-rs/hepta-agentd/src/deployment_notes_revoke_observation.rs"
+definition_markers = ["pub(crate) fn observe_original_grant_state(", "current.binding != expected"]
+product_callers = ["codex-rs/hepta-agentd/src/deployment_notes_revoke.rs", "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs"]
+caller_markers = ["observe_original_grant_state"]
+
+[[boundary]]
+id = "root_live_admin_same_service_effect_state_observe"
+symbol = "HostAuthorityService::observe_original_notes_grant"
+call_pattern = '(?:\.\s*|HostAuthorityService\s*::\s*)observe_original_notes_grant\s*\('
+definition_path = "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs"
+definition_markers = ["pub(crate) fn observe_original_notes_grant(", "context.check_for(self)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_admin_service.rs"]
+caller_markers = ["observe_original_notes_grant"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_signed_grant.rs"
+required = ["VerificationPurpose::LiveRevocation", "VerificationPurpose::RetainedObservation"]
+forbidden = []
+required_function_order = [{ function = "fn verify_original_signed_grant(", sequence = ["self.verify_original_artifact(", "VerificationPurpose::LiveRevocation"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs"
+required = ["head != observed.head", "let sampled = Instant::now()", ".checked_sub(now)", "input.before.min("]
+forbidden = []
+required_order = [["self.writer.with_live(", "self.observe_original_grant_state(", "issuer.verify_original_signed_grant(", "head != observed.head", "let sampled = Instant::now()", "issuer.clock.now_unix_ms()", ".checked_sub(now)", "input.before.min(", "actual_root_before(before)?", "Ok(PreparedNotesGrantRevocation"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs"
+required = ["RootAdminResponse::OriginalNotesGrantObserved", "grant_expired: actual.grant_expired"]
+forbidden = []
+required_function_order = [{ function = "fn observe_original_notes_grant(", sequence = ["context.check_for(self)?", "notes.observe_original_grant_state(", "self.observe_original_consumer_synchronization(&actual.head)", "context.check_for(self)?", "RootAdminResponse::OriginalNotesGrantObserved"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_authority_session.rs"
+required = ["self.live.cache.fence()", "self.worker.abort()", "self.live.consumers.lock()", "consumers.clear()"]
+forbidden = []
+required_order = [["impl Drop for AgentdRootAuthoritySession", "self.live.cache.fence()", "self.worker.abort()", "self.live.consumers.lock()", "consumers.clear()"]]
+
+[[boundary]]
+id = "agentd_original_registered_writer_custody"
+symbol = "AgentdConfig::retain_production_verifier"
+call_pattern = '(?:\.\s*|AgentdConfig\s*::\s*)retain_production_verifier\s*\('
+definition_path = "codex-rs/hepta-agentd/src/owner_writer_custody.rs"
+definition_markers = ["struct RegisteredWriterVerifier", "inner: Arc<dyn ProductionAuthorityVerifier>", "_writer_lock: Arc<File>", "Arc::clone(&self._writer_lock)", "self.inner.verify(", "self.inner.verify_sender_process_binding("]
+product_callers = ["codex-rs/hepta-agentd/src/config.rs", "codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["retain_production_verifier"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/owner_writer_custody.rs"
+required = ["struct RegisteredWriterVerifier", "_writer_lock: Arc<File>", "Arc::clone(&self._writer_lock)", "self.inner.verify(authority, expected_agent)", "self.inner.verify_sender_process_binding("]
+forbidden = ["pub struct RegisteredWriterVerifier", "AsRawFd", "pub fn new(", "AllowVerifier", "permit_all"]
+required_order = [["inner: Arc<dyn ProductionAuthorityVerifier>", "_writer_lock: Arc<File>"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/config.rs"
+required = ["_writer_lock: std::sync::Arc<File>", "_writer_lock: std::sync::Arc::new(writer_lock)", "operations.verifier = self.retain_production_verifier(operations.verifier)"]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
+required = ["config.retain_production_verifier("]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/production_protected_host.rs"
+required = ["Self::from_recovered_store(", "            config,"]
+forbidden = []
+
+[[boundary]]
+id = "agentd_original_recovered_writer_custody_factory"
+symbol = "AgentdProductionWriterHost::from_recovered_store"
+call_pattern = '(?:\.|::)\s*from_recovered_store\s*\('
+definition_path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
+definition_markers = ["async fn from_recovered_store(", "config: &AgentdConfig", "let verifier = config.retain_production_verifier(verifier)"]
+product_callers = ["codex-rs/hepta-agentd/src/production_protected_host.rs"]
+caller_markers = ["Self::from_recovered_store(", "            config,"]
+
+[[boundary]]
+id = "agentd_original_root_handoff_unique_file"
+symbol = "AgentdConfig::prepare_root_handoff"
+call_pattern = '(?:\.\s*|AgentdConfig\s*::\s*)prepare_root_handoff\s*\('
+definition_path = "codex-rs/hepta-agentd/src/config_root_handoff.rs"
+definition_markers = ["pub fn prepare_root_handoff(", "libc::getuid()", "libc::geteuid()", "std::sync::Arc::strong_count(&self._writer_lock) != 1", "require_starting(&self.identity, &record)?", "self._writer_lock.unlock()?"]
+product_callers = ["codex-rs/hepta-agentd/src/production_launcher.rs"]
+caller_markers = ["config.prepare_root_handoff(uid, gid)?.drop_to_owner()?"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/config_root_handoff.rs"
+required = ["libc::getuid()", "libc::geteuid()", "matches!(expected_uid, 0 | u32::MAX)", "matches!(expected_gid, 0 | u32::MAX)", "std::sync::Arc::strong_count(&self._writer_lock) != 1", "descriptor.dev() != path.dev()", "descriptor.ino() != path.ino()", "require_starting(&self.identity, &record)?"]
+forbidden = []
+required_function_order = [{ function = "fn prepare_root_handoff(", sequence = ["libc::getuid()", "libc::geteuid()", "self.require_unconfigured_production_hosts()?", "std::sync::Arc::strong_count(&self._writer_lock) != 1", "pin_control_directory(", "self._writer_lock.metadata()", "require_starting(&self.identity, &record)?", "self._writer_lock.unlock()?"] }]

@@ -9,6 +9,14 @@ use codex_hepta_contracts::authority_lease::AuthorityLeaseError;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry;
 use codex_hepta_memory::NotesTargetIdentity;
 
+#[path = "deployment_notes_observation.rs"]
+mod observation;
+pub use observation::RootIssuedNotesGrantObservation;
+pub use observation::RootIssuedNotesGrantSelection;
+#[path = "deployment_notes_revoke.rs"]
+mod revoke;
+pub(crate) use revoke::OriginalNotesRevokeInput;
+
 /// Trusted launcher capability, never accepted from a wire request. The Root
 /// launcher must obtain the target from its actual Session Reserved capability
 /// before installation. Text/schema validation remains delegated to the fixed
@@ -18,6 +26,7 @@ pub struct RootNotesGrantAdmission {
     writer: HostAuthorityWriterRegistration,
     proof: crate::HostSignedWriterAuthorizationV1,
     policy: DeploymentGrantPolicy,
+    observations: Option<observation::OriginalNotesGrantObservations>,
 }
 
 impl RootNotesGrantAdmission {
@@ -88,6 +97,7 @@ impl RootNotesGrantAdmission {
             writer,
             proof,
             policy,
+            observations: None,
         })
     }
 
@@ -208,7 +218,7 @@ impl RootNotesGrantAdmission {
             .verifier()
             .verify_use(&effect.lease_id, effect.revision, &expected)
             .map_err(root::lease_error)?;
-        canonical
+        let result = canonical
             .with_joint_dispatch_boundary(
                 writer_token,
                 &writer.binding,
@@ -226,7 +236,13 @@ impl RootNotesGrantAdmission {
                     )
                 },
             )
-            .map_err(root::lease_error)?
+            .map_err(root::lease_error)?;
+        if let Ok(Some(signed)) = &result
+            && let Some(observed) = &self.observations
+        {
+            observed.record(signed);
+        }
+        result
     }
 
     fn lease_id(&self, binding: &FinalUseBinding) -> io::Result<String> {

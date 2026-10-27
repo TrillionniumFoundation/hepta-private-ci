@@ -93,7 +93,6 @@ pub struct AgentdConfig {
     identity: AgentdIdentity,
     sockets: AgentdSocketInputs,
     registry: FleetRegistry,
-    _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     evidence_trust_file: Option<PathBuf>,
     automation_effect_host_file: Option<PathBuf>,
@@ -117,6 +116,8 @@ pub struct AgentdConfig {
     intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     intelligence_invocation_provider:
         Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>>,
+    // Retire original facade state before the one retained process-owner file.
+    _writer_lock: std::sync::Arc<File>,
 }
 
 impl AgentdConfig {
@@ -248,7 +249,7 @@ impl AgentdConfig {
                 app_server_socket,
             },
             registry,
-            _writer_lock: writer_lock,
+            _writer_lock: std::sync::Arc::new(writer_lock),
             sockets: AgentdSocketInputs::Bind,
             authbus_trust_file: None,
             evidence_trust_file: None,
@@ -389,7 +390,7 @@ impl AgentdConfig {
     pub(crate) fn install_production_hosts(
         &mut self,
         host: std::sync::Arc<crate::AgentdProductionWriterHost>,
-        operations: crate::AgentdProductionOperationRuntimeConfig,
+        mut operations: crate::AgentdProductionOperationRuntimeConfig,
     ) -> Result<(), AgentdError> {
         self.require_unconfigured_production_hosts()?;
         operations.validate_for(self)?;
@@ -412,6 +413,7 @@ impl AgentdConfig {
             .map_err(AgentdError::GenerationFenced)?;
         // No fallible operation follows either assignment. The caller has
         // revalidated this same original owner before this exclusive commit.
+        operations.verifier = self.retain_production_verifier(operations.verifier);
         self.production_writer_host = Some(host);
         self.production_operations = Some(operations);
         Ok(())
@@ -423,7 +425,7 @@ impl AgentdConfig {
     /// configuration explicitly.
     pub fn with_production_operations(
         mut self,
-        operations: crate::AgentdProductionOperationRuntimeConfig,
+        mut operations: crate::AgentdProductionOperationRuntimeConfig,
     ) -> Result<Self, AgentdError> {
         operations.validate_for(&self)?;
         if self.production_operations.is_some() {
@@ -431,6 +433,7 @@ impl AgentdConfig {
                 "production operation runtime already configured".to_string(),
             ));
         }
+        operations.verifier = self.retain_production_verifier(operations.verifier);
         self.production_operations = Some(operations);
         Ok(self)
     }
@@ -800,7 +803,7 @@ impl AgentdConfig {
         &self.identity
     }
 
-    pub(crate) fn into_parts(self) -> (AgentdIdentity, FleetRegistry, File) {
+    pub(crate) fn into_parts(self) -> (AgentdIdentity, FleetRegistry, std::sync::Arc<File>) {
         (self.identity, self.registry, self._writer_lock)
     }
 }
@@ -847,3 +850,6 @@ fn require_exact_path(actual: &Path, expected: &Path, label: &str) -> Result<(),
 #[cfg(test)]
 #[path = "config_tests.rs"]
 mod tests;
+
+#[path = "owner_writer_custody.rs"]
+mod writer_custody;

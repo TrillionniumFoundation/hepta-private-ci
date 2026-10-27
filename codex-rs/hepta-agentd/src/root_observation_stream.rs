@@ -7,6 +7,7 @@ use std::os::fd::AsRawFd;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 use std::path::Path;
+use std::sync::Mutex;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -15,7 +16,6 @@ use std::sync::Arc;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::io::unix::AsyncFd;
-use tokio::sync::Mutex;
 
 /// Exact root process identity established by the trusted launcher before
 /// descriptor transfer. A numeric PID discovered from the connection is not
@@ -128,11 +128,13 @@ impl RootObservationStream {
         if request.is_empty() || request.len() > 16_384 {
             return Err(AgentdRootAuthorityError::Refused);
         }
-        let mut slot = self
-            .stream
-            .try_lock()
-            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
-        let mut stream = slot.take().ok_or(AgentdRootAuthorityError::Unavailable)?;
+        let mut stream = {
+            let mut slot = self
+                .stream
+                .try_lock()
+                .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+            slot.take().ok_or(AgentdRootAuthorityError::Unavailable)?
+        };
         // Cancellation, malformed replies and every uncertain I/O error leave
         // the original slot empty. No reconnect or automatic retry exists.
         check_lifetime(self.root.get_ref())?;
@@ -154,7 +156,13 @@ impl RootObservationStream {
         if Instant::now() >= deadline {
             return Err(AgentdRootAuthorityError::Unavailable);
         }
-        *slot = Some(stream);
+        // The empty slot is the exclusive token for the complete exchange.
+        // Its mutex only protects synchronous take/restore, never I/O or an
+        // await. Concurrent readers observe None and cannot consume a reply.
+        *self
+            .stream
+            .lock()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)? = Some(stream);
         Ok(parsed)
     }
 }

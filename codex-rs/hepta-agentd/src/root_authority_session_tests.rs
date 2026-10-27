@@ -2,6 +2,16 @@
 //! Two executor workers match the production Agentd runtime: synchronous
 //! durable fixture initialization must not starve its original Root read feed.
 use super::*;
+use crate::AgentdConfig;
+use crate::AgentdRootWriterTrust;
+use codex_hepta_fleet::AgentLifecycle;
+use codex_hepta_fleet::AgentManifest;
+use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::ResourceBudget;
+use codex_hepta_fleet::WorkspaceBinding;
+use codex_hepta_paths::HeptaFleetRoot;
+use std::error::Error;
+
 use crate::root_writer_proof::tests::fixture;
 use crate::root_writer_proof::tests::observation;
 use codex_hepta_contracts::AuthorityFrontierStore;
@@ -13,7 +23,7 @@ use std::io::Write;
 use std::os::fd::FromRawFd;
 use std::os::unix::fs::PermissionsExt;
 use std::sync::atomic::AtomicU64;
-struct Frontier {
+pub(crate) struct Frontier {
     value: Mutex<FinalUseFrontier>,
     commits: AtomicU64,
     wait: AtomicBool,
@@ -64,7 +74,7 @@ impl AuthorityFrontierStore<FinalUseFrontier> for Frontier {
         Ok(())
     }
 }
-fn owner(
+pub(crate) fn owner(
     session: &AgentdRootAuthoritySession,
     key: [u8; 32],
 ) -> (FinalUseAuthority, Arc<Frontier>, tempfile::TempDir) {
@@ -96,13 +106,26 @@ fn owner(
     .unwrap();
     (authority, frontier, directory)
 }
-async fn connected() -> (
+pub(crate) async fn connected() -> (
     AgentdRootAuthoritySession,
     Arc<AtomicU64>,
     std::thread::JoinHandle<()>,
     [u8; 32],
 ) {
     let (trust, proof) = fixture();
+    connected_with_unix_time(trust, proof, 2_000).await
+}
+
+pub(crate) async fn connected_with_unix_time(
+    trust: crate::AgentdRootWriterTrust,
+    proof: crate::HostSignedWriterAuthorizationV1,
+    unix_base_ms: u64,
+) -> (
+    AgentdRootAuthoritySession,
+    Arc<AtomicU64>,
+    std::thread::JoinHandle<()>,
+    [u8; 32],
+) {
     let key = trust.verifying_key;
     let (client, mut server) = UnixStream::pair().unwrap();
     let pid = std::process::id();
@@ -166,9 +189,9 @@ async fn connected() -> (
                 let elapsed = (boottime_ns().unwrap() - base) / 1_000_000;
                 sample.clock.boot_id = peer_boot.clone();
                 sample.clock.anchor_boottime_ns = base;
-                sample.clock.anchor_unix_ms = 2_000;
-                sample.clock.ceiling_unix_ms = 3_001 + elapsed;
-                sample.observed_unix_ms = 2_000 + elapsed;
+                sample.clock.anchor_unix_ms = unix_base_ms;
+                sample.clock.ceiling_unix_ms = unix_base_ms + 1_001 + elapsed;
+                sample.observed_unix_ms = unix_base_ms + elapsed;
                 sample.revocations.revision = next_head.load(Ordering::Acquire);
                 if sample.revocations.revision > 1 {
                     sample
@@ -302,8 +325,11 @@ async fn both_original_frontiers_finish_before_new_head_is_published() {
         "test released second frontier: boottime_ns={}",
         boottime_ns().unwrap()
     );
-    tokio::time::timeout(Duration::from_millis(300), async {
-        while session.revocations().is_err() {
+    let current = tokio::time::timeout(Duration::from_millis(300), async {
+        loop {
+            if let Ok(current) = session.revocations() {
+                break current;
+            }
             tokio::time::sleep(Duration::from_millis(2)).await;
         }
     })
@@ -317,7 +343,6 @@ async fn both_original_frontiers_finish_before_new_head_is_published() {
             second.wait.load(Ordering::Acquire),
         )
     });
-    let current = session.revocations().unwrap();
     assert_eq!(current.revision, 2);
     assert_eq!(device.revocation_head().unwrap(), current);
     assert_eq!(notes.revocation_head().unwrap(), current);
@@ -358,3 +383,40 @@ async fn uncertain_original_consumer_update_fences_even_with_fresh_root_response
     tokio::time::sleep(Duration::from_millis(20)).await;
     peer.join().unwrap();
 }
+
+#[path = "root_authority_resource_tests.rs"]
+mod resources;
+
+pub(crate) fn observation_worker(session: &AgentdRootAuthoritySession) -> tokio::task::AbortHandle {
+    session.worker.abort_handle()
+}
+
+pub(crate) fn original_config(
+    path: &std::path::Path,
+    trust: &AgentdRootWriterTrust,
+) -> Result<AgentdConfig, Box<dyn Error>> {
+    let fleet = HeptaFleetRoot::parse(path.join("fleet"))?;
+    let registry = FleetRegistry::initialize(fleet.clone())?;
+    let workspace = path.join("workspace");
+    std::fs::create_dir(&workspace)?;
+    let record = registry.register(AgentManifest::new(
+        trust.agent_id.clone(),
+        WorkspaceBinding::new(workspace.clone(), &fleet)?,
+        ResourceBudget::local_default(),
+    )?)?;
+    registry.compare_and_transition(&trust.agent_id, 0, AgentLifecycle::Starting)?;
+    registry.compare_and_transition(&trust.agent_id, 1, AgentLifecycle::Failed)?;
+    registry.compare_and_transition(&trust.agent_id, 2, AgentLifecycle::Starting)?;
+    Ok(AgentdConfig::load(
+        fleet.as_path().to_owned(),
+        trust.agent_id.clone(),
+        trust.spawn_generation,
+        record.layout.home_root().to_owned(),
+        record.layout.run_root().to_owned(),
+        record.layout.home_root().to_owned(),
+        workspace,
+    )?)
+}
+
+#[path = "root_authority_file_custody_tests.rs"]
+mod file_custody;

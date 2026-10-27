@@ -140,7 +140,7 @@ jobs:
           cargo fmt --manifest-path apps/hepta-control-ui/rust/Cargo.toml --all -- --check
           just test --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-robrix-ui --no-default-features
           cargo clippy --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --target wasm32-unknown-unknown -- -D warnings
-          node --test apps/hepta-control-ui/test/artifact-lifetime.test.mjs
+          node --test apps/hepta-control-ui/test/artifact-lifetime.test.mjs apps/hepta-control-ui/test/workspace-patch-relocation.test.mjs
           python3 -m unittest discover -s apps/hepta-control-ui/test -p test_font_diagnostic_browser.py -v
           node --test apps/hepta-control-ui/test/font-delivery-diagnostic.test.mjs
           node --test apps/hepta-control-ui/test/font-diagnostic-browser-identity.test.mjs
@@ -437,10 +437,10 @@ jobs:
           set -euo pipefail
           TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/native-presentation-evidence/junit-gate-tests.json" --minimum-tests 12 --timeout-seconds 60 -- python3 apps/hepta-control-ui/test/test_native_composition_junit.py
           cargo fmt --manifest-path apps/hepta-control-ui/rust/Cargo.toml --all -- --check
-          python3 apps/hepta-control-ui/tools/check-native-composition-junit.py prepare --start "$RUNNER_TEMP/native-presentation-evidence/headless-junit-start.json" --junit "$CARGO_TARGET_DIR/nextest/native-composition-headless/junit.xml" --mode headless --tested-sha "$(git rev-parse HEAD)"
+          python3 apps/hepta-control-ui/tools/check-native-composition-junit.py prepare --start "$RUNNER_TEMP/native-presentation-evidence/headless-junit-start.json" --junit "$GITHUB_WORKSPACE/apps/hepta-control-ui/rust/target/nextest/native-composition-headless/junit.xml" --mode headless --tested-sha "$(git rev-parse HEAD)"
           TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/native-presentation-evidence/headless.json" --minimum-tests 5 --timeout-seconds 600 -- just test --locked --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --no-default-features --features native-presentation --lib --profile native-composition-headless
           python3 apps/hepta-control-ui/tools/check-native-composition-junit.py verify --start "$RUNNER_TEMP/native-presentation-evidence/headless-junit-start.json" --execution "$RUNNER_TEMP/native-presentation-evidence/headless.json" --output "$RUNNER_TEMP/native-presentation-evidence/headless-junit.json"
-          python3 apps/hepta-control-ui/tools/check-native-composition-junit.py prepare --start "$RUNNER_TEMP/native-presentation-evidence/native-junit-start.json" --junit "$CARGO_TARGET_DIR/nextest/native-composition-native/junit.xml" --mode native --tested-sha "$(git rev-parse HEAD)"
+          python3 apps/hepta-control-ui/tools/check-native-composition-junit.py prepare --start "$RUNNER_TEMP/native-presentation-evidence/native-junit-start.json" --junit "$GITHUB_WORKSPACE/apps/hepta-control-ui/rust/target/nextest/native-composition-native/junit.xml" --mode native --tested-sha "$(git rev-parse HEAD)"
           TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/native-presentation-evidence/native.json" --minimum-tests 8 --timeout-seconds 1200 -- just test --locked --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --features ui,native-host,native-presentation --lib --profile native-composition-native
           python3 apps/hepta-control-ui/tools/check-native-composition-junit.py verify --start "$RUNNER_TEMP/native-presentation-evidence/native-junit-start.json" --execution "$RUNNER_TEMP/native-presentation-evidence/native.json" --output "$RUNNER_TEMP/native-presentation-evidence/native-junit.json"
           cargo clippy --locked --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --all-targets --features ui,native-host,native-presentation -- -D warnings 2>&1 | tee "$RUNNER_TEMP/native-presentation-evidence/clippy.log"
@@ -453,7 +453,7 @@ jobs:
           name: native-presentation-${{ matrix.lane }}-${{ github.event.pull_request.head.sha }}
           path: |
             ${{ runner.temp }}/native-presentation-evidence/
-            ${{ runner.temp }}/native-presentation-target/nextest/native-composition-*/junit.xml
+            apps/hepta-control-ui/rust/target/nextest/native-composition-*/junit.xml
           if-no-files-found: error
 
   ui-bazel-lock-generation:

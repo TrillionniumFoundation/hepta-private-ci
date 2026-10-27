@@ -101,10 +101,16 @@ fn precreated_child() -> TestResult {
     };
     let spec = if std::env::var_os(CHILD_DESCRIPTOR).as_deref() == Some(std::ffi::OsStr::new("1")) {
         let (spec, descriptor) = receive_precreated_spawn_with_descriptor(
-            UnixStream::connect(socket)?, parent_pidfd, peer, &command,
+            UnixStream::connect(socket)?,
+            parent_pidfd,
+            peer,
+            &command,
         )?;
         let startup = UnixDatagram::from(descriptor);
-        assert_eq!(startup.send(b"original child received the actual pair")?, 39);
+        assert_eq!(
+            startup.send(b"original child received the actual pair")?,
+            39
+        );
         spec
     } else {
         receive_precreated_spawn(UnixStream::connect(socket)?, parent_pidfd, peer, &command)?
@@ -143,7 +149,11 @@ fn original_supervisor_case(descriptor: bool) -> TestResult {
     let (_child, stream, pin, peer, command) = child_at(&root, descriptor)?;
     let bound = PrecreatedChild::from_stream(stream, pin, peer, command.clone())?;
     let (startup, offered) = UnixDatagram::pair()?;
-    let bound = if descriptor { bound.with_startup_descriptor(offered.into())? } else { bound };
+    let bound = if descriptor {
+        bound.with_startup_descriptor(offered.into())?
+    } else {
+        bound
+    };
     let driver = PrecreatedProcessDriver::new(agent.clone(), vec![bound])?;
     let (mut supervisor, _) = crate::Supervisor::recover(
         registry.clone(),

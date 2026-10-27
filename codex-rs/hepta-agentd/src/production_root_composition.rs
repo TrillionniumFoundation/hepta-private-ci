@@ -103,6 +103,7 @@ pub async fn attach_root_production_operation_host_with_startup(
     verifier
         .verify(&authority, &config.identity().agent_id)
         .map_err(AgentdError::GenerationFenced)?;
+    config.retain_root_session(&root_session)?;
     let lease_id = bootstrap.writer.local_lease_id;
     let lease_generation = bootstrap.writer.local_lease_generation;
     let operation_grants: Arc<dyn AgentdFinalUseGrantProvider> = grants.clone();
@@ -222,6 +223,7 @@ pub async fn attach_root_notes_operation_host_with_startup(
     verifier
         .verify(&authority, &config.identity().agent_id)
         .map_err(AgentdError::GenerationFenced)?;
+    config.retain_root_session(&root_session)?;
     let (host, checkpoint) = AgentdProductionWriterHost::open_with_protected_recovery(
         config,
         authority,

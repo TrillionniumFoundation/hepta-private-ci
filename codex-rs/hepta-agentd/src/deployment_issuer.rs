@@ -53,10 +53,24 @@ pub use writer::HostAuthorityWriterRegistration;
 
 #[path = "deployment_notes.rs"]
 mod notes;
+pub(crate) use notes::OriginalNotesRevokeInput;
+pub use notes::RootIssuedNotesGrantObservation;
+pub use notes::RootIssuedNotesGrantSelection;
 pub use notes::RootNotesGrantAdmission;
 
 const STATE_OWNER: &str = "local-final-use-issuer";
 const EXCHANGE_DEADLINE: Duration = Duration::from_secs(2);
+
+#[path = "deployment_signed_grant.rs"]
+mod original_grant;
+
+enum RevocationExpectation<'a> {
+    Current,
+    Exact {
+        head: &'a FinalUseRevocations,
+        before: Instant,
+    },
+}
 
 /// Host policy permits only this exact original owner, target and scope.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -385,10 +399,36 @@ impl DeploymentFinalUseIssuer {
     /// the original authenticated revocation path; unsigned RPC reply heads
     /// must never update FinalUseAuthority on their own.
     pub fn revoke(&self, grant_id: &str) -> io::Result<FinalUseRevocations> {
-        let _guard = self
-            .request_lock
-            .lock()
-            .map_err(|_| io::Error::other("issuer fenced"))?;
+        self.revoke_selected(grant_id, RevocationExpectation::Current)
+    }
+
+    pub(crate) fn revoke_at_observed_head(
+        &self,
+        grant_id: &str,
+        head: &FinalUseRevocations,
+        before: Instant,
+    ) -> io::Result<FinalUseRevocations> {
+        self.revoke_selected(grant_id, RevocationExpectation::Exact { head, before })
+    }
+
+    fn revoke_selected(
+        &self,
+        grant_id: &str,
+        expectation: RevocationExpectation<'_>,
+    ) -> io::Result<FinalUseRevocations> {
+        if let RevocationExpectation::Exact { before, .. } = &expectation {
+            original_grant::require_before(*before)?;
+        }
+        let _guard = match &expectation {
+            RevocationExpectation::Current => self
+                .request_lock
+                .lock()
+                .map_err(|_| io::Error::other("issuer fenced"))?,
+            RevocationExpectation::Exact { .. } => self
+                .request_lock
+                .try_lock()
+                .map_err(|_| io::Error::other("original issuer busy or fenced"))?,
+        };
         if grant_id.is_empty()
             || grant_id.len() > 128
             || !grant_id
@@ -398,6 +438,12 @@ impl DeploymentFinalUseIssuer {
             return Err(io::Error::other("invalid grant id"));
         }
         let state = self.store.load(STATE_OWNER).map_err(io::Error::other)?;
+        if let RevocationExpectation::Exact { head, before } = &expectation {
+            original_grant::require_before(*before)?;
+            if &state.head != *head {
+                return Err(io::Error::other("original issuer revoke head CAS mismatch"));
+            }
+        }
         let mut next = state.clone();
         if next.head.revoked_grant_ids.contains(grant_id) {
             return Ok(next.head);
@@ -413,9 +459,15 @@ impl DeploymentFinalUseIssuer {
             .revision
             .checked_add(1)
             .ok_or_else(|| io::Error::other("revocation counter exhausted"))?;
+        if let RevocationExpectation::Exact { before, .. } = &expectation {
+            original_grant::require_before(*before)?;
+        }
         self.store
             .compare_and_set(STATE_OWNER, &state, &next)
             .map_err(io::Error::other)?;
+        if let RevocationExpectation::Exact { before, .. } = &expectation {
+            original_grant::require_before(*before)?;
+        }
         Ok(next.head)
     }
 

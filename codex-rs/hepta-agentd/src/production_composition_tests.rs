@@ -270,3 +270,6 @@ async fn installed_original_writer_keeps_the_protected_clock_and_original_verifi
     assert_eq!(probes.target.effects.load(Ordering::SeqCst), 0);
     assert_no_issuer_request(peer)
 }
+
+#[path = "production_owner_custody_tests.rs"]
+mod owner_custody;

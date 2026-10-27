@@ -86,8 +86,40 @@ impl AgentdConfig {
             current_dir,
             WriterSource::RootDescriptor(writer),
         )?;
-        crate::authority_host_runtime::verify_process(&registration, uid, gid)?;
-        verify()?;
-        Ok(config)
+        finish_loaded_root_writer(
+            config,
+            &inputs.session,
+            &registration,
+            &bundle.writer,
+            (uid, gid),
+        )
     }
 }
+
+// Consume the acquired Config so every postload refusal has the same custody
+// ordering. The original process and writer checks still run after loading.
+fn finish_loaded_root_writer(
+    config: AgentdConfig,
+    session: &crate::AgentdRootAuthoritySession,
+    registration: &crate::HostAuthorityRegistration,
+    writer: &crate::HostAuthorityWriterRegistration,
+    (uid, gid): (u32, u32),
+) -> Result<AgentdConfig, AgentdError> {
+    config.retain_root_session(session)?;
+    crate::authority_host_runtime::verify_process(registration, uid, gid)?;
+    session
+        .verifier()
+        .verify_sender_process_binding(
+            &session.authority(),
+            &config.identity().agent_id,
+            &writer.local_lease_id,
+            writer.local_lease_generation,
+            config.identity().spawn_generation,
+        )
+        .map_err(AgentdError::GenerationFenced)?;
+    Ok(config)
+}
+
+#[cfg(test)]
+#[path = "config_root_late_writer_custody_tests.rs"]
+mod custody_tests;

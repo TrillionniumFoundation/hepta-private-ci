@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use std::time::Duration;
 
+use crate::local::test_support::private_home;
 use codex_protocol::ThreadId;
 use codex_protocol::models::BaseInstructions;
 use codex_protocol::protocol::EventMsg;
@@ -229,7 +230,7 @@ async fn store_with_runtime() -> (
     Arc<LocalThreadStore>,
     Arc<codex_state::StateRuntime>,
 ) {
-    let home = TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let config = test_config(home.path());
     let runtime = codex_state::StateRuntime::init(
         config.sqlite.clone(),

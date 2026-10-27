@@ -8,6 +8,8 @@ FinalUse targets and original terminal receipt reconciliation.
 
 ## Development entry points
 
+- [Original Root session File custody](ROOT_SESSION_FILE_CUSTODY.md): active
+  session, blocking work, fenced read-only clones and actual retirement checks.
 - [Native text session](NATIVE_TEXT_SESSION.md): original Root launcher,
   registered UI pidfd, same App Server thread, stream/history/approval and
   original signed-reference recovery; includes source map and build/test commands.

@@ -335,7 +335,7 @@ impl AgentdProductionWriterHost {
             AgentdError::Protocol(format!("recover production cognitive store: {error}"))
         })?;
         Self::from_recovered_store(
-            config.identity().spawn_generation,
+            config,
             store,
             authority,
             verifier,
@@ -346,13 +346,15 @@ impl AgentdProductionWriterHost {
     }
 
     async fn from_recovered_store(
-        spawn_generation: u64,
+        config: &AgentdConfig,
         store: CognitiveStore,
         authority: ProductionAuthorityLease,
         verifier: Arc<dyn ProductionAuthorityVerifier>,
         lease_id: String,
         lease_generation: u64,
     ) -> Result<Self, AgentdError> {
+        let spawn_generation = config.identity().spawn_generation;
+        let verifier = config.retain_production_verifier(verifier);
         let runtime_store = store.clone();
         let writer = Arc::new(
             ProductionDurableWriter::open_with_live_verifier(

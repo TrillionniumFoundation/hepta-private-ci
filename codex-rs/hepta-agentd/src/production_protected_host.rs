@@ -77,7 +77,7 @@ impl AgentdProductionWriterHost {
                 AgentdError::Protocol(format!("bind protected cognitive checkpoint: {error}"))
             })?;
         let host = Self::from_recovered_store(
-            config.identity().spawn_generation,
+            config,
             store,
             authority,
             verifier,

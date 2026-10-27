@@ -22,12 +22,18 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_memory::ProductionAuthorityLease;
 use codex_hepta_memory::ProductionAuthorityVerifier;
+use std::fs::File;
+use std::future::Future;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
+use std::pin::Pin;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::OnceLock;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
+use std::task::Context;
+use std::task::Poll;
 use std::time::Duration;
 use tokio::io::unix::AsyncFd;
 
@@ -38,7 +44,61 @@ struct LiveRoot {
     end_boottime_ns: u64,
     active: AtomicBool,
     consumers: Mutex<Vec<FinalUseAuthority>>,
-    serial: tokio::sync::Mutex<()>,
+    // One asynchronous admission token covers the entire observation and
+    // consumer barrier. There is no shared payload behind this permit.
+    serial: tokio::sync::Semaphore,
+}
+
+// Only operational lifetimes retain this private, exact original File. Fenced
+// read-only LiveRoot clones cannot keep a retired registered owner locked.
+type WriterCustody = Arc<OnceLock<Arc<File>>>;
+
+// Field order drops the complete original future, including its stream and
+// consumers, before releasing its share of the original registered File.
+struct RootWorker<F> {
+    future: Pin<Box<F>>,
+    _writer_file: WriterCustody,
+}
+impl<F: Future<Output = ()>> Future for RootWorker<F> {
+    type Output = ();
+
+    fn poll(self: Pin<&mut Self>, context: &mut Context<'_>) -> Poll<()> {
+        self.get_mut().future.as_mut().poll(context)
+    }
+}
+
+// A queued blocking closure also drops the actual consumers before File even
+// when its executor shuts down without ever starting the original CAS work.
+struct ConsumerSyncJob {
+    consumers: Vec<FinalUseAuthority>,
+    head: FinalUseRevocations,
+    writer_file: WriterCustody,
+}
+impl ConsumerSyncJob {
+    fn run(self) -> Result<(), AgentdRootAuthorityError> {
+        let _writer_file = self.writer_file;
+        let consumers = self.consumers;
+        let head = self.head;
+        for owner in consumers {
+            if owner
+                .revocation_head()
+                .map_err(|_| AgentdRootAuthorityError::Unavailable)?
+                != head
+            {
+                owner
+                    .update_revocations(head.clone())
+                    .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+            }
+            if owner
+                .revocation_head()
+                .map_err(|_| AgentdRootAuthorityError::Unavailable)?
+                != head
+            {
+                return Err(AgentdRootAuthorityError::Unavailable);
+            }
+        }
+        Ok(())
+    }
 }
 impl LiveRoot {
     fn current(
@@ -122,6 +182,7 @@ impl ProductionAuthorityVerifier for LiveRoot {
 pub struct AgentdRootAuthoritySession {
     live: Arc<LiveRoot>,
     worker: tokio::task::JoinHandle<()>,
+    writer_file: WriterCustody,
 }
 impl AgentdRootAuthoritySession {
     pub async fn connect(
@@ -167,21 +228,57 @@ impl AgentdRootAuthoritySession {
                 .ok_or(AgentdRootAuthorityError::Refused)?,
             active: AtomicBool::new(false),
             consumers: Mutex::new(Vec::new()),
-            serial: tokio::sync::Mutex::new(()),
+            serial: tokio::sync::Semaphore::new(1),
         });
-        refresh(&live, &stream).await?;
+        let writer_file = Arc::new(OnceLock::new());
+        refresh(&live, &stream, &writer_file).await?;
         let background = Arc::clone(&live);
-        let worker = tokio::spawn(async move {
-            let _fence = FenceOnDrop(Arc::clone(&background));
-            loop {
-                tokio::time::sleep(Duration::from_millis(100)).await;
-                if refresh(&background, &stream).await.is_err() {
-                    return;
+        let background_file = Arc::clone(&writer_file);
+        let worker = tokio::spawn(RootWorker {
+            future: Box::pin(async move {
+                let _fence = FenceOnDrop(Arc::clone(&background));
+                loop {
+                    tokio::time::sleep(Duration::from_millis(100)).await;
+                    if refresh(&background, &stream, &background_file)
+                        .await
+                        .is_err()
+                    {
+                        return;
+                    }
                 }
-            }
+            }),
+            _writer_file: Arc::clone(&writer_file),
         });
-        Ok(Self { live, worker })
+        Ok(Self {
+            live,
+            worker,
+            writer_file,
+        })
     }
+    /// Called only with Config's already acquired original registered File.
+    /// A static proof mismatch never binds a foreign owner. Once bound, only
+    /// the SAME Arc allocation is accepted; a cache/peer failure cannot clear
+    /// custody or make a postload guard refusal release a still-live Root.
+    pub(crate) fn retain_registered_writer(
+        &self,
+        agent: &AgentId,
+        generation: u64,
+        file: &Arc<File>,
+    ) -> Result<(), AgentdRootAuthorityError> {
+        if !self
+            .live
+            .proof
+            .matches_registered_process(agent, generation)
+        {
+            return Err(AgentdRootAuthorityError::Refused);
+        }
+        let retained = self.writer_file.get_or_init(|| Arc::clone(file));
+        if !Arc::ptr_eq(retained, file) {
+            return Err(AgentdRootAuthorityError::Refused);
+        }
+        Ok(())
+    }
+
     pub fn clock(&self) -> Arc<dyn AuthorityClock> {
         self.live.clone()
     }
@@ -207,12 +304,18 @@ impl AgentdRootAuthoritySession {
             return Err(AgentdRootAuthorityError::Refused);
         }
         let started = boottime_ns()?;
-        let _serial = tokio::time::timeout(Duration::from_millis(500), self.live.serial.lock())
-            .await
-            .map_err(|_| {
+        let _serial = match tokio::time::timeout(
+            Duration::from_millis(500),
+            self.live.serial.acquire(),
+        )
+        .await
+        {
+            Ok(Ok(permit)) => permit,
+            Ok(Err(_)) | Err(_) => {
                 self.live.cache.fence();
-                AgentdRootAuthorityError::Unavailable
-            })?;
+                return Err(AgentdRootAuthorityError::Unavailable);
+            }
+        };
         if self.live.active.load(Ordering::Acquire) {
             return Err(AgentdRootAuthorityError::Refused);
         }
@@ -222,7 +325,13 @@ impl AgentdRootAuthoritySession {
         };
         let (observation, _) = self.live.current()?;
         self.live.cache.begin_update();
-        synchronize_consumers(consumers.clone(), observation.revocations.clone(), started).await?;
+        synchronize_consumers(
+            consumers.clone(),
+            observation.revocations.clone(),
+            started,
+            &self.writer_file,
+        )
+        .await?;
         *self
             .live
             .consumers
@@ -239,6 +348,14 @@ impl Drop for AgentdRootAuthoritySession {
     fn drop(&mut self) {
         self.live.cache.fence();
         self.worker.abort();
+        // Each original consumer holds this SAME LiveRoot as its clock. Break
+        // the strong cycle after fencing; external owners remain independently
+        // alive and locked until their own original Arc handles retire.
+        let mut consumers = match self.live.consumers.lock() {
+            Ok(consumers) => consumers,
+            Err(poisoned) => poisoned.into_inner(),
+        };
+        consumers.clear();
     }
 }
 struct FenceOnDrop(Arc<LiveRoot>);
@@ -262,8 +379,13 @@ impl Drop for ActivationAttempt<'_> {
 async fn refresh(
     live: &Arc<LiveRoot>,
     stream: &RootObservationStream,
+    writer_file: &WriterCustody,
 ) -> Result<(), AgentdRootAuthorityError> {
-    let _serial = live.serial.lock().await;
+    let _serial = live
+        .serial
+        .acquire()
+        .await
+        .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
     let started = boottime_ns()?;
     let observation: HostAuthorityObservationResponseV2 = stream
         .read(&HostAuthorityObservationRequestV2 {
@@ -287,7 +409,7 @@ async fn refresh(
             .lock()
             .map_err(|_| AgentdRootAuthorityError::Unavailable)?
             .clone();
-        synchronize_consumers(consumers, head, started).await?;
+        synchronize_consumers(consumers, head, started, writer_file).await?;
         live.cache.end_update();
     }
     live.current()?;
@@ -297,6 +419,7 @@ async fn synchronize_consumers(
     consumers: Vec<FinalUseAuthority>,
     head: FinalUseRevocations,
     started: u64,
+    writer_file: &WriterCustody,
 ) -> Result<(), AgentdRootAuthorityError> {
     if consumers.is_empty() {
         return Ok(());
@@ -308,29 +431,15 @@ async fn synchronize_consumers(
         .checked_sub(elapsed)
         .filter(|remaining| *remaining > 0)
         .ok_or(AgentdRootAuthorityError::Unavailable)?;
+    let job = ConsumerSyncJob {
+        consumers,
+        head,
+        writer_file: Arc::clone(writer_file),
+    };
     let result = tokio::time::timeout(
         Duration::from_nanos(remaining),
-        tokio::task::spawn_blocking(move || {
-            for owner in consumers {
-                if owner
-                    .revocation_head()
-                    .map_err(|_| AgentdRootAuthorityError::Unavailable)?
-                    != head
-                {
-                    owner
-                        .update_revocations(head.clone())
-                        .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
-                }
-                if owner
-                    .revocation_head()
-                    .map_err(|_| AgentdRootAuthorityError::Unavailable)?
-                    != head
-                {
-                    return Err(AgentdRootAuthorityError::Unavailable);
-                }
-            }
-            Ok(())
-        }),
+        // Aborting/timing out this await cannot cancel an already running CAS.
+        tokio::task::spawn_blocking(move || job.run()),
     )
     .await
     .map_err(|_| AgentdRootAuthorityError::Unavailable)?
@@ -346,4 +455,4 @@ async fn synchronize_consumers(
 }
 #[cfg(test)]
 #[path = "root_authority_session_tests.rs"]
-mod tests;
+pub(crate) mod tests;

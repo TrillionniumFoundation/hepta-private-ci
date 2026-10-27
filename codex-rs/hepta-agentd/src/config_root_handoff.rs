@@ -49,6 +49,11 @@ impl AgentdConfig {
             ));
         }
         self.require_unconfigured_production_hosts()?;
+        if std::sync::Arc::strong_count(&self._writer_lock) != 1 {
+            return Err(root_error(
+                "live production handles retain the original writer file",
+            ));
+        }
         let agent = pin_control_directory(self.identity.layout.agent_root(), expected_gid)?;
         let run = pin_control_directory(self.identity.layout.run_root(), expected_gid)?;
         let descriptor = self._writer_lock.metadata()?;
@@ -168,6 +173,7 @@ impl PreparedRootAgentdConfig {
             ._writer_lock
             .try_lock()
             .map_err(|error| root_error(format!("original writer lock is still owned: {error}")))?;
+        self.config.retain_root_session(&inputs.session)?;
         let record = self.config.registry.load_agent(&identity.agent_id)?;
         require_starting(identity, &record)?;
         verify()?;
