@@ -20,7 +20,7 @@ pub enum CargoBinError {
         #[source]
         source: std::io::Error,
     },
-    #[error("CARGO_BIN_EXE env var {key} resolved to {path:?}, but it does not exist")]
+    #[error("binary path env var {key} resolved to {path:?}, but it does not exist")]
     ResolvedPathDoesNotExist { key: String, path: PathBuf },
     #[error("could not locate binary {name:?}; tried env vars {env_keys:?}; {fallback}")]
     NotFound {
@@ -34,7 +34,10 @@ pub enum CargoBinError {
 ///
 /// In `cargo test`, `CARGO_BIN_EXE_*` env vars are absolute.
 /// In `bazel test`, `CARGO_BIN_EXE_*` env vars are rlocationpaths, intended to be consumed by `rlocation`.
-/// This helper allows callers to transparently support both.
+/// In `cargo nextest`, `NEXTEST_BIN_EXE_*` env vars are absolute runtime paths.
+/// This helper allows callers to transparently support these runners.
+/// Explicit Cargo/Bazel metadata takes precedence over nextest metadata, including
+/// when an explicit path is invalid. No path is inferred from the build directory.
 /// Missing binary metadata is returned as `CargoBinError::NotFound`, so callers
 /// can handle unavailable optional helpers through the normal `Result` API.
 pub fn cargo_bin(name: &str) -> Result<PathBuf, CargoBinError> {
@@ -52,13 +55,14 @@ pub fn cargo_bin(name: &str) -> Result<PathBuf, CargoBinError> {
 }
 
 fn cargo_bin_env_keys(name: &str) -> Vec<String> {
-    let mut keys = Vec::with_capacity(2);
-    keys.push(format!("CARGO_BIN_EXE_{name}"));
-
-    // Cargo replaces dashes in target names when exporting env vars.
+    let mut keys = Vec::with_capacity(4);
+    // Some runners also expose hyphenated target names with underscores.
     let underscore_name = name.replace('-', "_");
-    if underscore_name != name {
-        keys.push(format!("CARGO_BIN_EXE_{underscore_name}"));
+    for prefix in ["CARGO_BIN_EXE", "NEXTEST_BIN_EXE"] {
+        keys.push(format!("{prefix}_{name}"));
+        if underscore_name != name {
+            keys.push(format!("{prefix}_{underscore_name}"));
+        }
     }
 
     keys
