@@ -2,9 +2,11 @@
 //! store. This Root-only integrity primitive grants no Current or writer lease.
 
 use super::*;
+use crate::cognitive_store::COGNITIVE_RECOVERED_DB_PREFIX;
 use crate::cognitive_store::CognitiveStoreOpenGuard;
 use crate::cognitive_store::publish_active_database;
 use crate::cognitive_store::recovered_database_filename;
+use crate::cognitive_store::valid_recovered_database_filename;
 use std::io::Write;
 
 /// Retains the original exclusive store lock and Root custody until the trusted
@@ -73,45 +75,17 @@ impl CognitiveStore {
         }
         let directory = private_directory(root, /*owner*/ 0)?;
         let guard = CognitiveStoreOpenGuard::acquire_exclusive(root).map_err(unavailable)?;
+        validate_installation_directory(root, &directory)?;
         let path = resolve_active_database_path(root).map_err(unavailable)?;
-        let identity = installation_file(&path, registered_uid)?;
-        let database = OpenOptions::new()
-            .read(true)
-            .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
-            .open(&path)
-            .map_err(unavailable)?;
-        let held = database.metadata().map_err(unavailable)?;
-        if (held.dev(), held.ino()) != (identity.0, identity.1)
-            || digest_image(&database)? != (image.sha256.clone(), image.bytes)
-            || digest_image(&image.file)? != (image.sha256.clone(), image.bytes)
-        {
-            return Err(invalid(
-                "unreleased generation differs from independent pre-crash material",
-            ));
-        }
-        validate_image(&path, &image.cut).await?;
-        let pointer_path = root.join(".cognitive-active-v1");
-        let pointer_identity = installation_file(&pointer_path, registered_uid)?;
-        let pointer = OpenOptions::new()
-            .read(true)
-            .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
-            .open(&pointer_path)
-            .map_err(unavailable)?;
-        let held = pointer.metadata().map_err(unavailable)?;
-        if (held.dev(), held.ino()) != (pointer_identity.0, pointer_identity.1)
-            || resolve_active_database_path(root).map_err(unavailable)? != path
-            || installation_file(&path, registered_uid)? != identity
-        {
-            return Err(invalid("unreleased generation identity changed"));
-        }
-        Ok(InstalledRootCheckpointImage {
+        reopen_installation(
+            root,
             path,
+            image,
+            InstallationOwner::Releasing(registered_uid),
             directory,
-            database,
-            pointer,
-            root: root.to_path_buf(),
-            _guard: guard,
-        })
+            guard,
+        )
+        .await
     }
 
     /// Called only after Root proves the old publisher retired, the old lease
@@ -119,7 +93,10 @@ impl CognitiveStore {
     /// The registered cognitive directory must already be under Root0700
     /// custody. No live DB is opened, hashed, repaired or used as a witness.
     /// Old DB/WAL/journal generations remain untouched; the old pointer bytes
-    /// are retained before the ORIGINAL atomic pointer publication.
+    /// are retained before the ORIGINAL atomic pointer publication. A complete
+    /// Root-owned installation already selected by that pointer is reopened
+    /// only against the same independently verified image, with no new writes
+    /// or publication. Partial, ambiguous or changed installations are refused.
     pub async fn install_root_checkpoint_image(
         layout: &HeptaAgentLayout,
         image: CognitiveCheckpointImage,
@@ -137,10 +114,58 @@ impl CognitiveStore {
         }
         let directory = private_directory(root, /*owner*/ 0)?;
         let guard = CognitiveStoreOpenGuard::acquire_exclusive(root).map_err(unavailable)?;
+        validate_installation_directory(root, &directory)?;
         if private_file(&image.path, /*owner*/ 0)?.2 != image.bytes
             || digest_image(&image.file)? != (image.sha256.clone(), image.bytes)
         {
             return Err(invalid("independent material changed before installation"));
+        }
+        // An interrupted original install stays Root-owned until its Current
+        // adoption and explicit release. Do not create a second generation or
+        // republish its pointer. The original exclusive lock remains retained
+        // across discovery, verification and the returned opaque installation.
+        let active = match std::fs::symlink_metadata(root.join(".cognitive-active-v1")) {
+            Ok(_) => Some(resolve_active_database_path(root).map_err(unavailable)?),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => None,
+            Err(error) => return Err(unavailable(error)),
+        };
+        let mut retained = None;
+        for entry in std::fs::read_dir(root).map_err(unavailable)? {
+            let entry = entry.map_err(unavailable)?;
+            let name = entry.file_name();
+            if !name
+                .as_encoded_bytes()
+                .starts_with(COGNITIVE_RECOVERED_DB_PREFIX.as_bytes())
+            {
+                continue;
+            }
+            let metadata = entry.path().symlink_metadata().map_err(unavailable)?;
+            if metadata.uid() != 0 {
+                continue; // Suspect old owner bytes are never a recovery witness.
+            }
+            let name = name
+                .to_str()
+                .ok_or_else(|| invalid("invalid unreleased Root installation name"))?;
+            if !valid_recovered_database_filename(name) || retained.is_some() {
+                return Err(invalid("ambiguous unreleased Root installation"));
+            }
+            retained = Some(entry.path());
+        }
+        if let Some(path) = retained {
+            if active.as_ref() != Some(&path) {
+                return Err(invalid(
+                    "unreleased Root installation has no exact active pointer",
+                ));
+            }
+            return reopen_installation(
+                root,
+                path,
+                image,
+                InstallationOwner::Root,
+                directory,
+                guard,
+            )
+            .await;
         }
         // This is a fresh original-format generation name. The image digest is
         // an integrity salt here, never a substitute writer fencing token.
@@ -206,15 +231,98 @@ impl CognitiveStore {
     }
 }
 
+#[derive(Clone, Copy)]
+enum InstallationOwner {
+    Root,
+    Releasing(u32),
+}
+
+async fn reopen_installation(
+    root: &Path,
+    path: PathBuf,
+    image: CognitiveCheckpointImage,
+    owner: InstallationOwner,
+    directory: File,
+    guard: CognitiveStoreOpenGuard,
+) -> Result<InstalledRootCheckpointImage, CognitiveRecoveryError> {
+    let identity = installation_file(&path, owner)?;
+    let database = OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+        .open(&path)
+        .map_err(unavailable)?;
+    let held = database.metadata().map_err(unavailable)?;
+    if (held.dev(), held.ino()) != (identity.0, identity.1)
+        || digest_image(&database)? != (image.sha256.clone(), image.bytes)
+        || digest_image(&image.file)? != (image.sha256.clone(), image.bytes)
+    {
+        return Err(invalid(
+            "unreleased generation differs from independent pre-crash material",
+        ));
+    }
+    validate_image(&path, &image.cut).await?;
+    let pointer_path = root.join(".cognitive-active-v1");
+    let pointer_identity = installation_file(&pointer_path, owner)?;
+    let pointer = OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+        .open(&pointer_path)
+        .map_err(unavailable)?;
+    let held = pointer.metadata().map_err(unavailable)?;
+    if (held.dev(), held.ino()) != (pointer_identity.0, pointer_identity.1)
+        || resolve_active_database_path(root).map_err(unavailable)? != path
+        || installation_file(&path, owner)? != identity
+    {
+        return Err(invalid("unreleased generation identity changed"));
+    }
+    validate_installation_directory(root, &directory)?;
+    database.sync_all().map_err(unavailable)?;
+    pointer.sync_all().map_err(unavailable)?;
+    directory.sync_all().map_err(unavailable)?;
+    Ok(InstalledRootCheckpointImage {
+        path,
+        directory,
+        database,
+        pointer,
+        root: root.to_path_buf(),
+        _guard: guard,
+    })
+}
+
+fn validate_installation_directory(
+    root: &Path,
+    directory: &File,
+) -> Result<(), CognitiveRecoveryError> {
+    let named = private_directory(root, /*owner*/ 0)?
+        .metadata()
+        .map_err(unavailable)?;
+    let held = directory.metadata().map_err(unavailable)?;
+    if (named.dev(), named.ino()) != (held.dev(), held.ino()) {
+        return Err(invalid(
+            "registered installation directory identity changed",
+        ));
+    }
+    Ok(())
+}
+
 fn installation_file(
     path: &Path,
-    registered_uid: u32,
+    allowed: InstallationOwner,
 ) -> Result<(u64, u64, u64, i64, i64), CognitiveRecoveryError> {
     let owner = path.symlink_metadata().map_err(unavailable)?.uid();
-    if matches!(registered_uid, 0 | u32::MAX) || (owner != 0 && owner != registered_uid) {
-        return Err(invalid(
-            "unreleased installation owner is not the registered UID or Root",
-        ));
+    match allowed {
+        InstallationOwner::Root if owner != 0 => {
+            return Err(invalid("unadopted installation must remain Root-owned"));
+        }
+        InstallationOwner::Releasing(registered_uid)
+            if matches!(registered_uid, 0 | u32::MAX)
+                || (owner != 0 && owner != registered_uid) =>
+        {
+            return Err(invalid(
+                "unreleased installation owner is not the registered UID or Root",
+            ));
+        }
+        InstallationOwner::Root | InstallationOwner::Releasing(_) => {}
     }
     private_file(path, owner)
 }
