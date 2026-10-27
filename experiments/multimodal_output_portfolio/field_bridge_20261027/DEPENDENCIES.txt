@@ -1,0 +1,68 @@
+NATIVE BRIDGE REPRODUCTION
+
+This file describes the isolated native kernel and controls tests. The full
+multimodal experiment additionally requires its separately pinned model/data
+assets and PyTorch environment. No installation here runs the scientific study.
+
+Host profile:
+  x86_64 Linux, a compatible C linker (cc), Python >=3.12.
+  The executed controls tests used NumPy 2.3.5.
+  The isolated native build used official Rust 1.90.0, edition 2024.
+  Exact Rust compiler/cargo/rustfmt and runtime-library file hashes, official
+  component archive hashes, all 27 Cargo package identities, the full reduced
+  Cargo.lock, and the workspace manifest are in native_reproduction/PROFILE.json.
+
+Original source:
+  Repository: TrillionniumFoundation/hepta-private-ci
+  Commit: 63f198ad85cfa2aa579032256355f446cfe793a0
+  Crates: hepta-types, hepta-infer-core, hepta-neuron (83 original files).
+  PROFILE.json contains their Git blob SHA, SHA-256, and byte count, plus the
+  original repository lock and historical scalar-probe support-file identities.
+  All three original crates remain byte-identical. The only new compiled source
+  is bridge_probe.rs, added as an isolated Cargo example.
+
+From the repository root, choose a new output destination:
+
+  python experiments/multimodal_output_portfolio/field_bridge_20261027/restore_native.py \
+    --destination ./native-reproduction-new --run-controls-tests
+
+This fetches the exact source pin, checks official compiler component checksums,
+installs the compiler only inside the chosen destination, and downloads the
+24 checksum-pinned registry crates into a verified local vendor directory.
+The actual compilation is always cargo build --offline --locked --release.
+No system files, credentials, current product artifacts, or selected models
+are modified. Do not reuse an existing restoration output directory.
+
+Optional reuse:
+  --source-root PATH        copy exact pinned checkout files, verifying each hash
+  --toolchain-bin PATH      reuse compiler only after all pinned runtime hashes match
+  --cache-dir PATH          share checksum-addressed downloaded bytes
+  --offline                 refuse every missing download instead of using network
+  --verify-only             check the packaged source/lock profile; no download/build
+
+Source files missing from --source-root are fetched at the exact commit unless
+--offline is set. A present but different source file is an error. Third-party
+packages are verified against the original repository lock, extracted safely,
+and exposed through Cargo's checksum-aware vendored-source configuration.
+
+Outputs under the chosen destination:
+  BUILD_RECEIPT.json        actual binary/source/compiler/dependency/build identity
+  BUILD.log                actual offline compiler output
+  build/target/release/examples/parameter_field_bridge
+  CONTROLS_TESTS.log        only when --run-controls-tests was requested
+
+The new BUILD_RECEIPT.json can be passed directly to controls_tests:
+
+  python -m experiments.multimodal_output_portfolio.field_bridge_20261027.controls_tests \
+    --native-build-receipt ./native-reproduction-new/BUILD_RECEIPT.json -v
+
+native_reproduction/REFERENCE_BUILD.json and REFERENCE_SMOKE.json retain the
+already executed original build and twelve-call smoke evidence. They contain
+no machine-specific installation paths. These reference results are not results
+of a future restoration. restore_native.py records the rebuilt executable hash
+and its equality/difference from the reference. Identical binary bytes across
+different paths/system linkers are not assumed; compiler/dependency/source
+identity and the exact numerical integration tests are checked separately.
+
+Kernel receipts remain DENY_ALL and requires_calibration=true. No Agentd-owner
+integration, production activation, or model-training qualification is asserted.
