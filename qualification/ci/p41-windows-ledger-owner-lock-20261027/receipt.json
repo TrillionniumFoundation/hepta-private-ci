@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.p41-windows-ledger-locked-owner-fixture.v1",
+  "date_utc": "2026-10-27",
+  "authority": "DENY_ALL",
+  "mode": "SHADOW_ONLY",
+  "release": "HOLD_NO_GO",
+  "parent_pr": 4109,
+  "parent_head_sha": "98614dade9e252b81fd61e1401f1cee3251e578b",
+  "fixed_source_commit_sha": "32860141289a46117b1521ee7e9abf98040eb639",
+  "source_path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+  "preimage_git_blob_sha": "37f831ad8f50f3d3f197fed0a60cdf7b5f79b8d6",
+  "postimage_git_blob_sha": "964bda878dda3be038dfba8471440f414eff80a9",
+  "donor": {
+    "pr": 3353,
+    "commit_sha": "f9add309efc15b811db421688737591233504665",
+    "git_blob_sha": "964bda878dda3be038dfba8471440f414eff80a9",
+    "scope": "one original test-fixture file only; reviewed candidate, not a production owner"
+  },
+  "observed_failure": {
+    "workflow_run": 40519518830,
+    "job": 122253000244,
+    "source_head": "98614dade9e252b81fd61e1401f1cee3251e578b",
+    "test_target": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+    "result": "74 PASS / 4 FAIL",
+    "exception": "Os code 33: independent fs::read while live authenticated Windows LedgerWriter holds an exclusive file lock",
+    "failing_tests": [
+      "durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+      "invalid_authentication_artifact_or_dataset_never_calls_any_port",
+      "old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch",
+      "ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded"
+    ]
+  },
+  "repair_contract": {
+    "production_code_modified": false,
+    "required_gates_modified": false,
+    "cargo_lock_modified": false,
+    "original_tests_removed": 0,
+    "original_assertions_weakened": false,
+    "ledger_lock_weakened": false,
+    "authentic_witness_recovery": true,
+    "deny_competing_writer_truncation_on_windows": true,
+    "closed_owner_corruption_still_rejected": true,
+    "unix_live_owner_corruption_case_retained": true
+  },
+  "verification": {
+    "source_preimage_checked": true,
+    "donor_blob_checked": true,
+    "new_branch_source_blob_checked": false,
+    "original_windows_test_on_new_head": "PENDING_REAL_OWNING_EXECUTION",
+    "current_full_blocking_ci": "PENDING_REAL_OWNING_EXECUTION",
+    "no_pass_claimed": true
+  },
+  "other_blockers_still_open": [
+    "Windows outside-root DELETE",
+    "AppServer plugin TTL and raw permission roots",
+    "required exact-composed full CI and RustSec",
+    "real owner-backed policy episodes",
+    "target-device p95/p99 and energy"
+  ]
+}
