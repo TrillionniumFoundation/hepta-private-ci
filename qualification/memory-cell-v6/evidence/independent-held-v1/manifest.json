@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.cell.semantic.independent-held.v1",
+  "author": "root assistant, separate from training agent",
+  "not_human_authored": true,
+  "language": "en",
+  "supported": 120,
+  "out_of_distribution": 60,
+  "request_count": 180,
+  "held_sha256": "2d121bd1d3cabb1c8e8787bdec81dfc6f894233df95adc5625c85cb26639f969",
+  "date_and_series": "Provided explicitly by evaluator from the frozen numeric task; templates do not supply or change them.",
+  "release_rule": "Release only after candidate source, training data, selection rule and selected candidate hashes are frozen.",
+  "limitations": [
+    "Synthetic assistant-authored holdout",
+    "English only",
+    "Finite six-operation task",
+    "No general intelligence claim"
+  ]
+}

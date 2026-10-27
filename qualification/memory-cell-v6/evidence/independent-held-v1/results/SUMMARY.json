@@ -1,0 +1,89 @@
+{
+  "held_sha256": "2d121bd1d3cabb1c8e8787bdec81dfc6f894233df95adc5625c85cb26639f969",
+  "freeze_sha256": "01c4327b3f950b821861bb5ed54c592aa385e277260b9ab203059e765b0c8244",
+  "unique_utterances": 180,
+  "supported": 120,
+  "ood": 60,
+  "language": "en",
+  "synthetic_assistant_authored": true,
+  "results": {
+    "v6_selected": {
+      "correct": 12,
+      "known_rejected": 108,
+      "known_wrong": 0,
+      "correct_coverage": 0.1,
+      "ood_false_accept": 0,
+      "ood_false_accept_rate": 0.0,
+      "gate_pass": false,
+      "wall_seconds_including_process_start": 0.11633970000548288,
+      "resources_one_router_process": {
+        "user_seconds": 0.087256,
+        "system_seconds": 0.020576,
+        "max_rss_kib": 14032.0,
+        "elapsed_seconds": 0.0863115529937204
+      },
+      "per_operation": {
+        "at": 0,
+        "previous": 4,
+        "change": 2,
+        "mean3": 0,
+        "range3": 6,
+        "peak3": 0
+      },
+      "inference_ms_p50": 0.203803,
+      "inference_ms_p95": 0.301983
+    },
+    "deterministic": {
+      "correct": 89,
+      "known_rejected": 29,
+      "known_wrong": 2,
+      "correct_coverage": 0.7416666666666667,
+      "ood_false_accept": 8,
+      "ood_false_accept_rate": 0.13333333333333333,
+      "gate_pass": false,
+      "wall_seconds_including_process_start": 0.07630136400985066,
+      "resources_one_router_process": {
+        "user_seconds": 0.059604,
+        "system_seconds": 0.007954,
+        "max_rss_kib": 11776.0,
+        "elapsed_seconds": 0.04445691598812118
+      },
+      "per_operation": {
+        "at": 0,
+        "previous": 19,
+        "change": 19,
+        "mean3": 16,
+        "range3": 19,
+        "peak3": 16
+      },
+      "inference_ms_p50": 0.115577,
+      "inference_ms_p95": 0.193447
+    },
+    "v5_selected": {
+      "correct": 9,
+      "known_rejected": 111,
+      "known_wrong": 0,
+      "correct_coverage": 0.075,
+      "ood_false_accept": 0,
+      "ood_false_accept_rate": 0.0,
+      "gate_pass": false,
+      "wall_seconds_including_process_start": 2.603721917999792,
+      "resources_one_router_process": {
+        "user_seconds": 3.346516,
+        "system_seconds": 0.163795,
+        "max_rss_kib": 122216.0,
+        "elapsed_seconds": 2.3545989300037036
+      },
+      "per_operation": {
+        "at": 0,
+        "previous": 1,
+        "change": 1,
+        "mean3": 2,
+        "range3": 3,
+        "peak3": 2
+      },
+      "inference_ms_p50": 0.805766,
+      "inference_ms_p95": 1.026129
+    }
+  }
+}
