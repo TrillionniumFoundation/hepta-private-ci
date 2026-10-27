@@ -145,7 +145,9 @@ impl AgentdProductionWriterHost {
                     .dispatch(self.writer.as_ref(), &signed, &binding, receipt)
                     .await
                 {
-                    Ok(_) | Err(codex_hepta_memory::ProductionWriterError::FinalUse(_)) => {}
+                    Ok(_)
+                    | Err(codex_hepta_memory::ProductionWriterError::FinalUse(_))
+                    | Err(codex_hepta_memory::ProductionWriterError::ConsumerEntryRejected(_)) => {}
                     Err(codex_hepta_memory::ProductionWriterError::Local(
                         codex_hepta_memory::LocalLeaseOutboxError::StaleFence(_)
                         | codex_hepta_memory::LocalLeaseOutboxError::IllegalTransition(_),

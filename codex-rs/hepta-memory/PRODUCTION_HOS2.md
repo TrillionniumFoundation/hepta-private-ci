@@ -147,8 +147,12 @@ external implementations claiming to be a native device.
 ## Definite rejection before native entry
 
 The original writer alone can create the non-serializable
-`PreBoundaryRejected` value, in the `final_use.claim` or synchronous
-`with_verified_use` error branch, before the adapter callback was invoked.
+`PreBoundaryRejected` value, when `final_use.claim` or `with_verified_use`
+refuses entry, or when the synchronous target `enter` returns a proven
+admission refusal before InstallBudget. Policy admission can perform ReadUsage;
+it cannot install or queue an effect. The latter path returns
+`ConsumerEntryRejected` only after persisting the original proof. A device
+error after InstallBudget has entered remains `Indeterminate` instead.
 An append-only proof in the same database binds the original operation,
 payload, dispatch event, entered/settled claim heads, authority epochs and
 rejected nonce. The old event remains `Indeterminate`; it is never rewritten
@@ -163,6 +167,11 @@ the proof. Crash after that consumption, any effect entry without a new proof,
 a terminal/reconciliation event, or owner-fence drift remains fail closed.
 No reason string, timeout, NotSeen response or caller-supplied flag can create
 this state. Existing generic unknown operations retain their one-shot fence.
+
+The policy-enabled HOS2 target checks its retained proposal after every grant
+await, on the same synchronous call stack before InstallBudget. This uses the
+original FinalUse entry linearization; it does not claim to hold the revocation
+mutex during native I/O. No new claim table, authority or terminal format exists.
 
 The public dispatch entry tries this narrow path before its ordinary Queued
 receipt check only for a current, non-inherited HOS2 receipt. The proof

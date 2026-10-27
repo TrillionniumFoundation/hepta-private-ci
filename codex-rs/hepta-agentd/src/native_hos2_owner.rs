@@ -28,6 +28,9 @@ use crate::AgentdHos2Usage;
 use crate::AgentdProductionWriterHost;
 use crate::AgentdRootProductionAttachment;
 use crate::AgentdRootProductionInputs;
+use crate::CpuBudgetProposal;
+use crate::CpuPolicyConsumer;
+use crate::CpuPolicySubmission;
 
 /// Select the exact sealed page supplied by the kernel for this actual image.
 /// A successor requires the kernel's version-4 image/generation binding; an
@@ -47,6 +50,7 @@ pub struct AgentdG2NativeOperationHost {
     target: Arc<ProductionHos2Target>,
     device: FinalUseAuthority,
     notes: FinalUseAuthority,
+    policy_admission: Option<Arc<CpuPolicyConsumer>>,
 }
 
 impl AgentdG2NativeOperationHost {
@@ -143,6 +147,21 @@ impl AgentdG2NativeOperationHost {
             .map_err(AgentdError::Invalid)
     }
 
+    /// Retain one proposal on the explicitly policy-enabled original host.
+    /// The caller obtains `sequence` from this host's original writer and uses
+    /// the returned request in its normal prepare/grant-provider dispatch path.
+    pub fn prepare_cpu_policy(
+        &self,
+        proposal: CpuBudgetProposal,
+        sequence: u64,
+    ) -> Result<CpuPolicySubmission, AgentdError> {
+        self.policy_admission
+            .as_ref()
+            .ok_or_else(|| AgentdError::Invalid("CPU policy consumer is not attached".into()))?
+            .prepare(proposal, sequence)
+            .map_err(|error| AgentdError::Invalid(error.to_string()))
+    }
+
     /// Retire only through the original writer's independently acknowledged
     /// durable prefix and its retained native history target. This delegates
     /// permit construction, live authority checks and Current barriers to the
@@ -172,6 +191,33 @@ pub async fn attach_g2_native_operation_host(
     descriptor: File,
     image: AgentdG2NativeImage<'_>,
 ) -> Result<AgentdG2NativeOperationHost, AgentdError> {
+    attach_native_host(config, inputs, descriptor, image, Admission::Native).await
+}
+
+/// Explicit CPU-policy composition on the same Root/writer/device chain.
+/// Every install requires a retained original proposal and a fresh native
+/// read at synchronous FinalUse entry. This enables no collector or model arm.
+pub async fn attach_g2_native_cpu_policy_host(
+    config: &mut AgentdConfig,
+    inputs: AgentdRootProductionInputs,
+    descriptor: File,
+    image: AgentdG2NativeImage<'_>,
+) -> Result<AgentdG2NativeOperationHost, AgentdError> {
+    attach_native_host(config, inputs, descriptor, image, Admission::CpuPolicy).await
+}
+
+enum Admission {
+    Native,
+    CpuPolicy,
+}
+
+async fn attach_native_host(
+    config: &mut AgentdConfig,
+    inputs: AgentdRootProductionInputs,
+    descriptor: File,
+    image: AgentdG2NativeImage<'_>,
+    admission: Admission,
+) -> Result<AgentdG2NativeOperationHost, AgentdError> {
     config.require_unconfigured_production_hosts()?;
     let native = Arc::new(
         match image {
@@ -184,7 +230,19 @@ pub async fn attach_g2_native_operation_host(
         }
         .map_err(AgentdError::Protocol)?,
     );
-    let target = Arc::new(ProductionHos2Target::new(native.clone()));
+    let policy_admission = match admission {
+        Admission::Native => None,
+        Admission::CpuPolicy => Some(Arc::new(CpuPolicyConsumer::new(
+            native.clone(),
+            Arc::new(|| {
+                crate::root_observation_cache::boottime_ns().map_err(|error| error.to_string())
+            }),
+        ))),
+    };
+    let target = Arc::new(match &policy_admission {
+        Some(consumer) => ProductionHos2Target::with_admission(native.clone(), consumer.clone()),
+        None => ProductionHos2Target::new(native.clone()),
+    });
     let device = inputs.device.clone();
     let notes = inputs.notes.clone();
     let root = crate::attach_root_production_operation_host(
@@ -205,5 +263,6 @@ pub async fn attach_g2_native_operation_host(
         target,
         device,
         notes,
+        policy_admission,
     })
 }

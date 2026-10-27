@@ -82,6 +82,7 @@ pub use production_hos2::HOS2_INSTALL_TOPIC_V1;
 pub use production_hos2::Hos2DeliveryId;
 pub use production_hos2::Hos2DeliveryObservation;
 pub use production_hos2::Hos2Device;
+pub use production_hos2::Hos2InstallAdmission;
 pub use production_hos2::Hos2InstallBudgetV1;
 pub use production_hos2::Hos2InstallContradiction;
 pub use production_hos2::Hos2InstallOutcome;

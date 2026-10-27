@@ -150,6 +150,8 @@ pub enum ProductionWriterError {
     WriterBusy,
     #[error("final-use authority rejected dispatch: {0}")]
     FinalUse(#[from] FinalUseError),
+    #[error("consumer admission refused before effect entry: {0}")]
+    ConsumerEntryRejected(String),
     #[error("production semantic mutation requires a retained live authority verifier")]
     LiveVerifierRequired,
 }
@@ -1627,9 +1629,44 @@ impl ProductionDurableWriter {
             if bound_entry.is_some() {
                 self.effect_entry_live_check(&entered_claim)?;
             }
-            Ok::<_, ProductionWriterError>(target.dispatch(request.clone()))
+            Ok::<_, ProductionWriterError>(target.enter(request.clone()))
         }) {
-            Ok(Ok(future)) => future,
+            Ok(Ok(Ok(future))) => future,
+            Ok(Ok(Err(reason))) => {
+                if let Some(entry) = bound_entry.take() {
+                    entry.release().await?;
+                }
+                if request.topic == crate::HOS2_INSTALL_TOPIC_V1
+                    && inherited_from_generation.is_none()
+                {
+                    // The original synchronous consumer has not called its
+                    // device. Retain the same K/D and original proof path; a
+                    // policy refusal is not a fabricated native terminal.
+                    let proof = PreBoundaryRejected::at_rejected_entry(
+                        self.reauthorization_binding(&request),
+                        entered_claim,
+                        dispatch_claim_event_id,
+                        operation_claims::RejectionStage::Entry,
+                        signed.grant.nonce,
+                    );
+                    operation_claims::record_rejection(&self.store, proof, now_unix_ms()?).await?;
+                } else {
+                    self.settle_pre_dispatch_rejection(
+                        &request,
+                        &dispatch_claim_event_id,
+                        inherited_from_generation.is_some(),
+                        reason.clone(),
+                    )
+                    .await?;
+                    let _ = operation_claims::mark_settled(
+                        &self.store,
+                        &entered_claim,
+                        now_unix_ms().unwrap_or(1),
+                    )
+                    .await;
+                }
+                return Err(ProductionWriterError::ConsumerEntryRejected(reason));
+            }
             // This is an original owner/TTL failure, not a FinalUse proof of
             // non-entry. Dropping the retained guard fences every writer clone.
             Ok(Err(error)) => return Err(error),
@@ -2534,6 +2571,18 @@ pub trait ProductionOutboxTarget: Send + Sync {
 /// Notes/HOS2 guarantee across arbitrary asynchronous work.
 pub trait FinalUseProductionOutboxTarget: ProductionOutboxTarget {
     fn destination_id(&self) -> &str;
+
+    /// Perform synchronous consumer admission and enter the effect before
+    /// returning its future. `Err` must mean no device/effect entry occurred;
+    /// an error after entry belongs in the returned outcome as indeterminate.
+    /// The original writer invokes this inside its verified FinalUse closure,
+    /// after every grant/queue await, and owns any durable non-entry proof.
+    fn enter<'a>(
+        &'a self,
+        request: ProductionDispatchRequest,
+    ) -> Result<ProductionDispatchFuture<'a>, String> {
+        Ok(self.dispatch(request))
+    }
 
     /// Notes-only metadata retirement. A caller cannot construct this permit;
     /// the original writer derives it from its existing durable terminal event.
