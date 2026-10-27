@@ -53,6 +53,13 @@ pub(crate) fn sign_private_fixture(mut signer: std::process::Command, statement:
     use codex_utils_path::PrivateSecurityIdentity;
     use codex_utils_path::WindowsFileId;
     use std::fs::File;
+    use std::fs::OpenOptions;
+    use std::os::windows::fs::OpenOptionsExt;
+    use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT;
+    use windows_sys::Win32::Storage::FileSystem::FILE_READ_ATTRIBUTES;
+    use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
+    use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
+    use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
 
     let mut signature = statement.as_os_str().to_os_string();
     signature.push(".sig");
@@ -74,9 +81,21 @@ pub(crate) fn sign_private_fixture(mut signer: std::process::Command, statement:
             b"",
         )
         .expect("create an absent private signature before invoking OpenSSH");
-    let observer = File::open(&signature).expect("inspect own newly private signature");
+    // Win32 OpenSSH opens filename output O_WRONLY with FILE_SHARE_WRITE only.
+    // A held GENERIC_READ observer conflicts even when it shares writes itself.
+    // Hold full ID/security metadata without data-read access, while denying
+    // deletion/replacement until the original filename signer has completed.
+    let observer = OpenOptions::new()
+        .access_mode(READ_CONTROL | FILE_READ_ATTRIBUTES)
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE)
+        .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+        .open(&signature)
+        .expect("retain metadata-only observer of own private signature");
     let identity = WindowsFileId::inspect(&observer).expect("full native signature identity");
     let security = PrivateSecurityIdentity::inspect(&observer).expect("private owner and DACL");
+    eprintln!(
+        "HEPTA_FIXTURE_SIGNATURE_OBSERVER metadata_only=true deny_delete=true full_id={identity:?}"
+    );
     drop(created);
     let mut confirmation = statement.as_os_str().to_os_string();
     confirmation.push(".own-signing-confirmation");
