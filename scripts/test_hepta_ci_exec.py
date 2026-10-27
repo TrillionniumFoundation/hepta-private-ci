@@ -313,6 +313,8 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
                 "with open(os.environ['CALLS'], 'a') as stream:\n"
                 "    stream.write(json.dumps(sys.argv) + '\\n')\n"
                 "if sys.argv[1:2] == ['test-planned-binaries']:\n"
+                "    if os.environ.get('FAIL_NATIVE_BUILD') == '1':\n"
+                "        raise SystemExit(17)\n"
                 "    target = pathlib.Path(os.environ['RUNNER_TEMP']).resolve()\n"
                 "    payload = {'rust-build-meta': {'target-directory': str(target), 'non-test-binaries': {}}, 'rust-binaries': {}}\n"
                 "    pathlib.Path(sys.argv[2]).write_text(json.dumps(payload))\n"
@@ -413,6 +415,35 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
         folder = self.root / "hepta-command-records"
         test = json.loads((folder / "owner-test.json").read_text())
         self.assertEqual(test["status"], "failed")
+        self.assertEqual(test["command_exit_code"], 17)
+        bindings = json.loads((folder / "owner-test.json.bindings.json").read_text())
+        self.assertEqual(bindings["build_exit_code"], 0)
+        self.assertEqual(bindings["test_exit_code"], 17)
+        self.assertEqual(bindings["status"], "failed")
+        self.assertFalse((folder / "clippy.json").exists())
+
+    def test_shell_preparation_failure_has_no_test_or_lint_receipt(self):
+        result = subprocess.run(
+            ["bash", "-c", self.script],
+            cwd=self.repo / "codex-rs",
+            env={**self.env, "FAIL_NATIVE_BUILD": "1"},
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        self.assertEqual(result.returncode, 17, result.stderr)
+        folder = self.root / "hepta-command-records"
+        bindings = json.loads((folder / "owner-test.json.bindings.json").read_text())
+        build = json.loads((folder / "owner-test.json.build.json").read_text())
+        self.assertEqual(bindings["status"], "failed")
+        self.assertEqual(bindings["build_exit_code"], 17)
+        self.assertNotIn("test_exit_code", bindings)
+        self.assertEqual(build["status"], "failed")
+        self.assertEqual(build["command_exit_code"], 17)
+        self.assertEqual(build["before"], build["after"])
+        self.assertEqual(build["before"]["commit"], self.source)
+        self.assertFalse((folder / "owner-test.json").exists())
+        self.assertFalse((folder / "owner-test.json.test.json").exists())
         self.assertFalse((folder / "clippy.json").exists())
 
 
