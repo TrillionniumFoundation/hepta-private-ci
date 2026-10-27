@@ -1,0 +1,127 @@
+{
+  "asset_manifest_sha256": "a3ba37e14ee6beb969d219df45c33bcea3d9e081c7784a92319e74a5d784d389",
+  "heldout_scoring_not_started": true,
+  "opencv_version": "5.0.0",
+  "protocol": {
+    "CI": "Paired source-video cluster bootstrap,4000 resamples,seed2718; allframes/repetitions remain inside each of only3test source clusters. This is a small-source development qualification, not population proof.",
+    "acceptance": "Against fixed learnedflow, source-cluster95percentCI lowerPSNRdifference >=-0.25dB and CPU/wall upperdifferences <0; additionally compare cost-adjusted return with fixedblend and matchedrandom",
+    "cheap_generator": "Float average of endpoint RGB frames, rounded and clipped to actual8-bit PNG",
+    "controller": {
+      "allocation": "For each source clip independently choose topK predicted gains, K=round(fraction*12) on test",
+      "budgets": [
+        0,
+        0.25,
+        0.5,
+        0.75,
+        1
+      ],
+      "features": [
+        "intercept",
+        "mean_endpoint_absolute_difference",
+        "std_endpoint_difference",
+        "phase_correlation_displacement",
+        "phase_correlation_response"
+      ],
+      "fit": "Ridge regression lambda0.1 from training-frame actual PSNR gain; standardize using training only",
+      "selection": "On validation execute each budget and choose largest meanPSNR minus10timesactualCPU seconds; lowerbudgetties"
+    },
+    "expensive_generator": "Two Farneback optical flows with fixed parameters, half-time endpoint warps, then sigmoid linear per-pixel mixer between motion reconstruction and cheap interpolation",
+    "frame_selection": {
+      "development": "12 evenly spaced eligible target indices in first60percent for pixel-mixer training;6 evenly spaced eligible target indices in last40percent for controller validation",
+      "endpoint_offset": 2,
+      "isolation": "All target indices satisfy i%4 in {2,3}; public endpoints at i-2 and i+2 satisfy residues {0,1}. This applies across every sample and role in each source clip.",
+      "maximum_decoded_frames": 360,
+      "resize_width": 256,
+      "test": "12 evenly spaced eligible indices across each new source, excluding first/last2frames; integer positions follow the frozen global-residue isolation rule"
+    },
+    "primary_metrics": [
+      "PSNR from actual reopened8bit output",
+      "pixelMSE",
+      "total process+childCPU",
+      "whole wall",
+      "actual expensivecalls"
+    ],
+    "random_order": "SHA256 of fixed literal natural-video-2717 and frame identity; same number of expensive calls as learned for every source",
+    "resource_choice_before_source_fetch": "256-pixel canonical width and two timing repetitions to keep source+delivered evidence within the available disk budget; no video model outputs exist at this choice.",
+    "schema": "hepta.ndu.continuation.natural.video.protocol.v1",
+    "scope": "Small trained pixel-mixing decoder for natural-video interpolation and allocation control; not semantic video generation, a multimodal LLM, or originalHepta neuron integration",
+    "sources": [
+      {
+        "name": "david",
+        "role": "development",
+        "url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/david/data/david.webm"
+      },
+      {
+        "name": "dudek",
+        "role": "development",
+        "url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/dudek/data/dudek.webm"
+      },
+      {
+        "name": "faceocc2",
+        "role": "development",
+        "url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/faceocc2/data/faceocc2.webm"
+      },
+      {
+        "name": "realshort",
+        "role": "test",
+        "url": "https://raw.githubusercontent.com/imageio/imageio-binaries/f8f64710ea88e7e4a352c0f7d8c0deac9f5fd685/images/realshort.mp4"
+      },
+      {
+        "name": "vtest",
+        "role": "test",
+        "url": "https://raw.githubusercontent.com/opencv/opencv/fa3037533ed05f5018cdd22a20f5b2ee7a38e8ed/samples/data/vtest.avi"
+      },
+      {
+        "name": "cockatoo",
+        "role": "test",
+        "url": "https://raw.githubusercontent.com/imageio/imageio-binaries/f8f64710ea88e7e4a352c0f7d8c0deac9f5fd685/images/cockatoo.mp4"
+      }
+    ],
+    "stopping_rule": "Freeze allsource choices,indices,modelparameters andcontroller before newtest output; retain allfailures, noheldout retuning",
+    "task": "Reconstruct a missing natural RGB video frame from two surrounding public frames, then decide whether expensive motion reconstruction is worth its actual cost",
+    "test_arms": [
+      "fixed_blend",
+      "fixed_initial_mixer",
+      "fixed_pure_flow",
+      "fixed_learned_flow",
+      "learned_budget",
+      "matched_random_budget"
+    ],
+    "timing_repetitions": 2,
+    "trainable_mixer": {
+      "features": [
+        "intercept",
+        "endpoint_RGB_difference",
+        "reconstruction_vs_blend_difference",
+        "mean_bidirectional_flow_magnitude"
+      ],
+      "learning_rate": 0.05,
+      "loss": "Mean RGB squared reconstruction error on training-source target pixels; gradient through mixer only, optical flow fixed",
+      "sample_pixels_per_frame": 512,
+      "seed": 2716,
+      "steps": 400
+    },
+    "training_attribution_comparison": "Fixed learned mixer versus zero-initialized mixer using identical flow/inference compute, plus fixed pure-flow strong control; report source-paired actual-output PSNR and cost differences."
+  },
+  "registered_ns": 1793086943062691709,
+  "source_sha256": {
+    "VIDEO_PROTOCOL.json": "94c4d1222462e9741bb266f42518c1725de9648cae0443e4ac6c2ab3db363db5",
+    "__init__.py": "f11cce5ae299963fed8544b65c66340a451b5f3a99aa13f24a4dab62549cd0af",
+    "cache_mechanism.py": "39d68685a5a7e58c97730af4189e94bd30d1315a2dd9c8c08a5d1e8709575160",
+    "cascade_study.py": "0e6538c21443eea6965341b9886ab9b086dfe75ece9388e27cc31339dc6b3183",
+    "common.py": "1af93b66f5c3c88a83cfb5aa36bbe4747ab7db4eed5cc10dbfe75f1ea56def38",
+    "document_decoder.py": "6d2fc226e89a9c89c0317ad916f8c325cceb3c7dee9efe06cf5d21167f477b34",
+    "document_engine.py": "ae45597a0126da997ef76eed0d7df1fc84efeabb2a5e8a94e8c3f4fb6b7fb30a",
+    "document_study.py": "2b0aaa2f29fa0fb08c2ecb3c62ebe398475b27f3f5dae60a7f43f43d388c4517",
+    "fetch_cascade.py": "c8c38ef9b3105865bc515fde8185887ff956f683db9409bf771956f83b1dad01",
+    "fetch_document.py": "f6e172a9411d6d7166b754f98d0a0d4b7e22afd6c9414180796736c5b9f42186",
+    "fetch_speech.py": "841ba744a1282de817151292180950ad329ec2b0f3c4c9287e7e1724e2be16cd",
+    "fetch_video.py": "72f2dff95dccad8c8a415c8ae3f05f394dd52b28c562eeec9c9a61ce8cfa0de7",
+    "speech_engine.py": "4b806fdc7e0bab3b6faf5e87f5c0e5133a62159da6a617981d1b7a85e7a0be36",
+    "speech_study.py": "77d2567b6300b8a1f8c72a7417c8b81f7b77299bb523a11593e777b393eb586e",
+    "test_natural_boundaries.py": "23708e9e2798ada03fb400756659dc22532fcee10aa088a1d9785a1eb14b386a",
+    "video_generator.py": "156a4ec9fc82dbd2f22d549a1346ba98080f83dba2e082d2c568611702c78814",
+    "video_study.py": "db017ee27764516e6f43c8fcfabcaccf376abb3a8262339dc8710ea4ec1f146d"
+  },
+  "source_snapshot": "/workspace/scratch/95988d8d3ab1/natural-continuation-runs/video-001/executed-source"
+}

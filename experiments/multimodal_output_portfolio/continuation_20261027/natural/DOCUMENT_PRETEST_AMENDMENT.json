@@ -1,0 +1,14 @@
+{
+  "schema": "hepta.ndu.document.pretest-amendment.v1",
+  "time_ns": 1793085661611111230,
+  "original_protocol_sha256": "f5fec69d0ebea5cd6a2533db438cdb70d6ca446896166f08c1ed558a1e0555cd",
+  "amended_protocol_sha256": "3963fb63efad9c740687b739bfc3e222666602c0fac63203a82178e3ec7cb235",
+  "reason": "Actual training references contain None and old normalizer crashed; missing annotation must not become an invented negative target.",
+  "original_failure_run": "/workspace/scratch/95988d8d3ab1/natural-continuation-runs/document-001",
+  "failure_sha256": "62654390d706be663f31b9bdc74ad84097b588d171bbf42ce469d5b09accc40c",
+  "original_fit_OCR_preserved": 24,
+  "validation_outputs_before_amendment": 0,
+  "test_outputs_before_amendment": 0,
+  "source_split_architecture_steps_and_hyperparameters_unchanged": true,
+  "missing_annotation_mask_changes_scored_denominators": true
+}

@@ -4,3 +4,5 @@ skip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl
 check-hidden = true
 ignore-regex = ^\s*"image/\S+": ".*|\b(afterAll)\b
 ignore-words-list = ratatui,ser,iTerm,iterm2,iterm,te,TE,PASE,SEH,disjointness
+# Exact frozen source/receipt lines; provenance is recorded in the NDU CI amendment.
+exclude-file = .codespell-exclude-lines

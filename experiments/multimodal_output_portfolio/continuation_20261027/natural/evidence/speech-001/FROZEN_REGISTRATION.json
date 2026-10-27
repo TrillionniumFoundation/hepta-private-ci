@@ -1,0 +1,82 @@
+{
+  "asset_manifest_sha256": "ebd9c53abea5364c8530411a864003ee53f736870ad0c5ab48fde66bc2755416",
+  "heldout_scoring_not_started": true,
+  "protocol": {
+    "CI": "95% paired speaker-cluster bootstrap, 4000 resamples with seed2701; repetitions averaged inside utterance before speaker resampling",
+    "all_costs": "Include audio decoding, features, encoder, every decoder call, gate, output serialization/readback and digest; report model load and fitting separately",
+    "beams": [
+      1,
+      5
+    ],
+    "cpu_threads": 2,
+    "dataset": "openslr/librispeech_asr",
+    "dataset_revision": "71cacbfb7e2354c4226d01e70d77d5fca3d04ba1",
+    "fit_objective": "Mean per-speaker mean clipped WER plus 0.01 times actual process CPU seconds for encode + greedy + selected continuation; choose lower threshold on ties",
+    "max_length": 448,
+    "model": "Systran/faster-whisper-tiny.en",
+    "model_revision": "0d3d19a32d3338f10357c0889762bd8d64bbdeba",
+    "primary_comparisons": [
+      "cached_continuation versus same-policy reencoded_continuation",
+      "cached_continuation versus fixed_beam5"
+    ],
+    "quality_noninferiority_margin_absolute_WER": 0.01,
+    "schema": "hepta.ndu.continuation.natural.speech.protocol.v1",
+    "scope": "Frozen neural natural-speech-to-text generation with a fitted continuation threshold; no neural parameter update, speech synthesis, original Hepta neuron or general multimodal LLM claim",
+    "selection": {
+      "exclude_all_speakers_in_previous_natural_study": true,
+      "fit": {
+        "clean_speakers": 4,
+        "other_speakers": 4,
+        "split": "validation"
+      },
+      "maximum_seconds": 29,
+      "order": "ascending dataset row index within clean then other, skip used speaker groups and audio longer than 29 seconds using public duration only",
+      "test": {
+        "clean_speakers": 6,
+        "other_speakers": 6,
+        "split": "test"
+      },
+      "utterances_per_speaker": 3
+    },
+    "stopping_rule": "One frozen source split and gate; retain all errors, complete every predeclared arm/repetition, do not tune on held-out outputs",
+    "study": "Cached encoder continuation on previously unevaluated real speech sources",
+    "superiority_gate": "Actual transcript identity for same-policy arms; CPU and wall saving intervals must both exclude zero. Strong fixed baseline additionally requires WER upper difference <= 0.01 and CPU saving upper bound < 0.",
+    "temperature": 0,
+    "test_arms": [
+      "fixed_greedy",
+      "fixed_beam5",
+      "cached_continuation",
+      "reencoded_continuation"
+    ],
+    "thresholds": [
+      -1000,
+      -1.5,
+      -1.2,
+      -1.0,
+      -0.8,
+      -0.6,
+      -0.4,
+      -0.2,
+      1000
+    ],
+    "timing_repetitions": 3,
+    "without_timestamps": true
+  },
+  "registered_ns": 1793085174653474586,
+  "runtime_versions": {
+    "av": "16.1.0",
+    "ctranslate2": "4.8.4",
+    "faster-whisper": "1.2.1",
+    "numpy": "2.3.5"
+  },
+  "source_sha256": {
+    "SPEECH_PROTOCOL.json": "a908ad976f86ec67d9b66626c55278c84a2387ee781f7d3fb15960965ccecc41",
+    "__init__.py": "f11cce5ae299963fed8544b65c66340a451b5f3a99aa13f24a4dab62549cd0af",
+    "common.py": "1af93b66f5c3c88a83cfb5aa36bbe4747ab7db4eed5cc10dbfe75f1ea56def38",
+    "fetch_speech.py": "841ba744a1282de817151292180950ad329ec2b0f3c4c9287e7e1724e2be16cd",
+    "speech_engine.py": "4b806fdc7e0bab3b6faf5e87f5c0e5133a62159da6a617981d1b7a85e7a0be36",
+    "speech_study.py": "77d2567b6300b8a1f8c72a7417c8b81f7b77299bb523a11593e777b393eb586e"
+  },
+  "source_snapshot": "/workspace/scratch/95988d8d3ab1/natural-continuation-runs/speech-001/executed-source",
+  "upstream_API_reference": "SYSTRAN/faster-whisper v1.2.1 transcribe.py encode/get_prompt/generate_with_fallback"
+}

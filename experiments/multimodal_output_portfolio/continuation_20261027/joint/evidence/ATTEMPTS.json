@@ -1,0 +1,60 @@
+{
+  "attempts": [
+    {
+      "id": "development-001",
+      "initial_failed_source_snapshot_available": false,
+      "outcome": "SyntaxError before any run directory or model output",
+      "retained": "ndu-joint-development-001.log"
+    },
+    {
+      "executed_source_preserved": true,
+      "id": "development-002",
+      "new_qualification_predictions": false,
+      "seeds": [
+        17
+      ],
+      "sources": "historical train and validation only",
+      "steps": 200
+    },
+    {
+      "formal_qualification_started": false,
+      "id": "objective-test-convergence",
+      "outcome": "initial 600-iteration numerical regression test did not meet 2e-5 convergence tolerance; test optimizer iterations increased to 1600",
+      "training_protocol_changed": false
+    },
+    {
+      "changes": [
+        "selection tie favors lower interpolation then earlier checkpoint",
+        "full teacher encoder/transition/decoder counts",
+        "clean replay versus test mixture disclosure",
+        "exhaustive original-generator oracle attribution",
+        "checkpoint/observer/metric/source seal",
+        "independent source/plan/member grid and statistics audit"
+      ],
+      "id": "pre-qualification-review",
+      "new_test_outputs_inspected_before_changes": false
+    },
+    {
+      "executed_source_preserved": true,
+      "id": "development-full-001",
+      "outcome": "completed and selection frozen before audit-observer load",
+      "seeds": [
+        17,
+        29,
+        43
+      ],
+      "steps": 600
+    },
+    {
+      "id": "qualification-001",
+      "outcome": "completed once; generator and oracle gates pass; risk-vs-uniform matched gate fails",
+      "source_and_metric_seal_preserved": true
+    },
+    {
+      "id": "independent-audit-001",
+      "outcome": "passed; all delivered/oracle bytes and CE intervals reconstructed"
+    }
+  ],
+  "earlier_study_results_overwritten": false,
+  "schema": "hepta.ndu.joint-attempt-ledger.v1"
+}

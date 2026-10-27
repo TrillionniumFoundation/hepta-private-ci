@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.ndu.ci-observation.v1",
+  "observed_head": "648c69935d8cd5f45465b33eb1a95321802c476d",
+  "pull_request": 4064,
+  "completed_successes": [
+    "v8-canary",
+    "Codespell / Check for spelling errors",
+    "Blob size policy / Blob size policy",
+    "Select blocking CI scope",
+    "Hepta contract gate / Validate canonical branch and contract metadata",
+    "repo-checks / Native Hepta paths on windows-latest",
+    "repo-checks / Native Hepta paths on ubuntu-24.04",
+    "repo-checks / Native Hepta paths on macos-15",
+    "sdk / python-sdk",
+    "Architecture convergence (base-merge)"
+  ],
+  "format_failure": {
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40471734103/job/122080812831",
+    "identified_files": [
+      "scripts/format.py",
+      "scripts/test_hepta_format_scope.py"
+    ],
+    "amendment": "CI_FORMAT_AMENDMENT.json",
+    "all_ASTs_unchanged": true
+  },
+  "dependency_audit": {
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40471734103/job/122080812875",
+    "failed_step": "Run cargo-deny",
+    "exact_cause_verified": false,
+    "log_access": "permitted log tool repeatedly returned Transport closed; public-page retrieval also unavailable",
+    "Cargo_toml_lock_and_deny_policy_changed": false,
+    "dependency_or_security_policy_exception_added": false
+  },
+  "other_jobs": "still running at observation; no full-CI success claim",
+  "scientific_runs_and_frozen_outputs_changed": false
+}

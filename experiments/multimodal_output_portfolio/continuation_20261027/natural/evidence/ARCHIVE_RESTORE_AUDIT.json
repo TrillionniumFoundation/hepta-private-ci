@@ -1,0 +1,29 @@
+{
+  "status": "passed",
+  "unique_blobs_rehashed": 7034,
+  "logical_paths_actually_restored_and_reopened": 12206,
+  "logical_bytes_restored": 309637239,
+  "verify_discard": true,
+  "models_embedded": false,
+  "model_recovery_required": [
+    {
+      "bytes": 75537502,
+      "embedded_in_raw_archive": false,
+      "original_path": "/workspace/scratch/95988d8d3ab1/natural-continuation-assets/speech/model/model.bin",
+      "relative_path": "natural-continuation-assets/speech/model/model.bin",
+      "required_for_neural_reexecution": true,
+      "sha256": "1a5afae06a4db91c975c9a9d78be5cc110ee4ea022ad57d55492e4550e936b2a",
+      "url": "https://huggingface.co/Systran/faster-whisper-tiny.en/resolve/0d3d19a32d3338f10357c0889762bd8d64bbdeba/model.bin"
+    },
+    {
+      "bytes": 145216508,
+      "embedded_in_raw_archive": false,
+      "original_path": "/workspace/scratch/95988d8d3ab1/natural-continuation-assets/cascade/base_model/model.bin",
+      "relative_path": "natural-continuation-assets/cascade/base_model/model.bin",
+      "required_for_neural_reexecution": true,
+      "sha256": "2a166925539a16005f14ff328359f9b9adb9dc4fb631bb3b227526862e93e2ef",
+      "url": "https://huggingface.co/Systran/faster-whisper-base.en/resolve/3d3d5dee26484f91867d81cb899cfcf72b96be6c/model.bin"
+    }
+  ],
+  "archive_sha256": "34dd6b38d047b8d62f19f56c7875a3acd9b6afeeaa50f07c1a26d9a18719cd21"
+}

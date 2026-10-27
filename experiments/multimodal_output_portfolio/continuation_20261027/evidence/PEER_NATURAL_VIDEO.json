@@ -1,0 +1,188 @@
+{
+  "comparisons": {
+    "fixed_learned_flow minus fixed_initial_mixer": {
+      "PSNR": {
+        "CI95": [
+          -0.3436386969273819,
+          0.6161454719757913
+        ],
+        "difference": 0.10437203710877323
+      },
+      "cost_adjusted_return": {
+        "CI95": [
+          -0.3068418998440414,
+          0.6566157794757927
+        ],
+        "difference": 0.13034336960877604
+      },
+      "quality_cost_acceptance_passed": false,
+      "whole_cpu_seconds": {
+        "CI95": [
+          -0.004047030749999868,
+          -6.468929166655174e-05
+        ],
+        "difference": -0.002597133249999934
+      },
+      "whole_wall_seconds": {
+        "CI95": [
+          -0.004043659625191751,
+          -6.491408385045361e-05
+        ],
+        "difference": -0.0025954007920113847
+      }
+    },
+    "fixed_learned_flow minus fixed_pure_flow": {
+      "PSNR": {
+        "CI95": [
+          0.07554279873581393,
+          0.2633914660886916
+        ],
+        "difference": 0.14768477634860608
+      },
+      "cost_adjusted_return": {
+        "CI95": [
+          0.07281024540247927,
+          0.30456068525535684
+        ],
+        "difference": 0.15060839829305075
+      },
+      "quality_cost_acceptance_passed": false,
+      "whole_cpu_seconds": {
+        "CI95": [
+          -0.004116921916666648,
+          0.0029665799999999756
+        ],
+        "difference": -0.0002923621944444209
+      },
+      "whole_wall_seconds": {
+        "CI95": [
+          -0.004114941250008997,
+          0.0029668001667839047
+        ],
+        "difference": -0.0002934590694268144
+      }
+    },
+    "learned_budget minus fixed_blend": {
+      "PSNR": {
+        "CI95": [
+          1.6523330512789869,
+          2.568077287456731
+        ],
+        "difference": 2.0539552134089085
+      },
+      "cost_adjusted_return": {
+        "CI95": [
+          1.432026539195654,
+          2.260132935790068
+        ],
+        "difference": 1.778398368408908
+      },
+      "quality_cost_acceptance_passed": false,
+      "whole_cpu_seconds": {
+        "CI95": [
+          0.022030651208333387,
+          0.03079443516666654
+        ],
+        "difference": 0.027555684500000007
+      },
+      "whole_wall_seconds": {
+        "CI95": [
+          0.022027169750193327,
+          0.030852896791960422
+        ],
+        "difference": 0.027574405486221722
+      }
+    },
+    "learned_budget minus fixed_learned_flow": {
+      "PSNR": {
+        "CI95": [
+          0.0,
+          0.0
+        ],
+        "difference": 0.0
+      },
+      "cost_adjusted_return": {
+        "CI95": [
+          -0.06651177124999208,
+          -0.022236228749999754
+        ],
+        "difference": -0.04892888416666471
+      },
+      "quality_cost_acceptance_passed": false,
+      "whole_cpu_seconds": {
+        "CI95": [
+          0.002223622874999956,
+          0.006651177124999817
+        ],
+        "difference": 0.004892888416666598
+      },
+      "whole_wall_seconds": {
+        "CI95": [
+          0.002224508792399618,
+          0.006704614083597946
+        ],
+        "difference": 0.004910531347680561
+      }
+    },
+    "learned_budget minus matched_random_budget": {
+      "PSNR": {
+        "CI95": [
+          0.0,
+          0.0
+        ],
+        "difference": 0.0
+      },
+      "cost_adjusted_return": {
+        "CI95": [
+          -0.045419724583332766,
+          0.04213979249999866
+        ],
+        "difference": -0.01276368986111128
+      },
+      "quality_cost_acceptance_passed": false,
+      "whole_cpu_seconds": {
+        "CI95": [
+          -0.004213979249999847,
+          0.004541972458333252
+        ],
+        "difference": 0.0012763689861111256
+      },
+      "whole_wall_seconds": {
+        "CI95": [
+          -0.004213694916567583,
+          0.004571667874794613
+        ],
+        "difference": 0.0012867349586384857
+      }
+    }
+  },
+  "complete_unique_delivery_grid": 432,
+  "frozen_sources_and_manifest_match": true,
+  "identities": {
+    "/workspace/scratch/95988d8d3ab1/natural-continuation-assets/video/MANIFEST.json": "a3ba37e14ee6beb969d219df45c33bcea3d9e081c7784a92319e74a5d784d389",
+    "/workspace/scratch/95988d8d3ab1/natural-continuation-runs/video-001/FROZEN_REGISTRATION.json": "4a2fa24edf3f9f824eaeb9659e4bf7b2d4027f69ce99a091fe2063cebd592f38",
+    "/workspace/scratch/95988d8d3ab1/natural-continuation-runs/video-001/GATE_FROZEN.json": "1a84bf8a26017ef14d5ecdf24ad162d71c1fbee930a6cd6fe3cf7976a3f65f13",
+    "/workspace/scratch/95988d8d3ab1/natural-continuation-runs/video-001/RESULT.json": "324bf64ed995b8d650c59e4adab3cb5380549b574070ae9c9328aa9271e1d304",
+    "/workspace/scratch/95988d8d3ab1/natural-continuation-runs/video-001/ROWS.json": "cdb4503e94fab7bfdb0536185d183ba711f38f41a0b126df98136d6287076053"
+  },
+  "interpretation": "The selected allocator uses motion on every frame and adds overhead over fixed learned flow. Learned mixer versus pure flow is positive on the three source clips, but learned versus zero-initialized mixer attribution CI crosses zero. These results do not establish a robust training-caused or allocation-efficiency gain.",
+  "learned_random_and_fixed_flow_calls_per_clip_per_repetition": 12,
+  "maximum_batch_timer_reconciliation_error": 0,
+  "maximum_independent_MSE_or_PSNR_error": 7.105427357601002e-15,
+  "maximum_reconstructed_comparison_or_interval_error": 1.0658141036401503e-14,
+  "new_source_clips": 3,
+  "quality_cost_acceptance_passed": false,
+  "reviewed_utc": "2026-10-27T07:48:08.321616+00:00",
+  "schema": "hepta.ndu.peer-natural-video-review.v1",
+  "scope": "Read-only audit of already delivered PNGs, fixed target images and existing statistics. No generator inference, new output or threshold selection.",
+  "selected_acquisition_fraction": 1,
+  "target_endpoint_frame_index_overlap_by_source_all_roles": {
+    "cockatoo": 0,
+    "david": 0,
+    "dudek": 0,
+    "faceocc2": 0,
+    "realshort": 0,
+    "vtest": 0
+  },
+  "target_frames": 36
+}

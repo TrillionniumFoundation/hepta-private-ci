@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.ndu.final-repository-format.v2",
+  "command": "just fmt",
+  "cwd": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/codex-rs",
+  "started_ns": 1793087808578593214,
+  "completed_ns": 1793087808728728071,
+  "returncode": 0,
+  "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+  "stderr": "",
+  "just_version": "1.43.0",
+  "rustfmt_toolchain": "1.95.0",
+  "earlier_rust_format": {
+    "schema": "hepta.ndu.final-repository-format.v1",
+    "command": "just fmt",
+    "cwd": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/codex-rs",
+    "started_ns": 1793087573505300158,
+    "completed_ns": 1793087573740661240,
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "",
+    "just_version": "1.43.0",
+    "rustfmt_toolchain": "1.95.0",
+    "before_rs": {
+      "experiments/multimodal_output_portfolio/continuation_20261027/control/events.rs": "a5ecf786faa84b9782aa1b6a728b38fc13cf0934d73287c806e0a72a976e4b2f",
+      "experiments/multimodal_output_portfolio/continuation_20261027/control/owner_host.rs": "e2ff5ea3a6ec21d7b6c17bb9b746b815c0dd537f743233e7c0eeed0f7617f112",
+      "experiments/multimodal_output_portfolio/continuation_20261027/control/port.rs": "31c36f9a410881dfba52b1db1a98562362e75e119349e128e134b2718b50d312",
+      "experiments/multimodal_output_portfolio/continuation_20261027/control/profile.rs": "da1557776a6d3302b80555a9e6c1bf5cfd5cd55b651a1deb7c74a2f268978b21"
+    },
+    "after_rs": {
+      "experiments/multimodal_output_portfolio/continuation_20261027/control/events.rs": "d9db8db6f9088e183c6741d4650816a6c6c278bf4e29406d25e5a6a085693326",
+      "experiments/multimodal_output_portfolio/continuation_20261027/control/owner_host.rs": "1172a504371a1263bc2e9aadafe2bf2cccc803dc051df59a2b2a22c1f269146a",
+      "experiments/multimodal_output_portfolio/continuation_20261027/control/port.rs": "bb60186a37b64f3b96c05a512eeb7c133d5cb95d034d28ed46eca22035abf51d",
+      "experiments/multimodal_output_portfolio/continuation_20261027/control/profile.rs": "99e5d73349486161296024e3210c3d245d9cdc4c7a847bd04fd0fbb9d906b664"
+    },
+    "tests_and_experiments_complete_before_fmt": true,
+    "historical_executed_sources_unchanged": true
+  },
+  "final_amendment": {
+    "path": "control/training.py",
+    "change": "Removed exactly one extra EOF newline found by staged git diff --check",
+    "executable_statement_changed": false,
+    "final_source_sha256": "0555cae17e974a9b019dd25dae8d7bbdc2a7344e78470b30b2ab667a8e70e6a5"
+  },
+  "tests_rerun_after_fmt": false,
+  "historical_executed_sources_unchanged": true
+}

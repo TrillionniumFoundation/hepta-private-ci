@@ -1,0 +1,22 @@
+{
+  "fresh_source_actual_output_audit": {
+    "receipt": "INDEPENDENT_AUDIT.json",
+    "sha256": "b284b833141beed428a4d00cfc5f3715d6c13f5c771d8a606afbe625ecca15ea"
+  },
+  "historical_validation_integration": {
+    "receipt": "INTEGRATION_VERIFICATION.json",
+    "sha256": "6d28e87a896b0fd28bc272559dbb99a780712b1d80ec53c6b6b9b0529a32ef2f"
+  },
+  "objective_suite": {
+    "basis": "recorded successful execution before qualification",
+    "command": "python -m unittest experiments.multimodal_output_portfolio.continuation_20261027.joint.test_objective -v",
+    "passed": 3,
+    "scope": [
+      "conditional moment regression selects tail-aware action",
+      "numerical gradient for actual-moment MSE",
+      "expectation of exponential differs from exponential of expectation"
+    ],
+    "source_sha256": "5c585757ac159082d096b6e7430963edcc83a31e72098dffda7415a3ef5a4b4f"
+  },
+  "schema": "hepta.ndu.joint-validation-receipt.v1"
+}

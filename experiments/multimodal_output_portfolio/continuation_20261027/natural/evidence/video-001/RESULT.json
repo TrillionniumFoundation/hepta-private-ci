@@ -1,0 +1,437 @@
+{
+  "common_input_preparation_seconds": 6.430728893988999,
+  "comparisons": {
+    "fixed_learned_flow minus fixed_initial_mixer": {
+      "PSNR": {
+        "CI95": [
+          -0.3436386969273819,
+          0.6161454719757913
+        ],
+        "difference": 0.10437203710877323
+      },
+      "cost_adjusted_return": {
+        "CI95": [
+          -0.3068418998440414,
+          0.6566157794757927
+        ],
+        "difference": 0.13034336960877604
+      },
+      "quality_cost_acceptance_passed": false,
+      "whole_cpu_seconds": {
+        "CI95": [
+          -0.004047030749999868,
+          -6.468929166655174e-05
+        ],
+        "difference": -0.002597133249999934
+      },
+      "whole_wall_seconds": {
+        "CI95": [
+          -0.004043659625191751,
+          -6.491408385045361e-05
+        ],
+        "difference": -0.0025954007920113847
+      }
+    },
+    "fixed_learned_flow minus fixed_pure_flow": {
+      "PSNR": {
+        "CI95": [
+          0.07554279873581393,
+          0.2633914660886916
+        ],
+        "difference": 0.14768477634860608
+      },
+      "cost_adjusted_return": {
+        "CI95": [
+          0.07281024540247927,
+          0.30456068525535684
+        ],
+        "difference": 0.15060839829305075
+      },
+      "quality_cost_acceptance_passed": false,
+      "whole_cpu_seconds": {
+        "CI95": [
+          -0.004116921916666648,
+          0.0029665799999999756
+        ],
+        "difference": -0.0002923621944444209
+      },
+      "whole_wall_seconds": {
+        "CI95": [
+          -0.004114941250008997,
+          0.0029668001667839047
+        ],
+        "difference": -0.0002934590694268144
+      }
+    },
+    "learned_budget minus fixed_blend": {
+      "PSNR": {
+        "CI95": [
+          1.6523330512789869,
+          2.568077287456731
+        ],
+        "difference": 2.0539552134089085
+      },
+      "cost_adjusted_return": {
+        "CI95": [
+          1.432026539195654,
+          2.260132935790068
+        ],
+        "difference": 1.778398368408908
+      },
+      "quality_cost_acceptance_passed": false,
+      "whole_cpu_seconds": {
+        "CI95": [
+          0.022030651208333387,
+          0.03079443516666654
+        ],
+        "difference": 0.027555684500000007
+      },
+      "whole_wall_seconds": {
+        "CI95": [
+          0.022027169750193327,
+          0.030852896791960422
+        ],
+        "difference": 0.027574405486221722
+      }
+    },
+    "learned_budget minus fixed_learned_flow": {
+      "PSNR": {
+        "CI95": [
+          0.0,
+          0.0
+        ],
+        "difference": 0.0
+      },
+      "cost_adjusted_return": {
+        "CI95": [
+          -0.06651177124999208,
+          -0.022236228749999754
+        ],
+        "difference": -0.04892888416666471
+      },
+      "quality_cost_acceptance_passed": false,
+      "whole_cpu_seconds": {
+        "CI95": [
+          0.002223622874999956,
+          0.006651177124999817
+        ],
+        "difference": 0.004892888416666598
+      },
+      "whole_wall_seconds": {
+        "CI95": [
+          0.002224508792399618,
+          0.006704614083597946
+        ],
+        "difference": 0.004910531347680561
+      }
+    },
+    "learned_budget minus matched_random_budget": {
+      "PSNR": {
+        "CI95": [
+          0.0,
+          0.0
+        ],
+        "difference": 0.0
+      },
+      "cost_adjusted_return": {
+        "CI95": [
+          -0.045419724583332766,
+          0.04213979249999866
+        ],
+        "difference": -0.01276368986111128
+      },
+      "quality_cost_acceptance_passed": false,
+      "whole_cpu_seconds": {
+        "CI95": [
+          -0.004213979249999847,
+          0.004541972458333252
+        ],
+        "difference": 0.0012763689861111256
+      },
+      "whole_wall_seconds": {
+        "CI95": [
+          -0.004213694916567583,
+          0.004571667874794613
+        ],
+        "difference": 0.0012867349586384857
+      }
+    }
+  },
+  "gate": {
+    "candidates": [
+      {
+        "fraction": 0,
+        "validation_objective": 24.731692438730065
+      },
+      {
+        "fraction": 0.25,
+        "validation_objective": 25.65954150184273
+      },
+      {
+        "fraction": 0.5,
+        "validation_objective": 26.20575604810261
+      },
+      {
+        "fraction": 0.75,
+        "validation_objective": 26.403848960855544
+      },
+      {
+        "fraction": 1,
+        "validation_objective": 27.541802068728877
+      }
+    ],
+    "fraction": 1,
+    "frozen_ns": 1793086950114965430,
+    "test_not_started": true
+  },
+  "generated_test_images": 432,
+  "independent_test_sources": 3,
+  "model_is_small_trained_pixel_mixer": true,
+  "original_Hepta_neuron_integration": false,
+  "population_generalization_proven": false,
+  "schema": "hepta.ndu.continuation.natural.video.result.v1",
+  "semantic_video_generation_or_multimodal_LLM": false,
+  "source_rows": {
+    "cockatoo": {
+      "fixed_blend": {
+        "PSNR": 20.948929074686166,
+        "cost_adjusted_return": 20.76223165343617,
+        "expensive_calls": 0.0,
+        "pixel_MSE": 0.009156807756936136,
+        "whole_cpu_seconds": 0.018669742124999947,
+        "whole_wall_seconds": 0.018676436958533785
+      },
+      "fixed_initial_mixer": {
+        "PSNR": 22.560652789687243,
+        "cost_adjusted_return": 22.175238192187248,
+        "expensive_calls": 1.0,
+        "pixel_MSE": 0.007000966983722577,
+        "whole_cpu_seconds": 0.03854145974999993,
+        "whole_wall_seconds": 0.03854401200017795
+      },
+      "fixed_learned_flow": {
+        "PSNR": 22.601262125965153,
+        "cost_adjusted_return": 22.216494421381825,
+        "expensive_calls": 1.0,
+        "pixel_MSE": 0.007569980767910074,
+        "whole_cpu_seconds": 0.03847677045833338,
+        "whole_wall_seconds": 0.0384790979163275
+      },
+      "fixed_pure_flow": {
+        "PSNR": 22.49714206174384,
+        "cost_adjusted_return": 22.14204015716051,
+        "expensive_calls": 1.0,
+        "pixel_MSE": 0.007746195403703496,
+        "whole_cpu_seconds": 0.0355101904583334,
+        "whole_wall_seconds": 0.03551229774954359
+      },
+      "learned_budget": {
+        "PSNR": 22.601262125965153,
+        "cost_adjusted_return": 22.194258192631825,
+        "expensive_calls": 1.0,
+        "pixel_MSE": 0.007569980767910074,
+        "whole_cpu_seconds": 0.040700393333333335,
+        "whole_wall_seconds": 0.040703606708727115
+      },
+      "matched_random_budget": {
+        "PSNR": 22.601262125965153,
+        "cost_adjusted_return": 22.229269330131824,
+        "expensive_calls": 1.0,
+        "pixel_MSE": 0.007569980767910074,
+        "whole_cpu_seconds": 0.03719927958333336,
+        "whole_wall_seconds": 0.03720137479103869
+      }
+    },
+    "realshort": {
+      "fixed_blend": {
+        "PSNR": 25.29775309322122,
+        "cost_adjusted_return": 25.04565153113789,
+        "expensive_calls": 0.0,
+        "pixel_MSE": 0.0030067330537127588,
+        "whole_cpu_seconds": 0.025210156208333334,
+        "whole_wall_seconds": 0.025211460708305825
+      },
+      "fixed_initial_mixer": {
+        "PSNR": 27.24968490870216,
+        "cost_adjusted_return": 26.715680458702156,
+        "expensive_calls": 1.0,
+        "pixel_MSE": 0.0020311489917573104,
+        "whole_cpu_seconds": 0.05340044499999993,
+        "whole_wall_seconds": 0.05340340304186005
+      },
+      "fixed_learned_flow": {
+        "PSNR": 27.865830380677952,
+        "cost_adjusted_return": 27.37229623817795,
+        "expensive_calls": 1.0,
+        "pixel_MSE": 0.0019129816022950572,
+        "whole_cpu_seconds": 0.04935341425000006,
+        "whole_wall_seconds": 0.0493597434166683
+      },
+      "fixed_pure_flow": {
+        "PSNR": 27.790287581942138,
+        "cost_adjusted_return": 27.29948599277547,
+        "expensive_calls": 1.0,
+        "pixel_MSE": 0.001965286315937958,
+        "whole_cpu_seconds": 0.04908015891666665,
+        "whole_wall_seconds": 0.04909197954172365
+      },
+      "learned_budget": {
+        "PSNR": 27.865830380677952,
+        "cost_adjusted_return": 27.305784466927957,
+        "expensive_calls": 1.0,
+        "pixel_MSE": 0.0019129816022950572,
+        "whole_cpu_seconds": 0.05600459137499988,
+        "whole_wall_seconds": 0.05606435750026625
+      },
+      "matched_random_budget": {
+        "PSNR": 27.865830380677952,
+        "cost_adjusted_return": 27.35120419151129,
+        "expensive_calls": 1.0,
+        "pixel_MSE": 0.0019129816022950572,
+        "whole_cpu_seconds": 0.051462618916666626,
+        "whole_wall_seconds": 0.051492689625471634
+      }
+    },
+    "vtest": {
+      "fixed_blend": {
+        "PSNR": 26.89340169367149,
+        "cost_adjusted_return": 26.661753285754827,
+        "expensive_calls": 0.0,
+        "pixel_MSE": 0.0021566416602866864,
+        "whole_cpu_seconds": 0.023164840791666624,
+        "whole_wall_seconds": 0.023167425166927085
+      },
+      "fixed_initial_mixer": {
+        "PSNR": 29.17849569208988,
+        "cost_adjusted_return": 28.669669468339873,
+        "expensive_calls": 1.0,
+        "pixel_MSE": 0.001252627448449537,
+        "whole_cpu_seconds": 0.050882622375000075,
+        "whole_wall_seconds": 0.05088573258338632
+      },
+      "fixed_learned_flow": {
+        "PSNR": 28.834856995162497,
+        "cost_adjusted_return": 28.36282756849583,
+        "expensive_calls": 1.0,
+        "pixel_MSE": 0.0013774880289153834,
+        "whole_cpu_seconds": 0.04720294266666669,
+        "whole_wall_seconds": 0.04720810391639437
+      },
+      "fixed_pure_flow": {
+        "PSNR": 28.571465529073805,
+        "cost_adjusted_return": 28.058266883240474,
+        "expensive_calls": 1.0,
+        "pixel_MSE": 0.0014672571969042137,
+        "whole_cpu_seconds": 0.05131986458333334,
+        "whole_wall_seconds": 0.05132304516640337
+      },
+      "learned_budget": {
+        "PSNR": 28.834856995162497,
+        "cost_adjusted_return": 28.30478891599583,
+        "expensive_calls": 1.0,
+        "pixel_MSE": 0.0013774880289153834,
+        "whole_cpu_seconds": 0.05300680791666671,
+        "whole_wall_seconds": 0.05301057508343849
+      },
+      "matched_random_budget": {
+        "PSNR": 28.834856995162497,
+        "cost_adjusted_return": 28.26264912349583,
+        "expensive_calls": 1.0,
+        "pixel_MSE": 0.0013774880289153834,
+        "whole_cpu_seconds": 0.05722078716666656,
+        "whole_wall_seconds": 0.05722427000000607
+      }
+    }
+  },
+  "status": "completed",
+  "summary": {
+    "fixed_blend": {
+      "PSNR": 24.380027953859624,
+      "cost_adjusted_return": 24.156545490109625,
+      "expensive_calls": 0.0,
+      "pixel_MSE": 0.004773394156978528,
+      "whole_cpu_seconds": 0.022348246374999967,
+      "whole_wall_seconds": 0.02235177427792223
+    },
+    "fixed_initial_mixer": {
+      "PSNR": 26.329611130159762,
+      "cost_adjusted_return": 25.853529373076427,
+      "expensive_calls": 1.0,
+      "pixel_MSE": 0.003428247807976475,
+      "whole_cpu_seconds": 0.04760817570833331,
+      "whole_wall_seconds": 0.047611049208474775
+    },
+    "fixed_learned_flow": {
+      "PSNR": 26.433983167268536,
+      "cost_adjusted_return": 25.983872742685204,
+      "expensive_calls": 1.0,
+      "pixel_MSE": 0.0036201501330401717,
+      "whole_cpu_seconds": 0.04501104245833337,
+      "whole_wall_seconds": 0.04501564841646339
+    },
+    "fixed_pure_flow": {
+      "PSNR": 26.286298390919928,
+      "cost_adjusted_return": 25.833264344392152,
+      "expensive_calls": 1.0,
+      "pixel_MSE": 0.003726246305515223,
+      "whole_cpu_seconds": 0.045303404652777796,
+      "whole_wall_seconds": 0.045309107485890204
+    },
+    "learned_budget": {
+      "PSNR": 26.433983167268536,
+      "cost_adjusted_return": 25.934943858518537,
+      "expensive_calls": 1.0,
+      "pixel_MSE": 0.0036201501330401717,
+      "whole_cpu_seconds": 0.049903930874999974,
+      "whole_wall_seconds": 0.04992617976414395
+    },
+    "matched_random_budget": {
+      "PSNR": 26.433983167268536,
+      "cost_adjusted_return": 25.94770754837965,
+      "expensive_calls": 1.0,
+      "pixel_MSE": 0.0036201501330401717,
+      "whole_cpu_seconds": 0.048627561888888844,
+      "whole_wall_seconds": 0.048639444805505465
+    }
+  },
+  "test_frames": 36,
+  "training": {
+    "checkpoint_sha256": "0b04447c78e0324c69c0783c1e0c88c83a71df4052eb22d915e849075b6366de",
+    "cpu_seconds": 1.1859456439999998,
+    "final_parameter_sha256": "30dfe90b667ebbb5059b717f67d9dc00d88e9d966f3b8d4555d243e01ad98950",
+    "initial_parameter_sha256": "66687aadf862bd776c8fc18b8e9f8e20089714856ee233b3902a591d0d5f2925",
+    "losses": [
+      {
+        "pixel_MSE": 0.0018469890516861923,
+        "step": 1
+      },
+      {
+        "pixel_MSE": 0.001618183614948153,
+        "step": 100
+      },
+      {
+        "pixel_MSE": 0.0016179064251221316,
+        "step": 200
+      },
+      {
+        "pixel_MSE": 0.0016176920767732809,
+        "step": 300
+      },
+      {
+        "pixel_MSE": 0.0016174738568957704,
+        "step": 400
+      }
+    ],
+    "optimizer_steps": 400,
+    "sampled_training_pixels": 18432,
+    "source_videos": 3,
+    "trainable_parameters": 4,
+    "wall_seconds": 1.1868798719951883,
+    "weights": [
+      1.475124631319269,
+      2.303497395666193,
+      1.8124642292675293,
+      1.0389194619799966
+    ]
+  }
+}

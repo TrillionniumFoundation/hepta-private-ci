@@ -1,0 +1,807 @@
+{
+  "acknowledged_duplicate_rpc_count": 3,
+  "acknowledged_feedback": {
+    "activation_q24": [
+      8388608,
+      0,
+      4194304,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "bound_event_evidence_digest": "58e8867c1de5074559cbed027abfab47725cddf9a86fa50d986521ac4535d3c2",
+    "checkpoint_after": "110663140f1684cee88ed67ab2d70cae67878c0357175503af4f819fb6fd890e",
+    "checkpoint_before": "ca744f234a6c59345a99f6417a1ee59d443f32f87015aac269c36c223a705bad",
+    "checkpoint_bytes": 648,
+    "confidence_ppm": 1000000,
+    "duplicate_event_ignored": false,
+    "eligibility_after_q24": [
+      4194304,
+      0,
+      1048576,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "eligibility_before_q24": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "event_id": "durable-guard.initial.phase.1",
+    "evidence_digest": "61b4256d68c87ea56f90edf263ce04b1fbe66f52c932ce78cc6368dce75effbc",
+    "execution_micros": 1065,
+    "feedback_q24": -8388608,
+    "journal_bytes_written": 464,
+    "model_latency_micros": 3,
+    "model_resident_bytes": 32010,
+    "native_abstain": false,
+    "native_transition_executed": true,
+    "ood_ppm": 0,
+    "owner_authority": "DENY_ALL",
+    "phase": 1,
+    "proposed_repair": true,
+    "queue_age_micros": 0,
+    "readout_logit": 2.566973631832978,
+    "readout_scalar_input": false,
+    "readout_target_input": false,
+    "sequence": 5,
+    "transient_allocation_bytes": 204,
+    "write_amplification_ppm": 716050
+  },
+  "actual_original_owner_ticks": 10,
+  "actual_repaired_readback": {
+    "clock": {
+      "audio_samples": 8000,
+      "sample_rate": 8000,
+      "video_fps": 4,
+      "video_frames": 4
+    },
+    "codes": {
+      "audio": 1,
+      "image": 1,
+      "text": 1,
+      "video": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "fault_class": 0,
+    "media_sha256": {
+      "audio": "aa066c8f6d9cc009eb671f13b4ac3158ff83dde5b2143476e9a663d40abb4183",
+      "image": "4ccccec1f0f712557d795514d74177e72c47d9f0b6ab81de40af66a72c9ea76f",
+      "text": "eaaeba9c9a75f9a5f00d600d3e7b7849400b4c37bc61e9dae8f55612d3394928",
+      "video": "bb9ffb5c24de1088d9ed8e68fa37c399e47dc088b240b72f988771129436a313"
+    },
+    "target_supplied": false
+  },
+  "all_rpc_physical_receipt_processing_micros": 309383,
+  "checks": {
+    "cold_process_conflict": {
+      "before_file_sha256": {
+        "IDENTITY.json": "772e62ee8a6d2d81ea144470c4b925920d8f48c4bc78e6bd68e85e28e885ff72",
+        "events.jsonl": "631ddffb151e749631d21fb77cea75f208e1c1e2c759a1ba56ae4d7ba4eadbc6",
+        "owner.journal": "43d3f8640e095f649fc11e9c2a93b7b7d5b09c9efd592ccff7c9f7070a8af282",
+        "owner.witness": "eaa781ca8bf49ef399d278aafdc86792d270a9c49ee1d90ed0fccc5ae29b725c"
+      },
+      "before_state": {
+        "checkpoint": "110663140f1684cee88ed67ab2d70cae67878c0357175503af4f819fb6fd890e",
+        "durable_event_count": 5,
+        "eligibility_q24": [
+          4194304,
+          0,
+          1048576,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expires": 7,
+        "host_poisoned": false,
+        "owner_authority": "DENY_ALL",
+        "sequence": 5
+      },
+      "request": {
+        "command": "Tick",
+        "event_id": "durable-guard.initial.phase.1",
+        "feedback_q24": -16777216,
+        "phase": 1,
+        "receipt_digest": "61b4256d68c87ea56f90edf263ce04b1fbe66f52c932ce78cc6368dce75effbc"
+      },
+      "result": {
+        "error": "Conflicting retry: committed event payload is immutable",
+        "ok": false,
+        "physical_receipt_processing_micros": 23
+      },
+      "state_and_files_unchanged": true
+    },
+    "cold_process_retry": {
+      "before_file_sha256": {
+        "IDENTITY.json": "772e62ee8a6d2d81ea144470c4b925920d8f48c4bc78e6bd68e85e28e885ff72",
+        "events.jsonl": "631ddffb151e749631d21fb77cea75f208e1c1e2c759a1ba56ae4d7ba4eadbc6",
+        "owner.journal": "43d3f8640e095f649fc11e9c2a93b7b7d5b09c9efd592ccff7c9f7070a8af282",
+        "owner.witness": "eaa781ca8bf49ef399d278aafdc86792d270a9c49ee1d90ed0fccc5ae29b725c"
+      },
+      "before_state": {
+        "checkpoint": "110663140f1684cee88ed67ab2d70cae67878c0357175503af4f819fb6fd890e",
+        "durable_event_count": 5,
+        "eligibility_q24": [
+          4194304,
+          0,
+          1048576,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expires": 7,
+        "host_poisoned": false,
+        "owner_authority": "DENY_ALL",
+        "sequence": 5
+      },
+      "request": {
+        "command": "Tick",
+        "event_id": "durable-guard.initial.phase.1",
+        "feedback_q24": -8388608,
+        "phase": 1,
+        "receipt_digest": "61b4256d68c87ea56f90edf263ce04b1fbe66f52c932ce78cc6368dce75effbc"
+      },
+      "result": {
+        "activation_q24": [
+          8388608,
+          0,
+          4194304,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bound_event_evidence_digest": "58e8867c1de5074559cbed027abfab47725cddf9a86fa50d986521ac4535d3c2",
+        "checkpoint_after": "110663140f1684cee88ed67ab2d70cae67878c0357175503af4f819fb6fd890e",
+        "checkpoint_before": "ca744f234a6c59345a99f6417a1ee59d443f32f87015aac269c36c223a705bad",
+        "checkpoint_bytes": 648,
+        "confidence_ppm": 1000000,
+        "duplicate_event_ignored": true,
+        "eligibility_after_q24": [
+          4194304,
+          0,
+          1048576,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "eligibility_before_q24": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "event_id": "durable-guard.initial.phase.1",
+        "evidence_digest": "61b4256d68c87ea56f90edf263ce04b1fbe66f52c932ce78cc6368dce75effbc",
+        "execution_micros": 1065,
+        "feedback_q24": -8388608,
+        "journal_bytes_written": 464,
+        "model_latency_micros": 3,
+        "model_resident_bytes": 32010,
+        "native_abstain": false,
+        "native_transition_executed": false,
+        "ood_ppm": 0,
+        "owner_authority": "DENY_ALL",
+        "phase": 1,
+        "proposed_repair": true,
+        "queue_age_micros": 0,
+        "readout_logit": 2.566973631832978,
+        "readout_scalar_input": false,
+        "readout_target_input": false,
+        "sequence": 5,
+        "transient_allocation_bytes": 204,
+        "write_amplification_ppm": 716050
+      },
+      "state_and_files_unchanged": true
+    },
+    "feedback_conflict": {
+      "before_file_sha256": {
+        "IDENTITY.json": "772e62ee8a6d2d81ea144470c4b925920d8f48c4bc78e6bd68e85e28e885ff72",
+        "events.jsonl": "631ddffb151e749631d21fb77cea75f208e1c1e2c759a1ba56ae4d7ba4eadbc6",
+        "owner.journal": "43d3f8640e095f649fc11e9c2a93b7b7d5b09c9efd592ccff7c9f7070a8af282",
+        "owner.witness": "eaa781ca8bf49ef399d278aafdc86792d270a9c49ee1d90ed0fccc5ae29b725c"
+      },
+      "before_state": {
+        "checkpoint": "110663140f1684cee88ed67ab2d70cae67878c0357175503af4f819fb6fd890e",
+        "durable_event_count": 5,
+        "eligibility_q24": [
+          4194304,
+          0,
+          1048576,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expires": 7,
+        "host_poisoned": false,
+        "owner_authority": "DENY_ALL",
+        "sequence": 5
+      },
+      "request": {
+        "command": "Tick",
+        "event_id": "durable-guard.initial.phase.1",
+        "feedback_q24": -16777216,
+        "phase": 1,
+        "receipt_digest": "61b4256d68c87ea56f90edf263ce04b1fbe66f52c932ce78cc6368dce75effbc"
+      },
+      "result": {
+        "error": "Conflicting retry: committed event payload is immutable",
+        "ok": false,
+        "physical_receipt_processing_micros": 16
+      },
+      "state_and_files_unchanged": true
+    },
+    "fork_inherited_conflict": {
+      "before_file_sha256": {
+        "IDENTITY.json": "772e62ee8a6d2d81ea144470c4b925920d8f48c4bc78e6bd68e85e28e885ff72",
+        "events.jsonl": "667539069bfe51eae98d13362e48d2acb6d53f8880b73f9ecf8ee0357edc9561",
+        "owner.journal": "d0f4d35b9f73a6fe05a4211cd0331669eb36341728519a6a2613aa08eb9d098f",
+        "owner.witness": "136ea4c3973db9d4b2a5b69ac66273c990110a180e6310e6bf74253dca239aa9"
+      },
+      "before_state": {
+        "checkpoint": "b4c88739e6ca41c5a6b9a9df50d7b543265c03ecbd1e3d984080d894d5f7e857",
+        "durable_event_count": 7,
+        "eligibility_q24": [
+          1048576,
+          0,
+          262144,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expires": 7,
+        "host_poisoned": false,
+        "owner_authority": "DENY_ALL",
+        "sequence": 7
+      },
+      "request": {
+        "command": "Tick",
+        "event_id": "durable-guard.scan.0",
+        "feedback_q24": 0,
+        "phase": 0,
+        "receipt_digest": "64c81eb52bff30757e0b40bde27c76dd11818d9ba07a0afa1b2c52f99ffc29f0"
+      },
+      "result": {
+        "error": "Conflicting retry: committed event payload is immutable",
+        "ok": false,
+        "physical_receipt_processing_micros": 13
+      },
+      "state_and_files_unchanged": true
+    },
+    "fork_inherited_retry": {
+      "before_file_sha256": {
+        "IDENTITY.json": "772e62ee8a6d2d81ea144470c4b925920d8f48c4bc78e6bd68e85e28e885ff72",
+        "events.jsonl": "667539069bfe51eae98d13362e48d2acb6d53f8880b73f9ecf8ee0357edc9561",
+        "owner.journal": "d0f4d35b9f73a6fe05a4211cd0331669eb36341728519a6a2613aa08eb9d098f",
+        "owner.witness": "136ea4c3973db9d4b2a5b69ac66273c990110a180e6310e6bf74253dca239aa9"
+      },
+      "before_state": {
+        "checkpoint": "b4c88739e6ca41c5a6b9a9df50d7b543265c03ecbd1e3d984080d894d5f7e857",
+        "durable_event_count": 7,
+        "eligibility_q24": [
+          1048576,
+          0,
+          262144,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expires": 7,
+        "host_poisoned": false,
+        "owner_authority": "DENY_ALL",
+        "sequence": 7
+      },
+      "request": {
+        "command": "Tick",
+        "event_id": "durable-guard.scan.0",
+        "feedback_q24": 0,
+        "phase": 0,
+        "receipt_digest": "f60945e460a486f92bad61a2528bdeedb1028de80f16649abfae3ab160673ee4"
+      },
+      "result": {
+        "activation_q24": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bound_event_evidence_digest": "af76773b4b7c4b3a80f1e7b1b39a6bc4a546c85b698dad5c074353cad98b7435",
+        "checkpoint_after": "09b61e24721906a0964d90a9227f3c8dbbc58cdc8cec0408d7a891dce0f0f442",
+        "checkpoint_before": "0000000000000000000000000000000000000000000000000000000000000000",
+        "checkpoint_bytes": 648,
+        "confidence_ppm": 1000000,
+        "duplicate_event_ignored": true,
+        "eligibility_after_q24": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "eligibility_before_q24": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "event_id": "durable-guard.scan.0",
+        "evidence_digest": "f60945e460a486f92bad61a2528bdeedb1028de80f16649abfae3ab160673ee4",
+        "execution_micros": 1038,
+        "feedback_q24": 0,
+        "journal_bytes_written": 464,
+        "model_latency_micros": 3,
+        "model_resident_bytes": 11249,
+        "native_abstain": false,
+        "native_transition_executed": false,
+        "ood_ppm": 0,
+        "owner_authority": "DENY_ALL",
+        "phase": 0,
+        "proposed_repair": true,
+        "queue_age_micros": 0,
+        "readout_logit": 2.566973631832978,
+        "readout_scalar_input": false,
+        "readout_target_input": false,
+        "sequence": 1,
+        "transient_allocation_bytes": 204,
+        "write_amplification_ppm": 716050
+      },
+      "state_and_files_unchanged": true
+    },
+    "live_retry": {
+      "before_file_sha256": {
+        "IDENTITY.json": "772e62ee8a6d2d81ea144470c4b925920d8f48c4bc78e6bd68e85e28e885ff72",
+        "events.jsonl": "631ddffb151e749631d21fb77cea75f208e1c1e2c759a1ba56ae4d7ba4eadbc6",
+        "owner.journal": "43d3f8640e095f649fc11e9c2a93b7b7d5b09c9efd592ccff7c9f7070a8af282",
+        "owner.witness": "eaa781ca8bf49ef399d278aafdc86792d270a9c49ee1d90ed0fccc5ae29b725c"
+      },
+      "before_state": {
+        "checkpoint": "110663140f1684cee88ed67ab2d70cae67878c0357175503af4f819fb6fd890e",
+        "durable_event_count": 5,
+        "eligibility_q24": [
+          4194304,
+          0,
+          1048576,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expires": 7,
+        "host_poisoned": false,
+        "owner_authority": "DENY_ALL",
+        "sequence": 5
+      },
+      "request": {
+        "command": "Tick",
+        "event_id": "durable-guard.initial.phase.1",
+        "feedback_q24": -8388608,
+        "phase": 1,
+        "receipt_digest": "61b4256d68c87ea56f90edf263ce04b1fbe66f52c932ce78cc6368dce75effbc"
+      },
+      "result": {
+        "activation_q24": [
+          8388608,
+          0,
+          4194304,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bound_event_evidence_digest": "58e8867c1de5074559cbed027abfab47725cddf9a86fa50d986521ac4535d3c2",
+        "checkpoint_after": "110663140f1684cee88ed67ab2d70cae67878c0357175503af4f819fb6fd890e",
+        "checkpoint_before": "ca744f234a6c59345a99f6417a1ee59d443f32f87015aac269c36c223a705bad",
+        "checkpoint_bytes": 648,
+        "confidence_ppm": 1000000,
+        "duplicate_event_ignored": true,
+        "eligibility_after_q24": [
+          4194304,
+          0,
+          1048576,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "eligibility_before_q24": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "event_id": "durable-guard.initial.phase.1",
+        "evidence_digest": "61b4256d68c87ea56f90edf263ce04b1fbe66f52c932ce78cc6368dce75effbc",
+        "execution_micros": 1065,
+        "feedback_q24": -8388608,
+        "journal_bytes_written": 464,
+        "model_latency_micros": 3,
+        "model_resident_bytes": 32010,
+        "native_abstain": false,
+        "native_transition_executed": false,
+        "ood_ppm": 0,
+        "owner_authority": "DENY_ALL",
+        "phase": 1,
+        "proposed_repair": true,
+        "queue_age_micros": 0,
+        "readout_logit": 2.566973631832978,
+        "readout_scalar_input": false,
+        "readout_target_input": false,
+        "sequence": 5,
+        "transient_allocation_bytes": 204,
+        "write_amplification_ppm": 716050
+      },
+      "state_and_files_unchanged": true
+    },
+    "phase_conflict": {
+      "before_file_sha256": {
+        "IDENTITY.json": "772e62ee8a6d2d81ea144470c4b925920d8f48c4bc78e6bd68e85e28e885ff72",
+        "events.jsonl": "631ddffb151e749631d21fb77cea75f208e1c1e2c759a1ba56ae4d7ba4eadbc6",
+        "owner.journal": "43d3f8640e095f649fc11e9c2a93b7b7d5b09c9efd592ccff7c9f7070a8af282",
+        "owner.witness": "eaa781ca8bf49ef399d278aafdc86792d270a9c49ee1d90ed0fccc5ae29b725c"
+      },
+      "before_state": {
+        "checkpoint": "110663140f1684cee88ed67ab2d70cae67878c0357175503af4f819fb6fd890e",
+        "durable_event_count": 5,
+        "eligibility_q24": [
+          4194304,
+          0,
+          1048576,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expires": 7,
+        "host_poisoned": false,
+        "owner_authority": "DENY_ALL",
+        "sequence": 5
+      },
+      "request": {
+        "command": "Tick",
+        "event_id": "durable-guard.initial.phase.1",
+        "feedback_q24": 0,
+        "phase": 2,
+        "receipt_digest": "61b4256d68c87ea56f90edf263ce04b1fbe66f52c932ce78cc6368dce75effbc"
+      },
+      "result": {
+        "error": "Conflicting retry: committed event payload is immutable",
+        "ok": false,
+        "physical_receipt_processing_micros": 10
+      },
+      "state_and_files_unchanged": true
+    },
+    "receipt_conflict": {
+      "before_file_sha256": {
+        "IDENTITY.json": "772e62ee8a6d2d81ea144470c4b925920d8f48c4bc78e6bd68e85e28e885ff72",
+        "events.jsonl": "631ddffb151e749631d21fb77cea75f208e1c1e2c759a1ba56ae4d7ba4eadbc6",
+        "owner.journal": "43d3f8640e095f649fc11e9c2a93b7b7d5b09c9efd592ccff7c9f7070a8af282",
+        "owner.witness": "eaa781ca8bf49ef399d278aafdc86792d270a9c49ee1d90ed0fccc5ae29b725c"
+      },
+      "before_state": {
+        "checkpoint": "110663140f1684cee88ed67ab2d70cae67878c0357175503af4f819fb6fd890e",
+        "durable_event_count": 5,
+        "eligibility_q24": [
+          4194304,
+          0,
+          1048576,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expires": 7,
+        "host_poisoned": false,
+        "owner_authority": "DENY_ALL",
+        "sequence": 5
+      },
+      "request": {
+        "command": "Tick",
+        "event_id": "durable-guard.initial.phase.1",
+        "feedback_q24": -8388608,
+        "phase": 1,
+        "receipt_digest": "dbcbb05208bbb6cc1181867c1498e0e60dcbe6e4097bbada64fe1408114fa81b"
+      },
+      "result": {
+        "error": "Conflicting retry: committed event payload is immutable",
+        "ok": false,
+        "physical_receipt_processing_micros": 11
+      },
+      "state_and_files_unchanged": true
+    }
+  },
+  "cold_restored_state": {
+    "checkpoint": "110663140f1684cee88ed67ab2d70cae67878c0357175503af4f819fb6fd890e",
+    "durable_event_count": 5,
+    "eligibility_q24": [
+      4194304,
+      0,
+      1048576,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "expires": 7,
+    "host_poisoned": false,
+    "owner_authority": "DENY_ALL",
+    "sequence": 5
+  },
+  "commit_gap_policy": "Reject restore; preserve evidence; do not silently rerun an event",
+  "duplicate_native_ticks": 0,
+  "duplicate_rpc_physical_receipt_processing_micros": 78,
+  "fork_preserved_parent": true,
+  "later_decision": {
+    "activation_q24": [
+      4643226,
+      0,
+      2283930,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "bound_event_evidence_digest": "de2cce2fbd47e808c02d87fea173fc2733befa46eee0e864afd657adb1638598",
+    "checkpoint_after": "72c48afe1242bc8a73e61d79421e12b0fc701a8e56580fa54ca1ed8ddbf4e685",
+    "checkpoint_before": "bc5b74fa6dd0996cd47ad3be9a7ab39f555e1113d5dc26f01dea9e9f96b6223f",
+    "checkpoint_bytes": 648,
+    "confidence_ppm": 1000000,
+    "duplicate_event_ignored": false,
+    "eligibility_after_q24": [
+      1048576,
+      0,
+      262144,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "eligibility_before_q24": [
+      2097152,
+      0,
+      524288,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "event_id": "durable-guard.initial.phase.3",
+    "evidence_digest": "61b4256d68c87ea56f90edf263ce04b1fbe66f52c932ce78cc6368dce75effbc",
+    "execution_micros": 1006,
+    "feedback_q24": 0,
+    "journal_bytes_written": 464,
+    "model_latency_micros": 2,
+    "model_resident_bytes": 48013,
+    "native_abstain": false,
+    "native_transition_executed": true,
+    "ood_ppm": 0,
+    "owner_authority": "DENY_ALL",
+    "phase": 3,
+    "proposed_repair": true,
+    "queue_age_micros": 0,
+    "readout_logit": 3.2965998393358538,
+    "readout_scalar_input": false,
+    "readout_target_input": false,
+    "sequence": 7,
+    "transient_allocation_bytes": 204,
+    "write_amplification_ppm": 716050
+  },
+  "later_hold": {
+    "activation_q24": [
+      6278349,
+      0,
+      3132621,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "bound_event_evidence_digest": "75fafd3b357ccf0f954e30a3f8c295230ab766b1c422995d45c0be839895de50",
+    "checkpoint_after": "bc5b74fa6dd0996cd47ad3be9a7ab39f555e1113d5dc26f01dea9e9f96b6223f",
+    "checkpoint_before": "110663140f1684cee88ed67ab2d70cae67878c0357175503af4f819fb6fd890e",
+    "checkpoint_bytes": 648,
+    "confidence_ppm": 1000000,
+    "duplicate_event_ignored": false,
+    "eligibility_after_q24": [
+      2097152,
+      0,
+      524288,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "eligibility_before_q24": [
+      4194304,
+      0,
+      1048576,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "event_id": "durable-guard.initial.phase.2",
+    "evidence_digest": "61b4256d68c87ea56f90edf263ce04b1fbe66f52c932ce78cc6368dce75effbc",
+    "execution_micros": 2769,
+    "feedback_q24": 0,
+    "journal_bytes_written": 464,
+    "model_latency_micros": 5,
+    "model_resident_bytes": 43444,
+    "native_abstain": false,
+    "native_transition_executed": true,
+    "ood_ppm": 0,
+    "owner_authority": "DENY_ALL",
+    "phase": 2,
+    "proposed_repair": true,
+    "queue_age_micros": 0,
+    "readout_logit": 4.02622604683873,
+    "readout_scalar_input": false,
+    "readout_target_input": false,
+    "sequence": 6,
+    "transient_allocation_bytes": 204,
+    "write_amplification_ppm": 716050
+  },
+  "passed": true,
+  "power_loss_simulated": false,
+  "production_authority": false,
+  "restore_mutations": {
+    "altered_abstention": {
+      "durable_files_unchanged": true,
+      "rejected": true,
+      "response": {
+        "error": "Ledger checkpoint binding mismatch: native_abstain",
+        "ok": false,
+        "physical_receipt_processing_micros": 97701
+      }
+    },
+    "altered_event_identity": {
+      "durable_files_unchanged": true,
+      "rejected": true,
+      "response": {
+        "error": "Ledger checkpoint binding mismatch: bound_event_evidence_digest",
+        "ok": false,
+        "physical_receipt_processing_micros": 95768
+      }
+    },
+    "altered_event_payload": {
+      "durable_files_unchanged": true,
+      "rejected": true,
+      "response": {
+        "error": "Ledger checkpoint binding mismatch: activation_q24",
+        "ok": false,
+        "physical_receipt_processing_micros": 99604
+      }
+    },
+    "altered_readout": {
+      "durable_files_unchanged": true,
+      "rejected": true,
+      "response": {
+        "error": "Ledger checkpoint binding mismatch: proposed_repair",
+        "ok": false,
+        "physical_receipt_processing_micros": 98503
+      }
+    },
+    "missing_last_ledger_commit": {
+      "durable_files_unchanged": true,
+      "rejected": true,
+      "response": {
+        "error": "Durable event ledger differs from native witness frontier",
+        "ok": false,
+        "physical_receipt_processing_micros": 114892
+      }
+    }
+  },
+  "schema": "hepta.continuation.durable-event-validation.v2",
+  "single_writer_only": true
+}

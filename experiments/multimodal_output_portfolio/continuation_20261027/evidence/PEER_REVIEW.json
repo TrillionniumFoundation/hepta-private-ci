@@ -1,0 +1,439 @@
+{
+  "baseline_commit": "63f198ad85cfa2aa579032256355f446cfe793a0",
+  "execution_boundary": {
+    "new_model_scoring": false,
+    "original_likelihood_archive_repacked": false,
+    "own_scientific_archive_bytes": 134024015,
+    "own_scientific_archive_sha256": "f765a8e6d28c1b95c9f03f9edb5d8790447037515c45c27e4755d726571f2f27",
+    "post_test_threshold_changes": false,
+    "video_final_qualification_audit_performed_by_this_reviewer": true
+  },
+  "findings": [
+    {
+      "area": "control",
+      "disposition": "Both exact binaries, frozen numerical sources, original auditor source and build receipts are preserved separately. Run002 uses the distinct guard binary and its own freeze/audit.",
+      "evidence": "PEER_CONTROL_RUN001.json; PEER_CONTROL_RUN002.json; native_owner_run001_build_preservation_20261027/PRESERVATION.json",
+      "finding": "Old run001 predates the durable event guard and cannot substantiate new retry/restore claims.",
+      "id": "C01",
+      "severity": "high",
+      "status": "fixed_and_execution_verified"
+    },
+    {
+      "area": "control",
+      "disposition": "Registered event ID plus immutable phase/scalar/receipt payload is checked before owner.tick. ID and receipt digest enter checkpoint evidence. Live, cold-process and inherited-fork exact retries execute zero new transitions; conflicting requests reject before mutation.",
+      "evidence": "control/events.rs; control/owner_host.rs; native_owner_guard_20261027_001/{FROZEN_GUARD,RESULT}.json; PEER_CONTROL_RUN002.json",
+      "finding": "A repeated feedback receipt originally caused another owner transition; event identity needed durable binding.",
+      "id": "C02",
+      "remaining_limit": "Dispatcher must supply canonical event IDs. A physical event assigned a different new ID is not deduplicated by content; this is not exactly-once external media dispatch.",
+      "severity": "high",
+      "status": "fixed_and_execution_verified"
+    },
+    {
+      "area": "control",
+      "disposition": "Ledger acknowledgement follows append and fsync. An unacknowledged native transition poisons the live host; a missing/inconsistent ledger frontier fails closed on restore. Payload/ID/readout/abstention mutations and missing last ledger commit were rejected.",
+      "evidence": "control/events.rs; control/owner_host.rs; PEER_CONTROL_RUN002.json",
+      "finding": "Native commit and event-ledger acknowledgement must have explicit crash-gap semantics.",
+      "id": "C03",
+      "remaining_limit": "Real EOF cold-process restart was exercised, not hardware power loss. Single writer only. The fail-closed gap requires forensic recovery; automatic progress through all crash points is not proven.",
+      "severity": "high",
+      "status": "verified_with_scope_limit"
+    },
+    {
+      "area": "control",
+      "disposition": "All 240 episodes cover the exact 4cue x2expiry x2budget x5arm x3fault grid. Forecast branch states match actual realized continuation. The owner-aware rule consumes actual abstention and remaining media budget. The intentional future-blind ablation remains visibly inaccurate.",
+      "evidence": "control/forecast.py; control/run.py; PEER_CONTROL_RUN002.json",
+      "finding": "Future admission, expiry, budget, action continuation and actual host refusal must describe the deployed policy.",
+      "id": "C04",
+      "remaining_limit": "Original owner authority remains DENY_ALL. Research dispatch uses a separate explicit bounded host permit; no daemon activation or production authority is inferred.",
+      "severity": "high",
+      "status": "verified_in_executed_census"
+    },
+    {
+      "area": "control",
+      "disposition": "Run002 charges16 owner.tick calls +12 original journal replay steps +12 event-binding sparse validations =40 kernel executions per episode. The cost increase .0024 equals .0012 previously unpriced replay plus .0012 new guard validation. Actual complete costs and terminal utilities independently match exactly.",
+      "evidence": "control/PROTOCOL.json; control/evidence/COST_ACCOUNTING_ADDENDUM.json; PEER_CONTROL_RUN002.json",
+      "finding": "Original journal replay work was omitted from run001 task pricing; new guard adds further replay work.",
+      "id": "C05",
+      "remaining_limit": "Task fees are registered units, not empirical CPU/wall/energy prices. Run001 remains immutable and is not represented as complete kernel-cost accounting.",
+      "severity": "high",
+      "status": "fixed_and_execution_verified"
+    },
+    {
+      "area": "control",
+      "disposition": "Forecast and independent rescoring both compute sum_fault P(fault|action) sum_target P(target|cue) exp(-gamma*terminal_return), including final continuation, irreversible harm and all registered costs.",
+      "evidence": "control/forecast.py; control/audit.py; PEER_CONTROL_RUN002.json",
+      "finding": "Entropic utility must be evaluated before averaging stochastic terminal outcomes.",
+      "id": "C06",
+      "remaining_limit": "Target and fault laws are declared finite mechanisms; their match is not empirical calibration of a natural deployment population.",
+      "severity": "high",
+      "status": "verified_in_source_and_evidence"
+    },
+    {
+      "area": "control",
+      "disposition": "At a fixed common root, all48 numeric/zero pairs change late eligibility;16 change repair proposal,4 avoid actual unnecessary repair and12 avoid unnecessary denied attempts. All changes are fault-zero cases. Registered mean gain is .036375, strict success unchanged, and same-information history policy has identical mean return.",
+      "evidence": "PEER_CONTROL_RUN002.json",
+      "finding": "Feedback-state changes alone do not establish a consequential external benefit.",
+      "id": "C07",
+      "remaining_limit": "This demonstrates a post-delivery state/action/cost pathway. It does not demonstrate improved faulty-output repair rate or an advantage unique to Hepta over directly reading the same history.",
+      "severity": "high",
+      "status": "verified_with_narrow_causal_result"
+    },
+    {
+      "area": "control",
+      "disposition": "Run002 audit now checks exact episode/group key sets, protocol/calibration/common-root/model/binary/source hashes, actual phase1 scalar mapping, later scalar absence and charged restore steps. Reviewer independently verified every EPISODE/ROWS identity and actual media hash.",
+      "evidence": "control/audit.py; native_owner_audit_20261027_002/AUDIT.json; PEER_CONTROL_RUN002.json",
+      "finding": "Independent audit originally checked row count but not exact Cartesian coverage, all freeze bindings or phase1 readback mapping.",
+      "id": "C08",
+      "severity": "medium",
+      "status": "fixed_and_execution_verified"
+    },
+    {
+      "area": "control",
+      "disposition": "Confidence certifies the registered finite encoder domain; phase0 drives are zero, later feedback has a fixed finite encoder, and only an11-coefficient state readout is fitted. Original owner/runtime modules execute, but this isolated host does not integrate the natural generators or the joint generator training.",
+      "evidence": "control/port.rs; control/profile.rs; control/training.py; control/README.md",
+      "finding": "Native confidence and phase0 inputs could be overinterpreted as natural semantic qualification.",
+      "id": "C09",
+      "remaining_limit": "No semantic safety qualification or full multimodal-LLM deployment proof.",
+      "severity": "medium",
+      "status": "resolved_by_explicit_scope"
+    },
+    {
+      "area": "joint",
+      "disposition": "Selection uses explicit lexicographic (alpha,step) tie ordering after the quality tolerance and clean-retention eligibility constraint. The corrected source is in development/qualification freezes.",
+      "evidence": "joint/selection.py; PEER_JOINT_QUALIFICATION.json",
+      "finding": "Validation tie ordering disagreed with protocol: earlier checkpoint could win before smaller interpolation.",
+      "id": "J01",
+      "severity": "medium",
+      "status": "fixed_and_execution_verified"
+    },
+    {
+      "area": "joint",
+      "disposition": "Teacher encode/transition/decode counts are explicit. Three fixed seed pairs share the same training schedules and operation counts across risk/uniform updates.",
+      "evidence": "joint/training.py; PEER_JOINT_QUALIFICATION.json",
+      "finding": "Training-compute accounting omitted teacher encodes and transitions.",
+      "id": "J02",
+      "remaining_limit": "This matches declared operation schedules and information. It does not imply identical measured wall time.",
+      "severity": "medium",
+      "status": "fixed_and_execution_verified"
+    },
+    {
+      "area": "joint",
+      "disposition": "Reference checkpoint bytes are verified against restoration before audit observer loading, and the seal records reference hashes, selected models, metric, source manifest and exact qualification sources. Reviewer rehashed all selected/reference checkpoints and seal/result links.",
+      "evidence": "joint/evaluation.py; joint/audit.py; PEER_JOINT_QUALIFICATION.json",
+      "finding": "Qualification seal did not bind baseline generator, observer file identities and scoring metric tightly enough.",
+      "id": "J03",
+      "severity": "high",
+      "status": "fixed_and_execution_verified"
+    },
+    {
+      "area": "joint",
+      "disposition": "Audit checks unique source/condition grid, all16 plan indices and semantic plan mapping, exact zip members, ORACLE_ROWS/archive digests, and source-ID correspondence. Reviewer rechecked6144 oracle cases and98304 candidate rows without invoking models.",
+      "evidence": "joint/oracle.py; joint/audit.py; PEER_JOINT_QUALIFICATION.json",
+      "finding": "Original-generator oracle required full grid/candidate/member/source verification.",
+      "id": "J04",
+      "remaining_limit": "The oracle has privileged target access and is an attribution bound for16 fixed two-action plans at fixed noise, not a deployable matched-compute baseline.",
+      "severity": "high",
+      "status": "fixed_and_execution_verified"
+    },
+    {
+      "area": "joint",
+      "disposition": "Independent audit_statistics reconstructs bounded-return CE, frozen paired bootstrap intervals, per-seed differences and all acceptance gates. Reviewer separately recomputed CE/differences from23040 recorded actual-output utilities; maximum error2.22e-16.",
+      "evidence": "joint/audit_statistics.py; qualification-001/INDEPENDENT_AUDIT.json; PEER_JOINT_QUALIFICATION.json",
+      "finding": "Reopened utility arithmetic alone did not verify reported CE, intervals and acceptance gates.",
+      "id": "J05",
+      "severity": "high",
+      "status": "fixed_and_execution_verified"
+    },
+    {
+      "area": "joint",
+      "disposition": "Risk versus frozen CE +.1172764666 with clean retention +.0317722367; risk exceeds original16-plan oracle +.0543429299. Risk versus same-budget uniform generator update is -.0171947594 with97.5%CI[-.0269187979,-.0080273518]. Matched-training and all-joint gates remain false.",
+      "evidence": "PEER_JOINT_QUALIFICATION.json",
+      "finding": "A positive generator-update result must not be conflated with a risk-weighting advantage.",
+      "id": "J06",
+      "remaining_limit": "Both update arms share an NDU controller. This is not a risk-neutral-controller comparison. Retention is limited to the registered clean paired-digit task.",
+      "severity": "high",
+      "status": "resolved_by_preserving_negative_comparator"
+    },
+    {
+      "area": "joint",
+      "disposition": "The gate regresses actual post-PNG exp(-gamma*utility); monotone moment parameterization preserves deployed argmax ordering. Generator updates use supervised losses, teacher distillation and detached self-normalized weights; exact delivered-reward gradient is explicitly false.",
+      "evidence": "joint/training.py; joint/protocol.py; PEER_JOINT_QUALIFICATION.json",
+      "finding": "Differentiable generator proxy and gate moment regression require precise objective claims.",
+      "id": "J07",
+      "remaining_limit": "No claim of unbiased global-NDU generator gradients or solution of unrestricted continuous Merton control.",
+      "severity": "medium",
+      "status": "verified_with_scope_limit"
+    },
+    {
+      "area": "joint",
+      "disposition": "The heldout512 test pairs and512 retention pairs use2048 distinct source pixels, excluded from known historical corpora; conditions and seeds share pairs. Bootstrap unit is source pair, and seeds17/29/43 are fixed replicates.",
+      "evidence": "joint/data.py; joint/protocol.py; PEER_JOINT_QUALIFICATION.json",
+      "finding": "Source-disjoint pixels and fixed seeds must not be promoted to independent-writer/population replication.",
+      "id": "J08",
+      "remaining_limit": "Writer independence, all historical global usage and training-seed population generalization are not established.",
+      "severity": "medium",
+      "status": "verified_with_scope_limit"
+    },
+    {
+      "area": "natural",
+      "disposition": "Each validation quota executes the real public batch, including allocator/final delivery; selection freezes before test. The observed selected quota is0 and no test acquisition was added post hoc.",
+      "evidence": "natural/cascade_study.py; PEER_NATURAL_SPEECH.json",
+      "finding": "Cascade validation originally used summed component timing rather than the actual deployment batch.",
+      "id": "N01",
+      "severity": "high",
+      "status": "fixed_and_execution_verified"
+    },
+    {
+      "area": "natural",
+      "disposition": "Batch rejects reference fields; public_sources strips references; the evaluator scores only after batch returns. All576 evaluation deliveries precede their recorded private scoring.",
+      "evidence": "natural/cascade_study.py; PEER_NATURAL_SPEECH.json",
+      "finding": "Private references entered the cascade batch object even though they were not read for inference.",
+      "id": "N02",
+      "remaining_limit": "This is an API/dataflow boundary, not OS-level truth isolation.",
+      "severity": "high",
+      "status": "fixed_and_execution_verified"
+    },
+    {
+      "area": "natural",
+      "disposition": "Full batch CPU/wall residual is allocated and reconciles exactly over12 test batches. Fixed arms avoid unused predictor work. The random comparator matches expensive-call quota; measured costs remain separate.",
+      "evidence": "natural/cascade_study.py; PEER_NATURAL_SPEECH.json",
+      "finding": "Same acquisition quota and component timing must not be labelled equal realized compute or utterance latency.",
+      "id": "N03",
+      "remaining_limit": "Costs are amortized offline-batch throughput. The frozen-cohort bootstrap does not reallocate a newly resampled cohort.",
+      "severity": "medium",
+      "status": "fixed_and_execution_verified"
+    },
+    {
+      "area": "natural",
+      "disposition": "Speech001 executes zero adaptive continuations and fails its strong-beam gate. Cascade001 chooses quota0: learned/random/fixed-tiny all115 errors/1071 words versus fixed-base89/1071; the controller adds overhead and strong-fixed WER noninferiority fails. Reviewer reopened and rescored all final transcripts.",
+      "evidence": "PEER_NATURAL_SPEECH.json",
+      "finding": "Speech/cascade heldout results do not establish natural-speech quality/cost improvement.",
+      "id": "N04",
+      "remaining_limit": "Frozen Whisper weights were not updated; no neural speech-generator training benefit.",
+      "severity": "high",
+      "status": "resolved_by_preserving_negative_results"
+    },
+    {
+      "area": "natural",
+      "disposition": "On8 earlier fitting speakers,48 forced-continuation episodes preserve all transcripts and encoded-state digests. Cached paths use1 encoder versus2 at equal2 decoder calls. Independent4000 speaker bootstrap exactly matches mean CPU -.4558959s and wall -.4575141s.",
+      "evidence": "PEER_NATURAL_SPEECH.json",
+      "finding": "Positive cache mechanism evidence must be kept separate from fresh-source qualification.",
+      "id": "N05",
+      "remaining_limit": "This validates the reuse mechanism on development sources; it does not reverse the negative speech001 qualification.",
+      "severity": "medium",
+      "status": "verified_with_scope_limit"
+    },
+    {
+      "area": "natural",
+      "disposition": "Document001 failure is preserved. The documented pretest amendment masks None/empty reference fields; document002 has95 observed training labels and1 missing address. Four-field exactness requires all4 observed labels.",
+      "evidence": "natural/DOCUMENT_PRETEST_AMENDMENT.json; PEER_DOCUMENT_DIAGNOSTIC.json",
+      "finding": "Missing document references caused a pretest training failure and cannot become invented negative labels.",
+      "id": "N06",
+      "severity": "high",
+      "status": "fixed_before_validation_and_test"
+    },
+    {
+      "area": "natural",
+      "disposition": "Independent diagnostic finds92 candidate-supported observed fields out of95;3 date fields have no candidates. Weight mass before global renormalization is.9652777777777765. Correct interpretation is weighting over candidate-supported observed fields.",
+      "evidence": "PEER_DOCUMENT_DIAGNOSTIC.json",
+      "finding": "Observed fields without OCR candidates receive no training rows despite a balanced-field loss description.",
+      "id": "N07",
+      "remaining_limit": "The frozen model and protocol are not changed after test. Reports must not imply equal positive mass for every observed field.",
+      "severity": "medium",
+      "status": "measured_and_scope_narrowed"
+    },
+    {
+      "area": "natural",
+      "disposition": "All24 test documents have4 observed labels; macro and pooled accuracy therefore agree. Reopening192 deliveries reproduces rules41/96, learned-base31/96, all-refine33/96 and selective31/96 with zero metric error.",
+      "evidence": "PEER_DOCUMENT_DIAGNOSTIC.json",
+      "finding": "Document field_exact is a mean of per-document observed-field fractions, not generally pooled field exactness.",
+      "id": "N08",
+      "remaining_limit": "The learned OCR-candidate scorer updates do not show exact-output improvement. Annotated JPEG delivery is not learned image synthesis.",
+      "severity": "medium",
+      "status": "verified_no_current_numeric_discrepancy"
+    },
+    {
+      "area": "natural",
+      "disposition": "A recorded pretest amendment chooses global target residues2/3 mod4 and endpoints0/1. Reviewer independently computed all target/endpoint sets across every role for all6 sources; every intersection is empty. Source bytes and model/controller choices remain fixed.",
+      "evidence": "natural/VIDEO_FRAME_ISOLATION_AMENDMENT.json; natural-assets/video/MANIFEST.json",
+      "finding": "Realshort equal-spacing target indices overlapped other samples public endpoints within the same allocation batch.",
+      "id": "N09",
+      "remaining_limit": "No video model output or target extraction existed at amendment. The subsequently frozen432 generated PNG deliveries were independently rescored without generating new output; see PEER_NATURAL_VIDEO.json.",
+      "severity": "high",
+      "status": "fixed_before_generation_and_independently_verified"
+    },
+    {
+      "area": "natural",
+      "disposition": "Allocation uses only public endpoint differences and phase correlation; motion runs after allocation. Learned/random have equal per-clip expensive-call quotas; actual reopened8bit PNGs are scored. Initial-mixer and pure-flow controls isolate the4-parameter pixel-mixer update.",
+      "evidence": "natural/video_generator.py; natural/video_study.py; natural/VIDEO_PROTOCOL.json; PEER_NATURAL_VIDEO.json",
+      "finding": "Video training/compute claims must reflect its bounded mechanism and small source count.",
+      "id": "N10",
+      "remaining_limit": "Only3 new test source clips; historical dudek/faceocc2 now serve development. This is missing-frame interpolation, not semantic video generation, a multimodal LLM or native-Hepta integration.",
+      "severity": "medium",
+      "status": "source_and_actual_output_audit_verified"
+    },
+    {
+      "area": "joint_evidence",
+      "disposition": "Training/validation-only marginal calibration and coupling shrinkage fixed the confounded comparison; alias idempotency and unknown-coupling rejection hold. Both predeclared likelihood/output-gain gates remain false on8 fresh AudioMNIST speakers. No post-test margin, fallback or extra success-seeking study was added.",
+      "evidence": "evidence/{PROTOCOL_V2,RESULTS,INDEPENDENT_AUDIT}.json",
+      "finding": "Measured joint observation coupling did not achieve reproducible heldout likelihood/output gains.",
+      "id": "E01",
+      "remaining_limit": "Paired likelihood mean NLL difference -.00246159 has97.5%CI crossing0. The mixture posterior NLL point estimate is worse than independence.",
+      "severity": "high",
+      "status": "unresolved_empirical_result_preserved"
+    },
+    {
+      "area": "joint_evidence",
+      "disposition": "Controlled correlated-cue target priors improve actual delivered pair accuracy on plus1/plus3/plus7; uniform cue shows no meaningful gain. Priors fit only target/cue training counts; likelihoods fit waveform observations separately.",
+      "evidence": "evidence/RESULTS.json; evidence/METHOD.md",
+      "finding": "A target-prior dependence benefit is a separate claim from an observation-likelihood benefit.",
+      "id": "E02",
+      "remaining_limit": "The source-heldout speech observations are natural; target co-occurrence and alias-if-equal are declared controlled mechanisms, not universal natural-language dependence.",
+      "severity": "medium",
+      "status": "separately_verified_and_scoped"
+    },
+    {
+      "area": "natural",
+      "disposition": "All432 frozen PNGs, exact36frame x6arm x2rep grid, source isolation, actual pixel scores,3-source bootstrap comparisons and batch timing were checked. Allocation chose fraction1 before test and adds CPU/wall overhead relative to fixed learned flow. Learned mixer versus pure flow +.1476847763dB, CI[.0755427987,.2633914661]; learned versus initial mixer +.1043720371dB, CI[-.3436386969,.6161454720]. Allocation acceptance remains false and the training-attribution interval includes zero.",
+      "evidence": "PEER_NATURAL_VIDEO.json",
+      "finding": "Positive mixer-versus-pure-flow PSNR does not establish generator-training attribution or allocation efficiency.",
+      "id": "N11",
+      "remaining_limit": "Only3 fixed source clips and a4-parameter pixel mixer; no general video or multimodal-LLM result.",
+      "severity": "high",
+      "status": "resolved_by_preserving_negative_controls"
+    }
+  ],
+  "joint_report_text_review": {
+    "METHOD.md": "051ff21354110cc58302db415e63c587d9d7f81bdaf452f5e290428adb81517e",
+    "README.md": "dcee41bfacfe0c3c1068c73c59d5e4f891b7f8712863f795cebedc01d1e3fd63",
+    "development_training_and_selection_sources_equal_qualification_sources": true,
+    "numeric_and_scope_statements_match_qualification": true
+  },
+  "remaining_actions_for_root": [
+    "Keep overall joint acceptance false and report the risk-weighted versus uniform-update negative comparator.",
+    "Use run002 for complete kernel-cost/guard claims, preserve run001 original accounting and exact old source identity.",
+    "Preserve likelihood-coupling uncertainty and negative natural speech/document findings.",
+    "Retain scope: controlled finite mechanisms and small natural tasks, no full multimodal-LLM or production semantic qualification.",
+    "Include the final natural evidence index and preserve the video allocation failure and inconclusive initial-mixer attribution; the reviewer has now checked its frozen actual outputs/statistics."
+  ],
+  "reproducible_control_check": {
+    "command": "ndu-venv/bin/python hepta-private-ci/experiments/multimodal_output_portfolio/continuation_20261027/evidence/peer_control_verify.py --root /workspace/scratch/95988d8d3ab1 --output hepta-private-ci/experiments/multimodal_output_portfolio/continuation_20261027/evidence/PEER_CONTROL_RUN002.json",
+    "sha256": "ff64f147a254a43e100a6e15130b2736f781eae0673bf6f7bdf6afa67f46c63a",
+    "source": "peer_control_verify.py"
+  },
+  "review_artifacts": {
+    "PEER_CONTROL_RUN001.json": {
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/continuation_20261027/evidence/PEER_CONTROL_RUN001.json",
+      "sha256": "dd8957c127250748b3416a18c41149e6aff36dee5112625c24aeb37499204e45"
+    },
+    "PEER_CONTROL_RUN002.json": {
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/continuation_20261027/evidence/PEER_CONTROL_RUN002.json",
+      "sha256": "01cb09dcb8f2ab14fe5c5830e8966e34f4fdb53a56521e39400abb5d73386007"
+    },
+    "PEER_DOCUMENT_DIAGNOSTIC.json": {
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/continuation_20261027/evidence/PEER_DOCUMENT_DIAGNOSTIC.json",
+      "sha256": "7eb69c91adeac7783ab653a0bf69982a93b2735fe788abc25e5aa7383a7b8ec4"
+    },
+    "PEER_JOINT_QUALIFICATION.json": {
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/continuation_20261027/evidence/PEER_JOINT_QUALIFICATION.json",
+      "sha256": "97ac15004ccfbd9074ae5ea0583501d64bb8f82a401f6605fe7a756a73067cc8"
+    },
+    "PEER_NATURAL_SPEECH.json": {
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/continuation_20261027/evidence/PEER_NATURAL_SPEECH.json",
+      "sha256": "abba06e8a6bd29fba60c98b14b138cef9534cd47dd50f23ec9984780bf634063"
+    },
+    "PEER_NATURAL_VIDEO.json": {
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/continuation_20261027/evidence/PEER_NATURAL_VIDEO.json",
+      "sha256": "6657c2dfb1f6f41f1a18c7dbf2db7fced43da4a5ad64b2a85c91a46007a933a7"
+    }
+  },
+  "reviewed_source_identities": {
+    "control_run002": {
+      "PROTOCOL.json": "edd0712777007d9776a6800d5bedd4da00f47e1116f8015ce706c671ccd389e9",
+      "__init__.py": "6c20c9edc097f0cbc98c6d5680813b2cb780f3bb7038d461f0a0632a70d87b18",
+      "audit.py": "b14c500a12cdb5335f9f5a800014018c39a369a1cd945a06c94dc44514cee09b",
+      "build.py": "25239f6b918c1dda0bfbc71376a7ad78001efe481f5a86a0250c379c07435838",
+      "client.py": "cd0d693d53a0faf5cf5ad3bb428cac9d0d5b0072fb92f01a1d3863fd90fa133c",
+      "events.rs": "a5ecf786faa84b9782aa1b6a728b38fc13cf0934d73287c806e0a72a976e4b2f",
+      "forecast.py": "38a283148b2b315b11c3eafc80f102a9f6ce5d4b84edf2e6e1bab3926cc1dae2",
+      "guard.py": "4c95f13ed542f767b3db09fd38196d591e9ff3145df9d977946e346ee388abce",
+      "owner_host.rs": "e2ff5ea3a6ec21d7b6c17bb9b746b815c0dd537f743233e7c0eeed0f7617f112",
+      "port.rs": "31c36f9a410881dfba52b1db1a98562362e75e119349e128e134b2718b50d312",
+      "profile.rs": "da1557776a6d3302b80555a9e6c1bf5cfd5cd55b651a1deb7c74a2f268978b21",
+      "run.py": "575b62011aebe336ff13ec6818119509f68ffda7c9b6c2169fc23cdb69efb6e1",
+      "training.py": "b8bfbe37a5a01b936bc3d3fa37cf9af1144a119a035167e15430771d7e9473b3"
+    },
+    "joint_qualification001": {
+      "__init__.py": "b8ffcce1321fb505339985a35fa0ff97b6b1c31debfe0c1563632e179060d5cc",
+      "audit.py": "b04dff48e9774bc8e0ea5fdc049e3bc894757610ce595978daf6ccff49cb06d6",
+      "audit_statistics.py": "30b989714c225e97b0d9024151be894a19734fa0bc8764959dd53d575bebaf85",
+      "data.py": "733001f9410a940e05a0330b25cc6cd26c20844e16c709d39a26ea2e66571163",
+      "evaluation.py": "e1aec337f14561f12d0cc6806e3736b8878de8b80d49f140a38d1c331c284f9d",
+      "oracle.py": "fd9ca124c8dc5139aaf73b6690122dbab6323025ae9254e095bd278e746dfa68",
+      "protocol.py": "41a4767f75430e758703ad024bf2de6d65146810854a4a6206e8c89332c3d0ac",
+      "run.py": "fac3a8bf489d06b581ad5121f50d85ef0285cd787a7ed52778e1ab520f5c44b5",
+      "selection.py": "898bddbfe30412db26b067d7a43a8992c8ac2d47648cacade05df61440799d2b",
+      "test_objective.py": "5c585757ac159082d096b6e7430963edcc83a31e72098dffda7415a3ef5a4b4f",
+      "training.py": "fe3022648de682c8fce5985a8a82504d7417fa679894dd289dcf8d6f48de5f6f",
+      "verify_integration.py": "d9aba4406287c9cda24bc3ae885ddd2aa8ebb5211a2c667dfff965c4aa0c78a3"
+    },
+    "natural_current_review_snapshot": {
+      "CASCADE_PROTOCOL.json": "29a3b6403f2dfa8c72bebdcc704ba5602ab79f21ef2904e0d91b11aff46cdf5d",
+      "DOCUMENT_PRETEST_AMENDMENT.json": "b12c6822eb2a722fce5eea90d450d22221ffe745ef0b70eb38f244d7f3aad81f",
+      "DOCUMENT_PROTOCOL.json": "3963fb63efad9c740687b739bfc3e222666602c0fac63203a82178e3ec7cb235",
+      "SPEECH_PROTOCOL.json": "a908ad976f86ec67d9b66626c55278c84a2387ee781f7d3fb15960965ccecc41",
+      "VIDEO_FRAME_ISOLATION_AMENDMENT.json": "3e03f7ed320dd9612b983cb376c2657e5ebce40d557178034be090688e4f3b50",
+      "VIDEO_PROTOCOL.json": "94c4d1222462e9741bb266f42518c1725de9648cae0443e4ac6c2ab3db363db5",
+      "cache_mechanism.py": "39d68685a5a7e58c97730af4189e94bd30d1315a2dd9c8c08a5d1e8709575160",
+      "cascade_study.py": "0e6538c21443eea6965341b9886ab9b086dfe75ece9388e27cc31339dc6b3183",
+      "document_decoder.py": "6d2fc226e89a9c89c0317ad916f8c325cceb3c7dee9efe06cf5d21167f477b34",
+      "document_engine.py": "ae45597a0126da997ef76eed0d7df1fc84efeabb2a5e8a94e8c3f4fb6b7fb30a",
+      "document_study.py": "2b0aaa2f29fa0fb08c2ecb3c62ebe398475b27f3f5dae60a7f43f43d388c4517",
+      "fetch_video.py": "72f2dff95dccad8c8a415c8ae3f05f394dd52b28c562eeec9c9a61ce8cfa0de7",
+      "speech_engine.py": "4b806fdc7e0bab3b6faf5e87f5c0e5133a62159da6a617981d1b7a85e7a0be36",
+      "speech_study.py": "77d2567b6300b8a1f8c72a7417c8b81f7b77299bb523a11593e777b393eb586e",
+      "video_generator.py": "156a4ec9fc82dbd2f22d549a1346ba98080f83dba2e082d2c568611702c78814",
+      "video_study.py": "db017ee27764516e6f43c8fcfabcaccf376abb3a8262339dc8710ea4ec1f146d"
+    }
+  },
+  "reviewed_utc": "2026-10-27T07:48:40.391682+00:00",
+  "reviewer": "/root/evidence_generalization",
+  "schema": "hepta.ndu.crossworkstream-peer-review.v1",
+  "scope": "Read-only cross-review of owner/host execution, joint training qualification and natural-task protocols/outputs. Writes are restricted to continuation_20261027/evidence. No root/native/natural source or frozen scientific result was edited.",
+  "status_legend": {
+    "fixed_and_execution_verified": "Corrected source was present in the frozen run and corresponding receipts were checked.",
+    "unresolved_empirical_result_preserved": "Scientific acceptance failed or uncertainty remains; no post-test tuning.",
+    "verified_with_scope_limit": "Mechanism supported within stated experimental contract; stronger interpretation remains unsupported."
+  },
+  "video_frame_isolation": {
+    "manifest_path": "/workspace/scratch/95988d8d3ab1/natural-continuation-assets/video/MANIFEST.json",
+    "manifest_sha256": "a3ba37e14ee6beb969d219df45c33bcea3d9e081c7784a92319e74a5d784d389",
+    "protocol_sha256": "94c4d1222462e9741bb266f42518c1725de9648cae0443e4ac6c2ab3db363db5",
+    "source_checks": {
+      "cockatoo": {
+        "samples": 12,
+        "target_endpoint_overlap": 0
+      },
+      "david": {
+        "samples": 18,
+        "target_endpoint_overlap": 0
+      },
+      "dudek": {
+        "samples": 18,
+        "target_endpoint_overlap": 0
+      },
+      "faceocc2": {
+        "samples": 18,
+        "target_endpoint_overlap": 0
+      },
+      "realshort": {
+        "samples": 12,
+        "target_endpoint_overlap": 0
+      },
+      "vtest": {
+        "samples": 12,
+        "target_endpoint_overlap": 0
+      }
+    }
+  }
+}

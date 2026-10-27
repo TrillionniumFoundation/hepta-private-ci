@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.ndu.natural.runtime.v1",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "packages": {
+    "numpy": "2.3.5",
+    "Pillow": "13.0.0",
+    "faster-whisper": "1.2.1",
+    "ctranslate2": "4.8.4",
+    "av": "16.1.0",
+    "opencv-python-headless": "5.0.0.93",
+    "tokenizers": "0.23.3",
+    "huggingface-hub": "2.3.0",
+    "onnxruntime": "1.31.1"
+  },
+  "source_baseline": "63f198ad85cfa2aa579032256355f446cfe793a0",
+  "thread_policy": "Speech qualification CTranslate2 CPU threads2; forced cache mechanism threads1; video OpenCV threads1; Tesseract OMP_THREAD_LIMIT1. Actual full costs retained by arm.",
+  "system_versions": {
+    "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+    "tesseract": "tesseract 5.3.4"
+  },
+  "external_python_source_dependencies": {
+    "experiments/multimodal_output_portfolio/repair_20261026/natural/speech.py": "5aa266842e24fbb6657a7e0bba997dba0e5c86b25b5584218580cae8dc1b54a7",
+    "experiments/multimodal_output_portfolio/repair_20261026/natural/document/run.py": "eb7fd0fd43e9f34f4acbf9c2c27856fd20dfdc6eb539528d0225e12e168f7b65",
+    "experiments/multimodal_output_portfolio/repair_20261026/natural/document/ocr.py": "97ba269033611ff171703692ba4cbebf906ecebf107c4f212daf61ed49d6f27f"
+  },
+  "ocr_language_sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2"
+}

@@ -1,0 +1,11 @@
+{
+  "attempts": [
+    {
+      "status": "auditor_implementation_error",
+      "error": "KeyError: frozen_ns",
+      "reason": "First same-model speech gate uses fitting_complete_ns; auditor initially assumed the later cascade field name.",
+      "experiment_outputs_or_selection_modified": false,
+      "correction": "Use the study-specific pretest freeze timestamp field."
+    }
+  ]
+}

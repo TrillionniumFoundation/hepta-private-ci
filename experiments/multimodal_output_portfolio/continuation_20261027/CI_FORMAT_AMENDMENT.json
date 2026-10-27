@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.ndu.baseline-script-format-amendment.v1",
+  "reason": "Full repository CI identified two baseline scripts requiring the already pinned formatter; their Git blobs were unchanged from the experiment baseline before this amendment.",
+  "failed_head": "648c69935d8cd5f45465b33eb1a95321802c476d",
+  "failed_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40471734103/job/122080812831",
+  "formatter": "ruff 0.15.13",
+  "files": [
+    {
+      "path": "scripts/format.py",
+      "before_sha256": "afbc8f1f16cd807e822ab0dff2df71b4648cecbc0197a0d2be21f6f4cb7dea7c",
+      "before_ast_sha256": "0f6c0f2e6268842a83c33a9694aa511d5e4726045926d3dcd5dd2994d995fd1a",
+      "baseline_blob": "c7aa797c1cbeb8dcba0af3815c583dc33f984703",
+      "pre_amendment_blob": "c7aa797c1cbeb8dcba0af3815c583dc33f984703",
+      "after_sha256": "69cc5ebb60f88a704c98e3a5dfcffccee02bd98b3b3d306acc6e87cdc696a4a6",
+      "after_ast_sha256": "0f6c0f2e6268842a83c33a9694aa511d5e4726045926d3dcd5dd2994d995fd1a"
+    },
+    {
+      "path": "scripts/test_hepta_format_scope.py",
+      "before_sha256": "43585dbbaad6c8a37f1611b8a0633e2955d8aee411f2763e21891f8d053a9d4e",
+      "before_ast_sha256": "dadf7a020270005d6e4922eb79f9e7727e7cceaa2352d18089586143ec69c880",
+      "baseline_blob": "c24a8e2148711e4e3d93e44be28b5c9ebc97e3cd",
+      "pre_amendment_blob": "c24a8e2148711e4e3d93e44be28b5c9ebc97e3cd",
+      "after_sha256": "baf4d97594278e906ff69cd34bcd35f888780f44dd4207143f0fa9f4e660ee11",
+      "after_ast_sha256": "dadf7a020270005d6e4922eb79f9e7727e7cceaa2352d18089586143ec69c880"
+    }
+  ],
+  "all_ASTs_unchanged": true,
+  "experiment_code_or_evidence_changed": false,
+  "behavioral_tests_rerun": false,
+  "final_fmt": {
+    "command": "just fmt",
+    "cwd": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/codex-rs",
+    "started_ns": 1793089023101672994,
+    "completed_ns": 1793089023246253853,
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+}

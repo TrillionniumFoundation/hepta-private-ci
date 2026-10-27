@@ -1,0 +1,105 @@
+{
+  "schema": "hepta.ndu.codespell-verbatim-evidence-amendment.v1",
+  "reason": "CI applies prose spelling rules to verbatim upstream labels, proper names, a Latin quotation, and an immutable earlier receipt. Correcting those bytes would change recorded evidence and label identities.",
+  "failed_head": "bb63c6d7a85909ea53b6f54d36dc075cb33af3a6",
+  "failed_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40471126677/job/122078225737",
+  "codespell_version": "2.4.3",
+  "mechanism": "official exclude-file option with exact full-line matches",
+  "scope": "13 exact lines; all other lines remain checked; no global word allowance or file/directory skip added",
+  "path_scoped": false,
+  "matching_limitation": "An identical full line elsewhere is also exempt; individual words and nonidentical surrounding text are not exempt.",
+  "source_files_sha256": {
+    "experiments/multimodal_output_portfolio/next_20261025/media/evidence/public-source-retention-after-cache-eviction.json": "bd418ba0799681a577fe73b67722a6c5c9264f71bf3d0c51d694934e923f9f66",
+    "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json": "948b5f8915ebb3b961992eb49c4e089980166d7cd2138b024a7e2714f30a0966",
+    "experiments/multimodal_output_portfolio/continuation_20261027/natural/evidence/source-manifests/cascade.json": "2c8be8501f34412bb1acb7e09fa01b5f4ef142052e2225183e0decfb91b0eab0",
+    "experiments/multimodal_output_portfolio/continuation_20261027/natural/evidence/source-manifests/document.json": "d9d23a26b40780946d001020c59289917b055513fd7d05c68f06e6aecad4e44a"
+  },
+  "excluded_lines": [
+    {
+      "path": "experiments/multimodal_output_portfolio/next_20261025/media/evidence/public-source-retention-after-cache-eviction.json",
+      "line": 22,
+      "exact_line_sha256": "d054f9fc9d45f65a02700b4576502644b55d8b2cbee594b3ce347dc7781b25cf"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json",
+      "line": 3903,
+      "exact_line_sha256": "f7a56a725075c9ee01e92014a6f4a97a2823762518a3e3203b84ff4515cedbeb"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json",
+      "line": 4279,
+      "exact_line_sha256": "9af28f5bd8551bb8aac36463d4281b8ce3bf50ea4ef91cb05410dbb800338fd5"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json",
+      "line": 4900,
+      "exact_line_sha256": "0eb3800dcc56e33185303849e5e58afa3e7810d7791e7f19c258d3817a39be24"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json",
+      "line": 6515,
+      "exact_line_sha256": "c84eb2eaee2f5966780cb3aae2c11008760c98b9ea2daa412e5b2abb97f2c7b7"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/continuation_20261027/natural/evidence/source-manifests/cascade.json",
+      "line": 1606,
+      "exact_line_sha256": "d1af6ec07e529886388659b0b1003f3922e57cc3a194851ad28aa76523911c39"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/continuation_20261027/natural/evidence/source-manifests/document.json",
+      "line": 445,
+      "exact_line_sha256": "02e2e3a4b3167076379229f2696262599a9ee19583ae87f7f6b7cdba25c169ba"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/continuation_20261027/natural/evidence/source-manifests/document.json",
+      "line": 716,
+      "exact_line_sha256": "7a9d25a9b336906fbbc2c3876ff651151ce60c2658c70a8d29fce02b7f788124"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/continuation_20261027/natural/evidence/source-manifests/document.json",
+      "line": 2667,
+      "exact_line_sha256": "156e0873d16e01e8499ff2ba7408c50334786173fb298b2aeb7e938a1764ac20"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/continuation_20261027/natural/evidence/source-manifests/document.json",
+      "line": 2674,
+      "exact_line_sha256": "ce2fec94a8d4b4e7c7048c9fbb84df71a6b57b919dc7c21a900f0838e5dd7745"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/continuation_20261027/natural/evidence/source-manifests/document.json",
+      "line": 10572,
+      "exact_line_sha256": "728fc04b936cac89a82fa702df0fc39957a7b9e39fd19684ddc2927d763f4e1b"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/continuation_20261027/natural/evidence/source-manifests/document.json",
+      "line": 12138,
+      "exact_line_sha256": "ad906d50e196af7dd3e21debac5fd912e945a562bac6015c0a0167d88eeb4691"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/continuation_20261027/natural/evidence/source-manifests/document.json",
+      "line": 13280,
+      "exact_line_sha256": "4669878a9ea3e0a972ed9f38c287ba22f5bfd9a3351e09154c4c6829182fb0d1"
+    }
+  ],
+  "exception_file_sha256": "70ca923e6b20fe36b297dbc0452925c773d05118d5ea15fc3b069f4b15f90413",
+  "source_evidence_modified": false,
+  "experiments_or_behavioral_tests_rerun": false,
+  "local_lint": {
+    "command": "codespell --ignore-words .codespellignore --skip ./.git",
+    "version": "2.4.3",
+    "returncode": 0,
+    "stdout_stderr_bytes": 0,
+    "scope": "currently materialized sparse checkout, including every new file and all four previously flagged evidence files",
+    "isolated_tool_environment": true
+  },
+  "final_fmt": {
+    "command": "just fmt",
+    "cwd": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/codex-rs",
+    "started_ns": 1793088599754052605,
+    "completed_ns": 1793088599877124524,
+    "returncode": 0,
+    "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+    "stderr": "",
+    "behavioral_tests_rerun_after_format": false
+  }
+}

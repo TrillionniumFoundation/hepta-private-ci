@@ -1,0 +1,101 @@
+{
+  "schema": "hepta.ndu.continuation.natural.video.protocol.v1",
+  "task": "Reconstruct a missing natural RGB video frame from two surrounding public frames, then decide whether expensive motion reconstruction is worth its actual cost",
+  "sources": [
+    {
+      "name": "david",
+      "role": "development",
+      "url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/david/data/david.webm"
+    },
+    {
+      "name": "dudek",
+      "role": "development",
+      "url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/dudek/data/dudek.webm"
+    },
+    {
+      "name": "faceocc2",
+      "role": "development",
+      "url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/faceocc2/data/faceocc2.webm"
+    },
+    {
+      "name": "realshort",
+      "role": "test",
+      "url": "https://raw.githubusercontent.com/imageio/imageio-binaries/f8f64710ea88e7e4a352c0f7d8c0deac9f5fd685/images/realshort.mp4"
+    },
+    {
+      "name": "vtest",
+      "role": "test",
+      "url": "https://raw.githubusercontent.com/opencv/opencv/fa3037533ed05f5018cdd22a20f5b2ee7a38e8ed/samples/data/vtest.avi"
+    },
+    {
+      "name": "cockatoo",
+      "role": "test",
+      "url": "https://raw.githubusercontent.com/imageio/imageio-binaries/f8f64710ea88e7e4a352c0f7d8c0deac9f5fd685/images/cockatoo.mp4"
+    }
+  ],
+  "frame_selection": {
+    "resize_width": 256,
+    "maximum_decoded_frames": 360,
+    "endpoint_offset": 2,
+    "development": "12 evenly spaced eligible target indices in first60percent for pixel-mixer training;6 evenly spaced eligible target indices in last40percent for controller validation",
+    "test": "12 evenly spaced eligible indices across each new source, excluding first/last2frames; integer positions follow the frozen global-residue isolation rule",
+    "isolation": "All target indices satisfy i%4 in {2,3}; public endpoints at i-2 and i+2 satisfy residues {0,1}. This applies across every sample and role in each source clip."
+  },
+  "cheap_generator": "Float average of endpoint RGB frames, rounded and clipped to actual8-bit PNG",
+  "expensive_generator": "Two Farneback optical flows with fixed parameters, half-time endpoint warps, then sigmoid linear per-pixel mixer between motion reconstruction and cheap interpolation",
+  "trainable_mixer": {
+    "steps": 400,
+    "learning_rate": 0.05,
+    "sample_pixels_per_frame": 512,
+    "seed": 2716,
+    "features": [
+      "intercept",
+      "endpoint_RGB_difference",
+      "reconstruction_vs_blend_difference",
+      "mean_bidirectional_flow_magnitude"
+    ],
+    "loss": "Mean RGB squared reconstruction error on training-source target pixels; gradient through mixer only, optical flow fixed"
+  },
+  "controller": {
+    "features": [
+      "intercept",
+      "mean_endpoint_absolute_difference",
+      "std_endpoint_difference",
+      "phase_correlation_displacement",
+      "phase_correlation_response"
+    ],
+    "fit": "Ridge regression lambda0.1 from training-frame actual PSNR gain; standardize using training only",
+    "budgets": [
+      0,
+      0.25,
+      0.5,
+      0.75,
+      1
+    ],
+    "selection": "On validation execute each budget and choose largest meanPSNR minus10timesactualCPU seconds; lowerbudgetties",
+    "allocation": "For each source clip independently choose topK predicted gains, K=round(fraction*12) on test"
+  },
+  "test_arms": [
+    "fixed_blend",
+    "fixed_initial_mixer",
+    "fixed_pure_flow",
+    "fixed_learned_flow",
+    "learned_budget",
+    "matched_random_budget"
+  ],
+  "timing_repetitions": 2,
+  "random_order": "SHA256 of fixed literal natural-video-2717 and frame identity; same number of expensive calls as learned for every source",
+  "primary_metrics": [
+    "PSNR from actual reopened8bit output",
+    "pixelMSE",
+    "total process+childCPU",
+    "whole wall",
+    "actual expensivecalls"
+  ],
+  "acceptance": "Against fixed learnedflow, source-cluster95percentCI lowerPSNRdifference >=-0.25dB and CPU/wall upperdifferences <0; additionally compare cost-adjusted return with fixedblend and matchedrandom",
+  "CI": "Paired source-video cluster bootstrap,4000 resamples,seed2718; allframes/repetitions remain inside each of only3test source clusters. This is a small-source development qualification, not population proof.",
+  "scope": "Small trained pixel-mixing decoder for natural-video interpolation and allocation control; not semantic video generation, a multimodal LLM, or originalHepta neuron integration",
+  "stopping_rule": "Freeze allsource choices,indices,modelparameters andcontroller before newtest output; retain allfailures, noheldout retuning",
+  "resource_choice_before_source_fetch": "256-pixel canonical width and two timing repetitions to keep source+delivered evidence within the available disk budget; no video model outputs exist at this choice.",
+  "training_attribution_comparison": "Fixed learned mixer versus zero-initialized mixer using identical flow/inference compute, plus fixed pure-flow strong control; report source-paired actual-output PSNR and cost differences."
+}

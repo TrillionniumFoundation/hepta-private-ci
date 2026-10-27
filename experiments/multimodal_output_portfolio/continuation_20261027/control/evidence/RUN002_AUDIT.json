@@ -1,0 +1,26 @@
+{
+  "actual_episodes_rescored": 240,
+  "actual_evaluation_media_files_read": 1136,
+  "all_full_semantic_native_receipts_match": true,
+  "auditor_source_sha256": "b14c500a12cdb5335f9f5a800014018c39a369a1cd945a06c94dc44514cee09b",
+  "dispatch_receipt_mutations_rejected": [
+    "executed_repair",
+    "denied_attempt"
+  ],
+  "maximum_aggregate_metric_absolute_error": 5.820766091346741e-11,
+  "maximum_independent_state_head_logit_error": 0.0,
+  "maximum_terminal_utility_error": 0.0,
+  "native_measurements_not_assumed_repeatable": [
+    "execution_micros",
+    "model_latency_micros",
+    "model_resident_bytes",
+    "restore_micros",
+    "transient_allocation_bytes"
+  ],
+  "native_ticks_independently_replayed": 3840,
+  "passed": true,
+  "production_authority": false,
+  "result_sha256": "1297f6b9c1f82716c5e4c644db06c436afca7bb89394f41d572cfffccd05679c",
+  "schema": "hepta.continuation.owner-independent-audit.v1",
+  "semantic_success_qualification": false
+}

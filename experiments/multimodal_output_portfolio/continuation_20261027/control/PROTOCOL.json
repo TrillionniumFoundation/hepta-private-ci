@@ -1,0 +1,149 @@
+{
+  "schema": "hepta.continuation.actual-owner.protocol.v2",
+  "baseline_commit": "63f198ad85cfa2aa579032256355f446cfe793a0",
+  "study": "New finite executable owner/host composition, not a reconstruction or promotion of the failed advance_20261026 semantic qualification",
+  "owner_source_sha256": "4d56cc99d0edb1018734aebf70dc715de8df7846a2a9c4f2edb4230a0fc87faf",
+  "gamma": 1.5,
+  "target_law_by_cue": [
+    [
+      0.94,
+      0.05,
+      0.01
+    ],
+    [
+      0.05,
+      0.9,
+      0.05
+    ],
+    [
+      0.05,
+      0.15,
+      0.8
+    ],
+    [
+      0.5,
+      0.45,
+      0.05
+    ]
+  ],
+  "fault_law_by_action": [
+    [
+      0.7,
+      0.24,
+      0.06
+    ],
+    [
+      0.8,
+      0.16,
+      0.04
+    ],
+    [
+      0.8,
+      0.16,
+      0.04
+    ],
+    [
+      0.97,
+      0.025,
+      0.005
+    ]
+  ],
+  "semantic_utility_action_by_target": [
+    [
+      1,
+      -0.25,
+      -8
+    ],
+    [
+      -0.25,
+      1,
+      -4
+    ],
+    [
+      -0.5,
+      -0.5,
+      1
+    ],
+    [
+      0.35,
+      0.35,
+      0.35
+    ]
+  ],
+  "initial_action_cost": [
+    0.02,
+    0.02,
+    0.02,
+    0.06
+  ],
+  "channel_cost_by_fault": [
+    0,
+    0.03,
+    0.2
+  ],
+  "irreversible_first_delivery_damage": [
+    0,
+    0.05,
+    0.15
+  ],
+  "terminal_mismatch_penalty": [
+    0,
+    2,
+    5
+  ],
+  "repair_cost": 0.12,
+  "denied_repair_attempt_cost": 0.01,
+  "native_tick_charge": 0.0001,
+  "numeric_feedback_by_fault": [
+    1,
+    -0.5,
+    -1
+  ],
+  "expiry_contexts": [
+    6,
+    7
+  ],
+  "media_budget_contexts": [
+    1,
+    2
+  ],
+  "arms": [
+    "risk_numeric",
+    "mean_numeric",
+    "risk_zero",
+    "risk_history",
+    "mean_blind_future"
+  ],
+  "zero_intervention_root": "same risk_numeric root action; controlled post-delivery feedback intervention, not an independently optimized baseline",
+  "history_information": "same complete public media readback; direct registered repair decision; no claim of unique neuron advantage",
+  "blind_future_control": "same current information and shadow computation; deliberate old-bug ablation assumes future native non-abstention and sufficient media budget",
+  "prefix_native_ticks": 4,
+  "continuation_native_ticks": 3,
+  "forecast_branches": 3,
+  "forecast_native_ticks": 9,
+  "state_readout": "11-coefficient logistic model of intercept plus current original-owner eligibility; no scalar or target passed to phase3",
+  "training_cases": 96,
+  "training_updates": 600,
+  "learning_rate": 1.0,
+  "training_seed": 2026102701,
+  "evaluation": "Full finite census: 4 cues x 2 expiry contexts x 2 media budgets x 5 arms x 3 realized transport faults; 240 actual media episodes. Hidden-target utilities integrated only by the external scorer after delivery.",
+  "law_scope": "Declared mechanical finite environment; no estimated real-world speaker, writer or host-outage distribution and no independent-source population claim",
+  "primary_checks": [
+    "owner-aware complete-policy moments equal externally rescored weighted terminal census within 1e-10",
+    "forecast branches preserve actual original-owner eligibility and native abstention for the realized feedback",
+    "future-expiry/media-budget counterexample changes a selected root and an actual terminal outcome",
+    "numeric versus zero has changed later actions and positive weighted external-return gap under a common initial action"
+  ],
+  "host_permit": "User-authorized research media writes confined to this run directory; separate from native DENY_ALL signal; native non-abstention and remaining media budget additionally required",
+  "calibration_scope": "Exact finite public encoder-domain validity; this is not learned semantic-success qualification. Complete-policy terminal forecasts are separately audited.",
+  "authority": "All original owner signals retain DENY_ALL; no daemon startup activation, model promotion or production authorization",
+  "cost_scope": "Declared task charges include each actual owner.tick and every sparse replay during forecast restoration, failed repair attempts, realized transport and actual generation. CPU/wall/allocation/journal bytes measured separately; no wall-time price or energy inference.",
+  "media_scope": "Actual deterministic text, PNG, PCM-tone WAV and AVI readback; no learned natural-media generation",
+  "stopping_rule": "One frozen finite census; all failed episodes and mismatches retained; no heldout-target parameter search",
+  "amendment": "Durable host event identity added after immutable run001; new binary and source freeze before run002. Study laws and trained readout procedure unchanged.",
+  "event_retry_contract": "One registered event_id per processing phase; exact retries reuse the acknowledged receipt and execute zero native ticks; conflicting payloads reject before owner mutation. Event IDs and receipt digests are bound into original checkpoint history. Cold restore and forecast forks restore the fsynced event ledger with original journal/witness. A torn or inconsistent ledger fails closed; no automatic repair or replay of an unacknowledged event.",
+  "restore_cost_accounting": "Each branch restores four prefix records through the original journal and separately validates four event bindings with the original pure sparse kernel. Each episode therefore pays for 16 owner.tick calls plus 12 native journal replay steps plus 12 event-validation sparse steps, 40 original-kernel executions total. Replay and owner steps both cost 0.0001 task units. All RPC processing and restore elapsed times are also recorded separately; the task fee is not an empirical CPU/wall-time price.",
+  "guard_scope": "Single-writer experimental host; retry identity is supplied by the registered case/phase dispatcher. No cross-process concurrent writes, adversarial filesystem protection, production promotion or guaranteed power-loss recovery is claimed.",
+  "verification_replay_steps": 24,
+  "verification_replay_step_charge": 0.0001
+}

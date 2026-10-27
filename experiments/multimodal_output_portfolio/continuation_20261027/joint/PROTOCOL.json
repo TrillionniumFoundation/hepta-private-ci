@@ -1,0 +1,74 @@
+{
+  "arms": [
+    "frozen",
+    "joint_uniform",
+    "joint_risk"
+  ],
+  "audit_observer_loaded_only_after_selection_freeze": true,
+  "base_archive_sha256": "ddbdf10b4397c8538183df8fa7c16f08c5fba226a304ff7cb55574ddb97e951e",
+  "baseline_commit": "63f198ad85cfa2aa579032256355f446cfe793a0",
+  "batch_size": 32,
+  "bootstrap_replicates": 5000,
+  "bootstrap_seed": 62027,
+  "bootstrap_unit": "source image pair, shared across corruptions and fixed seeds; seeds are not a population sample",
+  "checkpoints": [
+    200,
+    400,
+    600
+  ],
+  "clean_replay_fraction": 0.5,
+  "conditions": [
+    "clean",
+    "occlusion",
+    "missing",
+    "heavy_noise"
+  ],
+  "deployed_selection": "deterministic argmax, same as candidate selection used in generator updates",
+  "evaluation_corruption_mixture": "each of four conditions 1/4; generator proxy is not an unbiased gradient of this qualification distribution",
+  "evaluation_seed": 20261027,
+  "exact_discrete_reward_gradient": false,
+  "fresh_source_seed": 271027,
+  "gamma": 2.0,
+  "gate_target": "actual PNG/UTF8 exp(-gamma * utility), squared moment prediction error; argmax raw score minimizes the predicted moment",
+  "generator_attribution_gate": "joint_risk exceeds an offline target-aware original-generator oracle over all 16 two-action sequences; paired test CE lower bound > 0 and each fixed seed positive",
+  "generator_objective": "supervised reconstruction/caption/semantic proxy on selected deployed plan, 0.1 all-plan anchor, 0.3 same-plan teacher distillation on clean replay",
+  "gradient_clip": 1.0,
+  "interval": 0.975,
+  "learning_rate_core": 0.00015,
+  "learning_rate_gate": 0.001,
+  "matched_training_gate": "joint_risk-joint_uniform test CE lower bound > 0, every fixed seed positive, retention lower bound >= -0.01",
+  "new_test_sources": "official MNIST test pixels outside every source hash in the restored full002 corpus and historical prior-heldout exclusion",
+  "oracle_scope": "offline privileged upper bound for the original generator at the same two-transition depth, same latent noise and final decoder; extra oracle search/target access is not an equal-budget deployed arm",
+  "parameter_interpolations": [
+    0.5,
+    1.0
+  ],
+  "primary_generator_gate": "joint_risk-frozen test CE lower bound > 0, every fixed seed positive, retention lower bound >= -0.01",
+  "retention_noninferiority_margin": 0.01,
+  "retention_pairs": 512,
+  "risk_weight": "exp(-gamma * actual selected-plan utility), normalized across the whole minibatch and detached",
+  "same_training_budget": "identical batches, latent noise, 4 plans, forced/free decoders, PNG roundtrips, fixed observer calls and optimizer updates",
+  "schema": "hepta.ndu.continuation-joint.v1",
+  "scope": "constructed MNIST pair generation; no writer metadata, natural AV synthesis, production owner or global unrestricted optimality claim",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "selection": "maximize actual reward-observer CE on all 4 conditions subject to clean validation CE >= original-0.005; original is eligible; tie favors smaller update then earlier checkpoint",
+  "steps": 600,
+  "stress_cycle": [
+    "occlusion",
+    "missing",
+    "heavy_noise"
+  ],
+  "study": "actual-moment-clean-replay-001",
+  "test_pairs": 512,
+  "threads": 1,
+  "training_corruption_mixture": "clean 1/2, each stress condition 1/6; extra clean replay is a capability-preservation regularizer",
+  "training_observer_parameters_frozen": true,
+  "validation_pairs": 64,
+  "validation_retention_offset": 64,
+  "validation_retention_pairs": 128,
+  "validation_retention_tolerance": 0.005
+}

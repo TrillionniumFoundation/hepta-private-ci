@@ -1,0 +1,242 @@
+{
+  "reviewed_utc": "2026-10-27T07:44:59.585040+00:00",
+  "runs": {
+    "cache-mechanism-001": {
+      "all_encoder_digests_and_transcripts_identical": true,
+      "complete_unique_grid": true,
+      "delivery_preceded_scoring": null,
+      "identities": {
+        "/workspace/scratch/95988d8d3ab1/natural-continuation-assets/speech/MANIFEST.json": "ebd9c53abea5364c8530411a864003ee53f736870ad0c5ab48fde66bc2755416",
+        "/workspace/scratch/95988d8d3ab1/natural-continuation-runs/cache-mechanism-001/RESULT.json": "812b783c009cf3dc28864ff61ce24ac8845c1db0710c92dd190c6e1aad448ac8",
+        "/workspace/scratch/95988d8d3ab1/natural-continuation-runs/cache-mechanism-001/ROWS.json": "e2d23815fa6a6bb8998e8e84cab5a30fb6c1ccea2708a31805699f51f1f70186"
+      },
+      "independent_speakers": 8,
+      "maximum_recomputed_statistic_error": 0,
+      "qualification_scope": "Forced continuation on eight fitting speakers only.",
+      "reopened_actual_text_files": 144,
+      "result": {
+        "CPU_difference_CI95": [
+          -0.49924834441666693,
+          -0.4144715748447915
+        ],
+        "CPU_difference_mean": -0.455895900375,
+        "actual_continue_every_episode": true,
+        "all_transcripts_identical": true,
+        "episodes": 48,
+        "mechanism_acceptance_passed": true,
+        "new_source_qualification": false,
+        "schema": "hepta.ndu.cache.mechanism.result.v1",
+        "sources": 8,
+        "status": "completed",
+        "wall_difference_CI95": [
+          -0.5009395889208333,
+          -0.415907917665625
+        ],
+        "wall_difference_mean": -0.4575140631666667
+      },
+      "rows": 48,
+      "scoring_chronology_scope": "Not applicable: forced-cache mechanism compares transcripts, digests and timing; no private-reference quality score.",
+      "source_freeze_hashes_valid": true,
+      "unique_utterances": 8
+    },
+    "cascade-001": {
+      "comparisons": {
+        "fixed_base": {
+          "CE": {
+            "CI95": [
+              -0.0335605974143893,
+              0.007504494081077312
+            ],
+            "difference": -0.01275513556468022
+          },
+          "CPU": {
+            "CI95": [
+              -1.0735379112699661,
+              -0.9496422895534847
+            ],
+            "difference": -1.0085692249097236
+          },
+          "WER": {
+            "CI95": [
+              0.005539910897787763,
+              0.045261227753058964
+            ],
+            "difference": 0.02427637721755369
+          },
+          "return": {
+            "CI95": [
+              -0.027812008481343495,
+              0.006125600210806592
+            ],
+            "difference": -0.010805584357999122
+          },
+          "strong_fixed_acceptance_passed": false,
+          "wall": {
+            "CI95": [
+              -0.5405710774945596,
+              -0.47611771527578084
+            ],
+            "difference": -0.5065569252429769
+          }
+        },
+        "fixed_tiny": {
+          "CE": {
+            "CI95": [
+              -0.0011077227409296482,
+              -0.0003792064581540077
+            ],
+            "difference": -0.0007358034958491189
+          },
+          "CPU": {
+            "CI95": [
+              0.04422426871111232,
+              0.11243042182517203
+            ],
+            "difference": 0.07967410121527588
+          },
+          "WER": {
+            "CI95": [
+              0.0,
+              0.0
+            ],
+            "difference": 0.0
+          },
+          "return": {
+            "CI95": [
+              -0.001124304218251728,
+              -0.00044224268711113906
+            ],
+            "difference": -0.0007967410121527616
+          },
+          "strong_fixed_acceptance_passed": false,
+          "wall": {
+            "CI95": [
+              0.02427462896372763,
+              0.06171607394278449
+            ],
+            "difference": 0.04395578032654152
+          }
+        },
+        "matched_random_budget": {
+          "CE": {
+            "CI95": [
+              -0.0009362626673253992,
+              -0.00033320631459849705
+            ],
+            "difference": -0.00060792285844391
+          },
+          "CPU": {
+            "CI95": [
+              0.03689592893107726,
+              0.09549070968696573
+            ],
+            "difference": 0.06479077463888709
+          },
+          "WER": {
+            "CI95": [
+              0.0,
+              0.0
+            ],
+            "difference": 0.0
+          },
+          "return": {
+            "CI95": [
+              -0.0009549070968696491,
+              -0.0003689592893107697
+            ],
+            "difference": -0.0006479077463888659
+          },
+          "strong_fixed_acceptance_passed": false,
+          "wall": {
+            "CI95": [
+              0.017397710822357706,
+              0.052039329270711365
+            ],
+            "difference": 0.0343129804793231
+          }
+        }
+      },
+      "complete_unique_grid": true,
+      "delivery_preceded_scoring": true,
+      "identities": {
+        "/workspace/scratch/95988d8d3ab1/natural-continuation-assets/cascade/MANIFEST.json": "2c8be8501f34412bb1acb7e09fa01b5f4ef142052e2225183e0decfb91b0eab0",
+        "/workspace/scratch/95988d8d3ab1/natural-continuation-runs/cascade-001/RESULT.json": "1ff7471312e831282f57f06e087d5be4714912902df219c288197cf03fc68b1a",
+        "/workspace/scratch/95988d8d3ab1/natural-continuation-runs/cascade-001/ROWS.json": "c0f0fb2b3df2e81c95c4709239b3cab6701d25af87dd84852abd82ca0a01c6f5"
+      },
+      "independent_speakers": 16,
+      "independently_rescored_WER": {
+        "fixed_base": {
+          "micro_WER": 0.08309990662931839,
+          "reference_words": 1071,
+          "word_errors": 89
+        },
+        "fixed_tiny": {
+          "micro_WER": 0.10737628384687208,
+          "reference_words": 1071,
+          "word_errors": 115
+        },
+        "learned_budget": {
+          "micro_WER": 0.10737628384687208,
+          "reference_words": 1071,
+          "word_errors": 115
+        },
+        "matched_random_budget": {
+          "micro_WER": 0.10737628384687208,
+          "reference_words": 1071,
+          "word_errors": 115
+        }
+      },
+      "interpretation": "Zero acquisition selected before test: all adaptive transcripts equal fixed tiny; controller adds realized overhead. Lower cost than fixed base fails the registered WER noninferiority requirement.",
+      "learned_and_random_base_calls_per_repetition": 0,
+      "maximum_batch_timer_reconciliation_error": 0,
+      "maximum_direct_CE_error": 1.1102230246251565e-16,
+      "reopened_actual_text_files": 1152,
+      "rows": 576,
+      "source_freeze_hashes_valid": true,
+      "strong_fixed_acceptance_passed": false,
+      "unique_utterances": 48,
+      "validation_selected_fraction": 0
+    },
+    "speech-001": {
+      "actual_adaptive_continuations": 0,
+      "complete_unique_grid": true,
+      "delivery_preceded_scoring": true,
+      "identities": {
+        "/workspace/scratch/95988d8d3ab1/natural-continuation-assets/speech/MANIFEST.json": "ebd9c53abea5364c8530411a864003ee53f736870ad0c5ab48fde66bc2755416",
+        "/workspace/scratch/95988d8d3ab1/natural-continuation-runs/speech-001/RESULT.json": "973cbdcf48c52be0e3ac7d385836bcbf2533f45279cdcd564cd3a6f2a34d2b27",
+        "/workspace/scratch/95988d8d3ab1/natural-continuation-runs/speech-001/ROWS.json": "e745b6a7ace031318bc8807e4f556c54a254af6f30909835af0438cab18b9d27"
+      },
+      "independent_speakers": 12,
+      "independently_rescored_WER": {
+        "cached_continuation": {
+          "micro_WER": 0.05922551252847381,
+          "reference_words": 878,
+          "word_errors": 52
+        },
+        "fixed_beam5": {
+          "micro_WER": 0.05808656036446469,
+          "reference_words": 878,
+          "word_errors": 51
+        },
+        "fixed_greedy": {
+          "micro_WER": 0.05922551252847381,
+          "reference_words": 878,
+          "word_errors": 52
+        },
+        "reencoded_continuation": {
+          "micro_WER": 0.05922551252847381,
+          "reference_words": 878,
+          "word_errors": 52
+        }
+      },
+      "no_cache_mechanism_exercised_on_heldout": true,
+      "qualification_against_strong_fixed_passed": false,
+      "reopened_actual_text_files": 864,
+      "rows": 432,
+      "source_freeze_hashes_valid": true,
+      "unique_utterances": 36
+    }
+  },
+  "schema": "hepta.ndu.peer-natural-speech-review.v1",
+  "scope": "Reopened existing outputs and independently recomputed word edit distances, cache statistics and cascade accounting. No model inference, new source scoring, or threshold change. Full speech/cascade bootstrap intervals remain those of the separate frozen study audit."
+}

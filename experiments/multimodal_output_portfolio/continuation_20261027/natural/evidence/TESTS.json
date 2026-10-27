@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/workspace/scratch/95988d8d3ab1/ndu-venv/bin/python",
+    "-m",
+    "unittest",
+    "experiments.multimodal_output_portfolio.continuation_20261027.natural.test_natural_boundaries",
+    "experiments.multimodal_output_portfolio.continuation_20261027.natural.test_evidence_archive",
+    "-v"
+  ],
+  "started_ns": 1793087364464597997,
+  "completed_ns": 1793087364816284461,
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "test_actual_video_cache_and_budget_preserve_output_and_charge_work (experiments.multimodal_output_portfolio.continuation_20261027.natural.test_natural_boundaries.NaturalBoundaryTests.test_actual_video_cache_and_budget_preserve_output_and_charge_work) ... ok\ntest_missing_document_labels_are_masked_without_inventing_success (experiments.multimodal_output_portfolio.continuation_20261027.natural.test_natural_boundaries.NaturalBoundaryTests.test_missing_document_labels_are_masked_without_inventing_success) ... ok\ntest_private_records_are_rejected_before_inference_or_delivery (experiments.multimodal_output_portfolio.continuation_20261027.natural.test_natural_boundaries.NaturalBoundaryTests.test_private_records_are_rejected_before_inference_or_delivery) ... ok\ntest_video_private_frames_never_appear_in_any_public_endpoint (experiments.multimodal_output_portfolio.continuation_20261027.natural.test_natural_boundaries.NaturalBoundaryTests.test_video_private_frames_never_appear_in_any_public_endpoint) ... ok\ntest_every_duplicate_logical_path_reopens_with_original_bytes (experiments.multimodal_output_portfolio.continuation_20261027.natural.test_evidence_archive.EvidenceArchiveTests.test_every_duplicate_logical_path_reopens_with_original_bytes) ... ok\ntest_existing_model_mismatch_is_preserved_and_never_overwritten (experiments.multimodal_output_portfolio.continuation_20261027.natural.test_evidence_archive.EvidenceArchiveTests.test_existing_model_mismatch_is_preserved_and_never_overwritten) ... ok\ntest_traversal_and_corrupt_blobs_do_not_write_logical_files (experiments.multimodal_output_portfolio.continuation_20261027.natural.test_evidence_archive.EvidenceArchiveTests.test_traversal_and_corrupt_blobs_do_not_write_logical_files) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 0.048s\n\nOK\n",
+  "test_source_sha256": {
+    "test_evidence_archive.py": "ba7fa9ae6463f1002a34f972f15adc8016c47ef930d154504489747302e9b1eb",
+    "test_natural_boundaries.py": "23708e9e2798ada03fb400756659dc22532fcee10aa088a1d9785a1eb14b386a"
+  },
+  "before_repository_final_fmt": true
+}

@@ -1,0 +1,435 @@
+{
+  "completion": {
+    "audit_observer_loaded": false,
+    "protocol_sha256": "2970e7053a00a0930e4dd6ad9aa257922bd3b719c35e7554b523a18620454a83",
+    "qualification_sources_scored": false,
+    "reward_observer_sha256": "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0",
+    "seeds": [
+      17,
+      29,
+      43
+    ],
+    "selection_sha256": "f449a0b783f378780f2c73d9f3357bb9edbfa1776cd46841739220da96dc6e7d",
+    "steps": 600
+  },
+  "full_candidate_validation_and_training_records": "preserved verbatim in raw archive",
+  "full_selections_sha256": "f449a0b783f378780f2c73d9f3357bb9edbfa1776cd46841739220da96dc6e7d",
+  "runtime": {
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "protocol_sha256": "2970e7053a00a0930e4dd6ad9aa257922bd3b719c35e7554b523a18620454a83",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "qualification_sources_scored": false,
+    "seeds": [
+      17,
+      29,
+      43
+    ],
+    "source_sha256": {
+      "__init__.py": "b8ffcce1321fb505339985a35fa0ff97b6b1c31debfe0c1563632e179060d5cc",
+      "data.py": "733001f9410a940e05a0330b25cc6cd26c20844e16c709d39a26ea2e66571163",
+      "evaluation.py": "f94dbab77f705544ec09604e05d0c1e02f4d6998d886328328ef2a59310a5779",
+      "protocol.py": "41a4767f75430e758703ad024bf2de6d65146810854a4a6206e8c89332c3d0ac",
+      "run.py": "fac3a8bf489d06b581ad5121f50d85ef0285cd787a7ed52778e1ab520f5c44b5",
+      "selection.py": "898bddbfe30412db26b067d7a43a8992c8ac2d47648cacade05df61440799d2b",
+      "training.py": "fe3022648de682c8fce5985a8a82504d7417fa679894dd289dcf8d6f48de5f6f"
+    },
+    "steps": 600,
+    "torch": "2.14.1+cpu"
+  },
+  "schema": "hepta.ndu.joint-development-summary.v1",
+  "selections": [
+    {
+      "arm": "joint_uniform",
+      "audit_observer_used": false,
+      "frozen_validation_ce": {
+        "quality": 0.5713355505093587,
+        "retention": 0.7472485003486067
+      },
+      "new_test_or_retention_sources_used": false,
+      "seed": 17,
+      "selected": {
+        "alpha": 1.0,
+        "checkpoint": "seed-17-joint_uniform-step-400.pt",
+        "eligible": true,
+        "step": 400
+      },
+      "selected_checkpoint_sha256": "508931a0cb780d413bc39de83b8de91aeab68b33cfe1b384f176cb8e8f004ee6",
+      "selected_path": "seed-17-joint_uniform-selected.pt",
+      "selected_snapshot_sha256": "0ab51f2c3b960f1a18ca0925e526fe88fa40f7d9fac0c97891e01f1d36b395cd",
+      "selected_validation_ce": {
+        "quality": 0.6945555547417417,
+        "retention": 0.7867809076526942
+      }
+    },
+    {
+      "arm": "joint_risk",
+      "audit_observer_used": false,
+      "frozen_validation_ce": {
+        "quality": 0.5713355505093587,
+        "retention": 0.7472485003486067
+      },
+      "new_test_or_retention_sources_used": false,
+      "seed": 17,
+      "selected": {
+        "alpha": 0.5,
+        "checkpoint": "seed-17-joint_risk-step-600.pt",
+        "eligible": true,
+        "step": 600
+      },
+      "selected_checkpoint_sha256": "854909b90ba312c6f1561d29303776cd3e17f05e1e67e266bb488b64a2bd4d8b",
+      "selected_path": "seed-17-joint_risk-selected.pt",
+      "selected_snapshot_sha256": "320578a6ea01bef578ca372d11ca0757898adba2db8b49a79602a3c413eba429",
+      "selected_validation_ce": {
+        "quality": 0.696373557814896,
+        "retention": 0.7966797373932952
+      }
+    },
+    {
+      "arm": "joint_uniform",
+      "audit_observer_used": false,
+      "frozen_validation_ce": {
+        "quality": 0.6123952049995243,
+        "retention": 0.8107660655739106
+      },
+      "new_test_or_retention_sources_used": false,
+      "seed": 29,
+      "selected": {
+        "alpha": 1.0,
+        "checkpoint": "seed-29-joint_uniform-step-600.pt",
+        "eligible": true,
+        "step": 600
+      },
+      "selected_checkpoint_sha256": "be81eaeb7d3159b35a01471d32792da8cb8fcbc5def9ddebd2677785e1be1367",
+      "selected_path": "seed-29-joint_uniform-selected.pt",
+      "selected_snapshot_sha256": "590b796e584f286da6abecc3b87ad58f3b7c17ae1a44c565e9e279d714c9e5a2",
+      "selected_validation_ce": {
+        "quality": 0.7103249202956117,
+        "retention": 0.8233553076026796
+      }
+    },
+    {
+      "arm": "joint_risk",
+      "audit_observer_used": false,
+      "frozen_validation_ce": {
+        "quality": 0.6123952049995243,
+        "retention": 0.8107660655739106
+      },
+      "new_test_or_retention_sources_used": false,
+      "seed": 29,
+      "selected": {
+        "alpha": 1.0,
+        "checkpoint": "seed-29-joint_risk-step-600.pt",
+        "eligible": true,
+        "step": 600
+      },
+      "selected_checkpoint_sha256": "1792ed0d23603dedd44951aa664a179cb03f0acf80f77c18b99a51e2aa0b1d9a",
+      "selected_path": "seed-29-joint_risk-selected.pt",
+      "selected_snapshot_sha256": "104c39eb5ee070e45c397a00e699d5d74970d8d8e9775184152e9e46c584efba",
+      "selected_validation_ce": {
+        "quality": 0.6955467296279454,
+        "retention": 0.8217132703160059
+      }
+    },
+    {
+      "arm": "joint_uniform",
+      "audit_observer_used": false,
+      "frozen_validation_ce": {
+        "quality": 0.5848944913709007,
+        "retention": 0.8301586448902318
+      },
+      "new_test_or_retention_sources_used": false,
+      "seed": 43,
+      "selected": {
+        "alpha": 1.0,
+        "checkpoint": "seed-43-joint_uniform-step-400.pt",
+        "eligible": true,
+        "step": 400
+      },
+      "selected_checkpoint_sha256": "7723fce3951dbe2445347c01357ba3a2bb6a9b77d245ab3a72730c3655c6f9c7",
+      "selected_path": "seed-43-joint_uniform-selected.pt",
+      "selected_snapshot_sha256": "cd3321ace7e5c0b3923177ca898ccc8a67c78e17c202ec3c5610c767d4965a81",
+      "selected_validation_ce": {
+        "quality": 0.6368872516973951,
+        "retention": 0.8373009717513172
+      }
+    },
+    {
+      "arm": "joint_risk",
+      "audit_observer_used": false,
+      "frozen_validation_ce": {
+        "quality": 0.5848944913709007,
+        "retention": 0.8301586448902318
+      },
+      "new_test_or_retention_sources_used": false,
+      "seed": 43,
+      "selected": {
+        "alpha": 1.0,
+        "checkpoint": "seed-43-joint_risk-step-400.pt",
+        "eligible": true,
+        "step": 400
+      },
+      "selected_checkpoint_sha256": "1d941db69ac87f06ea297ecde0469dbffad7ceacfa1e37ace6470cc694bbf75e",
+      "selected_path": "seed-43-joint_risk-selected.pt",
+      "selected_snapshot_sha256": "89e78affbc38a5fc72eb09d2997152b287a1f1d06c1b044dc71b19b3a21cfd68",
+      "selected_validation_ce": {
+        "quality": 0.6500880447583706,
+        "retention": 0.826175779543224
+      }
+    }
+  ],
+  "timing_scope": "per training arm excludes validation selection; operation counts and candidate grid matched; wall/CPU not asserted identical",
+  "training": [
+    {
+      "actual_training_output_sha256": "185de7df2e9201b955324ea0fabd85dafeeee48d76e69ba323ec98b20af64c4b",
+      "arm": "joint_risk",
+      "changed": {
+        "command_embedding": true,
+        "command_film": true,
+        "coupling_cell": true,
+        "digit_head": true,
+        "fuse": true,
+        "image_cell": true,
+        "initial_image": true,
+        "initial_text": true,
+        "pixel_decoder": true,
+        "pixel_encoder": true,
+        "semantic_cell": true,
+        "text_cell": true,
+        "text_decoder": true,
+        "text_encoder": true,
+        "text_initial": true,
+        "text_projection": true,
+        "token_embedding": true
+      },
+      "cpu_ns": 77434729470,
+      "gate_changed": true,
+      "observer_sha256": "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0",
+      "schedule_sha256": "d420b6feb3a65798b171c6983c655cc43d47d0c628dfdfbdcab00a5f45ee4f80",
+      "seed": 17,
+      "steps": 600,
+      "teacher_sha256": "3bdb3955667243563b8d3ffeb767b58c6d74b858933a349fa1befe18db7cfaff",
+      "training_counts": {
+        "actual_png_roundtrips": 76800,
+        "examples": 19200,
+        "model_decodes": 153600,
+        "model_encodes": 19200,
+        "model_transitions": 153600,
+        "observer_digit_examples": 153600,
+        "teacher_decodes": 76800,
+        "teacher_encodes": 19200,
+        "teacher_transitions": 153600
+      },
+      "wall_ns": 77473470588
+    },
+    {
+      "actual_training_output_sha256": "d1275d2bf6d868271de104fffc32c010e5bf88eb78e1ce86606839c3ad94b672",
+      "arm": "joint_uniform",
+      "changed": {
+        "command_embedding": true,
+        "command_film": true,
+        "coupling_cell": true,
+        "digit_head": true,
+        "fuse": true,
+        "image_cell": true,
+        "initial_image": true,
+        "initial_text": true,
+        "pixel_decoder": true,
+        "pixel_encoder": true,
+        "semantic_cell": true,
+        "text_cell": true,
+        "text_decoder": true,
+        "text_encoder": true,
+        "text_initial": true,
+        "text_projection": true,
+        "token_embedding": true
+      },
+      "cpu_ns": 75167827878,
+      "gate_changed": true,
+      "observer_sha256": "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0",
+      "schedule_sha256": "d420b6feb3a65798b171c6983c655cc43d47d0c628dfdfbdcab00a5f45ee4f80",
+      "seed": 17,
+      "steps": 600,
+      "teacher_sha256": "3bdb3955667243563b8d3ffeb767b58c6d74b858933a349fa1befe18db7cfaff",
+      "training_counts": {
+        "actual_png_roundtrips": 76800,
+        "examples": 19200,
+        "model_decodes": 153600,
+        "model_encodes": 19200,
+        "model_transitions": 153600,
+        "observer_digit_examples": 153600,
+        "teacher_decodes": 76800,
+        "teacher_encodes": 19200,
+        "teacher_transitions": 153600
+      },
+      "wall_ns": 75183769078
+    },
+    {
+      "actual_training_output_sha256": "8d5bd23e79aba8279440059456bbe06570b61a077a602cf7621c09ef265e60bc",
+      "arm": "joint_risk",
+      "changed": {
+        "command_embedding": true,
+        "command_film": true,
+        "coupling_cell": true,
+        "digit_head": true,
+        "fuse": true,
+        "image_cell": true,
+        "initial_image": true,
+        "initial_text": true,
+        "pixel_decoder": true,
+        "pixel_encoder": true,
+        "semantic_cell": true,
+        "text_cell": true,
+        "text_decoder": true,
+        "text_encoder": true,
+        "text_initial": true,
+        "text_projection": true,
+        "token_embedding": true
+      },
+      "cpu_ns": 78603420508,
+      "gate_changed": true,
+      "observer_sha256": "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0",
+      "schedule_sha256": "8fe39ca796876b56b9fccc9c221b3e4b167ad55563d75ed54d6f65722eb07edc",
+      "seed": 29,
+      "steps": 600,
+      "teacher_sha256": "ed991894c2fae887f4a644ca97613f2686cfb6d7e0c830b4ca950f5e119ef6a0",
+      "training_counts": {
+        "actual_png_roundtrips": 76800,
+        "examples": 19200,
+        "model_decodes": 153600,
+        "model_encodes": 19200,
+        "model_transitions": 153600,
+        "observer_digit_examples": 153600,
+        "teacher_decodes": 76800,
+        "teacher_encodes": 19200,
+        "teacher_transitions": 153600
+      },
+      "wall_ns": 78715914903
+    },
+    {
+      "actual_training_output_sha256": "705539c57e7f4a5974ae370ac97d0fbcc2c65e1220cb7fe1008ba136ba309a77",
+      "arm": "joint_uniform",
+      "changed": {
+        "command_embedding": true,
+        "command_film": true,
+        "coupling_cell": true,
+        "digit_head": true,
+        "fuse": true,
+        "image_cell": true,
+        "initial_image": true,
+        "initial_text": true,
+        "pixel_decoder": true,
+        "pixel_encoder": true,
+        "semantic_cell": true,
+        "text_cell": true,
+        "text_decoder": true,
+        "text_encoder": true,
+        "text_initial": true,
+        "text_projection": true,
+        "token_embedding": true
+      },
+      "cpu_ns": 74605930131,
+      "gate_changed": true,
+      "observer_sha256": "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0",
+      "schedule_sha256": "8fe39ca796876b56b9fccc9c221b3e4b167ad55563d75ed54d6f65722eb07edc",
+      "seed": 29,
+      "steps": 600,
+      "teacher_sha256": "ed991894c2fae887f4a644ca97613f2686cfb6d7e0c830b4ca950f5e119ef6a0",
+      "training_counts": {
+        "actual_png_roundtrips": 76800,
+        "examples": 19200,
+        "model_decodes": 153600,
+        "model_encodes": 19200,
+        "model_transitions": 153600,
+        "observer_digit_examples": 153600,
+        "teacher_decodes": 76800,
+        "teacher_encodes": 19200,
+        "teacher_transitions": 153600
+      },
+      "wall_ns": 74633201587
+    },
+    {
+      "actual_training_output_sha256": "ff0bccf4f766037199a662b8f34c260c97c2df41ac0166fc49ff19abcf034ac8",
+      "arm": "joint_risk",
+      "changed": {
+        "command_embedding": true,
+        "command_film": true,
+        "coupling_cell": true,
+        "digit_head": true,
+        "fuse": true,
+        "image_cell": true,
+        "initial_image": true,
+        "initial_text": true,
+        "pixel_decoder": true,
+        "pixel_encoder": true,
+        "semantic_cell": true,
+        "text_cell": true,
+        "text_decoder": true,
+        "text_encoder": true,
+        "text_initial": true,
+        "text_projection": true,
+        "token_embedding": true
+      },
+      "cpu_ns": 73811811015,
+      "gate_changed": true,
+      "observer_sha256": "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0",
+      "schedule_sha256": "e8155261ed5832e476c201213760cc21640564e26d760af504196dc4376dc91e",
+      "seed": 43,
+      "steps": 600,
+      "teacher_sha256": "dbf04f714b5209b1157dd70a991d94a9bc4a6620b51ed8ad45ccced5037c65bc",
+      "training_counts": {
+        "actual_png_roundtrips": 76800,
+        "examples": 19200,
+        "model_decodes": 153600,
+        "model_encodes": 19200,
+        "model_transitions": 153600,
+        "observer_digit_examples": 153600,
+        "teacher_decodes": 76800,
+        "teacher_encodes": 19200,
+        "teacher_transitions": 153600
+      },
+      "wall_ns": 73831126727
+    },
+    {
+      "actual_training_output_sha256": "823017cbde42c72de3071c547e39e524520c7d9dabf0dede7c4d64600e84dd4f",
+      "arm": "joint_uniform",
+      "changed": {
+        "command_embedding": true,
+        "command_film": true,
+        "coupling_cell": true,
+        "digit_head": true,
+        "fuse": true,
+        "image_cell": true,
+        "initial_image": true,
+        "initial_text": true,
+        "pixel_decoder": true,
+        "pixel_encoder": true,
+        "semantic_cell": true,
+        "text_cell": true,
+        "text_decoder": true,
+        "text_encoder": true,
+        "text_initial": true,
+        "text_projection": true,
+        "token_embedding": true
+      },
+      "cpu_ns": 75046925255,
+      "gate_changed": true,
+      "observer_sha256": "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0",
+      "schedule_sha256": "e8155261ed5832e476c201213760cc21640564e26d760af504196dc4376dc91e",
+      "seed": 43,
+      "steps": 600,
+      "teacher_sha256": "dbf04f714b5209b1157dd70a991d94a9bc4a6620b51ed8ad45ccced5037c65bc",
+      "training_counts": {
+        "actual_png_roundtrips": 76800,
+        "examples": 19200,
+        "model_decodes": 153600,
+        "model_encodes": 19200,
+        "model_transitions": 153600,
+        "observer_digit_examples": 153600,
+        "teacher_decodes": 76800,
+        "teacher_encodes": 19200,
+        "teacher_transitions": 153600
+      },
+      "wall_ns": 75132655172
+    }
+  ]
+}

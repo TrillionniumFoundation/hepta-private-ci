@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.ndu.continuation.natural.speech.cascade.protocol.v1",
+  "reason": "First new same-model beam continuation study selected no continuation; retain its negative result. This separate study gives actions genuinely different neural capacities and uses new source groups.",
+  "dataset": "openslr/librispeech_asr",
+  "dataset_revision": "71cacbfb7e2354c4226d01e70d77d5fca3d04ba1",
+  "tiny_model": "Systran/faster-whisper-tiny.en",
+  "tiny_revision": "0d3d19a32d3338f10357c0889762bd8d64bbdeba",
+  "base_model": "Systran/faster-whisper-base.en",
+  "base_revision": "3d3d5dee26484f91867d81cb899cfcf72b96be6c",
+  "selection": {
+    "train": "Reuse the 8 fit speakers from the first continuation study, never its12test speakers",
+    "validation": "First4new validation/clean and4new validation/other speaker groups in row order",
+    "test": "First8new test/clean and8new test/other speaker groups in row order",
+    "utterances_per_speaker": 3,
+    "maximum_seconds": 29,
+    "exclude": "All historical prior-study and first-continuation speaker groups from new validation/test; all roles disjoint"
+  },
+  "mode": "Offline batch portfolio: all first-stage public transcripts are delivered before budgeted second-stage allocation. This is not online low-latency streaming.",
+  "controller": {
+    "features": [
+      "intercept",
+      "tiny_avg_logprob",
+      "tiny_no_speech_probability",
+      "log1p_generated_token_count",
+      "log1p_duration_seconds"
+    ],
+    "training": "Ridge regression with lambda1 on train-speaker targets clippedWERtiny-clippedWERbase; standardize nonintercept features on training only",
+    "budget_fractions": [
+      0,
+      0.125,
+      0.25,
+      0.375,
+      0.5,
+      0.75,
+      1
+    ],
+    "selection": "On validation choose budgetfraction maximizing entropic certainty equivalent of actual terminal quality minus0.01actualCPU, gamma2; lower budgettie break",
+    "allocation": "TopK predicted quality improvements, K=round(frozen_fraction*batch_count), stable input-index tie break"
+  },
+  "arms": [
+    "fixed_tiny",
+    "fixed_base",
+    "learned_budget",
+    "matched_random_budget"
+  ],
+  "random_order": "SHA256 of fixed literal natural-cascade-2713 and source id, then choose sameK as learned; no target or futurebase output",
+  "cpu_threads": 2,
+  "tiny_beam": 1,
+  "base_beam": 5,
+  "timing_repetitions": 3,
+  "risk_gamma": 2,
+  "CPU_cost_coefficient": 0.01,
+  "quality_noninferiority_margin_absolute_WER": 0.01,
+  "CI": "95 percent paired speaker-cluster bootstrap,4000resamples,seed2714; repeats averaged withinutterance; allspeakerclusterrows jointlyresampled",
+  "primary_acceptance": "Against strongfixedbase, WERdiffCIupper<=0.01 and bothwholeCPU/wallcostdiffCIupper<0; also report cost-adjusted entropicCE and pairedreturn versus matchedrandom",
+  "all_costs": "Count every actual firststage and continuation encoding/decoding, publicdelivery/readback, controller feature/scoring/sorting, finaldelivery; record load and fitting separately",
+  "stopping_rule": "One frozen new-source study; no heldout-driven quota/parameter/metric changes; preserve all failures",
+  "scope": "Actual natural speech-to-text generation by two frozen neuralmodels with a trained allocation head; no generatorweightupdates, speechsynthesis or originalHeptaneuron integration"
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.continuation.cost-accounting-addendum.v1",
+  "run001_preserved_verbatim": true,
+  "reason": "Original run001 task fees counted owner.tick API calls but did not price the original journal sparse replays already required by each forecast fork. The v2 contract prices this previously uncharged work and the new event-ledger sparse validations separately.",
+  "run001_per_episode": {
+    "owner_tick_api_calls": 16,
+    "original_journal_sparse_replays": 12,
+    "event_ledger_sparse_validations": 0,
+    "total_original_sparse_kernel_executions": 28,
+    "charged_owner_api_units": 16,
+    "charged_original_journal_replays": 0,
+    "control_task_charge": 0.0016
+  },
+  "run002_per_episode": {
+    "owner_tick_api_calls": 16,
+    "original_journal_sparse_replays": 12,
+    "event_ledger_sparse_validations": 12,
+    "total_original_sparse_kernel_executions": 40,
+    "charged_owner_api_units": 16,
+    "charged_original_journal_replays": 12,
+    "charged_event_ledger_validations": 12,
+    "control_task_charge": 0.004
+  },
+  "run001_actual_journal_replay_steps_recounted_from_frozen_branch_prefixes": 2880,
+  "run002_actual_journal_replay_steps": 2880,
+  "run002_actual_event_validation_steps": 2880,
+  "change_in_terminal_return": {
+    "pricing_preexisting_journal_restoration": -0.0012,
+    "new_event_guard_validation_cost": -0.0012,
+    "total": -0.0024
+  },
+  "all_root_choices_unchanged_across_versions": true,
+  "maximum_measured_terminal_mean_shift_residual": 6.895525817007808e-17,
+  "same_information_and_computation": "All five v2 arms execute and pay the same 16 owner calls + 24 verification replays, including the blind-future ablation.",
+  "physical_metrics": {
+    "run002_episode_wall_seconds": 33.182365319,
+    "run002_parent_python_cpu_seconds": 1.692942452,
+    "run002_rpc_processing_wall_seconds": 30.95049,
+    "cpu_scope": "Python process_time only; excludes Rust subprocess and media encoder CPU. Native per-tick and full RPC elapsed times and allocations are separately measured. No total-machine CPU or energy estimate is claimed."
+  },
+  "source_of_kernel_counts": "Unchanged SparseJournal::open_with_policy replays each committed prefix at journal.rs sparse_tick call; commit executes one sparse_tick for each owner tick. New events::Ledger::restore executes one sparse_tick for each prefix event. Native receipts count actual branch prefix sequence lengths.",
+  "pricing_scope": "Registered synthetic task units, not measured money, wall-time, FLOPs or energy.",
+  "run001_result_sha256": "18f92f72f80827346fe5b0a5154bae7c5ce78945ce8e8ec93c0a89eaf3a2f535",
+  "run002_result_sha256": "1297f6b9c1f82716c5e4c644db06c436afca7bb89394f41d572cfffccd05679c"
+}
