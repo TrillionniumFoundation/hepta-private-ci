@@ -37,6 +37,7 @@ jobs:
       CARGO_PROFILE_DEV_DEBUG: '0'
       CARGO_PROFILE_TEST_DEBUG: '0'
       CARGO_BUILD_JOBS: '2'
+      CARGO_TARGET_DIR: ${{ runner.temp }}/memory-v7-target
       PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -47,10 +48,40 @@ jobs:
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: cargo-nextest@0.9.131
+      - uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ runner.temp }}/memory-v7-target
+          key: memory-v7-rust-1.95-${{ matrix.group }}-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ github.sha }}
+          restore-keys: |
+            memory-v7-rust-1.95-${{ matrix.group }}-${{ hashFiles('codex-rs/Cargo.lock') }}-
+            memory-v7-rust-1.95-${{ matrix.group }}-
+      - name: Prepare pinned real training and language runtime
+        if: matrix.group == 'daemon'
+        run: |
+          python3 qualification/memory-cell-v7/prepare_language_ci.py "$RUNNER_TEMP/memory-v7-language"
+          cat "$RUNNER_TEMP/memory-v7-language/github.env" >> "$GITHUB_ENV"
       - name: Test actual product dependency graph
         env:
           MEMORY_TEST_GROUP: ${{ matrix.group }}
         run: python3 qualification/memory-cell-v7/ci_verify.py test
+      - uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        if: always()
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ runner.temp }}/memory-v7-target
+          key: memory-v7-rust-1.95-${{ matrix.group }}-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ github.sha }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always() && matrix.group == 'daemon'
+        with:
+          name: memory-v7-runtime-preparation-${{ github.sha }}
+          path: ${{ runner.temp }}/memory-v7-language/PREPARATION.json
+          if-no-files-found: warn
+          retention-days: 30
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

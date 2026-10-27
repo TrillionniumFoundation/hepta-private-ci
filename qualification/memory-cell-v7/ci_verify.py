@@ -16,6 +16,7 @@ GROUPS = {
     "source-owner": ["codex-hepta-memory", "codex-hepta-cognitive-store"],
     "release-owner": ["codex-hepta-learning-artifacts"],
     "daemon": ["codex-hepta-agent-protocol", "codex-hepta-agentd"],
+    "population": ["codex-hepta-neuron", "codex-hepta-plasticity"],
 }
 
 
@@ -51,6 +52,13 @@ def main():
         raise ValueError("unknown verification mode")
     output = ROOT / "memory-v7-ci-output"
     output.mkdir(exist_ok=False)
+    commands = [command]
+    if mode == "test" and group == "daemon":
+        commands.append(["just", "test", "--locked", "--lib", "-p", "codex-hepta-agentd",
+                         "--run-ignored", "only", "-E", "test(memory_cell_) & test(actual_)"])
+        os.environ["MEMORY_CELL_TRAINING_RECEIPT_PATH"] = str(output / "training-receipt.json")
+        os.environ["MEMORY_CELL_LANGUAGE_RECEIPT_PATH"] = str(output / "language-receipt.json")
+        os.environ["MEMORY_CELL_POPULATION_RECEIPT_PATH"] = str(output / "population-receipt.json")
     receipt = {
         "schema": "hepta.memory.v7.product-ci-receipt.v1",
         "source_commit": git("rev-parse", "HEAD"),
@@ -59,19 +67,27 @@ def main():
         "mode": mode,
         "group": group,
         "command": command,
+        "commands": commands,
         "initial_tracked_changes": git("status", "--porcelain", "--untracked-files=no"),
         "lock_before": identity(ROOT / "MODULE.bazel.lock"),
         "complete_workspace_test": False,
         "production_manifests_modified_for_test": False,
     }
     started = time.monotonic()
+    executions = []
     with (output / "execution.log").open("w") as log:
-        process = subprocess.Popen(command, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-        for line in process.stdout:
-            log.write(line)
-            log.flush()
-            print(line, end="", flush=True)
-        receipt["exit_code"] = process.wait()
+        for command in commands:
+            before = time.monotonic()
+            process = subprocess.Popen(command, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            for line in process.stdout:
+                log.write(line)
+                log.flush()
+                print(line, end="", flush=True)
+            executions.append({"command": command, "exit_code": process.wait(), "wall_seconds": time.monotonic() - before})
+            if executions[-1]["exit_code"] != 0:
+                break
+        receipt["executions"] = executions
+        receipt["exit_code"] = next((item["exit_code"] for item in executions if item["exit_code"] != 0), 0)
     receipt["wall_seconds"] = time.monotonic() - started
     receipt["lock_after"] = identity(ROOT / "MODULE.bazel.lock")
     receipt["final_tracked_changes"] = git("status", "--porcelain", "--untracked-files=no")

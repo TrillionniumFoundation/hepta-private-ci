@@ -1,9 +1,10 @@
 {
   "schema": "hepta.memory.v7.product-verification-request.v1",
-  "attempt": 2,
-  "stage": "release-owner-and-daemon",
+  "attempt": 3,
+  "stage": "trained-owner-network-and-population",
   "groups": [
-    "release-owner",
+    "source-owner",
+    "population",
     "daemon"
   ],
   "tests_before_final_fix_and_format": true
