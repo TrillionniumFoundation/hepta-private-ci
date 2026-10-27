@@ -1,0 +1,74 @@
+{
+  "schema": "hepta.zlib-fallback-local-verification.v1",
+  "base_commit": "f49a000e36f8aba10aa937a91d8085cacd6f0c22",
+  "baseline_patch_git_blob": "53f9603ff8b5ed88f9e6b64cf8bd248dd874d099",
+  "candidate_patch_sha256": "470f688b32a133806dd0f3e96f1b3e504216633c418a6c87a8e5b81ea18f01fc",
+  "candidate_patch_bytes": 4097,
+  "candidate_patch_git_blob": "89c3dec383e5d44e3f54a0c421a5c710a520203a",
+  "patch_commands": [
+    {
+      "name": "git-baseline",
+      "check": true,
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/tmp/hepta-zlib-fallback-f49a000e/original.patch"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/hepta-zlib-fallback-f49a000e/git-baseline-check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "git-baseline",
+      "check": false,
+      "command": [
+        "git",
+        "apply",
+        "/tmp/hepta-zlib-fallback-f49a000e/original.patch"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/hepta-zlib-fallback-f49a000e/git-baseline-apply.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "git-candidate",
+      "check": true,
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/3df12f9191cd/hepta-memory-ci-fixes/patches/rules_rs_build_script_deps_annotation.patch"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/hepta-zlib-fallback-f49a000e/git-candidate-check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "git-candidate",
+      "check": false,
+      "command": [
+        "git",
+        "apply",
+        "/workspace/scratch/3df12f9191cd/hepta-memory-ci-fixes/patches/rules_rs_build_script_deps_annotation.patch"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/hepta-zlib-fallback-f49a000e/git-candidate-apply.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "url_list": [
+    "https://snapshot.ubuntu.com/ubuntu/20260801T000000Z/pool/main/z/zlib/zlib1g_1.3.dfsg-3.1ubuntu2.1_amd64.deb",
+    "https://launchpad.net/ubuntu/+archive/primary/+files/zlib1g_1.3.dfsg-3.1ubuntu2.1_amd64.deb"
+  ],
+  "unchanged_sha256": "7074b6a2f6367a10d280c00a1cb02e74277709180bab4f2491a2f355ab2d6c20",
+  "verified_payload_bytes": 62850,
+  "aarch64_unchanged": true,
+  "build_script_annotation_patch_unchanged": true,
+  "only_changed_applied_file": [
+    "rs/private/rustc_repository.bzl"
+  ],
+  "bazel_executed": false,
+  "lockfile_modified": false,
+  "prior_check_failure": "GNU patch --fuzz=0 could not apply the original upstream hunk with its pre-existing offset; original and candidate both pass git apply --check and git apply with full context."
+}

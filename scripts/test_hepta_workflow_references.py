@@ -59,7 +59,9 @@ class WorkflowReferenceTests(unittest.TestCase):
             "qualification/history.json",
             '{"files": ["' + nested + '", ".github/workflows/missing.yml"]}\n',
         )
-        with self.assertRaisesRegex(SystemExit, r"history.json:1: \.github/workflows/missing.yml"):
+        with self.assertRaisesRegex(
+            SystemExit, r"history.json:1: \.github/workflows/missing.yml"
+        ):
             VERIFIER.verify_exact_workflow_references()
 
     def test_missing_root_reference_is_rejected_in_every_existing_scope(self):
@@ -73,7 +75,10 @@ class WorkflowReferenceTests(unittest.TestCase):
                 target = self.write(relative, '".github/workflows/missing.yml"\n')
                 with self.assertRaises(SystemExit) as raised:
                     VERIFIER.verify_exact_workflow_references()
-                self.assertIn(relative + ":1: .github/workflows/missing.yml", str(raised.exception))
+                self.assertIn(
+                    relative + ":1: .github/workflows/missing.yml",
+                    str(raised.exception),
+                )
                 target.write_text("", encoding="utf-8")
 
     def test_existing_root_and_nested_references_can_coexist(self):
@@ -96,8 +101,13 @@ class WorkflowReferenceTests(unittest.TestCase):
         )
         for prefix in prefixes:
             with self.subTest(prefix=prefix):
-                self.write("docs/reference.md", "[CI](" + prefix + ".github/workflows/missing.yml)\n")
-                with self.assertRaisesRegex(SystemExit, r"reference.md:1: \.github/workflows/missing.yml"):
+                self.write(
+                    "docs/reference.md",
+                    "[CI](" + prefix + ".github/workflows/missing.yml)\n",
+                )
+                with self.assertRaisesRegex(
+                    SystemExit, r"reference.md:1: \.github/workflows/missing.yml"
+                ):
                     VERIFIER.verify_exact_workflow_references()
 
     def test_url_and_document_relative_existing_root_checks_are_retained(self):
@@ -109,7 +119,10 @@ class WorkflowReferenceTests(unittest.TestCase):
         )
         for prefix in prefixes:
             with self.subTest(prefix=prefix):
-                self.write("docs/reference.md", "[CI](" + prefix + ".github/workflows/current.yml)\n")
+                self.write(
+                    "docs/reference.md",
+                    "[CI](" + prefix + ".github/workflows/current.yml)\n",
+                )
                 VERIFIER.verify_exact_workflow_references()
 
 

@@ -25,26 +25,55 @@ if __name__ == "__main__":
         start = time.perf_counter()
         row = {"url": url, "expected_sha256": EXPECTED}
         try:
-            request = Request(url, headers={"User-Agent": "hepta-checksum-diagnostic/1"})
+            request = Request(
+                url, headers={"User-Agent": "hepta-checksum-diagnostic/1"}
+            )
             with urlopen(request, timeout=20) as response:
                 raw = response.read(5_000_001)
                 if len(raw) > 5_000_000:
                     raise ValueError("dependency exceeds diagnostic size bound")
                 actual = hashlib.sha256(raw).hexdigest()
-                row.update({"status": response.status, "final_url": response.geturl(), "bytes": len(raw),
-                            "sha256": actual, "matches_existing_pin": actual == EXPECTED})
+                row.update(
+                    {
+                        "status": response.status,
+                        "final_url": response.geturl(),
+                        "bytes": len(raw),
+                        "sha256": actual,
+                        "matches_existing_pin": actual == EXPECTED,
+                    }
+                )
                 if actual == EXPECTED:
                     name = f"verified-source-{index}.deb"
                     (output / name).write_bytes(raw)
                     row["verified_payload"] = name
         except HTTPError as error:
-            row.update({"status": error.code, "error": str(error), "matches_existing_pin": False})
+            row.update(
+                {
+                    "status": error.code,
+                    "error": str(error),
+                    "matches_existing_pin": False,
+                }
+            )
         except Exception as error:
-            row.update({"error_type": type(error).__name__, "error": str(error), "matches_existing_pin": False})
+            row.update(
+                {
+                    "error_type": type(error).__name__,
+                    "error": str(error),
+                    "matches_existing_pin": False,
+                }
+            )
         row["wall_seconds"] = time.perf_counter() - start
         results.append(row)
-    report = {"schema": "hepta.memory.v5.dependency-download-diagnostic.v1", "results": results,
-              "any_payload_matches_existing_pin": any(row["matches_existing_pin"] for row in results),
-              "dependency_version_or_checksum_changed": False, "bazel_success_claimed": False}
-    (output / "DOWNLOADS.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+    report = {
+        "schema": "hepta.memory.v5.dependency-download-diagnostic.v1",
+        "results": results,
+        "any_payload_matches_existing_pin": any(
+            row["matches_existing_pin"] for row in results
+        ),
+        "dependency_version_or_checksum_changed": False,
+        "bazel_success_claimed": False,
+    }
+    (output / "DOWNLOADS.json").write_text(
+        json.dumps(report, indent=2, sort_keys=True) + "\n"
+    )
     print(json.dumps(report))

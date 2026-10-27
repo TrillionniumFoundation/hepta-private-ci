@@ -1,109 +1,15 @@
 {
   "archive": {
-    "bytes": 62188,
+    "bytes": 196578,
     "path": "diagnostics.tar.gz",
-    "sha256": "bd6d0198390db04b462017fd5d8acb240f56b99cd5af6477b8c89f474f558255"
+    "sha256": "d0de1a67ea5c9c0557bf198789659b46b749fae64b1c690f32f6fa0c0a304bb8"
   },
   "baseline_commit": "332d8156d081e22405450dd607023689f68f03e1",
   "contains_original_failed_checks_and_literal_diagnostics": true,
-  "files": {
-    "CODESPELL_FIX.json": {
-      "bytes": 10027,
-      "sha256": "ec7c7a7f4f2445aa36b4ccf67af5e9189feb8e6ba9b2c87497d3e3dc2e3f4e2f"
-    },
-    "CODESPELL_FIX.md": {
-      "bytes": 2993,
-      "sha256": "9f2b32ac9b2575d858104b777ca532c7a6d034e20a6d76fffef4e30f8d012e44"
-    },
-    "WORKFLOW_REFERENCE_FIX.json": {
-      "bytes": 2259,
-      "sha256": "d4adcde4303af1aade4463968e1387a44fb45a172aa9484beeddd8312bbeea23"
-    },
-    "WORKFLOW_REFERENCE_FIX.md": {
-      "bytes": 2615,
-      "sha256": "1a13dfebb8fe68ee7074311fd4164fa76007757286b66a75a13e861f0dcc7f79"
-    },
-    "codespell.patch": {
-      "bytes": 1076,
-      "sha256": "129ed2350eb9089fd19cedc80ce4cb4187951c65414a2b6edf140ab6ec8b24f6"
-    },
-    "evidence/codespell/baseline/.codespellignore": {
-      "bytes": 69,
-      "sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275"
-    },
-    "evidence/codespell/baseline/.github/workflows/codespell.yml": {
-      "bytes": 862,
-      "sha256": "4bc889fafcd9d8437d16be7e79a3f15b928039a775df26338c759a41a00809c2"
-    },
-    "evidence/codespell/encoded-container-identity.json": {
-      "bytes": 570,
-      "sha256": "0900273d4460b53a739bd273d97fbc82c996bedb131e3226738ed78fd9e29007"
-    },
-    "evidence/codespell/findings.json": {
-      "bytes": 90726,
-      "sha256": "a3c1847b4795f3da1cb2c63ad64d9fbf6d8ee1660e2f1b6a311e9cc609f8da80"
-    },
-    "evidence/codespell/job-122077013125.log": {
-      "bytes": 60513,
-      "sha256": "13aa3f4587e8350e2edc3493254cb6b621f1c90a0d8009ce9cdd056f8121d600"
-    },
-    "evidence/codespell/references/action/action.yml": {
-      "bytes": 1669,
-      "sha256": "9ae204095c3c009144d8c899ab062c7caa92b25a7938cb973bfcfcf98182e652"
-    },
-    "evidence/codespell/references/action/entrypoint.sh": {
-      "bytes": 2621,
-      "sha256": "1fe2a8eff0e8155d74c0abfc258a692402c08326f1cb71a674e2c9c7a57cbc6d"
-    },
-    "evidence/codespell/references/repository/.codespellrc": {
-      "bytes": 346,
-      "sha256": "26a2389b135dc72267c53fd8d94df04d5fe0f66a0dc5ab06b6e4d435eee542bc"
-    },
-    "evidence/codespell/references/repository/.github/workflows/blocking-ci.yml": {
-      "bytes": 8755,
-      "sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f"
-    },
-    "evidence/codespell/references/repository/AGENTS.md": {
-      "bytes": 22519,
-      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
-    },
-    "evidence/codespell/valid-word-contexts.json": {
-      "bytes": 6338,
-      "sha256": "6b56c4241b124ddbd3971040a57091835938a35ffda5a92d8f0b29aa6ac69d00"
-    },
-    "evidence/workflow-reference/existing-root-tests-with-scripts-path.log": {
-      "bytes": 402,
-      "sha256": "b46082fa646092226e85200b10241a164bd961b8dac569b4f2733f1a26bd7846"
-    },
-    "evidence/workflow-reference/existing-root-tests.log": {
-      "bytes": 2217,
-      "sha256": "c2d3c2897107bb9a03654290a0a361fece90d26cd5c169d8351f0103a7e9e0e3"
-    },
-    "evidence/workflow-reference/new-behavior-tests.log": {
-      "bytes": 1401,
-      "sha256": "ad2973f7506fb81970d74a8ede40a547da1136c0fa0f5ace41a63d39bf82349f"
-    },
-    "evidence/workflow-reference/original-source-regression.log": {
-      "bytes": 2328,
-      "sha256": "d0df98c2c412b836a854ad2eaa04331a2e7dac4847338f159fcba8b572086300"
-    },
-    "evidence/workflow-reference/test-results-followup.json": {
-      "bytes": 1811,
-      "sha256": "2d8aa20c1c0b4221d9edf7d0c18937a3f7ae2ce405d349ea26a6b2a8c20e3b15"
-    },
-    "evidence/workflow-reference/test-results.json": {
-      "bytes": 1199,
-      "sha256": "8cfe9f414783bb2f288e1690e77e7b8d736f2b8a77ea14d7c0ed402d76cb1428"
-    },
-    "original/hepta-docs.py": {
-      "bytes": 78882,
-      "sha256": "63adeefe7231e970b21b8d6a3014986fcb8cf16f1741f4a36b9dd4717196e33d"
-    },
-    "workflow-reference.patch": {
-      "bytes": 6525,
-      "sha256": "bf38e6c45efaacbadd2108f5a25329c5d0c54ce78d20bee54dcd4e5cbed7380b"
-    }
-  },
   "frozen_v5_inputs_modified": false,
-  "schema": "hepta.memory.v5.ci-diagnostic-archive.v1"
+  "includes_fixed_version_dependency_patch_checks": true,
+  "member_inventory": "MANIFEST.members.json inside the archive; member paths are relative to the extracted archive, not repository references",
+  "members": 51,
+  "previous_archive_sha256": "bd6d0198390db04b462017fd5d8acb240f56b99cd5af6477b8c89f474f558255",
+  "schema": "hepta.memory.v5.ci-diagnostic-archive.v2"
 }
