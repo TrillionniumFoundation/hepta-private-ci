@@ -1,0 +1,126 @@
+{
+  "MNIST_or_registered_sources_opened": false,
+  "generator_and_observer_parameters_unchanged": true,
+  "live_decisions": 64,
+  "live_feedback_packets": 32,
+  "live_media_logical_deliveries_read_back": 80,
+  "live_native_ticks": 64,
+  "native_library_sha256": "253fb6a5d2115283148f99c83007363aa09ef3c66dcaf51e172563b0891d2a00",
+  "offline_feedback_packets": 160,
+  "offline_logical_deliveries_read_back": 680,
+  "offline_online_event_feature_value_media_exact": true,
+  "offline_tree_base_cases": 8,
+  "passed": true,
+  "physical_media_deduplication_contract": {
+    "actual_decoder_calls": 2,
+    "actual_encoder_calls": 2,
+    "actual_transition_calls": 2,
+    "logical_deliveries_read_back": 2,
+    "model_cache_used": false,
+    "new_readback_receipt_for_each_delivery": true,
+    "unique_physical_records": 1
+  },
+  "premature_or_exhausted_feedback_action_guards": 96,
+  "raw_torch_batching_witness": {
+    "different_hard_pixels": 0,
+    "different_public_feature_coordinates": 2,
+    "image_logit_max_abs_difference": 4.0978193283081055e-08,
+    "input_seed": 271034,
+    "model_seed": 271033,
+    "public_feature_max_abs_difference": 3.725290298461914e-09,
+    "synthetic_only": true,
+    "text_logit_max_abs_difference": 7.450580596923828e-08,
+    "untrained_model_and_observer": true
+  },
+  "schema": "hepta.field-bridge-v3.runtime-media-integration-contract.v1",
+  "selected_or_forced_live_episodes": 32,
+  "selected_rollout_contract": {
+    "all_selected_values_and_media_match_tree": true,
+    "canonical_arithmetic_model_batches": 1,
+    "episodes": 21,
+    "full_tree_output_states": 255,
+    "histories_checked": 18,
+    "mixed_action_terminal_nodes": [
+      1,
+      48,
+      0
+    ],
+    "resources_by_arm": {
+      "current": {
+        "decoder_examples": 3,
+        "encoder_examples": 3,
+        "native_tick_calls": 0,
+        "selection_rows": 3,
+        "simulated_feedback_packets": 0,
+        "transition_examples": 3,
+        "unchosen_continuations_executed": 0
+      },
+      "history": {
+        "decoder_examples": 3,
+        "encoder_examples": 3,
+        "native_tick_calls": 0,
+        "selection_rows": 3,
+        "simulated_feedback_packets": 0,
+        "transition_examples": 3,
+        "unchosen_continuations_executed": 0
+      },
+      "mixed_actions": {
+        "decoder_examples": 7,
+        "encoder_examples": 3,
+        "native_tick_calls": 0,
+        "selection_rows": 6,
+        "simulated_feedback_packets": 3,
+        "transition_examples": 7,
+        "unchosen_continuations_executed": 0
+      },
+      "native": {
+        "decoder_examples": 3,
+        "encoder_examples": 3,
+        "native_tick_calls": 6,
+        "selection_rows": 3,
+        "simulated_feedback_packets": 0,
+        "transition_examples": 3,
+        "unchosen_continuations_executed": 0
+      },
+      "reset_native": {
+        "decoder_examples": 3,
+        "encoder_examples": 3,
+        "native_tick_calls": 6,
+        "selection_rows": 3,
+        "simulated_feedback_packets": 0,
+        "transition_examples": 3,
+        "unchosen_continuations_executed": 0
+      },
+      "root_stop": {
+        "decoder_examples": 3,
+        "encoder_examples": 3,
+        "native_tick_calls": 0,
+        "selection_rows": 3,
+        "simulated_feedback_packets": 0,
+        "transition_examples": 3,
+        "unchosen_continuations_executed": 0
+      },
+      "three_revisions": {
+        "decoder_examples": 12,
+        "encoder_examples": 3,
+        "native_tick_calls": 0,
+        "selection_rows": 9,
+        "simulated_feedback_packets": 6,
+        "transition_examples": 12,
+        "unchosen_continuations_executed": 0
+      }
+    }
+  },
+  "source_sha256": {
+    "feedback_bank.py": "775d1cb3cc1734b3fa9d10d3dd5bf40572c81d97b83d78f406dd50a1c809b309",
+    "feedback_media.py": "03974950aee527913df0dbf80fdd1c0b2e7e7ede70df15f32feb2257dcf7d7d3",
+    "feedback_rollout.py": "cbaaf8c821fc70bafada6fec3b530a22f592cf17915808c32a9e5ab9ee001807",
+    "feedback_task.py": "3596bdd3386717fea8c46d5c7a4cf5dc6e088a4ef573a0e1c2bee900056a3f8d",
+    "native_stream.py": "81d4355a7482642317a1a45f26140ff5c7a8c47748b857f9cce300251d7171bf",
+    "runtime_controller.py": "ff38cd6ac178fa6550c4df03788401471e013895abbfd2417876c4f4fd193f5e"
+  },
+  "synthetic_only": true,
+  "test_source_sha256": "67008aec42114e4ede54865c72083e53adf8b8ad86dcb5f730dfd09b1ce22bed",
+  "trained_assets_loaded": false,
+  "wall_ns": 5523989012
+}
