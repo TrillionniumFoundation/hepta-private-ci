@@ -21,11 +21,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: ndu-tls-lock-candidate-${{ github.ref }}
+  group: ndu-tls-lock-candidate-${{ github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}
   cancel-in-progress: true
 
 jobs:
   generate-reviewable-candidate:
+    # Keep the in-flight ZIP/protocol qualification tied to its reviewed source.
+    # Later port candidates have their own workflow and must not duplicate it.
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.sha == '88bcc7f92b9a52bf77e0095614fd496288b6ca86'
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     outputs:

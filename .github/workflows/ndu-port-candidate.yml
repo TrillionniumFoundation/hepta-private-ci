@@ -1,0 +1,440 @@
+name: NDU dependency port candidate
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/ndu-port-candidate.yml
+      - scripts/ndu_port_candidate.py
+      - scripts/ndu_port_candidate_common.py
+      - scripts/ndu_port_matrix_fixture.py
+      - scripts/ndu_port_aws_upstream.py
+      - scripts/test_ndu_port*.py
+      - experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/**
+      - experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/**
+      - codex-rs/third_party/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ndu-port-candidate-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+
+env:
+  PYTHONDONTWRITEBYTECODE: 1
+  CARGO_TERM_COLOR: never
+  CARGO_BUILD_JOBS: 2
+  CARGO_INCREMENTAL: 0
+  CARGO_PROFILE_DEV_DEBUG: 0
+  CARGO_PROFILE_TEST_DEBUG: 0
+
+jobs:
+  generate-reviewable-candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    outputs:
+      source_commit: ${{ steps.generate.outputs.source_commit }}
+      result_sha256: ${{ steps.generate.outputs.result_sha256 }}
+      artifact_name: ndu-port-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Check out the exact reviewed new source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Test source binding, phase evidence and failure preservation
+        run: python3 -m unittest discover -s scripts -p 'test_ndu_port*.py' -v
+
+      - name: Prepare pinned Bazel tooling
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: ndu-port-candidate
+
+      - name: Install explicit candidate compiler
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+
+      - name: Verify recipe and generate source plus both locks
+        id: generate
+        env:
+          EXPECTED_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: >-
+          python3 scripts/ndu_port_candidate.py --mode generate
+          --repository "$GITHUB_WORKSPACE" --expected-source "$EXPECTED_SOURCE"
+          --output "$RUNNER_TEMP/ndu-port-candidate"
+
+      - name: Retain complete or partial producer evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-port-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-port-candidate
+          if-no-files-found: error
+          retention-days: 21
+          include-hidden-files: true
+
+  produce-independent-matrix-018-fixture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    outputs:
+      result_sha256: ${{ steps.produce.outputs.result_sha256 }}
+      artifact_name: ndu-matrix-018-fixture-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Check out the new driver and reviewed fixture patch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          path: driver
+          persist-credentials: false
+
+      - name: Independently check out the fixed original source and 0.18 lock
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 6215cb6a87f29623d4beaad24cdf7bcb6bb4fb2c
+          path: baseline
+          persist-credentials: false
+
+      - uses: ./driver/.github/actions/setup-ci
+
+      - name: Install Linux build prerequisites
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libcap-dev bubblewrap
+
+      - name: Install explicit original compiler
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+
+      - name: Install normal CI nextest version
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest
+          version: 0.9.103
+
+      - name: Produce and seal actual old-version state using only the fixture patch
+        id: produce
+        env:
+          EXPECTED_DRIVER_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
+          CODEX_REPO_ROOT: ${{ github.workspace }}/baseline
+          CARGO_TARGET_DIR: ${{ runner.temp }}/ndu-matrix-018-target
+        run: >-
+          python3 "$GITHUB_WORKSPACE/driver/scripts/ndu_port_matrix_fixture.py"
+          --repository "$GITHUB_WORKSPACE/baseline"
+          --driver-repository "$GITHUB_WORKSPACE/driver"
+          --expected-driver-source "$EXPECTED_DRIVER_SOURCE"
+          --output "$RUNNER_TEMP/ndu-matrix-018-fixture"
+
+      - name: Retain original source, lock, executable, database files and failures
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-matrix-018-fixture-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-matrix-018-fixture
+          if-no-files-found: error
+          retention-days: 21
+          include-hidden-files: true
+
+  targeted-workspace-tests:
+    needs: generate-reviewable-candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [yaml, aws, keyring]
+    steps:
+      - name: Check out the exact producer source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup-ci
+
+      - name: Install Linux build prerequisites
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libcap-dev bubblewrap
+
+      - name: Install explicit candidate compiler
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+
+      - name: Install normal CI nextest version
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest
+          version: 0.9.103
+
+      - name: Download the one producer artifact from this run
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ${{ needs.generate-reviewable-candidate.outputs.artifact_name }}
+          path: ${{ runner.temp }}/ndu-port-candidate
+
+      - name: Verify exact source and artifacts then run actual workspace packages
+        env:
+          EXPECTED_SOURCE: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          EXPECTED_RESULT_SHA256: ${{ needs.generate-reviewable-candidate.outputs.result_sha256 }}
+          TEST_GROUP: ${{ matrix.group }}
+        run: >-
+          python3 scripts/ndu_port_candidate.py --mode test
+          --repository "$GITHUB_WORKSPACE" --expected-source "$EXPECTED_SOURCE"
+          --candidate "$RUNNER_TEMP/ndu-port-candidate" --expected-result-sha256 "$EXPECTED_RESULT_SHA256"
+          --group "$TEST_GROUP" --output "$RUNNER_TEMP/ndu-port-tests-$TEST_GROUP"
+
+      - name: Retain every attempted regression and failure
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-port-tests-${{ matrix.group }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-port-tests-${{ matrix.group }}
+          if-no-files-found: error
+          retention-days: 21
+          include-hidden-files: true
+
+  matrix-workspace-and-old-fixture:
+    needs: [generate-reviewable-candidate, produce-independent-matrix-018-fixture]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out the exact candidate producer source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup-ci
+
+      - name: Install Linux build prerequisites
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libcap-dev bubblewrap
+
+      - name: Install explicit candidate compiler
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+
+      - name: Install normal CI nextest version
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest
+          version: 0.9.103
+
+      - name: Download the same candidate
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ${{ needs.generate-reviewable-candidate.outputs.artifact_name }}
+          path: ${{ runner.temp }}/ndu-port-candidate
+
+      - name: Download the independent old-source fixture from this run
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ${{ needs.produce-independent-matrix-018-fixture.outputs.artifact_name }}
+          path: ${{ runner.temp }}/ndu-matrix-018-fixture
+
+      - name: Run four actual Matrix crates and reopen a verified writable copy
+        env:
+          EXPECTED_SOURCE: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          EXPECTED_RESULT_SHA256: ${{ needs.generate-reviewable-candidate.outputs.result_sha256 }}
+          EXPECTED_OLD_RESULT_SHA256: ${{ needs.produce-independent-matrix-018-fixture.outputs.result_sha256 }}
+        run: >-
+          python3 scripts/ndu_port_candidate.py --mode test --group matrix
+          --repository "$GITHUB_WORKSPACE" --expected-source "$EXPECTED_SOURCE"
+          --candidate "$RUNNER_TEMP/ndu-port-candidate" --expected-result-sha256 "$EXPECTED_RESULT_SHA256"
+          --old-fixture "$RUNNER_TEMP/ndu-matrix-018-fixture" --expected-old-result-sha256 "$EXPECTED_OLD_RESULT_SHA256"
+          --output "$RUNNER_TEMP/ndu-port-tests-matrix"
+
+      - name: Retain actual regression logs, executable and migrated copy
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-port-tests-matrix-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-port-tests-matrix
+          if-no-files-found: error
+          retention-days: 21
+          include-hidden-files: true
+
+  full-scope-candidate-cargo-deny:
+    needs: generate-reviewable-candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out the exact producer source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup-ci
+
+      - name: Install explicit candidate compiler
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+
+      - name: Download the same candidate
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ${{ needs.generate-reviewable-candidate.outputs.artifact_name }}
+          path: ${{ runner.temp }}/ndu-port-candidate
+
+      - name: Verify and restore candidate before scanning
+        id: restore
+        env:
+          EXPECTED_SOURCE: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          EXPECTED_RESULT_SHA256: ${{ needs.generate-reviewable-candidate.outputs.result_sha256 }}
+        run: >-
+          python3 scripts/ndu_port_candidate.py --mode restore
+          --repository "$GITHUB_WORKSPACE" --expected-source "$EXPECTED_SOURCE"
+          --candidate "$RUNNER_TEMP/ndu-port-candidate" --expected-result-sha256 "$EXPECTED_RESULT_SHA256"
+          --output "$RUNNER_TEMP/ndu-port-deny/restore"
+
+      - name: Run the original pinned cargo-deny action with unchanged complete scope
+        id: cargo_deny
+        uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246
+        with:
+          rust-version: 1.96.0
+          manifest-path: ./codex-rs/Cargo.toml
+
+      - name: Preserve same-version host diagnostics after a scan failure
+        if: failure() && steps.cargo_deny.outcome == 'failure'
+        timeout-minutes: 8
+        env:
+          RUSTUP_TOOLCHAIN: 1.96.0
+        run: >-
+          python3 scripts/cargo_deny_diagnostics.py
+          --repository "$GITHUB_WORKSPACE" --output "$RUNNER_TEMP/ndu-port-deny/host-diagnostic"
+
+      - name: Verify scan preserved policy, source, features and locks
+        if: always() && !cancelled() && steps.restore.outcome == 'success'
+        env:
+          EXPECTED_SOURCE: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          EXPECTED_RESULT_SHA256: ${{ needs.generate-reviewable-candidate.outputs.result_sha256 }}
+        run: >-
+          python3 scripts/ndu_port_candidate.py --mode verify
+          --repository "$GITHUB_WORKSPACE" --expected-source "$EXPECTED_SOURCE"
+          --candidate "$RUNNER_TEMP/ndu-port-candidate" --expected-result-sha256 "$EXPECTED_RESULT_SHA256"
+          --output "$RUNNER_TEMP/ndu-port-deny/post-scan"
+
+      - name: Retain scan binding and all diagnostic failures
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-port-deny-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-port-deny
+          if-no-files-found: error
+          retention-days: 21
+          include-hidden-files: true
+
+  linux-bazel-libraries:
+    needs: generate-reviewable-candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out the exact producer source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          persist-credentials: false
+
+      - name: Prepare pinned Linux Bazel tooling
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: ndu-port-library-builds
+
+      - name: Install explicit candidate compiler
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+
+      - name: Download the same candidate
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ${{ needs.generate-reviewable-candidate.outputs.artifact_name }}
+          path: ${{ runner.temp }}/ndu-port-candidate
+
+      - name: Build real vendor libraries and first-party consumers with sealed locks
+        env:
+          EXPECTED_SOURCE: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          EXPECTED_RESULT_SHA256: ${{ needs.generate-reviewable-candidate.outputs.result_sha256 }}
+        run: >-
+          python3 scripts/ndu_port_candidate.py --mode bazel
+          --repository "$GITHUB_WORKSPACE" --expected-source "$EXPECTED_SOURCE"
+          --candidate "$RUNNER_TEMP/ndu-port-candidate" --expected-result-sha256 "$EXPECTED_RESULT_SHA256"
+          --output "$RUNNER_TEMP/ndu-port-bazel-libraries"
+
+      - name: Retain complete library build results and failures
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-port-bazel-libraries-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/ndu-port-bazel-libraries
+            ${{ runner.temp }}/bazel-execution-logs
+          if-no-files-found: error
+          retention-days: 21
+          include-hidden-files: true
+
+  independent-full-upstream-aws:
+    needs: generate-reviewable-candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out the exact producer source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup-ci
+
+      - name: Install Linux build prerequisites
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libcap-dev bubblewrap
+
+      - name: Install explicit candidate compiler
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+
+      - name: Install normal CI nextest version
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest
+          version: 0.9.103
+
+      - name: Download the same producer artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ${{ needs.generate-reviewable-candidate.outputs.artifact_name }}
+          path: ${{ runner.temp }}/ndu-port-candidate
+
+      - name: Qualify all 245 upstream cases on a separate exact-source copy
+        env:
+          EXPECTED_SOURCE: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          EXPECTED_RESULT_SHA256: ${{ needs.generate-reviewable-candidate.outputs.result_sha256 }}
+        run: >-
+          python3 scripts/ndu_port_candidate.py --mode upstream-aws
+          --repository "$GITHUB_WORKSPACE" --expected-source "$EXPECTED_SOURCE"
+          --candidate "$RUNNER_TEMP/ndu-port-candidate" --expected-result-sha256 "$EXPECTED_RESULT_SHA256"
+          --output "$RUNNER_TEMP/ndu-port-upstream-aws"
+
+      - name: Retain all upstream sources, executables, retries and failures
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-port-upstream-aws-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-port-upstream-aws
+          if-no-files-found: error
+          retention-days: 21
+          include-hidden-files: true
