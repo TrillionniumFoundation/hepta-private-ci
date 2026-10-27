@@ -23,7 +23,10 @@ fn runtime_options_equality_uses_original_drain_identity_not_observed_counters()
     let mut options = crate::AppServerRuntimeOptions::default();
     options.graceful_drain = Some(owner.clone());
     let cloned = options.clone();
-    std::assert!(options == cloned, "a cloned handle keeps its original owner");
+    std::assert!(
+        options == cloned,
+        "a cloned handle keeps its original owner"
+    );
 
     let mut independent = cloned.clone();
     independent.graceful_drain = Some(AppServerDrainHandle::new());
@@ -34,7 +37,10 @@ fn runtime_options_equality_uses_original_drain_identity_not_observed_counters()
 
     owner.request_drain();
     owner.mark_drained();
-    std::assert!(options == cloned, "drain state does not change owner identity");
+    std::assert!(
+        options == cloned,
+        "drain state does not change owner identity"
+    );
     std::assert!(
         options != independent,
         "a separate drain owner remains distinct after acknowledgement"
