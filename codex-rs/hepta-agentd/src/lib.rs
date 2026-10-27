@@ -236,6 +236,8 @@ pub use deployment_issuer::RootNotesGrantAdmission;
 mod android_runtime;
 #[cfg(target_os = "linux")]
 mod cpu_policy;
+#[cfg(target_os = "linux")]
+mod cpu_policy_consumer;
 mod error;
 mod event_buffer;
 mod evidence_frontier;
@@ -459,6 +461,10 @@ pub use cpu_policy::CpuPolicyError;
 pub use cpu_policy::CpuPolicyKind;
 #[cfg(target_os = "linux")]
 pub use cpu_policy::ObservedCpuDemand;
+#[cfg(target_os = "linux")]
+pub use cpu_policy_consumer::CpuPolicyConsumer;
+#[cfg(target_os = "linux")]
+pub use cpu_policy_consumer::CpuPolicySubmission;
 pub use error::AgentdError;
 pub use evidence_frontier::EvidenceRecoveryFrontierV1;
 pub use evidence_frontier::evidence_recovery_frontier_signing_bytes;

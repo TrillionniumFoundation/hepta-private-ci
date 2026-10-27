@@ -56,12 +56,15 @@ pub enum CpuPolicyError {
     UnknownDemand,
     #[error("the native revision or proposed budget changed")]
     Conflict,
+    #[error("another CPU policy proposal is retained or its consumer is busy")]
+    Busy,
     #[error("original native observation or request refused: {0}")]
     Native(String),
 }
 
 /// Non-serializable proposal. It is not a grant, delivery or durable receipt.
-/// Keep it only until the original owner prepares its immutable K/D request.
+/// Retain it through the original synchronous consumer entry; preparing an
+/// immutable K/D request alone does not preserve freshness across later waits.
 #[derive(Debug)]
 pub struct CpuBudgetProposal {
     observed: AgentdHos2Usage,

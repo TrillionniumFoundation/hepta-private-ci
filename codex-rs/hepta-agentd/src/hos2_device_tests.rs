@@ -13,6 +13,9 @@ type TestResult<T = ()> = Result<T, Box<dyn Error>>;
 #[path = "cpu_policy_native_tests.rs"]
 mod cpu_policy;
 
+#[path = "cpu_policy_consumer_tests.rs"]
+mod cpu_policy_consumer;
+
 /// Fixed A02 wire vectors shared with the OS consumer. This transport performs
 /// no native call and grants no capability; the real adapter parses every byte.
 struct A02Vectors {
