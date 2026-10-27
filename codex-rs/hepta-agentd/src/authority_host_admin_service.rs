@@ -190,7 +190,7 @@ impl HostAuthorityService {
                         .read_revocation(&original.lease_id)
                         .map_err(io::Error::other)?
                         .ok_or_else(|| io::Error::other("original writer lease changed"))?;
-                    let mut shape = lease.lease.clone();
+                    let mut shape = lease.lease;
                     shape.revision = original.revision;
                     if shape != *original || revoked.revocation.reason_sha256 != *reason_sha256 {
                         return Err(io::Error::other("original writer revoke differs"));
