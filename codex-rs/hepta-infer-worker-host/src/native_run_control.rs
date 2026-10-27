@@ -98,13 +98,13 @@ impl AppServerModelDriver {
             principal_id: self.config.agent_id.to_string(),
             worker_generation: self.config.generation,
             model: self.config.model.clone(),
-            payload_digest: native_source_payload_digest(
+            payload_digest: self.bind_memory_admission(native_source_payload_digest(
                 &prompt,
                 &context_query,
                 &self.config.agentd_socket,
                 self.config.timeout.as_millis(),
                 intelligence,
-            )?,
+            )?)?,
         };
         let record = control.reserve_native(request, admission.maximum_in_flight)?;
         if let Some(reason) = &record.pre_dispatch_stop {

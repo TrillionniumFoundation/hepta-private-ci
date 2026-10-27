@@ -73,8 +73,11 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
 mod control;
+#[path = "native_memory_cell.rs"]
+mod memory_cell;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
+pub use memory_cell::load_native_memory_request_v1;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
@@ -146,6 +149,7 @@ pub struct NativeWorkerConfig {
 pub struct AppServerModelDriver {
     config: NativeWorkerConfig,
     turn_start_authorizer: Option<Arc<dyn TurnStartAuthorizer>>,
+    memory_request: Option<codex_hepta_cognitive_types::MemoryRequestV1>,
 }
 
 #[derive(Clone)]
@@ -168,6 +172,7 @@ impl AppServerModelDriver {
         Ok(Self {
             config,
             turn_start_authorizer: None,
+            memory_request: None,
         })
     }
 
@@ -521,7 +526,7 @@ impl AppServerModelDriver {
             .as_ref()
             .map(|snapshot| -> Result<_> { Ok(control::digest(&serde_json::to_vec(snapshot)?)) })
             .transpose()?;
-        let additional_context = context
+        let mut additional_context = context
             .as_ref()
             .map(|snapshot| -> Result<_> {
                 let value = serde_json::to_string(&snapshot)?;
@@ -537,6 +542,20 @@ impl AppServerModelDriver {
                 )]))
             })
             .transpose()?;
+        let memory_evidence = self.acquire_memory_evidence(&owner).await?;
+        if let Some(evidence) = memory_evidence.as_ref() {
+            additional_context.get_or_insert_with(HashMap::new).insert(
+                "hepta-memory-cell".to_string(),
+                AdditionalContextEntry {
+                    value: String::from_utf8(evidence.realized().content.clone())?,
+                    kind: AdditionalContextKind::Untrusted,
+                },
+            );
+            if serde_json::to_vec(&additional_context)?.len() > MAX_COGNITIVE_CONTEXT_BYTES {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err("combined owner context exceeds the attachment byte limit".into());
+            }
+        }
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
@@ -758,6 +777,15 @@ impl AppServerModelDriver {
                     "cognitive final-use revalidation returned a mismatched receipt".into(),
                 );
             }
+        }
+        if let Some(evidence) = memory_evidence.as_ref()
+            && let Err(error) = self.revalidate_memory_evidence(&owner, evidence).await {
+            let reason: String = format!("memory cell final-use revalidation failed: {error}")
+                .chars().take(1024).collect();
+            let stopped = control.abort_native_before_effect(pre_effect_abort, reason);
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            stopped?;
+            return Err(error);
         }
         if cancellation.is_cancelled() {
             let stopped = control.abort_native_before_effect(
