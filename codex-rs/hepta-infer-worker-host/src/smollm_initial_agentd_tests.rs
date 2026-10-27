@@ -174,6 +174,7 @@ async fn session(
     if !(1..=6).contains(&reads) {
         return Err("ordinary read count must fit original journal".into());
     }
+    let codex_executable = codex_utils_cargo_bin::cargo_bin("codex")?.canonicalize()?;
     let identity = config.identity().clone();
     let parameter = material.manifest().content_digest;
     let selection = material.selection_digest();
@@ -211,7 +212,10 @@ async fn session(
         let registry = FleetRegistry::open_existing(HeptaFleetRoot::parse(&identity.fleet_root)?)?;
         registry.compare_and_transition(&identity.agent_id, identity.spawn_generation, AgentLifecycle::Running)?;
         running = Some(OwnedTask::new(tokio::spawn(codex_hepta_agentd::run(
-            config, codex_arg0::Arg0DispatchPaths::default()))));
+            config, codex_arg0::Arg0DispatchPaths {
+                codex_self_exe: Some(codex_executable.clone()),
+                ..Default::default()
+            }))));
         tokio::time::timeout(Duration::from_secs(20), async {
             loop {
                 if client.health().await.is_ok_and(|health| health.ready) { break; }
@@ -263,7 +267,8 @@ async fn session(
             "selection_digest":selection.to_string(),"observations":observations,"ordinary_context_reads":reads,
             "withdrawal_refused":withdrawal_refused,"controlled_test_issuer":true,"training_rounds":0,
             "beneficial_releases":0,"cold_runtime_installed":false,"public_network_ready":false,
-            "product_qualification_issued":false,"home_root":identity.home_root,"spawn_generation":identity.spawn_generation}))
+            "product_qualification_issued":false,"home_root":identity.home_root,"spawn_generation":identity.spawn_generation,
+            "codex_executable":codex_executable}))
     }.await;
     let stop_result: TestResult<()> = async {
         if let Some(task) = running.as_mut() {
