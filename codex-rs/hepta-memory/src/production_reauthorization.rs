@@ -4,8 +4,8 @@ use super::*;
 use crate::operation_claims::ReauthorizationBinding;
 use crate::operation_claims::RejectionStage;
 
-/// Not Clone, Deserialize, public or constructible by a target. Only the two
-/// synchronous FinalUse error branches in the parent writer create this value.
+/// Not Clone, Deserialize, public or constructible by a target. Only the
+/// original writer's synchronous FinalUse/non-entry branches create this value.
 pub(crate) struct PreBoundaryRejected {
     binding: ReauthorizationBinding,
     entered: DurableDispatchClaim,

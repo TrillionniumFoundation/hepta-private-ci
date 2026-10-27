@@ -28,6 +28,7 @@ use codex_hepta_memory::HOS2_INSTALL_TOPIC_V1;
 use codex_hepta_memory::Hos2DeliveryId;
 use codex_hepta_memory::Hos2DeliveryObservation;
 use codex_hepta_memory::Hos2Device;
+use codex_hepta_memory::Hos2InstallAdmission;
 use codex_hepta_memory::Hos2InstallBudgetV1;
 use codex_hepta_memory::Hos2RetirementObservation;
 use codex_hepta_memory::Hos2RetirementPermit;
@@ -119,6 +120,22 @@ struct HostTestDevice {
     applied: Mutex<Option<Hos2InstallBudgetV1>>,
     installs: AtomicUsize,
     queries: AtomicUsize,
+}
+
+struct HostTestAdmission {
+    checks: AtomicUsize,
+    reject_first: AtomicBool,
+}
+
+impl Hos2InstallAdmission for HostTestAdmission {
+    fn check(&self, _request: &Hos2InstallBudgetV1) -> Result<(), String> {
+        self.checks.fetch_add(1, Ordering::SeqCst);
+        if self.reject_first.swap(false, Ordering::SeqCst) {
+            Err("explicit fixture refuses before native install".into())
+        } else {
+            Ok(())
+        }
+    }
 }
 
 #[cfg(target_os = "linux")]
@@ -247,13 +264,20 @@ async fn actual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend
         },
     )?;
     let device = Arc::new(HostTestDevice::default());
+    let admission = Arc::new(HostTestAdmission {
+        checks: AtomicUsize::new(0),
+        reject_first: AtomicBool::new(true),
+    });
     let composition = AgentdProductionOperationRuntimeConfig::new(
         authority,
         verifier,
         "hos2-host-source".to_string(),
         /*lease_generation*/ 1,
         final_use,
-        Arc::new(ProductionHos2Target::new(device.clone())),
+        Arc::new(ProductionHos2Target::with_admission(
+            device.clone(),
+            admission.clone(),
+        )),
         issuer.clone(),
         Duration::from_millis(20),
     );
@@ -313,7 +337,9 @@ async fn actual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend
         cancellation.clone(),
     ));
     let result: Result<(), Box<dyn Error>> = async {
-        let deadline = Instant::now() + Duration::from_secs(15);
+        // The additional consumer refusal retains the original production
+        // claim/backoff (30 seconds), then the same K/D can be reauthorized.
+        let deadline = Instant::now() + Duration::from_secs(45);
         while issuer.requests.load(Ordering::SeqCst) < 2 {
             if Instant::now() >= deadline {
                 return Err("runtime never requested renewal from the external issuer".into());
@@ -327,6 +353,17 @@ async fn actual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend
             "a proven pre-boundary rejection is not an unknown destination query"
         );
         issuer.enabled.store(true, Ordering::SeqCst);
+        while admission.checks.load(Ordering::SeqCst) == 0 {
+            if Instant::now() >= deadline {
+                return Err("runtime never entered consumer admission".into());
+            }
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+        assert_eq!(device.installs.load(Ordering::SeqCst), 0);
+        assert!(
+            !worker.is_finished(),
+            "consumer refusal stopped the original reconciler"
+        );
         while host.writer().status(&queued.occurrence_key).await? != LocalOutcomeState::Committed {
             if Instant::now() >= deadline {
                 return Err("runtime did not dispatch the freshly authorized original D".into());

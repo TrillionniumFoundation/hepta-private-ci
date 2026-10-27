@@ -166,15 +166,38 @@ pub trait Hos2Device: Send + Sync {
     fn retire(&self, permit: &Hos2RetirementPermit) -> Result<Hos2RetirementObservation, String>;
 }
 
+/// Extra policy admission at the original synchronous consumer boundary. A
+/// check may observe the original device but must never install, queue, retry
+/// or manufacture authority. A refusal proves this call has not entered it.
+pub trait Hos2InstallAdmission: Send + Sync {
+    fn check(&self, request: &Hos2InstallBudgetV1) -> Result<(), String>;
+}
+
 /// Adapter attached to the existing ProductionFinalUseOutboxDispatcher. It
 /// does not hold a signer, alternate dispatcher, lease or mutable database.
 pub struct ProductionHos2Target {
     device: Arc<dyn Hos2Device>,
+    admission: Option<Arc<dyn Hos2InstallAdmission>>,
 }
 
 impl ProductionHos2Target {
     pub fn new(device: Arc<dyn Hos2Device>) -> Self {
-        Self { device }
+        Self {
+            device,
+            admission: None,
+        }
+    }
+
+    /// Attach an additional required policy check to this same native target.
+    /// Missing/expired proposal state cannot fall back to unguarded dispatch.
+    pub fn with_admission(
+        device: Arc<dyn Hos2Device>,
+        admission: Arc<dyn Hos2InstallAdmission>,
+    ) -> Self {
+        Self {
+            device,
+            admission: Some(admission),
+        }
     }
 
     pub(crate) fn retire(
@@ -212,56 +235,69 @@ impl ProductionHos2Target {
         }
         Ok(payload)
     }
+    fn install<'a>(
+        &'a self,
+        request: ProductionDispatchRequest,
+        payload: Hos2InstallBudgetV1,
+    ) -> ProductionDispatchFuture<'a> {
+        // Deliberately evaluate before constructing the future, in the
+        // original synchronous FinalUse consumer-entry closure. A later
+        // revocation is ordered after that entry; no task is queued here.
+        let outcome = match self.device.install(&payload) {
+            Ok(Hos2InstallOutcome::Contradiction(contradiction)) => {
+                match Hos2ProtocolConflict::new(&request.occurrence_key, &payload, contradiction) {
+                    Ok(evidence) => ProductionTargetOutcome::Hos2ProtocolConflict {
+                        evidence: Box::new(evidence),
+                    },
+                    Err(reason) => ProductionTargetOutcome::Indeterminate { reason },
+                }
+            }
+            Ok(Hos2InstallOutcome::Observed(observation)) => {
+                match terminal(&payload, observation) {
+                    ProductionTerminalObservation::Hos2ProtocolConflict { evidence } => {
+                        ProductionTargetOutcome::Hos2ProtocolConflict { evidence }
+                    }
+                    ProductionTerminalObservation::Applied { receipt } => {
+                        ProductionTargetOutcome::Committed { receipt }
+                    }
+                    ProductionTerminalObservation::NotApplied { reason } => {
+                        ProductionTargetOutcome::NotApplied { reason }
+                    }
+                    ProductionTerminalObservation::Indeterminate { reason }
+                    | ProductionTerminalObservation::Unavailable { reason }
+                    | ProductionTerminalObservation::Quarantined { reason } => {
+                        ProductionTargetOutcome::Indeterminate { reason }
+                    }
+                }
+            }
+            Err(reason) => ProductionTargetOutcome::Indeterminate { reason },
+        };
+        Box::pin(async move { outcome })
+    }
 }
 
 impl ProductionOutboxTarget for ProductionHos2Target {
     fn dispatch<'a>(&'a self, request: ProductionDispatchRequest) -> ProductionDispatchFuture<'a> {
-        // Deliberately evaluate before constructing the future, in the
-        // original synchronous FinalUse consumer-entry closure. A later
-        // revocation is ordered after that entry; no task is queued here.
-        let outcome = match self.decode(&request) {
-            Err(reason) => ProductionTargetOutcome::Rejected { reason },
-            Ok(payload) => match self.device.install(&payload) {
-                Ok(Hos2InstallOutcome::Contradiction(contradiction)) => {
-                    match Hos2ProtocolConflict::new(
-                        &request.occurrence_key,
-                        &payload,
-                        contradiction,
-                    ) {
-                        Ok(evidence) => ProductionTargetOutcome::Hos2ProtocolConflict {
-                            evidence: Box::new(evidence),
-                        },
-                        Err(reason) => ProductionTargetOutcome::Indeterminate { reason },
-                    }
-                }
-                Ok(Hos2InstallOutcome::Observed(observation)) => {
-                    match terminal(&payload, observation) {
-                        ProductionTerminalObservation::Hos2ProtocolConflict { evidence } => {
-                            ProductionTargetOutcome::Hos2ProtocolConflict { evidence }
-                        }
-                        ProductionTerminalObservation::Applied { receipt } => {
-                            ProductionTargetOutcome::Committed { receipt }
-                        }
-                        ProductionTerminalObservation::NotApplied { reason } => {
-                            ProductionTargetOutcome::NotApplied { reason }
-                        }
-                        ProductionTerminalObservation::Indeterminate { reason }
-                        | ProductionTerminalObservation::Unavailable { reason }
-                        | ProductionTerminalObservation::Quarantined { reason } => {
-                            ProductionTargetOutcome::Indeterminate { reason }
-                        }
-                    }
-                }
-                Err(reason) => ProductionTargetOutcome::Indeterminate { reason },
-            },
-        };
-        Box::pin(async move { outcome })
+        self.enter(request).unwrap_or_else(|reason| {
+            Box::pin(async move { ProductionTargetOutcome::Rejected { reason } })
+        })
     }
 }
 
 impl FinalUseProductionOutboxTarget for ProductionHos2Target {
     fn destination_id(&self) -> &str {
         HOS2_DESTINATION_V1
+    }
+
+    fn enter<'a>(
+        &'a self,
+        request: ProductionDispatchRequest,
+    ) -> Result<ProductionDispatchFuture<'a>, String> {
+        let payload = self.decode(&request)?;
+        if let Some(admission) = &self.admission {
+            admission.check(&payload)?;
+        }
+        Ok(self.install(request, payload))
     }
 
     fn observe_terminal<'a>(
