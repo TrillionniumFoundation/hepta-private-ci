@@ -14,12 +14,17 @@ class EvidenceArchiveTests(unittest.TestCase):
             source = root / "source"
             (source / "results").mkdir(parents=True)
             (source / "results" / "values.bin").write_bytes(bytes(range(256)) * 3000)
-            (source / "results" / "note.txt").write_text("Measured result, including failures.\n")
+            (source / "results" / "note.txt").write_text(
+                "Measured result, including failures.\n"
+            )
             manifest = pack(source, root / "archive", ["results"])
             result = unpack(root / "archive", root / "restore")
             self.assertEqual(result["files_verified"], 2)
             self.assertEqual(manifest["files"]["results/values.bin"]["bytes"], 768000)
-            self.assertEqual((root / "restore/results/values.bin").read_bytes(), (source / "results/values.bin").read_bytes())
+            self.assertEqual(
+                (root / "restore/results/values.bin").read_bytes(),
+                (source / "results/values.bin").read_bytes(),
+            )
 
     def test_corrupt_part_rejected(self):
         with tempfile.TemporaryDirectory() as directory:

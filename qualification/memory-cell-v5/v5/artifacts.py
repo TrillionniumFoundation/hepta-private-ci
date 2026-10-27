@@ -15,7 +15,7 @@ def store_payload(directory, prefix, raw):
     for index, start in enumerate(range(0, len(raw), PART_BYTES), 1):
         name = f"{prefix}.part{index:03d}"
         with (path / name).open("xb") as stream:
-            stream.write(raw[start:start + PART_BYTES])
+            stream.write(raw[start : start + PART_BYTES])
         files[name] = file_identity(path / name)
     if not files:
         raise ValueError("empty payload is not allowed")
@@ -33,7 +33,11 @@ def load_payload(directory, prefix, record, *, limit=16000000):
     chunks = []
     for name in names:
         item = path / name
-        if item.is_symlink() or not item.is_file() or not 0 < item.stat().st_size <= PART_BYTES:
+        if (
+            item.is_symlink()
+            or not item.is_file()
+            or not 0 < item.stat().st_size <= PART_BYTES
+        ):
             raise ValueError("payload part is missing, linked or exceeds its limit")
         raw = item.read_bytes()
         if {"bytes": len(raw), "sha256": sha256(raw)} != files[name]:
@@ -48,12 +52,22 @@ def load_payload(directory, prefix, record, *, limit=16000000):
 def compressed_json(directory, prefix, value):
     raw = canonical(value) + b"\n"
     record = store_payload(directory, prefix, zlib.compress(raw, level=9))
-    return {**record, "encoding": "zlib-compressed-UTF8-JSON", "uncompressed_bytes": len(raw), "uncompressed_sha256": sha256(raw)}
+    return {
+        **record,
+        "encoding": "zlib-compressed-UTF8-JSON",
+        "uncompressed_bytes": len(raw),
+        "uncompressed_sha256": sha256(raw),
+    }
 
 
 def bounded_decompress(raw, maximum):
     decoder = zlib.decompressobj()
     decoded = decoder.decompress(raw, maximum + 1)
-    if len(decoded) > maximum or not decoder.eof or decoder.unused_data or decoder.unconsumed_tail:
+    if (
+        len(decoded) > maximum
+        or not decoder.eof
+        or decoder.unused_data
+        or decoder.unconsumed_tail
+    ):
         raise ValueError("compressed payload exceeds bounds or has an invalid stream")
     return decoded

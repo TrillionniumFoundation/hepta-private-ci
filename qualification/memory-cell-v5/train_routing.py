@@ -25,24 +25,36 @@ def main():
     if not args.development and not re.fullmatch(r"[0-9a-f]{40}", args.source_commit):
         parser.error("formal training requires a frozen source commit identity")
     if args.candidate_names and not args.development:
-        parser.error("candidate subsets are limited to disclosed development increments")
+        parser.error(
+            "candidate subsets are limited to disclosed development increments"
+        )
     if not args.development:
         from v5.training_guard import REQUIRED_TRAINING_SOURCES, verify_training_freeze
 
         frozen_before, identity_before = verify_training_freeze(args.source_commit)
-    train_routing(args.output, args.seeds, source_commit=args.source_commit, development=args.development, candidate_names=args.candidate_names)
+    train_routing(
+        args.output,
+        args.seeds,
+        source_commit=args.source_commit,
+        development=args.development,
+        candidate_names=args.candidate_names,
+    )
     if not args.development:
         frozen_after, identity_after = verify_training_freeze(args.source_commit)
         if frozen_before != frozen_after or identity_before != identity_after:
             raise ValueError("project freeze changed during formal training")
-        write_json(Path(args.output) / "FORMAL_FREEZE_CHECK.json", {
-            "schema": "memory-cell-v5.formal-training-freeze.v1",
-            "source_commit": args.source_commit,
-            "freeze_before": identity_before, "freeze_after": identity_after,
-            "required_training_sources": list(REQUIRED_TRAINING_SOURCES),
-            "validated_before_and_after_fitting": True,
-            "held_materializer_called": False,
-        })
+        write_json(
+            Path(args.output) / "FORMAL_FREEZE_CHECK.json",
+            {
+                "schema": "memory-cell-v5.formal-training-freeze.v1",
+                "source_commit": args.source_commit,
+                "freeze_before": identity_before,
+                "freeze_after": identity_after,
+                "required_training_sources": list(REQUIRED_TRAINING_SOURCES),
+                "validated_before_and_after_fitting": True,
+                "held_materializer_called": False,
+            },
+        )
 
 
 if __name__ == "__main__":

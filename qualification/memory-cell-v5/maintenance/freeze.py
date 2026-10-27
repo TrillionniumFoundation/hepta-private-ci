@@ -26,22 +26,47 @@ def source_freeze(commit):
     files = set(PROJECT.glob("*.py"))
     for directory in ("v5", "legacy_v3", "maintenance", "tests", "validation"):
         files.update((PROJECT / directory).glob("*.py"))
-    files.update(PROJECT / name for name in ("PROTOCOL.json", "VENDOR.json", "V5B_PREDECLARATION.md", "requirements.txt", "assets/ASSETS.json"))
+    files.update(
+        PROJECT / name
+        for name in (
+            "PROTOCOL.json",
+            "VENDOR.json",
+            "V5B_PREDECLARATION.md",
+            "requirements.txt",
+            "assets/ASSETS.json",
+        )
+    )
     if any(path.is_symlink() for path in files):
         raise ValueError("linked source or asset")
     seal = file_identity(PROJECT / "held/SEAL.json")
     if seal["sha256"] != protocol["main_held"]["seal_sha256"]:
         raise ValueError("independent held seal differs from the protocol")
-    document = {"schema": "hepta.memory.v5.source-freeze.v1", "frozen": True,
-                "created_utc": datetime.now(timezone.utc).isoformat(), "source_commit": commit,
-                "source_files": {path.relative_to(PROJECT).as_posix(): file_identity(path) for path in sorted(files)},
-                "held_seal_sha256": seal["sha256"], "seeds": list(SEEDS), "gates": GATES,
-                "assets_binding_sha256": file_identity(PROJECT / "assets/ASSETS.json")["sha256"],
-                "python_version": platform.python_version(), "held_body_read_by_freezer": False,
-                "remote_commit_verification": "Caller must verify this commit and source blobs before starting formal training"}
+    document = {
+        "schema": "hepta.memory.v5.source-freeze.v1",
+        "frozen": True,
+        "created_utc": datetime.now(timezone.utc).isoformat(),
+        "source_commit": commit,
+        "source_files": {
+            path.relative_to(PROJECT).as_posix(): file_identity(path)
+            for path in sorted(files)
+        },
+        "held_seal_sha256": seal["sha256"],
+        "seeds": list(SEEDS),
+        "gates": GATES,
+        "assets_binding_sha256": file_identity(PROJECT / "assets/ASSETS.json")[
+            "sha256"
+        ],
+        "python_version": platform.python_version(),
+        "held_body_read_by_freezer": False,
+        "remote_commit_verification": "Caller must verify this commit and source blobs before starting formal training",
+    }
     write_exclusive(PROJECT / "FREEZE.json", document)
     verify_freeze(PROJECT / "FREEZE.json")
-    return {"source_commit": commit, "source_files": len(files), "freeze": file_identity(PROJECT / "FREEZE.json")}
+    return {
+        "source_commit": commit,
+        "source_files": len(files),
+        "freeze": file_identity(PROJECT / "FREEZE.json"),
+    }
 
 
 def seal_selected(training_root):
@@ -53,20 +78,31 @@ def seal_selected(training_root):
     mapping = {}
     for seed in SEEDS:
         directory = root / f"seed-{seed}" / "selected"
-        identity = selected_identity(directory, expected_seed=seed,
-                                     expected_source_commit=frozen["source_commit"],
-                                     frozen_source_files=frozen["source_files"])
+        identity = selected_identity(
+            directory,
+            expected_seed=seed,
+            expected_source_commit=frozen["source_commit"],
+            frozen_source_files=frozen["source_files"],
+        )
         routers[str(seed)] = {key: identity[key] for key in SEALED_ROUTER_FIELDS}
         mapping[str(seed)] = str(directory)
-    document = {"schema": "hepta.memory.v5.selected-before-held.v1", "source_commit": frozen["source_commit"],
-                "freeze_sha256": freeze_identity["sha256"], "routers": routers,
-                "assets_binding_sha256": frozen["assets_binding_sha256"], "held_opened": False,
-                "created_utc": datetime.now(timezone.utc).isoformat(),
-                "remote_delivery_before_held_required": True}
+    document = {
+        "schema": "hepta.memory.v5.selected-before-held.v1",
+        "source_commit": frozen["source_commit"],
+        "freeze_sha256": freeze_identity["sha256"],
+        "routers": routers,
+        "assets_binding_sha256": frozen["assets_binding_sha256"],
+        "held_opened": False,
+        "created_utc": datetime.now(timezone.utc).isoformat(),
+        "remote_delivery_before_held_required": True,
+    }
     write_exclusive(PROJECT / "SELECTED_MODELS.json", document)
     write_exclusive(PROJECT / "ROUTERS.json", mapping)
-    return {"selected_seal": file_identity(PROJECT / "SELECTED_MODELS.json"), "models": len(routers),
-            "next_step": "Verify immutable remote delivery of the selection seal and model bytes before opening held"}
+    return {
+        "selected_seal": file_identity(PROJECT / "SELECTED_MODELS.json"),
+        "models": len(routers),
+        "next_step": "Verify immutable remote delivery of the selection seal and model bytes before opening held",
+    }
 
 
 if __name__ == "__main__":
@@ -77,5 +113,9 @@ if __name__ == "__main__":
     sealing = actions.add_parser("selection")
     sealing.add_argument("--training", type=Path, required=True)
     args = parser.parse_args()
-    result = source_freeze(args.commit) if args.action == "source" else seal_selected(args.training)
+    result = (
+        source_freeze(args.commit)
+        if args.action == "source"
+        else seal_selected(args.training)
+    )
     print(json.dumps(result, sort_keys=True))

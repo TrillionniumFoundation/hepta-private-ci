@@ -24,7 +24,9 @@ CONTRACT = {
 
 
 def canonical(value):
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode()
+    return json.dumps(
+        value, sort_keys=True, separators=(",", ":"), ensure_ascii=True
+    ).encode()
 
 
 def sha256(data):
@@ -46,8 +48,13 @@ def file_identity(path):
 def normalized_request(request):
     """Replace only supplied identity slots; never inspect an intent lexicon."""
     if not isinstance(request, dict) or set(request) != REQUEST_KEYS:
-        raise ValueError("serving requests must have exactly utterance, series_name, date")
-    if any(not isinstance(request[key], str) or not request[key].strip() for key in REQUEST_KEYS):
+        raise ValueError(
+            "serving requests must have exactly utterance, series_name, date"
+        )
+    if any(
+        not isinstance(request[key], str) or not request[key].strip()
+        for key in REQUEST_KEYS
+    ):
         raise ValueError("serving fields must be nonempty strings")
     if len(request["utterance"]) > 4096 or len(request["series_name"]) > 256:
         raise ValueError("request exceeds the declared length limit")

@@ -46,9 +46,13 @@ class FeatureBlock:
         return {
             "name": self.name,
             "config": FEATURES[self.name],
-            "vocabulary": {str(key): int(value) for key, value in self.model.vocabulary_.items()},
+            "vocabulary": {
+                str(key): int(value) for key, value in self.model.vocabulary_.items()
+            },
             "idf_array": "idf_" + self.name,
-            "token_pattern": TOKEN_PATTERN if FEATURES[self.name]["analyzer"] == "word" else None,
+            "token_pattern": TOKEN_PATTERN
+            if FEATURES[self.name]["analyzer"] == "word"
+            else None,
             "sublinear_tf": True,
             "norm": "l2",
             "lowercase": False,
@@ -63,7 +67,9 @@ class FeatureBlock:
         vocabulary = descriptor["vocabulary"]
         if not isinstance(vocabulary, dict) or not vocabulary:
             raise ValueError("feature vocabulary must be nonempty")
-        if any(not isinstance(k, str) or type(v) is not int for k, v in vocabulary.items()):
+        if any(
+            not isinstance(k, str) or type(v) is not int for k, v in vocabulary.items()
+        ):
             raise ValueError("invalid vocabulary entries")
         if sorted(vocabulary.values()) != list(range(len(vocabulary))):
             raise ValueError("vocabulary indices are not contiguous and unique")

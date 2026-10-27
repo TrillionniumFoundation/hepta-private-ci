@@ -158,9 +158,30 @@ WINDOWS = [
     "across the monthly trio ending in {date}",
 ]
 OPERATORS = {
-    "mean3": ["arithmetic mean", "ordinary average", "simple mean", "equally weighted average", "sum divided by three", "average level"],
-    "range3": ["maximum minus minimum", "high-low range", "largest less smallest", "distance between the highest and lowest", "numerical range", "width from the lower extreme to the upper extreme"],
-    "peak3": ["maximum value", "highest reading", "largest observation", "upper extreme", "peak numerical level", "greatest recorded number"],
+    "mean3": [
+        "arithmetic mean",
+        "ordinary average",
+        "simple mean",
+        "equally weighted average",
+        "sum divided by three",
+        "average level",
+    ],
+    "range3": [
+        "maximum minus minimum",
+        "high-low range",
+        "largest less smallest",
+        "distance between the highest and lowest",
+        "numerical range",
+        "width from the lower extreme to the upper extreme",
+    ],
+    "peak3": [
+        "maximum value",
+        "highest reading",
+        "largest observation",
+        "upper extreme",
+        "peak numerical level",
+        "greatest recorded number",
+    ],
 }
 COMMANDS = ["Compute the", "Please give the", "I need the", "Return the"]
 WRONG_WINDOWS = [
@@ -176,11 +197,24 @@ WRONG_WINDOWS = [
     "across {date} and the two following months",
 ]
 WRONG_OPERATORS = [
-    "median", "geometric mean", "harmonic mean", "root mean square",
-    "standard deviation", "variance", "sum", "second-largest value",
-    "minimum", "lowest value", "slope of a fitted line", "weighted mean with unequal weights",
-    "date of the maximum", "index of the highest observation", "ratio of maximum to minimum",
-    "maximum minus the mean", "mean minus the minimum", "lowest minus highest",
+    "median",
+    "geometric mean",
+    "harmonic mean",
+    "root mean square",
+    "standard deviation",
+    "variance",
+    "sum",
+    "second-largest value",
+    "minimum",
+    "lowest value",
+    "slope of a fitted line",
+    "weighted mean with unequal weights",
+    "date of the maximum",
+    "index of the highest observation",
+    "ratio of maximum to minimum",
+    "maximum minus the mean",
+    "mean minus the minimum",
+    "lowest minus highest",
 ]
 
 
@@ -197,16 +231,38 @@ def training_templates():
         for operator in operators:
             for window in WINDOWS:
                 for command in COMMANDS:
-                    add(f"{command} {operator} of {{series_name}} {window}.", intent, "generated-positive-operator-window")
+                    add(
+                        f"{command} {operator} of {{series_name}} {window}.",
+                        intent,
+                        "generated-positive-operator-window",
+                    )
             for window in WRONG_WINDOWS:
                 for command in COMMANDS[:2]:
-                    add(f"{command} {operator} of {{series_name}} {window}.", REJECT, "different-window-or-alignment")
+                    add(
+                        f"{command} {operator} of {{series_name}} {window}.",
+                        REJECT,
+                        "different-window-or-alignment",
+                    )
     for operator in WRONG_OPERATORS:
         for window in WINDOWS:
             for command in COMMANDS[:2]:
-                add(f"{command} {operator} of {{series_name}} {window}.", REJECT, "unsupported-statistic-or-output")
-    current = ["its value at {date}", "the current month's reading at {date}", "the {date} observation", "the latest value at {date}"]
-    prior = ["its value one month before {date}", "the preceding month's reading", "the previous monthly observation", "last month's value relative to {date}"]
+                add(
+                    f"{command} {operator} of {{series_name}} {window}.",
+                    REJECT,
+                    "unsupported-statistic-or-output",
+                )
+    current = [
+        "its value at {date}",
+        "the current month's reading at {date}",
+        "the {date} observation",
+        "the latest value at {date}",
+    ]
+    prior = [
+        "its value one month before {date}",
+        "the preceding month's reading",
+        "the previous monthly observation",
+        "last month's value relative to {date}",
+    ]
     for new in current:
         for old in prior:
             for text, label in (
@@ -219,24 +275,56 @@ def training_templates():
                 (f"For {{series_name}}, divide {new} by {old}.", REJECT),
             ):
                 add(text, label, "generated-ordered-operand-contrast")
-    for verb in ("Read", "Retrieve", "Report", "Fetch", "Look up", "Return", "Quote", "Show"):
+    for verb in (
+        "Read",
+        "Retrieve",
+        "Report",
+        "Fetch",
+        "Look up",
+        "Return",
+        "Quote",
+        "Show",
+    ):
         for suffix in (
-            "at {date}", "for the specified month {date}", "in the reference month {date}",
-            "corresponding to {date}", "for month {date} itself", "with timestamp {date}",
+            "at {date}",
+            "for the specified month {date}",
+            "in the reference month {date}",
+            "corresponding to {date}",
+            "for month {date} itself",
+            "with timestamp {date}",
         ):
-            add(f"{verb} the recorded {{series_name}} value {suffix}.", "at", "generated-read-address")
+            add(
+                f"{verb} the recorded {{series_name}} value {suffix}.",
+                "at",
+                "generated-read-address",
+            )
         for suffix in (
-            "one month before {date}", "in the calendar month immediately before {date}",
-            "for the previous month relative to {date}", "one monthly interval earlier than {date}",
-            "in the predecessor month of {date}", "at a one-month backward offset from {date}",
+            "one month before {date}",
+            "in the calendar month immediately before {date}",
+            "for the previous month relative to {date}",
+            "one monthly interval earlier than {date}",
+            "in the predecessor month of {date}",
+            "at a one-month backward offset from {date}",
         ):
-            add(f"{verb} the recorded {{series_name}} value {suffix}.", "previous", "generated-read-address")
+            add(
+                f"{verb} the recorded {{series_name}} value {suffix}.",
+                "previous",
+                "generated-read-address",
+            )
         for suffix in (
-            "one month after {date}", "two months before {date}", "in the same month one year before {date}",
-            "three months earlier than {date}", "in the next month after {date}",
-            "in the year containing {date}", "at the end of the quarter containing {date}",
+            "one month after {date}",
+            "two months before {date}",
+            "in the same month one year before {date}",
+            "three months earlier than {date}",
+            "in the next month after {date}",
+            "in the year containing {date}",
+            "at the end of the quarter containing {date}",
         ):
-            add(f"{verb} the recorded {{series_name}} value {suffix}.", REJECT, "wrong-address")
+            add(
+                f"{verb} the recorded {{series_name}} value {suffix}.",
+                REJECT,
+                "wrong-address",
+            )
     for text in OTHER_REJECTS:
         add(text, REJECT, "manual-near-ood")
     return rows

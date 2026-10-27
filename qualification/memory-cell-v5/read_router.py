@@ -27,20 +27,25 @@ def main():
     after = parameter_digest(router)
     if before != after:
         raise AssertionError("inference changed loaded model parameters")
-    write_json(args.output, {
-        "schema": "memory-cell-v5.fresh-router-read.v1",
-        "requests": file_identity(requests_path),
-        "request_count": len(requests), "decisions": decisions,
-        "manifest_sha256": args.manifest_sha256,
-        "parameter_digest_before": before, "parameter_digest_after": after,
-        "numeric_parameter_bytes": router.numeric_parameter_bytes(),
-        "wall_seconds": time.perf_counter() - wall,
-        "process_cpu_seconds": time.process_time() - cpu,
-        "pretrained_encoder_calls": 0,
-        "training_performed": False,
-        "loaded_training_examples": False,
-        "loaded_numeric_memory_targets": False,
-    })
+    write_json(
+        args.output,
+        {
+            "schema": "memory-cell-v5.fresh-router-read.v1",
+            "requests": file_identity(requests_path),
+            "request_count": len(requests),
+            "decisions": decisions,
+            "manifest_sha256": args.manifest_sha256,
+            "parameter_digest_before": before,
+            "parameter_digest_after": after,
+            "numeric_parameter_bytes": router.numeric_parameter_bytes(),
+            "wall_seconds": time.perf_counter() - wall,
+            "process_cpu_seconds": time.process_time() - cpu,
+            "pretrained_encoder_calls": 0,
+            "training_performed": False,
+            "loaded_training_examples": False,
+            "loaded_numeric_memory_targets": False,
+        },
+    )
 
 
 if __name__ == "__main__":

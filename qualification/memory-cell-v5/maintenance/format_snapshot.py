@@ -40,18 +40,58 @@ def main():
     if not source or any(path.is_symlink() for path in source + protected):
         raise ValueError("missing source or linked input")
     before = {path.relative_to(PROJECT).as_posix(): identity(path) for path in source}
-    syntax = {path.relative_to(PROJECT).as_posix(): syntax_identity(path) for path in source}
-    immutable = {path.relative_to(PROJECT).as_posix(): identity(path) for path in protected}
+    syntax = {
+        path.relative_to(PROJECT).as_posix(): syntax_identity(path) for path in source
+    }
+    immutable = {
+        path.relative_to(PROJECT).as_posix(): identity(path) for path in protected
+    }
     commands = [
-        (["just", "fmt", "--base", "9616e81ec3f66d734c9f430801ec2f4c4e908adb"], REPOSITORY / "codex-rs"),
-        (["uv", "run", "--frozen", "--project", "scripts", "ruff", "format", *[path.relative_to(REPOSITORY).as_posix() for path in source]], REPOSITORY),
-        (["uv", "run", "--frozen", "--project", "scripts", "ruff", "check", *[path.relative_to(REPOSITORY).as_posix() for path in source]], REPOSITORY),
+        (
+            ["just", "fmt", "--base", "9616e81ec3f66d734c9f430801ec2f4c4e908adb"],
+            REPOSITORY / "codex-rs",
+        ),
+        (
+            [
+                "uv",
+                "run",
+                "--frozen",
+                "--project",
+                "scripts",
+                "ruff",
+                "format",
+                *[path.relative_to(REPOSITORY).as_posix() for path in source],
+            ],
+            REPOSITORY,
+        ),
+        (
+            [
+                "uv",
+                "run",
+                "--frozen",
+                "--project",
+                "scripts",
+                "ruff",
+                "check",
+                *[path.relative_to(REPOSITORY).as_posix() for path in source],
+            ],
+            REPOSITORY,
+        ),
     ]
     records = []
     for command, working_directory in commands:
-        process = subprocess.run(command, cwd=working_directory, capture_output=True, text=True)
-        records.append({"command": command, "cwd": str(working_directory), "exit_code": process.returncode,
-                        "stdout": process.stdout, "stderr": process.stderr})
+        process = subprocess.run(
+            command, cwd=working_directory, capture_output=True, text=True
+        )
+        records.append(
+            {
+                "command": command,
+                "cwd": str(working_directory),
+                "exit_code": process.returncode,
+                "stdout": process.stdout,
+                "stderr": process.stderr,
+            }
+        )
         if process.returncode:
             print(json.dumps(records, indent=2))
             raise RuntimeError("repository formatting or scoped lint failed")
@@ -63,22 +103,52 @@ def main():
     for path in protected:
         relative = path.relative_to(PROJECT).as_posix()
         if identity(path) != immutable[relative]:
-            raise ValueError("formatter touched sealed or byte-identical inputs: " + relative)
-    report = {"schema": "hepta.memory.v5.final-format.v1", "source_commit_before_format": os.environ["GITHUB_SHA"],
-              "commands": records, "before": before, "after": after, "ast_sha256": syntax,
-              "all_source_ast_equal": True, "protected_files": immutable, "protected_unchanged": True,
-              "unit_tests_run_by_this_job": False,
-              "formatter_inputs": {name: identity(REPOSITORY / name) for name in
-                                   ("justfile", "scripts/format.py", "scripts/just-shell.py", "scripts/pyproject.toml", "scripts/uv.lock")}}
+            raise ValueError(
+                "formatter touched sealed or byte-identical inputs: " + relative
+            )
+    report = {
+        "schema": "hepta.memory.v5.final-format.v1",
+        "source_commit_before_format": os.environ["GITHUB_SHA"],
+        "commands": records,
+        "before": before,
+        "after": after,
+        "ast_sha256": syntax,
+        "all_source_ast_equal": True,
+        "protected_files": immutable,
+        "protected_unchanged": True,
+        "unit_tests_run_by_this_job": False,
+        "formatter_inputs": {
+            name: identity(REPOSITORY / name)
+            for name in (
+                "justfile",
+                "scripts/format.py",
+                "scripts/just-shell.py",
+                "scripts/pyproject.toml",
+                "scripts/uv.lock",
+            )
+        },
+    }
     output = REPOSITORY / "v5-format-output"
     output.mkdir(exist_ok=False)
     report_file = output / "FORMAT.json"
     report_file.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
     with tarfile.open(output / "formatted-source.tar.gz", "w:gz") as archive:
         for path in source:
-            archive.add(path, arcname=path.relative_to(PROJECT).as_posix(), recursive=False)
-    print(json.dumps({"source_files": len(source), "changed_files": sum(before[name] != after[name] for name in before),
-                      "protected_files": len(protected), "ast_equal": True, "report": identity(report_file)}, sort_keys=True))
+            archive.add(
+                path, arcname=path.relative_to(PROJECT).as_posix(), recursive=False
+            )
+    print(
+        json.dumps(
+            {
+                "source_files": len(source),
+                "changed_files": sum(before[name] != after[name] for name in before),
+                "protected_files": len(protected),
+                "ast_equal": True,
+                "report": identity(report_file),
+            },
+            sort_keys=True,
+        )
+    )
 
 
 if __name__ == "__main__":

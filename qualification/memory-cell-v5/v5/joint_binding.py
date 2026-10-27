@@ -9,8 +9,12 @@ from .contracts import file_identity
 
 PROJECT = Path(__file__).resolve().parents[1]
 SEEDS = (1019, 1021, 1031, 1033, 1039)
-GATES = {"known_correct_accepted_min": 0.8, "ood_false_accept_max": 0.05,
-         "parameter_oracle_exact": 1.0, "composed_ablation_gain_min": 0.10}
+GATES = {
+    "known_correct_accepted_min": 0.8,
+    "ood_false_accept_max": 0.05,
+    "parameter_oracle_exact": 1.0,
+    "composed_ablation_gain_min": 0.10,
+}
 
 
 def immutable_path(value):
@@ -29,7 +33,12 @@ def relative_path(value):
     if not isinstance(value, str) or not value:
         raise ValueError("artifact names must be nonempty relative paths")
     path = PurePosixPath(value)
-    if path.is_absolute() or ".." in path.parts or path.as_posix() != value or value == ".":
+    if (
+        path.is_absolute()
+        or ".." in path.parts
+        or path.as_posix() != value
+        or value == "."
+    ):
         raise ValueError("unsafe or noncanonical artifact path")
     return path
 
@@ -39,7 +48,10 @@ def required_source_files():
     for directory in ("v5", "legacy_v3", "maintenance"):
         paths.update((PROJECT / directory).glob("*.py"))
     return {path.relative_to(PROJECT).as_posix() for path in paths} | {
-        "PROTOCOL.json", "VENDOR.json", "assets/ASSETS.json"}
+        "PROTOCOL.json",
+        "VENDOR.json",
+        "assets/ASSETS.json",
+    }
 
 
 def verify_freeze(path):
@@ -47,16 +59,24 @@ def verify_freeze(path):
     if path != PROJECT / "FREEZE.json":
         raise ValueError("formal execution needs the project FREEZE.json")
     frozen = json.loads(path.read_bytes())
-    if frozen["frozen"] is not True or frozen["seeds"] != list(SEEDS) or frozen["gates"] != GATES:
+    if (
+        frozen["frozen"] is not True
+        or frozen["seeds"] != list(SEEDS)
+        or frozen["gates"] != GATES
+    ):
         raise ValueError("formal seed, gate or freeze state differs")
-    if not isinstance(frozen.get("source_commit"), str) or not re.fullmatch(r"[0-9a-f]{40}", frozen["source_commit"]):
+    if not isinstance(frozen.get("source_commit"), str) or not re.fullmatch(
+        r"[0-9a-f]{40}", frozen["source_commit"]
+    ):
         raise ValueError("frozen source commit must be a full lowercase Git SHA")
     sources = frozen["source_files"]
     if not isinstance(sources, dict):
         raise ValueError("frozen source inventory must be a file mapping")
     missing = required_source_files() - sources.keys()
     if missing:
-        raise ValueError("formal freeze omits required sources: " + ", ".join(sorted(missing)))
+        raise ValueError(
+            "formal freeze omits required sources: " + ", ".join(sorted(missing))
+        )
     for relative, identity in sources.items():
         source = immutable_path(PROJECT.joinpath(*relative_path(relative).parts))
         if not source.is_file() or file_identity(source) != identity:

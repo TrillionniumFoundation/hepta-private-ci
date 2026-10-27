@@ -1,6 +1,5 @@
 """Bounded candidates and selection rule, declared before development fitting."""
 
-
 FEATURES = {
     "word": {"analyzer": "word", "ngram_range": [1, 3], "max_features": 12000},
     "char": {"analyzer": "char", "ngram_range": [3, 5], "max_features": 12000},
@@ -10,14 +9,46 @@ FEATURES = {
 BASE_CANDIDATES = (
     {"name": "word-lr-c1", "features": ["word"], "learner": "logistic", "C": 1.0},
     {"name": "word-lr-c4", "features": ["word"], "learner": "logistic", "C": 4.0},
-    {"name": "mixed-svm-c0.5", "features": ["word", "char"], "learner": "linear_svm", "C": 0.5},
-    {"name": "mixed-svm-c2", "features": ["word", "char"], "learner": "linear_svm", "C": 2.0},
-    {"name": "char4096-lr-c4", "features": ["char_small"], "learner": "logistic", "C": 4.0},
-    {"name": "unigram2048-lr-c4", "features": ["unigram_small"], "learner": "logistic", "C": 4.0},
+    {
+        "name": "mixed-svm-c0.5",
+        "features": ["word", "char"],
+        "learner": "linear_svm",
+        "C": 0.5,
+    },
+    {
+        "name": "mixed-svm-c2",
+        "features": ["word", "char"],
+        "learner": "linear_svm",
+        "C": 2.0,
+    },
+    {
+        "name": "char4096-lr-c4",
+        "features": ["char_small"],
+        "learner": "logistic",
+        "C": 4.0,
+    },
+    {
+        "name": "unigram2048-lr-c4",
+        "features": ["unigram_small"],
+        "learner": "logistic",
+        "C": 4.0,
+    },
 )
 SUBCLASS_CANDIDATES = (
-    {"name": "word-lr-c4-negative-families", "features": ["word"], "learner": "logistic", "C": 4.0, "negative_subclasses": True},
-    {"name": "mixed-svm-c2-negative-families", "features": ["word", "char"], "learner": "linear_svm", "C": 2.0, "negative_subclasses": True},
+    {
+        "name": "word-lr-c4-negative-families",
+        "features": ["word"],
+        "learner": "logistic",
+        "C": 4.0,
+        "negative_subclasses": True,
+    },
+    {
+        "name": "mixed-svm-c2-negative-families",
+        "features": ["word", "char"],
+        "learner": "linear_svm",
+        "C": 2.0,
+        "negative_subclasses": True,
+    },
 )
 CANDIDATES = (*BASE_CANDIDATES, *SUBCLASS_CANDIDATES)
 NEGATIVE_TRAINING_FAMILIES = (
@@ -45,7 +76,20 @@ DEFAULT_CONFIG = {
     "solver_max_iter": 2000,
     "solver_tolerance": 1e-5,
     "class_weight": "balanced",
-    "confidence_grid": [0.0, 0.25, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.98, 0.99, 0.995],
+    "confidence_grid": [
+        0.0,
+        0.25,
+        0.4,
+        0.5,
+        0.6,
+        0.7,
+        0.8,
+        0.9,
+        0.95,
+        0.98,
+        0.99,
+        0.995,
+    ],
     "margin_grid": [0.0, 0.02, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8],
     "minimum_correct_known_coverage": 0.8,
     "maximum_ood_false_accept": 0.05,
