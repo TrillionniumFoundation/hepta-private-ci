@@ -221,7 +221,9 @@ fn validate(budget: &MemoryStructureBudgetV1, items: &[MemoryStructureMeasuremen
         || budget.required_fixed_shards.iter().any(|count| !(1..=8).contains(count))
         || budget.required_fixed_shards != fixed.into_iter().collect::<Vec<_>>()
         || items.iter().filter(|item| item.role == MemoryStructureRoleV1::KeepFixed).count() != 1
-        || budget.forecast_queries == 0 || budget.error_weight == 0 || budget.max_retention_error_permyriad > 10_000 {
+        || budget.forecast_queries == 0 || budget.error_weight == 0 || budget.byte_weight == 0
+        || budget.wall_ns_weight == 0 || budget.communication_byte_weight == 0
+        || budget.max_retention_error_permyriad > 10_000 {
         return Err(MemoryStructureBudgetErrorV1::InvalidInventory);
     }
     let first = &items[0];

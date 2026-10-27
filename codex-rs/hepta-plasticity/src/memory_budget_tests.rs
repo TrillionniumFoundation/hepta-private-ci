@@ -70,6 +70,16 @@ fn unknown_costs_and_missing_independent_measurement_emit_only_no_change() {
 
 #[test]
 fn strongest_fixed_and_all_candidate_search_cost_prevent_false_structural_wins() {
+    for axis in 0..4 {
+        let mut invalid = budget();
+        match axis {
+            0 => invalid.error_weight = 0,
+            1 => invalid.byte_weight = 0,
+            2 => invalid.wall_ns_weight = 0,
+            _ => invalid.communication_byte_weight = 0,
+        }
+        assert_eq!(evaluate_memory_structure_v1(&invalid, &measurements()), Err(MemoryStructureBudgetErrorV1::InvalidInventory));
+    }
     let mut measured = measurements();
     measured[3].errors = 0;
     measured[3].cost.read_compute_wall_ns = Some(1);
