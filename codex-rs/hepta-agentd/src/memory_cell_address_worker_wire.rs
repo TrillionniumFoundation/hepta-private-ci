@@ -15,6 +15,7 @@ use serde::Serialize;
 use serde_json::Value;
 
 use crate::MemoryCellResolvedAddressV1;
+use super::time_view::TimeView;
 
 pub(super) const MAX_REQUEST_FRAME: usize = 2_097_152;
 pub(super) const MAX_RESPONSE_BODY: usize = 32_768;
@@ -45,6 +46,7 @@ pub(super) struct BoundRequest {
     pub registry_digest: ContractDigestV1,
     pub source_cut: ContractDigestV1,
     request: AddressRequest,
+    time_view: TimeView,
 }
 
 impl BoundRequest {
@@ -60,7 +62,10 @@ impl BoundRequest {
             "entities": entities.iter().map(|entity| serde_json::json!({"entity": entity,
                 "aliases": aliases.get(entity).cloned().unwrap_or_default()})).collect::<Vec<_>>()
         });
-        let request = AddressRequest::from(request);
+        let time_view = TimeView::build(request, &entities, aliases)?;
+        let mut request = AddressRequest::from(request);
+        request.at = time_view.at;
+        request.since = time_view.since;
         let request_value = serde_json::to_value(&request).map_err(|_| "address encoding failed".to_string())?;
         let digest = hash(&canonical(&request_value)?);
         let registry_digest = hash(&canonical(&registry)?);
@@ -68,10 +73,11 @@ impl BoundRequest {
         let mut bytes = canonical(&serde_json::json!({"schema": "hepta.memory.v7.address-worker-request.v1", "request": request_value, "registry": registry}))?;
         bytes.push(b'\n');
         if bytes.len() > MAX_REQUEST_FRAME { return Err("address worker request exceeds frame bound".to_string()); }
-        Ok(Self { bytes, digest, registry_digest, source_cut, request })
+        Ok(Self { bytes, digest, registry_digest, source_cut, request, time_view })
     }
 
     pub fn validate_response(&self, bytes: &[u8], model: ContractDigestV1, original: &MemoryRequestV1) -> Result<(Option<MemoryCellResolvedAddressV1>, WorkerCost), String> {
+        self.time_view.verify_original(original)?;
         let decision: WorkerDecision = serde_json::from_slice(bytes).map_err(|_| "invalid or duplicate address worker response fields".to_string())?;
         let shape: Value = serde_json::from_slice(bytes).map_err(|_| "invalid address worker response JSON".to_string())?;
         if shape.as_object().is_none_or(|object| object.len() != 13)
@@ -111,6 +117,7 @@ impl BoundRequest {
                 if plan.required_cells != cells || plan.read_hops != hops || hops > original.max_hops || cells.len() > usize::from(original.max_cells) {
                     return Err("address plan cell or hop semantics exceed the typed request".to_string());
                 }
+                if !self.time_view.permits(original, plan.operation) { return Ok((None, cost)); }
                 Ok((Some(MemoryCellResolvedAddressV1 { request: original.clone(), operation: plan.operation,
                     owner_cut_digest: self.source_cut, model_digest: model }), cost))
             }

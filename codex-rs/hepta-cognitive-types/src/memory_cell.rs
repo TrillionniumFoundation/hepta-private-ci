@@ -53,7 +53,9 @@ pub struct MemoryRequestV1 {
     pub scope: ContractIdV1,
     pub entity: ContractIdV1,
     pub text: String,
+    /// Unix seconds. History includes events effective at or before this instant.
     pub at: u64,
+    /// Unix seconds. Change subtracts the event effective at this instant from current.
     pub since: u64,
     pub max_hops: u8,
     pub max_cells: u8,

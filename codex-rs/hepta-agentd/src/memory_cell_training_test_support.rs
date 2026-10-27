@@ -63,11 +63,12 @@ pub(crate) async fn write_new(fixture: &ControlFixture, seed: &str, range: std::
     for index in range {
         let bytes = Digest32::of_bytes(format!("random-owner-values:{seed}:{index}").as_bytes());
         let random = bytes.as_array();
+        let opcode = ["affine", "multiply", "add_bias", "clamp"][usize::from(random[3] % 4)];
         let item = Expected {
             entity: ContractIdV1::new(format!("entity:trained-{index}-{}", &bytes.to_string()[..12])).unwrap(),
             event: i64::from(u16::from_be_bytes([random[0], random[1]]) % 1_000),
             semantic: json!({"factor": i64::from(random[2] % 13) + 1, "label": format!("owner-value-{}", &bytes.to_string()[12..28])}),
-            procedure: json!({"opcode": ["affine", "multiply", "add_bias", "clamp"][usize::from(random[3] % 4)], "bias": i64::from(random[4] % 17) - 8, "limit": 10_000}),
+            procedure: json!({"opcode": opcode, "bias": i64::from(random[4] % 17) - 8, "limit": 10_000}),
         };
         for (kind, value) in [(MemoryCellKindV1::Event, json!(item.event)), (MemoryCellKindV1::Semantic, item.semantic.clone()),
             (MemoryCellKindV1::Procedure, item.procedure.clone())] {

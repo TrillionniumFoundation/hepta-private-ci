@@ -47,6 +47,7 @@ pub fn memory_cell_scope_id(owner: &AgentId, scope: &CognitiveScope) -> Result<C
 pub struct MemoryCellAddressV1 {
     pub entity: ContractIdV1,
     pub kind: MemoryCellKindV1,
+    /// Unix seconds, matching the canonical owner's validity timestamp.
     pub effective_at: u64,
 }
 
@@ -56,6 +57,7 @@ pub struct MemoryCellRecordV1 {
     pub schema: String,
     pub entity: ContractIdV1,
     pub kind: MemoryCellKindV1,
+    /// Unix seconds; this is not a YYYYMMDD date or a scope-local logical clock.
     pub effective_at: u64,
     pub value: Value,
 }

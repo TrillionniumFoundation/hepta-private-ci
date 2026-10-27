@@ -74,3 +74,34 @@ fallback to an answer without the requested memory evidence.
 The two reads incur actual owner and native-inference work. They do not train
 parameters or issue grants. Unknown outcomes after a physical dispatch retain
 the existing reconcile-only behavior and are never automatically replayed.
+
+## Calendar dates and native timestamps
+
+Native `MemoryCellRecordV1.effective_at` and `MemoryRequestV1.at/since` are **Unix
+seconds**, never `YYYYMMDD` integers or scope-specific logical clocks. The host
+transport profile `hepta.memory.host-utc-midnight-time-view.v1` bridges literal
+dates to the frozen addressing worker, whose date check uses `YYYYMMDD` slots.
+
+Only requests containing a literal `YYYY-MM-DD` or `YYYYMMDD` date get a private
+worker time view. Owner-listed canonical names and aliases are masked on a
+normalized recognition copy first, so names such as `sensor20250201` do not
+become cutoffs. Neither the native text nor any non-time request field changes.
+The host binds the original complete request separately from the worker view,
+verifies the exact returned view, then executes with the original Unix seconds.
+
+For History, the native `at` must equal that date's UTC midnight. For Change,
+the native `since` must equal it. An instant elsewhere on the same day, a
+conflicting day, an invalid date or multiple distinct date cutoffs are rejected.
+Alias masking uses NFKC and lowercase rather than full Unicode casefold; a
+missed date-bearing alias can conservatively reject a non-temporal query.
+Unmentioned aliases never block a literal cutoff merely by sharing its date.
+NFKC-compatible date digits are
+recognized; remaining non-ASCII decimal date forms are outside this profile.
+No-date requests retain their original time slots and wire binding.
+
+For example, `2025-02-01` requires native cutoff `1738368000`; `20250201` appears
+only in the private worker view. Providing `20250201` as the native cutoff is
+rejected against that literal date, rather than reading a record in 1970.
+This deterministic adapter is outside the frozen classifier/model policy.
+Classifier held evaluation does not establish the adapter's correctness; its
+separate real-worker/SQLite/native temporal receipts do.

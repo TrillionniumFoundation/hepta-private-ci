@@ -44,7 +44,7 @@ impl WorkerFixture {
         let config = MemoryCellAddressWorkerConfigV1 {
             python, worker_script: script, worker_script_digest: hash(MOCK_WORKER.as_bytes()), code_pins: pins,
             model_directory: model, model_digest: hash(&manifest), encoder_directory: encoder,
-            aliases: BTreeMap::from([(ContractIdV1::new("meter:agentd-cell").unwrap(), vec!["meter alpha".to_string(), "测试读数".to_string()])]),
+            aliases: BTreeMap::from([(ContractIdV1::new("meter:agentd-cell").unwrap(), vec!["meter alpha".to_string(), "测试读数".to_string(), "station".to_string(), "station-2025-02-01".to_string()])]),
             request_timeout: Duration::from_millis(1_500), startup_timeout: Duration::from_secs(5),
         };
         Self { _root: root, config }
@@ -76,6 +76,11 @@ for raw in sys.stdin.buffer:
     if text == 'needs-alias': assert 'meter alpha' in registry['entities'][0]['aliases']
     plan = {'operation':'apply','required_cells':['event','semantic','procedure'],'read_hops':3,'source_cut':cut,'registry_digest':reg}
     decision = {'raw_operation':'apply','score':0.9,'margin':0.8,'score_kind':'explicit process protocol mock','capability_reason':None,'operation':'apply','threshold':0.5,'required_margin':0.1}
+    if text.startswith('date-history') or text.startswith('date-change'):
+        operation = 'history' if text.startswith('date-history') else 'change'
+        assert request['at' if operation == 'history' else 'since'] == 20250201
+        plan.update(operation=operation, required_cells=['event'], read_hops=1 if operation == 'history' else 2)
+        decision.update(operation=operation, raw_operation=operation)
     result = {'schema':'hepta.memory.v7.address-decision.v1','query_id':request['query_id'],'request_digest':digest(request),'status':'accepted','reason':None,'request':request,'plan':plan,'model_digest':args.model_digest,'registry_digest':reg,'source_cut':cut,'decision':decision,'authority':False,'cost':{'request_body_bytes':len(raw)-1,'processing_wall_seconds':0.002,'processing_cpu_seconds':0.001}}
     if text in ('decline', 'unavailable'):
         result.update(status='rejected' if text == 'decline' else 'unavailable', reason='explicit process mock', request=None, plan=None)
@@ -88,6 +93,8 @@ for raw in sys.stdin.buffer:
     if text == 'old-cut': result['source_cut'] = first_cut
     if text == 'bad-plan': result['plan']['required_cells'] = ['event']
     if text == 'substitute': result['request'] = {**request, 'entity':'entity:substitution'}
+    if text.endswith('mutate-time'): result['request'] = {**request, 'at':1738368000}
+    if text.endswith('mutate-text'): result['request'] = {**request, 'text':'substituted text'}
     if text == 'missing-nullable': del result['reason']
     if text == 'nonfinite': result['decision']['score'] = float('nan')
     output = canonical(result)

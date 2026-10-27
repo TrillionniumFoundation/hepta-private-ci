@@ -34,6 +34,9 @@ use crate::memory_cell_test_support::request;
 use crate::memory_cell_training_test_support::fit;
 use crate::memory_cell_training_test_support::trainer;
 
+#[path = "memory_cell_temporal_runtime_tests.rs"]
+mod temporal;
+
 fn worker_configuration(orion: &ContractIdV1, vega: &ContractIdV1) -> MemoryCellAddressWorkerConfigV1 {
     let qualified = codex_utils_cargo_bin::repo_root().expect("repository root").join("qualification");
     let addressing = qualified.join("memory-cell-v7/addressing");
@@ -129,7 +132,7 @@ async fn actual_language_worker_addresses_six_operations_through_native_paramete
     }
     for (index, (entity, text)) in [
         (ContractIdV1::new("meter:unregistered-sirius").expect("unknown entity"), "Retrieve Sirius's latest unprocessed sample."),
-        (orion, "Square Orion's stored factor."),
+        (orion.clone(), "Square Orion's stored factor."),
     ].into_iter().enumerate() {
         let mut query = request(fitted.snapshot().scope().clone());
         query.query_id = ContractIdV1::new(format!("query:real-language-reject-{index}")).expect("negative query");
@@ -143,6 +146,8 @@ async fn actual_language_worker_addresses_six_operations_through_native_paramete
     assert_eq!((counters.attempted_requests, counters.validated_responses, counters.process_starts), (8, 8, 1));
     assert!(counters.stdin_bytes > 0 && counters.stdout_bytes > 0 && counters.host_request_nanoseconds > 0);
     assert!(counters.reported_cpu_nanoseconds > 0 && counters.reported_wall_nanoseconds > 0);
+    let temporal = temporal::real_dates(&fixture, &release, &orion).await;
+    let counters = worker.metrics();
     let report = json!({"schema":"hepta.memory.v7.language-runtime-integration.v1", "test_kind":"product-protocol-and-data-binding-only",
         "address_model_digest":address_model,"training_code_digest":fitted.training_code_digest().to_string(), "parameter_training":fitted.receipt(),
         "bundle_digest":bundle.bundle_digest(),"owner_cut_digest":fitted.snapshot().owner_cut_digest(),"readbacks":evidence,
@@ -150,6 +155,7 @@ async fn actual_language_worker_addresses_six_operations_through_native_paramete
             "stdin_bytes":counters.stdin_bytes,"stdout_bytes":counters.stdout_bytes,"cpu_ns":counters.reported_cpu_nanoseconds,
             "reported_wall_ns":counters.reported_wall_nanoseconds,"host_request_ns":counters.host_request_nanoseconds,"startup_wall_ns":startup_wall_ns},
         "control_transport":fixture.client.traffic_snapshot(),"positive_phrases_from_public_fit_examples":true,
+        "temporal_transport":temporal,
         "independent_language_evaluation":false,"independent_future_task_evaluation":false,"held_reads":0});
     let path = std::env::var_os("MEMORY_CELL_LANGUAGE_RECEIPT_PATH").map(PathBuf::from)
         .unwrap_or_else(|| std::env::temp_dir().join(format!("hepta-memory-language-runtime-{}.json", std::process::id())));

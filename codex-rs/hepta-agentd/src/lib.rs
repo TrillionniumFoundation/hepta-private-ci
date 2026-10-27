@@ -113,6 +113,7 @@ pub use memory_cell_training::MemoryCellTrainingModeV1;
 pub use memory_cell_address_worker::MemoryCellAddressWorkerConfigV1;
 pub use memory_cell_address_worker::MemoryCellAddressWorkerMetricsV1;
 pub use memory_cell_address_worker::MemoryCellAddressWorkerV1;
+pub use memory_cell_address_worker::MEMORY_CELL_TIME_VIEW_PROFILE_V1;
 pub use codex_hepta_agent_protocol::MemoryCellSnapshotPageV1;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;

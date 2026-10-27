@@ -124,3 +124,34 @@ async fn code_and_model_pins_are_checked_at_start_and_before_every_restart() {
     assert_eq!(worker.metrics().process_starts, 1);
     owner.finish().await;
 }
+
+#[tokio::test]
+async fn real_process_time_view_preserves_epoch_bindings_and_ignores_dates_in_owner_names() {
+    let owner = ControlFixture::new().await;
+    let mut dated_entity = record(MemoryCellKindV1::Event, /*effective_at*/ 10, json!(7));
+    dated_entity.entity = codex_hepta_cognitive_types::hnmf::ContractIdV1::new("sensor20250201").unwrap();
+    owner.store.write_memory_cell(&owner.access(), &CognitiveScope::AgentPrivate, &dated_entity, MemoryCellWriteModeV1::Create).await.unwrap();
+    let snapshot = owner.snapshot().await;
+    let fixture = WorkerFixture::new();
+    let worker = MemoryCellAddressWorkerV1::start(fixture.config).await.unwrap();
+    let mut query = request(snapshot.scope().clone());
+    query.at = 1_738_368_000; query.since = 1_738_368_000;
+    for prefix in ["date-history", "date-change"] {
+        query.text = format!("{prefix} as of 2025-02-01");
+        assert_eq!(worker.resolve(&query, &snapshot).await.unwrap().unwrap().request, query);
+        for suffix in ["mutate-time", "mutate-text"] {
+            let mut bad = query.clone(); bad.text.push_str(&format!(" {suffix}"));
+            assert!(worker.resolve(&bad, &snapshot).await.is_err());
+        }
+    }
+    query.text = "date-history as of 2025-02-01".to_string(); query.at += 1;
+    assert!(worker.resolve(&query, &snapshot).await.unwrap().is_none());
+    query.at = 15; query.since = 10;
+    for text in ["Read station-2025-02-01 metadata.", "Read STATION-2025-02-01 latest data."] {
+        query.text = text.to_string();
+        assert_eq!(worker.resolve(&query, &snapshot).await.unwrap().unwrap().request, query);
+    }
+    query.entity = dated_entity.entity; query.text = "Retrieve sensor20250201 latest reading.".to_string();
+    assert_eq!(worker.resolve(&query, &snapshot).await.unwrap().unwrap().request, query);
+    owner.finish().await;
+}

@@ -29,7 +29,10 @@ use crate::MemoryCellResolvedAddressV1;
 mod config;
 #[path = "memory_cell_address_worker_wire.rs"]
 mod wire;
+#[path = "memory_cell_time_view.rs"]
+mod time_view;
 pub use config::MemoryCellAddressWorkerConfigV1;
+pub use time_view::MEMORY_CELL_TIME_VIEW_PROFILE_V1;
 
 use wire::BoundRequest;
 use wire::MAX_REQUEST_FRAME;
