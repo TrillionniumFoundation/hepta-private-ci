@@ -1,0 +1,51 @@
+{
+  "actual_bank_replay_started": false,
+  "authorized_reference_audits": {
+    "17": {
+      "path": "bridge_v3_review/REFERENCE_AUDIT_17.json",
+      "sha256": "c29ca395d25945da33a929dea01012f77bf2dbb9b841691a72f913f3e9ef5f8b"
+    },
+    "29": {
+      "path": "bridge_v3_review/REFERENCE_AUDIT_29.json",
+      "sha256": "321995c5e3f1ee6074ef112ce2edd21fb7765be6ed1c0d921b031e9de7620dff"
+    },
+    "43": {
+      "path": "bridge_v3_review/REFERENCE_AUDIT_43.json",
+      "sha256": "c383e561fc55abb4a0c525babc9e1256e209b2cea818a5759dfb8084d1ba22af"
+    }
+  },
+  "contracts": [
+    "guard acceptance, full rollback, clock advance and decision chronology reject corruptions",
+    "raw uint8/UTF8 output hashes and source-pair alignment reject corruption",
+    "complete checkpoint tensors and SGD momentum hashes reject corruption",
+    "completed evidence inventories reject additional or altered files",
+    "missing actual gradient counters are rejected",
+    "augmented least-squares reconstruction agrees with frozen normal-equation heads and rejects contaminated normalizers",
+    "replay sample cannot change and guard utility equality is exact"
+  ],
+  "new_scientific_model_outputs_generated_by_tests": false,
+  "new_source_roles_loaded_by_tests": false,
+  "passed": true,
+  "prespecified_replay_protocol_sha256": "f911a26a63b6a909b0a9d95bfd26fbf89296197765ab767dd807584911993013",
+  "reference_source_roles_loaded": [],
+  "reference_verification_gradient_microsteps": 0,
+  "schema": "hepta.field-bridge.v3.training-auditor-contract.1",
+  "scientific_sources_modified": false,
+  "source_lines": {
+    "training_audit_common.py": 268,
+    "training_audit_contract_tests.py": 162,
+    "training_evidence_audit.py": 245,
+    "training_fit_audit.py": 144,
+    "training_replay.py": 182
+  },
+  "source_sha256": {
+    "training_audit_common.py": "42c4136ae29e94d0e4ddd55e12d9678fc6776e837f5c25bdb35ad37a3c5cbeba",
+    "training_audit_contract_tests.py": "0406cd5ab608d438ab4c8df0991fad24f9d9d7af7bd897950a998c30cc651908",
+    "training_evidence_audit.py": "dcf7ae4f3c9919c2a80c85c15077df06b70676873754fa9a1102f23a7824f4fd",
+    "training_fit_audit.py": "d76b84d7eb8023aa8b3bf676862e7ae3e4a0787a3ec70490741379d386c4b20b",
+    "training_replay.py": "531ce4760d1f905bd272077dc12a24b9ddfa55b07a8555c64f18c1236b63dfb2"
+  },
+  "synthetic_tests_run": 7,
+  "test_inputs_synthetic": true,
+  "test_runtime_seconds": 4.616
+}
