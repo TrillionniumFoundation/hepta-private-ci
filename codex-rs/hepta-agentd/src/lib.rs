@@ -31,6 +31,16 @@ mod intuition_policy;
 mod lane_b_runtime;
 mod memory_cell_release;
 mod memory_cell_runtime;
+mod memory_cell_learning;
+#[cfg(test)]
+mod memory_cell_training_test_support;
+#[cfg(test)]
+mod memory_cell_training_tests;
+#[cfg(test)]
+mod memory_cell_language_runtime_tests;
+mod memory_cell_network;
+mod memory_cell_training;
+mod memory_cell_address_worker;
 #[cfg(test)]
 mod memory_cell_test_support;
 #[cfg(test)]
@@ -70,12 +80,35 @@ pub use browser_servo::BrowserServoProcessConfig;
 pub use browser_servo::BrowserServoTransport;
 pub use browser_servo::ChildBrowserTransport;
 pub use client::AgentdClient;
+pub use client::AgentdTrafficSnapshotV1;
+pub use memory_cell_network::MAX_MEMORY_CELL_NETWORK_NODES;
+pub use memory_cell_network::MemoryCellDeploymentV1;
+pub use memory_cell_network::MemoryCellNetworkCostV1;
+pub use memory_cell_network::MemoryCellNetworkErrorV1;
+pub use memory_cell_network::MemoryCellNetworkReadV1;
+pub use memory_cell_network::MemoryCellNetworkReceiptV1;
+pub use memory_cell_network::MemoryCellNetworkV1;
+pub use memory_cell_network::MemoryCellNetworkVersionV1;
+pub use memory_cell_network::MemoryCellNodeBindingV1;
+pub use memory_cell_network::MemoryCellNodeReadoutV1;
+pub use memory_cell_network::MemoryCellVersionPinV1;
 pub use memory_cell_release::LoadedMemoryCellBundleV1;
 pub use memory_cell_release::MemoryCellBundleCandidateV1;
 pub use memory_cell_release::MemoryCellReleaseHostV1;
 pub use memory_cell_runtime::AgentdMemoryCellRuntimeV1;
 pub use memory_cell_runtime::MemoryCellAddressResolverV1;
 pub use memory_cell_runtime::MemoryCellResolvedAddressV1;
+pub use memory_cell_learning::MemoryCellLearningDecisionV1;
+pub use memory_cell_learning::MemoryCellLearningSinkV1;
+pub use memory_cell_learning::MemoryCellTrainingDecisionContextV1;
+pub use memory_cell_training::MemoryCellFitBudgetV1;
+pub use memory_cell_training::MemoryCellReplayParentV1;
+pub use memory_cell_training::MemoryCellTrainerConfigV1;
+pub use memory_cell_training::MemoryCellTrainingCandidateV1;
+pub use memory_cell_training::MemoryCellTrainingModeV1;
+pub use memory_cell_address_worker::MemoryCellAddressWorkerConfigV1;
+pub use memory_cell_address_worker::MemoryCellAddressWorkerMetricsV1;
+pub use memory_cell_address_worker::MemoryCellAddressWorkerV1;
 pub use codex_hepta_agent_protocol::MemoryCellSnapshotPageV1;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;

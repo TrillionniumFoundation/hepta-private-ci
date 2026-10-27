@@ -61,6 +61,7 @@ pub use memory_cell_owner::MemoryCellAddressV1;
 pub use memory_cell_owner::MemoryCellOwnerRecordV1;
 pub use memory_cell_owner::MemoryCellOwnerSnapshotV1;
 pub use memory_cell_owner::MemoryCellRecordV1;
+pub use memory_cell_owner::memory_cell_scope_id;
 pub use memory_cell_write::MemoryCellWriteModeV1;
 
 pub use codex_hepta_memory_retrieval::RetrievalCandidateIdentityV1;

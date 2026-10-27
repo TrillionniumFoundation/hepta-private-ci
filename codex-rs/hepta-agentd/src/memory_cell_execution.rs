@@ -11,7 +11,7 @@ use codex_hepta_cognitive_types::MemoryReadoutV1;
 use codex_hepta_cognitive_types::MemoryRequestV1;
 use codex_hepta_cognitive_types::execute_memory_cell_program_v1;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
-use codex_hepta_neuron::AssociativeMemoryCellV1;
+use codex_hepta_neuron::MemoryCellPopulationV2;
 use serde_json::Value;
 
 use crate::LoadedMemoryCellBundleV1;
@@ -66,7 +66,7 @@ pub(super) fn execute(request: &MemoryRequestV1, operation: MemoryOperationV1, b
     Ok(readout)
 }
 
-fn predict(model: &AssociativeMemoryCellV1, request: &MemoryRequestV1, owner: &MemoryCellOwnerSnapshotV1, sources: &mut BTreeSet<ContractDigestV1>, models: &mut BTreeSet<ContractDigestV1>) -> Result<Value, ReadFailure> {
+fn predict(model: &MemoryCellPopulationV2, request: &MemoryRequestV1, owner: &MemoryCellOwnerSnapshotV1, sources: &mut BTreeSet<ContractDigestV1>, models: &mut BTreeSet<ContractDigestV1>) -> Result<Value, ReadFailure> {
     let predicted = model.predict(request.entity.as_str()).map_err(|_| unavailable("native memory inference failed"))?;
     let value = predicted.value.ok_or((MemoryReadStatusV1::Abstain, "native memory model declined the entity or confidence"))?;
     let source = owner.current(&request.entity, model.kind())

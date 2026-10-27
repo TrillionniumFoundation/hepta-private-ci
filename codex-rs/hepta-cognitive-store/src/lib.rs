@@ -46,6 +46,7 @@ pub use durable::MemoryCellOwnerRecordV1;
 pub use durable::MemoryCellOwnerSnapshotV1;
 pub use durable::MemoryCellRecordV1;
 pub use durable::MemoryCellWriteModeV1;
+pub use durable::memory_cell_scope_id;
 pub use durable::MemoryLifecycleState;
 pub use durable::MemoryRevisionDraft;
 pub use durable::MemoryVerification;

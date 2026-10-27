@@ -88,8 +88,7 @@ impl AgentdMemoryCellRuntimeV1 {
             return Err(AgentdError::GenerationFenced("memory cell host identity differs from Agentd".to_string()));
         }
         if let CognitiveScope::WorkspacePrivate { workspace_sha256 } = &self.scope
-            && *workspace_sha256 != codex_hepta_memory::workspace_binding_digest(workspace)
-                .map_err(|error| AgentdError::Invalid(error.to_string()))? {
+            && *workspace_sha256 != codex_hepta_memory::workspace_binding_digest(workspace) {
             return Err(AgentdError::GenerationFenced("memory cell scope differs from Agentd workspace".to_string()));
         }
         Ok(())

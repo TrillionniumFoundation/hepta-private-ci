@@ -36,6 +36,12 @@ use crate::cognitive_store::unavailable;
 
 pub const MAX_MEMORY_CELL_OWNER_HEADS: usize = 512;
 
+/// Canonical Lane C scope address. Deriving an address conveys no source access;
+/// callers still need the real owner or a current federation capability.
+pub fn memory_cell_scope_id(owner: &AgentId, scope: &CognitiveScope) -> Result<ContractIdV1, HnmfContractError> {
+    ContractIdV1::new(format!("cognitive:{owner}:{}", Digest32::of_bytes(scope.projection_key().as_bytes())))
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct MemoryCellAddressV1 {

@@ -33,6 +33,7 @@ pub use codex_hepta_memory::MemoryCellOwnerRecordV1;
 pub use codex_hepta_memory::MemoryCellOwnerSnapshotV1;
 pub use codex_hepta_memory::MemoryCellRecordV1;
 pub use codex_hepta_memory::MemoryCellWriteModeV1;
+pub use codex_hepta_memory::memory_cell_scope_id;
 pub use codex_hepta_memory::MemoryLifecycleState;
 pub use codex_hepta_memory::MemoryRevisionDraft;
 pub use codex_hepta_memory::MemoryVerification;

@@ -34,7 +34,7 @@ use crate::memory_cell_test_support::record;
 use crate::memory_cell_test_support::request;
 
 #[derive(Clone)]
-enum TestRoute {
+pub(crate) enum TestRoute {
     Read(MemoryOperationV1),
     Decline,
     SubstituteEntity,
@@ -42,17 +42,17 @@ enum TestRoute {
     Hang,
 }
 
-struct TrustedTestResolver {
+pub(crate) struct TrustedTestResolver {
     store: Arc<DurableCognitiveStore>,
     route: Mutex<TestRoute>,
 }
 
 impl TrustedTestResolver {
-    fn new(fixture: &ControlFixture) -> Arc<Self> {
+    pub(crate) fn new(fixture: &ControlFixture) -> Arc<Self> {
         Arc::new(Self { store: Arc::clone(&fixture.store), route: Mutex::new(TestRoute::Read(MemoryOperationV1::Apply)) })
     }
 
-    fn set(&self, route: TestRoute) { *self.route.lock().unwrap() = route; }
+    pub(crate) fn set(&self, route: TestRoute) { *self.route.lock().unwrap() = route; }
 }
 
 impl MemoryCellAddressResolverV1 for TrustedTestResolver {
@@ -87,7 +87,7 @@ impl MemoryCellAddressResolverV1 for TrustedTestResolver {
     }
 }
 
-fn attach(fixture: &ControlFixture, release: &ReleaseFixture, resolver: &Arc<TrustedTestResolver>) -> Arc<AgentdMemoryCellRuntimeV1> {
+pub(crate) fn attach(fixture: &ControlFixture, release: &ReleaseFixture, resolver: &Arc<TrustedTestResolver>) -> Arc<AgentdMemoryCellRuntimeV1> {
     let resolver: Arc<dyn MemoryCellAddressResolverV1> = resolver.clone();
     let runtime = Arc::new(AgentdMemoryCellRuntimeV1::new(fixture.state.identity().agent_id.clone(),
         /*spawn_generation*/ 1, CognitiveScope::AgentPrivate, Arc::clone(&release.host), resolver).unwrap());
