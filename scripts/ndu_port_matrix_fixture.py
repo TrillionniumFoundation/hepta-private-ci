@@ -20,6 +20,7 @@ from ndu_port_candidate_common import copy_files
 from ndu_port_candidate_common import describe
 from ndu_port_candidate_common import load_recipe
 from ndu_port_candidate_common import patch_paths
+from ndu_port_candidate_common import prepare_nextest_storage
 from ndu_port_candidate_common import tree_files
 
 
@@ -65,6 +66,7 @@ def parse_phase_junit(path, expected):
 
 def run_phase(runner, name, fixture):
     manifest = str(runner.root / "codex-rs/Cargo.toml")
+    storage = prepare_nextest_storage(runner)
     selection = [
         "--locked",
         "--cargo-profile",
@@ -73,6 +75,8 @@ def run_phase(runner, name, fixture):
         "codex-hepta-matrix-sdk",
         "--test",
         "store_version_migration",
+        "--tool-config-file",
+        storage["tool_config_argument"],
     ]
     listing = runner.json_command(
         f"{name}-binaries",
@@ -106,9 +110,10 @@ def run_phase(runner, name, fixture):
     if checksum(saved) != digest:
         raise ValueError("Saved executable differs from the compiled binary")
     target = Path(listing["rust-build-meta"]["target-directory"])
+    store = Path(storage["directory"])
     reports = lambda: {
         path: (path.stat().st_mtime_ns, checksum(path))
-        for path in target.glob("nextest/*/junit.xml")
+        for path in store.glob("*/junit.xml")
     }
     before = reports()
     status = runner.run(
@@ -117,6 +122,8 @@ def run_phase(runner, name, fixture):
             "just",
             "test",
             *selection,
+            "--profile",
+            "default",
             "--run-ignored",
             "only",
             "-E",
@@ -137,17 +144,29 @@ def run_phase(runner, name, fixture):
         "binary_original_path": str(binary),
         "binary_unchanged_after_execution": checksum(binary) == digest,
         "command_index": len(runner.record["commands"]) - 1,
+        "nextest_storage": storage,
+        "cargo_target_directory": str(target),
+        "store_config_unchanged_after_execution": describe(
+            runner.output, (storage["config_file"],)
+        )[storage["config_file"]]
+        == storage["config"],
     }
     runner.record["migration_phase"] = phase
     fresh = [path for path, value in reports().items() if before.get(path) != value]
     phase["fresh_junit_count"] = len(fresh)
+    phase["observed_junit_paths"] = [str(path) for path in fresh]
     for index, path in enumerate(fresh):
         shutil.copyfile(path, runner.output / f"{name}-{index}-junit.xml")
     phase["retained_junit_reports"] = describe(
         runner.output, [f"{name}-{index}-junit.xml" for index in range(len(fresh))]
     )
     runner.save()
-    if status or not phase["binary_unchanged_after_execution"] or len(fresh) != 1:
+    if (
+        status
+        or not phase["binary_unchanged_after_execution"]
+        or not phase["store_config_unchanged_after_execution"]
+        or fresh != [store / "default/junit.xml"]
+    ):
         raise ValueError(
             "Migration command failed, executable changed or fresh JUnit is missing"
         )
@@ -285,6 +304,7 @@ def produce_old_fixture(runner, driver_root, driver_source):
                 "original-files/codex-rs/Cargo.lock",
                 phase["binary"],
                 phase["junit"]["file"],
+                phase["nextest_storage"]["config_file"],
             ),
         ),
         status="old_fixture_generated",

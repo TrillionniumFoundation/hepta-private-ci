@@ -1,5 +1,6 @@
 """Exercise real Git artifact transport and rejection before Rust execution."""
 
+import copy
 import json
 import os
 from pathlib import Path
@@ -11,6 +12,7 @@ import unittest
 from unittest.mock import patch
 
 import ndu_port_candidate_common as common
+import ndu_port_candidate as candidate
 
 
 def git(root, *arguments):
@@ -164,6 +166,83 @@ class PortArtifactTests(unittest.TestCase):
         return common.restore_candidate(
             runner, self.artifact, self.result_sha, self.source
         )
+
+    def generate_with_final_features(self, features):
+        """Use real Git/process evidence with controlled external resolver results."""
+        runner = self.runner("generate")
+        run = runner.run
+        final_metadata = copy.deepcopy(self.metadata)
+        final_metadata["resolve"]["nodes"][0]["features"] = features
+        bazel_updated = False
+
+        def controlled_resolver(label, command, **kwargs):
+            nonlocal bazel_updated
+            if command[0] == "git":
+                return run(label, command, **kwargs)
+            if command[:2] == ["cargo", "update"]:
+                (self.root / common.LOCKS[0]).write_text(self.lock)
+            elif command[:2] == ["cargo", "metadata"]:
+                metadata = final_metadata if bazel_updated else self.metadata
+                return run(
+                    label,
+                    [
+                        sys.executable,
+                        "-c",
+                        "import sys; print(sys.argv[1])",
+                        json.dumps(metadata),
+                    ],
+                    **kwargs,
+                )
+            elif command == ["just", "bazel-lock-update"]:
+                bazel_updated = True
+                (self.root / common.LOCKS[1]).write_text("resolved Bazel lock\n")
+            elif command not in (["just", "bazel-lock-check"], ["bazel", "--version"]):
+                raise AssertionError(f"Unexpected resolver command: {command}")
+            return run(
+                label,
+                [sys.executable, "-c", "print('controlled resolver completed')"],
+                **kwargs,
+            )
+
+        with (
+            patch.object(candidate, "check_toolchain"),
+            patch.object(runner, "run", side_effect=controlled_resolver),
+        ):
+            candidate.generate(runner, self.source)
+        return runner, final_metadata
+
+    def test_generated_candidate_seals_final_graph_and_preserves_before_graph(self):
+        runner, final_metadata = self.generate_with_final_features(
+            ["crypto", "bazel-selected"]
+        )
+        self.assertEqual(
+            json.loads((runner.output / "metadata.json").read_text()), final_metadata
+        )
+        self.assertEqual(
+            json.loads((runner.output / "metadata-before-bazel.json").read_text()),
+            self.metadata,
+        )
+        self.assertEqual(runner.record["status"], "candidate_generated")
+        stdout = [row["stdout"] for row in runner.record["commands"] if "stdout" in row]
+        self.assertEqual(
+            {row["file"] for row in stdout},
+            {"metadata-before-bazel.json", "metadata.json"},
+        )
+        for row in stdout:
+            self.assertEqual(
+                common.checksum(runner.output / row["file"]), row["sha256"]
+            )
+            self.assertEqual(
+                runner.record["artifacts"][row["file"]]["sha256"], row["sha256"]
+            )
+
+    def test_final_resolver_feature_loss_cannot_reuse_pre_bazel_graph(self):
+        with self.assertRaisesRegex(ValueError, "features"):
+            self.generate_with_final_features([])
+        record = json.loads((self.base / "generate/RESULT.json").read_text())
+        self.assertNotEqual(record["status"], "candidate_generated")
+        final = json.loads((self.base / "generate/metadata.json").read_text())
+        self.assertEqual(final["resolve"]["nodes"][0]["features"], [])
 
     def test_exact_binary_patch_reconstructs_source_and_both_locks(self):
         runner = self.runner()

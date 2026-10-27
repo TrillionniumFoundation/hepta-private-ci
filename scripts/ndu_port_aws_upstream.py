@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 
 from ndu_port_candidate_common import checksum
 from ndu_port_candidate_common import describe
+from ndu_port_candidate_common import prepare_nextest_storage
 from ndu_port_candidate_common import relative_path
 from ndu_port_candidate_common import tree_files
 
@@ -118,6 +119,7 @@ def qualify_aws(runner, recipe):
             runner.output.parent / (runner.output.name + "-target")
         ),
     }
+    storage = prepare_nextest_storage(runner)
     args = [
         "--manifest-path",
         str(isolated / "Cargo.toml"),
@@ -128,6 +130,8 @@ def qualify_aws(runner, recipe):
         "credentials-login",
         "--config-file",
         str(isolated / ".config/nextest.toml"),
+        "--tool-config-file",
+        storage["tool_config_argument"],
     ]
     listing_path = runner.output / "aws-full-test-list.json"
     runner.run(
@@ -162,14 +166,17 @@ def qualify_aws(runner, recipe):
         binaries=executable_records, expected_executed_tests=sorted(expected)
     )
     target = Path(listing["rust-build-meta"]["target-directory"])
+    store = Path(storage["directory"])
+    runner.record["upstream_qualification"].update(
+        nextest_storage=storage, cargo_target_directory=str(target)
+    )
     reports = lambda: {
-        p: (p.stat().st_mtime_ns, checksum(p))
-        for p in target.glob("nextest/*/junit.xml")
+        p: (p.stat().st_mtime_ns, checksum(p)) for p in store.glob("*/junit.xml")
     }
     before = reports()
     status = runner.run(
         "all-upstream-tests",
-        ["just", "test", *args],
+        ["just", "test", *args, "--profile", "default"],
         required=False,
         environment=environment,
     )
@@ -177,6 +184,11 @@ def qualify_aws(runner, recipe):
     outcome["exit_code"] = status
     fresh = [path for path, value in reports().items() if before.get(path) != value]
     outcome["fresh_junit_count"] = len(fresh)
+    outcome["observed_junit_paths"] = [str(path) for path in fresh]
+    outcome["store_config_unchanged_after_execution"] = (
+        describe(runner.output, (storage["config_file"],))[storage["config_file"]]
+        == storage["config"]
+    )
     for index, path in enumerate(fresh):
         shutil.copyfile(path, runner.output / f"aws-upstream-{index}-junit.xml")
     outcome["retained_junit_reports"] = describe(
@@ -193,7 +205,12 @@ def qualify_aws(runner, recipe):
         raise ValueError(
             "Full qualification modified source, frozen lock or configuration"
         )
-    if status or not outcome["binary_bytes_unchanged"] or len(fresh) != 1:
+    if (
+        status
+        or not outcome["binary_bytes_unchanged"]
+        or not outcome["store_config_unchanged_after_execution"]
+        or fresh != [store / "default/junit.xml"]
+    ):
         raise ValueError("Full upstream execution failed or lacks a fresh bound result")
     report = runner.output / "aws-upstream-0-junit.xml"
     outcome["observed"] = verify_suite_junit(report, expected)

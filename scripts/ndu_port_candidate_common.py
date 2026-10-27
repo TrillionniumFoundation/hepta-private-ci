@@ -95,6 +95,19 @@ def verify_vendor(root, recipe):
             raise ValueError(f"Vendor inventory differs, including extra files: {name}")
 
 
+def prepare_nextest_storage(runner):
+    """Move only nextest reports outside the immutable compiled source copy."""
+    store = runner.output / "nextest-store"
+    config = runner.output / "nextest-store.toml"
+    config.write_text("[store]\ndir = " + json.dumps(str(store)) + "\n")
+    return {
+        "directory": str(store),
+        "config_file": config.name,
+        "config": describe(runner.output, (config.name,))[config.name],
+        "tool_config_argument": f"hepta-port:{config}",
+    }
+
+
 def load_recipe(root, name=RECIPE):
     path = regular_path(root, name)
     recipe = json.loads(path.read_text())

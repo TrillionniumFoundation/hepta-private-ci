@@ -91,21 +91,20 @@ def generate(runner, expected_source):
         if "precise" in update:
             command.extend(["--precise", update["precise"]])
         runner.run(f"cargo-update-{index}", command)
-    metadata = runner.json_command(
+    metadata_command = [
+        "cargo",
         "metadata",
-        [
-            "cargo",
-            "metadata",
-            "--manifest-path",
-            manifest,
-            "--locked",
-            "--format-version",
-            "1",
-        ],
-    )
+        "--manifest-path",
+        manifest,
+        "--locked",
+        "--format-version",
+        "1",
+    ]
+    metadata = runner.json_command("metadata-before-bazel", metadata_command)
     validate_graph(runner.root, recipe, metadata)
     runner.run("bazel-lock-update", ["just", "bazel-lock-update"])
     runner.run("bazel-lock-check", ["just", "bazel-lock-check"])
+    metadata = runner.json_command("metadata", metadata_command)
     runner.run("diff-check", ["git", "diff", "--check", "HEAD"])
     if (
         describe(runner.root, recipe["allowed_paths"], allow_missing=True)
@@ -144,7 +143,13 @@ def generate(runner, expected_source):
     runner.record.update(
         artifacts=describe(
             runner.output,
-            ("recipe.json", "source.patch", "candidate.patch", "metadata.json"),
+            (
+                "recipe.json",
+                "source.patch",
+                "candidate.patch",
+                "metadata-before-bazel.json",
+                "metadata.json",
+            ),
         ),
         status="candidate_generated",
         qualification="Only source/graph/Cargo/Bazel lock generation. Tests, unchanged cargo-deny and platform gates remain separate.",
