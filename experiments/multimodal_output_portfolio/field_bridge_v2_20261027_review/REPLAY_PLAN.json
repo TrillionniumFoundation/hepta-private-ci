@@ -1,0 +1,14 @@
+{
+  "schema": "hepta.field-bridge.v2.prespecified-bank-replay.v1",
+  "frozen_bank_source_commit": "2bbb8450b479828c8a32299d3177cda08e1d9657",
+  "seeds": [17, 29, 43],
+  "fit_trajectories": [0],
+  "audit_trajectories": [8],
+  "steps": [0, 136],
+  "branches": [0, 1, 2, 3],
+  "selection_rule": "The same indices for every seed; specified before completed fitting banks or audit outcomes. No effect-based sample selection.",
+  "reconstruction": "Recreate zero-effect local adapters and complete SGD state from original frozen models; advance every preceding selected block on its recorded seed/schedule, including zero-action gradient work. Reexecute all four branches at both selected boundaries.",
+  "checks": ["current local/optimizer/output identities", "field coordinates", "all branch local/optimizer/output identities", "all512 per-example hard values", "hard-value means", "frozen predictor values if audit", "frozen original backbone unchanged"],
+  "media_readback": "For each replayed branch, deliver and read back the first two cases in every one of the four conditions as real PNG and UTF8 files; verify bytes, then rescore alongside the full panel. These are development verification artifacts, not new task evaluation.",
+  "limitations": "A deterministic execution/serialization check on the same fixed training value panel and three original models; not a new scientific replication, new labels, new writers or all-snapshot replay. Whole-bank non-replay arithmetic and identity checks are separate."
+}
