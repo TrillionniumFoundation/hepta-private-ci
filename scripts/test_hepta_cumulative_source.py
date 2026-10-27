@@ -47,6 +47,26 @@ class RetainedSource(unittest.TestCase):
             source.extract(self.archive, self.output, None)
         self.assertFalse((self.root / "escaped").exists())
 
+    def test_pinned_member_and_expansion_budgets_are_enforced_before_writes(self):
+        with zipfile.ZipFile(self.archive, "w") as archive:
+            archive.writestr("one", b"12345")
+            archive.writestr("two", b"67890")
+        with self.assertRaisesRegex(ValueError, "archive member bound"):
+            source.extract(self.archive, self.output, None, maximum_members=1)
+        with self.assertRaisesRegex(ValueError, "archive expansion bound"):
+            source.extract(
+                self.archive, self.output, None, maximum_uncompressed_bytes=9
+            )
+        self.assertEqual(list(self.output.iterdir()), [])
+        observed = source.extract(
+            self.archive,
+            self.output,
+            None,
+            maximum_members=2,
+            maximum_uncompressed_bytes=10,
+        )
+        self.assertEqual(set(observed), {"one", "two"})
+
     def test_link_members_are_not_materialized(self):
         entry = zipfile.ZipInfo("checkpoint")
         entry.create_system = 3

@@ -45,3 +45,34 @@ and every newly trained checkpoint must be retained.
 The small metadata and archive tests are negative controls for hash, ancestry,
 count and path handling. They are not evidence that a neural model loaded or
 trained. Only terminal hosted execution receipts can establish that outcome.
+
+## Pinned original observations
+
+The source is [run 40492138476](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40492138476)
+at `f75bf1ac902ed73905e4daa49f9396df028a4254`. Its overall conclusion is
+**failure**. The three changed native packages passed 519 tests, and the separate
+ordinary context test executed three distinct neural forwards and refused a
+subsequent withdrawn selection. The first held training round completed, but
+reopening the same ordinary runtime failed with `RuntimeOpen(StateLocked)`.
+That failure and the skipped final lint remain in `source_required_outcomes`;
+this diagnostic does not repair or qualify that source runtime.
+
+The independent six-arm diagnostic completed all three candidate descendants.
+Their cumulative post-genesis schedules were 10/20/30 steps, 526/1052/1578 input
+tokens and 40/80/120 supervised tokens. Each round scored the candidate, fresh
+LoRA and fresh full-tune controls at 1/2 on both calibration and evaluation;
+the actual incumbent, unmodified backbone and random LoRA scored zero. These
+observations establish no gain over the strongest evaluated control. The source
+installed zero children and issued no product qualification.
+
+The records ZIP and every contained record were verified locally against its
+complete SHA and evidence index. The 2,175,707,854-byte checkpoint ZIP was not
+downloaded locally because of available disk space. Its GitHub digest and all
+29 checkpoint entries remain pinned; the new hosted runner must verify the full
+archive and every consumed checkpoint before training. The known records archive
+contains 11,465 members, so its explicit extraction budget covers that observed
+count and 193,733,440 expanded bytes. All archives retain finite count and byte
+bounds, regular relative member checks and the original per-file limit.
+
+GitHub retains these original artifacts for 14 days, until 2026-11-10. This is
+temporary experiment retention, not permanent decentralized cell storage.

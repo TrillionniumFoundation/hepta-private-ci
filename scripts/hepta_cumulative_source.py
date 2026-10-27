@@ -43,11 +43,31 @@ def pinned_member(root, index, name):
     return path
 
 
-def extract(archive_path, destination, wanted):
+def extract(
+    archive_path,
+    destination,
+    wanted,
+    maximum_members=10000,
+    maximum_uncompressed_bytes=3 * 1024**3,
+):
     """Only regular relative members; checkpoint selection is explicit."""
+    require(
+        type(maximum_members) is int and 1 <= maximum_members <= 20000,
+        "finite archive member policy",
+    )
+    require(
+        type(maximum_uncompressed_bytes) is int
+        and 1 <= maximum_uncompressed_bytes <= 4 * 1024**3,
+        "finite archive expansion policy",
+    )
     extracted = {}
     with zipfile.ZipFile(archive_path) as archive:
-        require(len(archive.infolist()) <= 10000, "archive member bound")
+        require(len(archive.infolist()) <= maximum_members, "archive member bound")
+        require(
+            sum(info.file_size for info in archive.infolist())
+            <= maximum_uncompressed_bytes,
+            "archive expansion bound",
+        )
         require(
             len({info.filename for info in archive.infolist()})
             == len(archive.infolist()),
@@ -215,7 +235,8 @@ def fetch(args):
             selected = None if role == "records" else set(pin["selected_checkpoints"])
             observation["complete_zip_verified"] = True
             receipt["stage"] = role + "-extraction"
-            members = extract(archive_path, destination, selected)
+            budget = artifact.get("extraction_budget", {})
+            members = extract(archive_path, destination, selected, **budget)
             observation["extracted_members"] = members
             persist()
         index_path = destination / "evidence-index.json"
