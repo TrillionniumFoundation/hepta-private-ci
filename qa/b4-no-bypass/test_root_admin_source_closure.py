@@ -76,9 +76,16 @@ class RootAdminSourceClosureTests(unittest.TestCase):
 
     def test_valid_signed_artifact_cannot_skip_existing_full_lease_binding(self):
         self.rejects(
-            "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs",
+            "codex-rs/hepta-agentd/src/deployment_notes_revoke_observation.rs",
             "current.binding != expected",
             "current.lease_id.is_empty()",
+        )
+
+    def test_retained_read_only_verification_cannot_authorize_mutation(self):
+        self.rejects(
+            "codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+            "self.verify_original_artifact(signed, before, VerificationPurpose::LiveRevocation)",
+            "self.verify_original_artifact(signed, before, VerificationPurpose::RetainedObservation)",
         )
 
     def test_admin_activation_cannot_precede_original_ready_callback(self):
