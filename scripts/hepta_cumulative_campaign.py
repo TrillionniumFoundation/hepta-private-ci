@@ -33,6 +33,7 @@ def scores(predictions, plan):
 def run(args):
     runtime, plan = controls.checked_runtime(args.chain)
     controls.verify_runtime_snapshot()
+    evaluation_entry = Path(__file__).with_name("hepta_cumulative_pilot_entry.py")
     pin_raw = args.source_pin.read_bytes()
     pin = json.loads(pin_raw)
     retained = json.loads((args.source / "source-retention.json").read_bytes())
@@ -92,6 +93,7 @@ def run(args):
         chain_sha=controls.CHAIN_SHA,
         runner_sha256=runtime.file_sha(__file__),
         helper_sha256=runtime.file_sha(controls.__file__),
+        evaluation_entry_sha256=runtime.file_sha(evaluation_entry),
         original_six_arms_preserved=True,
         source_candidate_training_reexecuted=False,
         comparison_scope="public repeated tasks; independent runs with exact frozen runtime/data recipe",
@@ -276,7 +278,9 @@ def run(args):
                             sys.executable,
                             "-I",
                             "-B",
-                            str(args.chain / "scripts/llm_runtime_pilot.py"),
+                            str(evaluation_entry),
+                            "--chain",
+                            str(args.chain),
                             "_child",
                             "--materials",
                             str(args.materials),

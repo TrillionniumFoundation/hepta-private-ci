@@ -87,7 +87,8 @@ jobs:
           required = {"scripts/" + name for name in ("hepta_cumulative_controls.py",
               "hepta_cumulative_control_child.py", "hepta_cumulative_campaign.py",
               "hepta_cumulative_source.py", "test_hepta_cumulative_controls.py",
-              "test_hepta_cumulative_source.py")}
+              "test_hepta_cumulative_source.py", "hepta_cumulative_pilot_entry.py",
+              "test_hepta_cumulative_pilot_entry.py")}
           allowed = required | {".github/workflows/hepta-cumulative-controls.yml",
               "qualification/cumulative-controls/README.md", "qualification/cumulative-controls/source-pin.json"}
           changed = set(subprocess.check_output(["git", "diff", "--name-only", "-z", baseline, "HEAD"]).decode().split("\0")) - {""}
@@ -108,6 +109,7 @@ jobs:
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-cumulative/parent-controls.json" --timeout-seconds 60 --minimum-tests 5 -- python3 -B scripts/test_hepta_cumulative_controls.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-cumulative/archive-controls.json" --timeout-seconds 60 --minimum-tests 9 -- python3 -B scripts/test_hepta_cumulative_source.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-cumulative/import-controls.json" --timeout-seconds 60 --minimum-tests 9 -- python3 -B scripts/test_hepta_cumulative_pilot_entry.py --chain "$GITHUB_WORKSPACE/chain" -v
       - name: Fetch and verify the complete pinned original artifact ZIPs
         id: original
         env:

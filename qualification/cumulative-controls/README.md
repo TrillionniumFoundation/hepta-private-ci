@@ -46,6 +46,35 @@ The small metadata and archive tests are negative controls for hash, ancestry,
 count and path handling. They are not evidence that a neural model loaded or
 trained. Only terminal hosted execution receipts can establish that outcome.
 
+## Isolated evaluator entry
+
+[Run 40498180354](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40498180354)
+failed when the original evaluator, launched with `python -I -B`, tried to import
+its sibling `llm_runtime_parent_step` while building its argument parser. The
+round-two LoRA evaluation exited with code 1 after 252,248,551 ns; its recorded
+waited-child peak RSS was 51,138,560 bytes. No model evaluation ran in that child.
+The original failed process log and supervisor observation remain valid failures.
+
+The cumulative runner now enters that same evaluator through
+`scripts/hepta_cumulative_pilot_entry.py`. It retains `-I -B`, checks the exact
+original Chain commit, tracked source and frozen ten-step plan, rejects untracked
+files in the importable source trees, and adds only that checked Chain scripts
+directory to module lookup. It verifies the original sibling-module locations
+and accepts only evaluation of the two cumulative control roles. The original
+pilot parser, child implementation, material checks and source identities remain
+in use. The cold runtime snapshot is checked in the child as well as before and
+after its supervisor. The original inference budget and source-candidate pins
+are unchanged; the campaign records the new entry's source hash separately.
+
+The import controls use a disposable sparse checkout of actual local c960 Git
+objects and call the original `_child --help` parser. This reproduces the old
+failure and checks the new import route without weights, model imports, forwards,
+receipts or synthetic model material. Negative controls cover missing isolation,
+a different commit, modified tracked source, an ignored package that shadows a
+sibling, caller path pollution, unsupported operations, changed plan bytes and a
+missing runtime snapshot. These controls do not establish successful cumulative
+evaluation; that still requires a new complete hosted run.
+
 ## Pinned original observations
 
 The source is [run 40492138476](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40492138476)
