@@ -36,8 +36,11 @@ No identity, Registry, signer, Root, clock, grant or ledger is duplicated.
 ## Asynchronous observation serialization
 
 The original observation stream leaves its private slot for the entire RPC.
-A short synchronous mutex protects only taking and restoring that same stream;
-no mutex guard crosses an await. An empty slot refuses concurrent reads. Only a
+A private one-permit admission is taken without waiting before touching the
+slot, and retained through the entire RPC and restoration. Concurrent callers
+fail before taking a slot guard. A short synchronous mutex uses `try_lock` for
+both taking and restoring the same stream; no mutex guard crosses an await or
+waits for a competing reader during restoration. Only a
 fully framed, parsed, live-Root response before the original deadline restores
 the stream. Cancellation or any uncertain result drops it with the slot empty,
 so a later call cannot consume a delayed reply, reconnect or retry.

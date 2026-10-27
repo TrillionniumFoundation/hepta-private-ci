@@ -37,6 +37,7 @@ pub struct AgentdCognitiveCheckpointPeer {
 /// can consume a late reply or obtain another connection. All Future polls use
 /// nonblocking I/O, including observation of the original root process lifetime.
 pub struct AgentdUnixCognitiveCheckpointTransport {
+    exchange: tokio::sync::Semaphore,
     stream: Mutex<Option<tokio::net::UnixStream>>,
     root: AsyncFd<OwnedFd>,
     timeout: Duration,
@@ -111,6 +112,7 @@ impl AgentdUnixCognitiveCheckpointTransport {
                 .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
         check_lifetime(root.get_ref())?;
         Ok(Self {
+            exchange: tokio::sync::Semaphore::new(1),
             stream: Mutex::new(Some(stream)),
             root,
             timeout,
@@ -129,6 +131,12 @@ impl CognitiveCheckpointTransport for AgentdUnixCognitiveCheckpointTransport {
         }
         let request: CognitiveCheckpointRequest = serde_json::from_slice(request_json)
             .map_err(|_| ObjectiveSenderCheckpointError::Refused)?;
+        // Retain the original RPC's sole admission through restore. A racing
+        // caller fails before touching the slot, without queueing or waiting.
+        let _exchange = self
+            .exchange
+            .try_acquire()
+            .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
         let mut stream = {
             let mut slot = self
                 .stream
@@ -164,7 +172,7 @@ impl CognitiveCheckpointTransport for AgentdUnixCognitiveCheckpointTransport {
         // response validation. No slot guard spans I/O or an await.
         *self
             .stream
-            .lock()
+            .try_lock()
             .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)? = Some(stream);
         Ok(response)
     }
