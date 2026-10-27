@@ -1,0 +1,32 @@
+{
+  "archive": "/tmp/hepta-v3-final-20261027/hepta_field_bridge_v3_20261027_evidence.tar.gz",
+  "archive_sha256": "37ef2e8de1a795ada43a92afc7403018e82ac23368e8ee6f7319569099abf4cf",
+  "files": [
+    {
+      "archive_member": "run/runtime/fit/17-frozen/READOUTS.json",
+      "bytes": 5056403,
+      "path": "/tmp/hepta-field-v3-run/runtime/fit/17-frozen/READOUTS.json",
+      "sha256": "65f1bf3b2dd3e09dee5efdfbdbbfc965ccc79a74f983be6d7d5f5c78689ebf46"
+    },
+    {
+      "archive_member": "run/runtime/fit/29-frozen/READOUTS.json",
+      "bytes": 5062006,
+      "path": "/tmp/hepta-field-v3-run/runtime/fit/29-frozen/READOUTS.json",
+      "sha256": "04e27e29e7b09e8d811cdafe794d9ac10f145604cc25755ada8cd2d07b92f1cc"
+    },
+    {
+      "archive_member": "run/runtime/fit/43-frozen/READOUTS.json",
+      "bytes": 5058489,
+      "path": "/tmp/hepta-field-v3-run/runtime/fit/43-frozen/READOUTS.json",
+      "sha256": "ae2b76da23e7547f68cf408fabb3d3b259bd19d29737dab9cb66d55ed02a7e2a"
+    }
+  ],
+  "free_all_bytes_after": 630476800,
+  "integrity_receipt_sha256": "59dda0604c4cc4813477c8da4e7118dfcc21ed375ba868a88fb61cab1682d8c6",
+  "open_references": [],
+  "reclaimed_bytes": 15176898,
+  "recorded_utc": "2026-10-27T15:09:59Z",
+  "schema": "hepta.field-bridge.v4.verified-readout-reclaim.1",
+  "scope": "Three completed V3 runtime full candidate readout working copies only. Exact members remain in the SHA-verified full archive; compressed Git-published versions and original metadata remain. New V4 training heads are untouched. Reanalysis needing these old full runtime readouts must restore the members first.",
+  "status": "VERIFIED_DUPLICATES_RECLAIMED"
+}

@@ -1,0 +1,50 @@
+{
+  "archive": "/tmp/hepta-v3-final-20261027/hepta_field_bridge_v3_20261027_evidence.tar.gz",
+  "archive_sha256": "37ef2e8de1a795ada43a92afc7403018e82ac23368e8ee6f7319569099abf4cf",
+  "files": [
+    {
+      "archive_member": "run/runtime/bank/17-frozen/runtime_fit/evidence.jsonl.gz",
+      "bytes": 35780629,
+      "path": "/tmp/hepta-field-v3-run/runtime/bank/17-frozen/runtime_fit/evidence.jsonl.gz",
+      "sha256": "349c19882041b21af324999166e608aa43416468a3152f91444746b4379686b3"
+    },
+    {
+      "archive_member": "run/runtime/bank/17-frozen/runtime_select/evidence.jsonl.gz",
+      "bytes": 17907270,
+      "path": "/tmp/hepta-field-v3-run/runtime/bank/17-frozen/runtime_select/evidence.jsonl.gz",
+      "sha256": "0c4bf0a5afc6957bb318da7520d4ed6f847b5320c4fe53624dc92eca6a8b1787"
+    },
+    {
+      "archive_member": "run/runtime/bank/29-frozen/runtime_fit/evidence.jsonl.gz",
+      "bytes": 35817089,
+      "path": "/tmp/hepta-field-v3-run/runtime/bank/29-frozen/runtime_fit/evidence.jsonl.gz",
+      "sha256": "00523f52af979edab27d91824bf1b74716efe761b520e56e6f830d5994c34e7a"
+    },
+    {
+      "archive_member": "run/runtime/bank/29-frozen/runtime_select/evidence.jsonl.gz",
+      "bytes": 17964500,
+      "path": "/tmp/hepta-field-v3-run/runtime/bank/29-frozen/runtime_select/evidence.jsonl.gz",
+      "sha256": "f14e2be63ebd4d94108b0f3e49ddc705dae8ce7ccf83e6b49f7c8c72ebf979c3"
+    },
+    {
+      "archive_member": "run/runtime/bank/43-frozen/runtime_fit/evidence.jsonl.gz",
+      "bytes": 35790107,
+      "path": "/tmp/hepta-field-v3-run/runtime/bank/43-frozen/runtime_fit/evidence.jsonl.gz",
+      "sha256": "0ad1d79c1b3be3336e749d8cd19f46abfc41d747441d2a097cf6085d02784a26"
+    },
+    {
+      "archive_member": "run/runtime/bank/43-frozen/runtime_select/evidence.jsonl.gz",
+      "bytes": 17937282,
+      "path": "/tmp/hepta-field-v3-run/runtime/bank/43-frozen/runtime_select/evidence.jsonl.gz",
+      "sha256": "bba977d3decebc012f4c4b36db3cf61bd7009f39fa782e3851db3a7de6342856"
+    }
+  ],
+  "free_all_bytes_after": 737009664,
+  "integrity_receipt_sha256": "59dda0604c4cc4813477c8da4e7118dfcc21ed375ba868a88fb61cab1682d8c6",
+  "open_references": [],
+  "reclaimed_bytes": 161196877,
+  "recorded_utc": "2026-10-27T15:38:09Z",
+  "schema": "hepta.field-bridge.v4.verified-bank-log-reclaim.1",
+  "scope": "Six completed V3 runtime bank evidence working copies only. Full exact gzip members and CRC proofs remain in the independently verified V3 archive. All V3 decisions, gate results, metadata and current V4 training dependencies remain. Any old runtime bank replay must restore these members before reading.",
+  "status": "VERIFIED_DUPLICATES_RECLAIMED"
+}

@@ -1,0 +1,45 @@
+{
+  "approval_reason_summary": "Automatic review classified upload of two evidence archives and two verification reports as sensitive external egress and required end-user-authored explicit approval of the named files and destination; assistant-authored enumeration followed by generic continuation was deemed insufficient.",
+  "attempt_in_this_turn": 1,
+  "authorization_context_sha256": "43c0ff2373f631e89f1ef3b086322af8da6e0354cfff1010a62505bf2e327aad",
+  "automatic_review_rejections_total": 3,
+  "created_library_files": [],
+  "files": [
+    {
+      "bytes": 550161476,
+      "original_unchanged": true,
+      "path": "/tmp/hepta-v2-final-20261027/hepta_field_bridge_v2_20261027_evidence.tar.gz",
+      "sha256": "7351ff2b694bb37bcd50e7d5be08e601f525516c9ba214a8d912d34f007a4607"
+    },
+    {
+      "bytes": 56583,
+      "original_unchanged": true,
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v2_archive/ARCHIVE_AND_RESTORE_VERIFICATION.json",
+      "sha256": "02db4d2386e1b2b092a1e2e784ab39f83a4131addcd77c11eaa82c4b78c41e82"
+    },
+    {
+      "bytes": 1254389884,
+      "original_unchanged": true,
+      "path": "/tmp/hepta-v3-final-20261027/hepta_field_bridge_v3_20261027_evidence.tar.gz",
+      "sha256": "37ef2e8de1a795ada43a92afc7403018e82ac23368e8ee6f7319569099abf4cf"
+    },
+    {
+      "bytes": 695743,
+      "original_unchanged": true,
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_archive/ARCHIVE_AND_RESTORE_VERIFICATION.json",
+      "sha256": "198916ddf9f2ad281fcda54a79b79f9b0210cc56129a8dc77e054ee34a0c6351"
+    }
+  ],
+  "local_and_github_work_continues": true,
+  "no_further_retry_or_alternate_egress": true,
+  "recorded_at_utc": "2026-10-27T15:08:39Z",
+  "request_sha256": "2cf49ae8026c49f64eee013ee404f43c01620a70a29d351429f49e2839051910",
+  "required_user_confirmation": "Explicitly authorize saving these four named V2/V3 evidence and verification files to ChatGPT Library.",
+  "schema": "hepta.field-bridge.v4.persistence-approval-status.1",
+  "status": "BLOCKED_BY_AUTOMATIC_APPROVAL_REVIEW",
+  "target": "ChatGPT Library",
+  "tool_process_started": false,
+  "upload_started": false,
+  "user_followup_was_generic_continuation": true,
+  "v2_v3_reports_not_rewritten": true
+}

@@ -1,0 +1,78 @@
+{
+  "checks": {
+    "active_calibration_context_is_14_float64_values": true,
+    "analyzer_accepts_general_seal_files_and_verifies_all_of_them": true,
+    "analyzer_endpoint_sample_axes_and_file_contract_unchanged": true,
+    "baseline_guard_record_retained_for_independent_acceptance_audit": true,
+    "endpoint_access_requires_external_freeze_and_all_108_training_paths": true,
+    "exactly_three_train_postflight_receipts_required_before_seal": true,
+    "frozen_v3_training_configuration_unchanged": true,
+    "full_raw30_provenance_and_heads_excluded_from_112B_claim": true,
+    "imports_of_analyzer_and_runner_do_not_import_torch": true,
+    "phase_receipts_are_outside_immutable_evaluate_seed_inventory": true,
+    "six_fixed_comparisons_and_4000_draw_contract_unchanged": true,
+    "source_registry_and_all_original_v3_failed_gates_unchanged": true,
+    "train_postflight_schema_study_seed_scope_completion_hash_bound": true,
+    "training_seal_inventory_includes_train_postflight_receipts": true
+  },
+  "closed_implementation_findings": [
+    "The legacy source_roles.py asset parser is included in the executable dependency closure.",
+    "All nine original BANK/CONTROLLERS/REFERENCE files must match the protocol-pinned byte counts and SHA identities as well as the external freeze.",
+    "Core sealing now rejects missing/extra/unbound training postflight cost receipts; a late train COMPLETE alone cannot authorize endpoint access.",
+    "The 112-byte quantity denotes only the 14-coordinate active numerical context; complete raw30 provenance, heads, Python/container state, trace and serialization storage are separately accounted."
+  ],
+  "model_observer_native_network_calls": 0,
+  "new_statistical_test_runs": 0,
+  "old_snapshot_preserved": true,
+  "prior_review_and_contract_receipts": {
+    "INDEPENDENT_V4_IMPLEMENTATION_REVIEW.json": "6945652974f2d101d6d69067f107577055130e39528eaee685bc2f68a67e8495",
+    "INDEPENDENT_V4_SOURCE_REVIEW.json": "ba01c02b0f57333a1fc17140668a06f56f42f171382a39a529ae35b8ce4f761c",
+    "QUALIFICATION_ANALYSIS_CONTRACTS.json": "84f3f43013a4e28a06413c304b57bdfb4a748f67162b64a7776e9bac7594ef29",
+    "TRAINING_RUNNER_CONTRACT.json": "541dcccb86909793bbc78ebd770a39e990f221a14ca22415e1d3ef7797359b9c",
+    "TRAINING_RUNNER_CONTRACT_POSTFLIGHT.json": "aad0276116a730eb145d167679cb1cd8869b940626d2464201ae2271a69a41e7"
+  },
+  "remaining_execution_requirements": [
+    "Publish and independently register the final frozen code/protocol/source/artifact closure before the first formal model call.",
+    "Execute all 108 training paths; independently verify complete traces, checkpoints, baseline guard and cost receipts before sealing endpoint access.",
+    "Complete all three endpoint phases, independently re-score retained media under both frozen observers, and run the single fixed qualification decision.",
+    "Preserve failure results and keep final/runtime studies closed unless separately prospectively registered."
+  ],
+  "reviewed_files": {
+    "PROTOCOL.json": {
+      "bytes": 15605,
+      "sha256": "561c8110c51fe5705f3966cc806221927497897f9498745466ec4966ea2f2797"
+    },
+    "SOURCE_ALLOCATION.json": {
+      "bytes": 4677,
+      "sha256": "0b5cc7213f7c635195b85c580cb92a72b08d9d200b9c3211dfef89a2887b79fb"
+    },
+    "SOURCE_IDENTITIES.json.gz": {
+      "bytes": 269403,
+      "sha256": "4dc43625c90a7d2b8ff5c93f6ef4c4e4f9b688dd37d5f15c41aae84c3e3ca88f"
+    },
+    "qualification_analysis.py": {
+      "bytes": 23015,
+      "sha256": "af3dee4c0b2870810d0fe2fee937499319ff93f8aa0e0ebabcf8d3c900d79998"
+    },
+    "qualification_analysis_tests.py": {
+      "bytes": 9189,
+      "sha256": "c527786219d91c54d70f4c213b84e9c616038827911844180a85937155cf5243"
+    },
+    "source_roles.py": {
+      "bytes": 12633,
+      "sha256": "e0ea926f257bd1ec81970b8b401357b9450f0e5b8994bfe56310f682fd18cc59"
+    },
+    "training_qualification.py": {
+      "bytes": 29162,
+      "sha256": "1442e2811292ad2c5a90912bb667e1fb3a515bd38b79b246c72b3056b8f53fa2"
+    },
+    "training_run.py": {
+      "bytes": 12700,
+      "sha256": "bf1be7887c7b3384356bfd398cc0c0d346eda09247394c93bfb8755043d8e0f1"
+    }
+  },
+  "schema": "hepta.field-bridge.v4.independent-final-pre-outcome-review.1",
+  "statistical_analyzer_unchanged": true,
+  "status": "IMPLEMENTATION_REVIEW_PASSED_NO_SCIENTIFIC_OUTCOME_CLAIM",
+  "substantive_scientific_blockers_closed": false
+}
