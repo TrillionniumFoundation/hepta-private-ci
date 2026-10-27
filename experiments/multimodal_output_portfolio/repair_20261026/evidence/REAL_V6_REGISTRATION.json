@@ -1,0 +1,31 @@
+{
+  "checkpoint_sha256": "8fa76a13cdeee48e41b84e29211659a065d9573e2fdfecc4281f882248b508b6",
+  "created_ns": 1793040817586992639,
+  "fit_pairs": 2000,
+  "fit_split": "train",
+  "holdout_pairs": 500,
+  "holdout_split": "validation",
+  "l2": 0.0001,
+  "learning_rate": 0.01,
+  "original_protocol_sha256": "b45d60a3dcd4de13493c20be5b8649692163ebe0674b58d8957c3919097e7de5",
+  "pair_offset": 0,
+  "primary": "paired per-source joint NLL, learned joint minus learned factorized; lower is better",
+  "schema": "hepta.repair.v6-joint-development.v1",
+  "scope": "Historical-source development holdout; no writer-disjoint/new-source confirmation or generation claim",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "source_sha256": {
+    "prior.py": "f05db19ae9c25333dfbc216be3f1fd171ed924c83aea24bda2d2711e1df25dd3",
+    "real_v6.py": "1b6737376bbec3add15059a8ab96f8cf86ce52734a7d53799003a98d3cc351a8"
+  },
+  "steps": 250,
+  "strong_controls": "Frozen initial semantic marginals; each arm also conditioned on the public relation",
+  "task": "Clean pairs; shared top-20-row occlusion plus explicitly public sum-modulo-10 instruction",
+  "views": [
+    "clean",
+    "shared_occlusion_public_sum"
+  ]
+}
