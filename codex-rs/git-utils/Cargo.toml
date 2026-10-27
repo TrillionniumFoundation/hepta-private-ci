@@ -39,5 +39,3 @@ pretty_assertions = { workspace = true }
 [lib]
 doctest = false
 
-[target.'cfg(windows)'.dev-dependencies]
-base64 = { workspace = true }
