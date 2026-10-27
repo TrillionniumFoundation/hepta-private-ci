@@ -9,8 +9,8 @@ use crate::HostAuthorityWriterObservationV2;
 use crate::HostAuthorityWriterRegistration;
 use crate::HostSignedWriterAuthorizationV1;
 use crate::HostWriterAuthorizationReadResponseV1;
+use crate::root_failure_report::RootServiceDiagnostics;
 use crate::root_failure_report::RootServicePhase;
-use crate::root_failure_report::service_io_failure;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
 
@@ -115,12 +115,13 @@ impl RegisteredWriter {
         clock: &HostAuthorityClock,
         identity: &AgentdIdentity,
         request: &ObservationRequest,
+        diagnostics: &RootServiceDiagnostics,
     ) -> Result<Vec<u8>, HostIssuerTransportError> {
         match (request.schema_version, request.operation.as_str()) {
             (1, HOST_WRITER_AUTHORIZATION_V1) | (2, HOST_AUTHORITY_OBSERVATION_V2) => {}
             _ => return Err(HostIssuerTransportError::InvalidRequest),
         }
-        // Local scalar only; reporting happens after with_live releases its fence.
+        // Local scalar only. The outer serve reports after releasing its channel.
         let failed_phase = std::cell::Cell::new(RootServicePhase::WriterObservation);
         self.registration
             .with_live(&self.leases, |store_revision| {
@@ -188,7 +189,7 @@ impl RegisteredWriter {
                 .map_err(io::Error::other)
             })
             .inspect_err(|error| {
-                service_io_failure(failed_phase.get(), error);
+                diagnostics.record_writer(failed_phase.get(), error);
             })
             .map_err(unavailable)
     }

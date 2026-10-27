@@ -4,6 +4,7 @@ use crate::AgentdRootAuthorityError;
 use crate::HostAuthorityLane;
 use crate::root_observation_diagnostic::ObservationDiagnostics;
 use codex_hepta_contracts::HostIssuerTransportError;
+use std::cell::Cell;
 use std::io::Write;
 
 #[derive(Clone, Copy, Debug)]
@@ -141,22 +142,66 @@ pub(crate) enum RootServicePhase {
     WriterEncoding,
 }
 
-pub(crate) fn service_failure(
-    lane: HostAuthorityLane,
+#[derive(Clone, Copy)]
+struct RootWriterFailure {
     phase: RootServicePhase,
-    error: HostIssuerTransportError,
-) {
-    let _ = writeln!(
-        std::io::stderr(),
-        "HEPTA_ROOT_SERVICE_FAILURE lane={lane:?} phase={phase:?} error={error:?}"
-    );
+    kind: std::io::ErrorKind,
+    os_error: Option<i32>,
 }
 
-pub(crate) fn service_io_failure(phase: RootServicePhase, error: &std::io::Error) {
-    let kind = error.kind();
-    let os_error = error.raw_os_error();
-    let _ = writeln!(
-        std::io::stderr(),
-        "HEPTA_ROOT_SERVICE_FAILURE lane=Observation phase={phase:?} io_error_kind={kind:?} os_error={os_error:?}"
-    );
+/// One synchronous `serve` invocation owns this collector. It is neither
+/// shared between lanes nor retained across connections. Recording only copies
+/// public scalar metadata; it never writes, locks, clears or changes authority.
+pub(crate) struct RootServiceDiagnostics {
+    phase: Cell<RootServicePhase>,
+    first_writer: Cell<Option<RootWriterFailure>>,
+}
+
+impl RootServiceDiagnostics {
+    pub(crate) fn new() -> Self {
+        Self {
+            phase: Cell::new(RootServicePhase::ChannelOpen),
+            first_writer: Cell::new(None),
+        }
+    }
+
+    pub(crate) fn stage(&self, phase: RootServicePhase) {
+        self.phase.set(phase);
+    }
+
+    pub(crate) fn record_writer(&self, phase: RootServicePhase, error: &std::io::Error) {
+        if self.first_writer.get().is_none() {
+            self.first_writer.set(Some(RootWriterFailure {
+                phase,
+                kind: error.kind(),
+                os_error: error.raw_os_error(),
+            }));
+        }
+    }
+
+    /// Called only after `serve_inner` returned and released every original
+    /// stream/channel/pidfd. Synchronous output can still take unbounded time;
+    /// it cannot defer the original channel's shutdown or resource drop.
+    pub(crate) fn report_after_release(
+        &self,
+        lane: HostAuthorityLane,
+        error: HostIssuerTransportError,
+    ) {
+        if let Some(RootWriterFailure {
+            phase,
+            kind,
+            os_error,
+        }) = self.first_writer.get()
+        {
+            let _ = writeln!(
+                std::io::stderr(),
+                "HEPTA_ROOT_SERVICE_FAILURE lane=Observation phase={phase:?} io_error_kind={kind:?} os_error={os_error:?}"
+            );
+        }
+        let phase = self.phase.get();
+        let _ = writeln!(
+            std::io::stderr(),
+            "HEPTA_ROOT_SERVICE_FAILURE lane={lane:?} phase={phase:?} error={error:?}"
+        );
+    }
 }

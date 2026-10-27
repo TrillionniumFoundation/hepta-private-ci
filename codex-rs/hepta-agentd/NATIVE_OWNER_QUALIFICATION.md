@@ -154,3 +154,29 @@ Real-clock Unix-stream regressions retain a pre-fix failure for 210 ms replies
 and require 260 ms replies to fence specifically on the expired previous sample,
 even though each reply meets the 300 ms transport limit. They do not establish
 which native Root substage incurred delay or prove native qualification.
+
+### Public failure phases after channel release
+
+Root diagnostics use closed client/lane/operation/error enums and scalar timing,
+OS-error and progress fields. They exclude arbitrary error Display text, stage
+strings, request bodies, grants, signatures and key material. Each synchronous
+Root `serve` owns an explicit local collector; the observation handler records
+only its first closed writer-failure metadata. No collector is shared between
+lanes or reused across connections, and recording does not change authority.
+
+The public `serve` calls an inner function that owns the original stream,
+channel and pidfd. Early checkpoint/constructor errors and exchange errors
+return through that inner ownership boundary. Only after those resources have
+been released, including the original exchange's permanent shutdown on error,
+does the outer call print at most one writer line and one lane error line and
+return the unchanged result. Synchronous diagnostic output has no bounded-time
+guarantee; it cannot delay that original shutdown or resource release. The
+collector cannot clear a failure, restore authority, retry or reconnect.
+
+This diagnostic successor is source-only, pending review, the original 939-case
+host qualification and a newly built exact static ELF/native guest. The real
+9fb26ed5/e7ed68e6 exact guest exited 65 without timing out after 56.626 seconds;
+its Root and owner errors were generic Unavailable, with no complete report.
+The retained source-bound failure does not establish a particular cache,
+reactor, transport, clock or storage root cause. Neither this documentation nor
+the diagnostic source changes the original 500 ms bounds or 100 ms cadence.

@@ -21,8 +21,8 @@ use crate::AgentdIdentity;
 use crate::AuthBusObjectiveBody;
 use crate::AuthBusObjectiveIngress;
 use crate::DeploymentFinalUseIssuer;
+use crate::root_failure_report::RootServiceDiagnostics;
 use crate::root_failure_report::RootServicePhase;
-use crate::root_failure_report::service_failure;
 
 #[path = "authority_host_launch.rs"]
 pub(super) mod launch;
@@ -143,8 +143,26 @@ impl HostAuthorityService {
         &self,
         lane: HostAuthorityLane,
         stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        owner_pidfd: OwnedFd,
+    ) -> Result<(), HostIssuerTransportError> {
+        let diagnostics = RootServiceDiagnostics::new();
+        // The inner call owns all resources, including early-failure arguments.
+        // Its return releases them before any diagnostic output can block.
+        let result = self.serve_inner(lane, stream, policy, owner_pidfd, &diagnostics);
+        if let Err(error) = result {
+            diagnostics.report_after_release(lane, error);
+        }
+        result
+    }
+
+    fn serve_inner(
+        &self,
+        lane: HostAuthorityLane,
+        stream: UnixStream,
         mut policy: HostAuthorityPeerPolicy,
         owner_pidfd: OwnedFd,
+        diagnostics: &RootServiceDiagnostics,
     ) -> Result<(), HostIssuerTransportError> {
         let bound = match lane {
             HostAuthorityLane::Observation => 16 * 1024,
@@ -158,23 +176,13 @@ impl HostAuthorityService {
         if matches!(lane, HostAuthorityLane::Checkpoint)
             && let Some(checkpoint) = &self.checkpoint
         {
-            checkpoint
-                .validate_peer(policy.peer)
-                .map_err(unavailable)
-                .inspect_err(|error| {
-                    service_failure(lane, RootServicePhase::CheckpointPeer, *error);
-                })?;
+            diagnostics.stage(RootServicePhase::CheckpointPeer);
+            checkpoint.validate_peer(policy.peer).map_err(unavailable)?;
         }
-        let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)
-            .inspect_err(|error| {
-                service_failure(lane, RootServicePhase::ChannelOpen, *error);
-            })?;
-        while channel
-            .exchange(|bytes| self.handle(lane, bytes))
-            .inspect_err(|error| {
-                service_failure(lane, RootServicePhase::Exchange, *error);
-            })?
-        {}
+        diagnostics.stage(RootServicePhase::ChannelOpen);
+        let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)?;
+        diagnostics.stage(RootServicePhase::Exchange);
+        while channel.exchange(|bytes| self.handle(lane, bytes, diagnostics))? {}
         Ok(())
     }
 
@@ -182,9 +190,10 @@ impl HostAuthorityService {
         &self,
         lane: HostAuthorityLane,
         bytes: &[u8],
+        diagnostics: &RootServiceDiagnostics,
     ) -> Result<Vec<u8>, HostIssuerTransportError> {
         match lane {
-            HostAuthorityLane::Observation => self.observe(bytes),
+            HostAuthorityLane::Observation => self.observe(bytes, diagnostics),
             HostAuthorityLane::Issuer => self.issue(bytes),
             HostAuthorityLane::Checkpoint => self
                 .writer
@@ -219,14 +228,24 @@ impl HostAuthorityService {
         }
     }
 
-    fn observe(&self, bytes: &[u8]) -> Result<Vec<u8>, HostIssuerTransportError> {
+    fn observe(
+        &self,
+        bytes: &[u8],
+        diagnostics: &RootServiceDiagnostics,
+    ) -> Result<Vec<u8>, HostIssuerTransportError> {
         let request: ObservationRequest = decode(bytes)?;
         if request.operation != "runtime.authority.observation.v1" {
             return self
                 .writer
                 .as_ref()
                 .ok_or(HostIssuerTransportError::Unavailable)?
-                .observe(&self.issuer, &self.clock, &self.identity, &request);
+                .observe(
+                    &self.issuer,
+                    &self.clock,
+                    &self.identity,
+                    &request,
+                    diagnostics,
+                );
         }
         if request.schema_version != 1 {
             return Err(HostIssuerTransportError::InvalidRequest);
