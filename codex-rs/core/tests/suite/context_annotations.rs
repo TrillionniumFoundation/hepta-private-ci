@@ -1,3 +1,4 @@
+use super::durable_history::persisted_response_items;
 use anyhow::Result;
 use codex_core::TurnInputRequest;
 use codex_core::config::CurrentTimeReminderConfig;
@@ -18,9 +19,11 @@ use core_test_support::responses::ev_response_created;
 use core_test_support::responses::mount_sse_once;
 use core_test_support::responses::sse;
 use core_test_support::responses::start_mock_server;
+use core_test_support::responses::strip_metadata_from_json;
 use core_test_support::skip_if_no_network;
 use core_test_support::test_codex::test_codex;
 use core_test_support::wait_for_event;
+use core_test_support::wait_for_event_match;
 use pretty_assertions::assert_eq;
 use std::collections::BTreeMap;
 
@@ -134,18 +137,33 @@ async fn first_request_item_types_roles_and_content_annotations() -> Result<()> 
             ])),
         )
         .await?;
-    wait_for_event(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_))
+    let turn_id = wait_for_event_match(&test.codex, |event| match event {
+        EventMsg::TurnComplete(event) => Some(event.turn_id.clone()),
+        _ => None,
     })
     .await;
 
+    let history = persisted_response_items(&test.codex).await?;
     let request = response.single_request();
-    assert!(request.has_content_kinds(&["guardian.approved_action"]));
-    let mut guardian_item = request
-        .input()
-        .into_iter()
-        .next()
-        .expect("guardian approval should be the first context item");
+    assert_eq!(
+        request.body_json()["client_metadata"]["turn_id"].as_str(),
+        Some(turn_id.as_str())
+    );
+    let input = request.input();
+    assert!(input.iter().all(|item| {
+        item.get("internal_chat_message_metadata_passthrough")
+            .is_none()
+    }));
+    // This fixture has one request and no assistant output. Its complete
+    // durable sequence must match the wire copy in both order and cardinality.
+    assert_eq!(
+        serde_json::Value::Array(input),
+        strip_metadata_from_json(serde_json::Value::Array(history.clone()))
+    );
+    let mut guardian_item = history
+        .first()
+        .expect("guardian approval should be the first persisted context item")
+        .clone();
     guardian_item
         .as_object_mut()
         .expect("guardian approval should be an object")
@@ -187,9 +205,8 @@ async fn first_request_item_types_roles_and_content_annotations() -> Result<()> 
         })
     );
 
-    let items = request
-        .input()
-        .into_iter()
+    let items = history
+        .iter()
         .map(|item| {
             let item_type = item["type"].as_str().expect("response item type");
             let role = item["role"].as_str().unwrap_or("-");
@@ -212,6 +229,12 @@ async fn first_request_item_types_roles_and_content_annotations() -> Result<()> 
     message developer ["rollout_budget.remaining_tokens"]
     message developer ["current_time.reminder"]
     "#);
+    // The exact snapshot above fixes the submitted user item at this position.
+    assert_eq!(history[8]["content"][0]["text"], "inspect world state");
+    assert_eq!(
+        history[8]["internal_chat_message_metadata_passthrough"]["turn_id"].as_str(),
+        Some(turn_id.as_str())
+    );
 
     Ok(())
 }
