@@ -1,4 +1,4 @@
-"""Profile metadata and migration tests use synthetic reports, not attestations."""
+"""Profile tests mutate copied baseline fixtures, not execution attestations."""
 
 from copy import deepcopy
 import json
@@ -18,17 +18,7 @@ from run_codex_compliance import (
 
 
 def vendor_candidate() -> dict[str, object]:
-    report = deepcopy(profiles.legacy_baseline())
-    report["conformanceProfile"] = profiles.VENDOR_PROFILE
-    report["officialConformance"]["gitRef"] = profiles.descriptor()["gitRef"]
-    report["executionIdentity"] = {
-        "identity": profiles.descriptor(),
-        "descriptorSha256": profiles.DESCRIPTOR_SHA256,
-    }
-    for record in profiles.required_fixed_checks():
-        report["checks"]["failing"].remove(record)
-        report["checks"]["passing"].append(record)
-    return report
+    return deepcopy(profiles.measured_baseline())
 
 
 def executable(tmp_path: Path) -> Path:
@@ -109,6 +99,43 @@ def test_baseline_writer_preserves_the_original_historical_file() -> None:
     with pytest.raises(ValueError, match="must remain unchanged"):
         _write_compact_regression_baseline(vendor_candidate(), path)
     assert path.read_bytes() == before
+
+
+def test_baseline_writer_preserves_the_code_owned_measured_vendor_file() -> None:
+    path = Path(profiles.__file__).with_name("regression-baseline-c37-sdk132-v1.json")
+    before = path.read_bytes()
+    with pytest.raises(ValueError, match="must remain unchanged"):
+        _write_compact_regression_baseline(vendor_candidate(), path)
+    assert path.read_bytes() == before
+
+
+def test_changed_measured_reference_is_not_an_authoritative_lower_bound(
+    monkeypatch,
+) -> None:
+    reference = Path(profiles.__file__).with_name(
+        "regression-baseline-c37-sdk132-v1.json"
+    )
+    original_read = Path.read_bytes
+
+    def changed_read(path):
+        data = original_read(path)
+        return data + b"\n" if path == reference else data
+
+    monkeypatch.setattr(Path, "read_bytes", changed_read)
+    with pytest.raises(ValueError, match="measured vendor baseline changed"):
+        profiles.measured_baseline()
+
+
+def test_a_measured_failure_can_be_repaired_without_disappearing() -> None:
+    report = vendor_candidate()
+    repaired = report["checks"]["failing"].pop()
+    report["checks"]["passing"].append(repaired)
+    compact = _compact_regression_baseline(report)
+    assert repaired in compact["checks"]["passing"]
+    assert repaired not in compact["checks"]["failing"]
+    gate = _evaluate_regression_gate(compact, profiles.measured_baseline())
+    assert gate["success"] is True
+    assert repaired in gate["fixedChecks"]
 
 
 def test_cli_rejects_a_cross_profile_baseline_before_starting_conformance(

@@ -41,6 +41,7 @@ from conformance_profiles import (  # noqa: E402
     descriptor,
     execution_metadata,
     legacy_baseline,
+    measured_baseline,
     report_profile,
     required_fixed_checks,
     validate_metadata,
@@ -1730,6 +1731,11 @@ def _compact_regression_baseline(report: Mapping[str, object]) -> dict[str, obje
             errors.append(
                 f"legacy migration failed: {json.dumps(migration, sort_keys=True)}"
             )
+        measured = _evaluate_regression_gate(report, measured_baseline())
+        if measured["success"] is not True:
+            errors.append(
+                f"measured vendor preservation failed: {json.dumps(measured, sort_keys=True)}"
+            )
         for record in required_fixed_checks():
             statuses = identities.get(_RegressionCheckIdentity(**record), set())
             if "PASS" not in statuses or "FAIL" in statuses:
@@ -1786,10 +1792,14 @@ def _write_compact_regression_baseline(
     report: Mapping[str, object],
     path: Path,
 ) -> None:
-    if path.resolve() == Path(__file__).resolve().with_name(
-        "regression-baseline-v1.json"
-    ):
-        raise ValueError("the original historical baseline must remain unchanged")
+    if path.resolve() in {
+        Path(__file__).resolve().with_name(name)
+        for name in (
+            "regression-baseline-v1.json",
+            "regression-baseline-c37-sdk132-v1.json",
+        )
+    }:
+        raise ValueError("the code-owned baseline reference must remain unchanged")
     _write_json_file(path, _compact_regression_baseline(report))
 
 

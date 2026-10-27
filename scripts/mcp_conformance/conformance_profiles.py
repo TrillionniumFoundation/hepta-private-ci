@@ -15,6 +15,9 @@ DESCRIPTOR_SHA256 = "eca54127cc3edf7593162942bf82e69275ae740f83a73a7187e4d2db43d
 LEGACY_BASELINE_SHA256 = (
     "896630ee5f2c890152634e84a39d433f68eede8fff0b4ff99317800453b048ca"
 )
+MEASURED_BASELINE_SHA256 = (
+    "c5045d5682f920bd9eca25a81f5d0d5160c12a0cd647d6c67ca88367365fd079"
+)
 _DIRECTORY = Path(__file__).resolve().parent
 
 
@@ -104,6 +107,13 @@ def legacy_baseline() -> dict[str, object]:
     data = (_DIRECTORY / "regression-baseline-v1.json").read_bytes()
     if hashlib.sha256(data).hexdigest() != LEGACY_BASELINE_SHA256:
         raise ValueError("the original legacy baseline changed")
+    return json.loads(data)
+
+
+def measured_baseline() -> dict[str, object]:
+    data = (_DIRECTORY / "regression-baseline-c37-sdk132-v1.json").read_bytes()
+    if hashlib.sha256(data).hexdigest() != MEASURED_BASELINE_SHA256:
+        raise ValueError("the code-owned measured vendor baseline changed")
     return json.loads(data)
 
 

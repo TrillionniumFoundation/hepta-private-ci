@@ -25,6 +25,14 @@ failure identities. The ten metadata-var3 checks repaired by the original 85f
 implementation must pass and become required passing checks. Remaining failures
 may decrease and stay visible. The original 491 baseline is never rewritten.
 
+The published c37 baseline is also an immutable, code-owned lower bound. Its exact
+SHA-256 pins all 634 measured passing identities, including the 62 vendor-only
+checks, and all 18 known failures. Every vendor baseline input and extraction must
+preserve every measured pass. A known failure may remain visible or become a real
+pass; it cannot disappear. Editing either code-owned reference makes validation
+fail, and the baseline writer rejects overwriting either reference. Extract an
+improved capture to a separate candidate file for review.
+
 For example, after a full vendor capture:
 
 ```sh
