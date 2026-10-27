@@ -240,8 +240,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+    "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
   },
   "repositoryControlledGaps": [
     "Bind every operation to an authenticated consumer callsite and owner store.",
@@ -251,5 +251,11 @@
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
-  ]
+  ],
+  "sourceObservationRebind": {
+    "ledger": "qualification/module-execution-dossiers/SOURCE_OBSERVATION_REBIND_20261027.json",
+    "record": "control.runtime",
+    "previousMapBlob": "15e2ee01e8b0e625de1345b1eec34857f7c262dc",
+    "scope": "source_navigation_only_no_execution_evidence_transferred"
+  }
 }

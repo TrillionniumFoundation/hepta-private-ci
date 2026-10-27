@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+    "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -191,8 +191,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+    "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
@@ -298,5 +298,11 @@
       "path": "docs/modules/memory.retrieval/TECHNICAL.md",
       "object": "5b04a2e04f9a20d3337cc460b17cc0814a7e9bc4"
     }
-  ]
+  ],
+  "sourceObservationRebind": {
+    "ledger": "qualification/module-execution-dossiers/SOURCE_OBSERVATION_REBIND_20261027.json",
+    "record": "memory.retrieval",
+    "previousMapBlob": "8fd94e7a29b72137a3cb73bdd5dda33804892877",
+    "scope": "source_navigation_only_no_execution_evidence_transferred"
+  }
 }
