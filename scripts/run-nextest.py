@@ -219,10 +219,11 @@ def use_scoped_metadata(args, cwd):
     return True
 
 
-def run(args):
-    command = ["cargo", "nextest", "run", "--no-fail-fast", *args]
+def invoke(args, operation, stdout=None):
+    redirect = {} if stdout is None else {"stdout": stdout}
+    command = ["cargo", "nextest", *operation, *args]
     if not use_scoped_metadata(args, Path.cwd()):
-        return subprocess.call(command)
+        return subprocess.call(command, **redirect)
     metadata_command = ["cargo", "metadata", "--no-deps", "--format-version=1"]
     for index, arg in enumerate(args):
         if arg == "--":
@@ -244,7 +245,7 @@ def run(args):
         if workspace_config.is_file() and re.search(
             r"\b(?:rdeps|deps)\s*\(", workspace_config.read_text()
         ):
-            return subprocess.call(command)
+            return subprocess.call(command, **redirect)
         workspace_members = set(metadata["workspace_members"])
         names = {
             p["name"] for p in metadata["packages"] if p["id"] in workspace_members
@@ -252,7 +253,7 @@ def run(args):
         # Cargo package IDs, globs and external dependencies retain Cargo's
         # ordinary selection semantics rather than approximating them here.
         if not all(package in names for package in scoped_packages(args)):
-            return subprocess.call(command)
+            return subprocess.call(command, **redirect)
         # Nextest derives its build manifest from the supplied metadata and
         # rejects combining --manifest-path with --cargo-metadata. Keep the
         # original arguments for fallback; remove only this resolved selector.
@@ -266,11 +267,38 @@ def run(args):
                 next(arguments)
             elif not arg.startswith("--manifest-path="):
                 build_args.append(arg)
-        command = ["cargo", "nextest", "run", "--no-fail-fast", *build_args]
+        command = ["cargo", "nextest", *operation, *build_args]
         separator = command.index("--") if "--" in command else len(command)
         command[separator:separator] = ["--cargo-metadata", str(metadata_path)]
-        return subprocess.call(command)
+        return subprocess.call(command, **redirect)
+
+
+def run(args):
+    return invoke(args, ["run", "--no-fail-fast"])
+
+
+def planned_inventory(output, args):
+    # This entry accepts only execution_command's selectors. Ordinary `test`
+    # continues to forward arbitrary nextest arguments through run unchanged.
+    packages = args[2::2]
+    if args != ["--locked", "--workspace"] and not (
+        len(args) >= 3
+        and len(args) % 2 == 1
+        and args[0] == "--locked"
+        and all(flag == "-p" for flag in args[1::2])
+        and all(re.fullmatch(r"[A-Za-z0-9_][A-Za-z0-9_-]*", p) for p in packages)
+        and len(set(packages)) == len(packages)
+    ):
+        raise ValueError("native inventory requires the exact planner selectors")
+    with Path(output).open("xb") as stream:
+        return invoke(
+            args,
+            ["list", "--list-type", "binaries-only", "--message-format", "json"],
+            stdout=stream,
+        )
 
 
 if __name__ == "__main__":
+    if sys.argv[1:2] == ["--hepta-planner-inventory"]:
+        raise SystemExit(planned_inventory(sys.argv[2], sys.argv[3:]))
     raise SystemExit(run(sys.argv[1:]))

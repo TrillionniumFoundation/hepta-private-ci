@@ -26,10 +26,12 @@ from typing import Iterable
 
 try:
     from scripts.hepta_ci_module_paths import literal_module_paths
+    from scripts.hepta_ci_native_binaries import run_planned_tests
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
     from hepta_ci_module_paths import literal_module_paths
+    from hepta_ci_native_binaries import run_planned_tests
 
 OID = re.compile(r"[0-9a-f]{40}\Z")
 WORKSPACE = "codex-rs"
@@ -673,6 +675,12 @@ def main() -> None:
             stream.write(f"has_packages={str(bool(selected['packages'])).lower()}\n")
     command = execution_command(selected, "test" if args.run else args.action)
     if command is not None:
+        if args.run or args.action == "test":
+            code = run_planned_tests(
+                args.root, command, args.tested, args.output, args.record_output
+            )
+            git(args.root, "diff", "--no-ext-diff", "--quiet", "HEAD", "--")
+            raise SystemExit(code)
         if args.record_output:
             command = [
                 sys.executable,
