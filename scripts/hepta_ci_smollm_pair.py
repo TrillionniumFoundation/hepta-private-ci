@@ -6,7 +6,6 @@ import importlib.metadata
 import os
 from pathlib import Path
 import platform
-import shutil
 import subprocess
 import sys
 import urllib.request
@@ -25,6 +24,7 @@ if __package__:
         sha,
         source_pair,
     )
+    from .hepta_ci_smollm_resources import require_provisioning, resource_snapshot
 else:
     from hepta_ci_smollm_common import (
         DENIED,
@@ -39,6 +39,7 @@ else:
         sha,
         source_pair,
     )
+    from hepta_ci_smollm_resources import require_provisioning, resource_snapshot
 
 
 def prepare(args):
@@ -79,22 +80,9 @@ def prepare(args):
         "separate evidence and material directories required",
     )
     output.mkdir(mode=0o700)
-    memory = dict(
-        line.split(":", 1) for line in Path("/proc/meminfo").read_text().splitlines()
-    )
-    resources = {
-        "available_memory_bytes": int(memory["MemAvailable"].split()[0]) * 1024,
-        "free_disk_bytes": shutil.disk_usage(output).free,
-    }
+    resources = resource_snapshot(output)
     save(output / "resource-preflight.json", resources)
-    require(
-        resources["available_memory_bytes"] >= 6 * 1024**3,
-        "model lane needs at least 6 GiB currently available RAM",
-    )
-    require(
-        resources["free_disk_bytes"] >= 8 * 1024**3,
-        "model lane needs at least 8 GiB free disk",
-    )
+    require_provisioning(resources)
     before = source_pair(chain)
     runtime, inherited = load_runtime(chain)
     family = runtime.verify_family(runtime.read_json(runtime.FAMILY_PATH))

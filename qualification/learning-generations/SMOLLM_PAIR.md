@@ -63,20 +63,50 @@ own result, provided preparation succeeded and the workflow was not cancelled.
 
 The new `smollm-pair` nextest profile matches only those two selectors, uses one
 test thread, zero retries and a finite 15 × 60-second harness watchdog. Its
-default inheritance works with the pinned nextest 0.9.103; the newer explicit
-`inherits` feature is not required. Old profiles and internal worker/FinalUse/
+default inheritance avoids introducing the explicit `inherits` feature, documented
+by nextest as added in 0.9.115, into this profile while CI pins 0.9.103. The existing
+`profile.local` already contains `inherits = "default"`; it is unchanged and its
+behavior with the pinned binary remains an explicit CI compatibility observation,
+not a locally verified result. Old profiles and internal worker/FinalUse/
 holdout deadlines are unchanged. Outer CI owners bound dependency setup to 900s,
 preparation to 1200s, each native command including compilation to 1200s, and
 readback to 180s. The existing total job limit remains 60 minutes. These are
 experiment ceilings, not throughput/latency guarantees or reclassification of
 any earlier timeout. Insufficient time or resources must remain a failed run.
 
-Preparation requires at least 6 GiB currently available RAM and 8 GiB free disk
-after the existing builds, CPU execution and outbound HTTPS to the pinned public
-materials/package sources. Two model sessions coexist in the comparison. A runner
-that cannot meet these requirements needs an appropriately provisioned existing
-executor; a smaller substitute experiment cannot satisfy this lane. No local
-Hepta Rust, Cargo or Bazel execution is needed to review the patch.
+The 6 GiB memory and 8 GiB free-disk prechecks are conservative **first-harness
+provisioning choices**, not original owner requirements or measured minimums.
+They are not evidence that a smaller executor cannot run the original workload.
+For scale, the earlier actual Chain-only three-generation run retained process
+peak RSS values 3,064,528,896 / 3,069,181,952 / 3,069,059,072 bytes and wall times
+40.170 / 37.639 / 39.967 seconds in
+`evidence/smollm-cell-replica-research-v1/training/gen{1,2,3}/actual-receipt.json`.
+Those receipts are scoped `actual-inherited-execution-no-owner-admission`; they
+are neither simultaneous Hepta comparison RSS nor whole-job provisioning proofs.
+The seven pinned public materials total 271,177,292 bytes. Those prior three
+worker directories contained 1,019,322 / 1,020,499 / 1,020,543 bytes respectively;
+these exclude Python packages, Rust build output, control journals and CI logs.
+The 8 GiB disk floor deliberately reserves additional space without claiming an
+empirically necessary bound. Neither floor is lowered after an observed failure.
+
+`resource-preflight.json` distinguishes host `/proc/meminfo` `MemAvailable` from
+the actual enclosing cgroup v2 `memory.max`/`memory.current` observations. It maps
+`/proc/self/cgroup` through `/proc/self/mountinfo` and records the process group
+and all visible ancestors. A known finite `max - current` below the same 6 GiB
+floor rejects preparation even when host RAM appears plentiful. Absent, malformed,
+v1 or inaccessible values stay explicitly unknown; invisible ancestor limits also
+remain unknown. Reclaimable memory, sibling use, changing limits and future
+allocation are not measured guarantees: `effective_allocatable_memory_bytes` is
+null and `capacity_guaranteed` is false. The snapshot is retained before any
+provisioning rejection. See the Linux kernel
+[cgroup v2 documentation](https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html).
+
+The original CPU worker bounds stay unchanged. Outbound HTTPS is required for the
+pinned public materials and packages. The actual existing executor must still
+complete both source lanes under the job's 60-minute limit; otherwise the run
+fails and its observations remain. No local Hepta Rust, Cargo or Bazel execution
+is needed to review the patch. Nextest configuration semantics are described in
+its [official reference](https://nexte.st/docs/configuration/reference/).
 
 All original raw seed/precommit, logs, forward rows, control journals, dispositions
 and failed attempts are retained under the existing per-run-attempt artifact.

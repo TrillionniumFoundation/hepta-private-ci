@@ -15,6 +15,7 @@ from unittest.mock import patch
 
 from scripts import hepta_ci_smollm_common as pair
 from scripts import hepta_ci_smollm_readback as reader
+from scripts import hepta_ci_smollm_resources as resources
 
 WORKFLOW = pair.ROOT / ".github/workflows/hepta-pon-native-pair.yml"
 NEXTTEST = pair.ROOT / "codex-rs/.config/nextest.toml"
@@ -132,6 +133,61 @@ class WiringTests(unittest.TestCase):
 
 
 class RejectionTests(unittest.TestCase):
+    def test_host_memory_cannot_hide_tighter_visible_enclosing_cgroup(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            proc, mount = root / "proc", root / "cgroup mount"
+            proc.mkdir()
+            leaf = mount / "lane"
+            leaf.mkdir(parents=True)
+            (proc / "cgroup").write_text("0::/job/lane\n")
+            escaped_mount = str(mount).replace(" ", r"\040")
+            (proc / "mountinfo").write_text(
+                f"1 0 0:1 /job {escaped_mount} ro - cgroup2 cgroup2 rw\n"
+                f"2 0 0:1 /job/lane {root}/nested-bind ro - cgroup2 cgroup2 rw\n"
+            )
+            for group, limit, current in (
+                (leaf, "max", 1024),
+                (mount, str(4 * 1024**3), 1024**3),
+            ):
+                (group / "memory.max").write_text(limit)
+                (group / "memory.current").write_text(str(current))
+            observation = resources.cgroup_memory(proc)
+            self.assertEqual(observation["visible_finite_headroom_bytes"], 3 * 1024**3)
+            self.assertEqual(observation["hidden_ancestor_limits"], "unknown")
+            self.assertEqual(observation["visible_groups"][0]["memory.max"], "max")
+            with patch.object(resources, "cgroup_memory", return_value=observation):
+                snapshot = resources.resource_snapshot(root)
+            snapshot.update(
+                host_memavailable_bytes=128 * 1024**3, free_disk_bytes=32 * 1024**3
+            )
+            with self.assertRaisesRegex(ValueError, "cgroup headroom"):
+                resources.require_provisioning(snapshot)
+            self.assertIsNone(snapshot["effective_allocatable_memory_bytes"])
+            self.assertFalse(snapshot["capacity_guaranteed"])
+
+    def test_absent_or_malformed_cgroup_memory_remains_unknown(self):
+        with tempfile.TemporaryDirectory() as directory:
+            proc = Path(directory)
+            (proc / "cgroup").write_text("5:memory:/legacy\n")
+            (proc / "mountinfo").write_text("")
+            observation = resources.cgroup_memory(proc)
+            self.assertEqual(observation["status"], "unknown")
+            self.assertIsNone(observation["visible_finite_headroom_bytes"])
+            self.assertTrue(observation["errors"])
+            (proc / "cgroup").write_text("0::/../../foreign\n")
+            self.assertEqual(resources.cgroup_memory(proc)["visible_groups"], [])
+            (proc / "cgroup").write_text("0::/\n")
+            (proc / "mountinfo").write_text(
+                f"1 0 0:1 / {proc} ro - cgroup2 cgroup2 rw\n"
+            )
+            (proc / "memory.max").write_text("not-a-limit")
+            observation = resources.cgroup_memory(proc)
+            self.assertEqual(observation["status"], "partial")
+            self.assertIsNone(observation["visible_finite_headroom_bytes"])
+            self.assertIsNone(observation["visible_groups"][0]["memory.max"])
+            self.assertIsNone(observation["visible_groups"][0]["memory.current"])
+
     def test_duplicate_json_and_symlink_cannot_supply_results(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "result.json"
