@@ -9,6 +9,7 @@ pub mod hnmf;
 pub mod hnmf_learning;
 pub mod lane_c;
 mod memory_cell;
+mod memory_cell_values;
 pub mod wire;
 
 pub use memory_cell::MemoryOperationV1;
@@ -18,6 +19,9 @@ pub use memory_cell::MemoryReadoutV1;
 pub use memory_cell::MemoryRequestV1;
 pub use memory_cell::decode_memory_readout_v1;
 pub use memory_cell::decode_memory_request_v1;
+pub use memory_cell_values::MemoryCellKindV1;
+pub use memory_cell_values::execute_memory_cell_program_v1;
+pub use memory_cell_values::validate_memory_cell_value_v1;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
