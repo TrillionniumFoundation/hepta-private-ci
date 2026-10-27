@@ -9,6 +9,7 @@ use std::fs::OpenOptions;
 use std::io;
 use std::os::windows::fs::OpenOptionsExt;
 use std::os::windows::io::AsRawHandle;
+use std::os::windows::process::CommandExt;
 use std::path::Path;
 use std::ptr;
 use windows_sys::Win32::Security::DACL_SECURITY_INFORMATION;
@@ -288,13 +289,24 @@ fn native_reparse_directory_is_refused_before_child_effect() {
     let (outer, path, directory) = root();
     let junction = outer.path().join("junction");
     let system = std::env::var_os("SystemRoot").expect("Windows system root");
+    let paths = [&junction, &path].map(|path| {
+        let text = dunce::simplified(path)
+            .to_str()
+            .expect("own Win32 scratch path");
+        assert!(text.as_bytes().get(1) == Some(&b':') && !text[2..].contains(':'));
+        assert!(
+            text.chars()
+                .all(|character| character.is_ascii_alphanumeric()
+                    || matches!(character, '\\' | '/' | ':' | ' ' | '.' | '_' | '-'))
+        );
+        text
+    });
+    let [junction_arg, target_arg] = paths;
     let output = std::process::Command::new(Path::new(&system).join("System32/cmd.exe"))
-        .args(["/d", "/c", "mklink", "/J"])
-        // cmd's mklink parser requires a Win32 spelling, not a \\?\ prefix.
-        // Both paths remain this test's owned scratch objects; admission below
-        // still uses the original retained full identity and rejects reparse.
-        .arg(dunce::simplified(&junction))
-        .arg(dunce::simplified(&path))
+        .args(["/d", "/s", "/c"])
+        // cmd /c parses command text, not the C-runtime argv quoting used by arg.
+        // Only these two strictly checked owned scratch paths enter fixed syntax.
+        .raw_arg(format!(r#""mklink /J "{junction_arg}" "{target_arg}"""#))
         .output()
         .expect("create own fixture junction");
     assert!(

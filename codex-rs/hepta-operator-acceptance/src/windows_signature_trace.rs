@@ -289,7 +289,9 @@ pub(crate) fn save(name: &str, facts: Value) -> io::Result<()> {
         || !root.is_dir()
         || !matches!(
             name,
-            "trust-signature-original.json" | "g5-signature-original.json"
+            "trust-signature-original.json"
+                | "g5-signature-original.json"
+                | "openssh-native-contract.json"
         )
     {
         return Err(io::Error::other("invalid dedicated diagnostic output"));

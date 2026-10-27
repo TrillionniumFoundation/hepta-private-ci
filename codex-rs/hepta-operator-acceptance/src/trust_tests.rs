@@ -277,3 +277,7 @@ mod differential;
 #[cfg(windows)]
 #[path = "trust_windows_signature_trace_tests.rs"]
 mod windows_signature_trace;
+
+#[cfg(windows)]
+#[path = "trust_windows_contract_probe_tests.rs"]
+mod windows_contract_probe;
