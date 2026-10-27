@@ -430,8 +430,8 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y pkg-config libasound2-dev libwayland-dev libx11-dev libxcursor-dev libxrandr-dev libxi-dev libxinerama-dev libxkbcommon-dev libgl1-mesa-dev libegl1-mesa-dev
-          dpkg-query -W pkg-config libasound2-dev libwayland-dev libx11-dev libxcursor-dev libxrandr-dev libxi-dev libxinerama-dev libxkbcommon-dev libgl1-mesa-dev libegl1-mesa-dev > "$RUNNER_TEMP/native-presentation-evidence/system-inputs.txt"
+          sudo apt-get install -y pkg-config libasound2-dev libpulse-dev libwayland-dev libx11-dev libxcursor-dev libxrandr-dev libxi-dev libxinerama-dev libxkbcommon-dev libgl1-mesa-dev libegl1-mesa-dev
+          dpkg-query -W pkg-config libasound2-dev libpulse-dev libwayland-dev libx11-dev libxcursor-dev libxrandr-dev libxi-dev libxinerama-dev libxkbcommon-dev libgl1-mesa-dev libegl1-mesa-dev > "$RUNNER_TEMP/native-presentation-evidence/system-inputs.txt"
       - name: Execute the explicitly enabled composition and lifecycle tests
         run: |
           set -euo pipefail
