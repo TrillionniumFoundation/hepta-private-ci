@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.frozen-code-spelling.v2",
+  "at": "2026-10-27T11:27:33.027757+00:00",
+  "scope": "Exact UTF-8/CP437 ZIP fixture offset in three already qualified source patches, plus the identical unprefixed implementation line.",
+  "reason": "The byte prefix deliberately ends immediately before the e-acute code point, which is replaced with CP437 byte 0x82. Altering that prefix would change the tested offset.",
+  "frozen_patch_inputs": {
+    "port-remediation/combined-source.patch": {
+      "bytes": 68011,
+      "sha256": "53905176719cc3d55fa5aeb3c233afbb20d722bf4e1df80929a90d1c0f93ff12"
+    },
+    "dependency-remediation/zip-source-v2.patch": {
+      "bytes": 11660,
+      "sha256": "1ddee3c9014e66add790ac80ea7ed6eee195d7789c3b1a9ab67192e0ef624fa2"
+    },
+    "dependency-remediation/zip-v1-to-v2.patch": {
+      "bytes": 4479,
+      "sha256": "9eed373b40de7c358e99093c8d8369c7c7adfe80761f01ff611982ccee5346b1"
+    }
+  },
+  "exception_line_sha256": [
+    "d809282b735d714dc1f6eb77c66930e5dea09afdb0c47c1354de77ac0dbeffde",
+    "0f507b5f052da4bf187407e59f11d70ff84ef59ac256f4621998b82337124312"
+  ],
+  "exception_file_before_sha256": "d37f32cdf8d6f9dd835cbf89ed93f87a04f1bb8690ce12bea89dbb5f7d20d19a",
+  "exception_file_after_sha256": "9c869c63b7986e53cffb402266873832c391380e0d877798d2d55e8ca9e52a1a",
+  "source_or_patch_bytes_changed": false,
+  "broad_word_ignore_added": false,
+  "verification": {
+    "command": [
+      "/workspace/scratch/95988d8d3ab1/continuation_format_tools_20261027/codespell-env/bin/codespell",
+      "experiments/multimodal_output_portfolio/closure_v2_20261027/ci"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+}

@@ -1,0 +1,462 @@
+{
+  "schema": "hepta.ci.zip-i18n-protocol-qualification.v1",
+  "completed_utc": "2026-10-27T11:31:01.814740+00:00",
+  "reviewer": "/root/joint_evidence",
+  "run": {
+    "id": 40490776143,
+    "run_attempt": 1,
+    "name": "NDU dependency remediation candidate",
+    "head_sha": "88bcc7f92b9a52bf77e0095614fd496288b6ca86",
+    "status": "completed",
+    "conclusion": "failure",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40490776143",
+    "updated_at": "2026-10-27T11:22:13Z"
+  },
+  "jobs": [
+    {
+      "id": 122143862966,
+      "name": "generate-reviewable-candidate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 122145010035,
+      "name": "targeted-workspace-tests (storage)",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 122145010040,
+      "name": "protocol-fixture-candidate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 122145010115,
+      "name": "targeted-workspace-tests (core)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 122145010430,
+      "name": "targeted-workspace-tests (plugins)",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "artifacts": {
+    "producer": {
+      "artifact_id": 12728932416,
+      "artifact_name": "ndu-dependency-candidate-40490776143-1",
+      "artifact_zip_bytes": 407830,
+      "artifact_zip_sha256": "90c9ecdd25e2ad75f3f1b6674d31f25a3f8e4dfaa8289cf8d555531bc050fdb0",
+      "result_sha256": "b7d390232b69b3dbb16dd859f22ad2a9de4ecb9da2dce52b7306fd8a2fb130e5",
+      "status": "candidate_generated",
+      "archive": "producer.zip",
+      "extracted_directory": "producer",
+      "audit_report": "PRODUCER_VERIFIED.json",
+      "audit_report_sha256": "f1c314cd814d6a475b589dce74ff57c2e354ccffaa3831035508a6b17c2b5e14"
+    },
+    "plugins": {
+      "artifact_id": 12730327792,
+      "artifact_name": "ndu-dependency-tests-plugins-40490776143-1",
+      "artifact_zip_bytes": 37935,
+      "artifact_zip_sha256": "979fc8b6f0e5b0a2a1f5172dcb5d20fb503f6ced231112e3a2ae6b29942023b8",
+      "result_sha256": "95c7d1f24ccd1554cef330c55bdf02a72c702452273325a3e898cd74814c499a",
+      "status": "targeted_tests_passed",
+      "archive": "plugins.zip",
+      "extracted_directory": "tests-plugins",
+      "audit_report": "tests-plugins-VERIFIED.json",
+      "audit_report_sha256": "34606e2b38fd01ea1b68c7577e2f3fa948887b62088bc732ab2a92f2b129e919"
+    },
+    "core": {
+      "artifact_id": 12729573910,
+      "artifact_name": "ndu-dependency-tests-core-40490776143-1",
+      "artifact_zip_bytes": 21988,
+      "artifact_zip_sha256": "f16dd67796168d68e98b2f481fff153de44d8c0fddd34e9b6245d86ddc1a7527",
+      "result_sha256": "01db2a20f2a68dd2c0719109388403590b180b3b721722d27c07f10b2de21bf1",
+      "status": "targeted_tests_passed",
+      "archive": "core.zip",
+      "extracted_directory": "tests-core",
+      "audit_report": "tests-core-VERIFIED.json",
+      "audit_report_sha256": "e99311307aeb0f2811623f336bf5e582bd2f4ba7f0be72d5032b8fc7cf1b49a7"
+    },
+    "storage": {
+      "artifact_id": 12729708913,
+      "artifact_name": "ndu-dependency-tests-storage-40490776143-1",
+      "artifact_zip_bytes": 249624,
+      "artifact_zip_sha256": "8900bddf41ffa92e6ca5fe8218630c49f0bcaf7578aa3c3332e950a4e612c8dc",
+      "result_sha256": "961c6da4bfb5150d4854d1ad5b0ba95f7b043c7849bdd488828231d5e859ce0d",
+      "status": "tests_failed",
+      "archive": "storage.zip",
+      "extracted_directory": "tests-storage",
+      "audit_report": "tests-storage-VERIFIED.json",
+      "audit_report_sha256": "1f8bee83500211cc5826a901636178bb111b28746267e8c3193ba7b82f950502"
+    },
+    "protocol": {
+      "artifact_id": 12729611336,
+      "artifact_name": "ndu-protocol-fixture-candidate-40490776143-1",
+      "artifact_zip_bytes": 923776,
+      "artifact_zip_sha256": "7b56ed61ccf03310ee55976c369ce80523c0fd46580b0267a604d9c609fd0c6f",
+      "result_sha256": "7e38bddfa771339d36b2a531485505c0a329b0e687fbb075ddb0490ed5cc9520",
+      "status": "schema_candidate_verified",
+      "archive": "protocol.zip",
+      "extracted_directory": "protocol",
+      "audit_report": "protocol-VERIFIED.json",
+      "audit_report_sha256": "788a7e7bf946f76d2df88ed728a6a38c394dd68d4e26560ef4cf5ac1eb3adf85"
+    }
+  },
+  "producer": {
+    "verified_commands": 25,
+    "candidate_patch_sha256": "bfbc9f76520f5185991234530d1bf637fbbb1e7aac476b285b35441488fe2fed",
+    "files": {
+      "codex-rs/Cargo.toml": {
+        "bytes": 21742,
+        "sha256": "df2be02803f1052e2112c48ddc3ff7c414d5a11faba11c42ce027b0afb6fc81e"
+      },
+      "codex-rs/Cargo.lock": {
+        "bytes": 419179,
+        "sha256": "3346f877ad087fbfd5a16cc9613bfce62316c52890cb0d7287503199c09c55b3"
+      },
+      "MODULE.bazel.lock": {
+        "bytes": 1664254,
+        "sha256": "a4c7ea83abd744c2555f7989de67bfe65dc5ace70e290dc2f44565bf3b0658ae"
+      },
+      "codex-rs/core-plugins/src/startup_sync.rs": {
+        "bytes": 39811,
+        "sha256": "d7402cc77b21a4412b9b47683a422353d60d977b735961b096b841d9218edea4"
+      },
+      "codex-rs/core-plugins/src/startup_sync_zip_tests.rs": {
+        "bytes": 7623,
+        "sha256": "a273b864f58b584390bcc8dbffa090bc1deb98594566bb103e53ad3beab8ee31"
+      },
+      "codex-rs/core-plugins/tests/fixtures/zipball_lzma.zip": {
+        "bytes": 194,
+        "sha256": "b6ce81e8450c7de591a4e4c7e2e9e975542cc709a07487e16d8f0dfaf7e3d30c"
+      }
+    },
+    "policy_inputs": {
+      "codex-rs/deny.toml": {
+        "bytes": 18803,
+        "sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352"
+      },
+      ".github/workflows/cargo-deny.yml": {
+        "bytes": 1697,
+        "sha256": "9e0d8388810a90f12776687b64e050d8110a025ff504f41f6c9f992b7f5b2959"
+      }
+    },
+    "source_patches": {
+      "zip-source-v2.patch": "1ddee3c9014e66add790ac80ea7ed6eee195d7789c3b1a9ab67192e0ef624fa2",
+      "zip-zstd-manifest.patch": "f5394874a7a1ed42890ea35dc3b4534ae518d54c34ab71d1c3a1d6357da29dd7",
+      "i18n-config-manifest.patch": "74a2c048d91c795114226d676575a3b04f4766bd13fba4e83111ad953b75e4dc",
+      "i18n-config-workspace.patch": "1ca3152032af6945653a261ada9f7da5915617f187e4572c27be546b559c2430"
+    },
+    "qualification": "Actual Cargo and Bazel lock generation/check; frozen ZIP/i18n candidate. Not full cargo-deny or all-platform qualification."
+  },
+  "tests": [
+    {
+      "group": "tests-plugins",
+      "package": "codex-core-plugins",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "ci-test",
+        "-p",
+        "codex-core-plugins"
+      ],
+      "exit_code": 0,
+      "passed": 426,
+      "failed": 0,
+      "skipped": 0,
+      "summary": "Summary [   6.705s] 426 tests run: 426 passed, 0 skipped",
+      "log": "tests-plugins/11-test-codex-core-plugins.log",
+      "bytes": 135861,
+      "sha256": "da2823bf685a3e116ffe4b5330f513f759362db07b9fa02680b4d374f91d0d80",
+      "independent_unique_pass_lines": 426,
+      "test_names_sha256": "16e4fbd4b56342af1b7ee58207ef76cf17690ab1bb752e5c4baaeaaf13589455",
+      "junit_count": 0
+    },
+    {
+      "group": "tests-plugins",
+      "package": "i18n-config",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "ci-test",
+        "-p",
+        "i18n-config"
+      ],
+      "exit_code": 0,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "summary": "Summary [   0.005s] 3 tests run: 3 passed, 0 skipped",
+      "log": "tests-plugins/14-test-i18n-config.log",
+      "bytes": 6718,
+      "sha256": "7bb5054a8b43d7505ebe409a7e13134c587bfac5d98c35a33e4e4234cb8d6bfd",
+      "independent_unique_pass_lines": 3,
+      "test_names_sha256": "a67c6067d123913ef739a178fba7e99896b0c4f971e11e3c01f25e29c41bce52",
+      "junit_count": 0
+    },
+    {
+      "group": "tests-plugins",
+      "package": "codex-secrets",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "ci-test",
+        "-p",
+        "codex-secrets"
+      ],
+      "exit_code": 0,
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "summary": "Summary [   9.251s] 9 tests run: 9 passed, 0 skipped",
+      "log": "tests-plugins/17-test-codex-secrets.log",
+      "bytes": 21180,
+      "sha256": "582d867248f64903b70bba651dcd2513e9241d0e190b1a417dbf8ee18a80fe7d",
+      "independent_unique_pass_lines": 9,
+      "test_names_sha256": "7c69eca2af42f74b86401bb1b16870f9e3b532cca47743e2b98bc55c2cdd860c",
+      "junit_count": 0
+    },
+    {
+      "group": "tests-core",
+      "package": "codex-core",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "ci-test",
+        "-p",
+        "codex-core",
+        "-E",
+        "test(request_compression)"
+      ],
+      "exit_code": 0,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 3805,
+      "summary": "Summary [   0.518s] 2 tests run: 2 passed, 3805 skipped",
+      "log": "tests-core/11-test-codex-core.log",
+      "bytes": 85673,
+      "sha256": "f082f09ff21c82a4133152f938eb36d3356e3e70cdf3fa9c5af125fed07758e5",
+      "independent_unique_pass_lines": 2,
+      "test_names_sha256": "d09925a8f4f5a6cfdcc6406dbbfb7e094ca95e6314fad56a44ae2bc2494dc165",
+      "junit_count": 0
+    },
+    {
+      "group": "tests-storage",
+      "package": "codex-http-client",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "ci-test",
+        "-p",
+        "codex-http-client"
+      ],
+      "exit_code": 0,
+      "passed": 93,
+      "failed": 0,
+      "skipped": 0,
+      "summary": "Summary [   2.931s] 93 tests run: 93 passed, 0 skipped",
+      "log": "tests-storage/11-test-codex-http-client.log",
+      "bytes": 30781,
+      "sha256": "a439b44fa7d344b7685f9d51ca9d2ec9eadaa92e7633575db6ceb1c40ced2e5a",
+      "independent_unique_pass_lines": 93,
+      "test_names_sha256": "c0d01cf259210ad93e7a8a83f227b1ae4a6329991339f871acc52b7ae78cdae0",
+      "junit_count": 0
+    },
+    {
+      "group": "tests-storage",
+      "package": "codex-rollout",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "ci-test",
+        "-p",
+        "codex-rollout"
+      ],
+      "exit_code": 0,
+      "passed": 123,
+      "failed": 0,
+      "skipped": 0,
+      "summary": "Summary [   2.956s] 123 tests run: 123 passed, 0 skipped",
+      "log": "tests-storage/14-test-codex-rollout.log",
+      "bytes": 55787,
+      "sha256": "4f5259d29f0f437d99489f4c83482303356953718f38730f92f3872a53a8ce55",
+      "independent_unique_pass_lines": 123,
+      "test_names_sha256": "c32e864e48da514dfeee61898287ea2fb023c9b4b7b2923a7ed9449f9077e5ea",
+      "junit_count": 0
+    },
+    {
+      "group": "tests-storage",
+      "package": "codex-app-server-protocol",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "ci-test",
+        "-p",
+        "codex-app-server-protocol"
+      ],
+      "exit_code": 100,
+      "passed": 300,
+      "failed": 3,
+      "skipped": 1,
+      "summary": "Summary [ 118.594s] 303 tests run: 300 passed, 3 failed, 1 skipped",
+      "log": "tests-storage/17-test-codex-app-server-protocol.log",
+      "bytes": 1672470,
+      "sha256": "c82032f39c9be336c10c0bd79807917ebe5070cd2b279f34ede8c7a4d3260b4c",
+      "independent_unique_pass_lines": 300,
+      "test_names_sha256": "f53dba5e183cd415610a9ccd9d14f7a750fb0ef18b0a126918a8926627bc8167",
+      "junit_count": 0
+    },
+    {
+      "group": "tests-storage",
+      "package": "codex-thread-store",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "ci-test",
+        "-p",
+        "codex-thread-store"
+      ],
+      "exit_code": 0,
+      "passed": 228,
+      "failed": 0,
+      "skipped": 0,
+      "summary": "Summary [   6.985s] 228 tests run: 228 passed, 0 skipped",
+      "log": "tests-storage/20-test-codex-thread-store.log",
+      "bytes": 46210,
+      "sha256": "33873394f96f77399c84a17fc204ccfb367dcfb2e9e5544c1360816a0c1dd308",
+      "independent_unique_pass_lines": 228,
+      "test_names_sha256": "7184b547d395905f147587b8fcac5ec46c0cdf4b1414ce17ee31a8abbae9354c",
+      "junit_count": 0
+    },
+    {
+      "group": "protocol",
+      "package": "codex-app-server-protocol",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-app-server-protocol"
+      ],
+      "exit_code": 0,
+      "passed": 303,
+      "failed": 0,
+      "skipped": 1,
+      "scope": "Independent generated-schema candidate, not a rewrite of the failed storage job.",
+      "log": "protocol/12-protocol-regressions.log",
+      "bytes": 55375,
+      "sha256": "393f4cc0e0b6ddda3e66ba1d6edc5d1e23da8770cc580314a97eb2598e6d0847",
+      "independent_unique_pass_lines": 303,
+      "supporting_audit": "PROTOCOL_SEMANTIC_AUDIT.json"
+    }
+  ],
+  "storage_failure_retained": {
+    "package": "codex-app-server-protocol",
+    "failed_test_names": [
+      "schema_fixtures_tests::json_schema_fixtures_match_generated",
+      "schema_fixtures_tests::stable_precomputed_exports_match_schema_fixtures",
+      "schema_fixtures_tests::experimental_precomputed_exports_match_generated"
+    ],
+    "first_attempt_timeout": [
+      "TRY 1 TRMNTG [> 60.000s] (\u2500\u2500\u2500\u2500\u2500\u2500\u2500) codex-app-server-protocol schema_fixtures_tests::experimental_precomputed_exports_match_generated",
+      "TRY 1 TMT [  60.057s] (\u2500\u2500\u2500\u2500\u2500\u2500\u2500) codex-app-server-protocol schema_fixtures_tests::experimental_precomputed_exports_match_generated"
+    ],
+    "original_timeout_seconds": 60,
+    "original_retry_limit": 1,
+    "subsequent_attempt": "Experimental export testcase retried, then failed its original fixture assertion at 57.036s. The timeout cause is not established.",
+    "audit_parser_note": "The original generic failure_lines field does not recognize nextest TMT/TRMNTG abbreviations; full raw logs and this explicit timeout inventory preserve them.",
+    "log": "tests-storage/17-test-codex-app-server-protocol.log",
+    "bytes": 1672470,
+    "sha256": "c82032f39c9be336c10c0bd79807917ebe5070cd2b279f34ede8c7a4d3260b4c"
+  },
+  "schema_candidate": {
+    "patch": "protocol/schema-candidate.patch",
+    "bytes": 730270,
+    "sha256": "ac348847481d6596613bbe2ce3fe8686893b154f585625af0c398b7219b58eb6",
+    "files": {
+      "codex-rs/app-server-protocol/schema/json/v2/TurnRecoverResponse.json": {
+        "bytes": 48967,
+        "sha256": "46831c10079913c27de4bb02cb0df199030150aaa3a0b218ae5133d8f5f82509"
+      },
+      "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-experimental.json.zst": {
+        "bytes": 145385,
+        "sha256": "2ca64026eba6ae9fb9d0d7b1bd7901d31a0cb0715b1e33918b99a1402b74a967"
+      },
+      "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-stable.json.zst": {
+        "bytes": 139671,
+        "sha256": "ae5edc54372651ff430ad70729b97f8139bef6562f7a773df2ca3f571edb2964"
+      }
+    },
+    "original_protocol_source_files_unchanged": 117,
+    "semantic_audit": "PROTOCOL_SEMANTIC_AUDIT.json",
+    "scope": "Three generated files only. TurnRecoverResponse SubAgentActivityKind gains completed; both compressed exports regenerated by original writers, original assertions unchanged."
+  },
+  "source_custody": {
+    "snapshot_file_count": 129,
+    "manifest": "SOURCE_ORIGINAL.json",
+    "bytes": 22025,
+    "sha256": "0ecf5ac32f72dd3019c60a0c7edd8b025645449b4af3a8d1374e6b2e4ad5f907"
+  },
+  "limitations": [
+    "The overall workflow and storage job remain failed. Successful schema-only qualification is a separately retained candidate.",
+    "These are actual full-repository selected-package tests on Linux. Core ran only request_compression and skipped 3805 nonselected tests; no full-workspace or other-platform claim.",
+    "Old consumers retained no JUnit under their actual custom local profile. Per-test PASS logs, complete stdout/stderr, process exits and artifact/source hashes are audited; later harness repairs do not retroactively create old JUnit.",
+    "Cargo resolution changed some allowed existing dependency edges in addition to ZIP/zstd/i18n. LOCK_DELTA.json retains full identities/dependency changes; Linux tests do not qualify Windows behavior.",
+    "No advisory ignore, policy weakening or scanner-scope change was made. Remaining dependency ports and original full cargo-deny require their own actual qualification."
+  ],
+  "supporting_reports": {
+    "PATCH_RECONSTRUCTION.json": {
+      "bytes": 2891,
+      "sha256": "b01336abc194d9076f8484a53d4b7b19df11bd629ac23e28e842fda096214c96"
+    },
+    "LOCK_DELTA.json": {
+      "bytes": 14429,
+      "sha256": "be9e231ab7c55a39073dabb38279fb479d294a56fe101a0d35b17560059bccf5"
+    },
+    "I18N_MEMBERSHIP.json": {
+      "bytes": 497,
+      "sha256": "71de0d9aea6ed572be47ca963810e614f9d765e3d83e79331d8b32e0764b1629"
+    },
+    "PLUGINS_BEHAVIOR_AUDIT.json": {
+      "bytes": 3265,
+      "sha256": "3b13c2b5d13c0f7dd756879ed49ea485262a3fdface1671358926865d0591bc7"
+    },
+    "PROTOCOL_BASELINE_DIAGNOSIS.json": {
+      "bytes": 2393,
+      "sha256": "5acd07fb4fd64aba5c48b255bbd259ab2c10f0feaa220488ef543a7b3b1dc1e4"
+    },
+    "PROTOCOL_SEMANTIC_AUDIT.json": {
+      "bytes": 5292,
+      "sha256": "b2dcdaf9c07247be48f3deb6cc95cd2d3bb5252f22b5b3ce7131e42d1917a7e5"
+    },
+    "STATIC_REVIEW.json": {
+      "bytes": 3798,
+      "sha256": "7cbb8b12027ade763712b4f14a1f9d16a0095396557ef1de9d73489d12c0a9b3"
+    },
+    "peer/PORT_RUNTIME_EVIDENCE_FIX_REVIEW.json": {
+      "bytes": 6259,
+      "sha256": "82b2681712dbe9959bb91dedcd129b156d38f6132169548f2d5d630ef8d7a1bd"
+    }
+  },
+  "promotion_allowed": false
+}

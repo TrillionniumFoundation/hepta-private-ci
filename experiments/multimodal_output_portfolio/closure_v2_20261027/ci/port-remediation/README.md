@@ -34,6 +34,12 @@ The workflow contains seven jobs, with the ordinary workspace test job expanded
 into three groups. The Linux library build is a targeted qualification; it is
 not a claim that all-platform or full-workspace CI has passed.
 
+The real dual-agent/dual-matrixd Synapse qualification is also required. Its
+existing exact runner and Rust host validator are bound to Mac/Xcode inputs.
+That requirement is not satisfied by the four ordinary Matrix packages or the
+database migration case. A separate strict Linux qualification is being
+prepared; it cannot certify the original Mac host protocol.
+
 ## Matrix migration provenance
 
 The old fixture is compiled from the independent fixed source
@@ -68,6 +74,17 @@ retains the original and formatted BUILD text, formatter hash, and expression
 equality with keyword argument order normalized. `PREFLIGHT_002.json` independently
 checks all 1,282 vendor files and reconstructs all 29 source paths from an
 isolated Git index using the final recipe. Earlier receipts remain available.
+
+`RUNTIME_EVIDENCE_FIX.json` records a later repair with 20 passing Python
+regressions, complete execution-source snapshots and actual nextest 0.9.103
+wrapper probes. Earlier probes exposed both missing JUnit under the local
+profile and report placement under the workspace instead of CARGO_TARGET_DIR.
+Matrix and AWS now explicitly select the default profile and use a bound,
+lower-priority tool configuration containing only an external report-store
+directory. Original timeouts, retries, filters and source guards remain intact.
+The probes demonstrate runner behavior, not real Matrix or full AWS success.
+The producer also retains separate metadata snapshots before and after Bazel
+updates and validates the final resolved graph.
 
 The older ZIP/protocol staging workflow is tied to the already running reviewed
 head `88bcc7f92b9a52bf77e0095614fd496288b6ca86`. Later candidate pushes do not cancel

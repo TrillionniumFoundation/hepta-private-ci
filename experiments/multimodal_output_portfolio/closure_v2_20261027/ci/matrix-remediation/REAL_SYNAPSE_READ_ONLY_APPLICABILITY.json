@@ -1,0 +1,173 @@
+{
+  "schema": "hepta.matrix-real-synapse.readonly-applicability.v1",
+  "at": "2026-10-27T11:30:23.147894+00:00",
+  "reviewer": "native_continuation",
+  "repository_head_at_report": "ea902849180a8319bdb1337de2adbcb2f93a0e2f",
+  "scope": "Read-only source investigation plus bash -n and Python AST parse. No Cargo/Rust compilation, Docker start, Matrix login, live account access or messaging. No production or workflow implementation was changed.",
+  "qualification_executed": false,
+  "promotion_eligible": false,
+  "source_inputs": {
+    "codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh": {
+      "bytes": 124460,
+      "lines": 3140,
+      "sha256": "2c733cafbe5cece9697ef08c6a5ecf5747ec69ab3dfa227c3273ce38d2c2a610"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/synapse-loopback-proxy.py": {
+      "bytes": 14182,
+      "lines": 397,
+      "sha256": "4ca56154c2e31b3476df6e2663af3d0d327fd2c000da7c8dcecb8dc486d15f67"
+    },
+    "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs": {
+      "bytes": 236274,
+      "lines": 6123,
+      "sha256": "f8321a43ffb7c57ec75349620b518a005884e125181f777bc1254dbc8f3253d1"
+    },
+    "codex-rs/hepta-matrixd/Cargo.toml": {
+      "bytes": 1925,
+      "lines": 77,
+      "sha256": "fb3f5dcf3c08a05a54826b4f76a21116752908a55d47db31bf32b7cfde887945"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/QUALIFICATION_PLAN.json": {
+      "bytes": 5193,
+      "lines": 164,
+      "sha256": "80a0e70dbad7ecbbbe9c1895b213b63a5591c15ade69db08403ef238125fe3b1"
+    }
+  },
+  "conclusion": "Existing exact runner is a Mac/Xcode qualification in both shell and Rust validation, and cannot honestly run unchanged on a normal Linux runner. A real Mac with usable Docker can reuse it unchanged; a strict Linux sibling requires explicit Linux host evidence and validation while preserving the original Mac schema8 checks and every shared product-behavior assertion. Merely adding a Linux shell, using diagnostic mode, or fabricating Apple fields is invalid.",
+  "current_entry": {
+    "runner": "codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh",
+    "arguments": [
+      "--source-root",
+      "<exact-disposable-Git-root>",
+      "--source-mode",
+      "exact",
+      "--artifacts-dir",
+      "<new-external-directory>"
+    ],
+    "actual_rust_test": "real_synapse_dual_agentd_dual_matrixd_restart_and_isolation",
+    "feature": "real-synapse-e2e -> codex-hepta-matrix-sdk/qualification-failpoints",
+    "source_mode": "exact rejects dirty, untracked AND ignored entries; Rust rechecks Git HEAD/tree/status and source hashes. diagnostic permits dirty source but runner-evidence exact_candidate_evidence=false and cannot close the exact gate. Both modes keep promotion/operator_acceptance false.",
+    "builds": [
+      {
+        "purpose": "test executable",
+        "command": "cargo test --locked --offline --target <native-host> --profile test -p codex-hepta-matrixd --features real-synapse-e2e --test real_synapse_e2e --no-run --message-format=json-render-diagnostics",
+        "target": "private test target"
+      },
+      {
+        "purpose": "actual agentd",
+        "command": "cargo build --locked --offline --target <native-host> --profile dev -p codex-hepta-agentd --bin codex-hepta-agentd --message-format=json-render-diagnostics",
+        "target": "separate private product target"
+      },
+      {
+        "purpose": "actual matrixd",
+        "command": "cargo build --locked --offline --target <native-host> --profile dev -p codex-hepta-matrixd --features real-synapse-e2e --bin codex-hepta-matrixd --message-format=json-render-diagnostics",
+        "target": "private product target"
+      }
+    ],
+    "execution": "Runs the Cargo-identified test executable with the exact test name, --exact --test-threads=1 --nocapture. This existing fixture executes its bound binary directly, not the ordinary just/nextest package-test path. Its completion nonce and teardown/publication checks are additional required evidence.",
+    "supply_chain": "Private env -i PATH/HOME/CARGO_HOME; native rustc release equals candidate toolchain file; exact compiler hashes. Seed only registry/cache, registry/index and bare git/db; reject seed symlinks/config, omit credentials/unpacked sources, repack/fsck local git objects. All builds locked/offline.",
+    "resource_cost": "Two independent cold targets, copied dependency seed, native toolchain and Synapse volume are required. Current workflow CARGO_PROFILE_* overrides must be absent; no implicit reuse of parent build targets or CI profiles. Capacity and timing need actual remote measurements."
+  },
+  "hard_mac_constraints": [
+    {
+      "source": "run-hermetic-synapse.sh",
+      "locations": [
+        10,
+        106,
+        718,
+        827,
+        1578
+      ],
+      "constraint": "Fixed /opt/homebrew Python and Bash>=4; closed Mac tool list; xcrun/xcode-select/Xcode compiler+SDK full ledger; BSD stat -f; atomic renamex_np(RENAME_EXCL)."
+    },
+    {
+      "source": "real_synapse_e2e.rs",
+      "locations": [
+        1769,
+        2026,
+        2158,
+        2438,
+        2458,
+        2590,
+        2805,
+        3231
+      ],
+      "constraint": "schema8 deny_unknown_fields; mandatory Mac/Apple booleans; actual /opt/homebrew Python identity; actual xcrun/xcodebuild/SDKSettings/clang resource/tree revalidation; exact47 tool names including Apple tools; exact original runner path. No existing Linux host-evidence branch."
+    }
+  ],
+  "runtime_preserved_contract": {
+    "transport": "Pinned real Synapse image, isolated generated synthetic accounts, internal Docker bridge, no published Docker ports; candidate-hashed loopback proxy uses docker exec into that network namespace. No real-user Matrix account is used.",
+    "pinned_image_ref": "matrixdotorg/synapse@sha256:467a587a5052dadd5d0bf1f8d89f043cc652d5201bca510307340f8dddb6b312",
+    "pinned_image_id": "sha256:d1292ef4b8d934a5b2acc9471eeabc53f718dd748cf10773454f401f678db784",
+    "pinned_synapse_version": "1.159.0",
+    "pinned_synapse_git_sha": "7b10e6b9bc2dacc33f0974c999f640b55ef831bc",
+    "image_preparation": "Exact runner forbids pull and requires pre-materialized image with exact ID+labels+runtime version. Target Linux architecture compatibility with this exact image ID remains unverified; never substitute a tag or another platform config silently.",
+    "actual_product": "Two actual separately built agentd processes and two actual matrixd sidecars under fleet/supervisor, persistent distinct Matrix crypto stores, encrypted rooms, actual Synapse send/decrypt and restart state. Model endpoints are bounded wiremock SSE fixtures, not external generative APIs.",
+    "behavior": [
+      "Transaction deduplication with actual post-send/pre-mark response loss and two identical encrypted PUT targets",
+      "Network disconnect/recovery, sidecar SIGKILL/restart, supervisor generation rollover and identity rechecks",
+      "Dual-agent inbound decryption and raw encrypted outbound send",
+      "Idle sync same-token coalescing, fault isolation, actual pending-approval authority boundary, final stable-count/durable-state isolation",
+      "Explicit shutdown, all historical PIDs absent, runtime and credential capabilities removed"
+    ],
+    "counts": {
+      "wire_put_attempts": 2,
+      "agent_a_provider_requests": 5,
+      "agent_b_provider_requests": 3,
+      "release_copy_observations_minimum": 13,
+      "process_history_minimum": 4
+    },
+    "count_scope": "These are fixed provider/wire request and lifecycle counts. Current fixture does not report an end-to-end CPU/wall cost qualification; do not relabel them as measured compute savings.",
+    "identity_limit": "Existing receipt explicitly declares release_execve_atomic_binding=false; lifecycle byte/inode checks do not become atomic execve binding by moving to Linux."
+  },
+  "minimal_linux_change_proposal": [
+    {
+      "area": "New Linux fixture runner",
+      "change": "Add a separately named checked-in Linux entry. Preserve original Mac shell bytes. Reuse unchanged synapse-loopback-proxy.py and identical image/network/user/fault/cleanup protocol. Native Linux tool discovery, exact hashes, env allowlist, private targets and offline seed rules must be explicit."
+    },
+    {
+      "area": "Test-only host-evidence boundary",
+      "change": "Keep legacy Mac schema8 deserialization and all Mac checks intact. Introduce a separate versioned Linux manifest/host-validator with explicit Linux target/host binding and Linux runner-path authority. Share source/lock/toolchain/seed, executable identity, transport, nonce and common product validators. Do not use optional Apple fields or a default-true bypass."
+    },
+    {
+      "area": "Linux build input evidence",
+      "change": "Bind actual compiler/linker/archiver/pkg-config tools and resource/include/link inputs to a reviewed Linux sysroot manifest or immutable builder image, then independently revalidate them in Rust before execution and after teardown. A runner OS label, or arbitrary Linux paths labelled Apple, is insufficient. The concrete sysroot/image choice must be frozen before qualification."
+    },
+    {
+      "area": "Filesystem publication semantics",
+      "change": "Use actual Linux no-overwrite atomic publication such as renameat2(RENAME_NOREPLACE), fsync files and parent directories, reject unsupported semantics; preserve exact private file modes and inode/link checks. Do not replace Darwin renamex_np with overwrite-capable os.rename."
+    },
+    {
+      "area": "Shared behavior invariant",
+      "change": "Keep run_real_synapse_qualification_inner, fleet/supervisor, encryption, ack-loss, restart, approval, identity and count assertions unchanged. Freeze relevant function/body hashes or a reviewed delta proving only host-evidence adaptation. A Linux pass closes only the Linux runtime path."
+    },
+    {
+      "area": "Failure and replay evidence",
+      "change": "New Linux entry should initialize external failure evidence before compilation and retain allowlisted compiler JSON/logs, exit status and failed-stage tombstone without private credentials. Preserve verified actual executables if durable byte-level replay is required. Existing Mac success artifact-set stores executable hashes, not executable bytes."
+    }
+  ],
+  "same_candidate_execution_plan": [
+    "Restore and verify the one original producer artifact in an independent disposable checkout using current exact result/source/recipe/vendor/lock checks. Keep its downloaded bytes immutable.",
+    "If Linux qualification code is new, first freeze its narrowly test-only overlay or include it in the next reviewed source/producer run. It changes full test-source identity: never claim the old artifact SHA represents a tree with an unrecorded Linux adaptation. Production paths and both sealed locks must remain byte-identical.",
+    "Create a qualification-only local commit from exactly the verified complete candidate index/tree. Record producer source commit, producer RESULT SHA, complete candidate patch SHA, qualification overlay SHA if any, new commit and full tree; do not overwrite the producer original source_commit field. No merge or production promotion is required.",
+    "Require completely empty Git status including ignored files; keep artifacts, seed, rustup and targets outside checkout. Existing verify_tree expects old HEAD and cannot silently be reused after this new commit; qualification wrapper must compare against the explicitly sealed qualification commit/tree plus original policy/source inventories.",
+    "Run cheap facility preflight first: native exactRust1.96, real local Docker capability, fixed image ID/labels/platform, loopback access, internal bridge and volume permissions, private filesystem and no-overwrite/fsync support, complete offline dependency seed, adequate disk/memory, permitted product process/signal/sandbox capabilities. Do not infer Mac Docker availability from a hosted runner label.",
+    "Run exact source mode only, retain complete command/exit/stdout/stderr from before harness startup, then verify original failure tombstone or full success completion and artifact hashes. A test body PASS alone is insufficient until runner post-cleanup provenance/publication succeeds.",
+    "Bind returned receipts to the qualification commit/tree, source patch/lock/vendor identities, real executable hashes and requested platform; preserve all pending cross-platform/deny/normal-CI gates."
+  ],
+  "remaining_obstacles": [
+    "No suitable Mac+Docker qualification host is established by the inspected source or current Ubuntu workflow.",
+    "A strict Linux host-evidence schema/validator/entry does not currently exist and requires implementation/review before the original body can run honestly on Linux.",
+    "Exact fixed Synapse config image architecture compatibility and materialization on the chosen Linux runner are unverified.",
+    "Actual SDK0.19.1 compilation of real_synapse_e2e.rs is unverified; Matrix port owner confirmed only bounded source migration, not this full test API compilation.",
+    "Full dependency seed and native build/runtime facility requirements must be met without broadening source/feature budgets.",
+    "Original Mac early failures remove private build state before artifact staging; later failure quarantines may contain only FAILURE.json. External console capture is necessary and is not a substitute for missing compiler JSON.",
+    "Linux qualification cannot close Mac/Windows compile or applicable platform regressions, original Mac exact qualification, unchanged cargo-deny or operator approval."
+  ],
+  "cheap_checks": {
+    "bash_syntax_exit": 0,
+    "proxy_python_ast_parse": "passed; not imported/executed",
+    "remote_execution": false,
+    "rust_compilation": false
+  }
+}

@@ -1,0 +1,430 @@
+{
+  "scope": "Actual nextest 0.9.103 and repository just/run-nextest wrappers, against explicit synthetic small crates; not real Matrix or AWS package qualification.",
+  "started_utc": "2026-10-27T11:24:22.472470+00:00",
+  "source_inputs_before_execution": {
+    "matrix": {
+      "codex-rs/.config/nextest.toml": {
+        "bytes": 5044,
+        "sha256": "78b998d1fcb16dfef6b243a4b18748c1b28ce2d5a28d57f1f477adf0546e5ac6"
+      },
+      "codex-rs/Cargo.lock": {
+        "bytes": 442,
+        "sha256": "de7cb176a8351ad878617a7d26cc3aa4ce0f0162a32aefce19d685d788c163ff"
+      },
+      "codex-rs/Cargo.toml": {
+        "bytes": 425,
+        "sha256": "12cba3d964944a69533a3c6859d7eac151e4dc567ebfb01a056006baabed2e0d"
+      },
+      "codex-rs/placeholders/codex-app-server-protocol/Cargo.toml": {
+        "bytes": 80,
+        "sha256": "219e69ac7118faffef696e45ca770063bb04b55ede5cf00b2da4dca09ae2eb87"
+      },
+      "codex-rs/placeholders/codex-app-server-protocol/src/lib.rs": {
+        "bytes": 91,
+        "sha256": "489d8c85a636354f09e629880f9c5f63fcef03ff60390f667971b328e876b724"
+      },
+      "codex-rs/placeholders/codex-app-server/Cargo.toml": {
+        "bytes": 71,
+        "sha256": "0552d1747f92f0186704e3e673fc62c5ab44fec0fbb0054322341dfb87952a96"
+      },
+      "codex-rs/placeholders/codex-app-server/src/lib.rs": {
+        "bytes": 91,
+        "sha256": "489d8c85a636354f09e629880f9c5f63fcef03ff60390f667971b328e876b724"
+      },
+      "codex-rs/placeholders/codex-core/Cargo.toml": {
+        "bytes": 65,
+        "sha256": "9fe8cddf362198821f3cdef6ce48de957b67b87cd4f5fa3798751a234c362212"
+      },
+      "codex-rs/placeholders/codex-core/src/lib.rs": {
+        "bytes": 91,
+        "sha256": "489d8c85a636354f09e629880f9c5f63fcef03ff60390f667971b328e876b724"
+      },
+      "codex-rs/placeholders/codex-hepta-learning-ledger/Cargo.toml": {
+        "bytes": 82,
+        "sha256": "12f1cc568f086ff8fb03c3e75d01bc2aca91ce316d16ab24231b94394f20a562"
+      },
+      "codex-rs/placeholders/codex-hepta-learning-ledger/src/lib.rs": {
+        "bytes": 91,
+        "sha256": "489d8c85a636354f09e629880f9c5f63fcef03ff60390f667971b328e876b724"
+      },
+      "codex-rs/placeholders/codex-hepta-operations/Cargo.toml": {
+        "bytes": 77,
+        "sha256": "94a058e8088fdbaa317165f4fd288d08564e4d2f6fd3600776bedef0fc371cbd"
+      },
+      "codex-rs/placeholders/codex-hepta-operations/src/lib.rs": {
+        "bytes": 91,
+        "sha256": "489d8c85a636354f09e629880f9c5f63fcef03ff60390f667971b328e876b724"
+      },
+      "codex-rs/placeholders/codex-windows-sandbox/Cargo.toml": {
+        "bytes": 76,
+        "sha256": "5b7b98b4a7cd71d93e6811f313324e95aa0f60a38a565e867ed356d5a23b8520"
+      },
+      "codex-rs/placeholders/codex-windows-sandbox/src/lib.rs": {
+        "bytes": 91,
+        "sha256": "489d8c85a636354f09e629880f9c5f63fcef03ff60390f667971b328e876b724"
+      },
+      "codex-rs/src/lib.rs": {
+        "bytes": 68,
+        "sha256": "bfdfe52b69ec8f8afef5f4eaa2cf6deac0300b05d23d8ba1fbdc2ab62b1f0cf9"
+      },
+      "codex-rs/tests/store_version_migration.rs": {
+        "bytes": 727,
+        "sha256": "8e55c809bbfbf38a2b8e63fabc6503c695fb49284e78887e0748a576caab5e82"
+      },
+      "justfile": {
+        "bytes": 7838,
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      },
+      "scripts/just-shell.py": {
+        "bytes": 2030,
+        "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+      },
+      "scripts/run-nextest.py": {
+        "bytes": 10206,
+        "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+      }
+    },
+    "aws": {
+      "codex-rs/.config/nextest.toml": {
+        "bytes": 213,
+        "sha256": "26d4c4ef4a7924e2dc1c0bec8651a105a155f9b4aa138a2293de97d187bb6962"
+      },
+      "codex-rs/Cargo.lock": {
+        "bytes": 74,
+        "sha256": "1e01df664b9aa7cd4c37e5720be9dd0b3bd6b5894e68809131de06295716b25f"
+      },
+      "codex-rs/Cargo.toml": {
+        "bytes": 203,
+        "sha256": "56850209baa2210345a3fd7e93d9165123434268ae8281bbdcd6d93aa3044d9c"
+      },
+      "codex-rs/src/lib.rs": {
+        "bytes": 80,
+        "sha256": "746a6e65d9896b1e2edc809067763d39767b36e4553f9d9af728706a77e10d8a"
+      },
+      "justfile": {
+        "bytes": 7838,
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      },
+      "scripts/just-shell.py": {
+        "bytes": 2030,
+        "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+      },
+      "scripts/run-nextest.py": {
+        "bytes": 10206,
+        "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+      }
+    }
+  },
+  "driver_sources": {
+    "scripts/ndu_port_aws_upstream.py": {
+      "bytes": 8902,
+      "sha256": "c6af112db92c9928ae036914345113e778639897e9a7acfe64a1fd1ff68be250"
+    },
+    "scripts/ndu_port_candidate_common.py": {
+      "bytes": 22992,
+      "sha256": "e0ec209e3351ea9caebbe7b56ec672d5bcacb405126027aa186abd20b5bf975a"
+    },
+    "scripts/ndu_port_matrix_fixture.py": {
+      "bytes": 16682,
+      "sha256": "2961ce3618bd22f50bde706b4315ed60c60ef57ae221cf76f9e50cf5211ff0e8"
+    }
+  },
+  "probe_script_before_execution": {
+    "sha256": "d46a65441f61f5e330c0de42a0fd62b7dd841c2af3bfe48188e6dab48b5c9eca",
+    "path": "executed-probe.py"
+  },
+  "configurations": {
+    "matrix": {
+      "profile": {
+        "default": {
+          "slow-timeout": {
+            "period": "30s",
+            "terminate-after": 2
+          },
+          "retries": 1,
+          "junit": {
+            "path": "junit.xml"
+          },
+          "overrides": [
+            {
+              "filter": "test(rmcp_client) | test(humanlike_typing_1000_chars_appears_live_no_placeholder)",
+              "slow-timeout": {
+                "period": "1m",
+                "terminate-after": 4
+              }
+            },
+            {
+              "filter": "test(approval_matrix_covers_all_modes)",
+              "slow-timeout": {
+                "period": "30s",
+                "terminate-after": 2
+              }
+            },
+            {
+              "filter": "package(codex-app-server-protocol) & (test(typescript_schema_fixtures_match_generated) | test(json_schema_fixtures_match_generated) | test(generate_ts_with_experimental_api_retains_experimental_entries) | test(generated_ts_optional_nullable_fields_only_in_params) | test(generate_json_filters_experimental_fields_and_methods))",
+              "test-group": "app_server_protocol_codegen"
+            },
+            {
+              "filter": "package(codex-app-server) & kind(test)",
+              "test-group": "app_server_integration"
+            },
+            {
+              "filter": "package(codex-core) & kind(test) & test(apply_patch_cli)",
+              "test-group": "core_apply_patch_cli_integration"
+            },
+            {
+              "filter": "package(codex-windows-sandbox) & test(legacy_)",
+              "test-group": "windows_sandbox_legacy_sessions"
+            },
+            {
+              "platform": "cfg(windows)",
+              "filter": "test(start_thread_uses_all_default_environments_from_codex_home)",
+              "slow-timeout": {
+                "period": "1m",
+                "terminate-after": 2
+              }
+            },
+            {
+              "platform": "cfg(windows)",
+              "filter": "test(suite::resume::) | test(suite::cli_stream::) | test(suite::auth_env::) | test(start_thread_uses_all_default_environments_from_codex_home) | test(connect_stdio_command_initializes_json_rpc_client_on_windows)",
+              "test-group": "windows_process_heavy",
+              "slow-timeout": {
+                "period": "45s",
+                "terminate-after": 2
+              }
+            },
+            {
+              "filter": "package(codex-hepta-learning-ledger) & test(history_exceeds_v1_record_capacity_without_resetting_chain_or_limits)",
+              "test-group": "hepta_durable_capacity",
+              "slow-timeout": {
+                "period": "30s",
+                "terminate-after": 6
+              }
+            },
+            {
+              "filter": "package(codex-hepta-learning-ledger) & test(signed_product_history_curve_append_lookup_reopen_and_exact_retry)",
+              "test-group": "hepta_durable_capacity",
+              "slow-timeout": {
+                "period": "30s",
+                "terminate-after": 20
+              },
+              "retries": 0
+            },
+            {
+              "filter": "package(codex-hepta-operations) & test(growing_history_keeps_early_identity_and_domain_count_after_restart)",
+              "test-group": "hepta_durable_capacity",
+              "slow-timeout": {
+                "period": "30s",
+                "terminate-after": 20
+              },
+              "retries": 0
+            }
+          ]
+        },
+        "local": {
+          "inherits": "default",
+          "overrides": [
+            {
+              "filter": "package(codex-app-server) & kind(test)",
+              "test-group": "app_server_integration_local"
+            }
+          ]
+        }
+      },
+      "test-groups": {
+        "app_server_protocol_codegen": {
+          "max-threads": 1
+        },
+        "app_server_integration": {
+          "max-threads": 1
+        },
+        "app_server_integration_local": {
+          "max-threads": 4
+        },
+        "core_apply_patch_cli_integration": {
+          "max-threads": 1
+        },
+        "windows_sandbox_legacy_sessions": {
+          "max-threads": 1
+        },
+        "windows_process_heavy": {
+          "max-threads": 2
+        },
+        "hepta_durable_capacity": {
+          "max-threads": 1
+        }
+      }
+    },
+    "aws": {
+      "profile": {
+        "default": {
+          "slow-timeout": {
+            "period": "30s",
+            "terminate-after": 2
+          },
+          "retries": 1,
+          "junit": {
+            "path": "junit.xml"
+          }
+        },
+        "local": {
+          "slow-timeout": {
+            "period": "30s",
+            "terminate-after": 2
+          },
+          "retries": 1
+        }
+      }
+    }
+  },
+  "environment_overrides": {
+    "PATH": "/workspace/scratch/95988d8d3ab1/native_toolchain_20261027/installed/bin:/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/yaml-migration/bin:/workspace/scratch/95988d8d3ab1/continuation_format_tools_20261027:/root/.codex/tmp/arg0/codex-arg0GMFUlX:/opt/codex/codex-path:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/override:/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/fallback",
+    "RUSTC": "/workspace/scratch/95988d8d3ab1/native_toolchain_20261027/installed/bin/rustc",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "tools": {
+    "rustc": {
+      "path": "/workspace/scratch/95988d8d3ab1/native_toolchain_20261027/installed/bin/rustc",
+      "sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6",
+      "version": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2"
+    },
+    "cargo": {
+      "path": "/workspace/scratch/95988d8d3ab1/native_toolchain_20261027/installed/bin/cargo",
+      "sha256": "841072d1d92f9e841d9ba5b0814182a0adf064acf4527cd120967b7bc49dcb66",
+      "version": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)"
+    },
+    "nextest": {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/yaml-migration/bin/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1",
+      "version": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu"
+    },
+    "just": {
+      "path": "/workspace/scratch/95988d8d3ab1/continuation_format_tools_20261027/just",
+      "sha256": "67ac1a1c905d4de14293bed368dd1f272423375d5f7132f522c0e8385061fd8c",
+      "version": "just 1.43.0"
+    }
+  },
+  "passed": true,
+  "old_matrix_source_sha256": "bb9cebcc6c55fb55e0f14610e130c50a8793658a99c260703964f388a67c2ef2",
+  "old_matrix_reproduced_missing_junit_after_actual_test_pass": true,
+  "fixed_matrix_exact_phases_passed": 2,
+  "aws_same_timeout_retry_new_default_junit_proven": true,
+  "source_inputs_after_execution": {
+    "matrix": {
+      "codex-rs/.config/nextest.toml": {
+        "bytes": 5044,
+        "sha256": "78b998d1fcb16dfef6b243a4b18748c1b28ce2d5a28d57f1f477adf0546e5ac6"
+      },
+      "codex-rs/Cargo.lock": {
+        "bytes": 442,
+        "sha256": "de7cb176a8351ad878617a7d26cc3aa4ce0f0162a32aefce19d685d788c163ff"
+      },
+      "codex-rs/Cargo.toml": {
+        "bytes": 425,
+        "sha256": "12cba3d964944a69533a3c6859d7eac151e4dc567ebfb01a056006baabed2e0d"
+      },
+      "codex-rs/placeholders/codex-app-server-protocol/Cargo.toml": {
+        "bytes": 80,
+        "sha256": "219e69ac7118faffef696e45ca770063bb04b55ede5cf00b2da4dca09ae2eb87"
+      },
+      "codex-rs/placeholders/codex-app-server-protocol/src/lib.rs": {
+        "bytes": 91,
+        "sha256": "489d8c85a636354f09e629880f9c5f63fcef03ff60390f667971b328e876b724"
+      },
+      "codex-rs/placeholders/codex-app-server/Cargo.toml": {
+        "bytes": 71,
+        "sha256": "0552d1747f92f0186704e3e673fc62c5ab44fec0fbb0054322341dfb87952a96"
+      },
+      "codex-rs/placeholders/codex-app-server/src/lib.rs": {
+        "bytes": 91,
+        "sha256": "489d8c85a636354f09e629880f9c5f63fcef03ff60390f667971b328e876b724"
+      },
+      "codex-rs/placeholders/codex-core/Cargo.toml": {
+        "bytes": 65,
+        "sha256": "9fe8cddf362198821f3cdef6ce48de957b67b87cd4f5fa3798751a234c362212"
+      },
+      "codex-rs/placeholders/codex-core/src/lib.rs": {
+        "bytes": 91,
+        "sha256": "489d8c85a636354f09e629880f9c5f63fcef03ff60390f667971b328e876b724"
+      },
+      "codex-rs/placeholders/codex-hepta-learning-ledger/Cargo.toml": {
+        "bytes": 82,
+        "sha256": "12f1cc568f086ff8fb03c3e75d01bc2aca91ce316d16ab24231b94394f20a562"
+      },
+      "codex-rs/placeholders/codex-hepta-learning-ledger/src/lib.rs": {
+        "bytes": 91,
+        "sha256": "489d8c85a636354f09e629880f9c5f63fcef03ff60390f667971b328e876b724"
+      },
+      "codex-rs/placeholders/codex-hepta-operations/Cargo.toml": {
+        "bytes": 77,
+        "sha256": "94a058e8088fdbaa317165f4fd288d08564e4d2f6fd3600776bedef0fc371cbd"
+      },
+      "codex-rs/placeholders/codex-hepta-operations/src/lib.rs": {
+        "bytes": 91,
+        "sha256": "489d8c85a636354f09e629880f9c5f63fcef03ff60390f667971b328e876b724"
+      },
+      "codex-rs/placeholders/codex-windows-sandbox/Cargo.toml": {
+        "bytes": 76,
+        "sha256": "5b7b98b4a7cd71d93e6811f313324e95aa0f60a38a565e867ed356d5a23b8520"
+      },
+      "codex-rs/placeholders/codex-windows-sandbox/src/lib.rs": {
+        "bytes": 91,
+        "sha256": "489d8c85a636354f09e629880f9c5f63fcef03ff60390f667971b328e876b724"
+      },
+      "codex-rs/src/lib.rs": {
+        "bytes": 68,
+        "sha256": "bfdfe52b69ec8f8afef5f4eaa2cf6deac0300b05d23d8ba1fbdc2ab62b1f0cf9"
+      },
+      "codex-rs/tests/store_version_migration.rs": {
+        "bytes": 727,
+        "sha256": "8e55c809bbfbf38a2b8e63fabc6503c695fb49284e78887e0748a576caab5e82"
+      },
+      "justfile": {
+        "bytes": 7838,
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      },
+      "scripts/just-shell.py": {
+        "bytes": 2030,
+        "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+      },
+      "scripts/run-nextest.py": {
+        "bytes": 10206,
+        "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+      }
+    },
+    "aws": {
+      "codex-rs/.config/nextest.toml": {
+        "bytes": 213,
+        "sha256": "26d4c4ef4a7924e2dc1c0bec8651a105a155f9b4aa138a2293de97d187bb6962"
+      },
+      "codex-rs/Cargo.lock": {
+        "bytes": 74,
+        "sha256": "1e01df664b9aa7cd4c37e5720be9dd0b3bd6b5894e68809131de06295716b25f"
+      },
+      "codex-rs/Cargo.toml": {
+        "bytes": 203,
+        "sha256": "56850209baa2210345a3fd7e93d9165123434268ae8281bbdcd6d93aa3044d9c"
+      },
+      "codex-rs/src/lib.rs": {
+        "bytes": 80,
+        "sha256": "746a6e65d9896b1e2edc809067763d39767b36e4553f9d9af728706a77e10d8a"
+      },
+      "justfile": {
+        "bytes": 7838,
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      },
+      "scripts/just-shell.py": {
+        "bytes": 2030,
+        "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+      },
+      "scripts/run-nextest.py": {
+        "bytes": 10206,
+        "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+      }
+    }
+  },
+  "completed_utc": "2026-10-27T11:24:24.091085+00:00"
+}

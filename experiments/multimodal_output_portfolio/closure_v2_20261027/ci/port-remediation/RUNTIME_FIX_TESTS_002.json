@@ -1,0 +1,74 @@
+{
+  "scope": "20 Python orchestration/transport/JUnit regressions on final store/profile/metadata fix, no actual package or Cargo/Bazel qualification.",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "unittest",
+    "-v",
+    "test_ndu_port_candidate",
+    "test_ndu_port_matrix_fixture",
+    "test_ndu_port_aws_upstream"
+  ],
+  "files": {
+    ".github/workflows/ndu-port-candidate.yml": {
+      "bytes": 18686,
+      "sha256": "8a58c6e255b1350cb9e72f14c3f14afd95099050f603338e7328aa77d25d8bfd"
+    },
+    "justfile": {
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    "scripts/run-nextest.py": {
+      "bytes": 10206,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    "scripts/just-shell.py": {
+      "bytes": 2030,
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    "codex-rs/.config/nextest.toml": {
+      "bytes": 5044,
+      "sha256": "78b998d1fcb16dfef6b243a4b18748c1b28ce2d5a28d57f1f477adf0546e5ac6"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.json": {
+      "bytes": 221834,
+      "sha256": "4efd3f67e272cd86f93d2a221c6584248118767ec5d2fdb88685885cffde6aae"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/aws-login-remediation/evidence/STANDALONE_TEST_nextest.toml": {
+      "bytes": 213,
+      "sha256": "26d4c4ef4a7924e2dc1c0bec8651a105a155f9b4aa138a2293de97d187bb6962"
+    },
+    "scripts/ndu_port_candidate_common.py": {
+      "bytes": 22992,
+      "sha256": "e0ec209e3351ea9caebbe7b56ec672d5bcacb405126027aa186abd20b5bf975a"
+    },
+    "scripts/ndu_port_candidate.py": {
+      "bytes": 14151,
+      "sha256": "7628b01c591d127b6dc3ce8076facb918dd15dbdd642e1556f16bb926bf20ffb"
+    },
+    "scripts/ndu_port_matrix_fixture.py": {
+      "bytes": 16682,
+      "sha256": "2961ce3618bd22f50bde706b4315ed60c60ef57ae221cf76f9e50cf5211ff0e8"
+    },
+    "scripts/ndu_port_aws_upstream.py": {
+      "bytes": 8902,
+      "sha256": "c6af112db92c9928ae036914345113e778639897e9a7acfe64a1fd1ff68be250"
+    },
+    "scripts/test_ndu_port_candidate.py": {
+      "bytes": 17833,
+      "sha256": "89b75971aaf36dac974d27378a0ae3eb1e1116e0a521eb96826fe6c0d3dac28b"
+    },
+    "scripts/test_ndu_port_matrix_fixture.py": {
+      "bytes": 8617,
+      "sha256": "50b138ded403dfbcd24ca60e3d0476e172eed14ab8149959c493c17c58c523ec"
+    },
+    "scripts/test_ndu_port_aws_upstream.py": {
+      "bytes": 3693,
+      "sha256": "16abf09373af6974b1e50e53a126087acbb538bb99962fbd97a772b2c9b7d3d8"
+    }
+  },
+  "started_unix": 1793100281.2707682,
+  "exit_code": 0,
+  "elapsed_seconds": 1.2435765266418457,
+  "log_sha256": "8fca833ab1da421d7b659d1051c9af53558e20c0e74b8a7a58d73930cb7f1b33"
+}
