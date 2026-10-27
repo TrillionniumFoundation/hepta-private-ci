@@ -1,0 +1,16 @@
+{
+  "schema": "hepta.ci.prettier-failure.v1",
+  "run_id": 40497632164,
+  "job_id": 122174195920,
+  "source_commit": "1e4f8b5c37474c61a5b58a655d5885dced887bf9",
+  "local_source_equivalent_commit": "1055afb2854b5c86b43136e816a548097cdc7a46",
+  "source_tree": "f9d473090d4035b09b2bb02ea71163164ea564ae",
+  "job_log_bytes": 121353,
+  "job_log_sha256": "5c0575a06203054c9cd6b560657bec447d582c0f4f67c6292392a284cef12fcb",
+  "failure": "Prettier reports only .github/workflows/ndu-port-candidate.yml",
+  "workflow_before_sha256": "8a58c6e255b1350cb9e72f14c3f14afd95099050f603338e7328aa77d25d8bfd",
+  "command": "pnpm run format",
+  "expanded_command": "prettier --check *.json *.md docs/*.md .github/workflows/*.yml **/*.js",
+  "failure_retained": true,
+  "fix_status": "owned by coherent port v2 final formatting; no assertions or workflow commands will change as a formatting fix"
+}

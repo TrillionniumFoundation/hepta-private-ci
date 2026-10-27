@@ -1,0 +1,127 @@
+{
+  "schema": "hepta.dependency-gate-followup.v1",
+  "source_commit": "1e4f8b5c37474c61a5b58a655d5885dced887bf9",
+  "workflow_run": 40497632164,
+  "job_id": 122174195676,
+  "scope": "Same pinned cargo-deny version and arguments on the host; not the Docker action's original log.",
+  "original_blocking_gate_unchanged": true,
+  "artifact_id": 12731754984,
+  "artifact_sha256": "26a9edda4ea76c420133abe05e62ee6180323c2b9db763872b01074646d3108c",
+  "result_sha256": "b5de92c7b76ca2386e707186aa5446011f12d4417f1185bcb91ed29acd0d4f02",
+  "log_sha256": "c06d8173c2b75ed9c0210d095be86124d8851096fa458564b80908b8e8fffdf7",
+  "environment": {
+    "binary_version": "cargo-deny 0.19.0",
+    "binary_sha256": "06f9d1a0ba92b201bff1215b6dc24e669b212c151ecd52cae5d38aab73931d3c",
+    "release_archive_sha256": "0e8c2aa59128612c90d9e09c02204e912f29a5b8d9a64671b94608cbe09e064f",
+    "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+    "cargo": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)"
+  },
+  "command": [
+    "/home/runner/work/_temp/cargo-deny-diagnostic/cargo-deny",
+    "--log-level",
+    "warn",
+    "--manifest-path",
+    "./codex-rs/Cargo.toml",
+    "--all-features",
+    "check"
+  ],
+  "cargo_lock_sha256_before": "56ed52d9789f01abda5bad96f25dd9d48b837108653cb2f3474ee5e0dbc790de",
+  "cargo_lock_sha256_after": "56ed52d9789f01abda5bad96f25dd9d48b837108653cb2f3474ee5e0dbc790de",
+  "advisory_error_count": 15,
+  "same_remaining_errors_as_prior_tls_followup": true,
+  "new_advisories": [],
+  "remaining_errors": [
+    {
+      "error": "error[unmaintained]: anymap2 is unmaintained",
+      "advisories": [
+        "RUSTSEC-2026-0319"
+      ]
+    },
+    {
+      "error": "error[unmaintained]: `basic-toml` is unmaintained",
+      "advisories": [
+        "RUSTSEC-2026-0374"
+      ]
+    },
+    {
+      "error": "error[vulnerability]: Multiple timing variability issues in operations intended to be constant-time",
+      "advisories": [
+        "RUSTSEC-2026-0387"
+      ]
+    },
+    {
+      "error": "error[vulnerability]: Sending custom to-device messages may panics",
+      "advisories": [
+        "RUSTSEC-2026-0318"
+      ]
+    },
+    {
+      "error": "error[unmaintained]: unsafe-libyaml is unmaintained",
+      "advisories": [
+        "RUSTSEC-2024-0449"
+      ]
+    },
+    {
+      "error": "error[unmaintained]: `zbus_names` is unmaintained",
+      "advisories": [
+        "RUSTSEC-2026-0371"
+      ]
+    },
+    {
+      "error": "error[vulnerability]:  Insecure Preservation of SUID/SGID Bits during ZIP Extraction Leading to Potential Privilege Escalation",
+      "advisories": [
+        "RUSTSEC-2026-0367"
+      ]
+    },
+    {
+      "error": "error[vulnerability]: zip: `ZipArchive::extract` creates symbolic links whose attacker-controlled targets are outside the destination directory",
+      "advisories": [
+        "RUSTSEC-2026-0368"
+      ]
+    },
+    {
+      "error": "error[vulnerability]: ZipStreamReader::extract() and ZipArchive::extract() apply Unix permissions through symlinks without confining the target",
+      "advisories": [
+        "RUSTSEC-2026-0369"
+      ]
+    },
+    {
+      "error": "error[vulnerability]: Data from an abandoned stream leaks into the next stream on a reused context",
+      "advisories": [
+        "RUSTSEC-2026-0391"
+      ]
+    },
+    {
+      "error": "error[vulnerability]: `Seekable::decompress` sets a `Vec` length beyond its capacity for offsets past the end",
+      "advisories": [
+        "RUSTSEC-2026-0398"
+      ]
+    },
+    {
+      "error": "error[vulnerability]: Uninitialized memory exposed when streaming decompression of a legacy frame fails",
+      "advisories": [
+        "RUSTSEC-2026-0403"
+      ]
+    },
+    {
+      "error": "error[vulnerability]: WebAssembly allocator shim corrupts memory on allocation failure",
+      "advisories": [
+        "RUSTSEC-2026-0410"
+      ]
+    },
+    {
+      "error": "error[unmaintained]: `zvariant` is unmaintained",
+      "advisories": [
+        "RUSTSEC-2026-0370"
+      ]
+    },
+    {
+      "error": "error[unmaintained]: `zvariant_derive` is unmaintained",
+      "advisories": [
+        "RUSTSEC-2026-0372"
+      ]
+    }
+  ],
+  "final_summary": "advisories FAILED, bans ok, licenses ok, sources ok",
+  "full_dependency_gate_passed": false
+}
