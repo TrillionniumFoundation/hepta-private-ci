@@ -72,13 +72,42 @@ jobs:
           python3 -I -B scripts/hepta_smollm_host_resources.py --output "$RUNNER_TEMP/hepta-cumulative/host.json"
           printf 'HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT=%s/hepta-cumulative/runtime-snapshot.json\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
           cp qualification/cumulative-controls/source-pin.json "$RUNNER_TEMP/hepta-cumulative/source-pin.json"
+      - name: Verify a nonempty exact formatting scope before expensive execution
+        id: formatting
+        run: |
+          set -euo pipefail
+          python3 -I -B - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          pin = json.loads(Path("qualification/cumulative-controls/source-pin.json").read_bytes())
+          baseline = pin["source_sha"]
+          assert len(baseline) == 40 and all(c in "0123456789abcdef" for c in baseline)
+          if subprocess.run(["git", "cat-file", "-e", baseline + "^{commit}"], capture_output=True).returncode:
+              subprocess.run(["git", "fetch", "--no-tags", "--depth=1", "https://github.com/TrillionniumFoundation/hepta-private-ci.git", baseline], check=True)
+          required = {"scripts/" + name for name in ("hepta_cumulative_controls.py",
+              "hepta_cumulative_control_child.py", "hepta_cumulative_campaign.py",
+              "hepta_cumulative_source.py", "test_hepta_cumulative_controls.py",
+              "test_hepta_cumulative_source.py")}
+          allowed = required | {".github/workflows/hepta-cumulative-controls.yml",
+              "qualification/cumulative-controls/README.md", "qualification/cumulative-controls/source-pin.json"}
+          changed = set(subprocess.check_output(["git", "diff", "--name-only", "-z", baseline, "HEAD"]).decode().split("\0")) - {""}
+          assert required <= changed <= allowed, "formatting scope is empty, incomplete, or includes original runtime changes"
+          record = dict(baseline=baseline, changed=sorted(changed), source=os.environ["SOURCE_SHA"],
+              files={name: hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in sorted(required)})
+          (Path(os.environ["RUNNER_TEMP"]) / "hepta-cumulative/format-scope.json").write_text(json.dumps(record, indent=2) + "\n")
+          with Path(os.environ["GITHUB_ENV"]).open("a") as environment:
+              environment.write(f"FORMAT_BASE_SHA={baseline}\n")
+          PY
+          FORMAT_BASE_SHA="$(python3 -I -B -c 'import json; print(json.load(open("qualification/cumulative-controls/source-pin.json"))["source_sha"])')"
+          just fmt --base "$FORMAT_BASE_SHA" --check
+          git diff --exit-code
       - name: Exercise metadata and archive attack controls
         id: controls
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-cumulative/parent-controls.json" --timeout-seconds 60 --minimum-tests 5 -- python3 -B scripts/test_hepta_cumulative_controls.py -v
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-cumulative/archive-controls.json" --timeout-seconds 60 --minimum-tests 5 -- python3 -B scripts/test_hepta_cumulative_source.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-cumulative/archive-controls.json" --timeout-seconds 60 --minimum-tests 8 -- python3 -B scripts/test_hepta_cumulative_source.py -v
       - name: Fetch and verify the complete pinned original artifact ZIPs
         id: original
         env:
@@ -109,12 +138,6 @@ jobs:
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-cumulative/actual-execution.json" --timeout-seconds 10800 --minimum-tests 0 -- "$RUNNER_TEMP/hepta-cumulative-env/bin/python" -I -B scripts/hepta_cumulative_campaign.py --chain "$GITHUB_WORKSPACE/chain" --materials "$RUNNER_TEMP/hepta-cumulative-model" --source "$RUNNER_TEMP/hepta-cumulative/reference" --source-pin "$GITHUB_WORKSPACE/hepta/qualification/cumulative-controls/source-pin.json" --output "$RUNNER_TEMP/hepta-cumulative/campaign"
           "$RUNNER_TEMP/hepta-cumulative-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
-      - name: Check the independent changed source formatting
-        id: formatting
-        run: |
-          set -euo pipefail
-          just fmt --base "$BASE_SHA" --check
-          git diff --exit-code
       - name: Preserve actual result and all original failures
         if: always()
         env:
@@ -134,11 +157,18 @@ jobs:
               "MATERIALS_OUTCOME", "CAMPAIGN_OUTCOME", "FORMATTING_OUTCOME")
           outcomes = {name: os.environ.get(name, "unavailable") for name in names}
           report = root / "campaign/campaign.json"
-          campaign = json.loads(report.read_bytes()) if report.is_file() else {}
+          campaign, report_error = {}, None
+          try:
+              campaign = json.loads(report.read_bytes()) if report.is_file() else {}
+          except (OSError, ValueError) as error:
+              report_error = type(error).__name__
+          if not isinstance(campaign, dict):
+              campaign, report_error = {}, "unexpected-report-type"
           complete = all(value == "success" for value in outcomes.values()) and campaign.get("status") == "completed-diagnostic-no-installation" and campaign.get("completed_rounds") == 3
           record = dict(schema="hepta-cumulative-required-outcomes-v1", outcomes=outcomes,
               actual_diagnostic_completed=complete, installed_children=0, product_qualification=False,
-              total_resource_cost_matched=False, original_native_gates_replaced=False)
+              total_resource_cost_matched=False, original_native_gates_replaced=False,
+              campaign_report_error=report_error)
           (root / "required-outcomes.json").write_text(json.dumps(record, indent=2) + "\n")
           files = {}
           for path in sorted(root.rglob("*")):

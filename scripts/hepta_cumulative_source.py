@@ -102,6 +102,7 @@ def fetch(args):
     )
     token = os.environ.get("GH_TOKEN")
     require(token is not None and len(token) > 0, "read-only Actions token required")
+    require("\r" not in token and "\n" not in token, "token header form")
     headers = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
@@ -119,90 +120,127 @@ def fetch(args):
         archives=[],
         source_runs_reexecuted=False,
         model_executed=False,
+        status="running",
+        stage="created-owned-output",
     )
-    for role in ("records", "checkpoints"):
-        artifact = pin["artifacts"][role]
-        endpoint = f"https://api.github.com/repos/{REPOSITORY}/actions/artifacts/{artifact['id']}"
-        with urllib.request.urlopen(
-            urllib.request.Request(endpoint, headers=headers), timeout=60
-        ) as response:
-            metadata = json.load(response)
-        require(
-            metadata["workflow_run"]["id"] == pin["run_id"]
-            and metadata["workflow_run"]["head_sha"] == pin["source_sha"]
-            and metadata["name"] == artifact["name"]
-            and metadata["expired"] is False
-            and metadata["size_in_bytes"] == artifact["bytes"]
-            and metadata["digest"] == "sha256:" + artifact["sha256"],
-            "artifact metadata binding",
-        )
-        opener = urllib.request.build_opener(NoRedirect)
-        try:
-            opener.open(
-                urllib.request.Request(endpoint + "/zip", headers=headers), timeout=60
-            )
-            raise ValueError("artifact API did not issue a signed redirect")
-        except urllib.error.HTTPError as error:
-            require(error.code == 302, "artifact redirect status")
-            location = error.headers["Location"]
-        parsed = urllib.parse.urlsplit(location)
-        require(
-            parsed.scheme == "https"
-            and parsed.hostname is not None
-            and parsed.username is None
-            and parsed.password is None,
-            "secure archive redirect",
-        )
-        archive_path = args.output / (role + ".zip")
-        hasher, size = hashlib.sha256(), 0
-        # Do not forward the GitHub token to signed object storage.
-        with (
-            urllib.request.urlopen(location, timeout=120) as response,
-            archive_path.open("xb") as output,
-        ):
-            while chunk := response.read(1024**2):
-                size += len(chunk)
-                require(
-                    size <= artifact["bytes"], "download exceeded fixed artifact size"
-                )
-                hasher.update(chunk)
-                output.write(chunk)
-        require(
-            size == artifact["bytes"] and hasher.hexdigest() == artifact["sha256"],
-            "complete original ZIP checksum",
-        )
-        selected = None if role == "records" else set(pin["selected_checkpoints"])
-        members = extract(archive_path, destination, selected)
-        receipt["archives"].append(
-            dict(
+
+    def persist():
+        partial = args.output / "source-retention.json.partial"
+        partial.write_text(json.dumps(receipt, indent=2) + "\n")
+        partial.replace(args.output / "source-retention.json")
+
+    persist()
+    opener = urllib.request.build_opener(NoRedirect)
+    try:
+        for role in ("records", "checkpoints"):
+            artifact = pin["artifacts"][role]
+            observation = dict(
                 role=role,
                 id=artifact["id"],
-                bytes=size,
-                sha256=hasher.hexdigest(),
-                complete_zip_verified=True,
-                extracted_members=members,
+                complete_zip_verified=False,
+                bytes=0,
+                sha256=None,
+                extracted_members={},
             )
+            receipt["archives"].append(observation)
+            receipt["stage"] = role + "-metadata"
+            persist()
+            endpoint = f"https://api.github.com/repos/{REPOSITORY}/actions/artifacts/{artifact['id']}"
+            with opener.open(
+                urllib.request.Request(endpoint, headers=headers), timeout=60
+            ) as response:
+                require(response.status == 200, "metadata response status")
+                metadata = json.load(response)
+            require(
+                metadata["workflow_run"]["id"] == pin["run_id"]
+                and metadata["workflow_run"]["head_sha"] == pin["source_sha"]
+                and metadata["name"] == artifact["name"]
+                and metadata["expired"] is False
+                and metadata["size_in_bytes"] == artifact["bytes"]
+                and metadata["digest"] == "sha256:" + artifact["sha256"],
+                "artifact metadata binding",
+            )
+            receipt["stage"] = role + "-signed-location"
+            try:
+                with opener.open(
+                    urllib.request.Request(endpoint + "/zip", headers=headers),
+                    timeout=60,
+                ):
+                    raise ValueError("artifact API did not issue a signed redirect")
+            except urllib.error.HTTPError as error:
+                require(error.code == 302, "artifact redirect status")
+                location = error.headers["Location"]
+            parsed = urllib.parse.urlsplit(location)
+            require(
+                parsed.scheme == "https"
+                and parsed.hostname is not None
+                and parsed.username is None
+                and parsed.password is None,
+                "secure archive redirect",
+            )
+            archive_path = args.output / (role + ".zip")
+            hasher, size = hashlib.sha256(), 0
+            receipt["stage"] = role + "-archive-download"
+            persist()
+            # Do not forward the GitHub token to signed object storage.
+            try:
+                with (
+                    opener.open(location, timeout=120) as response,
+                    archive_path.open("xb") as output,
+                ):
+                    require(response.status == 200, "archive response status")
+                    while chunk := response.read(
+                        min(1024**2, artifact["bytes"] - size + 1)
+                    ):
+                        size += len(chunk)
+                        hasher.update(chunk)
+                        output.write(chunk)
+                        require(
+                            size <= artifact["bytes"],
+                            "download exceeded fixed artifact size",
+                        )
+                        if size % (64 * 1024**2) < len(chunk):
+                            observation.update(bytes=size, sha256=hasher.hexdigest())
+                            persist()
+            finally:
+                observation.update(
+                    bytes=size,
+                    sha256=hasher.hexdigest(),
+                    digest_scope="bytes-read-from-response; writes may fail; complete only when complete_zip_verified",
+                )
+            require(
+                size == artifact["bytes"] and hasher.hexdigest() == artifact["sha256"],
+                "complete original ZIP checksum",
+            )
+            selected = None if role == "records" else set(pin["selected_checkpoints"])
+            observation["complete_zip_verified"] = True
+            receipt["stage"] = role + "-extraction"
+            members = extract(archive_path, destination, selected)
+            observation["extracted_members"] = members
+            persist()
+        index_path = destination / "evidence-index.json"
+        receipt["stage"] = "original-index-verification"
+        require(
+            digest(index_path) == pin["evidence_index_sha256"],
+            "original evidence index",
         )
-        (args.output / "source-retention.json").write_text(
-            json.dumps(receipt, indent=2) + "\n"
+        index = json.loads(index_path.read_bytes())
+        require(
+            index["source"] == pin["source_sha"] and index["chain"] == pin["chain_sha"],
+            "original source identity",
         )
-    index_path = destination / "evidence-index.json"
-    require(
-        digest(index_path) == pin["evidence_index_sha256"], "original evidence index"
-    )
-    index = json.loads(index_path.read_bytes())
-    require(
-        index["source"] == pin["source_sha"] and index["chain"] == pin["chain_sha"],
-        "original source identity",
-    )
-    for archive in receipt["archives"]:
-        for name in archive["extracted_members"]:
-            if name != "evidence-index.json":
-                pinned_member(destination, index, name)
-    receipt["all_extracted_members_match_original_index"] = True
-    (args.output / "source-retention.json").write_text(
-        json.dumps(receipt, indent=2) + "\n"
-    )
+        for archive in receipt["archives"]:
+            for name in archive["extracted_members"]:
+                if name != "evidence-index.json":
+                    pinned_member(destination, index, name)
+        receipt["all_extracted_members_match_original_index"] = True
+        receipt["status"] = "completed"
+        persist()
+    except BaseException as error:
+        receipt.update(status="failed", error_type=type(error).__name__)
+        raise
+    finally:
+        persist()
 
 
 def main():

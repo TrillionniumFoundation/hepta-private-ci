@@ -38,6 +38,7 @@ def run(args):
     retained = json.loads((args.source / "source-retention.json").read_bytes())
     controls.require(
         retained["source_pin_sha256"] == hashlib.sha256(pin_raw).hexdigest()
+        and retained["status"] == "completed"
         and retained["all_extracted_members_match_original_index"] is True
         and retained["source_sha"] == pin["source_sha"]
         and retained["run_id"] == pin["run_id"],
@@ -87,6 +88,7 @@ def run(args):
         source_pin_sha256=hashlib.sha256(pin_raw).hexdigest(),
         source_run_id=pin["run_id"],
         source_sha=pin["source_sha"],
+        source_required_outcomes=read("required-outcomes.json"),
         chain_sha=controls.CHAIN_SHA,
         runner_sha256=runtime.file_sha(__file__),
         helper_sha256=runtime.file_sha(controls.__file__),
