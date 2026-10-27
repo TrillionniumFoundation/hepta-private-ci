@@ -1,0 +1,409 @@
+{
+  "audit": {
+    "audit_elapsed_ns": 18168130468,
+    "audit_source_sha256": "00f2df0d998b6d882ef7de0cf2529969553e7d305cf5c99581c3874e50355f37",
+    "checks": {
+      "artifact_hash": 18050,
+      "chronology": 29444,
+      "control": 22419,
+      "cost": 18050,
+      "coverage": 4,
+      "dataset": 4,
+      "decision": 76004,
+      "delivery": 13312,
+      "feedback": 9476,
+      "model_hash": 3329,
+      "model_replay": 17052,
+      "png_bit_replay": 6656,
+      "prediction": 9216,
+      "prediction_loss": 6912,
+      "public_history": 94578,
+      "receipt": 54150,
+      "score": 13312,
+      "summary": 149
+    },
+    "chronology_scope": "Retained files, timestamps, and frozen source; not process-memory isolation proof",
+    "control_rows": 3328,
+    "dataset_seed": 30011,
+    "dataset_split": "confirmation",
+    "evidence_sha256": {
+      "CONTROL.jsonl": "b2c1f69613c22bc9c8a943d8881f55cee677ec107087a3394fc62a7920c04709",
+      "DATA.npz": "6132f7bc1dd0df82fe308af0f38fe9fe0476e36b3d605b974d9f3a87192e35b3",
+      "DATASET.json": "e1ae2a1305ba72eaafe629d7bc38a47670ae9aa35bdc971124107de8ddc0ac05",
+      "MODELS.json": "56c2bba2778e87a70984d666e5d4698be33133ab6b02c7fb7aa6fc57c2f8161e",
+      "PREDICTION.jsonl": "5ecff620a4502785cf43010d2c94db5b35582c13a009f9bcd75bdef5f2790b26",
+      "SUMMARY.json": "58a9544a5601f45ffbd99e066a9770e87fd67d0f2d84d0ed12da8cdbdb1cf8ca",
+      "transport/TRANSPORT_RECEIPTS.jsonl": "d1db95f07fd219d0b0edd14c84ef07133ab9b2b49762c8701a28bd70dd64f706"
+    },
+    "frozen_model_binding": true,
+    "independent_audit_wall_ns": 18206592079,
+    "law": "gaussian",
+    "maximum_absolute_numeric_error": 1.7763568394002505e-15,
+    "model_sha256": "56c2bba2778e87a70984d666e5d4698be33133ab6b02c7fb7aa6fc57c2f8161e",
+    "models": 9,
+    "offline_replay": true,
+    "passed": true,
+    "prediction_rows": 2304,
+    "schema": "hepta.analytic-event.scope-audit.v1",
+    "scope": "experiments/analytic_event_neuron/evidence/run-20261027/unpacked/seed_11_gaussian",
+    "trajectories": 256,
+    "transport_receipts": 18050
+  },
+  "execution": {
+    "actual_transport": {
+      "deliveries": 6656,
+      "files": 24706,
+      "observations": 11394,
+      "receipt_path": "experiments/analytic_event_neuron/evidence/run-20261027/unpacked/seed_11_gaussian/transport/TRANSPORT_RECEIPTS.jsonl",
+      "receipt_sha256": "d1db95f07fd219d0b0edd14c84ef07133ab9b2b49762c8701a28bd70dd64f706"
+    },
+    "evaluation_wall_ns": 18801012411,
+    "native_requests": 1186,
+    "native_roundtrip_ns": 412272862,
+    "original_sparse_ticks": 7731,
+    "private_target_first_read_after_final_delivery": true
+  },
+  "summary": {
+    "control": {
+      "always_repair": {
+        "action_sequences": {
+          "repair": 256
+        },
+        "cpu_ns": 1001086862,
+        "mean_action_cost": 0.20671875,
+        "mean_squared_error": 0.4771483379907626,
+        "mean_utility": 0.31613291200923743,
+        "repair_count": 256,
+        "severe_loss_fraction": 0.01953125,
+        "utility_quantiles_05_50_95": [
+          -1.1974037213558628,
+          0.5183443607079447,
+          0.9234528425605422
+        ],
+        "wait_count": 0,
+        "wall_ns": 1002078894
+      },
+      "always_stop": {
+        "action_sequences": {
+          "stop": 256
+        },
+        "cpu_ns": 1008098872,
+        "mean_action_cost": 0.0,
+        "mean_squared_error": 0.7006376572362806,
+        "mean_utility": 0.2993623427637194,
+        "repair_count": 0,
+        "severe_loss_fraction": 0.04296875,
+        "utility_quantiles_05_50_95": [
+          -1.610976397900525,
+          0.6852397708637634,
+          0.997587208021427
+        ],
+        "wait_count": 0,
+        "wall_ns": 1009313983
+      },
+      "always_wait": {
+        "action_sequences": {
+          "wait/stop": 256
+        },
+        "cpu_ns": 998647247,
+        "mean_action_cost": 0.12058593750000002,
+        "mean_squared_error": 0.4598249337026628,
+        "mean_utility": 0.4195891287973372,
+        "repair_count": 0,
+        "severe_loss_fraction": 0.01953125,
+        "utility_quantiles_05_50_95": [
+          -0.9298007971490934,
+          0.6584976866467115,
+          0.935570353229648
+        ],
+        "wait_count": 256,
+        "wall_ns": 999111520
+      },
+      "always_wait_repair": {
+        "action_sequences": {
+          "wait/repair": 256
+        },
+        "cpu_ns": 1083403933,
+        "mean_action_cost": 0.3273046875,
+        "mean_squared_error": 0.20970185303182282,
+        "mean_utility": 0.4629934594681772,
+        "repair_count": 256,
+        "severe_loss_fraction": 0.0,
+        "utility_quantiles_05_50_95": [
+          -0.255064845900404,
+          0.5748514983457901,
+          0.9009393162241763
+        ],
+        "wait_count": 256,
+        "wall_ns": 1083420109
+      },
+      "analytic": {
+        "action_sequences": {
+          "stop": 65,
+          "wait/repair": 144,
+          "wait/stop": 47
+        },
+        "cpu_ns": 1174399936,
+        "mean_action_cost": 0.10511718749999999,
+        "mean_squared_error": 0.35021671993924286,
+        "mean_utility": 0.5446660925607572,
+        "repair_count": 144,
+        "severe_loss_fraction": 0.01171875,
+        "utility_quantiles_05_50_95": [
+          -0.4954948426764614,
+          0.7511380136374146,
+          0.9561219119139941
+        ],
+        "wait_count": 191,
+        "wall_ns": 1175295879
+      },
+      "equivalent_gaussian": {
+        "action_sequences": {
+          "stop": 65,
+          "wait/repair": 144,
+          "wait/stop": 47
+        },
+        "cpu_ns": 1265858842,
+        "mean_action_cost": 0.10511718749999999,
+        "mean_squared_error": 0.35021671993924286,
+        "mean_utility": 0.5446660925607572,
+        "repair_count": 144,
+        "severe_loss_fraction": 0.01171875,
+        "utility_quantiles_05_50_95": [
+          -0.4954948426764615,
+          0.7511380136374144,
+          0.9561219119139941
+        ],
+        "wait_count": 191,
+        "wall_ns": 1267134752
+      },
+      "fixed": {
+        "action_sequences": {
+          "stop": 22,
+          "wait/repair": 201,
+          "wait/stop": 33
+        },
+        "cpu_ns": 1289215248,
+        "mean_action_cost": 0.20011718750000002,
+        "mean_squared_error": 0.28745551498738003,
+        "mean_utility": 0.5124272975126198,
+        "repair_count": 201,
+        "severe_loss_fraction": 0.00390625,
+        "utility_quantiles_05_50_95": [
+          -0.3226173808491489,
+          0.6219276347691062,
+          0.8964144522145243
+        ],
+        "wait_count": 234,
+        "wall_ns": 1289691956
+      },
+      "history": {
+        "action_sequences": {
+          "repair": 7,
+          "stop": 30,
+          "wait/repair": 191,
+          "wait/stop": 28
+        },
+        "cpu_ns": 1306395399,
+        "mean_action_cost": 0.190234375,
+        "mean_squared_error": 0.4370855839883633,
+        "mean_utility": 0.3726800410116367,
+        "repair_count": 198,
+        "severe_loss_fraction": 0.015625,
+        "utility_quantiles_05_50_95": [
+          -0.9267266387496126,
+          0.6081528515999337,
+          0.9026829192200427
+        ],
+        "wait_count": 219,
+        "wall_ns": 1307425813
+      },
+      "mean_drive": {
+        "action_sequences": {
+          "repair": 9,
+          "stop": 13,
+          "wait/repair": 226,
+          "wait/stop": 8
+        },
+        "cpu_ns": 2105952782,
+        "mean_action_cost": 0.26386718750000004,
+        "mean_squared_error": 0.7011561508085945,
+        "mean_utility": 0.03497666169140551,
+        "repair_count": 235,
+        "severe_loss_fraction": 0.0546875,
+        "utility_quantiles_05_50_95": [
+          -2.0697890741624847,
+          0.45685583305146565,
+          0.8901787320341974
+        ],
+        "wait_count": 234,
+        "wall_ns": 2106389438
+      },
+      "native": {
+        "action_sequences": {
+          "repair": 13,
+          "stop": 35,
+          "wait/repair": 197,
+          "wait/stop": 11
+        },
+        "cpu_ns": 1363373064,
+        "mean_action_cost": 0.20623046875,
+        "mean_squared_error": 0.6070624733323604,
+        "mean_utility": 0.18670705791763959,
+        "repair_count": 210,
+        "severe_loss_fraction": 0.02734375,
+        "utility_quantiles_05_50_95": [
+          -1.5395711409480397,
+          0.5041140778420579,
+          0.8982915438494679
+        ],
+        "wait_count": 208,
+        "wall_ns": 1589412171
+      },
+      "oracle": {
+        "action_sequences": {
+          "stop": 62,
+          "wait/repair": 153,
+          "wait/stop": 41
+        },
+        "cpu_ns": 1171217466,
+        "mean_action_cost": 0.1151953125,
+        "mean_squared_error": 0.3309176069145901,
+        "mean_utility": 0.5538870805854099,
+        "repair_count": 153,
+        "severe_loss_fraction": 0.0078125,
+        "utility_quantiles_05_50_95": [
+          -0.39804807731981584,
+          0.7433799162818409,
+          0.9694351455521031
+        ],
+        "wait_count": 194,
+        "wall_ns": 1171871035
+      },
+      "pulse": {
+        "action_sequences": {
+          "repair": 17,
+          "wait/repair": 231,
+          "wait/stop": 8
+        },
+        "cpu_ns": 2181351866,
+        "mean_action_cost": 0.2942578125,
+        "mean_squared_error": 0.7294774714711221,
+        "mean_utility": -0.023735283971121957,
+        "repair_count": 248,
+        "severe_loss_fraction": 0.06640625,
+        "utility_quantiles_05_50_95": [
+          -2.280207028594476,
+          0.3749812558450102,
+          0.8571382389451687
+        ],
+        "wait_count": 239,
+        "wall_ns": 2184217455
+      },
+      "pulse_no_reset": {
+        "action_sequences": {
+          "repair": 21,
+          "stop": 6,
+          "wait/repair": 221,
+          "wait/stop": 8
+        },
+        "cpu_ns": 2030917059,
+        "mean_action_cost": 0.27548828125,
+        "mean_squared_error": 0.7167110142442457,
+        "mean_utility": 0.0078007045057543085,
+        "repair_count": 242,
+        "severe_loss_fraction": 0.078125,
+        "utility_quantiles_05_50_95": [
+          -2.56294141716848,
+          0.4590286064788943,
+          0.8559676497920681
+        ],
+        "wait_count": 229,
+        "wall_ns": 2032440018
+      }
+    },
+    "prediction": {
+      "analytic": {
+        "accuracy": 0.7486979166666666,
+        "brier": 0.3168924622896529,
+        "evaluation_ns": 1117187,
+        "event_nll": 0.5159290144094523,
+        "horizons": 3,
+        "mse": 0.5023607955365578,
+        "trajectories": 256
+      },
+      "equivalent_gaussian": {
+        "accuracy": 0.7486979166666666,
+        "brier": 0.3168924622896529,
+        "evaluation_ns": 10649952,
+        "event_nll": 0.5159290144094524,
+        "horizons": 3,
+        "mse": 0.5023607955365578,
+        "trajectories": 256
+      },
+      "fixed": {
+        "accuracy": 0.7578125,
+        "brier": 0.3210475460504026,
+        "evaluation_ns": 755181,
+        "event_nll": 0.543919521036086,
+        "horizons": 3,
+        "mse": 0.5489596546427252,
+        "trajectories": 256
+      },
+      "history": {
+        "accuracy": 0.7044270833333334,
+        "brier": 0.33638815375109327,
+        "evaluation_ns": 1159220,
+        "event_nll": 0.5480940967821515,
+        "horizons": 3,
+        "mse": 0.5547247782038665,
+        "trajectories": 256
+      },
+      "mean_drive": {
+        "accuracy": 0.7356770833333334,
+        "brier": 0.3423581039687864,
+        "evaluation_ns": 140409865,
+        "event_nll": 0.5984175156301149,
+        "horizons": 3,
+        "mse": 0.8170871951827063,
+        "trajectories": 256
+      },
+      "native": {
+        "accuracy": 0.6770833333333334,
+        "brier": 0.38371323890433867,
+        "evaluation_ns": 63952245,
+        "event_nll": 0.6474592334231108,
+        "horizons": 3,
+        "mse": 0.7933714658417138,
+        "trajectories": 256
+      },
+      "oracle": {
+        "accuracy": 0.7473958333333334,
+        "brier": 0.31806304527265866,
+        "evaluation_ns": 796302,
+        "event_nll": 0.5168221493445003,
+        "horizons": 3,
+        "mse": 0.5043846780687923,
+        "trajectories": 256
+      },
+      "pulse": {
+        "accuracy": 0.7447916666666666,
+        "brier": 0.3693052398163837,
+        "evaluation_ns": 157283234,
+        "event_nll": 0.650484940434778,
+        "horizons": 3,
+        "mse": 0.9450149073792241,
+        "trajectories": 256
+      },
+      "pulse_no_reset": {
+        "accuracy": 0.7473958333333334,
+        "brier": 0.3602876589041157,
+        "evaluation_ns": 132773433,
+        "event_nll": 0.6320358165555966,
+        "horizons": 3,
+        "mse": 0.8981086772540121,
+        "trajectories": 256
+      }
+    }
+  }
+}
