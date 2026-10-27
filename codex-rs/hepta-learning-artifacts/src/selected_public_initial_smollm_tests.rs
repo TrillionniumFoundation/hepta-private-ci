@@ -51,9 +51,9 @@ fn public_initial_admission_rejects_profile_crossing_and_changed_factors() {
                                 .unwrap()
                         })
                 };
-                assert_eq!(result.is_ok(), public == v2 && !changed);
+                std::assert_eq!(result.is_ok(), public == v2 && !changed);
                 if let Ok(actual) = result {
-                    assert_eq!(actual, Digest32::of_bytes(&original));
+                    std::assert_eq!(actual, Digest32::of_bytes(&original));
                 }
             }
         }
