@@ -1,0 +1,102 @@
+{
+  "schema": "hepta.ci.protocol-schema-qualification.v1",
+  "source_commit": "88bcc7f92b9a52bf77e0095614fd496288b6ca86",
+  "source_run_id": 40490776143,
+  "source_job_id": 122145010040,
+  "source_run_attempt": 1,
+  "artifact": {
+    "id": 12729611336,
+    "name": "ndu-protocol-fixture-candidate-40490776143-1",
+    "zip_bytes": 923776,
+    "zip_sha256": "7b56ed61ccf03310ee55976c369ce80523c0fd46580b0267a604d9c609fd0c6f",
+    "result_sha256": "7e38bddfa771339d36b2a531485505c0a329b0e687fbb075ddb0490ed5cc9520",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40490776143/job/122145010040"
+  },
+  "dependency_candidate": {
+    "producer_artifact_id": 12728932416,
+    "producer_result_sha256": "b7d390232b69b3dbb16dd859f22ad2a9de4ecb9da2dce52b7306fd8a2fb130e5",
+    "candidate_patch_sha256": "bfbc9f76520f5185991234530d1bf637fbbb1e7aac476b285b35441488fe2fed"
+  },
+  "schema_patch": {
+    "absolute_path": "/workspace/scratch/95988d8d3ab1/ndu-dependency-candidate-88bcc7f/protocol/schema-candidate.patch",
+    "bytes": 730270,
+    "sha256": "ac348847481d6596613bbe2ce3fe8686893b154f585625af0c398b7219b58eb6"
+  },
+  "snapshots": {
+    "codex-rs/app-server-protocol/schema/json/v2/TurnRecoverResponse.json": {
+      "bytes": 48967,
+      "sha256": "46831c10079913c27de4bb02cb0df199030150aaa3a0b218ae5133d8f5f82509",
+      "absolute_path": "/workspace/scratch/95988d8d3ab1/ndu-dependency-candidate-88bcc7f/protocol/files/codex-rs/app-server-protocol/schema/json/v2/TurnRecoverResponse.json"
+    },
+    "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-experimental.json.zst": {
+      "bytes": 145385,
+      "sha256": "2ca64026eba6ae9fb9d0d7b1bd7901d31a0cb0715b1e33918b99a1402b74a967",
+      "absolute_path": "/workspace/scratch/95988d8d3ab1/ndu-dependency-candidate-88bcc7f/protocol/files/codex-rs/app-server-protocol/schema/precomputed/app-server-exports-experimental.json.zst"
+    },
+    "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-stable.json.zst": {
+      "bytes": 139671,
+      "sha256": "ae5edc54372651ff430ad70729b97f8139bef6562f7a773df2ca3f571edb2964",
+      "absolute_path": "/workspace/scratch/95988d8d3ab1/ndu-dependency-candidate-88bcc7f/protocol/files/codex-rs/app-server-protocol/schema/precomputed/app-server-exports-stable.json.zst"
+    }
+  },
+  "execution": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-app-server-protocol"
+    ],
+    "exit_code": 0,
+    "executed": 303,
+    "passed": 303,
+    "failed": 0,
+    "original_writer_ignored": 1,
+    "individual_unique_pass_lines_verified": 303,
+    "passed_names_sha256": "5f60041e0854767d6455aa0f4498881681cdd6a819be42fae7b5c63fb93c545b",
+    "repaired_assertions_observed_pass": [
+      "schema_fixtures_tests::json_schema_fixtures_match_generated",
+      "schema_fixtures_tests::stable_precomputed_exports_match_schema_fixtures",
+      "schema_fixtures_tests::experimental_precomputed_exports_match_generated"
+    ],
+    "regression_log_sha256": "393f4cc0e0b6ddda3e66ba1d6edc5d1e23da8770cc580314a97eb2598e6d0847",
+    "stable_writer": {
+      "command": [
+        "just",
+        "write-app-server-schema"
+      ],
+      "exit_code": 0,
+      "executed": 1,
+      "passed": 1
+    },
+    "experimental_writer": {
+      "command": [
+        "just",
+        "write-app-server-schema",
+        "--experimental"
+      ],
+      "exit_code": 0,
+      "executed": 1,
+      "passed": 1
+    }
+  },
+  "independent_audit": {
+    "report": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/PROTOCOL_SCHEMA_88BCC7F_SEMANTIC_AUDIT.json",
+    "sha256": "b2dcdaf9c07247be48f3deb6cc95cd2d3bb5252f22b5b3ce7131e42d1917a7e5",
+    "commands_with_matching_log_hashes": 17,
+    "protocol_source_files_exact_to_original_git_commit": 117,
+    "source_inventory_sha256": "82ed24254d764baee7eab3643a097ae094887a082201cde92c34dbda6ea01c77",
+    "nine_combined_snapshot_hashes_reconstructed": true,
+    "stable_typescript_entries_exact": 688,
+    "stable_json_entries_exact": 294,
+    "json_only_semantic_change": "TurnRecoverResponse definitions.SubAgentActivityKind.enum adds completed"
+  },
+  "scope": "Three generated schema files only, with original Rust implementation and assertions unchanged. ZIP/i18n storage/core/plugins consumer results are separate; this does not claim normal CI, full-workspace or all-platform success.",
+  "previous_failures_preserved": {
+    "old_source_commit": "6215cb6a87f29623d4beaad24cdf7bcb6bb4fb2c",
+    "raw_protocol_failure_log": "/workspace/scratch/95988d8d3ab1/ndu-dependency-candidate-6215cb6/tests-storage/17-test-codex-app-server-protocol.log",
+    "old_failure_log_sha256": "e26e4a831bf8f687c247362fe988e2bb1e11b9afa5807163dabcc5b09a3d9582"
+  },
+  "raw_directory": "/workspace/scratch/95988d8d3ab1/ndu-dependency-candidate-88bcc7f/protocol",
+  "promotion_allowed": false
+}

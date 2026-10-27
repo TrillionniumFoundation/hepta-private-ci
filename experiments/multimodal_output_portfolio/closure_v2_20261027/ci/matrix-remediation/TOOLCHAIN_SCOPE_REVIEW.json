@@ -1,0 +1,1398 @@
+{
+  "schema": "hepta.rust-1.96-migration.read-only-review.v1",
+  "utc": "2026-10-27T11:06:34.947840+00:00",
+  "source_head": "910ab35e5789650c6db31d2972f214beb9196f5f",
+  "scope": "Materialized CI/developer entrypoints plus exact upstream/source Git blobs; applicability is not execution qualification.",
+  "production_source_modified": false,
+  "tests_executed": false,
+  "patches": {
+    "matrix-toolchain.patch": {
+      "bytes": 610,
+      "sha256": "2af11c81e112ae94e96461bfee22881e818413b00ff46064e622001a59441e2d",
+      "paths": [
+        "MODULE.bazel",
+        "codex-rs/rust-toolchain.toml"
+      ],
+      "current_worktree_apply_check_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "matrix-toolchain-ci.patch": {
+      "bytes": 27705,
+      "sha256": "1ebb20708197b19d377488a55e8fdc2afdcfe2f45746533be85cd1d88619cf69",
+      "paths": [
+        ".github/workflows/cargo-deny.yml",
+        ".github/workflows/hepta-diagnostic-source-export.yml",
+        ".github/workflows/hepta-integration-diagnostics.yml",
+        ".github/workflows/hepta-intuition-qualification.yml",
+        ".github/workflows/hepta-kernel-evidence-qualification.yml",
+        ".github/workflows/hepta-lane-e-gap-closure.yml",
+        ".github/workflows/hepta-offline-build-inputs.yml",
+        ".github/workflows/hepta-vnext-qualification.yml",
+        ".github/workflows/ndu-tls-lock-candidate.yml",
+        ".github/workflows/repo-checks.yml",
+        ".github/workflows/rust-ci-full-nextest-platform.yml",
+        ".github/workflows/rust-ci-full.yml",
+        ".github/workflows/rust-ci.yml",
+        ".github/workflows/rust-release-argument-comment-lint.yml",
+        ".github/workflows/rust-release-windows.yml",
+        ".github/workflows/rust-release.yml",
+        ".github/workflows/rusty-v8-release.yml",
+        ".github/workflows/single-main-consolidation.yml",
+        ".github/workflows/single-main-foundation.yml",
+        ".github/workflows/single-main-maintenance.yml",
+        ".github/workflows/v8-canary.yml",
+        "scripts/test_hepta_ci_v8.py",
+        "codex-rs/scripts/setup-windows.ps1"
+      ],
+      "current_worktree_apply_check_exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "production_stable_entrypoints_to_align": {
+    "source_already_in_combined_candidate_patch": [
+      "MODULE.bazel",
+      "codex-rs/rust-toolchain.toml"
+    ],
+    "developer_setup_in_existing_ci_patch": [
+      "codex-rs/scripts/setup-windows.ps1"
+    ],
+    "developer_setup_missing_from_existing_patch": [
+      "flake.nix"
+    ],
+    "current_source_ci_workflows": [
+      ".github/workflows/cargo-deny.yml",
+      ".github/workflows/hepta-diagnostic-source-export.yml",
+      ".github/workflows/hepta-integration-diagnostics.yml",
+      ".github/workflows/hepta-intuition-qualification.yml",
+      ".github/workflows/hepta-kernel-evidence-qualification.yml",
+      ".github/workflows/hepta-lane-e-gap-closure.yml",
+      ".github/workflows/hepta-offline-build-inputs.yml",
+      ".github/workflows/hepta-vnext-qualification.yml",
+      ".github/workflows/repo-checks.yml",
+      ".github/workflows/rust-ci-full-nextest-platform.yml",
+      ".github/workflows/rust-ci-full.yml",
+      ".github/workflows/rust-ci.yml",
+      ".github/workflows/rust-release-windows.yml",
+      ".github/workflows/rust-release.yml",
+      ".github/workflows/rusty-v8-release.yml",
+      ".github/workflows/v8-canary.yml"
+    ],
+    "detail": [
+      "cargo-deny requires its toolchain action and action rust-version input to agree; deny policy and full scan scope stay unchanged.",
+      "rust-ci-full-nextest-platform requires both archive and shard compilers to agree.",
+      "v8-canary and rusty-v8-release include direct cargo +VERSION invocations; v8-canary also locates an absolute cargo executable by toolchain directory.",
+      "hepta-offline-build-inputs packages a compiler distribution and sets RUSTUP_TOOLCHAIN; all selectors and packaging paths must agree.",
+      "hepta-lane-e-gap-closure records tooling.rust in a produced evidence manifest; the recorded version must track the actual compiler.",
+      "Only stable jobs in mixed stable/nightly workflow files migrate; the independently compiled nightly lint plugin remains nightly."
+    ]
+  },
+  "patch_review_findings": [
+    {
+      "kind": "missing_active_selectors",
+      "path": "flake.nix",
+      "lines": [
+        45,
+        46,
+        62
+      ],
+      "finding": "The package cargo/rustc toolchain and developer shell remain 1.95.0 after both existing patches.",
+      "required_change": "Set all three stable selectors to 1.96.0; the locked rust-overlay already contains that version."
+    },
+    {
+      "kind": "conditional_legacy_candidate_scope",
+      "path": ".github/workflows/ndu-tls-lock-candidate.yml",
+      "finding": "The existing patch covers two old action pins, but the current workflow contains three. The additional protocol-fixture-candidate job is not covered.",
+      "required_change": "If this legacy pipeline remains runnable against upgraded production HEAD, align all three jobs. If retained strictly for a fixed historical cohort, preserve its frozen compiler and name that scope."
+    },
+    {
+      "kind": "overbroad_historical_edits",
+      "paths": [
+        ".github/workflows/single-main-consolidation.yml",
+        ".github/workflows/single-main-foundation.yml",
+        ".github/workflows/single-main-maintenance.yml"
+      ],
+      "finding": "Existing patch edits fixed historical a8f71be5d5eccd39090e054dc441e3e5f2a842a6 qualification and its Rust 1.95 compiler package.",
+      "required_change": "Leave those fixed historical protocols unchanged; they do not qualify the upgraded production source."
+    },
+    {
+      "kind": "nonfunctional_label",
+      "path": ".github/workflows/v8-canary.yml",
+      "finding": "The patch changes the selected cargo binary path to 1.96.0 but keeps the internal name CARGO_1_95 for both definition and use.",
+      "required_change": "Functional after patch, but a coordinated rename to CARGO_1_96 or a neutral name would make the evidence clearer."
+    },
+    {
+      "kind": "unnecessary_mock_edits",
+      "path": "scripts/test_hepta_ci_v8.py",
+      "finding": "1.95.0 values are parser test inputs, not executable compiler selections. They can remain as compatibility cases."
+    }
+  ],
+  "required_exceptions": [
+    {
+      "scope": "Independent Matrix 0.18 database fixture producer",
+      "source_sha": "6215cb6a87f29623d4beaad24cdf7bcb6bb4fb2c",
+      "toolchain": "1.95.0",
+      "paths": [
+        ".github/workflows/ndu-port-candidate.yml",
+        "scripts/ndu_port_matrix_fixture.py",
+        "scripts/test_ndu_port_matrix_fixture.py"
+      ],
+      "reason": "The source, original lock, actual old compiler and old binary together define the compatibility producer. New consumers are Rust 1.96 and reopen independent copies."
+    },
+    {
+      "scope": "Argument-comment-lint plugin package, tests, release and ABI-tagged library names",
+      "toolchain": "nightly-2025-09-18",
+      "paths": [
+        "tools/argument-comment-lint/rust-toolchain",
+        ".github/workflows/rust-ci.yml",
+        ".github/workflows/rust-ci-full.yml",
+        ".github/workflows/rust-release-argument-comment-lint.yml"
+      ],
+      "reason": "Exact package source contains a separate [workspace], rustc_private=true and a cdylib target. Its explicit nightly toolchain is a separate ABI dependency; updating an action implementation SHA is not an upgrade to stable 1.96."
+    },
+    {
+      "scope": "Historical fixed-source single-main qualification and original evidence",
+      "toolchain": "1.95.0",
+      "reason": "Do not rewrite prior evidence, fixed-source compiler protocols or old source snapshots to simulate a current-source upgrade."
+    }
+  ],
+  "files_reviewed": {
+    ".github/workflows/cargo-deny.yml": {
+      "bytes": 1697,
+      "sha256": "9e0d8388810a90f12776687b64e050d8110a025ff504f41f6c9f992b7f5b2959"
+    },
+    ".github/workflows/hepta-diagnostic-source-export.yml": {
+      "bytes": 8742,
+      "sha256": "5b1ef27c5fb40e5acc04f75ec8ad4cbcf660273147983e23e46d0acf8e940b4e"
+    },
+    ".github/workflows/hepta-integration-diagnostics.yml": {
+      "bytes": 7034,
+      "sha256": "1852411bc5a11df5927a248e2ee7e93e672be7746c2d4ef86ba2ba2659797b2b"
+    },
+    ".github/workflows/hepta-intuition-qualification.yml": {
+      "bytes": 5245,
+      "sha256": "78da2191ccf83a01da37e51f0f4cea245b10d7483b5f65ae29590dc0a7723c5b"
+    },
+    ".github/workflows/hepta-kernel-evidence-qualification.yml": {
+      "bytes": 6479,
+      "sha256": "53f34825b703305167cc222713f848a4f6236bf02381aa3c8170b75888c1247e"
+    },
+    ".github/workflows/hepta-lane-e-gap-closure.yml": {
+      "bytes": 22924,
+      "sha256": "0e8bf4c50b84e10388aab12698a5bbbf7dd91655e313f53417cecdd1db8b2f09"
+    },
+    ".github/workflows/hepta-offline-build-inputs.yml": {
+      "bytes": 9453,
+      "sha256": "3fde10f81d5fb9a1aca8af4c3790e203a5fbe07406b69585d50e370c441bf374"
+    },
+    ".github/workflows/hepta-vnext-qualification.yml": {
+      "bytes": 6636,
+      "sha256": "7f496c8bc41af3ec5799f0c62aa0daae8b7d2986948a92f4ad563177e1a5866b"
+    },
+    ".github/workflows/ndu-port-candidate.yml": {
+      "bytes": 18686,
+      "sha256": "8a58c6e255b1350cb9e72f14c3f14afd95099050f603338e7328aa77d25d8bfd"
+    },
+    ".github/workflows/ndu-tls-lock-candidate.yml": {
+      "bytes": 8588,
+      "sha256": "7d768b05e4e6c0df587b145049695b12f829878eeac542489aa07ee76c15577e"
+    },
+    ".github/workflows/repo-checks.yml": {
+      "bytes": 4263,
+      "sha256": "ee6a2c1204698740ca8420fbf9859f4b4248e44f08d5e05050b8d846036dd081"
+    },
+    ".github/workflows/rust-ci-full-nextest-platform.yml": {
+      "bytes": 17640,
+      "sha256": "d648480316e0106f5037aea6f39091093952b78618b230b0ccf94b7a221c7ec2"
+    },
+    ".github/workflows/rust-ci-full.yml": {
+      "bytes": 21978,
+      "sha256": "9e3b84356b7dad20c9b4847a27f3d588c24e243b9fb243374777cb49bd66b431"
+    },
+    ".github/workflows/rust-ci.yml": {
+      "bytes": 12233,
+      "sha256": "76ce84512f019867e9513c74e01877d47ba5e2b1ec554fa35175e9f0e9c6e373"
+    },
+    ".github/workflows/rust-release-argument-comment-lint.yml": {
+      "bytes": 4716,
+      "sha256": "429254911e199f41a2ec8b2ed3d1a0469c65e6cdd025dfbdda1263f9173477cb"
+    },
+    ".github/workflows/rust-release-windows.yml": {
+      "bytes": 16979,
+      "sha256": "00153ad5e174cb4979b7801bf77988fc51e58c1ce86b5b2f4d551ba4bae0f9cd"
+    },
+    ".github/workflows/rust-release.yml": {
+      "bytes": 64085,
+      "sha256": "513e3225388b7a2ba694e184e277854403eccb3e1ca01248cbbbb8364a38f9d0"
+    },
+    ".github/workflows/rusty-v8-release.yml": {
+      "bytes": 16471,
+      "sha256": "41417489a73fddce4aa396a8e8d6acc280331b430906fbdea9373eb2fdf9dfcf"
+    },
+    ".github/workflows/single-main-consolidation.yml": {
+      "bytes": 6247,
+      "sha256": "dc7be5bbd1366233786f10939aa749cb0d5c12e029ac54c4c73c5f519d362a1e"
+    },
+    ".github/workflows/single-main-foundation.yml": {
+      "bytes": 9987,
+      "sha256": "9a0dba6ba5120188c778254fa016ca74e5b195a23210e3aefd09e3d8b0502977"
+    },
+    ".github/workflows/single-main-maintenance.yml": {
+      "bytes": 4614,
+      "sha256": "1adcdca9c6900edd969fb30cedc5e75ff92ca4a611bdf63a28e5fb249bc5bb98"
+    },
+    ".github/workflows/v8-canary.yml": {
+      "bytes": 17348,
+      "sha256": "2516afbaa5538004406c0d92179665aba1b541e68944df53ad71d674ecd89cd4"
+    },
+    "MODULE.bazel": {
+      "bytes": 21895,
+      "sha256": "aaae03b0fc03055cecd7ef060ab53299e1e62abba7082daf513e5c2d3feb0d5f"
+    },
+    "codex-rs/rust-toolchain.toml": {
+      "bytes": 78,
+      "sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64"
+    },
+    "codex-rs/scripts/setup-windows.ps1": {
+      "bytes": 9577,
+      "sha256": "9e4d142a1c4d20b01fa72e8131d19bbdd00416aef0f4feb1a44a3eb8c3a5b471"
+    },
+    "flake.lock": {
+      "bytes": 1108,
+      "sha256": "f5f2c3088434125206c1668ede486901a0cad712832cb38950d56137230ff8fb"
+    },
+    "flake.nix": {
+      "bytes": 2679,
+      "sha256": "564e7c1482f8c018788f590a195ec9cd180fc08b0d3a98c585c89cb9f79396ae"
+    },
+    "scripts/ndu_port_matrix_fixture.py": {
+      "bytes": 15932,
+      "sha256": "bb9cebcc6c55fb55e0f14610e130c50a8793658a99c260703964f388a67c2ef2"
+    },
+    "scripts/test_hepta_ci_v8.py": {
+      "bytes": 4428,
+      "sha256": "a29d67aeeef462955a2be60bd8aa52b53cf71df6b17d15e78b3043068c72ae0b"
+    },
+    "scripts/test_ndu_port_matrix_fixture.py": {
+      "bytes": 8617,
+      "sha256": "50b138ded403dfbcd24ca60e3d0476e172eed14ab8149959c493c17c58c523ec"
+    }
+  },
+  "current_toolchain_pin_inventory": {
+    ".github/workflows/cargo-deny.yml": [
+      {
+        "line": 25,
+        "text": "uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 31,
+        "text": "rust-version: 1.95.0"
+      }
+    ],
+    ".github/workflows/hepta-diagnostic-source-export.yml": [
+      {
+        "line": 64,
+        "text": "uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+      }
+    ],
+    ".github/workflows/hepta-integration-diagnostics.yml": [
+      {
+        "line": 61,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+      }
+    ],
+    ".github/workflows/hepta-intuition-qualification.yml": [
+      {
+        "line": 32,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+      },
+      {
+        "line": 108,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+      }
+    ],
+    ".github/workflows/hepta-kernel-evidence-qualification.yml": [
+      {
+        "line": 31,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 97,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      }
+    ],
+    ".github/workflows/hepta-lane-e-gap-closure.yml": [
+      {
+        "line": 44,
+        "text": "uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+      },
+      {
+        "line": 46,
+        "text": "toolchain: 1.95.0"
+      },
+      {
+        "line": 246,
+        "text": "uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+      },
+      {
+        "line": 248,
+        "text": "toolchain: 1.95.0"
+      },
+      {
+        "line": 408,
+        "text": "uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+      },
+      {
+        "line": 410,
+        "text": "toolchain: 1.95.0"
+      },
+      {
+        "line": 542,
+        "text": "\"rust\": \"1.95.0\","
+      }
+    ],
+    ".github/workflows/hepta-offline-build-inputs.yml": [
+      {
+        "line": 29,
+        "text": "RUSTUP_TOOLCHAIN: 1.95.0"
+      },
+      {
+        "line": 32,
+        "text": "rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy"
+      },
+      {
+        "line": 41,
+        "text": "RUSTUP_TOOLCHAIN: 1.95.0"
+      },
+      {
+        "line": 88,
+        "text": "rustup toolchain install 1.95.0-x86_64-unknown-linux-gnu --force-non-host --profile minimal --component rustfmt --component clippy"
+      },
+      {
+        "line": 89,
+        "text": "tar -C \"$HOME/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu\" -czf \"$RUNNER_TEMP/hepta-offline-inputs/compiler.tar.gz\" ."
+      }
+    ],
+    ".github/workflows/hepta-vnext-qualification.yml": [
+      {
+        "line": 41,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 102,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 182,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      }
+    ],
+    ".github/workflows/ndu-port-candidate.yml": [
+      {
+        "line": 109,
+        "text": "uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+      },
+      {
+        "line": 111,
+        "text": "toolchain: 1.95.0"
+      }
+    ],
+    ".github/workflows/ndu-tls-lock-candidate.yml": [
+      {
+        "line": 55,
+        "text": "uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+      },
+      {
+        "line": 103,
+        "text": "uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+      },
+      {
+        "line": 165,
+        "text": "uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+      }
+    ],
+    ".github/workflows/repo-checks.yml": [
+      {
+        "line": 112,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      }
+    ],
+    ".github/workflows/rust-ci-full-nextest-platform.yml": [
+      {
+        "line": 91,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 311,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      }
+    ],
+    ".github/workflows/rust-ci-full.yml": [
+      {
+        "line": 32,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 52,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 71,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 73,
+        "text": "toolchain: nightly-2025-09-18"
+      },
+      {
+        "line": 241,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      }
+    ],
+    ".github/workflows/rust-ci.yml": [
+      {
+        "line": 90,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 118,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 142,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 163,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 190,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 194,
+        "text": "rustup toolchain install nightly-2025-09-18 \\"
+      },
+      {
+        "line": 200,
+        "text": "rustup default nightly-2025-09-18"
+      }
+    ],
+    ".github/workflows/rust-release-argument-comment-lint.yml": [
+      {
+        "line": 42,
+        "text": "lib_name: libargument_comment_lint@nightly-2025-09-18-aarch64-apple-darwin.dylib"
+      },
+      {
+        "line": 48,
+        "text": "lib_name: libargument_comment_lint@nightly-2025-09-18-x86_64-unknown-linux-gnu.so"
+      },
+      {
+        "line": 54,
+        "text": "lib_name: libargument_comment_lint@nightly-2025-09-18-aarch64-unknown-linux-gnu.so"
+      },
+      {
+        "line": 60,
+        "text": "lib_name: argument_comment_lint@nightly-2025-09-18-x86_64-pc-windows-msvc.dll"
+      },
+      {
+        "line": 72,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 74,
+        "text": "toolchain: nightly-2025-09-18"
+      }
+    ],
+    ".github/workflows/rust-release-windows.yml": [
+      {
+        "line": 90,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      }
+    ],
+    ".github/workflows/rust-release.yml": [
+      {
+        "line": 37,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 180,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      }
+    ],
+    ".github/workflows/rusty-v8-release.yml": [
+      {
+        "line": 180,
+        "text": "uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 182,
+        "text": "toolchain: \"1.95.0\""
+      },
+      {
+        "line": 334,
+        "text": "uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 336,
+        "text": "toolchain: \"1.95.0\""
+      },
+      {
+        "line": 425,
+        "text": "cargo +1.95.0 test -p codex-v8-poc --target \"${TARGET}\" --features sandbox --no-run"
+      }
+    ],
+    ".github/workflows/single-main-consolidation.yml": [
+      {
+        "line": 67,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+      },
+      {
+        "line": 69,
+        "text": "toolchain: 1.95.0"
+      }
+    ],
+    ".github/workflows/single-main-foundation.yml": [
+      {
+        "line": 70,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+      },
+      {
+        "line": 72,
+        "text": "toolchain: 1.95.0"
+      },
+      {
+        "line": 132,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+      },
+      {
+        "line": 134,
+        "text": "toolchain: 1.95.0"
+      }
+    ],
+    ".github/workflows/single-main-maintenance.yml": [
+      {
+        "line": 16,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+      },
+      {
+        "line": 18,
+        "text": "toolchain: 1.95.0"
+      },
+      {
+        "line": 25,
+        "text": "sysroot=\"$(rustc +1.95.0 --print sysroot)\""
+      },
+      {
+        "line": 26,
+        "text": "rustc +1.95.0 --version --verbose > \"$RUNNER_TEMP/compiler-tools/version.txt\""
+      },
+      {
+        "line": 27,
+        "text": "tar -C \"$sysroot\" -czf \"$RUNNER_TEMP/compiler-tools/rust-1.95.0-linux.tar.gz\" bin lib libexec"
+      },
+      {
+        "line": 28,
+        "text": "sha256sum \"$RUNNER_TEMP/compiler-tools/rust-1.95.0-linux.tar.gz\" > \"$RUNNER_TEMP/compiler-tools/compiler.sha256\""
+      },
+      {
+        "line": 49,
+        "text": "- uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582"
+      },
+      {
+        "line": 51,
+        "text": "toolchain: 1.95.0"
+      }
+    ],
+    ".github/workflows/v8-canary.yml": [
+      {
+        "line": 193,
+        "text": "uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 195,
+        "text": "toolchain: \"1.95.0\""
+      },
+      {
+        "line": 202,
+        "text": "cargo_bin=\"$(find \"${rustup_home}/toolchains\" -path '*/1.95.0-*/bin/cargo' -type f -print -quit)\""
+      },
+      {
+        "line": 204,
+        "text": "echo \"Rust 1.95.0 Cargo binary is not installed under ${rustup_home}.\" >&2"
+      },
+      {
+        "line": 207,
+        "text": "echo \"CARGO_1_95=${cargo_bin}\" >> \"${GITHUB_ENV}\""
+      },
+      {
+        "line": 325,
+        "text": "\"${CARGO_1_95}\" \"${cargo_args[@]}\""
+      },
+      {
+        "line": 383,
+        "text": "uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0"
+      },
+      {
+        "line": 385,
+        "text": "toolchain: \"1.95.0\""
+      },
+      {
+        "line": 474,
+        "text": "cargo +1.95.0 test -p codex-v8-poc --target \"${TARGET}\" --features sandbox --no-run"
+      }
+    ],
+    "MODULE.bazel": [
+      {
+        "line": 299,
+        "text": "version = \"1.95.0\","
+      }
+    ],
+    "codex-rs/rust-toolchain.toml": [
+      {
+        "line": 2,
+        "text": "channel = \"1.95.0\""
+      }
+    ],
+    "codex-rs/scripts/setup-windows.ps1": [
+      {
+        "line": 182,
+        "text": "$toolchain = '1.95.0'"
+      }
+    ],
+    "flake.nix": [
+      {
+        "line": 45,
+        "text": "cargo = pkgs.rust-bin.stable.\"1.95.0\".minimal;"
+      },
+      {
+        "line": 46,
+        "text": "rustc = pkgs.rust-bin.stable.\"1.95.0\".minimal;"
+      },
+      {
+        "line": 62,
+        "text": "rust = pkgs.rust-bin.stable.\"1.95.0\".default.override {"
+      }
+    ],
+    "scripts/ndu_port_matrix_fixture.py": [
+      {
+        "line": 176,
+        "text": "toolchain=\"1.95.0\","
+      },
+      {
+        "line": 231,
+        "text": "check_toolchain(runner, \"1.95.0\")"
+      },
+      {
+        "line": 313,
+        "text": "if record[\"toolchain\"] != \"1.95.0\" or record[\"recipe_sha256\"] != checksum("
+      },
+      {
+        "line": 376,
+        "text": "args.repository, args.output, \"matrix-old-producer\", toolchain=\"1.95.0\""
+      }
+    ],
+    "scripts/test_hepta_ci_v8.py": [
+      {
+        "line": 28,
+        "text": "return_value=\"rustc 1.95.0\\nhost: aarch64-unknown-linux-gnu\\n\","
+      },
+      {
+        "line": 58,
+        "text": "for version in (\"rustc 1.95.0\", \"host: unsupported\", \"host: x\\nhost: y\"):"
+      }
+    ],
+    "scripts/test_ndu_port_matrix_fixture.py": [
+      {
+        "line": 99,
+        "text": "\"toolchain\": \"1.95.0\","
+      }
+    ]
+  },
+  "workflow_job_scope": {
+    ".github/workflows/cargo-deny.yml": {
+      "cargo-deny": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {}
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      }
+    },
+    ".github/workflows/hepta-diagnostic-source-export.yml": {
+      "rust-policy-diagnostics": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {}
+          }
+        ],
+        "checkout_refs": [
+          "${{ github.sha }}"
+        ]
+      }
+    },
+    ".github/workflows/hepta-integration-diagnostics.yml": {
+      "source-preflight": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {}
+          }
+        ],
+        "checkout_refs": [
+          "${{ github.sha }}"
+        ]
+      }
+    },
+    ".github/workflows/hepta-intuition-qualification.yml": {
+      "source-head": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "components": "rustfmt,clippy"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "${{ github.event.pull_request.head.sha || github.sha }}"
+        ]
+      },
+      "merge-candidate": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "components": "rustfmt"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "${{ github.event.pull_request.head.sha }}"
+        ]
+      }
+    },
+    ".github/workflows/hepta-kernel-evidence-qualification.yml": {
+      "source-head": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {}
+          }
+        ],
+        "checkout_refs": [
+          "${{ github.event.pull_request.head.sha || github.sha }}"
+        ]
+      },
+      "merge-candidate": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {}
+          }
+        ],
+        "checkout_refs": [
+          "${{ github.event.pull_request.head.sha }}"
+        ]
+      }
+    },
+    ".github/workflows/hepta-lane-e-gap-closure.yml": {
+      "rust-closure": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "toolchain": "1.95.0",
+              "components": "clippy,rustfmt,llvm-tools-preview"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "${{ env.SOURCE_SHA }}"
+        ]
+      },
+      "synthetic-merge": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "toolchain": "1.95.0",
+              "components": "clippy,rustfmt"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "${{ env.SOURCE_SHA }}"
+        ]
+      },
+      "learning-eval-qualification": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "toolchain": "1.95.0",
+              "components": "llvm-tools-preview"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "${{ env.SOURCE_SHA }}"
+        ]
+      }
+    },
+    ".github/workflows/hepta-offline-build-inputs.yml": {},
+    ".github/workflows/hepta-vnext-qualification.yml": {
+      "portable-product": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "components": "rustfmt, clippy"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      },
+      "authbus-local-qualification": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "components": "rustfmt, clippy"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      },
+      "generated-and-locks": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "components": "rustfmt"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      }
+    },
+    ".github/workflows/ndu-port-candidate.yml": {
+      "generate-reviewable-candidate": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489",
+            "inputs": {
+              "toolchain": "1.96.0"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "${{ github.event.pull_request.head.sha || github.sha }}"
+        ]
+      },
+      "produce-independent-matrix-018-fixture": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "toolchain": "1.95.0"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "${{ github.event.pull_request.head.sha || github.sha }}",
+          "6215cb6a87f29623d4beaad24cdf7bcb6bb4fb2c"
+        ]
+      },
+      "targeted-workspace-tests": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489",
+            "inputs": {
+              "toolchain": "1.96.0"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "${{ needs.generate-reviewable-candidate.outputs.source_commit }}"
+        ]
+      },
+      "matrix-workspace-and-old-fixture": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489",
+            "inputs": {
+              "toolchain": "1.96.0"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "${{ needs.generate-reviewable-candidate.outputs.source_commit }}"
+        ]
+      },
+      "full-scope-candidate-cargo-deny": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489",
+            "inputs": {
+              "toolchain": "1.96.0"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "${{ needs.generate-reviewable-candidate.outputs.source_commit }}"
+        ]
+      },
+      "linux-bazel-libraries": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489",
+            "inputs": {
+              "toolchain": "1.96.0"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "${{ needs.generate-reviewable-candidate.outputs.source_commit }}"
+        ]
+      },
+      "independent-full-upstream-aws": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489",
+            "inputs": {
+              "toolchain": "1.96.0"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "${{ needs.generate-reviewable-candidate.outputs.source_commit }}"
+        ]
+      }
+    },
+    ".github/workflows/ndu-tls-lock-candidate.yml": {
+      "generate-reviewable-candidate": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {}
+          }
+        ],
+        "checkout_refs": [
+          "${{ github.event.pull_request.head.sha || github.sha }}"
+        ]
+      },
+      "protocol-fixture-candidate": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {}
+          }
+        ],
+        "checkout_refs": [
+          "${{ needs.generate-reviewable-candidate.outputs.source_commit }}"
+        ]
+      },
+      "targeted-workspace-tests": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {}
+          }
+        ],
+        "checkout_refs": [
+          "${{ needs.generate-reviewable-candidate.outputs.source_commit }}"
+        ]
+      }
+    },
+    ".github/workflows/repo-checks.yml": {
+      "native-paths": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {}
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      }
+    },
+    ".github/workflows/rust-ci-full-nextest-platform.yml": {
+      "archive": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "targets": "${{ inputs.target }}"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      },
+      "shard": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "targets": "${{ inputs.target }}"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      }
+    },
+    ".github/workflows/rust-ci-full.yml": {
+      "general": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "components": "rustfmt"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      },
+      "cargo_shear": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {}
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      },
+      "argument_comment_lint_package": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "toolchain": "nightly-2025-09-18",
+              "components": "llvm-tools-preview, rustc-dev, rust-src"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      },
+      "lint_build": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "targets": "${{ matrix.target }}",
+              "components": "clippy"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      }
+    },
+    ".github/workflows/rust-ci.yml": {
+      "workspace_manifest": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {}
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      },
+      "general": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "components": "rustfmt"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      },
+      "benchmark_smoke": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {}
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      },
+      "cargo_shear": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {}
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      },
+      "argument_comment_lint_package": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {}
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      }
+    },
+    ".github/workflows/rust-release-argument-comment-lint.yml": {
+      "build": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "toolchain": "nightly-2025-09-18",
+              "targets": "${{ matrix.target }}",
+              "components": "llvm-tools-preview, rustc-dev, rust-src"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      }
+    },
+    ".github/workflows/rust-release-windows.yml": {
+      "build-windows-binaries": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "targets": "${{ matrix.target }}"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      }
+    },
+    ".github/workflows/rust-release.yml": {
+      "tag-check": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {}
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      },
+      "build": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "targets": "${{ matrix.target }}"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      }
+    },
+    ".github/workflows/rusty-v8-release.yml": {
+      "build": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "toolchain": "1.95.0"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      },
+      "build-windows-source": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "toolchain": "1.95.0",
+              "targets": "${{ matrix.target }}"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA",
+          "v${{ needs.metadata.outputs.v8_version }}"
+        ]
+      }
+    },
+    ".github/workflows/single-main-consolidation.yml": {
+      "validate": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "toolchain": "1.95.0",
+              "components": "rustfmt"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "a8f71be5d5eccd39090e054dc441e3e5f2a842a6"
+        ]
+      }
+    },
+    ".github/workflows/single-main-foundation.yml": {
+      "source-and-format": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "toolchain": "1.95.0",
+              "components": "rustfmt"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "a8f71be5d5eccd39090e054dc441e3e5f2a842a6"
+        ]
+      },
+      "focused-rust": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "toolchain": "1.95.0",
+              "components": "clippy"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "a8f71be5d5eccd39090e054dc441e3e5f2a842a6"
+        ]
+      }
+    },
+    ".github/workflows/single-main-maintenance.yml": {
+      "compiler-tools": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "toolchain": "1.95.0",
+              "components": "clippy,rustfmt"
+            }
+          }
+        ],
+        "checkout_refs": []
+      },
+      "focused-rust": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "toolchain": "1.95.0",
+              "components": "clippy"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "a8f71be5d5eccd39090e054dc441e3e5f2a842a6"
+        ]
+      }
+    },
+    ".github/workflows/v8-canary.yml": {
+      "build": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "toolchain": "1.95.0"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA"
+        ]
+      },
+      "build-windows-source": {
+        "toolchain_actions": [
+          {
+            "action": "dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+            "inputs": {
+              "toolchain": "1.95.0",
+              "targets": "${{ matrix.target }}"
+            }
+          }
+        ],
+        "checkout_refs": [
+          "DEFAULT_EVENT_SHA",
+          "v${{ needs.metadata.outputs.v8_version }}"
+        ]
+      }
+    }
+  },
+  "primary_source_receipts": [
+    {
+      "path": "UPSTREAM_RUST_OVERLAY_1_96.nix",
+      "bytes": 27730,
+      "sha256": "0c4ad6d5e4d6ed5e9e0779256cb6e0ca1b164fc0a079bc458787aaf2319ad90f",
+      "url": "https://api.github.com/repos/oxalica/rust-overlay/contents/manifests/stable/1.96.0.nix?ref=b6916ba032e02122d6ed3064f40cabe937363d43",
+      "finding": "The existing locked overlay includes version 1.96.0. This confirms selector availability, not a successful Nix build."
+    },
+    {
+      "path": "argument-comment-lint-Cargo.toml",
+      "bytes": 491,
+      "sha256": "a08ff6b2e444e84a06cf621907621d565fb81476b79e6b1f7ef756b1270b1a70",
+      "git_blob_matches_head_tree": "db02b392f3a5e3f584c0a7e882ae76499af2ab12",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/db02b392f3a5e3f584c0a7e882ae76499af2ab12"
+    },
+    {
+      "path": "argument-comment-lint-rust-toolchain",
+      "bytes": 104,
+      "sha256": "d620e25a9f033951688d76b8b78e190bddb876772318d64b2fdf6b4e8e1a8396",
+      "git_blob_matches_head_tree": "d159253fc0367b25914cb8bbfcaa95f3c5196336",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/d159253fc0367b25914cb8bbfcaa95f3c5196336"
+    }
+  ],
+  "read_limitations_and_retained_failures": [
+    "Whole-tree git grep and local git show of unmaterialized lint-package blobs attempted lazy fetch and failed because the shell proxy is unavailable. No repository-wide absence claim is made.",
+    "Contents API requests using local-only head 5518cb0 returned 404. The exact two Git blob IDs from the local tree were then fetched successfully and independently rehashed; no source substitution was used.",
+    "No Rust build, Cargo resolution, Nix evaluation or normal-CI job was run during this read-only audit."
+  ],
+  "assessment": "Both supplied patches are mechanically applicable, but the CI patch needs scope correction and additional selectors before it is a complete production migration.",
+  "published_production_migration": false
+}

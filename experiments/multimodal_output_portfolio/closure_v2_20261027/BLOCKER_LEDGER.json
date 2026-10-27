@@ -1,6 +1,6 @@
 {
   "schema": "hepta.ndu-closure-ledger.v2",
-  "updated_utc": "2026-10-27T10:34:00Z",
+  "updated_utc": "2026-10-27T11:23:35.150834+00:00",
   "all_blockers_closed": false,
   "production_native_authority": "DENY_ALL",
   "qualification_policy": "Observed failures remain failures. Passing mechanics, source checks or isolated dependencies do not substitute for the stated outcome gates. No postqualification retuning is relabeled as preregistered evidence.",
@@ -106,22 +106,30 @@
       "mechanism": "active_remediation",
       "qualification": "pending",
       "blocking_for_general_claim": true,
-      "observed": "The actual unchanged cargo-deny scan fell from 22 to 15 errors after the coherent Cargo/Bazel TLS update. The first ZIP/i18n workspace qualification preserved its failed tests; downstream ports and schema artifacts are under validation.",
+      "observed": "The unchanged cargo-deny scan fell from 22 to 15 errors after coherent Cargo/Bazel TLS updates. ZIP v2 passed core-plugins 426/426, i18n-config 3/3 and secrets 9/9. Protocol source and assertions remained unchanged while regenerated fixtures passed all 303 actual regression tests; the three verified generated files are integrated locally. The coherent Matrix/AWS/keyring/YAML candidate remains unqualified; an actual nextest probe found missing report/profile/store bindings, which are being repaired before publication.",
       "evidence": [
         "ci/TLS_POST_UPDATE_SCAN.json",
-        "ci/ZIP_I18N_QUALIFICATION_001.json"
-      ]
+        "ci/ZIP_I18N_QUALIFICATION_001.json",
+        "ci/dependency-remediation/PROTOCOL_SCHEMA_88BCC7F_QUALIFICATION.json",
+        "ci/dependency-remediation/PROTOCOL_SCHEMA_88BCC7F_SEMANTIC_AUDIT.json",
+        "ci/dependency-remediation/PROTOCOL_SCHEMA_INTEGRATION.json",
+        "ci/port-remediation/RECIPE.json",
+        "ci/port-remediation/README.md"
+      ],
+      "next_required": "Complete final nextest evidence collection repair; run the coherent candidate, full upstream AWS coverage, actual old Matrix migration, unchanged dependency policy, scoped Bazel and normal platform gates before activation."
     },
     {
       "id": "ENG-evidence-custody",
       "priority": "P0",
       "goal": "Retain all qualification outputs, failures, independent audits and executed source in retrievable artifacts.",
       "mechanism": "verified",
-      "qualification": "five_archives_saved_and_restored",
+      "qualification": "five_scientific_archives_and_first_ci_checkpoint_saved_and_restored",
       "blocking_for_general_claim": false,
-      "observed": "Five archives totaling 510605199 bytes were saved successfully after actual restoration checks. The failed native restore attempt and corrected path-isolated restore are both retained.",
+      "observed": "Five scientific archives totaling 510605199 bytes and a 45021371-byte CI checkpoint were saved successfully after actual restoration checks. Both the failed native restore and corrected path-isolated restore remain retained. The CI checkpoint ends at 2026-10-27T11:07:58.400Z; later CI outputs are awaiting an incremental archive.",
       "evidence": [
-        "ARTIFACTS.json"
+        "ARTIFACTS.json",
+        "ci/CI_CHECKPOINT_001_RESTORE.json",
+        "ci/CI_CHECKPOINT_001_SAVED.json"
       ]
     }
   ]
