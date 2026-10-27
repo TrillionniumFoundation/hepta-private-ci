@@ -7,6 +7,7 @@ on:
       - codex-rs/.config/nextest.toml
       - codex-rs/hepta-agentd/**
       - codex-rs/hepta-agent-protocol/**
+      - codex-rs/app-server/**
       - codex-rs/hepta-infer-worker-host/**
       - codex-rs/hepta-learning-artifacts/**
       - scripts/hepta_smollm_*.py
@@ -105,13 +106,13 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/required-cli-build.json" --timeout-seconds 3600 --minimum-tests 0 -- cargo build --manifest-path codex-rs/Cargo.toml --locked -p codex-cli --bin codex
           sha256sum "$CARGO_TARGET_DIR/debug/codex" > "$RUNNER_TEMP/hepta-public-initial-v2/codex-binary.sha256"
           printf 'CARGO_BIN_EXE_codex=%s/debug/codex\n' "$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
-      - name: Execute the complete four changed Rust packages
+      - name: Execute the complete five changed Rust packages
         id: scoped_rust
         continue-on-error: true
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/scoped-rust.json" --timeout-seconds 3600 --minimum-tests 1 -- just test --locked -p codex-hepta-agent-protocol -p codex-hepta-learning-artifacts -p codex-hepta-agentd -p codex-hepta-infer-worker-host --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/scoped-rust.json" --timeout-seconds 3600 --minimum-tests 1 -- just test --locked -p codex-hepta-agent-protocol -p codex-hepta-learning-artifacts -p codex-hepta-agentd -p codex-hepta-infer-worker-host -p codex-app-server --no-capture
       - name: Record whether the actual model test target was built
         id: model_target
         run: |
@@ -130,6 +131,7 @@ jobs:
               result = subprocess.run([str(path), "--list"], capture_output=True, text=True, timeout=30)
               available = result.returncode == 0 and all(name in result.stdout for name in (
                   "real_selected_initial_serves_ordinary_context_then_refuses_revocation",
+                  "real_public_initial_reopens_same_ordinary_owners",
                   "real_public_initial_three_rounds_hold_and_read_original_current"))
               targets.append(dict(path=str(path), sha256=digest, bytes=path.stat().st_size,
                   list_exit=result.returncode, model_tests_present=available, stderr=result.stderr[-4096:]))
@@ -173,20 +175,20 @@ jobs:
               output=str(root / "hepta-public-initial-v2/n"))
           socket_key = "a" + base64.b32encode(uuid.UUID("00000000-0000-4000-8000-000000000219").bytes).decode().lower().rstrip("=")
           sockets = [Path(config["output"]) / fixture / "fleet/run" / (socket_key + extension)
-              for fixture in ("o/b", "p/o/b") for extension in (".ctl", ".mx", ".app")]
+              for fixture in ("o/b", "r/o/b", "p/o/b") for extension in (".ctl", ".mx", ".app")]
           socket_lengths = [dict(path=str(path), bytes=len(os.fsencode(path))) for path in sockets]
           (root / "hepta-public-initial-v2/native-socket-paths.json").write_text(json.dumps(socket_lengths, indent=2) + "\n")
           assert all(row["bytes"] <= 107 for row in socket_lengths), "original AF_UNIX paths exceed Linux bound"
           Path(os.environ["HEPTA_PN3_NEURAL_NATIVE_CONFIG"]).write_text(json.dumps(config, indent=2) + "\n")
           PY
-      - name: Require real ordinary inference and independent revocation
+      - name: Require real ordinary inference, independent revocation and same-owner reopen
         id: ordinary
         if: ${{ !cancelled() && steps.materials.outcome == 'success' }}
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/ordinary-native.json" --timeout-seconds 900 --minimum-tests 1 -- just test --locked -p codex-hepta-infer-worker-host --lib --profile hepta-public-initial-v2 -E 'test(real_selected_initial_serves_ordinary_context_then_refuses_revocation)' --run-ignored only --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/ordinary-native.json" --timeout-seconds 900 --minimum-tests 2 -- just test --locked -p codex-hepta-infer-worker-host --lib --profile hepta-public-initial-v2 -E 'test(real_selected_initial_serves_ordinary_context_then_refuses_revocation) | test(real_public_initial_reopens_same_ordinary_owners)' --run-ignored only --no-capture
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
       - name: Run three real matched proposal rounds and reread original CURRENT
         id: proposal_rounds
@@ -208,7 +210,7 @@ jobs:
         id: lint
         run: |
           set -euo pipefail
-          just fix --locked -p codex-hepta-agent-protocol -p codex-hepta-learning-artifacts -p codex-hepta-agentd -p codex-hepta-infer-worker-host
+          just fix --locked -p codex-hepta-agent-protocol -p codex-hepta-learning-artifacts -p codex-hepta-agentd -p codex-hepta-infer-worker-host -p codex-app-server
           just fmt
           git diff --exit-code
       - name: Enforce every original qualification and observation outcome
