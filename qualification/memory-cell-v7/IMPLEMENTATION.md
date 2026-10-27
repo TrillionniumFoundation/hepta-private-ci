@@ -150,6 +150,9 @@ driver 通过 `AgentdClient::memory_cell_read` 新取证据，并在最终使用
 来源、参数版本或返回值变化会阻止 dispatch；一份缓存 context 片段不能代替当前 owner 授权。
 CLI [`--memory-request-file`](../../codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs) 只读绝对路径下有界查询 JSON，不允许指定路由 gold 或选择模型。
 该片段不会签发 final-use grant，既有独立 final-use authority 仍然必需；实际消费者测试尚待最终 CI 汇总。
+native observer 同时接收增量和 completed-only 文本，同一 item 的重复完整消息须一致；文本最多 1 MiB，item ID 元数据另有独立上限。
+观察到的隔离、取消、超时或 owner loss 在异步中断之前写入 durable journal；之后的 `thread/read` 可以补充真实终态，但不能清除这些已保存的使用边界。
+只有取消标记而没有具体原因的恢复结果保守隔离；普通 Indeterminate 仍可凭精确终态证据正常完成。
 
 ## 10. 语言证据应如何解读
 
@@ -217,10 +220,11 @@ just test -p codex-hepta-agentd --run-ignored only -E 'test(memory_cell_) & test
 | release owner | 92 passed，1 skipped | [`122358149222.json`](evidence/ci/122358149222.json) |
 | source owner | 301 passed，7 skipped | 最新通过 [`122398855774.json`](evidence/ci/122398855774.json)；原 300/301 失败仍保留于 [`122356498801.json`](evidence/ci/122356498801.json) |
 | population | 149 passed | [`122371741084.json`](evidence/ci/122371741084.json) |
-| daemon / consumer / actual ignored | CI8：338 passed、3 failed、9 skipped、0 flaky；actual ignored 未执行 | [`122398855828.json`](evidence/ci/122398855828.json)，修复后等待 CI9 |
+| daemon / consumer / actual ignored | 最近执行为 CI8：338 passed、3 failed、9 skipped、0 flaky；CI9 编译失败，actual ignored 未执行 | [`122398855828.json`](evidence/ci/122398855828.json)、[`122408347206.json`](evidence/ci/122408347206.json)，等待 CI10 |
 
 CI5 的 `json!` 表达式与 CI6 的断言宏导入编译错误均保留原始记录。CI7 已编译并运行 341 项普通测试，7 项失败包括真实 App Server executable 配置、ledger 必需 abstain、节点旧 owner 锁释放、SQLite 关闭与恢复生命周期，以及旧源码顺序断言。另有一次立即多帧 worker 测试重试后通过，保留 flaky 标记。CI8 的 ledger、worker 边界和全部五项 network 测试通过；剩余三项是两个 completed-only 消息输出丢失和一个取得 writer lease 前后的状态摘要比较错误。消费者现已加入按 item ID 去重的有界输出累积器，恢复 fixture 改为保存取得真实 lease 后的切面；原成功输出、完整 anchor equality 和最终使用竞态断言保留。CI9 只重跑受影响的 daemon 组，三个 actual ignored 测试仍未执行，不能提前记为通过。
-从 CI9 起，普通 nextest 完成后的断言失败（exit 100）不阻止独立 actual profile 收集结果；构建或准备失败仍停止，任一实际执行失败仍使组合 receipt 失败。
+CI9 在新测试模块发现缺少 `pretty_assertions` crate 的唯一 E0432 编译错误，没有执行普通或 actual 测试；相应 dev-dependency 和 Cargo.lock 边已补齐。独立复查还修复了恢复路径清除已保存失败边界的问题，并新增真实 journal 重开测试；这些修改统一由 CI10 验证。
+CI9 允许普通 nextest 断言失败后继续独立 actual profile；CI10 将此扩展到两组各自的编译失败，避免一个范围的失败隐藏另一个范围的结果。共同前置 App Server 二进制构建或环境准备失败仍停止，任一实际执行非零退出仍使组合 receipt 失败。
 
 结构开发实验 [`population-costs-v2.json`](development/population-costs-v2.json) 比较固定 1–8 全计数空间；84 次真实 fit，部分计费下的固定比较器为 fixed-1，保留 keep-fixed。
 该轮已测部分加权净收益为负；独立未来任务、原生全链路成本、源账本与通信/RSS 缺项不能由 NumPy 诊断补成完整验收。

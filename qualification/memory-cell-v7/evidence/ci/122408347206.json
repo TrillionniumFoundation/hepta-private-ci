@@ -1,0 +1,159 @@
+{
+  "schema": "hepta.memory.v7.provider-job-evidence.v1",
+  "run_id": 40566233542,
+  "job_id": 122408347206,
+  "group": "daemon",
+  "status": "completed",
+  "conclusion": "failure",
+  "source_commit": "229ccd74788adbba4e31169bf2cc6e06f85633dd",
+  "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40566233542/job/122408347206",
+  "receipt": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-agent-protocol",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-context-compiler",
+      "-p",
+      "codex-hepta-infer-worker-host"
+    ],
+    "commands": [
+      [
+        "cargo",
+        "build",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "codex-app-server",
+        "--bin",
+        "codex-app-server"
+      ],
+      [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-context-compiler",
+        "-p",
+        "codex-hepta-infer-worker-host"
+      ],
+      [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "-p",
+        "codex-hepta-agentd",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(memory_cell_) & test(actual_)"
+      ]
+    ],
+    "complete_workspace_test": false,
+    "executions": [
+      {
+        "command": [
+          "cargo",
+          "build",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-app-server",
+          "--bin",
+          "codex-app-server"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 178.72095438900004
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agent-protocol",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-context-compiler",
+          "-p",
+          "codex-hepta-infer-worker-host"
+        ],
+        "exit_code": 101,
+        "wall_seconds": 213.21335427099996
+      }
+    ],
+    "exit_code": 101,
+    "final_tracked_changes": "",
+    "group": "daemon",
+    "initial_tracked_changes": "",
+    "lock_after": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "lock_before": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "log": {
+      "bytes": 55706,
+      "sha256": "a5e92e6f70958517be0a5a47d01b6786532832cd859247836a6cd67c281189b6"
+    },
+    "mode": "test",
+    "passed": false,
+    "production_manifests_modified_for_test": false,
+    "request": {
+      "attempt": 8,
+      "groups": [
+        "daemon"
+      ],
+      "schema": "hepta.memory.v7.product-verification-request.v1",
+      "stage": "completed-agent-messages-and-acquired-lease-recovery",
+      "tests_before_final_fix_and_format": true
+    },
+    "runtime_executable": {
+      "bytes": 443980736,
+      "path": "/home/runner/.cache/codex-ci/cargo-target/debug/codex-app-server",
+      "sha256": "0677e84a41247785074bb427d8e8202c923058993ffdc4cbf9e4ab2506696f3e"
+    },
+    "schema": "hepta.memory.v7.product-ci-receipt.v1",
+    "source_commit": "229ccd74788adbba4e31169bf2cc6e06f85633dd",
+    "source_tree": "eddc7c2c346060623ff8dfe7ce14332052241d50",
+    "wall_seconds": 392.26932318900003
+  },
+  "test_summaries": [
+    "error[E0432]: unresolved import `pretty_assertions`",
+    "error: could not compile `codex-hepta-infer-worker-host` (lib test) due to 1 previous error",
+    "error: command `/home/runner/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-agent-protocol --package codex-hepta-agentd --package codex-hepta-context-compiler --package codex-hepta-infer-worker-host --locked` exited with code 101",
+    "error: recipe `test` failed on line 89 with exit code 101"
+  ],
+  "test_counts": null,
+  "provider_log": {
+    "name": "122408347206.log",
+    "bytes": 197650,
+    "sha256": "d6047dc1fefb7190e73756caab576827fda0f64beb92fe4bf6d5fd2d7d48740e"
+  },
+  "log_representation": "Exact UTF-8 encoding of decoded provider job log, preserving ANSI, BOM, line endings and final newline; distinct from execution.log whose identity is in the CI receipt.",
+  "tests_executed": false,
+  "ignored_profile_executed": false,
+  "failure_phase": "lib test compilation",
+  "primary_error": "E0432 unresolved import pretty_assertions",
+  "failure_sites": [
+    {
+      "path": "hepta-infer-worker-host/src/native_agent_output_tests.rs",
+      "line": 4
+    }
+  ],
+  "preparation_step_passed": true
+}
