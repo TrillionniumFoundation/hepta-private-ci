@@ -7,6 +7,8 @@ use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStartedNotification;
 
+#[path = "native_cognitive_context_tests.rs"]
+mod cognitive_provenance;
 #[path = "native_output_tests.rs"]
 mod completed_output;
 
@@ -552,9 +554,22 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         requests.iter().any(|request| {
             request.url.path().ends_with("/responses")
                 && String::from_utf8_lossy(&request.body).contains(ACCEPT_MEMORY)
+                && String::from_utf8_lossy(&request.body).contains("hepta-cognitive-owner")
+                && !String::from_utf8_lossy(&request.body).contains("forward_request_digest")
         }),
         "physical model request must contain the exact verified cognitive context"
     );
+    let physical_request = response_mock.single_request();
+    let metadata: serde_json::Value = serde_json::from_str(
+        physical_request
+            .header("x-codex-turn-metadata")
+            .as_deref()
+            .ok_or("missing physical non-prompt metadata")?,
+    )?;
+    let execution_digest = metadata[cognitive_context::EXECUTION_METADATA_KEY]
+        .as_str()
+        .ok_or("missing historical execution digest")?;
+    assert!(!execution_digest.parse::<Digest32>()?.is_zero());
 
     let race_memory = host
         .seed_verified_memory("worker-final-use-race", RACE_MEMORY)
