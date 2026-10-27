@@ -1,0 +1,276 @@
+{
+  "all_development_audit_gates_pass": true,
+  "baseline_minus_field_mse_ci95": {
+    "action_mean_delta": [
+      1.2979279079688362e-05,
+      1.9871468593173914e-05
+    ],
+    "global_mean_delta": [
+      1.3438839944025983e-05,
+      2.0718802401790757e-05
+    ],
+    "no_change": [
+      1.3863859427052894e-05,
+      2.0979933854333977e-05
+    ]
+  },
+  "baseline_mses_equal_seed": {
+    "action_mean_delta": 4.646008584277552e-05,
+    "global_mean_delta": 4.717304882462961e-05,
+    "no_change": 4.735208468189319e-05
+  },
+  "by_seed": {
+    "17": {
+      "audit_rows": 288,
+      "audit_trajectory_ids": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "baselines_mse": {
+        "action_mean_delta": 3.8518190670879374e-05,
+        "global_mean_delta": 3.882390976864852e-05,
+        "no_change": 3.940549588260552e-05
+      },
+      "candidates": {
+        "field": {
+          "action_counts": [
+            63,
+            85,
+            114,
+            26
+          ],
+          "improvement_over_fit_selected_fixed": 0.002070115349459277,
+          "mean_regret": 0.002175447004848744,
+          "mean_value": 0.826254542237461,
+          "mse": 2.3971277425122603e-05,
+          "rmse": 0.004896047122436895
+        },
+        "generic": {
+          "action_counts": [
+            60,
+            111,
+            76,
+            41
+          ],
+          "improvement_over_fit_selected_fixed": 0.001799167301583617,
+          "mean_regret": 0.002446395052724404,
+          "mean_value": 0.8259835941895852,
+          "mse": 2.8203969360040012e-05,
+          "rmse": 0.005310740942659509
+        },
+        "richer": {
+          "action_counts": [
+            56,
+            122,
+            76,
+            34
+          ],
+          "improvement_over_fit_selected_fixed": 0.0020930678534215176,
+          "mean_regret": 0.0021524945008865033,
+          "mean_value": 0.8262774947414232,
+          "mse": 2.4313328883491153e-05,
+          "rmse": 0.0049308547822351405
+        }
+      },
+      "field_no_worse_than_best_baseline": true,
+      "fit_rows": 288,
+      "fit_selected_fixed_action": 1,
+      "fixed_mean_regret": 0.004245562354308021,
+      "fixed_mean_value": 0.8241844268880016,
+      "fraction_action_spread_at_least_0_001": 0.9930555555555556,
+      "max_action_spread": 0.03983178554917688,
+      "mean_action_spread": 0.009348650383359806,
+      "oracle_mean_value": 0.8284299892423097
+    },
+    "29": {
+      "audit_rows": 288,
+      "audit_trajectory_ids": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "baselines_mse": {
+        "action_mean_delta": 5.633994545182463e-05,
+        "global_mean_delta": 5.626869623813051e-05,
+        "no_change": 5.605296117639258e-05
+      },
+      "candidates": {
+        "field": {
+          "action_counts": [
+            62,
+            74,
+            83,
+            69
+          ],
+          "improvement_over_fit_selected_fixed": 0.0017107213045543723,
+          "mean_regret": 0.002859183657939312,
+          "mean_value": 0.8512013259802329,
+          "mse": 3.9474318749529885e-05,
+          "rmse": 0.0062828591222094015
+        },
+        "generic": {
+          "action_counts": [
+            44,
+            83,
+            98,
+            63
+          ],
+          "improvement_over_fit_selected_fixed": 0.0011521484061833881,
+          "mean_regret": 0.003417756556310296,
+          "mean_value": 0.8506427530818619,
+          "mse": 4.6377992154539894e-05,
+          "rmse": 0.006810138923292233
+        },
+        "richer": {
+          "action_counts": [
+            62,
+            57,
+            109,
+            60
+          ],
+          "improvement_over_fit_selected_fixed": 0.0011021964153693849,
+          "mean_regret": 0.0034677085471242993,
+          "mean_value": 0.8505928010910478,
+          "mse": 4.012144167312648e-05,
+          "rmse": 0.006334148851513239
+        }
+      },
+      "field_no_worse_than_best_baseline": true,
+      "fit_rows": 288,
+      "fit_selected_fixed_action": 2,
+      "fixed_mean_regret": 0.004569904962493685,
+      "fixed_mean_value": 0.8494906046756785,
+      "fraction_action_spread_at_least_0_001": 1.0,
+      "max_action_spread": 0.03310992866900042,
+      "mean_action_spread": 0.01151753159163541,
+      "oracle_mean_value": 0.8540605096381723
+    },
+    "43": {
+      "audit_rows": 288,
+      "audit_trajectory_ids": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "baselines_mse": {
+        "action_mean_delta": 4.4522121405622546e-05,
+        "global_mean_delta": 4.642654046710982e-05,
+        "no_change": 4.6597796986681465e-05
+      },
+      "candidates": {
+        "field": {
+          "action_counts": [
+            36,
+            136,
+            103,
+            13
+          ],
+          "improvement_over_fit_selected_fixed": 0.0008831538261334656,
+          "mean_regret": 0.002441458552070546,
+          "mean_value": 0.8286434592745127,
+          "mse": 2.6657512263083917e-05,
+          "rmse": 0.0051630913475440195
+        },
+        "generic": {
+          "action_counts": [
+            19,
+            180,
+            65,
+            24
+          ],
+          "improvement_over_fit_selected_fixed": 0.000746311848850686,
+          "mean_regret": 0.0025783005293533254,
+          "mean_value": 0.8285066172972299,
+          "mse": 3.37880368542909e-05,
+          "rmse": 0.005812747788635845
+        },
+        "richer": {
+          "action_counts": [
+            37,
+            134,
+            92,
+            25
+          ],
+          "improvement_over_fit_selected_fixed": 0.001117993235953285,
+          "mean_regret": 0.0022066191422507268,
+          "mean_value": 0.8288782986843325,
+          "mse": 2.832637414492109e-05,
+          "rmse": 0.005322252732154035
+        }
+      },
+      "field_no_worse_than_best_baseline": true,
+      "fit_rows": 288,
+      "fit_selected_fixed_action": 2,
+      "fixed_mean_regret": 0.0033246123782040117,
+      "fixed_mean_value": 0.8277603054483791,
+      "fraction_action_spread_at_least_0_001": 0.9965277777777778,
+      "max_action_spread": 0.03972776651753507,
+      "mean_action_spread": 0.010546886014680639,
+      "oracle_mean_value": 0.8310849178265831
+    }
+  },
+  "field_mean_improvement": 0.0015546634933823716,
+  "fit_rows_sha256": "5d9875a2e0b322913fcb781d2227a8a2d04bbea85dcaf6a79df679b9bf4404c3",
+  "fixed_mean_regret": 0.004046693231668573,
+  "freeze_sha256": "94661616618fd124dd314bfc023194c596aff412dc408350356b61c2fbe09772",
+  "gates": {
+    "audit_response": true,
+    "field_decision_skill": true,
+    "field_prediction_skill": true
+  },
+  "improvement_ci95": [
+    0.001191830976134037,
+    0.001948341623405289
+  ],
+  "input_files_sha256": {
+    "PREDICTOR_FREEZE.json": "e7bb79a8c1e42bd49a4969c155841e23497b885fc6124eeec380e4124d238578",
+    "audit-17/BANK.json": "c5380f3ed94017d90dc3576dbc30d86ae422321f493dd6904b4e4b6f28dfca2d",
+    "audit-29/BANK.json": "a3de83459701637adc6d8622f232ca23ca42e99d6de3075e96a4e856c11bc037",
+    "audit-43/BANK.json": "2f822ad5b6657be7be77285e1cc805f8265519911b8830b579da597c77c80b02",
+    "fit-17/BANK.json": "fe6b77ed4c7ffbc79420287d87fd867b4fafbd5c8b2f7030ed2ecf23b5de9905",
+    "fit-29/BANK.json": "08cf7d79f5d0911fc923056f74e4266c174939b568e48253d807091f930d35b0",
+    "fit-43/BANK.json": "0f1dbe1c2e791b138ae986b4836eafd36525fbbe9008f7ffc0a0b184dcc8b7d3"
+  },
+  "pooled_equal_seed": {
+    "field": {
+      "mse": 3.0034369479245472e-05,
+      "regret": 0.0024920297382862006,
+      "value": 0.8353664424974022
+    },
+    "generic": {
+      "mse": 3.61233327896236e-05,
+      "regret": 0.002814150712796009,
+      "value": 0.8350443215228923
+    },
+    "richer": {
+      "mse": 3.0920381567179575e-05,
+      "regret": 0.0026089407300871766,
+      "value": 0.8352495315056011
+    }
+  },
+  "record_count": 1728,
+  "schema": "hepta.field-bridge.v2.trajectory-gate.v1",
+  "scope": "Development audit only. Hashes verify consistency with supplied freeze; execution chronology requires separately committed receipts. No test/retention or theorem acceptance is inferred.",
+  "uncertainty": {
+    "bootstraps": 4000,
+    "interval": "paired stratified trajectory bootstrap; descriptive 95%; no model-population inference",
+    "seed": 271028,
+    "unit": "complete optimizer trajectory within fixed model seed"
+  }
+}
