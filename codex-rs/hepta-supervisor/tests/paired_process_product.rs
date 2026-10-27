@@ -1,5 +1,8 @@
 #![cfg(unix)]
 
+#[path = "paired_process_product/connection_tests.rs"]
+mod connection_tests;
+
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Write;
@@ -539,11 +542,41 @@ fn run_agent_child() -> Result<()> {
         let mut bytes = Vec::new();
         reader.read_until(b'\n', &mut bytes)?;
         let request: AgentdRequest = serde_json::from_slice(&bytes)?;
-        anyhow::ensure!(
-            request.schema_version == AGENTD_CONTROL_SCHEMA_VERSION
-                && request.spawn_generation == spawn_generation,
-            "agent fixture request does not bind this spawn"
-        );
+        let rejection = if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION {
+            Some((
+                "unsupported_schema",
+                "unsupported agentd control schema".to_string(),
+            ))
+        } else if request.spawn_generation != spawn_generation {
+            Some((
+                "request_rejected",
+                format!(
+                    "agentd generation fenced: request spawn generation {} does not match {spawn_generation}",
+                    request.spawn_generation
+                ),
+            ))
+        } else {
+            None
+        };
+        if let Some((code, message)) = rejection {
+            let response = AgentdResponse {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: request.request_id,
+                agent_id: agent_id.clone(),
+                spawn_generation,
+                current_generation: request.spawn_generation,
+                payload: AgentdPayload::Error {
+                    code: code.to_string(),
+                    message,
+                },
+            };
+            let mut bytes = serde_json::to_vec(&response)?;
+            bytes.push(b'\n');
+            // Agentd rejects this connection without retiring its listener,
+            // including when the rejected caller already closed the stream.
+            let _ = reader.into_inner().write_all(&bytes);
+            continue;
+        }
         let run_root = PathBuf::from(
             std::env::var_os("HEPTA_AGENT_RUN_ROOT").context("HEPTA_AGENT_RUN_ROOT")?,
         );
