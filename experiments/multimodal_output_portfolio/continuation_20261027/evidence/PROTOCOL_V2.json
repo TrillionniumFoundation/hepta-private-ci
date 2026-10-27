@@ -1,0 +1,145 @@
+{
+  "acceptance": "alias/support invariants pass; observed distinct likelihood improvement requires upper paired speaker-bootstrap NLL difference <0; output gain requires lower paired accuracy difference >0. Prior dependence and observation law are reported separately. Failure is preserved.",
+  "amendment": {
+    "before_any_new_test_model_features": true,
+    "created_ns": 1793085503259046597,
+    "fit_only_v1_models_frozen_sha256": "4419c9ac249507695de17d1df24aab297b9f07d1d9e00122162fc5b4050099f7",
+    "previous_protocol_sha256": "c1d6aaf1c232f399d8dee0dbae2785a2ff72d0b5d76c89992b6232be03e2db62",
+    "reason": "Fit-only validation found marginal-smoothing confounding: independent selected total pseudocount10 while joint families fixed .5. Isolate coupling by sharing independently validation-selected marginals and positive-table information projection. Preserve v1 without test scoring."
+  },
+  "baseline_commit": "63f198ad85cfa2aa579032256355f446cfe793a0",
+  "bootstrap": {
+    "interval_percent": 97.5,
+    "note": "8 fixed public source speakers, not a speaker-population qualification",
+    "samples": 20000,
+    "unit": "test speaker"
+  },
+  "candidate_pseudocounts": [
+    0.5,
+    2,
+    10,
+    50,
+    200,
+    1000,
+    4000
+  ],
+  "digits": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "implementation_status": "v2 design frozen after fit-only development and before all new test features; v1 results preserved",
+  "information_budget": "Same fit/validation/test observations and one fixed CNN call per waveform. Independent 7 marginal candidates; each joint family7 coupling strengths plus declared independence. Fitting CPU measured; search budgets differ and no equal-compute estimator superiority claim.",
+  "joint_fallback": "Add exact declared independence as an explicit validation candidate; no test-selected fallback and no unknown-column completion.",
+  "law_families": [
+    "pooled_independence_explicit_assumption",
+    "paired_joint_shrunk_to_measured_pooled_independence",
+    "speaker_mixture_partially_pooled_confusions"
+  ],
+  "observer": {
+    "old_development_speakers": [
+      "theo",
+      "yweweler"
+    ],
+    "old_test_is_not_requalified": true,
+    "origin": "exact frozen repair_20261026 FSDD observer; no new observer training",
+    "sha256": "6c5391e2ea0ee6102977992cb14ebcee857e393a7c9c66b8b534c78951356e86",
+    "training_speakers": [
+      "george",
+      "jackson",
+      "lucas",
+      "nicolas"
+    ]
+  },
+  "pair_mechanism": "balanced ordered digit targets; equal digits alias same waveform; otherwise right recording (7*k+11)%20; same speaker for both slots",
+  "posterior_likelihood_test_prior": "uniform over the exact 100 balanced target pairs",
+  "primary_comparisons": [
+    "speaker_mixture vs independently selected pooled law: distinct likelihood NLL, posterior NLL and actual pair output accuracy",
+    "paired_joint vs independently selected pooled law: same metrics",
+    "joint vs factorized target prior separately: prior NLL and actual pair output accuracy per cue"
+  ],
+  "prior_experiment": {
+    "cue_laws": {
+      "plus1": ".7 mass on right=(left+1)%10 plus .3 uniform",
+      "plus3": ".7 mass on right=(left+3)%10 plus .3 uniform",
+      "plus7": ".7 mass on right=(left+7)%10 plus .3 uniform",
+      "uniform": "uniform 100 pairs"
+    },
+    "fit_samples_per_speaker_per_cue": 300,
+    "observer_overlap": "public cue only; target prior does not reuse the waveform or CNN observation",
+    "prior_families": [
+      "full_joint_counts",
+      "product_of_fitted_marginals"
+    ],
+    "role": "separate controlled prior-dependence test on real waveform deliveries; not a claim about natural digit-pair occurrence",
+    "selection": "prior held-out validation NLL per cue; no likelihood score or test target used",
+    "test_samples_per_speaker_per_cue": 300,
+    "validation_samples_per_speaker_per_cue": 300
+  },
+  "recording_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "resampling": "48kHz mono PCM16 to 8kHz using fixed polyphase FIR scipy.signal.resample_poly(up=1,down=6); original 64x64 STFT normalization afterward",
+  "schema": "hepta.ndu.evidence.continuation.protocol.v2",
+  "scope": "new AudioMNIST public-source confirmation relative to old FSDD development, fixed pretrained observer, closed-digit task; not a natural multimodal foundation model",
+  "seed": 271927,
+  "selection": "Per-family validation-speaker mean distinct-event conditional NLL; joint candidate ties within1e-12 prefer explicit independence, otherwise candidate order. Freeze before test.",
+  "shared_marginals": "Select pooled independent marginal pseudocount on validation first. Every joint candidate uses these exact marginals. Iterative proportional fitting projects observed joint tables to them; supported columns only.",
+  "source_commit": "630d7dab4c040882834de6fa21baf9a60372accd",
+  "source_repository": "https://github.com/soerenab/AudioMNIST",
+  "speaker_roles": {
+    "fit": [
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08"
+    ],
+    "test": [
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20"
+    ],
+    "validation": [
+      "09",
+      "10",
+      "11",
+      "12"
+    ]
+  },
+  "unknown_target_columns": "remain unidentified; smoothing requires measured target support; no marginal-only completion"
+}
