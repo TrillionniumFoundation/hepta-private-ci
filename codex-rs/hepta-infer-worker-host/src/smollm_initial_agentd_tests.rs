@@ -163,6 +163,81 @@ pub(super) async fn ordinary_session(
     Ok(result)
 }
 
+pub(super) fn restart_stopped_config(
+    identity: &codex_hepta_agentd::AgentdIdentity,
+) -> TestResult<AgentdConfig> {
+    let registry = FleetRegistry::open_existing(HeptaFleetRoot::parse(&identity.fleet_root)?)?;
+    let stopped = registry.load_agent(&identity.agent_id)?.lifecycle;
+    if stopped.lifecycle != AgentLifecycle::Stopped {
+        return Err("previous ordinary incarnation did not stop before restart".into());
+    }
+    let starting = registry.compare_and_transition(
+        &identity.agent_id,
+        stopped.generation,
+        AgentLifecycle::Starting,
+    )?;
+    Ok(AgentdConfig::load(
+        identity.fleet_root.clone(),
+        identity.agent_id.clone(),
+        starting.generation,
+        identity.home_root.clone(),
+        identity.run_root.clone(),
+        identity.home_root.clone(),
+        identity.workspace.clone(),
+    )?)
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "requires actual public V2 weights; verifies same-owner reopen before any training"]
+async fn real_public_initial_reopens_same_ordinary_owners() -> TestResult<()> {
+    let (input, mut worker, bytes) = input_and_worker("public-reopen-session-0")?;
+    let root = input.output.join("r");
+    fs::create_dir(&root)?;
+    let fixture = Fixture::with_profile(
+        root.join("o"),
+        &bytes,
+        Digest32::of_bytes(SMOLLM_PUBLIC_INITIAL_PROFILE_V2),
+    )?;
+    let config = fixture.config("b")?;
+    let identity = config.identity().clone();
+    let actions = seed_actions(&config, i64::try_from(fixture.now)?).await?;
+    worker.action_completions = actions.clone();
+    let before = ordinary_session(
+        config,
+        worker,
+        &fixture,
+        &root.join("first"),
+        /*reads*/ 1,
+    )
+    .await?;
+    let config = restart_stopped_config(&identity)?;
+    let (second_input, mut worker, second_bytes) = input_and_worker("public-reopen-session-1")?;
+    if second_input.parent_sha256 != input.parent_sha256 || second_bytes != bytes {
+        return Err("same original material changed during owner reopen".into());
+    }
+    worker.action_completions = actions;
+    let after = ordinary_session(
+        config,
+        worker,
+        &fixture,
+        &root.join("second"),
+        /*reads*/ 1,
+    )
+    .await?;
+    assert_eq!(before["parent"], after["parent"]);
+    assert_eq!(before["current_after"], after["current_before"]);
+    assert_eq!(before["home_root"], after["home_root"]);
+    fs::write(
+        root.join("ordinary-reopen-result.json"),
+        serde_json::to_vec_pretty(&serde_json::json!({
+            "schema":"hepta-real-ordinary-same-owner-reopen-v1", "sessions":[before, after],
+            "ordinary_sessions":2,"training_rounds":0,"installed_children":0,
+            "product_qualification":false,"locks_removed_or_bypassed":false
+        }))?,
+    )?;
+    Ok(())
+}
+
 async fn session(
     config: AgentdConfig,
     worker: SmolLmNeuralReadConfigV1,
