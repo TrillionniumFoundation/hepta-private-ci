@@ -354,6 +354,24 @@ impl CodexThread {
             .await;
     }
 
+    /// Materializes this live owner's history and its pending thread metadata.
+    ///
+    /// Readers that need paginated history must await both through the original live handle.
+    /// Persisting only the store writer can leave durable JSONL without its metadata row.
+    pub async fn materialize_thread(&self) -> ThreadStoreResult<()> {
+        let live_thread = self
+            .session
+            .live_thread_for_persistence("materialize thread")
+            .map_err(|err| ThreadStoreError::Internal {
+                message: err.to_string(),
+            })?;
+        let result = live_thread.persist(PersistContext::Standard).await;
+        if result.is_err() {
+            self.session.mark_rollout_persistence_failure();
+        }
+        result
+    }
+
     #[doc(hidden)]
     pub async fn flush_rollout(&self) -> std::io::Result<()> {
         self.session.flush_rollout().await

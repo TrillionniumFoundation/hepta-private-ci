@@ -406,6 +406,18 @@ async fn wait_for_responses_request_count(
 
 #[tokio::test]
 async fn thread_resume_materializes_the_same_live_thread_without_starting_a_turn() -> Result<()> {
+    assert_resume_materializes_the_same_live_thread(ThreadHistoryMode::Legacy).await
+}
+
+#[tokio::test]
+async fn thread_resume_materializes_the_same_paginated_live_thread_without_starting_a_turn()
+-> Result<()> {
+    assert_resume_materializes_the_same_live_thread(ThreadHistoryMode::Paginated).await
+}
+
+async fn assert_resume_materializes_the_same_live_thread(
+    history_mode: ThreadHistoryMode,
+) -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
     mock_responses_config(&server.uri()).write(codex_home.path())?;
@@ -419,6 +431,7 @@ async fn thread_resume_materializes_the_same_live_thread_without_starting_a_turn
     let start_id = mcp
         .send_thread_start_request_with_auto_env(ThreadStartParams {
             model: Some("gpt-5.4".to_string()),
+            history_mode: Some(history_mode),
             ..Default::default()
         })
         .await?;
@@ -433,10 +446,11 @@ async fn thread_resume_materializes_the_same_live_thread_without_starting_a_turn
 
     // Repeated attaches must materialize through the live writer and retain the
     // original Core session; they must not cold-resume or synthesize a user turn.
-    for _ in 0..2 {
+    for exclude_turns in [true, false, true] {
         let resume_id = mcp
             .send_thread_resume_request(ThreadResumeParams {
                 thread_id: thread.id.clone(),
+                exclude_turns,
                 ..Default::default()
             })
             .await?;
@@ -453,6 +467,27 @@ async fn thread_resume_materializes_the_same_live_thread_without_starting_a_turn
             (&thread.id, &thread.session_id, &thread.path, &thread.turns),
         );
         assert!(resumed.turns.is_empty());
+        assert_eq!(resumed.history_mode, history_mode);
+        let page: ThreadTurnsListResponse = mcp
+            .request(|request_id| ClientRequest::ThreadTurnsList {
+                request_id,
+                params: ThreadTurnsListParams {
+                    thread_id: thread.id.clone(),
+                    cursor: None,
+                    limit: Some(5),
+                    sort_direction: Some(SortDirection::Desc),
+                    items_view: Some(TurnItemsView::NotLoaded),
+                },
+            })
+            .await?;
+        assert_eq!(
+            page,
+            ThreadTurnsListResponse {
+                data: Vec::new(),
+                next_cursor: None,
+                backwards_cursor: None,
+            }
+        );
     }
     assert!(thread_path.exists());
     let loaded: ThreadLoadedListResponse = mcp

@@ -20,7 +20,6 @@ use codex_protocol::config_types::MultiAgentMode;
 use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::mcp::ClientMcpExtensions;
 use codex_protocol::protocol::ThreadHistoryMode;
-use codex_thread_store::PersistContext;
 
 #[path = "thread_items_legacy.rs"]
 mod thread_items_legacy;
@@ -3245,8 +3244,8 @@ impl ThreadRequestProcessor {
                 thread.history_mode,
                 codex_app_server_protocol::ThreadHistoryMode::Paginated
             ) {
-                self.thread_store
-                    .persist_thread(thread_id, PersistContext::Standard)
+                loaded_thread
+                    .materialize_thread()
                     .await
                     .map_err(|err| thread_read_history_load_error(thread_id, err))?;
                 thread.turns = self
@@ -4068,9 +4067,8 @@ impl ThreadRequestProcessor {
                 // previous write failure. Persist after reopening the live writer so legacy
                 // response hydration reads the latest durable turns and items.
                 if paginated_resume
-                    && let Err(error) = self
-                        .thread_store
-                        .persist_thread(thread_id, PersistContext::Standard)
+                    && let Err(error) = codex_thread
+                        .materialize_thread()
                         .await
                         .map_err(thread_store_resume_read_error)
                 {
@@ -4368,8 +4366,8 @@ impl ThreadRequestProcessor {
                 .map_err(thread_read_view_error)?
                 .is_none()
             {
-                self.thread_store
-                    .persist_thread(existing_thread_id, PersistContext::Standard)
+                existing_thread
+                    .materialize_thread()
                     .await
                     .map_err(thread_store_resume_read_error)?;
             }
@@ -4483,9 +4481,18 @@ impl ThreadRequestProcessor {
                     )
                     .await?;
             }
-            if paginated_resume && (include_turns || params.initial_turns_page.is_some()) {
-                self.thread_store
-                    .persist_thread(existing_thread_id, PersistContext::Standard)
+            if paginated_resume {
+                // Even an excludeTurns response computes pagination cursors. A prior attempt
+                // may have written JSONL before metadata failed, so a readable rollout alone
+                // does not prove the pending metadata reached SQLite. Reuse the same owner.
+                existing_thread
+                    .materialize_thread()
+                    .await
+                    .map_err(thread_store_resume_read_error)?;
+                source_thread = existing_thread
+                    .read_thread(
+                        /*include_archived*/ true, /*include_history*/ false,
+                    )
                     .await
                     .map_err(thread_store_resume_read_error)?;
             }
