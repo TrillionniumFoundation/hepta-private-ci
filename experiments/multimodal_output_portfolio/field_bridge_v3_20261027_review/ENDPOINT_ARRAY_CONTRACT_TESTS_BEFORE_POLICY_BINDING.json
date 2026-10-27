@@ -1,0 +1,21 @@
+{
+  "elapsed_seconds": 1.3293130100064445,
+  "errors": 0,
+  "failures": 0,
+  "generator_forwards": 0,
+  "observer_forwards": 0,
+  "real_endpoint_files_opened": 0,
+  "schema": "hepta.field-bridge.v3.endpoint-array-contract-tests.1",
+  "source_files": {
+    "../field_bridge_v3_20261027/PROTOCOL.json": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7",
+    "../field_bridge_v3_20261027/training_stages.py": "ed3fcc45531fe2fdb7ea6033ee7067a8e5221e52a69ec3abf1a23e1f65d2f2ef",
+    "analysis_contract.py": "3bd14691fb73ba8cc6892aa514536f69dce471be38fca90c577022b567962317",
+    "endpoint_array_tests.py": "59776f60e1fba766c36a4816a7369f78da09319094b188db061b3bf6f7ee7ca5",
+    "endpoint_arrays.py": "570ca1872e4f60150e1a7a5558e81f9fa6ae9ae6806bc13606e62992f1aaa3c1",
+    "training_endpoint_audit.py": "2316bcf701f96cbcf90a3e67900a9f17d5904274c04c4954457aa72d931b63b3"
+  },
+  "status": "pass",
+  "synthetic_only": true,
+  "test_log": "test_audit_retains_all_five_methods_and_four_paths (endpoint_array_tests.EndpointArrayTests.test_audit_retains_all_five_methods_and_four_paths) ... ok\ntest_condition_major_to_pair_condition_adapter_is_exact (endpoint_array_tests.EndpointArrayTests.test_condition_major_to_pair_condition_adapter_is_exact) ... ok\ntest_final_roles_are_rejected (endpoint_array_tests.EndpointArrayTests.test_final_roles_are_rejected) ... ok\ntest_missing_path_nonfinite_and_wrong_condition_rejected (endpoint_array_tests.EndpointArrayTests.test_missing_path_nonfinite_and_wrong_condition_rejected) ... ok\ntest_no_complete_phase_fails_before_freeze_or_outcome_read (endpoint_array_tests.EndpointArrayTests.test_no_complete_phase_fails_before_freeze_or_outcome_read) ... ok\ntest_schedule_specific_endpoint_identity_is_rejected (endpoint_array_tests.EndpointArrayTests.test_schedule_specific_endpoint_identity_is_rejected) ... ok\ntest_source_role_substitution_or_permutation_rejected (endpoint_array_tests.EndpointArrayTests.test_source_role_substitution_or_permutation_rejected) ... ok\ntest_exact_hard_pixel_utf8_identity_and_aggregate_values (endpoint_array_tests.HardEvidenceTests.test_exact_hard_pixel_utf8_identity_and_aggregate_values) ... ok\ntest_all_frozen_selection_arithmetic_and_eligibility_agree (endpoint_array_tests.SelectionParityTests.test_all_frozen_selection_arithmetic_and_eligibility_agree) ... ok\ntest_near_tie_uses_unrounded_paired_gains (endpoint_array_tests.SelectionParityTests.test_near_tie_uses_unrounded_paired_gains) ... ok\ntest_no_eligible_adaptive_keeps_failure_and_all_arithmetic (endpoint_array_tests.SelectionParityTests.test_no_eligible_adaptive_keeps_failure_and_all_arithmetic) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 1.326s\n\nOK\n",
+  "tests_run": 11
+}

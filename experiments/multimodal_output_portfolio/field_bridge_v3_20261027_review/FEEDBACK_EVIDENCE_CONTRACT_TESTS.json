@@ -1,0 +1,19 @@
+{
+  "elapsed_seconds": 0.08320160600123927,
+  "errors": 0,
+  "failures": 0,
+  "generator_forwards": 0,
+  "real_outcome_files_opened": 0,
+  "schema": "hepta.field-bridge.v3.feedback-evidence-contract-tests.1",
+  "source_files": {
+    "../field_bridge_v3_20261027/feedback_media.py": "03974950aee527913df0dbf80fdd1c0b2e7e7ede70df15f32feb2257dcf7d7d3",
+    "../field_bridge_v3_20261027/feedback_task.py": "3596bdd3386717fea8c46d5c7a4cf5dc6e088a4ef573a0e1c2bee900056a3f8d",
+    "../field_bridge_v3_20261027/runtime_controller.py": "ff38cd6ac178fa6550c4df03788401471e013895abbfd2417876c4f4fd193f5e",
+    "feedback_evidence.py": "e0e2b472d4427dfc163c4a42903b55380e297412bc06ef4f358fa4d551d61686",
+    "feedback_evidence_tests.py": "140c4a39aa79fdac09ccfdeeffd0951de1702624747aff8930010cbef04a721c"
+  },
+  "status": "pass",
+  "synthetic_only": true,
+  "test_log": "test_current_and_history_all_transforms_stages_match_frozen_arithmetic (feedback_evidence_tests.HeadReplayTests.test_current_and_history_all_transforms_stages_match_frozen_arithmetic) ... ok\ntest_all_public_features_scores_and_feedback_match_independently (feedback_evidence_tests.MediaAndArithmeticTests.test_all_public_features_scores_and_feedback_match_independently) ... ok\ntest_changed_logits_or_component_hash_cannot_be_hidden_in_receipt (feedback_evidence_tests.MediaAndArithmeticTests.test_changed_logits_or_component_hash_cannot_be_hidden_in_receipt) ... ok\ntest_invalid_caption_and_strict_feedback_depth (feedback_evidence_tests.MediaAndArithmeticTests.test_invalid_caption_and_strict_feedback_depth) ... ok\ntest_observer_cache_reports_logical_and_actual_work_separately (feedback_evidence_tests.MediaAndArithmeticTests.test_observer_cache_reports_logical_and_actual_work_separately) ... ok\ntest_physical_dedup_preserves_each_logical_delivery (feedback_evidence_tests.MediaAndArithmeticTests.test_physical_dedup_preserves_each_logical_delivery) ... ok\ntest_truncated_or_duplicated_physical_record_rejected (feedback_evidence_tests.MediaAndArithmeticTests.test_truncated_or_duplicated_physical_record_rejected) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 0.083s\n\nOK\n",
+  "tests_run": 7
+}
