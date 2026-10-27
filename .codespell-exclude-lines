@@ -52,3 +52,12 @@
 +    let name_offset = b"archive/plugin/caf".len();
     let name_offset = b"archive/plugin/caf".len();
       "src/tests/derive/trace/statics.rs": {
+
+# Exact immutable source and dependency-name evidence; retain original bytes.
+  "actual_diagnostic": "RECIPE.v2.json:6545 statics ==> statistics",
+  "exact_added_line": "      \"src/tests/derive/trace/statics.rs\": {",
+      "vendor_file": "codex-rs/third_party/starlark-0.14.2/src/tests/derive/trace/statics.rs",
+  Downloaded inout v0.2.5
+   Compiling inout v0.2.5
+  Downloaded inout v0.1.4
+   Compiling inout v0.1.4
