@@ -58,6 +58,10 @@ impl ReleaseFixture {
     }
 
     pub(crate) fn from_models(snapshot: &MemoryCellOwnerSnapshotV1, semantic: &[u8], procedure: &[u8]) -> Self {
+        Self::from_models_with_training_code(snapshot, semantic, procedure, digest("synthetic-test-not-trained"))
+    }
+
+    pub(crate) fn from_models_with_training_code(snapshot: &MemoryCellOwnerSnapshotV1, semantic: &[u8], procedure: &[u8], training_code_digest: Digest32) -> Self {
         let directory = TempDir::new().expect("artifact root");
         let now = super::now().expect("test clock");
         let withdrawals = DatasetWithdrawalRegistry::new_scoped(DatasetWithdrawalScopeV1 {
@@ -93,7 +97,7 @@ impl ReleaseFixture {
         let verifier = ArtifactSelectionVerifierV1::new(selection_trust(&config), &config.trust).expect("configured independent selector");
         let host = Arc::new(MemoryCellReleaseHostV1::new(Arc::clone(&service), verifier));
         let candidate = MemoryCellBundleCandidateV1::from_owner_snapshot(snapshot, ContractGenerationV1::new(1).expect("generation"), semantic, procedure).expect("typed bundle");
-        let request = prepare_request(&service, &config, &candidate, 1);
+        let request = prepare_request(&service, &config, &candidate, 1, training_code_digest);
         let fixture = Self { directory, service, host, initial_request: request, config };
         fixture.host.publish(fixture.initial_request.clone(), snapshot).expect("durable typed publication");
         fixture.install(&fixture.initial_request).expect("independent selected load");
@@ -101,9 +105,15 @@ impl ReleaseFixture {
     }
 
     pub(crate) fn prepare(&self, snapshot: &MemoryCellOwnerSnapshotV1, generation: u64) -> LearningArtifactPublishRequestV1 {
+        self.prepare_models(snapshot, generation, &single_value_model(snapshot, MemoryCellKindV1::Semantic),
+            &single_value_model(snapshot, MemoryCellKindV1::Procedure), digest("synthetic-test-not-trained"))
+    }
+
+    pub(crate) fn prepare_models(&self, snapshot: &MemoryCellOwnerSnapshotV1, generation: u64,
+        semantic: &[u8], procedure: &[u8], training_code_digest: Digest32) -> LearningArtifactPublishRequestV1 {
         let candidate = MemoryCellBundleCandidateV1::from_owner_snapshot(snapshot, ContractGenerationV1::new(generation).expect("generation"),
-            &single_value_model(snapshot, MemoryCellKindV1::Semantic), &single_value_model(snapshot, MemoryCellKindV1::Procedure)).expect("successor bundle");
-        prepare_request(&self.service, &self.config, &candidate, generation)
+            semantic, procedure).expect("successor bundle");
+        prepare_request(&self.service, &self.config, &candidate, generation, training_code_digest)
     }
 
     pub(crate) fn signed_selection(&self, request: &LearningArtifactPublishRequestV1, current: &VerifiedCurrentRegistryViewV1) -> SignedArtifactSelectionV1 {
@@ -162,7 +172,7 @@ impl ReleaseFixture {
     }
 }
 
-fn prepare_request(service: &Mutex<LearningArtifactOwnerService>, config: &LearningArtifactOwnerServiceConfigV1, candidate: &MemoryCellBundleCandidateV1, generation: u64) -> LearningArtifactPublishRequestV1 {
+fn prepare_request(service: &Mutex<LearningArtifactOwnerService>, config: &LearningArtifactOwnerServiceConfigV1, candidate: &MemoryCellBundleCandidateV1, generation: u64, training_code_digest: Digest32) -> LearningArtifactPublishRequestV1 {
     let now = super::now().expect("publication clock");
     let manifest = candidate.bind_manifest(LearningArtifactManifestV2 {
         artifact_id: id(&format!("memory-bundle:{generation}")), kind: ArtifactKind::Parameters,
@@ -170,7 +180,7 @@ fn prepare_request(service: &Mutex<LearningArtifactOwnerService>, config: &Learn
         source_dataset_digests: vec![], lineage_digests: vec![],
         predecessor_ids: if generation == 1 { vec![] } else { vec![id(&format!("memory-bundle:{}", generation - 1))] },
         rollback_predecessor: None, bytes_digest: Digest32::ZERO, encoded_size_bytes: 0,
-        training_code_digest: digest("synthetic-test-not-trained"), runtime_tuple_digest: Digest32::ZERO,
+        training_code_digest, runtime_tuple_digest: Digest32::ZERO,
         device_profile_digest: digest("test-cpu-f64"), objective_class_digest: Digest32::ZERO,
         compatibility_digest: Digest32::ZERO, schema_profile_digest: Digest32::ZERO, normalization_digest: Digest32::ZERO,
         producer_id: id("memory-trainer"), created_at: config.now, expires_at: config.now + 3_600,
