@@ -1,0 +1,38 @@
+{
+  "source_parent": "99ae396ccdf3534928253b2af7b9329c0127ea44",
+  "command_attempts": [
+    {
+      "argv": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "status": "UNAVAILABLE",
+      "error_type": "FileNotFoundError"
+    },
+    {
+      "argv": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "status": "UNAVAILABLE",
+      "error_type": "FileNotFoundError"
+    },
+    {
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "status": "UNAVAILABLE",
+      "error_type": "FileNotFoundError"
+    }
+  ],
+  "exact_source_ci": "NOT_RUN",
+  "compilation_claim": false,
+  "raw_archive_size": 123246,
+  "raw_archive_sha256": "5a571120b13517214fc2e8ad88844f36f806fd8380bdc28113cb99f8b0b488d7",
+  "private_keys_or_issuer_payload_in_archive": false
+}
