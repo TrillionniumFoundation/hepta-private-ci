@@ -1,0 +1,42 @@
+{
+  "authorization_received_for_named_files_and_destination": false,
+  "authorization_requested": true,
+  "destination": "Connected ChatGPT Library",
+  "files": [
+    {
+      "bytes": 550161476,
+      "kind": "evidence_archive",
+      "path": "/tmp/hepta-v2-final-20261027/hepta_field_bridge_v2_20261027_evidence.tar.gz",
+      "sha256": "7351ff2b694bb37bcd50e7d5be08e601f525516c9ba214a8d912d34f007a4607",
+      "version": "V2"
+    },
+    {
+      "bytes": 56583,
+      "kind": "verification_report",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v2_archive/ARCHIVE_AND_RESTORE_VERIFICATION.json",
+      "sha256": "02db4d2386e1b2b092a1e2e784ab39f83a4131addcd77c11eaa82c4b78c41e82",
+      "version": "V2"
+    },
+    {
+      "bytes": 1254389884,
+      "kind": "evidence_archive",
+      "path": "/tmp/hepta-v3-final-20261027/hepta_field_bridge_v3_20261027_evidence.tar.gz",
+      "sha256": "37ef2e8de1a795ada43a92afc7403018e82ac23368e8ee6f7319569099abf4cf",
+      "version": "V3"
+    },
+    {
+      "bytes": 695743,
+      "kind": "verification_report",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v3_archive/ARCHIVE_AND_RESTORE_VERIFICATION.json",
+      "sha256": "198916ddf9f2ad281fcda54a79b79f9b0210cc56129a8dc77e054ee34a0c6351",
+      "version": "V3"
+    }
+  ],
+  "github_code_and_result_publication_separate": true,
+  "no_retry_or_alternate_egress_attempted": true,
+  "prior_rejection_record": "../field_bridge_v2_20261027/evidence/PERSISTENCE_AUTHORIZATION_BLOCKER.json",
+  "prior_v2_upload_auto_review_rejections": 2,
+  "reason": "Automatic approval review explicitly required authorization naming the V2 experimental archive/report and the connected Library destination; generic continuation was rejected. V3 files are now fully prepared and verified for the same concrete approval request.",
+  "schema": "hepta.field-bridge.v3.concrete-persistence-request.1",
+  "v3_upload_attempted": false
+}

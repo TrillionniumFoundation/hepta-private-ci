@@ -1,0 +1,60 @@
+{
+  "archive": {
+    "bytes": 1254389884,
+    "filename": "hepta_field_bridge_v3_20261027_evidence.tar.gz",
+    "manifest_sha256": "d31df0debb1a54091fa61cd275b20daf1b6fadc7b46a6ccd59507f8d642ea90a",
+    "path": "/tmp/hepta-v3-final-20261027/hepta_field_bridge_v3_20261027_evidence.tar.gz",
+    "payload_bytes": 1324748001,
+    "payload_files": 2590,
+    "regular_members_including_manifest": 2591,
+    "sha256": "37ef2e8de1a795ada43a92afc7403018e82ac23368e8ee6f7319569099abf4cf"
+  },
+  "archive_identity_scope": "The manifest binds each exact archived file. The named pre-packaging commit pins the latest published source/report state; generated ARCHIVE_LEDGER_BINDINGS.json and ARCHIVE_RUNTIME_ENVIRONMENT.json were added locally before packaging and are separately manifest-bound. No claim is made that every payload is a Git tree at that commit.",
+  "exact_reanalysis": true,
+  "explicit_archive_input_index": {
+    "compressed_bytes": 31507,
+    "compressed_sha256": "d5b1fde58ad83bc294936e85d8f9cb1fed49a0c080fc1bc10593f39b99b7b179",
+    "path": "ARCHIVE_INPUTS.json.gz",
+    "scope": "Exact original build input index. Absolute source paths describe the construction environment; manifest member paths are portable.",
+    "uncompressed_bytes": 526139,
+    "uncompressed_sha256": "0204af236a7f368ea554c18bd3fb2b07bf4ad27f055dda3ab8411377c51b817a"
+  },
+  "external_receipts": {
+    "ARCHIVE_BUILD_RECEIPT.json": {
+      "bytes": 24157,
+      "path": "ARCHIVE_BUILD_RECEIPT.json",
+      "sha256": "a93327d81347bb8fff8f0545239f1260c583bd9e5fdabb1dd8f4ceb199d6ac95"
+    },
+    "ARCHIVE_INTEGRITY.json": {
+      "bytes": 574882,
+      "path": "ARCHIVE_INTEGRITY.json",
+      "sha256": "59dda0604c4cc4813477c8da4e7118dfcc21ed375ba868a88fb61cab1682d8c6"
+    },
+    "ARCHIVE_REANALYSIS.json": {
+      "bytes": 16406,
+      "path": "ARCHIVE_REANALYSIS.json",
+      "sha256": "4085bda1d5985ab11637c33a6b17c7be6b0114aa90c6ab1a4cf512e3f33da4e6"
+    },
+    "LEDGER_ARCHIVE_COVERAGE_REVIEW.json": {
+      "bytes": 9919,
+      "path": "LEDGER_ARCHIVE_COVERAGE_REVIEW.json",
+      "sha256": "13effd547132375ce28b9f21ce0347100f73db8b589ac62a3203bc6478f4887a"
+    }
+  },
+  "fully_verified": true,
+  "latest_source_and_report_commit_before_packaging": "e2b7c9a1dbb0426088e8c9beff25065a04160689",
+  "raw_archive_persisted": false,
+  "restored_files": 50,
+  "restored_payload_bytes": 76679272,
+  "schema": "hepta.field-bridge.v3.evidence-archive-reference.1",
+  "scientific_gates": {
+    "development": false,
+    "runtime_frozen": false
+  },
+  "v3_upload_attempted": false,
+  "verification": {
+    "bytes": 695743,
+    "path": "ARCHIVE_AND_RESTORE_VERIFICATION.json",
+    "sha256": "198916ddf9f2ad281fcda54a79b79f9b0210cc56129a8dc77e054ee34a0c6351"
+  }
+}
