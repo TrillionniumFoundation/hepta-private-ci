@@ -1,0 +1,143 @@
+{
+  "audit_observer_loaded": false,
+  "development": "/workspace/scratch/95988d8d3ab1/ndu-joint-continuation/development-full-001",
+  "metric_sha256": "14f83e58554ed1293fbf3bdea4232caf5cee1c473f28e8301da47b6a5450b72d",
+  "protocol": {
+    "arms": [
+      "frozen",
+      "joint_uniform",
+      "joint_risk"
+    ],
+    "audit_observer_loaded_only_after_selection_freeze": true,
+    "base_archive_sha256": "ddbdf10b4397c8538183df8fa7c16f08c5fba226a304ff7cb55574ddb97e951e",
+    "baseline_commit": "63f198ad85cfa2aa579032256355f446cfe793a0",
+    "batch_size": 32,
+    "bootstrap_replicates": 5000,
+    "bootstrap_seed": 62027,
+    "bootstrap_unit": "source image pair, shared across corruptions and fixed seeds; seeds are not a population sample",
+    "checkpoints": [
+      200,
+      400,
+      600
+    ],
+    "clean_replay_fraction": 0.5,
+    "conditions": [
+      "clean",
+      "occlusion",
+      "missing",
+      "heavy_noise"
+    ],
+    "deployed_selection": "deterministic argmax, same as candidate selection used in generator updates",
+    "evaluation_corruption_mixture": "each of four conditions 1/4; generator proxy is not an unbiased gradient of this qualification distribution",
+    "evaluation_seed": 20261027,
+    "exact_discrete_reward_gradient": false,
+    "fresh_source_seed": 271027,
+    "gamma": 2.0,
+    "gate_target": "actual PNG/UTF8 exp(-gamma * utility), squared moment prediction error; argmax raw score minimizes the predicted moment",
+    "generator_attribution_gate": "joint_risk exceeds an offline target-aware original-generator oracle over all 16 two-action sequences; paired test CE lower bound > 0 and each fixed seed positive",
+    "generator_objective": "supervised reconstruction/caption/semantic proxy on selected deployed plan, 0.1 all-plan anchor, 0.3 same-plan teacher distillation on clean replay",
+    "gradient_clip": 1.0,
+    "interval": 0.975,
+    "learning_rate_core": 0.00015,
+    "learning_rate_gate": 0.001,
+    "matched_training_gate": "joint_risk-joint_uniform test CE lower bound > 0, every fixed seed positive, retention lower bound >= -0.01",
+    "new_test_sources": "official MNIST test pixels outside every source hash in the restored full002 corpus and historical prior-heldout exclusion",
+    "oracle_scope": "offline privileged upper bound for the original generator at the same two-transition depth, same latent noise and final decoder; extra oracle search/target access is not an equal-budget deployed arm",
+    "parameter_interpolations": [
+      0.5,
+      1.0
+    ],
+    "primary_generator_gate": "joint_risk-frozen test CE lower bound > 0, every fixed seed positive, retention lower bound >= -0.01",
+    "retention_noninferiority_margin": 0.01,
+    "retention_pairs": 512,
+    "risk_weight": "exp(-gamma * actual selected-plan utility), normalized across the whole minibatch and detached",
+    "same_training_budget": "identical batches, latent noise, 4 plans, forced/free decoders, PNG roundtrips, fixed observer calls and optimizer updates",
+    "schema": "hepta.ndu.continuation-joint.v1",
+    "scope": "constructed MNIST pair generation; no writer metadata, natural AV synthesis, production owner or global unrestricted optimality claim",
+    "seeds": [
+      17,
+      29,
+      43
+    ],
+    "selection": "maximize actual reward-observer CE on all 4 conditions subject to clean validation CE >= original-0.005; original is eligible; tie favors smaller update then earlier checkpoint",
+    "steps": 600,
+    "stress_cycle": [
+      "occlusion",
+      "missing",
+      "heavy_noise"
+    ],
+    "study": "actual-moment-clean-replay-001",
+    "test_pairs": 512,
+    "threads": 1,
+    "training_corruption_mixture": "clean 1/2, each stress condition 1/6; extra clean replay is a capability-preservation regularizer",
+    "training_observer_parameters_frozen": true,
+    "validation_pairs": 64,
+    "validation_retention_offset": 64,
+    "validation_retention_pairs": 128,
+    "validation_retention_tolerance": 0.005
+  },
+  "reference_checkpoint_file_sha256": {
+    "ndu-runs/full-002/audit-observer.pt": "cd560d4ec2f45cef6a0f4db9809b902ea68833c8693798f7597135a83a6e3589",
+    "ndu-runs/full-002/reward-observer.pt": "a9cfe78a08b9192ba9d8fe9c144de29ef5d3b1e9cd6ed236d01d170d32034210",
+    "ndu-runs/full-002/seed-17-terminal_entropic_ndu.pt": "8fa76a13cdeee48e41b84e29211659a065d9573e2fdfecc4281f882248b508b6",
+    "ndu-runs/full-002/seed-29-terminal_entropic_ndu.pt": "e92dc06cec18ee279b8367a2fd194ba91978197150e5edcdede1c0d9fde2b11c",
+    "ndu-runs/full-002/seed-43-terminal_entropic_ndu.pt": "1a38524e474d35ff9eb1ad584b1714ea2ef7f7f8d0c502a6b3b2172252ddabf9"
+  },
+  "restoration_receipt_sha256": "f56732b514eaba5ee4ef856bf125d856a8a59208200cdfc02e82046a9febbe22",
+  "schema": "hepta.ndu.joint-qualification-seal.v1",
+  "selected_models": [
+    {
+      "arm": "joint_uniform",
+      "seed": 17,
+      "selected_checkpoint_sha256": "508931a0cb780d413bc39de83b8de91aeab68b33cfe1b384f176cb8e8f004ee6",
+      "selected_path": "seed-17-joint_uniform-selected.pt"
+    },
+    {
+      "arm": "joint_risk",
+      "seed": 17,
+      "selected_checkpoint_sha256": "854909b90ba312c6f1561d29303776cd3e17f05e1e67e266bb488b64a2bd4d8b",
+      "selected_path": "seed-17-joint_risk-selected.pt"
+    },
+    {
+      "arm": "joint_uniform",
+      "seed": 29,
+      "selected_checkpoint_sha256": "be81eaeb7d3159b35a01471d32792da8cb8fcbc5def9ddebd2677785e1be1367",
+      "selected_path": "seed-29-joint_uniform-selected.pt"
+    },
+    {
+      "arm": "joint_risk",
+      "seed": 29,
+      "selected_checkpoint_sha256": "1792ed0d23603dedd44951aa664a179cb03f0acf80f77c18b99a51e2aa0b1d9a",
+      "selected_path": "seed-29-joint_risk-selected.pt"
+    },
+    {
+      "arm": "joint_uniform",
+      "seed": 43,
+      "selected_checkpoint_sha256": "7723fce3951dbe2445347c01357ba3a2bb6a9b77d245ab3a72730c3655c6f9c7",
+      "selected_path": "seed-43-joint_uniform-selected.pt"
+    },
+    {
+      "arm": "joint_risk",
+      "seed": 43,
+      "selected_checkpoint_sha256": "1d941db69ac87f06ea297ecde0469dbffad7ceacfa1e37ace6470cc694bbf75e",
+      "selected_path": "seed-43-joint_risk-selected.pt"
+    }
+  ],
+  "selection_sha256": "f449a0b783f378780f2c73d9f3357bb9edbfa1776cd46841739220da96dc6e7d",
+  "source_manifest_sha256": "f3880a2eec68b6d061dc5fcb41612543cef1b6e3bccee5769d5a9e526a3dac91",
+  "source_sha256": {
+    "__init__.py": "b8ffcce1321fb505339985a35fa0ff97b6b1c31debfe0c1563632e179060d5cc",
+    "audit.py": "b04dff48e9774bc8e0ea5fdc049e3bc894757610ce595978daf6ccff49cb06d6",
+    "audit_statistics.py": "30b989714c225e97b0d9024151be894a19734fa0bc8764959dd53d575bebaf85",
+    "data.py": "733001f9410a940e05a0330b25cc6cd26c20844e16c709d39a26ea2e66571163",
+    "evaluation.py": "e1aec337f14561f12d0cc6806e3736b8878de8b80d49f140a38d1c331c284f9d",
+    "oracle.py": "fd9ca124c8dc5139aaf73b6690122dbab6323025ae9254e095bd278e746dfa68",
+    "protocol.py": "41a4767f75430e758703ad024bf2de6d65146810854a4a6206e8c89332c3d0ac",
+    "run.py": "fac3a8bf489d06b581ad5121f50d85ef0285cd787a7ed52778e1ab520f5c44b5",
+    "selection.py": "898bddbfe30412db26b067d7a43a8992c8ac2d47648cacade05df61440799d2b",
+    "test_objective.py": "5c585757ac159082d096b6e7430963edcc83a31e72098dffda7415a3ef5a4b4f",
+    "training.py": "fe3022648de682c8fce5985a8a82504d7417fa679894dd289dcf8d6f48de5f6f",
+    "verify_integration.py": "d9aba4406287c9cda24bc3ae885ddd2aa8ebb5211a2c667dfff965c4aa0c78a3"
+  },
+  "test_predictions_computed": false
+}

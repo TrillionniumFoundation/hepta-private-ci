@@ -1,0 +1,231 @@
+{
+  "actual_media_files": 46080,
+  "all_joint_acceptance_gates_passed": false,
+  "audit_observer_sha256": "b02514987ea2986321e00652e0823111d30ebb79104ff85eb88ef0eae9e35474",
+  "comparisons": [
+    {
+      "ce_difference": 0.1172764666139523,
+      "comparison": "joint_risk-frozen",
+      "fixed_seeds": [
+        17,
+        29,
+        43
+      ],
+      "paired_97_5_interval": [
+        0.09838574582300562,
+        0.13651617574555427
+      ],
+      "per_seed_ce_differences": [
+        0.09385419779968451,
+        0.12916637535382036,
+        0.1288088266883518
+      ],
+      "source_pairs": 512,
+      "split": "test"
+    },
+    {
+      "ce_difference": -0.01719475944673865,
+      "comparison": "joint_risk-joint_uniform",
+      "fixed_seeds": [
+        17,
+        29,
+        43
+      ],
+      "paired_97_5_interval": [
+        -0.026918797935186967,
+        -0.00802735180532918
+      ],
+      "per_seed_ce_differences": [
+        -0.01794744840635132,
+        -0.011873973770396562,
+        -0.02176285616346796
+      ],
+      "source_pairs": 512,
+      "split": "test"
+    },
+    {
+      "ce_difference": 0.13447122606069095,
+      "comparison": "joint_uniform-frozen",
+      "fixed_seeds": [
+        17,
+        29,
+        43
+      ],
+      "paired_97_5_interval": [
+        0.11540241121788203,
+        0.15332831074937517
+      ],
+      "per_seed_ce_differences": [
+        0.11180164620603583,
+        0.14104034912421692,
+        0.15057168285181977
+      ],
+      "source_pairs": 512,
+      "split": "test"
+    },
+    {
+      "ce_difference": 0.03177223671283347,
+      "comparison": "joint_risk-frozen",
+      "fixed_seeds": [
+        17,
+        29,
+        43
+      ],
+      "paired_97_5_interval": [
+        0.008441791925694267,
+        0.05612064129107493
+      ],
+      "per_seed_ce_differences": [
+        0.03716633840821215,
+        0.03991240200348167,
+        0.018237969726806358
+      ],
+      "source_pairs": 512,
+      "split": "retention"
+    },
+    {
+      "ce_difference": -0.0005586422576678851,
+      "comparison": "joint_risk-joint_uniform",
+      "fixed_seeds": [
+        17,
+        29,
+        43
+      ],
+      "paired_97_5_interval": [
+        -0.013353261302758587,
+        0.012102167222572487
+      ],
+      "per_seed_ce_differences": [
+        -0.0019309548820669598,
+        0.0019450571059699273,
+        -0.001690028996907178
+      ],
+      "source_pairs": 512,
+      "split": "retention"
+    },
+    {
+      "ce_difference": 0.03233087897050135,
+      "comparison": "joint_uniform-frozen",
+      "fixed_seeds": [
+        17,
+        29,
+        43
+      ],
+      "paired_97_5_interval": [
+        0.008765524020542368,
+        0.0574368376823409
+      ],
+      "per_seed_ce_differences": [
+        0.03909729329027911,
+        0.037967344897511746,
+        0.019927998723713536
+      ],
+      "source_pairs": 512,
+      "split": "retention"
+    }
+  ],
+  "exact_actual_reward_generator_gradient": false,
+  "generator_attribution": {
+    "attribution_gate_passed": true,
+    "ce_difference": 0.05434292988585698,
+    "comparison": "joint_risk-original_16_plan_privileged_oracle",
+    "oracle_ce": 0.7077343481369093,
+    "paired_97_5_interval": [
+      0.036803751253088324,
+      0.07222749248849995
+    ],
+    "per_seed_ce_differences": [
+      0.029385912131316694,
+      0.07413262919639707,
+      0.059510248329857074
+    ],
+    "same_budget_deployed_baseline": false
+  },
+  "generator_update_gate_passed": true,
+  "matched_training_gate_passed": false,
+  "native_owner_integration": false,
+  "natural_av_generation": false,
+  "raw_delivered_bundles": 23040,
+  "reward_observer_sha256": "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0",
+  "rows_sha256": "bda63e15ff23001693fefd22bb61345f09230579bfa2c9bc007b20961cd7d9ed",
+  "same_information_compute_comparison": "joint_risk vs joint_uniform; frozen receives no new optimization",
+  "schema": "hepta.ndu.actual-moment-qualification.v1",
+  "seal_sha256": "fe48e68159cceaa6dbf46e2b6cc2ddf9d0346995e59c05d9f7ad792561651807",
+  "summaries": {
+    "retention/frozen": {
+      "audit_ce": 0.7948357113782851,
+      "mean_audit_utility": 0.8944251001439018,
+      "mean_inference_cpu_ms": 0.162726041015625,
+      "mean_inference_wall_ms": 0.16266684244791665,
+      "plan_counts": [
+        1065,
+        147,
+        50,
+        274
+      ]
+    },
+    "retention/joint_risk": {
+      "audit_ce": 0.8266079480911186,
+      "mean_audit_utility": 0.9067805968007331,
+      "mean_inference_cpu_ms": 0.21032851953125,
+      "mean_inference_wall_ms": 0.21138560872395834,
+      "plan_counts": [
+        857,
+        141,
+        37,
+        501
+      ]
+    },
+    "retention/joint_uniform": {
+      "audit_ce": 0.8271665903487865,
+      "mean_audit_utility": 0.9057404479079803,
+      "mean_inference_cpu_ms": 0.15433008723958333,
+      "mean_inference_wall_ms": 0.15430065169270835,
+      "plan_counts": [
+        753,
+        154,
+        43,
+        586
+      ]
+    },
+    "test/frozen": {
+      "audit_ce": 0.644800811408814,
+      "mean_audit_utility": 0.8105487946378162,
+      "mean_inference_cpu_ms": 0.15208293212890625,
+      "mean_inference_wall_ms": 0.1521309812825521,
+      "plan_counts": [
+        4446,
+        592,
+        187,
+        919
+      ]
+    },
+    "test/joint_risk": {
+      "audit_ce": 0.7620772780227663,
+      "mean_audit_utility": 0.8749134162175324,
+      "mean_inference_cpu_ms": 0.16876388541666665,
+      "mean_inference_wall_ms": 0.1688500196940104,
+      "plan_counts": [
+        3578,
+        530,
+        142,
+        1894
+      ]
+    },
+    "test/joint_uniform": {
+      "audit_ce": 0.7792720374695049,
+      "mean_audit_utility": 0.8846800502315091,
+      "mean_inference_cpu_ms": 0.1686783759765625,
+      "mean_inference_wall_ms": 0.16875863509114583,
+      "plan_counts": [
+        3130,
+        605,
+        192,
+        2217
+      ]
+    }
+  },
+  "test_used_for_selection": false,
+  "timing": "descriptive one-host batches of32; inference includes encoder, gate, two transitions and decoder; delivery measured separately",
+  "writer_population_or_training_seed_population_inference": false
+}

@@ -1,0 +1,75 @@
+{
+  "archive_sha256": "929092b6f3bcbe1c56c9c2076c856d78f44755c4ad83d30b7f17510e8992e155",
+  "candidate_bundles": 98304,
+  "equal_budget_deployed_arm": false,
+  "offline_privileged_target_access": true,
+  "plans": [
+    [
+      "refine_semantic",
+      "refine_semantic"
+    ],
+    [
+      "refine_semantic",
+      "refine_image"
+    ],
+    [
+      "refine_semantic",
+      "refine_text"
+    ],
+    [
+      "refine_semantic",
+      "couple"
+    ],
+    [
+      "refine_image",
+      "refine_semantic"
+    ],
+    [
+      "refine_image",
+      "refine_image"
+    ],
+    [
+      "refine_image",
+      "refine_text"
+    ],
+    [
+      "refine_image",
+      "couple"
+    ],
+    [
+      "refine_text",
+      "refine_semantic"
+    ],
+    [
+      "refine_text",
+      "refine_image"
+    ],
+    [
+      "refine_text",
+      "refine_text"
+    ],
+    [
+      "refine_text",
+      "couple"
+    ],
+    [
+      "couple",
+      "refine_semantic"
+    ],
+    [
+      "couple",
+      "refine_image"
+    ],
+    [
+      "couple",
+      "refine_text"
+    ],
+    [
+      "couple",
+      "couple"
+    ]
+  ],
+  "rows_sha256": "b7c3d368f1c00a4c71c8e097d13ee09f4422ec4aec0ac3befe5f434e0b2a9f19",
+  "same_initial_latent_noise": true,
+  "schema": "hepta.ndu.original-oracle.v1"
+}
