@@ -78,6 +78,32 @@ async fn original_fixed_stream_accepts_bounded_reads_without_reconnect() {
     peer.join().unwrap();
 }
 #[tokio::test]
+async fn concurrent_read_is_refused_without_discarding_the_original_inflight_exchange() {
+    let (client, mut server) = fixture(Duration::from_millis(400));
+    let client = Arc::new(client);
+    let (requested_tx, requested_rx) = tokio::sync::oneshot::channel();
+    let (release_tx, release_rx) = std::sync::mpsc::channel();
+    let peer = std::thread::spawn(move || {
+        read_request(&mut server);
+        requested_tx.send(()).unwrap();
+        release_rx.recv().unwrap();
+        reply(&mut server, b"42");
+        read_request(&mut server);
+        reply(&mut server, b"43");
+    });
+    let first_client = Arc::clone(&client);
+    let first = tokio::spawn(async move { first_client.read::<u64>(&request()).await });
+    requested_rx.await.unwrap();
+    assert!(matches!(
+        client.read::<u64>(&request()).await,
+        Err(AgentdRootAuthorityError::Unavailable)
+    ));
+    release_tx.send(()).unwrap();
+    assert_eq!(first.await.unwrap().unwrap(), 42);
+    assert_eq!(client.read::<u64>(&request()).await.unwrap(), 43);
+    peer.join().unwrap();
+}
+#[tokio::test]
 async fn cancelled_original_exchange_discards_late_reply_and_stays_closed() {
     let (client, mut server) = fixture(Duration::from_millis(400));
     let peer = std::thread::spawn(move || {

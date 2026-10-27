@@ -33,6 +33,22 @@ has no bound session. A bound operational session is an additional real holder
 and cannot be made eligible by changing a threshold or explicitly unlocking it.
 No identity, Registry, signer, Root, clock, grant or ledger is duplicated.
 
+## Asynchronous observation serialization
+
+The original observation stream leaves its private slot for the entire RPC.
+A short synchronous mutex protects only taking and restoring that same stream;
+no mutex guard crosses an await. An empty slot refuses concurrent reads. Only a
+fully framed, parsed, live-Root response before the original deadline restores
+the stream. Cancellation or any uncertain result drops it with the slot empty,
+so a later call cannot consume a delayed reply, reconnect or retry.
+
+The session's separate private one-permit semaphore serializes the complete
+refresh or activation, including original consumer synchronization and the
+cache barrier. It contains no protected payload and exposes no permit-changing
+API. Activation retains its original 500 ms admission deadline. Cancelled work
+releases admission while the existing stream and activation fencing rules
+remain mandatory; blocking consumer jobs retain their own original File custody.
+
 ## Development and qualification
 
 Use `just fmt`, scoped `just fix -p codex-hepta-agentd`, and `just test`; do not

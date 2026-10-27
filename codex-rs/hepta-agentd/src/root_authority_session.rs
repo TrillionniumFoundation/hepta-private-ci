@@ -44,7 +44,9 @@ struct LiveRoot {
     end_boottime_ns: u64,
     active: AtomicBool,
     consumers: Mutex<Vec<FinalUseAuthority>>,
-    serial: tokio::sync::Mutex<()>,
+    // One asynchronous admission token covers the entire observation and
+    // consumer barrier. There is no shared payload behind this permit.
+    serial: tokio::sync::Semaphore,
 }
 
 // Only operational lifetimes retain this private, exact original File. Fenced
@@ -226,7 +228,7 @@ impl AgentdRootAuthoritySession {
                 .ok_or(AgentdRootAuthorityError::Refused)?,
             active: AtomicBool::new(false),
             consumers: Mutex::new(Vec::new()),
-            serial: tokio::sync::Mutex::new(()),
+            serial: tokio::sync::Semaphore::new(1),
         });
         let writer_file = Arc::new(OnceLock::new());
         refresh(&live, &stream, &writer_file).await?;
@@ -302,12 +304,18 @@ impl AgentdRootAuthoritySession {
             return Err(AgentdRootAuthorityError::Refused);
         }
         let started = boottime_ns()?;
-        let _serial = tokio::time::timeout(Duration::from_millis(500), self.live.serial.lock())
-            .await
-            .map_err(|_| {
+        let _serial = match tokio::time::timeout(
+            Duration::from_millis(500),
+            self.live.serial.acquire(),
+        )
+        .await
+        {
+            Ok(Ok(permit)) => permit,
+            Ok(Err(_)) | Err(_) => {
                 self.live.cache.fence();
-                AgentdRootAuthorityError::Unavailable
-            })?;
+                return Err(AgentdRootAuthorityError::Unavailable);
+            }
+        };
         if self.live.active.load(Ordering::Acquire) {
             return Err(AgentdRootAuthorityError::Refused);
         }
@@ -373,7 +381,11 @@ async fn refresh(
     stream: &RootObservationStream,
     writer_file: &WriterCustody,
 ) -> Result<(), AgentdRootAuthorityError> {
-    let _serial = live.serial.lock().await;
+    let _serial = live
+        .serial
+        .acquire()
+        .await
+        .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
     let started = boottime_ns()?;
     let observation: HostAuthorityObservationResponseV2 = stream
         .read(&HostAuthorityObservationRequestV2 {
