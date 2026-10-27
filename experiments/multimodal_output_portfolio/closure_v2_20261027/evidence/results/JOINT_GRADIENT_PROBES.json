@@ -1,0 +1,1841 @@
+{
+  "actual_media_members": 9216,
+  "actual_reconstructed_bundles": 4608,
+  "cpu_seconds": 6.643791152,
+  "limitations": [
+    "All18 probes are clean-condition steps because the saved checkpoints are200-step multiples.",
+    "This validates the recorded costs and gradients at the selected saved states, not every unretained original training artifact.",
+    "Fitted reward CNN is an imperfect fixed recognizer; this is not human semantic certification."
+  ],
+  "maximum_coefficient_gradient_error": 1.8801063328410805e-07,
+  "maximum_cost_error": 3.052861996533096e-08,
+  "maximum_preclip_norm_error": 1.1430845214821517e-07,
+  "new_qualification_sources_scored": 0,
+  "parameter_updates_performed": 0,
+  "passed": true,
+  "probes": 18,
+  "protocol_sha256": "d58a7c2d748e0627d860d9e40723a44758240f767e1b2944eb65ff048ca0abda",
+  "records": [
+    {
+      "archive": "17-direct_mean-step-1.zip",
+      "archive_sha256": "636ee839c15ff7ed483608894026d77444078a706eded85fd921fb9341815bb3",
+      "arm": "direct_mean",
+      "condition": "clean",
+      "examples": 256,
+      "input_sha256": "07c5e463e46fba8b23cf9c975065be1cb5b9a01e0ea36f21b0e6f7a87e886c2e",
+      "maximum_coefficient_gradient_error": 1.3211405114343933e-07,
+      "maximum_cost_error": 2.9661173961414988e-08,
+      "outcomes_sha256": "dc8f73684e6804cff70b02f9d0a4ab58f3a4355b960f529837258102637fd0af",
+      "parameter_preclip_norm": 0.7565271805392261,
+      "plans": [
+        0,
+        3,
+        0,
+        3,
+        1,
+        2,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        0,
+        3,
+        0
+      ],
+      "preceding_checkpoint_sha256": null,
+      "preclip_norm_error": 1.1430845214821517e-07,
+      "seed": 17,
+      "source_ids": [
+        [
+          "mnist:train:19195:18cf50659da757f3fa6b1a66352ad8ce1c480241111f22fb724931c33a4f5ec8",
+          "mnist:train:50087:504c6d94489f2c8d6d92a218f0e1fd115f20390e63a23f2427cbf96c076b92af"
+        ],
+        [
+          "mnist:train:18764:376c49664f42a81050b45d015baa3d6f23fef4cfbed6a64339ec3c70b8d29150",
+          "mnist:train:5419:f8210a920ffcc7172fcdd953f70901d0cdba6ca41b1f571520f8ee4b22d2aa08"
+        ],
+        [
+          "mnist:train:37322:41ef050b94821276c295787f16029671b8695a2442f92b8cacb0b7e6224f0a48",
+          "mnist:train:28299:c4a61e0edbf96240b6a2aa506c2eb5ec5d01144c27e3f234619a47ec410ec5df"
+        ],
+        [
+          "mnist:train:52269:26b946926816b685b71fb19716c663295e35bf1c4975742c74eb32c1a0637fcd",
+          "mnist:train:51991:0a53631f80709f490203a534a17cd25cf20c4fdeec5625730c45fb8a18642982"
+        ],
+        [
+          "mnist:train:22513:382d3afaf4673d850dcf8436dce19ea702b0ba58228c9a7622715a498d251daf",
+          "mnist:train:46678:cecc88e05916d7f2748e0d5fdc531a90e98624cd5f6c48e1fddd0ad6c6462700"
+        ],
+        [
+          "mnist:train:29967:2245f0d04d41b27be74203ce1cb3fa371e141fc6e2294d93129d900ee4900bb6",
+          "mnist:train:5235:97e589d074b13bfffc8ac3aa62bce618dfd65bd59c0cdefa841afd0ff78514c7"
+        ],
+        [
+          "mnist:train:24642:7b75ac16ae833c7098e546cb3034a9eb83d1c58e859304f42672859ef7d45e68",
+          "mnist:train:14188:0ca968f9077aa7307f723f1d247d0131ef0a6092bb479d22dc7d8ad3f62379f3"
+        ],
+        [
+          "mnist:train:5623:a740651f06d23a7c94768ec7ff2c589ee154f68756e638beeaf65cf42a18e4c3",
+          "mnist:train:2106:f2a322e7d27d48ea546ff8424f99096624f08c9dbd209674c4f5832185cd68e8"
+        ],
+        [
+          "mnist:train:20296:caf103a61930e4c2460fa2ea2d999dd092b1864483b3c9d6e760cd5079c5f08d",
+          "mnist:train:6383:582162043a5e1008f5675f83c181f2e165399a44838ecf181b3c61941e6b1aa6"
+        ],
+        [
+          "mnist:train:11694:7b1c761cccd9d24692e3a292d45fdc54706627135667a2684ea5f511418b91a7",
+          "mnist:train:47179:c3194ff24828e1ef2fef4dfc4893884719baf38f1bec9d52ad17db6c930353eb"
+        ],
+        [
+          "mnist:train:50978:053631f121aaac6d7692039eac01ae573ae4d6a962845964994a8cc84addc635",
+          "mnist:train:55893:a6e8c682e2f87341d0de063b8f65716dd17c96a6abd4f4b78ff197ee3ef3cc74"
+        ],
+        [
+          "mnist:train:30692:685b93f67ff87662d18932e0476b857a8ac1a2f4be9c7989d80a3574d0a7b3d8",
+          "mnist:train:13732:0e768129c7adcf2095c199de6e7ae54e99bde741a8aba019301340448365fca2"
+        ],
+        [
+          "mnist:train:44460:57e7aba689ace6a92edbe99b0afa0844fd65f6f4a409ca221dcea82c4932d592",
+          "mnist:train:10897:5b5adb935ffb536c9b1df556b5efa90e2519526ec5636ea56d82852e479a21b2"
+        ],
+        [
+          "mnist:train:17145:d10151f7717b4df7d776966bba79c2d8c26e96777b8570aab8cef2e80573124c",
+          "mnist:train:8002:91512c871ff9ade6849908fcdc5d511d90105cdcedf7dfa45765e09ee7a0ce0d"
+        ],
+        [
+          "mnist:train:36659:f3d7449c16ccb69824ca760c3e6c2aafe1849678e7840f82f5fd9379675c9b8a",
+          "mnist:train:4222:509f6b46d0bc0b7edec425d4355e380c77e638f997ca022e9a2da6e7112b683a"
+        ],
+        [
+          "mnist:train:17239:cdd0ce2fe9d9e22bf8bdaa1f9cead3f4553d4593a59112be8514e35bdd5510a0",
+          "mnist:train:12891:c181305c63db355d8c580637a6952ef03281b1498a95e1919ccb0a53845caca4"
+        ]
+      ],
+      "step": 1,
+      "trace_sha256": "c2db8ea6a1607e1790703dd63807c6ee454cc6d7a7d86f6f6baf0a1b9ad73a45"
+    },
+    {
+      "archive": "17-direct_mean-step-201.zip",
+      "archive_sha256": "f16eb5d64c6c892f44c5ce8f3735ceddd16d402ecc1cf09ec406cd480f63032b",
+      "arm": "direct_mean",
+      "condition": "clean",
+      "examples": 256,
+      "input_sha256": "e500cb2c834ab579b9d344e7785263123d5c18225a6f8a0ba70a0d1e973928ef",
+      "maximum_coefficient_gradient_error": 1.584558833034322e-07,
+      "maximum_cost_error": 3.0022381469763104e-08,
+      "outcomes_sha256": "7f86cedece7eea4b65c1c16c129bd2c96baa6264a2e4ef7b0ad5fdc436340827",
+      "parameter_preclip_norm": 0.8803680038753137,
+      "plans": [
+        3,
+        0,
+        3,
+        3,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        3,
+        0,
+        0
+      ],
+      "preceding_checkpoint_sha256": "e34a019934dc08a45badccec55fa1ce7b869f4e3c3179650e16ca47da6999810",
+      "preclip_norm_error": 6.917148676066631e-08,
+      "seed": 17,
+      "source_ids": [
+        [
+          "mnist:train:50854:3cd529af37adc8771babbbc829fb70fea68ee8948cc963da2d4073f5c0b1ca8e",
+          "mnist:train:18424:1bd9dfe29f738d0b6ccae85f7cc6433e3fd4ce3d1bcffef42c039e5d278bb996"
+        ],
+        [
+          "mnist:train:47820:14f806d47994e3067702f699e7c812bd327df419a156010d3bc239e6ce71d609",
+          "mnist:train:59192:757c8e1e68124fbb0f534315989f5645ca31ac0c4880079997674d19fd506a22"
+        ],
+        [
+          "mnist:train:57727:3673c53bc4da733f37a1ad5d4ae37f3f9e9d33118825623ace34f01d87994df1",
+          "mnist:train:2046:d73e3f98ee9108084a2ea9564a4acafd840d204709fcf2eb22473b64d9ff4f25"
+        ],
+        [
+          "mnist:train:30499:588cd98a765fd7ec38c6e2b5c939d4b61a675e0e343dd10888cd536acabdfa4b",
+          "mnist:train:20520:5f975d256267c73b2adc0cdc1aa2c1a0fa0d5db28cd7aa74475df22250b3d4c7"
+        ],
+        [
+          "mnist:train:16671:528b5771c3e3f45331b66887b10016e0cb3af40cb71b586c52d83440e9245691",
+          "mnist:train:33772:067b337c9f25ae8084a8cf66689a93144983015f1053c836cf14bfdb8990939f"
+        ],
+        [
+          "mnist:train:30264:b42166bfffeb4a456e434a0faf2ca96b80d40147a16f4ee389cf53d5854ae396",
+          "mnist:train:18228:1a46f15a581cd2e79d1dbb4e5d8e2329fcfa98736b29f40c54396be90e05c4b8"
+        ],
+        [
+          "mnist:train:42037:5cc47ee891608be6e0d2fadea536b91cb9eb6bce5832a511cfb081f046a8ae7c",
+          "mnist:train:48446:f596d4fb33de532b8c11383783df5ef9a195b2e8fca5ab675199d24eaeab85e5"
+        ],
+        [
+          "mnist:train:58281:43ab2b7c8608e8332e8f530a72386fd238a46a7cf2256beb32335f8ef4c81e77",
+          "mnist:train:640:d0c9b9262112dd3699a4f01819bedf77799a4e435baf46390b39c3561f7ad2ac"
+        ],
+        [
+          "mnist:train:32855:a88e9aa2cd80e52d209f1eda81059d1400a4cb4c8a50883567fa23869cbd0f02",
+          "mnist:train:48773:3659777e00f6423eb942106e4f90bc543d6d89c97d9f9dd4ba06987e4af8c01a"
+        ],
+        [
+          "mnist:train:17169:9327ffc464b0a7d20ca37ea5214ffac8bc502841ec28b165dce5c4115457923c",
+          "mnist:train:57077:966bd0d5c5c466cdaa592eeb96bb580ad7f78cb3cebcef62278c8a2e0fd86690"
+        ],
+        [
+          "mnist:train:31680:4b61c8e4a71500795b4c9ba5d60d4d8d0875388933b9f1fa444d3e7a1a609770",
+          "mnist:train:51484:898afbf313f5f9533a733e1f559848259fc81a54c8519a0defee1d0e255cf7a1"
+        ],
+        [
+          "mnist:train:30619:dd7ede60c0486d03e1c1766326db6e759bb54d0c6edc7fd3ba7f72edf4ec94ba",
+          "mnist:train:1287:42440012553d35e1ca19953b4175c6cbbd2c8ee300ab413c237fb5e2ea88b311"
+        ],
+        [
+          "mnist:train:23930:1b24db6228c7df69b54557ad5069c0f33626bc021fd4f2608598f956e3772a6f",
+          "mnist:train:37192:2fd65b26c6115c2755654a2eb960909dc224b88d8c6d2d8ae93690c44a789000"
+        ],
+        [
+          "mnist:train:36666:1ba3f24f7f00e09441d78a4cddc9dfaaaecb6e1f84ed27d3a5487dad896a79f5",
+          "mnist:train:2824:ac8bfe44043f4947188aa8f683ac7e782bab1d59d660a4df552d6bc787a2025b"
+        ],
+        [
+          "mnist:train:27851:811aacfeedc844b32f16fbc929d94683fe42ed3904bdb31a0968f32c71254aa6",
+          "mnist:train:39774:67c63110cfc1fe26ba2aedbc8ba2aa7b68f72fb2f714ad1ea9f9d0a899f3b923"
+        ],
+        [
+          "mnist:train:4825:516ed46900ddcd6c7ee2d54672bc70be050dadc6b53458bb48c07207b0ac5a1d",
+          "mnist:train:13018:91cb4253761d977473dd8b467fd5fb2255f3d599b9390fdcd83a31c0119cb5b3"
+        ]
+      ],
+      "step": 201,
+      "trace_sha256": "c2db8ea6a1607e1790703dd63807c6ee454cc6d7a7d86f6f6baf0a1b9ad73a45"
+    },
+    {
+      "archive": "17-direct_mean-step-401.zip",
+      "archive_sha256": "42235e888a0ef5bfc87c3805f12d46796964a25cc8d9644f5c3feb533841cd15",
+      "arm": "direct_mean",
+      "condition": "clean",
+      "examples": 256,
+      "input_sha256": "0ba67e0f069c27763e1cc5178d013da54f2fca9506f006cebf46d6723c7732d2",
+      "maximum_coefficient_gradient_error": 1.062049772543967e-07,
+      "maximum_cost_error": 3.016192984262034e-08,
+      "outcomes_sha256": "3aae0e9d50027bd8273c1a7dd89e1b4065cfe868b480319fe448cbcc838acdd7",
+      "parameter_preclip_norm": 0.8184198372341721,
+      "plans": [
+        0,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        0,
+        3,
+        0,
+        3,
+        3,
+        3,
+        0,
+        3
+      ],
+      "preceding_checkpoint_sha256": "30ac980a7559768c7f996cd5f7b936d7258bb9e1e741f3f81aa06e412ac5e1a7",
+      "preclip_norm_error": 2.312436986340316e-08,
+      "seed": 17,
+      "source_ids": [
+        [
+          "mnist:train:42936:2ced3c8ee8f8e85434d03f79887b645db3240a727ba3ce103093ad198a5dd7e7",
+          "mnist:train:26003:b4821ed6b98c94c15bf0411d964ff6dacbd46759923c1871d6a6f7202535e818"
+        ],
+        [
+          "mnist:train:17166:4c008c9388a4b852384bf4ab5a219acb1ff48abde18590177996b820b192ccce",
+          "mnist:train:40059:a5ae3bc7430d2175ef07a1ec391bef9e442bfed762ec9e29f2806770b82453ee"
+        ],
+        [
+          "mnist:train:56605:3984331a92767f88251c4d157e2d03e0382318ee142d1b13b0686b97611c3a61",
+          "mnist:train:17460:df2f29d15579705ea93c96d2784e95b63d68f1aa2ccaca7ad01c16be61342f6b"
+        ],
+        [
+          "mnist:train:21102:97056d71f8ed81f4121ae3ac14ced6d33df69069cc9d45996c4995b8e2fb2d7e",
+          "mnist:train:2342:b94c8a0a4013e8f860fd34dacd780b2b58a63f24745ed7b0dacefa3c37ed38d3"
+        ],
+        [
+          "mnist:train:46932:47c29427430e26ef133a41188e7da53bbe8d60def60659b211c2deda15242dbb",
+          "mnist:train:16190:316edc15b1b21b86447e71c045d67f5cf435da84fa14bd75cde9c6087e0275c5"
+        ],
+        [
+          "mnist:train:9342:8a0c9442b32fd0cde0a75768f19a7a810605a5f47fae61750e75c589834d45df",
+          "mnist:train:3748:175e733e90037a36544d8082e1345f9761932c335f7fb43fe6f0022bf792796f"
+        ],
+        [
+          "mnist:train:56255:8de201e29728f00236b5c36baa54cbf7b0c8c76516ff2dec727fbcca642f25c0",
+          "mnist:train:39686:0becb5447b6e3e7cc611a3d9088877a68cf2bddbfe2d5464313c94caf9c3b7c5"
+        ],
+        [
+          "mnist:train:38954:69fc49c6a12198526c3b27efc14ed678e2828a06bcc316e0e81670960eec15b8",
+          "mnist:train:5144:2610bf1e1d3fdfdc5e061817933a926b8c2ba0add028e888d60f18966f1625f7"
+        ],
+        [
+          "mnist:train:30870:35f9d3119da3f6dbc82ce6008caea362ec81ee994b2683988e2c55a25850dad5",
+          "mnist:train:14337:e6deada7c425e85a8339bc79802e79d6a12a4bf7240396da8c1cb8493d12a0d6"
+        ],
+        [
+          "mnist:train:12759:d3fc0adf522135cd361062eba04114f9a9a45cd5cf79fc9623cc1282e87afc35",
+          "mnist:train:12307:78569ae49caedd0cf8ba6a69e42b4d89114c638d5474d0f467ba8e261efaa411"
+        ],
+        [
+          "mnist:train:35576:e483266693d61d42071be218e31f23a82e68e3552743fe7723bbcce9727f339f",
+          "mnist:train:22749:564c00f4fadf868583f67e88c33e1679bb9380fedce685803ce61c17ca0b563d"
+        ],
+        [
+          "mnist:train:45537:682203681d7c4937070cb6300229b1d63fe69ed34763f181fe5328665628b252",
+          "mnist:train:35380:d8ac6f4aa9933ddc1de39a76f09d14a6fa0b65306c295db553bf19b64ad35a6c"
+        ],
+        [
+          "mnist:train:36167:c91c3182454ed530dfa00c5c5564f151dcbe05e64a47071d0934c6be3f5ec313",
+          "mnist:train:12161:919ce6df43a1e9884a62c8157a353ffaf90da7670149026b92fc70a008886510"
+        ],
+        [
+          "mnist:train:53742:a6468e476f2f8ff701f8f3850da2a75c9227c7156a8a51667bb34f44df4e17f1",
+          "mnist:train:15823:7547776df29cca6b32f8afef7a8d0ec171340e9aef78272a9061ece8795030de"
+        ],
+        [
+          "mnist:train:59373:f98d257d314670d2132f5153d60cba9b4d9d9dae266e00641c667519da9d9f82",
+          "mnist:train:2597:e1f92cf83333e72086ec61544de1c0badd67514772b1ff8f26bc28922c0b5829"
+        ],
+        [
+          "mnist:train:49796:7f605628ae3cc10e0e0515a4b9084b499e9c5eafdf66dd828561a617576eaa89",
+          "mnist:train:3151:efa0219c31f30b9ce13edc48e6b27fe0007e3dcb110674981b18072b68cf96b0"
+        ]
+      ],
+      "step": 401,
+      "trace_sha256": "c2db8ea6a1607e1790703dd63807c6ee454cc6d7a7d86f6f6baf0a1b9ad73a45"
+    },
+    {
+      "archive": "17-direct_risk-step-1.zip",
+      "archive_sha256": "defe55e7a1ef67f989a2784fbcf1c07edf01a2b17a742eb42fa7f56fc696f271",
+      "arm": "direct_risk",
+      "condition": "clean",
+      "examples": 256,
+      "input_sha256": "a159aa5e54e6cb9bb72c112409a66c4add9fa15b179ab0fdabc5df12da6b4168",
+      "maximum_coefficient_gradient_error": 1.2621203093754474e-07,
+      "maximum_cost_error": 1.8467135043387373e-08,
+      "outcomes_sha256": "dc8f73684e6804cff70b02f9d0a4ab58f3a4355b960f529837258102637fd0af",
+      "parameter_preclip_norm": 0.3517465878177421,
+      "plans": [
+        0,
+        3,
+        0,
+        3,
+        1,
+        2,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        0,
+        3,
+        0
+      ],
+      "preceding_checkpoint_sha256": null,
+      "preclip_norm_error": 2.8674675689455142e-08,
+      "seed": 17,
+      "source_ids": [
+        [
+          "mnist:train:19195:18cf50659da757f3fa6b1a66352ad8ce1c480241111f22fb724931c33a4f5ec8",
+          "mnist:train:50087:504c6d94489f2c8d6d92a218f0e1fd115f20390e63a23f2427cbf96c076b92af"
+        ],
+        [
+          "mnist:train:18764:376c49664f42a81050b45d015baa3d6f23fef4cfbed6a64339ec3c70b8d29150",
+          "mnist:train:5419:f8210a920ffcc7172fcdd953f70901d0cdba6ca41b1f571520f8ee4b22d2aa08"
+        ],
+        [
+          "mnist:train:37322:41ef050b94821276c295787f16029671b8695a2442f92b8cacb0b7e6224f0a48",
+          "mnist:train:28299:c4a61e0edbf96240b6a2aa506c2eb5ec5d01144c27e3f234619a47ec410ec5df"
+        ],
+        [
+          "mnist:train:52269:26b946926816b685b71fb19716c663295e35bf1c4975742c74eb32c1a0637fcd",
+          "mnist:train:51991:0a53631f80709f490203a534a17cd25cf20c4fdeec5625730c45fb8a18642982"
+        ],
+        [
+          "mnist:train:22513:382d3afaf4673d850dcf8436dce19ea702b0ba58228c9a7622715a498d251daf",
+          "mnist:train:46678:cecc88e05916d7f2748e0d5fdc531a90e98624cd5f6c48e1fddd0ad6c6462700"
+        ],
+        [
+          "mnist:train:29967:2245f0d04d41b27be74203ce1cb3fa371e141fc6e2294d93129d900ee4900bb6",
+          "mnist:train:5235:97e589d074b13bfffc8ac3aa62bce618dfd65bd59c0cdefa841afd0ff78514c7"
+        ],
+        [
+          "mnist:train:24642:7b75ac16ae833c7098e546cb3034a9eb83d1c58e859304f42672859ef7d45e68",
+          "mnist:train:14188:0ca968f9077aa7307f723f1d247d0131ef0a6092bb479d22dc7d8ad3f62379f3"
+        ],
+        [
+          "mnist:train:5623:a740651f06d23a7c94768ec7ff2c589ee154f68756e638beeaf65cf42a18e4c3",
+          "mnist:train:2106:f2a322e7d27d48ea546ff8424f99096624f08c9dbd209674c4f5832185cd68e8"
+        ],
+        [
+          "mnist:train:20296:caf103a61930e4c2460fa2ea2d999dd092b1864483b3c9d6e760cd5079c5f08d",
+          "mnist:train:6383:582162043a5e1008f5675f83c181f2e165399a44838ecf181b3c61941e6b1aa6"
+        ],
+        [
+          "mnist:train:11694:7b1c761cccd9d24692e3a292d45fdc54706627135667a2684ea5f511418b91a7",
+          "mnist:train:47179:c3194ff24828e1ef2fef4dfc4893884719baf38f1bec9d52ad17db6c930353eb"
+        ],
+        [
+          "mnist:train:50978:053631f121aaac6d7692039eac01ae573ae4d6a962845964994a8cc84addc635",
+          "mnist:train:55893:a6e8c682e2f87341d0de063b8f65716dd17c96a6abd4f4b78ff197ee3ef3cc74"
+        ],
+        [
+          "mnist:train:30692:685b93f67ff87662d18932e0476b857a8ac1a2f4be9c7989d80a3574d0a7b3d8",
+          "mnist:train:13732:0e768129c7adcf2095c199de6e7ae54e99bde741a8aba019301340448365fca2"
+        ],
+        [
+          "mnist:train:44460:57e7aba689ace6a92edbe99b0afa0844fd65f6f4a409ca221dcea82c4932d592",
+          "mnist:train:10897:5b5adb935ffb536c9b1df556b5efa90e2519526ec5636ea56d82852e479a21b2"
+        ],
+        [
+          "mnist:train:17145:d10151f7717b4df7d776966bba79c2d8c26e96777b8570aab8cef2e80573124c",
+          "mnist:train:8002:91512c871ff9ade6849908fcdc5d511d90105cdcedf7dfa45765e09ee7a0ce0d"
+        ],
+        [
+          "mnist:train:36659:f3d7449c16ccb69824ca760c3e6c2aafe1849678e7840f82f5fd9379675c9b8a",
+          "mnist:train:4222:509f6b46d0bc0b7edec425d4355e380c77e638f997ca022e9a2da6e7112b683a"
+        ],
+        [
+          "mnist:train:17239:cdd0ce2fe9d9e22bf8bdaa1f9cead3f4553d4593a59112be8514e35bdd5510a0",
+          "mnist:train:12891:c181305c63db355d8c580637a6952ef03281b1498a95e1919ccb0a53845caca4"
+        ]
+      ],
+      "step": 1,
+      "trace_sha256": "d46dee2404e43b9d4bc9d607ced8b6b8890cbfdfc02acc674b932bc32b53b965"
+    },
+    {
+      "archive": "17-direct_risk-step-201.zip",
+      "archive_sha256": "ca4a03e527477ea4565f4cc0e3b72012bc78f41b74e2e7b52817776781be5030",
+      "arm": "direct_risk",
+      "condition": "clean",
+      "examples": 256,
+      "input_sha256": "3f15ae32d8bf81c6f4bfcdafb789e37a6f52717dce84b9ebbaf120ff73e1ae52",
+      "maximum_coefficient_gradient_error": 6.223036896901846e-08,
+      "maximum_cost_error": 2.07727246515077e-08,
+      "outcomes_sha256": "7bfc366fe84f24608717e3d825aabf7e28440e8aa99c7d90f92f3be28efd570d",
+      "parameter_preclip_norm": 0.5092660721956555,
+      "plans": [
+        3,
+        0,
+        3,
+        3,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        3,
+        0,
+        0
+      ],
+      "preceding_checkpoint_sha256": "098fc8ae70f27a0224a0b7261b26aab169f50ee47a9bc0c64186823856be00b3",
+      "preclip_norm_error": 6.276482000799888e-09,
+      "seed": 17,
+      "source_ids": [
+        [
+          "mnist:train:50854:3cd529af37adc8771babbbc829fb70fea68ee8948cc963da2d4073f5c0b1ca8e",
+          "mnist:train:18424:1bd9dfe29f738d0b6ccae85f7cc6433e3fd4ce3d1bcffef42c039e5d278bb996"
+        ],
+        [
+          "mnist:train:47820:14f806d47994e3067702f699e7c812bd327df419a156010d3bc239e6ce71d609",
+          "mnist:train:59192:757c8e1e68124fbb0f534315989f5645ca31ac0c4880079997674d19fd506a22"
+        ],
+        [
+          "mnist:train:57727:3673c53bc4da733f37a1ad5d4ae37f3f9e9d33118825623ace34f01d87994df1",
+          "mnist:train:2046:d73e3f98ee9108084a2ea9564a4acafd840d204709fcf2eb22473b64d9ff4f25"
+        ],
+        [
+          "mnist:train:30499:588cd98a765fd7ec38c6e2b5c939d4b61a675e0e343dd10888cd536acabdfa4b",
+          "mnist:train:20520:5f975d256267c73b2adc0cdc1aa2c1a0fa0d5db28cd7aa74475df22250b3d4c7"
+        ],
+        [
+          "mnist:train:16671:528b5771c3e3f45331b66887b10016e0cb3af40cb71b586c52d83440e9245691",
+          "mnist:train:33772:067b337c9f25ae8084a8cf66689a93144983015f1053c836cf14bfdb8990939f"
+        ],
+        [
+          "mnist:train:30264:b42166bfffeb4a456e434a0faf2ca96b80d40147a16f4ee389cf53d5854ae396",
+          "mnist:train:18228:1a46f15a581cd2e79d1dbb4e5d8e2329fcfa98736b29f40c54396be90e05c4b8"
+        ],
+        [
+          "mnist:train:42037:5cc47ee891608be6e0d2fadea536b91cb9eb6bce5832a511cfb081f046a8ae7c",
+          "mnist:train:48446:f596d4fb33de532b8c11383783df5ef9a195b2e8fca5ab675199d24eaeab85e5"
+        ],
+        [
+          "mnist:train:58281:43ab2b7c8608e8332e8f530a72386fd238a46a7cf2256beb32335f8ef4c81e77",
+          "mnist:train:640:d0c9b9262112dd3699a4f01819bedf77799a4e435baf46390b39c3561f7ad2ac"
+        ],
+        [
+          "mnist:train:32855:a88e9aa2cd80e52d209f1eda81059d1400a4cb4c8a50883567fa23869cbd0f02",
+          "mnist:train:48773:3659777e00f6423eb942106e4f90bc543d6d89c97d9f9dd4ba06987e4af8c01a"
+        ],
+        [
+          "mnist:train:17169:9327ffc464b0a7d20ca37ea5214ffac8bc502841ec28b165dce5c4115457923c",
+          "mnist:train:57077:966bd0d5c5c466cdaa592eeb96bb580ad7f78cb3cebcef62278c8a2e0fd86690"
+        ],
+        [
+          "mnist:train:31680:4b61c8e4a71500795b4c9ba5d60d4d8d0875388933b9f1fa444d3e7a1a609770",
+          "mnist:train:51484:898afbf313f5f9533a733e1f559848259fc81a54c8519a0defee1d0e255cf7a1"
+        ],
+        [
+          "mnist:train:30619:dd7ede60c0486d03e1c1766326db6e759bb54d0c6edc7fd3ba7f72edf4ec94ba",
+          "mnist:train:1287:42440012553d35e1ca19953b4175c6cbbd2c8ee300ab413c237fb5e2ea88b311"
+        ],
+        [
+          "mnist:train:23930:1b24db6228c7df69b54557ad5069c0f33626bc021fd4f2608598f956e3772a6f",
+          "mnist:train:37192:2fd65b26c6115c2755654a2eb960909dc224b88d8c6d2d8ae93690c44a789000"
+        ],
+        [
+          "mnist:train:36666:1ba3f24f7f00e09441d78a4cddc9dfaaaecb6e1f84ed27d3a5487dad896a79f5",
+          "mnist:train:2824:ac8bfe44043f4947188aa8f683ac7e782bab1d59d660a4df552d6bc787a2025b"
+        ],
+        [
+          "mnist:train:27851:811aacfeedc844b32f16fbc929d94683fe42ed3904bdb31a0968f32c71254aa6",
+          "mnist:train:39774:67c63110cfc1fe26ba2aedbc8ba2aa7b68f72fb2f714ad1ea9f9d0a899f3b923"
+        ],
+        [
+          "mnist:train:4825:516ed46900ddcd6c7ee2d54672bc70be050dadc6b53458bb48c07207b0ac5a1d",
+          "mnist:train:13018:91cb4253761d977473dd8b467fd5fb2255f3d599b9390fdcd83a31c0119cb5b3"
+        ]
+      ],
+      "step": 201,
+      "trace_sha256": "d46dee2404e43b9d4bc9d607ced8b6b8890cbfdfc02acc674b932bc32b53b965"
+    },
+    {
+      "archive": "17-direct_risk-step-401.zip",
+      "archive_sha256": "3c9c34739db999ca5ceead6d4fc6a2527361d83c0bffb8ea2d6838bec7166c6f",
+      "arm": "direct_risk",
+      "condition": "clean",
+      "examples": 256,
+      "input_sha256": "d177c884fb479c8ac0224c2e5d4f146a9c9a06dfa04584eab21d5bfe72e1d5c9",
+      "maximum_coefficient_gradient_error": 4.80400777980446e-08,
+      "maximum_cost_error": 1.8669705281748605e-08,
+      "outcomes_sha256": "660296c56cd7067d615342ae17a2fb32b23a8d47bc41790a53ca912c81b5502f",
+      "parameter_preclip_norm": 0.1948735870860981,
+      "plans": [
+        0,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        0,
+        3,
+        0,
+        3,
+        3,
+        3,
+        0,
+        3
+      ],
+      "preceding_checkpoint_sha256": "8daee75e2307b3f424cfa4627baa5a61ffa634935ad309aeca73a1e55bf0c905",
+      "preclip_norm_error": 7.890628705986558e-10,
+      "seed": 17,
+      "source_ids": [
+        [
+          "mnist:train:42936:2ced3c8ee8f8e85434d03f79887b645db3240a727ba3ce103093ad198a5dd7e7",
+          "mnist:train:26003:b4821ed6b98c94c15bf0411d964ff6dacbd46759923c1871d6a6f7202535e818"
+        ],
+        [
+          "mnist:train:17166:4c008c9388a4b852384bf4ab5a219acb1ff48abde18590177996b820b192ccce",
+          "mnist:train:40059:a5ae3bc7430d2175ef07a1ec391bef9e442bfed762ec9e29f2806770b82453ee"
+        ],
+        [
+          "mnist:train:56605:3984331a92767f88251c4d157e2d03e0382318ee142d1b13b0686b97611c3a61",
+          "mnist:train:17460:df2f29d15579705ea93c96d2784e95b63d68f1aa2ccaca7ad01c16be61342f6b"
+        ],
+        [
+          "mnist:train:21102:97056d71f8ed81f4121ae3ac14ced6d33df69069cc9d45996c4995b8e2fb2d7e",
+          "mnist:train:2342:b94c8a0a4013e8f860fd34dacd780b2b58a63f24745ed7b0dacefa3c37ed38d3"
+        ],
+        [
+          "mnist:train:46932:47c29427430e26ef133a41188e7da53bbe8d60def60659b211c2deda15242dbb",
+          "mnist:train:16190:316edc15b1b21b86447e71c045d67f5cf435da84fa14bd75cde9c6087e0275c5"
+        ],
+        [
+          "mnist:train:9342:8a0c9442b32fd0cde0a75768f19a7a810605a5f47fae61750e75c589834d45df",
+          "mnist:train:3748:175e733e90037a36544d8082e1345f9761932c335f7fb43fe6f0022bf792796f"
+        ],
+        [
+          "mnist:train:56255:8de201e29728f00236b5c36baa54cbf7b0c8c76516ff2dec727fbcca642f25c0",
+          "mnist:train:39686:0becb5447b6e3e7cc611a3d9088877a68cf2bddbfe2d5464313c94caf9c3b7c5"
+        ],
+        [
+          "mnist:train:38954:69fc49c6a12198526c3b27efc14ed678e2828a06bcc316e0e81670960eec15b8",
+          "mnist:train:5144:2610bf1e1d3fdfdc5e061817933a926b8c2ba0add028e888d60f18966f1625f7"
+        ],
+        [
+          "mnist:train:30870:35f9d3119da3f6dbc82ce6008caea362ec81ee994b2683988e2c55a25850dad5",
+          "mnist:train:14337:e6deada7c425e85a8339bc79802e79d6a12a4bf7240396da8c1cb8493d12a0d6"
+        ],
+        [
+          "mnist:train:12759:d3fc0adf522135cd361062eba04114f9a9a45cd5cf79fc9623cc1282e87afc35",
+          "mnist:train:12307:78569ae49caedd0cf8ba6a69e42b4d89114c638d5474d0f467ba8e261efaa411"
+        ],
+        [
+          "mnist:train:35576:e483266693d61d42071be218e31f23a82e68e3552743fe7723bbcce9727f339f",
+          "mnist:train:22749:564c00f4fadf868583f67e88c33e1679bb9380fedce685803ce61c17ca0b563d"
+        ],
+        [
+          "mnist:train:45537:682203681d7c4937070cb6300229b1d63fe69ed34763f181fe5328665628b252",
+          "mnist:train:35380:d8ac6f4aa9933ddc1de39a76f09d14a6fa0b65306c295db553bf19b64ad35a6c"
+        ],
+        [
+          "mnist:train:36167:c91c3182454ed530dfa00c5c5564f151dcbe05e64a47071d0934c6be3f5ec313",
+          "mnist:train:12161:919ce6df43a1e9884a62c8157a353ffaf90da7670149026b92fc70a008886510"
+        ],
+        [
+          "mnist:train:53742:a6468e476f2f8ff701f8f3850da2a75c9227c7156a8a51667bb34f44df4e17f1",
+          "mnist:train:15823:7547776df29cca6b32f8afef7a8d0ec171340e9aef78272a9061ece8795030de"
+        ],
+        [
+          "mnist:train:59373:f98d257d314670d2132f5153d60cba9b4d9d9dae266e00641c667519da9d9f82",
+          "mnist:train:2597:e1f92cf83333e72086ec61544de1c0badd67514772b1ff8f26bc28922c0b5829"
+        ],
+        [
+          "mnist:train:49796:7f605628ae3cc10e0e0515a4b9084b499e9c5eafdf66dd828561a617576eaa89",
+          "mnist:train:3151:efa0219c31f30b9ce13edc48e6b27fe0007e3dcb110674981b18072b68cf96b0"
+        ]
+      ],
+      "step": 401,
+      "trace_sha256": "d46dee2404e43b9d4bc9d607ced8b6b8890cbfdfc02acc674b932bc32b53b965"
+    },
+    {
+      "archive": "29-direct_mean-step-1.zip",
+      "archive_sha256": "39479df17557b1f796e8ade0b9fe15ea4fda3a96e75a61537bc63b8566927c11",
+      "arm": "direct_mean",
+      "condition": "clean",
+      "examples": 256,
+      "input_sha256": "98f5bc854fcdaab6390cf6c298125f5de613213f39c9243f64480f3aa487c187",
+      "maximum_coefficient_gradient_error": 1.6848332184959958e-07,
+      "maximum_cost_error": 3.014954963465044e-08,
+      "outcomes_sha256": "f10c5e541c1c3810efdf97bb5d38a5474747b38c2a30f7fc9cf6030e65441ff9",
+      "parameter_preclip_norm": 0.41038755092126633,
+      "plans": [
+        3,
+        0,
+        2,
+        1,
+        3,
+        3,
+        3,
+        0,
+        3,
+        0,
+        3,
+        0,
+        2,
+        0,
+        3,
+        1
+      ],
+      "preceding_checkpoint_sha256": null,
+      "preclip_norm_error": 3.489953781521393e-08,
+      "seed": 29,
+      "source_ids": [
+        [
+          "mnist:train:2852:8285fb16a5d5c061f24caf6375e4265d519d0de9cc6445686333491d9ace7c33",
+          "mnist:train:37969:5f89769b5b745a5e6250309e9d958532659e371993b749a66bf5c944f8e23e33"
+        ],
+        [
+          "mnist:train:18198:fe53a4cbc5b307ed08681a25330b1f429fd1469d10db59976090133f5b45c26d",
+          "mnist:train:46451:afc8b273f976b26901f36376bcbf93fcfd11b19b03fb2afc63e93e61b4549c1d"
+        ],
+        [
+          "mnist:train:46734:866ecc475d63478d915cf0fc078242951455a33612212f519ea38a656a9b2166",
+          "mnist:train:10603:3040986167721f7120c4ad2127db0b496f3bc227c5a4a73a6a8eae3c5e1a5a09"
+        ],
+        [
+          "mnist:train:33040:1d107d2b449c8b23f9f4fa156d5ad1c84080fc6ca0ea8c9d8d7c9dd1ff949107",
+          "mnist:train:16550:7b29ec90f009dc61b72897009d3456d523571ebbfe712eb1c433e9d6be9d1616"
+        ],
+        [
+          "mnist:train:59582:8255f3b9d7c70ebdf3e14b891ae5d336195d9200466a714014d75d39350eb2c8",
+          "mnist:train:22113:7cde6326371868a8f2097e0960de11a7e6207293c4e0910e4220eaf4a8e21b63"
+        ],
+        [
+          "mnist:train:57403:a844b739fa4353e39271d2137dba34bf74901d6ce624638449de79c6015d1807",
+          "mnist:train:39290:8fe28656801559e691319ba161a7cba0e0c698d47777cdb1fcd4efa0adba2e03"
+        ],
+        [
+          "mnist:train:28601:ad711bc339e2472efa081d8cca8b1ab2560eb17ffab889811f965ed93567d5b3",
+          "mnist:train:11091:c700969a3eda6d8abdad6c75e671ad1f686421abd4520fb8865db8af2716139c"
+        ],
+        [
+          "mnist:train:16565:0de423b17c3009b2ba624284d2b9274940a2097505d016444e021e2b95171f7a",
+          "mnist:train:38389:3c107ccbffdc35a01fc20c8018818ae06950be5c4a0113761714d11f466ab475"
+        ],
+        [
+          "mnist:train:30499:588cd98a765fd7ec38c6e2b5c939d4b61a675e0e343dd10888cd536acabdfa4b",
+          "mnist:train:58281:43ab2b7c8608e8332e8f530a72386fd238a46a7cf2256beb32335f8ef4c81e77"
+        ],
+        [
+          "mnist:train:13187:5c4a6307cc9b21301aa048d7768c637cc84f5e866f0aa8cb0df2b0f0c8ac7d26",
+          "mnist:train:57883:3951fc2f9a34a36e2b9a21aa5e25db6375978213cbf3bc9349eaff382bd2100b"
+        ],
+        [
+          "mnist:train:37699:920c23df509f847714e5c6914b475ef3ca8b43b536fc18ff6586f08613b784b1",
+          "mnist:train:26032:898ce76153351a5056b2460bf9dba65835d0886c3469824e3bff0bb14c4362e2"
+        ],
+        [
+          "mnist:train:29886:462993d2eb885c6309cfbc68512b0c7661f63fca4f75965e438490f36927ff5d",
+          "mnist:train:37367:619835bb6dace6726b9ae1eebdcc4043a4ef3a4a17b639ca1b1b1405bc515302"
+        ],
+        [
+          "mnist:train:51822:35601c4d6341c43521d7a2c68e1622b055a99463124ba79faa92f838380fbd5a",
+          "mnist:train:41231:ba4d5c8cc7e23e761395d287a90737f479a05c476cfb7a27e4c18dd2f2dc4094"
+        ],
+        [
+          "mnist:train:7256:bd9c28c489be325a16049b8cd03aa27c323986f98749838d939bef50e3419ae7",
+          "mnist:train:30119:6ce31b08462a441270779f9e1479bfecb6d7c0c37f90eec9f19480ea5b6c973d"
+        ],
+        [
+          "mnist:train:11764:bc28c04e872c38673f3daf57b229444fd73ce2f348a5c348b8263b634bfee0c8",
+          "mnist:train:10988:aeb7d22df55341ab452a807a3f5211bf923ef8914cf76c52f8850232e72f872a"
+        ],
+        [
+          "mnist:train:9635:e7dc753bc25dd409ebe90ba89461dced5b2165506c733cba96bbf6876e84d012",
+          "mnist:train:46921:6201b764253fde8c15b4801c8e66863ea34f0ad66c31bc25202df701377cba73"
+        ]
+      ],
+      "step": 1,
+      "trace_sha256": "1d66661a27da7c9f69199dcde0ccddaa138cd958f6e83f2b19c0afe62e40b552"
+    },
+    {
+      "archive": "29-direct_mean-step-201.zip",
+      "archive_sha256": "980060c66d1afc42b4e8fa5d4f34f8b2342f305e314586dd13bd4d2fe43c76b7",
+      "arm": "direct_mean",
+      "condition": "clean",
+      "examples": 256,
+      "input_sha256": "193794012f89784579d522f1b67caea7429a50822d9399f23aaa054b2444c926",
+      "maximum_coefficient_gradient_error": 1.3578323106232075e-07,
+      "maximum_cost_error": 3.052861996533096e-08,
+      "outcomes_sha256": "26853c3d3b9d548995a5655a4de4a9ae1b7feaefef2376c0c3fbd71235a1c696",
+      "parameter_preclip_norm": 0.4604163133014878,
+      "plans": [
+        3,
+        3,
+        3,
+        3,
+        0,
+        0,
+        3,
+        0,
+        3,
+        0,
+        0,
+        3,
+        1,
+        3,
+        3,
+        0
+      ],
+      "preceding_checkpoint_sha256": "67856eb1396a35ad68c9ce112874afeb38787f35648b6cf01785dff206d36a47",
+      "preclip_norm_error": 3.6845961837173036e-09,
+      "seed": 29,
+      "source_ids": [
+        [
+          "mnist:train:38216:478988ea8d1591e3fb8161dea190961008851e31b490b3c3ef6ffe7e8d78ce4e",
+          "mnist:train:18099:7cdc70dfbb2cc304ce9683d66a72676f910d5c86e285d291e6d33374d8e536f3"
+        ],
+        [
+          "mnist:train:52443:5607e976e45ade5b985b173c9db431032403e3445da74fc1e03f4e7ea7dfd0b0",
+          "mnist:train:59180:01fc156ccab851557ce666a6f58f2b95cd5098374fdb48a1cd7f9202e2d1b29d"
+        ],
+        [
+          "mnist:train:27322:41eff34c623b3317f0a94cb546a4747584ae4ece96ff5e1aaefe913ed3dc480b",
+          "mnist:train:33749:c9593263702a0cfd359fc5230d168bdce4ad52d939cc013caeb36c6a01fa0693"
+        ],
+        [
+          "mnist:train:42943:8ba0a8959469d74336dbbb73a8fd9476c1c1637d7c997dc0580a33c5c898fba7",
+          "mnist:train:41337:63f456ce2151cb3f04bc290690c64147a259635ffa820eab27216ebc98724bb9"
+        ],
+        [
+          "mnist:train:4170:cbb516cceb6136e5131459be4567063824a957786de04463974833f58e890318",
+          "mnist:train:13869:fcbc621b0a373b35b9272b1e82a79df14685470d255693d38a8b14c8ca341950"
+        ],
+        [
+          "mnist:train:37775:c8ee7205e10a657902d4d9404e7f4b97f3f074399fcf7bf390114743a605523d",
+          "mnist:train:15147:b74c71479b1b6468ce4773d8b59dfbeb82f28e1e0428fd7c4581142cc92fda2a"
+        ],
+        [
+          "mnist:train:55534:8227f7ed649fc0ea6cbc107f6c5988a1ab41493aecf95b850a832c9e426393e9",
+          "mnist:train:55325:84c9ae7aeb4c7e66c109b345172b94d0512368a44e1a11b813f1ebeb0ae9b7d6"
+        ],
+        [
+          "mnist:train:20909:5cd87c1ddf25163b076e007f9ae58b7d619bbe5c597f35d921fdd1650b0a35d1",
+          "mnist:train:19327:19e3dfce17374450ec955513212fa5e25638ec0480989c4cd62420c9aa328a01"
+        ],
+        [
+          "mnist:train:23620:6012ec32de9aa202cbd169bd3b363d4eeca9d018686a7d122f9794a028e95c87",
+          "mnist:train:52814:d72f5939144edbe516801d36db378fefc27253780d843f2fb155aa4b49c628ba"
+        ],
+        [
+          "mnist:train:31293:f499f9fb15545fff417b22b6d6cd1ce3db1133b76603ed2d0b4c41589411d890",
+          "mnist:train:37769:9c8f8ade74c2896b8c087916d0bfe40f2df4403858fc305824ad391804084df0"
+        ],
+        [
+          "mnist:train:15924:2cb63575718a5003419dbb6cfbbcc0f1559ff82ec6480924c664d8e51227e8ab",
+          "mnist:train:56646:e71652eb818ac10e2a48bf5e826ee646bd8b2235c3c6dbc4f278980efce27e69"
+        ],
+        [
+          "mnist:train:28509:2fc06ee697fc18ff2c7f538ba54cef83c0bbc391c28015e4e3f092b502448844",
+          "mnist:train:29528:0c225626050a23b670336e754942cbcb0a1015b4424524f4c347769c2540ab52"
+        ],
+        [
+          "mnist:train:7560:dc1bab9ff34c8841530d64694016f3f2e0b404f7df5fbab5334b15db918a03b9",
+          "mnist:train:52684:be8f37bb0feb05466a23de2da11c824a6da3715f096757e57b681aaa70f4fbc4"
+        ],
+        [
+          "mnist:train:16260:188ded72a271c3d623ab288b6d34d21a857bd151fac4a0d823bd5ea2e5118237",
+          "mnist:train:44856:d4ffa615a5ad2c0d4e26b9fbc34f59ec9898dc9843a67ba34191da8d35cd4275"
+        ],
+        [
+          "mnist:train:10929:224f8481c4446f4851d079a50004d38809fd1f91076a771d30317e2ea065aaa3",
+          "mnist:train:48329:9bc52863aaaaa93453b793c587ae6989468b0f50f3d1a790788c4eba085d8138"
+        ],
+        [
+          "mnist:train:34109:b30be5dcc4aa1e098d5a4af1f4984ccf07c3da62cbd6df9e19e3c4020b27c60c",
+          "mnist:train:8439:c2b5d54589934b96e017491c048efebc27c703c0a9968df190c8128e48ce13ec"
+        ]
+      ],
+      "step": 201,
+      "trace_sha256": "1d66661a27da7c9f69199dcde0ccddaa138cd958f6e83f2b19c0afe62e40b552"
+    },
+    {
+      "archive": "29-direct_mean-step-401.zip",
+      "archive_sha256": "478ea028e2a2052cfa0682d8d37d419de5e5f2737517039bc51274969b348417",
+      "arm": "direct_mean",
+      "condition": "clean",
+      "examples": 256,
+      "input_sha256": "894bff7e939bebac6e6bc972cf9e11cbf1d12449301994c4274d57076281d40d",
+      "maximum_coefficient_gradient_error": 1.8801063328410805e-07,
+      "maximum_cost_error": 3.0348641155697464e-08,
+      "outcomes_sha256": "9f54334aa3dca74d3dc6777ed672651e1bd1bde18e5be88a63882ae070952f97",
+      "parameter_preclip_norm": 1.1830668961009914,
+      "plans": [
+        3,
+        3,
+        3,
+        2,
+        0,
+        0,
+        3,
+        2,
+        0,
+        0,
+        3,
+        0,
+        3,
+        3,
+        3,
+        3
+      ],
+      "preceding_checkpoint_sha256": "f8aee9bb5d3dbb24ab15da7ce3187363fc96205384cbca181387a6f8947473bd",
+      "preclip_norm_error": 5.116080581402116e-08,
+      "seed": 29,
+      "source_ids": [
+        [
+          "mnist:train:26543:31e821ca6ca0a05ccd724555f597a903b50c008de03a219dad158ea4f3e3b52c",
+          "mnist:train:9344:3fe31c1ca3caaf12d31b51c55cd0763d76b9ca9dd109f77d31f0c38b153365f3"
+        ],
+        [
+          "mnist:train:22133:c9f54012d30736be7fb4aedbd620707f5d1db8cdbb088393897e11b3ab755c56",
+          "mnist:train:9947:248e11a1328dfc325d1e9ef73c135cf5b919ef9de6ae6d169647cba869c0a9cb"
+        ],
+        [
+          "mnist:train:49538:2528ae0bd9d4ed561262f0c6910aebca4806ad6ec88acbb75670211ac1a5374e",
+          "mnist:train:30007:9c3e442cdcdd4cda3d0df139aa915db6d804a6873ac8a2d3062adeaf34575bbc"
+        ],
+        [
+          "mnist:train:53667:e1fd79fc9eb727968e3a33d2c83eff999754dddc197453628181f343c2aec8e5",
+          "mnist:train:45500:976b1cd1dc576f7f87ea557a150d4eb8403c976767e40f33775b5f74dce99928"
+        ],
+        [
+          "mnist:train:28817:86740a7da649799a0c14451972bbb28d292ad4915a3d56082ee51764e9d897f3",
+          "mnist:train:34522:25f9760a458376c12c9c0f4bfe4b012f61fdaaa378b43f0fbe84b52c465091c2"
+        ],
+        [
+          "mnist:train:47182:439535e4cc32980eb7cf0adb6ef569feb94f9dec749c1f897e28bf3817fee98a",
+          "mnist:train:24527:72e3e8dc3825b8316aef457ea488f4d2f1f91ec1a67bff466dfedec04977c717"
+        ],
+        [
+          "mnist:train:41719:aa1065339eb9339a95161d669dfd375c9559dcc0432d0c935c6e85e2dfef84ac",
+          "mnist:train:24845:8677fa7d7f2867e81d2feddf03cc3f48242fa23dcfec036b188ff22b31915faf"
+        ],
+        [
+          "mnist:train:42801:e5012adeef77b2da3f58ea7e67b424d8f4afc6f6fe7c25eae8a3a8f58cb455b0",
+          "mnist:train:14908:ea585df02fc3fea20ae02032ba6a512859fed59a3df055e89f2190b8201ded24"
+        ],
+        [
+          "mnist:train:13871:baa39fcc876a122485a25294ac5d0c626ffeabb1f61144e97976257537820dd0",
+          "mnist:train:1684:bf834ffb7368d98671aea454d7dee37dec1847c7437115d2f37785acec39306d"
+        ],
+        [
+          "mnist:train:1895:02e5741dce0c18d1d84a15c206212f4fddcc000457d92439f103144266699a83",
+          "mnist:train:1759:a2f3b899a076ae9b51a1d1caaed3403bdef717f5c5d5079f905b1178cb9b9898"
+        ],
+        [
+          "mnist:train:47764:de2266185cc3aba6cd87cb932e5428b0fdc3b5f668defc4f739774d3e36092b7",
+          "mnist:train:18952:146048710e99560eb14caf6648d77acf111d52eebd2195dbf6db4df1ededb2d0"
+        ],
+        [
+          "mnist:train:38036:43ddcaf5032f80bc434d3eaa53c89622b5fbf25ad3d2f92975d3dbde3d0ba4ff",
+          "mnist:train:49660:107c027a687eeefdc09c52ae1b86a212937e2c808b838fae192cec50fd2396f2"
+        ],
+        [
+          "mnist:train:2074:26056811b30f89d20507c0e1bb8c2f7a154a1c7fb383ba341a5845788daf6c30",
+          "mnist:train:5680:7022a265fd86187afd18c873f6a47102d53beceb86701669225b87a271bafce5"
+        ],
+        [
+          "mnist:train:53757:116211e46dfac5ec9832984cb2e1c6c600feeb1751c3983d968a5e0dcfd9c02e",
+          "mnist:train:28383:4c1559b8e15b5957db484c07537602db845b04dac4f7f00bfa8e6e95c09eba78"
+        ],
+        [
+          "mnist:train:24190:d48b9455ee24051f2342511c32a1c3feeb4a5ed3bf394db9e1c78adca0887bb3",
+          "mnist:train:37293:e5ff53c197a945c33233b4b589110afb6cd9598866f4ec4c5beaeff684d51322"
+        ],
+        [
+          "mnist:train:31354:c8ac96997724b60fde23f0f55150c91a71028f2b3bbd71cd98b21ce6bfe2eae1",
+          "mnist:train:18980:0bff80f1b61e08a07bd938bea09a9519bcb00e09f1dd34099f9273e57b4256ea"
+        ]
+      ],
+      "step": 401,
+      "trace_sha256": "1d66661a27da7c9f69199dcde0ccddaa138cd958f6e83f2b19c0afe62e40b552"
+    },
+    {
+      "archive": "29-direct_risk-step-1.zip",
+      "archive_sha256": "39479df17557b1f796e8ade0b9fe15ea4fda3a96e75a61537bc63b8566927c11",
+      "arm": "direct_risk",
+      "condition": "clean",
+      "examples": 256,
+      "input_sha256": "d746aa7ef30ad89c0b915c1f7f1671276df229ff18c1c65dd5ec6b0f3455bd02",
+      "maximum_coefficient_gradient_error": 6.43403416291177e-08,
+      "maximum_cost_error": 2.141288618640047e-08,
+      "outcomes_sha256": "f10c5e541c1c3810efdf97bb5d38a5474747b38c2a30f7fc9cf6030e65441ff9",
+      "parameter_preclip_norm": 0.09157304802251659,
+      "plans": [
+        3,
+        0,
+        2,
+        1,
+        3,
+        3,
+        3,
+        0,
+        3,
+        0,
+        3,
+        0,
+        2,
+        0,
+        3,
+        1
+      ],
+      "preceding_checkpoint_sha256": null,
+      "preclip_norm_error": 3.364809375572264e-09,
+      "seed": 29,
+      "source_ids": [
+        [
+          "mnist:train:2852:8285fb16a5d5c061f24caf6375e4265d519d0de9cc6445686333491d9ace7c33",
+          "mnist:train:37969:5f89769b5b745a5e6250309e9d958532659e371993b749a66bf5c944f8e23e33"
+        ],
+        [
+          "mnist:train:18198:fe53a4cbc5b307ed08681a25330b1f429fd1469d10db59976090133f5b45c26d",
+          "mnist:train:46451:afc8b273f976b26901f36376bcbf93fcfd11b19b03fb2afc63e93e61b4549c1d"
+        ],
+        [
+          "mnist:train:46734:866ecc475d63478d915cf0fc078242951455a33612212f519ea38a656a9b2166",
+          "mnist:train:10603:3040986167721f7120c4ad2127db0b496f3bc227c5a4a73a6a8eae3c5e1a5a09"
+        ],
+        [
+          "mnist:train:33040:1d107d2b449c8b23f9f4fa156d5ad1c84080fc6ca0ea8c9d8d7c9dd1ff949107",
+          "mnist:train:16550:7b29ec90f009dc61b72897009d3456d523571ebbfe712eb1c433e9d6be9d1616"
+        ],
+        [
+          "mnist:train:59582:8255f3b9d7c70ebdf3e14b891ae5d336195d9200466a714014d75d39350eb2c8",
+          "mnist:train:22113:7cde6326371868a8f2097e0960de11a7e6207293c4e0910e4220eaf4a8e21b63"
+        ],
+        [
+          "mnist:train:57403:a844b739fa4353e39271d2137dba34bf74901d6ce624638449de79c6015d1807",
+          "mnist:train:39290:8fe28656801559e691319ba161a7cba0e0c698d47777cdb1fcd4efa0adba2e03"
+        ],
+        [
+          "mnist:train:28601:ad711bc339e2472efa081d8cca8b1ab2560eb17ffab889811f965ed93567d5b3",
+          "mnist:train:11091:c700969a3eda6d8abdad6c75e671ad1f686421abd4520fb8865db8af2716139c"
+        ],
+        [
+          "mnist:train:16565:0de423b17c3009b2ba624284d2b9274940a2097505d016444e021e2b95171f7a",
+          "mnist:train:38389:3c107ccbffdc35a01fc20c8018818ae06950be5c4a0113761714d11f466ab475"
+        ],
+        [
+          "mnist:train:30499:588cd98a765fd7ec38c6e2b5c939d4b61a675e0e343dd10888cd536acabdfa4b",
+          "mnist:train:58281:43ab2b7c8608e8332e8f530a72386fd238a46a7cf2256beb32335f8ef4c81e77"
+        ],
+        [
+          "mnist:train:13187:5c4a6307cc9b21301aa048d7768c637cc84f5e866f0aa8cb0df2b0f0c8ac7d26",
+          "mnist:train:57883:3951fc2f9a34a36e2b9a21aa5e25db6375978213cbf3bc9349eaff382bd2100b"
+        ],
+        [
+          "mnist:train:37699:920c23df509f847714e5c6914b475ef3ca8b43b536fc18ff6586f08613b784b1",
+          "mnist:train:26032:898ce76153351a5056b2460bf9dba65835d0886c3469824e3bff0bb14c4362e2"
+        ],
+        [
+          "mnist:train:29886:462993d2eb885c6309cfbc68512b0c7661f63fca4f75965e438490f36927ff5d",
+          "mnist:train:37367:619835bb6dace6726b9ae1eebdcc4043a4ef3a4a17b639ca1b1b1405bc515302"
+        ],
+        [
+          "mnist:train:51822:35601c4d6341c43521d7a2c68e1622b055a99463124ba79faa92f838380fbd5a",
+          "mnist:train:41231:ba4d5c8cc7e23e761395d287a90737f479a05c476cfb7a27e4c18dd2f2dc4094"
+        ],
+        [
+          "mnist:train:7256:bd9c28c489be325a16049b8cd03aa27c323986f98749838d939bef50e3419ae7",
+          "mnist:train:30119:6ce31b08462a441270779f9e1479bfecb6d7c0c37f90eec9f19480ea5b6c973d"
+        ],
+        [
+          "mnist:train:11764:bc28c04e872c38673f3daf57b229444fd73ce2f348a5c348b8263b634bfee0c8",
+          "mnist:train:10988:aeb7d22df55341ab452a807a3f5211bf923ef8914cf76c52f8850232e72f872a"
+        ],
+        [
+          "mnist:train:9635:e7dc753bc25dd409ebe90ba89461dced5b2165506c733cba96bbf6876e84d012",
+          "mnist:train:46921:6201b764253fde8c15b4801c8e66863ea34f0ad66c31bc25202df701377cba73"
+        ]
+      ],
+      "step": 1,
+      "trace_sha256": "1d63a969995869cb208a3db4be5c32fdfa8256a89359ab9c6fa146840d5dfbba"
+    },
+    {
+      "archive": "29-direct_risk-step-201.zip",
+      "archive_sha256": "ec5c5556a9594f1c51c7ad6753c63a74ba895c5b6483c0124ba666e490a68114",
+      "arm": "direct_risk",
+      "condition": "clean",
+      "examples": 256,
+      "input_sha256": "59671d0348bab76d3139f2e365b3f1f45bfde165a12f9a7b84eef206ad54cb9d",
+      "maximum_coefficient_gradient_error": 4.8455938927993714e-08,
+      "maximum_cost_error": 2.3134604398844516e-08,
+      "outcomes_sha256": "814335e35049800b7296e938b94c14ef387e342f5623ee957c2766beb7a5dc0c",
+      "parameter_preclip_norm": 0.10268219479216881,
+      "plans": [
+        3,
+        3,
+        3,
+        3,
+        0,
+        0,
+        3,
+        0,
+        3,
+        0,
+        0,
+        3,
+        1,
+        3,
+        3,
+        0
+      ],
+      "preceding_checkpoint_sha256": "e03452098d8765e826ff04f3bc6c81a3c671cf65fa03092b2854ada85c1dfd50",
+      "preclip_norm_error": 2.8990643691217954e-08,
+      "seed": 29,
+      "source_ids": [
+        [
+          "mnist:train:38216:478988ea8d1591e3fb8161dea190961008851e31b490b3c3ef6ffe7e8d78ce4e",
+          "mnist:train:18099:7cdc70dfbb2cc304ce9683d66a72676f910d5c86e285d291e6d33374d8e536f3"
+        ],
+        [
+          "mnist:train:52443:5607e976e45ade5b985b173c9db431032403e3445da74fc1e03f4e7ea7dfd0b0",
+          "mnist:train:59180:01fc156ccab851557ce666a6f58f2b95cd5098374fdb48a1cd7f9202e2d1b29d"
+        ],
+        [
+          "mnist:train:27322:41eff34c623b3317f0a94cb546a4747584ae4ece96ff5e1aaefe913ed3dc480b",
+          "mnist:train:33749:c9593263702a0cfd359fc5230d168bdce4ad52d939cc013caeb36c6a01fa0693"
+        ],
+        [
+          "mnist:train:42943:8ba0a8959469d74336dbbb73a8fd9476c1c1637d7c997dc0580a33c5c898fba7",
+          "mnist:train:41337:63f456ce2151cb3f04bc290690c64147a259635ffa820eab27216ebc98724bb9"
+        ],
+        [
+          "mnist:train:4170:cbb516cceb6136e5131459be4567063824a957786de04463974833f58e890318",
+          "mnist:train:13869:fcbc621b0a373b35b9272b1e82a79df14685470d255693d38a8b14c8ca341950"
+        ],
+        [
+          "mnist:train:37775:c8ee7205e10a657902d4d9404e7f4b97f3f074399fcf7bf390114743a605523d",
+          "mnist:train:15147:b74c71479b1b6468ce4773d8b59dfbeb82f28e1e0428fd7c4581142cc92fda2a"
+        ],
+        [
+          "mnist:train:55534:8227f7ed649fc0ea6cbc107f6c5988a1ab41493aecf95b850a832c9e426393e9",
+          "mnist:train:55325:84c9ae7aeb4c7e66c109b345172b94d0512368a44e1a11b813f1ebeb0ae9b7d6"
+        ],
+        [
+          "mnist:train:20909:5cd87c1ddf25163b076e007f9ae58b7d619bbe5c597f35d921fdd1650b0a35d1",
+          "mnist:train:19327:19e3dfce17374450ec955513212fa5e25638ec0480989c4cd62420c9aa328a01"
+        ],
+        [
+          "mnist:train:23620:6012ec32de9aa202cbd169bd3b363d4eeca9d018686a7d122f9794a028e95c87",
+          "mnist:train:52814:d72f5939144edbe516801d36db378fefc27253780d843f2fb155aa4b49c628ba"
+        ],
+        [
+          "mnist:train:31293:f499f9fb15545fff417b22b6d6cd1ce3db1133b76603ed2d0b4c41589411d890",
+          "mnist:train:37769:9c8f8ade74c2896b8c087916d0bfe40f2df4403858fc305824ad391804084df0"
+        ],
+        [
+          "mnist:train:15924:2cb63575718a5003419dbb6cfbbcc0f1559ff82ec6480924c664d8e51227e8ab",
+          "mnist:train:56646:e71652eb818ac10e2a48bf5e826ee646bd8b2235c3c6dbc4f278980efce27e69"
+        ],
+        [
+          "mnist:train:28509:2fc06ee697fc18ff2c7f538ba54cef83c0bbc391c28015e4e3f092b502448844",
+          "mnist:train:29528:0c225626050a23b670336e754942cbcb0a1015b4424524f4c347769c2540ab52"
+        ],
+        [
+          "mnist:train:7560:dc1bab9ff34c8841530d64694016f3f2e0b404f7df5fbab5334b15db918a03b9",
+          "mnist:train:52684:be8f37bb0feb05466a23de2da11c824a6da3715f096757e57b681aaa70f4fbc4"
+        ],
+        [
+          "mnist:train:16260:188ded72a271c3d623ab288b6d34d21a857bd151fac4a0d823bd5ea2e5118237",
+          "mnist:train:44856:d4ffa615a5ad2c0d4e26b9fbc34f59ec9898dc9843a67ba34191da8d35cd4275"
+        ],
+        [
+          "mnist:train:10929:224f8481c4446f4851d079a50004d38809fd1f91076a771d30317e2ea065aaa3",
+          "mnist:train:48329:9bc52863aaaaa93453b793c587ae6989468b0f50f3d1a790788c4eba085d8138"
+        ],
+        [
+          "mnist:train:34109:b30be5dcc4aa1e098d5a4af1f4984ccf07c3da62cbd6df9e19e3c4020b27c60c",
+          "mnist:train:8439:c2b5d54589934b96e017491c048efebc27c703c0a9968df190c8128e48ce13ec"
+        ]
+      ],
+      "step": 201,
+      "trace_sha256": "1d63a969995869cb208a3db4be5c32fdfa8256a89359ab9c6fa146840d5dfbba"
+    },
+    {
+      "archive": "29-direct_risk-step-401.zip",
+      "archive_sha256": "4bb79067a1cd46896c75a17b6318134fd3d44440ad5527a10f66e4aa5ce5de8a",
+      "arm": "direct_risk",
+      "condition": "clean",
+      "examples": 256,
+      "input_sha256": "e7839130b056e9db0f60aed17b99b5df10a7d5b4971944ea736b427d5cf9a5c0",
+      "maximum_coefficient_gradient_error": 5.967852858418388e-08,
+      "maximum_cost_error": 2.3381992175774968e-08,
+      "outcomes_sha256": "ba67ebba69fe677ec5996a4e3ae9d77392ba60122319da326025177bfd48c57b",
+      "parameter_preclip_norm": 0.258338006673378,
+      "plans": [
+        3,
+        3,
+        3,
+        2,
+        0,
+        0,
+        3,
+        2,
+        0,
+        0,
+        3,
+        0,
+        3,
+        3,
+        3,
+        3
+      ],
+      "preceding_checkpoint_sha256": "94928d0a197bbe7a49dc1c647b48e190a6febb8620e977f9d1a8f28b1a75d3ed",
+      "preclip_norm_error": 2.3227157419647426e-09,
+      "seed": 29,
+      "source_ids": [
+        [
+          "mnist:train:26543:31e821ca6ca0a05ccd724555f597a903b50c008de03a219dad158ea4f3e3b52c",
+          "mnist:train:9344:3fe31c1ca3caaf12d31b51c55cd0763d76b9ca9dd109f77d31f0c38b153365f3"
+        ],
+        [
+          "mnist:train:22133:c9f54012d30736be7fb4aedbd620707f5d1db8cdbb088393897e11b3ab755c56",
+          "mnist:train:9947:248e11a1328dfc325d1e9ef73c135cf5b919ef9de6ae6d169647cba869c0a9cb"
+        ],
+        [
+          "mnist:train:49538:2528ae0bd9d4ed561262f0c6910aebca4806ad6ec88acbb75670211ac1a5374e",
+          "mnist:train:30007:9c3e442cdcdd4cda3d0df139aa915db6d804a6873ac8a2d3062adeaf34575bbc"
+        ],
+        [
+          "mnist:train:53667:e1fd79fc9eb727968e3a33d2c83eff999754dddc197453628181f343c2aec8e5",
+          "mnist:train:45500:976b1cd1dc576f7f87ea557a150d4eb8403c976767e40f33775b5f74dce99928"
+        ],
+        [
+          "mnist:train:28817:86740a7da649799a0c14451972bbb28d292ad4915a3d56082ee51764e9d897f3",
+          "mnist:train:34522:25f9760a458376c12c9c0f4bfe4b012f61fdaaa378b43f0fbe84b52c465091c2"
+        ],
+        [
+          "mnist:train:47182:439535e4cc32980eb7cf0adb6ef569feb94f9dec749c1f897e28bf3817fee98a",
+          "mnist:train:24527:72e3e8dc3825b8316aef457ea488f4d2f1f91ec1a67bff466dfedec04977c717"
+        ],
+        [
+          "mnist:train:41719:aa1065339eb9339a95161d669dfd375c9559dcc0432d0c935c6e85e2dfef84ac",
+          "mnist:train:24845:8677fa7d7f2867e81d2feddf03cc3f48242fa23dcfec036b188ff22b31915faf"
+        ],
+        [
+          "mnist:train:42801:e5012adeef77b2da3f58ea7e67b424d8f4afc6f6fe7c25eae8a3a8f58cb455b0",
+          "mnist:train:14908:ea585df02fc3fea20ae02032ba6a512859fed59a3df055e89f2190b8201ded24"
+        ],
+        [
+          "mnist:train:13871:baa39fcc876a122485a25294ac5d0c626ffeabb1f61144e97976257537820dd0",
+          "mnist:train:1684:bf834ffb7368d98671aea454d7dee37dec1847c7437115d2f37785acec39306d"
+        ],
+        [
+          "mnist:train:1895:02e5741dce0c18d1d84a15c206212f4fddcc000457d92439f103144266699a83",
+          "mnist:train:1759:a2f3b899a076ae9b51a1d1caaed3403bdef717f5c5d5079f905b1178cb9b9898"
+        ],
+        [
+          "mnist:train:47764:de2266185cc3aba6cd87cb932e5428b0fdc3b5f668defc4f739774d3e36092b7",
+          "mnist:train:18952:146048710e99560eb14caf6648d77acf111d52eebd2195dbf6db4df1ededb2d0"
+        ],
+        [
+          "mnist:train:38036:43ddcaf5032f80bc434d3eaa53c89622b5fbf25ad3d2f92975d3dbde3d0ba4ff",
+          "mnist:train:49660:107c027a687eeefdc09c52ae1b86a212937e2c808b838fae192cec50fd2396f2"
+        ],
+        [
+          "mnist:train:2074:26056811b30f89d20507c0e1bb8c2f7a154a1c7fb383ba341a5845788daf6c30",
+          "mnist:train:5680:7022a265fd86187afd18c873f6a47102d53beceb86701669225b87a271bafce5"
+        ],
+        [
+          "mnist:train:53757:116211e46dfac5ec9832984cb2e1c6c600feeb1751c3983d968a5e0dcfd9c02e",
+          "mnist:train:28383:4c1559b8e15b5957db484c07537602db845b04dac4f7f00bfa8e6e95c09eba78"
+        ],
+        [
+          "mnist:train:24190:d48b9455ee24051f2342511c32a1c3feeb4a5ed3bf394db9e1c78adca0887bb3",
+          "mnist:train:37293:e5ff53c197a945c33233b4b589110afb6cd9598866f4ec4c5beaeff684d51322"
+        ],
+        [
+          "mnist:train:31354:c8ac96997724b60fde23f0f55150c91a71028f2b3bbd71cd98b21ce6bfe2eae1",
+          "mnist:train:18980:0bff80f1b61e08a07bd938bea09a9519bcb00e09f1dd34099f9273e57b4256ea"
+        ]
+      ],
+      "step": 401,
+      "trace_sha256": "1d63a969995869cb208a3db4be5c32fdfa8256a89359ab9c6fa146840d5dfbba"
+    },
+    {
+      "archive": "43-direct_mean-step-1.zip",
+      "archive_sha256": "6c67a4dc4860495c52f1f53df2c8dca05d41645afa624fa6c6c311f72aaef41e",
+      "arm": "direct_mean",
+      "condition": "clean",
+      "examples": 256,
+      "input_sha256": "4e0d5743310497452729c0a3096f714a914e9d71da3a562d85c545ed3c785852",
+      "maximum_coefficient_gradient_error": 9.507741334513486e-08,
+      "maximum_cost_error": 3.011331339841661e-08,
+      "outcomes_sha256": "8db6242cf32735768f1875cb239ab5460daf4109c0cb39a1db2ba912f625eadf",
+      "parameter_preclip_norm": 0.7100115970756915,
+      "plans": [
+        0,
+        3,
+        3,
+        0,
+        3,
+        0,
+        1,
+        3,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "preceding_checkpoint_sha256": null,
+      "preclip_norm_error": 4.372367579108527e-09,
+      "seed": 43,
+      "source_ids": [
+        [
+          "mnist:train:40950:e86cc8aa8d2867f66e69f0b25243b58b9ef3b1035fe4261dd098015c074db930",
+          "mnist:train:2650:2d713a31c0b330a7ebdda7add3c5bf8673a140d144b533ef96d008507b7df38e"
+        ],
+        [
+          "mnist:train:29314:6ef22bd8b521751cbf2aec25f9d68ff124786bbae638bc43183c9550149d989d",
+          "mnist:train:39560:f8cdf9540f271c1a6aa6cc9369d1cf8ed27b1e7fe91819eaf1637a3c4b8ef8cd"
+        ],
+        [
+          "mnist:train:27134:3146ca86375f396ae7366563a28b40bfdb83855a723a0181595a8defaff7c7ec",
+          "mnist:train:26052:b85a6d5fce62b3cc6f59f8106c7390d855a96eda667d6285e2dcc81f69eaa574"
+        ],
+        [
+          "mnist:train:45830:8fb04f16ff2cc0b06e9f69bf91b5acb9cbbe38ee09561d54ec208334397c9d5a",
+          "mnist:train:37382:03892f2510e825743424f6510d5d70419c6c273e289e31eba96070861b84bea9"
+        ],
+        [
+          "mnist:train:2269:dc8a5eb1b80fef243343e280a8ee6b96ad9bbccb004fd0d4240db8977da0d8f9",
+          "mnist:train:737:cf559fa2111fd595a14fa5b9f6269d0fb89e4108c14d2da7b99db898319e7165"
+        ],
+        [
+          "mnist:train:6176:7868c67ec45c747b67c4a802ab25e4b64f3a1fb7b9f12c3837d18b2280d199bc",
+          "mnist:train:7767:d558728de695145127f028204bdb2a1f6897b88d93ac45fb80201023e13a4af5"
+        ],
+        [
+          "mnist:train:49485:a240b5b428e32a3fc801d09bdb48316f966d696e90e28ec5760f3aea3dd9dcf8",
+          "mnist:train:4402:91d84561d2ca7e57bac303cd62ce4be8c4e766a138fc238a2b10231abad9be9a"
+        ],
+        [
+          "mnist:train:50616:5c7294d22d1470b33c4b5d722466f66cef954093e49cb62b5a7f10f42051ae50",
+          "mnist:train:32461:cd2355bcacad85c5cb496adba8c351fbb421e29a6d3f8fa6463721a2c438cd7d"
+        ],
+        [
+          "mnist:train:49721:2965cdc7e7df6158b1d2fd683ab134be953a8c02bccef325eae9d5123a1e89df",
+          "mnist:train:54369:4cb78d03e515c4d71597831b8e9ff7630ca532ee6295dfeee85ff4918c2d4bd7"
+        ],
+        [
+          "mnist:train:11463:8574581b18263b3abebbced93dbbb7aa37344f296fb1aec0a32818609b699553",
+          "mnist:train:16453:6b9ac66d7f61bdf4ca7d79cc5832ef117590916a8f031a7afa126b7b5c9db329"
+        ],
+        [
+          "mnist:train:49:44e0c81a29722d3842474cc8536fb4100aa30a763fa01edf493a5803dfb58ac6",
+          "mnist:train:49873:84adb543fbacd86ad3028b366f26d0fcd48bd5cafc12a5db7fbc3ed5bf892835"
+        ],
+        [
+          "mnist:train:14968:5479cb6e866432c3f406bd6bc3d988505c16882e5fa04705316e56834c711d40",
+          "mnist:train:22470:f83e7ec2eda9130d55679a369c086be43a1adbf7b79cbc0e86ced39ad86e102e"
+        ],
+        [
+          "mnist:train:36402:8421ff77da7c3a713aa077e75e9b222352a4929af1adb7331db1675b40828e14",
+          "mnist:train:27121:e0d963b0ef38f5f0e5dc83fe30e38bb50ad5a4812d2e10823688dba4536f95f8"
+        ],
+        [
+          "mnist:train:32330:1f69cb8247a1277b99f2f94ef332cc04670ad5ef315218450c6801b032906919",
+          "mnist:train:55129:caf7e24c7d74725c85c60c1246510b98e86f0034a2cb9a2d37a1ac6acf582145"
+        ],
+        [
+          "mnist:train:50797:5f60afd782cd2e2d07ffeddd871ed68dd03bf07f0e19bc099c71a5f98499edeb",
+          "mnist:train:20578:f837137bdde0093eae67146aa316fc17335bb67606f85c992928d4295e1cac45"
+        ],
+        [
+          "mnist:train:38214:871051d3116b9b95af8591854ca3d6b297e4545da6cd645970fe69af2dbff4df",
+          "mnist:train:29459:dc126529f2336187a2cdb32a6ef05ea6dd9b9ac88fdc6319cd06b35547218e90"
+        ]
+      ],
+      "step": 1,
+      "trace_sha256": "abe12004b82fd9349e56d0c95302a0b8fb27901ba79952060b3ca5477e838b43"
+    },
+    {
+      "archive": "43-direct_mean-step-201.zip",
+      "archive_sha256": "758d3ada4e9b6b9419fd373214c5c5ed3f00922b6dd1bd7bf769b673f47f1f6d",
+      "arm": "direct_mean",
+      "condition": "clean",
+      "examples": 256,
+      "input_sha256": "72808522be7531ace1ebcb12361663db375d84e619d96a24031bedd16f10bb7b",
+      "maximum_coefficient_gradient_error": 1.1557017343122311e-07,
+      "maximum_cost_error": 2.992462200257506e-08,
+      "outcomes_sha256": "7746af200185ed7d6779314f7e033836bcfb80905bce792f5238d4e61004a357",
+      "parameter_preclip_norm": 0.8217297872594308,
+      "plans": [
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        0,
+        0,
+        0,
+        3,
+        0
+      ],
+      "preceding_checkpoint_sha256": "1d9e375fc70e09f6fbc622d5bf5822f0419483e2054fea7dddf497380c83d042",
+      "preclip_norm_error": 1.1119332798958936e-07,
+      "seed": 43,
+      "source_ids": [
+        [
+          "mnist:train:41719:aa1065339eb9339a95161d669dfd375c9559dcc0432d0c935c6e85e2dfef84ac",
+          "mnist:train:9688:b2e0b4e378ed976b6c4f5ca124634312d1daf7e900f21488df6809b208e4e4c3"
+        ],
+        [
+          "mnist:train:3178:05ea7daffdd4e37d0b1cda112d02164b55fbe864444d104c773229922e95455f",
+          "mnist:train:58207:a85e56f64879c27d2cb3189ad818fb74df01500759a1ab541713a369296fe619"
+        ],
+        [
+          "mnist:train:29112:350577901a7c9c44e790053c1f5ed390978cc8726ed39f652508785d3628ebfe",
+          "mnist:train:56650:e95105c6861c8cb25e22b23fcbaa95d1feeafdb89d4b057d9c21ca3a7068b54c"
+        ],
+        [
+          "mnist:train:37838:40ee09b80238cfcaae9300815ccbb80dd7a5a540621989e610c613f37e336d80",
+          "mnist:train:18807:fd16f0dd2c7b15484c0df98a836e2a8ecc30dc7d4c40537cd49d7d2b75fbb568"
+        ],
+        [
+          "mnist:train:10817:96e8075daac42c2229f52fc99e8a054d52b90cce1248a61f287ad53e81c606ad",
+          "mnist:train:27381:507e0a3a9f9650e91d14e28a554dcdba641022a9b6724590574814c1fc69b781"
+        ],
+        [
+          "mnist:train:58474:7bc16d2bfcd20ba735e1b8e41af5b88b48aebac68373b8247d80a90af364d85e",
+          "mnist:train:35111:4cb560f5d2c3bd95ead3e9a778f1c1215addcafec3f1ba70849452066182f5b4"
+        ],
+        [
+          "mnist:train:44041:c3705a23f4b48ef56f26da85a32163ffef775b777a78a855a90aa4ca98831f4f",
+          "mnist:train:11382:4f9f645770148e1606f60e9722b4f7ee40ba7ddc48ec90625a916e44efa79a66"
+        ],
+        [
+          "mnist:train:11918:b1311a9b1922005c3c6798860e7397d15c9548761988001c8c4e2c7465ac07f2",
+          "mnist:train:53688:5502589494474b962a1cbf75cf446692fe478da47f51966d15e4a23b00dcc4ae"
+        ],
+        [
+          "mnist:train:35959:3d62eb16a04e0e61a531d0388b0ca17936ee76621763d693e88918562d180642",
+          "mnist:train:21969:44502a58e29337ce0befe49f105094f7b690aa482fdbe551322f5d2d62ee4e7e"
+        ],
+        [
+          "mnist:train:59597:8e26d9275501295fee85cc9d45a15d6bab4672458c3432c1278006bc5fc6db4f",
+          "mnist:train:28826:dc2b1a33f4d7b12b626bc085c9890ebdefc43b049fb956a6434cc9beeae49dba"
+        ],
+        [
+          "mnist:train:7188:5113df77b33944f00693a2c36e80f9ac4fc7ea91c709eef7453f2302bec2a2ba",
+          "mnist:train:58295:78ff839e4ec0d00a3fffa1ec6235cf75eca54d61527e21d13d112d79d85ac00b"
+        ],
+        [
+          "mnist:train:58048:21c275252d72ac694e3033e8509e0331093edb89490e0145fb4cb0c24868b59d",
+          "mnist:train:50029:5b0decf423bee8731a2b2f1ddd0eb67e1bac054f2f0cc9a543723925f3231668"
+        ],
+        [
+          "mnist:train:10839:eb86cb7257fb249b22dd6b395b83a5ca410cb929ba12eff4a7eb253c19c9a819",
+          "mnist:train:31438:545050e384a772486121af71fd03e15feb91b7f8f5e3b270ef13d402bb4c3ac1"
+        ],
+        [
+          "mnist:train:43739:150772f77ee6d3992ad5ddb873dd845bce5f78bdc39232ba1c9c81e54171accb",
+          "mnist:train:12022:ba33b92fbb2d83de0ec932ee5146a73c9af9e8f00e2badab91494058bc9cfb7f"
+        ],
+        [
+          "mnist:train:33116:2320b8a2147132a10074fbf1014c2b3aa2259150c6668d94e1cf19a156e802c0",
+          "mnist:train:26348:f8139902d9149dfc99b9fced761bfd3c598326bbcb47f251187eb663bf80ebec"
+        ],
+        [
+          "mnist:train:3691:0cc69cfa4619680267bcf69a5fa568895999788a7cac149f51c6c3d5f76d6980",
+          "mnist:train:49863:86d8454a1770419609018a5d4248542eb879d5152d02c933ab7f262d942970ec"
+        ]
+      ],
+      "step": 201,
+      "trace_sha256": "abe12004b82fd9349e56d0c95302a0b8fb27901ba79952060b3ca5477e838b43"
+    },
+    {
+      "archive": "43-direct_mean-step-401.zip",
+      "archive_sha256": "d81626b57e3309a6319f439770dac459e84cbb52a48cebe6fa70c5912d91e8db",
+      "arm": "direct_mean",
+      "condition": "clean",
+      "examples": 256,
+      "input_sha256": "ee4edb3876ed8082556940569b393f3554be2d1bf324335d6e538130b4d18f96",
+      "maximum_coefficient_gradient_error": 7.872696350277701e-08,
+      "maximum_cost_error": 2.9944682622407015e-08,
+      "outcomes_sha256": "64d3fdf590b625661a55f53d6dae66584d48779db3954d7c2e3605460bcd5d32",
+      "parameter_preclip_norm": 0.569171505643799,
+      "plans": [
+        0,
+        0,
+        3,
+        0,
+        3,
+        0,
+        3,
+        0,
+        1,
+        3,
+        1,
+        0,
+        3,
+        0,
+        3,
+        0
+      ],
+      "preceding_checkpoint_sha256": "5be41abbbdce649f768c62200fa92a2e949653a5855d2cc168667f39ba14ac58",
+      "preclip_norm_error": 1.7358734338834836e-08,
+      "seed": 43,
+      "source_ids": [
+        [
+          "mnist:train:41802:5ea0fae76ced23ee9511c007810ddfbf0effe428751450f923476daf6fe28e32",
+          "mnist:train:6095:3bb263719fa51f8ea27cdef1ba17da18372b809d90836b9b91d88af7493ee585"
+        ],
+        [
+          "mnist:train:38430:d08ee1a8689d2e229564e3a84527b456d7066d89d9c6a883ddd11a2b1ad0c874",
+          "mnist:train:49542:f56e3444c4912fd3123ceeb78ddd43821fe20935682c90c70f8ec9780f0d9e4a"
+        ],
+        [
+          "mnist:train:24764:d330349e4275222a691acd4d9715674e07432d688d73bb928ef4ade3b988710d",
+          "mnist:train:39514:188063ccfb6309e7dd5025cdefeb3edd015efde0b90996b394d7f51e988e4364"
+        ],
+        [
+          "mnist:train:23276:9ebdd431b021ac6320a5e853e1ccb66ed14670b7453fac9225429812e2de0b8c",
+          "mnist:train:45364:3a9c86b439d8dedb8a5d6c8e5488cc62f56561892ea9a33482f1bea328194250"
+        ],
+        [
+          "mnist:train:41933:00a18393e51053ca79656ec0da806787ea5b7a4c1a2aad05e7158697ec6ae039",
+          "mnist:train:28782:2a0a130ca707a0ee1d128095188f9188b35f3889dea5eb8187070b7a04c3bbb9"
+        ],
+        [
+          "mnist:train:28327:fa33e3c7c8f40cc90e16b7e0f1720165bc3bb8f2d94c4101f910f923d87ccbb5",
+          "mnist:train:52839:2171e7114a913be3a963aab40b2a37c8ff3e05cf5be0f88ed930b631c0a6db16"
+        ],
+        [
+          "mnist:train:33116:2320b8a2147132a10074fbf1014c2b3aa2259150c6668d94e1cf19a156e802c0",
+          "mnist:train:44197:7625d2e9aefc25067a096cc26332fabae12655fbc7ae375ca45fe89a932d469f"
+        ],
+        [
+          "mnist:train:41115:78428b8580c73fa516a914e47234e8b878d5bcf8c8242cedd7809388c4d7b139",
+          "mnist:train:43303:e5fbb7a8c5feb26236170c4efc379e87038e62b59a65f0418a0fc2477f8b1a9d"
+        ],
+        [
+          "mnist:train:23770:62801c343556c6217188b54e2c11ba4d8e26c4c313947db0f4c0d19d10d70b8e",
+          "mnist:train:38584:91464b9016d8a7fc4f04d5182a6b567ce0b13c6489222ddac575aecd4fa5be1f"
+        ],
+        [
+          "mnist:train:4008:a4c029110541f2e46470f1d28a610dc06c3d23801f0b39e26423da03681c4847",
+          "mnist:train:4407:9edbc768a492ba92f2b69dad39aa5059ff77211ac3e10a28db4e5a8787598467"
+        ],
+        [
+          "mnist:train:23078:bb52d11e30144c1543085c8378cf74b09521e0cbb828abc30f6ecf4b99923b39",
+          "mnist:train:52620:c60584573f66b38e14dfae21a7a3e62a7122f636d3fc4164236937d63261ccc0"
+        ],
+        [
+          "mnist:train:32877:851ce25c2f1920ad9be52714df7effccab744214d65e53ce7ecae97fe63436a4",
+          "mnist:train:57368:686b363a1fc899e04a5a305bec6014fdf2e0836728102a0be0f4d4131f31ddfd"
+        ],
+        [
+          "mnist:train:41830:ee07a97ea5c8c9b0c59286c95dbca95777aa8b582ed7fc0bc553b435928698e4",
+          "mnist:train:56125:e7618bf0293158f8eaffa161ae80d96567d8ccff059bd30b981155e30659d25d"
+        ],
+        [
+          "mnist:train:40887:a9e1e1ae84c1afaae325fcea4670edce1edbc920215a638f8eafaf63d5c9c935",
+          "mnist:train:17095:7fca501175bcef0099fc5e8e425db482716f62efa234f8f77ab64a0e5026dde8"
+        ],
+        [
+          "mnist:train:36001:bc7744f2c32400c2b6e19f96bf19a4bac4eda5646e42bd4a5041d1a7686cfbd3",
+          "mnist:train:57069:a9307fe42031050f08fc513960486aedc36b4153a05ced69b0d62084c3d410f3"
+        ],
+        [
+          "mnist:train:59162:d692adc3c4ee63819e1913d30713787519597cc64b255751d16421fec2e87033",
+          "mnist:train:19660:08b313012195484029a56592b172041655ca1635c3dd02dcebbf1ad9eb04eb92"
+        ]
+      ],
+      "step": 401,
+      "trace_sha256": "abe12004b82fd9349e56d0c95302a0b8fb27901ba79952060b3ca5477e838b43"
+    },
+    {
+      "archive": "43-direct_risk-step-1.zip",
+      "archive_sha256": "6c67a4dc4860495c52f1f53df2c8dca05d41645afa624fa6c6c311f72aaef41e",
+      "arm": "direct_risk",
+      "condition": "clean",
+      "examples": 256,
+      "input_sha256": "3b64f53297a2ef8c9305bf7200e64c285ec024905fe62e93430f7ab57f136208",
+      "maximum_coefficient_gradient_error": 8.346090913601115e-08,
+      "maximum_cost_error": 2.3905935619961127e-08,
+      "outcomes_sha256": "8db6242cf32735768f1875cb239ab5460daf4109c0cb39a1db2ba912f625eadf",
+      "parameter_preclip_norm": 0.27767574273842854,
+      "plans": [
+        0,
+        3,
+        3,
+        0,
+        3,
+        0,
+        1,
+        3,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "preceding_checkpoint_sha256": null,
+      "preclip_norm_error": 2.4669352005624035e-08,
+      "seed": 43,
+      "source_ids": [
+        [
+          "mnist:train:40950:e86cc8aa8d2867f66e69f0b25243b58b9ef3b1035fe4261dd098015c074db930",
+          "mnist:train:2650:2d713a31c0b330a7ebdda7add3c5bf8673a140d144b533ef96d008507b7df38e"
+        ],
+        [
+          "mnist:train:29314:6ef22bd8b521751cbf2aec25f9d68ff124786bbae638bc43183c9550149d989d",
+          "mnist:train:39560:f8cdf9540f271c1a6aa6cc9369d1cf8ed27b1e7fe91819eaf1637a3c4b8ef8cd"
+        ],
+        [
+          "mnist:train:27134:3146ca86375f396ae7366563a28b40bfdb83855a723a0181595a8defaff7c7ec",
+          "mnist:train:26052:b85a6d5fce62b3cc6f59f8106c7390d855a96eda667d6285e2dcc81f69eaa574"
+        ],
+        [
+          "mnist:train:45830:8fb04f16ff2cc0b06e9f69bf91b5acb9cbbe38ee09561d54ec208334397c9d5a",
+          "mnist:train:37382:03892f2510e825743424f6510d5d70419c6c273e289e31eba96070861b84bea9"
+        ],
+        [
+          "mnist:train:2269:dc8a5eb1b80fef243343e280a8ee6b96ad9bbccb004fd0d4240db8977da0d8f9",
+          "mnist:train:737:cf559fa2111fd595a14fa5b9f6269d0fb89e4108c14d2da7b99db898319e7165"
+        ],
+        [
+          "mnist:train:6176:7868c67ec45c747b67c4a802ab25e4b64f3a1fb7b9f12c3837d18b2280d199bc",
+          "mnist:train:7767:d558728de695145127f028204bdb2a1f6897b88d93ac45fb80201023e13a4af5"
+        ],
+        [
+          "mnist:train:49485:a240b5b428e32a3fc801d09bdb48316f966d696e90e28ec5760f3aea3dd9dcf8",
+          "mnist:train:4402:91d84561d2ca7e57bac303cd62ce4be8c4e766a138fc238a2b10231abad9be9a"
+        ],
+        [
+          "mnist:train:50616:5c7294d22d1470b33c4b5d722466f66cef954093e49cb62b5a7f10f42051ae50",
+          "mnist:train:32461:cd2355bcacad85c5cb496adba8c351fbb421e29a6d3f8fa6463721a2c438cd7d"
+        ],
+        [
+          "mnist:train:49721:2965cdc7e7df6158b1d2fd683ab134be953a8c02bccef325eae9d5123a1e89df",
+          "mnist:train:54369:4cb78d03e515c4d71597831b8e9ff7630ca532ee6295dfeee85ff4918c2d4bd7"
+        ],
+        [
+          "mnist:train:11463:8574581b18263b3abebbced93dbbb7aa37344f296fb1aec0a32818609b699553",
+          "mnist:train:16453:6b9ac66d7f61bdf4ca7d79cc5832ef117590916a8f031a7afa126b7b5c9db329"
+        ],
+        [
+          "mnist:train:49:44e0c81a29722d3842474cc8536fb4100aa30a763fa01edf493a5803dfb58ac6",
+          "mnist:train:49873:84adb543fbacd86ad3028b366f26d0fcd48bd5cafc12a5db7fbc3ed5bf892835"
+        ],
+        [
+          "mnist:train:14968:5479cb6e866432c3f406bd6bc3d988505c16882e5fa04705316e56834c711d40",
+          "mnist:train:22470:f83e7ec2eda9130d55679a369c086be43a1adbf7b79cbc0e86ced39ad86e102e"
+        ],
+        [
+          "mnist:train:36402:8421ff77da7c3a713aa077e75e9b222352a4929af1adb7331db1675b40828e14",
+          "mnist:train:27121:e0d963b0ef38f5f0e5dc83fe30e38bb50ad5a4812d2e10823688dba4536f95f8"
+        ],
+        [
+          "mnist:train:32330:1f69cb8247a1277b99f2f94ef332cc04670ad5ef315218450c6801b032906919",
+          "mnist:train:55129:caf7e24c7d74725c85c60c1246510b98e86f0034a2cb9a2d37a1ac6acf582145"
+        ],
+        [
+          "mnist:train:50797:5f60afd782cd2e2d07ffeddd871ed68dd03bf07f0e19bc099c71a5f98499edeb",
+          "mnist:train:20578:f837137bdde0093eae67146aa316fc17335bb67606f85c992928d4295e1cac45"
+        ],
+        [
+          "mnist:train:38214:871051d3116b9b95af8591854ca3d6b297e4545da6cd645970fe69af2dbff4df",
+          "mnist:train:29459:dc126529f2336187a2cdb32a6ef05ea6dd9b9ac88fdc6319cd06b35547218e90"
+        ]
+      ],
+      "step": 1,
+      "trace_sha256": "16b4cbfca1e559d103a75c12c339b3de26e5b5591a1f313a33d233e3b9bee468"
+    },
+    {
+      "archive": "43-direct_risk-step-201.zip",
+      "archive_sha256": "ea73f1b31cdb0ad370e63084544f79b8e6f34a8b771c1019efc4d22daa966664",
+      "arm": "direct_risk",
+      "condition": "clean",
+      "examples": 256,
+      "input_sha256": "1539c2bb535092064f33d5b2b825c1066dfcf777593608145ccd80aac708e7d6",
+      "maximum_coefficient_gradient_error": 6.221482151872837e-08,
+      "maximum_cost_error": 2.2900154716953836e-08,
+      "outcomes_sha256": "499bdadab958cb21d9eea727d3b12cc48be8f50c72f92b41c981c781053bef26",
+      "parameter_preclip_norm": 0.13248404155691285,
+      "plans": [
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        0,
+        0,
+        0,
+        3,
+        0
+      ],
+      "preceding_checkpoint_sha256": "7411b7a6365abd5386e41a070d459400f8b71a1500a39b595de2c0a439289d32",
+      "preclip_norm_error": 7.048052363956003e-09,
+      "seed": 43,
+      "source_ids": [
+        [
+          "mnist:train:41719:aa1065339eb9339a95161d669dfd375c9559dcc0432d0c935c6e85e2dfef84ac",
+          "mnist:train:9688:b2e0b4e378ed976b6c4f5ca124634312d1daf7e900f21488df6809b208e4e4c3"
+        ],
+        [
+          "mnist:train:3178:05ea7daffdd4e37d0b1cda112d02164b55fbe864444d104c773229922e95455f",
+          "mnist:train:58207:a85e56f64879c27d2cb3189ad818fb74df01500759a1ab541713a369296fe619"
+        ],
+        [
+          "mnist:train:29112:350577901a7c9c44e790053c1f5ed390978cc8726ed39f652508785d3628ebfe",
+          "mnist:train:56650:e95105c6861c8cb25e22b23fcbaa95d1feeafdb89d4b057d9c21ca3a7068b54c"
+        ],
+        [
+          "mnist:train:37838:40ee09b80238cfcaae9300815ccbb80dd7a5a540621989e610c613f37e336d80",
+          "mnist:train:18807:fd16f0dd2c7b15484c0df98a836e2a8ecc30dc7d4c40537cd49d7d2b75fbb568"
+        ],
+        [
+          "mnist:train:10817:96e8075daac42c2229f52fc99e8a054d52b90cce1248a61f287ad53e81c606ad",
+          "mnist:train:27381:507e0a3a9f9650e91d14e28a554dcdba641022a9b6724590574814c1fc69b781"
+        ],
+        [
+          "mnist:train:58474:7bc16d2bfcd20ba735e1b8e41af5b88b48aebac68373b8247d80a90af364d85e",
+          "mnist:train:35111:4cb560f5d2c3bd95ead3e9a778f1c1215addcafec3f1ba70849452066182f5b4"
+        ],
+        [
+          "mnist:train:44041:c3705a23f4b48ef56f26da85a32163ffef775b777a78a855a90aa4ca98831f4f",
+          "mnist:train:11382:4f9f645770148e1606f60e9722b4f7ee40ba7ddc48ec90625a916e44efa79a66"
+        ],
+        [
+          "mnist:train:11918:b1311a9b1922005c3c6798860e7397d15c9548761988001c8c4e2c7465ac07f2",
+          "mnist:train:53688:5502589494474b962a1cbf75cf446692fe478da47f51966d15e4a23b00dcc4ae"
+        ],
+        [
+          "mnist:train:35959:3d62eb16a04e0e61a531d0388b0ca17936ee76621763d693e88918562d180642",
+          "mnist:train:21969:44502a58e29337ce0befe49f105094f7b690aa482fdbe551322f5d2d62ee4e7e"
+        ],
+        [
+          "mnist:train:59597:8e26d9275501295fee85cc9d45a15d6bab4672458c3432c1278006bc5fc6db4f",
+          "mnist:train:28826:dc2b1a33f4d7b12b626bc085c9890ebdefc43b049fb956a6434cc9beeae49dba"
+        ],
+        [
+          "mnist:train:7188:5113df77b33944f00693a2c36e80f9ac4fc7ea91c709eef7453f2302bec2a2ba",
+          "mnist:train:58295:78ff839e4ec0d00a3fffa1ec6235cf75eca54d61527e21d13d112d79d85ac00b"
+        ],
+        [
+          "mnist:train:58048:21c275252d72ac694e3033e8509e0331093edb89490e0145fb4cb0c24868b59d",
+          "mnist:train:50029:5b0decf423bee8731a2b2f1ddd0eb67e1bac054f2f0cc9a543723925f3231668"
+        ],
+        [
+          "mnist:train:10839:eb86cb7257fb249b22dd6b395b83a5ca410cb929ba12eff4a7eb253c19c9a819",
+          "mnist:train:31438:545050e384a772486121af71fd03e15feb91b7f8f5e3b270ef13d402bb4c3ac1"
+        ],
+        [
+          "mnist:train:43739:150772f77ee6d3992ad5ddb873dd845bce5f78bdc39232ba1c9c81e54171accb",
+          "mnist:train:12022:ba33b92fbb2d83de0ec932ee5146a73c9af9e8f00e2badab91494058bc9cfb7f"
+        ],
+        [
+          "mnist:train:33116:2320b8a2147132a10074fbf1014c2b3aa2259150c6668d94e1cf19a156e802c0",
+          "mnist:train:26348:f8139902d9149dfc99b9fced761bfd3c598326bbcb47f251187eb663bf80ebec"
+        ],
+        [
+          "mnist:train:3691:0cc69cfa4619680267bcf69a5fa568895999788a7cac149f51c6c3d5f76d6980",
+          "mnist:train:49863:86d8454a1770419609018a5d4248542eb879d5152d02c933ab7f262d942970ec"
+        ]
+      ],
+      "step": 201,
+      "trace_sha256": "16b4cbfca1e559d103a75c12c339b3de26e5b5591a1f313a33d233e3b9bee468"
+    },
+    {
+      "archive": "43-direct_risk-step-401.zip",
+      "archive_sha256": "778844df14d66fe3155bceb55374f4a1fc70839554ea00356e387d2eda132258",
+      "arm": "direct_risk",
+      "condition": "clean",
+      "examples": 256,
+      "input_sha256": "d28999cf35d84f176302fb37c8c3c4898616d6495635e3b31bd367f43e383baa",
+      "maximum_coefficient_gradient_error": 4.6991582963659955e-08,
+      "maximum_cost_error": 2.203620269591866e-08,
+      "outcomes_sha256": "0543c7e7a74812570acf3f81f328dd88b7faad2c449988d2ddc6bc9d67c2fcbf",
+      "parameter_preclip_norm": 0.26406143369973994,
+      "plans": [
+        0,
+        0,
+        3,
+        0,
+        3,
+        0,
+        3,
+        0,
+        1,
+        3,
+        1,
+        0,
+        3,
+        0,
+        3,
+        0
+      ],
+      "preceding_checkpoint_sha256": "435fb36d845a0e5cdad40025e6c627689e2d0111ae6455808b243fd71ce1c23a",
+      "preclip_norm_error": 4.234613276699051e-08,
+      "seed": 43,
+      "source_ids": [
+        [
+          "mnist:train:41802:5ea0fae76ced23ee9511c007810ddfbf0effe428751450f923476daf6fe28e32",
+          "mnist:train:6095:3bb263719fa51f8ea27cdef1ba17da18372b809d90836b9b91d88af7493ee585"
+        ],
+        [
+          "mnist:train:38430:d08ee1a8689d2e229564e3a84527b456d7066d89d9c6a883ddd11a2b1ad0c874",
+          "mnist:train:49542:f56e3444c4912fd3123ceeb78ddd43821fe20935682c90c70f8ec9780f0d9e4a"
+        ],
+        [
+          "mnist:train:24764:d330349e4275222a691acd4d9715674e07432d688d73bb928ef4ade3b988710d",
+          "mnist:train:39514:188063ccfb6309e7dd5025cdefeb3edd015efde0b90996b394d7f51e988e4364"
+        ],
+        [
+          "mnist:train:23276:9ebdd431b021ac6320a5e853e1ccb66ed14670b7453fac9225429812e2de0b8c",
+          "mnist:train:45364:3a9c86b439d8dedb8a5d6c8e5488cc62f56561892ea9a33482f1bea328194250"
+        ],
+        [
+          "mnist:train:41933:00a18393e51053ca79656ec0da806787ea5b7a4c1a2aad05e7158697ec6ae039",
+          "mnist:train:28782:2a0a130ca707a0ee1d128095188f9188b35f3889dea5eb8187070b7a04c3bbb9"
+        ],
+        [
+          "mnist:train:28327:fa33e3c7c8f40cc90e16b7e0f1720165bc3bb8f2d94c4101f910f923d87ccbb5",
+          "mnist:train:52839:2171e7114a913be3a963aab40b2a37c8ff3e05cf5be0f88ed930b631c0a6db16"
+        ],
+        [
+          "mnist:train:33116:2320b8a2147132a10074fbf1014c2b3aa2259150c6668d94e1cf19a156e802c0",
+          "mnist:train:44197:7625d2e9aefc25067a096cc26332fabae12655fbc7ae375ca45fe89a932d469f"
+        ],
+        [
+          "mnist:train:41115:78428b8580c73fa516a914e47234e8b878d5bcf8c8242cedd7809388c4d7b139",
+          "mnist:train:43303:e5fbb7a8c5feb26236170c4efc379e87038e62b59a65f0418a0fc2477f8b1a9d"
+        ],
+        [
+          "mnist:train:23770:62801c343556c6217188b54e2c11ba4d8e26c4c313947db0f4c0d19d10d70b8e",
+          "mnist:train:38584:91464b9016d8a7fc4f04d5182a6b567ce0b13c6489222ddac575aecd4fa5be1f"
+        ],
+        [
+          "mnist:train:4008:a4c029110541f2e46470f1d28a610dc06c3d23801f0b39e26423da03681c4847",
+          "mnist:train:4407:9edbc768a492ba92f2b69dad39aa5059ff77211ac3e10a28db4e5a8787598467"
+        ],
+        [
+          "mnist:train:23078:bb52d11e30144c1543085c8378cf74b09521e0cbb828abc30f6ecf4b99923b39",
+          "mnist:train:52620:c60584573f66b38e14dfae21a7a3e62a7122f636d3fc4164236937d63261ccc0"
+        ],
+        [
+          "mnist:train:32877:851ce25c2f1920ad9be52714df7effccab744214d65e53ce7ecae97fe63436a4",
+          "mnist:train:57368:686b363a1fc899e04a5a305bec6014fdf2e0836728102a0be0f4d4131f31ddfd"
+        ],
+        [
+          "mnist:train:41830:ee07a97ea5c8c9b0c59286c95dbca95777aa8b582ed7fc0bc553b435928698e4",
+          "mnist:train:56125:e7618bf0293158f8eaffa161ae80d96567d8ccff059bd30b981155e30659d25d"
+        ],
+        [
+          "mnist:train:40887:a9e1e1ae84c1afaae325fcea4670edce1edbc920215a638f8eafaf63d5c9c935",
+          "mnist:train:17095:7fca501175bcef0099fc5e8e425db482716f62efa234f8f77ab64a0e5026dde8"
+        ],
+        [
+          "mnist:train:36001:bc7744f2c32400c2b6e19f96bf19a4bac4eda5646e42bd4a5041d1a7686cfbd3",
+          "mnist:train:57069:a9307fe42031050f08fc513960486aedc36b4153a05ced69b0d62084c3d410f3"
+        ],
+        [
+          "mnist:train:59162:d692adc3c4ee63819e1913d30713787519597cc64b255751d16421fec2e87033",
+          "mnist:train:19660:08b313012195484029a56592b172041655ca1635c3dd02dcebbf1ad9eb04eb92"
+        ]
+      ],
+      "step": 401,
+      "trace_sha256": "16b4cbfca1e559d103a75c12c339b3de26e5b5591a1f313a33d233e3b9bee468"
+    }
+  ],
+  "reward_observer_sha256": "a9cfe78a08b9192ba9d8fe9c144de29ef5d3b1e9cd6ed236d01d170d32034210",
+  "schema": "hepta.ndu.direct-gradient-independent-probes.v1",
+  "wall_seconds": 7.493861647002632
+}

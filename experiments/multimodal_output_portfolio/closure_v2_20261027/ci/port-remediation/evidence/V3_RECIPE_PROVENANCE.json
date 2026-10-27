@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-27T13:02:24.307584+00:00",
+  "source_assembly_result_sha256": "46b3a6038ffdd711e99b5735129a662ce4cfb9ce69296aae5f4c10588a9528ca",
+  "supersedes_only_recipe_provenance_metadata": true,
+  "before_recipe_sha256": "ec5a8a68a68874de88661d587128edaba9cfb46cc92a231331eea7879b010043",
+  "final_recipe": {
+    "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v3.json",
+    "bytes": 336513,
+    "sha256": "b3936e6c2385d8fe93e30cc2ebb904dda43a9e86174fd3e9d427459ddd69629c"
+  },
+  "operational_changes_from_v2": [
+    "aws_qualification.ignored_tests",
+    "patch_path",
+    "patch_sha256"
+  ],
+  "provenance_change": "revision describes v3, its v2 parent and actual failed run; all other recipe data are identical",
+  "revision": {
+    "number": 3,
+    "previous_recipe_sha256": "1122a85d579ff781fa0941eaa6233aeb72ea881b80a948fd1b24305b59890295",
+    "previous_patch_sha256": "123fbb21bbb9ddb6f88bfd1b7e17144317b7b36f887852ec9d863090f734ad22",
+    "failed_run_id": 40503203294,
+    "purpose": "Correct the exact original AWS ignored testcase name and bind the zstd 2.1 versioned MSVC include patch for the real candidate Bazel graph; preserve all inventory, source, feature and policy constraints."
+  }
+}

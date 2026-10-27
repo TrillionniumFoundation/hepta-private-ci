@@ -1,0 +1,164 @@
+{
+  "status": "required execution not run",
+  "baseline": {
+    "independent_checkout": true,
+    "toolchain": "1.95.0",
+    "apply_only": [
+      "matrix-fixture-tests.patch"
+    ],
+    "required_lock_versions": {
+      "matrix-sdk": "0.18.0",
+      "matrix-sdk-crypto": "0.18.0",
+      "matrix-sdk-sqlite": "0.18.0"
+    },
+    "fixture_environment": "HEPTA_MATRIX_MIGRATION_FIXTURE must name a new existing absolute directory",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "ci-test",
+      "-p",
+      "codex-hepta-matrix-sdk",
+      "--test",
+      "store_version_migration",
+      "--run-ignored",
+      "only",
+      "-E",
+      "test(=prepare_old_version_fixture)"
+    ],
+    "required_observed_test": "prepare_old_version_fixture",
+    "required_pass_count": 1,
+    "retain": [
+      "checkout source SHA and tree",
+      "test patch hash",
+      "original Cargo.lock",
+      "rustc --version --verbose",
+      "resolved feature metadata",
+      "compiled test binary hash",
+      "command exit/log",
+      "all fixture bytes including SQLite WAL files",
+      "fixture per-file SHA-256"
+    ]
+  },
+  "candidate": {
+    "independent_checkout": true,
+    "toolchain": "1.96.0",
+    "dtolnay_action_sha": "d86e0fa8f147d6539442c26a61ebba8becc19489",
+    "extract": "matrix-vendor-v2.tar.gz after archive and member SHA-256 verification",
+    "apply": [
+      "matrix-manifest.patch",
+      "matrix-production.patch",
+      "matrix-context-tests.patch",
+      "matrix-fixture-tests.patch",
+      "matrix-toolchain.patch"
+    ],
+    "resolution_commands": [
+      [
+        "cargo",
+        "update",
+        "-p",
+        "matrix-sdk",
+        "--precise",
+        "0.19.1"
+      ],
+      [
+        "cargo",
+        "metadata",
+        "--locked",
+        "--format-version",
+        "1"
+      ],
+      [
+        "just",
+        "bazel-lock-update"
+      ],
+      [
+        "just",
+        "bazel-lock-check"
+      ]
+    ],
+    "lock_requirements": {
+      "matrix-sdk": "0.19.1 path vendor",
+      "matrix-sdk-crypto": "0.19.1 registry checksum 6851a6f102574c52430bd3617f86fb0def62f912fd2aed5356dcb8ff06a9fbc3",
+      "matrix-sdk-sqlite": "0.19.1 path vendor",
+      "anymap3": "1.1.0 registry checksum fb5dfbc6d8d2675589ccbe4d0fd61df2419075625f8c1a62325e718e2b0049f9",
+      "rusqlite": "0.39.0",
+      "libsqlite3-sys": "single package, 0.37.x, same one used by SQLx",
+      "imbl": ">=7.0.2",
+      "forbidden": [
+        "anymap2",
+        "matrix-sdk* <0.19.0",
+        "old imbl 6 override"
+      ]
+    },
+    "required_effective_features": {
+      "matrix-sdk": [
+        "e2e-encryption",
+        "sqlite",
+        "rustls-aws-lc-rs"
+      ],
+      "matrix-sdk-sqlite": [
+        "crypto-store",
+        "state-store",
+        "event-cache-store",
+        "media-store"
+      ],
+      "rusqlite": [
+        "limits",
+        "cache",
+        "fallible_uint"
+      ]
+    },
+    "workspace_tests": [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "ci-test",
+      "-p",
+      "codex-hepta-matrix-protocol",
+      "-p",
+      "codex-hepta-matrix-store",
+      "-p",
+      "codex-hepta-matrix-sdk",
+      "-p",
+      "codex-hepta-matrixd"
+    ],
+    "old_fixture_consumer": [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "ci-test",
+      "-p",
+      "codex-hepta-matrix-sdk",
+      "--test",
+      "store_version_migration",
+      "--run-ignored",
+      "only",
+      "-E",
+      "test(=reopen_old_version_fixture)"
+    ],
+    "required_observed_consumer_test": "reopen_old_version_fixture",
+    "required_consumer_pass_count": 1,
+    "fixture_rule": "Verify original producer artifact hashes, preserve it immutable, and consume only a separate writable exact copy; never run the producer on the candidate as a substitute.",
+    "source_rule": "Retain full candidate patch, source/tree hash, Cargo.toml, Cargo.lock, MODULE.bazel, MODULE.bazel.lock, toolchain file, vendor inventory, each command exit/log/hash and actual binaries.",
+    "remaining_gates": [
+      "Existing exact-source real-Synapse dual-agent/dual-matrixd restart and isolation qualification, on the committed candidate source",
+      "Unmodified cargo-deny policy and unchanged scan scope",
+      "Cross-platform compiler/Bazel CI for the coordinated Rust 1.96 migration",
+      "Separate explicitly recorded upstream-test membership overlay if upstream package dev-tests are requested; production default features must not change"
+    ],
+    "vendor_sha256": "10c22bd676feba90ea34a12b9a0212a5c0484aff98a44e78b1979e5c6affb350",
+    "bazel_binding": "SDK library and build script: e2e-encryption, rustls-aws-lc-rs, sqlite; SQLite library: crypto-store, event-cache-store, media-store, state-store; every target version 0.19.1; compare these with the actual Cargo metadata."
+  },
+  "prohibited_shortcuts": [
+    "Reusing the candidate to fabricate the old fixture",
+    "Relabeling skipped phase tests as passes",
+    "Keeping anymap2 under a new package name",
+    "Changing advisory policy",
+    "Disabling encryption or persistence features",
+    "Treating source/API inspection as Rust execution"
+  ]
+}

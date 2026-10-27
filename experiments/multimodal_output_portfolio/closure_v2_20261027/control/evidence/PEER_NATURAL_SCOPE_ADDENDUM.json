@@ -1,0 +1,10 @@
+{
+  "original_peer_receipt_sha256": "4199c4284f5c5246b1ec1a229dd66aaa5d20322c68101fb6d3aa7a92bf94c039",
+  "correction": "Speech encoder-only gate times PUBLIC_RESULT.json write but not immediate metadata JSON reread; old SpeechEngine times both write and reread. Every arm does time DELIVERED.txt readback and output hash. The original peer phrase public metadata readback was too broad for encoder_gate.",
+  "independent_later_audit_reopens_metadata": true,
+  "original_timings_and_gates_changed": false,
+  "timing_asymmetry": true,
+  "magnitude_not_independently_remeasured": true,
+  "model_outputs_not_regenerated": true,
+  "scope": "Core audio decode, feature extraction, encoder, gate and selected decoder costs remain included. No claim of exactly identical bookkeeping across old and encoder-only engine."
+}

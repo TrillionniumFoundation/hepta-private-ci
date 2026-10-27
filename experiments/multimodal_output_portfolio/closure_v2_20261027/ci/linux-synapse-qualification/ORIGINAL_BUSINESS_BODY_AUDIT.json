@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.linux-synapse.business-body-byte-audit.v1",
+  "recorded_utc": "2026-10-27T12:20:02.478802+00:00",
+  "review_mode": "Read-only mechanical inverse; no Rust execution",
+  "baseline_commit": "ba9b48a98acff559671f197fd7f28e2113f58ac2",
+  "original_test": {
+    "bytes": 236274,
+    "sha256": "f8321a43ffb7c57ec75349620b518a005884e125181f777bc1254dbc8f3253d1"
+  },
+  "reviewed_test": {
+    "bytes": 236636,
+    "sha256": "68894e5411cb47a5b4b9bfad6d2c50963148b48986d4b0ac60914bbf63efc264"
+  },
+  "inverse_count": 4,
+  "inverse_equals_original_all_bytes": true,
+  "unchanged_original_runner_and_proxy": {
+    "codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh": {
+      "bytes": 124460,
+      "sha256": "2c733cafbe5cece9697ef08c6a5ecf5747ec69ab3dfa227c3273ce38d2c2a610"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/synapse-loopback-proxy.py": {
+      "bytes": 14182,
+      "sha256": "4ca56154c2e31b3476df6e2663af3d0d327fd2c000da7c8dcecb8dc486d15f67"
+    }
+  },
+  "scope": "Only cfg module import, cfg choice of required adapter and LinuxExact enum/as_str additions were removed; all original qualification methods and all business-test assertions are byte-identical. This does not prove the new adapter runs successfully."
+}

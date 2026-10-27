@@ -1,0 +1,13 @@
+independent actual owner and media audits 80/640
+independent actual owner and media audits 160/640
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/control/audit.py", line 201, in <module>
+    run(args.assets, args.binary, args.development, args.qualification, args.output)
+  File "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/control/audit.py", line 171, in run
+    count, fingerprint = replay(transcript, binary, development, output / "temporary-native-replay")
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/control/verify_forecasts.py", line 43, in replay
+    raise ValueError(f"Original owner replay differs at {request['command']}")
+ValueError: Original owner replay differs at Open

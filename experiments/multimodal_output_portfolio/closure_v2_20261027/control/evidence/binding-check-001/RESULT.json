@@ -1,0 +1,66 @@
+{
+  "bound_runtime_identity": {
+    "critic_algorithm_ast_sha256": "6d1b39239df67f2c1b783eb799beb71e3394600766b6f09f97f4c88f5278b5cc",
+    "decoder_contract": {
+      "delivery_function_ast_sha256": "0bdebc0648e7cf7e196f91d89ad4d1986db17bfa1a940802250b6c54ceef6f03",
+      "dependency_file_sha256": {
+        "repair_20261026/joint/train.py": "71776941c8c7d289b6c3ad2886cfab3512f2ae7b3ffd3898fda6c5a2a72c9c8c",
+        "v6/conditioned.py": "ccb5f9a78e58d6f1d1511a95f50de3602e1f39e7254fce5566e97a994d5b4cba",
+        "v6/data.py": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29",
+        "v6/neural.py": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742",
+        "v6/observer.py": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e",
+        "v6/plan_training.py": "b43ff714960139d4b58d02dec86b69d27ac51d5abfd75509936ee2c5c355997b"
+      },
+      "name": "public-observation-order-command-two-transitions-greedy-png-utf8.v1"
+    },
+    "empirical_joint_law_sha256": "fe989c230ccecdaa0bbb7c5b6670b5f2ae37e7b249d10fde9493ddfa76612900",
+    "generator_checkpoint_sha256": "508931a0cb780d413bc39de83b8de91aeab68b33cfe1b384f176cb8e8f004ee6",
+    "owner_binary_sha256": "ba5fc96e8139e652fd1d7ae0f9713b66ccd879b12e190e4dcc93bca43426143b",
+    "owner_calibration_sha256": "8de3536b03f2fa2b6475b64635dbbd3345279a867cf82cf770fee495dc59c929",
+    "owner_readout_sha256": "70c61b3712724534bbdeaa0b1860b4520987c2671fa90cb15f93764bff9d75c0",
+    "policy_protocol_sha256": "b4296c23c82e4f81bd0627351b4d8e69d3967eef7075915477b6ebb165f37694",
+    "pooling_choice_sha256": "4e4a5f0bd3438717f46e2552c9aca57d01ad92518ec97d8cef7525f406688ed8",
+    "readout_heads_sha256": "36f1621a096116a1b6dad4bbc3f4943fa99c385c7c3e24012c05975e2a4fcc96"
+  },
+  "bound_runtime_sha256": "4be71c0d445fab766037c57c192975c1c23cff0a05995a7973c8b81610c8fb63",
+  "new_test_sources_or_outputs_used": false,
+  "passed": true,
+  "qualification_rerun": false,
+  "rejected_versions": [
+    {
+      "case": "different_generator_checkpoint",
+      "rejection": "Critic/runtime identity mismatch: refit and validate before predicting"
+    },
+    {
+      "case": "different_owner_runtime",
+      "rejection": "Critic/runtime identity mismatch: refit and validate before predicting"
+    },
+    {
+      "case": "changed_MODEL.json",
+      "rejection": "Critic/runtime identity mismatch: refit and validate before predicting"
+    },
+    {
+      "case": "changed_READOUT_FIT.json",
+      "rejection": "Critic/runtime identity mismatch: refit and validate before predicting"
+    },
+    {
+      "case": "changed_ENCODER_DOMAIN_PROOF.json",
+      "rejection": "Critic/runtime identity mismatch: refit and validate before predicting"
+    },
+    {
+      "case": "changed_FIT.json",
+      "rejection": "Critic/runtime identity mismatch: refit and validate before predicting"
+    },
+    {
+      "case": "changed_CRITIC_SELECTION.json",
+      "rejection": "Critic/runtime identity mismatch: refit and validate before predicting"
+    },
+    {
+      "case": "changed_PROTOCOL.json",
+      "rejection": "Critic/runtime identity mismatch: refit and validate before predicting"
+    }
+  ],
+  "restored_prediction_identity": "33b48c70933dafbea810bb9b649e7da1493ea38aada2e0648356f88460de0b78",
+  "state_and_durable_bytes_unchanged_after_every_rejection": true,
+  "timing": "Post-qualification-start interface hardening; original qualification source snapshot unchanged"
+}

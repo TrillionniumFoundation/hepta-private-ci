@@ -1,0 +1,150 @@
+{
+  "scope": "real patch application and full source restoration only; no Rust compilation or test execution",
+  "base_source": "77477ac788022ff738f82a83ef678c27423fd643",
+  "patches_applied": 6,
+  "patched_files_verified": 31,
+  "vendor_files_restored_and_rehashed": 286,
+  "all_vendor_upstream_feature_tables_unchanged": true,
+  "tls_provider_explicit": true,
+  "crypto_release_file_matches_pinned_upstream_commit": true,
+  "toml_and_workflow_yaml_parse": true,
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-fixture-tests.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-fixture-tests.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-context-tests.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-context-tests.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-production.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-production.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-manifest.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-manifest.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-toolchain.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-toolchain.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-toolchain-ci.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-toolchain-ci.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "rust_executed": false
+}

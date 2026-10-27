@@ -1,0 +1,17 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling serde_core v1.0.228
+   Compiling serde_json v1.0.149
+   Compiling memchr v2.8.1
+   Compiling serde-saphyr v2.0.0 (/workspace/scratch/95988d8d3ab1/ndu-yaml-candidate-worktree/codex-rs/third_party/serde-saphyr-2.0.0)
+   Compiling hepta-yaml-upstream-default-compatibility v0.0.0 (/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/yaml-migration/v4/upstream-default-smoke)
+    Finished `test` profile [unoptimized] target(s) in 4.22s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.149` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 1dc39927-55d6-4015-82f8-27f80e850c61 with nextest profile: local
+    Starting 1 test across 1 binary
+        PASS [   0.004s] hepta-yaml-upstream-default-compatibility::default_mode upstream_defaults_keep_their_original_scalar_extensions
+────────────
+     Summary [   0.004s] 1 test run: 1 passed, 0 skipped

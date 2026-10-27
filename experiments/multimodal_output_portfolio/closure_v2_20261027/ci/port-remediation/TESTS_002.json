@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-27T10:59:39.361252+00:00",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts",
+    "-p",
+    "test_ndu_port*.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "source_inputs": {
+    ".github/workflows/ndu-port-candidate.yml": "8a58c6e255b1350cb9e72f14c3f14afd95099050f603338e7328aa77d25d8bfd",
+    "scripts/ndu_port_aws_upstream.py": "c83becf9e87341f677c20571a452ba9776d5f080b1367b7425659a9055040bf8",
+    "scripts/ndu_port_candidate.py": "5fa10320fa939d697da9b8d51c02939e852c253506303c405c4a372139efa189",
+    "scripts/ndu_port_candidate_common.py": "b1957d71bc123acf89e649155e911455bd8fdc262db65495adaed60a5ad6f81f",
+    "scripts/ndu_port_matrix_fixture.py": "6f7f5af928ce1ce6f52d9728802b7e8c5eee89304b33edfb482d872f44cd6e0d",
+    "scripts/test_ndu_port_aws_upstream.py": "661ac8379f30b4388e10826fab6d6156c40ac857ec165570334906914caa0e4a",
+    "scripts/test_ndu_port_candidate.py": "28323d376877509229c577b7b7371932960dc2a864175286e6c847e51f9e3c89",
+    "scripts/test_ndu_port_matrix_fixture.py": "066b7b8998b765361ba3b9b85b734316002eb716bb661d71fb04e1efcf5881a1"
+  },
+  "log_sha256": "b5edcd5cff83d84cef2e2168eb2c0ad9ec752d8e0a8e17ba9695a0625cf1f7e2",
+  "workflow_jobs": [
+    "generate-reviewable-candidate",
+    "produce-independent-matrix-018-fixture",
+    "targeted-workspace-tests",
+    "matrix-workspace-and-old-fixture",
+    "full-scope-candidate-cargo-deny",
+    "linux-bazel-libraries",
+    "independent-full-upstream-aws"
+  ],
+  "python_syntax_parsed": 7,
+  "scope": "Pure Python artifact/source/phase evidence regressions and workflow parsing; not Cargo, Bazel or Rust execution"
+}

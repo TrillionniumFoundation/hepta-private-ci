@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.raw-source-export.mapping.v1",
+  "scope": "Byte-identical source snapshots use .rs.txt so repository formatters do not reinterpret or rewrite sealed evidence.",
+  "files": [
+    {
+      "role": "before",
+      "source_path": "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+      "export": "before-sdk.rs.txt",
+      "bytes": 28070,
+      "sha256": "8f6ed35c3a360da6893758c5bb7f357f5dd3b880e8008bd84c9983f1c61078d5"
+    },
+    {
+      "role": "before",
+      "source_path": "codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs",
+      "export": "before-startup_deadline_tests.rs.txt",
+      "bytes": 3181,
+      "sha256": "499c164c841a64c8f9ba6e7c917fb3e7ac5cc713b159cf2558b70512dc1f1849"
+    },
+    {
+      "role": "after",
+      "source_path": "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+      "export": "after-sdk.rs.txt",
+      "bytes": 28633,
+      "sha256": "97ffaf520931ff71ace0b3db0e4f24eaee17577e83e69333a7d699bfac46be24"
+    },
+    {
+      "role": "after",
+      "source_path": "codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs",
+      "export": "after-startup_deadline_tests.rs.txt",
+      "bytes": 4706,
+      "sha256": "0fb04da4d28ac84ec52bd338fe466a5593791df3539b9847ab09c9d8d731645a"
+    }
+  ]
+}

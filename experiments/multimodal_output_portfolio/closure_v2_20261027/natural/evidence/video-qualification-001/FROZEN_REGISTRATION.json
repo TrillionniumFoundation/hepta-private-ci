@@ -1,0 +1,103 @@
+{
+  "assets_sha256": "2697ba58c664cc1c4e302cf81713fb94de039db178e6c37a227b84bfb7a4544b",
+  "configurations": {
+    "efficient_initial": {
+      "alpha": 0.5,
+      "solver": "dis_ultrafast"
+    },
+    "efficient_learned": {
+      "alpha": 0.9029752972422481,
+      "solver": "dis_ultrafast"
+    },
+    "fixed_blend": {
+      "alpha": 0.0,
+      "solver": "blend"
+    },
+    "old_learned_mixer": {
+      "solver": "farneback_original",
+      "weights": [
+        1.475124631319269,
+        2.303497395666193,
+        1.8124642292675293,
+        1.0389194619799966
+      ]
+    },
+    "old_pure_flow": {
+      "alpha": 1.0,
+      "solver": "farneback_original"
+    }
+  },
+  "frozen_model_sha256": "f5b31ecaffba82e76a13ad1682f0d0343fd27ca62ed2b7eaea0e7dd7b5691b84",
+  "heldout_generation_not_started": true,
+  "opencv_version": "5.0.0",
+  "original_model_sha256": "cc571e31d7028742af785030e77b373946bf5077085d6b0f91883975e57748c7",
+  "protocol": {
+    "acceptance": "efficient_learned versus old_learned_mixer: paired source-bootstrap95percentCI lowerPSNRdifference>=-0.25, upperCPUdifference<0, upperwalldifference<0. Training attribution requires learned minus same-solver alpha0.5 PSNR lowerCI>0. Report pixelMSE separately.",
+    "archive_url": "https://data.vision.ee.ethz.ch/csergi/share/davis/DAVIS-2017-trainval-480p.zip",
+    "canonical_resize": "RGB, width256, proportional height, Pillow BOX; source preparation is timed separately and shared by arms",
+    "comparison_arms": [
+      "fixed_blend",
+      "old_pure_flow",
+      "old_learned_mixer",
+      "efficient_initial",
+      "efficient_learned"
+    ],
+    "cost": "Charge endpoint file decode, both flow calls, inverse mapping, pixel mixing, PNG write/readback, hash, metadata. Model selection/development and source preparation separately reported. No per-frame learned gate if validation selects a fixed solver.",
+    "development": "Only old David/Dudek/Faceocc2 train/validation frames; no historical test frame used for new model selection",
+    "frame_isolation": "Evenly spaced eligible target positions i%4 in{2,3}; endpoints i-2,i+2 in{0,1}; global target/endpoint intersection empty within every source.",
+    "frames_per_source": 8,
+    "model": "DIS optical flow selected on old validation; one convex RGB interpolation coefficient learned by exact least-squares on old train targets",
+    "quality_noninferiority_margin_dB": 0.25,
+    "schema": "hepta.ndu.closure-v2.natural.video.protocol.v1",
+    "scope": "Natural missing-frame generation and actual compute reduction; no claim of semantic video synthesis, adaptive allocation superiority, Hepta integration, or general multimodal LLM training.",
+    "source_selection": "First eight lexically ordered JPEG sequence directories with at least36 frames, retaining only first sequence per name-before-hyphen family. All are excluded from earlier OpenCV/imageio development and test sources.",
+    "stopping": "Freeze model, protocol, dependencies, source identities and exact code before any heldout generation. No retuning after test. Retain failures.",
+    "test_sources": 8,
+    "timing_repetitions": 2,
+    "uncertainty": "5000 paired family/sequence cluster resamples, seed2811; allframes/repetitions stay within source; source-generalization bounded to eight selected scenes"
+  },
+  "registered_ns": 1793090919420673393,
+  "source_files": [
+    {
+      "bytes": 82,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/__init__.py",
+      "sha256": "2dc5cf76711291eaaf73ef7a2192cb75ca8b4fd04a58383d8674d3b6f8adb911"
+    },
+    {
+      "bytes": 3327,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/common.py",
+      "sha256": "214cc23db94ea5fe64aaf43f27bec866f0710f07cb873f4e53bdff8160dfe4d7"
+    },
+    {
+      "bytes": 3597,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/document_develop.py",
+      "sha256": "4d2abc9d5bc7ba2e02622d8f5727c52036c426a9dcc8aa6070e559b660bde66d"
+    },
+    {
+      "bytes": 4062,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/document_model.py",
+      "sha256": "53a597b66245bdfe2cf1dc97ff97a256526fc1b99ac19b7159b7c954d299b76e"
+    },
+    {
+      "bytes": 8891,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/fetch_video.py",
+      "sha256": "9a482179eb969ccf7425827210cf581db2691284fc731f85a170d0bd9b0821f8"
+    },
+    {
+      "bytes": 3191,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_develop.py",
+      "sha256": "51bab5b85e985a056ad2141ddada4caa286bcacf6b065195d4d77c0b77e32091"
+    },
+    {
+      "bytes": 4812,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_engine.py",
+      "sha256": "7681e6277c50f848a0b4b04a98e198c02cea45b08f3e9c8a544f02e833213354"
+    },
+    {
+      "bytes": 4191,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_study.py",
+      "sha256": "e213010df668cb209b6c125e86f363e3e1008a53bccdc6220f12b5ca1a52438b"
+    }
+  ],
+  "source_snapshot": "/workspace/scratch/95988d8d3ab1/natural-v2-runs/video-qualification-001/executed-source"
+}

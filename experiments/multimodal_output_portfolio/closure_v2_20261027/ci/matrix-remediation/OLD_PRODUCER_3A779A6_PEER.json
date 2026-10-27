@@ -1,0 +1,370 @@
+{
+  "schema": "hepta.matrix-old-success-independent-stream-audit.v1",
+  "started_utc": "2026-10-27T12:37:11.800356+00:00",
+  "status": "verified_old_fixture_archive",
+  "expected": {
+    "repository": "/workspace/scratch/95988d8d3ab1/hepta-private-ci",
+    "baseline_tree": "4273d55bc2cf375cf249869774db9c57ba05337c",
+    "source_commit": "6215cb6a87f29623d4beaad24cdf7bcb6bb4fb2c",
+    "driver_source_commit": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+    "recipe_sha256": "1122a85d579ff781fa0941eaa6233aeb72ea881b80a948fd1b24305b59890295",
+    "fixture_patch_sha256": "e2dfb517cd07278eef6b0fced8c7e61db3b0e6fd3ffde61da717301116721027",
+    "original_lock_sha256": "56ed52d9789f01abda5bad96f25dd9d48b837108653cb2f3474ee5e0dbc790de",
+    "github_run_id": "40503203294",
+    "github_run_attempt": "1",
+    "artifact_id": 12733663698,
+    "zip_bytes": 131647018,
+    "zip_sha256": "d3ae752d0bbe2f6e1c08a3cfd7b3b88cc89651d8b6af861c2872a2092b08612a",
+    "driver_inputs": {
+      "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v2.json": {
+        "bytes": 336470,
+        "sha256": "1122a85d579ff781fa0941eaa6233aeb72ea881b80a948fd1b24305b59890295"
+      },
+      "scripts/ndu_port_candidate_common.py": {
+        "bytes": 23594,
+        "sha256": "c260cf29b2681bc99077730bc80b744ff53a28f4d402dbe379a801a20af881dd"
+      },
+      "scripts/ndu_port_matrix_fixture.py": {
+        "bytes": 16690,
+        "sha256": "21862146157207b82bd9d36777d6afca3afa6c5b167ff84e6aeb21698ee2f5ce"
+      }
+    }
+  },
+  "reviewer_source_sha256": "e00b1af6749f8e95ab4d4e45c06e554185167ed7ddb84ec29c5a231dad057bd7",
+  "raw_zip_retained_by_this_audit": false,
+  "large_binary_and_source_archive_extracted": false,
+  "compiled_or_executed_or_reopened_database": false,
+  "checks": [
+    "Pinned source_commit",
+    "Pinned driver_source_commit",
+    "Pinned recipe_sha256",
+    "Pinned github_run_id",
+    "Pinned github_run_attempt",
+    "Successful old producer schema/status",
+    "Original compiler and Matrix versions",
+    "Driver input bytes match independently pinned sources",
+    "Retained artifact bytes: binaries/f37edbcf8076994f934b140809a99fd1f28200dc1c98e3d2342c99c9d5194e1b",
+    "Retained artifact bytes: compiled-source.tar.gz",
+    "Retained artifact bytes: fixture-only.patch",
+    "Retained artifact bytes: nextest-store.toml",
+    "Retained artifact bytes: old-metadata.json",
+    "Retained artifact bytes: original-files/codex-rs/Cargo.lock",
+    "Retained artifact bytes: prepare_old_version_fixture-0-junit.xml",
+    "Retained artifact bytes: recipe.json",
+    "Recipe pin",
+    "Recipe old source",
+    "Reviewed sole fixture patch",
+    "Actual command succeeded: 00-source-head.log",
+    "Command log binding: 00-source-head.log",
+    "Actual command succeeded: 01-clean-checkout.log",
+    "Command log binding: 01-clean-checkout.log",
+    "Actual command succeeded: 02-patch-paths.log",
+    "Command log binding: 02-patch-paths.log",
+    "Actual command succeeded: 03-check-fixture-only-patch.log",
+    "Command log binding: 03-check-fixture-only-patch.log",
+    "Actual command succeeded: 04-apply-fixture-only-patch.log",
+    "Command log binding: 04-apply-fixture-only-patch.log",
+    "Actual command succeeded: 05-compiled-source-tree.log",
+    "Command log binding: 05-compiled-source-tree.log",
+    "Actual command succeeded: 06-archive-compiled-source.log",
+    "Command log binding: 06-archive-compiled-source.log",
+    "Actual command succeeded: 07-bound-rustc-path.log",
+    "Command log binding: 07-bound-rustc-path.log",
+    "Actual command succeeded: 08-rustc-version.log",
+    "Command log binding: 08-rustc-version.log",
+    "Actual command succeeded: 09-cargo-version.log",
+    "Command log binding: 09-cargo-version.log",
+    "Actual command succeeded: 10-just-version.log",
+    "Command log binding: 10-just-version.log",
+    "Actual command succeeded: 11-nextest-version.log",
+    "Command log binding: 11-nextest-version.log",
+    "Actual command succeeded: 12-old-metadata.log",
+    "Command log binding: 12-old-metadata.log",
+    "Command stdout binding: old-metadata.json",
+    "Actual command succeeded: 13-prepare_old_version_fixture-binaries.log",
+    "Command log binding: 13-prepare_old_version_fixture-binaries.log",
+    "Command stdout binding: prepare_old_version_fixture-binaries.json",
+    "Actual command succeeded: 14-prepare_old_version_fixture.log",
+    "Command log binding: 14-prepare_old_version_fixture.log",
+    "Actual command succeeded: 15-changed-paths.log",
+    "Command log binding: 15-changed-paths.log",
+    "Actual command succeeded: 16-untracked-paths.log",
+    "Command log binding: 16-untracked-paths.log",
+    "Actual command succeeded: 17-old-source-unstaged.log",
+    "Command log binding: 17-old-source-unstaged.log",
+    "Actual old HEAD log",
+    "Compiled tree log",
+    "Independent driver HEAD log",
+    "Independent clean checkouts",
+    "No untracked or unstaged old source after execution",
+    "Only fixture test changed in old source",
+    "Original Cargo.lock pin",
+    "Exact old lock/metadata package: matrix-sdk",
+    "Exact old lock/metadata package: matrix-sdk",
+    "Exact old lock/metadata package: matrix-sdk-crypto",
+    "Exact old lock/metadata package: matrix-sdk-crypto",
+    "Exact old lock/metadata package: matrix-sdk-sqlite",
+    "Exact old lock/metadata package: matrix-sdk-sqlite",
+    "Sole new regular fixture file",
+    "Complete reviewed new-file hunk",
+    "Independent complete baseline tree reconstruction",
+    "Fixture is absent from original source",
+    "Every archived source blob and mode equals original tree plus sole v2 fixture",
+    "Independent complete compiled tree reconstruction",
+    "Compiled original lock unchanged",
+    "Actual old fixture phase succeeded with unchanged binary",
+    "Retained actual ELF byte identity",
+    "Actual nextest binary selection and path",
+    "Recorded actual target directory",
+    "Exact actual phase flag --profile",
+    "Exact actual phase flag --run-ignored",
+    "Exact actual phase flag -E",
+    "Exact actual phase flag --retries",
+    "Exact actual phase flag --no-tests",
+    "Actual repository test wrapper",
+    "Dedicated nextest storage bytes",
+    "Storage override changes only output path",
+    "Exactly one fresh default-profile JUnit path recorded",
+    "JUnit content binding",
+    "Only exact old fixture testcase executed",
+    "One pass, no skip, retry or failure",
+    "Complete fixture file set and all bytes",
+    "Every surviving database sidecar retained",
+    "Expected values and actual databases retained",
+    "Required identity/session/state/queue expectation fields",
+    "Actual SQLite header: fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-event-cache.sqlite3",
+    "Actual SQLite header: fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-media.sqlite3",
+    "Actual SQLite header: fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-crypto.sqlite3",
+    "Actual SQLite header: fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3",
+    "Actual SQLite header: fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix_1.sqlite3"
+  ],
+  "members": {
+    "00-source-head.log": {
+      "bytes": 41,
+      "sha256": "6cd1253832c11b026881bea08a2f0fff3850e34600265eba597f9719c9d4401a"
+    },
+    "03-check-fixture-only-patch.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "02-patch-paths.log": {
+      "bytes": 65,
+      "sha256": "f7921d10d028a376b8544d96b009a58cd63c937bd4582243c5c3096d7629979a"
+    },
+    "01-clean-checkout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "04-apply-fixture-only-patch.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "05-compiled-source-tree.log": {
+      "bytes": 41,
+      "sha256": "b34ea2a9f33b61ae655017eca1bb6fd347f4807535ce8c2938ac0afa31570eb0"
+    },
+    "06-archive-compiled-source.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "07-bound-rustc-path.log": {
+      "bytes": 74,
+      "sha256": "d0193700af7f567877ce9dbc20f915552972e146926733da26ae3fe0e363efcc"
+    },
+    "08-rustc-version.log": {
+      "bytes": 196,
+      "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad"
+    },
+    "09-cargo-version.log": {
+      "bytes": 36,
+      "sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5"
+    },
+    "10-just-version.log": {
+      "bytes": 12,
+      "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+    },
+    "11-nextest-version.log": {
+      "bytes": 171,
+      "sha256": "5c2764053db8c4d8203c610667ee5dbecfeca1af742b15d0324d5c4a727ab012"
+    },
+    "12-old-metadata.log": {
+      "bytes": 44256,
+      "sha256": "2a723c52684e2675c0742c76e30021020c91052a347b064afb55d7f8bce25bea"
+    },
+    "13-prepare_old_version_fixture-binaries.log": {
+      "bytes": 23302,
+      "sha256": "de4cb37ca20401de27ba2558ca42fd7b9969c3569ee912cfff0280ac359cb4b4"
+    },
+    "14-prepare_old_version_fixture.log": {
+      "bytes": 642,
+      "sha256": "d1ddd6e566403d4470fa322d849c9f35c15ab8cb003f60e37bf11b8294e40cfc"
+    },
+    "15-changed-paths.log": {
+      "bytes": 59,
+      "sha256": "b546fdb6a86f181416390289c6bb9270ee55b1f00b61856a0180ab04a6f77643"
+    },
+    "16-untracked-paths.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "17-old-source-unstaged.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "RESULT.json": {
+      "bytes": 20292,
+      "sha256": "b3a732c86a7d1574b09c6388cea9574f456bb731f859dbbd95bfab6efe7fe5c6"
+    },
+    "binaries/f37edbcf8076994f934b140809a99fd1f28200dc1c98e3d2342c99c9d5194e1b": {
+      "bytes": 507796584,
+      "sha256": "f37edbcf8076994f934b140809a99fd1f28200dc1c98e3d2342c99c9d5194e1b"
+    },
+    "driver-context/00-source-head.log": {
+      "bytes": 41,
+      "sha256": "be99c8439cf84ee99b18e73ce5de358cb68bdac6fdcdbcc895c716a2bdacfd25"
+    },
+    "driver-context/01-clean-checkout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "driver-context/RESULT.json": {
+      "bytes": 1570,
+      "sha256": "3a7af89453a3c548f3a592a6f6f03892eed4d75f4e169368c07f0769c1e65ae1"
+    },
+    "compiled-source.tar.gz": {
+      "bytes": 29784648,
+      "sha256": "a51d30988f1e1561df2b1a4bba668af4d7cc75c60a95874bb2f44ae7b8c81710"
+    },
+    "fixture/expected.json": {
+      "bytes": 1690,
+      "sha256": "2dcd8dcf267a60ff51d10b680fcbf46c5d29d75dc0f3fd9fc1d688e5d13a077d"
+    },
+    "fixture/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-event-cache.sqlite3": {
+      "bytes": 69632,
+      "sha256": "73032a6b7cc752dd0c5498c520db919c1ba0ad58c4c4d378086d43dd3b9b239e"
+    },
+    "fixture/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-media.sqlite3": {
+      "bytes": 36864,
+      "sha256": "2e8b4bc1f4c4181a22f21b54adf61858099242277438f897cccca5f774b17e24"
+    },
+    "fixture/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/session.json": {
+      "bytes": 151,
+      "sha256": "195167ce802c9630ae49edf1ffe97397c71d33d42273de6a8cb02697877abe17"
+    },
+    "fixture/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-crypto.sqlite3": {
+      "bytes": 180224,
+      "sha256": "eafa0f63f46baacc32f60fcfbc3a5c94d18b4a235b87a19b8e15ced0f4dae954"
+    },
+    "fixture/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3": {
+      "bytes": 131072,
+      "sha256": "472787f24d7e914fa49a48060e5137f938e0aa1486cfa0ced8fc184cceb1f571"
+    },
+    "fixture/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3-shm": {
+      "bytes": 32768,
+      "sha256": "a848a19cfea0a8a420d6e9728554b25c705bbdd59f50f3998072ef3d14d835a0"
+    },
+    "fixture/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3-wal": {
+      "bytes": 24752,
+      "sha256": "d98dd7e8a5f4de9d39fe20132b24cec26fa68a11ffaff0c63beb9d76e76c99da"
+    },
+    "fixture/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix_1.sqlite3": {
+      "bytes": 196608,
+      "sha256": "ea9603990ea0b362d17892583fa9f2023d6b0487ea1105f7ae534c91bbbb2e9c"
+    },
+    "fixture-only.patch": {
+      "bytes": 10732,
+      "sha256": "e2dfb517cd07278eef6b0fced8c7e61db3b0e6fd3ffde61da717301116721027"
+    },
+    "nextest-store/default/junit.xml": {
+      "bytes": 542,
+      "sha256": "ce7fe697bb8ba2e51e9ca3e7e208bee096ecaa09ef23f6271e72d6679f9047a3"
+    },
+    "nextest-store.toml": {
+      "bytes": 77,
+      "sha256": "3e343cd33ce0f791418c02d67c5f2314ceae0d23a4f6697316659f4762957bcc"
+    },
+    "old-metadata.json": {
+      "bytes": 8156559,
+      "sha256": "9f121b49089bb6533c716cc858112548e17fef0e5473890d3ac1a7093982a358"
+    },
+    "original-files/codex-rs/Cargo.lock": {
+      "bytes": 418040,
+      "sha256": "56ed52d9789f01abda5bad96f25dd9d48b837108653cb2f3474ee5e0dbc790de"
+    },
+    "prepare_old_version_fixture-0-junit.xml": {
+      "bytes": 542,
+      "sha256": "ce7fe697bb8ba2e51e9ca3e7e208bee096ecaa09ef23f6271e72d6679f9047a3"
+    },
+    "prepare_old_version_fixture-binaries.json": {
+      "bytes": 1317,
+      "sha256": "81fb5fa64fc562c9f35ad46d4de6ea6d1870790fc39ec773f546234fdbef7755"
+    },
+    "recipe.json": {
+      "bytes": 336470,
+      "sha256": "1122a85d579ff781fa0941eaa6233aeb72ea881b80a948fd1b24305b59890295"
+    }
+  },
+  "member_count": 41,
+  "all_members_read_to_eof_with_zip_crc": true,
+  "result_sha256": "b3a732c86a7d1574b09c6388cea9574f456bb731f859dbbd95bfab6efe7fe5c6",
+  "source_differences": [],
+  "compiled_source_file_count": 10304,
+  "compiled_source_tree": "df4aff79e5aea7080eee54a02ad0925619ca1dbc",
+  "compiled_source_manifest": {
+    "bytes": 2304437,
+    "sha256": "464c82986de260031819e5d10c66afbc96425257c0f4ece7076bc9db8b5d2a44"
+  },
+  "fixture_files": {
+    "expected.json": {
+      "bytes": 1690,
+      "sha256": "2dcd8dcf267a60ff51d10b680fcbf46c5d29d75dc0f3fd9fc1d688e5d13a077d"
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-event-cache.sqlite3": {
+      "bytes": 69632,
+      "sha256": "73032a6b7cc752dd0c5498c520db919c1ba0ad58c4c4d378086d43dd3b9b239e"
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-media.sqlite3": {
+      "bytes": 36864,
+      "sha256": "2e8b4bc1f4c4181a22f21b54adf61858099242277438f897cccca5f774b17e24"
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/session.json": {
+      "bytes": 151,
+      "sha256": "195167ce802c9630ae49edf1ffe97397c71d33d42273de6a8cb02697877abe17"
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-crypto.sqlite3": {
+      "bytes": 180224,
+      "sha256": "eafa0f63f46baacc32f60fcfbc3a5c94d18b4a235b87a19b8e15ced0f4dae954"
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3": {
+      "bytes": 131072,
+      "sha256": "472787f24d7e914fa49a48060e5137f938e0aa1486cfa0ced8fc184cceb1f571"
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3-shm": {
+      "bytes": 32768,
+      "sha256": "a848a19cfea0a8a420d6e9728554b25c705bbdd59f50f3998072ef3d14d835a0"
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3-wal": {
+      "bytes": 24752,
+      "sha256": "d98dd7e8a5f4de9d39fe20132b24cec26fa68a11ffaff0c63beb9d76e76c99da"
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix_1.sqlite3": {
+      "bytes": 196608,
+      "sha256": "ea9603990ea0b362d17892583fa9f2023d6b0487ea1105f7ae534c91bbbb2e9c"
+    }
+  },
+  "sidecar_files": [
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3-shm",
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3-wal"
+  ],
+  "binary": {
+    "bytes": 507796584,
+    "sha256": "f37edbcf8076994f934b140809a99fd1f28200dc1c98e3d2342c99c9d5194e1b"
+  },
+  "test": {
+    "name": "prepare_old_version_fixture",
+    "passed": 1
+  },
+  "qualification": "Independent byte/source/archive audit of the successful old producer. New-version reopen and consumer-copy identity require the separate consumer artifact.",
+  "raw_archive_custody": "Caller streamed the complete ZIP in memory; neither raw ZIP nor large binary/source archive retained by this audit.",
+  "finished_utc": "2026-10-27T12:37:14.984069+00:00"
+}

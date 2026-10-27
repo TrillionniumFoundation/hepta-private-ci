@@ -1,0 +1,45 @@
+{
+  "actual_media_files_reopened": 4328,
+  "additional_selective_gates": {
+    "id_coverage": true,
+    "incorrect_commit_rate": false
+  },
+  "audit_source_sha256": {
+    "admission_audit.py": "4dbc4cd68c0c979a342569d54061dd64ce484255a559dc29ce31882320bcd214",
+    "verify_forecasts.py": "00785b0df2f17f56f7d548243d6d234367f892d3aae98698f75e42976401ffe8",
+    "verify_media.py": "7a29f950a331dda0a9105d42853655eb0822f0461c1eab5b9f2ff5dfd0036ccb"
+  },
+  "calibration_candidates_regraded": 856,
+  "candidate_episodes_reconstructed": 1024,
+  "cold_recoveries_replayed": 1024,
+  "full_and_id_ece_include_every_rejected_candidate": true,
+  "legacy_shaped_gates": {
+    "ece": true,
+    "id_nonvacuity": true,
+    "ood_far": true,
+    "ood_upper": true
+  },
+  "maximum_feature_probability_cost_statistic_discrepancy": 0.0,
+  "metrics": {
+    "ece_full": 0.008349641601562496,
+    "ece_id": 0.023704794811320744,
+    "incorrect_semantic_commit_per_id_case": 0.007075471698113208,
+    "incorrect_semantic_commit_per_id_one_sided_95_upper": 0.01818464090625043,
+    "incorrect_semantic_commits_id": 3,
+    "legacy_id_coverage": 0.5801886792452831,
+    "legacy_ood_false_acceptances": 0,
+    "legacy_ood_far": 0.0,
+    "legacy_ood_one_sided_95_upper": 0.004980443380361299,
+    "selective_id_coverage": 0.27358490566037735
+  },
+  "native_semantic_replay_sha256": "55527b76c832e435c360c6f640158505e2eb8131d44c11390b162e3a6989811b",
+  "original_native_api_ticks_replayed": 16384,
+  "original_native_kernel_work_replayed": 51200,
+  "passed": true,
+  "private_final_labels_are_not_policy_inputs": true,
+  "qualification_all_bounded_gates_passed": false,
+  "read_only_to_original_evidence": true,
+  "run_rows_sha256": "d1d6c1b0f91e71ff25643995dacfdd6a33d810d37f38f3689d6af0c2ed1f98d8",
+  "run_seal_sha256": "e2d2de7c3660cc43f2da88610c42413117292cf890a93096bf57d6d20364992f",
+  "source_pixel_identities_verified": 3760
+}

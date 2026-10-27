@@ -1,0 +1,88 @@
+{
+  "assets_sha256": "c2ce3b1c02e86ba9f0d48c1437de57446391fbe03622c8c2af320f1b4dfb8861",
+  "frozen_model_sha256": "d5f19f9ddcc408831a31976df1ff28a8b17f01e4701b5493b54dfefed759471d",
+  "heldout_generation_not_started": true,
+  "old_model_sha256": "07aed0d872e78a3a33dd8274b7493f2394adbe8e56607f6b37bb38774bbe310a",
+  "protocol": {
+    "acceptance": "Against original_rules: positive95percentCI lower bound of quality-minus0.01*actualCPU. Against old_all_refine: quality95percentCI lower difference>=-0.02 and CPU/wall95percentCI upper differences<0. Preserve original margins and strong baseline.",
+    "actual_output": "Four text fields plus corresponding annotated RGB JPEG; no reference box in inference",
+    "cost_price": 0.01,
+    "dataset": "jsdnrs/ICDAR2019-SROIE",
+    "dataset_revision": "bffe40c26759f3376ec2b3ae9031dbba54cd587c",
+    "model": "Four field-specific ridge models predicting actual quality gain over original rules,128 weights; preserve original rule output as a candidate; missing references masked; fit only old24 training merchants",
+    "quality": "Per-document mean over observed fields of0.5 exact match plus0.5 normalized edit similarity; separately report exact field accuracy and missing labels",
+    "schema": "hepta.ndu.closure-v2.natural.document.protocol.v1",
+    "scope": "Learned structured text correction and corresponding image annotation over natural OCR evidence; no foundation visual-language reasoning or natural audio/video synthesis claim",
+    "selection": "Old12 validation merchants select ridge from0.1,1,10,100 and correction threshold from0,0.05,0.1,0.2,1000 by entropic CE(gamma2); ties fewer changes then stronger regularization then larger threshold",
+    "source_selection": "First new normalized company per ascending upstream test row, excluding every historical and first-continuation merchant and exact image hash; fixed before model outputs",
+    "stopping": "One frozen new-source qualification; retain all failure/negative results, no test-dependent parameter or protocol changes",
+    "test_arms": [
+      "original_rules",
+      "old_learned_base",
+      "old_all_refine",
+      "rule_residual"
+    ],
+    "test_merchants": 24,
+    "timing_repetitions": 2,
+    "uncertainty": "5000 paired merchant cluster bootstrap resamples seed2811; repetitions averaged inside source"
+  },
+  "registered_ns": 1793091037742061125,
+  "source_files": [
+    {
+      "bytes": 82,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/__init__.py",
+      "sha256": "2dc5cf76711291eaaf73ef7a2192cb75ca8b4fd04a58383d8674d3b6f8adb911"
+    },
+    {
+      "bytes": 3327,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/common.py",
+      "sha256": "214cc23db94ea5fe64aaf43f27bec866f0710f07cb873f4e53bdff8160dfe4d7"
+    },
+    {
+      "bytes": 3597,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/document_develop.py",
+      "sha256": "4d2abc9d5bc7ba2e02622d8f5727c52036c426a9dcc8aa6070e559b660bde66d"
+    },
+    {
+      "bytes": 4062,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/document_model.py",
+      "sha256": "53a597b66245bdfe2cf1dc97ff97a256526fc1b99ac19b7159b7c954d299b76e"
+    },
+    {
+      "bytes": 5108,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/document_study.py",
+      "sha256": "1135719faaff58cefa7366d7a15ff592a258cc7f808a5a8c4cad077ba463a8a6"
+    },
+    {
+      "bytes": 3168,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/fetch_document.py",
+      "sha256": "a7f8993d6bfc3f34810b145ee901ab9055ada5c9c34b591069255957a676bd76"
+    },
+    {
+      "bytes": 8891,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/fetch_video.py",
+      "sha256": "9a482179eb969ccf7425827210cf581db2691284fc731f85a170d0bd9b0821f8"
+    },
+    {
+      "bytes": 4377,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/speech_develop.py",
+      "sha256": "e70153cf3e21bdf89a13fb9d46d80a6df685b61104800c3d96f0a78eafca3ba3"
+    },
+    {
+      "bytes": 3191,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_develop.py",
+      "sha256": "51bab5b85e985a056ad2141ddada4caa286bcacf6b065195d4d77c0b77e32091"
+    },
+    {
+      "bytes": 4812,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_engine.py",
+      "sha256": "7681e6277c50f848a0b4b04a98e198c02cea45b08f3e9c8a544f02e833213354"
+    },
+    {
+      "bytes": 4191,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_study.py",
+      "sha256": "e213010df668cb209b6c125e86f363e3e1008a53bccdc6220f12b5ca1a52438b"
+    }
+  ],
+  "source_snapshot": "/workspace/scratch/95988d8d3ab1/natural-v2-runs/document-qualification-001/executed-source"
+}

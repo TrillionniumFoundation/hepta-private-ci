@@ -1,0 +1,396 @@
+{
+  "actual_deliveries": 640,
+  "comparisons": {
+    "fixed_beam5": {
+      "CPU": {
+        "CI95": [
+          0.24677253877636715,
+          0.3754901647656249
+        ],
+        "difference": 0.31011717703124997,
+        "independent_source_clusters": 16,
+        "source_level_differences": {
+          "1089": 0.10919924487499993,
+          "1221": 0.49959707825,
+          "3538": 0.4599408925000001,
+          "367": 0.5301476306249999,
+          "3729": 0.2732908745000001,
+          "3764": 0.30890957175000006,
+          "3997": 0.14872601724999995,
+          "5105": 0.48423099875,
+          "5442": 0.2747844946249999,
+          "672": 0.21039980550000004,
+          "6938": 0.24588254075000004,
+          "7021": 0.12673759,
+          "8131": 0.2373323586249999,
+          "8224": 0.4352477001249999,
+          "8461": 0.3246073287500001,
+          "908": 0.2928407056250001
+        }
+      },
+      "WER_difference": 0.0,
+      "WER_difference_CI95": [
+        0.0,
+        0.0
+      ],
+      "exact_transcript_equality": true,
+      "gate_passed": false,
+      "nonzero_continuation": true,
+      "wall": {
+        "CI95": [
+          0.24103211839218758,
+          0.3731176383849609
+        ],
+        "difference": 0.30530889696875,
+        "independent_source_clusters": 16,
+        "source_level_differences": {
+          "1089": 0.11091109212499994,
+          "1221": 0.49858479762499996,
+          "3538": 0.46114873662500006,
+          "367": 0.5341254606249999,
+          "3729": 0.26404889075,
+          "3764": 0.269127138375,
+          "3997": 0.12643520012499998,
+          "5105": 0.49222158275000005,
+          "5442": 0.2749023397500001,
+          "672": 0.20961729625000003,
+          "6938": 0.227948007625,
+          "7021": 0.126507036375,
+          "8131": 0.23777679387500011,
+          "8224": 0.43634307524999993,
+          "8461": 0.32418193525000005,
+          "908": 0.29106296812500015
+        }
+      }
+    },
+    "reencoded_continuation": {
+      "CPU": {
+        "CI95": [
+          -1.0732864192539062,
+          -0.8504999608001954
+        ],
+        "difference": -0.9703221948749999,
+        "independent_source_clusters": 16,
+        "source_level_differences": {
+          "1089": -0.7675441206250001,
+          "1221": -0.8735253045000002,
+          "3538": -1.030865597625,
+          "367": -0.9782661665,
+          "3729": -0.5368958714999998,
+          "3764": -1.013295593375,
+          "3997": -1.1712355597500002,
+          "5105": -1.3498158531250002,
+          "5442": -1.054636035625,
+          "672": -0.4450311243749999,
+          "6938": -1.071954040125,
+          "7021": -0.8428259542499998,
+          "8131": -1.0948677115,
+          "8224": -1.09130757,
+          "8461": -1.153255768375,
+          "908": -1.0498328467499998
+        }
+      },
+      "WER_difference": 0.0,
+      "WER_difference_CI95": [
+        0.0,
+        0.0
+      ],
+      "exact_transcript_equality": true,
+      "gate_passed": true,
+      "nonzero_continuation": true,
+      "wall": {
+        "CI95": [
+          -1.0908660348230468,
+          -0.8619661950867191
+        ],
+        "difference": -0.983161057953125,
+        "independent_source_clusters": 16,
+        "source_level_differences": {
+          "1089": -0.763557364125,
+          "1221": -0.8843961971249998,
+          "3538": -1.045531100375,
+          "367": -0.980923501625,
+          "3729": -0.541917880875,
+          "3764": -1.109558424375,
+          "3997": -1.1714295808750002,
+          "5105": -1.404228232875,
+          "5442": -1.054047465125,
+          "672": -0.44412002000000006,
+          "6938": -1.088741821875,
+          "7021": -0.8452942745000003,
+          "8131": -1.0952564575,
+          "8224": -1.0908568605000002,
+          "8461": -1.155226131375,
+          "908": -1.055491614125
+        }
+      }
+    }
+  },
+  "encoder_controller_fitted": true,
+  "encoder_selection": {
+    "WER_difference_CI95": [
+      -0.006493858635941065,
+      0.0
+    ],
+    "beam5_calls": 9,
+    "feasible": true,
+    "kind": "encoder_gate",
+    "mean_CPU": 1.586567747375,
+    "threshold": -0.0007247636911868068
+  },
+  "encoder_vs_fixed_beam5": {
+    "CPU": {
+      "CI95": [
+        -0.10441384058496092,
+        -0.03402902822226567
+      ],
+      "difference": -0.06797196787500001,
+      "independent_source_clusters": 16,
+      "source_level_differences": {
+        "1089": -0.04878853575000003,
+        "1221": 0.006040482874999864,
+        "3538": -0.09848859337499988,
+        "367": -0.13557537900000005,
+        "3729": -0.18058613325,
+        "3764": -0.0706421717500001,
+        "3997": -0.030787651375000002,
+        "5105": -0.24172710200000003,
+        "5442": -0.06485326362500005,
+        "672": -0.13022570587500004,
+        "6938": -0.08428134312500002,
+        "7021": -0.006062142874999954,
+        "8131": -0.024877842375000014,
+        "8224": 0.023273482124999967,
+        "8461": 0.02234488587500011,
+        "908": -0.022314472500000015
+      }
+    },
+    "WER_difference": 0.00234375,
+    "WER_difference_CI95": [
+      -0.0008591805901173124,
+      0.005797206545385754
+    ],
+    "beam1_calls_per_repetition": 52,
+    "compiled_fixed_baseline": false,
+    "deployment_kind": "encoder_gate",
+    "quality_cost_gate_passed": true,
+    "wall": {
+      "CI95": [
+        -0.10438303380332035,
+        -0.03245790342226566
+      ],
+      "difference": -0.06756070255468752,
+      "independent_source_clusters": 16,
+      "source_level_differences": {
+        "1089": -0.03615480225000006,
+        "1221": 0.004180034124999954,
+        "3538": -0.09328632849999985,
+        "367": -0.12809987787500005,
+        "3729": -0.19161744000000003,
+        "3764": -0.023843719625000093,
+        "3997": -0.08570662150000002,
+        "5105": -0.23079778225000008,
+        "5442": -0.06603525037500002,
+        "672": -0.12790529450000004,
+        "6938": -0.102885290375,
+        "7021": -0.006314390749999899,
+        "8131": -0.024304439625000063,
+        "8224": 0.024972213124999976,
+        "8461": 0.02839191837499999,
+        "908": -0.021564168874999956
+      }
+    }
+  },
+  "model_load_wall_seconds": 0.48896869500458706,
+  "neural_model_parameters_updated": false,
+  "new_independent_speakers": 16,
+  "original_Hepta_neuron_integrated": false,
+  "schema": "hepta.ndu.closure-v2.natural.speech.result.v2",
+  "selected_threshold": -0.05,
+  "status": "completed",
+  "summary": {
+    "cached_continuation": {
+      "WER": 0.05078125,
+      "decoder_calls_per_repetition": 121,
+      "encoder_calls_per_repetition": 64,
+      "mean_CPU": 1.8914235347265624,
+      "mean_wall": 1.904305465515625,
+      "reference_words": 1280,
+      "word_errors": 65
+    },
+    "encoder_gate": {
+      "WER": 0.053125,
+      "decoder_calls_per_repetition": 64,
+      "encoder_calls_per_repetition": 64,
+      "mean_CPU": 1.5133343898203127,
+      "mean_wall": 1.5314358659921874,
+      "reference_words": 1280,
+      "word_errors": 68
+    },
+    "fixed_beam5": {
+      "WER": 0.05078125,
+      "decoder_calls_per_repetition": 64,
+      "encoder_calls_per_repetition": 64,
+      "mean_CPU": 1.5813063576953124,
+      "mean_wall": 1.598996568546875,
+      "reference_words": 1280,
+      "word_errors": 65
+    },
+    "fixed_greedy": {
+      "WER": 0.05390625,
+      "decoder_calls_per_repetition": 64,
+      "encoder_calls_per_repetition": 64,
+      "mean_CPU": 1.4613108516875002,
+      "mean_wall": 1.4744946996875,
+      "reference_words": 1280,
+      "word_errors": 69
+    },
+    "reencoded_continuation": {
+      "WER": 0.05078125,
+      "decoder_calls_per_repetition": 121,
+      "encoder_calls_per_repetition": 121,
+      "mean_CPU": 2.8617457296015623,
+      "mean_wall": 2.88746652346875,
+      "reference_words": 1280,
+      "word_errors": 65
+    }
+  },
+  "warmup": {
+    "arm": "fixed_greedy",
+    "decoder_calls": 1,
+    "delivered_before_private_scoring_ns": 1793091819234554168,
+    "encoded_bytes": 3072000,
+    "encoder_calls": 1,
+    "encodings": [
+      {
+        "audio_samples": 397600,
+        "cpu_seconds": 1.141038406,
+        "encoded_bytes": 3072000,
+        "encoded_sha256": "fa135942515305c28e185222e88ccb759569e0d6ef86d9b44974c5f23e2cc3eb",
+        "encoded_shape": [
+          1,
+          1500,
+          512
+        ],
+        "feature_shape": [
+          80,
+          3000
+        ],
+        "wall_seconds": 1.162097341
+      }
+    ],
+    "gate": {
+      "continue": false,
+      "cpu_seconds": 1.913e-06,
+      "observed_confidence": -0.09454818355829217,
+      "threshold": -1000,
+      "wall_seconds": 1.752e-06
+    },
+    "generations": [
+      {
+        "beam": 1,
+        "confidence": -0.09454818355829217,
+        "cpu_seconds": 1.147760238,
+        "no_speech_probability": 0.058813437819480896,
+        "output_path": "/workspace/scratch/95988d8d3ab1/natural-v2-runs/speech-qualification-001/warmup/FIRST.txt",
+        "private_reference_received": false,
+        "score": -0.09566051512956619,
+        "tokens": [
+          367,
+          7834,
+          350,
+          29441,
+          710,
+          1816,
+          530,
+          1110,
+          284,
+          262,
+          24141,
+          286,
+          10807,
+          7459,
+          25875,
+          351,
+          257,
+          5166,
+          286,
+          18051,
+          543,
+          673,
+          550,
+          1216,
+          24431,
+          290,
+          27623,
+          3089,
+          284,
+          465,
+          1502,
+          11,
+          290,
+          543,
+          547,
+          284,
+          307,
+          12666,
+          319,
+          617,
+          1049,
+          6695,
+          286,
+          1181,
+          13,
+          1114,
+          11,
+          996,
+          262,
+          8395,
+          286,
+          257,
+          2968,
+          3071,
+          550,
+          4073,
+          428,
+          1966,
+          22740,
+          284,
+          15350,
+          257,
+          2239,
+          393,
+          734,
+          422,
+          262,
+          4511,
+          4279,
+          11,
+          339,
+          991,
+          2714,
+          281,
+          33655,
+          290,
+          14212,
+          1295,
+          1871,
+          262,
+          17091,
+          2153,
+          1694,
+          1590,
+          13
+        ],
+        "transcript": "Hester Prynne went one day to the mansion of Governor Bellingham with a pair of gloves which she had fringed and embroidered to his order, and which were to be worn on some great occasion of state. For, though the chances of a popular election had caused this former ruler to descend a step or two from the highest rank, he still held an honorable and influential place among the colonial magisteracy.",
+        "wall_seconds": 1.157808878
+      }
+    ],
+    "output_path": "/workspace/scratch/95988d8d3ab1/natural-v2-runs/speech-qualification-001/warmup/DELIVERED.txt",
+    "output_sha256": "37373b1e48300b7e2c4fb2a4291c5d96893fd7db349a45ac8e9c19a51f721926",
+    "private_reference_received": false,
+    "transcript": "Hester Prynne went one day to the mansion of Governor Bellingham with a pair of gloves which she had fringed and embroidered to his order, and which were to be worn on some great occasion of state. For, though the chances of a popular election had caused this former ruler to descend a step or two from the highest rank, he still held an honorable and influential place among the colonial magisteracy.",
+    "whole_cpu_seconds": 2.289307569,
+    "whole_wall_seconds": 2.320428936
+  }
+}

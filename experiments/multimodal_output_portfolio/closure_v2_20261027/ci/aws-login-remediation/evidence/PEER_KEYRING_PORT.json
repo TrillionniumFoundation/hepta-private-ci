@@ -1,0 +1,278 @@
+{
+  "at": "2026-10-27T10:34:52.654621+00:00",
+  "reviewer": "/root/native_continuation",
+  "mode": "Read-only independent source and existing execution evidence review; no new model, test, daemon, keyring or credential operations.",
+  "passed_with_scope_limits": true,
+  "upstream_inventory_entries_rehashed": 52,
+  "keyring_original_rust_files_unchanged": 15,
+  "reviewed_runs": [
+    {
+      "name": "real-dbus-007",
+      "receipt_sha256": "c366e7be52ff2c308a60fc0ab58efe09e0c760975cd78beb2e97b669db6995d7",
+      "commands": 18,
+      "verified_logs": [
+        {
+          "label": "no-service",
+          "sha256": "db5088ec18585c7e64bc1bcb90eb83d7fbd38cc632f81380e36e9d8b46907651",
+          "bytes": 221
+        },
+        {
+          "label": "prompt",
+          "sha256": "b6dff0ef95591363f16e0e7ca3428a121c601b8c25fbf9008cdf9e19e2a13541",
+          "bytes": 86
+        },
+        {
+          "label": "native-no-service",
+          "sha256": "25fbf5a523f9c83b082d02830d2a50f2b944505b4a6e84c487e23b243b90add6",
+          "bytes": 341
+        },
+        {
+          "label": "lifecycle",
+          "sha256": "6d5a8fcfab850f96d4ca79b7daac002d2f6f529eb07955a57511e8c1035dbc0b",
+          "bytes": 512
+        },
+        {
+          "label": "native-composite",
+          "sha256": "f88aa6cfa39216521f7f14fc7972367aa406758924d47f71c7f66080ec4f2641",
+          "bytes": 446
+        },
+        {
+          "label": "write",
+          "sha256": "bd30c4f16f1dc2747d58b625038dabaed2fcb6a41b075d0f89c94e29c92cfe6c",
+          "bytes": 36
+        },
+        {
+          "label": "read-after-service-restart",
+          "sha256": "52e4689883772f42589fec0867e5d4c9150cb6eb4b6681ef7f97c5f12bcc663f",
+          "bytes": 36
+        },
+        {
+          "label": "delete-after-service-restart",
+          "sha256": "ce5a670b7af060466db88d58c8ecb35dcec3467e8bb0fe0189caaa54be296d03",
+          "bytes": 40
+        },
+        {
+          "label": "sync-lifecycle",
+          "sha256": "6d5a8fcfab850f96d4ca79b7daac002d2f6f529eb07955a57511e8c1035dbc0b",
+          "bytes": 512
+        },
+        {
+          "label": "sync-native-composite",
+          "sha256": "1775a941c08916c785b489dd18f7996a43ac2c965fbc00829d2a603fc9c5db5b",
+          "bytes": 446
+        },
+        {
+          "label": "sync-writes",
+          "sha256": "bd30c4f16f1dc2747d58b625038dabaed2fcb6a41b075d0f89c94e29c92cfe6c",
+          "bytes": 36
+        },
+        {
+          "label": "async-reads-sync",
+          "sha256": "52e4689883772f42589fec0867e5d4c9150cb6eb4b6681ef7f97c5f12bcc663f",
+          "bytes": 36
+        },
+        {
+          "label": "sync-reads-async",
+          "sha256": "ce5a670b7af060466db88d58c8ecb35dcec3467e8bb0fe0189caaa54be296d03",
+          "bytes": 40
+        },
+        {
+          "label": "async-writes",
+          "sha256": "bd30c4f16f1dc2747d58b625038dabaed2fcb6a41b075d0f89c94e29c92cfe6c",
+          "bytes": 36
+        },
+        {
+          "label": "sync-updates-async",
+          "sha256": "52e4689883772f42589fec0867e5d4c9150cb6eb4b6681ef7f97c5f12bcc663f",
+          "bytes": 36
+        },
+        {
+          "label": "async-deletes-sync",
+          "sha256": "ce5a670b7af060466db88d58c8ecb35dcec3467e8bb0fe0189caaa54be296d03",
+          "bytes": 40
+        },
+        {
+          "label": "lock",
+          "sha256": "6d62d0b3fd81d7757f86d9ce2297b1f83c2b7186fbd251f10a0c695c9351b2a3",
+          "bytes": 27
+        },
+        {
+          "label": "verify-unlocked",
+          "sha256": "2166e671b79e32c3ce0220e5c9e2ef43ceca883cb5a50c33939b6b8095789294",
+          "bytes": 31
+        }
+      ]
+    },
+    {
+      "name": "real-dbus-tokio-001",
+      "receipt_sha256": "8a996d30d6c1c600f093d58779c2ae0c94b6399612651ccd97ee781b8c988b4f",
+      "commands": 10,
+      "verified_logs": [
+        {
+          "label": "no-service",
+          "sha256": "db5088ec18585c7e64bc1bcb90eb83d7fbd38cc632f81380e36e9d8b46907651",
+          "bytes": 221
+        },
+        {
+          "label": "prompt",
+          "sha256": "b6dff0ef95591363f16e0e7ca3428a121c601b8c25fbf9008cdf9e19e2a13541",
+          "bytes": 86
+        },
+        {
+          "label": "native-no-service",
+          "sha256": "8de4c6ed31d53903c53896ceb4b2f630f1f3cd91bd6e2465ccadc8d01148cb1b",
+          "bytes": 341
+        },
+        {
+          "label": "lifecycle",
+          "sha256": "6d5a8fcfab850f96d4ca79b7daac002d2f6f529eb07955a57511e8c1035dbc0b",
+          "bytes": 512
+        },
+        {
+          "label": "native-composite",
+          "sha256": "9acc84c778fd9ce0258623c335df91139d7c3783e653ac2a76f1688a24ad717c",
+          "bytes": 446
+        },
+        {
+          "label": "write",
+          "sha256": "bd30c4f16f1dc2747d58b625038dabaed2fcb6a41b075d0f89c94e29c92cfe6c",
+          "bytes": 36
+        },
+        {
+          "label": "read-after-service-restart",
+          "sha256": "52e4689883772f42589fec0867e5d4c9150cb6eb4b6681ef7f97c5f12bcc663f",
+          "bytes": 36
+        },
+        {
+          "label": "delete-after-service-restart",
+          "sha256": "ce5a670b7af060466db88d58c8ecb35dcec3467e8bb0fe0189caaa54be296d03",
+          "bytes": 40
+        },
+        {
+          "label": "lock",
+          "sha256": "6d62d0b3fd81d7757f86d9ce2297b1f83c2b7186fbd251f10a0c695c9351b2a3",
+          "bytes": 27
+        },
+        {
+          "label": "verify-unlocked",
+          "sha256": "2166e671b79e32c3ce0220e5c9e2ef43ceca883cb5a50c33939b6b8095789294",
+          "bytes": 31
+        }
+      ]
+    },
+    {
+      "name": "actual-consumer-001",
+      "receipt_sha256": "e73f1c198997e32b026a3eb2a68f8fc4b33af17d9e089532ddc5bc9b5a07c0e1",
+      "commands": 11,
+      "verified_logs": [
+        {
+          "label": "no-service",
+          "sha256": "db5088ec18585c7e64bc1bcb90eb83d7fbd38cc632f81380e36e9d8b46907651",
+          "bytes": 221
+        },
+        {
+          "label": "prompt",
+          "sha256": "b6dff0ef95591363f16e0e7ca3428a121c601b8c25fbf9008cdf9e19e2a13541",
+          "bytes": 86
+        },
+        {
+          "label": "native-no-service",
+          "sha256": "59a298456efc55ab282e284c392c8dcdb0807f5d0a7281f345962551a1d5dd48",
+          "bytes": 341
+        },
+        {
+          "label": "lifecycle",
+          "sha256": "6d5a8fcfab850f96d4ca79b7daac002d2f6f529eb07955a57511e8c1035dbc0b",
+          "bytes": 512
+        },
+        {
+          "label": "actual-codex-store",
+          "sha256": "50fb7fea7e1a3623d886ea80c3de863f12872e1b21629c222ea1fea03d8df47a",
+          "bytes": 89
+        },
+        {
+          "label": "native-composite",
+          "sha256": "b8a860085dd18eea43f6d522aadc2089b02115e0ec5bb31e3c65303a0d3d896a",
+          "bytes": 446
+        },
+        {
+          "label": "write",
+          "sha256": "bd30c4f16f1dc2747d58b625038dabaed2fcb6a41b075d0f89c94e29c92cfe6c",
+          "bytes": 36
+        },
+        {
+          "label": "read-after-service-restart",
+          "sha256": "52e4689883772f42589fec0867e5d4c9150cb6eb4b6681ef7f97c5f12bcc663f",
+          "bytes": 36
+        },
+        {
+          "label": "delete-after-service-restart",
+          "sha256": "ce5a670b7af060466db88d58c8ecb35dcec3467e8bb0fe0189caaa54be296d03",
+          "bytes": 40
+        },
+        {
+          "label": "lock",
+          "sha256": "6d62d0b3fd81d7757f86d9ce2297b1f83c2b7186fbd251f10a0c695c9351b2a3",
+          "bytes": 27
+        },
+        {
+          "label": "verify-unlocked",
+          "sha256": "2166e671b79e32c3ce0220e5c9e2ef43ceca883cb5a50c33939b6b8095789294",
+          "bytes": 31
+        }
+      ]
+    }
+  ],
+  "actual_executable_bytes_reopened_and_hashed": {
+    "/workspace/scratch/95988d8d3ab1/ndu-keyring-zbus6-candidate/binaries/1d24b15549b4d990eb8939b621418116e3c8f0388e731f0331db0ca8a544965d": {
+      "bytes": 11866112,
+      "sha256": "1d24b15549b4d990eb8939b621418116e3c8f0388e731f0331db0ca8a544965d"
+    },
+    "/workspace/scratch/95988d8d3ab1/ndu-keyring-zbus6-candidate/binaries/4f90564c91240efa974c1407317f9a017bc13911e20226633eaac1e599fe64e1": {
+      "bytes": 11886584,
+      "sha256": "4f90564c91240efa974c1407317f9a017bc13911e20226633eaac1e599fe64e1"
+    },
+    "/workspace/scratch/95988d8d3ab1/ndu-keyring-zbus6-candidate/binaries/83ab803d961f2bf3b533b4162e656bd2c300e73da469270d79ab14c0e44ca89e": {
+      "bytes": 13624344,
+      "sha256": "83ab803d961f2bf3b533b4162e656bd2c300e73da469270d79ab14c0e44ca89e"
+    },
+    "/workspace/scratch/95988d8d3ab1/ndu-keyring-zbus6-candidate/binaries/36c887cb86f695573cb16fbd18a0e80832e1005822e8ecd4848f4b1169fa71cb": {
+      "bytes": 11910184,
+      "sha256": "36c887cb86f695573cb16fbd18a0e80832e1005822e8ecd4848f4b1169fa71cb"
+    }
+  },
+  "source_bindings": {
+    "run_fixture.py": "0ebd538874238e433510336d40540b1523c3013d390cdc979b8ce79711a2ada9",
+    "run_cargo.py": "7419f25ee18c02f1a569695fd5e3462711af82edf2edbd7e19deee0b64719b24",
+    "harness/Cargo.toml": "d5b2a1a3d1f5407bf28fffb9850334d6027a511f60e6231860b872cb180d8d6b",
+    "harness/src/main.rs": "cf003cd3d921d1f4d8e55eb99c8d28122f8716dd9c543a057157ec1d05cccd4d",
+    "harness/src/native_fixture.rs": "4f04944fadca4c2978ddfb75cb6c01115364d3bcda991b746a1332d9538e7ed8",
+    "harness/src/prompt_fixture.rs": "f9deb05722d94026a76a3cef62589d623e4877e034b575c799f72c60d2d5f006",
+    "vendor/secret-service-4.0.0/src/blocking/mod.rs": "2a8a30e29440a5a7a5078ac22f67e2103466f6b89274f3e6793d63f791803a16",
+    "vendor/secret-service-4.0.0/src/blocking/collection.rs": "57fd2c4107d552785e1fc5f596694f4c59c52076299e8a55411e26ae3a92a646",
+    "vendor/secret-service-4.0.0/src/blocking/item.rs": "461f60f94e433bd3768af36e6402ca2e746d9a4b4f03bd30806b8cf3c8553456",
+    "vendor/secret-service-4.0.0/src/session.rs": "e886a06f14729f915ed8e408671553d1f4ba141a7510e7620b446e84f9cbc456",
+    "vendor/secret-service-4.0.0/src/util.rs": "e51d1d1f8b38b7896facf2ee91229b483372457b72883269c6abd6eff69992b8",
+    "vendor/secret-service-4.0.0/src/error.rs": "87c5642da8bae38518cc0e1daca061bda3649c15ef6f4ec154420646d28d8c50"
+  },
+  "official_zbus_6_1_runtime_source": {
+    "path": "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/yaml-migration/cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/zbus-6.1.0/src/utils.rs",
+    "sha256": "482f02e58fae185b47086dcbe540fe535ad9df15f027ae228409653c61f612c3"
+  },
+  "review_findings": [
+    "The secret-service blocking facade retains its connection, session, and borrowed proxy lifetimes; each call drives the same async methods through zbus::block_on. It does not create and immediately destroy a Tokio runtime per call.",
+    "Official zbus 6.1 default-rt transfers live connection work to a helper between block_on calls; the tokio build holds a process-lifetime OnceLock runtime. Both supported runtime feature configurations have actual lifecycle evidence, including eight parallel Entry users and moving a blocking connection to another thread.",
+    "The existing prohibition on invoking the blocking facade inside an async task remains necessary; nested async-runtime calls are not qualified by these fixtures.",
+    "Plain and DH secret payloads, binary and Unicode values, attributes, content type, ambiguity, legacy no-target discovery, and sync/async interoperability are exercised against an actual isolated GNOME Secret Service. The lifecycle fixture compares payloads and attributes with the independent libdbus backend.",
+    "The prompt fixture uses a controlled D-Bus service, with subscription before invocation and explicit completed/dismissed branches. Error::Zvariant now carries zbus::Error because zbus 6 merged the serialization types; conversion failures remain explicitly mapped to that variant. Source and missing-service evidence retain error causes.",
+    "The runner owns a fresh session bus with no activation service directories and XDG data/config/runtime paths under its synthetic fixture. It freezes executable bytes by SHA before execution, terminates only its child daemons, saves fixture state, and removes only that fixture.",
+    "Native composite operations verify a different user namespace and a newly created anonymous kernel session keyring before any cache operation; absent-service rollback, prior-value restoration, dual writes, cache refill, and ambiguity preservation are exercised.",
+    "actual-consumer-001 executes the real codex-keyring-store library API for Option load, serialized payload persistence, and true/false delete results; this remains an isolated consumer harness rather than the entire first-party workspace CI."
+  ],
+  "limits": [
+    "The optional kernel persistent register is unavailable on this kernel (EOPNOTSUPP). Passing native tests cover the session cache plus Secret Service persistence, not successful use of that optional register.",
+    "The old real-dbus-006 receipt is excluded: it used a mutable target/debug path and was invalidated by the author. Only content-addressed binaries from 007 onward are considered here.",
+    "Source inputs for the later tokio/consumer builds are captured before execution; the earlier build-007 receipt has only command/log metadata. This review independently binds the current matching source inventory and saved executables, not a reproducible-build proof for that earlier binary.",
+    "Full first-party Cargo/Bazel lock generation, macOS and Windows behavior, and production integration remain independent gates. No advisory ignore or production approval follows from this peer review."
+  ]
+}

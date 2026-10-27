@@ -1,0 +1,967 @@
+{
+  "schema": "hepta.pr-workflows.readonly-refresh.v1",
+  "observed_at": "2026-10-27T15:56:33Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "requested_head": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+  "runs_source": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=3a779a6e52138d63056fdb00e1e477c8db6517f8&per_page=100",
+  "pull_source": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/4070",
+  "pull": {
+    "number": 4070,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4070",
+    "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+    "base_sha": "fb9281e4a7ccfc4034281ed6310adea7e50f4474",
+    "state": "open",
+    "draft": true,
+    "merged": false,
+    "mergeable_state": "unstable",
+    "updated_at": "2026-10-27T12:22:48Z"
+  },
+  "run_count": 5,
+  "job_count": 68,
+  "job_conclusions": {
+    "success": 25,
+    "failure": 12,
+    "cancelled": 23,
+    "skipped": 8
+  },
+  "pagination": {
+    "runs_complete": true,
+    "all_job_lists_complete": true,
+    "per_page": 100
+  },
+  "read_only": true,
+  "scope": "Status projection from GitHub API responses; no run created, rerun, cancelled or modified. Failure steps identify locations, not uninspected log-level causes. This is the published 3a779a6 head, not v5.",
+  "runs": [
+    {
+      "id": 40503203294,
+      "name": "NDU dependency port candidate",
+      "path": ".github/workflows/ndu-port-candidate.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_attempt": 1,
+      "created_at": "2026-10-27T12:22:10Z",
+      "updated_at": "2026-10-27T13:07:33Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40503203294",
+      "jobs_source": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40503203294/jobs?per_page=100&filter=all",
+      "job_count": 10,
+      "job_conclusions": {
+        "success": 5,
+        "failure": 5
+      },
+      "jobs": [
+        {
+          "id": 122185817438,
+          "name": "produce-independent-matrix-018-fixture",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:24:54Z",
+          "completed_at": "2026-10-27T12:30:09Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122185817567,
+          "name": "generate-reviewable-candidate",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:24:43Z",
+          "completed_at": "2026-10-27T12:26:37Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122187796396,
+          "name": "full-scope-candidate-cargo-deny",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:40:36Z",
+          "completed_at": "2026-10-27T12:42:43Z",
+          "failed_steps": [
+            {
+              "number": 8,
+              "name": "Run the original pinned cargo-deny action with unchanged complete scope",
+              "conclusion": "failure"
+            },
+            {
+              "number": 9,
+              "name": "Preserve same-version host diagnostics after a scan failure",
+              "conclusion": "failure"
+            }
+          ]
+        },
+        {
+          "id": 122187796433,
+          "name": "independent-full-upstream-aws",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:43:24Z",
+          "completed_at": "2026-10-27T12:45:27Z",
+          "failed_steps": [
+            {
+              "number": 8,
+              "name": "Qualify all 245 upstream cases on a separate exact-source copy",
+              "conclusion": "failure"
+            }
+          ]
+        },
+        {
+          "id": 122187796472,
+          "name": "linux-bazel-libraries",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:41:42Z",
+          "completed_at": "2026-10-27T12:48:24Z",
+          "failed_steps": [
+            {
+              "number": 6,
+              "name": "Build real vendor libraries and first-party consumers with sealed locks",
+              "conclusion": "failure"
+            }
+          ]
+        },
+        {
+          "id": 122187796482,
+          "name": "targeted-workspace-tests (execpolicy)",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:45:53Z",
+          "completed_at": "2026-10-27T12:47:40Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122187796518,
+          "name": "targeted-workspace-tests (aws)",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:40:48Z",
+          "completed_at": "2026-10-27T12:52:44Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122187796569,
+          "name": "targeted-workspace-tests (keyring)",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:40:10Z",
+          "completed_at": "2026-10-27T12:41:17Z",
+          "failed_steps": [
+            {
+              "number": 8,
+              "name": "Verify exact source and artifacts then run actual workspace packages",
+              "conclusion": "failure"
+            }
+          ]
+        },
+        {
+          "id": 122187796596,
+          "name": "targeted-workspace-tests (yaml)",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:43:34Z",
+          "completed_at": "2026-10-27T12:55:28Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122189367737,
+          "name": "matrix-workspace-and-old-fixture",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:49:45Z",
+          "completed_at": "2026-10-27T13:07:33Z",
+          "failed_steps": [
+            {
+              "number": 9,
+              "name": "Run four actual Matrix crates and reopen a verified writable copy",
+              "conclusion": "failure"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 40503203235,
+      "name": "blocking-ci",
+      "path": ".github/workflows/blocking-ci.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_attempt": 1,
+      "created_at": "2026-10-27T12:22:10Z",
+      "updated_at": "2026-10-27T14:56:07Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40503203235",
+      "jobs_source": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40503203235/jobs?per_page=100&filter=all",
+      "job_count": 38,
+      "job_conclusions": {
+        "success": 16,
+        "failure": 7,
+        "cancelled": 11,
+        "skipped": 4
+      },
+      "jobs": [
+        {
+          "id": 122191287783,
+          "name": "Select blocking CI scope",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:50:39Z",
+          "completed_at": "2026-10-27T12:51:35Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122191288313,
+          "name": "Codespell / Check for spelling errors",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:35:56Z",
+          "completed_at": "2026-10-27T12:36:35Z",
+          "failed_steps": [
+            {
+              "number": 5,
+              "name": "Codespell",
+              "conclusion": "failure"
+            }
+          ]
+        },
+        {
+          "id": 122191288318,
+          "name": "Blob size policy / Blob size policy",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:59:31Z",
+          "completed_at": "2026-10-27T13:00:52Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199100854,
+          "name": "cargo-deny / cargo-deny",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:56:58Z",
+          "completed_at": "2026-10-27T12:58:56Z",
+          "failed_steps": [
+            {
+              "number": 6,
+              "name": "Run cargo-deny",
+              "conclusion": "failure"
+            },
+            {
+              "number": 7,
+              "name": "Preserve a same-version host diagnostic after failure",
+              "conclusion": "failure"
+            }
+          ]
+        },
+        {
+          "id": 122199100916,
+          "name": "rust-ci / Detect changed areas",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:56:34Z",
+          "completed_at": "2026-10-27T12:56:48Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199100956,
+          "name": "repo-checks / Native Hepta paths on macos-15",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:56:17Z",
+          "completed_at": "2026-10-27T12:57:25Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199100977,
+          "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T13:07:29Z",
+          "completed_at": "2026-10-27T13:08:16Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199101008,
+          "name": "sdk / python-sdk",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T13:00:23Z",
+          "completed_at": "2026-10-27T13:01:39Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199101059,
+          "name": "sdk / sdks",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T13:06:53Z",
+          "completed_at": "2026-10-27T14:07:13Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199101100,
+          "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T13:08:56Z",
+          "completed_at": "2026-10-27T13:09:39Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199101145,
+          "name": "repo-checks / Native Hepta paths on windows-latest",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:56:41Z",
+          "completed_at": "2026-10-27T12:58:29Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199101212,
+          "name": "repo-checks / build-test",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:57:55Z",
+          "completed_at": "2026-10-27T13:00:16Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199101536,
+          "name": "NDU v6 neural rollout smoke / Python, native NDU, and real rollout",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T13:01:35Z",
+          "completed_at": "2026-10-27T13:17:25Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199101576,
+          "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T13:07:37Z",
+          "completed_at": "2026-10-27T14:08:14Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199101603,
+          "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:57:15Z",
+          "completed_at": "2026-10-27T13:57:45Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199101630,
+          "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T13:03:58Z",
+          "completed_at": "2026-10-27T14:04:31Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199101647,
+          "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:52:11Z",
+          "completed_at": "2026-10-27T13:53:04Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199101658,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T13:16:16Z",
+          "completed_at": "2026-10-27T14:16:41Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199101671,
+          "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:57:29Z",
+          "completed_at": "2026-10-27T13:50:56Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199101691,
+          "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:56:51Z",
+          "completed_at": "2026-10-27T13:57:36Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199101726,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:59:21Z",
+          "completed_at": "2026-10-27T13:55:02Z",
+          "failed_steps": [
+            {
+              "number": 6,
+              "name": "bazel test shard",
+              "conclusion": "failure"
+            }
+          ]
+        },
+        {
+          "id": 122199101734,
+          "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:57:25Z",
+          "completed_at": "2026-10-27T13:57:59Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199101772,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:57:16Z",
+          "completed_at": "2026-10-27T13:57:39Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199101853,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T13:11:39Z",
+          "completed_at": "2026-10-27T14:12:01Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199101929,
+          "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T13:23:00Z",
+          "completed_at": "2026-10-27T14:23:27Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199101993,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:59:29Z",
+          "completed_at": "2026-10-27T13:46:47Z",
+          "failed_steps": [
+            {
+              "number": 6,
+              "name": "bazel test shard",
+              "conclusion": "failure"
+            }
+          ]
+        },
+        {
+          "id": 122199102008,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:59:21Z",
+          "completed_at": "2026-10-27T13:54:15Z",
+          "failed_steps": [
+            {
+              "number": 6,
+              "name": "bazel test shard",
+              "conclusion": "failure"
+            }
+          ]
+        },
+        {
+          "id": 122199103715,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:51:36Z",
+          "completed_at": "2026-10-27T12:51:36Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199103753,
+          "name": "Lightweight prose and derived checks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:51:36Z",
+          "completed_at": "2026-10-27T12:51:36Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122199105315,
+          "name": "Hepta scoped native checks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:51:36Z",
+          "completed_at": "2026-10-27T12:51:36Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122201545449,
+          "name": "rust-ci / cargo shear",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T13:10:11Z",
+          "completed_at": "2026-10-27T13:11:00Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122201545481,
+          "name": "rust-ci / Cargo manifest preflight",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T13:19:54Z",
+          "completed_at": "2026-10-27T13:20:15Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122201545537,
+          "name": "rust-ci / Rust format",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T13:25:23Z",
+          "completed_at": "2026-10-27T13:26:06Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122201547730,
+          "name": "rust-ci / Argument comment lint package",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:56:48Z",
+          "completed_at": "2026-10-27T12:56:48Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122213045442,
+          "name": "rust-ci / Rust benchmark smoke",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T13:43:26Z",
+          "completed_at": "2026-10-27T13:44:36Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122225620413,
+          "name": "rust-ci / CI results (required)",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T14:00:02Z",
+          "completed_at": "2026-10-27T14:00:05Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122232232247,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T14:11:59Z",
+          "completed_at": "2026-10-27T14:12:02Z",
+          "failed_steps": [
+            {
+              "number": 2,
+              "name": "Confirm Windows Bazel test shards passed",
+              "conclusion": "failure"
+            }
+          ]
+        },
+        {
+          "id": 122246492987,
+          "name": "CI required",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T14:55:55Z",
+          "completed_at": "2026-10-27T14:56:06Z",
+          "failed_steps": [
+            {
+              "number": 3,
+              "name": "Require successful applicable dependencies",
+              "conclusion": "failure"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 40503202995,
+      "name": "NDU dependency remediation candidate",
+      "path": ".github/workflows/ndu-tls-lock-candidate.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "skipped",
+      "run_attempt": 1,
+      "created_at": "2026-10-27T12:22:09Z",
+      "updated_at": "2026-10-27T12:22:16Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40503202995",
+      "jobs_source": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40503202995/jobs?per_page=100&filter=all",
+      "job_count": 3,
+      "job_conclusions": {
+        "skipped": 3
+      },
+      "jobs": [
+        {
+          "id": 122185817822,
+          "name": "generate-reviewable-candidate",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:22:10Z",
+          "completed_at": "2026-10-27T12:22:10Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122185819006,
+          "name": "targeted-workspace-tests",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:22:10Z",
+          "completed_at": "2026-10-27T12:22:10Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122185819404,
+          "name": "protocol-fixture-candidate",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:22:11Z",
+          "completed_at": "2026-10-27T12:22:10Z",
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "id": 40503202993,
+      "name": "v8-canary",
+      "path": ".github/workflows/v8-canary.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "run_attempt": 1,
+      "created_at": "2026-10-27T12:22:09Z",
+      "updated_at": "2026-10-27T13:14:30Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40503202993",
+      "jobs_source": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40503202993/jobs?per_page=100&filter=all",
+      "job_count": 14,
+      "job_conclusions": {
+        "success": 1,
+        "cancelled": 12,
+        "skipped": 1
+      },
+      "jobs": [
+        {
+          "id": 122185816347,
+          "name": "metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:27:17Z",
+          "completed_at": "2026-10-27T12:28:08Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122188465817,
+          "name": "Build release x86_64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:37:06Z",
+          "completed_at": "2026-10-27T13:07:24Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122188465843,
+          "name": "Build ptrcomp-sandbox x86_64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:37:27Z",
+          "completed_at": "2026-10-27T13:07:46Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122188465870,
+          "name": "Build release x86_64-unknown-linux-musl",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:37:06Z",
+          "completed_at": "2026-10-27T13:07:26Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122188465883,
+          "name": "Build ptrcomp-sandbox aarch64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:31:14Z",
+          "completed_at": "2026-10-27T13:01:33Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122188465891,
+          "name": "Build release aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:29:01Z",
+          "completed_at": "2026-10-27T12:59:28Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122188465929,
+          "name": "Build release x86_64-apple-darwin",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:29:03Z",
+          "completed_at": "2026-10-27T12:59:30Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122188465933,
+          "name": "Build release aarch64-unknown-linux-musl",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:40:17Z",
+          "completed_at": "2026-10-27T13:10:38Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122188465941,
+          "name": "Build ptrcomp-sandbox aarch64-unknown-linux-musl",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:41:40Z",
+          "completed_at": "2026-10-27T13:11:59Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122188465944,
+          "name": "Build ptrcomp-sandbox x86_64-apple-darwin",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:30:48Z",
+          "completed_at": "2026-10-27T13:01:14Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122188466085,
+          "name": "Build release aarch64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:44:07Z",
+          "completed_at": "2026-10-27T13:14:29Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122188466097,
+          "name": "Build ptrcomp-sandbox x86_64-unknown-linux-musl",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:41:38Z",
+          "completed_at": "2026-10-27T13:11:59Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122188466128,
+          "name": "Build ptrcomp-sandbox aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:29:02Z",
+          "completed_at": "2026-10-27T12:59:26Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122188467064,
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:28:09Z",
+          "completed_at": "2026-10-27T12:28:09Z",
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "id": 40503202998,
+      "name": "Hepta architecture convergence",
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "created_at": "2026-10-27T12:22:09Z",
+      "updated_at": "2026-10-27T13:26:06Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40503202998",
+      "jobs_source": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40503202998/jobs?per_page=100&filter=all",
+      "job_count": 3,
+      "job_conclusions": {
+        "success": 3
+      },
+      "jobs": [
+        {
+          "id": 122186946834,
+          "name": "Architecture convergence (base-merge)",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:28:31Z",
+          "completed_at": "2026-10-27T12:29:00Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122186946846,
+          "name": "Architecture convergence (source-head)",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T12:28:31Z",
+          "completed_at": "2026-10-27T12:59:10Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122202660803,
+          "name": "Architecture required",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+          "run_attempt": 1,
+          "started_at": "2026-10-27T13:25:42Z",
+          "completed_at": "2026-10-27T13:25:45Z",
+          "failed_steps": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "additional_gates": {
+    "maximum_incorrect_commit_per_id_case": 0.004999,
+    "minimum_selective_id_coverage": 0.25
+  },
+  "additional_selective_gate_values_unchanged": true,
+  "calibration": "Fixed-category Jeffreys mean (successes+0.5)/(n+1); logically inconsistent caption has probability0; no threshold retuning on calibration",
+  "calibration_id_pairs": 256,
+  "calibration_id_source": "Historical training pairs3000..3255, never used for outcome-head fit, selection, or earlier calibration",
+  "calibration_ood_pairs": 600,
+  "calibration_ood_source": "Historical training pairs3400..3999, never used for outcome-head fit, selection, or earlier calibration",
+  "categories": [
+    "declared_ood",
+    "unknown_preference",
+    "caption_inconsistent",
+    "selected_by_public_head",
+    "other_known_candidate"
+  ],
+  "confidence_quantization": "Q24 round-nearest then legacy confidence_ppm=1000000-(Q-pQ)*1000000//Q",
+  "declared_ood": "Both public image halves absent, mask entirely zero, both text class hints unknown; this is a declared missing-input distribution only",
+  "earlier_640_episode_result_replaced": false,
+  "earlier_calibration": "001 remains failed and is retired to development; it supplies neither the new calibration labels nor heldout estimates",
+  "ece": "Same ten confidence-ppm bins as legacy native qualification, calculated over full cohort and ID cohort separately",
+  "final_utility": {
+    "abstain": 0.0,
+    "commit_cost": 0.002,
+    "correct_commit": 1.0,
+    "gamma": 2.0,
+    "incorrect_commit": -2.0
+  },
+  "legacy_gate_values_unchanged": true,
+  "legacy_gates": {
+    "maximum_declared_ood_far": 0.004999,
+    "maximum_declared_ood_one_sided_95_upper": 0.004999,
+    "maximum_full_and_id_ece": 0.03,
+    "minimum_id_coverage": 0.25
+  },
+  "legacy_rule": "confidence_ppm>=750000 and ood_ppm<=500000, with ood_ppm=1000000-confidence_ppm",
+  "native_production_qualification": false,
+  "new_random_namespaces": {
+    "calibration_id": 27167001,
+    "calibration_ood": 27177001,
+    "qualification_id": 27187001,
+    "qualification_ood": 27197001
+  },
+  "outcome": "Actual candidate caption valid and text facts/relation/image facts/crossmodal agreement all correct under the same frozen audit observer",
+  "outcome_time": "Private candidate grade is unavailable to prediction and final commitment",
+  "owner_role_in_calibration": "Six actual native state paths certify the frozen readout table; offline calibration candidates use that table, not a claimed per-case native execution",
+  "public_inputs": "Actual initial caption, arrived preference scalar, actual candidate PNG/UTF8, public input mask, frozen reward CNN features",
+  "schema": "hepta.ndu.selective-candidate-calibration.v2",
+  "score_event": "Candidate correctness, including every rejected candidate; not correctness conditional on acceptance",
+  "selective_rule": "The fixed public head's selected category and positive final entropic value relative to abstention",
+  "selector": "Frozen historical-only refinement002: public reward CNN confidence intersected with a fixed learned outcome head; all thresholds fixed before this cohort's generation",
+  "source_exclusions": "Every original head fit/validation pixel and every retired calibration001 ID/OOD pixel; qualification uses only separately allocated never-used official-test pixels",
+  "source_slices": {
+    "calibration_id": [
+      "train",
+      3000
+    ],
+    "calibration_ood": [
+      "train",
+      3400
+    ]
+  },
+  "uncertainty": "Exact zero-count one-sided95% OOD upper=1-.05**(1/n_ood); nonzero OOD accepts fail the unchanged design"
+}

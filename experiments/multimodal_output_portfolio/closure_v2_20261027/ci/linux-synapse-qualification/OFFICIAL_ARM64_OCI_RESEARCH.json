@@ -1,0 +1,459 @@
+{
+  "schema": "hepta.ci.synapse-native-arm64-platform-research.v1",
+  "completed_utc": "2026-10-27T11:40:42.179178+00:00",
+  "reviewer": "/root/joint_evidence",
+  "scope": "Read-only source/registry/primary-document investigation. Only small manifests, JSON configurations and documents fetched; no image layers, compiler archives, Docker execution, runner creation, purchases, Matrix account access or user messages.",
+  "source": {
+    "repository_head": "a060a0a98729ef6d6d5bc42a1fc5842db1d1a1a2",
+    "files": {
+      "codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh": {
+        "bytes": 124460,
+        "sha256": "2c733cafbe5cece9697ef08c6a5ecf5747ec69ab3dfa227c3273ce38d2c2a610"
+      },
+      "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs": {
+        "bytes": 236274,
+        "sha256": "f8321a43ffb7c57ec75349620b518a005884e125181f777bc1254dbc8f3253d1"
+      }
+    },
+    "scope": "Read-only OCI architecture investigation. Sources copied before querying registry; no Matrix accounts, images, layers, containers or source edits."
+  },
+  "synapse": {
+    "image_ref": "matrixdotorg/synapse@sha256:467a587a5052dadd5d0bf1f8d89f043cc652d5201bca510307340f8dddb6b312",
+    "manifest_media_type": "application/vnd.oci.image.manifest.v1+json",
+    "single_platform_manifest": true,
+    "image_id": "sha256:d1292ef4b8d934a5b2acc9471eeabc53f718dd748cf10773454f401f678db784",
+    "os": "linux",
+    "architecture": "arm64",
+    "variant": null,
+    "version_label": "1.159.0",
+    "revision_label": "7b10e6b9bc2dacc33f0974c999f640b55ef831bc",
+    "layer_count": 10,
+    "compressed_layers_bytes": 108561941,
+    "both_source_pins_match": true,
+    "evidence": [
+      {
+        "url": "https://registry-1.docker.io/v2/matrixdotorg/synapse/manifests/sha256:467a587a5052dadd5d0bf1f8d89f043cc652d5201bca510307340f8dddb6b312",
+        "fetched_utc": "2026-10-27T11:35:17.138775+00:00",
+        "file": "registry/synapse-pinned-manifest.body.json",
+        "bytes": 2197,
+        "sha256": "467a587a5052dadd5d0bf1f8d89f043cc652d5201bca510307340f8dddb6b312",
+        "http_receipt": {
+          "file": "registry/synapse-pinned-manifest.http.json",
+          "bytes": 2572,
+          "sha256": "dc4a2a827c469e8cf90c45b2645700db0523b7950c0899f3dafa53a0cdd810dc"
+        }
+      },
+      {
+        "url": "https://registry-1.docker.io/v2/matrixdotorg/synapse/blobs/sha256:d1292ef4b8d934a5b2acc9471eeabc53f718dd748cf10773454f401f678db784",
+        "fetched_utc": "2026-10-27T11:35:31.223580+00:00",
+        "file": "registry/synapse-pinned-config.body.json",
+        "bytes": 9488,
+        "sha256": "d1292ef4b8d934a5b2acc9471eeabc53f718dd748cf10773454f401f678db784",
+        "http_receipt": {
+          "file": "registry/synapse-pinned-config.http.json",
+          "bytes": 2463,
+          "sha256": "41676266f76aba52217130ac4d387819dad95dff0876e1ff6b2456c4c46c6542"
+        }
+      }
+    ]
+  },
+  "platform_decision": {
+    "selected": "Native Linux ARM64 only",
+    "linux_arm64": "Registry-declared image architecture is compatible; actual materialization, engine architecture, server version and full qualification are still unexecuted.",
+    "linux_x86_64": "Not eligible for this plan. The fixed single ARM64 manifest does not select an amd64 sibling; no emulation or tag/image substitution is authorized.",
+    "original_harness": "The original Mac/Xcode-specific host provenance still requires a distinct strict Linux adapter. ARM64 image metadata alone does not make that original script runnable on Linux."
+  },
+  "builder_candidates": [
+    {
+      "name": "official-rust-1.96.0-bookworm-arm64",
+      "native_arm64_plan_eligible": true,
+      "image_ref": "docker.io/library/rust@sha256:05f85ef6eb0f2600ac62e9d779642b5b362d5be2ed67b80e162fae6e28b66524",
+      "image_id": "sha256:e1c74d1ab074f9e6696ae7b759e9c522b1517b32c5a30cc567b3f11f8c3e1be0",
+      "platform": {
+        "architecture": "arm64",
+        "os": "linux",
+        "variant": "v8"
+      },
+      "rust_version_env": "1.96.0",
+      "origin_tag_used_only_for_discovery": "1.96.0-bookworm",
+      "index_digest": "sha256:5e2214abe154fe26e39f64488952e5c991eeed1d6d6da7cc8381ae83927f0cfc",
+      "source_revision": "7502a8239b3db41eda6017b17aa50067d140d2a7",
+      "source_url": "https://github.com/rust-lang/docker-rust.git#7502a8239b3db41eda6017b17aa50067d140d2a7:stable/bookworm",
+      "base_name": "buildpack-deps:bookworm",
+      "base_digest": "sha256:f3bb516ed9920c4da63b33988189fe0198e69f34c44b6e3a305989a2dec523cc",
+      "layer_count": 5,
+      "compressed_layers_bytes": 519844425,
+      "uncompressed_size": "not established without layer materialization",
+      "evidence": [
+        {
+          "url": "https://registry-1.docker.io/v2/library/rust/manifests/1.96.0-bookworm",
+          "fetched_utc": "2026-10-27T11:35:31.586107+00:00",
+          "file": "registry/rust-1.96.0-bookworm-index.body.json",
+          "bytes": 7752,
+          "sha256": "5e2214abe154fe26e39f64488952e5c991eeed1d6d6da7cc8381ae83927f0cfc",
+          "http_receipt": {
+            "file": "registry/rust-1.96.0-bookworm-index.http.json",
+            "bytes": 2339,
+            "sha256": "7571ae34588526b481833b5fcc126bfc04f1529f76205b8997c72f6ceb2909c7"
+          }
+        },
+        {
+          "url": "https://registry-1.docker.io/v2/library/rust/manifests/sha256:05f85ef6eb0f2600ac62e9d779642b5b362d5be2ed67b80e162fae6e28b66524",
+          "fetched_utc": "2026-10-27T11:36:16.638587+00:00",
+          "file": "registry/rust-1.96.0-bookworm-arm64-manifest.body.json",
+          "bytes": 1942,
+          "sha256": "05f85ef6eb0f2600ac62e9d779642b5b362d5be2ed67b80e162fae6e28b66524",
+          "http_receipt": {
+            "file": "registry/rust-1.96.0-bookworm-arm64-manifest.http.json",
+            "bytes": 2559,
+            "sha256": "41a4bfc4795800395bf4f1fd505d3e5467a10a4e77c9053faf2d6b6d1cadd24e"
+          }
+        },
+        {
+          "url": "https://registry-1.docker.io/v2/library/rust/blobs/sha256:e1c74d1ab074f9e6696ae7b759e9c522b1517b32c5a30cc567b3f11f8c3e1be0",
+          "fetched_utc": "2026-10-27T11:36:37.825798+00:00",
+          "file": "registry/rust-1.96.0-bookworm-arm64-config.body.json",
+          "bytes": 4735,
+          "sha256": "e1c74d1ab074f9e6696ae7b759e9c522b1517b32c5a30cc567b3f11f8c3e1be0",
+          "http_receipt": {
+            "file": "registry/rust-1.96.0-bookworm-arm64-config.http.json",
+            "bytes": 2459,
+            "sha256": "46c4c686b124476d735094cc50e65648514583c94d4ce97a96a3ca0b02562048"
+          }
+        }
+      ]
+    },
+    {
+      "name": "official-rust-1.96.0-slim-bookworm-arm64",
+      "native_arm64_plan_eligible": true,
+      "image_ref": "docker.io/library/rust@sha256:04934a96843aadd70c92bf27ed3ad1ce8a375d5c4e54467fd2e7b3257b20849c",
+      "image_id": "sha256:34ac09b50178d7fc138c07964c0e2f8917f9452b5753033d513058a4c68271c7",
+      "platform": {
+        "architecture": "arm64",
+        "os": "linux",
+        "variant": "v8"
+      },
+      "rust_version_env": "1.96.0",
+      "origin_tag_used_only_for_discovery": "1.96.0-slim-bookworm",
+      "index_digest": "sha256:4732ca96fd086cb9be682050c3f0176288eebaac2b80aa2bcefccfaf198e1950",
+      "source_revision": "7502a8239b3db41eda6017b17aa50067d140d2a7",
+      "source_url": "https://github.com/rust-lang/docker-rust.git#7502a8239b3db41eda6017b17aa50067d140d2a7:stable/bookworm/slim",
+      "base_name": "debian:bookworm-slim",
+      "base_digest": "sha256:675b032d19e294c9eb2525b24ee63e6dc718854a481c6fd6f5e0aefcaf8208a1",
+      "layer_count": 2,
+      "compressed_layers_bytes": 274205737,
+      "uncompressed_size": "not established without layer materialization",
+      "evidence": [
+        {
+          "url": "https://registry-1.docker.io/v2/library/rust/manifests/1.96.0-slim-bookworm",
+          "fetched_utc": "2026-10-27T11:36:17.181926+00:00",
+          "file": "registry/rust-1.96.0-slim-bookworm-index.body.json",
+          "bytes": 7800,
+          "sha256": "4732ca96fd086cb9be682050c3f0176288eebaac2b80aa2bcefccfaf198e1950",
+          "http_receipt": {
+            "file": "registry/rust-1.96.0-slim-bookworm-index.http.json",
+            "bytes": 2359,
+            "sha256": "4cfae31bc876b5a9b440a72872bf10ef02766c779900754914c75f06fd08c15e"
+          }
+        },
+        {
+          "url": "https://registry-1.docker.io/v2/library/rust/manifests/sha256:04934a96843aadd70c92bf27ed3ad1ce8a375d5c4e54467fd2e7b3257b20849c",
+          "fetched_utc": "2026-10-27T11:37:43.219196+00:00",
+          "file": "registry/rust-1.96.0-slim-bookworm-arm64-manifest.body.json",
+          "bytes": 1369,
+          "sha256": "04934a96843aadd70c92bf27ed3ad1ce8a375d5c4e54467fd2e7b3257b20849c",
+          "http_receipt": {
+            "file": "registry/rust-1.96.0-slim-bookworm-arm64-manifest.http.json",
+            "bytes": 2565,
+            "sha256": "6644450779c2bd1d3677f630f7cddc59071056baf2c3ebce70ab03e9cff44014"
+          }
+        },
+        {
+          "url": "https://registry-1.docker.io/v2/library/rust/blobs/sha256:34ac09b50178d7fc138c07964c0e2f8917f9452b5753033d513058a4c68271c7",
+          "fetched_utc": "2026-10-27T11:38:06.695506+00:00",
+          "file": "registry/rust-1.96.0-slim-bookworm-arm64-config.body.json",
+          "bytes": 3295,
+          "sha256": "34ac09b50178d7fc138c07964c0e2f8917f9452b5753033d513058a4c68271c7",
+          "http_receipt": {
+            "file": "registry/rust-1.96.0-slim-bookworm-arm64-config.http.json",
+            "bytes": 2464,
+            "sha256": "79e6db736447664e2b7a61ca29403be9e12f7bbf03a8a664e0a41e1c73bb9578"
+          }
+        }
+      ]
+    },
+    {
+      "name": "official-rust-1.96.0-bookworm-amd64",
+      "native_arm64_plan_eligible": false,
+      "image_ref": "docker.io/library/rust@sha256:c993d32d95cc146bd12c84d66f0b924a6a96f3988325f39c144f2f9893dea120",
+      "image_id": "sha256:13783f492bda9b66aed2e6c95c874499f1c5020821704d412113c104bc9cf14f",
+      "platform": {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      "rust_version_env": "1.96.0",
+      "origin_tag_used_only_for_discovery": "1.96.0-bookworm",
+      "index_digest": "sha256:5e2214abe154fe26e39f64488952e5c991eeed1d6d6da7cc8381ae83927f0cfc",
+      "source_revision": "7502a8239b3db41eda6017b17aa50067d140d2a7",
+      "source_url": "https://github.com/rust-lang/docker-rust.git#7502a8239b3db41eda6017b17aa50067d140d2a7:stable/bookworm",
+      "base_name": "buildpack-deps:bookworm",
+      "base_digest": "sha256:38228d5e52074f61c29e89ce4321eeacbf12275287d92df38ed1a08e8b44975b",
+      "layer_count": 5,
+      "compressed_layers_bytes": 563754814,
+      "uncompressed_size": "not established without layer materialization",
+      "evidence": [
+        {
+          "url": "https://registry-1.docker.io/v2/library/rust/manifests/1.96.0-bookworm",
+          "fetched_utc": "2026-10-27T11:35:31.586107+00:00",
+          "file": "registry/rust-1.96.0-bookworm-index.body.json",
+          "bytes": 7752,
+          "sha256": "5e2214abe154fe26e39f64488952e5c991eeed1d6d6da7cc8381ae83927f0cfc",
+          "http_receipt": {
+            "file": "registry/rust-1.96.0-bookworm-index.http.json",
+            "bytes": 2339,
+            "sha256": "7571ae34588526b481833b5fcc126bfc04f1529f76205b8997c72f6ceb2909c7"
+          }
+        },
+        {
+          "url": "https://registry-1.docker.io/v2/library/rust/manifests/sha256:c993d32d95cc146bd12c84d66f0b924a6a96f3988325f39c144f2f9893dea120",
+          "fetched_utc": "2026-10-27T11:36:17.611012+00:00",
+          "file": "registry/rust-1.96.0-bookworm-amd64-manifest.body.json",
+          "bytes": 1940,
+          "sha256": "c993d32d95cc146bd12c84d66f0b924a6a96f3988325f39c144f2f9893dea120",
+          "http_receipt": {
+            "file": "registry/rust-1.96.0-bookworm-amd64-manifest.http.json",
+            "bytes": 2559,
+            "sha256": "377591db1a7f42287962eaea23016c2ed903fe66d178100b15d27508353b5a7a"
+          }
+        },
+        {
+          "url": "https://registry-1.docker.io/v2/library/rust/blobs/sha256:13783f492bda9b66aed2e6c95c874499f1c5020821704d412113c104bc9cf14f",
+          "fetched_utc": "2026-10-27T11:36:38.034270+00:00",
+          "file": "registry/rust-1.96.0-bookworm-amd64-config.body.json",
+          "bytes": 4720,
+          "sha256": "13783f492bda9b66aed2e6c95c874499f1c5020821704d412113c104bc9cf14f",
+          "http_receipt": {
+            "file": "registry/rust-1.96.0-bookworm-amd64-config.http.json",
+            "bytes": 2459,
+            "sha256": "15caa77440a64d19bee086042bb86c13a1a120f92d51d6b04c9682e37b1c3a0b"
+          }
+        }
+      ]
+    }
+  ],
+  "builder_assessment": {
+    "preferred_research_candidate": "official-rust-1.96.0-bookworm-arm64",
+    "reason": "The standard Bookworm variant has a fixed ARM64 manifest/config and a source recipe selecting the Rust 1.96.0 GNU host installation over a buildpack-deps base. This is a bounded preparation candidate; its full tool/library inventory has not been materialized or qualified.",
+    "slim_boundary": "The fixed slim recipe explicitly installs ca-certificates, gcc and libc6-dev, plus a temporary wget removed after rustup. It is a smaller sysroot baseline, not proof of complete repo tooling. It must not be used to omit required linkers, libraries, just, nextest, Python, jq or build assertions.",
+    "source_recipe_pin": "7502a8239b3db41eda6017b17aa50067d140d2a7",
+    "tags_are_not_final_pins": true,
+    "full_builder_plus_synapse_compressed_layer_bytes_without_dedup": 628406366
+  },
+  "rust_release_primary": {
+    "date": "2026-05-28",
+    "version": "1.96.0 (ac68faa20 2026-05-25)",
+    "commit": "ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96",
+    "target": "aarch64-unknown-linux-gnu",
+    "component_archives_not_downloaded": {
+      "rustc": {
+        "xz_url": "https://static.rust-lang.org/dist/2026-05-28/rustc-1.96.0-aarch64-unknown-linux-gnu.tar.xz",
+        "xz_hash": "76b1a6e8dd1636e364d4bbba685485ff44eee5ff6434add089bab4c703c7e19d"
+      },
+      "cargo": {
+        "xz_url": "https://static.rust-lang.org/dist/2026-05-28/cargo-1.96.0-aarch64-unknown-linux-gnu.tar.xz",
+        "xz_hash": "09ea03e74aa94e07db7bc00bd2ec1ad86d90a7348c89fde3909a8922543b949f"
+      },
+      "rust-std": {
+        "xz_url": "https://static.rust-lang.org/dist/2026-05-28/rust-std-1.96.0-aarch64-unknown-linux-gnu.tar.xz",
+        "xz_hash": "538e85452709687797d990579a491ff9b02f8bffba4a5d54cfa945e28868053e"
+      }
+    }
+  },
+  "github_runner": {
+    "label": "ubuntu-24.04-arm",
+    "private_repository_supported": true,
+    "announcement_date": "2026-01-29",
+    "documented_private_vm": {
+      "vcpus": 2,
+      "ram": "8 GB",
+      "ssd": "14 GB",
+      "architecture": "arm64"
+    },
+    "arm64_specific_software_image_version": "20261023.149.3",
+    "documented_docker_client": "28.0.4",
+    "documented_docker_server": "28.0.4",
+    "documented_host_rust": "1.99.0, not the required fixed 1.96.0",
+    "support_sources": [
+      {
+        "url": "https://github.blog/changelog/2026-01-29-arm64-standard-runners-are-now-available-in-private-repositories/",
+        "fetched_utc": "2026-10-27T11:37:43.965333+00:00",
+        "file": "primary/github-private-arm64-announcement.html",
+        "bytes": 100697,
+        "sha256": "12c7f4616c883725b60ab857f55a5a19810da7e4081cd2484d35b29232ac09a0",
+        "http_receipt": {
+          "file": "primary/github-private-arm64-announcement.html.http.json",
+          "bytes": 2023,
+          "sha256": "a1728c26685f900948f3a3b00d30d34415578c0ab0ba88fdb5a635ecb1aa1142"
+        }
+      },
+      {
+        "url": "https://raw.githubusercontent.com/github/docs/main/data/reusables/actions/supported-github-runners.md",
+        "fetched_utc": "2026-10-27T11:37:43.236743+00:00",
+        "file": "primary/github-supported-runners.md",
+        "bytes": 9087,
+        "sha256": "2c5913f214ddf4991c36bb2ad4928bd8b2c48dbf6b8fb4d7cec4bc3a72bcca5f",
+        "http_receipt": {
+          "file": "primary/github-supported-runners.md.http.json",
+          "bytes": 2271,
+          "sha256": "92e4c8d3f6f076bc9f8c8f352b6f888f5010c56a50168239faf8863b260fe745"
+        }
+      },
+      {
+        "url": "https://docs.github.com/en/actions/reference/runners/github-hosted-runners",
+        "fetched_utc": "2026-10-27T11:37:43.695968+00:00",
+        "file": "primary/github-runner-reference.html",
+        "bytes": 435475,
+        "sha256": "96c6cf050cb51d8ff42270fcc0c6492e8405ff4c1f2b6a97c6ff993b72804fdd",
+        "http_receipt": {
+          "file": "primary/github-runner-reference.html.http.json",
+          "bytes": 3263,
+          "sha256": "2d6d5e1729c42f8e030d14557654766bac58c3540f8ef957a1f3b30398d0a8d0"
+        }
+      },
+      {
+        "url": "https://raw.githubusercontent.com/actions/runner-images/main/images/ubuntu/Ubuntu2404-Arm64-Readme.md",
+        "fetched_utc": "2026-10-27T11:37:43.347468+00:00",
+        "file": "primary/github-ubuntu2404-arm64-readme.md",
+        "bytes": 9783,
+        "sha256": "ce50ab1881ad71ca9ba665f0a87c79e831e9004db5d0e41039076ea188c92a1b",
+        "http_receipt": {
+          "file": "primary/github-ubuntu2404-arm64-readme.md.http.json",
+          "bytes": 2271,
+          "sha256": "d0e968cdae964a576e95a1bb747043a806628628c5c63c1043ba78e19298a510"
+        }
+      }
+    ],
+    "boundary": "Current public documentation establishes eligibility and ARM-specific Docker preinstallation. It does not prove this organization has quota or an actual assigned VM has sufficient free disk. The label is maintained/updated; log the assigned image version and actual runtime inventory."
+  },
+  "required_actual_evidence_before_qualification": [
+    "Native runner and daemon architecture must both be ARM64/aarch64 with Linux OSType; do not install or use foreign-architecture binfmt/QEMU for this qualification.",
+    "Materialize exact Synapse and builder manifest digests in a separate preparation phase. Verify ImageID=config digest, complete layer identities, labels and platform. Qualification uses already materialized images with pull disabled.",
+    "Record actual rustc -Vv host aarch64-unknown-linux-gnu, release 1.96.0 and commit ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96; cargo/rustdoc, resolved compiler binaries, full rust sysroot and native linker/include/library inputs need immutable hashes.",
+    "A base image label or Env alone does not prove the executed compiler or dynamic ELF library closure. Retain actual build commands, resolved tools, kernel/container runtime, executable bytes and before/after source/config/lock inventories.",
+    "Record actual Docker/runner versions, available memory, free disk before prep/build/run, materialized image sizes and build-target growth. The 14 GB documentation figure is not a promise of unused space; compressed layer totals do not bound extracted/build size.",
+    "Keep existing encrypted sync, isolation, independent dual agentd/matrixd, restart, outbox/dedup and external delivery assertions. Retain all failures and original required test names; host-specific evidence adapter cannot relax business assertions.",
+    "No runtime network fetch or tool installation may silently change a sealed sysroot/tool manifest. Any added preparation tooling needs exact source/version/digest and the resulting image or filesystem inventory."
+  ],
+  "primary_sources": {
+    "github-private-arm64-announcement.html": {
+      "url": "https://github.blog/changelog/2026-01-29-arm64-standard-runners-are-now-available-in-private-repositories/",
+      "fetched_utc": "2026-10-27T11:37:43.965333+00:00",
+      "file": "primary/github-private-arm64-announcement.html",
+      "bytes": 100697,
+      "sha256": "12c7f4616c883725b60ab857f55a5a19810da7e4081cd2484d35b29232ac09a0",
+      "http_receipt": {
+        "file": "primary/github-private-arm64-announcement.html.http.json",
+        "bytes": 2023,
+        "sha256": "a1728c26685f900948f3a3b00d30d34415578c0ab0ba88fdb5a635ecb1aa1142"
+      }
+    },
+    "github-runner-reference.html": {
+      "url": "https://docs.github.com/en/actions/reference/runners/github-hosted-runners",
+      "fetched_utc": "2026-10-27T11:37:43.695968+00:00",
+      "file": "primary/github-runner-reference.html",
+      "bytes": 435475,
+      "sha256": "96c6cf050cb51d8ff42270fcc0c6492e8405ff4c1f2b6a97c6ff993b72804fdd",
+      "http_receipt": {
+        "file": "primary/github-runner-reference.html.http.json",
+        "bytes": 3263,
+        "sha256": "2d6d5e1729c42f8e030d14557654766bac58c3540f8ef957a1f3b30398d0a8d0"
+      }
+    },
+    "github-supported-runners.md": {
+      "url": "https://raw.githubusercontent.com/github/docs/main/data/reusables/actions/supported-github-runners.md",
+      "fetched_utc": "2026-10-27T11:37:43.236743+00:00",
+      "file": "primary/github-supported-runners.md",
+      "bytes": 9087,
+      "sha256": "2c5913f214ddf4991c36bb2ad4928bd8b2c48dbf6b8fb4d7cec4bc3a72bcca5f",
+      "http_receipt": {
+        "file": "primary/github-supported-runners.md.http.json",
+        "bytes": 2271,
+        "sha256": "92e4c8d3f6f076bc9f8c8f352b6f888f5010c56a50168239faf8863b260fe745"
+      }
+    },
+    "github-ubuntu2404-arm64-readme.md": {
+      "url": "https://raw.githubusercontent.com/actions/runner-images/main/images/ubuntu/Ubuntu2404-Arm64-Readme.md",
+      "fetched_utc": "2026-10-27T11:37:43.347468+00:00",
+      "file": "primary/github-ubuntu2404-arm64-readme.md",
+      "bytes": 9783,
+      "sha256": "ce50ab1881ad71ca9ba665f0a87c79e831e9004db5d0e41039076ea188c92a1b",
+      "http_receipt": {
+        "file": "primary/github-ubuntu2404-arm64-readme.md.http.json",
+        "bytes": 2271,
+        "sha256": "d0e968cdae964a576e95a1bb747043a806628628c5c63c1043ba78e19298a510"
+      }
+    },
+    "rust-1.96-bookworm.Dockerfile": {
+      "url": "https://raw.githubusercontent.com/rust-lang/docker-rust/7502a8239b3db41eda6017b17aa50067d140d2a7/stable/bookworm/Dockerfile",
+      "fetched_utc": "2026-10-27T11:37:43.272363+00:00",
+      "file": "primary/rust-1.96-bookworm.Dockerfile",
+      "bytes": 2041,
+      "sha256": "c08a12d5f149e02ed6368524bdf0ad8d4f16efd3dd5fcd20fc4892db6da3af14",
+      "http_receipt": {
+        "file": "primary/rust-1.96-bookworm.Dockerfile.http.json",
+        "bytes": 2317,
+        "sha256": "daadd671e20546bf3eb5d78a9e455ae5cd6a03fe70e730f68e15d4443d039844"
+      }
+    },
+    "rust-1.96-slim-bookworm.Dockerfile": {
+      "url": "https://raw.githubusercontent.com/rust-lang/docker-rust/7502a8239b3db41eda6017b17aa50067d140d2a7/stable/bookworm/slim/Dockerfile",
+      "fetched_utc": "2026-10-27T11:37:43.274897+00:00",
+      "file": "primary/rust-1.96-slim-bookworm.Dockerfile",
+      "bytes": 2308,
+      "sha256": "b9d568dd05265252fd9daa4cf0ca1c70eb7ec439847fb038acc7f64ffa04d20d",
+      "http_receipt": {
+        "file": "primary/rust-1.96-slim-bookworm.Dockerfile.http.json",
+        "bytes": 2325,
+        "sha256": "95f289e72cebe00631e8a45579a34325e6f8bc62e708dc0dfd0c6af8d17d5f19"
+      }
+    },
+    "rust-1.96.0-channel.toml": {
+      "url": "https://static.rust-lang.org/dist/channel-rust-1.96.0.toml",
+      "fetched_utc": "2026-10-27T11:37:43.414444+00:00",
+      "file": "primary/rust-1.96.0-channel.toml",
+      "bytes": 857570,
+      "sha256": "9af50610e1d82699f78a40b985c9277ae1a2c5a0bec86ae430cfe58832038285",
+      "http_receipt": {
+        "file": "primary/rust-1.96.0-channel.toml.http.json",
+        "bytes": 1711,
+        "sha256": "652cc9dadb2ce60aed3aa5e21c3f26c1a81e04d3cf984e21c3a1805b221164db"
+      }
+    },
+    "rust-1.96.0-channel.toml.sha256": {
+      "url": "https://static.rust-lang.org/dist/channel-rust-1.96.0.toml.sha256",
+      "fetched_utc": "2026-10-27T11:37:43.415734+00:00",
+      "file": "primary/rust-1.96.0-channel.toml.sha256",
+      "bytes": 91,
+      "sha256": "058abe0118d4379242da1a3c0eaa3f24cdbbac021fd45ed6585e30a16cb64ebc",
+      "http_receipt": {
+        "file": "primary/rust-1.96.0-channel.toml.sha256.http.json",
+        "bytes": 1737,
+        "sha256": "41f33edf3dd9f2a5e8b648cb7bc05504593ebf49802ad53fec8f24fe7f5f6ea4"
+      }
+    },
+    "synapse-fixed-revision.Dockerfile": {
+      "url": "https://raw.githubusercontent.com/element-hq/synapse/7b10e6b9bc2dacc33f0974c999f640b55ef831bc/docker/Dockerfile",
+      "fetched_utc": "2026-10-27T11:37:43.366897+00:00",
+      "file": "primary/synapse-fixed-revision.Dockerfile",
+      "bytes": 8163,
+      "sha256": "392f7e5ef6c1ef03f5727896fa80edaf1c9ed2223e8edc22dc67c4179577a3ea",
+      "http_receipt": {
+        "file": "primary/synapse-fixed-revision.Dockerfile.http.json",
+        "bytes": 2293,
+        "sha256": "d0563bd1e40e8cab5c1de2fdcd72fb6c18aa85598783455db4e1037d49cc9873"
+      }
+    }
+  },
+  "qualification_executed": false,
+  "promotion_allowed": false
+}

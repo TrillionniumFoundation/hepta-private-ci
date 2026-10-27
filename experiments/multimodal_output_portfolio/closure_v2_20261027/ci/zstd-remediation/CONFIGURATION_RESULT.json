@@ -1,0 +1,30 @@
+{
+  "all_new_cc_calls_other_than_conditional_includes_unchanged": true,
+  "compiled_trace_binaries": 24,
+  "completed_unix": 1793105862.4343896,
+  "configuration_executions": 192,
+  "feature_combinations": 8,
+  "frozen_inputs_sha256": "0a7a4d997483ace237245482cb37ffb7d986c7d9d1b3e72f116c19f8647881fd",
+  "msvc_never_gets_gnu_visibility_flag": true,
+  "new_patch_new_source_applies": true,
+  "new_source_only_change": "ten MSVC include lines",
+  "no_hide_symbols_states": 2,
+  "old_and_new_patched_include_sequences_identical": true,
+  "old_patch_matches_head": true,
+  "old_patch_new_source_rejected": true,
+  "old_patch_old_source_applies": true,
+  "scope": "Host Rust compilation and execution of exact checksum-bound build.rs with recording cc/pkg_config substitutes; no C compilation, no Windows linker, no Bazel or MSVC platform qualification.",
+  "source_sha256": {
+    "new_patched": "b4d324c3020334d34236e5974bbdc9fe7c05b30532d9527910ea8a50e61968b5",
+    "new_pristine": "ff97fca52b72ba76c2c71f0d4ca3475d5fa746e184e7d01c6085f9efee360171",
+    "old_patched": "6abcc4d130ce186c3916ec9ff3490661ac361749a11cf13c76c7cacdcc64e509"
+  },
+  "status": "passed",
+  "target_configurations": [
+    "x86_64-pc-windows-msvc",
+    "aarch64-pc-windows-msvc",
+    "x86_64-pc-windows-gnu",
+    "x86_64-unknown-linux-gnu"
+  ],
+  "upstream_no_hide_symbols_behavior_preserved": true
+}

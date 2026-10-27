@@ -1,0 +1,39 @@
+{
+  "checkpoint_sha256": "0b04447c78e0324c69c0783c1e0c88c83a71df4052eb22d915e849075b6366de",
+  "cpu_seconds": 1.1859456439999998,
+  "final_parameter_sha256": "30dfe90b667ebbb5059b717f67d9dc00d88e9d966f3b8d4555d243e01ad98950",
+  "initial_parameter_sha256": "66687aadf862bd776c8fc18b8e9f8e20089714856ee233b3902a591d0d5f2925",
+  "losses": [
+    {
+      "pixel_MSE": 0.0018469890516861923,
+      "step": 1
+    },
+    {
+      "pixel_MSE": 0.001618183614948153,
+      "step": 100
+    },
+    {
+      "pixel_MSE": 0.0016179064251221316,
+      "step": 200
+    },
+    {
+      "pixel_MSE": 0.0016176920767732809,
+      "step": 300
+    },
+    {
+      "pixel_MSE": 0.0016174738568957704,
+      "step": 400
+    }
+  ],
+  "optimizer_steps": 400,
+  "sampled_training_pixels": 18432,
+  "source_videos": 3,
+  "trainable_parameters": 4,
+  "wall_seconds": 1.1868798719951883,
+  "weights": [
+    1.475124631319269,
+    2.303497395666193,
+    1.8124642292675293,
+    1.0389194619799966
+  ]
+}

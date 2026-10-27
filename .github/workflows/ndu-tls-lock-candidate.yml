@@ -1,0 +1,201 @@
+name: NDU dependency remediation candidate
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/ndu-tls-lock-candidate.yml
+      - scripts/ndu_tls_lock_candidate.py
+      - scripts/ndu_dependency_candidate_common.py
+      - scripts/test_ndu_dependency_candidate.py
+      - scripts/ndu_protocol_fixture_candidate.py
+      - scripts/test_ndu_protocol_fixture_candidate.py
+      - codex-rs/third_party/i18n-config-0.4.8/**
+      - experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/zip-source.patch
+      - experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/zip-source-v2.patch
+      - experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/zip-zstd-manifest.patch
+      - experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/i18n-config-manifest.patch
+      - experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/i18n-config-workspace.patch
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ndu-tls-lock-candidate-${{ github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  generate-reviewable-candidate:
+    # Keep the in-flight ZIP/protocol qualification tied to its reviewed source.
+    # Later port candidates have their own workflow and must not duplicate it.
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.sha == '88bcc7f92b9a52bf77e0095614fd496288b6ca86'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    outputs:
+      source_commit: ${{ steps.generate.outputs.source_commit }}
+      result_sha256: ${{ steps.generate.outputs.result_sha256 }}
+      artifact_name: ndu-dependency-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Check out the reviewed source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Test artifact binding and failure evidence
+        run: python3 -m unittest discover -s scripts -p 'test_ndu_*candidate.py' -v
+
+      - name: Prepare the pinned Bazel tools
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: ndu-dependency-candidate
+
+      - name: Install the repository Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+
+      - name: Apply fixed source and manifest patches and resolve both locks
+        id: generate
+        env:
+          CARGO_TERM_COLOR: never
+          EXPECTED_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: >-
+          python3 scripts/ndu_tls_lock_candidate.py
+          --mode generate
+          --repository "$GITHUB_WORKSPACE"
+          --expected-source "$EXPECTED_SOURCE"
+          --output "$RUNNER_TEMP/ndu-dependency-candidate"
+
+      - name: Retain candidates and any resolver failures
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-dependency-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-dependency-candidate
+          if-no-files-found: error
+          retention-days: 21
+
+  protocol-fixture-candidate:
+    needs: generate-reviewable-candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      CARGO_TERM_COLOR: never
+      CARGO_BUILD_JOBS: 2
+      CARGO_INCREMENTAL: 0
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+    steps:
+      - name: Check out the exact producer source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup-ci
+
+      - name: Install Linux build prerequisites
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libcap-dev bubblewrap
+
+      - name: Install the repository Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+
+      - name: Install the same nextest version as normal platform CI
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest
+          version: 0.9.103
+
+      - name: Download the single producer artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ${{ needs.generate-reviewable-candidate.outputs.artifact_name }}
+          path: ${{ runner.temp }}/ndu-dependency-candidate
+
+      - name: Regenerate derived protocol files and run unchanged regressions
+        env:
+          EXPECTED_SOURCE: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          EXPECTED_RESULT_SHA256: ${{ needs.generate-reviewable-candidate.outputs.result_sha256 }}
+        run: >-
+          python3 scripts/ndu_protocol_fixture_candidate.py
+          --repository "$GITHUB_WORKSPACE"
+          --expected-source "$EXPECTED_SOURCE"
+          --candidate "$RUNNER_TEMP/ndu-dependency-candidate"
+          --expected-result-sha256 "$EXPECTED_RESULT_SHA256"
+          --output "$RUNNER_TEMP/ndu-protocol-fixture-candidate"
+
+      - name: Retain generated artifacts and every attempted regression
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-protocol-fixture-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-protocol-fixture-candidate
+          if-no-files-found: error
+          retention-days: 21
+
+  targeted-workspace-tests:
+    needs: generate-reviewable-candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [plugins, storage, core]
+    env:
+      CARGO_TERM_COLOR: never
+      CARGO_BUILD_JOBS: 2
+      CARGO_INCREMENTAL: 0
+    steps:
+      - name: Check out the exact producer source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup-ci
+
+      - name: Install Linux build prerequisites
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libcap-dev bubblewrap
+
+      - name: Install the repository Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+
+      - name: Install the same nextest version as normal platform CI
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest
+          version: 0.9.103
+
+      - name: Download the single producer artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ${{ needs.generate-reviewable-candidate.outputs.artifact_name }}
+          path: ${{ runner.temp }}/ndu-dependency-candidate
+
+      - name: Verify source and artifact hashes then run actual workspace regressions
+        env:
+          EXPECTED_SOURCE: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
+          EXPECTED_RESULT_SHA256: ${{ needs.generate-reviewable-candidate.outputs.result_sha256 }}
+          TEST_GROUP: ${{ matrix.group }}
+        run: >-
+          python3 scripts/ndu_tls_lock_candidate.py
+          --mode test
+          --repository "$GITHUB_WORKSPACE"
+          --expected-source "$EXPECTED_SOURCE"
+          --candidate "$RUNNER_TEMP/ndu-dependency-candidate"
+          --expected-result-sha256 "$EXPECTED_RESULT_SHA256"
+          --group "$TEST_GROUP"
+          --output "$RUNNER_TEMP/ndu-dependency-tests-$TEST_GROUP"
+
+      - name: Retain every attempted test status and log
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-dependency-tests-${{ matrix.group }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-dependency-tests-${{ matrix.group }}
+          if-no-files-found: error
+          retention-days: 21

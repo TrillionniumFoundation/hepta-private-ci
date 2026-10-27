@@ -1,0 +1,96 @@
+{
+  "schema": "hepta.integrated-preformat.tests.v1",
+  "started_at": "2026-10-27T13:03:35.855885+00:00",
+  "frozen_inputs": {
+    "bytes": 9781,
+    "sha256": "f6c2734ab57df8620fd485e67aa2c04769117e488f9cb511757d1afe735478f2",
+    "mode": "0o644"
+  },
+  "commands": [
+    {
+      "group": "port",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_ndu_port*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.385396429002867,
+      "expected_tests": 25,
+      "reported_test_counts": [
+        "25"
+      ],
+      "passed": true,
+      "log": {
+        "bytes": 11487,
+        "sha256": "c167738dc6216e90a9505d9c8a985a18cf5bf9736bccc0746132961d3551cb88",
+        "mode": "0o644"
+      }
+    },
+    {
+      "group": "linux",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse",
+        "-t",
+        "codex-rs/hepta-matrixd/tests/fixtures",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.978092256991658,
+      "expected_tests": 17,
+      "reported_test_counts": [
+        "17"
+      ],
+      "passed": true,
+      "log": {
+        "bytes": 2855,
+        "sha256": "760e8b570532ad9889855f66f25434795af44cf703d88b3b9fe6b4b0b8ab743f",
+        "mode": "0o644"
+      }
+    },
+    {
+      "group": "post-fix",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_ndu_post_qualification_fix.py",
+        "-v"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 0.7939137170033064,
+      "expected_tests": 12,
+      "reported_test_counts": [
+        "12"
+      ],
+      "passed": false,
+      "log": {
+        "bytes": 12153,
+        "sha256": "ac0561f4dc816798aa2b93e6c0d3e6c1650dc01ce1705ffa88cb4e335e113966",
+        "mode": "0o644"
+      }
+    }
+  ],
+  "finished_at": "2026-10-27T13:03:44.019741+00:00",
+  "source_unchanged": true,
+  "actual_tests": 54,
+  "status": "failed",
+  "scope": "Real Python, temporary Git and local Unix-socket regressions. No Docker/ARM/native business, Rust Clippy or new scientific qualification is claimed."
+}

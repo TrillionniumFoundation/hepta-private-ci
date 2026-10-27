@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.fixture-directory-source-audit.v1",
+  "status": "all_observed_fixture_directories_are_required_file_ancestors",
+  "old_result_sha256": "b3a732c86a7d1574b09c6388cea9574f456bb731f859dbbd95bfab6efe7fe5c6",
+  "compiled_source_archive": {
+    "bytes": 29784648,
+    "sha256": "a51d30988f1e1561df2b1a4bba668af4d7cc75c60a95874bb2f44ae7b8c81710"
+  },
+  "retained_old_source": {
+    "codex-rs/hepta-matrix-sdk/src/config.rs": {
+      "bytes": 3496,
+      "sha256": "06c09a5273903b65a00c156ea92b5155bde18a39456d67f2cf6efa183b74daab",
+      "local": "/workspace/scratch/95988d8d3ab1/ndu-matrix-gap-fill-019-001/empty-directory-audit-001/old-compiled-source/codex-rs/hepta-matrix-sdk/src/config.rs.txt"
+    },
+    "codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs": {
+      "bytes": 10207,
+      "sha256": "bed1d7e870e9cca66518985ebd34ccbc0562216ebbb86e0a95f81a4a08bbbe5c",
+      "local": "/workspace/scratch/95988d8d3ab1/ndu-matrix-gap-fill-019-001/empty-directory-audit-001/old-compiled-source/codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs.txt"
+    },
+    "codex-rs/hepta-matrix-store/src/store.rs": {
+      "bytes": 151045,
+      "sha256": "8264b8de5dbca3d5fa1048092978c89b765e0e2d5ca2f32322aab4601f282598",
+      "local": "/workspace/scratch/95988d8d3ab1/ndu-matrix-gap-fill-019-001/empty-directory-audit-001/old-compiled-source/codex-rs/hepta-matrix-store/src/store.rs.txt"
+    },
+    "codex-rs/hepta-paths/src/fleet.rs": {
+      "bytes": 9841,
+      "sha256": "b2e9e821ec1bfc76a959b1fbd2cc971b7c45c47539eb2db80b6a1b86f731b9b1",
+      "local": "/workspace/scratch/95988d8d3ab1/ndu-matrix-gap-fill-019-001/empty-directory-audit-001/old-compiled-source/codex-rs/hepta-paths/src/fleet.rs.txt"
+    }
+  },
+  "file_count": 9,
+  "directory_count": 7,
+  "directory_files": {
+    "fleet": 8,
+    "fleet/agents": 8,
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12": 8,
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix": 8,
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18": 7,
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache": 2,
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state": 4
+  },
+  "pinned_upload_source": {
+    "url": "https://github.com/actions/upload-artifact/blob/bbbca2ddaa5d8feaa63e36b76fdaad77386f024f/src/shared/search.ts",
+    "sha256": "4cbd489c239640073ee1bd17b9f941aabcf34cb7f41d68edd2264ee0438174e9"
+  },
+  "limits": [
+    "Pinned uploader filters all directory entries, including empty directories.",
+    "All seven observed downloaded fixture directories are ancestors of the nine byte-bound producer files; this observed fixture has no empty directory requiring transfer.",
+    "Historical producer v1 did not record its original directory set or modes, so the ZIP cannot prove that an unobserved empty directory never existed before upload.",
+    "Source audit and observed membership do not replace the new v2 manifest end-to-end CI check; a missing producer directory causes a fail-closed rejection."
+  ],
+  "helper_changed": false,
+  "rust_test_execution": false
+}

@@ -1,0 +1,95 @@
+{
+  "status": "Bazel BUILD repair prepared; Bazel and Rust execution remain pending",
+  "supersedes_vendor_bundle": "matrix-vendor.tar.gz",
+  "old_vendor_sha256": "2dd85d6c71f9174253f48242d82a1a71b5a03ab2c16864de6a9a7f246b9848a4",
+  "base_patchset_sha256": "6c66f6c927f9210b934bd5fe0047d4a45086a4cf8be6193bc300a1aa3795d6ac",
+  "cause": "The v1 codex_rust_crate wrapper had empty crate_features and generated upstream dev-test targets. Cargo features were not inherited.",
+  "repair": "Explicit production rust_library targets, SDK cargo_build_script, version 0.19.1 for every target, native/SQLite/HTTPS feature lists, proc-macro dependencies, compile-time assets, no upstream dev-test targets.",
+  "rules": {
+    "matrix-sdk-build-script": {
+      "kind": "cargo_build_script",
+      "features": [
+        "e2e-encryption",
+        "rustls-aws-lc-rs",
+        "sqlite"
+      ],
+      "version": "0.19.1"
+    },
+    "matrix-sdk": {
+      "kind": "rust_library",
+      "features": [
+        "e2e-encryption",
+        "rustls-aws-lc-rs",
+        "sqlite"
+      ],
+      "version": "0.19.1"
+    },
+    "matrix-sdk-sqlite": {
+      "kind": "rust_library",
+      "features": [
+        "crypto-store",
+        "event-cache-store",
+        "media-store",
+        "state-store"
+      ],
+      "version": "0.19.1"
+    }
+  },
+  "changed_files": [
+    {
+      "path": "codex-rs/third_party/matrix-sdk-0.19.1/BUILD.bazel",
+      "before_sha256": "77a9957a6f7295fcde1af80aa349a9b24afcb9b9baa710ab34845396b6431f3e",
+      "after_sha256": "e186f8131ffc1b33351a571a29d52f58b0966e69e88ea9c409d187ad57b02ac1"
+    },
+    {
+      "path": "codex-rs/third_party/matrix-sdk-sqlite-0.19.1/BUILD.bazel",
+      "before_sha256": "fcb58619c7913bddb70ba41695a0ff8feb8c7f6c2728eb2b9e6a8aabe1f02467",
+      "after_sha256": "403d7d851482c801d15468bd2ae406abafa277dcd61d06452365dc234d735b27"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "matrix-bazel-build-v2.patch",
+      "bytes": 3128,
+      "sha256": "67d06ca2707a5bff7ef464c42174695d95040230a866dbba8532ffeee8114c66"
+    },
+    {
+      "path": "matrix-vendor-v2.tar.gz",
+      "bytes": 1150271,
+      "sha256": "10c22bd676feba90ea34a12b9a0212a5c0484aff98a44e78b1979e5c6affb350"
+    },
+    {
+      "path": "VENDOR_INVENTORY_V2.json",
+      "bytes": 90516,
+      "sha256": "0101e3e2779d0caa5c4d4fd36dbdc798c4b7ba64c818d4e7702738049808e70d"
+    }
+  ],
+  "full_vendor_restore_members": 286,
+  "unmodified_non_BUILD_members": 284,
+  "feature_check": "Static declared Cargo dependency/feature expansion only; compare against actual resolved metadata when candidate runs.",
+  "patch_application_commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-bazel-build-v2.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-bazel-build-v2.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "rust_executed": false,
+  "bazel_analysis_executed": false
+}

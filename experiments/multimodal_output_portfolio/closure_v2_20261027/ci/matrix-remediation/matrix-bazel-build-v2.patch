@@ -1,0 +1,88 @@
+diff --git a/codex-rs/third_party/matrix-sdk-0.19.1/BUILD.bazel b/codex-rs/third_party/matrix-sdk-0.19.1/BUILD.bazel
+--- a/codex-rs/third_party/matrix-sdk-0.19.1/BUILD.bazel
++++ b/codex-rs/third_party/matrix-sdk-0.19.1/BUILD.bazel
+@@ -1,8 +1,45 @@
+-load("//:defs.bzl", "codex_rust_crate")
++load("@crates//:defs.bzl", "all_crate_deps")
++load("@rules_rust//cargo/private:cargo_build_script_wrapper.bzl", "cargo_build_script")
++load("@rules_rust//rust:defs.bzl", "rust_library")
+ 
+-codex_rust_crate(
++_SDK_FEATURES = [
++    "e2e-encryption",
++    "rustls-aws-lc-rs",
++    "sqlite",
++]
++
++filegroup(
++    name = "package-files",
++    srcs = glob(["**"], exclude = ["BUILD.bazel", "target/**"]),
++    visibility = ["//visibility:public"],
++)
++
++cargo_build_script(
++    name = "matrix-sdk-build-script",
++    srcs = ["build.rs"],
++    crate_features = _SDK_FEATURES,
++    crate_name = "build_script_build",
++    crate_root = "build.rs",
++    edition = "2024",
++    pkg_name = "matrix-sdk",
++    version = "0.19.1",
++    visibility = ["//visibility:private"],
++    deps = all_crate_deps(build = True),
++)
++
++# These are the production features requested by the first-party Cargo
++# dependency. Keep the first-party migration tests in their workspace crate;
++# this nonmember vendor does not have a resolved upstream dev-dependency graph.
++rust_library(
+     name = "matrix-sdk",
++    srcs = glob(["src/**/*.rs"]),
+     compile_data = glob(["README.md", "src/**/*.md", ".cargo/mermaid.html"]),
+-    crate_edition = "2024",
++    crate_features = _SDK_FEATURES,
+     crate_name = "matrix_sdk",
++    crate_root = "src/lib.rs",
++    edition = "2024",
++    version = "0.19.1",
++    visibility = ["//visibility:public"],
++    deps = all_crate_deps() + [":matrix-sdk-build-script"],
++    proc_macro_deps = all_crate_deps(proc_macro = True),
+ )
+diff --git a/codex-rs/third_party/matrix-sdk-sqlite-0.19.1/BUILD.bazel b/codex-rs/third_party/matrix-sdk-sqlite-0.19.1/BUILD.bazel
+--- a/codex-rs/third_party/matrix-sdk-sqlite-0.19.1/BUILD.bazel
++++ b/codex-rs/third_party/matrix-sdk-sqlite-0.19.1/BUILD.bazel
+@@ -1,8 +1,29 @@
+-load("//:defs.bzl", "codex_rust_crate")
++load("@crates//:defs.bzl", "all_crate_deps")
++load("@rules_rust//rust:defs.bzl", "rust_library")
+ 
+-codex_rust_crate(
++filegroup(
++    name = "package-files",
++    srcs = glob(["**"], exclude = ["BUILD.bazel", "target/**"]),
++    visibility = ["//visibility:public"],
++)
++
++# Match the stores selected by matrix-sdk/e2e-encryption and matrix-sdk/sqlite.
++# Upstream dev-tests are not emitted into the ordinary Bazel //... graph.
++rust_library(
+     name = "matrix-sdk-sqlite",
++    srcs = glob(["src/**/*.rs"]),
+     compile_data = glob(["migrations/**/*.sql"]),
+-    crate_edition = "2024",
++    crate_features = [
++        "crypto-store",
++        "event-cache-store",
++        "media-store",
++        "state-store",
++    ],
+     crate_name = "matrix_sdk_sqlite",
++    crate_root = "src/lib.rs",
++    edition = "2024",
++    version = "0.19.1",
++    visibility = ["//visibility:public"],
++    deps = all_crate_deps(),
++    proc_macro_deps = all_crate_deps(proc_macro = True),
+ )

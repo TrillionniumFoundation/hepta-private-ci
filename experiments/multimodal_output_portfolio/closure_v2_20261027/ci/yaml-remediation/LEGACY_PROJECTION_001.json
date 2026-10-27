@@ -1,0 +1,15 @@
+{
+  "exit_code": 100,
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-utils-yaml",
+    "-E",
+    "test(legacy_parser_projection_boundaries)",
+    "--success-output",
+    "immediate"
+  ],
+  "test_only_old_parser": "serde_yaml=0.9.34+deprecated; never a production candidate dependency",
+  "log_sha256": "0d59078e2b07f4c5d765fd0e2c351876d9ef7ddbb0dc5924d9000e10202ea5af"
+}

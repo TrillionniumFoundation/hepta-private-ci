@@ -1,0 +1,97 @@
+{
+  "schema": "hepta.ndu.v5-final-review.v1",
+  "time": "2026-10-27T15:58:12.743088+00:00",
+  "status": "source_review_and_formatter_passed_remote_qualification_pending",
+  "initial_auditor_failure": "All source/tree/vendor assertions passed; the independent auditor looked for nonexistent DEFAULT_RECIPE instead of actual RECIPE. No candidate source was changed. Original failure and executed auditor retained; corrected attempt 002 passed.",
+  "recovered_redundant_raw_exports": [
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/candidate/proposed-sdk.rs",
+      "formatter_output": {
+        "bytes": 28070,
+        "sha256": "c5afe9f60d67016cb7d281eb74fb91b4c734cb424a88f181bfc0469b4e72f41c"
+      },
+      "retained_original": {
+        "original_manifest_path": "candidate/proposed-sdk.rs",
+        "repository_export_path": "candidate/proposed-sdk.rs.txt",
+        "bytes": 28070,
+        "sha256": "8f6ed35c3a360da6893758c5bb7f357f5dd3b880e8008bd84c9983f1c61078d5",
+        "mode": "0o644"
+      }
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/candidate/source-before-sdk.rs",
+      "formatter_output": {
+        "bytes": 25629,
+        "sha256": "76d9e7c8ac017656fb46fe2346265a818453835884ab3c4842f33fcc44dbd8cd"
+      },
+      "retained_original": {
+        "original_manifest_path": "candidate/source-before-sdk.rs",
+        "repository_export_path": "candidate/source-before-sdk.rs.txt",
+        "bytes": 25629,
+        "sha256": "6cc077a47917da7ff7c261de2b77b61bcddd3caf24c4cec868eb513ffb33c3b4",
+        "mode": "0o644"
+      }
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/candidate/startup_deadline_tests.rs",
+      "formatter_output": {
+        "bytes": 3181,
+        "sha256": "580574f586b65b230250c6393bb4d72da6fc5a5c11faff214fe4155d96e1e3e0"
+      },
+      "retained_original": {
+        "original_manifest_path": "candidate/startup_deadline_tests.rs",
+        "repository_export_path": "candidate/startup_deadline_tests.rs.txt",
+        "bytes": 3181,
+        "sha256": "499c164c841a64c8f9ba6e7c917fb3e7ac5cc713b159cf2558b70512dc1f1849",
+        "mode": "0o644"
+      }
+    }
+  ],
+  "raw_export_note": "Workspace synchronization re-created three redundant .rs exports after earlier rename. Final formatter modified only those redundant copies. Original immutable .rs.txt exports and both formatter snapshots are intact; redundant .rs outputs are excluded from publication. Original manifests resolve through the retained name map.",
+  "python_formatter_ast_unchanged": true,
+  "scientific_baseline_six_files_unchanged": true,
+  "actual_new_rust_execution": false,
+  "new_behavioral_tests_after_final_formatter": false,
+  "receipts": {
+    "ROOT_AUDIT_ATTEMPT_001.json": {
+      "bytes": 39564,
+      "sha256": "04301f0f1113ad921be65c55e307e8704fbb7d143d80fc1d11eb2de7c8d42d0f"
+    },
+    "root-audit-attempt-001.py.txt": {
+      "bytes": 7779,
+      "sha256": "682d6626ddc972675ea34fa543adf56b870e586cfd559cd6d4c71d02b7dd15c0"
+    },
+    "ROOT_AUDIT_V5.json": {
+      "bytes": 64066,
+      "sha256": "ae5cfb62e17e4deb9aec92fbc27b2c55de06bf0927ff0175000ce29fb3b87a7a"
+    },
+    "root-audit-v5.py.txt": {
+      "bytes": 7783,
+      "sha256": "e3bc1ada991a6bbe424ac5b9fde3ea4af3d56876341a94035d9d18e8d2de8764"
+    },
+    "FINAL_FORMAT_V5.json": {
+      "bytes": 17363,
+      "sha256": "9ee2cdbf961d998a867d53bec52fe5adb3625f20d6fb9daebf651aa7764e8509"
+    },
+    "executed-final-format-v5.py.txt": {
+      "bytes": 5455,
+      "sha256": "e0ba416b485adcb0f9ece951dc1bc65054194f5c44d94b0ea7e46342fd4b677e"
+    },
+    "repository-just-fmt.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "workflow-format.log": {
+      "bytes": 58,
+      "sha256": "6932a30b5f3af25bdacc11e98f14acffff49500dc225ef9a5aff2d3955c3609f"
+    },
+    "native-python-format.log": {
+      "bytes": 24,
+      "sha256": "8548a2eb66b720028f4698e500fab8b82fabbe0340c3708d7b3979dadea82629"
+    },
+    "REMOTE_3A779A6_COMPLETED.json": {
+      "bytes": 34882,
+      "sha256": "a728960c536277dfd30b65b38c9256afa9cdae94fb531705abb30f33f395bf84"
+    }
+  }
+}

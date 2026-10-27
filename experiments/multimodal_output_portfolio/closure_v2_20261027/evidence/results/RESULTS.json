@@ -1,0 +1,1602 @@
+{
+  "actual_alias_checks": 240,
+  "actual_delivered_transcripts": 115200,
+  "distinct_event_comparisons": {
+    "paired": {
+      "accuracy": {
+        "ci97_5": [
+          0.0,
+          0.0
+        ],
+        "difference": 0.0
+      },
+      "actual_output_gain": false,
+      "both_gates_passed": false,
+      "conditional_likelihood_gain": false,
+      "conditional_nll": {
+        "ci97_5": [
+          -0.00942209693068413,
+          0.00786979059234669
+        ],
+        "difference": -0.0004960998613322368
+      },
+      "posterior_nll": {
+        "ci97_5": [
+          -0.0059788325207026346,
+          0.009523183916377546
+        ],
+        "difference": 0.002183585275296255
+      }
+    },
+    "speaker_mixture": {
+      "accuracy": {
+        "ci97_5": [
+          0.0,
+          0.0
+        ],
+        "difference": 0.0
+      },
+      "actual_output_gain": false,
+      "both_gates_passed": false,
+      "conditional_likelihood_gain": false,
+      "conditional_nll": {
+        "ci97_5": [
+          -0.014717700927537885,
+          0.00020996276265922823
+        ],
+        "difference": -0.006885482484176568
+      },
+      "posterior_nll": {
+        "ci97_5": [
+          -0.009613150160960983,
+          0.0013289453994799973
+        ],
+        "difference": -0.003971355881034182
+      }
+    }
+  },
+  "gates": {
+    "all_constructed_correlated_prior_output_gains": true,
+    "any_distinct_model_both_gates": false,
+    "same_event_both_gates": false
+  },
+  "models": {
+    "pair_independent": {
+      "by_speaker": {
+        "21": {
+          "accuracy": 0.4145,
+          "conditional_nll": 1.6549468461041026,
+          "posterior_nll": 2.0655944002229374
+        },
+        "22": {
+          "accuracy": 0.408,
+          "conditional_nll": 2.2362143076346945,
+          "posterior_nll": 2.5016305288207077
+        },
+        "23": {
+          "accuracy": 0.5535,
+          "conditional_nll": 1.8960545802823603,
+          "posterior_nll": 1.8060647381874624
+        },
+        "24": {
+          "accuracy": 0.473,
+          "conditional_nll": 1.5120888853646368,
+          "posterior_nll": 1.9093395723582185
+        },
+        "25": {
+          "accuracy": 0.62,
+          "conditional_nll": 1.3323062027073185,
+          "posterior_nll": 1.39960361718311
+        },
+        "26": {
+          "accuracy": 0.396,
+          "conditional_nll": 2.3167938372080203,
+          "posterior_nll": 2.331949749269852
+        },
+        "27": {
+          "accuracy": 0.449,
+          "conditional_nll": 1.8046207494531374,
+          "posterior_nll": 2.133085110917381
+        },
+        "28": {
+          "accuracy": 0.4055,
+          "conditional_nll": 2.368734687807597,
+          "posterior_nll": 2.534888513231923
+        },
+        "29": {
+          "accuracy": 0.592,
+          "conditional_nll": 1.4499110575525813,
+          "posterior_nll": 1.5426239252757747
+        },
+        "30": {
+          "accuracy": 0.7005,
+          "conditional_nll": 1.3784430917356147,
+          "posterior_nll": 1.389324012729026
+        },
+        "31": {
+          "accuracy": 0.7655,
+          "conditional_nll": 1.2145509881068117,
+          "posterior_nll": 1.160392239698567
+        },
+        "32": {
+          "accuracy": 0.5555,
+          "conditional_nll": 1.839903835746478,
+          "posterior_nll": 1.69994447174232
+        }
+      },
+      "derived_rows": 24000,
+      "means": {
+        "accuracy": 0.52775,
+        "conditional_nll": 1.7503807558086129,
+        "posterior_nll": 1.8728700733031067
+      },
+      "source_count": 12
+    },
+    "pair_paired": {
+      "by_speaker": {
+        "21": {
+          "accuracy": 0.4145,
+          "conditional_nll": 1.6671862481773014,
+          "posterior_nll": 2.0764402255084375
+        },
+        "22": {
+          "accuracy": 0.408,
+          "conditional_nll": 2.249981074712189,
+          "posterior_nll": 2.514207081465026
+        },
+        "23": {
+          "accuracy": 0.5535,
+          "conditional_nll": 1.8930735064333526,
+          "posterior_nll": 1.8070246238644498
+        },
+        "24": {
+          "accuracy": 0.473,
+          "conditional_nll": 1.4974316935540752,
+          "posterior_nll": 1.8966976377394902
+        },
+        "25": {
+          "accuracy": 0.62,
+          "conditional_nll": 1.3305582724779912,
+          "posterior_nll": 1.3991753754235745
+        },
+        "26": {
+          "accuracy": 0.396,
+          "conditional_nll": 2.3088271624591976,
+          "posterior_nll": 2.338139249077544
+        },
+        "27": {
+          "accuracy": 0.449,
+          "conditional_nll": 1.8166793902171459,
+          "posterior_nll": 2.1426537415349225
+        },
+        "28": {
+          "accuracy": 0.4055,
+          "conditional_nll": 2.388907641497797,
+          "posterior_nll": 2.5572394446373643
+        },
+        "29": {
+          "accuracy": 0.592,
+          "conditional_nll": 1.4542822056154425,
+          "posterior_nll": 1.5478802113846915
+        },
+        "30": {
+          "accuracy": 0.7005,
+          "conditional_nll": 1.3604947719913976,
+          "posterior_nll": 1.3744641169706244
+        },
+        "31": {
+          "accuracy": 0.7655,
+          "conditional_nll": 1.1886175250133915,
+          "posterior_nll": 1.1390252427318317
+        },
+        "32": {
+          "accuracy": 0.5555,
+          "conditional_nll": 1.842576379218085,
+          "posterior_nll": 1.707696952602879
+        }
+      },
+      "derived_rows": 24000,
+      "means": {
+        "accuracy": 0.52775,
+        "conditional_nll": 1.7498846559472805,
+        "posterior_nll": 1.8750536585784034
+      },
+      "source_count": 12
+    },
+    "pair_speaker_mixture": {
+      "by_speaker": {
+        "21": {
+          "accuracy": 0.4145,
+          "conditional_nll": 1.6641196799003592,
+          "posterior_nll": 2.0735131847366777
+        },
+        "22": {
+          "accuracy": 0.408,
+          "conditional_nll": 2.2396310217662014,
+          "posterior_nll": 2.504415936002567
+        },
+        "23": {
+          "accuracy": 0.5535,
+          "conditional_nll": 1.8925295208198791,
+          "posterior_nll": 1.8064475201363848
+        },
+        "24": {
+          "accuracy": 0.473,
+          "conditional_nll": 1.4977770471081029,
+          "posterior_nll": 1.8969292342950068
+        },
+        "25": {
+          "accuracy": 0.62,
+          "conditional_nll": 1.32797751802,
+          "posterior_nll": 1.3967466488691165
+        },
+        "26": {
+          "accuracy": 0.396,
+          "conditional_nll": 2.287420738154587,
+          "posterior_nll": 2.317717861732249
+        },
+        "27": {
+          "accuracy": 0.449,
+          "conditional_nll": 1.8101690451172536,
+          "posterior_nll": 2.136271052083416
+        },
+        "28": {
+          "accuracy": 0.4055,
+          "conditional_nll": 2.3710499043005404,
+          "posterior_nll": 2.5397647361441438
+        },
+        "29": {
+          "accuracy": 0.592,
+          "conditional_nll": 1.4511727241405645,
+          "posterior_nll": 1.5449583613834201
+        },
+        "30": {
+          "accuracy": 0.7005,
+          "conditional_nll": 1.3622631191226446,
+          "posterior_nll": 1.3760791739024376
+        },
+        "31": {
+          "accuracy": 0.7655,
+          "conditional_nll": 1.190765998887273,
+          "posterior_nll": 1.1411843243398658
+        },
+        "32": {
+          "accuracy": 0.5555,
+          "conditional_nll": 1.827066962555829,
+          "posterior_nll": 1.692756575439585
+        }
+      },
+      "derived_rows": 24000,
+      "means": {
+        "accuracy": 0.52775,
+        "conditional_nll": 1.7434952733244362,
+        "posterior_nll": 1.868898717422072
+      },
+      "source_count": 12
+    },
+    "rank_baseline": {
+      "by_speaker": {
+        "21": {
+          "accuracy": 0.765,
+          "conditional_nll": 2.0330884076935076,
+          "posterior_nll": 0.7820921922522672
+        },
+        "22": {
+          "accuracy": 0.705,
+          "conditional_nll": 2.436760684172309,
+          "posterior_nll": 1.0620349196374599
+        },
+        "23": {
+          "accuracy": 0.79,
+          "conditional_nll": 1.9808421982833593,
+          "posterior_nll": 0.6770139197257643
+        },
+        "24": {
+          "accuracy": 0.785,
+          "conditional_nll": 1.8877030999920155,
+          "posterior_nll": 0.7771907619736317
+        },
+        "25": {
+          "accuracy": 0.845,
+          "conditional_nll": 1.786351506077922,
+          "posterior_nll": 0.4563824011798692
+        },
+        "26": {
+          "accuracy": 0.61,
+          "conditional_nll": 2.3786396447318428,
+          "posterior_nll": 0.9282558809194473
+        },
+        "27": {
+          "accuracy": 0.675,
+          "conditional_nll": 2.2437442123305367,
+          "posterior_nll": 0.9227790189292024
+        },
+        "28": {
+          "accuracy": 0.575,
+          "conditional_nll": 2.3981392061834796,
+          "posterior_nll": 1.0967060901585979
+        },
+        "29": {
+          "accuracy": 0.84,
+          "conditional_nll": 1.8123810742418833,
+          "posterior_nll": 0.4969203805476421
+        },
+        "30": {
+          "accuracy": 0.895,
+          "conditional_nll": 1.8972684268338398,
+          "posterior_nll": 0.4414304433894604
+        },
+        "31": {
+          "accuracy": 0.955,
+          "conditional_nll": 1.5246233947018653,
+          "posterior_nll": 0.25337647425948484
+        },
+        "32": {
+          "accuracy": 0.765,
+          "conditional_nll": 2.09438514125578,
+          "posterior_nll": 0.5990262108534841
+        }
+      },
+      "derived_rows": 2400,
+      "means": {
+        "accuracy": 0.7670833333333333,
+        "conditional_nll": 2.039493916374862,
+        "posterior_nll": 0.7077673911521928
+      },
+      "source_count": 12
+    },
+    "rank_joint": {
+      "by_speaker": {
+        "21": {
+          "accuracy": 0.72,
+          "conditional_nll": 2.026030442624814,
+          "posterior_nll": 0.8178114830957038
+        },
+        "22": {
+          "accuracy": 0.695,
+          "conditional_nll": 2.3446042564893856,
+          "posterior_nll": 1.0193419163624342
+        },
+        "23": {
+          "accuracy": 0.785,
+          "conditional_nll": 1.9079553334496238,
+          "posterior_nll": 0.6824179765211587
+        },
+        "24": {
+          "accuracy": 0.73,
+          "conditional_nll": 1.8287165745633027,
+          "posterior_nll": 0.8142014327393706
+        },
+        "25": {
+          "accuracy": 0.84,
+          "conditional_nll": 1.7728123926340638,
+          "posterior_nll": 0.5169350533132938
+        },
+        "26": {
+          "accuracy": 0.61,
+          "conditional_nll": 2.311910432882073,
+          "posterior_nll": 0.9961724236294168
+        },
+        "27": {
+          "accuracy": 0.64,
+          "conditional_nll": 2.2042925292431743,
+          "posterior_nll": 0.9362066534604915
+        },
+        "28": {
+          "accuracy": 0.565,
+          "conditional_nll": 2.4239837556016495,
+          "posterior_nll": 1.1916189541854671
+        },
+        "29": {
+          "accuracy": 0.8,
+          "conditional_nll": 1.779565065718611,
+          "posterior_nll": 0.5522989421799555
+        },
+        "30": {
+          "accuracy": 0.9,
+          "conditional_nll": 1.8591531911029122,
+          "posterior_nll": 0.4844284121257868
+        },
+        "31": {
+          "accuracy": 0.945,
+          "conditional_nll": 1.4822969498332794,
+          "posterior_nll": 0.29645121675245323
+        },
+        "32": {
+          "accuracy": 0.75,
+          "conditional_nll": 2.0487458643559897,
+          "posterior_nll": 0.6357829553849009
+        }
+      },
+      "derived_rows": 2400,
+      "means": {
+        "accuracy": 0.7483333333333332,
+        "conditional_nll": 1.9991722323749066,
+        "posterior_nll": 0.7453056183125361
+      },
+      "source_count": 12
+    }
+  },
+  "observer_accuracy": 0.7220833333333333,
+  "post_test_selection_changes": 0,
+  "prior_comparisons": {
+    "plus1": {
+      "accuracy": {
+        "ci97_5": [
+          0.13166666666666663,
+          0.2183333333333333
+        ],
+        "difference": 0.17694444444444443
+      },
+      "actual_output_gain": true,
+      "both_gates_passed": true,
+      "conditional_likelihood_gain": true,
+      "conditional_nll": {
+        "ci97_5": [
+          -1.1730043528976675,
+          -1.0625922579033122
+        ],
+        "difference": -1.1158033664421232
+      },
+      "posterior_nll": {
+        "ci97_5": [
+          -0.8112669311382988,
+          -0.6424284760436672
+        ],
+        "difference": -0.7283251635741873
+      }
+    },
+    "plus3": {
+      "accuracy": {
+        "ci97_5": [
+          0.10805555555555557,
+          0.17166666666666666
+        ],
+        "difference": 0.14166666666666664
+      },
+      "actual_output_gain": true,
+      "both_gates_passed": true,
+      "conditional_likelihood_gain": true,
+      "conditional_nll": {
+        "ci97_5": [
+          -1.1516618835621872,
+          -1.0682614288936998
+        ],
+        "difference": -1.1048048854368246
+      },
+      "posterior_nll": {
+        "ci97_5": [
+          -0.7916813302468627,
+          -0.6299678264051396
+        ],
+        "difference": -0.710392323670503
+      }
+    },
+    "plus7": {
+      "accuracy": {
+        "ci97_5": [
+          0.11583333333333339,
+          0.1991666666666667
+        ],
+        "difference": 0.15888888888888894
+      },
+      "actual_output_gain": true,
+      "both_gates_passed": true,
+      "conditional_likelihood_gain": true,
+      "conditional_nll": {
+        "ci97_5": [
+          -1.2212671411654832,
+          -1.102722928863413
+        ],
+        "difference": -1.1652407561432214
+      },
+      "posterior_nll": {
+        "ci97_5": [
+          -0.8610879277928397,
+          -0.6183211066571039
+        ],
+        "difference": -0.7401328260188519
+      }
+    },
+    "uniform": {
+      "accuracy": {
+        "ci97_5": [
+          -0.009722222222222235,
+          0.0019444444444444385
+        ],
+        "difference": -0.003888888888888891
+      },
+      "actual_output_gain": false,
+      "both_gates_passed": false,
+      "conditional_likelihood_gain": false,
+      "conditional_nll": {
+        "ci97_5": [
+          0.0005970985927950691,
+          0.006229839134387507
+        ],
+        "difference": 0.0033132339210277806
+      },
+      "posterior_nll": {
+        "ci97_5": [
+          -0.0014801843904726178,
+          0.005057608994959456
+        ],
+        "difference": 0.0019195693317681783
+      }
+    }
+  },
+  "prior_conditional_nll_field_means": "prior-only target NLL, not observation likelihood",
+  "prior_models": {
+    "plus1": {
+      "factorized": {
+        "by_speaker": {
+          "21": {
+            "accuracy": 0.39666666666666667,
+            "conditional_nll": 4.604584821476478,
+            "posterior_nll": 2.10090086788189
+          },
+          "22": {
+            "accuracy": 0.39,
+            "conditional_nll": 4.603919841332504,
+            "posterior_nll": 2.393253822858944
+          },
+          "23": {
+            "accuracy": 0.5166666666666667,
+            "conditional_nll": 4.603878659741624,
+            "posterior_nll": 1.8035619573252204
+          },
+          "24": {
+            "accuracy": 0.44333333333333336,
+            "conditional_nll": 4.6052585773795345,
+            "posterior_nll": 1.9738214407422867
+          },
+          "25": {
+            "accuracy": 0.6133333333333333,
+            "conditional_nll": 4.60618940304549,
+            "posterior_nll": 1.4211459650795268
+          },
+          "26": {
+            "accuracy": 0.41,
+            "conditional_nll": 4.602933716113187,
+            "posterior_nll": 2.2659143649395794
+          },
+          "27": {
+            "accuracy": 0.42,
+            "conditional_nll": 4.607926221190117,
+            "posterior_nll": 2.2677988674643297
+          },
+          "28": {
+            "accuracy": 0.38333333333333336,
+            "conditional_nll": 4.603788355524059,
+            "posterior_nll": 2.431236469336775
+          },
+          "29": {
+            "accuracy": 0.5433333333333333,
+            "conditional_nll": 4.604343669041597,
+            "posterior_nll": 1.5898012343119239
+          },
+          "30": {
+            "accuracy": 0.7233333333333334,
+            "conditional_nll": 4.607509463439845,
+            "posterior_nll": 1.2709630437152672
+          },
+          "31": {
+            "accuracy": 0.8233333333333334,
+            "conditional_nll": 4.603463375621803,
+            "posterior_nll": 1.0626965208989714
+          },
+          "32": {
+            "accuracy": 0.5633333333333334,
+            "conditional_nll": 4.600760205372309,
+            "posterior_nll": 1.7505730416163374
+          }
+        },
+        "derived_rows": 3600,
+        "means": {
+          "accuracy": 0.5188888888888888,
+          "conditional_nll": 4.604546359106545,
+          "posterior_nll": 1.860972299680921
+        },
+        "source_count": 12
+      },
+      "joint": {
+        "by_speaker": {
+          "21": {
+            "accuracy": 0.6666666666666666,
+            "conditional_nll": 3.5772021897411523,
+            "posterior_nll": 1.400001973577864
+          },
+          "22": {
+            "accuracy": 0.5866666666666667,
+            "conditional_nll": 3.5059589244254568,
+            "posterior_nll": 1.4955076427680694
+          },
+          "23": {
+            "accuracy": 0.71,
+            "conditional_nll": 3.4813121653291548,
+            "posterior_nll": 1.0224225382751175
+          },
+          "24": {
+            "accuracy": 0.67,
+            "conditional_nll": 3.582249872546224,
+            "posterior_nll": 1.2453769405462283
+          },
+          "25": {
+            "accuracy": 0.7966666666666666,
+            "conditional_nll": 3.3895436597314292,
+            "posterior_nll": 0.7645701183137129
+          },
+          "26": {
+            "accuracy": 0.5633333333333334,
+            "conditional_nll": 3.4285396013000375,
+            "posterior_nll": 1.3424286838603543
+          },
+          "27": {
+            "accuracy": 0.57,
+            "conditional_nll": 3.5901611692165107,
+            "posterior_nll": 1.5388478701518218
+          },
+          "28": {
+            "accuracy": 0.6466666666666666,
+            "conditional_nll": 3.4884466195058605,
+            "posterior_nll": 1.5264470275405575
+          },
+          "29": {
+            "accuracy": 0.7733333333333333,
+            "conditional_nll": 3.3630446998729076,
+            "posterior_nll": 0.8560287519240641
+          },
+          "30": {
+            "accuracy": 0.7866666666666666,
+            "conditional_nll": 3.5683146469415608,
+            "posterior_nll": 0.7910013010705721
+          },
+          "31": {
+            "accuracy": 0.87,
+            "conditional_nll": 3.3347768395958806,
+            "posterior_nll": 0.5287451130675159
+          },
+          "32": {
+            "accuracy": 0.71,
+            "conditional_nll": 3.555365523766891,
+            "posterior_nll": 1.0803876721849281
+          }
+        },
+        "derived_rows": 3600,
+        "means": {
+          "accuracy": 0.6958333333333333,
+          "conditional_nll": 3.4887429926644224,
+          "posterior_nll": 1.1326471361067336
+        },
+        "source_count": 12
+      }
+    },
+    "plus3": {
+      "factorized": {
+        "by_speaker": {
+          "21": {
+            "accuracy": 0.47,
+            "conditional_nll": 4.612197612824037,
+            "posterior_nll": 1.964758501518125
+          },
+          "22": {
+            "accuracy": 0.41,
+            "conditional_nll": 4.606535928773857,
+            "posterior_nll": 2.4324534596594356
+          },
+          "23": {
+            "accuracy": 0.54,
+            "conditional_nll": 4.604786789445848,
+            "posterior_nll": 1.7273782586397273
+          },
+          "24": {
+            "accuracy": 0.49333333333333335,
+            "conditional_nll": 4.604200260383229,
+            "posterior_nll": 1.8436431113887366
+          },
+          "25": {
+            "accuracy": 0.6566666666666666,
+            "conditional_nll": 4.6068942726646345,
+            "posterior_nll": 1.3915371984136309
+          },
+          "26": {
+            "accuracy": 0.35333333333333333,
+            "conditional_nll": 4.609926375350257,
+            "posterior_nll": 2.517095307779791
+          },
+          "27": {
+            "accuracy": 0.4166666666666667,
+            "conditional_nll": 4.603025825674437,
+            "posterior_nll": 2.0793875865173166
+          },
+          "28": {
+            "accuracy": 0.39666666666666667,
+            "conditional_nll": 4.611768967545371,
+            "posterior_nll": 2.4241974785916556
+          },
+          "29": {
+            "accuracy": 0.65,
+            "conditional_nll": 4.604700650922783,
+            "posterior_nll": 1.4549699846423727
+          },
+          "30": {
+            "accuracy": 0.7133333333333334,
+            "conditional_nll": 4.60623534346337,
+            "posterior_nll": 1.3462051670320172
+          },
+          "31": {
+            "accuracy": 0.79,
+            "conditional_nll": 4.609067496332783,
+            "posterior_nll": 1.1006548613846503
+          },
+          "32": {
+            "accuracy": 0.53,
+            "conditional_nll": 4.607472001442879,
+            "posterior_nll": 1.6734311441314844
+          }
+        },
+        "derived_rows": 3600,
+        "means": {
+          "accuracy": 0.535,
+          "conditional_nll": 4.60723429373529,
+          "posterior_nll": 1.8296426716415786
+        },
+        "source_count": 12
+      },
+      "joint": {
+        "by_speaker": {
+          "21": {
+            "accuracy": 0.66,
+            "conditional_nll": 3.5279290653850928,
+            "posterior_nll": 1.1733786597123612
+          },
+          "22": {
+            "accuracy": 0.57,
+            "conditional_nll": 3.5046011176802434,
+            "posterior_nll": 1.5382597298219893
+          },
+          "23": {
+            "accuracy": 0.6833333333333333,
+            "conditional_nll": 3.569916083818657,
+            "posterior_nll": 0.9968243424010956
+          },
+          "24": {
+            "accuracy": 0.65,
+            "conditional_nll": 3.5048391640670493,
+            "posterior_nll": 1.2231360962864968
+          },
+          "25": {
+            "accuracy": 0.7866666666666666,
+            "conditional_nll": 3.460109900297257,
+            "posterior_nll": 0.7999507336325794
+          },
+          "26": {
+            "accuracy": 0.54,
+            "conditional_nll": 3.50719548415411,
+            "posterior_nll": 1.625510645830843
+          },
+          "27": {
+            "accuracy": 0.61,
+            "conditional_nll": 3.5518290289319725,
+            "posterior_nll": 1.4308983130857202
+          },
+          "28": {
+            "accuracy": 0.54,
+            "conditional_nll": 3.545372792835746,
+            "posterior_nll": 1.5341891240697176
+          },
+          "29": {
+            "accuracy": 0.7233333333333334,
+            "conditional_nll": 3.576535168275663,
+            "posterior_nll": 0.8253424887615354
+          },
+          "30": {
+            "accuracy": 0.79,
+            "conditional_nll": 3.3231075712871334,
+            "posterior_nll": 0.7355537860423224
+          },
+          "31": {
+            "accuracy": 0.8366666666666667,
+            "conditional_nll": 3.4709383921065062,
+            "posterior_nll": 0.60487147115653
+          },
+          "32": {
+            "accuracy": 0.73,
+            "conditional_nll": 3.4867791307421583,
+            "posterior_nll": 0.9430887848517163
+          }
+        },
+        "derived_rows": 3600,
+        "means": {
+          "accuracy": 0.6766666666666667,
+          "conditional_nll": 3.502429408298466,
+          "posterior_nll": 1.1192503479710756
+        },
+        "source_count": 12
+      }
+    },
+    "plus7": {
+      "factorized": {
+        "by_speaker": {
+          "21": {
+            "accuracy": 0.43333333333333335,
+            "conditional_nll": 4.601528373790989,
+            "posterior_nll": 2.121583351000123
+          },
+          "22": {
+            "accuracy": 0.38333333333333336,
+            "conditional_nll": 4.607999314010449,
+            "posterior_nll": 2.5165604722966752
+          },
+          "23": {
+            "accuracy": 0.49666666666666665,
+            "conditional_nll": 4.6032840440249645,
+            "posterior_nll": 1.8152731088999372
+          },
+          "24": {
+            "accuracy": 0.51,
+            "conditional_nll": 4.612445608440388,
+            "posterior_nll": 1.7710927537245873
+          },
+          "25": {
+            "accuracy": 0.6366666666666667,
+            "conditional_nll": 4.60545770892971,
+            "posterior_nll": 1.332704886234391
+          },
+          "26": {
+            "accuracy": 0.4,
+            "conditional_nll": 4.603155903871637,
+            "posterior_nll": 2.3227076697349625
+          },
+          "27": {
+            "accuracy": 0.42,
+            "conditional_nll": 4.604675142061563,
+            "posterior_nll": 2.1417317210633637
+          },
+          "28": {
+            "accuracy": 0.38333333333333336,
+            "conditional_nll": 4.608869429731083,
+            "posterior_nll": 2.5461756956317423
+          },
+          "29": {
+            "accuracy": 0.6533333333333333,
+            "conditional_nll": 4.607972015958871,
+            "posterior_nll": 1.4582671881274978
+          },
+          "30": {
+            "accuracy": 0.69,
+            "conditional_nll": 4.603637319470321,
+            "posterior_nll": 1.3268895671437848
+          },
+          "31": {
+            "accuracy": 0.7433333333333333,
+            "conditional_nll": 4.605776087035617,
+            "posterior_nll": 1.144213587133396
+          },
+          "32": {
+            "accuracy": 0.58,
+            "conditional_nll": 4.603177923780852,
+            "posterior_nll": 1.5747579340898719
+          }
+        },
+        "derived_rows": 3600,
+        "means": {
+          "accuracy": 0.5275,
+          "conditional_nll": 4.605664905925538,
+          "posterior_nll": 1.8393298279233605
+        },
+        "source_count": 12
+      },
+      "joint": {
+        "by_speaker": {
+          "21": {
+            "accuracy": 0.6966666666666667,
+            "conditional_nll": 3.39114449932277,
+            "posterior_nll": 1.2076406297220301
+          },
+          "22": {
+            "accuracy": 0.54,
+            "conditional_nll": 3.565931214971995,
+            "posterior_nll": 1.6634042956924284
+          },
+          "23": {
+            "accuracy": 0.72,
+            "conditional_nll": 3.413172519515785,
+            "posterior_nll": 1.0532895600744239
+          },
+          "24": {
+            "accuracy": 0.6733333333333333,
+            "conditional_nll": 3.5858941045021093,
+            "posterior_nll": 1.187795196500705
+          },
+          "25": {
+            "accuracy": 0.77,
+            "conditional_nll": 3.396463133154876,
+            "posterior_nll": 0.7350371920584329
+          },
+          "26": {
+            "accuracy": 0.6066666666666667,
+            "conditional_nll": 3.33449328665835,
+            "posterior_nll": 1.3713606156577163
+          },
+          "27": {
+            "accuracy": 0.6333333333333333,
+            "conditional_nll": 3.3704478683656673,
+            "posterior_nll": 1.3289650445310335
+          },
+          "28": {
+            "accuracy": 0.5633333333333334,
+            "conditional_nll": 3.3507564098795233,
+            "posterior_nll": 1.447634042520498
+          },
+          "29": {
+            "accuracy": 0.73,
+            "conditional_nll": 3.540450992870261,
+            "posterior_nll": 0.9034477786102036
+          },
+          "30": {
+            "accuracy": 0.7566666666666667,
+            "conditional_nll": 3.3931301330046266,
+            "posterior_nll": 0.7528293118287505
+          },
+          "31": {
+            "accuracy": 0.79,
+            "conditional_nll": 3.590570613887335,
+            "posterior_nll": 0.7339032648347993
+          },
+          "32": {
+            "accuracy": 0.7566666666666667,
+            "conditional_nll": 3.35263502125449,
+            "posterior_nll": 0.8050570908230882
+          }
+        },
+        "derived_rows": 3600,
+        "means": {
+          "accuracy": 0.6863888888888888,
+          "conditional_nll": 3.440424149782316,
+          "posterior_nll": 1.099197001904509
+        },
+        "source_count": 12
+      }
+    },
+    "uniform": {
+      "factorized": {
+        "by_speaker": {
+          "21": {
+            "accuracy": 0.44,
+            "conditional_nll": 4.607194053112978,
+            "posterior_nll": 2.036398924526953
+          },
+          "22": {
+            "accuracy": 0.4266666666666667,
+            "conditional_nll": 4.606838593548446,
+            "posterior_nll": 2.4779882804126183
+          },
+          "23": {
+            "accuracy": 0.53,
+            "conditional_nll": 4.606857904529334,
+            "posterior_nll": 1.9396205315756825
+          },
+          "24": {
+            "accuracy": 0.45666666666666667,
+            "conditional_nll": 4.607505925600775,
+            "posterior_nll": 1.9525159605052003
+          },
+          "25": {
+            "accuracy": 0.69,
+            "conditional_nll": 4.6058040764673045,
+            "posterior_nll": 1.33299315672101
+          },
+          "26": {
+            "accuracy": 0.4066666666666667,
+            "conditional_nll": 4.60483346251971,
+            "posterior_nll": 2.2467843028482677
+          },
+          "27": {
+            "accuracy": 0.44666666666666666,
+            "conditional_nll": 4.606094076612981,
+            "posterior_nll": 2.267933315639537
+          },
+          "28": {
+            "accuracy": 0.37,
+            "conditional_nll": 4.606776855186195,
+            "posterior_nll": 2.5878983082884464
+          },
+          "29": {
+            "accuracy": 0.62,
+            "conditional_nll": 4.607521396583972,
+            "posterior_nll": 1.484034590561984
+          },
+          "30": {
+            "accuracy": 0.6966666666666667,
+            "conditional_nll": 4.603804060058911,
+            "posterior_nll": 1.4199163492852198
+          },
+          "31": {
+            "accuracy": 0.75,
+            "conditional_nll": 4.607260793864274,
+            "posterior_nll": 1.1790107301712458
+          },
+          "32": {
+            "accuracy": 0.5933333333333334,
+            "conditional_nll": 4.60436331699869,
+            "posterior_nll": 1.635281576665382
+          }
+        },
+        "derived_rows": 3600,
+        "means": {
+          "accuracy": 0.5355555555555556,
+          "conditional_nll": 4.606237876256965,
+          "posterior_nll": 1.8800313356001288
+        },
+        "source_count": 12
+      },
+      "joint": {
+        "by_speaker": {
+          "21": {
+            "accuracy": 0.43,
+            "conditional_nll": 4.612982062795975,
+            "posterior_nll": 2.0423370374896113
+          },
+          "22": {
+            "accuracy": 0.41333333333333333,
+            "conditional_nll": 4.610214729576045,
+            "posterior_nll": 2.4804106075185484
+          },
+          "23": {
+            "accuracy": 0.51,
+            "conditional_nll": 4.616472652636112,
+            "posterior_nll": 1.9478790881988217
+          },
+          "24": {
+            "accuracy": 0.45666666666666667,
+            "conditional_nll": 4.606359152256374,
+            "posterior_nll": 1.952914723828515
+          },
+          "25": {
+            "accuracy": 0.6933333333333334,
+            "conditional_nll": 4.6054845141689995,
+            "posterior_nll": 1.332217845573817
+          },
+          "26": {
+            "accuracy": 0.41,
+            "conditional_nll": 4.602861497986174,
+            "posterior_nll": 2.239156986484139
+          },
+          "27": {
+            "accuracy": 0.45,
+            "conditional_nll": 4.6069002840654765,
+            "posterior_nll": 2.2697481579328316
+          },
+          "28": {
+            "accuracy": 0.36666666666666664,
+            "conditional_nll": 4.604375776424135,
+            "posterior_nll": 2.580730148549348
+          },
+          "29": {
+            "accuracy": 0.6066666666666667,
+            "conditional_nll": 4.6186040863676725,
+            "posterior_nll": 1.4915081820455693
+          },
+          "30": {
+            "accuracy": 0.6966666666666667,
+            "conditional_nll": 4.606963503922036,
+            "posterior_nll": 1.421720450525516
+          },
+          "31": {
+            "accuracy": 0.7633333333333333,
+            "conditional_nll": 4.610659018138438,
+            "posterior_nll": 1.1816129941001554
+          },
+          "32": {
+            "accuracy": 0.5833333333333334,
+            "conditional_nll": 4.612736043798465,
+            "posterior_nll": 1.6431746369358922
+          }
+        },
+        "derived_rows": 3600,
+        "means": {
+          "accuracy": 0.5316666666666666,
+          "conditional_nll": 4.609551110177993,
+          "posterior_nll": 1.8819509049318974
+        },
+        "source_count": 12
+      }
+    }
+  },
+  "same_event_comparison": {
+    "accuracy": {
+      "ci97_5": [
+        -0.03166666666666668,
+        -0.007499999999999997
+      ],
+      "difference": -0.018750000000000006
+    },
+    "actual_output_gain": false,
+    "both_gates_passed": false,
+    "conditional_likelihood_gain": true,
+    "conditional_nll": {
+      "ci97_5": [
+        -0.059334139064945425,
+        -0.019774928160122055
+      ],
+      "difference": -0.04032168399995514
+    },
+    "posterior_nll": {
+      "ci97_5": [
+        0.014828427717765696,
+        0.05751570146133043
+      ],
+      "difference": 0.03753822716034347
+    }
+  },
+  "selective_prediction_diagnostic": {
+    "joint_minus_baseline": {
+      "0": {
+        "ce_gain": false,
+        "certainty_equivalent_gamma2": {
+          "ci97_5": [
+            -0.05551524739251425,
+            -0.013495351088963863
+          ],
+          "difference": -0.032297774368438184
+        },
+        "correct_rate": {
+          "ci97_5": [
+            -0.03250000000000002,
+            -0.009583333333333341
+          ],
+          "difference": -0.02041666666666675
+        },
+        "error_rate": {
+          "ci97_5": [
+            0.007083333333333342,
+            0.03125000000000001
+          ],
+          "difference": 0.018333333333333396
+        },
+        "mean_gain": false,
+        "mean_utility": {
+          "ci97_5": [
+            -0.04811625,
+            -0.013327390624999994
+          ],
+          "difference": -0.029568750000000033
+        },
+        "uncertain_rate": {
+          "ci97_5": [
+            0.0004166666666666667,
+            0.004166666666666667
+          ],
+          "difference": 0.0020833333333333333
+        }
+      },
+      "2": {
+        "ce_gain": false,
+        "certainty_equivalent_gamma2": {
+          "ci97_5": [
+            -0.04165558390306312,
+            0.026592116871860683
+          ],
+          "difference": -0.011519466458491834
+        },
+        "correct_rate": {
+          "ci97_5": [
+            -0.06874999999999999,
+            -0.0062500000000000056
+          ],
+          "difference": -0.036250000000000004
+        },
+        "error_rate": {
+          "ci97_5": [
+            -0.03291666666666667,
+            0.011666666666666667
+          ],
+          "difference": -0.009166666666666698
+        },
+        "mean_gain": false,
+        "mean_utility": {
+          "ci97_5": [
+            -0.06457159375000002,
+            -0.0003524999999999685
+          ],
+          "difference": -0.031348750000000036
+        },
+        "uncertain_rate": {
+          "ci97_5": [
+            0.004166666666666675,
+            0.08333333333333336
+          ],
+          "difference": 0.045416666666666605
+        }
+      }
+    },
+    "map_accuracy_gate_unchanged": true,
+    "models": {
+      "risk_rank_baseline_gamma0": {
+        "by_speaker": {
+          "21": {
+            "correct_rate": 0.765,
+            "error_rate": 0.235,
+            "mean_utility": 0.6375000000000001,
+            "moment2": 0.7573237360744429,
+            "uncertain_rate": 0.0
+          },
+          "22": {
+            "correct_rate": 0.705,
+            "error_rate": 0.295,
+            "mean_utility": 0.5475000000000001,
+            "moment2": 0.9154312676736472,
+            "uncertain_rate": 0.0
+          },
+          "23": {
+            "correct_rate": 0.79,
+            "error_rate": 0.21,
+            "mean_utility": 0.675,
+            "moment2": 0.6914455979081078,
+            "uncertain_rate": 0.0
+          },
+          "24": {
+            "correct_rate": 0.785,
+            "error_rate": 0.215,
+            "mean_utility": 0.6675,
+            "moment2": 0.7046212255413749,
+            "uncertain_rate": 0.0
+          },
+          "25": {
+            "correct_rate": 0.845,
+            "error_rate": 0.15,
+            "mean_utility": 0.760035,
+            "moment2": 0.5376778103026194,
+            "uncertain_rate": 0.005
+          },
+          "26": {
+            "correct_rate": 0.61,
+            "error_rate": 0.39,
+            "mean_utility": 0.4050000000000001,
+            "moment2": 1.1657681927057209,
+            "uncertain_rate": 0.0
+          },
+          "27": {
+            "correct_rate": 0.675,
+            "error_rate": 0.325,
+            "mean_utility": 0.5025000000000001,
+            "moment2": 0.9944850334732493,
+            "uncertain_rate": 0.0
+          },
+          "28": {
+            "correct_rate": 0.575,
+            "error_rate": 0.425,
+            "mean_utility": 0.3525000000000001,
+            "moment2": 1.25799758613859,
+            "uncertain_rate": 0.0
+          },
+          "29": {
+            "correct_rate": 0.84,
+            "error_rate": 0.16,
+            "mean_utility": 0.75,
+            "moment2": 0.5596893215754376,
+            "uncertain_rate": 0.0
+          },
+          "30": {
+            "correct_rate": 0.895,
+            "error_rate": 0.105,
+            "mean_utility": 0.8325,
+            "moment2": 0.4147574176095003,
+            "uncertain_rate": 0.0
+          },
+          "31": {
+            "correct_rate": 0.955,
+            "error_rate": 0.045,
+            "mean_utility": 0.9225,
+            "moment2": 0.25664988601029604,
+            "uncertain_rate": 0.0
+          },
+          "32": {
+            "correct_rate": 0.765,
+            "error_rate": 0.235,
+            "mean_utility": 0.6375000000000001,
+            "moment2": 0.7573237360744429,
+            "uncertain_rate": 0.0
+          }
+        },
+        "certainty_equivalent_gamma2": 0.14310985937908857,
+        "correct_rate": 0.7670833333333333,
+        "error_rate": 0.2325,
+        "mean_utility": 0.64083625,
+        "moment2": 0.7510975675906192,
+        "uncertain_rate": 0.0004166666666666667
+      },
+      "risk_rank_baseline_gamma2": {
+        "by_speaker": {
+          "21": {
+            "correct_rate": 0.59,
+            "error_rate": 0.065,
+            "mean_utility": 0.549915,
+            "moment2": 0.6087947321097584,
+            "uncertain_rate": 0.345
+          },
+          "22": {
+            "correct_rate": 0.565,
+            "error_rate": 0.145,
+            "mean_utility": 0.48453,
+            "moment2": 0.7718675903111564,
+            "uncertain_rate": 0.29
+          },
+          "23": {
+            "correct_rate": 0.66,
+            "error_rate": 0.115,
+            "mean_utility": 0.594075,
+            "moment2": 0.6363971525932479,
+            "uncertain_rate": 0.225
+          },
+          "24": {
+            "correct_rate": 0.56,
+            "error_rate": 0.09,
+            "mean_utility": 0.50745,
+            "moment2": 0.6790126142698094,
+            "uncertain_rate": 0.35
+          },
+          "25": {
+            "correct_rate": 0.74,
+            "error_rate": 0.09,
+            "mean_utility": 0.68619,
+            "moment2": 0.5227818304960384,
+            "uncertain_rate": 0.17
+          },
+          "26": {
+            "correct_rate": 0.445,
+            "error_rate": 0.185,
+            "mean_utility": 0.34509,
+            "moment2": 0.9467085152767464,
+            "uncertain_rate": 0.37
+          },
+          "27": {
+            "correct_rate": 0.525,
+            "error_rate": 0.11,
+            "mean_utility": 0.462555,
+            "moment2": 0.7447343567840252,
+            "uncertain_rate": 0.365
+          },
+          "28": {
+            "correct_rate": 0.44,
+            "error_rate": 0.185,
+            "mean_utility": 0.340125,
+            "moment2": 0.9510482592704622,
+            "uncertain_rate": 0.375
+          },
+          "29": {
+            "correct_rate": 0.67,
+            "error_rate": 0.065,
+            "mean_utility": 0.629355,
+            "moment2": 0.5393588282103047,
+            "uncertain_rate": 0.265
+          },
+          "30": {
+            "correct_rate": 0.8,
+            "error_rate": 0.04,
+            "mean_utility": 0.7711199999999999,
+            "moment2": 0.3823460661759366,
+            "uncertain_rate": 0.16
+          },
+          "31": {
+            "correct_rate": 0.84,
+            "error_rate": 0.02,
+            "mean_utility": 0.82098,
+            "moment2": 0.31228457966800494,
+            "uncertain_rate": 0.14
+          },
+          "32": {
+            "correct_rate": 0.615,
+            "error_rate": 0.165,
+            "mean_utility": 0.5240400000000001,
+            "moment2": 0.7638136849322024,
+            "uncertain_rate": 0.22
+          }
+        },
+        "certainty_equivalent_gamma2": 0.21161420971796988,
+        "correct_rate": 0.6208333333333333,
+        "error_rate": 0.10625000000000001,
+        "mean_utility": 0.55961875,
+        "moment2": 0.6549290175081411,
+        "uncertain_rate": 0.27291666666666675
+      },
+      "risk_rank_joint_gamma0": {
+        "by_speaker": {
+          "21": {
+            "correct_rate": 0.72,
+            "error_rate": 0.28,
+            "mean_utility": 0.5700000000000001,
+            "moment2": 0.8759043847738461,
+            "uncertain_rate": 0.0
+          },
+          "22": {
+            "correct_rate": 0.69,
+            "error_rate": 0.3,
+            "mean_utility": 0.53007,
+            "moment2": 0.937286383294346,
+            "uncertain_rate": 0.01
+          },
+          "23": {
+            "correct_rate": 0.785,
+            "error_rate": 0.215,
+            "mean_utility": 0.6675,
+            "moment2": 0.7046212255413749,
+            "uncertain_rate": 0.0
+          },
+          "24": {
+            "correct_rate": 0.73,
+            "error_rate": 0.27,
+            "mean_utility": 0.5850000000000001,
+            "moment2": 0.8495531295073121,
+            "uncertain_rate": 0.0
+          },
+          "25": {
+            "correct_rate": 0.835,
+            "error_rate": 0.16,
+            "mean_utility": 0.745035,
+            "moment2": 0.5640290655691533,
+            "uncertain_rate": 0.005
+          },
+          "26": {
+            "correct_rate": 0.61,
+            "error_rate": 0.39,
+            "mean_utility": 0.4050000000000001,
+            "moment2": 1.1657681927057209,
+            "uncertain_rate": 0.0
+          },
+          "27": {
+            "correct_rate": 0.64,
+            "error_rate": 0.355,
+            "mean_utility": 0.4525350000000001,
+            "moment2": 1.0778785432665674,
+            "uncertain_rate": 0.005
+          },
+          "28": {
+            "correct_rate": 0.565,
+            "error_rate": 0.435,
+            "mean_utility": 0.3375000000000001,
+            "moment2": 1.2843488414051243,
+            "uncertain_rate": 0.0
+          },
+          "29": {
+            "correct_rate": 0.8,
+            "error_rate": 0.2,
+            "mean_utility": 0.69,
+            "moment2": 0.6650943426415737,
+            "uncertain_rate": 0.0
+          },
+          "30": {
+            "correct_rate": 0.895,
+            "error_rate": 0.1,
+            "mean_utility": 0.835035,
+            "moment2": 0.4059215339699492,
+            "uncertain_rate": 0.005
+          },
+          "31": {
+            "correct_rate": 0.94,
+            "error_rate": 0.055,
+            "mean_utility": 0.902535,
+            "moment2": 0.2873408852705459,
+            "uncertain_rate": 0.005
+          },
+          "32": {
+            "correct_rate": 0.75,
+            "error_rate": 0.25,
+            "mean_utility": 0.6150000000000001,
+            "moment2": 0.7968506189742439,
+            "uncertain_rate": 0.0
+          }
+        },
+        "certainty_equivalent_gamma2": 0.11081208501065039,
+        "correct_rate": 0.7466666666666666,
+        "error_rate": 0.2508333333333334,
+        "mean_utility": 0.6112675,
+        "moment2": 0.8012164289099797,
+        "uncertain_rate": 0.0025
+      },
+      "risk_rank_joint_gamma2": {
+        "by_speaker": {
+          "21": {
+            "correct_rate": 0.53,
+            "error_rate": 0.065,
+            "mean_utility": 0.490335,
+            "moment2": 0.6608716600343488,
+            "uncertain_rate": 0.405
+          },
+          "22": {
+            "correct_rate": 0.515,
+            "error_rate": 0.09,
+            "mean_utility": 0.462765,
+            "moment2": 0.7180703102132522,
+            "uncertain_rate": 0.395
+          },
+          "23": {
+            "correct_rate": 0.63,
+            "error_rate": 0.09,
+            "mean_utility": 0.57696,
+            "moment2": 0.6182561983577873,
+            "uncertain_rate": 0.28
+          },
+          "24": {
+            "correct_rate": 0.61,
+            "error_rate": 0.1,
+            "mean_utility": 0.55203,
+            "moment2": 0.6532869416117532,
+            "uncertain_rate": 0.29
+          },
+          "25": {
+            "correct_rate": 0.735,
+            "error_rate": 0.085,
+            "mean_utility": 0.68376,
+            "moment2": 0.5182856908502032,
+            "uncertain_rate": 0.18
+          },
+          "26": {
+            "correct_rate": 0.46,
+            "error_rate": 0.235,
+            "mean_utility": 0.334635,
+            "moment2": 1.0220481196911106,
+            "uncertain_rate": 0.305
+          },
+          "27": {
+            "correct_rate": 0.45,
+            "error_rate": 0.135,
+            "mean_utility": 0.375405,
+            "moment2": 0.8540099348875191,
+            "uncertain_rate": 0.415
+          },
+          "28": {
+            "correct_rate": 0.295,
+            "error_rate": 0.175,
+            "mean_utility": 0.20121000000000003,
+            "moment2": 1.05922906780912,
+            "uncertain_rate": 0.53
+          },
+          "29": {
+            "correct_rate": 0.66,
+            "error_rate": 0.06,
+            "mean_utility": 0.6219600000000001,
+            "moment2": 0.5392024325581852,
+            "uncertain_rate": 0.28
+          },
+          "30": {
+            "correct_rate": 0.74,
+            "error_rate": 0.035,
+            "mean_utility": 0.714075,
+            "moment2": 0.4255871104609757,
+            "uncertain_rate": 0.225
+          },
+          "31": {
+            "correct_rate": 0.78,
+            "error_rate": 0.02,
+            "mean_utility": 0.7614,
+            "moment2": 0.36436150759259534,
+            "uncertain_rate": 0.2
+          },
+          "32": {
+            "correct_rate": 0.61,
+            "error_rate": 0.075,
+            "mean_utility": 0.5647050000000001,
+            "moment2": 0.6091075234139973,
+            "uncertain_rate": 0.315
+          }
+        },
+        "certainty_equivalent_gamma2": 0.20009474325947804,
+        "correct_rate": 0.5845833333333333,
+        "error_rate": 0.09708333333333331,
+        "mean_utility": 0.52827,
+        "moment2": 0.6701930414567373,
+        "uncertain_rate": 0.31833333333333336
+      }
+    },
+    "payoff_scope": "Task-defined correct/wrong/uncertain payoffs and delivery fees, not dollars or energy; measured CPU/wall is reported separately.",
+    "preference_action_disagreements": {
+      "rank_baseline": 654,
+      "rank_joint": 758
+    }
+  },
+  "separate_scopes": true,
+  "source_count": 12,
+  "waveforms": 2400
+}

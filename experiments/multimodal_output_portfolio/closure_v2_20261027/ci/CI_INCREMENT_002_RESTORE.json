@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.ci-runtime-increment.restore.v2",
+  "archive": {
+    "name": "hepta_ci_runtime_increment_20261027_002.tar.gz",
+    "bytes": 9690743,
+    "sha256": "3cdb017cdbe31cd202d3226b397a36632a58158fb963d9de017a18a570dc3d47"
+  },
+  "index": {
+    "name": "hepta_ci_runtime_increment_20261027_002.index.json",
+    "bytes": 4032,
+    "sha256": "f72ebdb7625cdb87f815588b0230174cd4389a121a2793e8e1ef3abc9e293b42"
+  },
+  "restored_regular_files": 11,
+  "logical_bytes": 10151384,
+  "actual_write_fsync_close_reopen_hash_verified": true,
+  "no_missing_extra_or_nonregular_members": true,
+  "maximum_simultaneous_restored_payload_bytes": 5257172,
+  "members": [
+    {
+      "member": "raw/ndu-dependency-candidate-88bcc7f-evidence-001.tar.gz",
+      "bytes": 4308257,
+      "sha256": "ec99d5454d3ebce4f534c13cc3b85ffecad4400f06646cf787d76b2a69b1ea20"
+    },
+    {
+      "member": "raw/ndu-dependency-candidate-88bcc7f-evidence-001-RESTORE.json",
+      "bytes": 1119,
+      "sha256": "14c588fd348a595475f22c0e8b2c7246dbdf142996d223c777826ce5d8c9558a"
+    },
+    {
+      "member": "raw/port-runtime-bugfix-003.tar.gz",
+      "bytes": 5257172,
+      "sha256": "821f4df1ee2ff80dc17ceb7dca5d933a631bdef3868910c10a4ec660272e76c4"
+    },
+    {
+      "member": "raw/port-runtime-bugfix-003-MANIFEST.json",
+      "bytes": 66824,
+      "sha256": "de08e5e5f8ea265643e6a8665acd2a32496e6bc1603feb42797d536d95a7042c"
+    },
+    {
+      "member": "bindings/RUNTIME_EVIDENCE_FIX.json",
+      "bytes": 477290,
+      "sha256": "a8abbfb028fb8045d0f3aff8f99ab2bd79a5140bf809c2d916cd83e2a0a7db67"
+    },
+    {
+      "member": "bindings/PEER_RUNTIME_EVIDENCE_FIX.json",
+      "bytes": 6259,
+      "sha256": "82b2681712dbe9959bb91dedcd129b156d38f6132169548f2d5d630ef8d7a1bd"
+    },
+    {
+      "member": "bindings/ZIP_I18N_88BCC7F_QUALIFICATION.json",
+      "bytes": 17843,
+      "sha256": "a2de9f9e9a7fe871c34c83c8001da3884e77e211fe525305d31816b04a6b7675"
+    },
+    {
+      "member": "bindings/PROTOCOL_SCHEMA_88BCC7F_QUALIFICATION.json",
+      "bytes": 4914,
+      "sha256": "f14e002d94a67b8bb232881370e6277770b670e5e21e1f8f6fe92f43820111ce"
+    },
+    {
+      "member": "bindings/PROTOCOL_SCHEMA_88BCC7F_SEMANTIC_AUDIT.json",
+      "bytes": 5292,
+      "sha256": "b2dcdaf9c07247be48f3deb6cc95cd2d3bb5252f22b5b3ce7131e42d1917a7e5"
+    },
+    {
+      "member": "bindings/PROTOCOL_SCHEMA_INTEGRATION.json",
+      "bytes": 2382,
+      "sha256": "064a912d2ef96e24c1cc256aeadf05b4ec56a34e08a774cfd2396c24745f74ab"
+    },
+    {
+      "member": "INDEX.json",
+      "bytes": 4032,
+      "sha256": "f72ebdb7625cdb87f815588b0230174cd4389a121a2793e8e1ef3abc9e293b42"
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "configuration": {
+    "alpha": 0.9029752972422481,
+    "solver": "dis_ultrafast"
+  },
+  "frozen_ns": 1793090683050797525,
+  "heldout_generation_not_started": true,
+  "models": {
+    "dis_fast": {
+      "alpha": 0.9154493953655917,
+      "denominator": 5805.782132530888,
+      "initial_alpha": 0.5,
+      "initial_training_MSE": 0.0018175209693314532,
+      "numerator": 5314.899742849757,
+      "objective": "Exact training RGB least-squares minimizer over convex blend coefficient",
+      "private_test_pixels_received": false,
+      "solver": "dis_fast",
+      "trainable_parameters": 1,
+      "training_scalar_values": 5114880,
+      "training_sources": [
+        "david",
+        "dudek",
+        "faceocc2"
+      ]
+    },
+    "dis_medium": {
+      "alpha": 0.9151004001514332,
+      "denominator": 6383.0724514312205,
+      "initial_alpha": 0.5,
+      "initial_training_MSE": 0.0017428506286928736,
+      "numerator": 5841.1521545003,
+      "objective": "Exact training RGB least-squares minimizer over convex blend coefficient",
+      "private_test_pixels_received": false,
+      "solver": "dis_medium",
+      "trainable_parameters": 1,
+      "training_scalar_values": 5114880,
+      "training_sources": [
+        "david",
+        "dudek",
+        "faceocc2"
+      ]
+    },
+    "dis_ultrafast": {
+      "alpha": 0.9029752972422481,
+      "denominator": 5800.455358177779,
+      "initial_alpha": 0.5,
+      "initial_training_MSE": 0.0018323600560882314,
+      "numerator": 5237.667901190971,
+      "objective": "Exact training RGB least-squares minimizer over convex blend coefficient",
+      "private_test_pixels_received": false,
+      "solver": "dis_ultrafast",
+      "trainable_parameters": 1,
+      "training_scalar_values": 5114880,
+      "training_sources": [
+        "david",
+        "dudek",
+        "faceocc2"
+      ]
+    }
+  },
+  "selected_arm": "dis_ultrafast_learned",
+  "source_manifest_sha256": "a3ba37e14ee6beb969d219df45c33bcea3d9e081c7784a92319e74a5d784d389",
+  "validation_summaries": {
+    "dis_fast_initial": {
+      "PSNR": 27.43510936185244,
+      "cpu_seconds": 0.029110318722222188,
+      "pixel_MSE": 0.002721764073617417,
+      "wall_seconds": 0.030085175501881167
+    },
+    "dis_fast_learned": {
+      "PSNR": 28.58680125155119,
+      "cpu_seconds": 0.029754583055555426,
+      "pixel_MSE": 0.0023755554611986146,
+      "wall_seconds": 0.03128083477834783
+    },
+    "dis_medium_initial": {
+      "PSNR": 27.525463302323665,
+      "cpu_seconds": 0.0414161648333333,
+      "pixel_MSE": 0.0027024047538712534,
+      "wall_seconds": 0.04326636738874691
+    },
+    "dis_medium_learned": {
+      "PSNR": 28.777870829337832,
+      "cpu_seconds": 0.041348025833333336,
+      "pixel_MSE": 0.002357948451964763,
+      "wall_seconds": 0.042802347443486925
+    },
+    "dis_ultrafast_initial": {
+      "PSNR": 27.388319987710386,
+      "cpu_seconds": 0.028645681166666707,
+      "pixel_MSE": 0.0027392482620220964,
+      "wall_seconds": 0.030208578832065944
+    },
+    "dis_ultrafast_learned": {
+      "PSNR": 28.464767183068716,
+      "cpu_seconds": 0.028312714611111164,
+      "pixel_MSE": 0.0023932316682466,
+      "wall_seconds": 0.029425354668799426
+    },
+    "original_flow": {
+      "PSNR": 27.999536797050034,
+      "cpu_seconds": 0.047316619388888786,
+      "pixel_MSE": 0.0034332397125826056,
+      "wall_seconds": 0.04884017766582676
+    }
+  }
+}

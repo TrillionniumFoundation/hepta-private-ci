@@ -1,0 +1,136 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+    Updating crates.io index
+    Updating git repository `https://github.com/openai-oss-forks/tungstenite-rs`
+    Blocking waiting for file lock on package cache
+     Locking 2 packages to latest compatible versions
+      Adding serde_yaml v0.9.34+deprecated
+      Adding unsafe-libyaml v0.2.11
+ Downloading crates ...
+  Downloaded serde_yaml v0.9.34+deprecated
+  Downloaded unsafe-libyaml v0.2.11
+   Compiling proc-macro2 v1.0.106
+   Compiling quote v1.0.45
+   Compiling unicode-ident v1.0.22
+   Compiling serde_core v1.0.228
+   Compiling autocfg v1.5.0
+   Compiling num-traits v0.2.19
+   Compiling syn v2.0.117
+   Compiling cfg-if v1.0.4
+   Compiling serde v1.0.228
+   Compiling zmij v1.0.19
+   Compiling serde_derive v1.0.228
+   Compiling encoding_rs v0.8.35
+   Compiling unicode-width v0.2.1
+   Compiling anstyle v1.0.13
+   Compiling smallvec v1.15.1
+   Compiling arraydeque v0.5.1
+   Compiling granit-parser v2.0.0
+   Compiling annotate-snippets v0.12.5
+   Compiling encoding_rs_io v0.1.8
+   Compiling base64 v0.23.0
+   Compiling equivalent v1.0.2
+   Compiling ryu v1.0.22
+   Compiling hashbrown v0.17.1
+   Compiling nohash-hasher v0.2.0
+   Compiling serde-saphyr v2.0.0
+   Compiling indexmap v2.14.0
+   Compiling yansi v1.0.1
+   Compiling unsafe-libyaml v0.2.11
+   Compiling itoa v1.0.17
+   Compiling diff v0.1.13
+   Compiling pretty_assertions v1.4.1
+   Compiling serde_yaml v0.9.34+deprecated
+   Compiling codex-utils-yaml v0.0.0 (/workspace/scratch/95988d8d3ab1/ndu-yaml-candidate-worktree/codex-rs/utils/yaml)
+    Finished `test` profile [unoptimized] target(s) in 19.20s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID a5848d1e-4808-4c65-803a-1e5205816a1e with nextest profile: local
+    Starting 1 test across 2 binaries (6 tests skipped)
+  TRY 1 FAIL [   0.011s] codex-utils-yaml::legacy_projection legacy_parser_projection_boundaries
+  stdout ───
+
+    running 1 test
+    boolean-key-alias: old=Err(()); candidate=Ok(Some([]))
+    null-key-alias: old=Err(()); candidate=Ok(Some([]))
+    float-key-alias: old=Err(()); candidate=Ok(Some([]))
+    nan-key-alias: old=Err(()); candidate=Ok(Some([]))
+    signed-zero-key: old=Err(()); candidate=Err(())
+    integer-and-float-key: old=Ok(Some([])); candidate=Ok(Some([]))
+    mixed-case-bool: old=Ok(Some([("description", Some("TrUe"))])); candidate=Ok(Some([("description", Some("true"))]))
+    mixed-case-null: old=Ok(Some([("description", Some("NuLl"))])); candidate=Ok(Some([("description", None)]))
+    sequence-key-alias: old=Err(()); candidate=Ok(Some([]))
+    mapping-key-alias: old=Err(()); candidate=Ok(Some([]))
+    empty: old=Ok(None); candidate=Ok(None)
+    comments-only: old=Ok(None); candidate=Ok(None)
+    empty-document: old=Ok(None); candidate=Ok(None)
+    tagged-key: old=Ok(Some([("description", Some("hello"))])); candidate=Ok(Some([("description", Some("hello"))]))
+    different-tags: old=Ok(Some([("description", Some("first")), ("description", Some("second"))])); candidate=Ok(Some([("description", Some("first")), ("description", Some("second"))]))
+    standard-binary: old=Ok(Some([("description", Some("aGVsbG8="))])); candidate=Ok(Some([("description", None)]))
+    explicit-float: old=Ok(Some([("description", Some("1.0"))])); candidate=Ok(Some([("description", Some("1.0"))]))
+    large-integer: old=Err(()); candidate=Ok(Some([("description", Some("1.8446744073709552e19"))]))
+    merge-key: old=Ok(Some([("base", None), ("<<", None), ("name", Some("example"))])); candidate=Ok(Some([("base", None), ("<<", None), ("name", Some("example"))]))
+    test legacy_parser_projection_boundaries ... FAILED
+
+    failures:
+
+    failures:
+        legacy_parser_projection_boundaries
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+  stderr ───
+
+    thread 'legacy_parser_projection_boundaries' (796435) panicked at utils/yaml/tests/legacy_projection.rs:49:5:
+    compatibility differences: ["boolean-key-alias", "null-key-alias", "float-key-alias", "nan-key-alias", "mixed-case-bool", "mixed-case-null", "sequence-key-alias", "mapping-key-alias", "standard-binary", "large-integer"]
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+   RETRY 2/2 [         ] codex-utils-yaml::legacy_projection legacy_parser_projection_boundaries
+  TRY 2 FAIL [   0.007s] codex-utils-yaml::legacy_projection legacy_parser_projection_boundaries
+  stdout ───
+
+    running 1 test
+    boolean-key-alias: old=Err(()); candidate=Ok(Some([]))
+    null-key-alias: old=Err(()); candidate=Ok(Some([]))
+    float-key-alias: old=Err(()); candidate=Ok(Some([]))
+    nan-key-alias: old=Err(()); candidate=Ok(Some([]))
+    signed-zero-key: old=Err(()); candidate=Err(())
+    integer-and-float-key: old=Ok(Some([])); candidate=Ok(Some([]))
+    mixed-case-bool: old=Ok(Some([("description", Some("TrUe"))])); candidate=Ok(Some([("description", Some("true"))]))
+    mixed-case-null: old=Ok(Some([("description", Some("NuLl"))])); candidate=Ok(Some([("description", None)]))
+    sequence-key-alias: old=Err(()); candidate=Ok(Some([]))
+    mapping-key-alias: old=Err(()); candidate=Ok(Some([]))
+    empty: old=Ok(None); candidate=Ok(None)
+    comments-only: old=Ok(None); candidate=Ok(None)
+    empty-document: old=Ok(None); candidate=Ok(None)
+    tagged-key: old=Ok(Some([("description", Some("hello"))])); candidate=Ok(Some([("description", Some("hello"))]))
+    different-tags: old=Ok(Some([("description", Some("first")), ("description", Some("second"))])); candidate=Ok(Some([("description", Some("first")), ("description", Some("second"))]))
+    standard-binary: old=Ok(Some([("description", Some("aGVsbG8="))])); candidate=Ok(Some([("description", None)]))
+    explicit-float: old=Ok(Some([("description", Some("1.0"))])); candidate=Ok(Some([("description", Some("1.0"))]))
+    large-integer: old=Err(()); candidate=Ok(Some([("description", Some("1.8446744073709552e19"))]))
+    merge-key: old=Ok(Some([("base", None), ("<<", None), ("name", Some("example"))])); candidate=Ok(Some([("base", None), ("<<", None), ("name", Some("example"))]))
+    test legacy_parser_projection_boundaries ... FAILED
+
+    failures:
+
+    failures:
+        legacy_parser_projection_boundaries
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'legacy_parser_projection_boundaries' (796437) panicked at utils/yaml/tests/legacy_projection.rs:49:5:
+    compatibility differences: ["boolean-key-alias", "null-key-alias", "float-key-alias", "nan-key-alias", "mixed-case-bool", "mixed-case-null", "sequence-key-alias", "mapping-key-alias", "standard-binary", "large-integer"]
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+────────────
+     Summary [   0.019s] 1 test run: 0 passed, 1 failed, 6 skipped
+  TRY 2 FAIL [   0.007s] codex-utils-yaml::legacy_projection legacy_parser_projection_boundaries
+error: test run failed
+error: Recipe `test` failed on line 89 with exit code 100

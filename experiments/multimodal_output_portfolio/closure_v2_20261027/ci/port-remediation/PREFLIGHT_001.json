@@ -1,0 +1,199 @@
+{
+  "mode": "Source-bound input and real Git index preflight; no Cargo/Bazel build or Rust test execution",
+  "source_head": "5518cb02837bd429d33c0797011e34bfdb2b16eb",
+  "recipe_sha256": "687878336d3924d16094edc56183cef877831e77d73496c83d6e236987c63e2e",
+  "patch_sha256": "62386f8281933befb72dc9136aa5f07365c40a600fa3729f8e0bf624432ed501",
+  "vendor_files": 1282,
+  "allowed_source_paths": 29,
+  "expected_imbl": [
+    {
+      "name": "imbl",
+      "version": "7.0.2",
+      "source": "registry",
+      "required_features": []
+    }
+  ],
+  "negative_checks": [
+    {
+      "case": "changed production Rust",
+      "rejected": true,
+      "error": "Vendor inventory differs, including extra files: codex-rs/third_party/i18n-config-0.4.8",
+      "tampered_sha256": "d745043230bd71cc612614fc03e80b8cc5be2a7e35485a4b2ffb56cb0cf12a6c"
+    },
+    {
+      "case": "changed source patch",
+      "rejected": true,
+      "error": "Source patch differs from the recipe SHA-256",
+      "tampered_sha256": "a47bc62989c5d58fa691673825c507374f28719b4307ae35664a7d01e81fef7a"
+    },
+    {
+      "case": "changed frozen old-fixture patch",
+      "rejected": true,
+      "error": "Matrix fixture patch differs from recipe",
+      "tampered_sha256": "8f9e0212807c5d30e6b3cf628ea1d170494c8695fcf15d390560a9d63629cf48"
+    },
+    {
+      "case": "changed standalone AWS lock",
+      "rejected": true,
+      "error": "Qualification resource differs from recipe",
+      "tampered_sha256": "c80d6345c7ab1e5fc72833cec280ee8ed02a12277aada5b43c8178248f344238"
+    },
+    {
+      "case": "extra vendor file",
+      "rejected": true,
+      "error": "Vendor inventory differs, including extra files: codex-rs/third_party/i18n-config-0.4.8"
+    }
+  ],
+  "index_commands": [
+    {
+      "command": [
+        "git",
+        "read-tree",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--cached",
+        "--check",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/combined-source.patch"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--cached",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/combined-source.patch"
+      ],
+      "exit_code": 0,
+      "output": ""
+    }
+  ],
+  "index_recreated_files": {
+    "MODULE.bazel": {
+      "bytes": 21895,
+      "sha256": "4c1a9c92bfc4f8b0280db54f7f276b0140e342a8626db053ef9d75b9bfca08e5"
+    },
+    "codex-rs/Cargo.toml": {
+      "bytes": 21815,
+      "sha256": "e7a1d62ac53470bd9d52618e4b5094266fcb51fe192bf7574980cf38c6acd5f8"
+    },
+    "codex-rs/core-plugins/Cargo.toml": {
+      "bytes": 2198,
+      "sha256": "63132e583a6a888c05536b9fabfb489d0a8da0f4681379b6b0a356e115c380f0"
+    },
+    "codex-rs/core-plugins/src/command_migration.rs": {
+      "bytes": 12071,
+      "sha256": "1dbb263aa6136621f9d7c895a02082ac727b878b8f724c0cda6e4fb0c6b7e783"
+    },
+    "codex-rs/core-plugins/src/plugin_metrics.rs": {
+      "bytes": 5603,
+      "sha256": "1e95bcc40a790f933bdd14d4e5ac1c8b17778966b375acaee91d132b2de53d7c"
+    },
+    "codex-rs/core-plugins/src/startup_sync.rs": {
+      "bytes": 39811,
+      "sha256": "d7402cc77b21a4412b9b47683a422353d60d977b735961b096b841d9218edea4"
+    },
+    "codex-rs/core-plugins/src/startup_sync_zip_tests.rs": {
+      "bytes": 7623,
+      "sha256": "a273b864f58b584390bcc8dbffa090bc1deb98594566bb103e53ad3beab8ee31"
+    },
+    "codex-rs/core-plugins/tests/fixtures/zipball_lzma.zip": {
+      "bytes": 194,
+      "sha256": "b6ce81e8450c7de591a4e4c7e2e9e975542cc709a07487e16d8f0dfaf7e3d30c"
+    },
+    "codex-rs/ext/skills/Cargo.toml": {
+      "bytes": 1460,
+      "sha256": "4159f5f83864714f0b593247ea5322f3bc13bfc69b2e8d555bafef71d8a19847"
+    },
+    "codex-rs/ext/skills/src/loader/environment.rs": {
+      "bytes": 13832,
+      "sha256": "cb049ed3640dafda1d457b7bfb28e85f7089813d70af750f2649bb0acb459732"
+    },
+    "codex-rs/ext/skills/src/loader/metadata.rs": {
+      "bytes": 7994,
+      "sha256": "49a2e2de83ac7bee1ee11023d9b065cc22ff449db48ee6fd571fa052c2ccefda"
+    },
+    "codex-rs/external-agent-migration/Cargo.toml": {
+      "bytes": 1331,
+      "sha256": "b890e0b170700951a96369e5e84fc906864ddf621cf548f0c7586deb57c6ccfb"
+    },
+    "codex-rs/external-agent-migration/src/subagents.rs": {
+      "bytes": 8752,
+      "sha256": "5aa90bd0f5eb5721a80c1bd8c82ab3de84f3736e5ffed38ccb9ff767a5aa8bc1"
+    },
+    "codex-rs/hepta-matrix-sdk/Cargo.toml": {
+      "bytes": 935,
+      "sha256": "281ad225f084f63fc35f2f6238d7931d4fdb05b31c99cc6ee8544f5815ce2fa3"
+    },
+    "codex-rs/hepta-matrix-sdk/src/config.rs": {
+      "bytes": 3668,
+      "sha256": "bdd4dd626b548e16964dc18f138d4c889f972d527efeccb79d0bcea9444bc395"
+    },
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs": {
+      "bytes": 25629,
+      "sha256": "6cc077a47917da7ff7c261de2b77b61bcddd3caf24c4cec868eb513ffb33c3b4"
+    },
+    "codex-rs/hepta-matrix-sdk/tests/event_context_migration.rs": {
+      "bytes": 4633,
+      "sha256": "6f4bdff30fd7966fd8a2ba69fbf0e3276a513c2fb43a312ba320b7e787dbce06"
+    },
+    "codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs": {
+      "bytes": 9937,
+      "sha256": "28d08e3ad133d1ae95838329b280e24dac11047a4f59b9537f6d957daf73339f"
+    },
+    "codex-rs/rust-toolchain.toml": {
+      "bytes": 78,
+      "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+    },
+    "codex-rs/skills/Cargo.toml": {
+      "bytes": 688,
+      "sha256": "68403ab839b55f57c345a2cded3ba129e0661d399ab4f257be923cc798f684a2"
+    },
+    "codex-rs/skills/src/parser.rs": {
+      "bytes": 7253,
+      "sha256": "7c7e4970b4318eadfebab3420bdb82dd001558abfa9471441d420eeb1a205cf5"
+    },
+    "codex-rs/third_party/imbl-6.1.0/BUILD.bazel": {
+      "bytes": 279,
+      "sha256": "8390554bf2c4ebcbce3b23f972dae68ae239813c7ee7db0b43d5222b6f50891e"
+    },
+    "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/BUILD.bazel": {
+      "bytes": 279,
+      "sha256": "8390554bf2c4ebcbce3b23f972dae68ae239813c7ee7db0b43d5222b6f50891e"
+    },
+    "codex-rs/utils/yaml/BUILD.bazel": {
+      "bytes": 117,
+      "sha256": "35ab6843c2552bbe1cd3a6142f93124935daec0889db4fe35b90439196294f85"
+    },
+    "codex-rs/utils/yaml/Cargo.toml": {
+      "bytes": 418,
+      "sha256": "c8afe9db3266267d3a5e2448550a1c408026d8951b1d06733707c3c0cae182f2"
+    },
+    "codex-rs/utils/yaml/src/key.rs": {
+      "bytes": 1423,
+      "sha256": "374d0b7e32b09af6c69a9eb6d6851301999460cdb3eb66fd5b9168155a7437e8"
+    },
+    "codex-rs/utils/yaml/src/lib.rs": {
+      "bytes": 6264,
+      "sha256": "778cb731c9007e7a6a1b692e07ead52073df639c5a64d9b6a0a2150cd484de06"
+    },
+    "codex-rs/utils/yaml/src/yaml_tests.rs": {
+      "bytes": 3649,
+      "sha256": "81be6c0dc3c175d9b3171a010a6f9a710a132074f09a70152306ea163c98c036"
+    },
+    "codex-rs/utils/yaml/tests/legacy_projection.rs": {
+      "bytes": 6520,
+      "sha256": "39c0a2eabf2052add31543d71f081e0667603ad397aca8dbcc075f544a3271be"
+    }
+  },
+  "real_copy_inputs_verified": 1287,
+  "passed": true
+}

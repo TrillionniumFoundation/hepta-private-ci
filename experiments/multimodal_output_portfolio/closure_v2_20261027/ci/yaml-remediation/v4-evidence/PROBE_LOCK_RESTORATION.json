@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.yaml.probe-lock-restoration.v1",
+  "status": "exact_preexecution_digest_recovered",
+  "expected_sha256": "0c7413f4c18a152e40a04aa39d25fcaa2f48390f35b0e2079ec7d5dd57eeb995",
+  "actual_sha256": "0c7413f4c18a152e40a04aa39d25fcaa2f48390f35b0e2079ec7d5dd57eeb995",
+  "bytes": 419566,
+  "method": "Isolated manifests-only resolver reconstruction with original V3 production lock, pre-execution-digest-matched temporary utility manifest, and exact vendor/workspace manifests. cargo update --workspace --offline on Rust1.95; no Rust implementation files or tests compiled. Output bytes equal the SHA frozen before probe-v4-001 execution. This is reconstruction, not a directly retained original-copy claim.",
+  "command": [
+    "cargo",
+    "update",
+    "--workspace",
+    "--offline"
+  ],
+  "source_receipt": "probe-v4-001.json",
+  "production_workspace_mutated": false,
+  "test_rerun": false,
+  "log_sha256": "f3e4b7e89bd450e138ac28c80d97f37b1571def062ac9e19df7617e0f62e21a7"
+}

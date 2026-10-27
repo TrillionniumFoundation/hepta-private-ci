@@ -1,0 +1,26 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+────────────
+ Nextest run ID 95d2938f-1442-4b38-a85c-3e53b1f74c80 with nextest profile: default
+    Starting 1 test across 1 binary (2 tests skipped)
+        FAIL [   6.240s] codex-hepta-matrix-sdk::store_version_migration reopen_old_version_fixture
+  stdout ───
+
+    running 1 test
+    test reopen_old_version_fixture ... FAILED
+
+    failures:
+
+    failures:
+        reopen_old_version_fixture
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 6.22s
+
+  stderr ───
+    Error: Initialization
+
+────────────
+     Summary [   6.243s] 1 test run: 0 passed, 1 failed, 2 skipped
+        FAIL [   6.240s] codex-hepta-matrix-sdk::store_version_migration reopen_old_version_fixture
+error: test run failed
+error: Recipe `test` failed on line 89 with exit code 100

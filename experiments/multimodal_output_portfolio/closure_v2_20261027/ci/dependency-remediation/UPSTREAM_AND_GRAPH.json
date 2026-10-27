@@ -1,0 +1,2640 @@
+{
+  "created_at": "2026-10-27T09:47:52.045914+00:00",
+  "diagnostic_head": "11a273daeeca82010db5f30050fa3ea709d0f11d",
+  "original_error_count": 22,
+  "tls_errors_owned_by_root": 7,
+  "non_tls_error_count": 15,
+  "scanned_cargo_lock_sha256": "56ed52d9789f01abda5bad96f25dd9d48b837108653cb2f3474ee5e0dbc790de",
+  "scanned_cargo_manifest_sha256": "0e3fc0b7dc3ec907e02059a1bc79579077c8e5d1a0ac936b4f1bd984e94afdb4",
+  "non_tls_errors": [
+    {
+      "error": "error[unmaintained]: anymap2 is unmaintained",
+      "advisories": [
+        "RUSTSEC-2026-0319"
+      ],
+      "solution": "No safe upgrade is available!",
+      "crate": "anymap2 0.13.0 registry+https://github.com/rust-lang/crates.io-index",
+      "representative_inverse_paths_to_first_party": [
+        [
+          "anymap2@0.13.0",
+          "matrix-sdk@0.18.0",
+          "codex-hepta-matrix-sdk@0.0.0"
+        ],
+        [
+          "anymap2@0.13.0",
+          "matrix-sdk@0.18.0",
+          "codex-hepta-matrixd@0.0.0"
+        ]
+      ]
+    },
+    {
+      "error": "error[unmaintained]: `basic-toml` is unmaintained",
+      "advisories": [
+        "RUSTSEC-2026-0374"
+      ],
+      "solution": "No safe upgrade is available!",
+      "crate": "basic-toml 0.1.10 registry+https://github.com/rust-lang/crates.io-index",
+      "representative_inverse_paths_to_first_party": [
+        [
+          "basic-toml@0.1.10",
+          "i18n-config@0.4.8",
+          "i18n-embed-fl@0.9.4",
+          "age@0.11.2",
+          "codex-secrets@0.0.0"
+        ]
+      ]
+    },
+    {
+      "error": "error[vulnerability]: Multiple timing variability issues in operations intended to be constant-time",
+      "advisories": [
+        "RUSTSEC-2026-0387"
+      ],
+      "solution": "Upgrade to >=0.7.6 (try `cargo update -p crypto-bigint`)",
+      "crate": "crypto-bigint 0.5.5 registry+https://github.com/rust-lang/crates.io-index",
+      "representative_inverse_paths_to_first_party": [
+        [
+          "crypto-bigint@0.5.5",
+          "elliptic-curve@0.13.8",
+          "p256@0.13.2",
+          "aws-config@1.8.12",
+          "codex-aws-auth@0.0.0"
+        ]
+      ]
+    },
+    {
+      "error": "error[vulnerability]: Sending custom to-device messages may panics",
+      "advisories": [
+        "RUSTSEC-2026-0318"
+      ],
+      "solution": "Upgrade to >=0.19.0 (try `cargo update -p matrix-sdk-crypto`)",
+      "crate": "matrix-sdk-crypto 0.18.0 registry+https://github.com/rust-lang/crates.io-index",
+      "representative_inverse_paths_to_first_party": [
+        [
+          "matrix-sdk-crypto@0.18.0",
+          "matrix-sdk-base@0.18.0",
+          "matrix-sdk@0.18.0",
+          "codex-hepta-matrix-sdk@0.0.0"
+        ],
+        [
+          "matrix-sdk-crypto@0.18.0",
+          "matrix-sdk-base@0.18.0",
+          "matrix-sdk@0.18.0",
+          "codex-hepta-matrixd@0.0.0"
+        ]
+      ]
+    },
+    {
+      "error": "error[unmaintained]: unsafe-libyaml is unmaintained",
+      "advisories": [
+        "RUSTSEC-2024-0449"
+      ],
+      "solution": "No safe upgrade is available!",
+      "crate": "unsafe-libyaml 0.2.11 registry+https://github.com/rust-lang/crates.io-index",
+      "representative_inverse_paths_to_first_party": [
+        [
+          "unsafe-libyaml@0.2.11",
+          "serde_yaml@0.9.34+deprecated",
+          "codex-core-plugins@0.0.0"
+        ],
+        [
+          "unsafe-libyaml@0.2.11",
+          "serde_yaml@0.9.34+deprecated",
+          "codex-external-agent-migration@0.0.0"
+        ],
+        [
+          "unsafe-libyaml@0.2.11",
+          "serde_yaml@0.9.34+deprecated",
+          "codex-skills@0.0.0"
+        ],
+        [
+          "unsafe-libyaml@0.2.11",
+          "serde_yaml@0.9.34+deprecated",
+          "codex-skills-extension@0.0.0"
+        ]
+      ]
+    },
+    {
+      "error": "error[unmaintained]: `zbus_names` is unmaintained",
+      "advisories": [
+        "RUSTSEC-2026-0371"
+      ],
+      "solution": "No safe upgrade is available!",
+      "crate": "zbus_names 3.0.0 registry+https://github.com/rust-lang/crates.io-index",
+      "representative_inverse_paths_to_first_party": [
+        [
+          "zbus_names@3.0.0",
+          "zbus@4.4.0",
+          "keyring@3.6.3",
+          "codex-keyring-store@0.0.0"
+        ],
+        [
+          "zbus_names@3.0.0",
+          "zbus@4.4.0",
+          "keyring@3.6.3",
+          "codex-login@0.0.0"
+        ],
+        [
+          "zbus_names@3.0.0",
+          "zbus@4.4.0",
+          "keyring@3.6.3",
+          "codex-rmcp-client@0.0.0"
+        ],
+        [
+          "zbus_names@3.0.0",
+          "zbus@4.4.0",
+          "keyring@3.6.3",
+          "codex-secrets@0.0.0"
+        ]
+      ]
+    },
+    {
+      "error": "error[vulnerability]:  Insecure Preservation of SUID/SGID Bits during ZIP Extraction Leading to Potential Privilege Escalation",
+      "advisories": [
+        "RUSTSEC-2026-0367"
+      ],
+      "solution": "Upgrade to >=9.0.0 (try `cargo update -p zip`)",
+      "crate": "zip 2.4.2 registry+https://github.com/rust-lang/crates.io-index",
+      "representative_inverse_paths_to_first_party": [
+        [
+          "zip@2.4.2",
+          "codex-core-plugins@0.0.0"
+        ]
+      ]
+    },
+    {
+      "error": "error[vulnerability]: zip: `ZipArchive::extract` creates symbolic links whose attacker-controlled targets are outside the destination directory",
+      "advisories": [
+        "RUSTSEC-2026-0368"
+      ],
+      "solution": "Upgrade to >=9.0.0 (try `cargo update -p zip`)",
+      "crate": "zip 2.4.2 registry+https://github.com/rust-lang/crates.io-index",
+      "representative_inverse_paths_to_first_party": [
+        [
+          "zip@2.4.2",
+          "codex-core-plugins@0.0.0"
+        ]
+      ]
+    },
+    {
+      "error": "error[vulnerability]: ZipStreamReader::extract() and ZipArchive::extract() apply Unix permissions through symlinks without confining the target",
+      "advisories": [
+        "RUSTSEC-2026-0369"
+      ],
+      "solution": "Upgrade to >=9.0.0 (try `cargo update -p zip`)",
+      "crate": "zip 2.4.2 registry+https://github.com/rust-lang/crates.io-index",
+      "representative_inverse_paths_to_first_party": [
+        [
+          "zip@2.4.2",
+          "codex-core-plugins@0.0.0"
+        ]
+      ]
+    },
+    {
+      "error": "error[vulnerability]: Data from an abandoned stream leaks into the next stream on a reused context",
+      "advisories": [
+        "RUSTSEC-2026-0391"
+      ],
+      "solution": "Upgrade to >=0.14.3 (try `cargo update -p zstd`)",
+      "crate": "zstd 0.13.3 registry+https://github.com/rust-lang/crates.io-index",
+      "representative_inverse_paths_to_first_party": [
+        [
+          "zstd@0.13.3",
+          "codex-app-server-protocol@0.0.0"
+        ],
+        [
+          "zstd@0.13.3",
+          "codex-cli@0.0.0"
+        ],
+        [
+          "zstd@0.13.3",
+          "codex-core@0.0.0"
+        ],
+        [
+          "zstd@0.13.3",
+          "codex-http-client@0.0.0"
+        ],
+        [
+          "zstd@0.13.3",
+          "codex-queue-extension@0.0.0"
+        ],
+        [
+          "zstd@0.13.3",
+          "codex-rollout@0.0.0"
+        ],
+        [
+          "zstd@0.13.3",
+          "codex-thread-store@0.0.0"
+        ],
+        [
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-agent-extension@0.0.0"
+        ],
+        [
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-app-server@0.0.0"
+        ],
+        [
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-exec@0.0.0"
+        ],
+        [
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-guardian-v2@0.0.0"
+        ],
+        [
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-hepta-agentd@0.0.0"
+        ],
+        [
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-hepta-infer-worker-host@0.0.0"
+        ],
+        [
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-hepta-matrixd@0.0.0"
+        ],
+        [
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-login@0.0.0"
+        ],
+        [
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-mcp-server@0.0.0"
+        ],
+        [
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-memories-write@0.0.0"
+        ],
+        [
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-tui@0.0.0"
+        ],
+        [
+          "zstd@0.13.3",
+          "zip@2.4.2",
+          "codex-core-plugins@0.0.0"
+        ]
+      ]
+    },
+    {
+      "error": "error[vulnerability]: `Seekable::decompress` sets a `Vec` length beyond its capacity for offsets past the end",
+      "advisories": [
+        "RUSTSEC-2026-0398"
+      ],
+      "solution": "Upgrade to >=8.2.0 (try `cargo update -p zstd-safe`)",
+      "crate": "zstd-safe 7.2.4 registry+https://github.com/rust-lang/crates.io-index",
+      "representative_inverse_paths_to_first_party": [
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-app-server-protocol@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-cli@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-core@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-http-client@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-queue-extension@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-rollout@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-thread-store@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-agent-extension@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-app-server@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-exec@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-guardian-v2@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-hepta-agentd@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-hepta-infer-worker-host@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-hepta-matrixd@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-login@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-mcp-server@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-memories-write@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-tui@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "zip@2.4.2",
+          "codex-core-plugins@0.0.0"
+        ]
+      ]
+    },
+    {
+      "error": "error[vulnerability]: Uninitialized memory exposed when streaming decompression of a legacy frame fails",
+      "advisories": [
+        "RUSTSEC-2026-0403"
+      ],
+      "solution": "Upgrade to >=8.2.0 (try `cargo update -p zstd-safe`)",
+      "crate": "zstd-safe 7.2.4 registry+https://github.com/rust-lang/crates.io-index",
+      "representative_inverse_paths_to_first_party": [
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-app-server-protocol@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-cli@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-core@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-http-client@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-queue-extension@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-rollout@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-thread-store@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-agent-extension@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-app-server@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-exec@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-guardian-v2@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-hepta-agentd@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-hepta-infer-worker-host@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-hepta-matrixd@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-login@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-mcp-server@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-memories-write@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-tui@0.0.0"
+        ],
+        [
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "zip@2.4.2",
+          "codex-core-plugins@0.0.0"
+        ]
+      ]
+    },
+    {
+      "error": "error[vulnerability]: WebAssembly allocator shim corrupts memory on allocation failure",
+      "advisories": [
+        "RUSTSEC-2026-0410"
+      ],
+      "solution": "Upgrade to >=2.1.2 (try `cargo update -p zstd-sys`)",
+      "crate": "zstd-sys 2.0.16+zstd.1.5.7 registry+https://github.com/rust-lang/crates.io-index",
+      "representative_inverse_paths_to_first_party": [
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-app-server-protocol@0.0.0"
+        ],
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-cli@0.0.0"
+        ],
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-core@0.0.0"
+        ],
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-http-client@0.0.0"
+        ],
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-queue-extension@0.0.0"
+        ],
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-rollout@0.0.0"
+        ],
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "codex-thread-store@0.0.0"
+        ],
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-agent-extension@0.0.0"
+        ],
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-app-server@0.0.0"
+        ],
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-exec@0.0.0"
+        ],
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-guardian-v2@0.0.0"
+        ],
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-hepta-agentd@0.0.0"
+        ],
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-hepta-infer-worker-host@0.0.0"
+        ],
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-hepta-matrixd@0.0.0"
+        ],
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-login@0.0.0"
+        ],
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-mcp-server@0.0.0"
+        ],
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-memories-write@0.0.0"
+        ],
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "core_test_support@0.0.0",
+          "codex-tui@0.0.0"
+        ],
+        [
+          "zstd-sys@2.0.16+zstd.1.5.7",
+          "zstd-safe@7.2.4",
+          "zstd@0.13.3",
+          "zip@2.4.2",
+          "codex-core-plugins@0.0.0"
+        ]
+      ]
+    },
+    {
+      "error": "error[unmaintained]: `zvariant` is unmaintained",
+      "advisories": [
+        "RUSTSEC-2026-0370"
+      ],
+      "solution": "No safe upgrade is available!",
+      "crate": "zvariant 4.2.0 registry+https://github.com/rust-lang/crates.io-index",
+      "representative_inverse_paths_to_first_party": [
+        [
+          "zvariant@4.2.0",
+          "zbus@4.4.0",
+          "keyring@3.6.3",
+          "codex-keyring-store@0.0.0"
+        ],
+        [
+          "zvariant@4.2.0",
+          "zbus@4.4.0",
+          "keyring@3.6.3",
+          "codex-login@0.0.0"
+        ],
+        [
+          "zvariant@4.2.0",
+          "zbus@4.4.0",
+          "keyring@3.6.3",
+          "codex-rmcp-client@0.0.0"
+        ],
+        [
+          "zvariant@4.2.0",
+          "zbus@4.4.0",
+          "keyring@3.6.3",
+          "codex-secrets@0.0.0"
+        ]
+      ]
+    },
+    {
+      "error": "error[unmaintained]: `zvariant_derive` is unmaintained",
+      "advisories": [
+        "RUSTSEC-2026-0372"
+      ],
+      "solution": "No safe upgrade is available!",
+      "crate": "zvariant_derive 4.2.0 registry+https://github.com/rust-lang/crates.io-index",
+      "representative_inverse_paths_to_first_party": [
+        [
+          "zvariant_derive@4.2.0",
+          "zvariant@4.2.0",
+          "zbus@4.4.0",
+          "keyring@3.6.3",
+          "codex-keyring-store@0.0.0"
+        ],
+        [
+          "zvariant_derive@4.2.0",
+          "zvariant@4.2.0",
+          "zbus@4.4.0",
+          "keyring@3.6.3",
+          "codex-login@0.0.0"
+        ],
+        [
+          "zvariant_derive@4.2.0",
+          "zvariant@4.2.0",
+          "zbus@4.4.0",
+          "keyring@3.6.3",
+          "codex-rmcp-client@0.0.0"
+        ],
+        [
+          "zvariant_derive@4.2.0",
+          "zvariant@4.2.0",
+          "zbus@4.4.0",
+          "keyring@3.6.3",
+          "codex-secrets@0.0.0"
+        ]
+      ]
+    }
+  ],
+  "published_version_evidence": [
+    {
+      "name": "matrix-sdk",
+      "version": "0.19.1",
+      "rust_version": "1.96",
+      "created_at": "2026-09-18T12:48:02.919920Z",
+      "yanked": false,
+      "crate_sha256": "2afc652a144822f6fbe24084e08bc59cb483fd0b504396d492131dec0749396e",
+      "repository": "https://github.com/matrix-org/matrix-rust-sdk",
+      "features": {
+        "automatic-room-key-forwarding": [
+          "e2e-encryption",
+          "matrix-sdk-base/automatic-room-key-forwarding"
+        ],
+        "bundled-sqlite": [
+          "sqlite",
+          "matrix-sdk-sqlite?/bundled"
+        ],
+        "default": [
+          "e2e-encryption",
+          "automatic-room-key-forwarding",
+          "sqlite",
+          "rustls-aws-lc-rs"
+        ],
+        "docsrs": [
+          "e2e-encryption",
+          "sqlite",
+          "indexeddb",
+          "sso-login",
+          "qrcode",
+          "federation-api"
+        ],
+        "e2e-encryption": [
+          "matrix-sdk-base/e2e-encryption",
+          "matrix-sdk-sqlite?/crypto-store",
+          "matrix-sdk-indexeddb?/e2e-encryption"
+        ],
+        "experimental-element-recent-emojis": [
+          "matrix-sdk-base/experimental-element-recent-emojis"
+        ],
+        "experimental-encrypted-state-events": [
+          "e2e-encryption",
+          "matrix-sdk-base/experimental-encrypted-state-events",
+          "matrix-sdk-sqlite/experimental-encrypted-state-events",
+          "matrix-sdk-test?/experimental-encrypted-state-events"
+        ],
+        "experimental-push-secrets": [
+          "e2e-encryption",
+          "matrix-sdk-base/experimental-push-secrets",
+          "matrix-sdk-sqlite?/experimental-push-secrets",
+          "matrix-sdk-indexeddb?/experimental-push-secrets",
+          "ruma/unstable-msc4385"
+        ],
+        "experimental-search": [
+          "matrix-sdk-search"
+        ],
+        "experimental-send-custom-to-device": [
+          "e2e-encryption",
+          "matrix-sdk-base/experimental-send-custom-to-device"
+        ],
+        "experimental-widgets": [
+          "dep:urlencoding",
+          "dep:uuid",
+          "experimental-send-custom-to-device"
+        ],
+        "experimental-x509-identity-verification": [
+          "e2e-encryption",
+          "matrix-sdk-base/experimental-x509-identity-verification"
+        ],
+        "federation-api": [
+          "ruma/federation-api-c"
+        ],
+        "indexeddb": [
+          "matrix-sdk-indexeddb/state-store",
+          "matrix-sdk-indexeddb/event-cache-store",
+          "matrix-sdk-indexeddb/media-store"
+        ],
+        "js": [
+          "matrix-sdk-common/js",
+          "matrix-sdk-base/js"
+        ],
+        "local-server": [
+          "dep:axum",
+          "dep:rand",
+          "dep:tower"
+        ],
+        "markdown": [
+          "ruma/markdown"
+        ],
+        "qrcode": [
+          "e2e-encryption",
+          "matrix-sdk-base/qrcode"
+        ],
+        "rustls-aws-lc-rs": [
+          "reqwest/rustls"
+        ],
+        "socks": [
+          "reqwest/socks"
+        ],
+        "sqlite": [
+          "dep:matrix-sdk-sqlite",
+          "matrix-sdk-sqlite?/state-store",
+          "matrix-sdk-sqlite?/event-cache-store",
+          "matrix-sdk-sqlite?/media-store"
+        ],
+        "sso-login": [
+          "local-server"
+        ],
+        "testing": [
+          "matrix-sdk-sqlite?/testing",
+          "matrix-sdk-indexeddb?/testing",
+          "matrix-sdk-base/testing",
+          "wiremock",
+          "matrix-sdk-test",
+          "assert_matches2"
+        ],
+        "uniffi": [
+          "dep:uniffi",
+          "matrix-sdk-base/uniffi",
+          "dep:matrix-sdk-ffi-macros"
+        ],
+        "unstable-msc4274": [
+          "ruma/unstable-msc4274",
+          "matrix-sdk-base/unstable-msc4274"
+        ],
+        "unstable-msc4426": [
+          "matrix-sdk-base/unstable-msc4426"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/matrix-sdk"
+    },
+    {
+      "name": "matrix-sdk",
+      "version": "0.19.0",
+      "rust_version": "1.96",
+      "created_at": "2026-09-16T13:03:16.469140Z",
+      "yanked": false,
+      "crate_sha256": "d41d3631bac5de5c2fdd8dad2edb84a9077a12836d50ef0fb5c3465335cc49ed",
+      "repository": "https://github.com/matrix-org/matrix-rust-sdk",
+      "features": {
+        "automatic-room-key-forwarding": [
+          "e2e-encryption",
+          "matrix-sdk-base/automatic-room-key-forwarding"
+        ],
+        "bundled-sqlite": [
+          "sqlite",
+          "matrix-sdk-sqlite?/bundled"
+        ],
+        "default": [
+          "e2e-encryption",
+          "automatic-room-key-forwarding",
+          "sqlite",
+          "rustls-aws-lc-rs"
+        ],
+        "docsrs": [
+          "e2e-encryption",
+          "sqlite",
+          "indexeddb",
+          "sso-login",
+          "qrcode",
+          "federation-api"
+        ],
+        "e2e-encryption": [
+          "matrix-sdk-base/e2e-encryption",
+          "matrix-sdk-sqlite?/crypto-store",
+          "matrix-sdk-indexeddb?/e2e-encryption"
+        ],
+        "experimental-element-recent-emojis": [
+          "matrix-sdk-base/experimental-element-recent-emojis"
+        ],
+        "experimental-encrypted-state-events": [
+          "e2e-encryption",
+          "matrix-sdk-base/experimental-encrypted-state-events",
+          "matrix-sdk-sqlite/experimental-encrypted-state-events",
+          "matrix-sdk-test?/experimental-encrypted-state-events"
+        ],
+        "experimental-push-secrets": [
+          "e2e-encryption",
+          "matrix-sdk-base/experimental-push-secrets",
+          "matrix-sdk-sqlite?/experimental-push-secrets",
+          "matrix-sdk-indexeddb?/experimental-push-secrets",
+          "ruma/unstable-msc4385"
+        ],
+        "experimental-search": [
+          "matrix-sdk-search"
+        ],
+        "experimental-send-custom-to-device": [
+          "e2e-encryption",
+          "matrix-sdk-base/experimental-send-custom-to-device"
+        ],
+        "experimental-widgets": [
+          "dep:urlencoding",
+          "dep:uuid",
+          "experimental-send-custom-to-device"
+        ],
+        "experimental-x509-identity-verification": [
+          "e2e-encryption",
+          "matrix-sdk-base/experimental-x509-identity-verification"
+        ],
+        "federation-api": [
+          "ruma/federation-api-c"
+        ],
+        "indexeddb": [
+          "matrix-sdk-indexeddb/state-store",
+          "matrix-sdk-indexeddb/event-cache-store",
+          "matrix-sdk-indexeddb/media-store"
+        ],
+        "js": [
+          "matrix-sdk-common/js",
+          "matrix-sdk-base/js"
+        ],
+        "local-server": [
+          "dep:axum",
+          "dep:rand",
+          "dep:tower"
+        ],
+        "markdown": [
+          "ruma/markdown"
+        ],
+        "qrcode": [
+          "e2e-encryption",
+          "matrix-sdk-base/qrcode"
+        ],
+        "rustls-aws-lc-rs": [
+          "reqwest/rustls"
+        ],
+        "socks": [
+          "reqwest/socks"
+        ],
+        "sqlite": [
+          "dep:matrix-sdk-sqlite",
+          "matrix-sdk-sqlite?/state-store",
+          "matrix-sdk-sqlite?/event-cache-store",
+          "matrix-sdk-sqlite?/media-store"
+        ],
+        "sso-login": [
+          "local-server"
+        ],
+        "testing": [
+          "matrix-sdk-sqlite?/testing",
+          "matrix-sdk-indexeddb?/testing",
+          "matrix-sdk-base/testing",
+          "wiremock",
+          "matrix-sdk-test",
+          "assert_matches2"
+        ],
+        "uniffi": [
+          "dep:uniffi",
+          "matrix-sdk-base/uniffi",
+          "dep:matrix-sdk-ffi-macros"
+        ],
+        "unstable-msc4274": [
+          "ruma/unstable-msc4274",
+          "matrix-sdk-base/unstable-msc4274"
+        ],
+        "unstable-msc4426": [
+          "matrix-sdk-base/unstable-msc4426"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/matrix-sdk"
+    },
+    {
+      "name": "matrix-sdk-sqlite",
+      "version": "0.19.1",
+      "rust_version": "1.96",
+      "created_at": "2026-09-18T12:47:58.904083Z",
+      "yanked": false,
+      "crate_sha256": "8d4271e06d52a17bc6ec39b5a2985b65dcced737969fac3678967783656edb34",
+      "repository": "https://github.com/matrix-org/matrix-rust-sdk",
+      "features": {
+        "bundled": [
+          "rusqlite/bundled"
+        ],
+        "crypto-store": [
+          "dep:matrix-sdk-base",
+          "dep:matrix-sdk-crypto"
+        ],
+        "default": [
+          "state-store",
+          "event-cache-store",
+          "media-store"
+        ],
+        "event-cache-store": [
+          "dep:matrix-sdk-base"
+        ],
+        "experimental-encrypted-state-events": [
+          "matrix-sdk-crypto?/experimental-encrypted-state-events"
+        ],
+        "experimental-push-secrets": [
+          "matrix-sdk-crypto?/experimental-push-secrets"
+        ],
+        "media-store": [
+          "dep:matrix-sdk-base"
+        ],
+        "state-store": [
+          "dep:matrix-sdk-base"
+        ],
+        "testing": [
+          "matrix-sdk-crypto?/testing"
+        ],
+        "uniffi": [
+          "dep:uniffi"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/matrix-sdk-sqlite"
+    },
+    {
+      "name": "matrix-sdk-sqlite",
+      "version": "0.19.0",
+      "rust_version": "1.96",
+      "created_at": "2026-09-16T13:03:12.634152Z",
+      "yanked": false,
+      "crate_sha256": "fc72eaeae8a98dad0fd892607558d3bd40fe02575d522d4642f7c45631f738c9",
+      "repository": "https://github.com/matrix-org/matrix-rust-sdk",
+      "features": {
+        "bundled": [
+          "rusqlite/bundled"
+        ],
+        "crypto-store": [
+          "dep:matrix-sdk-base",
+          "dep:matrix-sdk-crypto"
+        ],
+        "default": [
+          "state-store",
+          "event-cache-store",
+          "media-store"
+        ],
+        "event-cache-store": [
+          "dep:matrix-sdk-base"
+        ],
+        "experimental-encrypted-state-events": [
+          "matrix-sdk-crypto?/experimental-encrypted-state-events"
+        ],
+        "experimental-push-secrets": [
+          "matrix-sdk-crypto?/experimental-push-secrets"
+        ],
+        "media-store": [
+          "dep:matrix-sdk-base"
+        ],
+        "state-store": [
+          "dep:matrix-sdk-base"
+        ],
+        "testing": [
+          "matrix-sdk-crypto?/testing"
+        ],
+        "uniffi": [
+          "dep:uniffi"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/matrix-sdk-sqlite"
+    },
+    {
+      "name": "anymap3",
+      "version": "1.1.0",
+      "rust_version": "1.56",
+      "created_at": "2026-06-14T18:19:19.928456Z",
+      "yanked": false,
+      "crate_sha256": "fb5dfbc6d8d2675589ccbe4d0fd61df2419075625f8c1a62325e718e2b0049f9",
+      "repository": "https://github.com/reivilibre/anymap3",
+      "features": {
+        "default": [
+          "std"
+        ],
+        "std": []
+      },
+      "source": "https://crates.io/api/v1/crates/anymap3"
+    },
+    {
+      "name": "age",
+      "version": "0.12.1",
+      "rust_version": "1.74",
+      "created_at": "2026-07-14T03:05:40.153921Z",
+      "yanked": false,
+      "crate_sha256": "fd290633c2482479f70f6d1d96ae0e9f52c6a26cd5859edd47ee1fe33fc89f26",
+      "repository": "https://github.com/str4d/rage",
+      "features": {
+        "armor": [],
+        "async": [
+          "futures",
+          "memchr"
+        ],
+        "cli-common": [
+          "console",
+          "is-terminal",
+          "pinentry",
+          "rpassword"
+        ],
+        "default": [],
+        "plugin": [
+          "age-core/plugin",
+          "which",
+          "wsl"
+        ],
+        "ssh": [
+          "aes",
+          "aes-gcm",
+          "bcrypt-pbkdf",
+          "cbc",
+          "ctr",
+          "curve25519-dalek",
+          "num-traits",
+          "rsa"
+        ],
+        "unstable": [
+          "age-core/unstable"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/age"
+    },
+    {
+      "name": "age",
+      "version": "0.11.5",
+      "rust_version": "1.65",
+      "created_at": "2026-07-14T02:28:23.630928Z",
+      "yanked": false,
+      "crate_sha256": "047a482d1843edf1ce76ada63183698144030fe1191bd5ddba6e41e164e0bc43",
+      "repository": "https://github.com/str4d/rage",
+      "features": {
+        "armor": [],
+        "async": [
+          "futures",
+          "memchr"
+        ],
+        "cli-common": [
+          "console",
+          "is-terminal",
+          "pinentry",
+          "rpassword"
+        ],
+        "default": [],
+        "plugin": [
+          "age-core/plugin",
+          "which",
+          "wsl"
+        ],
+        "ssh": [
+          "aes",
+          "aes-gcm",
+          "bcrypt-pbkdf",
+          "cbc",
+          "cipher",
+          "ctr",
+          "curve25519-dalek",
+          "num-traits",
+          "rsa"
+        ],
+        "unstable": [
+          "age-core/unstable"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/age"
+    },
+    {
+      "name": "i18n-config",
+      "version": "0.4.8",
+      "rust_version": null,
+      "created_at": "2025-07-09T02:29:05.168149Z",
+      "yanked": false,
+      "crate_sha256": "3e06b90c8a0d252e203c94344b21e35a30f3a3a85dc7db5af8f8df9f3e0c63ef",
+      "repository": "https://github.com/kellpossible/cargo-i18n/tree/master/i18n-config",
+      "features": {},
+      "source": "https://crates.io/api/v1/crates/i18n-config"
+    },
+    {
+      "name": "i18n-embed-fl",
+      "version": "0.10.1",
+      "rust_version": null,
+      "created_at": "2026-07-23T05:49:58.333975Z",
+      "yanked": false,
+      "crate_sha256": "602e6bd30c3db2749e13e38b363a3d98d9d41de1d8de7a79c31bb69e45b47cda",
+      "repository": "https://github.com/kellpossible/cargo-i18n/tree/master/i18n-embed-fl",
+      "features": {
+        "dashmap": [
+          "dep:dashmap"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/i18n-embed-fl"
+    },
+    {
+      "name": "aws-config",
+      "version": "1.13.0",
+      "rust_version": "1.94.1",
+      "created_at": "2026-10-20T19:09:34.523014Z",
+      "yanked": false,
+      "crate_sha256": "939e256cfe0ed68e96d32f194339d88210d5c10685cff0787400158f852c6819",
+      "repository": "https://github.com/smithy-lang/smithy-rs",
+      "features": {
+        "allow-compilation": [],
+        "behavior-version-latest": [],
+        "client-hyper": [
+          "aws-smithy-runtime/default-https-client"
+        ],
+        "credentials-login": [
+          "dep:aws-sdk-signin",
+          "dep:sha2",
+          "dep:zeroize",
+          "dep:hex",
+          "dep:base64-simd",
+          "dep:uuid",
+          "uuid?/v4",
+          "dep:p256",
+          "p256?/arithmetic",
+          "p256?/pem",
+          "dep:rand"
+        ],
+        "credentials-process": [
+          "tokio/process"
+        ],
+        "default": [
+          "default-https-client",
+          "rt-tokio",
+          "credentials-process",
+          "sso"
+        ],
+        "default-https-client": [
+          "aws-smithy-runtime/default-https-client"
+        ],
+        "legacy-client": [
+          "aws-smithy-runtime/tls-rustls"
+        ],
+        "rt-tokio": [
+          "aws-smithy-async/rt-tokio",
+          "aws-smithy-runtime/rt-tokio",
+          "tokio/rt"
+        ],
+        "rustls": [
+          "client-hyper"
+        ],
+        "sso": [
+          "dep:aws-sdk-sso",
+          "dep:aws-sdk-ssooidc",
+          "dep:sha1",
+          "dep:hex",
+          "dep:zeroize",
+          "aws-smithy-runtime-api/http-auth"
+        ],
+        "test-util": [
+          "aws-runtime/test-util"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/aws-config"
+    },
+    {
+      "name": "p256",
+      "version": "0.14.0",
+      "rust_version": "1.85",
+      "created_at": "2026-07-03T17:56:52.396813Z",
+      "yanked": false,
+      "crate_sha256": "d2c9239b2dbc807adbbe147e8cf72ea7450c3a0aabe62cb8e75ff4ec22e1f72a",
+      "repository": "https://github.com/RustCrypto/elliptic-curves",
+      "features": {
+        "alloc": [
+          "ecdsa-core?/alloc",
+          "elliptic-curve/alloc",
+          "primeorder?/alloc"
+        ],
+        "arithmetic": [
+          "dep:primefield",
+          "dep:primeorder",
+          "elliptic-curve/arithmetic"
+        ],
+        "default": [
+          "arithmetic",
+          "ecdsa",
+          "pem",
+          "precomputed-tables",
+          "std"
+        ],
+        "digest": [
+          "ecdsa-core/digest"
+        ],
+        "ecdh": [
+          "arithmetic",
+          "elliptic-curve/ecdh"
+        ],
+        "ecdsa": [
+          "arithmetic",
+          "ecdsa-core/algorithm",
+          "sha256"
+        ],
+        "getrandom": [
+          "elliptic-curve/getrandom"
+        ],
+        "group-digest": [
+          "hash2curve",
+          "sha2"
+        ],
+        "hash2curve": [
+          "arithmetic",
+          "dep:hash2curve",
+          "primeorder/hash2curve"
+        ],
+        "oprf": [
+          "group-digest"
+        ],
+        "pem": [
+          "elliptic-curve/pem",
+          "ecdsa-core/pem",
+          "pkcs8"
+        ],
+        "pkcs8": [
+          "ecdsa-core?/pkcs8",
+          "elliptic-curve/pkcs8"
+        ],
+        "precomputed-tables": [
+          "arithmetic",
+          "primeorder/basepoint-table"
+        ],
+        "serde": [
+          "ecdsa-core?/serde",
+          "elliptic-curve/serde",
+          "primeorder?/serde",
+          "serdect"
+        ],
+        "sha256": [
+          "digest",
+          "sha2"
+        ],
+        "std": [
+          "alloc",
+          "ecdsa-core?/std",
+          "elliptic-curve/std",
+          "getrandom",
+          "primeorder?/std"
+        ],
+        "test-vectors": [
+          "dep:hex-literal"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/p256"
+    },
+    {
+      "name": "elliptic-curve",
+      "version": "0.14.3",
+      "rust_version": "1.87",
+      "created_at": "2026-10-25T15:50:54.339709Z",
+      "yanked": false,
+      "crate_sha256": "900f37e7e18d74a2347389af6cd69e3a30d5cc9e697f40004865679aa75e9c7c",
+      "repository": "https://github.com/RustCrypto/traits",
+      "features": {
+        "alloc": [
+          "base16ct/alloc",
+          "ff?/alloc",
+          "group?/alloc",
+          "array/alloc",
+          "pkcs8?/alloc",
+          "sec1?/alloc",
+          "zeroize/alloc"
+        ],
+        "arithmetic": [
+          "group"
+        ],
+        "default": [
+          "arithmetic"
+        ],
+        "dev": [
+          "arithmetic",
+          "dep:hex-literal",
+          "pem",
+          "pkcs8"
+        ],
+        "ecdh": [
+          "arithmetic",
+          "digest",
+          "dep:hkdf"
+        ],
+        "getrandom": [
+          "arithmetic",
+          "bigint/getrandom",
+          "common/getrandom"
+        ],
+        "group": [
+          "dep:group",
+          "ff"
+        ],
+        "pem": [
+          "dep:pem-rfc7468",
+          "alloc",
+          "arithmetic",
+          "pkcs8/pem",
+          "sec1/pem"
+        ],
+        "pkcs8": [
+          "dep:pkcs8",
+          "sec1"
+        ],
+        "serde": [
+          "dep:serdect",
+          "alloc",
+          "pkcs8",
+          "sec1/serde"
+        ],
+        "std": [
+          "alloc",
+          "pkcs8?/std",
+          "sec1?/std"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/elliptic-curve"
+    },
+    {
+      "name": "elliptic-curve",
+      "version": "0.14.1",
+      "rust_version": "1.85",
+      "created_at": "2026-06-29T02:53:52.557207Z",
+      "yanked": false,
+      "crate_sha256": "9d65aa39b3a5c1c9c1b745c9a019234bb7a21b77abcb4f4d266d706e2d577d65",
+      "repository": "https://github.com/RustCrypto/traits",
+      "features": {
+        "alloc": [
+          "base16ct/alloc",
+          "ff?/alloc",
+          "group?/alloc",
+          "array/alloc",
+          "pkcs8?/alloc",
+          "sec1?/alloc",
+          "zeroize/alloc"
+        ],
+        "arithmetic": [
+          "group"
+        ],
+        "default": [
+          "arithmetic"
+        ],
+        "dev": [
+          "arithmetic",
+          "dep:hex-literal",
+          "pem",
+          "pkcs8"
+        ],
+        "ecdh": [
+          "arithmetic",
+          "digest",
+          "dep:hkdf"
+        ],
+        "getrandom": [
+          "arithmetic",
+          "bigint/getrandom",
+          "common/getrandom"
+        ],
+        "group": [
+          "dep:group",
+          "ff"
+        ],
+        "pem": [
+          "dep:pem-rfc7468",
+          "alloc",
+          "arithmetic",
+          "pkcs8/pem",
+          "sec1/pem"
+        ],
+        "pkcs8": [
+          "dep:pkcs8",
+          "sec1"
+        ],
+        "serde": [
+          "dep:serdect",
+          "alloc",
+          "pkcs8",
+          "sec1/serde"
+        ],
+        "std": [
+          "alloc",
+          "pkcs8?/std",
+          "sec1?/std"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/elliptic-curve"
+    },
+    {
+      "name": "crypto-bigint",
+      "version": "0.7.10",
+      "rust_version": "1.87",
+      "created_at": "2026-10-26T04:00:33.406475Z",
+      "yanked": false,
+      "crate_sha256": "9c035cb64cba03dad2fb921f3e218785e8cf9a41790da5eb3a1400f62fa2be11",
+      "repository": "https://github.com/RustCrypto/crypto-bigint",
+      "features": {
+        "alloc": [
+          "serdect?/alloc"
+        ],
+        "default": [
+          "rand_core"
+        ],
+        "der": [
+          "dep:der",
+          "hybrid-array"
+        ],
+        "extra-sizes": [],
+        "getrandom": [
+          "dep:getrandom",
+          "rand_core"
+        ],
+        "rand_core": [
+          "dep:rand_core"
+        ],
+        "serde": [
+          "dep:serdect"
+        ],
+        "subtle": [
+          "dep:subtle",
+          "ctutils/subtle",
+          "hybrid-array?/subtle"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/crypto-bigint"
+    },
+    {
+      "name": "crypto-bigint",
+      "version": "0.7.6",
+      "rust_version": "1.87",
+      "created_at": "2026-10-23T12:25:51.025899Z",
+      "yanked": true,
+      "crate_sha256": "6bb08299a6046833a879ace115697f12fd2bd6c8d3e93c909ffc9e0738e7cae0",
+      "repository": "https://github.com/RustCrypto/crypto-bigint",
+      "features": {
+        "alloc": [
+          "serdect?/alloc"
+        ],
+        "default": [
+          "rand_core"
+        ],
+        "der": [
+          "dep:der",
+          "hybrid-array"
+        ],
+        "extra-sizes": [],
+        "getrandom": [
+          "dep:getrandom",
+          "rand_core"
+        ],
+        "rand_core": [
+          "dep:rand_core"
+        ],
+        "serde": [
+          "dep:serdect"
+        ],
+        "subtle": [
+          "dep:subtle",
+          "ctutils/subtle",
+          "hybrid-array?/subtle"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/crypto-bigint"
+    },
+    {
+      "name": "keyring",
+      "version": "4.2.0",
+      "rust_version": "1.88.0",
+      "created_at": "2026-08-29T23:48:56.175457Z",
+      "yanked": false,
+      "crate_sha256": "2270074a3d26bcac93c1dc5d2845eb4c089e8d761ccf6e0ea266a16004640627",
+      "repository": "https://github.com/open-source-cooperative/keyring-rs",
+      "features": {
+        "cli": [
+          "android-native-keyring-store",
+          "apple-native-keyring-store/keychain",
+          "apple-native-keyring-store/protected",
+          "db-keystore",
+          "dbus-secret-service-keyring-store",
+          "keyring-core/sample",
+          "linux-keyutils-keyring-store",
+          "windows-native-keyring-store",
+          "zbus-secret-service-keyring-store"
+        ],
+        "default": [
+          "v1"
+        ],
+        "v1": [
+          "apple-native-keyring-store/keychain",
+          "windows-native-keyring-store",
+          "zbus-secret-service-keyring-store"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/keyring"
+    },
+    {
+      "name": "secret-service",
+      "version": "5.2.0",
+      "rust_version": "1.87.0",
+      "created_at": "2026-08-29T22:02:04.379952Z",
+      "yanked": false,
+      "crate_sha256": "5107b24b91445dd2aa449a258a1807b63240942157292354dc5bfdbeb8bc6db8",
+      "repository": "https://github.com/hwchen/secret-service-rs.git",
+      "features": {
+        "crypto-openssl": [
+          "dep:openssl"
+        ],
+        "crypto-rust": [
+          "dep:aes",
+          "dep:cbc",
+          "dep:sha2",
+          "dep:hkdf"
+        ],
+        "rt-async-io": [
+          "zbus/async-io"
+        ],
+        "rt-async-io-crypto-openssl": [
+          "rt-async-io",
+          "crypto-openssl"
+        ],
+        "rt-async-io-crypto-rust": [
+          "rt-async-io",
+          "crypto-rust"
+        ],
+        "rt-tokio": [
+          "zbus/tokio"
+        ],
+        "rt-tokio-crypto-openssl": [
+          "rt-tokio",
+          "crypto-openssl"
+        ],
+        "rt-tokio-crypto-rust": [
+          "rt-tokio",
+          "crypto-rust"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/secret-service"
+    },
+    {
+      "name": "zbus",
+      "version": "6.1.0",
+      "rust_version": "1.89",
+      "created_at": "2026-10-23T11:04:18.834779Z",
+      "yanked": false,
+      "crate_sha256": "fcff5faa63a63d5b81051740f7382017f10b3440b3f401d97f0cf0b3b39c62d9",
+      "repository": "https://github.com/z-galaxy/zbus/",
+      "features": {
+        "arrayvec": [
+          "dep:arrayvec"
+        ],
+        "bus-impl": [
+          "p2p"
+        ],
+        "camino": [
+          "dep:camino"
+        ],
+        "chrono": [
+          "dep:chrono"
+        ],
+        "comms": [
+          "dep:bitflags",
+          "zbus_macros/comms",
+          "dep:serde_repr",
+          "dep:futures-core",
+          "dep:hex",
+          "dep:ordered-stream",
+          "dep:zruntime",
+          "zruntime/broadcast",
+          "zruntime/lock",
+          "zruntime/unblock",
+          "dep:async-trait",
+          "dep:rustix",
+          "dep:libc",
+          "dep:windows-sys",
+          "dep:uds_windows",
+          "dep:socket2",
+          "dep:uuid"
+        ],
+        "default": [
+          "default-rt",
+          "proxy",
+          "service",
+          "object-manager",
+          "tracing"
+        ],
+        "default-rt": [
+          "comms",
+          "zruntime/runtime",
+          "zruntime/helper",
+          "zruntime/tcp",
+          "zruntime/unix",
+          "zruntime/process"
+        ],
+        "heapless": [
+          "dep:heapless"
+        ],
+        "ibus": [
+          "comms",
+          "tokio?/process"
+        ],
+        "object-manager": [
+          "service"
+        ],
+        "option-as-array": [],
+        "p2p": [
+          "comms",
+          "uuid?/v4"
+        ],
+        "proxy": [
+          "comms",
+          "zbus_macros/proxy"
+        ],
+        "serde_bytes": [
+          "dep:serde_bytes"
+        ],
+        "service": [
+          "comms",
+          "zbus_macros/service"
+        ],
+        "time": [
+          "dep:time"
+        ],
+        "tokio": [
+          "comms",
+          "dep:tokio"
+        ],
+        "tokio-multithread": [
+          "tokio",
+          "tokio/rt-multi-thread"
+        ],
+        "tracing": [
+          "dep:tracing",
+          "tokio?/tracing",
+          "zruntime?/tracing"
+        ],
+        "unixexec": [
+          "comms",
+          "tokio?/process"
+        ],
+        "url": [
+          "dep:url"
+        ],
+        "uuid": [
+          "dep:uuid"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/zbus"
+    },
+    {
+      "name": "zbus",
+      "version": "6.0.0",
+      "rust_version": "1.89",
+      "created_at": "2026-10-16T13:20:17.335153Z",
+      "yanked": false,
+      "crate_sha256": "266223222c9d81e5966455a9da0783e35d56a7ccab79a03c2366b2d98f8fc8a9",
+      "repository": "https://github.com/z-galaxy/zbus/",
+      "features": {
+        "arrayvec": [
+          "dep:arrayvec"
+        ],
+        "bus-impl": [
+          "p2p"
+        ],
+        "camino": [
+          "dep:camino"
+        ],
+        "chrono": [
+          "dep:chrono"
+        ],
+        "comms": [
+          "dep:bitflags",
+          "zbus_macros/comms",
+          "dep:serde_repr",
+          "dep:futures-core",
+          "dep:hex",
+          "dep:ordered-stream",
+          "dep:zruntime",
+          "zruntime/broadcast",
+          "zruntime/lock",
+          "zruntime/unblock",
+          "dep:async-trait",
+          "dep:rustix",
+          "dep:libc",
+          "dep:windows-sys",
+          "dep:uds_windows",
+          "dep:socket2",
+          "dep:uuid"
+        ],
+        "default": [
+          "default-rt",
+          "proxy",
+          "service",
+          "object-manager",
+          "tracing"
+        ],
+        "default-rt": [
+          "comms",
+          "zruntime/runtime",
+          "zruntime/helper",
+          "zruntime/tcp",
+          "zruntime/unix",
+          "zruntime/process"
+        ],
+        "heapless": [
+          "dep:heapless"
+        ],
+        "ibus": [
+          "comms",
+          "tokio?/process"
+        ],
+        "object-manager": [
+          "service"
+        ],
+        "option-as-array": [],
+        "p2p": [
+          "comms",
+          "uuid?/v4"
+        ],
+        "proxy": [
+          "comms",
+          "zbus_macros/proxy"
+        ],
+        "serde_bytes": [
+          "dep:serde_bytes"
+        ],
+        "service": [
+          "comms",
+          "zbus_macros/service"
+        ],
+        "time": [
+          "dep:time"
+        ],
+        "tokio": [
+          "comms",
+          "dep:tokio"
+        ],
+        "tokio-multithread": [
+          "tokio",
+          "tokio/rt-multi-thread"
+        ],
+        "tracing": [
+          "dep:tracing",
+          "tokio?/tracing",
+          "zruntime?/tracing"
+        ],
+        "unixexec": [
+          "comms",
+          "tokio?/process"
+        ],
+        "url": [
+          "dep:url"
+        ],
+        "uuid": [
+          "dep:uuid"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/zbus"
+    },
+    {
+      "name": "zbus-secret-service-keyring-store",
+      "version": "1.0.1",
+      "rust_version": "1.88",
+      "created_at": "2026-08-15T05:03:45.133516Z",
+      "yanked": false,
+      "crate_sha256": "74801d001b9e7729adb4f1825b67b398185fed424749aa3d8bacf70417137d9a",
+      "repository": "https://github.com/open-source-cooperative/zbus-secret-service-keyring-store.git",
+      "features": {
+        "crypto-openssl": [
+          "secret-service/crypto-openssl"
+        ],
+        "crypto-rust": [
+          "secret-service/crypto-rust"
+        ],
+        "rt-async-io-crypto-openssl": [
+          "secret-service/rt-async-io-crypto-openssl"
+        ],
+        "rt-async-io-crypto-rust": [
+          "secret-service/rt-async-io-crypto-rust"
+        ],
+        "rt-tokio-crypto-openssl": [
+          "secret-service/rt-tokio-crypto-openssl"
+        ],
+        "rt-tokio-crypto-rust": [
+          "secret-service/rt-tokio-crypto-rust"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/zbus-secret-service-keyring-store"
+    },
+    {
+      "name": "serde_yaml_ng",
+      "version": "0.10.0",
+      "rust_version": "1.64",
+      "created_at": "2024-05-26T19:57:45.710414Z",
+      "yanked": false,
+      "crate_sha256": "7b4db627b98b36d4203a7b458cf3573730f2bb591b28871d916dfa9efabfd41f",
+      "repository": "https://github.com/acatton/serde-yaml-ng",
+      "features": {},
+      "source": "https://crates.io/api/v1/crates/serde_yaml_ng"
+    },
+    {
+      "name": "serde-saphyr",
+      "version": "2.0.0",
+      "rust_version": "1.89",
+      "created_at": "2026-10-13T15:11:53.735115Z",
+      "yanked": false,
+      "crate_sha256": "a253edfdea34032da21af84e16fcc94f4c7a6ba237f9f3bc2dbf43cea8535c44",
+      "repository": "https://github.com/bourumir-wyngs/serde-saphyr",
+      "features": {
+        "comments": [
+          "granit-parser?/comments"
+        ],
+        "default": [
+          "serialize",
+          "deserialize",
+          "comments"
+        ],
+        "deserialize": [
+          "dep:num-traits",
+          "dep:annotate-snippets",
+          "dep:granit-parser",
+          "dep:smallvec",
+          "dep:encoding_rs_io"
+        ],
+        "figment": [
+          "dep:figment",
+          "deserialize"
+        ],
+        "figment2": [
+          "dep:figment2",
+          "deserialize"
+        ],
+        "garde": [
+          "dep:garde",
+          "deserialize"
+        ],
+        "huge_documents": [
+          "deserialize"
+        ],
+        "include": [
+          "deserialize"
+        ],
+        "include_fs": [
+          "include"
+        ],
+        "miette": [
+          "dep:miette",
+          "deserialize"
+        ],
+        "properties": [
+          "deserialize"
+        ],
+        "robotics": [
+          "deserialize"
+        ],
+        "serde_derived_types": [
+          "dep:serde",
+          "deserialize"
+        ],
+        "serialize": [
+          "dep:base64",
+          "dep:num-traits",
+          "dep:zmij",
+          "dep:nohash-hasher"
+        ],
+        "validator": [
+          "dep:validator",
+          "deserialize"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/serde-saphyr"
+    },
+    {
+      "name": "zip",
+      "version": "9.1.2",
+      "rust_version": "1.88",
+      "created_at": "2026-10-26T05:11:07.868634Z",
+      "yanked": false,
+      "crate_sha256": "ec2e3161de27091f18a831d9494e9c53378a34833af5c1dda35ad85849da18d6",
+      "repository": "https://github.com/zip-rs/zip2",
+      "features": {
+        "_arbitrary": [
+          "dep:arbitrary"
+        ],
+        "_bzip2_any": [],
+        "_deflate-any": [],
+        "_miri_compatible_features": [
+          "bzip2",
+          "chrono",
+          "deflate-flate2",
+          "flate2/rust_backend",
+          "deflate-zopfli",
+          "jiff-02",
+          "legacy-zip",
+          "lzma",
+          "nt-time",
+          "ppmd",
+          "unreserved",
+          "xz",
+          "time"
+        ],
+        "aes-crypto": [
+          "dep:aes",
+          "dep:constant_time_eq",
+          "getrandom/std",
+          "dep:hmac",
+          "dep:pbkdf2",
+          "dep:sha1",
+          "dep:zeroize"
+        ],
+        "bzip2": [
+          "dep:bzip2",
+          "bzip2/default",
+          "_bzip2_any"
+        ],
+        "bzip2-rs": [
+          "dep:bzip2",
+          "bzip2/bzip2-sys",
+          "_bzip2_any"
+        ],
+        "chrono": [
+          "dep:chrono"
+        ],
+        "default": [
+          "aes-crypto",
+          "bzip2",
+          "deflate64",
+          "deflate",
+          "lzma",
+          "ppmd",
+          "time",
+          "zstd",
+          "xz"
+        ],
+        "deflate": [
+          "deflate-zopfli",
+          "deflate-flate2-zlib-rs"
+        ],
+        "deflate-flate2": [
+          "_deflate-any",
+          "dep:flate2"
+        ],
+        "deflate-flate2-zlib": [
+          "deflate-flate2",
+          "flate2/zlib"
+        ],
+        "deflate-flate2-zlib-ng": [
+          "deflate-flate2",
+          "flate2/zlib-ng"
+        ],
+        "deflate-flate2-zlib-ng-compat": [
+          "deflate-flate2",
+          "flate2/zlib-ng-compat"
+        ],
+        "deflate-flate2-zlib-rs": [
+          "deflate-flate2",
+          "flate2/zlib-rs"
+        ],
+        "deflate-zopfli": [
+          "dep:zopfli",
+          "_deflate-any"
+        ],
+        "getrandom": [],
+        "jiff-02": [
+          "dep:jiff"
+        ],
+        "legacy-zip": [
+          "bitstream-io"
+        ],
+        "lzma": [
+          "dep:lzma-rust2"
+        ],
+        "nt-time": [
+          "dep:nt-time"
+        ],
+        "ppmd": [
+          "dep:ppmd-rust"
+        ],
+        "time": [
+          "dep:time"
+        ],
+        "unreserved": [],
+        "xz": [
+          "dep:lzma-rust2"
+        ],
+        "zstd": [
+          "dep:zstd"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/zip"
+    },
+    {
+      "name": "zip",
+      "version": "9.0.0",
+      "rust_version": "1.88",
+      "created_at": "2026-10-09T04:48:51.262822Z",
+      "yanked": false,
+      "crate_sha256": "711e8c9646791c49b7eb799a19c4ae70a9b8372ddc6a1fa4778defd1e2aa5d5e",
+      "repository": "https://github.com/zip-rs/zip2",
+      "features": {
+        "_arbitrary": [
+          "dep:arbitrary"
+        ],
+        "_bzip2_any": [],
+        "_deflate-any": [],
+        "aes-crypto": [
+          "dep:aes",
+          "dep:constant_time_eq",
+          "getrandom/std",
+          "dep:hmac",
+          "dep:pbkdf2",
+          "dep:sha1",
+          "dep:zeroize"
+        ],
+        "bzip2": [
+          "dep:bzip2",
+          "bzip2/default",
+          "_bzip2_any"
+        ],
+        "bzip2-rs": [
+          "dep:bzip2",
+          "bzip2/bzip2-sys",
+          "_bzip2_any"
+        ],
+        "chrono": [
+          "dep:chrono"
+        ],
+        "default": [
+          "aes-crypto",
+          "bzip2",
+          "deflate64",
+          "deflate",
+          "lzma",
+          "ppmd",
+          "time",
+          "zstd",
+          "xz"
+        ],
+        "deflate": [
+          "deflate-zopfli",
+          "deflate-flate2-zlib-rs"
+        ],
+        "deflate-flate2": [
+          "_deflate-any",
+          "dep:flate2"
+        ],
+        "deflate-flate2-zlib": [
+          "deflate-flate2",
+          "flate2/zlib"
+        ],
+        "deflate-flate2-zlib-ng": [
+          "deflate-flate2",
+          "flate2/zlib-ng"
+        ],
+        "deflate-flate2-zlib-ng-compat": [
+          "deflate-flate2",
+          "flate2/zlib-ng-compat"
+        ],
+        "deflate-flate2-zlib-rs": [
+          "deflate-flate2",
+          "flate2/zlib-rs"
+        ],
+        "deflate-zopfli": [
+          "dep:zopfli",
+          "_deflate-any"
+        ],
+        "jiff-02": [
+          "dep:jiff"
+        ],
+        "legacy-zip": [
+          "bitstream-io"
+        ],
+        "lzma": [
+          "dep:lzma-rust2"
+        ],
+        "nt-time": [
+          "dep:nt-time"
+        ],
+        "ppmd": [
+          "dep:ppmd-rust"
+        ],
+        "time": [
+          "dep:time"
+        ],
+        "unreserved": [],
+        "xz": [
+          "dep:lzma-rust2"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/zip"
+    },
+    {
+      "name": "zstd",
+      "version": "0.14.3",
+      "rust_version": "1.64",
+      "created_at": "2026-10-16T16:59:51.114469Z",
+      "yanked": false,
+      "crate_sha256": "db3ae9bf90af6e40197bef767eeefc46ad6397420fe873830bd85e5fbbfb3c70",
+      "repository": "https://github.com/gyscos/zstd-rs",
+      "features": {
+        "arrays": [
+          "zstd-safe/arrays"
+        ],
+        "bindgen": [
+          "zstd-safe/bindgen"
+        ],
+        "cmake": [
+          "zstd-safe/cmake"
+        ],
+        "debug": [
+          "zstd-safe/debug"
+        ],
+        "default": [
+          "legacy",
+          "arrays",
+          "zdict_builder"
+        ],
+        "doc-cfg": [],
+        "experimental": [
+          "zstd-safe/experimental"
+        ],
+        "fat-lto": [
+          "zstd-safe/fat-lto"
+        ],
+        "legacy": [
+          "zstd-safe/legacy"
+        ],
+        "no_asm": [
+          "zstd-safe/no_asm"
+        ],
+        "pkg-config": [
+          "zstd-safe/pkg-config"
+        ],
+        "thin": [
+          "zstd-safe/thin"
+        ],
+        "thin-lto": [
+          "zstd-safe/thin-lto"
+        ],
+        "vendored": [
+          "zstd-safe/vendored"
+        ],
+        "wasm": [],
+        "with-rust-allocator": [
+          "zstd-safe/with-rust-allocator"
+        ],
+        "zdict_builder": [
+          "zstd-safe/zdict_builder"
+        ],
+        "zstdmt": [
+          "zstd-safe/zstdmt"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/zstd"
+    },
+    {
+      "name": "zstd-safe",
+      "version": "8.2.0",
+      "rust_version": "1.64",
+      "created_at": "2026-10-16T16:59:12.917175Z",
+      "yanked": false,
+      "crate_sha256": "ded520f16b29e1a9b771c722221b2b0a0398c2316d9bb3c42b458a5414d7434b",
+      "repository": "https://github.com/gyscos/zstd-rs",
+      "features": {
+        "arrays": [],
+        "bindgen": [
+          "zstd-sys/bindgen"
+        ],
+        "cmake": [
+          "zstd-sys/cmake"
+        ],
+        "debug": [
+          "zstd-sys/debug"
+        ],
+        "default": [
+          "legacy",
+          "arrays",
+          "zdict_builder"
+        ],
+        "doc-cfg": [],
+        "experimental": [
+          "zstd-sys/experimental"
+        ],
+        "fat-lto": [
+          "zstd-sys/fat-lto"
+        ],
+        "legacy": [
+          "zstd-sys/legacy"
+        ],
+        "no_asm": [
+          "zstd-sys/no_asm"
+        ],
+        "pkg-config": [
+          "zstd-sys/pkg-config"
+        ],
+        "seekable": [
+          "zstd-sys/seekable"
+        ],
+        "std": [
+          "zstd-sys/std"
+        ],
+        "thin": [
+          "zstd-sys/thin"
+        ],
+        "thin-lto": [
+          "zstd-sys/thin-lto"
+        ],
+        "vendored": [
+          "zstd-sys/vendored"
+        ],
+        "with-rust-allocator": [
+          "experimental"
+        ],
+        "zdict_builder": [
+          "zstd-sys/zdict_builder"
+        ],
+        "zstdmt": [
+          "zstd-sys/zstdmt"
+        ]
+      },
+      "source": "https://crates.io/api/v1/crates/zstd-safe"
+    },
+    {
+      "name": "zstd-sys",
+      "version": "2.1.2+zstd.1.5.7",
+      "rust_version": "1.64",
+      "created_at": "2026-10-16T16:59:08.260973Z",
+      "yanked": false,
+      "crate_sha256": "481ada9c543b2323cbb7bbdbb5249177fbf0188ed959ed2c15e4b22421c84ed3",
+      "repository": "https://github.com/gyscos/zstd-rs",
+      "features": {
+        "cmake": [
+          "dep:cmake"
+        ],
+        "debug": [],
+        "default": [
+          "legacy",
+          "zdict_builder"
+        ],
+        "experimental": [],
+        "fat-lto": [],
+        "legacy": [],
+        "no_asm": [],
+        "no_wasm_shim": [],
+        "non-cargo": [],
+        "pkg-config": [],
+        "seekable": [],
+        "std": [],
+        "thin": [],
+        "thin-lto": [],
+        "vendored": [],
+        "zdict_builder": [],
+        "zstdmt": []
+      },
+      "source": "https://crates.io/api/v1/crates/zstd-sys"
+    }
+  ],
+  "metadata_archive": {
+    "file": "upstream-metadata.tar.gz",
+    "bytes": 218192,
+    "sha256": "cce9d8b084820ba542adad40a684ca11cb1e6b85c27e48bc224e19b25133dc14",
+    "all_members_reopened_and_hash_verified": true,
+    "members": [
+      {
+        "name": "age-0.11.5-dependencies.json",
+        "bytes": 8095,
+        "sha256": "c6b25922c7a7ae098fae1dbd1dfa15bda4e9a8fac2f5e517d15a5485b6a77502"
+      },
+      {
+        "name": "age-0.12.1-dependencies.json",
+        "bytes": 8989,
+        "sha256": "7dbd8aac68282834adbfe0b774f3358ed6752d24f93c3bb44df5ab071daad8cf"
+      },
+      {
+        "name": "age.json",
+        "bytes": 59391,
+        "sha256": "4387ffbec20d2319094bbba4cd149a93c87c76df1927856fa37d80373513e719"
+      },
+      {
+        "name": "anymap3.json",
+        "bytes": 6797,
+        "sha256": "765b3126be6e42bc9a8157aa24ffc398093276f3c9b80d965605f4ac8e0a33ad"
+      },
+      {
+        "name": "aws-config-1.13.0-dependencies.json",
+        "bytes": 7205,
+        "sha256": "38f4e07f9ec600351b84cb6bb20091acd80c63deadad9c2ded8ce87040893910"
+      },
+      {
+        "name": "aws-config-current.json",
+        "bytes": 7137,
+        "sha256": "63c1e7f672a9cb237ea481c42342faeff30ec662143a6053edb43587cede1bf1"
+      },
+      {
+        "name": "aws-config.json",
+        "bytes": 220385,
+        "sha256": "e482aa7adeef4f395b90d4b3690d34fe093d4b895d37fb055048888e53844ef9"
+      },
+      {
+        "name": "aws-sdk-sso.json",
+        "bytes": 311018,
+        "sha256": "c863dfd17017fab85e99b0fa1947a365f32737988d19fb3577e0a6c36d118553"
+      },
+      {
+        "name": "crypto-bigint.json",
+        "bytes": 216446,
+        "sha256": "d8aaa0a27abe9400957fe7574cb5f22da9987da1fa67df65d1e8939434a18f45"
+      },
+      {
+        "name": "elliptic-curve-0.14.1-dependencies.json",
+        "bytes": 3031,
+        "sha256": "34baf6409041a35246141726c084ce656a4d92c7e9318ca5ca53b6ab22d2ea92"
+      },
+      {
+        "name": "elliptic-curve-0.14.3-dependencies.json",
+        "bytes": 3031,
+        "sha256": "0c38ec949a23738c89d36cd95428ad210d7755ad429af9d0f44f2bc661cbd1c0"
+      },
+      {
+        "name": "elliptic-curve.json",
+        "bytes": 293484,
+        "sha256": "6cbdbbe3ba1e648b08e38c58c41c62d1e2218c325ecf40de8b28cbe208c8e45e"
+      },
+      {
+        "name": "i18n-config-0.4.8-dependencies.json",
+        "bytes": 1061,
+        "sha256": "c1b52b07d10730e4bbef085af86fe696c72b8ca43d83c802e16667a218923f11"
+      },
+      {
+        "name": "i18n-config.json",
+        "bytes": 28706,
+        "sha256": "ff69adeddfb434dc283e6af1d12ff1db770acce3a012ced347a6301c8e76a9b3"
+      },
+      {
+        "name": "i18n-current-raw.json",
+        "bytes": 832,
+        "sha256": "fb77c06ccceaf624313368517360805611a76b93894862f1b6b20f3cfed9d534"
+      },
+      {
+        "name": "i18n-embed-fl-0.10.1-dependencies.json",
+        "bytes": 2879,
+        "sha256": "14b3d5588a09583b53d7cebaf02d57761bcfe3267c708a27836c76933ff02098"
+      },
+      {
+        "name": "i18n-embed-fl.json",
+        "bytes": 49791,
+        "sha256": "f52a10310a519b04b3f0980efb095806967b928388afd8b69aa7c3930ba31faa"
+      },
+      {
+        "name": "keyring-4.2.0-dependencies.json",
+        "bytes": 2943,
+        "sha256": "17f0a9a6caffe6773c49021c846db588a17144e6f53b7934c62f1aed150541e7"
+      },
+      {
+        "name": "keyring-zbus-store-current-raw.json",
+        "bytes": 1418,
+        "sha256": "ccf095866e0a9697503d31b8ac9f1d615b31642fc0611465c74b66fd0b8401e9"
+      },
+      {
+        "name": "keyring.json",
+        "bytes": 160929,
+        "sha256": "3a52bf18a39383449a162b51e2911b6c9cfa6c24a2c3e894a54795dd1107b132"
+      },
+      {
+        "name": "linux-keyutils-keyring-store-1.0.0-dependencies.json",
+        "bytes": 706,
+        "sha256": "de33985101134f168ea6b0a8027f03022003c8d526439450803587c92579e3f0"
+      },
+      {
+        "name": "linux-keyutils-keyring-store.json",
+        "bytes": 8768,
+        "sha256": "53699cb9d671fc6f6139134bbddd4329d4ce224d160c1c6c7720d44103a85747"
+      },
+      {
+        "name": "matrix-current.json",
+        "bytes": 17692,
+        "sha256": "73ab551dd47bc846b39e2ba9bb7531e3468cf742f88bdd0471ff6ea950e8525c"
+      },
+      {
+        "name": "matrix-sdk-0.19.0-dependencies.json",
+        "bytes": 16068,
+        "sha256": "91e72d612c251df0731f641b85321fed366e3bff7c5cf60c600db490b33152a5"
+      },
+      {
+        "name": "matrix-sdk-0.19.1-dependencies.json",
+        "bytes": 16068,
+        "sha256": "6c56991ae7d8bdeb8392c67284b30b91e0c26589a7e9f60b6fb3280c22341640"
+      },
+      {
+        "name": "matrix-sdk-current-raw.json",
+        "bytes": 8417,
+        "sha256": "a0ee338016c2e5cb7819dd4d7f888c9961e11e67db5e9db59312dcabcffe6d11"
+      },
+      {
+        "name": "matrix-sdk-sqlite-0.19.0-dependencies.json",
+        "bytes": 6413,
+        "sha256": "10beb2f220ea0c162263e3e2f725847a2fc4d58f3a19c960960e5689298e1bd6"
+      },
+      {
+        "name": "matrix-sdk-sqlite-0.19.1-dependencies.json",
+        "bytes": 6413,
+        "sha256": "0b86a4382b7efaba8f6dc664664e6457f68018a0175e3d017c3892e3fbf8d8e5"
+      },
+      {
+        "name": "matrix-sdk-sqlite.json",
+        "bytes": 30372,
+        "sha256": "0be0b0b4e46446ff093b00c8e495eba288a29c5b039474b4991c5e765198de68"
+      },
+      {
+        "name": "matrix-sdk.json",
+        "bytes": 70618,
+        "sha256": "1b58d0a959e50c8eb57c745d676d95fe0842b4bb946c6658187617d4ff33a887"
+      },
+      {
+        "name": "p256-0.14.0-dependencies.json",
+        "bytes": 2430,
+        "sha256": "81ecc72b8ba27d4ceb6b9243b4cf6d91591b94fa15c4e6954b3136ad21265de3"
+      },
+      {
+        "name": "p256.json",
+        "bytes": 148002,
+        "sha256": "e5e60c3cfb04ca5223bb8db82cc6391866560d043aebd6423959b15588b02f88"
+      },
+      {
+        "name": "rusqlite-0.39.0-dependencies.json",
+        "bytes": 5829,
+        "sha256": "a27efa72ca18118e04d4fc791fc2977ed8a2a989689cce5f4468acec5b32775b"
+      },
+      {
+        "name": "rusqlite-0.40.2-dependencies.json",
+        "bytes": 6298,
+        "sha256": "6e9889dc1b6adad28df04a86d5a4094164d2bbb2e7650d5f1b4c2defa5bde128"
+      },
+      {
+        "name": "secret-service-5.2.0-dependencies.json",
+        "bytes": 2436,
+        "sha256": "4bb0ce929e4cd6fd0047847a9886bd5724a46b3ca1c7c71651742d3add7fa95e"
+      },
+      {
+        "name": "secret-service-current-raw.json",
+        "bytes": 1867,
+        "sha256": "e8c93aed9b8c6876d48d2bc047c68dec15259c8806790dd4ef8133fe91070c5a"
+      },
+      {
+        "name": "secret-service.json",
+        "bytes": 33696,
+        "sha256": "a05d20fe6f96dc0e61446123086f2ba12721a5d9298cd1d44704ad27c251f5e1"
+      },
+      {
+        "name": "serde-saphyr-2.0.0-dependencies.json",
+        "bytes": 5801,
+        "sha256": "1358e24182b90c8d3c72c01cde4723c162a770f54bff30cc6e8b4eabb69a91fc"
+      },
+      {
+        "name": "serde-saphyr.json",
+        "bytes": 75490,
+        "sha256": "500c914b8ca26c1be83c8eb0c39d365b87d73e667cded705fb56a347d23f2006"
+      },
+      {
+        "name": "serde_yaml_ng-0.10.0-dependencies.json",
+        "bytes": 1386,
+        "sha256": "67afc7134faeaba472939e9c5439629edd0ad62764b1c78ba8ece04821915e47"
+      },
+      {
+        "name": "serde_yaml_ng.json",
+        "bytes": 6542,
+        "sha256": "d988a00a40c1df56ad695928d86e9d50ea4d8cddc9f0dc1a8d204fa243d7d7f7"
+      },
+      {
+        "name": "zbus-secret-service-keyring-store-1.0.1-dependencies.json",
+        "bytes": 1026,
+        "sha256": "fa1667538515524af8a1a78dc1c8e8da17826d70e14d681f5559f724bb56af44"
+      },
+      {
+        "name": "zbus-secret-service-keyring-store.json",
+        "bytes": 16712,
+        "sha256": "b4c3fa172a6170e87ac6d404a1e9c25542026e54a00677f0bb79bbd3fb5073ae"
+      },
+      {
+        "name": "zbus.json",
+        "bytes": 176396,
+        "sha256": "350c9811614cd76d4d5fb071050d232da218dc1c4be136e1d1412acd02884a7c"
+      },
+      {
+        "name": "zip-9.1.2-dependencies.json",
+        "bytes": 7360,
+        "sha256": "d9ce008e0e75edc2316b3d31d522006d6dbc52e06c36a0b04dc77a0336cf2e2a"
+      },
+      {
+        "name": "zip.json",
+        "bytes": 312305,
+        "sha256": "9765f505128b861f48d70e2239142b4d1b9d9d4b004643995c1b68b686728399"
+      },
+      {
+        "name": "zstd-0.14.3-dependencies.json",
+        "bytes": 876,
+        "sha256": "2542b3e59eddea376ed1c5f825659c0b844d850a2f9c6c17252b24a25c476758"
+      },
+      {
+        "name": "zstd-safe-8.2.0-dependencies.json",
+        "bytes": 192,
+        "sha256": "57b888d05c073ade1b76495817ee095831c4f3c37864817fee3ba852509adb3f"
+      },
+      {
+        "name": "zstd-safe.json",
+        "bytes": 102633,
+        "sha256": "e0d17a1537bfb30268730c200037d7e3f1cac4a66bd384b42fe09cb1b3566a90"
+      },
+      {
+        "name": "zstd-sys.json",
+        "bytes": 103064,
+        "sha256": "a28bf0ea547962f3f782f82b2bfdc4f34716ea8753fca37b61e31767d55cce4f"
+      },
+      {
+        "name": "zstd.json",
+        "bytes": 130529,
+        "sha256": "08c151f4fd26e3111e6814213ec7a8b5f5e435ba8e3f2aee923acaf25a5f757c"
+      }
+    ]
+  },
+  "implementation_status": {
+    "zip_zstd": "Production API migration, permission masking, six real ZIP regression tests and a two-line manifest patch prepared. Workspace manifest/lock and full repository tests are owned by root; no passing gate is claimed.",
+    "i18n_config": "Checksum-verified upstream source vendored; actual parser changed from basic-toml to maintained toml, with three real-file tests and independent workspace patch. Not resolved into root lock or compiled yet.",
+    "no_ignores_or_feature_removal": true,
+    "no_local_target_or_cache_created": true,
+    "formatted_or_committed_by_this_agent": false
+  }
+}

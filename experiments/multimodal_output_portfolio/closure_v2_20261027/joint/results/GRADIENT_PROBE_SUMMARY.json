@@ -1,0 +1,21 @@
+{
+  "actual_media_members": 9216,
+  "actual_reconstructed_bundles": 4608,
+  "cpu_seconds": 6.643791152,
+  "limitations": [
+    "All18 probes are clean-condition steps because the saved checkpoints are200-step multiples.",
+    "This validates the recorded costs and gradients at the selected saved states, not every unretained original training artifact.",
+    "Fitted reward CNN is an imperfect fixed recognizer; this is not human semantic certification."
+  ],
+  "maximum_coefficient_gradient_error": 1.8801063328410805e-07,
+  "maximum_cost_error": 3.052861996533096e-08,
+  "maximum_preclip_norm_error": 1.1430845214821517e-07,
+  "new_qualification_sources_scored": 0,
+  "parameter_updates_performed": 0,
+  "passed": true,
+  "probes": 18,
+  "protocol_sha256": "d58a7c2d748e0627d860d9e40723a44758240f767e1b2944eb65ff048ca0abda",
+  "reward_observer_sha256": "a9cfe78a08b9192ba9d8fe9c144de29ef5d3b1e9cd6ed236d01d170d32034210",
+  "schema": "hepta.ndu.direct-gradient-independent-probes.v1",
+  "wall_seconds": 7.493861647002632
+}

@@ -1,0 +1,207 @@
+{
+  "schema": "hepta.dependency-qualification.v1",
+  "workflow_run": 40486573394,
+  "source_commit": "6215cb6a87f29623d4beaad24cdf7bcb6bb4fb2c",
+  "candidate_patch_sha256": "ee01fa0ef584a0fc8375f1dc0adbb17732653e747efee7f22663dff9df75be81",
+  "all_targeted_tests_pass": false,
+  "promotion_eligible": false,
+  "groups": {
+    "plugins": {
+      "artifact_id": 12726425778,
+      "artifact_sha256": "0ae6238e9b4122e4d8e43f14ce3dd55eb5d56f423206ed0261cec6d6992da9e0",
+      "result_sha256": "04b6950853d8521b101a22397648c32ac0bdc98e8ad6f36aedcfaa34d98fe60d",
+      "status": "tests_failed",
+      "tests": [
+        {
+          "package": "codex-core-plugins",
+          "exit_code": 100,
+          "summary": [
+            "Summary [   7.886s] 424 tests run: 422 passed, 2 failed, 0 skipped"
+          ],
+          "failed_cases": [
+            "codex-core-plugins startup_sync::zip_tests::zipball_extraction_rejects_invalid_utf8_names",
+            "codex-core-plugins startup_sync::zip_tests::zipball_extraction_strips_privileged_bits_and_keeps_executable_access"
+          ],
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "--cargo-profile",
+            "ci-test",
+            "-p",
+            "codex-core-plugins"
+          ],
+          "log_sha256": "87da7c1256bd2e2acc5481a06b8f3ca22fce616fb4e9bd6c83abded8fa9f55a7",
+          "log_bytes": 139440
+        },
+        {
+          "package": "i18n-config",
+          "exit_code": 101,
+          "summary": [
+            "error: package `i18n-config` cannot be tested because it requires dev-dependencies and is not a member of the workspace"
+          ],
+          "failed_cases": [],
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "--cargo-profile",
+            "ci-test",
+            "-p",
+            "i18n-config"
+          ],
+          "log_sha256": "c1e0d22c450ff8cf8f88edfacd60058be601ddedce37de4a901344ee18aaf3f9",
+          "log_bytes": 10476
+        },
+        {
+          "package": "codex-secrets",
+          "exit_code": 0,
+          "summary": [
+            "Summary [  12.248s] 9 tests run: 9 passed, 0 skipped"
+          ],
+          "failed_cases": [],
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "--cargo-profile",
+            "ci-test",
+            "-p",
+            "codex-secrets"
+          ],
+          "log_sha256": "4dbe0293e1ba7a46e6be57c99dee98486b6e3f8344010a5c03d96da0f4e257d6",
+          "log_bytes": 21180
+        }
+      ],
+      "source_commit": "6215cb6a87f29623d4beaad24cdf7bcb6bb4fb2c",
+      "policy_preserved": true
+    },
+    "storage": {
+      "artifact_id": 12726755056,
+      "artifact_sha256": "6de4bbb32d239a634bea85de4cdb4c78e8b36c6331b6b317604bcfcf68349870",
+      "result_sha256": "9de1ed07a045ab8d316624166c6a74ae7a6a3c0a49450ad692bcc87f2dbbe0ed",
+      "status": "tests_failed",
+      "tests": [
+        {
+          "package": "codex-http-client",
+          "exit_code": 0,
+          "summary": [
+            "Summary [   2.736s] 93 tests run: 93 passed, 0 skipped"
+          ],
+          "failed_cases": [],
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "--cargo-profile",
+            "ci-test",
+            "-p",
+            "codex-http-client"
+          ],
+          "log_sha256": "f7db775bb61a7808e561c5117282baef8c9a79dbfd89e37c61b6df6dd9c78568",
+          "log_bytes": 30781
+        },
+        {
+          "package": "codex-rollout",
+          "exit_code": 0,
+          "summary": [
+            "Summary [   3.416s] 123 tests run: 123 passed, 0 skipped"
+          ],
+          "failed_cases": [],
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "--cargo-profile",
+            "ci-test",
+            "-p",
+            "codex-rollout"
+          ],
+          "log_sha256": "61f3b0ff5b294306ea086faf850c57a7feee452624ec4f11018c869bf92cf12c",
+          "log_bytes": 55787
+        },
+        {
+          "package": "codex-app-server-protocol",
+          "exit_code": 100,
+          "summary": [
+            "Summary [  95.442s] 303 tests run: 300 passed, 3 failed, 1 skipped"
+          ],
+          "failed_cases": [
+            "codex-app-server-protocol schema_fixtures_tests::experimental_precomputed_exports_match_generated",
+            "codex-app-server-protocol schema_fixtures_tests::json_schema_fixtures_match_generated",
+            "codex-app-server-protocol schema_fixtures_tests::stable_precomputed_exports_match_schema_fixtures"
+          ],
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "--cargo-profile",
+            "ci-test",
+            "-p",
+            "codex-app-server-protocol"
+          ],
+          "log_sha256": "e26e4a831bf8f687c247362fe988e2bb1e11b9afa5807163dabcc5b09a3d9582",
+          "log_bytes": 2279696
+        },
+        {
+          "package": "codex-thread-store",
+          "exit_code": 0,
+          "summary": [
+            "Summary [   6.363s] 228 tests run: 228 passed, 0 skipped"
+          ],
+          "failed_cases": [],
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "--cargo-profile",
+            "ci-test",
+            "-p",
+            "codex-thread-store"
+          ],
+          "log_sha256": "693f82db56f991d849f207c38f8d899a7078704dd99e34931dcbc0de52a8e3ea",
+          "log_bytes": 46210
+        }
+      ],
+      "source_commit": "6215cb6a87f29623d4beaad24cdf7bcb6bb4fb2c",
+      "policy_preserved": true
+    },
+    "core": {
+      "artifact_id": 12726475202,
+      "artifact_sha256": "039e4265c2accbe7ca7f27330fff011f840b8ff71cabc86a17ab79607248540e",
+      "result_sha256": "81a774b4b7e8d3efc9a030b1ebafaeb9db305c165d455c5d041be331aa8d6f0b",
+      "status": "targeted_tests_passed",
+      "tests": [
+        {
+          "package": "codex-core",
+          "exit_code": 0,
+          "summary": [
+            "Summary [   0.460s] 2 tests run: 2 passed, 3805 skipped"
+          ],
+          "failed_cases": [],
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "--cargo-profile",
+            "ci-test",
+            "-p",
+            "codex-core",
+            "-E",
+            "test(request_compression)"
+          ],
+          "log_sha256": "6b07f05f7432e3e80ed9d981e0783b0e107f97c836826cd95ac355f464139988",
+          "log_bytes": 85673
+        }
+      ],
+      "source_commit": "6215cb6a87f29623d4beaad24cdf7bcb6bb4fb2c",
+      "policy_preserved": true
+    }
+  },
+  "interpretation": [
+    "ZIP compatibility: 422/424 core-plugin tests passed; invalid UTF-8 and privileged-mode fixtures require investigation.",
+    "The i18n parser test did not run: the path dependency is not an explicit workspace member.",
+    "Protocol tests: 300/303 passed, one existing writer test ignored; three fixture consistency checks failed. No protocol Rust source or generation dependency changed in this candidate.",
+    "Five other package/filter invocations passed. Passing subsets do not override failed package gates."
+  ]
+}

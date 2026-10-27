@@ -1,0 +1,68 @@
+{
+  "actual_text_outputs_and_metadata_reopened": 256,
+  "all_original_transcript_bytes_encoder_hashes_and_beams_identical": true,
+  "comparisons": {
+    "cpu_seconds": {
+      "clusters": 16,
+      "difference": -0.07906951461718749,
+      "interval": [
+        -0.0995367710759766,
+        -0.058718037055859346
+      ]
+    },
+    "metadata_cpu_seconds": {
+      "clusters": 16,
+      "difference": 3.181437500000001e-05,
+      "interval": [
+        -3.735946972656248e-05,
+        9.248634824218751e-05
+      ]
+    },
+    "metadata_inclusive_cpu_seconds": {
+      "clusters": 16,
+      "difference": -0.07903744110937501,
+      "interval": [
+        -0.09949720052968758,
+        -0.05867707659414066
+      ]
+    },
+    "metadata_inclusive_wall_seconds": {
+      "clusters": 16,
+      "difference": -0.07902936601562502,
+      "interval": [
+        -0.09944067050722664,
+        -0.05875983334628908
+      ]
+    },
+    "metadata_wall_seconds": {
+      "clusters": 16,
+      "difference": 7.019137499999998e-05,
+      "interval": [
+        1.2654485742187495e-05,
+        0.00012671439433593743
+      ]
+    },
+    "wall_seconds": {
+      "clusters": 16,
+      "difference": -0.07909954978906242,
+      "interval": [
+        -0.09950172433359365,
+        -0.05884986070546871
+      ]
+    }
+  },
+  "correction_registration_sha256": "04514670875441f961fdcc5dccb3ed429edfb8a3e3efae25f9a8a007b7524d6a",
+  "correction_result_sha256": "da7f33348d264b0326b8fb892953c4cbf5db62087734219cedd57915b0655fdf",
+  "correction_rows_sha256": "9f7e2269eb34151e0f40c3ac26fb047d698cc15301bf98ecee6c691e7f1654c6",
+  "independent_model_reruns": 0,
+  "maximum_statistical_discrepancy": 1.1102230246251565e-16,
+  "metadata_inclusive_boundary_reviewed": "Both arms then write and reopen the public JSON, and measure metadata-inclusive CPU/wall from the same original start",
+  "metadata_inclusive_cost_gate": true,
+  "new_independent_quality_cohort": false,
+  "original_cheap_greedy_limit_unchanged": true,
+  "original_registration_sha256": "a646f3d95c416a3f6e9a876e1f9d3a3a9dec751a16c11630d57c87587fe772e5",
+  "passed": true,
+  "same_function_core_timer_boundary_reviewed": "Both arms call the same function: audio preparation, fixed/public-gate beam selection, identical CT2 parameters, both transcript writes/readbacks/hash, then both stop timestamps before JSON serialization",
+  "shared_boundary_cost_gate": true,
+  "source_clusters": 16
+}

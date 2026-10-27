@@ -1,0 +1,13 @@
+{
+  "exit_code": 0,
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-utils-yaml",
+    "--success-output",
+    "immediate"
+  ],
+  "test_only_old_parser": "serde_yaml=0.9.34+deprecated; never a production candidate dependency",
+  "log_sha256": "a61eb62bd065263a0c1891866c09fd23578917a1f10388ef99c1664fef5a4f20"
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.port-v4.default-recipe-wiring.v1",
+  "time": "2026-10-27T15:46:24.058783+00:00",
+  "status": "default_recipe_structurally_validated_not_runtime_qualified",
+  "default_recipe": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v4.json",
+  "recipe_sha256": "5bd5cd193ba9824c2010157be58bc775c984fd8211d77c6e8df0d4c1b275e2d5",
+  "patch_sha256": "015f55fb042a049923156ce028dfb81cb734fabeb9cbabf691280dcf9a0b3fa8",
+  "allowed_path_count": 31,
+  "expected_package_count": 52,
+  "unchanged_vendor_file_count": 1971,
+  "changed_recipe_fields": [
+    "allowed_paths",
+    "patch_path",
+    "patch_sha256",
+    "revision"
+  ],
+  "common_driver_only_change_since_12_fixture_tests": "literal default RECIPE.v3.json to RECIPE.v4.json; every other driver-common byte matches the executed source",
+  "common_driver_sha256": "570ee030893a9d230f93c613b3cc6cf73ffcddf3bff607b1c57a3afff8d890ab",
+  "v3_recipe_unchanged_sha256": "b3936e6c2385d8fe93e30cc2ebb904dda43a9e86174fd3e9d427459ddd69629c",
+  "scope": "load_recipe exact default path and complete schema/patch/vendor bindings; no old 54-test rerun and no local Rust build."
+}

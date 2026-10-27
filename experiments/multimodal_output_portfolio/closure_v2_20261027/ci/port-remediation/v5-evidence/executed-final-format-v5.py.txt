@@ -1,0 +1,101 @@
+#!/usr/bin/env python3
+"""Run the repository formatter after completed regressions; retain exact deltas."""
+import ast
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import yaml
+
+ROOT = Path('/workspace/scratch/95988d8d3ab1')
+REPO = ROOT / 'hepta-private-ci'
+OUT = ROOT / 'closure_v2_final_format_v5_20261027'
+TOOLS = ROOT / 'ndu-rust196-format-tools/installed/bin'
+LOCAL = ROOT / 'continuation_format_tools_20261027'
+
+
+def describe(path):
+    data = path.read_bytes()
+    return {'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest(),
+            'mode': oct(path.stat().st_mode & 0o777)}
+
+
+def snapshot(paths, directory):
+    result = {}
+    for name in sorted(paths):
+        path = REPO / name
+        if not path.is_file():
+            continue
+        result[name] = describe(path)
+        destination = directory / name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, destination)
+    return result
+
+
+OUT.mkdir(exist_ok=False)
+changed = subprocess.check_output(['git', 'diff', '--name-only', '-z', 'HEAD'], cwd=REPO)
+untracked = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard', '-z'], cwd=REPO)
+paths = {name.decode() for name in (changed + b'\0' + untracked).split(b'\0') if name}
+paths = {name for name in paths if Path(name).suffix in {'.rs', '.py', '.yml', '.yaml', '.bazel', '.md'}}
+base = 'experiments/multimodal_output_portfolio/'
+binding = ast.parse((REPO / base / 'closure_v2_20261027/control/binding.py').read_text())
+protected = next(ast.literal_eval(node.value) for node in binding.body if isinstance(node, ast.Assign)
+                 and any(isinstance(t, ast.Name) and t.id == 'BASELINE_DECODER_SHA256' for t in node.targets))
+for name, expected in protected.items():
+    assert describe(REPO / base / name)['sha256'] == expected
+before = snapshot(paths, OUT / 'before-source')
+record = {'schema': 'hepta.ndu.final-format.v1', 'started_utc': datetime.now(timezone.utc).isoformat(),
+          'runner': describe(Path(__file__)), 'source_before': before,
+          'protected_scientific_source': protected, 'commands': []}
+(OUT / 'PRE_FORMAT.json').write_text(json.dumps(record, indent=2) + '\n')
+shutil.copyfile(__file__, OUT / 'executed-source.py')
+environment = dict(os.environ,
+    PATH=os.pathsep.join([str(TOOLS), str(LOCAL), os.environ['PATH']]),
+    DOTSLASH_CACHE=str(ROOT / 'ndu-rust196-format-tools/dotslash-cache'),
+    UV_CACHE_DIR=str(ROOT / 'continuation_format_tools_20261027/ruff-cache'),
+    UV_OFFLINE='1', PYTHONDONTWRITEBYTECODE='1')
+native = sorted(str(p.relative_to(REPO)) for p in (REPO / 'codex-rs/hepta-matrixd/tests/fixtures/linux_synapse').glob('*.py'))
+native.append('codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse-linux.py')
+steps = [
+    ('native-python-format', [str(REPO / 'scripts/.venv/bin/ruff'), 'format', *native], REPO),
+    ('workflow-format', ['/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node',
+                         str(ROOT / 'ndu-starlark-blake3-candidate/formatter-tools/prettier-3.5.3/bin/prettier.cjs'),
+                         '--write', '.github/workflows/ndu-port-candidate.yml'], REPO),
+    ('repository-just-fmt', [str(LOCAL / 'just'), 'fmt'], REPO / 'codex-rs'),
+]
+passed = True
+for name, command, directory in steps:
+    log = OUT / (name + '.log')
+    with log.open('wb') as output:
+        process = subprocess.run(command, cwd=directory, env=environment, stdout=output, stderr=subprocess.STDOUT)
+    record['commands'].append({'name': name, 'command': command, 'cwd': str(directory),
+                               'exit_code': process.returncode, 'log': describe(log)})
+    print(json.dumps({'step': name, 'exit_code': process.returncode, 'log': str(log)}), flush=True)
+    passed = passed and process.returncode == 0
+after = snapshot(paths, OUT / 'after-source')
+changed_paths = sorted(name for name in before if before[name] != after[name])
+python_proof = {}
+for name in changed_paths:
+    if name.endswith('.py'):
+        old = ast.dump(ast.parse((OUT / 'before-source' / name).read_text()), include_attributes=False)
+        new = ast.dump(ast.parse((REPO / name).read_text()), include_attributes=False)
+        assert old == new, name
+        python_proof[name] = hashlib.sha256(old.encode()).hexdigest()
+workflow = '.github/workflows/ndu-port-candidate.yml'
+assert yaml.safe_load((OUT / 'before-source' / workflow).read_text()) == yaml.safe_load((REPO / workflow).read_text())
+for name, expected in protected.items():
+    assert describe(REPO / base / name)['sha256'] == expected
+record.update(status='passed' if passed else 'failed', finished_utc=datetime.now(timezone.utc).isoformat(),
+              source_after=after, changed_paths=changed_paths, python_ast_unchanged=python_proof,
+              workflow_structure_unchanged=True, protected_scientific_source_unchanged=True,
+              rust_scope='Pinned Rust 1.96 rustfmt only; exact before/after Rust sources retained. No Rust semantic equivalence claim beyond the standard formatter.',
+              no_behavioral_tests_after_format=True)
+(OUT / 'RESULT.json').write_text(json.dumps(record, indent=2) + '\n')
+print(json.dumps({'status': record['status'], 'changed_paths': changed_paths,
+                  'result': describe(OUT / 'RESULT.json')}), flush=True)
+raise SystemExit(0 if passed else 1)

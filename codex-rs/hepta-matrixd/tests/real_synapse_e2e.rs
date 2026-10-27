@@ -1,5 +1,9 @@
 #![cfg(all(unix, feature = "real-synapse-e2e"))]
 
+#[cfg(target_os = "linux")]
+#[path = "fixtures/linux_qualification/mod.rs"]
+mod linux_qualification;
+
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::fs::OpenOptions;
@@ -183,6 +187,9 @@ impl Drop for QualificationMockServer {
 /// in-process App Server is substituted.
 #[test]
 fn real_synapse_dual_agentd_dual_matrixd_restart_and_isolation() -> Result<()> {
+    #[cfg(target_os = "linux")]
+    let environment = linux_qualification::required()?;
+    #[cfg(not(target_os = "linux"))]
     let environment = E2eEnvironment::required()?;
     environment.scrub_qualification_environment_before_spawning_product_processes();
     let fleet = FleetHarness::new(
@@ -1754,6 +1761,8 @@ struct ReleaseCopyObservation {
 enum QualificationMode {
     Exact,
     Diagnostic,
+    #[cfg(target_os = "linux")]
+    LinuxExact,
 }
 
 impl QualificationMode {
@@ -1761,6 +1770,8 @@ impl QualificationMode {
         match self {
             Self::Exact => "exact",
             Self::Diagnostic => "diagnostic",
+            #[cfg(target_os = "linux")]
+            Self::LinuxExact => "linux_exact",
         }
     }
 }

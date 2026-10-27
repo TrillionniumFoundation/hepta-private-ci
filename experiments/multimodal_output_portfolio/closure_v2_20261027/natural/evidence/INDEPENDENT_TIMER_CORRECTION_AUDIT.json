@@ -1,0 +1,62 @@
+{
+  "actual_transcript_and_public_metadata_pairs_reopened": 256,
+  "all_JSON_work_after_shared_timer_stop": true,
+  "all_transcript_bytes_encoder_hashes_and_beam_choices_equal_original": true,
+  "comparisons": {
+    "cpu_seconds": {
+      "CI95": [
+        -0.0995367710759766,
+        -0.058718037055859394
+      ],
+      "difference": -0.07906951461718752
+    },
+    "metadata_cpu_seconds": {
+      "CI95": [
+        -3.7359469726562516e-05,
+        9.248634824218751e-05
+      ],
+      "difference": 3.181437499999999e-05
+    },
+    "metadata_inclusive_cpu_seconds": {
+      "CI95": [
+        -0.09949720052968748,
+        -0.05867707659414062
+      ],
+      "difference": -0.07903744110937501
+    },
+    "metadata_inclusive_wall_seconds": {
+      "CI95": [
+        -0.09944067050722653,
+        -0.05875983334628904
+      ],
+      "difference": -0.07902936601562498
+    },
+    "metadata_wall_seconds": {
+      "CI95": [
+        1.2654485742187493e-05,
+        0.00012671439433593749
+      ],
+      "difference": 7.019137500000001e-05
+    },
+    "wall_seconds": {
+      "CI95": [
+        -0.09950172433359374,
+        -0.05884986070546882
+      ],
+      "difference": -0.07909954978906251
+    }
+  },
+  "corrected_cost_gate": true,
+  "corrected_metadata_inclusive_cost_gate": true,
+  "correction_rows_sha256": "9f7e2269eb34151e0f40c3ac26fb047d698cc15301bf98ecee6c691e7f1654c6",
+  "correction_seal_sha256": "04514670875441f961fdcc5dccb3ed429edfb8a3e3efae25f9a8a007b7524d6a",
+  "imports_producer_scorer_or_statistics": false,
+  "maximum_statistical_discrepancy": 0.0,
+  "maximum_wall_component_reconciliation_error": 3.512790686655801e-16,
+  "metadata_inclusive_costs_also_reported": true,
+  "model_or_decoder_reexecutions": 0,
+  "new_source_qualification_or_policy_selection": false,
+  "original_5arm_result_sha256": "b0abc09d155f9008a5a00d4da4e543f06cf680da3a38e01e5f1254b6eb8f9e83",
+  "passed": true,
+  "speakers": 16
+}

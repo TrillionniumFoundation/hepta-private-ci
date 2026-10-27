@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.protocol-schema.integration.v1",
+  "local_base": "910ab35e5789650c6db31d2972f214beb9196f5f",
+  "local_commit": "9e210aa6dc2dfab9a41eafd49b8b148971f3a165",
+  "qualified_remote_source": "88bcc7f92b9a52bf77e0095614fd496288b6ca86",
+  "schema_patch_sha256": "ac348847481d6596613bbe2ce3fe8686893b154f585625af0c398b7219b58eb6",
+  "protocol_source_files_rehashed_and_equal": 117,
+  "generated_files": {
+    "codex-rs/app-server-protocol/schema/json/v2/TurnRecoverResponse.json": {
+      "bytes": 48967,
+      "sha256": "46831c10079913c27de4bb02cb0df199030150aaa3a0b218ae5133d8f5f82509"
+    },
+    "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-experimental.json.zst": {
+      "bytes": 145385,
+      "sha256": "2ca64026eba6ae9fb9d0d7b1bd7901d31a0cb0715b1e33918b99a1402b74a967"
+    },
+    "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-stable.json.zst": {
+      "bytes": 139671,
+      "sha256": "ae5edc54372651ff430ad70729b97f8139bef6562f7a773df2ca3f571edb2964"
+    }
+  },
+  "sole_json_semantic_change": "Add completed to the already implemented SubAgentActivityKind enum.",
+  "actual_regression": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-app-server-protocol"
+    ],
+    "exit_code": 0,
+    "executed": 303,
+    "passed": 303,
+    "failed": 0,
+    "original_writer_ignored": 1,
+    "individual_unique_pass_lines_verified": 303,
+    "passed_names_sha256": "5f60041e0854767d6455aa0f4498881681cdd6a819be42fae7b5c63fb93c545b",
+    "repaired_assertions_observed_pass": [
+      "schema_fixtures_tests::json_schema_fixtures_match_generated",
+      "schema_fixtures_tests::stable_precomputed_exports_match_schema_fixtures",
+      "schema_fixtures_tests::experimental_precomputed_exports_match_generated"
+    ],
+    "regression_log_sha256": "393f4cc0e0b6ddda3e66ba1d6edc5d1e23da8770cc580314a97eb2598e6d0847",
+    "stable_writer": {
+      "command": [
+        "just",
+        "write-app-server-schema"
+      ],
+      "exit_code": 0,
+      "executed": 1,
+      "passed": 1
+    },
+    "experimental_writer": {
+      "command": [
+        "just",
+        "write-app-server-schema",
+        "--experimental"
+      ],
+      "exit_code": 0,
+      "executed": 1,
+      "passed": 1
+    }
+  },
+  "root_applied_verified_schema_only": true,
+  "remaining_dependency_and_platform_gates_separate": true
+}

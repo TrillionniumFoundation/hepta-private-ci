@@ -1,0 +1,141 @@
+#!/usr/bin/env python3
+"""Independent private-index review; does not activate or qualify the candidate."""
+import ast
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+
+ROOT = Path('/workspace/scratch/95988d8d3ab1')
+REPO = ROOT / 'hepta-private-ci'
+PORT = REPO / 'experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation'
+OUT = ROOT / 'closure_v2_port_v5_review_20261027_attempt_002'
+BASE = '5a9a6c759d37f1eebda43f0f6b7e091cc1b4faeb'
+EXPECTED = {
+    3: 'b3936e6c2385d8fe93e30cc2ebb904dda43a9e86174fd3e9d427459ddd69629c',
+    4: '5bd5cd193ba9824c2010157be58bc775c984fd8211d77c6e8df0d4c1b275e2d5',
+    5: '4b13ea7f07ba51f651fb6803334d103653d832a901ad070ea97b181e94d1853f',
+}
+
+
+def identity(data):
+    return {'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+
+
+def git(*args, index=None):
+    env = dict(os.environ, GIT_NO_LAZY_FETCH='1', GIT_TERMINAL_PROMPT='0')
+    if index:
+        env['GIT_INDEX_FILE'] = str(index)
+    result = subprocess.run(['git', *args], cwd=REPO, env=env, capture_output=True)
+    report['commands'].append({'args': list(args), 'index': str(index) if index else None,
+        'exit_code': result.returncode, 'stdout': identity(result.stdout),
+        'stderr': result.stderr.decode(errors='replace')})
+    if result.returncode:
+        raise RuntimeError(result.stderr.decode(errors='replace'))
+    return result.stdout
+
+
+def inventory(index):
+    rows = {}
+    for record in git('ls-files', '--stage', '-z', index=index).split(b'\0'):
+        if not record:
+            continue
+        header, path = record.split(b'\t', 1)
+        mode, blob, stage = header.decode().split()
+        assert stage == '0'
+        rows[path.decode()] = {'mode': mode, 'blob': blob}
+    return rows
+
+
+OUT.mkdir(exist_ok=False)
+shutil.copyfile(__file__, OUT / 'executed-source.py')
+report = {'schema': 'hepta.port-v5.independent-source-review.v1', 'status': 'started',
+    'started_utc': datetime.now(timezone.utc).isoformat(),
+    'reviewer': identity(Path(__file__).read_bytes()), 'commands': []}
+try:
+    assert git('rev-parse', 'HEAD').decode().strip() == BASE
+    main_index = REPO / git('rev-parse', '--git-path', 'index').decode().strip()
+    original_index = identity(main_index.read_bytes())
+    recipes, inventories, tables = {}, {}, {}
+    git('read-tree', BASE, index=OUT / 'base.index')
+    inherited = inventory(OUT / 'base.index')
+    for version, expected in EXPECTED.items():
+        path = PORT / f'RECIPE.v{version}.json'
+        content = path.read_bytes()
+        assert identity(content)['sha256'] == expected
+        recipe = recipes[version] = json.loads(content)
+        patch = REPO / recipe['patch_path']
+        assert identity(patch.read_bytes())['sha256'] == recipe['patch_sha256']
+        report[f'recipe_v{version}'] = identity(content)
+        report[f'patch_v{version}'] = identity(patch.read_bytes())
+        index = OUT / f'v{version}.index'
+        git('read-tree', BASE, index=index)
+        git('apply', '--cached', str(patch), index=index)
+        current = tables[version] = inventory(index)
+        changed = {n for n in set(current) | set(inherited) if current.get(n) != inherited.get(n)}
+        assert changed == set(recipe['allowed_paths'])
+        assert all(current.get(n) == row for n, row in inherited.items() if n not in changed)
+        physical = {}
+        for name in sorted(changed):
+            row = current[name]
+            assert row['mode'] == '100644'
+            data = git('cat-file', 'blob', row['blob'])
+            assert hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest() == row['blob']
+            physical[name] = {**row, **identity(data)}
+        inventories[version] = physical
+        report[f'v{version}_source_tree'] = git('write-tree', '--missing-ok', index=index).decode().strip()
+    assert report['v5_source_tree'] == 'aac87a12248966da88cec314014c2c8a94ec41af'
+    assert report['v4_source_tree'] == 'd7a6e729d354ccd25cf98612e5735a52be6841db'
+    delta34 = {n for n in set(tables[3]) | set(tables[4]) if tables[3].get(n) != tables[4].get(n)}
+    delta45 = {n for n in set(tables[4]) | set(tables[5]) if tables[4].get(n) != tables[5].get(n)}
+    prefix = 'codex-rs/hepta-matrix-sdk/src/'
+    assert delta34 == {prefix + n for n in ['sdk.rs', 'gap_fill_tests.rs', 'startup_deadline_tests.rs']}
+    assert delta45 == {prefix + n for n in ['sdk.rs', 'startup_deadline_tests.rs']}
+    for version in [4, 5]:
+        assert len(recipes[version]['allowed_paths']) == 31
+        assert len(recipes[version]['expected_packages']) == 52
+        changed = {k for k in set(recipes[version-1]) | set(recipes[version]) if recipes[version-1].get(k) != recipes[version].get(k)}
+        assert changed == ({'patch_path', 'patch_sha256', 'revision', 'allowed_paths'} if version == 4 else {'patch_path', 'patch_sha256', 'revision'})
+        revision = recipes[version]['revision']
+        assert revision['number'] == version and revision['previous_recipe_sha256'] == EXPECTED[version-1]
+        assert revision['previous_patch_sha256'] == recipes[version-1]['patch_sha256']
+        assert revision['failed_run_id'] == 40503203294
+    aws = recipes[5]['aws_qualification']
+    assert [aws[k] for k in ['expected_total', 'expected_executed', 'expected_ignored']] == [245, 244, 1]
+    assert aws['ignored_tests'] == ['ecs::test::real_dns_lookup']
+    count = 0
+    for directory, files in recipes[5]['vendor_dirs'].items():
+        parent = REPO / directory
+        assert {str(p.relative_to(parent)) for p in parent.rglob('*') if p.is_file()} == set(files)
+        for name, expected in files.items():
+            path = parent / name
+            assert not path.is_symlink() and identity(path.read_bytes()) == expected
+            count += 1
+    assert count == 1971
+    report['protected_active_inputs'] = {}
+    for name in ['codex-rs/Cargo.toml', 'codex-rs/Cargo.lock', 'MODULE.bazel', 'MODULE.bazel.lock', 'codex-rs/deny.toml', 'patches/zstd-sys_windows_msvc_include_dirs.patch']:
+        content = (REPO / name).read_bytes()
+        assert content == git('show', BASE + ':' + name)
+        report['protected_active_inputs'][name] = identity(content)
+    module = ast.parse((REPO / 'scripts/ndu_port_candidate_common.py').read_text())
+    default = next(ast.literal_eval(n.value) for n in module.body if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == 'RECIPE' for t in n.targets))
+    assert default.endswith('/RECIPE.v5.json')
+    assert identity(main_index.read_bytes()) == original_index
+    assert git('rev-parse', 'HEAD').decode().strip() == BASE
+    report.update(status='verified_source_candidate_only', source_inventory=inventories,
+        source_delta_v3_v4=sorted(delta34), source_delta_v4_v5=sorted(delta45),
+        package_constraints=52, vendor_file_count=count, unchanged_inherited_index_entries=len(inherited)-len(set(recipes[5]['allowed_paths']) & set(inherited)),
+        original_head_unchanged=True, original_index_unchanged=True, default_recipe=default,
+        source_changed_count=31, actual_new_rust_execution=False, main_dependencies_activated=False,
+        note='Each changed blob read and independently rehashed; missing inherited promisor objects allowed only for unchanged path/mode/OID entries.')
+except Exception as error:
+    report.update(status='failed', error_type=type(error).__name__, error=str(error))
+    raise
+finally:
+    report['finished_utc'] = datetime.now(timezone.utc).isoformat()
+    output = OUT / 'RESULT.json'
+    output.write_text(json.dumps(report, indent=2) + '\n')
+    print(json.dumps({'status': report['status'], 'result': str(output), **identity(output.read_bytes())}), flush=True)

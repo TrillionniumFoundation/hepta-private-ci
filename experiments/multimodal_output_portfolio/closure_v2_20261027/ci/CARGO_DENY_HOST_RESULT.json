@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/home/runner/work/_temp/cargo-deny-diagnostic/cargo-deny",
+    "--log-level",
+    "warn",
+    "--manifest-path",
+    "./codex-rs/Cargo.toml",
+    "--all-features",
+    "check"
+  ],
+  "exit_code": 1,
+  "cargo_lock_sha256_before": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389",
+  "cargo_lock_sha256_after": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389",
+  "log_sha256": "da2ac143a1e501c4c2b384ef21f069840ce86182ce474500d30e3023662e22e3",
+  "scope": "Same pinned cargo-deny version and arguments on the host; not the Docker action's original log.",
+  "original_blocking_gate_unchanged": true
+}

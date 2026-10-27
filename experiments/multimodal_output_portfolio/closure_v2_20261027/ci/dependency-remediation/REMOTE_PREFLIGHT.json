@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts",
+    "-p",
+    "test_ndu_dependency_candidate.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "raw_log": "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/remote-preflight-001/tests.log",
+  "raw_log_sha256": "b4440a1302ed68631b9d13df8533eee82ca21e25ffff5970bd5c86f8d6d63cd4",
+  "python_ast_parses": true,
+  "workflow_yaml_parses": true,
+  "consumer_uses_producer_artifact_identity_across_reruns": true,
+  "source_patch_applies_to_current_base": true,
+  "rust_workspace_tests_executed_locally": false,
+  "files": [
+    {
+      "path": "scripts/ndu_tls_lock_candidate.py",
+      "sha256": "744e5bdf9fe8942eff81470a0c304280dd22d79add7890b6911dd914a5da4a13"
+    },
+    {
+      "path": "scripts/ndu_dependency_candidate_common.py",
+      "sha256": "ba2a3a737177a42423bd550b6704b86cca4528a1d5a942383f2f3c26af646d0d"
+    },
+    {
+      "path": "scripts/test_ndu_dependency_candidate.py",
+      "sha256": "7379034ec9e7c3119b0cb2d630588ac40fd9582da95e9f17f815360c08b363e6"
+    },
+    {
+      "path": ".github/workflows/ndu-tls-lock-candidate.yml",
+      "sha256": "96f01a536266eb2e9babf94ae89d21b7d05b61a9ad38c1253d699f37ee4719a9"
+    }
+  ]
+}

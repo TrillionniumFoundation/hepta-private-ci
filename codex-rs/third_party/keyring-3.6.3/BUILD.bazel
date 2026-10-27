@@ -1,0 +1,39 @@
+load("@crates//:defs.bzl", "all_crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+filegroup(
+    name = "package-files",
+    srcs = glob(
+        ["**"],
+        exclude = [
+            "BUILD.bazel",
+            "target/**",
+        ],
+    ),
+    visibility = ["//visibility:public"],
+)
+
+# Upstream tests run in their explicit qualification graph. This production
+# nonmember must not generate test targets without their dev-dependencies.
+rust_library(
+    name = "keyring",
+    srcs = glob(["src/**/*.rs"]),
+    compile_data = ["README.md"],
+    crate_features = ["crypto-rust"] + select({
+        "@platforms//os:linux": [
+            "async-secret-service",
+            "linux-native",
+            "linux-native-async-persistent",
+        ],
+        "@platforms//os:macos": ["apple-native"],
+        "@platforms//os:windows": ["windows-native"],
+        "//conditions:default": [],
+    }),
+    crate_name = "keyring",
+    crate_root = "src/lib.rs",
+    edition = "2021",
+    proc_macro_deps = all_crate_deps(proc_macro = True),
+    version = "3.6.3",
+    visibility = ["//visibility:public"],
+    deps = all_crate_deps(),
+)

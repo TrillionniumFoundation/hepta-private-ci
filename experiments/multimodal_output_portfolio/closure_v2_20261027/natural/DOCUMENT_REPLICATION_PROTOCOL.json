@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.ndu.closure-v2.natural.document.replication.protocol.v1",
+  "reason": "The first24new-merchant result remains inconclusive versus strong rules. This is one separately authorized, capped, fixed-model replication, never an extension until significance.",
+  "dataset": "jsdnrs/ICDAR2019-SROIE",
+  "dataset_revision": "bffe40c26759f3376ec2b3ae9031dbba54cd587c",
+  "candidate_universe_order": "All347 public official test rows, then626 public official train rows in numeric row order; unseen experimental groups from either upstream split are eligible. Enumerate all candidates before downloading selected images or producing predictions.",
+  "target_merchants": 128,
+  "if_insufficient": "Use the full prespecified available collection, after excluding all prior experimental merchant strings and exact images; freeze the actualN before any model output.",
+  "source_selection": "First128remaining unique ASCII-alphanumeric uppercase annotated company groups, one image each; exclude previous historical, continuation fit/validation/test, and firstv2qualification merchants and byte-identical images. No quality, OCR confidence, answer or outcome based inclusion.",
+  "model": "Exact frozen document-development-001 model; ridge100, correction threshold0.1, original rule candidate retained,128residual weights; no refit or hyperparameter change",
+  "OCR": "Same pinned Tesseract English model, psm3, scale1, same public candidate construction",
+  "arms": ["original_rules", "rule_residual"],
+  "timing_repetitions": 2,
+  "primary_contrast": "rule_residual minus original_rules",
+  "primary_endpoint": "Per-document quality minus0.01times actual measured process+child CPUseconds",
+  "quality": "Original per-observed-field average of0.5exact+0.5normalizededit similarity; missing references masked; exact field accuracy separate",
+  "acceptance": "97.5percent paired normalized-merchant-cluster bootstrap lower bound of primary cost-adjusted-return difference>0; report raw quality, exact fields,CPU andwall separately",
+  "bootstrap": {"draws": 5000, "seed": 2832, "lower_quantile": 0.0125, "upper_quantile": 0.9875},
+  "cost_and_information": "Both arms read the same source image and invoke one actual OCR; residual candidate scoring is charged; references enter only after actual JSON/JPEG write/readback; same source/repetition/order rotation",
+  "stopping_rule": "Exactly one fixedN replication after old results; complete all2arms×2repetitions, retain all outputs/failures; no interim scoring for stopping, no extra cohorts, no refit, no pooling old24into new primary evidence",
+  "scope": "Independent experimental merchant-string groups, not a proof of unseen corporate families/templates or foundation-model generalization"
+}

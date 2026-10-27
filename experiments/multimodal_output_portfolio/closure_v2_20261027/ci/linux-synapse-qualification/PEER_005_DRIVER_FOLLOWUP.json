@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.linux-synapse-peer.custody-followup.v1",
+  "review_sha256": "5b944cc9a1f6a57f18d0c9bd69424a792c50195a28438e1f6a7397535d2e837a",
+  "source": {
+    "bytes": 7841,
+    "sha256": "b9f7efd7a2eaf9781b6617ce3db5b05568d8dfd920125ff720a77c11721ff099"
+  },
+  "readback_receipt": {
+    "bytes": 679,
+    "sha256": "aeebdfc100e64243c188b9bfd9d5af01d67e0b9106004f56c571980c220eeafd"
+  },
+  "frozen_inputs": {
+    "bytes": 2453,
+    "sha256": "9e021ea4a128a03e5c481903b734bab1937563187d93b4766c30cb8fa149a8d7"
+  },
+  "finding": "Probe002 driver identity was recorded after Cargo metadata, before actual nextest list/just test; post-execution copy matches that exact pre-runtime identity. Neither reviewer nor owner claims the copy existed before execution. The pending custody item in REVIEW.json is now supplied.",
+  "reviewer_executed_tests": false
+}

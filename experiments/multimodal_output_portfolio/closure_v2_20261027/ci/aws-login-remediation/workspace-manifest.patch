@@ -1,0 +1,29 @@
+--- a/codex-rs/Cargo.toml
++++ b/codex-rs/Cargo.toml
+@@ -189,6 +189,8 @@
+     "model-provider",
+ ]
+ resolver = "2"
++# Keep upstream AWS dev-dependencies out of the first-party workspace.
++exclude = ["third_party/aws-config-1.8.12"]
+ 
+ [workspace.package]
+ version = "0.0.0"
+@@ -367,7 +369,7 @@
+ async-channel = "2.3.1"
+ async-io = "2.6.0"
+ async-stream = "0.3.6"
+-aws-config = "1"
++aws-config = "=1.8.12"
+ aws-credential-types = "1"
+ aws-sigv4 = "1"
+ aws-types = "1"
+@@ -661,6 +663,8 @@
+ opt-level = 0
+ 
+ [patch.crates-io]
++# Preserve AWS providers while updating the credentials-login P-256 chain.
++aws-config = { path = "third_party/aws-config-1.8.12" }
+ # Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
+ # bitmap import and patched chunk dependency without changing their public API.
+ imbl = { path = "third_party/imbl-6.1.0" }

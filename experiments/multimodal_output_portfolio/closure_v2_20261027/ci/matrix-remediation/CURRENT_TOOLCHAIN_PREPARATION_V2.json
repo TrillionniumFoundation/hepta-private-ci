@@ -1,0 +1,134 @@
+{
+  "schema": "hepta.current-toolchain-migration.v2",
+  "baseline_local_head": "37a097efde1022b3ff9728bee76017305e4e961c",
+  "source_review_sha256": "32a49cd75bbc246084687d609dd7ba3c9d05c50c75cd5d3ac3845d4d572be874",
+  "patch": {
+    "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-current-toolchain-ci-v2.patch",
+    "bytes": 24223,
+    "sha256": "51eb5816e152d846885ad606862f28b17f96d826f193543a3a12d7273472617e"
+  },
+  "paths": [
+    ".github/workflows/cargo-deny.yml",
+    ".github/workflows/hepta-diagnostic-source-export.yml",
+    ".github/workflows/hepta-integration-diagnostics.yml",
+    ".github/workflows/hepta-intuition-qualification.yml",
+    ".github/workflows/hepta-kernel-evidence-qualification.yml",
+    ".github/workflows/hepta-lane-e-gap-closure.yml",
+    ".github/workflows/hepta-offline-build-inputs.yml",
+    ".github/workflows/hepta-vnext-qualification.yml",
+    ".github/workflows/repo-checks.yml",
+    ".github/workflows/rust-ci-full-nextest-platform.yml",
+    ".github/workflows/rust-ci-full.yml",
+    ".github/workflows/rust-ci.yml",
+    ".github/workflows/rust-release-windows.yml",
+    ".github/workflows/rust-release.yml",
+    ".github/workflows/rusty-v8-release.yml",
+    ".github/workflows/v8-canary.yml",
+    "codex-rs/scripts/setup-windows.ps1",
+    "flake.nix"
+  ],
+  "candidate_files": {
+    ".github/workflows/cargo-deny.yml": {
+      "sha256": "9f6a38523d4b5f59ef375df009486177aabdbabb8725b6335bf45aeb28171049",
+      "bytes": 1697
+    },
+    ".github/workflows/hepta-diagnostic-source-export.yml": {
+      "sha256": "741a4b762cf98f77a1792416109683b1f1fbb7c91ba1a4504b5e1584c4e2f82b",
+      "bytes": 8742
+    },
+    ".github/workflows/hepta-integration-diagnostics.yml": {
+      "sha256": "3466fd9cd81ce0bf3708f32810d3e5cadc23e78f4c483a4544db7c98653280ef",
+      "bytes": 7034
+    },
+    ".github/workflows/hepta-intuition-qualification.yml": {
+      "sha256": "20c4932d6bcc28c4351ba2af7cf9bf857432d4774464df8a9ec95c0f9f975de9",
+      "bytes": 5245
+    },
+    ".github/workflows/hepta-kernel-evidence-qualification.yml": {
+      "sha256": "3a67f67982ceca43c968b27928c61580fe4fb60e5b7187370b272c52e306beee",
+      "bytes": 6479
+    },
+    ".github/workflows/hepta-lane-e-gap-closure.yml": {
+      "sha256": "daf35eb7128789e6619e5fb50c9ce6eae1b233ddd489e5332358ede1c40fd0cc",
+      "bytes": 22924
+    },
+    ".github/workflows/hepta-offline-build-inputs.yml": {
+      "sha256": "f7135d311e96728da029fba302e374e5b7b7258b80cf06e2372ec56ff6e49c8c",
+      "bytes": 9453
+    },
+    ".github/workflows/hepta-vnext-qualification.yml": {
+      "sha256": "e3c67fc35d1d377dd0cd29b1e64aeda2403e4f4815676b37a599c9218ff71654",
+      "bytes": 6636
+    },
+    ".github/workflows/repo-checks.yml": {
+      "sha256": "be712fbe289f42c91b6b0480cf035b95a8dab4119950b164d0cfc3752401888b",
+      "bytes": 4263
+    },
+    ".github/workflows/rust-ci-full-nextest-platform.yml": {
+      "sha256": "b8e38de81a7a701e61b853e8e2b2cd26fb1d77dbabe0e8ecee7310111605ce0e",
+      "bytes": 17640
+    },
+    ".github/workflows/rust-ci-full.yml": {
+      "sha256": "103c8a27d8410c9e20204afcad4c9b7773843bb9e2b0983e6169c6eccf077a7d",
+      "bytes": 21978
+    },
+    ".github/workflows/rust-ci.yml": {
+      "sha256": "e6fb26daaed0be7c5b03b5662c03f342acc05efefcf2819474000db55bc2e7db",
+      "bytes": 12233
+    },
+    ".github/workflows/rust-release-windows.yml": {
+      "sha256": "ce7636c2cda13b616cb834111d3e4104bcff83b4b5c5e68df7323e624f220818",
+      "bytes": 16979
+    },
+    ".github/workflows/rust-release.yml": {
+      "sha256": "0365bd374dbf21c12d98aadd3ceaed43ac4aa37865e1aa6c628d055bb65033c2",
+      "bytes": 64085
+    },
+    ".github/workflows/rusty-v8-release.yml": {
+      "sha256": "3bbc2a10c5e6f9d39d5cd54077a398d19316b1eb2f8eea16e198c982eb1dfe50",
+      "bytes": 16471
+    },
+    ".github/workflows/v8-canary.yml": {
+      "sha256": "fffeec26e6950f9082d10a548cb0377771b11ef71687c4cc82481a2de2c18d20",
+      "bytes": 17352
+    },
+    "codex-rs/scripts/setup-windows.ps1": {
+      "sha256": "b670cc0894ba5da17e004d25b76ea595445ee4a155bfaa7d6286b17e6e09e8c7",
+      "bytes": 9577
+    },
+    "flake.nix": {
+      "sha256": "5eda88841f0bb326ebe72b4f0d93f1609cba6360a7089faee4ea853ce2f017a7",
+      "bytes": 2679
+    }
+  },
+  "narrow_additional_edits": [
+    {
+      "path": "flake.nix",
+      "before_sha256": "564e7c1482f8c018788f590a195ec9cd180fc08b0d3a98c585c89cb9f79396ae",
+      "after_sha256": "5eda88841f0bb326ebe72b4f0d93f1609cba6360a7089faee4ea853ce2f017a7"
+    },
+    {
+      "path": ".github/workflows/v8-canary.yml",
+      "before_sha256": "9f8eb1759867587f26f55251b86b78ddc1d4bb6b5914a62520e84b8b291083d0",
+      "after_sha256": "fffeec26e6950f9082d10a548cb0377771b11ef71687c4cc82481a2de2c18d20"
+    }
+  ],
+  "excluded_historical_or_mock_paths": [
+    ".github/workflows/single-main-consolidation.yml",
+    ".github/workflows/single-main-foundation.yml",
+    ".github/workflows/single-main-maintenance.yml",
+    ".github/workflows/ndu-tls-lock-candidate.yml",
+    ".github/workflows/rust-release-argument-comment-lint.yml",
+    "scripts/test_hepta_ci_v8.py"
+  ],
+  "preserved_exceptions": [
+    "Matrix 0.18 fixture producer at fixed source 6215cb6 remains Rust 1.95.0",
+    "Independent rustc_private argument-comment-lint nightly ABI remains nightly-2025-09-18",
+    "Three fixed-source single-main historical compiler protocols remain unchanged",
+    "Legacy ZIP/protocol qualification remains tied to its original source; retire task-owned staging after integration"
+  ],
+  "flake_lock_changed": false,
+  "production_tree_modified": false,
+  "execution_qualified": false,
+  "scope": "Prepared for coherent activation only after the candidate qualifies; no policy, feature, assertion, platform or scan scope reductions."
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.ci-migration.checkpoint-actual-restore.v1",
+  "at": "2026-10-27T11:08:00.499113+00:00",
+  "status": "passed",
+  "archive": {
+    "path": "/workspace/scratch/95988d8d3ab1/hepta_ci_migration_checkpoint_20261027_001.tar.gz",
+    "bytes": 45021371,
+    "sha256": "7c207ae4aef9f3d9e33311ba4b77ce909290a835b00aa09da50e6083f191555f"
+  },
+  "index": {
+    "path": "/workspace/scratch/95988d8d3ab1/hepta_ci_migration_checkpoint_20261027_001.index.json",
+    "bytes": 76414,
+    "sha256": "dc0c1ad462ae11fd3b57abca3bc1042d33fb61f0d30d819bf2ef852bd797b122"
+  },
+  "members_restored": 372,
+  "payload_bytes_restored": 60750171,
+  "maximum_live_restore_file_bytes": 17757574,
+  "repository_head_before": "910ab35e5789650c6db31d2972f214beb9196f5f",
+  "repository_head_after": "910ab35e5789650c6db31d2972f214beb9196f5f",
+  "method": "Every aggregate member was actually written to a uniquely named disk file, flushed/fsynced/closed, reopened for independent SHA-256 and exact-byte-length verification, then deleted. The complete member set and aggregate archive hash were verified again. Nested original archives were preserved byte-exact and checked against their earlier receipts; this aggregate restore does not pretend to repeat all earlier inner-archive restoration experiments.",
+  "prior_artifact_hash_checks": 15,
+  "downloaded_zip_files_fully_read": 8,
+  "promotion_eligible": false,
+  "library_upload_performed": false
+}

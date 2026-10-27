@@ -1,0 +1,134 @@
+{
+  "schema": "hepta.ci.port-runtime-evidence-fix-peer.v1",
+  "reviewer": "/root/joint_evidence",
+  "completed_utc": "2026-10-27T11:29:11.432097+00:00",
+  "scope": "Read-only five-file delta and retained execution/custody audit. No qualified code was imported or executed, and no behavior test was run after formatting.",
+  "conclusion": "No remaining blocker found in this narrow runtime fix. Ready for genuine candidate generation and package qualification; those pending results remain mandatory.",
+  "patch": {
+    "path": "/workspace/scratch/95988d8d3ab1/ndu-port-ci-evidence/bugfix-003/port-runtime-evidence-fix.patch",
+    "bytes": 14448,
+    "sha256": "7e1e8735b932de916f6a2f9ae9f635f230c46aae66f040625c578e44fe90fc74",
+    "paths": [
+      "scripts/ndu_port_aws_upstream.py",
+      "scripts/ndu_port_candidate.py",
+      "scripts/ndu_port_candidate_common.py",
+      "scripts/ndu_port_matrix_fixture.py",
+      "scripts/test_ndu_port_candidate.py"
+    ]
+  },
+  "evidence": {
+    "unit-tests-002/RESULT.json": {
+      "bytes": 2864,
+      "sha256": "cd5cc3b9e4d314d1a407314da12413cc48f5d9ebfcf7cc10ac0970ced8d0b49e"
+    },
+    "unit-tests-002/tests.log": {
+      "bytes": 10616,
+      "sha256": "8fca833ab1da421d7b659d1051c9af53558e20c0e74b8a7a58d73930cb7f1b33"
+    },
+    "actual-profile-probes-003/RESULT.json": {
+      "bytes": 17286,
+      "sha256": "685427ce2878412e7ab42c57abfeec77b4832a5993ba58c995132be1882a95ff"
+    },
+    "format/FORMAT_ONLY.json": {
+      "bytes": 11195,
+      "sha256": "acd25b0f4c86bdf1854bb5ef9fe7e132f7eb47c0ccc9a3942dac30ba63f52e95"
+    }
+  },
+  "snapshot_file_count": 14,
+  "all_five_snapshot_inventories_verified": true,
+  "execution_source_matches_pre_format": true,
+  "python_ast_equal": {
+    "scripts/run-nextest.py": true,
+    "scripts/just-shell.py": true,
+    "scripts/ndu_port_candidate_common.py": true,
+    "scripts/ndu_port_candidate.py": true,
+    "scripts/ndu_port_matrix_fixture.py": true,
+    "scripts/ndu_port_aws_upstream.py": true,
+    "scripts/test_ndu_port_candidate.py": true,
+    "scripts/test_ndu_port_matrix_fixture.py": true,
+    "scripts/test_ndu_port_aws_upstream.py": true
+  },
+  "qualification_guards_unchanged_ast": {
+    "ndu_port_matrix_fixture.py:parse_phase_junit": true,
+    "ndu_port_matrix_fixture.py:verify_old_packages": true,
+    "ndu_port_matrix_fixture.py:consume_old_fixture": true,
+    "ndu_port_aws_upstream.py:suite_inventory": true,
+    "ndu_port_aws_upstream.py:verify_suite_junit": true,
+    "ndu_port_candidate_common.py:load_recipe": true,
+    "ndu_port_candidate_common.py:validate_graph": true,
+    "ndu_port_candidate_common.py:verify_vendor": true
+  },
+  "observed_harness_tests": {
+    "passed": 20,
+    "failed": 0,
+    "qualification": "Python orchestration, actual Git/process transport, controlled resolver output and JUnit rejection cases; not real Cargo/Bazel resolution"
+  },
+  "actual_small_crate_probes": {
+    "matrix-before-fix": {
+      "result": {
+        "bytes": 5551,
+        "sha256": "ade8ae5baf97bd1c5c69e130c41dcfe41d5880225a9a7675d4e3337c8229adc4"
+      },
+      "verified_command_logs": 2,
+      "retained_summary_lines": [
+        "    Starting 1 test across 1 binary (1 test skipped)",
+        "     Summary [   0.004s] 1 test run: 1 passed, 1 skipped"
+      ]
+    },
+    "matrix-fixed-prepare_old_version_fixture": {
+      "result": {
+        "bytes": 7367,
+        "sha256": "c7ba97479fabe0f21a2b4fa0cf735ee4803449f8be5e576887a551c1e613b6c0"
+      },
+      "verified_command_logs": 2,
+      "retained_summary_lines": [
+        "    Starting 1 test across 1 binary (1 test skipped)",
+        "     Summary [   0.004s] 1 test run: 1 passed, 1 skipped"
+      ]
+    },
+    "matrix-fixed-reopen_old_version_fixture": {
+      "result": {
+        "bytes": 7352,
+        "sha256": "142b9d0eda7e76c73938d4f99c6a7ca1da98f240dbe3e94731abba1ccd5062b8"
+      },
+      "verified_command_logs": 2,
+      "retained_summary_lines": [
+        "    Starting 1 test across 1 binary (1 test skipped)",
+        "     Summary [   0.003s] 1 test run: 1 passed, 1 skipped"
+      ]
+    },
+    "aws-local-before-fix": {
+      "result": {
+        "bytes": 6130,
+        "sha256": "5f0c94f7c2953a81c4cc0de6edb98ab8295d50a38a1f9ac0391a67aa3e871b2c"
+      },
+      "verified_command_logs": 2,
+      "retained_summary_lines": [
+        "    Starting 1 test across 1 binary",
+        "     Summary [   0.004s] 1 test run: 1 passed, 0 skipped"
+      ]
+    },
+    "aws-default-fixed": {
+      "result": {
+        "bytes": 6453,
+        "sha256": "f1825fcedfb01810142c761ae762a4c32358a5145f2c29a69a9cef75064f2b9b"
+      },
+      "verified_command_logs": 2,
+      "retained_summary_lines": [
+        "    Starting 1 test across 1 binary",
+        "     Summary [   0.004s] 1 test run: 1 passed, 0 skipped"
+      ]
+    }
+  },
+  "fixed_findings": [
+    "Matrix and AWS actual just test explicitly select profile default to enable its frozen JUnit path under nextest 0.9.103; Matrix retains retries 0 and exact ignored phase.",
+    "The separately hashed tool config contains only [store].dir, directs report files outside source, and is identical for list/run. Final reporting requires exactly nextest-store/default/junit.xml with a fresh timestamp/hash.",
+    "AWS production inventory still requires 245 total, 244 executed and only the original one ignored DNS test. Full source tree before/after and binary hashes remain mandatory. Synthetic AWS probe is one test and proves the wrapper behavior only.",
+    "Metadata is independently recollected after both Bazel lock commands, validated as the final graph, and kept under a separate stdout filename from pre-Bazel metadata. Controlled regression proves missing final features fail instead of reusing the earlier graph."
+  ],
+  "limitations": [
+    "Actual small crates used native Rust 1.95 and the exact real nextest 0.9.103; no Matrix 0.19/Rust 1.96/AWS 244-test qualification is claimed.",
+    "No new real Cargo/Bazel lock generation was performed in this review; final graph enforcement is code-reviewed plus controlled resolver regression.",
+    "Original failed probe attempts 001/002 remain retained. Runtime fresh-report checks and independent source/fixture bindings must succeed on the real CI run."
+  ]
+}

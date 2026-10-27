@@ -1,0 +1,226 @@
+{
+  "schema": "hepta.remote-consumer-audit.v1",
+  "at": "2026-10-27T13:03:58.172632+00:00",
+  "source_head": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+  "run_id": 40503203294,
+  "run_attempt": 1,
+  "scope": "Read-only original ZIP, command log, source/recipe/candidate/run identity and actual summary verification; no test rerun.",
+  "groups": {
+    "aws": {
+      "artifact_id": 12734564811,
+      "archive": {
+        "path": "/workspace/scratch/95988d8d3ab1/ndu-port-remote-3a779a6/raw/ndu-port-tests-aws-40503203294-1.zip",
+        "bytes": 35179,
+        "sha256": "6bbf1c7491af87851c6f5fc211ba45f6cf8e2447ceee31ccd52a0f98aec28706"
+      },
+      "result": {
+        "bytes": 17450,
+        "sha256": "fca4293bacedcd5d036184ce6afefb751df3006975f06d775800f0391c478544"
+      },
+      "status": "targeted_tests_passed",
+      "command_log_count": 25,
+      "actual_tests": [
+        {
+          "package": "codex-aws-auth",
+          "executed": 5,
+          "passed": 5,
+          "skipped": 0,
+          "command_log": "13-test-codex-aws-auth.log",
+          "log": {
+            "bytes": 16924,
+            "sha256": "c5bf6dcfd90e0d51bc3f7fc0da341297981f49ff55409abe3917198c1a2aae02"
+          }
+        },
+        {
+          "package": "codex-login",
+          "executed": 195,
+          "passed": 195,
+          "skipped": 0,
+          "command_log": "17-test-codex-login.log",
+          "log": {
+            "bytes": 99936,
+            "sha256": "95c371f0f0843bccae10d6f943786b4f9ee70c3a3a780a1e2ee0e6454c80bea8"
+          }
+        },
+        {
+          "package": "codex-secrets",
+          "executed": 9,
+          "passed": 9,
+          "skipped": 0,
+          "command_log": "21-test-codex-secrets.log",
+          "log": {
+            "bytes": 21839,
+            "sha256": "641f3fdb79f8ca3aebe3b6c67c1b754b4fda5f53dbd1bac149ee4282dd139e26"
+          }
+        }
+      ],
+      "total_executed": 209,
+      "junit": "No JUnit recorded by the original ordinary local-profile consumer; exact command exits and complete nextest logs are retained."
+    },
+    "yaml": {
+      "artifact_id": 12735008991,
+      "archive": {
+        "path": "/workspace/scratch/95988d8d3ab1/ndu-port-remote-3a779a6/raw/ndu-port-tests-yaml-40503203294-1.zip",
+        "bytes": 57002,
+        "sha256": "5110de111a1895147b62a5cc94c791733107d6dfef59c0e81e9fa287dd0a99c8"
+      },
+      "result": {
+        "bytes": 23194,
+        "sha256": "5e13ce1625ceb74b6a6290f257fd6eb21a9f7b740e05d79e94ebd101d5364ca4"
+      },
+      "status": "targeted_tests_passed",
+      "command_log_count": 33,
+      "actual_tests": [
+        {
+          "package": "codex-utils-yaml",
+          "executed": 9,
+          "passed": 9,
+          "skipped": 0,
+          "command_log": "13-test-codex-utils-yaml.log",
+          "log": {
+            "bytes": 5468,
+            "sha256": "898b7952bc5e5e3fa16ab513bae6f30e0ec35fb39ca61e45aa5f585c36bc323f"
+          }
+        },
+        {
+          "package": "codex-skills",
+          "executed": 49,
+          "passed": 49,
+          "skipped": 0,
+          "command_log": "17-test-codex-skills.log",
+          "log": {
+            "bytes": 45894,
+            "sha256": "af13a632beeaddcf22fbe80ccc8859a0f0bd66787d12fd9cff109c3e869f1bb2"
+          }
+        },
+        {
+          "package": "codex-skills-extension",
+          "executed": 175,
+          "passed": 175,
+          "skipped": 0,
+          "command_log": "21-test-codex-skills-extension.log",
+          "log": {
+            "bytes": 80330,
+            "sha256": "8f323d3d63267bc5a323457f793ca19d72fa80ee3dc019d1d3a0f02b1c2e4010"
+          }
+        },
+        {
+          "package": "codex-core-plugins",
+          "executed": 426,
+          "passed": 426,
+          "skipped": 0,
+          "command_log": "25-test-codex-core-plugins.log",
+          "log": {
+            "bytes": 79701,
+            "sha256": "b3ab31efdd1602994ba0783d9a2fa815b9230ef9f6b294d68f22b77f2463d27b"
+          }
+        },
+        {
+          "package": "codex-external-agent-migration",
+          "executed": 166,
+          "passed": 166,
+          "skipped": 0,
+          "command_log": "29-test-codex-external-agent-migration.log",
+          "log": {
+            "bytes": 51995,
+            "sha256": "5e5157839cfc39a6008a61eea0e94bef0119c53da9402a852699a1e68804cd3b"
+          }
+        }
+      ],
+      "total_executed": 825,
+      "junit": "No JUnit recorded by the original ordinary local-profile consumer; exact command exits and complete nextest logs are retained."
+    },
+    "execpolicy": {
+      "artifact_id": 12735441388,
+      "archive": {
+        "path": "/workspace/scratch/95988d8d3ab1/ndu-port-remote-3a779a6/raw/ndu-port-tests-execpolicy-40503203294-1.zip",
+        "bytes": 10831,
+        "sha256": "9d23ed94f84b61670ebc892bc9243450e300a20898c1613474e61051d475889b"
+      },
+      "result": {
+        "bytes": 11812,
+        "sha256": "6e930d4697a28385c18dd312cd6b8c72932d1d2e0be33425b3fb58308329b3ff"
+      },
+      "status": "targeted_tests_passed",
+      "command_log_count": 17,
+      "actual_tests": [
+        {
+          "package": "codex-execpolicy",
+          "executed": 34,
+          "passed": 34,
+          "skipped": 0,
+          "command_log": "13-test-codex-execpolicy.log",
+          "log": {
+            "bytes": 22352,
+            "sha256": "434f9655e644d9efe4b362f377f788520224f208ce6b4cbcf3a0d44facfceb6e"
+          }
+        }
+      ],
+      "total_executed": 34,
+      "junit": "No JUnit recorded by the original ordinary local-profile consumer; exact command exits and complete nextest logs are retained."
+    },
+    "aws_upstream": {
+      "artifact_id": 12734129970,
+      "archive": {
+        "path": "/workspace/scratch/95988d8d3ab1/ndu-port-remote-3a779a6/raw/ndu-port-upstream-aws-40503203294-1.zip",
+        "bytes": 358318,
+        "sha256": "e64b2c547f1062c8ac3d7b720ac9e27213d812d1f1ea06dbb61769d94d763e59"
+      },
+      "result": {
+        "bytes": 72967,
+        "sha256": "0745c9e08c7269c9d7ef4a048e8a1dbe6641472375dca2fc985564f2519b6853"
+      },
+      "status": "failed",
+      "command_log_count": 16,
+      "failure": "Full upstream inventory or original ignored testcase differs",
+      "listed_cases": 245,
+      "original_ignored": "ecs::test::real_dns_lookup",
+      "actual_upstream_tests_executed": 0,
+      "listing": {
+        "bytes": 28749,
+        "sha256": "be5d3bd72793047cd9b1871e29dffa5711a743be6ee7ace6afe16554b4f40e28"
+      }
+    },
+    "bazel": {
+      "artifact_id": 12735456501,
+      "archive": {
+        "path": "/workspace/scratch/95988d8d3ab1/ndu-port-remote-3a779a6/raw/ndu-port-bazel-libraries-40503203294-1.zip",
+        "bytes": 12562,
+        "sha256": "a8dab6bde10dea87f35b8d80103b9bb6848a7b9c9b38170f85910b52cf419b55"
+      },
+      "result": {
+        "bytes": 13080,
+        "sha256": "8c1b1eb899e260eaadfe69bbc6b01c55497fbcec48da717af7b4bf22342209fb"
+      },
+      "status": "bazel_build_failed",
+      "command_log_count": 17,
+      "failures": [
+        "Seven direct local vendor labels are deliberately omitted by production --deleted_packages.",
+        "The frozen old zstd Windows patch does not apply to resolved zstd-sys 2.1.2."
+      ],
+      "targets": [
+        "//codex-rs/utils/yaml:yaml",
+        "//codex-rs/aws-auth:aws-auth",
+        "//codex-rs/keyring-store:keyring-store",
+        "//codex-rs/execpolicy:execpolicy",
+        "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk",
+        "//codex-rs/third_party/serde-saphyr-2.0.0:serde-saphyr",
+        "//codex-rs/third_party/aws-config-1.8.12:aws-config",
+        "//codex-rs/third_party/keyring-3.6.3:keyring",
+        "//codex-rs/third_party/secret-service-4.0.0:secret-service",
+        "//codex-rs/third_party/matrix-sdk-0.19.1:matrix-sdk",
+        "//codex-rs/third_party/matrix-sdk-sqlite-0.19.1:matrix-sdk-sqlite",
+        "//codex-rs/third_party/starlark-0.14.2:starlark"
+      ],
+      "complete_bazel_gate_passed": false
+    }
+  },
+  "workspace_successful_tests": 1068,
+  "not_closed_by_these_results": [
+    "full upstream AWS 244-case run",
+    "keyring first-party group",
+    "complete Bazel library build",
+    "cargo-deny license scan",
+    "new Matrix consumer and old-fixture reopen"
+  ]
+}

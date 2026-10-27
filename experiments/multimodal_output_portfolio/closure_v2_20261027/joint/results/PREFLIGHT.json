@@ -1,0 +1,86 @@
+{
+  "allocation_sha256": "4705430b32d7d6c2eb47c3e2ed632928684bfe08af3de9404e41ffc3f0a62567",
+  "checks": [
+    {
+      "check": "changed_deployment_sigma",
+      "error": "The deployed Gaussian density differs from training",
+      "status": "rejected_before_prediction"
+    },
+    {
+      "check": "changed_deployment_basis",
+      "error": "The deployed latent basis differs from training",
+      "status": "rejected_before_prediction"
+    },
+    {
+      "check": "source_overlap_between_studies",
+      "error": "Joint and original-owner qualification sources overlap",
+      "status": "rejected_before_prediction"
+    },
+    {
+      "check": "duplicate_source_even_with_updated_manifest_digest",
+      "error": "Repeated source identities or pixels",
+      "status": "rejected_before_prediction"
+    },
+    {
+      "check": "changed_official_labels",
+      "error": "Official MNIST labels changed",
+      "status": "rejected_before_prediction"
+    },
+    {
+      "check": "unsealed_validation_report",
+      "error": "A candidate report differs from its sealed aggregate",
+      "status": "rejected_before_prediction"
+    },
+    {
+      "check": "changed_scored_checkpoint",
+      "error": "A scored training checkpoint changed",
+      "status": "rejected_before_prediction"
+    }
+  ],
+  "development_pins": {
+    "baselines_sha256": "7979db2acf683daad49e92fb83ef5daab80a34f9a384969f1419d4a9f1a7b3fd",
+    "completed_sha256": "f694532e6aebb378e05410c50e0275ded3e0c82ad5733af3c79732c22ec4e4fb",
+    "runtime_sha256": "df848ed1cbd933c191ac6fd664e515740d3c21ad74b1e60dada750050b0914d7",
+    "training": {
+      "17/direct_mean": {
+        "selection_sha256": "52e13ff5f00afe790128190b49d943d4fac5fa749955b1bc54c6b4265672e6fe",
+        "training_sha256": "b39ff0795aabddd887dc6c67eb13b6725d625670d548f643ddea22d3b7293b62"
+      },
+      "17/direct_risk": {
+        "selection_sha256": "23b97c509af4ac3f07494f674cf4792c62142d62c1772e8e4e8f151a04ebea2e",
+        "training_sha256": "ae3f1e46df047904aed3ab3d9cc30a65cf4007153a4fc9573ab4f6f964c43543"
+      },
+      "29/direct_mean": {
+        "selection_sha256": "70e8b4c762708990e317aec3222e30288f148ab78e39f0b5d1af4eea0eff1ffe",
+        "training_sha256": "bdd7384430f57f04215170fe5148e1f0ea85465231ec9d28dd3558a6705a281e"
+      },
+      "29/direct_risk": {
+        "selection_sha256": "77a72522d2252218a277163405684393ffdd6e010d96e46188f6f9fd4a722328",
+        "training_sha256": "b3eb3e0d3cc9e19110b315c87f3f28d21211210cd0346ae34ecb1924ab841b56"
+      },
+      "43/direct_mean": {
+        "selection_sha256": "c1b2edf9d73a182971b3a640e86d2741c6e61b81b3f06913e6e725ecc40663bf",
+        "training_sha256": "a9774624e5caa24750cde65305ef4dc6683d8fe20e9bf37c7b1bbf7ed7cb60c1"
+      },
+      "43/direct_risk": {
+        "selection_sha256": "3a1e3ea87b1c2e963f73ac7fff411d1e53b0d44cd53c6706a09e64488d8efd9a",
+        "training_sha256": "c53482bccad075e8c742b08504b3745c219e850022542d63d106d9b3ddfe429b"
+      }
+    }
+  },
+  "new_test_predictions_computed": false,
+  "original_development_unchanged": true,
+  "source_boundary_check_only": true,
+  "status": "passed",
+  "valid_actual_density": {
+    "actor_config": {
+      "bound": 2.0,
+      "dimensions": 12,
+      "hidden": 48,
+      "input_size": 384
+    },
+    "basis_file_sha256": "2b99cb8d24463918a7dad6407114db1b29c027093759266a63d9259e91b7426b",
+    "basis_tensor_sha256": "676a9774e6722606fc3e5b19d95426f8ff4761f34eee6eee283d07152d3bdd79",
+    "sigma": 0.15
+  }
+}

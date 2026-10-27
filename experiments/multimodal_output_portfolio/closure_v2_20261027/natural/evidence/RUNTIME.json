@@ -1,0 +1,42 @@
+{
+  "baseline_git_commit": "fb9281e4a7ccfc4034281ed6310adea7e50f4474",
+  "ffmpeg": {
+    "path": "/usr/bin/ffmpeg",
+    "sha256": "ed16af623947494a72e284b6eb8ff225f2da22b38b5d5069c2fd4b4ba3384e41",
+    "version": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers"
+  },
+  "ffprobe": {
+    "path": "/usr/bin/ffprobe",
+    "sha256": "272f6ebc634a63d9c8b4ca68e964119d980f25154e5aa2c35e5487da48e9a58f",
+    "version": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
+  },
+  "ocr_language": {
+    "bytes": 4113088,
+    "path": "/usr/share/tesseract-ocr/5/tessdata/eng.traineddata",
+    "sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2"
+  },
+  "package_versions": {
+    "av": "16.1.0",
+    "ctranslate2": "4.8.4",
+    "faster-whisper": "1.2.1",
+    "numpy": "2.3.5",
+    "opencv-python-headless": "5.0.0.93",
+    "pillow": "13.0.0",
+    "scipy": "1.18.1",
+    "torch": "2.14.1+cpu"
+  },
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "registered_ns": 1793091398798990161,
+  "tesseract": {
+    "path": "/usr/bin/tesseract",
+    "sha256": "9f831cab7525c3dab04af41bda35182af7ea1df9dceeaaa2f3bf207ac45c06a5",
+    "version": "tesseract 5.3.4"
+  },
+  "threads": {
+    "OMP_NUM_THREADS": 1,
+    "OPENBLAS_NUM_THREADS": 1,
+    "opencv": 1,
+    "whisper": 1
+  }
+}

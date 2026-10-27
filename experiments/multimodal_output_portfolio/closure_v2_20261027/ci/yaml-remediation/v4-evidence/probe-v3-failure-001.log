@@ -1,0 +1,199 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+     Locking 12 packages to latest compatible versions
+    Updating ctutils v0.4.2 -> v0.4.6
+    Updating dbus v0.9.10 -> v0.9.12
+    Updating hybrid-array v0.4.12 -> v0.4.15
+    Updating linux-keyutils v0.2.4 -> v0.2.5
+    Updating num-iter v0.1.45 -> v0.1.46
+    Updating security-framework v3.5.1 -> v3.7.0
+    Updating security-framework-sys v2.15.0 -> v2.17.0
+      Adding serde_yaml v0.9.34+deprecated
+    Updating syn v3.0.3 -> v3.0.9
+    Updating uds_windows v1.1.0 -> v1.2.1
+      Adding unsafe-libyaml v0.2.11
+    Updating zeroize_derive v1.4.3 -> v1.5.0
+   Compiling serde-saphyr v2.0.0 (/workspace/scratch/95988d8d3ab1/ndu-yaml-candidate-worktree/codex-rs/third_party/serde-saphyr-2.0.0)
+   Compiling codex-utils-yaml v0.0.0 (/workspace/scratch/95988d8d3ab1/ndu-yaml-candidate-worktree/codex-rs/utils/yaml)
+    Finished `test` profile [unoptimized] target(s) in 6.25s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 73ee86be-4687-4b9b-b800-46aec87c97d2 with nextest profile: local
+    Starting 7 tests across 2 binaries
+        PASS [   0.008s] codex-utils-yaml tests::anchors_work_without_implicitly_expanding_merge_keys
+  stdout ───
+
+    running 1 test
+    test tests::anchors_work_without_implicitly_expanding_merge_keys ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] codex-utils-yaml tests::scalar_resolution_keeps_yaml12_and_number_rendering
+  stdout ───
+
+    running 1 test
+    test tests::scalar_resolution_keeps_yaml12_and_number_rendering ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+
+        PASS [   0.009s] codex-utils-yaml tests::typed_manifests_and_utf8_slices_share_the_same_parser
+  stdout ───
+
+    running 1 test
+    test tests::typed_manifests_and_utf8_slices_share_the_same_parser ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+
+        PASS [   0.012s] codex-utils-yaml tests::application_tags_survive_until_scalar_selection
+  stdout ───
+
+    running 1 test
+    test tests::application_tags_survive_until_scalar_selection ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+
+        PASS [   0.014s] codex-utils-yaml tests::arbitrary_mapping_keys_do_not_hide_string_fields
+  stdout ───
+
+    running 1 test
+    test tests::arbitrary_mapping_keys_do_not_hide_string_fields ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+
+        PASS [   0.014s] codex-utils-yaml tests::malformed_and_duplicate_nested_values_fail_the_whole_document
+  stdout ───
+
+    running 1 test
+    test tests::malformed_and_duplicate_nested_values_fail_the_whole_document ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.01s
+
+
+  TRY 1 FAIL [   0.018s] codex-utils-yaml::legacy_projection legacy_parser_v4_numeric_boundaries
+  stdout ───
+
+    running 1 test
+    boolean-key-alias: old=Err(()); candidate=Err(())
+    null-key-alias: old=Err(()); candidate=Err(())
+    float-key-alias: old=Err(()); candidate=Err(())
+    nan-key-alias: old=Err(()); candidate=Err(())
+    signed-zero-key: old=Err(()); candidate=Err(())
+    integer-and-float-key: old=Ok(Some([])); candidate=Ok(Some([]))
+    mixed-case-bool: old=Ok(Some([("description", Some("TrUe"))])); candidate=Ok(Some([("description", Some("TrUe"))]))
+    mixed-case-null: old=Ok(Some([("description", Some("NuLl"))])); candidate=Ok(Some([("description", Some("NuLl"))]))
+    sequence-key-alias: old=Err(()); candidate=Err(())
+    mapping-key-alias: old=Err(()); candidate=Err(())
+    empty: old=Ok(None); candidate=Ok(None)
+    comments-only: old=Ok(None); candidate=Ok(None)
+    empty-document: old=Ok(None); candidate=Ok(None)
+    tagged-key: old=Ok(Some([("description", Some("hello"))])); candidate=Ok(Some([("description", Some("hello"))]))
+    different-tags: old=Ok(Some([("description", Some("first")), ("description", Some("second"))])); candidate=Ok(Some([("description", Some("first")), ("description", Some("second"))]))
+    standard-binary: old=Ok(Some([("description", Some("aGVsbG8="))])); candidate=Ok(Some([("description", Some("aGVsbG8="))]))
+    explicit-float: old=Ok(Some([("description", Some("1.0"))])); candidate=Ok(Some([("description", Some("1.0"))]))
+    large-integer: old=Err(()); candidate=Err(())
+    merge-key: old=Ok(Some([("base", None), ("<<", None), ("name", Some("example"))])); candidate=Ok(Some([("base", None), ("<<", None), ("name", Some("example"))]))
+    uppercase-hex-prefix: old=Ok(Some([("description", Some("0X10"))])); candidate=Ok(Some([("description", Some("16"))]))
+    uppercase-octal-prefix: old=Ok(Some([("description", Some("0O10"))])); candidate=Ok(Some([("description", Some("8"))]))
+    uppercase-binary-prefix: old=Ok(Some([("description", Some("0B10"))])); candidate=Ok(Some([("description", Some("2"))]))
+    hex-u64-overflow: old=Err(()); candidate=Ok(Some([("description", Some("0x10000000000000000"))]))
+    octal-u64-overflow: old=Err(()); candidate=Ok(Some([("description", Some("0o2000000000000000000000"))]))
+    binary-u64-overflow: old=Err(()); candidate=Ok(Some([("description", Some("0b10000000000000000000000000000000000000000000000000000000000000000"))]))
+    negative-hex-i64-overflow: old=Err(()); candidate=Ok(Some([("description", Some("-0x8000000000000001"))]))
+    decimal-underscore: old=Ok(Some([("description", Some("1_000"))])); candidate=Ok(Some([("description", Some("1000"))]))
+    hex-underscore: old=Ok(Some([("description", Some("0x1_0"))])); candidate=Ok(Some([("description", Some("16"))]))
+    float-overflow: old=Ok(Some([("description", Some("1e999"))])); candidate=Ok(Some([("description", Some(".inf"))]))
+    decimal-u128-overflow: old=Ok(Some([("description", Some("3.402823669209385e38"))])); candidate=Err(())
+    leading-zero-decimal: old=Ok(Some([("description", Some("0123"))])); candidate=Ok(Some([("description", Some("123.0"))]))
+    uppercase-prefix-key-distinct: old=Ok(Some([("0X10", Some("first"))])); candidate=Err(())
+    underscored-key-distinct: old=Ok(Some([("1_0", Some("first"))])); candidate=Err(())
+    u64-upper-bound: old=Ok(Some([("description", Some("18446744073709551615"))])); candidate=Ok(Some([("description", Some("18446744073709551615"))]))
+    i64-lower-bound: old=Ok(Some([("description", Some("-9223372036854775808"))])); candidate=Ok(Some([("description", Some("-9223372036854775808"))]))
+    quoted-overflow: old=Ok(Some([("description", Some("0x10000000000000000"))])); candidate=Ok(Some([("description", Some("0x10000000000000000"))]))
+    mixed-case-infinity: old=Ok(Some([("description", Some(".iNf"))])); candidate=Ok(Some([("description", Some(".inf"))]))
+    test legacy_parser_v4_numeric_boundaries ... FAILED
+
+    failures:
+
+    failures:
+        legacy_parser_v4_numeric_boundaries
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+  stderr ───
+
+    thread 'legacy_parser_v4_numeric_boundaries' (147) panicked at utils/yaml/tests/legacy_projection.rs:67:5:
+    compatibility differences: ["uppercase-hex-prefix", "uppercase-octal-prefix", "uppercase-binary-prefix", "hex-u64-overflow", "octal-u64-overflow", "binary-u64-overflow", "negative-hex-i64-overflow", "decimal-underscore", "hex-underscore", "float-overflow", "decimal-u128-overflow", "leading-zero-decimal", "uppercase-prefix-key-distinct", "underscored-key-distinct", "mixed-case-infinity"]
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+   RETRY 2/2 [         ] codex-utils-yaml::legacy_projection legacy_parser_v4_numeric_boundaries
+  TRY 2 FAIL [   0.011s] codex-utils-yaml::legacy_projection legacy_parser_v4_numeric_boundaries
+  stdout ───
+
+    running 1 test
+    boolean-key-alias: old=Err(()); candidate=Err(())
+    null-key-alias: old=Err(()); candidate=Err(())
+    float-key-alias: old=Err(()); candidate=Err(())
+    nan-key-alias: old=Err(()); candidate=Err(())
+    signed-zero-key: old=Err(()); candidate=Err(())
+    integer-and-float-key: old=Ok(Some([])); candidate=Ok(Some([]))
+    mixed-case-bool: old=Ok(Some([("description", Some("TrUe"))])); candidate=Ok(Some([("description", Some("TrUe"))]))
+    mixed-case-null: old=Ok(Some([("description", Some("NuLl"))])); candidate=Ok(Some([("description", Some("NuLl"))]))
+    sequence-key-alias: old=Err(()); candidate=Err(())
+    mapping-key-alias: old=Err(()); candidate=Err(())
+    empty: old=Ok(None); candidate=Ok(None)
+    comments-only: old=Ok(None); candidate=Ok(None)
+    empty-document: old=Ok(None); candidate=Ok(None)
+    tagged-key: old=Ok(Some([("description", Some("hello"))])); candidate=Ok(Some([("description", Some("hello"))]))
+    different-tags: old=Ok(Some([("description", Some("first")), ("description", Some("second"))])); candidate=Ok(Some([("description", Some("first")), ("description", Some("second"))]))
+    standard-binary: old=Ok(Some([("description", Some("aGVsbG8="))])); candidate=Ok(Some([("description", Some("aGVsbG8="))]))
+    explicit-float: old=Ok(Some([("description", Some("1.0"))])); candidate=Ok(Some([("description", Some("1.0"))]))
+    large-integer: old=Err(()); candidate=Err(())
+    merge-key: old=Ok(Some([("base", None), ("<<", None), ("name", Some("example"))])); candidate=Ok(Some([("base", None), ("<<", None), ("name", Some("example"))]))
+    uppercase-hex-prefix: old=Ok(Some([("description", Some("0X10"))])); candidate=Ok(Some([("description", Some("16"))]))
+    uppercase-octal-prefix: old=Ok(Some([("description", Some("0O10"))])); candidate=Ok(Some([("description", Some("8"))]))
+    uppercase-binary-prefix: old=Ok(Some([("description", Some("0B10"))])); candidate=Ok(Some([("description", Some("2"))]))
+    hex-u64-overflow: old=Err(()); candidate=Ok(Some([("description", Some("0x10000000000000000"))]))
+    octal-u64-overflow: old=Err(()); candidate=Ok(Some([("description", Some("0o2000000000000000000000"))]))
+    binary-u64-overflow: old=Err(()); candidate=Ok(Some([("description", Some("0b10000000000000000000000000000000000000000000000000000000000000000"))]))
+    negative-hex-i64-overflow: old=Err(()); candidate=Ok(Some([("description", Some("-0x8000000000000001"))]))
+    decimal-underscore: old=Ok(Some([("description", Some("1_000"))])); candidate=Ok(Some([("description", Some("1000"))]))
+    hex-underscore: old=Ok(Some([("description", Some("0x1_0"))])); candidate=Ok(Some([("description", Some("16"))]))
+    float-overflow: old=Ok(Some([("description", Some("1e999"))])); candidate=Ok(Some([("description", Some(".inf"))]))
+    decimal-u128-overflow: old=Ok(Some([("description", Some("3.402823669209385e38"))])); candidate=Err(())
+    leading-zero-decimal: old=Ok(Some([("description", Some("0123"))])); candidate=Ok(Some([("description", Some("123.0"))]))
+    uppercase-prefix-key-distinct: old=Ok(Some([("0X10", Some("first"))])); candidate=Err(())
+    underscored-key-distinct: old=Ok(Some([("1_0", Some("first"))])); candidate=Err(())
+    u64-upper-bound: old=Ok(Some([("description", Some("18446744073709551615"))])); candidate=Ok(Some([("description", Some("18446744073709551615"))]))
+    i64-lower-bound: old=Ok(Some([("description", Some("-9223372036854775808"))])); candidate=Ok(Some([("description", Some("-9223372036854775808"))]))
+    quoted-overflow: old=Ok(Some([("description", Some("0x10000000000000000"))])); candidate=Ok(Some([("description", Some("0x10000000000000000"))]))
+    mixed-case-infinity: old=Ok(Some([("description", Some(".iNf"))])); candidate=Ok(Some([("description", Some(".inf"))]))
+    test legacy_parser_v4_numeric_boundaries ... FAILED
+
+    failures:
+
+    failures:
+        legacy_parser_v4_numeric_boundaries
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+  stderr ───
+
+    thread 'legacy_parser_v4_numeric_boundaries' (149) panicked at utils/yaml/tests/legacy_projection.rs:67:5:
+    compatibility differences: ["uppercase-hex-prefix", "uppercase-octal-prefix", "uppercase-binary-prefix", "hex-u64-overflow", "octal-u64-overflow", "binary-u64-overflow", "negative-hex-i64-overflow", "decimal-underscore", "hex-underscore", "float-overflow", "decimal-u128-overflow", "leading-zero-decimal", "uppercase-prefix-key-distinct", "underscored-key-distinct", "mixed-case-infinity"]
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+────────────
+     Summary [   0.035s] 7 tests run: 6 passed, 1 failed, 0 skipped
+  TRY 2 FAIL [   0.011s] codex-utils-yaml::legacy_projection legacy_parser_v4_numeric_boundaries
+error: test run failed
+error: Recipe `test` failed on line 89 with exit code 100

@@ -1,0 +1,90 @@
+{
+  "schema": "hepta.matrix-reopen.permission-diagnosis.v1",
+  "started_at": "2026-10-27T15:32:26.412773+00:00",
+  "scope": "Diagnostic reuse of the unchanged v2 CI executable. No new-source qualification, new build or policy change.",
+  "driver_sha256": "5cf888a736a300471561a758a0e96f4daf7be7e7d0343160380cced98fefd85f",
+  "commands": [
+    {
+      "label": "test-inventory",
+      "command": [
+        "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/yaml-migration/bin/cargo-nextest",
+        "nextest",
+        "list",
+        "--cargo-metadata",
+        "/workspace/scratch/95988d8d3ab1/ndu-matrix-reopen-diagnosis-v4-001/execution-002/cargo-metadata.json",
+        "--binaries-metadata",
+        "/workspace/scratch/95988d8d3ab1/ndu-matrix-reopen-diagnosis-v4-001/execution-002/binaries-metadata.json",
+        "--workspace-remap",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/codex-rs",
+        "--target-dir-remap",
+        "/workspace/scratch/95988d8d3ab1/ndu-matrix-reopen-diagnosis-v4-001/execution-002/relocated-target",
+        "--message-format",
+        "json"
+      ],
+      "exit_code": 0,
+      "seconds": 0.11205161099496763,
+      "log_sha256": "ad95e2b87512b8943382382aa81779ce4a95381f2515179240f455baf878653d",
+      "user_seconds": 0.071962,
+      "system_seconds": 0.046971
+    }
+  ],
+  "arms": [],
+  "original_zip": {
+    "path": "/workspace/scratch/95988d8d3ab1/ndu-port-remote-3a779a6/raw/ndu-port-tests-matrix-40503203294-1.zip",
+    "sha256": "ac5260d4cb487988c470b3cf4dfd4ac5817f84a424c64b26628be76e7074fbf5",
+    "bytes": 99739902
+  },
+  "pristine_fixture": {
+    "expected.json": {
+      "bytes": 1690,
+      "sha256": "2dcd8dcf267a60ff51d10b680fcbf46c5d29d75dc0f3fd9fc1d688e5d13a077d"
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-event-cache.sqlite3": {
+      "bytes": 69632,
+      "sha256": "73032a6b7cc752dd0c5498c520db919c1ba0ad58c4c4d378086d43dd3b9b239e"
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-media.sqlite3": {
+      "bytes": 36864,
+      "sha256": "2e8b4bc1f4c4181a22f21b54adf61858099242277438f897cccca5f774b17e24"
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/session.json": {
+      "bytes": 151,
+      "sha256": "195167ce802c9630ae49edf1ffe97397c71d33d42273de6a8cb02697877abe17"
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-crypto.sqlite3": {
+      "bytes": 180224,
+      "sha256": "eafa0f63f46baacc32f60fcfbc3a5c94d18b4a235b87a19b8e15ced0f4dae954"
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3": {
+      "bytes": 131072,
+      "sha256": "472787f24d7e914fa49a48060e5137f938e0aa1486cfa0ced8fc184cceb1f571"
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3-shm": {
+      "bytes": 32768,
+      "sha256": "a848a19cfea0a8a420d6e9728554b25c705bbdd59f50f3998072ef3d14d835a0"
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3-wal": {
+      "bytes": 24752,
+      "sha256": "d98dd7e8a5f4de9d39fe20132b24cec26fa68a11ffaff0c63beb9d76e76c99da"
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix_1.sqlite3": {
+      "bytes": 196608,
+      "sha256": "ea9603990ea0b362d17892583fa9f2023d6b0487ea1105f7ae534c91bbbb2e9c"
+    }
+  },
+  "cargo-metadata.json": {
+    "sha256": "8e63a212794be9da5b63b406b6dadbc17207d373d2b3c4ab8b4b46a637618235",
+    "bytes": 8272911
+  },
+  "binaries-metadata.json": {
+    "sha256": "371ed5831480583c9ffdf13ad7ba68bc13c624ec3f1e61123d0c97d01804944e",
+    "bytes": 1300
+  },
+  "actual_binary": {
+    "sha256": "12e53b85e42fbb8e42658a987523425bd1dc3ada4d545d1f1ac0ba3710859448",
+    "bytes": 480021760,
+    "memfd_seals": 15,
+    "relocated_path": "/workspace/scratch/95988d8d3ab1/ndu-matrix-reopen-diagnosis-v4-001/execution-002/relocated-target/ci-test/deps/store_version_migration-2b9150d9beed835e",
+    "stored_on_disk": false
+  }
+}

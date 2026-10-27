@@ -1,0 +1,16 @@
+{
+  "schema": "hepta.codespell.exact-frozen-filename.v1",
+  "source_run_id": 40503203235,
+  "actual_diagnostic": "RECIPE.v2.json:6545 statics ==> statistics",
+  "resolution": "Recognize only the exact frozen manifest line naming the real upstream Rust static-lifetime fixture; source/recipes/dictionary-wide behavior unchanged.",
+  "exact_added_line": "      \"src/tests/derive/trace/statics.rs\": {",
+  "source_identity": [
+    {
+      "vendor_file": "codex-rs/third_party/starlark-0.14.2/src/tests/derive/trace/statics.rs",
+      "bytes": 1369,
+      "sha256": "767b0cadd3420960b0fdac0c7e5f727cefb39ce4f066cbcd600ae9e3434b7bca"
+    }
+  ],
+  "recipe_v2_sha256": "1122a85d579ff781fa0941eaa6233aeb72ea881b80a948fd1b24305b59890295",
+  "new_ci_status": "pending"
+}

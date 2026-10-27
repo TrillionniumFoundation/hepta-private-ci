@@ -1,0 +1,125 @@
+{
+  "at": "2026-10-27T13:03:22.684897+00:00",
+  "scope": "Static production alias mapping against exact pinned official generator and actual resolved candidate metadata; the next remote Bazel job remains required.",
+  "source_before": {
+    "bytes": 14287,
+    "sha256": "e5413a7413bfbdee4087656620f77d2ff018b2a31a64d9123754202a01a04340"
+  },
+  "source_after": {
+    "bytes": 14111,
+    "sha256": "81469925bd9ffa4bd0f58265e724c4018b945db16a4e6403d28e8bfedd81254c"
+  },
+  "only_code_change": "BAZEL_TARGETS seven vendor labels; the other five targets and every function AST are unchanged.",
+  "targets_before": [
+    "//codex-rs/utils/yaml:yaml",
+    "//codex-rs/aws-auth:aws-auth",
+    "//codex-rs/keyring-store:keyring-store",
+    "//codex-rs/execpolicy:execpolicy",
+    "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk",
+    "//codex-rs/third_party/serde-saphyr-2.0.0:serde-saphyr",
+    "//codex-rs/third_party/aws-config-1.8.12:aws-config",
+    "//codex-rs/third_party/keyring-3.6.3:keyring",
+    "//codex-rs/third_party/secret-service-4.0.0:secret-service",
+    "//codex-rs/third_party/matrix-sdk-0.19.1:matrix-sdk",
+    "//codex-rs/third_party/matrix-sdk-sqlite-0.19.1:matrix-sdk-sqlite",
+    "//codex-rs/third_party/starlark-0.14.2:starlark"
+  ],
+  "targets_after": [
+    "//codex-rs/utils/yaml:yaml",
+    "//codex-rs/aws-auth:aws-auth",
+    "//codex-rs/keyring-store:keyring-store",
+    "//codex-rs/execpolicy:execpolicy",
+    "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk",
+    "@crates//:serde-saphyr-2.0.0",
+    "@crates//:aws-config-1.8.12",
+    "@crates//:keyring-3.6.3",
+    "@crates//:secret-service-4.0.0",
+    "@crates//:matrix-sdk-0.19.1",
+    "@crates//:matrix-sdk-sqlite-0.19.1",
+    "@crates//:starlark-0.14.2"
+  ],
+  "mapping": [
+    {
+      "previous_direct_label": "//codex-rs/third_party/serde-saphyr-2.0.0:serde-saphyr",
+      "production_versioned_alias": "@crates//:serde-saphyr-2.0.0",
+      "name": "serde-saphyr",
+      "version": "2.0.0",
+      "actual_candidate_manifest": "codex-rs/third_party/serde-saphyr-2.0.0/Cargo.toml"
+    },
+    {
+      "previous_direct_label": "//codex-rs/third_party/aws-config-1.8.12:aws-config",
+      "production_versioned_alias": "@crates//:aws-config-1.8.12",
+      "name": "aws-config",
+      "version": "1.8.12",
+      "actual_candidate_manifest": "codex-rs/third_party/aws-config-1.8.12/Cargo.toml"
+    },
+    {
+      "previous_direct_label": "//codex-rs/third_party/keyring-3.6.3:keyring",
+      "production_versioned_alias": "@crates//:keyring-3.6.3",
+      "name": "keyring",
+      "version": "3.6.3",
+      "actual_candidate_manifest": "codex-rs/third_party/keyring-3.6.3/Cargo.toml"
+    },
+    {
+      "previous_direct_label": "//codex-rs/third_party/secret-service-4.0.0:secret-service",
+      "production_versioned_alias": "@crates//:secret-service-4.0.0",
+      "name": "secret-service",
+      "version": "4.0.0",
+      "actual_candidate_manifest": "codex-rs/third_party/secret-service-4.0.0/Cargo.toml"
+    },
+    {
+      "previous_direct_label": "//codex-rs/third_party/matrix-sdk-0.19.1:matrix-sdk",
+      "production_versioned_alias": "@crates//:matrix-sdk-0.19.1",
+      "name": "matrix-sdk",
+      "version": "0.19.1",
+      "actual_candidate_manifest": "codex-rs/third_party/matrix-sdk-0.19.1/Cargo.toml"
+    },
+    {
+      "previous_direct_label": "//codex-rs/third_party/matrix-sdk-sqlite-0.19.1:matrix-sdk-sqlite",
+      "production_versioned_alias": "@crates//:matrix-sdk-sqlite-0.19.1",
+      "name": "matrix-sdk-sqlite",
+      "version": "0.19.1",
+      "actual_candidate_manifest": "codex-rs/third_party/matrix-sdk-sqlite-0.19.1/Cargo.toml"
+    },
+    {
+      "previous_direct_label": "//codex-rs/third_party/starlark-0.14.2:starlark",
+      "production_versioned_alias": "@crates//:starlark-0.14.2",
+      "name": "starlark",
+      "version": "0.14.2",
+      "actual_candidate_manifest": "codex-rs/third_party/starlark-0.14.2/Cargo.toml"
+    }
+  ],
+  "official_generator": {
+    "path": "/workspace/scratch/95988d8d3ab1/ndu-keyring-store-contract-001/bazel-alias-001/selected/rs/extensions.bzl",
+    "identity": {
+      "bytes": 43586,
+      "sha256": "17d29d47b5eac06d60c4557f4f9f7b084474ec5a273b00ec7673a4d73ad8acf8"
+    },
+    "source_archive": {
+      "url": "https://github.com/hermeticbuild/rules_rs/releases/download/v0.0.96/rules_rs-v0.0.96.tar.gz",
+      "bytes": 827642,
+      "sha256": "04781205ae648b0c67bf1108e28b8f780445bef40c721564ec525cab63c475d6",
+      "integrity_verified": true,
+      "selected_source_paths": [
+        "selected/rs/extensions.bzl",
+        "selected/rs/private/rustc_src_repository.bzl",
+        "selected/rs/rust_crate.bzl",
+        "selected/rs/toolchains/declare_rustc_toolchains.bzl"
+      ],
+      "fetched_at": "2026-10-27T13:00:02.925490+00:00"
+    },
+    "registry_metadata": {
+      "url": "https://bcr.bazel.build/modules/rules_rs/0.0.96/source.json",
+      "bytes": 478,
+      "sha256": "2b52d3d209324bd4aaa4896aa0e8b28d0123856b4ade32ebd7bf24b4fded6f12",
+      "candidate_lock_matched": true,
+      "fetched_at": "2026-10-27T12:59:45.576044+00:00"
+    },
+    "generation_excerpt": "        _fq_crate(package[\"name\"], package[\"version\"]): package\n        for package in packages\n    }\n    repo_root = _normalize_path(cargo_metadata[\"workspace_root\"])\n    workspace_package = _label_directory(cargo_lock_path)\n\n    hub_contents = []\n    for name, versions in versions_by_name.items():\n        for version in versions:\n            annotation = annotation_for(annotations, name, version, hub_name)\n            package = package_by_fq[_fq_crate(name, version)]\n            target_repo_name = package[\"target_repo_name\"]\n            target_package_path = package[\"target_package_path\"]\n\n            hub_contents.append(\"\"\"\nalias(\n    name = \"{name}-{version}\",\n    actual = \"{actual}\",\n)\"\"\".format(name = name, version = version, actual = _target_label(target_repo_name, target_package_path, name)))\n"
+  },
+  "original_deleted_packages_mechanism": "unchanged; local vendored packages remain omitted from direct package traversal, while the production crate hub owns the dependency library targets.",
+  "original_failure_log": {
+    "bytes": 39412,
+    "sha256": "b9272d8be001c68313abade62441f71f7b64967bbd7f73e55f5867f8fd6ea97c"
+  }
+}

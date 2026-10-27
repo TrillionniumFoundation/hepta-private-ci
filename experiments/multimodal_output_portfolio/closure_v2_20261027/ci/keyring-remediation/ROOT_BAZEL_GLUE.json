@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.nonmember-bazel-glue.v1",
+  "reason": "Explicit production libraries retain actual Cargo platform features without creating upstream test targets missing their separate dev graph.",
+  "feature_selections_changed": false,
+  "rust_or_cargo_sources_changed": false,
+  "bazel_execution": "pending",
+  "files": [
+    {
+      "path": "codex-rs/third_party/keyring-3.6.3/BUILD.bazel",
+      "before_sha256": "90d1afeff1ed259ac4785fd8ef95ea86a09f0beab561388c55af7612e39dd053",
+      "after_sha256": "5580e4852d56c899c8c59fbfc047d881fe8e5912fe71a998d8d91c5b42c7960a"
+    },
+    {
+      "path": "codex-rs/third_party/secret-service-4.0.0/BUILD.bazel",
+      "before_sha256": "6b5c957f776d501bfaa0940ee3db38a3f8f846aad1a9081de328e8271e37f98d",
+      "after_sha256": "2151f7020a9712ba63cc4234dbaff2ae4a2cf9e3857031a2b461c7c90e3b0f79"
+    }
+  ]
+}

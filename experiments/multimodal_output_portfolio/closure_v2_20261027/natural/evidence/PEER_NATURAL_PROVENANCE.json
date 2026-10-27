@@ -1,0 +1,36 @@
+{
+  "23_group_alias_sensitivity_is_posthoc": true,
+  "all_copies_exact": true,
+  "earlier_audit_failure_preserved": true,
+  "failure_reason": "The first independent audit used merchant sort order for finite Monte Carlo draws, while the replication protocol uses sorted source IDs. Matching the frozen source order corrected the auditor; no scientific data, interval, policy or gate was changed.",
+  "files": [
+    {
+      "archived_copy": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/evidence/PEER_NATURAL.json",
+      "bytes": 4827,
+      "sha256": "4199c4284f5c5246b1ec1a229dd66aaa5d20322c68101fb6d3aa7a92bf94c039",
+      "source_path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/control/evidence/PEER_NATURAL.json"
+    },
+    {
+      "archived_copy": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/evidence/PEER_NATURAL_AUDITOR.py.txt",
+      "bytes": 19541,
+      "sha256": "96b5dab8e3079a0643f00d3b5c6bc9a152b8fc9dc102b169ea5cc260a2d46ba4",
+      "source_path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/control/peer_natural.py"
+    },
+    {
+      "archived_copy": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/evidence/native_peer_natural_001.log",
+      "bytes": 1388,
+      "sha256": "7701719914791eb989c9c85109eb0ffcba5913eeed3f5a58308fa897d636d027",
+      "source_path": "/workspace/scratch/95988d8d3ab1/native_peer_natural_001.log"
+    },
+    {
+      "archived_copy": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/evidence/native_peer_natural_002.log",
+      "bytes": 3909,
+      "sha256": "909918724b68f174575f8f790d8329671f0b6f20bf6c9b031d99cfef5e940258",
+      "source_path": "/workspace/scratch/95988d8d3ab1/native_peer_natural_002.log"
+    }
+  ],
+  "generator_or_model_reruns": 0,
+  "original_24_group_gate_unchanged": true,
+  "peer_agent": "/root/native_continuation",
+  "recorded_ns": 1793094185695525388
+}

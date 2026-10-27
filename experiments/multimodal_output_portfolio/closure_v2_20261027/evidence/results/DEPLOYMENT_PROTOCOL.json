@@ -1,0 +1,52 @@
+{
+  "baseline_always_eligible": true,
+  "bootstrap_samples": 20000,
+  "bootstrap_seed": 272037,
+  "context": "A code/selection repair after the immutable speakers21-32 negative qualification; historical development only, not a replacement test.",
+  "coupling_candidates": [
+    0.5,
+    2.0,
+    10.0,
+    50.0,
+    200.0,
+    1000.0,
+    4000.0
+  ],
+  "created_ns": 1793093440066050329,
+  "fit_speakers": [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08"
+  ],
+  "gate": "Paired four-source bootstrap97.5% upper posterior-NLL delta<=0 and lower MAP, mean-utility, risk-CE deltas>=0. Conditional likelihood is reported separately and cannot suffice for promotion.",
+  "inputs": {
+    "observations_fit.json": "25d66f76bf7f72c27cc867b6fd6bb8f610b671493e18b2995f4af46e4bdac164",
+    "observations_validation.json": "18bd021b983db4582b641e21d78b5eccdd77af4404f3d4b7dcbff00920e27e08"
+  },
+  "marginal_selection": "Same pooled conditional-likelihood selection as before; every coupling candidate has the identical marginals.",
+  "new_qualification_sources_scored": 0,
+  "payoffs": {
+    "correct": 0.99,
+    "uncertain": -0.003,
+    "wrong": -0.51
+  },
+  "risk_gamma": 2,
+  "schema": "hepta.ndu.evidence.deployment-selection-development.v1",
+  "source_census": "Derived pairs are repeated views of four validation speakers; no population or fresh-source claim.",
+  "source_paths_opened": [
+    "/workspace/scratch/95988d8d3ab1/ndu-continuation-evidence/study-002/observations_fit.json",
+    "/workspace/scratch/95988d8d3ab1/ndu-continuation-evidence/study-002/observations_validation.json"
+  ],
+  "tie_break": "Highest protected risk CE, lowest proper posterior score, unchanged baseline, candidate name.",
+  "validation_speakers": [
+    "09",
+    "10",
+    "11",
+    "12"
+  ]
+}

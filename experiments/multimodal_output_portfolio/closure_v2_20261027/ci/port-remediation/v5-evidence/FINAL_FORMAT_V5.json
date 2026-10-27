@@ -1,0 +1,359 @@
+{
+  "schema": "hepta.ndu.final-format.v1",
+  "started_utc": "2026-10-27T15:57:21.455531+00:00",
+  "runner": {
+    "bytes": 5455,
+    "sha256": "e0ba416b485adcb0f9ece951dc1bc65054194f5c44d94b0ea7e46342fd4b677e",
+    "mode": "0o644"
+  },
+  "source_before": {
+    ".github/workflows/ndu-port-candidate.yml": {
+      "bytes": 25259,
+      "sha256": "9ed8e2e6b13893f5522989b1437dd3d2dcbe56cf1591afc09ff9a249c48fd684",
+      "mode": "0o644"
+    },
+    "codex-rs/utils/yaml/BUILD.bazel": {
+      "bytes": 117,
+      "sha256": "35ab6843c2552bbe1cd3a6142f93124935daec0889db4fe35b90439196294f85",
+      "mode": "0o644"
+    },
+    "codex-rs/utils/yaml/src/key.rs": {
+      "bytes": 1423,
+      "sha256": "374d0b7e32b09af6c69a9eb6d6851301999460cdb3eb66fd5b9168155a7437e8",
+      "mode": "0o644"
+    },
+    "codex-rs/utils/yaml/src/lib.rs": {
+      "bytes": 6244,
+      "sha256": "d45f22ca7e681d92e0372b65caa5f4916f9a47f0a045724e1225cc196060413c",
+      "mode": "0o644"
+    },
+    "codex-rs/utils/yaml/src/yaml_tests.rs": {
+      "bytes": 3683,
+      "sha256": "795b317a85ae2277465c975928d89bc4bc761ec9296d81746dfc8fc804ad864c",
+      "mode": "0o644"
+    },
+    "codex-rs/utils/yaml/tests/legacy_projection.rs": {
+      "bytes": 8065,
+      "sha256": "57ae4de6d759eba0654f11f34537982cd654d4154c8920bdc4edf8044720b346",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/executed_source_assembly.py": {
+      "bytes": 8494,
+      "sha256": "04dd85b84a42ec74c0ad9905d43baded54b0d020456191aac2a25e8e969c2914",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/candidate/proposed-sdk.rs": {
+      "bytes": 28070,
+      "sha256": "8f6ed35c3a360da6893758c5bb7f357f5dd3b880e8008bd84c9983f1c61078d5",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/candidate/source-before-sdk.rs": {
+      "bytes": 25629,
+      "sha256": "6cc077a47917da7ff7c261de2b77b61bcddd3caf24c4cec868eb513ffb33c3b4",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/candidate/startup_deadline_tests.rs": {
+      "bytes": 3181,
+      "sha256": "499c164c841a64c8f9ba6e7c917fb3e7ac5cc713b159cf2558b70512dc1f1849",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/capture-source.py": {
+      "bytes": 13142,
+      "sha256": "7da847f868f90be7e7d677a50c5efa15e3e4fa16526ba9c9d41d57f39e362359",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/drivers/inspect_sealed_symbols_004.py": {
+      "bytes": 4856,
+      "sha256": "2f17f6dbc89f489bac9e1d77bbe6fb91a3e632858d5835fe65a3dceda7a222e2",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/drivers/run_sealed_binary.py": {
+      "bytes": 8422,
+      "sha256": "09c96ffe4738372be8081a7c2e18add623cfea7792d7d8748a15fd9312761472",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/drivers/run_sealed_binary_002.py": {
+      "bytes": 8750,
+      "sha256": "5cf888a736a300471561a758a0e96f4daf7be7e7d0343160380cced98fefd85f",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/drivers/run_sealed_binary_003.py": {
+      "bytes": 8860,
+      "sha256": "9ba87bd57b38f8125c6317ab273d456a0d6a765180924751c0481a07e507758d",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/drivers/run_sealed_binary_005.py": {
+      "bytes": 10115,
+      "sha256": "9890ae08a868781f81cb8e9b928cb1865358bda0030cb7b7bb305ab4a28b0ca1",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/execution-005/restored-mode-0600/nextest-gdb-runner.py": {
+      "bytes": 334,
+      "sha256": "2c27ca71a14ef69cf63b2f55573d0400b933641876e833525c5c7a212f29f5cd",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v5-evidence/executed_source_assembly.py": {
+      "bytes": 8226,
+      "sha256": "fa970776d6a30b73e70cc194c8ccb3997e744bbb1f1ae9e68a69b467c1ff6aef",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/control/evidence/archive-restoration/001/executed-source.py": {
+      "bytes": 3562,
+      "sha256": "3a9fb24f9d24585844d0ac43cc02775e8c647c15e83f2a1b44ca65033f7c27cd",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/control/evidence/archive-restoration/002/executed-source.py": {
+      "bytes": 4144,
+      "sha256": "777b2cb444f9d69189d7e22180345e13c79a17eb7d79fa84ae4e8b424a9655d6",
+      "mode": "0o644"
+    },
+    "scripts/ndu_port_candidate_common.py": {
+      "bytes": 23593,
+      "sha256": "1968263e5dcf6de8d34ee1c1f91e4e1e940b115802bb1a4e5e10d1d16b2228da",
+      "mode": "0o644"
+    },
+    "scripts/ndu_port_fixture_layout.py": {
+      "bytes": 4838,
+      "sha256": "b316327be4316a4d8d97cd76a3fcc7d5c68cdc316e71343ad14d46fa5f4fc8ac",
+      "mode": "0o644"
+    },
+    "scripts/ndu_port_matrix_fixture.py": {
+      "bytes": 17157,
+      "sha256": "e4b9da556b10762c5e5b761f94ea5dccc1c4d2f655082c8afc328a3b68a1c247",
+      "mode": "0o644"
+    },
+    "scripts/test_ndu_port_fixture_layout.py": {
+      "bytes": 4185,
+      "sha256": "58f3b4f1068a9c9bf420b5db1da6ba92a57adc08dcfa774c0adc51c24a47205f",
+      "mode": "0o644"
+    },
+    "scripts/test_ndu_port_matrix_fixture.py": {
+      "bytes": 11516,
+      "sha256": "ba4275d1ccd3c70a5d3050b41c44406357ee6d5360ccc1fc64fbd57179a170b1",
+      "mode": "0o644"
+    }
+  },
+  "protected_scientific_source": {
+    "v6/data.py": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29",
+    "v6/neural.py": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742",
+    "v6/conditioned.py": "ccb5f9a78e58d6f1d1511a95f50de3602e1f39e7254fce5566e97a994d5b4cba",
+    "v6/plan_training.py": "b43ff714960139d4b58d02dec86b69d27ac51d5abfd75509936ee2c5c355997b",
+    "v6/observer.py": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e",
+    "repair_20261026/joint/train.py": "71776941c8c7d289b6c3ad2886cfab3512f2ae7b3ffd3898fda6c5a2a72c9c8c"
+  },
+  "commands": [
+    {
+      "name": "native-python-format",
+      "command": [
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/scripts/.venv/bin/ruff",
+        "format",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/__init__.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/build.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/ci.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/commands.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/contract.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/docker_control.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/files.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/inputs.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/orchestrate.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/prep_inside.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/prep_tools.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/prepare.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/receipts.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/recovery.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/runtime.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/source.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/synapse.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_boundaries.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_cleanup.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_execution.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_restore.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_source.py",
+        "codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse-linux.py"
+      ],
+      "cwd": "/workspace/scratch/95988d8d3ab1/hepta-private-ci",
+      "exit_code": 0,
+      "log": {
+        "bytes": 24,
+        "sha256": "8548a2eb66b720028f4698e500fab8b82fabbe0340c3708d7b3979dadea82629",
+        "mode": "0o644"
+      }
+    },
+    {
+      "name": "workflow-format",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/workspace/scratch/95988d8d3ab1/ndu-starlark-blake3-candidate/formatter-tools/prettier-3.5.3/bin/prettier.cjs",
+        "--write",
+        ".github/workflows/ndu-port-candidate.yml"
+      ],
+      "cwd": "/workspace/scratch/95988d8d3ab1/hepta-private-ci",
+      "exit_code": 0,
+      "log": {
+        "bytes": 58,
+        "sha256": "6932a30b5f3af25bdacc11e98f14acffff49500dc225ef9a5aff2d3955c3609f",
+        "mode": "0o644"
+      }
+    },
+    {
+      "name": "repository-just-fmt",
+      "command": [
+        "/workspace/scratch/95988d8d3ab1/continuation_format_tools_20261027/just",
+        "fmt"
+      ],
+      "cwd": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/codex-rs",
+      "exit_code": 0,
+      "log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": "0o644"
+      }
+    }
+  ],
+  "status": "passed",
+  "finished_utc": "2026-10-27T15:57:22.100861+00:00",
+  "source_after": {
+    ".github/workflows/ndu-port-candidate.yml": {
+      "bytes": 25259,
+      "sha256": "9ed8e2e6b13893f5522989b1437dd3d2dcbe56cf1591afc09ff9a249c48fd684",
+      "mode": "0o644"
+    },
+    "codex-rs/utils/yaml/BUILD.bazel": {
+      "bytes": 117,
+      "sha256": "35ab6843c2552bbe1cd3a6142f93124935daec0889db4fe35b90439196294f85",
+      "mode": "0o644"
+    },
+    "codex-rs/utils/yaml/src/key.rs": {
+      "bytes": 1423,
+      "sha256": "374d0b7e32b09af6c69a9eb6d6851301999460cdb3eb66fd5b9168155a7437e8",
+      "mode": "0o644"
+    },
+    "codex-rs/utils/yaml/src/lib.rs": {
+      "bytes": 6244,
+      "sha256": "d45f22ca7e681d92e0372b65caa5f4916f9a47f0a045724e1225cc196060413c",
+      "mode": "0o644"
+    },
+    "codex-rs/utils/yaml/src/yaml_tests.rs": {
+      "bytes": 3683,
+      "sha256": "795b317a85ae2277465c975928d89bc4bc761ec9296d81746dfc8fc804ad864c",
+      "mode": "0o644"
+    },
+    "codex-rs/utils/yaml/tests/legacy_projection.rs": {
+      "bytes": 8065,
+      "sha256": "57ae4de6d759eba0654f11f34537982cd654d4154c8920bdc4edf8044720b346",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/executed_source_assembly.py": {
+      "bytes": 8494,
+      "sha256": "04dd85b84a42ec74c0ad9905d43baded54b0d020456191aac2a25e8e969c2914",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/candidate/proposed-sdk.rs": {
+      "bytes": 28070,
+      "sha256": "c5afe9f60d67016cb7d281eb74fb91b4c734cb424a88f181bfc0469b4e72f41c",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/candidate/source-before-sdk.rs": {
+      "bytes": 25629,
+      "sha256": "76d9e7c8ac017656fb46fe2346265a818453835884ab3c4842f33fcc44dbd8cd",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/candidate/startup_deadline_tests.rs": {
+      "bytes": 3181,
+      "sha256": "580574f586b65b230250c6393bb4d72da6fc5a5c11faff214fe4155d96e1e3e0",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/capture-source.py": {
+      "bytes": 13142,
+      "sha256": "7da847f868f90be7e7d677a50c5efa15e3e4fa16526ba9c9d41d57f39e362359",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/drivers/inspect_sealed_symbols_004.py": {
+      "bytes": 4856,
+      "sha256": "2f17f6dbc89f489bac9e1d77bbe6fb91a3e632858d5835fe65a3dceda7a222e2",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/drivers/run_sealed_binary.py": {
+      "bytes": 8422,
+      "sha256": "09c96ffe4738372be8081a7c2e18add623cfea7792d7d8748a15fd9312761472",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/drivers/run_sealed_binary_002.py": {
+      "bytes": 8750,
+      "sha256": "5cf888a736a300471561a758a0e96f4daf7be7e7d0343160380cced98fefd85f",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/drivers/run_sealed_binary_003.py": {
+      "bytes": 8860,
+      "sha256": "9ba87bd57b38f8125c6317ab273d456a0d6a765180924751c0481a07e507758d",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/drivers/run_sealed_binary_005.py": {
+      "bytes": 10115,
+      "sha256": "9890ae08a868781f81cb8e9b928cb1865358bda0030cb7b7bb305ab4a28b0ca1",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/execution-005/restored-mode-0600/nextest-gdb-runner.py": {
+      "bytes": 334,
+      "sha256": "2c27ca71a14ef69cf63b2f55573d0400b933641876e833525c5c7a212f29f5cd",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v5-evidence/executed_source_assembly.py": {
+      "bytes": 8226,
+      "sha256": "fa970776d6a30b73e70cc194c8ccb3997e744bbb1f1ae9e68a69b467c1ff6aef",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/control/evidence/archive-restoration/001/executed-source.py": {
+      "bytes": 3562,
+      "sha256": "3a9fb24f9d24585844d0ac43cc02775e8c647c15e83f2a1b44ca65033f7c27cd",
+      "mode": "0o644"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/control/evidence/archive-restoration/002/executed-source.py": {
+      "bytes": 4144,
+      "sha256": "777b2cb444f9d69189d7e22180345e13c79a17eb7d79fa84ae4e8b424a9655d6",
+      "mode": "0o644"
+    },
+    "scripts/ndu_port_candidate_common.py": {
+      "bytes": 23593,
+      "sha256": "1968263e5dcf6de8d34ee1c1f91e4e1e940b115802bb1a4e5e10d1d16b2228da",
+      "mode": "0o644"
+    },
+    "scripts/ndu_port_fixture_layout.py": {
+      "bytes": 5035,
+      "sha256": "1acbf3db7b3ebd92287619aeceb0fe97356d7f95cab1e724bb61f6c4dcd8a061",
+      "mode": "0o644"
+    },
+    "scripts/ndu_port_matrix_fixture.py": {
+      "bytes": 17157,
+      "sha256": "e4b9da556b10762c5e5b761f94ea5dccc1c4d2f655082c8afc328a3b68a1c247",
+      "mode": "0o644"
+    },
+    "scripts/test_ndu_port_fixture_layout.py": {
+      "bytes": 4296,
+      "sha256": "aad42dc2810479f65d8e3a2c4e8514e925f6a090937b6537f3d95348e43d14e9",
+      "mode": "0o644"
+    },
+    "scripts/test_ndu_port_matrix_fixture.py": {
+      "bytes": 11723,
+      "sha256": "f46b169d2bd195fb4fe295595de3879a1788df38c9663eec43cc010e849a68ee",
+      "mode": "0o644"
+    }
+  },
+  "changed_paths": [
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/candidate/proposed-sdk.rs",
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/candidate/source-before-sdk.rs",
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/candidate/startup_deadline_tests.rs",
+    "scripts/ndu_port_fixture_layout.py",
+    "scripts/test_ndu_port_fixture_layout.py",
+    "scripts/test_ndu_port_matrix_fixture.py"
+  ],
+  "python_ast_unchanged": {
+    "scripts/ndu_port_fixture_layout.py": "36509ff99b30587f162ddcff5b537f93bdc2d943de5ddb2e4fe47beccf159ede",
+    "scripts/test_ndu_port_fixture_layout.py": "f196e5e71e8ca672f08db5976b59820c62cdcd60837d45773de7f244407dbf0f",
+    "scripts/test_ndu_port_matrix_fixture.py": "51310db0b27a249f05333f2e5a88474582599a9bd6eeaaf1b1ec5bfdbd96599a"
+  },
+  "workflow_structure_unchanged": true,
+  "protected_scientific_source_unchanged": true,
+  "rust_scope": "Pinned Rust 1.96 rustfmt only; exact before/after Rust sources retained. No Rust semantic equivalence claim beyond the standard formatter.",
+  "no_behavioral_tests_after_format": true
+}

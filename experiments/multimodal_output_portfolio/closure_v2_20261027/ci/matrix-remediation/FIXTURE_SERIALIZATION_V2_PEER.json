@@ -1,0 +1,196 @@
+{
+  "schema": "hepta.matrix-fixture-serialization-v2-independent-peer.v1",
+  "recorded_utc": "2026-10-27T11:58:49.649559+00:00",
+  "review_mode": "Read-only source/archive/API review; no Rust compilation, test execution, workspace source change or patch application",
+  "conclusion": "No blocker found in the narrow serialization repair. Full key identity and values are retained, five original equality checks and all other old body bytes are preserved, with a new nonempty key map guard. Execution qualification remains pending.",
+  "inputs": {
+    "v1_patch": {
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-fixture-tests.patch",
+      "bytes": 10455,
+      "sha256": "dec3b6075c928a924e32754e1c310361fd231da3da2a3cdf3657a1a3a734b1fd"
+    },
+    "v2_patch": {
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-fixture-tests-v2.patch",
+      "bytes": 10732,
+      "sha256": "e2dfb517cd07278eef6b0fced8c7e61db3b0e6fd3ffde61da717301116721027"
+    },
+    "v2_report": {
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/FIXTURE_SERIALIZATION_V2.json",
+      "bytes": 6060,
+      "sha256": "9ab931c2152eb94cf921ae3889a27d15fd54cd75053565f9b649d24901212262"
+    },
+    "old_raw_archive": {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-port-remote-1e4f8b5/raw/ndu-matrix-018-fixture-40497632113-1.zip",
+      "bytes": 30421442,
+      "sha256": "6544ea2fc066618a4bb42dce69c10feedaf44fd1d8b2963e931f22a2a6cd36ac"
+    }
+  },
+  "static_checks": {
+    "patch_contains_exactly_one_new_fixture_file": true,
+    "new_source_matches_report_sha": true,
+    "three_exact_substitutions_restore_original_source": true,
+    "all_five_original_assert_eq_calls_preserved": true,
+    "session_checkpoint_inbox_outbox_continuation_bodies_unchanged": true,
+    "all_key_id_strings_retained_without_filtering_or_truncation": true,
+    "all_public_key_values_use_upstream_transport_encoding": true,
+    "new_nonempty_guard": true,
+    "no_debug_or_hash_surrogate": true
+  },
+  "upstream": {
+    "0.18.0": {
+      "crate": {
+        "path": "/workspace/scratch/95988d8d3ab1/ndu-matrix-fixture-compat-002/upstream/matrix-sdk-crypto-0.18.0.crate",
+        "bytes": 521545,
+        "sha256": "c54afd2a326f51c13a6ad44ec86315a688fffeb3f1e287fb343e0e1836a3bdaf"
+      },
+      "index_checksum_matches": true,
+      "listed_source_bytes_match_archive": true,
+      "getter": "&BTreeMap<OwnedDeviceKeyId, DeviceKey>",
+      "to_base64_method_sha256": "8f322e562baf97fc4200ff2f5310e2d25de21d8e2c38f1759889ddf40cc176ff",
+      "method": "    pub fn to_base64(&self) -> String {\n        match self {\n            DeviceKey::Curve25519(k) => k.to_base64(),\n            DeviceKey::Ed25519(k) => k.to_base64(),\n            DeviceKey::Unknown(k) => k.to_owned(),\n        }\n    }",
+      "upstream_serializer_uses_same_value_encoding": true,
+      "DeviceKey_has_no_Serialize_derive": true
+    },
+    "0.19.1": {
+      "crate": {
+        "path": "/workspace/scratch/95988d8d3ab1/ndu-matrix-fixture-compat-002/upstream/matrix-sdk-crypto-0.19.1.crate",
+        "bytes": 543746,
+        "sha256": "6851a6f102574c52430bd3617f86fb0def62f912fd2aed5356dcb8ff06a9fbc3"
+      },
+      "index_checksum_matches": true,
+      "listed_source_bytes_match_archive": true,
+      "getter": "&BTreeMap<OwnedDeviceKeyId, DeviceKey>",
+      "to_base64_method_sha256": "8f322e562baf97fc4200ff2f5310e2d25de21d8e2c38f1759889ddf40cc176ff",
+      "method": "    pub fn to_base64(&self) -> String {\n        match self {\n            DeviceKey::Curve25519(k) => k.to_base64(),\n            DeviceKey::Ed25519(k) => k.to_base64(),\n            DeviceKey::Unknown(k) => k.to_owned(),\n        }\n    }",
+      "upstream_serializer_uses_same_value_encoding": true,
+      "DeviceKey_has_no_Serialize_derive": true
+    }
+  },
+  "old_failed_execution": {
+    "artifact_id": 12731982590,
+    "run_id": 40497632113,
+    "job_id": 122166998773,
+    "all_25_original_zip_files_match": true,
+    "files": {
+      "00-source-head.log": {
+        "bytes": 41,
+        "sha256": "6cd1253832c11b026881bea08a2f0fff3850e34600265eba597f9719c9d4401a"
+      },
+      "02-patch-paths.log": {
+        "bytes": 65,
+        "sha256": "7fde66857e3d60cdb6c47113f6ef1d9fe4ebd555d3973099b195b3414e25580b"
+      },
+      "01-clean-checkout.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "03-check-fixture-only-patch.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "04-apply-fixture-only-patch.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "05-compiled-source-tree.log": {
+        "bytes": 41,
+        "sha256": "baacb0773f6952d590254ec88c68b9ee74b60eb29916ebee2fa42b80df81a9c5"
+      },
+      "06-archive-compiled-source.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "07-bound-rustc-path.log": {
+        "bytes": 74,
+        "sha256": "d0193700af7f567877ce9dbc20f915552972e146926733da26ae3fe0e363efcc"
+      },
+      "08-rustc-version.log": {
+        "bytes": 196,
+        "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad"
+      },
+      "09-cargo-version.log": {
+        "bytes": 36,
+        "sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5"
+      },
+      "10-just-version.log": {
+        "bytes": 12,
+        "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+      },
+      "11-nextest-version.log": {
+        "bytes": 171,
+        "sha256": "5c2764053db8c4d8203c610667ee5dbecfeca1af742b15d0324d5c4a727ab012"
+      },
+      "12-old-metadata.log": {
+        "bytes": 44256,
+        "sha256": "86ccb85a84891ec81209d34a074f65ba8af199123003d580bcb403c51ed61c63"
+      },
+      "13-prepare_old_version_fixture-binaries.log": {
+        "bytes": 26044,
+        "sha256": "3a6ad969c1c412d155df9353141d171348d97cd27d4b6c565d53988930b4c929"
+      },
+      "RESULT.json": {
+        "bytes": 11742,
+        "sha256": "b0bc870b61aef66f1e651a7207696fbe77794f34c2af784e249f57430caf1541"
+      },
+      "compiled-source.tar.gz": {
+        "bytes": 29786557,
+        "sha256": "6b3219b5e21a95e929ddd6f795bee5a922d422e6364adc44efcb72df35e70200"
+      },
+      "driver-context/00-source-head.log": {
+        "bytes": 41,
+        "sha256": "5dd9a26585234ac2e0bb5503cee972236207bd7ae47ac9f565507bbc3f3097b5"
+      },
+      "driver-context/01-clean-checkout.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "driver-context/RESULT.json": {
+        "bytes": 1568,
+        "sha256": "8d31416b2229e09993d575d1dbb9b7b63de0d95e0589757a92fc3e628e28aa9a"
+      },
+      "fixture-only.patch": {
+        "bytes": 10455,
+        "sha256": "dec3b6075c928a924e32754e1c310361fd231da3da2a3cdf3657a1a3a734b1fd"
+      },
+      "nextest-store.toml": {
+        "bytes": 77,
+        "sha256": "3e343cd33ce0f791418c02d67c5f2314ceae0d23a4f6697316659f4762957bcc"
+      },
+      "original-files/codex-rs/Cargo.lock": {
+        "bytes": 418040,
+        "sha256": "56ed52d9789f01abda5bad96f25dd9d48b837108653cb2f3474ee5e0dbc790de"
+      },
+      "old-metadata.json": {
+        "bytes": 8156559,
+        "sha256": "9f121b49089bb6533c716cc858112548e17fef0e5473890d3ac1a7093982a358"
+      },
+      "recipe.json": {
+        "bytes": 221834,
+        "sha256": "4efd3f67e272cd86f93d2a221c6584248118767ec5d2fdb88685885cffde6aae"
+      },
+      "prepare_old_version_fixture-binaries.json": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "all_command_logs_match_RESULT_hashes": true,
+    "archived_fixture_equals_v1_patch": true,
+    "archived_lock_equals_original_lock": true,
+    "actual_locked_crypto_package": [
+      {
+        "name": "matrix-sdk-crypto",
+        "version": "0.18.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index"
+      }
+    ],
+    "terminal_command_exit_code": 101,
+    "failure": "E0277 DeviceKey has no Serialize",
+    "binary_or_database_produced": false,
+    "prepare_or_reopen_test_executed": false
+  },
+  "limits": [
+    "This review confirms the narrow serialization semantics, not successful compilation or database migration.",
+    "Full identity equality here covers the entire device public-key map, alongside the existing full session. It does not add signature or cross-signing checks not present in the original fixture.",
+    "Producer must still create a fixture with original source/lock, and the candidate consumer must reopen an independently copied artifact under 0.19.1."
+  ]
+}

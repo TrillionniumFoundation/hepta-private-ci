@@ -1,0 +1,62 @@
+{
+  "assets_sha256": "d9d23a26b40780946d001020c59289917b055513fd7d05c68f06e6aecad4e44a",
+  "heldout_generation_not_started": true,
+  "protocol": {
+    "heldout_not_received": true,
+    "regularization": [
+      0.1,
+      1.0,
+      10.0,
+      100.0
+    ],
+    "selection": "Max validation entropic certainty-equivalent of document quality, gamma2; tie fewer changed fields, stronger ridge, larger threshold",
+    "thresholds": [
+      0.0,
+      0.05,
+      0.1,
+      0.2,
+      1000.0
+    ],
+    "training": "Existing fit role24 merchants",
+    "validation": "Existing validation role12 merchants; never oldtest"
+  },
+  "registered_ns": 1793090850236305408,
+  "source_files": [
+    {
+      "bytes": 82,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/__init__.py",
+      "sha256": "2dc5cf76711291eaaf73ef7a2192cb75ca8b4fd04a58383d8674d3b6f8adb911"
+    },
+    {
+      "bytes": 3327,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/common.py",
+      "sha256": "214cc23db94ea5fe64aaf43f27bec866f0710f07cb873f4e53bdff8160dfe4d7"
+    },
+    {
+      "bytes": 3597,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/document_develop.py",
+      "sha256": "4d2abc9d5bc7ba2e02622d8f5727c52036c426a9dcc8aa6070e559b660bde66d"
+    },
+    {
+      "bytes": 4062,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/document_model.py",
+      "sha256": "53a597b66245bdfe2cf1dc97ff97a256526fc1b99ac19b7159b7c954d299b76e"
+    },
+    {
+      "bytes": 8891,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/fetch_video.py",
+      "sha256": "9a482179eb969ccf7425827210cf581db2691284fc731f85a170d0bd9b0821f8"
+    },
+    {
+      "bytes": 3191,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_develop.py",
+      "sha256": "51bab5b85e985a056ad2141ddada4caa286bcacf6b065195d4d77c0b77e32091"
+    },
+    {
+      "bytes": 4812,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_engine.py",
+      "sha256": "7681e6277c50f848a0b4b04a98e198c02cea45b08f3e9c8a544f02e833213354"
+    }
+  ],
+  "source_snapshot": "/workspace/scratch/95988d8d3ab1/natural-v2-runs/document-development-001/executed-source"
+}

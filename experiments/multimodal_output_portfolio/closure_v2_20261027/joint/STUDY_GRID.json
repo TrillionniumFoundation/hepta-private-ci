@@ -1,0 +1,16 @@
+{
+  "schema": "hepta.ndu.direct-gradient-pretest-grid.v1",
+  "reason": "The first development grid showed that sigma 0.15 itself reduced validation retention and that direct-risk benefits differed across fixed seeds. Before any new qualification prediction, evaluate one additional, equally budgeted sigma 0.05 grid in both objective arms.",
+  "candidate_standard_deviations": [0.15, 0.05],
+  "training_steps_per_candidate_per_seed_per_objective": 600,
+  "total_training_steps_per_seed_per_objective": 1200,
+  "seeds": [17, 29, 43],
+  "objectives": ["direct_mean", "direct_risk"],
+  "checkpoints_per_candidate": [200, 400, 600],
+  "selection": "Across both candidate runs, retain only checkpoints that meet the same clean validation retention threshold, then maximize actual validation CE. Tie favors smaller sigma, then earlier checkpoint. The exact prior original is a no-update fallback when no candidate improves its validation quality.",
+  "fallback_work": "Every objective pays both complete training grids and all validation calls even if the selected deployment is unchanged.",
+  "new_qualification_outputs_seen_at_amendment": false,
+  "prior_failed_or_less_effective_attempts_preserved": true,
+  "new_test_seed_namespace": "qualification_guard.QUALIFICATION_CONTRACT, separate from all development randomness",
+  "no_update_scope": "The likelihood-ratio gradient claim applies only to the trained stochastic actor; a selected deterministic original fallback is explicitly marked and receives no such gradient claim."
+}

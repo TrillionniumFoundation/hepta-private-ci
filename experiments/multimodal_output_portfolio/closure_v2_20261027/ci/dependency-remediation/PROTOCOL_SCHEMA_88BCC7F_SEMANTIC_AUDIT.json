@@ -1,0 +1,150 @@
+{
+  "source_commit": "88bcc7f92b9a52bf77e0095614fd496288b6ca86",
+  "local_matching_preimage": "19084bd4722a2b83bcd59e1a12b7877a9a38c079",
+  "producer_result_sha256": "b7d390232b69b3dbb16dd859f22ad2a9de4ecb9da2dce52b7306fd8a2fb130e5",
+  "protocol_result_sha256": "7e38bddfa771339d36b2a531485505c0a329b0e687fbb075ddb0490ed5cc9520",
+  "schema_patch_sha256": "ac348847481d6596613bbe2ce3fe8686893b154f585625af0c398b7219b58eb6",
+  "protocol_source_files_verified_against_original_commit": 117,
+  "combined_patch_reconstruction": [
+    {
+      "command": [
+        "git",
+        "apply",
+        "--index",
+        "--check",
+        "/workspace/scratch/95988d8d3ab1/ndu-dependency-candidate-88bcc7f/protocol/schema-candidate.patch"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--index",
+        "/workspace/scratch/95988d8d3ab1/ndu-dependency-candidate-88bcc7f/protocol/schema-candidate.patch"
+      ],
+      "exit_code": 0,
+      "output": ""
+    }
+  ],
+  "all_nine_snapshots_exact": true,
+  "json_semantic_change": {
+    "file": "codex-rs/app-server-protocol/schema/json/v2/TurnRecoverResponse.json",
+    "only_change": "append completed to definitions.SubAgentActivityKind.enum"
+  },
+  "stable_exports_match_fixture_tree": {
+    "typescript": {
+      "files": 688,
+      "all_exact_strings_match": true
+    },
+    "json_schema": {
+      "files": 294,
+      "all_exact_strings_match": true
+    }
+  },
+  "precomputed_export_deltas": {
+    "stable": {
+      "old_decompressed_sha256": "41ab37257f6f6de460cd6e0f3bbbf7ebd2b0758601f2f2478a2b24eeca8b21c5",
+      "new_decompressed_sha256": "c4ec61becf7385dd5e8c2176d01dbd7abd8e3b007cc742d5c6274547514b6783",
+      "old_bytes": 4159562,
+      "new_bytes": 4241566,
+      "changes": {
+        "typescript": {
+          "added_files": [
+            "v2/HeptaGovernanceEvidenceSummary.ts",
+            "v2/HeptaHistoricalEvidenceFamily.ts",
+            "v2/HeptaHistoricalEvidenceRecord.ts",
+            "v2/HeptaHistoricalEvidenceState.ts",
+            "v2/HeptaProviderEvidenceSummary.ts",
+            "v2/ThreadQueueReconcileMode.ts",
+            "v2/ThreadQueueReconcileOutcome.ts",
+            "v2/TurnRecoverParams.ts",
+            "v2/TurnRecoverResponse.ts"
+          ],
+          "removed_files": [],
+          "changed_files": [
+            "ClientRequest.ts",
+            "v2/index.ts"
+          ]
+        },
+        "json_schema": {
+          "added_files": [
+            "v2/TurnRecoverParams.json",
+            "v2/TurnRecoverResponse.json"
+          ],
+          "removed_files": [],
+          "changed_files": [
+            "ClientRequest.json",
+            "codex_app_server_protocol.schemas.json",
+            "codex_app_server_protocol.v2.schemas.json"
+          ]
+        },
+        "internal_json_schema": {
+          "added_files": [],
+          "removed_files": [],
+          "changed_files": [
+            "RolloutLine.json"
+          ]
+        }
+      }
+    },
+    "experimental": {
+      "old_decompressed_sha256": "05965e58c69a09ea61cbe25fbf132cd890653ea418f2c61c3f355cdf1a516e40",
+      "new_decompressed_sha256": "5be2118f6d17d60f144a672562ee5ac047831a37838048f8b496c57c7a879129",
+      "old_bytes": 4773783,
+      "new_bytes": 4889807,
+      "changes": {
+        "typescript": {
+          "added_files": [
+            "v2/HeptaEvidenceSummaryReadParams.ts",
+            "v2/HeptaEvidenceSummaryReadResponse.ts",
+            "v2/HeptaGovernanceEvidenceSummary.ts",
+            "v2/HeptaHistoricalEvidenceFamily.ts",
+            "v2/HeptaHistoricalEvidenceReadParams.ts",
+            "v2/HeptaHistoricalEvidenceReadResponse.ts",
+            "v2/HeptaHistoricalEvidenceRecord.ts",
+            "v2/HeptaHistoricalEvidenceState.ts",
+            "v2/HeptaProviderEvidenceSummary.ts",
+            "v2/ThreadQueueReconcileMode.ts",
+            "v2/ThreadQueueReconcileOutcome.ts",
+            "v2/ThreadQueueReconcileParams.ts",
+            "v2/ThreadQueueReconcileResponse.ts",
+            "v2/TurnRecoverParams.ts",
+            "v2/TurnRecoverResponse.ts"
+          ],
+          "removed_files": [],
+          "changed_files": [
+            "ClientRequest.ts",
+            "v2/index.ts"
+          ]
+        },
+        "json_schema": {
+          "added_files": [
+            "v2/HeptaEvidenceSummaryReadParams.json",
+            "v2/HeptaEvidenceSummaryReadResponse.json",
+            "v2/HeptaHistoricalEvidenceReadParams.json",
+            "v2/HeptaHistoricalEvidenceReadResponse.json",
+            "v2/ThreadQueueReconcileParams.json",
+            "v2/ThreadQueueReconcileResponse.json",
+            "v2/TurnRecoverParams.json",
+            "v2/TurnRecoverResponse.json"
+          ],
+          "removed_files": [],
+          "changed_files": [
+            "ClientRequest.json",
+            "codex_app_server_protocol.schemas.json",
+            "codex_app_server_protocol.v2.schemas.json"
+          ]
+        },
+        "internal_json_schema": {
+          "added_files": [],
+          "removed_files": [],
+          "changed_files": []
+        }
+      }
+    }
+  },
+  "regression": "303 executed, 303 passed, 1 original ignored writer skipped; stable and experimental writers separately executed once each with exit 0",
+  "unchanged_assertions": true
+}

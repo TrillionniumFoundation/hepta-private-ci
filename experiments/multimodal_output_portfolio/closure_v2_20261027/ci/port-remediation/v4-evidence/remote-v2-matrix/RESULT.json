@@ -1,0 +1,892 @@
+{
+  "schema": "hepta.ci.port-candidate.v1",
+  "mode": "test",
+  "status": "tests_failed",
+  "commands": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0"
+      },
+      "started_at": "2026-10-27T12:50:25.456721+00:00",
+      "log": "00-source-head.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.0021644369999975765,
+      "log_sha256": "be99c8439cf84ee99b18e73ce5de358cb68bdac6fdcdbcc895c716a2bdacfd25",
+      "log_bytes": 41
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0"
+      },
+      "started_at": "2026-10-27T12:50:25.459882+00:00",
+      "log": "01-clean-checkout.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.43834444100000525,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_bytes": 0
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--numstat",
+        "-z",
+        "/home/runner/work/_temp/ndu-port-candidate/candidate.patch"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0"
+      },
+      "started_at": "2026-10-27T12:50:25.952657+00:00",
+      "log": "02-patch-paths.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.004212961000000348,
+      "log_sha256": "8aab001c13b0b7c6ee9c0c31a01ed6a6c89c8445e7cf888f23349645ac46b42c",
+      "log_bytes": 1345
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "--index",
+        "/home/runner/work/_temp/ndu-port-candidate/candidate.patch"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0"
+      },
+      "started_at": "2026-10-27T12:50:25.958227+00:00",
+      "log": "03-check-candidate-patch.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.053440443999996035,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_bytes": 0
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--index",
+        "/home/runner/work/_temp/ndu-port-candidate/candidate.patch"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0"
+      },
+      "started_at": "2026-10-27T12:50:26.012590+00:00",
+      "log": "04-apply-candidate-patch.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.09686251100000476,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_bytes": 0
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0"
+      },
+      "started_at": "2026-10-27T12:50:26.110525+00:00",
+      "log": "05-verify-head.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.0025435430000015913,
+      "log_sha256": "be99c8439cf84ee99b18e73ce5de358cb68bdac6fdcdbcc895c716a2bdacfd25",
+      "log_bytes": 41
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--no-renames",
+        "--name-only",
+        "-z",
+        "HEAD"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0"
+      },
+      "started_at": "2026-10-27T12:50:26.496530+00:00",
+      "log": "06-changed-paths.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.027495546000004367,
+      "log_sha256": "108bff23169957f3c52643a3cb17d71ba7330bdf2326f943c5c8f24ef9265995",
+      "log_bytes": 1189
+    },
+    {
+      "command": [
+        "git",
+        "ls-files",
+        "--others",
+        "--exclude-standard",
+        "-z"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0"
+      },
+      "started_at": "2026-10-27T12:50:26.525298+00:00",
+      "log": "07-untracked-paths.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.03234794600000157,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_bytes": 0
+    },
+    {
+      "command": [
+        "rustup",
+        "which",
+        "--toolchain",
+        "1.96.0",
+        "rustc"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0"
+      },
+      "started_at": "2026-10-27T12:50:26.746993+00:00",
+      "log": "08-bound-rustc-path.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.00595822800000434,
+      "log_sha256": "23c8a085c5ab6720b31e33bf711aca33ceddbfc87303a7bec4758308ee912e50",
+      "log_bytes": 74
+    },
+    {
+      "command": [
+        "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--version",
+        "--verbose"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T12:50:26.754491+00:00",
+      "log": "09-rustc-version.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.00726295399999799,
+      "log_sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+      "log_bytes": 196
+    },
+    {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T12:50:26.762908+00:00",
+      "log": "10-cargo-version.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.008917741000004753,
+      "log_sha256": "b6ef6807dd96d18b833474ad68e7a23a29e562a29c67afa71a59fb9a73df0068",
+      "log_bytes": 36
+    },
+    {
+      "command": [
+        "just",
+        "--version"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T12:50:26.772848+00:00",
+      "log": "11-just-version.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.0013885779999966985,
+      "log_sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87",
+      "log_bytes": 12
+    },
+    {
+      "command": [
+        "cargo",
+        "nextest",
+        "--version"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T12:50:26.776245+00:00",
+      "log": "12-nextest-version.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.0174035810000035,
+      "log_sha256": "5c2764053db8c4d8203c610667ee5dbecfeca1af742b15d0324d5c4a727ab012",
+      "log_bytes": 171
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "ci-test",
+        "-p",
+        "codex-hepta-matrix-protocol"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T12:50:26.795090+00:00",
+      "log": "13-test-codex-hepta-matrix-protocol.log",
+      "exit_code": 0,
+      "required": false,
+      "elapsed_seconds": 26.872808082,
+      "log_sha256": "db561054dc8b434e52355c2156dff62671428e54ce63be1d0f103de0b10ffd2a",
+      "log_bytes": 9649
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T12:50:53.708802+00:00",
+      "log": "14-verify-head.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.0021925280000090197,
+      "log_sha256": "be99c8439cf84ee99b18e73ce5de358cb68bdac6fdcdbcc895c716a2bdacfd25",
+      "log_bytes": 41
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--no-renames",
+        "--name-only",
+        "-z",
+        "HEAD"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T12:50:54.198010+00:00",
+      "log": "15-changed-paths.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.025747813999998925,
+      "log_sha256": "108bff23169957f3c52643a3cb17d71ba7330bdf2326f943c5c8f24ef9265995",
+      "log_bytes": 1189
+    },
+    {
+      "command": [
+        "git",
+        "ls-files",
+        "--others",
+        "--exclude-standard",
+        "-z"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T12:50:54.402271+00:00",
+      "log": "16-untracked-paths.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.03185780199999044,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_bytes": 0
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "ci-test",
+        "-p",
+        "codex-hepta-matrix-store"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T12:50:54.501574+00:00",
+      "log": "17-test-codex-hepta-matrix-store.log",
+      "exit_code": 0,
+      "required": false,
+      "elapsed_seconds": 250.785004455,
+      "log_sha256": "3e3a794024f48e807d05278af5d5e62a2852850ce40417aa7a1b3028efa71134",
+      "log_bytes": 50493
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T12:55:05.288136+00:00",
+      "log": "18-verify-head.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.001972929999965345,
+      "log_sha256": "be99c8439cf84ee99b18e73ce5de358cb68bdac6fdcdbcc895c716a2bdacfd25",
+      "log_bytes": 41
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--no-renames",
+        "--name-only",
+        "-z",
+        "HEAD"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T12:55:05.648319+00:00",
+      "log": "19-changed-paths.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.025613039000006665,
+      "log_sha256": "108bff23169957f3c52643a3cb17d71ba7330bdf2326f943c5c8f24ef9265995",
+      "log_bytes": 1189
+    },
+    {
+      "command": [
+        "git",
+        "ls-files",
+        "--others",
+        "--exclude-standard",
+        "-z"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T12:55:05.675561+00:00",
+      "log": "20-untracked-paths.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.031752662000030796,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_bytes": 0
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "ci-test",
+        "-p",
+        "codex-hepta-matrix-sdk"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T12:55:05.709896+00:00",
+      "log": "21-test-codex-hepta-matrix-sdk.log",
+      "exit_code": 101,
+      "required": false,
+      "elapsed_seconds": 206.262096849,
+      "log_sha256": "de6885129fb8fdee901613367d26f3ef398d31021bb9ac158eb7d7545cb068b8",
+      "log_bytes": 18558
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T12:58:31.973410+00:00",
+      "log": "22-verify-head.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.0019420410000066113,
+      "log_sha256": "be99c8439cf84ee99b18e73ce5de358cb68bdac6fdcdbcc895c716a2bdacfd25",
+      "log_bytes": 41
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--no-renames",
+        "--name-only",
+        "-z",
+        "HEAD"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T12:58:32.328915+00:00",
+      "log": "23-changed-paths.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.02850115400008235,
+      "log_sha256": "108bff23169957f3c52643a3cb17d71ba7330bdf2326f943c5c8f24ef9265995",
+      "log_bytes": 1189
+    },
+    {
+      "command": [
+        "git",
+        "ls-files",
+        "--others",
+        "--exclude-standard",
+        "-z"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T12:58:32.359165+00:00",
+      "log": "24-untracked-paths.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.03209109099998386,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_bytes": 0
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "ci-test",
+        "-p",
+        "codex-hepta-matrixd"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T12:58:32.393919+00:00",
+      "log": "25-test-codex-hepta-matrixd.log",
+      "exit_code": 0,
+      "required": false,
+      "elapsed_seconds": 510.06791000299995,
+      "log_sha256": "5b6c3a779f2e6b6a0e586e35f1046a3fe9db9a6b89a9a548b33b56dc5b4e078f",
+      "log_bytes": 76964
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T13:07:02.463464+00:00",
+      "log": "26-verify-head.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.0020010690000162867,
+      "log_sha256": "be99c8439cf84ee99b18e73ce5de358cb68bdac6fdcdbcc895c716a2bdacfd25",
+      "log_bytes": 41
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--no-renames",
+        "--name-only",
+        "-z",
+        "HEAD"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T13:07:02.820767+00:00",
+      "log": "27-changed-paths.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.02493880099996204,
+      "log_sha256": "108bff23169957f3c52643a3cb17d71ba7330bdf2326f943c5c8f24ef9265995",
+      "log_bytes": 1189
+    },
+    {
+      "command": [
+        "git",
+        "ls-files",
+        "--others",
+        "--exclude-standard",
+        "-z"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T13:07:02.847519+00:00",
+      "log": "28-untracked-paths.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.03257377399995676,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_bytes": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "nextest",
+        "list",
+        "--manifest-path",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/Cargo.toml",
+        "--locked",
+        "--cargo-profile",
+        "ci-test",
+        "-p",
+        "codex-hepta-matrix-sdk",
+        "--test",
+        "store_version_migration",
+        "--tool-config-file",
+        "hepta-port:/home/runner/work/_temp/ndu-port-tests-matrix/nextest-store.toml",
+        "--list-type",
+        "binaries-only",
+        "--message-format",
+        "json"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T13:07:03.984827+00:00",
+      "log": "29-reopen_old_version_fixture-binaries.log",
+      "exit_code": 0,
+      "required": true,
+      "stdout": {
+        "file": "reopen_old_version_fixture-binaries.json",
+        "sha256": "371ed5831480583c9ffdf13ad7ba68bc13c624ec3f1e61123d0c97d01804944e",
+        "bytes": 1300
+      },
+      "elapsed_seconds": 5.475847416000079,
+      "log_sha256": "4ce188937f0363f545c9dc4c40c4e6ac18b444d12b49c11eadc7932d620a42de",
+      "log_bytes": 5767
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "ci-test",
+        "-p",
+        "codex-hepta-matrix-sdk",
+        "--test",
+        "store_version_migration",
+        "--tool-config-file",
+        "hepta-port:/home/runner/work/_temp/ndu-port-tests-matrix/nextest-store.toml",
+        "--profile",
+        "default",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(=reopen_old_version_fixture)",
+        "--retries",
+        "0",
+        "--no-tests",
+        "fail"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "HEPTA_MATRIX_MIGRATION_FIXTURE": "/home/runner/work/_temp/ndu-port-tests-matrix/writable-old-fixture"
+      },
+      "started_at": "2026-10-27T13:07:10.290568+00:00",
+      "log": "30-reopen_old_version_fixture.log",
+      "exit_code": 100,
+      "required": false,
+      "elapsed_seconds": 7.551404161999926,
+      "log_sha256": "48fd9fc6f0d6eebd545d429081ade4d35b6bcdcf0af2d1c55cdd4a203acc2624",
+      "log_bytes": 1642
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T13:07:18.202268+00:00",
+      "log": "31-verify-head.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.002016830000002301,
+      "log_sha256": "be99c8439cf84ee99b18e73ce5de358cb68bdac6fdcdbcc895c716a2bdacfd25",
+      "log_bytes": 41
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--no-renames",
+        "--name-only",
+        "-z",
+        "HEAD"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T13:07:18.566627+00:00",
+      "log": "32-changed-paths.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.026048285999877407,
+      "log_sha256": "108bff23169957f3c52643a3cb17d71ba7330bdf2326f943c5c8f24ef9265995",
+      "log_bytes": 1189
+    },
+    {
+      "command": [
+        "git",
+        "ls-files",
+        "--others",
+        "--exclude-standard",
+        "-z"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "environment_overrides": {
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTC": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+      },
+      "started_at": "2026-10-27T13:07:18.594984+00:00",
+      "log": "33-untracked-paths.log",
+      "exit_code": 0,
+      "required": true,
+      "elapsed_seconds": 0.031138877000103093,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_bytes": 0
+    }
+  ],
+  "promotion_allowed": false,
+  "toolchain": "1.96.0",
+  "github_run_id": "40503203294",
+  "github_run_attempt": "1",
+  "original_dependency_policy_unchanged": true,
+  "source_commit": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+  "candidate_result_sha256": "d22f12700c3fd455b325b366162eb90cd65150e49de8fc252a567b782509feab",
+  "recipe_sha256": "1122a85d579ff781fa0941eaa6233aeb72ea881b80a948fd1b24305b59890295",
+  "candidate_patch_sha256": "f4f9555d6d12123e699c5ad06d16f4e9662c6d8a343636b06dbf2e47c30d4472",
+  "inherited_compiler_overrides": {},
+  "cargo_compiler": {
+    "path": "/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+    "sha256": "ba4b837efb6612dfa8d941c5a72b8a50d1d03a0f36216743b173949aa8d9eb75"
+  },
+  "rustc_verbose": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2",
+  "test_group": "matrix",
+  "test_results": [
+    {
+      "package": "codex-hepta-matrix-protocol",
+      "exit_code": 0,
+      "command_index": 13,
+      "junit": []
+    },
+    {
+      "package": "codex-hepta-matrix-store",
+      "exit_code": 0,
+      "command_index": 17,
+      "junit": []
+    },
+    {
+      "package": "codex-hepta-matrix-sdk",
+      "exit_code": 101,
+      "command_index": 21,
+      "junit": []
+    },
+    {
+      "package": "codex-hepta-matrixd",
+      "exit_code": 0,
+      "command_index": 25,
+      "junit": []
+    }
+  ],
+  "old_fixture_input": {
+    "producer_result_sha256": "b3a732c86a7d1574b09c6388cea9574f456bb731f859dbbd95bfab6efe7fe5c6",
+    "old_source": "6215cb6a87f29623d4beaad24cdf7bcb6bb4fb2c",
+    "driver_source": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+    "recipe_sha256": "1122a85d579ff781fa0941eaa6233aeb72ea881b80a948fd1b24305b59890295",
+    "files_before_reopen": {
+      "expected.json": {
+        "bytes": 1690,
+        "sha256": "2dcd8dcf267a60ff51d10b680fcbf46c5d29d75dc0f3fd9fc1d688e5d13a077d"
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-event-cache.sqlite3": {
+        "bytes": 69632,
+        "sha256": "73032a6b7cc752dd0c5498c520db919c1ba0ad58c4c4d378086d43dd3b9b239e"
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-media.sqlite3": {
+        "bytes": 36864,
+        "sha256": "2e8b4bc1f4c4181a22f21b54adf61858099242277438f897cccca5f774b17e24"
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/session.json": {
+        "bytes": 151,
+        "sha256": "195167ce802c9630ae49edf1ffe97397c71d33d42273de6a8cb02697877abe17"
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-crypto.sqlite3": {
+        "bytes": 180224,
+        "sha256": "eafa0f63f46baacc32f60fcfbc3a5c94d18b4a235b87a19b8e15ced0f4dae954"
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3": {
+        "bytes": 131072,
+        "sha256": "472787f24d7e914fa49a48060e5137f938e0aa1486cfa0ced8fc184cceb1f571"
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3-shm": {
+        "bytes": 32768,
+        "sha256": "a848a19cfea0a8a420d6e9728554b25c705bbdd59f50f3998072ef3d14d835a0"
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3-wal": {
+        "bytes": 24752,
+        "sha256": "d98dd7e8a5f4de9d39fe20132b24cec26fa68a11ffaff0c63beb9d76e76c99da"
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix_1.sqlite3": {
+        "bytes": 196608,
+        "sha256": "ea9603990ea0b362d17892583fa9f2023d6b0487ea1105f7ae534c91bbbb2e9c"
+      }
+    },
+    "compiled_source_tree": "df4aff79e5aea7080eee54a02ad0925619ca1dbc",
+    "producer_binary_sha256": "f37edbcf8076994f934b140809a99fd1f28200dc1c98e3d2342c99c9d5194e1b",
+    "producer_fixture_unchanged_after_reopen": true,
+    "files_after_reopen": {
+      "expected.json": {
+        "bytes": 1690,
+        "sha256": "2dcd8dcf267a60ff51d10b680fcbf46c5d29d75dc0f3fd9fc1d688e5d13a077d"
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-event-cache.sqlite3": {
+        "bytes": 73728,
+        "sha256": "c014cf3b357448f3cfea7b6762e5fc7a8d1899aef1f0c29a64f0e5a39e11bc28"
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-media.sqlite3": {
+        "bytes": 36864,
+        "sha256": "2e8b4bc1f4c4181a22f21b54adf61858099242277438f897cccca5f774b17e24"
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/session.json": {
+        "bytes": 151,
+        "sha256": "195167ce802c9630ae49edf1ffe97397c71d33d42273de6a8cb02697877abe17"
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-crypto.sqlite3": {
+        "bytes": 184320,
+        "sha256": "e1441a8b0b5c046dbe68479ca19dcb8ad7ac4eba917974e0b3edf26830928e45"
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3": {
+        "bytes": 147456,
+        "sha256": "f266ece8e1ad87de82e854e3899efd6e63862d9c1e5753796f296affd3459abb"
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix_1.sqlite3": {
+        "bytes": 196608,
+        "sha256": "ea9603990ea0b362d17892583fa9f2023d6b0487ea1105f7ae534c91bbbb2e9c"
+      }
+    }
+  },
+  "migration_phase": {
+    "name": "reopen_old_version_fixture",
+    "exit_code": 100,
+    "binary": "binaries/12e53b85e42fbb8e42658a987523425bd1dc3ada4d545d1f1ac0ba3710859448",
+    "binary_sha256": "12e53b85e42fbb8e42658a987523425bd1dc3ada4d545d1f1ac0ba3710859448",
+    "binary_original_path": "/home/runner/.cache/codex-ci/cargo-target/ci-test/deps/store_version_migration-2b9150d9beed835e",
+    "binary_unchanged_after_execution": true,
+    "command_index": 30,
+    "nextest_storage": {
+      "directory": "/home/runner/work/_temp/ndu-port-tests-matrix/nextest-store",
+      "config_file": "nextest-store.toml",
+      "config": {
+        "bytes": 76,
+        "sha256": "e16f0061f9236e038bb3995564be2329a01e2817ed6b2822613eb5041da41319"
+      },
+      "tool_config_argument": "hepta-port:/home/runner/work/_temp/ndu-port-tests-matrix/nextest-store.toml"
+    },
+    "cargo_target_directory": "/home/runner/.cache/codex-ci/cargo-target",
+    "store_config_unchanged_after_execution": true,
+    "fresh_junit_count": 1,
+    "observed_junit_paths": [
+      "/home/runner/work/_temp/ndu-port-tests-matrix/nextest-store/default/junit.xml"
+    ],
+    "retained_junit_reports": {
+      "reopen_old_version_fixture-0-junit.xml": {
+        "bytes": 975,
+        "sha256": "641c2ffe9263c5ed9b48e0e23cd2f0cc7cc383c74b9516de6861e04b4f86ea4e"
+      }
+    }
+  },
+  "matrix_migration_error": {
+    "type": "ValueError",
+    "message": "Migration command failed, executable changed or fresh JUnit is missing"
+  },
+  "failed_tests": [
+    "codex-hepta-matrix-sdk",
+    "old-version-fixture-reopen"
+  ]
+}

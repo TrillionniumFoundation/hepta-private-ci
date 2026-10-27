@@ -1,0 +1,16 @@
+{
+  "active_vendor_bundle": {
+    "path": "matrix-vendor-v2.tar.gz",
+    "bytes": 1150271,
+    "sha256": "10c22bd676feba90ea34a12b9a0212a5c0484aff98a44e78b1979e5c6affb350"
+  },
+  "active_vendor_inventory": {
+    "path": "VENDOR_INVENTORY_V2.json",
+    "bytes": 90516,
+    "sha256": "0101e3e2779d0caa5c4d4fd36dbdc798c4b7ba64c818d4e7702738049808e70d"
+  },
+  "other_patches": "Use the unchanged six patches described by PATCHSET.json. With the v2 bundle do not apply matrix-bazel-build-v2.patch again; with the v1 bundle apply that delta exactly once.",
+  "base_patchset_sha256": "6c66f6c927f9210b934bd5fe0047d4a45086a4cf8be6193bc300a1aa3795d6ac",
+  "build_repair_report_sha256": "12c584638bf1267af377e46dde8e76486ca4d839b11c01b15a5a3230a3dfc132",
+  "all_execution_gates": "pending; this is not a qualification pass"
+}

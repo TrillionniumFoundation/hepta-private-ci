@@ -1,0 +1,12 @@
+--- a/codex-rs/Cargo.toml
++++ b/codex-rs/Cargo.toml
+@@ -661,6 +661,9 @@
+ opt-level = 0
+ 
+ [patch.crates-io]
++# Preserve keyring 3 Entry/backends while porting Secret Service transport to zbus 6.
++keyring = { path = "third_party/keyring-3.6.3" }
++secret-service = { path = "third_party/secret-service-4.0.0" }
+ # Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
+ # bitmap import and patched chunk dependency without changing their public API.
+ imbl = { path = "third_party/imbl-6.1.0" }

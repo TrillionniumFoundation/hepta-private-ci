@@ -1,0 +1,91 @@
+{
+  "cost_scope": "Whole batch includes frozen-input verification, preprocessing, shared CNN, actual writers and evidence controllers, readback/scoring and alias diagnostics; separate independent audit is measured separately. No production latency claim.",
+  "files": [
+    {
+      "cpu_seconds": 4.655253314000001,
+      "file": "DELIVERED_pair_independent.jsonl",
+      "rows": 24000,
+      "sha256": "a7fdeb519c9f0b96bdea28ceeeb3f7b78b235a8bfd7407b7935bf7d3655b8086",
+      "wall_seconds": 10.386706727993442
+    },
+    {
+      "cpu_seconds": 3.8740318610000024,
+      "file": "DELIVERED_pair_paired.jsonl",
+      "rows": 24000,
+      "sha256": "9e0840840d3b29a804639f8436eed180d8a43fcc77db06aace0ba5ba4adbbd0f",
+      "wall_seconds": 8.687819768005284
+    },
+    {
+      "cpu_seconds": 3.450057859000001,
+      "file": "DELIVERED_pair_speaker_mixture.jsonl",
+      "rows": 24000,
+      "sha256": "88d842bf637f969b03df6aa37aa7d1979f0664c3ae7dc6296c0e33a0b2afb97e",
+      "wall_seconds": 8.264500043005683
+    },
+    {
+      "cpu_seconds": 0.3385060400000022,
+      "file": "DELIVERED_rank_baseline.jsonl",
+      "rows": 2400,
+      "sha256": "4ba7b0da775fbaf107f9c5cd782477224426d54ebc10db7b4a33ebf9929fbbe3",
+      "wall_seconds": 0.7997358949942281
+    },
+    {
+      "cpu_seconds": 0.3392052279999973,
+      "file": "DELIVERED_rank_joint.jsonl",
+      "rows": 2400,
+      "sha256": "bb63281a9b641097e87f0a72d161ced3627927c9de3a7adcd5530f939289c5bd",
+      "wall_seconds": 0.7620675850048428
+    },
+    {
+      "cpu_seconds": 2.0530694329999974,
+      "file": "DELIVERED_prior_joint.jsonl",
+      "rows": 14400,
+      "sha256": "4af26923882d201882ad87ed315da1737145b233554287f6eb290874bc08d16b",
+      "wall_seconds": 2.8778792149969377
+    },
+    {
+      "cpu_seconds": 2.3674386729999988,
+      "file": "DELIVERED_prior_factorized.jsonl",
+      "rows": 14400,
+      "sha256": "1fc41353bfced2ab5893b379da289d348d8e22c5ab03328fd539c7c6818bd650",
+      "wall_seconds": 2.807640689003165
+    },
+    {
+      "cpu_seconds": 0.5025048690000027,
+      "file": "DELIVERED_risk_rank_baseline_gamma0.jsonl",
+      "rows": 2400,
+      "sha256": "619b7e44dab7e7ddffa8536f17b99b4f64802989e022426dbd94bc54736aeda9",
+      "wall_seconds": 0.5623748130019521
+    },
+    {
+      "cpu_seconds": 0.33805629300000106,
+      "file": "DELIVERED_risk_rank_baseline_gamma2.jsonl",
+      "rows": 2400,
+      "sha256": "e72d064fbb1ad40f5d492c4a18b8f6ce14708edc065157c7d9d0a4d03087a818",
+      "wall_seconds": 0.37115101199015044
+    },
+    {
+      "cpu_seconds": 0.3192892010000037,
+      "file": "DELIVERED_risk_rank_joint_gamma0.jsonl",
+      "rows": 2400,
+      "sha256": "27d795c300b0f46e53ff9a2a9b1e8568e5f18781012f06ddcf8359faf23ebcf2",
+      "wall_seconds": 0.5021207880054135
+    },
+    {
+      "cpu_seconds": 0.31105921599999675,
+      "file": "DELIVERED_risk_rank_joint_gamma2.jsonl",
+      "rows": 2400,
+      "sha256": "424641ce55453836d780201971db8587d7722c2f2f355edeb63d02c76576ad79",
+      "wall_seconds": 0.3530580549995648
+    }
+  ],
+  "observation_cost": {
+    "cpu_seconds": 8.938351306000001,
+    "frozen_cnn_examples": 2400,
+    "wall_seconds": 20.95833412099455,
+    "waveforms": 2400
+  },
+  "time_ns": 1793091594647049422,
+  "whole_research_batch_cpu_seconds": 32.679156535,
+  "whole_research_batch_wall_seconds": 66.39442412101198
+}

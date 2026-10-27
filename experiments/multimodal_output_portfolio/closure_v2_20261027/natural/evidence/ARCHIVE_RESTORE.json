@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "unique_blobs_rehashed": 8156,
+  "logical_paths_actually_restored_and_reopened": 13778,
+  "logical_bytes_restored": 563400843,
+  "verify_discard": true,
+  "models_embedded": false,
+  "model_recovery_required": [
+    {
+      "bytes": 145216508,
+      "embedded_in_raw_archive": false,
+      "original_path": "/workspace/scratch/95988d8d3ab1/natural-continuation-assets/cascade/base_model/model.bin",
+      "relative_path": "natural-continuation-assets/cascade/base_model/model.bin",
+      "required_for_neural_reexecution": true,
+      "sha256": "2a166925539a16005f14ff328359f9b9adb9dc4fb631bb3b227526862e93e2ef",
+      "url": "https://huggingface.co/Systran/faster-whisper-base.en/resolve/3d3d5dee26484f91867d81cb899cfcf72b96be6c/model.bin"
+    }
+  ],
+  "archive_sha256": "0266aebc793bf0469e440d9d931357593ae06ebc8b44d94ad3c7573d63d6b071"
+}

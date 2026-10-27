@@ -1,0 +1,27 @@
+{
+  "before_final_format": true,
+  "first_record_preserved": {
+    "before_final_format": true,
+    "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 ndu-venv/bin/python -m unittest experiments.multimodal_output_portfolio.closure_v2_20261027.natural.test_boundaries -v",
+    "exit_code": 0,
+    "log": "test_frame_replication_does_not_create_source_clusters (experiments.multimodal_output_portfolio.closure_v2_20261027.natural.test_boundaries.BoundaryTests.test_frame_replication_does_not_create_source_clusters) ... ok\ntest_full_archive_response_is_rejected_without_read (experiments.multimodal_output_portfolio.closure_v2_20261027.natural.test_boundaries.BoundaryTests.test_full_archive_response_is_rejected_without_read) ... ok\ntest_rule_fallback_and_fitted_exception (experiments.multimodal_output_portfolio.closure_v2_20261027.natural.test_boundaries.BoundaryTests.test_rule_fallback_and_fitted_exception) ... ok\ntest_target_file_is_not_an_inference_input (experiments.multimodal_output_portfolio.closure_v2_20261027.natural.test_boundaries.BoundaryTests.test_target_file_is_not_an_inference_input) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.090s\n\nOK\n",
+    "log_sha256": "e64793551a8091f1572930004c90efa377ee9cbcd4baf2df9ce619de24721b71"
+  },
+  "runs": [
+    {
+      "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 ndu-venv/bin/python -m unittest experiments.multimodal_output_portfolio.closure_v2_20261027.natural.test_boundaries -v",
+      "exit_code": 0,
+      "log": "test_frame_replication_does_not_create_source_clusters (experiments.multimodal_output_portfolio.closure_v2_20261027.natural.test_boundaries.BoundaryTests.test_frame_replication_does_not_create_source_clusters) ... ok\ntest_full_archive_response_is_rejected_without_read (experiments.multimodal_output_portfolio.closure_v2_20261027.natural.test_boundaries.BoundaryTests.test_full_archive_response_is_rejected_without_read) ... ok\ntest_rule_fallback_and_fitted_exception (experiments.multimodal_output_portfolio.closure_v2_20261027.natural.test_boundaries.BoundaryTests.test_rule_fallback_and_fitted_exception) ... ok\ntest_target_file_is_not_an_inference_input (experiments.multimodal_output_portfolio.closure_v2_20261027.natural.test_boundaries.BoundaryTests.test_target_file_is_not_an_inference_input) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.090s\n\nOK\n",
+      "log_sha256": "e64793551a8091f1572930004c90efa377ee9cbcd4baf2df9ce619de24721b71",
+      "tests": 4
+    },
+    {
+      "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 ndu-venv/bin/python -m unittest experiments.multimodal_output_portfolio.closure_v2_20261027.natural.test_encoder_gate -v",
+      "exit_code": 0,
+      "log": "test_public_gate_dispatches_exactly_one_decoder_after_one_encoder (experiments.multimodal_output_portfolio.closure_v2_20261027.natural.test_encoder_gate.EncoderGateTests.test_public_gate_dispatches_exactly_one_decoder_after_one_encoder) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.002s\n\nOK\n",
+      "log_sha256": "0658b2d07e2ed95345746e6cdda96cc9e87968063b234d58694e8c75149858db",
+      "tests": 1
+    }
+  ],
+  "total_tests_passed": 5
+}

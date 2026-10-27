@@ -1,0 +1,1156 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+ Downloading crates ...
+  Downloaded adler2 v2.0.1
+  Downloaded allocative v0.3.6
+  Downloaded dirs v6.0.0
+  Downloaded ahash v0.8.12
+  Downloaded dupe_derive v0.9.1
+  Downloaded crypto-common v0.2.2
+  Downloaded cfg_aliases v0.2.1
+  Downloaded embedded-io v0.4.0
+  Downloaded embedded-io v0.6.1
+  Downloaded enumflags2 v0.7.12
+  Downloaded env_filter v1.0.0
+  Downloaded downcast-rs v1.2.1
+  Downloaded either v1.15.0
+  Downloaded enumflags2_derive v0.7.12
+  Downloaded clru v0.6.3
+  Downloaded darling_macro v0.21.3
+  Downloaded fnv v1.0.7
+  Downloaded erased-serde v0.3.31
+  Downloaded gix-protocol v0.59.0
+  Downloaded fd-lock v4.0.4
+  Downloaded hash32 v0.3.1
+  Downloaded gix-trace v0.1.18
+  Downloaded hex v0.4.3
+  Downloaded hashlink v0.11.0
+  Downloaded http-body v1.0.1
+  Downloaded httpdate v1.0.3
+  Downloaded indexmap v1.9.3
+  Downloaded io-close v0.3.7
+  Downloaded is_terminal_polyfill v1.70.2
+  Downloaded quinn v0.11.9
+  Downloaded quick-error v2.0.1
+  Downloaded strong_hash_derive v0.1.0
+  Downloaded tracing-log v0.2.0
+  Downloaded want v0.3.1
+  Downloaded tokio-stream v0.1.19
+  Downloaded tower-layer v0.3.3
+  Downloaded toml_parser v1.1.3+spec-1.1.0
+  Downloaded untrusted v0.7.1
+  Downloaded utf8parse v0.2.2
+  Downloaded walkdir v2.5.0
+  Downloaded uuid v1.29.0
+  Downloaded unicode-bidi v0.3.18
+  Downloaded unicode-segmentation v1.12.0
+  Downloaded zune-jpeg v0.5.12
+  Downloaded yansi v1.0.1
+  Downloaded winnow v0.7.14
+  Downloaded unicode-normalization v0.1.25
+  Downloaded yasna v0.5.2
+  Downloaded wildmatch v2.6.1
+  Downloaded zune-core v0.5.1
+  Downloaded zstd-safe v8.2.0
+  Downloaded unicode-width v0.1.14
+  Downloaded winnow v1.0.4
+  Downloaded x509-parser v0.18.1
+  Downloaded regex-automata v0.4.18
+  Downloaded zstd v0.14.3
+  Downloaded wildcard v0.3.0
+  Downloaded zlib-rs v0.6.3
+  Downloaded vcpkg v0.2.15
+  Downloaded whoami v2.1.2
+  Downloaded weezl v0.1.12
+  Downloaded webpki-roots v1.0.10
+  Downloaded zerocopy v0.8.37
+  Downloaded sha1-checked v0.10.0
+  Downloaded triomphe v0.1.15
+  Downloaded strsim v0.10.0
+  Downloaded ts-rs v11.1.0
+  Downloaded tracing v0.1.44
+  Downloaded tower-service v0.3.3
+  Downloaded strum v0.27.2
+  Downloaded unicode-properties v0.1.4
+  Downloaded tower v0.5.3
+  Downloaded toml_edit v0.23.10+spec-1.0.0
+  Downloaded starlark_map v0.14.2
+  Downloaded tracing-subscriber v0.3.23
+  Downloaded tracing-opentelemetry v0.32.1
+  Downloaded tracing-core v0.1.36
+  Downloaded tracing-attributes v0.1.31
+  Downloaded urlencoding v2.1.3
+  Downloaded ts-rs-macros v11.1.0
+  Downloaded starlark_syntax v0.14.2
+  Downloaded sqlx v0.9.0
+  Downloaded sorted_vector_map v0.2.1
+  Downloaded regex-syntax v0.8.11
+  Downloaded unicode-xid v0.2.6
+  Downloaded unicode-bom v2.0.3
+  Downloaded typeid v1.0.3
+  Downloaded try-lock v0.2.5
+  Downloaded tokio v1.54.1
+  Downloaded time v0.3.55
+  Downloaded unicase v2.9.0
+  Downloaded tower-http v0.6.8
+  Downloaded tokio-native-tls v0.3.1
+  Downloaded tinyvec_macros v0.1.1
+  Downloaded zstd-sys v2.1.2+zstd.1.5.7
+  Downloaded thread_local v1.1.9
+  Downloaded sync_wrapper v1.0.2
+  Downloaded syn v1.0.109
+  Downloaded strum_macros v0.27.2
+  Downloaded strsim v0.11.1
+  Downloaded static_assertions v1.1.0
+  Downloaded sqlx-sqlite v0.9.0
+  Downloaded sqlx-macros-core v0.9.0
+  Downloaded spin v0.9.8
+  Downloaded socket2 v0.5.10
+  Downloaded tokio-test v0.4.5
+  Downloaded tinyvec v1.10.0
+  Downloaded logos v0.15.1
+  Downloaded time-macros v0.2.32
+  Downloaded sqlx-core v0.9.0
+  Downloaded ring v0.17.14
+  Downloaded radix_trie v0.3.0
+  Downloaded quinn-proto v0.11.14
+  Downloaded tokio-util v0.7.20
+  Downloaded tokio-rustls v0.26.4
+  Downloaded tokio-macros v2.7.0
+  Downloaded time-core v0.1.9
+  Downloaded textwrap v0.11.0
+  Downloaded tagptr v0.2.0
+  Downloaded sys-locale v0.3.2
+  Downloaded strong_hash v0.1.0
+  Downloaded sqlx-mysql v0.9.0
+  Downloaded socket2 v0.6.5
+  Downloaded serde_with v3.17.0
+  Downloaded schemafy v0.5.2
+  Downloaded regex v1.13.1
+  Downloaded thiserror v1.0.69
+  Downloaded stringprep v0.1.5
+  Downloaded static_interner v0.1.2
+  Downloaded starlark_derive v0.14.2
+  Downloaded sqlx-macros v0.9.0
+  Downloaded similar v2.7.0
+  Downloaded sharded-slab v0.1.7
+  Downloaded sha2 v0.11.0
+  Downloaded serial2 v0.2.33
+  Downloaded serde_urlencoded v0.7.1
+  Downloaded serde_repr v0.1.20
+  Downloaded serde_html_form v0.3.2
+  Downloaded seccompiler v0.5.0
+  Downloaded schemars v0.8.22
+  Downloaded same-file v1.0.6
+  Downloaded rustyline v14.0.0
+  Downloaded rayon-core v1.13.0
+  Downloaded rand v0.10.3
+  Downloaded rand v0.9.3
+  Downloaded rama-socks5 v0.3.0-alpha.4
+  Downloaded rama-core v0.3.0-alpha.4
+  Downloaded pxfm v0.1.27
+  Downloaded untrusted v0.9.0
+  Downloaded toml_datetime v0.7.5+spec-1.1.0
+  Downloaded tokio-graceful v0.2.2
+  Downloaded thiserror-impl v1.0.69
+  Downloaded termcolor v1.4.1
+  Downloaded rama-http-types v0.3.0-alpha.4
+  Downloaded tempfile v3.27.0
+  Downloaded take_mut v0.2.2
+  Downloaded strum_macros v0.28.0
+  Downloaded sqlx-postgres v0.9.0
+  Downloaded smol_str v0.3.5
+  Downloaded simd-adler32 v0.3.8
+  Downloaded signal-hook-registry v1.4.8
+  Downloaded shlex v1.3.0
+  Downloaded serde_with_macros v3.17.0
+  Downloaded serde_derive_internals v0.29.1
+  Downloaded scopeguard v1.2.0
+  Downloaded schemars v1.2.1
+  Downloaded schemars v0.9.0
+  Downloaded schemafy_core v0.5.2
+  Downloaded ryu v1.0.22
+  Downloaded rustls v0.23.46
+  Downloaded regex-lite v0.1.8
+  Downloaded rcgen v0.14.7
+  Downloaded rama-utils v0.3.0-alpha.4
+  Downloaded rama-unix v0.3.0-alpha.4
+  Downloaded rama-tls-rustls v0.3.0-alpha.4
+  Downloaded quinn-udp v0.5.14
+  Downloaded jiff v0.2.23
+  Downloaded slab v0.4.12
+  Downloaded shell-words v1.1.1
+  Downloaded sha1 v0.11.0
+  Downloaded sha1 v0.10.6
+  Downloaded sequence_trie v0.3.6
+  Downloaded schemars_derive v0.8.22
+  Downloaded rustversion v1.0.22
+  Downloaded rustls-webpki v0.103.16
+  Downloaded rustls-native-certs v0.8.3
+  Downloaded reqwest v0.12.28
+  Downloaded ref-cast-impl v1.0.25
+  Downloaded ref-cast v1.0.25
+  Downloaded rand_core v0.10.1
+  Downloaded rand_chacha v0.9.0
+  Downloaded rama-udp v0.3.0-alpha.4
+  Downloaded rama-tcp v0.3.0-alpha.4
+  Downloaded rama-net v0.3.0-alpha.4
+  Downloaded rama-http-core v0.3.0-alpha.4
+  Downloaded rama-http-backend v0.3.0-alpha.4
+  Downloaded rama-http v0.3.0-alpha.4
+  Downloaded radix_trie v0.2.1
+  Downloaded quickcheck v1.1.0
+  Downloaded ppv-lite86 v0.2.21
+  Downloaded powerfmt v0.2.0
+  Downloaded schemafy_lib v0.5.2
+  Downloaded rustls-pki-types v1.14.0
+  Downloaded rusticata-macros v4.1.0
+  Downloaded rustc-hash v2.1.1
+  Downloaded resolv-conf v0.7.6
+  Downloaded rand_core v0.9.5
+  Downloaded rama-macros v0.3.0-alpha.4
+  Downloaded rama-http-headers v0.3.0-alpha.4
+  Downloaded rama-error v0.3.0-alpha.4
+  Downloaded rama-dns v0.3.0-alpha.4
+  Downloaded quick-xml v0.41.0
+  Downloaded publicsuffix v2.3.0
+  Downloaded psl-types v2.0.11
+  Downloaded psl v2.1.184
+  Downloaded prodash v31.0.0
+  Downloaded postcard v1.1.3
+  Downloaded portable-atomic v1.13.1
+  Downloaded pin-utils v0.1.0
+  Downloaded pagable v0.4.2
+  Downloaded openssl-sys v0.9.111
+  Downloaded openssl v0.10.75
+  Downloaded oid-registry v0.8.1
+  Downloaded nom v8.0.0
+  Downloaded nom v7.1.3
+  Downloaded nix v0.28.0
+  Downloaded moxcms v0.7.11
+  Downloaded moka v0.12.13
+  Downloaded gix-merge v0.14.0
+  Downloaded encoding_rs v0.8.35
+  Downloaded pretty_assertions v1.4.1
+  Downloaded portable-pty v0.9.0
+  Downloaded png v0.18.0
+  Downloaded pkg-config v0.3.32
+  Downloaded pin-project-lite v0.2.17
+  Downloaded paste v1.0.15
+  Downloaded parking_lot_core v0.9.12
+  Downloaded parking_lot v0.12.5
+  Downloaded parking v2.2.1
+  Downloaded opentelemetry v0.31.0
+  Downloaded openssl-probe v0.2.1
+  Downloaded num-traits v0.2.19
+  Downloaded num-conv v0.2.2
+  Downloaded nu-ansi-term v0.50.3
+  Downloaded nonempty v0.12.0
+  Downloaded nibble_vec v0.1.0
+  Downloaded native-tls v0.2.14
+  Downloaded multimap v0.10.1
+  Downloaded minimal-lexical v0.2.1
+  Downloaded memoffset v0.9.1
+  Downloaded memmap2 v0.9.10
+  Downloaded matchit v0.9.1
+  Downloaded libsqlite3-sys v0.37.0
+  Downloaded lsp-types v0.97.0
+  Downloaded lru v0.18.2
+  Downloaded logos-derive v0.15.1
+  Downloaded logos-codegen v0.15.1
+  Downloaded log v0.4.29
+  Downloaded litrs v1.0.0
+  Downloaded link-section v0.17.2
+  Downloaded jobserver v0.1.34
+  Downloaded jiff-static v0.2.23
+  Downloaded iri-string v0.7.10
+  Downloaded gix v0.81.0
+  Downloaded proc-macro-crate v3.4.0
+  Downloaded pem v3.0.6
+  Downloaded pagable_derive v0.4.2
+  Downloaded option-ext v0.2.0
+  Downloaded openssl-probe v0.1.6
+  Downloaded openssl-macros v0.1.1
+  Downloaded once_cell v1.21.4
+  Downloaded num-integer v0.1.46
+  Downloaded num-bigint v0.4.6
+  Downloaded mio v1.2.0
+  Downloaded miniz_oxide v0.8.9
+  Downloaded mime_guess v2.0.5
+  Downloaded mime v0.3.17
+  Downloaded md5 v0.8.0
+  Downloaded md-5 v0.11.0
+  Downloaded maybe-async v0.2.10
+  Downloaded matchers v0.2.0
+  Downloaded maplit v1.0.2
+  Downloaded lru-slab v0.1.2
+  Downloaded lock_free_hashtable v0.1.4
+  Downloaded lock_api v0.4.14
+  Downloaded linktime-proc-macro v0.1.0
+  Downloaded lazy_static v1.5.0
+  Downloaded landlock v0.4.4
+  Downloaded kstring v2.0.2
+  Downloaded itertools v0.14.0
+  Downloaded indexmap v2.14.2
+  Downloaded http v1.5.0
+  Downloaded hkdf v0.13.0
+  Downloaded hickory-proto v0.25.2
+  Downloaded hashbrown v0.16.1
+  Downloaded hashbrown v0.15.5
+  Downloaded gix-ref v0.61.0
+  Downloaded gix-pack v0.68.0
+  Downloaded gix-index v0.49.0
+  Downloaded gix-blame v0.11.0
+  Downloaded futures-util v0.3.34
+  Downloaded futures-intrusive v0.5.0
+  Downloaded csv v1.4.0
+  Downloaded bstr v1.12.1
+  Downloaded ipnet v2.11.0
+  Downloaded imara-diff v0.2.0
+  Downloaded imara-diff v0.1.8
+  Downloaded image v0.25.9
+  Downloaded icu_plurals v2.2.0
+  Downloaded icu_locale_data v2.2.0
+  Downloaded hyper-util v0.1.20
+  Downloaded hyper v1.8.1
+  Downloaded hickory-resolver v0.25.2
+  Downloaded heapless v0.8.0
+  Downloaded heapless v0.7.17
+  Downloaded hashbrown v0.17.1
+  Downloaded h2 v0.4.16
+  Downloaded gix-transport v0.55.1
+  Downloaded gix-status v0.28.0
+  Downloaded gix-revision v0.43.0
+  Downloaded gix-filter v0.28.0
+  Downloaded gix-features v0.46.2
+  Downloaded gix-discover v0.49.0
+  Downloaded gix-dir v0.23.0
+  Downloaded gix-diff v0.61.0
+  Downloaded gix-config v0.54.0
+  Downloaded gix-commitgraph v0.35.0
+  Downloaded gix-archive v0.30.0
+  Downloaded gif v0.14.1
+  Downloaded getrandom v0.4.3
+  Downloaded getrandom v0.3.4
+  Downloaded futures-executor v0.3.34
+  Downloaded futures-channel v0.3.34
+  Downloaded futures v0.3.31
+  Downloaded clap_builder v4.5.58
+  Downloaded chrono v0.4.43
+  Downloaded blake3 v1.8.7
+  Downloaded aws-lc-rs v1.18.1
+  Downloaded inventory v0.3.24
+  Downloaded ident_case v1.0.1
+  Downloaded icu_plurals_data v2.2.0
+  Downloaded hashbrown v0.14.5
+  Downloaded hashbrown v0.12.3
+  Downloaded gix-worktree v0.50.0
+  Downloaded gix-validate v0.11.0
+  Downloaded gix-url v0.35.2
+  Downloaded gix-traverse v0.55.0
+  Downloaded gix-pathspec v0.16.1
+  Downloaded gix-odb v0.78.0
+  Downloaded gix-object v0.58.0
+  Downloaded gix-hashtable v0.13.0
+  Downloaded gix-hash v0.23.0
+  Downloaded gix-fs v0.19.2
+  Downloaded gix-error v0.2.1
+  Downloaded gix-date v0.15.1
+  Downloaded gix-config-value v0.17.1
+  Downloaded gix-attributes v0.31.0
+  Downloaded indenter v0.3.4
+  Downloaded image-webp v0.2.4
+  Downloaded icu_locale v2.2.0
+  Downloaded icu_decimal_data v2.2.0
+  Downloaded icu_decimal v2.2.0
+  Downloaded iana-time-zone v0.1.65
+  Downloaded hyper-tls v0.6.0
+  Downloaded hyper-rustls v0.27.7
+  Downloaded hybrid-array v0.4.15
+  Downloaded httparse v1.10.1
+  Downloaded http-body-util v0.1.3
+  Downloaded hmac v0.13.0
+  Downloaded heck v0.5.0
+  Downloaded gix-submodule v0.28.0
+  Downloaded gix-sec v0.13.2
+  Downloaded gix-revwalk v0.29.0
+  Downloaded gix-glob v0.24.0
+  Downloaded gix-actor v0.40.0
+  Downloaded fxhash v0.2.1
+  Downloaded futures-io v0.3.34
+  Downloaded futures-core v0.3.34
+  Downloaded foreign-types-shared v0.1.1
+  Downloaded crossbeam-channel v0.5.15
+  Downloaded bumpalo v3.19.1
+  Downloaded asn1-rs v0.7.1
+  Downloaded arrayvec v0.7.8
+  Downloaded arc-swap v1.9.0
+  Downloaded allocator-api2 v0.2.21
+  Downloaded http-range-header v0.4.2
+  Downloaded gix-utils v0.3.1
+  Downloaded gix-tempfile v21.0.2
+  Downloaded gix-shallow v0.10.0
+  Downloaded gix-refspec v0.39.0
+  Downloaded gix-quote v0.7.0
+  Downloaded gix-packetline v0.21.2
+  Downloaded gix-lock v21.0.2
+  Downloaded gix-ignore v0.19.1
+  Downloaded foreign-types v0.3.2
+  Downloaded darling_core v0.21.3
+  Downloaded const_format v0.2.35
+  Downloaded clap v4.5.58
+  Downloaded bytemuck v1.25.0
+  Downloaded base64 v0.22.1
+  Downloaded home v0.5.12
+  Downloaded globset v0.4.18
+  Downloaded gix-path v0.11.2
+  Downloaded gix-negotiate v0.29.0
+  Downloaded futures-task v0.3.34
+  Downloaded foldhash v0.2.0
+  Downloaded diff v0.1.13
+  Downloaded der-parser v10.0.0
+  Downloaded ctutils v0.4.6
+  Downloaded ctor v1.0.6
+  Downloaded crossbeam-utils v0.8.21
+  Downloaded gix-command v0.8.0
+  Downloaded darling v0.21.3
+  Downloaded crc32fast v1.5.0
+  Downloaded cookie v0.18.1
+  Downloaded clap_derive v4.5.55
+  Downloaded chacha20 v0.10.0
+  Downloaded bytes v1.12.1
+  Downloaded borsh v1.6.0
+  Downloaded autocfg v1.5.0
+  Downloaded anstyle v1.0.13
+  Downloaded anstream v0.6.21
+  Downloaded annotate-snippets v0.9.2
+  Downloaded gix-worktree-stream v0.30.0
+  Downloaded gix-worktree-state v0.28.0
+  Downloaded gix-chunk v0.7.0
+  Downloaded gix-bitmap v0.3.0
+  Downloaded futures-sink v0.3.34
+  Downloaded futures-macro v0.3.34
+  Downloaded derive_more v1.0.0
+  Downloaded derivative v2.2.0
+  Downloaded csv-core v0.1.13
+  Downloaded crossbeam-deque v0.8.6
+  Downloaded critical-section v1.2.0
+  Downloaded cmake v0.1.57
+  Downloaded fs_extra v1.3.0
+  Downloaded flume v0.12.0
+  Downloaded fluent-uri v0.1.4
+  Downloaded filetime v0.2.27
+  Downloaded filedescriptor v0.8.3
+  Downloaded fdeflate v0.3.7
+  Downloaded erased-serde v0.4.10
+  Downloaded dotenvy v0.15.7
+  Downloaded debugserver-types v0.5.0
+  Downloaded data-encoding v2.10.0
+  Downloaded convert_case v0.6.0
+  Downloaded constant_time_eq v0.4.2
+  Downloaded byteorder v1.5.0
+  Downloaded async-trait v0.1.92
+  Downloaded allocative_derive v0.3.6
+  Downloaded hash32 v0.2.1
+  Downloaded fancy-regex v0.16.2
+  Downloaded clap_lex v1.0.0
+  Downloaded anstyle-parse v0.2.7
+  Downloaded aho-corasick v1.1.4
+  Downloaded fastrand v2.3.0
+  Downloaded faster-hex v0.10.0
+  Downloaded event-listener v5.4.2
+  Downloaded equivalent v1.0.2
+  Downloaded endian-type v0.1.2
+  Downloaded dupe v0.9.1
+  Downloaded dunce v1.0.5
+  Downloaded document-features v0.2.12
+  Downloaded display_container v0.9.0
+  Downloaded digest v0.11.3
+  Downloaded dashmap v6.1.0
+  Downloaded crossbeam-epoch v0.9.20
+  Downloaded cpufeatures v0.3.0
+  Downloaded chardetng v0.1.17
+  Downloaded cfg_aliases v0.1.1
+  Downloaded beef v0.5.2
+  Downloaded atomic-waker v1.1.2
+  Downloaded asn1-rs-derive v0.6.0
+  Downloaded anstyle-query v1.1.5
+  Downloaded foldhash v0.1.5
+  Downloaded flate2 v1.1.8
+  Downloaded fixed_decimal v0.7.2
+  Downloaded find-msvc-tools v0.1.9
+  Downloaded enum-as-inner v0.6.1
+  Downloaded endian-type v0.2.0
+  Downloaded dirs-sys v0.5.0
+  Downloaded crc v3.4.0
+  Downloaded colorchoice v1.0.4
+  Downloaded byteorder-lite v0.1.0
+  Downloaded bit-set v0.8.0
+  Downloaded atomic v0.5.3
+  Downloaded env_logger v0.11.9
+  Downloaded const_format_proc_macros v0.2.34
+  Downloaded cc v1.2.55
+  Downloaded bytemuck_derive v1.10.2
+  Downloaded bitflags v1.3.2
+  Downloaded atoi v2.0.0
+  Downloaded crossbeam-queue v0.3.12
+  Downloaded cookie_store v0.22.1
+  Downloaded cobs v0.3.0
+  Downloaded aws-lc-sys v0.45.0
+  Downloaded cmp_any v0.8.1
+  Downloaded cmov v0.5.3
+  Downloaded asynk-strim v0.1.5
+  Downloaded asn1-rs-impl v0.2.0
+  Downloaded bit-vec v0.8.0
+  Downloaded derive_more-impl v1.0.0
+  Downloaded color_quant v1.1.0
+  Downloaded block-buffer v0.12.0
+  Downloaded dyn-clone v1.0.20
+  Downloaded deranged v0.5.9
+  Downloaded anyhow v1.0.103
+  Downloaded crc-catalog v2.4.0
+  Downloaded Inflector v0.11.4
+   Compiling serde v1.0.229
+   Compiling syn v2.0.117
+   Compiling syn v3.0.3
+   Compiling serde_core v1.0.229
+   Compiling serde_derive v1.0.229
+   Compiling memchr v2.8.1
+   Compiling libc v0.2.186
+   Compiling smallvec v1.15.1
+   Compiling scopeguard v1.2.0
+   Compiling lock_api v0.4.14
+   Compiling parking_lot_core v0.9.12
+   Compiling thiserror-impl v2.0.21
+   Compiling portable-atomic v1.13.1
+   Compiling parking_lot v0.12.5
+   Compiling thiserror v2.0.21
+   Compiling regex-syntax v0.8.11
+   Compiling critical-section v1.2.0
+   Compiling once_cell v1.21.4
+   Compiling equivalent v1.0.2
+   Compiling aho-corasick v1.1.4
+   Compiling regex-automata v0.4.18
+   Compiling stable_deref_trait v1.2.1
+   Compiling jobserver v0.1.34
+   Compiling synstructure v0.13.2
+   Compiling shlex v1.3.0
+   Compiling find-msvc-tools v0.1.9
+   Compiling pin-project-lite v0.2.17
+   Compiling cc v1.2.55
+   Compiling typenum v1.20.0
+   Compiling futures-core v0.3.34
+   Compiling log v0.4.29
+   Compiling zerofrom-derive v0.1.6
+   Compiling bytes v1.12.1
+   Compiling displaydoc v0.2.5
+   Compiling yoke-derive v0.8.2
+   Compiling foldhash v0.2.0
+   Compiling allocator-api2 v0.2.21
+   Compiling generic-array v0.14.7
+   Compiling zerovec-derive v0.11.3
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling digest v0.10.7
+   Compiling autocfg v1.5.0
+   Compiling fastrand v2.3.0
+   Compiling errno v0.3.14
+   Compiling socket2 v0.6.5
+   Compiling signal-hook-registry v1.4.8
+   Compiling mio v1.2.0
+   Compiling tokio-macros v2.7.0
+   Compiling pkg-config v0.3.32
+   Compiling tokio v1.54.1
+   Compiling serde_json v1.0.154
+   Compiling getrandom v0.4.3
+   Compiling rand_core v0.10.1
+   Compiling futures-sink v0.3.34
+   Compiling bstr v1.12.1
+   Compiling tracing-attributes v0.1.31
+   Compiling tinyvec_macros v0.1.1
+   Compiling futures-task v0.3.34
+   Compiling futures-io v0.3.34
+   Compiling tinyvec v1.10.0
+   Compiling percent-encoding v2.3.2
+   Compiling byteorder v1.5.0
+   Compiling tracing-core v0.1.36
+   Compiling slab v0.4.12
+   Compiling zerofrom v0.1.6
+   Compiling fnv v1.0.7
+   Compiling yoke v0.8.2
+   Compiling futures-channel v0.3.34
+   Compiling num-traits v0.2.19
+   Compiling tracing v0.1.44
+   Compiling hashbrown v0.16.1
+   Compiling futures-macro v0.3.34
+   Compiling crc32fast v1.5.0
+   Compiling futures-util v0.3.34
+   Compiling zerovec v0.11.6
+   Compiling writeable v0.6.2
+   Compiling spin v0.9.8
+   Compiling tinystr v0.8.3
+   Compiling form_urlencoded v1.2.2
+   Compiling sha1 v0.10.6
+   Compiling ring v0.17.14
+   Compiling litemap v0.8.1
+   Compiling dunce v1.0.5
+   Compiling gix-trace v0.1.18
+   Compiling icu_locale_core v2.2.0
+   Compiling potential_utf v0.1.4
+   Compiling zerotrie v0.2.4
+   Compiling gix-validate v0.11.0
+   Compiling hashbrown v0.17.1
+   Compiling regex v1.13.1
+   Compiling crossbeam-utils v0.8.21
+   Compiling indexmap v2.14.2
+   Compiling gix-path v0.11.2
+   Compiling icu_provider v2.2.0
+   Compiling icu_collections v2.2.0
+   Compiling unicode-normalization v0.1.25
+   Compiling http v1.5.0
+   Compiling either v1.15.0
+   Compiling gix-utils v0.3.1
+   Compiling tokio-util v0.7.20
+   Compiling unicode-xid v0.2.6
+   Compiling getrandom v0.3.4
+   Compiling zerocopy v0.8.37
+   Compiling untrusted v0.9.0
+   Compiling http-body v1.0.1
+   Compiling rustls-pki-types v1.14.0
+   Compiling same-file v1.0.6
+   Compiling time-core v0.1.9
+   Compiling num-conv v0.2.2
+   Compiling time-macros v0.2.32
+   Compiling walkdir v2.5.0
+   Compiling sha2 v0.10.9
+   Compiling cmake v0.1.57
+   Compiling prodash v31.0.0
+   Compiling zlib-rs v0.6.3
+   Compiling fs_extra v1.3.0
+   Compiling deranged v0.5.9
+   Compiling powerfmt v0.2.0
+   Compiling time v0.3.55
+   Compiling aws-lc-sys v0.45.0
+   Compiling gix-features v0.46.2
+   Compiling icu_properties v2.2.0
+   Compiling icu_normalizer v2.2.0
+   Compiling vcpkg v0.2.15
+   Compiling ipnet v2.11.0
+   Compiling winnow v1.0.4
+   Compiling heapless v0.8.0
+   Compiling base64 v0.22.1
+   Compiling toml_parser v1.1.3+spec-1.1.0
+   Compiling idna_adapter v1.2.1
+   Compiling itertools v0.14.0
+   Compiling futures-executor v0.3.34
+   Compiling hash32 v0.3.1
+   Compiling uuid v1.29.0
+   Compiling winnow v0.7.14
+   Compiling lazy_static v1.5.0
+   Compiling toml_datetime v0.7.5+spec-1.1.0
+   Compiling toml_edit v0.23.10+spec-1.0.0
+   Compiling idna v1.1.0
+   Compiling ppv-lite86 v0.2.21
+   Compiling rand_core v0.9.5
+   Compiling gix-error v0.2.1
+   Compiling sync_wrapper v1.0.2
+   Compiling nibble_vec v0.1.0
+   Compiling crossbeam-epoch v0.9.20
+   Compiling mime v0.3.17
+   Compiling aws-lc-rs v1.18.1
+   Compiling psl-types v2.0.11
+   Compiling heck v0.5.0
+   Compiling unicase v2.9.0
+   Compiling mime_guess v2.0.5
+   Compiling rand_chacha v0.9.0
+   Compiling faster-hex v0.10.0
+   Compiling proc-macro-crate v3.4.0
+   Compiling http-body-util v0.1.3
+   Compiling const_format_proc_macros v0.2.34
+   Compiling ahash v0.8.12
+   Compiling const_format v0.2.35
+   Compiling rama-macros v0.3.0-alpha.4
+   Compiling rand v0.9.3
+   Compiling url v2.5.8
+   Compiling futures v0.3.31
+   Compiling wildcard v0.3.0
+   Compiling getrandom v0.2.17
+   Compiling untrusted v0.7.1
+   Compiling smol_str v0.3.5
+   Compiling hex v0.4.3
+   Compiling rama-utils v0.3.0-alpha.4
+   Compiling sha1-checked v0.10.0
+   Compiling flume v0.12.0
+   Compiling tokio-graceful v0.2.2
+   Compiling asynk-strim v0.1.5
+   Compiling iana-time-zone v0.1.65
+   Compiling rama-error v0.3.0-alpha.4
+   Compiling crc-catalog v2.4.0
+   Compiling crc v3.4.0
+   Compiling rama-core v0.3.0-alpha.4
+   Compiling gix-hash v0.23.0
+   Compiling nom v8.0.0
+   Compiling endian-type v0.2.0
+   Compiling radix_trie v0.3.0
+   Compiling rama-http-types v0.3.0-alpha.4
+   Compiling psl v2.1.184
+   Compiling num-integer v0.1.46
+   Compiling async-trait v0.1.92
+   Compiling md5 v0.8.0
+   Compiling jiff v0.2.23
+   Compiling rustls v0.23.46
+   Compiling gix-date v0.15.1
+   Compiling rama-net v0.3.0-alpha.4
+   Compiling num-bigint v0.4.6
+   Compiling httparse v1.10.1
+   Compiling anyhow v1.0.103
+   Compiling gix-actor v0.40.0
+   Compiling gix-hashtable v0.13.0
+   Compiling tempfile v3.27.0
+   Compiling openssl-sys v0.9.111
+   Compiling atomic-waker v1.1.2
+   Compiling data-encoding v2.10.0
+   Compiling try-lock v0.2.5
+   Compiling want v0.3.1
+   Compiling gix-object v0.58.0
+   Compiling webpki-roots v1.0.10
+   Compiling hybrid-array v0.4.15
+   Compiling memmap2 v0.9.10
+   Compiling serde_derive_internals v0.29.1
+   Compiling schemars v0.8.22
+   Compiling minimal-lexical v0.2.1
+   Compiling ryu v1.0.22
+   Compiling rayon-core v1.13.0
+   Compiling strsim v0.11.1
+   Compiling syn v1.0.109
+   Compiling nom v7.1.3
+   Compiling schemars_derive v0.8.22
+   Compiling h2 v0.4.16
+   Compiling chrono v0.4.43
+   Compiling heapless v0.7.17
+   Compiling env_filter v1.0.0
+   Compiling bytemuck_derive v1.10.2
+   Compiling ref-cast v1.0.25
+   Compiling cfg_aliases v0.1.1
+   Compiling cmov v0.5.3
+   Compiling termcolor v1.4.1
+   Compiling dyn-clone v1.0.20
+   Compiling option-ext v0.2.0
+   Compiling typeid v1.0.3
+   Compiling utf8parse v0.2.2
+   Compiling dirs-sys v0.5.0
+   Compiling rustls-webpki v0.103.16
+   Compiling ts-rs-macros v11.1.0
+   Compiling ctutils v0.4.6
+   Compiling nix v0.28.0
+   Compiling bytemuck v1.25.0
+   Compiling env_logger v0.11.9
+   Compiling rusticata-macros v4.1.0
+   Compiling block-buffer v0.12.0
+   Compiling crypto-common v0.2.2
+   Compiling crossbeam-deque v0.8.6
+   Compiling enum-as-inner v0.6.1
+   Compiling logos-codegen v0.15.1
+   Compiling crossbeam-channel v0.5.15
+   Compiling hash32 v0.2.1
+   Compiling tokio-stream v0.1.19
+   Compiling rand v0.10.3
+   Compiling blake3 v1.8.7
+   Compiling asn1-rs-derive v0.6.0
+   Compiling ref-cast-impl v1.0.25
+   Compiling asn1-rs-impl v0.2.0
+   Compiling dupe_derive v0.9.1
+   Compiling link-section v0.17.2
+   Compiling erased-serde v0.4.10
+   Compiling tower-service v0.3.3
+   Compiling foreign-types-shared v0.1.1
+   Compiling atomic v0.5.3
+   Compiling unicode-segmentation v1.12.0
+   Compiling iri-string v0.7.10
+   Compiling openssl v0.10.75
+   Compiling tagptr v0.2.0
+   Compiling allocative v0.3.6
+   Compiling bit-vec v0.8.0
+   Compiling linktime-proc-macro v0.1.0
+   Compiling ctor v1.0.6
+   Compiling bit-set v0.8.0
+   Compiling moka v0.12.13
+   Compiling lock_free_hashtable v0.1.4
+   Compiling foreign-types v0.3.2
+   Compiling dupe v0.9.1
+   Compiling asn1-rs v0.7.1
+   Compiling quickcheck v1.1.0
+   Compiling hickory-proto v0.25.2
+   Compiling digest v0.11.3
+   Compiling ts-rs v11.1.0
+   Compiling dirs v6.0.0
+   Compiling gix-fs v0.19.2
+   Compiling zstd-sys v2.1.2+zstd.1.5.7
+   Compiling cobs v0.3.0
+   Compiling openssl-macros v0.1.1
+   Compiling strong_hash_derive v0.1.0
+   Compiling allocative_derive v0.3.6
+   Compiling serde_repr v0.1.20
+   Compiling resolv-conf v0.7.6
+   Compiling oid-registry v0.8.1
+   Compiling arrayvec v0.7.8
+   Compiling hashbrown v0.14.5
+   Compiling rama-http-headers v0.3.0-alpha.4
+   Compiling constant_time_eq v0.4.2
+   Compiling pin-utils v0.1.0
+   Compiling openssl-probe v0.2.1
+   Compiling unicode-width v0.1.14
+   Compiling beef v0.5.2
+   Compiling simd-adler32 v0.3.8
+   Compiling bumpalo v3.19.1
+   Compiling native-tls v0.2.14
+   Compiling cpufeatures v0.3.0
+   Compiling rustls-native-certs v0.8.3
+   Compiling hyper v1.8.1
+   Compiling dashmap v6.1.0
+   Compiling hickory-resolver v0.25.2
+   Compiling strong_hash v0.1.0
+   Compiling postcard v1.1.3
+   Compiling codex-utils-absolute-path v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/absolute-path)
+   Compiling Inflector v0.11.4
+   Compiling sorted_vector_map v0.2.1
+   Compiling static_interner v0.1.2
+   Compiling fancy-regex v0.16.2
+   Compiling convert_case v0.6.0
+   Compiling tokio-rustls v0.26.4
+   Compiling anstyle-parse v0.2.7
+   Compiling schemafy_core v0.5.2
+   Compiling gix-chunk v0.7.0
+   Compiling triomphe v0.1.15
+   Compiling cookie v0.18.1
+   Compiling socket2 v0.5.10
+   Compiling csv-core v0.1.13
+   Compiling pagable_derive v0.4.2
+   Compiling ident_case v1.0.1
+   Compiling inventory v0.3.24
+   Compiling starlark_map v0.14.2
+   Compiling static_assertions v1.1.0
+   Compiling take_mut v0.2.2
+   Compiling adler2 v2.0.1
+   Compiling bitflags v1.3.2
+   Compiling sequence_trie v0.3.6
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling nonempty v0.12.0
+   Compiling anstyle v1.0.13
+   Compiling anstyle-query v1.1.5
+   Compiling httpdate v1.0.3
+   Compiling colorchoice v1.0.4
+   Compiling openssl-probe v0.1.6
+   Compiling anstream v0.6.21
+   Compiling pagable v0.4.2
+   Compiling fluent-uri v0.1.4
+   Compiling miniz_oxide v0.8.9
+   Compiling darling_core v0.21.3
+   Compiling csv v1.4.0
+   Compiling hyper-util v0.1.20
+   Compiling schemafy_lib v0.5.2
+   Compiling derive_more-impl v1.0.0
+   Compiling rama-dns v0.3.0-alpha.4
+   Compiling logos-derive v0.15.1
+   Compiling gix-tempfile v21.0.2
+   Compiling der-parser v10.0.0
+   Compiling serde_html_form v0.3.2
+   Compiling fxhash v0.2.1
+   Compiling memoffset v0.9.1
+   Compiling zstd-safe v8.2.0
+   Compiling http-range-header v0.4.2
+   Compiling icu_locale_data v2.2.0
+   Compiling matchit v0.9.1
+   Compiling litrs v1.0.0
+   Compiling clap_lex v1.0.0
+   Compiling paste v1.0.15
+   Compiling parking v2.2.1
+   Compiling tower-layer v0.3.3
+   Compiling endian-type v0.1.2
+   Compiling radix_trie v0.2.1
+   Compiling tower v0.5.3
+   Compiling event-listener v5.4.2
+   Compiling document-features v0.2.12
+   Compiling clap_builder v4.5.58
+   Compiling rama-http v0.3.0-alpha.4
+   Compiling x509-parser v0.18.1
+   Compiling gix-lock v21.0.2
+   Compiling logos v0.15.1
+   Compiling derive_more v1.0.0
+   Compiling rama-tcp v0.3.0-alpha.4
+   Compiling schemafy v0.5.2
+   Compiling darling_macro v0.21.3
+   Compiling flate2 v1.1.8
+   Compiling lsp-types v0.97.0
+   Compiling tokio-native-tls v0.3.1
+   Compiling fdeflate v0.3.7
+   Compiling annotate-snippets v0.9.2
+   Compiling tokio-test v0.4.5
+   Compiling derivative v2.2.0
+   Compiling clap_derive v4.5.55
+   Compiling publicsuffix v2.3.0
+   Compiling fd-lock v4.0.4
+   Compiling sharded-slab v0.1.7
+   Compiling pem v3.0.6
+   Compiling libsqlite3-sys v0.37.0
+   Compiling yasna v0.5.2
+   Compiling pxfm v0.1.27
+   Compiling hashlink v0.11.0
+   Compiling tracing-log v0.2.0
+   Compiling thread_local v1.1.9
+   Compiling encoding_rs v0.8.35
+   Compiling indenter v0.3.4
+   Compiling quick-error v2.0.1
+   Compiling home v0.5.12
+   Compiling nu-ansi-term v0.50.3
+   Compiling icu_decimal_data v2.2.0
+   Compiling shell-words v1.1.1
+   Compiling color_quant v1.1.0
+   Compiling zune-core v0.5.1
+   Compiling starlark v0.14.2 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/starlark-0.14.2)
+   Compiling byteorder-lite v0.1.0
+   Compiling weezl v0.1.12
+   Compiling image-webp v0.2.4
+   Compiling gif v0.14.1
+   Compiling zune-jpeg v0.5.12
+   Compiling tracing-subscriber v0.3.23
+   Compiling rustyline v14.0.0
+   Compiling display_container v0.9.0
+   Compiling starlark_syntax v0.14.2
+   Compiling moxcms v0.7.11
+   Compiling rcgen v0.14.7
+   Compiling cookie_store v0.22.1
+   Compiling clap v4.5.58
+   Compiling rama-http-core v0.3.0-alpha.4
+   Compiling png v0.18.0
+   Compiling hyper-tls v0.6.0
+   Compiling darling v0.21.3
+   Compiling debugserver-types v0.5.0
+   Compiling tower-http v0.6.8
+   Compiling hyper-rustls v0.27.7
+   Compiling gix-commitgraph v0.35.0
+   Compiling textwrap v0.11.0
+   Compiling starlark_derive v0.14.2
+   Compiling codex-utils-rustls-provider v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/rustls-provider)
+   Compiling serde_urlencoded v0.7.1
+   Compiling rama-unix v0.3.0-alpha.4
+   Compiling rama-udp v0.3.0-alpha.4
+   Compiling gix-quote v0.7.0
+   Compiling lru v0.18.2
+   Compiling opentelemetry v0.31.0
+   Compiling gix-sec v0.13.2
+   Compiling erased-serde v0.3.31
+   Compiling enumflags2_derive v0.7.12
+   Compiling rustversion v1.0.22
+   Compiling thiserror v1.0.69
+   Compiling strsim v0.10.0
+   Compiling maplit v1.0.2
+   Compiling cmp_any v0.8.1
+   Compiling enumflags2 v0.7.12
+   Compiling tracing-opentelemetry v0.32.1
+   Compiling codex-utils-cache v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/cache)
+   Compiling rama-socks5 v0.3.0-alpha.4
+   Compiling rama-http-backend v0.3.0-alpha.4
+   Compiling reqwest v0.12.28
+   Compiling gix-revwalk v0.29.0
+   Compiling crossbeam-queue v0.3.12
+   Compiling icu_locale v2.2.0
+   Compiling serde_with_macros v3.17.0
+   Compiling zstd v0.14.3
+   Compiling image v0.25.9
+   Compiling futures-intrusive v0.5.0
+   Compiling rama-tls-rustls v0.3.0-alpha.4
+   Compiling gix-ref v0.61.0
+   Compiling codex-utils-home-dir v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/home-dir)
+   Compiling strum_macros v0.27.2
+   Compiling fixed_decimal v0.7.2
+   Compiling globset v0.4.18
+   Compiling multimap v0.10.1
+   Compiling thiserror-impl v1.0.69
+   Compiling regex-lite v0.1.8
+   Compiling urlencoding v2.1.3
+   Compiling sqlx-core v0.9.0
+   Compiling codex-utils-path-uri v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/path-uri)
+   Compiling codex-utils-string v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/string)
+   Compiling codex-execpolicy v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/execpolicy)
+   Compiling codex-network-proxy v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/network-proxy)
+   Compiling icu_decimal v2.2.0
+   Compiling strum v0.27.2
+   Compiling codex-utils-image v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/image)
+   Compiling codex-http-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/http-client)
+   Compiling serde_with v3.17.0
+   Compiling landlock v0.4.4
+   Compiling gix-command v0.8.0
+   Compiling chardetng v0.1.17
+   Compiling atoi v2.0.0
+   Compiling codex-extension-items v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/items)
+   Compiling codex-utils-redacted-string v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/redacted-string)
+   Compiling gix-packetline v0.21.2
+   Compiling strum_macros v0.28.0
+   Compiling gix-glob v0.24.0
+   Compiling codex-async-utils v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/async-utils)
+   Compiling gix-url v0.35.2
+   Compiling clru v0.6.3
+   Compiling seccompiler v0.5.0
+   Compiling quick-xml v0.41.0
+   Compiling curve25519-dalek-derive v0.1.1
+   Compiling wildmatch v2.6.1
+   Compiling sys-locale v0.3.2
+   Compiling codex-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/protocol)
+   Compiling curve25519-dalek v4.1.3
+   Compiling gix-pack v0.68.0
+   Compiling gix-transport v0.55.1
+   Compiling sqlx-sqlite v0.9.0
+   Compiling arc-swap v1.9.0
+   Compiling filedescriptor v0.8.3
+   Compiling gix-revision v0.43.0
+   Compiling gix-shallow v0.10.0
+   Compiling gix-config-value v0.17.1
+   Compiling serial2 v0.2.33
+   Compiling maybe-async v0.2.10
+   Compiling dotenvy v0.15.7
+   Compiling downcast-rs v1.2.1
+   Compiling unicode-bom v2.0.3
+   Compiling gix-config v0.54.0
+   Compiling portable-pty v0.9.0
+   Compiling sqlx-macros-core v0.9.0
+   Compiling gix-protocol v0.59.0
+   Compiling gix-refspec v0.39.0
+   Compiling gix-odb v0.78.0
+   Compiling ed25519-dalek v2.2.0
+   Compiling gix-discover v0.49.0
+   Compiling gix-traverse v0.55.0
+   Compiling gix-diff v0.61.0
+   Compiling gix v0.81.0
+   Compiling codex-hepta-contracts v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-contracts)
+   Compiling codex-file-system v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/file-system)
+   Compiling sqlx-macros v0.9.0
+   Compiling codex-utils-pty v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/pty)
+warning: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)
+  --> utils/pty/src/unix_io.rs:38:60
+   |
+38 |         let fd = std::panic::catch_unwind(move || AsyncFd::new(File::from(fd)))
+   |                                                            ^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-utils-pty` (lib) generated 1 warning
+   Compiling similar v2.7.0
+   Compiling codex-git-utils v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/git-utils)
+   Compiling sqlx v0.9.0
+   Compiling codex-history v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/history)
+   Compiling codex-state v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/state)
+   Compiling codex-hepta-paths v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-paths)
+   Compiling codex-hepta-matrix-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-matrix-protocol)
+   Compiling yansi v1.0.1
+   Compiling diff v0.1.13
+   Compiling pretty_assertions v1.4.1
+   Compiling codex-hepta-matrix-store v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-matrix-store)
+    Finished `ci-test` profile [unoptimized + debuginfo] target(s) in 3m 49s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.13.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.37` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.20` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.103` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.111` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.45.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.25` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.75` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0-alpha.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_data@2.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@8.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/starlark-0.14.2#starlark@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.37.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.22` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID c39c1c33-de4e-4c2a-adef-480d2247eaed with nextest profile: local
+    Starting 36 tests across 3 binaries
+        PASS [   0.008s] ( 1/36) codex-hepta-matrix-store::durable_core canonical_transaction_type_is_used_by_public_store_models
+        PASS [   0.057s] ( 2/36) codex-hepta-matrix-store::durable_core control_cursor_gap_resets_to_snapshot_and_active_turn_is_paired
+        PASS [   0.068s] ( 3/36) codex-hepta-matrix-store::durable_core cursor_gap_requires_snapshot_then_resumes_exactly
+        PASS [   0.064s] ( 4/36) codex-hepta-matrix-store::durable_core duplicate_event_and_transaction_are_exact_or_conflict
+        PASS [   0.148s] ( 5/36) codex-hepta-matrix-store::durable_core crash_reopen_reconciles_dispatch_and_expired_outbox_lease
+        PASS [   0.064s] ( 6/36) codex-hepta-matrix-store::durable_core server_resolved_notification_closes_local_completion_crash_window
+        PASS [   0.141s] ( 7/36) codex-hepta-matrix-store::durable_core pending_approval_is_owner_local_fenced_and_restart_safe
+        PASS [   0.082s] ( 8/36) codex-hepta-matrix-store::durable_core stable_matrix_plane_recovers_across_agentd_generation_rollover
+        PASS [   0.078s] ( 9/36) codex-hepta-matrix-store::durable_core sync_checkpoint_and_inbox_batch_commit_atomically_with_exact_replay
+        PASS [   0.108s] (10/36) codex-hepta-matrix-store::durable_core two_agents_never_share_stream_or_owner_database
+        PASS [   0.087s] (11/36) codex-hepta-matrix-store::sync_mutation_v2 caller_persisted_outbox_attempt_survives_a_later_room_leave
+        PASS [   0.066s] (12/36) codex-hepta-matrix-store::sync_mutation_v2 durable_replay_precedes_a_reduced_runtime_capacity
+        PASS [   0.061s] (13/36) codex-hepta-matrix-store::sync_mutation_v2 failed_mutation_rolls_back_prior_mutations_and_cursor
+        PASS [   0.395s] (14/36) codex-hepta-matrix-store::durable_core token_burst_is_one_bounded_final_and_later_updates_replace_the_root
+        PASS [   0.087s] (15/36) codex-hepta-matrix-store::sync_mutation_v2 journal_saturation_is_terminal_but_preserves_the_deletion_reserve
+        PASS [   0.083s] (16/36) codex-hepta-matrix-store::sync_mutation_v2 kicked_room_rebind_preserves_the_account_cursor_and_resumes_sync
+        PASS [   0.081s] (17/36) codex-hepta-matrix-store::sync_mutation_v2 one_room_rebind_does_not_fence_another_room_or_the_account_cursor
+        PASS [   0.061s] (18/36) codex-hepta-matrix-store::sync_mutation_v2 redacted_v1_source_cannot_be_reused_in_another_room
+        PASS [   0.070s] (19/36) codex-hepta-matrix-store::sync_mutation_v2 redaction_ignores_a_hidden_dispatch_from_an_old_room_fence
+        PASS [   0.073s] (20/36) codex-hepta-matrix-store::sync_mutation_v2 redaction_ignores_another_rooms_active_dispatch
+        PASS [   0.868s] (21/36) codex-hepta-matrix-store::durable_core capped_delta_replacement_renders_the_complete_prefix
+        PASS [   0.079s] (22/36) codex-hepta-matrix-store::sync_mutation_v2 room_leave_and_replacement_tombstones_prevent_replay
+        PASS [   0.067s] (23/36) codex-hepta-matrix-store::sync_mutation_v2 room_leave_fences_an_active_dispatch_without_blocking_the_cursor
+        PASS [   0.112s] (24/36) codex-hepta-matrix-store::sync_mutation_v2 redaction_missing_target_and_cancellation_remain_distinct
+        PASS [   0.066s] (25/36) codex-hepta-matrix-store::sync_mutation_v2 room_tombstone_is_a_logical_fence_above_the_physical_scrub_bound
+        PASS [   0.069s] (26/36) codex-hepta-matrix-store::sync_mutation_v2 tombstone_refuses_to_orphan_an_active_dispatch
+        PASS [   0.099s] (27/36) codex-hepta-matrix-store::sync_mutation_v2 startup_rejects_same_name_counterfeit_v2_schema_objects
+        PASS [   0.066s] (28/36) codex-hepta-matrix-store::sync_mutation_v2 tombstoned_v1_source_cannot_gain_a_new_v2_meaning
+        PASS [   0.054s] (29/36) codex-hepta-matrix-store::sync_mutation_v2 v1_and_v2_timeline_identity_matches_exact_semantics_only
+        PASS [   0.008s] (30/36) codex-hepta-matrix-store::sync_mutation_v2 v2_validation_rejects_wrong_schema
+        PASS [   0.057s] (31/36) codex-hepta-matrix-store::sync_mutation_v2 v1_source_hidden_by_leave_cannot_be_reused_after_rebind
+        PASS [   0.109s] (32/36) codex-hepta-matrix-store::sync_observation_v1 absent_stale_or_malformed_caller_fences_never_become_unchanged_success
+        PASS [   0.161s] (33/36) codex-hepta-matrix-store::sync_observation_v1 observation_serializes_after_a_checkpoint_writer_and_rejects_the_old_token
+        PASS [   0.100s] (34/36) codex-hepta-matrix-store::sync_observation_v1 repeated_observations_preserve_all_durable_evidence_and_survive_reopen
+        PASS [   0.303s] (35/36) codex-hepta-matrix-store::sync_observation_v1 every_ordinary_journal_ceiling_refuses_idle_readiness_without_breaking_v2_replay
+        PASS [  20.353s] (36/36) codex-hepta-matrix-store::durable_core ten_thousand_deltas_are_bounded_and_final_is_exact
+────────────
+     Summary [  20.571s] 36 tests run: 36 passed, 0 skipped

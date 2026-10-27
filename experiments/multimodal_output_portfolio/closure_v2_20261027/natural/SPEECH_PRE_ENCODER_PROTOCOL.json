@@ -1,0 +1,32 @@
+{
+  "CI": "5000 paired speaker-cluster bootstrap resamples with seed2821; repetitions averaged within utterance; pooled WER numerator and denominator resampled jointly",
+  "cost": "Full audio decode, features, encoder, every decoder, gate, transcript/metadata delivery/readback/hash; model loading/warmup/selection reported separately. No privileged reference or high-model answer before allocation.",
+  "cpu_threads": 1,
+  "dataset": "openslr/librispeech_asr",
+  "dataset_revision": "71cacbfb7e2354c4226d01e70d77d5fca3d04ba1",
+  "model": "Systran/faster-whisper-base.en",
+  "model_revision": "3d3d5dee26484f91867d81cb899cfcf72b96be6c",
+  "primary_gates": "Against fixed_beam5: WER95percentCI upperdifference<=0.01, CPU and wall upperdifference<0. Against same-policy reencoded: nonzero continuation, exact transcript equality and CPU/wall upperdifference<0. Zero continuation leaves cache identification failed, never relabeled passed.",
+  "quality_noninferiority_margin_absolute_WER": 0.01,
+  "schema": "hepta.ndu.closure-v2.natural.speech.protocol.v1",
+  "scope": "Frozen neural natural speech transcription and quality-constrained continuation; no speech synthesis, neural weight training or original Hepta integration claim",
+  "selection": "Execute every candidate on the prior cascade's8 validation speakers24 utterances; among candidates whose paired speaker95percentCI upper WER difference versus actual fixed beam5 <=0.01 choose lowest actual whole CPU. Zero continuation and full continuation remain valid options; no mandatory second pass introduced.",
+  "stopping": "Source split, threshold, exact source and models frozen before one new qualification; no test retuning; preserve zero/nonzero allocation and all failures",
+  "test_arms": [
+    "fixed_greedy",
+    "fixed_beam5",
+    "cached_continuation",
+    "reencoded_continuation"
+  ],
+  "test_source_selection": "Ascending public upstream test rows, first4 duration<=29s utterances per unused speaker, eight speakers each from clean and other; exclude all earlier fit/validation/test speakers and waveforms",
+  "test_speakers_each_config": 8,
+  "thresholds": [
+    -1000,
+    -0.3,
+    -0.15,
+    -0.05,
+    1000
+  ],
+  "timing_repetitions": 2,
+  "utterances_per_speaker": 4
+}

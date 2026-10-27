@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.ci.fixture-mode-custody-test.v1",
+  "started_at": "2026-10-27T15:37:57.392588+00:00",
+  "finished_at": "2026-10-27T15:37:57.613235+00:00",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "-v",
+    "test_ndu_port_fixture_layout",
+    "test_ndu_port_matrix_fixture"
+  ],
+  "cwd": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/scripts",
+  "exit_code": 0,
+  "source_before": {
+    "scripts/ndu_port_fixture_layout.py": {
+      "bytes": 4838,
+      "sha256": "b316327be4316a4d8d97cd76a3fcc7d5c68cdc316e71343ad14d46fa5f4fc8ac"
+    },
+    "scripts/ndu_port_matrix_fixture.py": {
+      "bytes": 17157,
+      "sha256": "e4b9da556b10762c5e5b761f94ea5dccc1c4d2f655082c8afc328a3b68a1c247"
+    },
+    "scripts/test_ndu_port_fixture_layout.py": {
+      "bytes": 4185,
+      "sha256": "58f3b4f1068a9c9bf420b5db1da6ba92a57adc08dcfa774c0adc51c24a47205f"
+    },
+    "scripts/test_ndu_port_matrix_fixture.py": {
+      "bytes": 11516,
+      "sha256": "ba4275d1ccd3c70a5d3050b41c44406357ee6d5360ccc1fc64fbd57179a170b1"
+    },
+    "scripts/ndu_port_candidate_common.py": {
+      "bytes": 23593,
+      "sha256": "b160cd40b45eebeaf6c676d7704e4cf93e0d358c6c0727228bc8429886aa546d"
+    }
+  },
+  "source_unchanged": true,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "a6b57cd18039fa655c79573f003fd78e36f3fbce44a277c1787bdf05ed916589",
+  "scope": "12 affected fixture/layout Python cases; mocks cover phase dispatch only, no Rust compilation or actual Matrix runtime qualification."
+}

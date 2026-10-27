@@ -1,0 +1,537 @@
+diff --git a/codex-rs/core-plugins/src/command_migration.rs b/codex-rs/core-plugins/src/command_migration.rs
+index 1544b25..cff2867 100644
+--- a/codex-rs/core-plugins/src/command_migration.rs
++++ b/codex-rs/core-plugins/src/command_migration.rs
+@@ -4,7 +4,6 @@ mod render;
+ use render::rewrite_terms;
+ use render::slugify_name;
+ use render::yaml_string;
+-use serde_yaml::Value as YamlValue;
+ use std::collections::BTreeMap;
+ use std::fs;
+ use std::io;
+@@ -314,28 +313,16 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
+ }
+ 
+ fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
+-    let parsed: YamlValue = serde_yaml::from_str(raw_frontmatter).ok()?;
+-    let mapping = parsed.as_mapping()?;
+-    mapping.iter().find_map(|(key, value)| {
+-        if key.as_str()?.trim() == "description" {
+-            yaml_scalar(value)
++    let mapping = codex_utils_yaml::scalar_mapping(raw_frontmatter).ok()??;
++    mapping.into_iter().find_map(|(key, value)| {
++        if key.trim() == "description" {
++            value
+         } else {
+             None
+         }
+     })
+ }
+ 
+-fn yaml_scalar(value: &YamlValue) -> Option<String> {
+-    match value {
+-        YamlValue::String(value) => Some(value.trim().to_string()),
+-        YamlValue::Bool(value) => Some(value.to_string()),
+-        YamlValue::Number(value) => Some(value.to_string()),
+-        YamlValue::Null | YamlValue::Sequence(_) | YamlValue::Mapping(_) | YamlValue::Tagged(_) => {
+-            None
+-        }
+-    }
+-}
+-
+ fn command_skill_name(source_name: &str) -> String {
+     slugify_name(&format!("{COMMAND_SKILL_PREFIX}-{source_name}"))
+ }
+diff --git a/codex-rs/core-plugins/src/plugin_metrics.rs b/codex-rs/core-plugins/src/plugin_metrics.rs
+index b7df811..904257b 100644
+--- a/codex-rs/core-plugins/src/plugin_metrics.rs
++++ b/codex-rs/core-plugins/src/plugin_metrics.rs
+@@ -74,7 +74,7 @@ pub(crate) fn load_plugin_metrics_operations(
+     if contents.len() as u64 > MAX_ANALYTICS_MANIFEST_BYTES {
+         return None;
+     }
+-    let manifest: AnalyticsManifest = serde_yaml::from_slice(&contents).ok()?;
++    let manifest: AnalyticsManifest = codex_utils_yaml::from_slice(&contents).ok()?;
+     validate_manifest(manifest, plugin_root)
+ }
+ 
+diff --git a/codex-rs/ext/skills/src/loader/environment.rs b/codex-rs/ext/skills/src/loader/environment.rs
+index 3b7ca9e..16b6734 100644
+--- a/codex-rs/ext/skills/src/loader/environment.rs
++++ b/codex-rs/ext/skills/src/loader/environment.rs
+@@ -268,7 +268,7 @@ pub fn load_environment_skills_from_discovery(
+             .metadata
+             .as_ref()
+             .and_then(|metadata| {
+-                serde_yaml::from_str::<SkillMetadataFile>(&metadata.contents)
++                codex_utils_yaml::from_str::<SkillMetadataFile>(&metadata.contents)
+                     .map_err(|error| {
+                         tracing::warn!(
+                             path = %metadata.path,
+@@ -378,7 +378,7 @@ async fn read_skill_metadata(
+             return (None, None);
+         }
+     };
+-    let parsed: SkillMetadataFile = match serde_yaml::from_str(&contents) {
++    let parsed: SkillMetadataFile = match codex_utils_yaml::from_str(&contents) {
+         Ok(parsed) => parsed,
+         Err(error) => {
+             tracing::warn!("ignoring {metadata_path}: invalid metadata: {error}");
+diff --git a/codex-rs/ext/skills/src/loader/metadata.rs b/codex-rs/ext/skills/src/loader/metadata.rs
+index 0527b3c..07ea25a 100644
+--- a/codex-rs/ext/skills/src/loader/metadata.rs
++++ b/codex-rs/ext/skills/src/loader/metadata.rs
+@@ -127,7 +127,7 @@ pub(super) async fn load_host_skill_metadata(
+         }
+     };
+ 
+-    let parsed: SkillMetadataFile = match serde_yaml::from_str(&contents) {
++    let parsed: SkillMetadataFile = match codex_utils_yaml::from_str(&contents) {
+         Ok(parsed) => parsed,
+         Err(error) => {
+             tracing::warn!(
+diff --git a/codex-rs/external-agent-migration/src/subagents.rs b/codex-rs/external-agent-migration/src/subagents.rs
+index 9490799..ce26d94 100644
+--- a/codex-rs/external-agent-migration/src/subagents.rs
++++ b/codex-rs/external-agent-migration/src/subagents.rs
+@@ -1,7 +1,6 @@
+ use crate::RewriteProfile;
+ use crate::invalid_data_error;
+ use crate::scope::is_redirected_destination;
+-use serde_yaml::Value as YamlValue;
+ use std::collections::BTreeMap;
+ use std::fs;
+ use std::io;
+@@ -164,11 +163,11 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
+ fn parse_frontmatter(
+     raw_frontmatter: &str,
+ ) -> (BTreeMap<String, FrontmatterValue>, Option<String>) {
+-    let parsed: YamlValue = match serde_yaml::from_str(raw_frontmatter) {
++    let mapping = match codex_utils_yaml::scalar_mapping(raw_frontmatter) {
+         Ok(parsed) => parsed,
+         Err(err) => return (BTreeMap::new(), Some(err.to_string())),
+     };
+-    let Some(mapping) = parsed.as_mapping() else {
++    let Some(mapping) = mapping else {
+         return (
+             BTreeMap::new(),
+             Some("frontmatter is not a YAML mapping".to_string()),
+@@ -177,26 +176,21 @@ fn parse_frontmatter(
+ 
+     let mut frontmatter = BTreeMap::new();
+     for (key, value) in mapping {
+-        let Some(key) = key.as_str().map(str::trim).filter(|key| !key.is_empty()) else {
++        let key = key.trim();
++        if key.is_empty() {
+             continue;
+-        };
+-        frontmatter.insert(key.to_string(), frontmatter_value_from_yaml(value));
++        }
++        frontmatter.insert(
++            key.to_string(),
++            value
++                .map(FrontmatterValue::Scalar)
++                .unwrap_or(FrontmatterValue::Other),
++        );
+     }
+ 
+     (frontmatter, None)
+ }
+ 
+-fn frontmatter_value_from_yaml(value: &YamlValue) -> FrontmatterValue {
+-    match value {
+-        YamlValue::String(value) => FrontmatterValue::Scalar(value.trim().to_string()),
+-        YamlValue::Bool(value) => FrontmatterValue::Scalar(value.to_string()),
+-        YamlValue::Number(value) => FrontmatterValue::Scalar(value.to_string()),
+-        YamlValue::Null | YamlValue::Sequence(_) | YamlValue::Mapping(_) | YamlValue::Tagged(_) => {
+-            FrontmatterValue::Other
+-        }
+-    }
+-}
+-
+ pub(crate) fn agent_metadata(document: &ParsedDocument) -> Option<AgentMetadata> {
+     if document.frontmatter_error.is_some() || document.body.trim().is_empty() {
+         return None;
+diff --git a/codex-rs/skills/src/parser.rs b/codex-rs/skills/src/parser.rs
+index aef295c..8956418 100644
+--- a/codex-rs/skills/src/parser.rs
++++ b/codex-rs/skills/src/parser.rs
+@@ -33,7 +33,7 @@ pub enum SkillParseError {
+     #[error("missing YAML frontmatter delimited by ---")]
+     MissingFrontmatter,
+     #[error("invalid YAML: {0}")]
+-    InvalidYaml(#[source] serde_yaml::Error),
++    InvalidYaml(#[source] codex_utils_yaml::Error),
+     #[error("missing field `{0}`")]
+     MissingField(&'static str),
+     #[error("invalid {field}: {reason}")]
+@@ -47,14 +47,14 @@ pub fn parse_skill_frontmatter_metadata(
+ ) -> Result<ParsedSkillFrontmatter, SkillParseError> {
+     let frontmatter = extract_frontmatter(contents).ok_or(SkillParseError::MissingFrontmatter)?;
+ 
+-    let parsed: SkillFrontmatter = match serde_yaml::from_str(&frontmatter) {
++    let parsed: SkillFrontmatter = match codex_utils_yaml::from_str(&frontmatter) {
+         Ok(parsed) => Ok(parsed),
+         Err(original_error) => match repair_frontmatter_scalar_fields(&frontmatter) {
+             // Some third-party skills use prose like `description: Build for AWS: ECS`
+             // or `argument-hint: <duration: e.g. 7d>`. Keep the repair line-oriented
+             // so unrelated invalid YAML still surfaces.
+             Some(repaired_frontmatter) => {
+-                serde_yaml::from_str(&repaired_frontmatter).map_err(|_| original_error)
++                codex_utils_yaml::from_str(&repaired_frontmatter).map_err(|_| original_error)
+             }
+             None => Err(original_error),
+         },
+@@ -165,7 +165,7 @@ fn repair_frontmatter_scalar_fields(frontmatter: &str) -> Option<String> {
+             }
+         }
+         let invalid_flow_like_scalar = matches!(first_char, '[' | '{' | '@' | '`')
+-            && serde_yaml::from_str::<serde_yaml::Value>(scalar).is_err();
++            && codex_utils_yaml::validate(scalar).is_err();
+         if !has_colon_separator && !invalid_flow_like_scalar {
+             repaired_lines.push(line.to_string());
+             continue;
+diff --git a/codex-rs/utils/yaml/BUILD.bazel b/codex-rs/utils/yaml/BUILD.bazel
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/utils/yaml/BUILD.bazel
+@@ -0,0 +1,6 @@
++load("//:defs.bzl", "codex_rust_crate")
++
++codex_rust_crate(
++    name = "yaml",
++    crate_name = "codex_utils_yaml",
++)
+diff --git a/codex-rs/utils/yaml/Cargo.toml b/codex-rs/utils/yaml/Cargo.toml
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/utils/yaml/Cargo.toml
+@@ -0,0 +1,20 @@
++[package]
++name = "codex-utils-yaml"
++version.workspace = true
++edition.workspace = true
++license.workspace = true
++
++[lib]
++doctest = false
++
++[lints]
++workspace = true
++
++[dependencies]
++ryu = { workspace = true }
++serde = { workspace = true }
++serde-saphyr = { workspace = true }
++
++[dev-dependencies]
++pretty_assertions = { workspace = true }
++serde = { workspace = true, features = ["derive"] }
+diff --git a/codex-rs/utils/yaml/src/lib.rs b/codex-rs/utils/yaml/src/lib.rs
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/utils/yaml/src/lib.rs
+@@ -0,0 +1,184 @@
++//! YAML parsing for plugin manifests and imported frontmatter.
++//!
++//! Keep YAML 1.2 scalar resolution and explicit merge handling consistent across
++//! consumers. The private visitor accepts arbitrary YAML mapping keys and keeps
++//! application tags distinct from ordinary scalar values.
++
++use serde::Deserialize;
++use serde::Deserializer;
++use serde::de::MapAccess;
++use serde::de::SeqAccess;
++use serde::de::Visitor;
++use serde_saphyr::MergeKeyPolicy;
++use serde_saphyr::NonFiniteFloatPolicy;
++use serde_saphyr::Options;
++use serde_saphyr::Tagged;
++use std::fmt;
++
++pub use serde_saphyr::Error;
++
++/// Ordered string keys and their ordinary scalar values. A missing value means
++/// that the YAML node is null, a collection, or an application-tagged scalar.
++pub type ScalarMapping = Vec<(String, Option<String>)>;
++
++fn options() -> Options {
++    let mut options = Options::default();
++    options.strict_booleans = true;
++    options.merge_keys = MergeKeyPolicy::AsOrdinary;
++    options.non_finite_float_policy = NonFiniteFloatPolicy::PassThrough;
++    options
++}
++
++/// Deserialize a typed YAML document using the shared compatibility options.
++pub fn from_str<'de, T: Deserialize<'de>>(input: &'de str) -> Result<T, Error> {
++    serde_saphyr::from_str_with_options(input, options())
++}
++
++/// Deserialize a UTF-8 YAML document using the same options as [`from_str`].
++pub fn from_slice<'de, T: Deserialize<'de>>(input: &'de [u8]) -> Result<T, Error> {
++    serde_saphyr::from_slice_with_options(input, options())
++}
++
++/// Validate a complete YAML value, including nested mappings and non-string keys.
++pub fn validate(input: &str) -> Result<(), Error> {
++    from_str::<Node>(input).map(|_| ())
++}
++
++/// Extract string-keyed scalar frontmatter while accepting other valid YAML.
++/// Non-string keys are ignored; their values are still fully parsed. Root and
++/// key tags are transparent, as in the previous Value accessors. Application
++/// tags on values are retained as non-scalar values, rather than silently lost.
++pub fn scalar_mapping(input: &str) -> Result<Option<ScalarMapping>, Error> {
++    let root: Node = from_str(input)?;
++    let Kind::Mapping(entries) = root.kind else {
++        return Ok(None);
++    };
++    let fields = entries
++        .into_iter()
++        .filter_map(|(key, value)| {
++            let Kind::String(key) = key.kind else {
++                return None;
++            };
++            let scalar = if value.application_tag {
++                None
++            } else {
++                match value.kind {
++                    Kind::String(text) => Some(text.trim().to_string()),
++                    Kind::Scalar(text) => Some(text),
++                    Kind::Mapping(_) | Kind::Other => None,
++                }
++            };
++            Some((key, scalar))
++        })
++        .collect();
++    Ok(Some(fields))
++}
++
++struct Node {
++    kind: Kind,
++    application_tag: bool,
++}
++
++enum Kind {
++    String(String),
++    Scalar(String),
++    Mapping(Vec<(Node, Node)>),
++    Other,
++}
++
++impl<'de> Deserialize<'de> for Node {
++    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
++        let Tagged(kind, tag) = Tagged::<Kind>::deserialize(deserializer)?;
++        let application_tag = !matches!(
++            tag.as_deref(),
++            None | Some(
++                "!"
++                    | "tag:yaml.org,2002:str"
++                    | "tag:yaml.org,2002:bool"
++                    | "tag:yaml.org,2002:int"
++                    | "tag:yaml.org,2002:float"
++                    | "tag:yaml.org,2002:null"
++                    | "tag:yaml.org,2002:seq"
++                    | "tag:yaml.org,2002:map"
++            )
++        );
++        Ok(Self {
++            kind,
++            application_tag,
++        })
++    }
++}
++
++impl<'de> Deserialize<'de> for Kind {
++    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
++        deserializer.deserialize_any(NodeVisitor)
++    }
++}
++
++struct NodeVisitor;
++
++impl<'de> Visitor<'de> for NodeVisitor {
++    type Value = Kind;
++
++    fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
++        formatter.write_str("a YAML value")
++    }
++
++    fn visit_unit<E>(self) -> Result<Kind, E> {
++        Ok(Kind::Other)
++    }
++
++    fn visit_none<E>(self) -> Result<Kind, E> {
++        Ok(Kind::Other)
++    }
++
++    fn visit_bool<E>(self, value: bool) -> Result<Kind, E> {
++        Ok(Kind::Scalar(value.to_string()))
++    }
++
++    fn visit_i64<E>(self, value: i64) -> Result<Kind, E> {
++        Ok(Kind::Scalar(value.to_string()))
++    }
++
++    fn visit_u64<E>(self, value: u64) -> Result<Kind, E> {
++        Ok(Kind::Scalar(value.to_string()))
++    }
++
++    fn visit_f64<E>(self, value: f64) -> Result<Kind, E> {
++        let text = if value.is_nan() {
++            ".nan".to_string()
++        } else if value == f64::INFINITY {
++            ".inf".to_string()
++        } else if value == f64::NEG_INFINITY {
++            "-.inf".to_string()
++        } else {
++            ryu::Buffer::new().format_finite(value).to_string()
++        };
++        Ok(Kind::Scalar(text))
++    }
++
++    fn visit_str<E>(self, value: &str) -> Result<Kind, E> {
++        Ok(Kind::String(value.to_string()))
++    }
++
++    fn visit_string<E>(self, value: String) -> Result<Kind, E> {
++        Ok(Kind::String(value))
++    }
++
++    fn visit_seq<A: SeqAccess<'de>>(self, mut sequence: A) -> Result<Kind, A::Error> {
++        while sequence.next_element::<Node>()?.is_some() {}
++        Ok(Kind::Other)
++    }
++
++    fn visit_map<A: MapAccess<'de>>(self, mut mapping: A) -> Result<Kind, A::Error> {
++        let mut entries = Vec::new();
++        while let Some(entry) = mapping.next_entry::<Node, Node>()? {
++            entries.push(entry);
++        }
++        Ok(Kind::Mapping(entries))
++    }
++}
++
++#[cfg(test)]
++#[path = "yaml_tests.rs"]
++mod tests;
+diff --git a/codex-rs/utils/yaml/src/yaml_tests.rs b/codex-rs/utils/yaml/src/yaml_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/utils/yaml/src/yaml_tests.rs
+@@ -0,0 +1,113 @@
++use super::from_slice;
++use super::from_str;
++use super::scalar_mapping;
++use super::validate;
++use pretty_assertions::assert_eq;
++use serde::Deserialize;
++
++#[test]
++fn arbitrary_mapping_keys_do_not_hide_string_fields() {
++    let actual = scalar_mapping(
++        "? [one, two]\n: ignored\n? {nested: key}\n: ignored\n7: ignored\ntrue: ignored\nnull: ignored\nname: demo\ndescription: ' a document '\n",
++    )
++    .unwrap();
++    assert_eq!(
++        actual,
++        Some(vec![
++            ("name".to_string(), Some("demo".to_string())),
++            ("description".to_string(), Some("a document".to_string())),
++        ])
++    );
++}
++
++#[test]
++fn scalar_resolution_keeps_yaml12_and_number_rendering() {
++    let actual = scalar_mapping(
++        "a: yes\nb: OFF\nc: True\nd: FALSE\ne: 0x10\nf: 1.0\ng: .NaN\nh: -.Inf\ni: null\nj: ' null '\nk: !!str 0x10\nl: -0.0\n",
++    )
++    .unwrap()
++    .unwrap();
++    let expected = [
++        ("a", Some("yes")),
++        ("b", Some("OFF")),
++        ("c", Some("true")),
++        ("d", Some("false")),
++        ("e", Some("16")),
++        ("f", Some("1.0")),
++        ("g", Some(".nan")),
++        ("h", Some("-.inf")),
++        ("i", None),
++        ("j", Some("null")),
++        ("k", Some("0x10")),
++        ("l", Some("-0.0")),
++    ]
++    .map(|(key, value)| (key.to_string(), value.map(str::to_string)))
++    .to_vec();
++    assert_eq!(actual, expected);
++}
++
++#[test]
++fn application_tags_survive_until_scalar_selection() {
++    let actual = scalar_mapping(
++        "!root\n!key name: demo\ndescription: !secret hidden\narray: !items [a, b]\nmap: !entry {a: b}\nordinary: !!str visible\n",
++    )
++    .unwrap();
++    assert_eq!(
++        actual,
++        Some(vec![
++            ("name".to_string(), Some("demo".to_string())),
++            ("description".to_string(), None),
++            ("array".to_string(), None),
++            ("map".to_string(), None),
++            ("ordinary".to_string(), Some("visible".to_string())),
++        ])
++    );
++}
++
++#[test]
++fn anchors_work_without_implicitly_expanding_merge_keys() {
++    assert_eq!(
++        scalar_mapping("defaults: &defaults {description: inherited}\n<<: *defaults\nname: &name demo\ncopy: *name\n").unwrap(),
++        Some(vec![
++            ("defaults".to_string(), None),
++            ("<<".to_string(), None),
++            ("name".to_string(), Some("demo".to_string())),
++            ("copy".to_string(), Some("demo".to_string())),
++        ])
++    );
++}
++
++#[test]
++fn malformed_and_duplicate_nested_values_fail_the_whole_document() {
++    for input in [
++        "name: demo\nname: other\n",
++        "ignored: [{a: 1, a: 2}]\nname: demo\n",
++        "name: demo\n---\nname: second\n",
++        "ignored: [unterminated\n",
++        "ignored: *undefined\n",
++    ] {
++        assert!(validate(input).is_err(), "accepted invalid input: {input}");
++        assert!(scalar_mapping(input).is_err(), "accepted invalid input: {input}");
++    }
++    assert_eq!(scalar_mapping("[one, two]").unwrap(), None);
++    assert_eq!(scalar_mapping("null").unwrap(), None);
++}
++
++#[derive(Debug, Deserialize, PartialEq)]
++struct Manifest {
++    name: String,
++    description: String,
++}
++
++#[test]
++fn typed_manifests_and_utf8_slices_share_the_same_parser() {
++    let input = "name: demo\ndescription: |\n  line one\n  line two\n";
++    let expected = Manifest {
++        name: "demo".to_string(),
++        description: "line one\nline two\n".to_string(),
++    };
++    assert_eq!(from_str::<Manifest>(input).unwrap(), expected);
++    assert_eq!(from_slice::<Manifest>(input.as_bytes()).unwrap(), expected);
++    assert!(from_slice::<Manifest>(&[0xff, 0xfe]).is_err());
++    assert!(from_str::<Manifest>("name: demo\ndescription: [wrong]").is_err());
++}

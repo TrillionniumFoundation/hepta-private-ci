@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.post-qualification-handoff.v2",
+  "status": "ready_for_root_final_format_and_remote_qualification",
+  "files": {
+    "scripts/ndu_post_qualification_fix.py": {
+      "bytes": 11817,
+      "sha256": "407cfc8f480ebc5348fbfd24a48747d6300f617ee88929ce5aa8d861aef65200"
+    },
+    "scripts/ndu_post_qualification_evidence.py": {
+      "bytes": 6223,
+      "sha256": "492820585e8758eb94c88242321bb1cf4a1bf35dc8d2ada084849e566f4c3d8b"
+    },
+    "scripts/ndu_post_qualification_test_support.py": {
+      "bytes": 12055,
+      "sha256": "3649184581e17166bceb1358c6f2060fad624fdfc7b0d9ff01b73b58be15a70c"
+    },
+    "scripts/test_ndu_post_qualification_fix.py": {
+      "bytes": 7212,
+      "sha256": "5fc4c9ba27d04517e852e8b5042995604e6befc5f1b75fc4182d7f2289a0c71e"
+    }
+  },
+  "source_snapshot": "pretest-002/executed-source",
+  "regression_result": "pretest-002/RESULT.json",
+  "regression_tests": 12,
+  "all_passed": true,
+  "original_pretest_preserved": "pretest-001",
+  "extraction_proof": "refactor-002/EXTRACTION.json",
+  "real_clippy_performed_locally": false,
+  "formatter_performed_by_owner": false,
+  "original_consumer_artifact_separation": "Nonempty fix.patch never inherits prior behavioral qualification; separate source revision/review required.",
+  "toolchain_boundary": "Separate host Rust 1.96 Clippy gate; not part of the sealed Linux ARM64 Synapse builder."
+}

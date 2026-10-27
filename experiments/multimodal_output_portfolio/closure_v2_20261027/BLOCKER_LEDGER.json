@@ -1,0 +1,192 @@
+{
+  "schema": "hepta.ndu-closure-ledger.v2",
+  "updated_utc": "2026-10-27T15:58:12.743639+00:00",
+  "all_blockers_closed": false,
+  "production_native_authority": "DENY_ALL",
+  "qualification_policy": "Observed failures remain failures. Passing mechanics, source checks or isolated dependencies do not substitute for the stated outcome gates. No postqualification retuning is relabeled as preregistered evidence.",
+  "items": [
+    {
+      "id": "P0-joint-evidence",
+      "priority": "P0",
+      "goal": "Do not count one physical event as independent evidence; distinguish target prior from observation likelihood.",
+      "mechanism": "verified_in_bounded_audio_task",
+      "qualification": "joint_likelihood_gain_not_established",
+      "blocking_for_general_claim": true,
+      "observed": "Capture-level identities, separate target-prior API, disjoint WAV pairs and constrained maximum-entropy comparisons are implemented and independently replayed. Improved conditional NLL did not improve posterior decisions on the held-out rank-view task.",
+      "next_required": "Develop joint evidence using historical fit/validation only; freeze posterior decision and calibration gates before a new source-disjoint evaluation.",
+      "evidence": [
+        "evidence/results/RESULTS.json",
+        "evidence/results/INDEPENDENT_AUDIT.json",
+        "evidence/results/DEPLOYMENT_RESULTS.json",
+        "evidence/results/DEPLOYMENT_INDEPENDENT_AUDIT.json"
+      ]
+    },
+    {
+      "id": "P0-executed-continuation",
+      "priority": "P0",
+      "goal": "Forecast the actual deployed policy with identical admission, refusal, owner, costs and continuation.",
+      "mechanism": "actual_owner_and_execution_replay_verified",
+      "qualification": "semantic_tail_qualification_failed",
+      "blocking_for_general_claim": true,
+      "observed": "All admission decisions, cold restores and delivered files replayed exactly. The frozen fresh qualification had 3 wrong commitments among 424 ID episodes: 0.00707547 versus a 0.004999 cap. Marginal ECE and declared OOD gates passed; those do not establish tail adequacy.",
+      "next_required": "Calibrate semantic tail loss and the multiplicative risk critic on new development data, then run one preregistered qualification on unspent sources. Do not retune on the three qualification errors.",
+      "evidence": [
+        "control/evidence/admission-qualification-002/RESULT.json",
+        "control/evidence/admission-audit-001/RESULT.json",
+        "control/evidence/admission-diagnosis-001/RESULT.json",
+        "control/evidence/admission-promotion-denial-001/RESULT.json"
+      ]
+    },
+    {
+      "id": "P0-risk-identifiable-actions",
+      "priority": "P0",
+      "goal": "Actions have genuinely different external losses, costs and tail outcomes.",
+      "mechanism": "verified",
+      "qualification": "passed_within_declared_finite_task",
+      "blocking_for_general_claim": false,
+      "observed": "Real delivered answers and abstentions have different payoffs. Changing risk preference changes 654 decisions, reduces errors and increases abstention; higher risk-sensitive certainty equivalent trades against lower mean reward.",
+      "boundary": "This is an identified finite output task, not a proof of global multimodal portfolio optimality.",
+      "evidence": [
+        "evidence/results/RESULTS.json",
+        "evidence/results/INDEPENDENT_AUDIT.json"
+      ]
+    },
+    {
+      "id": "P0-feedback-control",
+      "priority": "P0",
+      "goal": "Delivered numeric feedback changes neuron state, a later controllable action, and actual external payoff.",
+      "mechanism": "verified",
+      "qualification": "passed_condition_matched_source_generalization",
+      "blocking_for_general_claim": false,
+      "observed": "The numeric-feedback arm improves final preference match by 10.9375 percentage points against the zero-feedback arm in 128 paired cases. State, cold restore, later action, media and costs are replayed.",
+      "boundary": "Simple history and a small linear memory have identical actions and delivered bytes under matched kernel charges. Corruption RNG indices match development; this is not fresh-noise generalization or exclusive neuron superiority.",
+      "evidence": [
+        "control/evidence/qualification-001/RESULT.json",
+        "control/evidence/audit-003/RESULT.json",
+        "control/evidence/bound-execution-001/RESULT.json"
+      ]
+    },
+    {
+      "id": "P1-joint-training",
+      "priority": "P1",
+      "goal": "Matched-information and matched-compute generator updates yield repeatable real-output gains while retaining base capability.",
+      "mechanism": "actual_gradient_updates_and_delivery_verified",
+      "qualification": "all_four_preregistered_acceptance_flags_false",
+      "blocking_for_general_claim": true,
+      "observed": "Three fixed seeds and two objectives used 1843200 actual training deliveries plus a separately accounted pilot. Risk-versus-original certainty-equivalent difference is -0.004180056; its 97.5% paired interval crosses zero. Base-retention noninferiority also failed. One seed selected the original-policy fallback before qualification.",
+      "next_required": "Change the training model or objective using development data, preserve the full prior negative run, and freeze a new fixed-budget grid and new qualification before evaluation. Do not continue selecting seeds until a positive result appears.",
+      "evidence": [
+        "joint/results/QUALIFICATION_SEAL.json",
+        "joint/results/QUALIFICATION_RESULT.json",
+        "joint/results/INDEPENDENT_AUDIT.json"
+      ]
+    },
+    {
+      "id": "P1-natural-modalities-cost",
+      "priority": "P1",
+      "goal": "Extend beyond digits to natural speech, video and document tasks with measured quality and actual cost.",
+      "mechanism": "real_media_and_cost_audits_verified",
+      "qualification": "bounded_subtasks_pass_broader_integration_open",
+      "blocking_for_general_claim": true,
+      "observed": "Frozen video interpolation preserves the declared quality margin while reducing CPU time. Speech gate timing was corrected and re-executed with byte-identical transcripts; a cheaper fixed greedy baseline also passes quality noninferiority. The independent document replication has positive quality gain but no demonstrated speedup.",
+      "next_required": "Integrate these natural paths into a single actual Hepta controller and compare against the strongest fixed policies with full encoder, control, delivery and continuation costs. Natural speech generation, open video generation and a jointly trained all-modality foundation model remain untested.",
+      "evidence": [
+        "natural/evidence/video-qualification-001/RESULT.json",
+        "natural/evidence/speech-timer-correction-001/RESULT.json",
+        "natural/evidence/INDEPENDENT_TIMER_CORRECTION_AUDIT.json",
+        "natural/evidence/document-replication-001/RESULT.json",
+        "natural/evidence/INDEPENDENT_REPLICATION_AUDIT.json",
+        "natural/evidence/DOCUMENT_ALIAS_SOURCE_SEAL.json"
+      ]
+    },
+    {
+      "id": "ENG-dependency-ci",
+      "priority": "P0",
+      "goal": "Close observed dependency and build failures without weakening policy or dropping features.",
+      "mechanism": "active_remediation",
+      "qualification": "v2_actual_failures_diagnosed_v5_source_reviewed_new_remote_qualification_pending",
+      "blocking_for_general_claim": true,
+      "observed": "The v2 producer at 3a779a6e52138d63056fdb00e1e477c8db6517f8 resolved all 52 expected packages, verified 1971 vendor files, generated and checked both Cargo/Bazel locks, and passed independent complete candidate-tree replay. The fixed original Matrix 0.18 source executed its actual state-preparation test (1 pass, no skip/retry), retaining database sidecars and actual ELF identity; new-version reopen remains pending. Real v2 workspace tests passed YAML 825/825, AWS first-party 209/209 and execpolicy 34/34. Observed failures remain preserved: keyring had zero tests; upstream AWS stopped before execution on a misspelled original ignored name; Bazel rejected direct deleted-package labels and an obsolete zstd patch; the separate pinned full-scope cargo-deny host diagnostic found one unapproved libbz2-rs-sys license while advisories/bans/sources passed. V3 adds a real first-party keyring integration test, corrects strict AWS inventory spelling without changing 245/244/1 coverage, addresses production Bazel aliases, and versions the zstd patch without changing the active old patch. Independent source replay confirms the same 29-path scope with only the candidate MODULE patch reference changed from v2. 54 unique Python/Git/socket regressions passed across preserved attempts after one fixture correction; actual final just fmt passed. Native ARM64 Synapse and post-qualification scoped Clippy are now wired for actual remote execution. No new-version full gate, native business qualification, dependency activation or normal-platform success is inferred. Completed v2 Matrix consumer evidence is now retained: protocol 12/12, store 36/36 and matrixd 31/31 passed; SDK package compilation failed on the removed writable bundled_latest_thread_event field, and actual old-state reopen failed Initialization. Reuse of the exact sealed consumer ELF localized the current failure to the 5-second SDK build timeout before session loading; independent custody inspection also found private fixture modes changed from 0600 to 0644 during artifact transfer. V4 preserves both failures and repairs gap-fill metadata tests, a producer-bound complete permission manifest, and one shared 20-second cooperative startup deadline with unchanged 5-second request budgets and full-strength encryption. V5 adds success-finalization deadline checks after persistence and around identity/cache setup, retaining already completed writes. The four new Rust regressions and real new-source migration have not executed. Twelve affected fixture/layout Python cases passed before final formatting. Root independently read and rehashed all 31 candidate blobs and 1971 vendor files; 52 package constraints and original AWS 245/244/1 coverage remain. Actual final just fmt passed with Python AST and six scientific source hashes unchanged. The completed ordinary v2 workflow still failed codespell, cargo-deny and Windows Bazel; architecture alone passed.",
+      "evidence": [
+        "ci/TLS_POST_UPDATE_SCAN.json",
+        "ci/ZIP_I18N_QUALIFICATION_001.json",
+        "ci/dependency-remediation/PROTOCOL_SCHEMA_88BCC7F_QUALIFICATION.json",
+        "ci/dependency-remediation/PROTOCOL_SCHEMA_88BCC7F_SEMANTIC_AUDIT.json",
+        "ci/dependency-remediation/PROTOCOL_SCHEMA_INTEGRATION.json",
+        "ci/port-remediation/RECIPE.json",
+        "ci/port-remediation/README.md",
+        "ci/dependency-remediation/ZIP_I18N_88BCC7F_QUALIFICATION.json",
+        "ci/port-remediation/RUNTIME_EVIDENCE_FIX.json",
+        "ci/port-remediation/PEER_RUNTIME_EVIDENCE_FIX.json",
+        "ci/port-remediation/FAILED_1E4F8B5_QUALIFICATION.json",
+        "ci/matrix-remediation/FIXTURE_SERIALIZATION_V2.json",
+        "ci/matrix-remediation/FIXTURE_SERIALIZATION_V2_PEER.json",
+        "ci/port-remediation/RECIPE.v2.json",
+        "ci/port-remediation/V2_IMPLEMENTATION.json",
+        "ci/port-remediation/PEER_STARLARK_V2.json",
+        "ci/port-remediation/INDEPENDENT_SOURCE_INTEGRATION_V2.json",
+        "ci/port-remediation/PRODUCER_3A779A6_VERIFIED.json",
+        "ci/matrix-remediation/OLD_PRODUCER_3A779A6_PEER.json",
+        "ci/port-remediation/PORT_V3_IMPLEMENTATION.json",
+        "ci/port-remediation/INDEPENDENT_SOURCE_INTEGRATION_V3.json",
+        "ci/port-remediation/INTEGRATED_LOCAL_QUALIFICATION_V3.json",
+        "ci/port-remediation/FINAL_FORMAT_V3.json",
+        "ci/port-remediation/evidence/V2_REMOTE_CONSUMERS_VERIFICATION.json",
+        "ci/zstd-remediation/HANDOFF.json",
+        "ci/linux-synapse-qualification/HANDOFF.json",
+        "ci/post-qualification-fix/HANDOFF_V3.json",
+        "ci/port-remediation/RECIPE.v4.json",
+        "ci/port-remediation/combined-source-v4.patch",
+        "ci/port-remediation/RECIPE.v5.json",
+        "ci/port-remediation/combined-source-v5.patch",
+        "ci/port-remediation/v4-evidence/SDK_COMPLETION.json",
+        "ci/port-remediation/v4-evidence/remote-v2-matrix/RESULT.json",
+        "ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/DIAGNOSIS.json",
+        "ci/port-remediation/v5-evidence/SDK_COMPLETION.json",
+        "ci/port-remediation/v5-evidence/ROOT_AUDIT_V5.json",
+        "ci/port-remediation/v5-evidence/ROOT_FINAL_REVIEW.json",
+        "ci/port-remediation/v5-evidence/REMOTE_3A779A6_COMPLETED.json"
+      ],
+      "next_required": "Run exact new v5 producer and all original consumer gates, actual old Matrix state reopen and native ARM64 Synapse. Review scoped Clippy output separately from before-source qualification. Diagnose ordinary codespell and Windows Bazel failures from actual logs. Activate coherent dependencies, locks and toolchains only after applicable gates and the exact license-policy decision; then obtain normal-platform CI on activated source."
+    },
+    {
+      "id": "ENG-license-policy",
+      "priority": "P0",
+      "goal": "Resolve the actual BZIP2 license-policy failure without concealing the license or reducing codec features.",
+      "mechanism": "exact_package_version_proposal_prepared",
+      "qualification": "explicit_owner_decision_required_not_applied",
+      "blocking_for_general_claim": true,
+      "observed": "Pinned cargo-deny 0.19.0 full-scope host diagnostic rejects libbz2-rs-sys 0.2.5 under bzip2-1.0.6. The prior locked C bzip2-sys also bundles the original license; switching back to its wrapper metadata would not eliminate the source license. Original policy is unchanged. A one-line package/version-specific exception is prepared and verified against official parser source, but not applied or executed.",
+      "proposal": "{ crate = \"libbz2-rs-sys@0.2.5\", allow = [\"bzip2-1.0.6\"] },",
+      "evidence": [
+        "ci/license-policy/REVIEW.json",
+        "ci/license-policy/PROPOSED_EXACT_EXCEPTION.patch",
+        "ci/license-policy/OLD_BZIP2_LICENSE",
+        "ci/license-policy/CANDIDATE_BZIP2_LICENSE",
+        "ci/license-policy/FULL_LICENSE_TEXT.diff"
+      ],
+      "next_required": "Explicit project-owner decision on the exact exception, followed by the unchanged full gate. Source-text comparison is not project approval."
+    },
+    {
+      "id": "ENG-evidence-custody",
+      "priority": "P0",
+      "goal": "Retain all qualification outputs, failures, independent audits and executed source in retrievable artifacts.",
+      "mechanism": "verified",
+      "qualification": "five_scientific_archives_and_ci_001_to_003_saved_004_local_restore_passed_upload_blocked",
+      "blocking_for_general_claim": true,
+      "observed": "Five scientific archives totaling 510605199 bytes plus three CI evidence archives totaling 88437049 bytes are saved and individually restored. This includes the earlier storage timeout and protocol failures, independent 303/303 protocol success, nextest collector correction, and the complete failed port producer and old Matrix fixture compiler at exact head 1e4f8b5c. The latest CI increment also retains the fixture v2 correction, independent peer review, official ARM64 OCI research and verified formatter installation. Capture ends at 2026-10-27T12:03:46.638609Z; later candidate changes remain separately tracked. Increment 004 captures the frozen Starlark/BLAKE3/pagable repair, final independent reviews, validator negative regressions, current original dependency/formatter failures and exact-tree publication. All 18 members totaling 27099806 payload bytes were simultaneously restored and rehashed; its 13902301-byte archive is retained locally. Automatic approval review rejected the proposed Library upload of these private source/CI artifacts; no alternate transfer was attempted.",
+      "evidence": [
+        "ARTIFACTS.json",
+        "ci/CI_CHECKPOINT_001_RESTORE.json",
+        "ci/CI_CHECKPOINT_001_SAVED.json",
+        "ci/CI_INCREMENT_002_RESTORE.json",
+        "ci/CI_INCREMENT_002_SAVED.json",
+        "ci/CI_INCREMENT_003_RESTORE.json",
+        "ci/CI_INCREMENT_003_SAVED.json",
+        "ci/CI_INCREMENT_004_RESTORE.json",
+        "ci/CI_INCREMENT_004_SAVE_BLOCKED.json"
+      ],
+      "next_required": "Obtain explicit user authorization for the exact private increment 004 archive and companion files to the user ChatGPT Library, then save using the approved route and retain returned identities. Continue qualifying new CI independently."
+    }
+  ]
+}

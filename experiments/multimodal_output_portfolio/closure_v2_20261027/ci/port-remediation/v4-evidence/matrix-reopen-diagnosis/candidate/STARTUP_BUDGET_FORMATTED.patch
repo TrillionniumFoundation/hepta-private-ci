@@ -1,0 +1,263 @@
+--- a/codex-rs/hepta-matrix-sdk/src/sdk.rs
++++ b/codex-rs/hepta-matrix-sdk/src/sdk.rs
+@@ -42,6 +42,12 @@
+ // startup paths may otherwise consume several transport attempts and their
+ // individual timeouts before matrixd can bind its control socket.
+ const MATRIX_STARTUP_REQUEST_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(5);
++// Opening four encrypted stores performs strong local KDFs and schema
++// migrations before the client can make any request. The request deadline must
++// not also be their aggregate budget. Keep one startup deadline across local
++// initialization, authentication, and any fresh-client fallback; individual
++// requests retain the shorter timeout above.
++const MATRIX_STARTUP_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(20);
+ const MATRIX_SESSION_MAX_BYTES: u64 = 16 * 1024;
+ 
+ pub struct MatrixSdkClient {
+@@ -59,17 +65,13 @@
+         store_passphrase: Option<&str>,
+     ) -> Result<Self, MatrixSdkError> {
+         verify_session_identity(&config, &session)?;
+-        let sidecar = tokio::time::timeout(
+-            MATRIX_STARTUP_REQUEST_TIMEOUT,
+-            Self::build(layout, config, store_passphrase),
++        let startup_deadline = tokio::time::Instant::now() + MATRIX_STARTUP_TIMEOUT;
++        let sidecar = Self::build_until(layout, config, store_passphrase, startup_deadline).await?;
++        Self::authenticate_until(
++            startup_deadline,
++            sidecar.client.restore_session(session.clone()),
+         )
+-        .await
+-        .map_err(|_| MatrixSdkError::Initialization)??;
+-        sidecar
+-            .client
+-            .restore_session(session.clone())
+-            .await
+-            .map_err(|_| MatrixSdkError::Authentication)?;
++        .await?;
+         persist_session(sidecar.paths.session(), &session)?;
+         sidecar.verify_authenticated_identity()?;
+         sidecar.enable_event_cache()?;
+@@ -83,12 +85,26 @@
+         store_passphrase: Option<&str>,
+         device_display_name: Option<&str>,
+     ) -> Result<(Self, MatrixSession), MatrixSdkError> {
+-        let sidecar = tokio::time::timeout(
+-            MATRIX_STARTUP_REQUEST_TIMEOUT,
+-            Self::build(layout, config, store_passphrase),
++        Self::login_password_until(
++            layout,
++            config,
++            password,
++            store_passphrase,
++            device_display_name,
++            tokio::time::Instant::now() + MATRIX_STARTUP_TIMEOUT,
+         )
+         .await
+-        .map_err(|_| MatrixSdkError::Initialization)??;
++    }
++
++    async fn login_password_until(
++        layout: &HeptaAgentLayout,
++        config: MatrixSidecarConfig,
++        password: &str,
++        store_passphrase: Option<&str>,
++        device_display_name: Option<&str>,
++        startup_deadline: tokio::time::Instant,
++    ) -> Result<(Self, MatrixSession), MatrixSdkError> {
++        let sidecar = Self::build_until(layout, config, store_passphrase, startup_deadline).await?;
+         let mut login = sidecar
+             .client
+             .matrix_auth()
+@@ -102,10 +118,7 @@
+         // SDK's own three-attempt policy (whose individual timeout defaults
+         // to 30s).  Bound the whole startup login so an offline replacement
+         // returns to Supervisor instead of occupying the health window.
+-        let response = tokio::time::timeout(MATRIX_STARTUP_REQUEST_TIMEOUT, login.send())
+-            .await
+-            .map_err(|_| MatrixSdkError::Authentication)?
+-            .map_err(|_| MatrixSdkError::Authentication)?;
++        let response = Self::authenticate_until(startup_deadline, login.send()).await?;
+         let session = MatrixSession::from(&response);
+         verify_session_identity(&sidecar.config, &session)?;
+         persist_session(sidecar.paths.session(), &session)?;
+@@ -126,21 +139,18 @@
+         store_passphrase: Option<&str>,
+         device_display_name: Option<&str>,
+     ) -> Result<(Self, MatrixSession), MatrixSdkError> {
+-        let sidecar = tokio::time::timeout(
+-            MATRIX_STARTUP_REQUEST_TIMEOUT,
+-            Self::build(layout, config.clone(), store_passphrase),
+-        )
+-        .await
+-        .map_err(|_| MatrixSdkError::Initialization)??;
++        let startup_deadline = tokio::time::Instant::now() + MATRIX_STARTUP_TIMEOUT;
++        let sidecar =
++            Self::build_until(layout, config.clone(), store_passphrase, startup_deadline).await?;
+ 
+         if let Some(session) = load_session(sidecar.paths.session())? {
+             verify_session_identity(&sidecar.config, &session)?;
+-            let restore = tokio::time::timeout(
+-                MATRIX_STARTUP_REQUEST_TIMEOUT,
++            let restore = Self::authenticate_until(
++                startup_deadline,
+                 sidecar.client.restore_session(session.clone()),
+             )
+             .await;
+-            if matches!(restore, Ok(Ok(()))) {
++            if restore.is_ok() {
+                 sidecar.verify_authenticated_identity()?;
+                 sidecar.enable_event_cache()?;
+                 return Ok((sidecar, session));
+@@ -148,14 +158,57 @@
+         }
+ 
+         drop(sidecar);
+-        Self::login_password(
++        Self::login_password_until(
+             layout,
+             config,
+             password,
+             store_passphrase,
+             device_display_name,
++            startup_deadline,
+         )
+         .await
++    }
++
++    async fn build_until(
++        layout: &HeptaAgentLayout,
++        config: MatrixSidecarConfig,
++        store_passphrase: Option<&str>,
++        startup_deadline: tokio::time::Instant,
++    ) -> Result<Self, MatrixSdkError> {
++        if tokio::time::Instant::now() >= startup_deadline {
++            return Err(MatrixSdkError::Initialization);
++        }
++        let sidecar = tokio::time::timeout_at(
++            startup_deadline,
++            Self::build(layout, config, store_passphrase),
++        )
++        .await
++        .map_err(|_| MatrixSdkError::Initialization)??;
++        // A synchronous KDF can finish a poll after the timer expires. Reject
++        // that result before activating a session or starting a fresh request.
++        if tokio::time::Instant::now() >= startup_deadline {
++            return Err(MatrixSdkError::Initialization);
++        }
++        Ok(sidecar)
++    }
++
++    async fn authenticate_until<T, E>(
++        startup_deadline: tokio::time::Instant,
++        request: impl std::future::Future<Output = Result<T, E>>,
++    ) -> Result<T, MatrixSdkError> {
++        let now = tokio::time::Instant::now();
++        if now >= startup_deadline {
++            return Err(MatrixSdkError::Authentication);
++        }
++        let request_deadline = startup_deadline.min(now + MATRIX_STARTUP_REQUEST_TIMEOUT);
++        let response = tokio::time::timeout_at(request_deadline, request)
++            .await
++            .map_err(|_| MatrixSdkError::Authentication)?
++            .map_err(|_| MatrixSdkError::Authentication)?;
++        if tokio::time::Instant::now() >= request_deadline {
++            return Err(MatrixSdkError::Authentication);
++        }
++        Ok(response)
+     }
+ 
+     async fn build(
+@@ -680,3 +733,7 @@
+         );
+     }
+ }
++
++#[cfg(test)]
++#[path = "startup_deadline_tests.rs"]
++mod startup_deadline_tests;
+--- /dev/null
++++ b/codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs
+@@ -0,0 +1,83 @@
++use std::cell::Cell;
++use std::error::Error;
++use std::time::Duration;
++
++use codex_hepta_contracts::AgentId;
++use codex_hepta_matrix_protocol::MATRIX_BINDING_SCHEMA_VERSION;
++use codex_hepta_matrix_protocol::MatrixBindingV1;
++use codex_hepta_matrix_protocol::MatrixDeviceId;
++use codex_hepta_matrix_protocol::MatrixHomeserverUrl;
++use codex_hepta_matrix_protocol::MatrixRoomId;
++use codex_hepta_matrix_protocol::MatrixUserId;
++use codex_hepta_paths::HeptaFleetRoot;
++use pretty_assertions::assert_eq;
++
++use super::MatrixSdkClient;
++use super::MatrixSdkError;
++use super::MatrixSidecarConfig;
++
++#[tokio::test]
++async fn fresh_login_cannot_renew_expired_startup_budget() -> Result<(), Box<dyn Error>> {
++    let root = tempfile::tempdir()?;
++    let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
++    let layout = HeptaFleetRoot::parse(root.path().canonicalize()?)?
++        .layout()
++        .agent(&agent_id);
++    let config = MatrixSidecarConfig {
++        binding: MatrixBindingV1 {
++            schema_version: MATRIX_BINDING_SCHEMA_VERSION,
++            agent_id,
++            revision: 1,
++            homeserver: MatrixHomeserverUrl::parse("https://example.test")?,
++            expected_mxid: MatrixUserId::parse("@deadline:example.test")?,
++            expected_device_id: MatrixDeviceId::parse("DEADLINE")?,
++            allowed_rooms: vec![MatrixRoomId::parse("!deadline:example.test")?],
++            allowed_senders: vec![MatrixUserId::parse("@owner:example.test")?],
++            require_explicit_mention: true,
++        },
++        matrix_generation: 1,
++        sync_timeline_limit: 32,
++        sync_timeout: Duration::from_secs(1),
++    };
++    config.validate(&layout)?;
++    let result = MatrixSdkClient::login_password_until(
++        &layout,
++        config,
++        "must not be sent after the original startup deadline",
++        Some("full-strength human passphrase"),
++        /*device_display_name*/ None,
++        tokio::time::Instant::now(),
++    )
++    .await;
++    assert_eq!(result.map(|_| ()), Err(MatrixSdkError::Initialization));
++    assert!(!layout.matrix_root().exists());
++    Ok(())
++}
++
++#[tokio::test]
++async fn expired_authentication_does_not_poll_the_request() {
++    let polled = Cell::new(false);
++    let result = MatrixSdkClient::authenticate_until(tokio::time::Instant::now(), async {
++        polled.set(true);
++        Ok::<_, ()>("a request must not start after its startup budget")
++    })
++    .await;
++    assert_eq!(result, Err(MatrixSdkError::Authentication));
++    assert!(!polled.get());
++}
++
++#[tokio::test]
++async fn authentication_returning_late_ready_cannot_activate_a_session() {
++    let polled = Cell::new(false);
++    let startup_deadline = tokio::time::Instant::now() + Duration::from_secs(1);
++    let result = MatrixSdkClient::authenticate_until(startup_deadline, async {
++        polled.set(true);
++        // Model a synchronous SDK operation that returns Ready in its first
++        // poll, after the shared deadline. Tokio's timer cannot preempt it.
++        std::thread::sleep(Duration::from_millis(1_100));
++        Ok::<_, ()>("late session")
++    })
++    .await;
++    assert!(polled.get());
++    assert_eq!(result, Err(MatrixSdkError::Authentication));
++}

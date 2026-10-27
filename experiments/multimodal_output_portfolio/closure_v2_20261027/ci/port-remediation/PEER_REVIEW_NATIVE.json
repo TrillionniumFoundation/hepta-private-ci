@@ -1,0 +1,117 @@
+{
+  "schema": "hepta.port-ci.independent-source-review.v1",
+  "at": "2026-10-27T11:02:09.000249+00:00",
+  "reviewer": "native_continuation, independent of driver author",
+  "status": "passed_bounded_source_review",
+  "production_promotion": false,
+  "method": "Read-only inspection of four orchestration modules, three regression modules and seven-job workflow. Reopened author local-test log and current files. Test evidence precedes formatting; independently recomputed current SHA/AST, verified against root FORMAT_ONLY before/after record, and checked its before SHA matches the tested source. Original before-format AST values are root-provided attestations, not independently re-derived from unavailable before-format copies. No new Cargo/Bazel or behavior execution.",
+  "reviewed_files": {
+    ".github/workflows/ndu-port-candidate.yml": {
+      "bytes": 18686,
+      "sha256": "8a58c6e255b1350cb9e72f14c3f14afd95099050f603338e7328aa77d25d8bfd",
+      "tested_sha256": "8a58c6e255b1350cb9e72f14c3f14afd95099050f603338e7328aa77d25d8bfd"
+    },
+    "scripts/ndu_port_aws_upstream.py": {
+      "bytes": 8189,
+      "sha256": "1294539078703aa0ec6802e84049487824e6de9b6e9d79e9cb85526c0f9f1e7e",
+      "tested_sha256": "c83becf9e87341f677c20571a452ba9776d5f080b1367b7425659a9055040bf8",
+      "ast_sha256": "844ff38812afcb149d9be50eba2a6fecf0596c9828e516d130ec3b9964621c00",
+      "format_only_bridge_verified": true
+    },
+    "scripts/ndu_port_candidate.py": {
+      "bytes": 13963,
+      "sha256": "49ff7501c3f4496864d72f9ab36add4678040c34569a0e77258a913338782c56",
+      "tested_sha256": "5fa10320fa939d697da9b8d51c02939e852c253506303c405c4a372139efa189",
+      "ast_sha256": "4ae4095560f6ae07d9799b23c2b20d206f7c3f6ef50261daf4381e9c8cb4ef4e",
+      "format_only_bridge_verified": true
+    },
+    "scripts/ndu_port_candidate_common.py": {
+      "bytes": 22490,
+      "sha256": "bf88d506b7859b3c6fc9e9fbe41a5db1a45b999761719df2fe8e6adfb26a8c4a",
+      "tested_sha256": "b1957d71bc123acf89e649155e911455bd8fdc262db65495adaed60a5ad6f81f",
+      "ast_sha256": "1a7d498f3d5ab8e7339a6851000c2bc1a790c3cfbf05ffbf22de52ed1b54d0b1",
+      "format_only_bridge_verified": true
+    },
+    "scripts/ndu_port_matrix_fixture.py": {
+      "bytes": 15932,
+      "sha256": "bb9cebcc6c55fb55e0f14610e130c50a8793658a99c260703964f388a67c2ef2",
+      "tested_sha256": "6f7f5af928ce1ce6f52d9728802b7e8c5eee89304b33edfb482d872f44cd6e0d",
+      "ast_sha256": "0bc9a3b4c067e9358b99c7eefe6cd18ff12fae3d7b1fdbc49090d76514561f25",
+      "format_only_bridge_verified": true
+    },
+    "scripts/test_ndu_port_aws_upstream.py": {
+      "bytes": 3693,
+      "sha256": "16abf09373af6974b1e50e53a126087acbb538bb99962fbd97a772b2c9b7d3d8",
+      "tested_sha256": "661ac8379f30b4388e10826fab6d6156c40ac857ec165570334906914caa0e4a",
+      "ast_sha256": "04d8d156ff3473f4e2bd1d5aa86057d2ecf943d3f945083a4bbe864dbba5a27b",
+      "format_only_bridge_verified": true
+    },
+    "scripts/test_ndu_port_candidate.py": {
+      "bytes": 14721,
+      "sha256": "43141c664d7ad23a88aa8c3fe686fe9fac05d8a3e3058198a533804c7b8eb738",
+      "tested_sha256": "28323d376877509229c577b7b7371932960dc2a864175286e6c847e51f9e3c89",
+      "ast_sha256": "69b72f8a9e628f5944aecdc7526968464cfa076138b2de8f3408b6db4fa6aa5a",
+      "format_only_bridge_verified": true
+    },
+    "scripts/test_ndu_port_matrix_fixture.py": {
+      "bytes": 8617,
+      "sha256": "50b138ded403dfbcd24ca60e3d0476e172eed14ab8149959c493c17c58c523ec",
+      "tested_sha256": "066b7b8998b765361ba3b9b85b734316002eb716bb661d71fb04e1efcf5881a1",
+      "ast_sha256": "12c68bd0a6dacaefe345a315aded4f29266b74ec80e2a370a247579cb2875782",
+      "format_only_bridge_verified": true
+    }
+  },
+  "recipe": {
+    "sha256": "687878336d3924d16094edc56183cef877831e77d73496c83d6e236987c63e2e",
+    "allowed_paths": 29,
+    "vendor_directories": 7,
+    "vendor_files": 1282
+  },
+  "local_test_evidence": {
+    "sha256": "60ee977ed287d761cbd851ddacc67074a442a62fd0b4bc9b0b21d6f97f2ff680",
+    "source_path": "/workspace/scratch/95988d8d3ab1/ndu-port-ci-evidence/tests-002/RESULT.json",
+    "exit_code": 0,
+    "tests": 18,
+    "log_sha256": "b5edcd5cff83d84cef2e2168eb2c0ad9ec752d8e0a8e17ba9695a0625cf1f7e2",
+    "reviewer_reopened_log": true,
+    "reviewer_did_not_rerun": true
+  },
+  "format_bridge": {
+    "path": "FORMAT_ONLY.json",
+    "sha256": "9a53b9f3bd316dcfd098867276118e67edaee841e812b8ba4f1d89de76f7012c",
+    "all_7_current_ast_hashes_match_before_after_record": true,
+    "workflow_unchanged": true,
+    "post_format_behavior_tests_run": false
+  },
+  "findings_closed": [
+    {
+      "finding": "Stale policy attestation if a later policy read raises.",
+      "resolution": "verify_tree persists False before reading policy; deletion regression is included."
+    },
+    {
+      "finding": "Toolchain selection string alone did not bind actual Cargo compiler.",
+      "resolution": "Known inherited rustc/wrapper overrides and Cargo config overrides rejected; exact rustup compiler path SHA/release verified and supplied through RUSTC for subsequent commands."
+    },
+    {
+      "finding": "AWS saved executable copy lacked immediate readback hash.",
+      "resolution": "Saved copy is now rehashed and must equal original executable SHA before testing; original executable is checked again after execution."
+    }
+  ],
+  "verified_design": {
+    "artifact_binding": "Exact clean source HEAD, typed source allowlist, complete vendor inventory including extra-file rejection, source/Cargo/Bazel snapshots, binary patch, recipe, same run/attempt and producer RESULT SHA. Source and policy checks recur after executing stages.",
+    "matrix_producer": "Independent fixed 6215cb6a87f29623d4beaad24cdf7bcb6bb4fb2c checkout, original Cargo.lock, Matrix SDK/crypto/sqlite exactly0.18.0. Only new driver-provided fixture test patch is applied. Explicit Rust1.95 actual compiler, complete staged-source archive, actual binary and metadata retained.",
+    "matrix_phase": "One actual named test executable. just test exact ignored phase, retries0, no-tests fail. Exactly one fresh JUnit testcase with correct package/classname and no failures/errors/skips/retries. Executable SHA checked before and after.",
+    "matrix_copy": "Complete post-process fixture files including surviving DB/WAL/SHM are hashed; consumer verifies and copies every file before creating writable state. Original bytes rechecked after migration; partial failed after-state is retained. New consumer uses Rust1.96.",
+    "aws_full_suite": "Complete production vendor copied outside main workspace; only frozen standalone lock/nextest config overlaid. Before/after full source inventory.245-case listing includes exactly the original DNS ignore;244 unique JUnit classname/name pairs must equal the complete listing and pass. Both reserved-address timeout assertions remain enabled. Production feature membership is unchanged by qualification overlay.",
+    "original_deny": "deny.toml, original cargo-deny workflow and diagnostics cannot be edited by source patch and remain hash-bound. New workflow invokes the same pinned action against whole codex-rs/Cargo.toml with no added ignore or narrower scan scope.",
+    "workflow_and_failures": "Exact source SHA and same-run named artifacts, hidden files included, normal nonzero failure propagation, no continue-on-error. Matrix step explicitly overrides setup-ci CODEX_REPO_ROOT with baseline. Command logs/exit status and available partial snapshots/JUnit/source/fixture state survive ordinary failures."
+  },
+  "limits": [
+    "Source review and local Python regressions are not remote Rust/Cargo/Bazel/deny qualification.",
+    "Compiler checks bind known direct overrides and inspected configs, not a hermetic runner or complete ambient environment.",
+    "AWS retains its frozen retry policy and reports passed_after_retry with flaky XML; this is not a first-attempt pass claim. Matrix migration phases reject retries.",
+    "Workspace groups rely on actual just/nextest exits and retain produced JUnit; they do not use AWS fixed244 inventory.",
+    "Uploads use always() && !cancelled(); externally cancelled runs have no full-preservation guarantee.",
+    "Bazel covers listed Linux libraries/consumers, not all-platform or full-workspace behavior. All production policy and authorization gates remain independent."
+  ]
+}

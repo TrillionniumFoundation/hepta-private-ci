@@ -1,0 +1,33 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+ Downloading crates ...
+  Downloaded proc-macro2 v1.0.106
+  Downloaded unicode-ident v1.0.22
+  Downloaded serde_derive v1.0.228
+  Downloaded quote v1.0.45
+  Downloaded syn v2.0.117
+   Compiling proc-macro2 v1.0.106
+   Compiling quote v1.0.45
+   Compiling unicode-ident v1.0.22
+   Compiling serde v1.0.228
+   Compiling syn v2.0.117
+   Compiling serde_derive v1.0.228
+   Compiling codex-utils-yaml v0.0.0 (/workspace/scratch/95988d8d3ab1/ndu-yaml-candidate-worktree/codex-rs/utils/yaml)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.95s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.228` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 4092b4a2-0baf-4344-bbd8-e6d1d455d1af with nextest profile: local
+    Starting 6 tests across 1 binary
+        PASS [   0.007s] codex-utils-yaml tests::application_tags_survive_until_scalar_selection
+        PASS [   0.007s] codex-utils-yaml tests::scalar_resolution_keeps_yaml12_and_number_rendering
+        PASS [   0.007s] codex-utils-yaml tests::malformed_and_duplicate_nested_values_fail_the_whole_document
+        PASS [   0.007s] codex-utils-yaml tests::typed_manifests_and_utf8_slices_share_the_same_parser
+        PASS [   0.007s] codex-utils-yaml tests::anchors_work_without_implicitly_expanding_merge_keys
+        PASS [   0.007s] codex-utils-yaml tests::arbitrary_mapping_keys_do_not_hide_string_fields
+────────────
+     Summary [   0.008s] 6 tests run: 6 passed, 0 skipped

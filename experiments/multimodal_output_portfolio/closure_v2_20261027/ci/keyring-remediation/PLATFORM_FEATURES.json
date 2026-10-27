@@ -1,0 +1,66 @@
+{
+  "consumer": "actual repository codex-keyring-store package",
+  "mode": "Cargo effective feature graph, not cross-platform execution",
+  "targets": [
+    {
+      "target": "x86_64-unknown-linux-gnu",
+      "exit_code": 0,
+      "command": [
+        "/workspace/scratch/95988d8d3ab1/native_toolchain_20261027/installed/bin/cargo",
+        "tree",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "-p",
+        "keyring",
+        "--depth",
+        "1",
+        "--prefix",
+        "none",
+        "--format",
+        "{p} FEATURES={f}"
+      ],
+      "stdout": "keyring v3.6.3 (/workspace/scratch/95988d8d3ab1/ndu-keyring-zbus6-candidate/vendor/keyring-3.6.3) FEATURES=async-secret-service,crypto-rust,linux-native,linux-native-async-persistent\nlinux-keyutils v0.2.5 FEATURES=default,std\nlog v0.4.34 FEATURES=\nsecret-service v4.0.0 (/workspace/scratch/95988d8d3ab1/ndu-keyring-zbus6-candidate/vendor/secret-service-4.0.0) FEATURES=crypto-rust\nzbus v6.1.0 FEATURES=comms,default,default-rt,object-manager,proxy,service,tracing\n",
+      "log_sha256": "1367843e8fe3a9bd0837f5f4cb147bf6172979ba5a6fe5697023c5c34e07e4d7"
+    },
+    {
+      "target": "x86_64-apple-darwin",
+      "exit_code": 0,
+      "command": [
+        "/workspace/scratch/95988d8d3ab1/native_toolchain_20261027/installed/bin/cargo",
+        "tree",
+        "--target",
+        "x86_64-apple-darwin",
+        "-p",
+        "keyring",
+        "--depth",
+        "1",
+        "--prefix",
+        "none",
+        "--format",
+        "{p} FEATURES={f}"
+      ],
+      "stdout": "keyring v3.6.3 (/workspace/scratch/95988d8d3ab1/ndu-keyring-zbus6-candidate/vendor/keyring-3.6.3) FEATURES=apple-native,crypto-rust\nlog v0.4.34 FEATURES=\nsecurity-framework v3.7.0 FEATURES=OSX_10_14,alpn,default,session-tickets\n",
+      "log_sha256": "f4ecb4409e7b06c15b85eae762be5ba0b5569fb0bb1a20f3829b5d748625401f"
+    },
+    {
+      "target": "x86_64-pc-windows-msvc",
+      "exit_code": 0,
+      "command": [
+        "/workspace/scratch/95988d8d3ab1/native_toolchain_20261027/installed/bin/cargo",
+        "tree",
+        "--target",
+        "x86_64-pc-windows-msvc",
+        "-p",
+        "keyring",
+        "--depth",
+        "1",
+        "--prefix",
+        "none",
+        "--format",
+        "{p} FEATURES={f}"
+      ],
+      "stdout": "keyring v3.6.3 (/workspace/scratch/95988d8d3ab1/ndu-keyring-zbus6-candidate/vendor/keyring-3.6.3) FEATURES=crypto-rust,windows-native\nbyteorder v1.5.0 FEATURES=default,std\nlog v0.4.34 FEATURES=\nwindows-sys v0.60.2 FEATURES=Win32,Win32_Foundation,Win32_Security,Win32_Security_Credentials,default\nzeroize v1.9.1 FEATURES=alloc,default\n",
+      "log_sha256": "b8e776a9da3a72be9f86779a86dc71a7786990f9d639cbbbbe33f0ddcf14279d"
+    }
+  ]
+}

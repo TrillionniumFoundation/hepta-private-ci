@@ -1,0 +1,357 @@
+--- /dev/null
++++ b/codex-rs/third_party/aws-config-1.8.12/src/login/dpop_port_tests.rs
+@@ -0,0 +1,103 @@
++use super::calculate;
++use super::sign;
++use super::signing_rng::SigningRng;
++use super::DPoPAuthScheme;
++use p256::ecdsa::signature::Verifier;
++use p256::ecdsa::Signature;
++use p256::ecdsa::VerifyingKey;
++use p256::elliptic_curve::rand_core::TryRng;
++use p256::elliptic_curve::sec1::ToSec1Point;
++use p256::pkcs8::EncodePrivateKey;
++use p256::pkcs8::LineEnding;
++use p256::SecretKey;
++use pretty_assertions::assert_eq;
++use rand::RngCore;
++use rand::SeedableRng;
++use std::time::Duration;
++use std::time::SystemTime;
++
++#[path = "dpop_provider_tests.rs"]
++mod provider;
++
++const KEY: &str = "-----BEGIN EC PRIVATE KEY-----\nMHcCAQEEIBMB/RwQERsVoqWRQG4zK8CnaAa5dfrpbm+9tFdBh3z4oAoGCCqGSM49\nAwEHoUQDQgAEWb1VLi1EA2hJaTz4yYuxSELvY+1GAfL+8rUTCAdiFid87Bf6GY+s\n2+1RpqDv0RpZiDIMCrZrsAh+RK9S3QCaGA==\n-----END EC PRIVATE KEY-----\n";
++
++#[test]
++fn rng_bridge_preserves_existing_generator_draws() {
++    let seed = [0x53; 32];
++    let mut direct = rand::rngs::StdRng::from_seed(seed);
++    let mut bridged = SigningRng(rand::rngs::StdRng::from_seed(seed));
++    for length in [0, 1, 7, 32, 65, 4097] {
++        let mut expected = vec![0; length];
++        let mut actual = vec![0; length];
++        assert_eq!(bridged.try_next_u32().unwrap(), direct.next_u32());
++        assert_eq!(bridged.try_next_u64().unwrap(), direct.next_u64());
++        direct.fill_bytes(&mut expected);
++        bridged.try_fill_bytes(&mut actual).unwrap();
++        assert_eq!(actual, expected);
++    }
++}
++
++#[test]
++fn sec1_key_roundtrip_preserves_original_der_and_public_coordinates() {
++    let key = SecretKey::from_sec1_pem(KEY).unwrap();
++    let original_base64 = KEY.lines().filter(|line| !line.starts_with('-')).collect::<String>();
++    let expected_der = base64_simd::STANDARD.decode_to_vec(original_base64).unwrap();
++    assert_eq!(key.to_sec1_der().unwrap().as_ref(), expected_der);
++    let encoded = key.to_sec1_pem(LineEnding::LF).unwrap();
++    let restored = SecretKey::from_sec1_pem(&encoded).unwrap();
++    assert_eq!(restored.to_bytes(), key.to_bytes());
++    let actual = key.public_key().to_sec1_point(false);
++    let expected = hex::decode("0459bd552e2d44036849693cf8c98bb14842ef63ed4601f2fef2b51308076216277cec17fa198facdbed51a6a0efd11a5988320c0ab66bb0087e44af52dd009a18").unwrap();
++    assert_eq!(actual.as_bytes(), expected);
++    assert_eq!(restored.public_key().to_sec1_point(true), key.public_key().to_sec1_point(true));
++}
++
++#[test]
++fn dpop_preserves_sec1_input_contract_and_rejects_pkcs8() {
++    let key = SecretKey::from_sec1_pem(KEY).unwrap();
++    assert!(DPoPAuthScheme::new(KEY).is_ok());
++    let pkcs8 = key.to_pkcs8_pem(LineEnding::LF).unwrap();
++    assert!(DPoPAuthScheme::new(&pkcs8).is_err());
++    assert!(DPoPAuthScheme::new("-----BEGIN EC PRIVATE KEY-----\ninvalid\n-----END EC PRIVATE KEY-----").is_err());
++}
++
++#[test]
++fn actual_dpop_signature_uses_es256_fixed_width_and_authenticates_claims() {
++    let key = SecretKey::from_sec1_pem(KEY).unwrap();
++    let endpoint = "https://signin.us-east-2.amazonaws.com/v1/token";
++    let now = SystemTime::UNIX_EPOCH + Duration::from_secs(1_763_510_400);
++    let token = calculate(&key, endpoint, now).unwrap();
++    let (message, encoded_signature) = token.rsplit_once('.').unwrap();
++    let (encoded_header, encoded_payload) = message.split_once('.').unwrap();
++    let header: serde_json::Value = serde_json::from_slice(&base64_simd::URL_SAFE_NO_PAD.decode_to_vec(encoded_header).unwrap()).unwrap();
++    let payload: serde_json::Value = serde_json::from_slice(&base64_simd::URL_SAFE_NO_PAD.decode_to_vec(encoded_payload).unwrap()).unwrap();
++    assert_eq!(header, serde_json::json!({"typ":"dpop+jwt","alg":"ES256","jwk":{"kty":"EC","crv":"P-256","x":"Wb1VLi1EA2hJaTz4yYuxSELvY-1GAfL-8rUTCAdiFic","y":"fOwX-hmPrNvtUaag79EaWYgyDAq2a7AIfkSvUt0Amhg"}}));
++    let jti = uuid::Uuid::parse_str(payload["jti"].as_str().unwrap()).unwrap();
++    assert_eq!(jti.get_version_num(), 4);
++    assert_eq!(payload, serde_json::json!({"jti":jti.to_string(),"htm":"POST","htu":endpoint,"iat":1_763_510_400}));
++    let bytes = base64_simd::URL_SAFE_NO_PAD.decode_to_vec(encoded_signature).unwrap();
++    assert_eq!(bytes.len(), 64);
++    let signature = Signature::from_slice(&bytes).unwrap();
++    let verifying_key = VerifyingKey::from_sec1_bytes(key.public_key().to_sec1_point(false).as_bytes()).unwrap();
++    verifying_key.verify(message.as_bytes(), &signature).unwrap();
++    assert!(verifying_key.verify(format!("{message}tampered").as_bytes(), &signature).is_err());
++    #[cfg(feature = "sso")]
++    ring::signature::UnparsedPublicKey::new(
++        &ring::signature::ECDSA_P256_SHA256_FIXED,
++        key.public_key().to_sec1_point(false).as_bytes(),
++    ).verify(message.as_bytes(), &bytes).unwrap();
++}
++
++#[test]
++fn randomized_signing_keeps_nonce_entropy_for_identical_messages() {
++    let key = SecretKey::from_sec1_pem(KEY).unwrap();
++    let first = sign("same.header-and-payload", &key).unwrap();
++    let second = sign("same.header-and-payload", &key).unwrap();
++    assert_ne!(first, second);
++    let verifying_key = VerifyingKey::from_sec1_bytes(key.public_key().to_sec1_point(false).as_bytes()).unwrap();
++    for token in [first, second] {
++        let (message, encoded_signature) = token.rsplit_once('.').unwrap();
++        let bytes = base64_simd::URL_SAFE_NO_PAD.decode_to_vec(encoded_signature).unwrap();
++        verifying_key.verify(message.as_bytes(), &Signature::from_slice(&bytes).unwrap()).unwrap();
++    }
++}
+--- /dev/null
++++ b/codex-rs/third_party/aws-config-1.8.12/src/login/dpop_provider_tests.rs
+@@ -0,0 +1,184 @@
++use super::KEY;
++use crate::login::LoginCredentialsProvider;
++use crate::provider_config::ProviderConfig;
++use aws_credential_types::provider::ProvideCredentials;
++use aws_sdk_signin::config::RuntimeComponents;
++use aws_smithy_async::rt::sleep::TokioSleep;
++use aws_smithy_async::time::SharedTimeSource;
++use aws_smithy_async::time::TimeSource;
++use aws_smithy_runtime_api::client::http::{HttpClient, HttpConnector, HttpConnectorFuture, HttpConnectorSettings, SharedHttpConnector};
++use aws_smithy_runtime_api::client::orchestrator::{HttpRequest, HttpResponse};
++use aws_smithy_types::body::SdkBody;
++use aws_types::os_shim_internal::{Env, Fs};
++use aws_types::region::Region;
++use p256::ecdsa::signature::Verifier;
++use p256::ecdsa::{Signature, VerifyingKey};
++use p256::elliptic_curve::sec1::ToSec1Point;
++use p256::SecretKey;
++use pretty_assertions::assert_eq;
++use sha2::{Digest, Sha256};
++use std::collections::HashMap;
++use std::sync::{Arc, Mutex};
++use std::time::{Duration, SystemTime, UNIX_EPOCH};
++
++const SESSION: &str = "arn:aws:sts::012345678910:assumed-role/Admin/admin";
++const NOW: u64 = 1_763_510_400;
++
++#[derive(Debug, Clone)]
++struct Clock(Arc<Mutex<SystemTime>>);
++
++impl TimeSource for Clock {
++    fn now(&self) -> SystemTime {
++        *self.0.lock().unwrap()
++    }
++}
++
++#[derive(Debug, Clone)]
++struct RecordingHttpClient(SharedHttpConnector);
++
++impl HttpClient for RecordingHttpClient {
++    fn http_connector(&self, _settings: &HttpConnectorSettings, _components: &RuntimeComponents) -> SharedHttpConnector {
++        self.0.clone()
++    }
++}
++
++#[derive(Debug)]
++struct RecordingConnector {
++    requests: Arc<Mutex<Vec<HttpRequest>>>,
++    response_status: u16,
++    expires_in: u64,
++}
++
++impl HttpConnector for RecordingConnector {
++    fn call(&self, request: HttpRequest) -> HttpConnectorFuture {
++        self.requests.lock().unwrap().push(request);
++        let body = if self.response_status == 200 {
++            serde_json::json!({"accessToken":{"accessKeyId":"REFRESHED-KEY","secretAccessKey":"REFRESHED-SECRET","sessionToken":"REFRESHED-SESSION"},"expiresIn":self.expires_in,"refreshToken":"next-refresh-token"}).to_string()
++        } else {
++            serde_json::json!({"error":"token_expired","error_description":"Synthetic refresh failure"}).to_string()
++        };
++        HttpConnectorFuture::ready(Ok(HttpResponse::new(self.response_status.try_into().unwrap(), SdkBody::from(body))))
++    }
++}
++
++enum CacheLifetime {
++    Fresh,
++    Due,
++}
++
++struct TestResponse {
++    status: u16,
++    expires_in: u64,
++}
++
++struct Scenario {
++    config: ProviderConfig,
++    fs: Fs,
++    path: String,
++    original: Vec<u8>,
++    requests: Arc<Mutex<Vec<HttpRequest>>>,
++    clock: Clock,
++}
++
++fn setup(lifetime: CacheLifetime, response: TestResponse) -> Scenario {
++    let expiry = match lifetime {
++        CacheLifetime::Fresh => "2025-11-19T01:00:00Z",
++        CacheLifetime::Due => "2025-11-19T00:01:00Z",
++    };
++    let original = serde_json::to_vec(&serde_json::json!({"accessToken":{"accessKeyId":"CACHED-KEY","secretAccessKey":"CACHED-SECRET","sessionToken":"CACHED-SESSION","accountId":"012345678910","expiresAt":expiry},"tokenType":"aws_sigv4","refreshToken":"original-refresh-token","clientId":"arn:aws:signin:::devtools/same-device","dpopKey":KEY})).unwrap();
++    let path = format!("/test/cache/{}.json", hex::encode(Sha256::digest(SESSION.as_bytes())));
++    let fs = Fs::from_map(HashMap::from([(path.clone(), original.clone())]));
++    let env = Env::from_slice(&[("HOME", "/test/home"), ("AWS_LOGIN_CACHE_DIRECTORY", "/test/cache")]);
++    let requests = Arc::new(Mutex::new(Vec::new()));
++    let connector = SharedHttpConnector::new(RecordingConnector { requests: requests.clone(), response_status: response.status, expires_in: response.expires_in });
++    let clock = Clock(Arc::new(Mutex::new(UNIX_EPOCH + Duration::from_secs(NOW))));
++    let config = ProviderConfig::empty()
++        .with_env(env)
++        .with_fs(fs.clone())
++        .with_http_client(RecordingHttpClient(connector))
++        .with_region(Some(Region::from_static("us-east-2")))
++        .with_sleep_impl(TokioSleep::new())
++        .with_time_source(SharedTimeSource::new(clock.clone()));
++    Scenario { config, fs, path, original, requests, clock }
++}
++
++fn verify_actual_request(request: &HttpRequest, expected_refresh: &str, expected_iat: u64) {
++    assert_eq!(request.method(), "POST");
++    let body: serde_json::Value = serde_json::from_slice(request.body().bytes().unwrap()).unwrap();
++    assert_eq!(body, serde_json::json!({"clientId":"arn:aws:signin:::devtools/same-device","grantType":"refresh_token","refreshToken":expected_refresh}));
++    let dpop = request.headers().get("dpop").expect("actual refresh must carry DPoP");
++    let (message, encoded_signature) = dpop.rsplit_once('.').unwrap();
++    let (encoded_header, encoded_payload) = message.split_once('.').unwrap();
++    let decode = |text| base64_simd::URL_SAFE_NO_PAD.decode_to_vec(text).unwrap();
++    let header: serde_json::Value = serde_json::from_slice(&decode(encoded_header)).unwrap();
++    let payload: serde_json::Value = serde_json::from_slice(&decode(encoded_payload)).unwrap();
++    assert_eq!(header["alg"], "ES256");
++    assert_eq!(payload["htm"], "POST");
++    assert_eq!(payload["htu"], request.uri().to_string());
++    assert_eq!(payload["iat"], expected_iat);
++    assert_eq!(uuid::Uuid::parse_str(payload["jti"].as_str().unwrap()).unwrap().get_version_num(), 4);
++    let bytes = decode(encoded_signature);
++    assert_eq!(bytes.len(), 64);
++    let key = SecretKey::from_sec1_pem(KEY).unwrap();
++    let public = key.public_key().to_sec1_point(false);
++    VerifyingKey::from_sec1_bytes(public.as_bytes()).unwrap().verify(message.as_bytes(), &Signature::from_slice(&bytes).unwrap()).unwrap();
++    #[cfg(feature = "sso")]
++    ring::signature::UnparsedPublicKey::new(&ring::signature::ECDSA_P256_SHA256_FIXED, public.as_bytes()).verify(message.as_bytes(), &bytes).unwrap();
++}
++
++#[tokio::test]
++async fn fresh_login_cache_returns_existing_credentials_without_http() {
++    let scenario = setup(CacheLifetime::Fresh, TestResponse { status: 200, expires_in: 3600 });
++    let provider = LoginCredentialsProvider::builder(SESSION).configure(&scenario.config).build();
++    let credentials = provider.provide_credentials().await.unwrap();
++    assert_eq!((credentials.access_key_id(), credentials.secret_access_key(), credentials.session_token(), credentials.expiry()), ("CACHED-KEY", "CACHED-SECRET", Some("CACHED-SESSION"), Some(UNIX_EPOCH + Duration::from_secs(NOW + 3600))));
++    assert!(scenario.requests.lock().unwrap().is_empty());
++    assert_eq!(scenario.fs.read_to_end(&scenario.path).await.unwrap(), scenario.original);
++}
++
++#[tokio::test]
++async fn signed_refresh_persists_tokens_and_survives_new_provider_then_refreshes_again() {
++    let scenario = setup(CacheLifetime::Due, TestResponse { status: 200, expires_in: 3600 });
++    let provider = LoginCredentialsProvider::builder(SESSION).configure(&scenario.config).build();
++    let credentials = provider.provide_credentials().await.unwrap();
++    assert_eq!((credentials.access_key_id(), credentials.secret_access_key(), credentials.session_token(), credentials.account_id().unwrap().as_str(), credentials.expiry()), ("REFRESHED-KEY", "REFRESHED-SECRET", Some("REFRESHED-SESSION"), "012345678910", Some(UNIX_EPOCH + Duration::from_secs(NOW + 3600))));
++    let cached: serde_json::Value = serde_json::from_slice(&scenario.fs.read_to_end(&scenario.path).await.unwrap()).unwrap();
++    assert_eq!(cached["refreshToken"], "next-refresh-token");
++    assert_eq!(cached["dpopKey"], KEY);
++    assert_eq!(cached["clientId"], "arn:aws:signin:::devtools/same-device");
++    let restarted = LoginCredentialsProvider::builder(SESSION).configure(&scenario.config).build();
++    assert_eq!(restarted.provide_credentials().await.unwrap().access_key_id(), "REFRESHED-KEY");
++    assert_eq!(scenario.requests.lock().unwrap().len(), 1);
++    *scenario.clock.0.lock().unwrap() = UNIX_EPOCH + Duration::from_secs(NOW + 3301);
++    assert_eq!(restarted.provide_credentials().await.unwrap().expiry(), Some(UNIX_EPOCH + Duration::from_secs(NOW + 6901)));
++    let requests = scenario.requests.lock().unwrap();
++    assert_eq!(requests.len(), 2);
++    verify_actual_request(&requests[0], "original-refresh-token", NOW);
++    verify_actual_request(&requests[1], "next-refresh-token", NOW + 3301);
++}
++
++#[tokio::test]
++async fn refresh_failure_keeps_existing_cache_bytes() {
++    let scenario = setup(CacheLifetime::Due, TestResponse { status: 403, expires_in: 3600 });
++    let provider = LoginCredentialsProvider::builder(SESSION).configure(&scenario.config).build();
++    assert!(provider.provide_credentials().await.is_err());
++    assert_eq!(scenario.fs.read_to_end(&scenario.path).await.unwrap(), scenario.original);
++    let requests = scenario.requests.lock().unwrap();
++    assert_eq!(requests.len(), 1);
++    verify_actual_request(&requests[0], "original-refresh-token", NOW);
++}
++
++#[tokio::test]
++async fn thirty_second_refresh_throttle_still_refuses_expired_credentials() {
++    let scenario = setup(CacheLifetime::Due, TestResponse { status: 200, expires_in: 1 });
++    let provider = LoginCredentialsProvider::builder(SESSION).configure(&scenario.config).build();
++    assert!(provider.provide_credentials().await.is_ok());
++    *scenario.clock.0.lock().unwrap() = UNIX_EPOCH + Duration::from_secs(NOW + 2);
++    assert!(provider.provide_credentials().await.is_err());
++    assert_eq!(scenario.requests.lock().unwrap().len(), 1);
++    *scenario.clock.0.lock().unwrap() = UNIX_EPOCH + Duration::from_secs(NOW + 31);
++    assert!(provider.provide_credentials().await.is_ok());
++    let requests = scenario.requests.lock().unwrap();
++    assert_eq!(requests.len(), 2);
++    verify_actual_request(&requests[1], "next-refresh-token", NOW + 31);
++}
+--- /dev/null
++++ b/codex-rs/third_party/aws-config-1.8.12/BUILD.bazel
+@@ -0,0 +1,57 @@
++load("@crates//:defs.bzl", "all_crate_deps")
++load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
++load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "workspace_root_test")
++
++# Keep the Cargo default providers and the first-party credentials-login request.
++_FEATURES = [
++    "credentials-login",
++    "credentials-process",
++    "default",
++    "default-https-client",
++    "rt-tokio",
++    "sso",
++]
++
++filegroup(
++    name = "package-files",
++    srcs = glob(["**"], exclude = ["BUILD.bazel", "target/**"]),
++    visibility = ["//visibility:public"],
++)
++
++rust_library(
++    name = "aws-config",
++    srcs = glob(["src/**/*.rs"]),
++    compile_data = glob(["src/**/*.md"]),
++    crate_features = _FEATURES,
++    crate_name = "aws_config",
++    crate_root = "src/lib.rs",
++    edition = "2021",
++    version = "1.8.12",
++    visibility = ["//visibility:public"],
++    deps = all_crate_deps(),
++    proc_macro_deps = all_crate_deps(proc_macro = True),
++)
++
++rust_test(
++    name = "aws-config-unit-tests-bin",
++    crate = ":aws-config",
++    crate_features = _FEATURES,
++    data = glob(["test-data/**"]),
++    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS,
++    tags = ["manual"],
++    version = "1.8.12",
++    deps = all_crate_deps(normal_dev = True),
++    proc_macro_deps = all_crate_deps(proc_macro_dev = True),
++)
++
++# The unchanged upstream tests open test-data relative to the crate root.
++# The shared launcher computes the working directory as marker/../../..;
++# placing a marker two directories below this package preserves that contract.
++workspace_root_test(
++    name = "aws-config-unit-tests",
++    env = {"NO_COLOR": ""},  # The upstream loader test checks ANSI-formatted logs.
++    test_bin = ":aws-config-unit-tests-bin",
++    data = glob(["test-data/**"]),
++    tags = ["manual", "requires-network"],  # Explicit qualification graph and real timeout network required.
++    workspace_root_marker = "test-data/hepta-runfiles/crate-root.marker",
++)
+--- /dev/null
++++ b/codex-rs/third_party/aws-config-1.8.12/test-data/hepta-runfiles/crate-root.marker
+@@ -0,0 +1 @@
++This marker lets the shared Bazel test launcher retain the upstream crate-root working directory.

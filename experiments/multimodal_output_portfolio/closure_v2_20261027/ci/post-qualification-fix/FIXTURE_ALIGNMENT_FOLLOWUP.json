@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.wiring-peer.followup.v1",
+  "created_at": "2026-10-27T13:05:45.228171+00:00",
+  "original_review": {
+    "bytes": 12973,
+    "sha256": "4dc4dd9ee5f49d9b560a5021deea704cd280dbb93795792b06f1a7d312af60d6"
+  },
+  "original_review_preserved": true,
+  "finding_discovered_by": "Root integrated preformat 54-test attempt, after this read-only wiring review",
+  "finding": "The controlled Clippy fixture retained ecs::tests::real_dns_lookup while the newly strict v3 common.load_recipe requires actual upstream ecs::test::real_dns_lookup. This caused the 12 helper regressions to reject the fixture before reaching their intended cases.",
+  "review_scope_limit": "The preceding static review checked workflow/helper artifact and execution wiring; it missed the fixture/new-common inventory string mismatch. Its source readback and no-new-wiring-blocker conclusion are retained as historical evidence, not rewritten as having caught this failure.",
+  "authorization": "Root explicitly requested exactly this fixture correction and a frozen-source rerun of the original 12 tests.",
+  "actual_change": {
+    "file": "scripts/ndu_post_qualification_test_support.py",
+    "from": "ecs::tests::real_dns_lookup",
+    "to": "ecs::test::real_dns_lookup",
+    "only_fixture_delta_verified": true,
+    "new_identity": {
+      "bytes": 12054,
+      "sha256": "c4bbbb3c2d1323eabcc963f9fd87473c3b42ec4aa69b84b38660a788af356e41"
+    }
+  },
+  "validation": {
+    "result": "/workspace/scratch/95988d8d3ab1/ndu-post-qualification-fix-001/pretest-003/RESULT.json",
+    "bytes": 730,
+    "sha256": "5b640fe958890a626198c328af4469895f50abaa3dfe5acd04840583edbd0972",
+    "source_manifest": {
+      "bytes": 1838,
+      "sha256": "53a569275b58d6bc7f2eaac5713f47ce1cbf3bf6b7778576e6e1f56c699682d9"
+    },
+    "actual_tests": 12,
+    "exit_code": 0,
+    "source_unchanged": true,
+    "port_25_and_linux_17_not_repeated": true,
+    "no_behavior_tests_after_formatter": true
+  },
+  "remaining_actionable_wiring_findings": [],
+  "original_root_failure_directory_untouched": "/workspace/scratch/95988d8d3ab1/closure_v2_preformat_tests_20261027"
+}

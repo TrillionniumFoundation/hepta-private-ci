@@ -1,0 +1,155 @@
+{
+  "tool": {
+    "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/scripts/.venv/bin/ruff",
+    "sha256": "e7fe044c1215edf671c497dc77312d329237f827e50ecfcb7266a662a110dc97",
+    "version": "ruff 0.15.13"
+  },
+  "command": [
+    "/workspace/scratch/95988d8d3ab1/hepta-private-ci/scripts/.venv/bin/ruff",
+    "format",
+    "scripts/ndu_port_candidate_common.py",
+    "scripts/ndu_port_candidate.py",
+    "scripts/ndu_port_matrix_fixture.py",
+    "scripts/ndu_port_aws_upstream.py",
+    "scripts/test_ndu_port_candidate.py"
+  ],
+  "scope": "Format only after all behavior tests; no import sorting, lint fixes or later test execution",
+  "started_unix": 1793100308.2740073,
+  "before_files": {
+    ".github/workflows/ndu-port-candidate.yml": {
+      "bytes": 18686,
+      "sha256": "8a58c6e255b1350cb9e72f14c3f14afd95099050f603338e7328aa77d25d8bfd"
+    },
+    "justfile": {
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    "scripts/run-nextest.py": {
+      "bytes": 10206,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    "scripts/just-shell.py": {
+      "bytes": 2030,
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    "codex-rs/.config/nextest.toml": {
+      "bytes": 5044,
+      "sha256": "78b998d1fcb16dfef6b243a4b18748c1b28ce2d5a28d57f1f477adf0546e5ac6"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.json": {
+      "bytes": 221834,
+      "sha256": "4efd3f67e272cd86f93d2a221c6584248118767ec5d2fdb88685885cffde6aae"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/aws-login-remediation/evidence/STANDALONE_TEST_nextest.toml": {
+      "bytes": 213,
+      "sha256": "26d4c4ef4a7924e2dc1c0bec8651a105a155f9b4aa138a2293de97d187bb6962"
+    },
+    "scripts/ndu_port_candidate_common.py": {
+      "bytes": 22992,
+      "sha256": "e0ec209e3351ea9caebbe7b56ec672d5bcacb405126027aa186abd20b5bf975a"
+    },
+    "scripts/ndu_port_candidate.py": {
+      "bytes": 14151,
+      "sha256": "7628b01c591d127b6dc3ce8076facb918dd15dbdd642e1556f16bb926bf20ffb"
+    },
+    "scripts/ndu_port_matrix_fixture.py": {
+      "bytes": 16682,
+      "sha256": "2961ce3618bd22f50bde706b4315ed60c60ef57ae221cf76f9e50cf5211ff0e8"
+    },
+    "scripts/ndu_port_aws_upstream.py": {
+      "bytes": 8902,
+      "sha256": "c6af112db92c9928ae036914345113e778639897e9a7acfe64a1fd1ff68be250"
+    },
+    "scripts/test_ndu_port_candidate.py": {
+      "bytes": 17833,
+      "sha256": "89b75971aaf36dac974d27378a0ae3eb1e1116e0a521eb96826fe6c0d3dac28b"
+    },
+    "scripts/test_ndu_port_matrix_fixture.py": {
+      "bytes": 8617,
+      "sha256": "50b138ded403dfbcd24ca60e3d0476e172eed14ab8149959c493c17c58c523ec"
+    },
+    "scripts/test_ndu_port_aws_upstream.py": {
+      "bytes": 3693,
+      "sha256": "16abf09373af6974b1e50e53a126087acbb538bb99962fbd97a772b2c9b7d3d8"
+    }
+  },
+  "exit_code": 0,
+  "stdout": "3 files reformatted, 2 files left unchanged\n",
+  "stderr": "",
+  "after_files": {
+    ".github/workflows/ndu-port-candidate.yml": {
+      "bytes": 18686,
+      "sha256": "8a58c6e255b1350cb9e72f14c3f14afd95099050f603338e7328aa77d25d8bfd"
+    },
+    "justfile": {
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    "scripts/run-nextest.py": {
+      "bytes": 10206,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    "scripts/just-shell.py": {
+      "bytes": 2030,
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    "codex-rs/.config/nextest.toml": {
+      "bytes": 5044,
+      "sha256": "78b998d1fcb16dfef6b243a4b18748c1b28ce2d5a28d57f1f477adf0546e5ac6"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.json": {
+      "bytes": 221834,
+      "sha256": "4efd3f67e272cd86f93d2a221c6584248118767ec5d2fdb88685885cffde6aae"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/aws-login-remediation/evidence/STANDALONE_TEST_nextest.toml": {
+      "bytes": 213,
+      "sha256": "26d4c4ef4a7924e2dc1c0bec8651a105a155f9b4aa138a2293de97d187bb6962"
+    },
+    "scripts/ndu_port_candidate_common.py": {
+      "bytes": 22992,
+      "sha256": "e0ec209e3351ea9caebbe7b56ec672d5bcacb405126027aa186abd20b5bf975a"
+    },
+    "scripts/ndu_port_candidate.py": {
+      "bytes": 14151,
+      "sha256": "7628b01c591d127b6dc3ce8076facb918dd15dbdd642e1556f16bb926bf20ffb"
+    },
+    "scripts/ndu_port_matrix_fixture.py": {
+      "bytes": 16690,
+      "sha256": "21862146157207b82bd9d36777d6afca3afa6c5b167ff84e6aeb21698ee2f5ce"
+    },
+    "scripts/ndu_port_aws_upstream.py": {
+      "bytes": 8904,
+      "sha256": "4c204c6f4d26f314527c0b9ff841d1c276b34e1e32996f78fbfd313f623842ff"
+    },
+    "scripts/test_ndu_port_candidate.py": {
+      "bytes": 18189,
+      "sha256": "6fce7fe85f403f807558c4f0a98886a5a03b211b0d3733730b97b9d27cf0b876"
+    },
+    "scripts/test_ndu_port_matrix_fixture.py": {
+      "bytes": 8617,
+      "sha256": "50b138ded403dfbcd24ca60e3d0476e172eed14ab8149959c493c17c58c523ec"
+    },
+    "scripts/test_ndu_port_aws_upstream.py": {
+      "bytes": 3693,
+      "sha256": "16abf09373af6974b1e50e53a126087acbb538bb99962fbd97a772b2c9b7d3d8"
+    }
+  },
+  "python_ast_equal": {
+    "scripts/run-nextest.py": true,
+    "scripts/just-shell.py": true,
+    "scripts/ndu_port_candidate_common.py": true,
+    "scripts/ndu_port_candidate.py": true,
+    "scripts/ndu_port_matrix_fixture.py": true,
+    "scripts/ndu_port_aws_upstream.py": true,
+    "scripts/test_ndu_port_candidate.py": true,
+    "scripts/test_ndu_port_matrix_fixture.py": true,
+    "scripts/test_ndu_port_aws_upstream.py": true
+  },
+  "diffs": {
+    "scripts/ndu_port_matrix_fixture.py": "--- before/scripts/ndu_port_matrix_fixture.py\n+++ after/scripts/ndu_port_matrix_fixture.py\n@@ -148,7 +148,8 @@\n         \"cargo_target_directory\": str(target),\n         \"store_config_unchanged_after_execution\": describe(\n             runner.output, (storage[\"config_file\"],)\n-        )[storage[\"config_file\"]] == storage[\"config\"],\n+        )[storage[\"config_file\"]]\n+        == storage[\"config\"],\n     }\n     runner.record[\"migration_phase\"] = phase\n     fresh = [path for path, value in reports().items() if before.get(path) != value]\n",
+    "scripts/ndu_port_aws_upstream.py": "--- before/scripts/ndu_port_aws_upstream.py\n+++ after/scripts/ndu_port_aws_upstream.py\n@@ -171,8 +171,7 @@\n         nextest_storage=storage, cargo_target_directory=str(target)\n     )\n     reports = lambda: {\n-        p: (p.stat().st_mtime_ns, checksum(p))\n-        for p in store.glob(\"*/junit.xml\")\n+        p: (p.stat().st_mtime_ns, checksum(p)) for p in store.glob(\"*/junit.xml\")\n     }\n     before = reports()\n     status = runner.run(\n@@ -186,9 +185,10 @@\n     fresh = [path for path, value in reports().items() if before.get(path) != value]\n     outcome[\"fresh_junit_count\"] = len(fresh)\n     outcome[\"observed_junit_paths\"] = [str(path) for path in fresh]\n-    outcome[\"store_config_unchanged_after_execution\"] = describe(\n-        runner.output, (storage[\"config_file\"],)\n-    )[storage[\"config_file\"]] == storage[\"config\"]\n+    outcome[\"store_config_unchanged_after_execution\"] = (\n+        describe(runner.output, (storage[\"config_file\"],))[storage[\"config_file\"]]\n+        == storage[\"config\"]\n+    )\n     for index, path in enumerate(fresh):\n         shutil.copyfile(path, runner.output / f\"aws-upstream-{index}-junit.xml\")\n     outcome[\"retained_junit_reports\"] = describe(\n",
+    "scripts/test_ndu_port_candidate.py": "--- before/scripts/test_ndu_port_candidate.py\n+++ after/scripts/test_ndu_port_candidate.py\n@@ -185,7 +185,12 @@\n                 metadata = final_metadata if bazel_updated else self.metadata\n                 return run(\n                     label,\n-                    [sys.executable, \"-c\", \"import sys; print(sys.argv[1])\", json.dumps(metadata)],\n+                    [\n+                        sys.executable,\n+                        \"-c\",\n+                        \"import sys; print(sys.argv[1])\",\n+                        json.dumps(metadata),\n+                    ],\n                     **kwargs,\n                 )\n             elif command == [\"just\", \"bazel-lock-update\"]:\n@@ -193,7 +198,11 @@\n                 (self.root / common.LOCKS[1]).write_text(\"resolved Bazel lock\\n\")\n             elif command not in ([\"just\", \"bazel-lock-check\"], [\"bazel\", \"--version\"]):\n                 raise AssertionError(f\"Unexpected resolver command: {command}\")\n-            return run(label, [sys.executable, \"-c\", \"print('controlled resolver completed')\"], **kwargs)\n+            return run(\n+                label,\n+                [sys.executable, \"-c\", \"print('controlled resolver completed')\"],\n+                **kwargs,\n+            )\n \n         with (\n             patch.object(candidate, \"check_toolchain\"),\n@@ -203,15 +212,29 @@\n         return runner, final_metadata\n \n     def test_generated_candidate_seals_final_graph_and_preserves_before_graph(self):\n-        runner, final_metadata = self.generate_with_final_features([\"crypto\", \"bazel-selected\"])\n-        self.assertEqual(json.loads((runner.output / \"metadata.json\").read_text()), final_metadata)\n-        self.assertEqual(json.loads((runner.output / \"metadata-before-bazel.json\").read_text()), self.metadata)\n+        runner, final_metadata = self.generate_with_final_features(\n+            [\"crypto\", \"bazel-selected\"]\n+        )\n+        self.assertEqual(\n+            json.loads((runner.output / \"metadata.json\").read_text()), final_metadata\n+        )\n+        self.assertEqual(\n+            json.loads((runner.output / \"metadata-before-bazel.json\").read_text()),\n+            self.metadata,\n+        )\n         self.assertEqual(runner.record[\"status\"], \"candidate_generated\")\n         stdout = [row[\"stdout\"] for row in runner.record[\"commands\"] if \"stdout\" in row]\n-        self.assertEqual({row[\"file\"] for row in stdout}, {\"metadata-before-bazel.json\", \"metadata.json\"})\n+        self.assertEqual(\n+            {row[\"file\"] for row in stdout},\n+            {\"metadata-before-bazel.json\", \"metadata.json\"},\n+        )\n         for row in stdout:\n-            self.assertEqual(common.checksum(runner.output / row[\"file\"]), row[\"sha256\"])\n-            self.assertEqual(runner.record[\"artifacts\"][row[\"file\"]][\"sha256\"], row[\"sha256\"])\n+            self.assertEqual(\n+                common.checksum(runner.output / row[\"file\"]), row[\"sha256\"]\n+            )\n+            self.assertEqual(\n+                runner.record[\"artifacts\"][row[\"file\"]][\"sha256\"], row[\"sha256\"]\n+            )\n \n     def test_final_resolver_feature_loss_cannot_reuse_pre_bazel_graph(self):\n         with self.assertRaisesRegex(ValueError, \"features\"):\n"
+  },
+  "all_ast_equal": true,
+  "completed_unix": 1793100308.367909
+}

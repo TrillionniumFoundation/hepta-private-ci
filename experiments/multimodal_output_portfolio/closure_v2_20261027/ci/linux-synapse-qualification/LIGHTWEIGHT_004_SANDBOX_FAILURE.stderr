@@ -1,0 +1,49 @@
+test_ancestor_symlink_rejected_before_any_external_write (linux_synapse.test_boundaries.FileBoundaries.test_ancestor_symlink_rejected_before_any_external_write) ... ok
+test_compiler_overrides_even_empty_fail_closed (linux_synapse.test_boundaries.FileBoundaries.test_compiler_overrides_even_empty_fail_closed) ... ok
+test_contract_digest_and_platform_rejected_before_execution (linux_synapse.test_boundaries.FileBoundaries.test_contract_digest_and_platform_rejected_before_execution) ... ok
+test_copy_readback_and_changed_input_rejected (linux_synapse.test_boundaries.FileBoundaries.test_copy_readback_and_changed_input_rejected) ... ok
+test_invalid_paths_do_not_create_output (linux_synapse.test_boundaries.FileBoundaries.test_invalid_paths_do_not_create_output) ... ok
+test_nonoverwriting_atomic_publication (linux_synapse.test_boundaries.FileBoundaries.test_nonoverwriting_atomic_publication) ... ok
+test_nonzero_child_keeps_exact_stdout_stderr (linux_synapse.test_boundaries.FileBoundaries.test_nonzero_child_keeps_exact_stdout_stderr) ... ok
+test_symlink_and_special_file_rejected (linux_synapse.test_boundaries.FileBoundaries.test_symlink_and_special_file_rejected) ... ok
+test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed (linux_synapse.test_cleanup.TeardownEvidence.test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed) ... 
+  test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed (linux_synapse.test_cleanup.TeardownEvidence.test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed) (scenario='owned') ... ERROR
+  test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed (linux_synapse.test_cleanup.TeardownEvidence.test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed) (scenario='foreign_name') ... ERROR
+  test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed (linux_synapse.test_cleanup.TeardownEvidence.test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed) (scenario='foreign_label') ... ERROR
+test_timed_out_control_command_keeps_a_failure_receipt (linux_synapse.test_cleanup.TeardownEvidence.test_timed_out_control_command_keeps_a_failure_receipt) ... ok
+test_full_inventory_selects_one_actual_frozen_path_and_rejects_tamper (linux_synapse.test_execution.ExecutionEvidence.test_full_inventory_selects_one_actual_frozen_path_and_rejects_tamper) ... ok
+test_junit_requires_one_success_and_no_hidden_skips_or_reruns (linux_synapse.test_execution.ExecutionEvidence.test_junit_requires_one_success_and_no_hidden_skips_or_reruns) ... ok
+test_original_restore_guards_then_identical_private_tree_without_host_rust (linux_synapse.test_restore.ProducerRestore.test_original_restore_guards_then_identical_private_tree_without_host_rust) ... ok
+test_candidate_mode_drift_rejected_by_exact_patch_tree (linux_synapse.test_source.SourceImportBoundary.test_candidate_mode_drift_rejected_by_exact_patch_tree) ... ok
+test_staged_matching_bytecode_cache_is_never_executed (linux_synapse.test_source.SourceImportBoundary.test_staged_matching_bytecode_cache_is_never_executed) ... ok
+test_staged_or_unstaged_helper_tamper_never_executes (linux_synapse.test_source.SourceImportBoundary.test_staged_or_unstaged_helper_tamper_never_executes) ... ok
+test_staged_stdlib_shadow_is_not_imported (linux_synapse.test_source.SourceImportBoundary.test_staged_stdlib_shadow_is_not_imported) ... ok
+
+======================================================================
+ERROR: test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed (linux_synapse.test_cleanup.TeardownEvidence.test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed) (scenario='owned')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/95988d8d3ab1/hepta-private-ci/codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_cleanup.py", line 44, in test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed
+    endpoint.bind(str(root / "docker.sock"))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed (linux_synapse.test_cleanup.TeardownEvidence.test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed) (scenario='foreign_name')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/95988d8d3ab1/hepta-private-ci/codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_cleanup.py", line 44, in test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed
+    endpoint.bind(str(root / "docker.sock"))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed (linux_synapse.test_cleanup.TeardownEvidence.test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed) (scenario='foreign_label')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/95988d8d3ab1/hepta-private-ci/codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_cleanup.py", line 44, in test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed
+    endpoint.bind(str(root / "docker.sock"))
+PermissionError: [Errno 1] Operation not permitted
+
+----------------------------------------------------------------------
+Ran 17 tests in 4.293s
+
+FAILED (errors=3)

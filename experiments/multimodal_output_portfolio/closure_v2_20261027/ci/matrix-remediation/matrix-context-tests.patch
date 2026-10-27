@@ -1,0 +1,140 @@
+diff --git a/codex-rs/hepta-matrix-sdk/Cargo.toml b/codex-rs/hepta-matrix-sdk/Cargo.toml
+--- a/codex-rs/hepta-matrix-sdk/Cargo.toml
++++ b/codex-rs/hepta-matrix-sdk/Cargo.toml
+@@ -33,3 +33,4 @@
+ pretty_assertions = { workspace = true }
+ serde = { workspace = true, features = ["derive"] }
+ tempfile = { workspace = true }
++wiremock = { workspace = true }
+diff --git a/codex-rs/hepta-matrix-sdk/tests/event_context_migration.rs b/codex-rs/hepta-matrix-sdk/tests/event_context_migration.rs
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/hepta-matrix-sdk/tests/event_context_migration.rs
+@@ -0,0 +1,127 @@
++use std::error::Error;
++use std::sync::Arc;
++use std::sync::atomic::AtomicUsize;
++use std::sync::atomic::Ordering;
++
++use matrix_sdk::Client;
++use matrix_sdk::SessionMeta;
++use matrix_sdk::SessionTokens;
++use matrix_sdk::authentication::matrix::MatrixSession;
++use matrix_sdk::config::SyncSettings;
++use matrix_sdk::event_handler::Ctx;
++use matrix_sdk::ruma::api::MatrixVersion;
++use matrix_sdk::ruma::events::room::message::OriginalSyncRoomMessageEvent;
++use pretty_assertions::assert_eq;
++use serde_json::json;
++use tokio::sync::Mutex;
++use wiremock::Mock;
++use wiremock::MockServer;
++use wiremock::ResponseTemplate;
++use wiremock::matchers::method;
++use wiremock::matchers::path;
++
++#[derive(Clone)]
++struct Label(String);
++
++#[derive(Clone)]
++struct InitiallyMissing;
++
++type Deliveries = Arc<Mutex<Vec<(String, String)>>>;
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn event_context_preserves_types_clones_and_replacement()
++-> Result<(), Box<dyn Error>> {
++    let server = MockServer::start().await;
++    let client = Client::builder()
++        .homeserver_url(server.uri())
++        .server_versions([MatrixVersion::V1_11])
++        .build()
++        .await?;
++    client
++        .restore_session(MatrixSession {
++            meta: SessionMeta {
++                user_id: "@migration:example.test".try_into()?,
++                device_id: "MIGRATION".into(),
++            },
++            tokens: SessionTokens {
++                access_token: "local-context-test".to_owned(),
++                refresh_token: None,
++            },
++        })
++        .await?;
++    Mock::given(method("POST"))
++        .and(path("/_matrix/client/v3/keys/upload"))
++        .respond_with(ResponseTemplate::new(200).set_body_json(json!({
++            "one_time_key_counts": {"signed_curve25519": 50}
++        })))
++        .mount(&server)
++        .await;
++    let delivered: Deliveries = Arc::new(Mutex::new(Vec::new()));
++    let previously_missing = Arc::new(AtomicUsize::new(0));
++    client.add_event_handler_context(delivered.clone());
++    client.add_event_handler(
++        |event: OriginalSyncRoomMessageEvent,
++         Ctx(label): Ctx<Label>,
++         Ctx(deliveries): Ctx<Deliveries>| async move {
++            deliveries
++                .lock()
++                .await
++                .push((event.event_id.to_string(), label.0));
++        },
++    );
++    let missing_calls = previously_missing.clone();
++    client.add_event_handler(
++        move |_event: OriginalSyncRoomMessageEvent, _context: Ctx<InitiallyMissing>| {
++            let calls = missing_calls.clone();
++            async move {
++                calls.fetch_add(1, Ordering::SeqCst);
++            }
++        },
++    );
++    for (index, label) in ["before replacement", "after replacement"].into_iter().enumerate() {
++        client.add_event_handler_context(Label(label.to_owned()));
++        if index == 1 {
++            client.add_event_handler_context(InitiallyMissing);
++        }
++        Mock::given(method("GET"))
++            .and(path("/_matrix/client/v3/sync"))
++            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
++                "next_batch": format!("batch-{index}"),
++                "rooms": {"join": {"!context:example.test": {
++                    "state": {"events": [{
++                        "type": "m.room.member",
++                        "event_id": "$membership",
++                        "sender": "@migration:example.test",
++                        "state_key": "@migration:example.test",
++                        "origin_server_ts": 1,
++                        "content": {"membership": "join"}
++                    }]},
++                    "timeline": {
++                        "limited": false,
++                        "prev_batch": format!("previous-{index}"),
++                        "events": [{
++                            "type": "m.room.message",
++                            "event_id": format!("$event-{index}"),
++                            "sender": "@owner:example.test",
++                            "origin_server_ts": 2,
++                            "content": {"msgtype": "m.text", "body": "context delivery"}
++                        }]
++                    }
++                }}}
++            })))
++            .up_to_n_times(1)
++            .expect(1)
++            .mount(&server)
++            .await;
++        client.sync_once(SyncSettings::default()).await?;
++        assert_eq!(previously_missing.load(Ordering::SeqCst), index);
++    }
++    assert_eq!(
++        *delivered.lock().await,
++        vec![
++            ("$event-0".to_owned(), "before replacement".to_owned()),
++            ("$event-1".to_owned(), "after replacement".to_owned()),
++        ]
++    );
++    Ok(())
++}

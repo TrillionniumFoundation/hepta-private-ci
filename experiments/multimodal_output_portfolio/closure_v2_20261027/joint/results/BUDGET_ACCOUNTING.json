@@ -1,0 +1,359 @@
+{
+  "pilot": "development-001 separately spent 100 steps in both objectives for seed17; exploratory counts and CPU remain in its original training receipts.",
+  "rows": [
+    {
+      "arm": "direct_mean",
+      "original_pca_validation_cpu_measured": false,
+      "pca_shared_per_seed_per_run": {
+        "encoder_examples": 512,
+        "gate_examples": 512,
+        "svd_calls": 1,
+        "transition_examples": 1024
+      },
+      "seed": 17,
+      "sigma": 0.15,
+      "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+      "training_counts": {
+        "actor_examples": 9600,
+        "actual_png_roundtrips": 153600,
+        "decoder_examples": 153600,
+        "encoder_examples": 9600,
+        "gate_examples": 9600,
+        "observer_digit_examples": 307200,
+        "optimizer_updates": 600,
+        "transition_examples": 19200
+      },
+      "training_cpu_ns": 115601894320,
+      "training_record_sha256": "b39ff0795aabddd887dc6c67eb13b6725d625670d548f643ddea22d3b7293b62",
+      "training_wall_ns": 148357870115,
+      "validation_actor_examples": 2048,
+      "validation_delivered_examples": 2560,
+      "validation_model_count": 5
+    },
+    {
+      "arm": "direct_mean",
+      "original_pca_validation_cpu_measured": false,
+      "pca_shared_per_seed_per_run": {
+        "encoder_examples": 512,
+        "gate_examples": 512,
+        "svd_calls": 1,
+        "transition_examples": 1024
+      },
+      "seed": 17,
+      "sigma": 0.05,
+      "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+      "training_counts": {
+        "actor_examples": 9600,
+        "actual_png_roundtrips": 153600,
+        "decoder_examples": 153600,
+        "encoder_examples": 9600,
+        "gate_examples": 9600,
+        "observer_digit_examples": 307200,
+        "optimizer_updates": 600,
+        "transition_examples": 19200
+      },
+      "training_cpu_ns": 118316653725,
+      "training_record_sha256": "a9c0befb5a916ee704647744d37638ad9d6593f39e01e291f3e5af67b061427c",
+      "training_wall_ns": 118458285203,
+      "validation_actor_examples": 2048,
+      "validation_delivered_examples": 2560,
+      "validation_model_count": 5
+    },
+    {
+      "arm": "direct_risk",
+      "original_pca_validation_cpu_measured": false,
+      "pca_shared_per_seed_per_run": {
+        "encoder_examples": 512,
+        "gate_examples": 512,
+        "svd_calls": 1,
+        "transition_examples": 1024
+      },
+      "seed": 17,
+      "sigma": 0.15,
+      "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+      "training_counts": {
+        "actor_examples": 9600,
+        "actual_png_roundtrips": 153600,
+        "decoder_examples": 153600,
+        "encoder_examples": 9600,
+        "gate_examples": 9600,
+        "observer_digit_examples": 307200,
+        "optimizer_updates": 600,
+        "transition_examples": 19200
+      },
+      "training_cpu_ns": 118115575097,
+      "training_record_sha256": "ae3f1e46df047904aed3ab3d9cc30a65cf4007153a4fc9573ab4f6f964c43543",
+      "training_wall_ns": 162962066374,
+      "validation_actor_examples": 2048,
+      "validation_delivered_examples": 2560,
+      "validation_model_count": 5
+    },
+    {
+      "arm": "direct_risk",
+      "original_pca_validation_cpu_measured": false,
+      "pca_shared_per_seed_per_run": {
+        "encoder_examples": 512,
+        "gate_examples": 512,
+        "svd_calls": 1,
+        "transition_examples": 1024
+      },
+      "seed": 17,
+      "sigma": 0.05,
+      "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+      "training_counts": {
+        "actor_examples": 9600,
+        "actual_png_roundtrips": 153600,
+        "decoder_examples": 153600,
+        "encoder_examples": 9600,
+        "gate_examples": 9600,
+        "observer_digit_examples": 307200,
+        "optimizer_updates": 600,
+        "transition_examples": 19200
+      },
+      "training_cpu_ns": 119113931053,
+      "training_record_sha256": "b71e20700eaa9e511c6988294b699d00f2870224384e3c571034be53faea2a42",
+      "training_wall_ns": 119148059375,
+      "validation_actor_examples": 2048,
+      "validation_delivered_examples": 2560,
+      "validation_model_count": 5
+    },
+    {
+      "arm": "direct_mean",
+      "original_pca_validation_cpu_measured": false,
+      "pca_shared_per_seed_per_run": {
+        "encoder_examples": 512,
+        "gate_examples": 512,
+        "svd_calls": 1,
+        "transition_examples": 1024
+      },
+      "seed": 29,
+      "sigma": 0.15,
+      "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+      "training_counts": {
+        "actor_examples": 9600,
+        "actual_png_roundtrips": 153600,
+        "decoder_examples": 153600,
+        "encoder_examples": 9600,
+        "gate_examples": 9600,
+        "observer_digit_examples": 307200,
+        "optimizer_updates": 600,
+        "transition_examples": 19200
+      },
+      "training_cpu_ns": 128327924263,
+      "training_record_sha256": "bdd7384430f57f04215170fe5148e1f0ea85465231ec9d28dd3558a6705a281e",
+      "training_wall_ns": 205620756560,
+      "validation_actor_examples": 2048,
+      "validation_delivered_examples": 2560,
+      "validation_model_count": 5
+    },
+    {
+      "arm": "direct_mean",
+      "original_pca_validation_cpu_measured": false,
+      "pca_shared_per_seed_per_run": {
+        "encoder_examples": 512,
+        "gate_examples": 512,
+        "svd_calls": 1,
+        "transition_examples": 1024
+      },
+      "seed": 29,
+      "sigma": 0.05,
+      "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+      "training_counts": {
+        "actor_examples": 9600,
+        "actual_png_roundtrips": 153600,
+        "decoder_examples": 153600,
+        "encoder_examples": 9600,
+        "gate_examples": 9600,
+        "observer_digit_examples": 307200,
+        "optimizer_updates": 600,
+        "transition_examples": 19200
+      },
+      "training_cpu_ns": 117006236505,
+      "training_record_sha256": "63104d9258dfa7511be18dc749e4344770ee959d0ed2884f8eed37bdc5b1f61e",
+      "training_wall_ns": 117020478360,
+      "validation_actor_examples": 2048,
+      "validation_delivered_examples": 2560,
+      "validation_model_count": 5
+    },
+    {
+      "arm": "direct_risk",
+      "original_pca_validation_cpu_measured": false,
+      "pca_shared_per_seed_per_run": {
+        "encoder_examples": 512,
+        "gate_examples": 512,
+        "svd_calls": 1,
+        "transition_examples": 1024
+      },
+      "seed": 29,
+      "sigma": 0.15,
+      "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+      "training_counts": {
+        "actor_examples": 9600,
+        "actual_png_roundtrips": 153600,
+        "decoder_examples": 153600,
+        "encoder_examples": 9600,
+        "gate_examples": 9600,
+        "observer_digit_examples": 307200,
+        "optimizer_updates": 600,
+        "transition_examples": 19200
+      },
+      "training_cpu_ns": 123946062612,
+      "training_record_sha256": "b3eb3e0d3cc9e19110b315c87f3f28d21211210cd0346ae34ecb1924ab841b56",
+      "training_wall_ns": 153190371958,
+      "validation_actor_examples": 2048,
+      "validation_delivered_examples": 2560,
+      "validation_model_count": 5
+    },
+    {
+      "arm": "direct_risk",
+      "original_pca_validation_cpu_measured": false,
+      "pca_shared_per_seed_per_run": {
+        "encoder_examples": 512,
+        "gate_examples": 512,
+        "svd_calls": 1,
+        "transition_examples": 1024
+      },
+      "seed": 29,
+      "sigma": 0.05,
+      "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+      "training_counts": {
+        "actor_examples": 9600,
+        "actual_png_roundtrips": 153600,
+        "decoder_examples": 153600,
+        "encoder_examples": 9600,
+        "gate_examples": 9600,
+        "observer_digit_examples": 307200,
+        "optimizer_updates": 600,
+        "transition_examples": 19200
+      },
+      "training_cpu_ns": 116931437156,
+      "training_record_sha256": "3f8c7adab000ba2083d9d99a4bf9b9945fce64797696a73872c79f3cb4ff41a4",
+      "training_wall_ns": 117006193974,
+      "validation_actor_examples": 2048,
+      "validation_delivered_examples": 2560,
+      "validation_model_count": 5
+    },
+    {
+      "arm": "direct_mean",
+      "original_pca_validation_cpu_measured": false,
+      "pca_shared_per_seed_per_run": {
+        "encoder_examples": 512,
+        "gate_examples": 512,
+        "svd_calls": 1,
+        "transition_examples": 1024
+      },
+      "seed": 43,
+      "sigma": 0.15,
+      "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+      "training_counts": {
+        "actor_examples": 9600,
+        "actual_png_roundtrips": 153600,
+        "decoder_examples": 153600,
+        "encoder_examples": 9600,
+        "gate_examples": 9600,
+        "observer_digit_examples": 307200,
+        "optimizer_updates": 600,
+        "transition_examples": 19200
+      },
+      "training_cpu_ns": 116168808079,
+      "training_record_sha256": "a9774624e5caa24750cde65305ef4dc6683d8fe20e9bf37c7b1bbf7ed7cb60c1",
+      "training_wall_ns": 116199900660,
+      "validation_actor_examples": 2048,
+      "validation_delivered_examples": 2560,
+      "validation_model_count": 5
+    },
+    {
+      "arm": "direct_mean",
+      "original_pca_validation_cpu_measured": false,
+      "pca_shared_per_seed_per_run": {
+        "encoder_examples": 512,
+        "gate_examples": 512,
+        "svd_calls": 1,
+        "transition_examples": 1024
+      },
+      "seed": 43,
+      "sigma": 0.05,
+      "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+      "training_counts": {
+        "actor_examples": 9600,
+        "actual_png_roundtrips": 153600,
+        "decoder_examples": 153600,
+        "encoder_examples": 9600,
+        "gate_examples": 9600,
+        "observer_digit_examples": 307200,
+        "optimizer_updates": 600,
+        "transition_examples": 19200
+      },
+      "training_cpu_ns": 128204372490,
+      "training_record_sha256": "bcdb8e97fdeba3db2905f0ad05cfe3fc9094bf47263556c0ea29817e8e92759b",
+      "training_wall_ns": 133597411886,
+      "validation_actor_examples": 2048,
+      "validation_delivered_examples": 2560,
+      "validation_model_count": 5
+    },
+    {
+      "arm": "direct_risk",
+      "original_pca_validation_cpu_measured": false,
+      "pca_shared_per_seed_per_run": {
+        "encoder_examples": 512,
+        "gate_examples": 512,
+        "svd_calls": 1,
+        "transition_examples": 1024
+      },
+      "seed": 43,
+      "sigma": 0.15,
+      "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+      "training_counts": {
+        "actor_examples": 9600,
+        "actual_png_roundtrips": 153600,
+        "decoder_examples": 153600,
+        "encoder_examples": 9600,
+        "gate_examples": 9600,
+        "observer_digit_examples": 307200,
+        "optimizer_updates": 600,
+        "transition_examples": 19200
+      },
+      "training_cpu_ns": 116830647244,
+      "training_record_sha256": "c53482bccad075e8c742b08504b3745c219e850022542d63d106d9b3ddfe429b",
+      "training_wall_ns": 116892309187,
+      "validation_actor_examples": 2048,
+      "validation_delivered_examples": 2560,
+      "validation_model_count": 5
+    },
+    {
+      "arm": "direct_risk",
+      "original_pca_validation_cpu_measured": false,
+      "pca_shared_per_seed_per_run": {
+        "encoder_examples": 512,
+        "gate_examples": 512,
+        "svd_calls": 1,
+        "transition_examples": 1024
+      },
+      "seed": 43,
+      "sigma": 0.05,
+      "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+      "training_counts": {
+        "actor_examples": 9600,
+        "actual_png_roundtrips": 153600,
+        "decoder_examples": 153600,
+        "encoder_examples": 9600,
+        "gate_examples": 9600,
+        "observer_digit_examples": 307200,
+        "optimizer_updates": 600,
+        "transition_examples": 19200
+      },
+      "training_cpu_ns": 118018049147,
+      "training_record_sha256": "e66c61e2d367409e50fd888aa7b417c31dc1abe55ec9d497818b2d3590bdfd4d",
+      "training_wall_ns": 125509061513,
+      "validation_actor_examples": 2048,
+      "validation_delivered_examples": 2560,
+      "validation_model_count": 5
+    }
+  ],
+  "same_budget_pair": [
+    "direct_mean",
+    "direct_risk"
+  ],
+  "shared_pca_counting": "One PCA per seed per run is physically performed before both arms; do not count it twice when summing actual work.",
+  "timing_limit": "Training CPU/wall were measured. Original PCA and validation CPU/wall were not separately timed; logical counts are exact, total study CPU is not claimed."
+}

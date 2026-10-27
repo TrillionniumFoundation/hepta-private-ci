@@ -1,0 +1,69 @@
+{
+  "binary": {
+    "bytes": 1059400,
+    "sha256": "5b642a75f632c8fb919298420e9b07cf635a7378cb4dc56780a8200eac4e842c"
+  },
+  "files": {
+    "binaries-metadata.json": {
+      "bytes": 1393,
+      "sha256": "5660836970971625cd1696ecc022fe743780181310934824f799e27e7268f8b2"
+    },
+    "cargo-metadata.json": {
+      "bytes": 1734,
+      "sha256": "51fd2bdfc5734e873e45a6452d598b15d27b7097653a8b56a5b7489c7f8e22fb"
+    },
+    "nextest.toml": {
+      "bytes": 213,
+      "sha256": "472340e0e253b46a2d9882f2fa2e36d535c9afce0b6c2c94f71e98eeb2e6f832"
+    }
+  },
+  "probe_source": {
+    "bytes": 7841,
+    "sha256": "b9f7efd7a2eaf9781b6617ce3db5b05568d8dfd920125ff720a77c11721ff099"
+  },
+  "source": {
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/runtime.py": {
+      "bytes": 6971,
+      "sha256": "c1b45e7448960b1840979a7e1eae7c3450ec6b87b01201ca13fc755a9a411756"
+    },
+    "justfile": {
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    "scripts/just-shell.py": {
+      "bytes": 2030,
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    "scripts/run-nextest.py": {
+      "bytes": 10206,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    }
+  },
+  "tools": {
+    "cargo": {
+      "bytes": 42185192,
+      "path": "/workspace/scratch/95988d8d3ab1/native_toolchain_20261027/installed/bin/cargo",
+      "sha256": "841072d1d92f9e841d9ba5b0814182a0adf064acf4527cd120967b7bc49dcb66"
+    },
+    "cargo-nextest": {
+      "bytes": 24038232,
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/yaml-migration/bin/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+    },
+    "just": {
+      "bytes": 4779120,
+      "path": "/workspace/scratch/95988d8d3ab1/continuation_format_tools_20261027/just",
+      "sha256": "67ac1a1c905d4de14293bed368dd1f272423375d5f7132f522c0e8385061fd8c"
+    },
+    "python3": {
+      "bytes": 30894944,
+      "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+      "sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7"
+    },
+    "rustc": {
+      "bytes": 644784,
+      "path": "/workspace/scratch/95988d8d3ab1/native_toolchain_20261027/installed/bin/rustc",
+      "sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6"
+    }
+  }
+}

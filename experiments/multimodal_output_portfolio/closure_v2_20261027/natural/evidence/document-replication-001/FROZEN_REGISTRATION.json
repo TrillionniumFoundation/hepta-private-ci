@@ -1,0 +1,287 @@
+{
+  "additional_replications_permitted": 0,
+  "assets_sha256": "42878ce729c40e1762eef581a32ce5f6dc8b02badf7174e0ace4df6079d4a842",
+  "exact_N": 128,
+  "heldout_generation_not_started": true,
+  "model_sha256": "d5f19f9ddcc408831a31976df1ff28a8b17f01e4701b5493b54dfefed759471d",
+  "old_qualification_sha256": "0201ffe6c20bddcfceac5a57186a0f2ef0ce0e36300af81817a0fd92ebab7e6a",
+  "ordered_source_ids": [
+    "X51005675099",
+    "X510056849111",
+    "X51005705727",
+    "X51005705759",
+    "X51005710963",
+    "X51005715006",
+    "X51005715007",
+    "X51005719823",
+    "X51005719855",
+    "X51005719857",
+    "X51005719863",
+    "X51005719888",
+    "X51005719889",
+    "X51005719895",
+    "X51005719905",
+    "X51006328967",
+    "X51006329183",
+    "X51006334139",
+    "X51006334742",
+    "X51006334770",
+    "X51006334927",
+    "X51006349081",
+    "X51006349083",
+    "X51006349085",
+    "X51006387931",
+    "X51006389898",
+    "X51006392167",
+    "X51006401845",
+    "X51006401940",
+    "X51006401977",
+    "X51006414512",
+    "X51006414532",
+    "X51006414600",
+    "X51006414708",
+    "X51006414715",
+    "X51006414728",
+    "X51006438346",
+    "X51006502534",
+    "X51006554841",
+    "X51006555819",
+    "X51006556610",
+    "X51006619328",
+    "X51006619503",
+    "X51006619507",
+    "X51006619509",
+    "X51006619784",
+    "X51006619869",
+    "X51006620182",
+    "X51006647933",
+    "X51006647984",
+    "X51006714066",
+    "X51006828199",
+    "X51006828200",
+    "X51006828201",
+    "X51006857126",
+    "X51006857540",
+    "X51006912959",
+    "X51006912976",
+    "X51007103597",
+    "X51007225406",
+    "X51007231346",
+    "X51007231372",
+    "X51007339105",
+    "X51007339638",
+    "X51007391390",
+    "X51007433809",
+    "X51007579714",
+    "X51007579719",
+    "X51007579725",
+    "X51007846282",
+    "X51007846321",
+    "X51007846358",
+    "X51007846361",
+    "X51007846387",
+    "X51007846397",
+    "X51007846400",
+    "X00016469672",
+    "X00016469676",
+    "X51005255805",
+    "X51005268262",
+    "X51005268400",
+    "X51005268472",
+    "X51005306399",
+    "X51005337872",
+    "X51005361895",
+    "X51005433552",
+    "X51005441398",
+    "X51005441401",
+    "X51005441407",
+    "X51005441408",
+    "X51005442341",
+    "X51005442361",
+    "X51005442378",
+    "X51005442383",
+    "X51005444037",
+    "X51005447832",
+    "X51005447833",
+    "X51005447848",
+    "X51005453729",
+    "X51005453801",
+    "X51005568827",
+    "X51005568829",
+    "X51005568884",
+    "X51005605284",
+    "X51005663272",
+    "X51005722668",
+    "X51005741944",
+    "X51005742068",
+    "X51005745183",
+    "X51005745187",
+    "X51005745296",
+    "X51005749905",
+    "X51005757304",
+    "X51005763940",
+    "X51005806679",
+    "X51005806702",
+    "X51006008057",
+    "X51006008095",
+    "X51006008197",
+    "X51006311758",
+    "X51006311778",
+    "X51006327978",
+    "X51006335552",
+    "X51006349086",
+    "X51006350750",
+    "X51006387812",
+    "X51006387813",
+    "X51006388044"
+  ],
+  "protocol": {
+    "OCR": "Same pinned Tesseract English model, psm3, scale1, same public candidate construction",
+    "acceptance": "97.5percent paired normalized-merchant-cluster bootstrap lower bound of primary cost-adjusted-return difference>0; report raw quality, exact fields,CPU andwall separately",
+    "arms": [
+      "original_rules",
+      "rule_residual"
+    ],
+    "bootstrap": {
+      "draws": 5000,
+      "lower_quantile": 0.0125,
+      "seed": 2832,
+      "upper_quantile": 0.9875
+    },
+    "candidate_universe_order": "All347 public official test rows, then626 public official train rows in numeric row order; unseen experimental groups from either upstream split are eligible. Enumerate all candidates before downloading selected images or producing predictions.",
+    "cost_and_information": "Both arms read the same source image and invoke one actual OCR; residual candidate scoring is charged; references enter only after actual JSON/JPEG write/readback; same source/repetition/order rotation",
+    "dataset": "jsdnrs/ICDAR2019-SROIE",
+    "dataset_revision": "bffe40c26759f3376ec2b3ae9031dbba54cd587c",
+    "if_insufficient": "Use the full prespecified available collection, after excluding all prior experimental merchant strings and exact images; freeze the actualN before any model output.",
+    "model": "Exact frozen document-development-001 model; ridge100, correction threshold0.1, original rule candidate retained,128residual weights; no refit or hyperparameter change",
+    "primary_contrast": "rule_residual minus original_rules",
+    "primary_endpoint": "Per-document quality minus0.01times actual measured process+child CPUseconds",
+    "quality": "Original per-observed-field average of0.5exact+0.5normalizededit similarity; missing references masked; exact field accuracy separate",
+    "reason": "The first24new-merchant result remains inconclusive versus strong rules. This is one separately authorized, capped, fixed-model replication, never an extension until significance.",
+    "schema": "hepta.ndu.closure-v2.natural.document.replication.protocol.v1",
+    "scope": "Independent experimental merchant-string groups, not a proof of unseen corporate families/templates or foundation-model generalization",
+    "source_selection": "First128remaining unique ASCII-alphanumeric uppercase annotated company groups, one image each; exclude previous historical, continuation fit/validation/test, and firstv2qualification merchants and byte-identical images. No quality, OCR confidence, answer or outcome based inclusion.",
+    "stopping_rule": "Exactly one fixedN replication after old results; complete all2arms×2repetitions, retain all outputs/failures; no interim scoring for stopping, no extra cohorts, no refit, no pooling old24into new primary evidence",
+    "target_merchants": 128,
+    "timing_repetitions": 2
+  },
+  "registered_ns": 1793093136439997555,
+  "residual_source_sha256": "53a597b66245bdfe2cf1dc97ff97a256526fc1b99ac19b7159b7c954d299b76e",
+  "source_files": [
+    {
+      "bytes": 82,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/__init__.py",
+      "sha256": "2dc5cf76711291eaaf73ef7a2192cb75ca8b4fd04a58383d8674d3b6f8adb911"
+    },
+    {
+      "bytes": 13683,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/audit_outputs.py",
+      "sha256": "fcadd33d8f2f44cc60fc584aa8ad07bb66f767ac722b0210852567b9bcb6c406"
+    },
+    {
+      "bytes": 3327,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/common.py",
+      "sha256": "214cc23db94ea5fe64aaf43f27bec866f0710f07cb873f4e53bdff8160dfe4d7"
+    },
+    {
+      "bytes": 3597,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/document_develop.py",
+      "sha256": "4d2abc9d5bc7ba2e02622d8f5727c52036c426a9dcc8aa6070e559b660bde66d"
+    },
+    {
+      "bytes": 4062,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/document_model.py",
+      "sha256": "53a597b66245bdfe2cf1dc97ff97a256526fc1b99ac19b7159b7c954d299b76e"
+    },
+    {
+      "bytes": 7949,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/document_replication.py",
+      "sha256": "d94e8126cd692752ab19958b075e39e67004b6bcd4b95c4dfd13421eb71c7661"
+    },
+    {
+      "bytes": 5108,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/document_study.py",
+      "sha256": "1135719faaff58cefa7366d7a15ff592a258cc7f808a5a8c4cad077ba463a8a6"
+    },
+    {
+      "bytes": 3168,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/fetch_document.py",
+      "sha256": "a7f8993d6bfc3f34810b145ee901ab9055ada5c9c34b591069255957a676bd76"
+    },
+    {
+      "bytes": 5015,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/fetch_replication.py",
+      "sha256": "a5690c4ba8c3a58be2457e4389bd4a3c885492ab212c1f5d1d028348e1f21f4a"
+    },
+    {
+      "bytes": 5780,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/fetch_speech.py",
+      "sha256": "cddf9110074e2018daa1cdb1e1b23e40e818590bb9d843bbc910aa0688709373"
+    },
+    {
+      "bytes": 8891,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/fetch_video.py",
+      "sha256": "9a482179eb969ccf7425827210cf581db2691284fc731f85a170d0bd9b0821f8"
+    },
+    {
+      "bytes": 10842,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/peer_control.py",
+      "sha256": "0e8db2a1cdcaae597757d9363d2a0fce1aa9ff70a9bb361f8480bb2142106bd5"
+    },
+    {
+      "bytes": 6002,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/speech_combined_study.py",
+      "sha256": "3cbfb781e65a0f3e933249bed0a2ec6ddfeb5676567146064eae76b1b3a4c78c"
+    },
+    {
+      "bytes": 4377,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/speech_develop.py",
+      "sha256": "e70153cf3e21bdf89a13fb9d46d80a6df685b61104800c3d96f0a78eafca3ba3"
+    },
+    {
+      "bytes": 5010,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/speech_encoder_develop.py",
+      "sha256": "29c1215e612e588b929cbdcdfe1f717bf2cb11eb95652b71d103ea564496b5b7"
+    },
+    {
+      "bytes": 3361,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/speech_encoder_gate.py",
+      "sha256": "f0b7052442cea1e339ebf073c851d25e067fdda6c74e0679e93ecdab3f01f8db"
+    },
+    {
+      "bytes": 6452,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/speech_study.py",
+      "sha256": "b5226e74f48399ffcb84a234e21617862c7b761299695d5d95351a1c6f340a5f"
+    },
+    {
+      "bytes": 3477,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/test_boundaries.py",
+      "sha256": "a9a1540ecbea331d3c7f3f818de3f237fb9436348430c325cc6362107a481cdc"
+    },
+    {
+      "bytes": 1803,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/test_encoder_gate.py",
+      "sha256": "9ffccc56035e6257b9d6d88d69a9c42ced748d20879edb765dd16a29b26d9962"
+    },
+    {
+      "bytes": 3191,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_develop.py",
+      "sha256": "51bab5b85e985a056ad2141ddada4caa286bcacf6b065195d4d77c0b77e32091"
+    },
+    {
+      "bytes": 4812,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_engine.py",
+      "sha256": "7681e6277c50f848a0b4b04a98e198c02cea45b08f3e9c8a544f02e833213354"
+    },
+    {
+      "bytes": 4191,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_study.py",
+      "sha256": "e213010df668cb209b6c125e86f363e3e1008a53bccdc6220f12b5ca1a52438b"
+    }
+  ],
+  "source_snapshot": "/workspace/scratch/95988d8d3ab1/natural-v2-runs/document-replication-001/executed-source",
+  "upstream_split_counts": {
+    "test": 76,
+    "train": 52
+  }
+}
