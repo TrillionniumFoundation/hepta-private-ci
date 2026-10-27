@@ -1,0 +1,413 @@
+{
+  "schema": "0c03-four-lane-original-Windows-native-adjudication-v1",
+  "recorded_utc": "2026-10-27T01:15:03.056580+00:00",
+  "source": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+  "tree": "c3af0d319063c48e5425d53bd856011912bec0fc",
+  "actual_preview": "0806e7ae5c555d327818fa0c044baa5e73884c91",
+  "all4_native_source_before_after_and_rustc_host_verified": true,
+  "rows": [
+    {
+      "job": 121938378168,
+      "job_name": "Native Windows deletion boundary (windows-latest, base-merge)",
+      "run": 40427967275,
+      "attempt": 1,
+      "source": {
+        "base_sha": "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "lane": "base-merge",
+        "native": {
+          "runner": "windows-latest",
+          "runner_arch": "X64",
+          "target": "x86_64-pc-windows-msvc"
+        },
+        "parents": [
+          "c38e7727220f32c7410f59083c5ea7878bbae078",
+          "0c03d808d6898c2a91ae456bfefcfc5abe925468"
+        ],
+        "source_sha": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+        "symlink_placeholders": 0,
+        "tested_sha": "0806e7ae5c555d327818fa0c044baa5e73884c91",
+        "tracked_bytes_sha256": "b0a43ed1fe0a0a8c446a68ea01113bac4535c6b3db549ed0b2afa1fa6dc55e9d",
+        "tracked_files": 10205,
+        "tree": "c3af0d319063c48e5425d53bd856011912bec0fc"
+      },
+      "source_before_after_exact": true,
+      "official_archive": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/ci-follow/PN0-current-pair-complete-readonly-20261027T0107Z-001/Windows40427967275/official-artifacts/12701370998.original.zip",
+        "bytes": 92111,
+        "sha256": "05899258b9071a8220b773f0b212ddace734c5a28e11858dc0c24a663323968d"
+      },
+      "full_original_job_log": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/ci-follow/PN0-current-pair-complete-readonly-20261027T0107Z-001/Windows40427967275/ROG-official-readonly-ranges/job121938378168-full-original.log",
+        "bytes": 2000825,
+        "sha256": "c05e8295b5838239c8750b3aa35c1a27a1491fad11cdcdbd5477d3a813c7cbe6"
+      },
+      "original20": {
+        "passed": 18,
+        "failed": [
+          "broad-identity-delete",
+          "legacy-delete-boundary"
+        ],
+        "all20_receipt_and_case_log_SHA_verified": true
+      },
+      "query6": {
+        "passed": 6,
+        "failed": 0,
+        "not_original_safety_closure": true
+      },
+      "terminal3": {
+        "passed": 0,
+        "failed": 3,
+        "actual_panic_evidence": {
+          "actual_live_child_is_pending_until_original_stdin_closes": {
+            "actual_nextest_tries": 2,
+            "both_actual_Exited": 1,
+            "first_expected_Exited": 0,
+            "source_panic_location": "143:9",
+            "actual_panic_spans": [
+              "thread 'win::process_observation::tests::actual_live_child_is_pending_until_original_stdin_closes' (884) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:143:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    0,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "thread 'win::process_observation::tests::actual_live_child_is_pending_until_original_stdin_closes' (3208) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:143:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    0,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            ]
+          },
+          "actual_wait_and_query_rights_failures_do_not_publish_exit": {
+            "actual_nextest_tries": 2,
+            "both_actual_Exited": 1,
+            "first_expected_Exited": 7,
+            "source_panic_location": "117:9",
+            "actual_panic_spans": [
+              "thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (3716) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:117:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    7,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (8264) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:117:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    7,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            ]
+          },
+          "original_signalled_exit_zero_seven_and_259_require_successful_query": {
+            "actual_nextest_tries": 2,
+            "both_actual_Exited": 1,
+            "first_expected_Exited": 0,
+            "source_panic_location": "104:13",
+            "actual_panic_spans": [
+              "thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (1428) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:104:13:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    0,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (7412) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:104:13:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    0,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            ]
+          }
+        },
+        "first_Pending_in_live_test_reached_but_post_stdin_close_exit_is1": true,
+        "reduced_rights_and_later7_259_loop_reached": false,
+        "no_new_raw_BOOL_or_GetLastError5_observation_claim": true
+      },
+      "production_guard_and_whole_unit_qualified": false
+    },
+    {
+      "job": 121938378423,
+      "job_name": "Native Windows deletion boundary (windows-latest, source-head)",
+      "run": 40427967275,
+      "attempt": 1,
+      "source": {
+        "base_sha": "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "lane": "source-head",
+        "native": {
+          "runner": "windows-latest",
+          "runner_arch": "X64",
+          "target": "x86_64-pc-windows-msvc"
+        },
+        "parents": [
+          "2abbb756a13282e3e81157c6e73c36e2122f9101"
+        ],
+        "source_sha": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+        "symlink_placeholders": 0,
+        "tested_sha": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+        "tracked_bytes_sha256": "b0a43ed1fe0a0a8c446a68ea01113bac4535c6b3db549ed0b2afa1fa6dc55e9d",
+        "tracked_files": 10205,
+        "tree": "c3af0d319063c48e5425d53bd856011912bec0fc"
+      },
+      "source_before_after_exact": true,
+      "official_archive": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/ci-follow/PN0-current-pair-complete-readonly-20261027T0107Z-001/Windows40427967275/official-artifacts/12701042811.original.zip",
+        "bytes": 92151,
+        "sha256": "c223717f64c8bb687b66478d8a3d168b2ddfc11607dacc08ac8c419ea9d518be"
+      },
+      "full_original_job_log": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/ci-follow/PN0-current-pair-complete-readonly-20261027T0107Z-001/Windows40427967275/ROG-official-readonly-ranges/job121938378423-full-original.log",
+        "bytes": 2000133,
+        "sha256": "1254fece905721db1b5bcbcda1df6eaa43e90fcbe340b59d18d0ece9be554f59"
+      },
+      "original20": {
+        "passed": 18,
+        "failed": [
+          "broad-identity-delete",
+          "legacy-delete-boundary"
+        ],
+        "all20_receipt_and_case_log_SHA_verified": true
+      },
+      "query6": {
+        "passed": 6,
+        "failed": 0,
+        "not_original_safety_closure": true
+      },
+      "terminal3": {
+        "passed": 0,
+        "failed": 3,
+        "actual_panic_evidence": {
+          "actual_live_child_is_pending_until_original_stdin_closes": {
+            "actual_nextest_tries": 2,
+            "both_actual_Exited": 1,
+            "first_expected_Exited": 0,
+            "source_panic_location": "143:9",
+            "actual_panic_spans": [
+              "thread 'win::process_observation::tests::actual_live_child_is_pending_until_original_stdin_closes' (1904) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:143:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    0,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "thread 'win::process_observation::tests::actual_live_child_is_pending_until_original_stdin_closes' (8980) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:143:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    0,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            ]
+          },
+          "actual_wait_and_query_rights_failures_do_not_publish_exit": {
+            "actual_nextest_tries": 2,
+            "both_actual_Exited": 1,
+            "first_expected_Exited": 7,
+            "source_panic_location": "117:9",
+            "actual_panic_spans": [
+              "thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (4856) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:117:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    7,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (8552) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:117:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    7,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            ]
+          },
+          "original_signalled_exit_zero_seven_and_259_require_successful_query": {
+            "actual_nextest_tries": 2,
+            "both_actual_Exited": 1,
+            "first_expected_Exited": 0,
+            "source_panic_location": "104:13",
+            "actual_panic_spans": [
+              "thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (7740) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:104:13:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    0,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (1280) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:104:13:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    0,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            ]
+          }
+        },
+        "first_Pending_in_live_test_reached_but_post_stdin_close_exit_is1": true,
+        "reduced_rights_and_later7_259_loop_reached": false,
+        "no_new_raw_BOOL_or_GetLastError5_observation_claim": true
+      },
+      "production_guard_and_whole_unit_qualified": false
+    },
+    {
+      "job": 121938378431,
+      "job_name": "Native Windows deletion boundary (windows-11-arm, source-head)",
+      "run": 40427967275,
+      "attempt": 1,
+      "source": {
+        "base_sha": "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "lane": "source-head",
+        "native": {
+          "runner": "windows-11-arm",
+          "runner_arch": "ARM64",
+          "target": "aarch64-pc-windows-msvc"
+        },
+        "parents": [
+          "2abbb756a13282e3e81157c6e73c36e2122f9101"
+        ],
+        "source_sha": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+        "symlink_placeholders": 0,
+        "tested_sha": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+        "tracked_bytes_sha256": "b0a43ed1fe0a0a8c446a68ea01113bac4535c6b3db549ed0b2afa1fa6dc55e9d",
+        "tracked_files": 10205,
+        "tree": "c3af0d319063c48e5425d53bd856011912bec0fc"
+      },
+      "source_before_after_exact": true,
+      "official_archive": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/ci-follow/PN0-current-pair-complete-readonly-20261027T0107Z-001/Windows40427967275/official-artifacts/12700873328.original.zip",
+        "bytes": 92161,
+        "sha256": "8f71df8830e2d0d3f1bb777b372a5e82108a2021e0beca03342addf0e71c14ba"
+      },
+      "full_original_job_log": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/ci-follow/PN0-current-pair-complete-readonly-20261027T0107Z-001/Windows40427967275/ROG-official-readonly-ranges/job121938378431-full-original.log",
+        "bytes": 2002191,
+        "sha256": "bd72921bce9cfd871a5d89aa65aab80e2355d66b81e89f670b2d463ae15fdfb5"
+      },
+      "original20": {
+        "passed": 18,
+        "failed": [
+          "broad-identity-delete",
+          "legacy-delete-boundary"
+        ],
+        "all20_receipt_and_case_log_SHA_verified": true
+      },
+      "query6": {
+        "passed": 6,
+        "failed": 0,
+        "not_original_safety_closure": true
+      },
+      "terminal3": {
+        "passed": 0,
+        "failed": 3,
+        "actual_panic_evidence": {
+          "actual_live_child_is_pending_until_original_stdin_closes": {
+            "actual_nextest_tries": 2,
+            "both_actual_Exited": 1,
+            "first_expected_Exited": 0,
+            "source_panic_location": "143:9",
+            "actual_panic_spans": [
+              "thread 'win::process_observation::tests::actual_live_child_is_pending_until_original_stdin_closes' (2212) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:143:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    0,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "thread 'win::process_observation::tests::actual_live_child_is_pending_until_original_stdin_closes' (8096) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:143:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    0,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            ]
+          },
+          "actual_wait_and_query_rights_failures_do_not_publish_exit": {
+            "actual_nextest_tries": 2,
+            "both_actual_Exited": 1,
+            "first_expected_Exited": 7,
+            "source_panic_location": "117:9",
+            "actual_panic_spans": [
+              "thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (4684) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:117:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    7,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (2824) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:117:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    7,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            ]
+          },
+          "original_signalled_exit_zero_seven_and_259_require_successful_query": {
+            "actual_nextest_tries": 2,
+            "both_actual_Exited": 1,
+            "first_expected_Exited": 0,
+            "source_panic_location": "104:13",
+            "actual_panic_spans": [
+              "thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (8636) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:104:13:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    0,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (2996) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:104:13:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    0,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            ]
+          }
+        },
+        "first_Pending_in_live_test_reached_but_post_stdin_close_exit_is1": true,
+        "reduced_rights_and_later7_259_loop_reached": false,
+        "no_new_raw_BOOL_or_GetLastError5_observation_claim": true
+      },
+      "production_guard_and_whole_unit_qualified": false
+    },
+    {
+      "job": 121938378554,
+      "job_name": "Native Windows deletion boundary (windows-11-arm, base-merge)",
+      "run": 40427967275,
+      "attempt": 1,
+      "source": {
+        "base_sha": "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "lane": "base-merge",
+        "native": {
+          "runner": "windows-11-arm",
+          "runner_arch": "ARM64",
+          "target": "aarch64-pc-windows-msvc"
+        },
+        "parents": [
+          "c38e7727220f32c7410f59083c5ea7878bbae078",
+          "0c03d808d6898c2a91ae456bfefcfc5abe925468"
+        ],
+        "source_sha": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+        "symlink_placeholders": 0,
+        "tested_sha": "0806e7ae5c555d327818fa0c044baa5e73884c91",
+        "tracked_bytes_sha256": "b0a43ed1fe0a0a8c446a68ea01113bac4535c6b3db549ed0b2afa1fa6dc55e9d",
+        "tracked_files": 10205,
+        "tree": "c3af0d319063c48e5425d53bd856011912bec0fc"
+      },
+      "source_before_after_exact": true,
+      "official_archive": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/ci-follow/PN0-current-pair-complete-readonly-20261027T0107Z-001/Windows40427967275/official-artifacts/12700733458.original.zip",
+        "bytes": 92199,
+        "sha256": "d9a6764bbf2181461af83dd2fe5df0a097ddd60e2a13a5cfe2dead483d631209"
+      },
+      "full_original_job_log": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/ci-follow/PN0-current-pair-complete-readonly-20261027T0107Z-001/Windows40427967275/ROG-official-readonly-ranges/job121938378554-full-original.log",
+        "bytes": 2002312,
+        "sha256": "117287a126ae9cb542e119b410f7a6147b29807019f42d5c618b084cff7d63de"
+      },
+      "original20": {
+        "passed": 18,
+        "failed": [
+          "broad-identity-delete",
+          "legacy-delete-boundary"
+        ],
+        "all20_receipt_and_case_log_SHA_verified": true
+      },
+      "query6": {
+        "passed": 6,
+        "failed": 0,
+        "not_original_safety_closure": true
+      },
+      "terminal3": {
+        "passed": 0,
+        "failed": 3,
+        "actual_panic_evidence": {
+          "actual_live_child_is_pending_until_original_stdin_closes": {
+            "actual_nextest_tries": 2,
+            "both_actual_Exited": 1,
+            "first_expected_Exited": 0,
+            "source_panic_location": "143:9",
+            "actual_panic_spans": [
+              "thread 'win::process_observation::tests::actual_live_child_is_pending_until_original_stdin_closes' (8804) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:143:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    0,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "thread 'win::process_observation::tests::actual_live_child_is_pending_until_original_stdin_closes' (6648) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:143:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    0,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            ]
+          },
+          "actual_wait_and_query_rights_failures_do_not_publish_exit": {
+            "actual_nextest_tries": 2,
+            "both_actual_Exited": 1,
+            "first_expected_Exited": 7,
+            "source_panic_location": "117:9",
+            "actual_panic_spans": [
+              "thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (10192) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:117:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    7,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (3340) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:117:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    7,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            ]
+          },
+          "original_signalled_exit_zero_seven_and_259_require_successful_query": {
+            "actual_nextest_tries": 2,
+            "both_actual_Exited": 1,
+            "first_expected_Exited": 0,
+            "source_panic_location": "104:13",
+            "actual_panic_spans": [
+              "thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (5592) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:104:13:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    0,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (7124) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:104:13:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Exited(\n<    1,\n>    0,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            ]
+          }
+        },
+        "first_Pending_in_live_test_reached_but_post_stdin_close_exit_is1": true,
+        "reduced_rights_and_later7_259_loop_reached": false,
+        "no_new_raw_BOOL_or_GetLastError5_observation_claim": true
+      },
+      "production_guard_and_whole_unit_qualified": false
+    }
+  ],
+  "source_readback": [
+    {
+      "path": ".github/workflows/hepta-windows-delete-boundary.yml",
+      "bytes": 56027,
+      "sha256": "5957af19f9513b0e8c1cf335b4e94280f3e93381bbb363e28fd869ab4836fabd",
+      "old9d_sha256": "5957af19f9513b0e8c1cf335b4e94280f3e93381bbb363e28fd869ab4836fabd",
+      "byteexact_to_old9d": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win/process_observation.rs",
+      "bytes": 1571,
+      "sha256": "842988628199ca90030f95ae4c9874f4b7e708e8a8c063360d5a8cc832f4613f",
+      "old9d_sha256": "842988628199ca90030f95ae4c9874f4b7e708e8a8c063360d5a8cc832f4613f",
+      "byteexact_to_old9d": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win/process_observation_tests.rs",
+      "bytes": 5168,
+      "sha256": "da1d4557aba8793a8101f4feb61970335ebd5420362989ebdfc3efd828ac448f",
+      "old9d_sha256": "bfdbf62a5b0137af12faf08c090bcf7cb2084f794b8a676936f0db01c3fef0b0",
+      "byteexact_to_old9d": false
+    }
+  ],
+  "all_88_case_group_logs_and_required_receipt_hashes_verified": true,
+  "original20_each18PASS2FAIL": true,
+  "original_broad_and_legacy_delete_failures_closed": false,
+  "terminal_each0PASS3FAIL": "All three fail in both retained Nextest tries per lane; old9d1PASS2FAIL not inherited. Newly raw_arg fixture did not fix the original terminal failures and live-child now fails its post-stdin-close Exited0 assertion too.",
+  "observed_reachability": "rights stops at full-handle Exited1!=7, before reduced-rights loop; 0/7/259 stops at first0 with Exited1!=0; live-child Pending assertion passes but terminal assertion Exited1!=0 fails. No proof of raw BOOL1, query ACCESS_DENIED5, actual7/259 outcome, or full resource return.",
+  "cause_not_established": "Exact public observer still checks GetExitCodeProcess Boolean only for success and returns the output code variable. Constant observed1 does not prove Boolean/exit-code confusion. Child stdout/stderr remain original null, so CMD failure cause is not captured. No native cause repair asserted.",
+  "original_workflow_and_production_observer_byteexact_to9d": true,
+  "original_assertions_8s_deadlines_rights_stdio_cleanup_and_workflow_caps_unchanged": true,
+  "original16plus4_groups_not_replaced_with_query_or_terminal_mechanisms": true,
+  "no_skip_xfail_guard_enable_token_ACL_fixture_read_contract_or_limit_change": true,
+  "no_CI_dispatch_rerun_or_cancel_by_reviewer": true,
+  "old07731_9d_historical_failure_evidence_retained": true,
+  "ROG_readonly_HTTP_range_completion": "4 initial local60s GETs timed out and partials/-9 waits retained; 8 official exact206 ranges through authorized SSHROG completed, remotechild/localSSH actualwait0 and wireSHA/total verified; every complete log matches its original partial prefix. No ROG source/config/service or original LAN hold mutation.",
+  "transport": {
+    "path": "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/ci-follow/PN0-current-pair-complete-readonly-20261027T0107Z-001/Windows40427967275/four-complete-original-logs-official-range-receipt.json",
+    "bytes": 24281,
+    "sha256": "39f1ad39e80f3208a1f1fc597539ed983360d84021a561b643fd8be0cf3e81e9"
+  },
+  "artifact_downloads": {
+    "path": "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/ci-follow/PN0-current-pair-complete-readonly-20261027T0107Z-001/Windows40427967275/four-official-artifact-download-receipts.json",
+    "bytes": 46308,
+    "sha256": "4d8b8f7f275986e8853871930cde201f14b5f76952ef047761953557fe9864e5"
+  },
+  "task_complete": false,
+  "merge_ready": false,
+  "decision": "NO_GO"
+}

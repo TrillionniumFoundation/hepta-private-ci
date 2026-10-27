@@ -1844,3 +1844,39 @@ PN0 [ROG host development failure and source-map observations](../qualification/
 
 
 PN0 [exact paired source interface](../qualification/pn0-ci/paired-source-bd8184-20261026/README.md) binds Chain `bd81849bb47b10e912cfea84f7532ccc1175e4ee` to the real ordered main snapshot `96175153365914375739e5ccf6dd47b84a9e97a2` (parents main9fed then sourcebd8184; treef1df). This is a source-input binding, not an execution receipt or the actual PR preview. The original56 pair steps,112 commands per lane and9 Windows-ledger steps remain exact. Resolve each actual Hepta head/base/preview independently; old PASS does not qualify the new tuple. Keep the old Legacy-path growth timeout, both Windows deletion failures and all original PN0-PN6 model/release/WAN gates; **NO_GO**.
+
+
+### PN0 Windows terminal regression and source follow-up — 2026-10-27 (OPEN)
+
+[Four original native artifacts and source follow-up](../qualification/pn0-ci/windows-0c03-terminal-regression-20261027/manifest.json)
+preserve run40427967275 attempt1 at exact Hepta
+`0c03d808d6898c2a91ae456bfefcfc5abe925468` and actual PR preview
+`0806e7ae5c555d327818fa0c044baa5e73884c91`. Each of four native lanes
+still passed eighteen of the original twenty groups; broad-identity-delete and
+legacy-delete-boundary failed. The separate six query controls passed. All three
+terminal controls now failed, compared with one pass and two failures at9d.
+The first complete-handle observations returned Exited1 instead of expected0/7;
+reduced-rights and later7/259 checks were not reached. No observation proves
+CMD syntax, a stale executable or another historical root cause.
+
+The local source follow-up restores the original9d private Command argument
+construction and retains the original scripts, seven checks, stdio, rights,
+eight-second deadline, cleanup and Result/panic propagation. Failure-only
+diagnostics query the same full owned child handle once after original cleanup,
+and preserve the original try-wait, optional kill and wait results. Query failure
+is UNKNOWN. Output is capped at4096bytes, which is no runtime bound; parent
+arguments do not prove the actual child command line. Source review and formatting
+passed; this follow-up has no compile or native qualification. Production guards
+and the complete token/ACL/PE-DLL/namespace/desktop/stdio/Job/caller chain remain
+required. Restoring a previous helper cannot close the two original failures.
+
+On the same published0c source, the single transport-failure YAML retry actually
+passed the original ten response-context/terminal-owner tests,808 consumer tests
+and strict Clippy. Its original failed attempt remains. The new pair workflow
+reported SUCCESS; complete original execution artifacts are being verified
+separately. Neither result qualifies the later local source follow-up. A Mac
+release job separately hit its original sixty-minute maximum before compilation
+finished; the cancelled result remains a failure observation without a restart
+or longer limit. All existing PN0–PN6 exits, four native lanes, original twenty
+groups, pair steps, resources, historical failures, model/release/WAN requirements
+and NO_GO remain; task_complete=false and merge_ready=false.

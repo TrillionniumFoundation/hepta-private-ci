@@ -1,0 +1,9 @@
+{
+  "recorded_utc": "2026-10-27T01:59:55.638711+00:00",
+  "actual_first_driver_exit": 1,
+  "phase": "post-format diff capture",
+  "error": "subprocess.check_output(diff -u) treated conventional differences exit1 as Python exception",
+  "source_was_already_applied_and_original_fmt_actual_exit": 0,
+  "no_test_or_native_result_claimed": true,
+  "correction": "capture formatting diff as data with difflib; do not rerun formatter or tests"
+}

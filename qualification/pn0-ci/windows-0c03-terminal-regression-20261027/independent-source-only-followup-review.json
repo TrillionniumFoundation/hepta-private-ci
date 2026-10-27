@@ -1,0 +1,107 @@
+{
+  "schema": "private-CMD-rollback-diagnostic-independent-static-admission-v1",
+  "recorded_utc": "2026-10-27T01:54:05.297549+00:00",
+  "decision": "SOURCE_ONLY_ADMIT_FOR_ROOT_INTEGRATION",
+  "candidate_sha256": "7a7d3d547bd90e76ec9f3839f502d795ff5ee95d224e01e97a7d795f75eac4a1",
+  "patch_sha256": "82ac0e961c7aa1efb73db5b10f1674048375325270b1b63ce3d5f9abeb3a3138",
+  "source_files_frozen": [
+    {
+      "path": "work/ci-follow/Hepta-Windows-CMD-rollback-diagnostic-independent-static-review-20261027-001/base-public0c03.rs",
+      "bytes": 5168,
+      "sha256": "da1d4557aba8793a8101f4feb61970335ebd5420362989ebdfc3efd828ac448f"
+    },
+    {
+      "path": "work/ci-follow/Hepta-Windows-CMD-rollback-diagnostic-independent-static-review-20261027-001/combined-candidate.rs",
+      "bytes": 7823,
+      "sha256": "7a7d3d547bd90e76ec9f3839f502d795ff5ee95d224e01e97a7d795f75eac4a1"
+    },
+    {
+      "path": "work/ci-follow/Hepta-Windows-CMD-rollback-diagnostic-independent-static-review-20261027-001/combined-public0c03.patch",
+      "bytes": 4896,
+      "sha256": "82ac0e961c7aa1efb73db5b10f1674048375325270b1b63ce3d5f9abeb3a3138"
+    },
+    {
+      "path": "work/ci-follow/Hepta-Windows-CMD-rollback-diagnostic-independent-static-review-20261027-001/original-package-Cargo.toml",
+      "bytes": 2582,
+      "sha256": "5a302aef6e20787114e13fc1c15389efda3c03221a523e5b781106454a0fabcc"
+    },
+    {
+      "path": "work/ci-follow/Hepta-Windows-CMD-rollback-diagnostic-independent-static-review-20261027-001/primary-binding-feature-and-capacity-review.json",
+      "bytes": 1830,
+      "sha256": "1b8cba6a22a07f0b3a1fe1bd75595638be7dc7c7bd373b2676a20140d84e0f52"
+    },
+    {
+      "path": "work/ci-follow/Hepta-Windows-CMD-rollback-diagnostic-independent-static-review-20261027-001/rollback-only.rs",
+      "bytes": 5112,
+      "sha256": "bfdbf62a5b0137af12faf08c090bcf7cb2084f794b8a676936f0db01c3fef0b0"
+    },
+    {
+      "path": "work/ci-follow/Hepta-Windows-CMD-rollback-diagnostic-independent-static-review-20261027-001/rust196-cursor.rs",
+      "bytes": 21527,
+      "sha256": "55ddc80e67c3d9af04030c55a143e0d1e62c608472448144436274a48075543f"
+    },
+    {
+      "path": "work/ci-follow/Hepta-Windows-CMD-rollback-diagnostic-independent-static-review-20261027-001/rust196-process-windows.rs",
+      "bytes": 33234,
+      "sha256": "a6cb145cdfe3e1f71bc78c70e8072ea89ce418ab4d3df22a04264393383d4236"
+    },
+    {
+      "path": "work/ci-follow/Hepta-Windows-CMD-rollback-diagnostic-independent-static-review-20261027-001/windows-sys-0.52.0-threading.rs",
+      "bytes": 136501,
+      "sha256": "6258ef99d17078002020644540a608a89cdf20436daefa3970a65348e6793c1c"
+    }
+  ],
+  "independent_static_results": {
+    "rollback_only_exact_public9d_file": true,
+    "private_command_builder_exact_old9d": true,
+    "original_test_tail_reduced_function_and_test_bodies_byteexact_public0c": true,
+    "original_predicate_count": "6 assert_eq! plus1 deadline ensure!=7 retained original checks; not7assert_eq macros",
+    "original_remaining_and_8s_value_byteexact": true,
+    "original_Result_reaped_panic_deadline_propagation_tail_byteexact": true,
+    "original_child_call_counts": {
+      "command.spawn()": 1,
+      "child.try_wait()": 1,
+      "child.kill()": 1,
+      "child.wait()": 1,
+      "QueryFullProcessImageNameW(": 1
+    },
+    "original_cleanup_order": [
+      "command.spawn()",
+      "catch_unwind",
+      "drop(child.stdin.take())",
+      "child.try_wait()",
+      "child.kill()",
+      "child.wait()",
+      "QueryFullProcessImageNameW(",
+      "    match checked {"
+    ],
+    "try_wait_predicate": "same Ok(Some(_)) using borrowed stored original result; no extra try_wait/kill/wait",
+    "child_stdio": "original stdin piped, stdout/stderr null unchanged",
+    "production_guard_token_ACL_Job_observer_or_caller_changed": false,
+    "new_dep_or_features": false,
+    "actual_windows_sys0_52_signature_and_existing_Foundation_Threading_inspected": true
+  },
+  "failure_diagnostic": {
+    "only_trigger": "original checked failure/panic or original wait Err, after same original cleanup/wait; final-deadline-only ensure failure is not logged by this branch",
+    "query": "single QueryFullProcessImageNameW on retained original owned Child handle; no PID reopen. Fixed32768u16 buffer, bounds-check returned length. Failed/empty/out-of-range labelUNKNOWN, not PASS. Rust1.96 process wait/try_wait source retains handle.",
+    "bytecap": "Additional diagnostic only: fixed Cursor<[u8;4096]> with no seek/resizing keeps position<=4096; utf8 invalid suffix truncated, first fixed prefix fits, marker changes0to1 on formatting/cut error. Existing original eprintln records remain separate.",
+    "one_write": "One stderr.lock().write <=4096B; no write_all or retry, Err/short writes ignored and cannot substitute original failure. OS failure/short write may lose marker/content, absence is UNKNOWN.",
+    "time_limit": "4096B is a BYTE bound only. Synchronous query/stderr lock/write has no proven wallclock bound. Original8s deadline and failure propagation remain unchanged; no new native budget or deadline extension.",
+    "scope_limits": "parent builder args/program and queried image only; no actual command-line wire, childstderr (stillNull), PEhash/loader proof, causal CMD error proof, or original7/259/reducedrights qualification"
+  },
+  "primary_references": [
+    {
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/1.96.0/library/std/src/io/cursor.rs",
+      "verified_fact": "array Cursor Write stable1.61 uses bounded non-resizing slice_write; no candidate seek"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-queryfullprocessimagenamew",
+      "verified_fact": "query-access required; character length excludes NUL; zero Boolean indicates failure, not an image observation"
+    }
+  ],
+  "reviewer_error_preserved": "First ad-hoc static builder stopped before receipt on mistaken assumption7assert_eq macros. Re-read proves6assert_eq+1ensure original7checks; original full tail bytes unchanged. No candidate/root change or tests occurred.",
+  "no_root_or_candidate_write_build_test_native_CI_rerun_dispatch_cancel_push_or_budget_reset": true,
+  "qualification": "source-only observation candidate; native0c Windows20groups18PASS2FAIL and terminal0PASS3FAIL all remain failures. Rollback is not claimed to repair old2terminal failures or prove raw_arg cause.",
+  "task_complete": false,
+  "merge_ready": false
+}
