@@ -3,6 +3,7 @@ use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
+use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_automation::AuthorizedEffectIntent;
 use codex_hepta_automation::AutomationCalendarScheduleV2;
 use codex_hepta_automation::AutomationMissedRunPolicy;
@@ -115,6 +116,22 @@ impl AgentdClient {
             .payload
         {
             AgentdPayload::Lifecycle(snapshot) => Ok(snapshot),
+            payload => unexpected(payload),
+        }
+    }
+
+    /// Request the existing owner drain after Supervisor enters Draining.
+    /// A drained response reports quiescence, not process exit or task joining.
+    pub async fn drain(&self) -> Result<DrainSnapshot, AgentdError> {
+        match self
+            .send(AgentdRequest::drain(
+                self.request_id(),
+                self.spawn_generation,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::Drain(snapshot) => Ok(snapshot),
             payload => unexpected(payload),
         }
     }
