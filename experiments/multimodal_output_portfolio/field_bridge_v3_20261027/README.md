@@ -123,6 +123,8 @@ V2 的同面板 H7 轨迹审计限制仍留在原 ledger；V3 的新数据边界
 | B10 完整持久证据 | 归档与恢复回执单独记录；上传权限未闭合 | 自动审批要求对 V2 具体归档和报告、以及 Library 目标明确授权 |
 | 理论、LLM 与生产范围 | 尚未建立 | 属于主张边界，不被小任务的工程通过替代 |
 
-代码、冻结协议、完整拟合候选、开发终点数组、独立审计与停止决定均已进入研究分支。原始媒体、全部检查点及逐步证据的归档使用逐成员哈希清单；归档身份和从归档恢复的复算回执独立于归档保存，以避免自指哈希。[恢复说明](../field_bridge_v3_20261027_review/RESTORE_V3.txt)、[归档校验与恢复复算](evidence/ARCHIVE_AND_RESTORE_VERIFICATION.json)。
+代码、冻结协议、完整拟合候选、开发终点数组、独立审计与停止决定均已进入研究分支。完整本地证据包为 **1,254,389,884 字节**，包含 **2,590 个 payload 文件、1,324,748,001 字节原始内容**；全部成员 SHA、外层 CRC 和 129 个内部 gzip 流均通过检查，无例外放行。另从包内按原字节恢复 **50 个文件、76,679,272 字节**，使用归档算法重新读取 506,880 个开发终点值与 30,720 个运行 episode，精确重现开发选择、运行比较、bootstrap draw SHA 和两道失败门槛。构建、完整验证及恢复复算均首次通过；新增模型、observer、Hepta native 和网络调用均为 0。归档回执另存于包外，避免自指哈希。[恢复说明](../field_bridge_v3_20261027_review/RESTORE_V3.txt)、[归档校验与恢复复算](evidence/ARCHIVE_AND_RESTORE_VERIFICATION.json)。
 
-**不能将全部 substantive blocker 标为 closed。** 科学门槛失败作为完整结果保留；V2 的归档上传也曾被自动审批两次拒绝，要求明确文件和保存目标。没有通过改用其他外部目标来绕过这一拦截。V3 的新归档将提供同样可审查的文件身份，等待具体保存授权；仓库内代码和结果的提交不等于原始归档已长期保存。[原始授权 blocker](../field_bridge_v2_20261027/evidence/PERSISTENCE_AUTHORIZATION_BLOCKER.json)。
+成本账的 **1,181 个绑定文件全部保全**：1,171 个原路径直接归档，10 个换位置副本经过逐字节比对；独立交叉检查差异为 0。归档构建／验证／恢复的额外 CPU 和 wall 成本单列，没有改写原有 18 份研究验证回执的不可变成本账。[归档文件身份](evidence/EVIDENCE_ARCHIVE.json)、[成本账与归档覆盖复核](evidence/LEDGER_ARCHIVE_COVERAGE_REVIEW.json)。
+
+**不能将全部 substantive blocker 标为 closed。** 科学门槛失败作为完整结果保留；V2 的归档上传也曾被自动审批两次拒绝，要求明确文件和保存目标。没有通过改用其他外部目标来绕过这一拦截。V3 的归档和完整校验报告现已就绪，具体保存请求列明 V2/V3 两个包、两份报告和 ChatGPT Library 目标；V3 尚未尝试上传。仓库内代码和结果的提交不等于原始归档已长期保存。[原始授权 blocker](../field_bridge_v2_20261027/evidence/PERSISTENCE_AUTHORIZATION_BLOCKER.json)、[具体文件与目标请求](evidence/PERSISTENCE_REQUEST.json)。

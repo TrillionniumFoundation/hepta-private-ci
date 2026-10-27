@@ -258,6 +258,16 @@
       "title": "Full evidence reproduction and independent arithmetic",
       "v3_update": {
         "gate_failures_are_not_relabelled_as_success": true,
+        "local_verified_archive": {
+          "exact_statistical_reanalysis": true,
+          "inner_gzip_streams_verified": 129,
+          "ledger_bindings_preserved": 1181,
+          "payload_files": 2590,
+          "raw_archive_persisted": false,
+          "restore_files": 50,
+          "verification_receipt": "../field_bridge_v3_20261027/evidence/ARCHIVE_AND_RESTORE_VERIFICATION.json",
+          "verification_sha256": "198916ddf9f2ad281fcda54a79b79f9b0210cc56129a8dc77e054ee34a0c6351"
+        },
         "resolution": "V3 actual fitting, media, both observer scores, native state, statistics, execution costs and stop decisions are independently verified. Complete raw archive integrity/restoration is reported by the external archive receipt. V2 archive/report upload was automatically rejected twice pending explicit named-file and Library-destination authorization; V3 archive persistence must also be concretely authorized. Git-backed sources/results do not equal durable raw archive storage.",
         "status": "partially_closed_pending_persistence_authorization"
       }
@@ -326,10 +336,13 @@
     "registered": 6,
     "result_sha256": "ae10b12185c64d366019f3b73c522e9d6b364523174864a9424a65ffafc547e2"
   },
+  "v3_archive_sha256": "37ef2e8de1a795ada43a92afc7403018e82ac23368e8ee6f7319569099abf4cf",
   "v3_archive_verification_external_receipt": "../field_bridge_v3_20261027/evidence/ARCHIVE_AND_RESTORE_VERIFICATION.json",
+  "v3_archive_verification_sha256": "198916ddf9f2ad281fcda54a79b79f9b0210cc56129a8dc77e054ee34a0c6351",
   "v3_development_gate_passed": false,
   "v3_final_confirmation_executed": false,
   "v3_frozen_runtime_gate_passed": false,
+  "v3_local_archive_and_restore_passed": true,
   "v3_primary_comparisons_executed": 0,
   "v3_primary_comparisons_not_established": [
     "B-A",
