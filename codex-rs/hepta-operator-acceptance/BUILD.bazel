@@ -17,7 +17,9 @@ rust_library(
         "@crates//:sha2",
         "@crates//:thiserror",
     ] + select({
-        "@platforms//os:windows": ["@crates//:winapi-util"],
+        "@platforms//os:windows": [
+            "//codex-rs/utils/path-utils",
+        ],
         "//conditions:default": [],
     }),
 )
@@ -35,7 +37,10 @@ rust_test(
     deps = [
         "@crates//:pretty_assertions",
         "@crates//:tempfile",
-    ],
+    ] + select({
+        "@platforms//os:windows": ["@crates//:windows-sys"],
+        "//conditions:default": [],
+    }),
 )
 
 rust_binary(

@@ -18,7 +18,10 @@ rust_library(
         "@crates//:thiserror",
         "@crates//:tokio",
         "@crates//:toml",
-    ],
+    ] + select({
+        "@platforms//os:windows": ["//codex-rs/utils/path-utils"],
+        "//conditions:default": [],
+    }),
 )
 
 rust_test(
