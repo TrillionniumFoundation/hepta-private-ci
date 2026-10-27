@@ -1,0 +1,148 @@
+{
+  "actual_evaluation_episodes": 1280,
+  "actual_media_files": 9040,
+  "actual_native_sparse_ticks": 2752,
+  "authority": "DENY_ALL",
+  "comparisons": {
+    "history": {
+      "difference": 0.0,
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "metric": "mean_net_return",
+      "positive_lower_bound": false,
+      "prespecified_primary": false
+    },
+    "shuffled": {
+      "difference": 0.58203125,
+      "interval": [
+        0.43639843750000007,
+        0.7536777343750001
+      ],
+      "metric": "mean_net_return",
+      "positive_lower_bound": true,
+      "prespecified_primary": false
+    },
+    "state_reset": {
+      "difference": 0.07687500000000001,
+      "interval": [
+        0.06843750000000001,
+        0.08461523437500015
+      ],
+      "metric": "mean_net_return",
+      "positive_lower_bound": true,
+      "prespecified_primary": true
+    },
+    "zero": {
+      "difference": 0.07687500000000001,
+      "interval": [
+        0.06843750000000001,
+        0.08461523437500015
+      ],
+      "metric": "mean_net_return",
+      "positive_lower_bound": true,
+      "prespecified_primary": true
+    }
+  },
+  "full_NDU_training": false,
+  "host_private_state_isolation_proven": false,
+  "learned_natural_multimodal_generation": false,
+  "native_owner_integration": false,
+  "numeric_unique_advantage_over_same_information_history": false,
+  "old_native_closure_recovered": false,
+  "original_neuron_parameters_trained": false,
+  "original_sparse_neuron_state_causally_mediates_actions": true,
+  "post_delivery_feedback_before_decision_chronology": true,
+  "python_peak_rss_bytes": 62455808,
+  "readout_parameters_trained": true,
+  "registration_sha256": "fd6213adf5f8f025c9c6594e30135ced319bb7a31f2adfc5d0d7adcf39e1c6a8",
+  "requires_calibration": true,
+  "rows_sha256": "54fdde486150281d8108d561cdf9e0294117ac32ad14fd37beacd7e084623915",
+  "same_public_information_across_arms": true,
+  "schema": "hepta.repair.original-neuron-feedback.result.v1",
+  "scope": "Constructed two-tick feedback pathway in a new synthetic codec task; conditional on one trained head",
+  "shuffle_from_actual_committed_receipts_and_preserves_marginal": true,
+  "source_unchanged": true,
+  "statistics": {
+    "history": {
+      "action_disagreements_with_numeric": 0,
+      "actual_output_bundles": 348,
+      "empirical_ce": 0.18706384328808698,
+      "mean_net_return": 0.30203125,
+      "native_ns": 49502554,
+      "native_tick_count": 512,
+      "repair_count": 92,
+      "rows": 256,
+      "second_state_digest_differs_from_numeric": 0,
+      "wall_ns": 686354205
+    },
+    "numeric": {
+      "action_disagreements_with_numeric": 0,
+      "actual_output_bundles": 348,
+      "empirical_ce": 0.18706384328808698,
+      "mean_net_return": 0.30203125,
+      "native_ns": 46442915,
+      "native_tick_count": 512,
+      "repair_count": 92,
+      "rows": 256,
+      "second_state_digest_differs_from_numeric": 0,
+      "wall_ns": 685735170
+    },
+    "shuffled": {
+      "action_disagreements_with_numeric": 122,
+      "actual_output_bundles": 348,
+      "empirical_ce": -2.89172560225374,
+      "mean_net_return": -0.28,
+      "native_ns": 48039612,
+      "native_tick_count": 512,
+      "repair_count": 92,
+      "rows": 256,
+      "second_state_digest_differs_from_numeric": 133,
+      "wall_ns": 700852197
+    },
+    "state_reset": {
+      "action_disagreements_with_numeric": 164,
+      "actual_output_bundles": 512,
+      "empirical_ce": 0.11927942304457788,
+      "mean_net_return": 0.22515624999999995,
+      "native_ns": 37771879,
+      "native_tick_count": 512,
+      "repair_count": 256,
+      "rows": 256,
+      "second_state_digest_differs_from_numeric": 256,
+      "wall_ns": 865476313
+    },
+    "zero": {
+      "action_disagreements_with_numeric": 164,
+      "actual_output_bundles": 512,
+      "empirical_ce": 0.11927942304457788,
+      "mean_net_return": 0.22515624999999995,
+      "native_ns": 49706240,
+      "native_tick_count": 512,
+      "repair_count": 256,
+      "rows": 256,
+      "second_state_digest_differs_from_numeric": 256,
+      "wall_ns": 872001973
+    }
+  },
+  "status": "completed",
+  "training": {
+    "actual_bundles": 192,
+    "final_logloss": 0.007542275341063993,
+    "final_parameter_sha256": "43b47a4fe00ad16eaa9f750ae377c6cbb2e829b5856a461ee09cce2c9a19a6d3",
+    "gradient_updates": 600,
+    "initial_logloss": 0.6931471805599453,
+    "initial_parameter_sha256": "8080e4dd83d982adb0932bcee86939a2099e2045eb34975691c28e988f8806d5",
+    "labels_sha256": "875078ab21a3dc8964e7865034f8edef4f787a5780466d2b5a6f27af5d914c38",
+    "model": "21-coefficient linear logistic readout of original neuron state",
+    "native_kernel_parameters_trained": false,
+    "native_ticks": 192,
+    "readout_has_scalar_or_private_target_input": false,
+    "rows": 96,
+    "train_feature_matrix_sha256": "6f74dcf020994607bebc1a67d73ea33b30715a02e5da20a03e13d26cd335d6ff",
+    "training_classification_accuracy": 1.0,
+    "training_rows_sha256": "838d3a2dd62654a0b067c1b32884d5592b2670e910d3054bebc5311c281fcbf4"
+  },
+  "wall_ns": 4988296114
+}

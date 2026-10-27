@@ -1,0 +1,90 @@
+{
+  "all_blockers_closed": false,
+  "gate": {
+    "candidates": [
+      {
+        "fit_objective": 0.453240995095,
+        "threshold": 0
+      },
+      {
+        "fit_objective": 0.453240995095,
+        "threshold": 50
+      },
+      {
+        "fit_objective": 0.453240995095,
+        "threshold": 65
+      },
+      {
+        "fit_objective": 0.36055552050166667,
+        "threshold": 80
+      },
+      {
+        "fit_objective": 0.36055552050166667,
+        "threshold": 90
+      },
+      {
+        "fit_objective": 0.36055552050166667,
+        "threshold": 101
+      }
+    ],
+    "fitted_parameters": 1,
+    "parser_and_OCR_model_frozen": true,
+    "selected_threshold": 0,
+    "test_has_not_started": true
+  },
+  "general_complex_image_text_reasoning_proven": false,
+  "native_neuron_integration": false,
+  "neural_parameter_updates": false,
+  "schema": "hepta.repair.natural.document.result.v1",
+  "source_and_model_unchanged": true,
+  "source_scope": "Normalized annotated merchant strings and exact image hashes are disjoint; parent companies/template families are not exhaustively resolved",
+  "status": "completed",
+  "summary": {
+    "dynamic": {
+      "actual_OCR_calls": 12,
+      "all_fields_document_rate": 0.08333333333333333,
+      "documents": 12,
+      "exact_match_by_field": {
+        "address": 0.16666666666666666,
+        "company": 0.5,
+        "date": 0.5833333333333334,
+        "total": 0.5833333333333334
+      },
+      "macro_field_exact_match": 0.4583333333333333,
+      "merchant_groups": 12,
+      "subprocess_CPU_seconds": 6.275136000000007,
+      "whole_wall_seconds": 10.909775465
+    },
+    "fixed_base": {
+      "actual_OCR_calls": 12,
+      "all_fields_document_rate": 0.08333333333333333,
+      "documents": 12,
+      "exact_match_by_field": {
+        "address": 0.16666666666666666,
+        "company": 0.5,
+        "date": 0.5833333333333334,
+        "total": 0.5833333333333334
+      },
+      "macro_field_exact_match": 0.4583333333333333,
+      "merchant_groups": 12,
+      "subprocess_CPU_seconds": 6.326242000000002,
+      "whole_wall_seconds": 11.117399235
+    },
+    "fixed_enhanced": {
+      "actual_OCR_calls": 12,
+      "all_fields_document_rate": 0.0,
+      "documents": 12,
+      "exact_match_by_field": {
+        "address": 0.16666666666666666,
+        "company": 0.5833333333333334,
+        "date": 0.5,
+        "total": 0.5833333333333334
+      },
+      "macro_field_exact_match": 0.4583333333333333,
+      "merchant_groups": 12,
+      "subprocess_CPU_seconds": 12.004101999999998,
+      "whole_wall_seconds": 23.93172915
+    }
+  },
+  "wall_seconds": 54.673969724
+}

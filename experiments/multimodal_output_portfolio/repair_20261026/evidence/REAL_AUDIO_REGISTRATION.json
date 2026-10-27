@@ -1,0 +1,40 @@
+{
+  "Adam_learning_rate": 0.001,
+  "archive_sha256": "9a68686ad29274bd0affde81b244953e677c9d7048dfb8acaf1168d7758bafab",
+  "batch_size": 64,
+  "comparators": [
+    "naive_kron_labels",
+    "alias_corrected_product_labels",
+    "paired_joint_labels",
+    "alias_corrected_product_identity",
+    "paired_joint_identity"
+  ],
+  "created_ns": 1793041320747869039,
+  "development_test_speakers": [
+    "yweweler"
+  ],
+  "epochs": 24,
+  "license": "CC BY-SA 4.0",
+  "likelihood_fit_speakers": [
+    "theo"
+  ],
+  "observer_train_speakers": [
+    "george",
+    "jackson",
+    "lucas",
+    "nicolas"
+  ],
+  "pair_rule": "all ordered targets, left index k; alias k for equal digits, right (7*k+11)%50 otherwise",
+  "prior": "uniform 100-target prior; exactly balanced constructed target census",
+  "schema": "hepta.repair.fsdd-paired-development.v1",
+  "scope": "New closed-digit source/model development task; one test speaker, no population CI or old-model qualification",
+  "seed": 271831,
+  "smoothing": "fixed total Dirichlet mass .5 per target, uniformly on structural support",
+  "source_commit": "26eb9aaf76e81b692f806f9140c2d2777410d7a1",
+  "source_sha256": {
+    "joint.py": "41c17d03366de389b14f6392d937a3da94fa3d9eedc28e4b61a1234018cceb18",
+    "real_audio.py": "348835525517de565f67b9f26f85a54f6c513e5324cfe0efe94d4673fb484956"
+  },
+  "source_url": "https://github.com/Jakobovski/free-spoken-digit-dataset/tree/26eb9aaf76e81b692f806f9140c2d2777410d7a1",
+  "weight_decay": 0.0001
+}

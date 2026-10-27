@@ -1,0 +1,262 @@
+{
+  "actual_evaluation_episodes": 1792,
+  "actual_media_files": 11248,
+  "all_blockers_closed": false,
+  "binary_equal_cost_negative_control_agrees": true,
+  "comparisons": {
+    "mean_numeric": {
+      "difference": 4.519001245057151,
+      "interval": [
+        1.2062866812708306,
+        5.4230483067740245
+      ],
+      "metric": "ce",
+      "positive_lower_bound": true,
+      "prespecified_primary": true
+    },
+    "risk_history": {
+      "difference": 0.0,
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "metric": "mean",
+      "positive_lower_bound": false,
+      "prespecified_primary": false
+    },
+    "risk_shuffled": {
+      "difference": 0.53515625,
+      "interval": [
+        0.3813906250000001,
+        0.7008847656250006
+      ],
+      "metric": "mean",
+      "positive_lower_bound": true,
+      "prespecified_primary": false
+    },
+    "risk_zero": {
+      "difference": 0.08296875000000002,
+      "interval": [
+        0.07522851562500002,
+        0.09093750000000003
+      ],
+      "metric": "mean",
+      "positive_lower_bound": true,
+      "prespecified_primary": true
+    }
+  },
+  "continuation_disagreements_with_numeric": {
+    "risk_always_repair": 177,
+    "risk_history": 0,
+    "risk_numeric": 0,
+    "risk_shuffled": 104,
+    "risk_static_stop": 79,
+    "risk_zero": 177
+  },
+  "cpu_ns": 4605371097,
+  "finite_bellman_enumeration": [
+    {
+      "absolute_error": 0.0,
+      "bellman_action": "3",
+      "bellman_moment": 0.7413749528037473,
+      "enumerated_action": 3,
+      "enumerated_moment": 0.7413749528037473,
+      "nonanticipating_policies_enumerated": 32,
+      "scope": "Exact only for the supplied synthetic joint law and twelve observable continuation states"
+    },
+    {
+      "absolute_error": 0.0,
+      "bellman_action": "3",
+      "bellman_moment": 0.7413749528037473,
+      "enumerated_action": 3,
+      "enumerated_moment": 0.7413749528037473,
+      "nonanticipating_policies_enumerated": 32,
+      "scope": "Exact only for the supplied synthetic joint law and twelve observable continuation states"
+    },
+    {
+      "absolute_error": 1.1102230246251565e-16,
+      "bellman_action": "2",
+      "bellman_moment": 0.7104150736885417,
+      "enumerated_action": 2,
+      "enumerated_moment": 0.7104150736885416,
+      "nonanticipating_policies_enumerated": 32,
+      "scope": "Exact only for the supplied synthetic joint law and twelve observable continuation states"
+    },
+    {
+      "absolute_error": 0.0,
+      "bellman_action": "3",
+      "bellman_moment": 0.7413749528037473,
+      "enumerated_action": 3,
+      "enumerated_moment": 0.7413749528037473,
+      "nonanticipating_policies_enumerated": 32,
+      "scope": "Exact only for the supplied synthetic joint law and twelve observable continuation states"
+    }
+  ],
+  "learned_decisions_by_cue": {
+    "mean": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "risk": [
+      3,
+      3,
+      2,
+      3
+    ]
+  },
+  "learned_media_generation": false,
+  "native_owner_integration": false,
+  "natural_multimodal_generalization_proven": false,
+  "numeric_unique_benefit_over_same_information_history_control": false,
+  "old_v6_reproduced": false,
+  "peak_rss_bytes": 74620928,
+  "post_delivery_continuation_chronology_passed": true,
+  "protocol_sha256": "8ee00929f8d5ff142230999c651291c6b0a1118a7c064bf0e1944a42e5a28b93",
+  "real_file_generation_and_readback": true,
+  "real_parameter_updates": true,
+  "registration_sha256": "981519883bf863678cbfe59dd1a700c44c631bbe27ebe797e29b7fc5f6cd0447",
+  "risk_action_ranking_identified": true,
+  "rows_sha256": "d680ce08ecf8bf603201c1d7feeef24cf056fae830c08a74c5065b522c8948bb",
+  "schema": "hepta.repair.risk-feedback.result.v1",
+  "source_unchanged": true,
+  "statistics": {
+    "mean_numeric": {
+      "actual_output_bundles": 335,
+      "certainty_equivalent": -4.335840554423354,
+      "cpu_ns": 454329588,
+      "mean_net_return": 0.4480078125,
+      "p05_net_return": -0.72,
+      "repair_count": 79,
+      "rows": 256,
+      "severe_loss_count": 7,
+      "wall_ns": 454818741,
+      "worst_net_return": -8.02
+    },
+    "risk_always_repair": {
+      "actual_output_bundles": 512,
+      "certainty_equivalent": 0.11224064744311042,
+      "cpu_ns": 632731829,
+      "mean_net_return": 0.21515624999999997,
+      "p05_net_return": -0.64,
+      "repair_count": 256,
+      "rows": 256,
+      "severe_loss_count": 0,
+      "wall_ns": 633218286,
+      "worst_net_return": -0.99
+    },
+    "risk_history": {
+      "actual_output_bundles": 335,
+      "certainty_equivalent": 0.18316069063379725,
+      "cpu_ns": 432647325,
+      "mean_net_return": 0.298125,
+      "p05_net_return": -0.52,
+      "repair_count": 79,
+      "rows": 256,
+      "severe_loss_count": 0,
+      "wall_ns": 433700983,
+      "worst_net_return": -0.99
+    },
+    "risk_numeric": {
+      "actual_output_bundles": 335,
+      "certainty_equivalent": 0.18316069063379725,
+      "cpu_ns": 429277091,
+      "mean_net_return": 0.298125,
+      "p05_net_return": -0.52,
+      "repair_count": 79,
+      "rows": 256,
+      "severe_loss_count": 0,
+      "wall_ns": 429695006,
+      "worst_net_return": -0.99
+    },
+    "risk_shuffled": {
+      "actual_output_bundles": 335,
+      "certainty_equivalent": -3.112777349916082,
+      "cpu_ns": 433415753,
+      "mean_net_return": -0.23703125000000005,
+      "p05_net_return": -2.6,
+      "repair_count": 79,
+      "rows": 256,
+      "severe_loss_count": 11,
+      "wall_ns": 433909632,
+      "worst_net_return": -5.87
+    },
+    "risk_static_stop": {
+      "actual_output_bundles": 256,
+      "certainty_equivalent": -3.3360700517613275,
+      "cpu_ns": 344268165,
+      "mean_net_return": -0.48125000000000007,
+      "p05_net_return": -5.0600000000000005,
+      "repair_count": 0,
+      "rows": 256,
+      "severe_loss_count": 17,
+      "wall_ns": 344546476,
+      "worst_net_return": -5.87
+    },
+    "risk_zero": {
+      "actual_output_bundles": 512,
+      "certainty_equivalent": 0.11224064744311042,
+      "cpu_ns": 651901835,
+      "mean_net_return": 0.21515624999999997,
+      "p05_net_return": -0.64,
+      "repair_count": 256,
+      "rows": 256,
+      "severe_loss_count": 0,
+      "wall_ns": 652436607,
+      "worst_net_return": -0.99
+    }
+  },
+  "status": "completed",
+  "synthetic_task_and_fault_law": true,
+  "training": {
+    "feedback": {
+      "actual_output_bundles": 192,
+      "final_parameter_sha256": "40e58bf84ece4c26d1aa1f5a29f6d8945709aada7b8fa76c4ca53acf507f7e13",
+      "gradient_updates": 600,
+      "initial_parameter_sha256": "f29310de4c3ebf47f2b596ae85f92daedae7a426dd2e145ab2a1ebec019199e6",
+      "logloss_before_and_last_update": [
+        0.6931471805599453,
+        0.003174045319890018
+      ],
+      "model": "two-parameter logistic repair policy",
+      "rows": 96,
+      "training_receipts_sha256": "c366e49c35ab8889baa42102962bd8db78fe1795c38c8cf4e25b67c9531bd24e"
+    },
+    "posterior": {
+      "final_parameter_sha256": "f9f00e603a7a4cc4cbe2fbd9f808a75b38e4a8956ba58c47b9717ed6e085c402",
+      "gradient_updates": 600,
+      "initial_parameter_sha256": "16d99875c61d4adc8bc7de05ec1b2b78e8bc7bb18936e4ae318905b39e0382ec",
+      "model": "categorical softmax, twelve trainable logits",
+      "nll_before_and_last_update": [
+        1.09861228866811,
+        0.5309990974795024
+      ],
+      "observed_counts": [
+        [
+          938,
+          46,
+          10
+        ],
+        [
+          53,
+          927,
+          48
+        ],
+        [
+          57,
+          162,
+          812
+        ],
+        [
+          537,
+          461,
+          45
+        ]
+      ],
+      "rows": 4096,
+      "training_data_sha256": "a3329fa141b18385a209849c5335b124537b761d98eccea1e95f3f84b008ce31"
+    }
+  },
+  "wall_ns": 4332243323
+}

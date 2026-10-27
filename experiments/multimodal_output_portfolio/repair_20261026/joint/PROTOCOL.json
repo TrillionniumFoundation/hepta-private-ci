@@ -1,0 +1,64 @@
+{
+  "acceptance": "both primary lower bounds > 0; retention lower bound >= -0.01; all three seed differences > 0",
+  "arms": [
+    "frozen",
+    "joint_mean",
+    "joint_entropic"
+  ],
+  "audit_observer_exposed_to_training": false,
+  "base": "seed-matched original full002 terminal_entropic_ndu ControlledSnapshot",
+  "base_archive_sha256": "ddbdf10b4397c8538183df8fa7c16f08c5fba226a304ff7cb55574ddb97e951e",
+  "batch_size": 16,
+  "bootstrap_cluster": "disjoint_source_pair_across_corruptions_and_training_seeds",
+  "bootstrap_samples": 3000,
+  "bootstrap_seed": 51026,
+  "comparisons": [
+    "joint_entropic-frozen",
+    "joint_entropic-joint_mean"
+  ],
+  "deployed_plan_selection": "argmax",
+  "distillation_anchor": 0.5,
+  "evaluation_seed": 20261026,
+  "fresh_population_confirmation": false,
+  "gamma": 2.0,
+  "gradient_clip": 1.0,
+  "learning_rate_core": 8e-05,
+  "learning_rate_gate": 0.0005,
+  "matched_budget": "same minibatches, noise, four two-action plans, decoder/observer calls, anchors, optimizer steps",
+  "parameters_fixed_during_inference": true,
+  "primary": "independent_audit_observer_actual_PNG_UTF8_CE_gamma2",
+  "retention_noninferiority_margin": 0.01,
+  "retention_offset": 100,
+  "retention_pairs": 128,
+  "scenarios": 2,
+  "schema": "hepta.ndu.repair-joint-development.v1",
+  "scope": "MNIST-pair text/image development; historical public dataset; no natural audio/video claim",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "simultaneous_comparison_interval": 0.975,
+  "steps": 120,
+  "study": "real-v6-joint-001",
+  "supervised_anchor": 0.1,
+  "test_corruptions": [
+    "clean",
+    "occlusion",
+    "missing",
+    "heavy_noise"
+  ],
+  "test_offset": 200,
+  "test_pairs": 128,
+  "threads": 2,
+  "train_plan_selection": "soft distribution",
+  "training_is_exact_discrete_output_reward_gradient": false,
+  "training_objective": "differentiable soft semantic utility, straight-through 8-bit quantization, plus supervised and teacher anchors",
+  "updated": [
+    "public_encoders",
+    "shared_latent_transitions",
+    "image_decoder",
+    "text_decoder",
+    "plan_gate"
+  ]
+}
