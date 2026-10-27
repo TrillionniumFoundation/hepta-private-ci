@@ -3,18 +3,21 @@
 本文记录 `research/memory-cell-v7-owner-integration-20261027` 的实现和现存证据。
 当前交付是接入真实 owner、参数推理、发布与消费路径的研究实现；六项验收没有全部通过。
 自然语言覆盖、结构演化的全成本优势、学到的专业化分工仍不成立，不能据此宣称通用记忆已经涌现。
-文中的“已实现”表示存在执行路径；“已验证”只对应明确保存的运行结果，最终 CI 汇总仍需补充。
+文中的“已实现”表示存在执行路径；“已验证”只对应明确保存的运行结果。
+[CI10](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40568534089) 已通过普通 350 项测试和另行执行的 3 项 actual 集成测试；这两组结果分别报告，不与历史套件相加。
+测试来源为 `59b45ccd863cab0fd1ea96f3b4b025715aa814f8`，Git tree 为 `4d7e6d4180e9a8e1a003065eecfccded3b2c9103`，见原始 [`receipt.json`](evidence/ci/ci10-runtime/receipt.json)。
+最终 `just fix` / `just fmt` 尚未执行；本次收据与文档更新仍是待发布补丁，不能把产品测试成功写成全部发布收尾完成。
 
 ## 1. 六项交付的实际状态
 
-| 项目 | 本轮代码 | 仍需满足的验收条件 |
+| 项目 | 已实现及已执行的工程结果 | 仍需满足的验收条件 |
 | --- | --- | --- |
-| 1：类型化请求与寻址 | 严格 `MemoryRequestV1/MemoryReadoutV1`；固定模型 worker；owner registry 与完整请求绑定 | 独立 known 覆盖仅 80/240；日期适配补丁待真实时间链路验证 |
-| 2：事件、语义、过程 cell | SQLite 事件；真实参数语义/过程；`apply` 跨三类组合 | 实际写入→训练→socket 读回的 ignored 集成测试仍在 CI 中 |
-| 3：训练、回放、校准、清洁重建 | 有界 NumPy worker、父参数校验、纠错/撤销后 clean rebuild、真实 ledger 接口 | 训练诊断不等于未来任务改善；尚无长期遗忘或总体校准保证 |
-| 4：分裂、合并、休眠、预算竞争 | V2 population、实际 shard fit、驻留缓存、NoChange 与 topology proposal 桥 | 未通过偏向强固定的保守部分成本门；完整成本优势尚未建立 |
-| 5：多节点、迁移、一致发布 | Fleet owner/socket 验证；完整版本向量；OrganHost 只读路由迁移 | 本机多个 owner/control socket；未交付跨机器复制、共识或网络分区下可用性保证 |
-| 6：新领域、组合、专业化迁移 | 新实体自动地址分区、重训、typed 组合读回 | 确定性地址分片没有证明学习专业分工；不能以开发读回替代新任务族验收 |
+| 1：类型化请求与寻址 | 严格 `MemoryRequestV1/MemoryReadoutV1`；固定 worker、owner registry 与完整请求绑定；14 次公开语言/日期协议读取通过 | 独立 known 正确接受覆盖 80/240（33.33%）；OOD 错误接受 4/120（3.33%）；原 440 行 native held 未执行 |
+| 2：事件、语义、过程 cell | SQLite 事件；真实参数语义/过程；`apply` 跨三类组合；四阶段新写入与变更共 116 次 socket 读回正确 | 值域限于有界整数、`{factor,label}` 和注册 opcode；不能代表任意自然语言记忆或任意程序 |
+| 3：训练、回放、校准、清洁重建 | 真实 NumPy 参数 fit；新增后 replay、纠错/撤销后 clean rebuild；可重复参数 digest 与实际 ledger decision 已验证 | 显式 catalog 和来源账本仍保留；未来任务改善、长期遗忘控制及总体概率校准尚未建立 |
+| 4：分裂、合并、休眠、预算竞争 | 手动 1→2→1、8 次 shard fit、三代共 288 次唤醒前后读回；零驻留预算及旧 source cut 拒绝 | 自动预算→提案→发布闭环未由该测试验证；保守部分成本门未通过，完整成本优势未知 |
+| 5：多节点、迁移、一致发布 | Fleet owner/socket、完整版本向量、OrganHost 只读路由迁移；五项 network 测试通过 | 多 owner 在同一测试进程、本机 socket 故障域；目标 owner 须预先准备，未交付跨机器复制或共识 |
+| 6：新领域、组合、专业化迁移 | 新实体确定性分区、重训和 typed 组合读回已执行 | 地址分片没有证明学习专业分工；新领域/任务族迁移和通用记忆涌现仍未验收 |
 
 模块名称以真实源码为准；表中的系统层名称不表示新增了同名顶层服务。
 
@@ -81,7 +84,7 @@ host 固定解释器、导入文件 hashes、时间与尺寸上限，从 owner �
 host 验证响应与原始请求绑定、native 参数格式及实际 owner cut；完成 fit 不会选中或发布模型。
 [`training.py`](training.py) 调用冻结的 [`AssociativeCell.fit`](../memory-cell-v6/v6/cells.py)：NumPy tanh MLP、Adam、真实权重更新。
 这不是 LLM/LoRA 微调，也没有证明自然语言知识被压缩进小语言模型参数。
-每个 cell 保留显式 catalog 值，支持表只保存地址与来源；正确值由张量分类选出，catalog、来源账本都必须计成本。
+每个 cell 保留显式 catalog 值，支持表只保存地址与来源；预测值由张量分类选出，catalog、来源账本都必须计成本。
 [`native_export.py`](native_export.py) 导出 float32 权重，Rust [`AssociativeMemoryCellV1`](../../codex-rs/hepta-neuron/src/associative_memory.rs) 用固定数值协议执行。
 native loader 检查数组形状、有限值、参数 digest、值域、catalog、支持与 lineage；未知写入地址 abstain。
 softmax 标为 `uncalibrated-softmax`；训练读回率与固定 threshold 不构成独立概率校准。
@@ -89,7 +92,11 @@ softmax 标为 `uncalibrated-softmax`；训练读回率与固定 threshold 不�
 `Clean` 不接收父参数；`Replay` 校验父 artifact 能重导出为当前独立选择的 native digest。
 父 lineage 必须仍在当前来源集合中；来源被纠错或撤销后，旧父参数重放被拒绝，必须 clean rebuild。
 重建检查参数 digest 可重复，以及被撤销 source 不再进入新模型依赖；历史证据和旧发布记录仍需保留审计。
-具体真实链路测试在 [`memory_cell_training_tests.rs`](../../codex-rs/hepta-agentd/src/memory_cell_training_tests.rs)，当前不能提前标为通过。
+具体真实链路测试在 [`memory_cell_training_tests.rs`](../../codex-rs/hepta-agentd/src/memory_cell_training_tests.rs)，CI10 已通过。
+原始 [`training-receipt.json`](evidence/ci/ci10-runtime/training-receipt.json) 保存初次 clean、新增后 replay、纠错后 clean、撤销后 clean 四阶段，分别正确读回 24、32、32、28 次，共 **116 次**。
+重复 clean 重建得到相同参数 digest；纠错和撤销后继续 replay 被拒绝，被撤销实体的组合读取 abstain。
+四份阶段 receipt 记录 8 次 fit，另有用于检查重建相等性的 2 次实际 fit，共 10 次；后两次未单独保存成本 receipt，不能把已报告成本当作完整训练总账。
+该测试使用显式受信 integration resolver，并非独立自然语言或未来任务评估。
 参数 population 的 clean shard fit 另在 [`population_training.py`](population_training.py)，没有改变单模型默认训练输出。
 
 ## 6. 发布、选择与 learning ledger 的职责
@@ -119,11 +126,14 @@ loader 拒绝支持重叠、遗漏、未知 route、类型错误、lineage 不�
 
 [`evaluate_memory_structure_v1`](../../codex-rs/hepta-plasticity/src/memory_budget.rs) 要求 KeepFixed 和完整冻结固定库存。
 候选必须共享 source cut、task set、training profile 和评估量；所有成本权重必须为正，缺测不能填零。
-adaptive 方案计入全部候选的搜索、训练、回放、保留材料、读取、唤醒及通信，比较器取同预算下最强固定方案。
+接口要求 adaptive 方案计入全部候选的搜索、训练、回放、保留材料、读取、唤醒及通信；这项要求不表示旧实验已经测齐这些成本。
+比较器取冻结的 1–8 shard 固定库存中同预算下表现最强的方案，不能据此宣称涵盖所有可能的固定结构。
 固定比较器只计自身 fit、评估与材料，免计从固定库存中筛选它的搜索；这是刻意偏向固定的保守门，不是双方公平搜索总账。
 收益不为正或没有独立证据时保持 NoChange；通过也只由 `propose_memory_structure_v1` 生成待独立接受的 topology proposal。
 提案永远保留 NoChange，authority 为 DENY_ALL；实际激活仍需外部签名发布与 selector。
-真实 1→2→1 训练、签名发布、sleep/wake 和 source-cut 拒绝测试见 [`memory_cell_population_tests.rs`](../../codex-rs/hepta-agentd/src/memory_cell_population_tests.rs)，尚待相应 CI 完成。
+真实 1→2→1 训练、签名发布、sleep/wake 和 source-cut 拒绝测试见 [`memory_cell_population_tests.rs`](../../codex-rs/hepta-agentd/src/memory_cell_population_tests.rs)，CI10 已通过。
+[`population-receipt.json`](evidence/ci/ci10-runtime/population-receipt.json) 记录三代的 2、4、2 次 fit，以及每代唤醒前后各 48 次正确读回，共 **8 次 fit、288 次读回**；零驻留预算和过期 source cut 均被拒绝。
+这些结构转换由测试显式安排，不是预算优化器自主选择的结果。socket 计时只覆盖每代首批 48 次读取，包含推理；逻辑驻留字节不等于 RSS，来源账本及独占通信成本仍缺测。
 
 ## 8. 多 owner 读取与 OrganHost 迁移
 
@@ -149,7 +159,9 @@ adaptive 方案计入全部候选的搜索、训练、回放、保留材料、�
 driver 通过 `AgentdClient::memory_cell_read` 新取证据，并在最终使用前再次 fresh read，比对 request/evidence digest 和 realized 内容。
 来源、参数版本或返回值变化会阻止 dispatch；一份缓存 context 片段不能代替当前 owner 授权。
 CLI [`--memory-request-file`](../../codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs) 只读绝对路径下有界查询 JSON，不允许指定路由 gold 或选择模型。
-该片段不会签发 final-use grant，既有独立 final-use authority 仍然必需；实际消费者测试尚待最终 CI 汇总。
+该片段不会签发 final-use grant，既有独立 final-use authority 仍然必需。
+CI10 普通套件已通过真实 SQLite、原生参数、Agentd socket 和 App Server 消费路径：检查实际 provider 请求，并验证换版、来源纠错、撤销三种竞态在最终 effect 前拒绝使用。
+这些集成使用固定 resolver 和 mock Responses；它们验证消费契约与生命周期，不替代语言质量或训练收益评估。
 native observer 同时接收增量和 completed-only 文本，同一 item 的重复完整消息须一致；文本最多 1 MiB，item ID 元数据另有独立上限。
 观察到的隔离、取消、超时或 owner loss 在异步中断之前写入 durable journal；之后的 `thread/read` 可以补充真实终态，但不能清除这些已保存的使用边界。
 只有取消标记而没有具体原因的恢复结果保守隔离；普通 Indeterminate 仍可凭精确终态证据正常完成。
@@ -169,13 +181,16 @@ native observer 同时接收增量和 completed-only 文本，同一 item 的重
 
 [`language-public-smoke.json`](evidence/language-public-smoke.json) 是真实 worker 的 8 条固定公开用例，6 条支持请求被接受，未重训、未读 held。
 该 smoke 没有 SQLite/native readback，也不是新的独立语言质量证据；原 held 失败结论保持不变。
+CI10 另有真实 SQLite→训练参数→Agentd socket 的 [`language-receipt.json`](evidence/ci/ci10-runtime/language-receipt.json)：六类操作的 6 条公开支持请求、未知实体/不支持操作的 2 条 abstain，以及下述 6 条日期用例，共 **14 次读取**。
+正例措辞来自公开 fit 样本，receipt 明确记录 `held_reads=0`、`independent_language_evaluation=false`；这 14 次通过没有修复或替代上表的独立留出失败。
 校准概率界需要相应独立同分布采样条件；作者构造的任务族没有建立该条件，`population_risk_established=false`。
 canonical `MemoryRequestV1`、owner 记录与最终执行始终保留 Unix seconds；冻结 Python 的遗留 `YYYYMMDD` 仅用于私有 transport view。
 [`memory_cell_time_view.rs`](../../codex-rs/hepta-agentd/src/memory_cell_time_view.rs) 定义 profile `hepta.memory.host-utc-midnight-time-view.v1`，在 [`worker wire`](../../codex-rs/hepta-agentd/src/memory_cell_address_worker_wire.rs) 边界转换该私有视图。
 对于文本中的明示日期，profile 只接受与其 UTC 零点精确相等的 cutoff：`history` 核对原始 `at`，`change` 核对原始 `since`；同日非零点不算匹配。
 没有明示日期时保留原始秒值；明示日期不能使 `current/semantic/procedure/apply` 获得新的日期语义。
 host 保存完整原始请求 hash，worker 回应须匹配私有 view 的请求 hash、字段、registry、model 与 source cut；返回 runtime 的请求仍是原始 Unix 秒请求。
-这是新 host adapter，不在冻结 classifier 的 held 覆盖内；真实日期、日边界与 socket 集成仍待 actual profile 验证，不能把代码存在写成测试通过。
+这是新 host adapter，不在冻结 classifier 的 held 覆盖内。CI10 actual profile 已验证 UTC 2025-02-01 零点的 `history=37`、`change=16`，并拒绝日期整数冒充 Unix 秒、错误日期和非零点 cutoff 四类用例。
+语言 receipt 保存主 profile 的 2 次参数 fit；日期 helper 另执行 2 次 clean fit，但没有保留其完整成本 receipt。四次 fit 的执行证据不能被表述为四次 fit 的完整成本记录。
 旧 `at=15/since=10` smoke 不能证明现代时间戳正确；适配没有改写冻结权重、阈值或旧 held 标签。
 
 ## 11. 启动与复现
@@ -210,9 +225,13 @@ just test -p codex-hepta-agentd --run-ignored only -E 'test(memory_cell_) & test
 仓库测试入口是 `just test`；ignored 测试必须显式执行，普通套件 skipped 不能当通过。
 预算重跑使用 [`population_benchmark.py`](population_benchmark.py)，必须新输出路径，传入每份历史 receipt，不能覆盖已有负结果。
 
-## 12. 已确认 CI 与待补摘要
+## 12. 已确认 CI、原始收据与发布收尾
 
-以下是各自 source commit 上的组级结果，不表示最新整条分支已经全部通过；最终汇总须绑定新 commit 与原始 receipt。
+CI10 运行 `40568534089` 的三个命令均退出 0，测试源码与 Git tree 见本文开头和 [`receipt.json`](evidence/ci/ci10-runtime/receipt.json)。
+其中 `cargo build` 只构建真实 App Server；随后两组测试均通过 `just test --locked` 执行，原始 `execution.log` 保存在 [`ci10-daemon-artifact.zip`](evidence/ci/ci10-daemon-artifact.zip)。
+[`INDEX`](evidence/ci/ci10-daemon-artifact.INDEX.json) 记录 ZIP 与每个成员的大小、SHA-256；原始运行收据保持字节不变。
+ZIP 为 34,130 bytes，SHA-256 为 `4b95ae34d45ebd139b984b5e26c70116c11b0e46fefbe3c7c4099e0dc52fbabf`。
+以下历史组结果来自各自 commit；CI10 只重跑受影响的 daemon/consumer 范围，不能把不同来源、重叠或 skipped 的计数相加成全仓测试数。
 
 | 组 | 当前已核结果 | 证据或状态 |
 | --- | --- | --- |
@@ -220,10 +239,14 @@ just test -p codex-hepta-agentd --run-ignored only -E 'test(memory_cell_) & test
 | release owner | 92 passed，1 skipped | [`122358149222.json`](evidence/ci/122358149222.json) |
 | source owner | 301 passed，7 skipped | 最新通过 [`122398855774.json`](evidence/ci/122398855774.json)；原 300/301 失败仍保留于 [`122356498801.json`](evidence/ci/122356498801.json) |
 | population | 149 passed | [`122371741084.json`](evidence/ci/122371741084.json) |
-| daemon / consumer / actual ignored | 最近执行为 CI8：338 passed、3 failed、9 skipped、0 flaky；CI9 编译失败，actual ignored 未执行 | [`122398855828.json`](evidence/ci/122398855828.json)、[`122408347206.json`](evidence/ci/122408347206.json)，等待 CI10 |
+| CI10 daemon / consumer 普通套件 | **350 passed，0 failed，9 skipped**；0 slow、0 flaky；nextest 61.423 s | 原始 [`receipt`](evidence/ci/ci10-runtime/receipt.json) 与 ZIP 内 `execution.log` |
+| CI10 actual ignored profile | **3 passed，0 failed，204 skipped**；0 slow、0 flaky；nextest 19.307 s | [`training`](evidence/ci/ci10-runtime/training-receipt.json)、[`language`](evidence/ci/ci10-runtime/language-receipt.json)、[`population`](evidence/ci/ci10-runtime/population-receipt.json) |
 
-CI5 的 `json!` 表达式与 CI6 的断言宏导入编译错误均保留原始记录。CI7 已编译并运行 341 项普通测试，7 项失败包括真实 App Server executable 配置、ledger 必需 abstain、节点旧 owner 锁释放、SQLite 关闭与恢复生命周期，以及旧源码顺序断言。另有一次立即多帧 worker 测试重试后通过，保留 flaky 标记。CI8 的 ledger、worker 边界和全部五项 network 测试通过；剩余三项是两个 completed-only 消息输出丢失和一个取得 writer lease 前后的状态摘要比较错误。消费者现已加入按 item ID 去重的有界输出累积器，恢复 fixture 改为保存取得真实 lease 后的切面；原成功输出、完整 anchor equality 和最终使用竞态断言保留。CI9 只重跑受影响的 daemon 组，三个 actual ignored 测试仍未执行，不能提前记为通过。
-CI9 在新测试模块发现缺少 `pretty_assertions` crate 的唯一 E0432 编译错误，没有执行普通或 actual 测试；相应 dev-dependency 和 Cargo.lock 边已补齐。独立复查还修复了恢复路径清除已保存失败边界的问题，并新增真实 journal 重开测试；这些修改统一由 CI10 验证。
+普通测试命令包含编译的总 wall 为 233.761 s，actual 命令为 39.513 s；这与上表 nextest 自身计时不同。App Server 构建耗时 132.189 s。
+三个 actual 集成分别验证：四阶段参数训练/回放/清洁重建与实际读回；真实冻结语言 worker 经 native 参数及 socket 的六类操作和日期绑定；三代 population 的签名发布、sleep/wake、预算和 source-cut 拒绝。
+
+CI5 的 `json!` 表达式与 CI6 的断言宏导入编译错误均保留原始记录。CI7 已编译并运行 341 项普通测试，7 项失败包括真实 App Server executable 配置、ledger 必需 abstain、节点旧 owner 锁释放、SQLite 关闭与恢复生命周期，以及旧源码顺序断言。另有一次立即多帧 worker 测试重试后通过，保留 flaky 标记。CI8 的 ledger、worker 边界和全部五项 network 测试通过；剩余三项是两个 completed-only 消息输出丢失和一个取得 writer lease 前后的状态摘要比较错误。消费者加入按 item ID 去重的有界输出累积器，恢复 fixture 改为保存取得真实 lease 后的切面；原成功输出、完整 anchor equality 和最终使用竞态断言保留。
+CI9 在新测试模块发现缺少 `pretty_assertions` crate 的唯一 E0432 编译错误，没有执行普通或 actual 测试；相应 dev-dependency 和 Cargo.lock 边已补齐。独立复查还修复了恢复路径清除已保存失败边界的问题，并新增真实 journal 重开测试；这些修改在 CI10 普通套件中通过。
 CI9 允许普通 nextest 断言失败后继续独立 actual profile；CI10 将此扩展到两组各自的编译失败，避免一个范围的失败隐藏另一个范围的结果。共同前置 App Server 二进制构建或环境准备失败仍停止，任一实际执行非零退出仍使组合 receipt 失败。
 
 结构开发实验 [`population-costs-v2.json`](development/population-costs-v2.json) 比较固定 1–8 全计数空间；84 次真实 fit，部分计费下的固定比较器为 fixed-1，保留 keep-fixed。
@@ -237,4 +260,13 @@ Python development runner 固定输出 `selected_action=keep-fixed`、`full_cost
 v1/v2 实验没有预 fit 登记；未来 runner 已增加 create-only manifest、来源/代码 hashes、追加进度和失败 receipt，不把新机制追认到旧运行。
 两份完整数字报告记录的旧 runner hashes 不同于当前源码；仓库可达该路径历史中未找到对应旧源码快照。完整数字记录不是完整源码复现包，保留这一可复现性缺项，不反推或补猜旧源码。
 
-当前应保留研究分支。只有新独立任务上的可靠覆盖、遗忘控制、同预算全成本净收益和跨节点/最终消费验证同时成立，才可提升相应验收状态。
+当前应保留研究分支。已经通过的有界读回和消费契约验证，不消除可靠寻址、独立未来任务收益、遗忘控制、全成本净收益及跨机器运行的剩余验收条件。
+
+### 发布收尾状态
+
+最后确认的远端分支 head 为 `d3f0f84905877b84ee5575d0a0ed018b4fff8a9f`；CI10 所测产品代码已经在该分支历史中。
+后续 finalization 请求的远端写入两次未返回结果并被中止，没有确认发布成功；临时工作目录失效后，本文与 CI10 原始 artifact 从远端恢复。
+仓库要求的最终 `just fix -p ...`、`just fmt` **尚未执行**，本次证据与文档更新也尚未提交到远端，不能标记为已完成最终格式化或最终发布。
+交付补丁以该远端 head 为基础，包含绑定 CI10 tested commit 的 `FINALIZE_REQUEST.json`、原始 CI10 证据与本文更新。后续先核对分支 head，再应用并发布这份补丁；不修改 `VERIFY_REQUEST.json`，也不重跑 CI10。
+既有 finalizer workflow 只监听该请求文件的推送，先验证待格式化源码与 tested commit 的受保护路径一致，再针对十个 Hepta package 执行 `just fix --locked -p ...`，随后执行 `just fmt --base 0b0b041b6dd8121050c335cb3be73bb1d8cb7904`。
+finalizer 只生成 receipt 与补丁，不会自动 commit 或 push。完成后须校验 artifact、审阅并应用实际生成的补丁，保存原始 finalization receipt，再提交最终结果。依据 `AGENTS.md`，完成 fix/fmt 后不重跑测试；保留“被测试的源码”和“最终机械修复/格式化后的源码”的明确来源关系。

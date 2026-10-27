@@ -1,0 +1,577 @@
+{
+  "address_model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+  "bundle_digest": "544d242983ef3365d4a97ef73eeb35fe63ee6e1b25314e62674bd03be6d98d52",
+  "control_transport": {
+    "received_bytes": 9260,
+    "rpc_attempts": 14,
+    "transmitted_bytes": 6319
+  },
+  "held_reads": 0,
+  "independent_future_task_evaluation": false,
+  "independent_language_evaluation": false,
+  "owner_cut_digest": "dc7f8b9fec4c2cd46bcf0789fad67e92f262b529fd94aa84c45a4051b146f010",
+  "parameter_training": {
+    "authority": false,
+    "calibration_population_risk_established": false,
+    "catalog_contains_explicit_values": true,
+    "cpu_seconds": 0.10845291500000001,
+    "fit_calls": 2,
+    "fixed_threshold": 0.5,
+    "language_model_finetuning": false,
+    "mode": "clean",
+    "schema": "hepta.memory.training-receipt.v1",
+    "source_export_bytes": 3469,
+    "types": {
+      "procedure": {
+        "catalog_bytes": 85,
+        "current_source_ids": [
+          "1b9a2f51f398082751854cc2a287caef7e982c3332d866163175b1455bb3c185",
+          "79efa07a101d0f0a3ed193e4b76a4e2ecbca3a22162e3868f61d39b0fd325966"
+        ],
+        "independent_future_task_evaluation": false,
+        "native_bytes": 65379,
+        "native_digest": "4c8d8e5d597168bb2b61663b713fb843a35a4b4de6d31feda458f45375589a52",
+        "numeric_parameter_bytes": 13064,
+        "original_bytes": 19059,
+        "original_digest": "1f646d496a5ab79a160883f76479741189f093e051139532f453f00242c75fad",
+        "parameter_digest": "bf2aa8c9b448f6208fb929808c08147a37abf035cd76eb117f98d189d0f0bd7f",
+        "training": {
+          "catalog_contains_explicit_values": true,
+          "catalog_digest": "c2e4d8f83a1a59bc2466e96d7486d350cd2fcfc3e096ee106c7025f49040f0ce",
+          "catalog_fixed_by_caller": false,
+          "cpu_seconds": 0.05076646899999998,
+          "dataset_digest": "2e7c5fd294f3b8a69c550af1f4c8050d71c356fc1141918f969c4725fef3739d",
+          "examples_seen": 1200,
+          "final_cross_entropy": 8.684799979082168e-09,
+          "inherited_hidden_units": 0,
+          "initial_cross_entropy": 0.6619831151930482,
+          "initial_parameters": "686108551d5ac2c6689b3581b1bd848e75eef37b357fff95acb30f4919f7f827",
+          "kind": "actual-numpy-tanh-mlp-adam",
+          "language_model_finetuning": false,
+          "parent_parameters": null,
+          "rows": 2,
+          "seed": 91317,
+          "source_bound": true,
+          "steps": 600,
+          "training_accuracy": 1.0,
+          "wall_seconds": 0.05077458300002036
+        },
+        "written_address_diagnostic": {
+          "correct": 2,
+          "rows": 2
+        }
+      },
+      "semantic": {
+        "catalog_bytes": 76,
+        "current_source_ids": [
+          "017c7d626edf2cc61215734fd77b126d40a8aa1d8f819204a7bb4608409bf804",
+          "b211ffe9feeb15e849f5e3c69643863cce6b582c4e0d3d84c3e0a7bcaf314254"
+        ],
+        "independent_future_task_evaluation": false,
+        "native_bytes": 65369,
+        "native_digest": "90c6a78d90b6585b933a350516116164da983db15f28a9dc16815e816198e322",
+        "numeric_parameter_bytes": 13064,
+        "original_bytes": 19042,
+        "original_digest": "775d6ddd141411279a4b5d6875b1c382ed9fb907d6b2454f4814541d6d8cbad7",
+        "parameter_digest": "bf2aa8c9b448f6208fb929808c08147a37abf035cd76eb117f98d189d0f0bd7f",
+        "training": {
+          "catalog_contains_explicit_values": true,
+          "catalog_digest": "11cb04c9d34ff020bb05cf60a79c0793822bcea5318ed404f3532b2074e1a791",
+          "catalog_fixed_by_caller": false,
+          "cpu_seconds": 0.047431552,
+          "dataset_digest": "ee03f91005c55a7c77574306c26debaa5072a27cb633a4e402d88c0be47ac43c",
+          "examples_seen": 1200,
+          "final_cross_entropy": 8.684799979082168e-09,
+          "inherited_hidden_units": 0,
+          "initial_cross_entropy": 0.6619831151930482,
+          "initial_parameters": "686108551d5ac2c6689b3581b1bd848e75eef37b357fff95acb30f4919f7f827",
+          "kind": "actual-numpy-tanh-mlp-adam",
+          "language_model_finetuning": false,
+          "parent_parameters": null,
+          "rows": 2,
+          "seed": 91317,
+          "source_bound": true,
+          "steps": 600,
+          "training_accuracy": 1.0,
+          "wall_seconds": 0.047431014000039795
+        },
+        "written_address_diagnostic": {
+          "correct": 2,
+          "rows": 2
+        }
+      }
+    },
+    "wall_seconds": 0.10846226499995737
+  },
+  "positive_phrases_from_public_fit_examples": true,
+  "readbacks": [
+    {
+      "owner_cut_digest": "dc7f8b9fec4c2cd46bcf0789fad67e92f262b529fd94aa84c45a4051b146f010",
+      "readout": {
+        "cell_digests": [],
+        "elapsed_seconds": 0.041404386,
+        "generation": 1,
+        "hops": 1,
+        "operation": "current",
+        "prediction_kind": "source_evidence",
+        "query_id": "query:real-language-0",
+        "reason": null,
+        "schema": "hepta.memory.readout.v1",
+        "snapshot_digest": "544d242983ef3365d4a97ef73eeb35fe63ee6e1b25314e62674bd03be6d98d52",
+        "source_ids": [
+          "f124c110303224619244b850fd51486f31fc16dbc55ef211ba554864f8de09f7"
+        ],
+        "status": "ok",
+        "value": 9
+      },
+      "request": {
+        "at": 15,
+        "entity": "meter:agentd-cell",
+        "max_cells": 3,
+        "max_hops": 3,
+        "query_id": "query:real-language-0",
+        "schema": "hepta.memory.request.v1",
+        "scope": "cognitive:018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+        "since": 10,
+        "text": "Retrieve Orion's latest unprocessed sample."
+      }
+    },
+    {
+      "owner_cut_digest": "dc7f8b9fec4c2cd46bcf0789fad67e92f262b529fd94aa84c45a4051b146f010",
+      "readout": {
+        "cell_digests": [],
+        "elapsed_seconds": 0.031153552,
+        "generation": 1,
+        "hops": 1,
+        "operation": "history",
+        "prediction_kind": "source_evidence",
+        "query_id": "query:real-language-1",
+        "reason": null,
+        "schema": "hepta.memory.readout.v1",
+        "snapshot_digest": "544d242983ef3365d4a97ef73eeb35fe63ee6e1b25314e62674bd03be6d98d52",
+        "source_ids": [
+          "1df92ed2d35a310e8c5ed023d0ef6119dd5fe53ff354f93cd6e10727f9464c68"
+        ],
+        "status": "ok",
+        "value": 6
+      },
+      "request": {
+        "at": 15,
+        "entity": "meter:language-vega",
+        "max_cells": 3,
+        "max_hops": 3,
+        "query_id": "query:real-language-1",
+        "schema": "hepta.memory.request.v1",
+        "scope": "cognitive:018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+        "since": 10,
+        "text": "For Vega, recall the reading on file by the supplied cutoff."
+      }
+    },
+    {
+      "owner_cut_digest": "dc7f8b9fec4c2cd46bcf0789fad67e92f262b529fd94aa84c45a4051b146f010",
+      "readout": {
+        "cell_digests": [
+          "90c6a78d90b6585b933a350516116164da983db15f28a9dc16815e816198e322"
+        ],
+        "elapsed_seconds": 0.033060635,
+        "generation": 1,
+        "hops": 1,
+        "operation": "semantic",
+        "prediction_kind": "model_prediction",
+        "query_id": "query:real-language-2",
+        "reason": null,
+        "schema": "hepta.memory.readout.v1",
+        "snapshot_digest": "544d242983ef3365d4a97ef73eeb35fe63ee6e1b25314e62674bd03be6d98d52",
+        "source_ids": [
+          "017c7d626edf2cc61215734fd77b126d40a8aa1d8f819204a7bb4608409bf804"
+        ],
+        "status": "ok",
+        "value": {
+          "factor": 3,
+          "label": "owner semantic"
+        }
+      },
+      "request": {
+        "at": 15,
+        "entity": "meter:agentd-cell",
+        "max_cells": 3,
+        "max_hops": 3,
+        "query_id": "query:real-language-2",
+        "schema": "hepta.memory.request.v1",
+        "scope": "cognitive:018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+        "since": 10,
+        "text": "Recall Orion's stored multiplier itself."
+      }
+    },
+    {
+      "owner_cut_digest": "dc7f8b9fec4c2cd46bcf0789fad67e92f262b529fd94aa84c45a4051b146f010",
+      "readout": {
+        "cell_digests": [
+          "4c8d8e5d597168bb2b61663b713fb843a35a4b4de6d31feda458f45375589a52"
+        ],
+        "elapsed_seconds": 0.037633772,
+        "generation": 1,
+        "hops": 1,
+        "operation": "procedure",
+        "prediction_kind": "model_prediction",
+        "query_id": "query:real-language-3",
+        "reason": null,
+        "schema": "hepta.memory.readout.v1",
+        "snapshot_digest": "544d242983ef3365d4a97ef73eeb35fe63ee6e1b25314e62674bd03be6d98d52",
+        "source_ids": [
+          "79efa07a101d0f0a3ed193e4b76a4e2ecbca3a22162e3868f61d39b0fd325966"
+        ],
+        "status": "ok",
+        "value": {
+          "bias": 3,
+          "limit": 1000,
+          "opcode": "affine"
+        }
+      },
+      "request": {
+        "at": 15,
+        "entity": "meter:language-vega",
+        "max_cells": 3,
+        "max_hops": 3,
+        "query_id": "query:real-language-3",
+        "schema": "hepta.memory.request.v1",
+        "scope": "cognitive:018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+        "since": 10,
+        "text": "Describe only the saved steps for Vega, without executing them."
+      }
+    },
+    {
+      "owner_cut_digest": "dc7f8b9fec4c2cd46bcf0789fad67e92f262b529fd94aa84c45a4051b146f010",
+      "readout": {
+        "cell_digests": [],
+        "elapsed_seconds": 0.027654221,
+        "generation": 1,
+        "hops": 2,
+        "operation": "change",
+        "prediction_kind": "source_evidence",
+        "query_id": "query:real-language-4",
+        "reason": null,
+        "schema": "hepta.memory.readout.v1",
+        "snapshot_digest": "544d242983ef3365d4a97ef73eeb35fe63ee6e1b25314e62674bd03be6d98d52",
+        "source_ids": [
+          "72b4f7d608a5176d6759bb10a6123d8248ae96d63c2c4d830f4582063d8bbba7",
+          "f124c110303224619244b850fd51486f31fc16dbc55ef211ba554864f8de09f7"
+        ],
+        "status": "ok",
+        "value": 5
+      },
+      "request": {
+        "at": 15,
+        "entity": "meter:agentd-cell",
+        "max_cells": 3,
+        "max_hops": 3,
+        "query_id": "query:real-language-4",
+        "schema": "hepta.memory.request.v1",
+        "scope": "cognitive:018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+        "since": 10,
+        "text": "Read Orion's current and earlier values, then return current minus earlier."
+      }
+    },
+    {
+      "owner_cut_digest": "dc7f8b9fec4c2cd46bcf0789fad67e92f262b529fd94aa84c45a4051b146f010",
+      "readout": {
+        "cell_digests": [
+          "4c8d8e5d597168bb2b61663b713fb843a35a4b4de6d31feda458f45375589a52",
+          "90c6a78d90b6585b933a350516116164da983db15f28a9dc16815e816198e322"
+        ],
+        "elapsed_seconds": 0.030029986,
+        "generation": 1,
+        "hops": 3,
+        "operation": "apply",
+        "prediction_kind": "mixed",
+        "query_id": "query:real-language-5",
+        "reason": null,
+        "schema": "hepta.memory.readout.v1",
+        "snapshot_digest": "544d242983ef3365d4a97ef73eeb35fe63ee6e1b25314e62674bd03be6d98d52",
+        "source_ids": [
+          "67488f8495e4215cb188490519002068afa085ffa4c49a89565445226342be36",
+          "79efa07a101d0f0a3ed193e4b76a4e2ecbca3a22162e3868f61d39b0fd325966",
+          "b211ffe9feeb15e849f5e3c69643863cce6b582c4e0d3d84c3e0a7bcaf314254"
+        ],
+        "status": "ok",
+        "value": 59
+      },
+      "request": {
+        "at": 15,
+        "entity": "meter:language-vega",
+        "max_cells": 3,
+        "max_hops": 3,
+        "query_id": "query:real-language-5",
+        "schema": "hepta.memory.request.v1",
+        "scope": "cognitive:018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+        "since": 10,
+        "text": "Use Vega's saved recipe to produce a result from its latest observation."
+      }
+    },
+    {
+      "owner_cut_digest": "dc7f8b9fec4c2cd46bcf0789fad67e92f262b529fd94aa84c45a4051b146f010",
+      "readout": {
+        "cell_digests": [],
+        "elapsed_seconds": 0.015113427,
+        "generation": 1,
+        "hops": 0,
+        "operation": null,
+        "prediction_kind": "none",
+        "query_id": "query:real-language-reject-0",
+        "reason": "address resolver declined the request",
+        "schema": "hepta.memory.readout.v1",
+        "snapshot_digest": "544d242983ef3365d4a97ef73eeb35fe63ee6e1b25314e62674bd03be6d98d52",
+        "source_ids": [],
+        "status": "abstain",
+        "value": null
+      },
+      "request": {
+        "at": 15,
+        "entity": "meter:unregistered-sirius",
+        "max_cells": 3,
+        "max_hops": 3,
+        "query_id": "query:real-language-reject-0",
+        "schema": "hepta.memory.request.v1",
+        "scope": "cognitive:018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+        "since": 10,
+        "text": "Retrieve Sirius's latest unprocessed sample."
+      }
+    },
+    {
+      "owner_cut_digest": "dc7f8b9fec4c2cd46bcf0789fad67e92f262b529fd94aa84c45a4051b146f010",
+      "readout": {
+        "cell_digests": [],
+        "elapsed_seconds": 0.018805984,
+        "generation": 1,
+        "hops": 0,
+        "operation": null,
+        "prediction_kind": "none",
+        "query_id": "query:real-language-reject-1",
+        "reason": "address resolver declined the request",
+        "schema": "hepta.memory.readout.v1",
+        "snapshot_digest": "544d242983ef3365d4a97ef73eeb35fe63ee6e1b25314e62674bd03be6d98d52",
+        "source_ids": [],
+        "status": "abstain",
+        "value": null
+      },
+      "request": {
+        "at": 15,
+        "entity": "meter:agentd-cell",
+        "max_cells": 3,
+        "max_hops": 3,
+        "query_id": "query:real-language-reject-1",
+        "schema": "hepta.memory.request.v1",
+        "scope": "cognitive:018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+        "since": 10,
+        "text": "Square Orion's stored factor."
+      }
+    }
+  ],
+  "schema": "hepta.memory.v7.language-runtime-integration.v1",
+  "temporal_transport": {
+    "canonical_unit": "unix_seconds",
+    "classifier_held_results_cover_this_adapter": false,
+    "frozen_python_or_model_modified": false,
+    "held_reads": 0,
+    "literal_date_semantics": "UTC midnight only",
+    "native_midnight": 1738368000,
+    "new_host_transport_outside_frozen_classifier": true,
+    "owner_cut_digest": "b78c972ba78d966d8be69a59b4f537abd8acd963dc0c6459c2462f02655189cb",
+    "private_worker_date_slot": 20250201,
+    "profile": "hepta.memory.host-utc-midnight-time-view.v1",
+    "readbacks": [
+      {
+        "readout": {
+          "cell_digests": [],
+          "elapsed_seconds": 0.053956807,
+          "generation": 2,
+          "hops": 1,
+          "operation": "history",
+          "prediction_kind": "source_evidence",
+          "query_id": "query:real-utc-date-0",
+          "reason": null,
+          "schema": "hepta.memory.readout.v1",
+          "snapshot_digest": "7aa0f8de67584319425d6aea5e9bf5fdf03de4df0f3b3fd26809a6ff7cedeb4a",
+          "source_ids": [
+            "ebedbaa7efdf341539dc0b47a0d8be90992f85b25d6e903ddd7bf2d40aa1a2d2"
+          ],
+          "status": "ok",
+          "value": 37
+        },
+        "request": {
+          "at": 1738368000,
+          "entity": "meter:agentd-cell",
+          "max_cells": 3,
+          "max_hops": 3,
+          "query_id": "query:real-utc-date-0",
+          "schema": "hepta.memory.request.v1",
+          "scope": "cognitive:018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+          "since": 0,
+          "text": "Read Orion's observation on or before the provided 2025-02-01."
+        }
+      },
+      {
+        "readout": {
+          "cell_digests": [],
+          "elapsed_seconds": 0.049380734,
+          "generation": 2,
+          "hops": 2,
+          "operation": "change",
+          "prediction_kind": "source_evidence",
+          "query_id": "query:real-utc-date-1",
+          "reason": null,
+          "schema": "hepta.memory.readout.v1",
+          "snapshot_digest": "7aa0f8de67584319425d6aea5e9bf5fdf03de4df0f3b3fd26809a6ff7cedeb4a",
+          "source_ids": [
+            "44e78573a8baa3ff5434dbbd21ed45d3ec2c9531910a55e566ad3f3b04530097",
+            "ebedbaa7efdf341539dc0b47a0d8be90992f85b25d6e903ddd7bf2d40aa1a2d2"
+          ],
+          "status": "ok",
+          "value": 16
+        },
+        "request": {
+          "at": 1738454400,
+          "entity": "meter:agentd-cell",
+          "max_cells": 3,
+          "max_hops": 3,
+          "query_id": "query:real-utc-date-1",
+          "schema": "hepta.memory.request.v1",
+          "scope": "cognitive:018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+          "since": 1738368000,
+          "text": "Read Orion's current and earlier values, then return current minus earlier since 2025-02-01."
+        }
+      },
+      {
+        "boundary": "YYYYMMDD supplied as epoch must not read the 1970 trap",
+        "readout": {
+          "cell_digests": [],
+          "elapsed_seconds": 0.03523395,
+          "generation": 2,
+          "hops": 0,
+          "operation": null,
+          "prediction_kind": "none",
+          "query_id": "query:real-utc-reject-0",
+          "reason": "address resolver declined the request",
+          "schema": "hepta.memory.readout.v1",
+          "snapshot_digest": "7aa0f8de67584319425d6aea5e9bf5fdf03de4df0f3b3fd26809a6ff7cedeb4a",
+          "source_ids": [],
+          "status": "abstain",
+          "value": null
+        },
+        "request": {
+          "at": 20250201,
+          "entity": "meter:agentd-cell",
+          "max_cells": 3,
+          "max_hops": 3,
+          "query_id": "query:real-utc-reject-0",
+          "schema": "hepta.memory.request.v1",
+          "scope": "cognitive:018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+          "since": 0,
+          "text": "Read Orion's observation on or before the provided 2025-02-01."
+        }
+      },
+      {
+        "boundary": "native cutoff and literal day conflict",
+        "readout": {
+          "cell_digests": [],
+          "elapsed_seconds": 0.035964641,
+          "generation": 2,
+          "hops": 0,
+          "operation": null,
+          "prediction_kind": "none",
+          "query_id": "query:real-utc-reject-1",
+          "reason": "address resolver declined the request",
+          "schema": "hepta.memory.readout.v1",
+          "snapshot_digest": "7aa0f8de67584319425d6aea5e9bf5fdf03de4df0f3b3fd26809a6ff7cedeb4a",
+          "source_ids": [],
+          "status": "abstain",
+          "value": null
+        },
+        "request": {
+          "at": 1738454400,
+          "entity": "meter:agentd-cell",
+          "max_cells": 3,
+          "max_hops": 3,
+          "query_id": "query:real-utc-reject-1",
+          "schema": "hepta.memory.request.v1",
+          "scope": "cognitive:018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+          "since": 0,
+          "text": "Read Orion's observation on or before the provided 2025-02-01."
+        }
+      },
+      {
+        "boundary": "history cutoff is not exactly UTC midnight",
+        "readout": {
+          "cell_digests": [],
+          "elapsed_seconds": 0.036254578,
+          "generation": 2,
+          "hops": 0,
+          "operation": null,
+          "prediction_kind": "none",
+          "query_id": "query:real-utc-reject-2",
+          "reason": "address resolver declined the request",
+          "schema": "hepta.memory.readout.v1",
+          "snapshot_digest": "7aa0f8de67584319425d6aea5e9bf5fdf03de4df0f3b3fd26809a6ff7cedeb4a",
+          "source_ids": [],
+          "status": "abstain",
+          "value": null
+        },
+        "request": {
+          "at": 1738368001,
+          "entity": "meter:agentd-cell",
+          "max_cells": 3,
+          "max_hops": 3,
+          "query_id": "query:real-utc-reject-2",
+          "schema": "hepta.memory.request.v1",
+          "scope": "cognitive:018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+          "since": 0,
+          "text": "Read Orion's observation on or before the provided 2025-02-01."
+        }
+      },
+      {
+        "boundary": "change cutoff is not exactly UTC midnight",
+        "readout": {
+          "cell_digests": [],
+          "elapsed_seconds": 0.03294392,
+          "generation": 2,
+          "hops": 0,
+          "operation": null,
+          "prediction_kind": "none",
+          "query_id": "query:real-utc-reject-3",
+          "reason": "address resolver declined the request",
+          "schema": "hepta.memory.readout.v1",
+          "snapshot_digest": "7aa0f8de67584319425d6aea5e9bf5fdf03de4df0f3b3fd26809a6ff7cedeb4a",
+          "source_ids": [],
+          "status": "abstain",
+          "value": null
+        },
+        "request": {
+          "at": 1738454400,
+          "entity": "meter:agentd-cell",
+          "max_cells": 3,
+          "max_hops": 3,
+          "query_id": "query:real-utc-reject-3",
+          "schema": "hepta.memory.request.v1",
+          "scope": "cognitive:018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+          "since": 1738368001,
+          "text": "Read Orion's current and earlier values, then return current minus earlier since 2025-02-01."
+        }
+      }
+    ],
+    "training_code_digest": "9c780a13541f43ca6f4c044644a0f43d8b10e7ef89fd7d3288312db42714b15a",
+    "trap_source": "770a0aa629627d1641eb468f60d693030590110a9de6489cde9852caec54430a"
+  },
+  "test_kind": "product-protocol-and-data-binding-only",
+  "training_code_digest": "9c780a13541f43ca6f4c044644a0f43d8b10e7ef89fd7d3288312db42714b15a",
+  "worker": {
+    "attempts": 14,
+    "cpu_ns": 82673056,
+    "host_request_ns": 96191783,
+    "process_starts": 1,
+    "reported_wall_ns": 83846997,
+    "responses": 14,
+    "startup_wall_ns": 1559506227,
+    "stdin_bytes": 10556,
+    "stdout_bytes": 17805
+  }
+}
