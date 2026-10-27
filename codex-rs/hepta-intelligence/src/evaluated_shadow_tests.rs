@@ -169,7 +169,11 @@ fn reopen_ledger_at(
     fixture: &Fixture,
     anchor: LedgerAnchor,
 ) -> LedgerWriter {
-    let file = OpenOptions::new().read(true).write(true).open(path).unwrap();
+    let file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(path)
+        .unwrap();
     let ledger = DurableLedger::recover(
         file,
         digest("host-authorized-ledger"),
