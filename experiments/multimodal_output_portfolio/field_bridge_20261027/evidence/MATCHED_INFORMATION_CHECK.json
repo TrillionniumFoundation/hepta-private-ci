@@ -1,0 +1,1216 @@
+{
+  "arm_pair_comparison_counts": {
+    "A_frozen_fixed|D_frozen_native": {
+      "observation_comparisons": 1824,
+      "same_action_final_comparisons": 592
+    },
+    "A_frozen_fixed|H_frozen_history": {
+      "observation_comparisons": 1824,
+      "same_action_final_comparisons": 442
+    },
+    "B_ordinary_fixed|G_ordinary_native": {
+      "observation_comparisons": 1824,
+      "same_action_final_comparisons": 457
+    },
+    "C_field_fixed|E_field_native": {
+      "observation_comparisons": 1824,
+      "same_action_final_comparisons": 509
+    },
+    "C_field_fixed|F_field_history": {
+      "observation_comparisons": 1824,
+      "same_action_final_comparisons": 486
+    },
+    "C_field_fixed|I_field_reset": {
+      "observation_comparisons": 1824,
+      "same_action_final_comparisons": 917
+    },
+    "D_frozen_native|H_frozen_history": {
+      "observation_comparisons": 1824,
+      "same_action_final_comparisons": 682
+    },
+    "E_field_native|F_field_history": {
+      "observation_comparisons": 1824,
+      "same_action_final_comparisons": 690
+    },
+    "E_field_native|I_field_reset": {
+      "observation_comparisons": 1824,
+      "same_action_final_comparisons": 534
+    },
+    "F_field_history|I_field_reset": {
+      "observation_comparisons": 1824,
+      "same_action_final_comparisons": 423
+    }
+  },
+  "artifact_check_scope": "Recorded SHA256 comparison over every row. Raw artifact revalidation is covered by the separate complete independent audit. Final unquantized neural tensors were not compared; the conclusion is persisted PNG and UTF-8 equality.",
+  "comparison_counts": {
+    "arm_pair_comparisons": 18240,
+    "multiarm_groups": 5472,
+    "same_action_arm_pair_comparisons": 5732
+  },
+  "cost_interpretation": [
+    "Wall and Python process CPU times cover runtime feature construction plus readout choice. Native timing includes IPC, feature hashing, receipt serialization and writing; history uses an in-process NumPy feature map.",
+    "Native kernel time is the sum of durations measured immediately around the two original sparse_tick calls. Python process CPU does not include the native subprocess CPU time.",
+    "Recorded timings are batch totals divided by batch size, repeated for each row. Their median and p95 describe batch-amortized costs, not independently timed per-case latency.",
+    "Descriptive timings are measured for this implementation and host. They are separate from the objective's logical refinement tariff and do not establish optimized production latency."
+  ],
+  "cost_scope": "logical refinement tariff in objective; measured host/bridge timings descriptive and separate",
+  "coverage_errors": [],
+  "created_utc": "2026-10-27T07:42:35.670416+00:00",
+  "decision_cost_ratios": {
+    "retention/field": {
+      "history_arm": "F_field_history",
+      "mean_decision_wall_difference_us": 325.3607118055556,
+      "mean_decision_wall_ratio": 35.095217043263105,
+      "native_arm": "E_field_native",
+      "native_kernel_fraction_of_native_decision_wall": 0.06665668590089482
+    },
+    "retention/frozen": {
+      "history_arm": "H_frozen_history",
+      "mean_decision_wall_difference_us": 263.27243402777776,
+      "mean_decision_wall_ratio": 29.009909541493922,
+      "native_arm": "D_frozen_native",
+      "native_kernel_fraction_of_native_decision_wall": 0.06601453508243176
+    },
+    "test/field": {
+      "history_arm": "F_field_history",
+      "mean_decision_wall_difference_us": 263.9258001302083,
+      "mean_decision_wall_ratio": 27.802235430173894,
+      "native_arm": "E_field_native",
+      "native_kernel_fraction_of_native_decision_wall": 0.062191659674391706
+    },
+    "test/frozen": {
+      "history_arm": "H_frozen_history",
+      "mean_decision_wall_difference_us": 263.0923404947917,
+      "mean_decision_wall_ratio": 29.827378780469626,
+      "native_arm": "D_frozen_native",
+      "native_kernel_fraction_of_native_decision_wall": 0.0657993495294863
+    }
+  },
+  "decision_costs": {
+    "retention/A_frozen_fixed": {
+      "decision_python_cpu_ns": {
+        "mean": 15352.125,
+        "median": 1170.5,
+        "p95": 129057.09375,
+        "rows_with_measurement": 288
+      },
+      "decision_python_cpu_us": {
+        "mean": 15.352125,
+        "median": 1.1705,
+        "p95": 129.05709375,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_ns": {
+        "mean": 1572.0868055555557,
+        "median": 1182.40625,
+        "p95": 4944.9375,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_us": {
+        "mean": 1.5720868055555557,
+        "median": 1.18240625,
+        "p95": 4.9449375,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_ns": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_us": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      },
+      "native_tick_calls": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      }
+    },
+    "retention/B_ordinary_fixed": {
+      "decision_python_cpu_ns": {
+        "mean": 1196.329861111111,
+        "median": 1185.53125,
+        "p95": 1327.28125,
+        "rows_with_measurement": 288
+      },
+      "decision_python_cpu_us": {
+        "mean": 1.196329861111111,
+        "median": 1.18553125,
+        "p95": 1.32728125,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_ns": {
+        "mean": 1210.267361111111,
+        "median": 1220.28125,
+        "p95": 1338.5625,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_us": {
+        "mean": 1.210267361111111,
+        "median": 1.22028125,
+        "p95": 1.3385625,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_ns": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_us": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      },
+      "native_tick_calls": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      }
+    },
+    "retention/C_field_fixed": {
+      "decision_python_cpu_ns": {
+        "mean": 1253.3541666666667,
+        "median": 1143.5625,
+        "p95": 2145.6875,
+        "rows_with_measurement": 288
+      },
+      "decision_python_cpu_us": {
+        "mean": 1.2533541666666668,
+        "median": 1.1435625,
+        "p95": 2.1456875,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_ns": {
+        "mean": 1268.263888888889,
+        "median": 1155.5,
+        "p95": 2156.375,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_us": {
+        "mean": 1.2682638888888889,
+        "median": 1.1555,
+        "p95": 2.156375,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_ns": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_us": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      },
+      "native_tick_calls": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      }
+    },
+    "retention/D_frozen_native": {
+      "decision_python_cpu_ns": {
+        "mean": 363230.1423611111,
+        "median": 396263.5,
+        "p95": 434948.65625,
+        "rows_with_measurement": 288
+      },
+      "decision_python_cpu_us": {
+        "mean": 363.2301423611111,
+        "median": 396.2635,
+        "p95": 434.94865625,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_ns": {
+        "mean": 272671.69444444444,
+        "median": 284498.6875,
+        "p95": 335463.96875,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_us": {
+        "mean": 272.6716944444444,
+        "median": 284.4986875,
+        "p95": 335.46396875,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_ns": {
+        "mean": 18000.29513888889,
+        "median": 18897.125,
+        "p95": 21009.75,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_us": {
+        "mean": 18.00029513888889,
+        "median": 18.897125,
+        "p95": 21.00975,
+        "rows_with_measurement": 288
+      },
+      "native_tick_calls": {
+        "mean": 2.0,
+        "median": 2.0,
+        "p95": 2.0,
+        "rows_with_measurement": 288
+      }
+    },
+    "retention/E_field_native": {
+      "decision_python_cpu_ns": {
+        "mean": 408939.09027777775,
+        "median": 386595.625,
+        "p95": 571888.96875,
+        "rows_with_measurement": 288
+      },
+      "decision_python_cpu_us": {
+        "mean": 408.9390902777778,
+        "median": 386.595625,
+        "p95": 571.88896875,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_ns": {
+        "mean": 334903.4201388889,
+        "median": 288494.4375,
+        "p95": 629924.90625,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_us": {
+        "mean": 334.90342013888886,
+        "median": 288.4944375,
+        "p95": 629.92490625,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_ns": {
+        "mean": 22323.552083333332,
+        "median": 19636.96875,
+        "p95": 40492.28125,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_us": {
+        "mean": 22.323552083333333,
+        "median": 19.63696875,
+        "p95": 40.49228125,
+        "rows_with_measurement": 288
+      },
+      "native_tick_calls": {
+        "mean": 2.0,
+        "median": 2.0,
+        "p95": 2.0,
+        "rows_with_measurement": 288
+      }
+    },
+    "retention/F_field_history": {
+      "decision_python_cpu_ns": {
+        "mean": 23461.63888888889,
+        "median": 9845.84375,
+        "p95": 135948.1875,
+        "rows_with_measurement": 288
+      },
+      "decision_python_cpu_us": {
+        "mean": 23.461638888888892,
+        "median": 9.84584375,
+        "p95": 135.9481875,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_ns": {
+        "mean": 9542.708333333334,
+        "median": 9843.5625,
+        "p95": 10722.09375,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_us": {
+        "mean": 9.542708333333334,
+        "median": 9.8435625,
+        "p95": 10.72209375,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_ns": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_us": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      },
+      "native_tick_calls": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      }
+    },
+    "retention/G_ordinary_native": {
+      "decision_python_cpu_ns": {
+        "mean": 348242.8333333333,
+        "median": 342494.03125,
+        "p95": 414736.09375,
+        "rows_with_measurement": 288
+      },
+      "decision_python_cpu_us": {
+        "mean": 348.2428333333333,
+        "median": 342.49403125,
+        "p95": 414.73609375,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_ns": {
+        "mean": 250909.5625,
+        "median": 255466.5625,
+        "p95": 332164.90625,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_us": {
+        "mean": 250.9095625,
+        "median": 255.4665625,
+        "p95": 332.16490625,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_ns": {
+        "mean": 17733.291666666668,
+        "median": 17104.625,
+        "p95": 21321.875,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_us": {
+        "mean": 17.733291666666666,
+        "median": 17.104625,
+        "p95": 21.321875,
+        "rows_with_measurement": 288
+      },
+      "native_tick_calls": {
+        "mean": 2.0,
+        "median": 2.0,
+        "p95": 2.0,
+        "rows_with_measurement": 288
+      }
+    },
+    "retention/H_frozen_history": {
+      "decision_python_cpu_ns": {
+        "mean": 23255.32638888889,
+        "median": 9762.28125,
+        "p95": 134724.21875,
+        "rows_with_measurement": 288
+      },
+      "decision_python_cpu_us": {
+        "mean": 23.25532638888889,
+        "median": 9.76228125,
+        "p95": 134.72421875,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_ns": {
+        "mean": 9399.260416666666,
+        "median": 9750.9375,
+        "p95": 10603.78125,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_us": {
+        "mean": 9.399260416666666,
+        "median": 9.7509375,
+        "p95": 10.60378125,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_ns": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_us": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      },
+      "native_tick_calls": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      }
+    },
+    "retention/I_field_reset": {
+      "decision_python_cpu_ns": {
+        "mean": 411183.3263888889,
+        "median": 402963.78125,
+        "p95": 594188.1875,
+        "rows_with_measurement": 288
+      },
+      "decision_python_cpu_us": {
+        "mean": 411.1833263888889,
+        "median": 402.96378125,
+        "p95": 594.1881875,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_ns": {
+        "mean": 324593.2013888889,
+        "median": 290815.0625,
+        "p95": 547608.46875,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_us": {
+        "mean": 324.5932013888889,
+        "median": 290.8150625,
+        "p95": 547.60846875,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_ns": {
+        "mean": 18588.788194444445,
+        "median": 16823.84375,
+        "p95": 30186.15625,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_us": {
+        "mean": 18.588788194444444,
+        "median": 16.82384375,
+        "p95": 30.18615625,
+        "rows_with_measurement": 288
+      },
+      "native_tick_calls": {
+        "mean": 2.0,
+        "median": 2.0,
+        "p95": 2.0,
+        "rows_with_measurement": 288
+      }
+    },
+    "retention/J_generic_fixed": {
+      "decision_python_cpu_ns": {
+        "mean": 15163.322916666666,
+        "median": 1200.53125,
+        "p95": 127610.875,
+        "rows_with_measurement": 288
+      },
+      "decision_python_cpu_us": {
+        "mean": 15.163322916666665,
+        "median": 1.20053125,
+        "p95": 127.610875,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_ns": {
+        "mean": 1268.3333333333333,
+        "median": 1206.1875,
+        "p95": 2503.15625,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_us": {
+        "mean": 1.2683333333333333,
+        "median": 1.2061875,
+        "p95": 2.50315625,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_ns": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_us": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      },
+      "native_tick_calls": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      }
+    },
+    "retention/K_richer_fixed": {
+      "decision_python_cpu_ns": {
+        "mean": 1109.2916666666667,
+        "median": 1159.21875,
+        "p95": 1233.09375,
+        "rows_with_measurement": 288
+      },
+      "decision_python_cpu_us": {
+        "mean": 1.1092916666666668,
+        "median": 1.15921875,
+        "p95": 1.23309375,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_ns": {
+        "mean": 1124.607638888889,
+        "median": 1170.8125,
+        "p95": 1243.4375,
+        "rows_with_measurement": 288
+      },
+      "decision_wall_us": {
+        "mean": 1.1246076388888888,
+        "median": 1.1708125,
+        "p95": 1.2434375,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_ns": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      },
+      "native_kernel_us": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      },
+      "native_tick_calls": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 288
+      }
+    },
+    "test/A_frozen_fixed": {
+      "decision_python_cpu_ns": {
+        "mean": 3806.3053385416665,
+        "median": 1143.09375,
+        "p95": 2014.5625,
+        "rows_with_measurement": 1536
+      },
+      "decision_python_cpu_us": {
+        "mean": 3.8063053385416663,
+        "median": 1.14309375,
+        "p95": 2.0145625,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_ns": {
+        "mean": 1216.09765625,
+        "median": 1162.390625,
+        "p95": 1999.875,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_us": {
+        "mean": 1.21609765625,
+        "median": 1.162390625,
+        "p95": 1.999875,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_ns": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_us": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      },
+      "native_tick_calls": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      }
+    },
+    "test/B_ordinary_fixed": {
+      "decision_python_cpu_ns": {
+        "mean": 3681.7063802083335,
+        "median": 1172.984375,
+        "p95": 1415.25,
+        "rows_with_measurement": 1536
+      },
+      "decision_python_cpu_us": {
+        "mean": 3.6817063802083334,
+        "median": 1.172984375,
+        "p95": 1.41525,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_ns": {
+        "mean": 1231.9407552083333,
+        "median": 1191.8125,
+        "p95": 1449.34375,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_us": {
+        "mean": 1.2319407552083332,
+        "median": 1.1918125,
+        "p95": 1.44934375,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_ns": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_us": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      },
+      "native_tick_calls": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      }
+    },
+    "test/C_field_fixed": {
+      "decision_python_cpu_ns": {
+        "mean": 1157.90234375,
+        "median": 1151.546875,
+        "p95": 1335.40625,
+        "rows_with_measurement": 1536
+      },
+      "decision_python_cpu_us": {
+        "mean": 1.15790234375,
+        "median": 1.151546875,
+        "p95": 1.33540625,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_ns": {
+        "mean": 1173.244140625,
+        "median": 1158.140625,
+        "p95": 1363.9375,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_us": {
+        "mean": 1.173244140625,
+        "median": 1.158140625,
+        "p95": 1.3639375,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_ns": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_us": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      },
+      "native_tick_calls": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      }
+    },
+    "test/D_frozen_native": {
+      "decision_python_cpu_ns": {
+        "mean": 364198.8307291667,
+        "median": 360791.515625,
+        "p95": 464955.0625,
+        "rows_with_measurement": 1536
+      },
+      "decision_python_cpu_us": {
+        "mean": 364.1988307291667,
+        "median": 360.791515625,
+        "p95": 464.9550625,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_ns": {
+        "mean": 272218.8151041667,
+        "median": 274510.28125,
+        "p95": 414141.3125,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_us": {
+        "mean": 272.2188151041667,
+        "median": 274.51028125,
+        "p95": 414.1413125,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_ns": {
+        "mean": 17911.820963541668,
+        "median": 18460.421875,
+        "p95": 22383.34375,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_us": {
+        "mean": 17.91182096354167,
+        "median": 18.460421875,
+        "p95": 22.38334375,
+        "rows_with_measurement": 1536
+      },
+      "native_tick_calls": {
+        "mean": 2.0,
+        "median": 2.0,
+        "p95": 2.0,
+        "rows_with_measurement": 1536
+      }
+    },
+    "test/E_field_native": {
+      "decision_python_cpu_ns": {
+        "mean": 361402.490234375,
+        "median": 355755.4375,
+        "p95": 506652.375,
+        "rows_with_measurement": 1536
+      },
+      "decision_python_cpu_us": {
+        "mean": 361.402490234375,
+        "median": 355.7554375,
+        "p95": 506.652375,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_ns": {
+        "mean": 273772.9563802083,
+        "median": 276231.125,
+        "p95": 435139.46875,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_us": {
+        "mean": 273.7729563802083,
+        "median": 276.231125,
+        "p95": 435.13946875,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_ns": {
+        "mean": 17026.39453125,
+        "median": 16433.75,
+        "p95": 22151.5,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_us": {
+        "mean": 17.02639453125,
+        "median": 16.43375,
+        "p95": 22.1515,
+        "rows_with_measurement": 1536
+      },
+      "native_tick_calls": {
+        "mean": 2.0,
+        "median": 2.0,
+        "p95": 2.0,
+        "rows_with_measurement": 1536
+      }
+    },
+    "test/F_field_history": {
+      "decision_python_cpu_ns": {
+        "mean": 20259.852213541668,
+        "median": 9783.890625,
+        "p95": 134485.125,
+        "rows_with_measurement": 1536
+      },
+      "decision_python_cpu_us": {
+        "mean": 20.259852213541667,
+        "median": 9.783890625,
+        "p95": 134.485125,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_ns": {
+        "mean": 9847.15625,
+        "median": 9736.078125,
+        "p95": 12085.09375,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_us": {
+        "mean": 9.84715625,
+        "median": 9.736078125,
+        "p95": 12.08509375,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_ns": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_us": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      },
+      "native_tick_calls": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      }
+    },
+    "test/G_ordinary_native": {
+      "decision_python_cpu_ns": {
+        "mean": 378844.04296875,
+        "median": 371792.234375,
+        "p95": 524125.53125,
+        "rows_with_measurement": 1536
+      },
+      "decision_python_cpu_us": {
+        "mean": 378.84404296875,
+        "median": 371.792234375,
+        "p95": 524.12553125,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_ns": {
+        "mean": 280521.7858072917,
+        "median": 286026.484375,
+        "p95": 326434.71875,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_us": {
+        "mean": 280.5217858072917,
+        "median": 286.026484375,
+        "p95": 326.43471875,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_ns": {
+        "mean": 18848.352213541668,
+        "median": 19257.09375,
+        "p95": 21368.8125,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_us": {
+        "mean": 18.848352213541666,
+        "median": 19.25709375,
+        "p95": 21.3688125,
+        "rows_with_measurement": 1536
+      },
+      "native_tick_calls": {
+        "mean": 2.0,
+        "median": 2.0,
+        "p95": 2.0,
+        "rows_with_measurement": 1536
+      }
+    },
+    "test/H_frozen_history": {
+      "decision_python_cpu_ns": {
+        "mean": 19541.319010416668,
+        "median": 9495.953125,
+        "p95": 134333.34375,
+        "rows_with_measurement": 1536
+      },
+      "decision_python_cpu_us": {
+        "mean": 19.541319010416668,
+        "median": 9.495953125,
+        "p95": 134.33334375,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_ns": {
+        "mean": 9126.474609375,
+        "median": 9296.671875,
+        "p95": 11539.90625,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_us": {
+        "mean": 9.126474609375,
+        "median": 9.296671875,
+        "p95": 11.53990625,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_ns": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_us": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      },
+      "native_tick_calls": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      }
+    },
+    "test/I_field_reset": {
+      "decision_python_cpu_ns": {
+        "mean": 378878.9915364583,
+        "median": 359961.375,
+        "p95": 524115.71875,
+        "rows_with_measurement": 1536
+      },
+      "decision_python_cpu_us": {
+        "mean": 378.87899153645833,
+        "median": 359.961375,
+        "p95": 524.11571875,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_ns": {
+        "mean": 297143.5891927083,
+        "median": 270442.703125,
+        "p95": 414287.78125,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_us": {
+        "mean": 297.1435891927083,
+        "median": 270.442703125,
+        "p95": 414.28778125,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_ns": {
+        "mean": 15660.276041666666,
+        "median": 15265.90625,
+        "p95": 21253.4375,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_us": {
+        "mean": 15.660276041666666,
+        "median": 15.26590625,
+        "p95": 21.2534375,
+        "rows_with_measurement": 1536
+      },
+      "native_tick_calls": {
+        "mean": 2.0,
+        "median": 2.0,
+        "p95": 2.0,
+        "rows_with_measurement": 1536
+      }
+    },
+    "test/J_generic_fixed": {
+      "decision_python_cpu_ns": {
+        "mean": 1140.3600260416667,
+        "median": 1151.25,
+        "p95": 1267.8125,
+        "rows_with_measurement": 1536
+      },
+      "decision_python_cpu_us": {
+        "mean": 1.1403600260416666,
+        "median": 1.15125,
+        "p95": 1.2678125,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_ns": {
+        "mean": 1156.8548177083333,
+        "median": 1171.0,
+        "p95": 1311.65625,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_us": {
+        "mean": 1.1568548177083333,
+        "median": 1.171,
+        "p95": 1.31165625,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_ns": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_us": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      },
+      "native_tick_calls": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      }
+    },
+    "test/K_richer_fixed": {
+      "decision_python_cpu_ns": {
+        "mean": 3882.404296875,
+        "median": 1217.125,
+        "p95": 2001.09375,
+        "rows_with_measurement": 1536
+      },
+      "decision_python_cpu_us": {
+        "mean": 3.882404296875,
+        "median": 1.217125,
+        "p95": 2.00109375,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_ns": {
+        "mean": 1232.9505208333333,
+        "median": 1233.40625,
+        "p95": 1417.46875,
+        "rows_with_measurement": 1536
+      },
+      "decision_wall_us": {
+        "mean": 1.2329505208333333,
+        "median": 1.23340625,
+        "p95": 1.41746875,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_ns": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      },
+      "native_kernel_us": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      },
+      "native_tick_calls": {
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "rows_with_measurement": 1536
+      }
+    }
+  },
+  "expected_groups": 9120,
+  "group_key": [
+    "seed",
+    "split",
+    "corruption",
+    "pair",
+    "profile"
+  ],
+  "groups": 9120,
+  "input_hashes_unchanged": true,
+  "inputs_sha256": {
+    "EVALUATION_COMPLETE.json": "d43ec47587d754da8a52cfa6931be6addf5f90ee5756551ef325cad60441b394",
+    "PROTOCOL.json": "614a70f4fced58be5599fc323f61ac6fa22f1fb390887b23b195fafd1ce94c26",
+    "RESULT.json": "844d6ec87ef1905e59602db7895d43ea95e2df6cd54a948d9776b054252d8b13",
+    "rows.jsonl": "74a3631775f1d10e36d202954a59e944cb40b6a6eabee790fb645f687e6e4267"
+  },
+  "native_state_reset_action_diagnostic": {
+    "retention": {
+      "action_change_percent": 90.625,
+      "action_changes": 261,
+      "matches_RESULT": true,
+      "paired_rows": 288,
+      "same_controller_sha": 288,
+      "transition_counts": {
+        "0->2": 67,
+        "0->4": 50,
+        "1->1": 1,
+        "1->2": 2,
+        "1->4": 19,
+        "2->1": 24,
+        "2->2": 19,
+        "2->4": 3,
+        "3->1": 42,
+        "3->2": 20,
+        "3->4": 18,
+        "4->1": 4,
+        "4->2": 12,
+        "4->4": 7
+      }
+    },
+    "test": {
+      "action_change_percent": 66.9921875,
+      "action_changes": 1029,
+      "matches_RESULT": true,
+      "paired_rows": 1536,
+      "same_controller_sha": 1536,
+      "transition_counts": {
+        "0->0": 119,
+        "0->1": 67,
+        "0->2": 257,
+        "0->3": 37,
+        "0->4": 87,
+        "1->1": 39,
+        "1->2": 13,
+        "1->3": 14,
+        "1->4": 43,
+        "2->0": 33,
+        "2->1": 43,
+        "2->2": 68,
+        "2->3": 22,
+        "2->4": 12,
+        "3->0": 15,
+        "3->1": 91,
+        "3->2": 127,
+        "3->3": 231,
+        "3->4": 58,
+        "4->0": 8,
+        "4->1": 8,
+        "4->2": 89,
+        "4->3": 5,
+        "4->4": 50
+      }
+    }
+  },
+  "observation_check": "Both preview image and UTF-8 SHA256 values; both public 8-vectors packed as little-endian float64 for exact identity; both preview public-logit SHA256 values; same model, source IDs, noise seed, batch seed/start/size.",
+  "observation_mismatch_count": 0,
+  "observation_mismatches": [],
+  "passed": true,
+  "profile_arms": {
+    "field": [
+      "C_field_fixed",
+      "E_field_native",
+      "F_field_history",
+      "I_field_reset"
+    ],
+    "frozen": [
+      "A_frozen_fixed",
+      "D_frozen_native",
+      "H_frozen_history"
+    ],
+    "generic": [
+      "J_generic_fixed"
+    ],
+    "ordinary": [
+      "B_ordinary_fixed",
+      "G_ordinary_native"
+    ],
+    "richer": [
+      "K_richer_fixed"
+    ]
+  },
+  "profile_comparison_counts": {
+    "field": {
+      "arm_pair_comparisons": 10944,
+      "groups": 1824,
+      "same_action_arm_pair_comparisons": 3559
+    },
+    "frozen": {
+      "arm_pair_comparisons": 5472,
+      "groups": 1824,
+      "same_action_arm_pair_comparisons": 1716
+    },
+    "generic": {
+      "groups": 1824
+    },
+    "ordinary": {
+      "arm_pair_comparisons": 1824,
+      "groups": 1824,
+      "same_action_arm_pair_comparisons": 457
+    },
+    "richer": {
+      "groups": 1824
+    }
+  },
+  "reset_interpretation": "Same E/I frozen controller SHA and same public observations. Changed actions establish state sensitivity for this controller; action-change frequency alone does not establish better control or memory benefit.",
+  "resource_recomputation_mismatches": [],
+  "row_hash_and_count_match_EVALUATION_COMPLETE": true,
+  "rows": 20064,
+  "rows_by_split_arm": {
+    "retention/A_frozen_fixed": 288,
+    "retention/B_ordinary_fixed": 288,
+    "retention/C_field_fixed": 288,
+    "retention/D_frozen_native": 288,
+    "retention/E_field_native": 288,
+    "retention/F_field_history": 288,
+    "retention/G_ordinary_native": 288,
+    "retention/H_frozen_history": 288,
+    "retention/I_field_reset": 288,
+    "retention/J_generic_fixed": 288,
+    "retention/K_richer_fixed": 288,
+    "test/A_frozen_fixed": 1536,
+    "test/B_ordinary_fixed": 1536,
+    "test/C_field_fixed": 1536,
+    "test/D_frozen_native": 1536,
+    "test/E_field_native": 1536,
+    "test/F_field_history": 1536,
+    "test/G_ordinary_native": 1536,
+    "test/H_frozen_history": 1536,
+    "test/I_field_reset": 1536,
+    "test/J_generic_fixed": 1536,
+    "test/K_richer_fixed": 1536
+  },
+  "same_action_final_media_mismatch_count": 0,
+  "same_action_final_media_mismatches": [],
+  "same_information_conclusion": "All matched arms within each shared model profile received exactly identical recorded public observations; generic and richer profiles each have only one arm and provide no between-arm matching evidence.",
+  "schema": "hepta.field-bridge.matched-information-audit.v1",
+  "scope": "Post-execution evidence comparison only; no model execution, fitting, source edits or result edits."
+}
