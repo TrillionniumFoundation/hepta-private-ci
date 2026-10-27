@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.memory.v6.independent-source-annex.v1",
+  "audit_passed": true,
+  "checks": 253893,
+  "failure_count": 0,
+  "failures_first_100": [],
+  "rows": 25920,
+  "cases": 15,
+  "case_arms": 90,
+  "source_records": 1800,
+  "exact_routed_abstentions": 0,
+  "records": {
+    "bytes": 56755110,
+    "sha256": "29b82275adb010bbca2c466b51e399f7ae58927c56f8406a4dc21da3e14cbab7"
+  },
+  "freeze_sha256": "a3dc02766d061d9d3031fda5117889de84d53e2a2843edfa324001ee9432d477",
+  "annex_source": {
+    "sha256": "e232afb19cdfb15e274af2e0423e250cdbfe372d63c37d4920941e42c8188bcd",
+    "bytes": 17805
+  },
+  "cost_totals": {
+    "rows": 25920.0,
+    "read_wall_seconds": 102.64996550025535,
+    "rpc_bytes": 29552469.0,
+    "rpc_attempts": 35400.0,
+    "read_attempts": 19395.0,
+    "validation_attempts": 16005.0
+  },
+  "limitations": [
+    "This independently recomputes source truth and recorded accounting, not neural predictions or historical timing/OS traffic.",
+    "The author also implemented runner/transport; this is not a third-party audit.",
+    "Frozen source records are synthetic experimental truth, not externally verified real-world facts.",
+    "Encoder, development, replay, structure search and transfer costs require their separate ledgers."
+  ]
+}

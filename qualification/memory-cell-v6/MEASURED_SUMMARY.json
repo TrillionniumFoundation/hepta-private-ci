@@ -1,0 +1,190 @@
+{
+  "all_six_acceptance_complete": false,
+  "cell_calibration_independent_risk_established": false,
+  "clean_rebuild_identical_to_reference_seeds": 5,
+  "development_total_cost_complete": false,
+  "language_families": 36,
+  "language_gate_passed_cases": 0,
+  "language_gate_total_cases": 15,
+  "language_known_correct": {
+    "correct": 128,
+    "rate": 0.6666666666666666,
+    "total": 192
+  },
+  "language_ood_routed": {
+    "count": 13,
+    "rate": 0.13541666666666666,
+    "total": 96
+  },
+  "language_templates": 288,
+  "lifecycle_checks": {
+    "passed": 270,
+    "total": 270
+  },
+  "lifecycle_recovery_median_seconds": 0.13779789699765388,
+  "limits": [
+    "explicit value/program catalogs; no free-text parameter compression proof",
+    "registered typed arithmetic and predefined expert capabilities",
+    "same language templates and deterministic head across repeated seeds/domains",
+    "trained-address cell calibration is only a mechanism check",
+    "post-search budget admission and projected net benefit; not enforced hardware compute limits",
+    "single-host loopback and explicit replica update; production owner adapters remain unwired"
+  ],
+  "no_replay_old_raw": {
+    "correct": 111,
+    "total": 120
+  },
+  "oracle_known_correct": {
+    "correct": 192,
+    "total": 192
+  },
+  "parameter_to_exact_read_latency_ratio": 1.8037802997136165,
+  "primary_record_audit_passed": true,
+  "production_organ_taskflow_integrated": false,
+  "python_targeted_tests": {
+    "by_file": {
+      "test_audit.py": 9,
+      "test_cells.py": 8,
+      "test_contracts.py": 3,
+      "test_evolution.py": 6,
+      "test_language_runner.py": 4,
+      "test_lifecycle.py": 2,
+      "test_memory_cli.py": 1,
+      "test_network.py": 3,
+      "test_router.py": 5,
+      "test_runtime.py": 6,
+      "test_transfer.py": 3
+    },
+    "scope": "Passed in staged development runs before their final formatting; not a single final full-product suite run.",
+    "unique_test_methods": 50
+  },
+  "records_sha256": "29b82275adb010bbca2c466b51e399f7ae58927c56f8406a4dc21da3e14cbab7",
+  "replay_example_presentations_ratio": 4,
+  "replay_old": {
+    "correct": 120,
+    "total": 120
+  },
+  "rows": 25920,
+  "rust_leaf_tests": {
+    "full_product_build": false,
+    "ignored_existing": 2,
+    "new_memory_tests": 7,
+    "passed": 127
+  },
+  "same_router_exact_accuracy_advantage": 0,
+  "schema": "hepta.memory.v6.measured-summary.v1",
+  "source_commit": "856c77f8f29e84e0fdcae43e1c2171aaaaac14ee",
+  "source_freeze_sha256": "a3dc02766d061d9d3031fda5117889de84d53e2a2843edfa324001ee9432d477",
+  "source_replication_is_explicit": true,
+  "source_truth_audit_passed": true,
+  "storage": {
+    "exact": {
+      "case_count": 15,
+      "copies_per_case": 3,
+      "three_copy_max_bytes": 326292,
+      "three_copy_mean_bytes": 326046.4,
+      "three_copy_min_bytes": 325842,
+      "total_45_copy_bytes": 4890696
+    },
+    "parameter": {
+      "case_count": 15,
+      "copies_per_case": 3,
+      "three_copy_max_bytes": 506268,
+      "three_copy_mean_bytes": 506009,
+      "three_copy_min_bytes": 505800,
+      "total_45_copy_bytes": 7590135
+    }
+  },
+  "structure": {
+    "natural": {
+      "all_search_evaluation_work_proxy": 623544,
+      "all_search_retained_candidate_bytes": 1109460,
+      "all_search_training_work_proxy": 483113100,
+      "break_even_queries_selection_range": [
+        60228,
+        65642
+      ],
+      "positive_full_search_test_projection_seeds": 0,
+      "selected": {
+        "fixed_4": 5
+      },
+      "selected_test": {
+        "accuracy": 1.0,
+        "correct": 95,
+        "rows": 95
+      },
+      "strong_fixed": {
+        "fixed_4": 5
+      },
+      "structural_adoption_approved_seeds": 0,
+      "test_projected_net_benefit_mean": -0.015514159096842107,
+      "test_projected_net_benefit_range": [
+        -0.015571263697368422,
+        -0.015408567788421054
+      ],
+      "test_projected_net_benefit_sum": -0.07757079548421053,
+      "winner": {
+        "split": 5
+      }
+    },
+    "same_parameter_ceiling": {
+      "all_search_evaluation_work_proxy": 639666,
+      "all_search_retained_candidate_bytes": 1145964,
+      "all_search_training_work_proxy": 495434100,
+      "break_even_queries_selection_range": [
+        77653,
+        99913
+      ],
+      "positive_full_search_test_projection_seeds": 0,
+      "selected": {
+        "fixed_4": 5
+      },
+      "selected_test": {
+        "accuracy": 1.0,
+        "correct": 95,
+        "rows": 95
+      },
+      "strong_fixed": {
+        "fixed_4": 5
+      },
+      "structural_adoption_approved_seeds": 0,
+      "test_projected_net_benefit_mean": -0.016795851415157895,
+      "test_projected_net_benefit_range": [
+        -0.016998519327894732,
+        -0.016359103745263157
+      ],
+      "test_projected_net_benefit_sum": -0.08397925707578947,
+      "winner": {
+        "split": 5
+      }
+    }
+  },
+  "structure_supplement": {
+    "additional_read_work_proxy": 199394,
+    "calibration_attempts": 0,
+    "ensemble_reads": 190,
+    "fit_attempts": 0,
+    "fixed_4_correct": 95,
+    "full_cost_projection_reproduced_seeds": 5,
+    "inference_cpu_seconds": 0.019974309,
+    "per_arm_total": 95,
+    "positive_net_benefit_seeds": 0,
+    "post_hoc_additional_inference": true,
+    "source_formal_inputs_unchanged": true,
+    "split_correct": 95,
+    "verification_cpu_seconds": 0.756072702
+  },
+  "transfer_expert_work": {
+    "fixed_capability": 1467792,
+    "general": 3469200,
+    "learned": 2044944,
+    "learned_extra_router_dot_work": 17600
+  },
+  "transfer_gates": {
+    "bounded_structured_transfer_demonstrated": true,
+    "reason": "All 400 recorded tasks are correct, but learned expert work ties fixed capability on known combinations and is greater on novel combinations; routing/training overhead is additional. The fourth old-domain/known-combination test population is absent.",
+    "strong_fixed_net_benefit_gate_met": false
+  },
+  "transfer_test_correct": 400,
+  "transfer_test_total": 400
+}
