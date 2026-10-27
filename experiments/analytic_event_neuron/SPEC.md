@@ -76,7 +76,7 @@ Each trajectory supplies six irregularly timed noisy observations of a hidden
 state, with explicit missingness. Primary events use fixed thresholds
 `[-0.6, 0.6]` and future horizons `[0.5, 1.0, 2.0]`. Gaussian development and
 confirmation test the declared model. Additional drift-shift and Student-t
-observation laws test model mismatch. These are controlled synthetic tasks,
+process-and-observation laws test model mismatch. These are controlled synthetic tasks,
 not natural-source or large-language-model generalization evidence.
 
 Metrics include per-trajectory event negative log likelihood, Brier score,
@@ -86,6 +86,10 @@ and readout changes are measured before/after learning and after reload.
 ## 5. Sequential decision task
 
 The fixed endpoint is two time units after the initial observation history.
+Before choosing an action, every arm reads the same public cost multiplier,
+drawn independently and uniformly from `[0.5, 1, 2, 4]`. It scales both action
+costs below. This pre-confirmation revision avoids a degenerate always-wait-
+then-repair task; development-only checks established multiple optimal paths.
 The public decision sequence permits:
 
 1. stop: submit the current prediction;
@@ -105,6 +109,17 @@ this is an explicitly approximate plug-in policy, evaluated by actual rollout.
 A known-law Gaussian comparator does not certify optimality under model
 mismatch. No population exponential-risk claim is made for Student-t squared
 losses, whose exponential moment may not exist.
+
+Four fixed policies (always stop, immediate repair, wait then stop, wait then
+repair) share the learned analytic estimator and isolate the contribution of
+action selection. The matched pulse ablations replace categorical draws by
+their mean drive, or disable reset. Mean drive is not an exact expectation of
+the nonlinear reset process. These are secondary, descriptive comparisons.
+
+The auxiliary horizon zero estimates current-state uncertainty for decisions.
+Training uses all four acquired-history contexts (initial, repair, wait,
+wait-and-repair); their correlated labels define a composite conditional score,
+not an independent joint likelihood. Each context is available to every arm.
 
 Public observations are serialized and read back before model consumption.
 Submitted predictions are written to UTF-8 and an independently decoded PNG
@@ -130,6 +145,11 @@ units. Multiple arms share paired environment draws but cannot read future
 draws before their actions. Nested horizons, transitions and delivered files
 do not increase the independent sample count. The protocol fixes primary
 contrasts and multiplicity handling before confirmation.
+
+Student-t(4) noise has finite second moment but no fourth moment. Its empirical
+utility and intervals are retained, but ordinary squared-loss bootstrap
+coverage and population noninferiority are not asserted. Five training seeds
+also limit the reliability of asymptotic inference in the primary study.
 
 ## 7. Scope of success
 
