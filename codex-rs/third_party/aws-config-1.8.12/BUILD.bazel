@@ -1,0 +1,57 @@
+load("@crates//:defs.bzl", "all_crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "workspace_root_test")
+
+# Keep the Cargo default providers and the first-party credentials-login request.
+_FEATURES = [
+    "credentials-login",
+    "credentials-process",
+    "default",
+    "default-https-client",
+    "rt-tokio",
+    "sso",
+]
+
+filegroup(
+    name = "package-files",
+    srcs = glob(["**"], exclude = ["BUILD.bazel", "target/**"]),
+    visibility = ["//visibility:public"],
+)
+
+rust_library(
+    name = "aws-config",
+    srcs = glob(["src/**/*.rs"]),
+    compile_data = glob(["src/**/*.md"]),
+    crate_features = _FEATURES,
+    crate_name = "aws_config",
+    crate_root = "src/lib.rs",
+    edition = "2021",
+    version = "1.8.12",
+    visibility = ["//visibility:public"],
+    deps = all_crate_deps(),
+    proc_macro_deps = all_crate_deps(proc_macro = True),
+)
+
+rust_test(
+    name = "aws-config-unit-tests-bin",
+    crate = ":aws-config",
+    crate_features = _FEATURES,
+    data = glob(["test-data/**"]),
+    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS,
+    tags = ["manual"],
+    version = "1.8.12",
+    deps = all_crate_deps(normal_dev = True),
+    proc_macro_deps = all_crate_deps(proc_macro_dev = True),
+)
+
+# The unchanged upstream tests open test-data relative to the crate root.
+# The shared launcher computes the working directory as marker/../../..;
+# placing a marker two directories below this package preserves that contract.
+workspace_root_test(
+    name = "aws-config-unit-tests",
+    env = {"NO_COLOR": ""},  # The upstream loader test checks ANSI-formatted logs.
+    test_bin = ":aws-config-unit-tests-bin",
+    data = glob(["test-data/**"]),
+    tags = ["manual", "requires-network"],  # Explicit qualification graph and real timeout network required.
+    workspace_root_marker = "test-data/hepta-runfiles/crate-root.marker",
+)
