@@ -61,7 +61,9 @@ async fn postload_birth_refusal_consumes_config_but_retains_active_original_sess
     };
     // SAFETY: sample this actual fixture process's unchanged credentials only.
     let credentials = unsafe { (libc::geteuid(), libc::getegid()) };
-    crate::authority_host_runtime::verify_process(&registration, credentials.0, credentials.1)?;
+    // This ordinary same-UID fixture does not claim the dedicated credential
+    // profile. Exercise the original postload birth refusal, which precedes
+    // those unchanged credential checks, through the actual consuming tail.
     registration.process_start_ticks = ticks.checked_add(1).ok_or("birth overflow")?;
     let writer = crate::HostAuthorityWriterRegistration {
         registered_agent_id: trust.agent_id,
@@ -74,10 +76,15 @@ async fn postload_birth_refusal_consumes_config_but_retains_active_original_sess
     let error = finish_loaded_root_writer(config, &session, &registration, &writer, credentials)
         .err()
         .ok_or("changed birth must refuse the actual postload tail")?;
-    assert!(
-        error
-            .to_string()
-            .contains("registered start identity mismatch")
+    let AgentdError::Io(cause) = error else {
+        return Err("postload must refuse at the original process birth check".into());
+    };
+    assert_eq!(
+        (cause.kind(), cause.to_string()),
+        (
+            std::io::ErrorKind::Other,
+            "registered start identity mismatch".to_string()
+        )
     );
     assert!(clock.now_unix_ms().is_ok());
     verifier.verify(&authority, &identity.agent_id)?;
