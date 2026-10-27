@@ -39,6 +39,7 @@ use codex_app_server_protocol::UserInput;
 use codex_hepta_agentd::AgentRunPhase;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
+use codex_hepta_agentd::COGNITIVE_CONTEXT_EXECUTION_CAPABILITY_V1;
 use codex_hepta_agentd::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_agentd::MAX_COGNITIVE_CONTEXT_BYTES;
@@ -72,6 +73,8 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 #[path = "native_app_server_observation.rs"]
 mod observation;
 use observation::NativeTurnObservation;
+#[path = "native_cognitive_context.rs"]
+mod cognitive_context;
 
 #[path = "native_run_control.rs"]
 mod control;
@@ -442,14 +445,7 @@ impl AppServerModelDriver {
         }
         if context_query.is_some() {
             let capabilities = owner.capabilities().await?;
-            let supports_revalidation = capabilities.capabilities.iter().any(|capability| {
-                capability.id == COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY && capability.major == 1
-            });
-            if !supports_revalidation {
-                return Err(
-                    "owning Agent does not support final-use cognitive revalidation".into(),
-                );
-            }
+            cognitive_context::require_capabilities(&capabilities)?;
         }
         let mut intelligence_revision = match intelligence {
             Some(binding) => Some(require_intelligence_handoff(&owner, binding).await?),
@@ -516,28 +512,16 @@ impl AppServerModelDriver {
         // the final model-request attachment boundary.
         owner.session_ingress().await?;
         let context = match context_query {
-            Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
+            Some(query) => Some(
+                owner
+                    .cognitive_context_with_execution_v1(query, /*limit*/ 4)
+                    .await?,
+            ),
             None => None,
         };
-        let owner_context_digest = context
+        let attachment = context
             .as_ref()
-            .map(|snapshot| -> Result<_> { Ok(control::digest(&serde_json::to_vec(snapshot)?)) })
-            .transpose()?;
-        let additional_context = context
-            .as_ref()
-            .map(|snapshot| -> Result<_> {
-                let value = serde_json::to_string(&snapshot)?;
-                if value.len() > MAX_COGNITIVE_CONTEXT_BYTES {
-                    return Err("verified context exceeds the model attachment byte limit".into());
-                }
-                Ok(HashMap::from([(
-                    "hepta-cognitive-owner".to_string(),
-                    AdditionalContextEntry {
-                        value,
-                        kind: AdditionalContextKind::Untrusted,
-                    },
-                )]))
-            })
+            .map(|context| cognitive_context::prepare(request_id, context))
             .transpose()?;
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
@@ -557,7 +541,10 @@ impl AppServerModelDriver {
                 text: prompt,
                 text_elements: Vec::new(),
             }],
-            additional_context,
+            additional_context: attachment
+                .as_ref()
+                .map(|value| value.additional_context.clone()),
+            responsesapi_client_metadata: attachment.as_ref().map(|value| value.metadata.clone()),
             environments: Some(Vec::new()),
             ..Default::default()
         };
@@ -626,7 +613,9 @@ impl AppServerModelDriver {
                 context_digest: control::digest(&serde_json::to_vec(
                     &turn_params.additional_context,
                 )?),
-                owner_context_digest,
+                owner_context_digest: attachment
+                    .as_ref()
+                    .map(|value| value.owner_context_digest.clone()),
                 codex_payload_digest: Some(payload_digest.to_string()),
                 codex_request_digest: Some(request_receipt.request_digest.to_string()),
                 app_server_version: Some(app_server_version.clone()),
@@ -660,6 +649,14 @@ impl AppServerModelDriver {
                 app_server_version: &app_server_version,
             },
         )?;
+        if let (Some(attachment), Some(context)) = (&attachment, &context) {
+            attachment.observe_dispatch(
+                request_id,
+                context,
+                payload_digest,
+                request_receipt.request_digest,
+            );
+        }
 
         if let Some(binding) = intelligence {
             let dispatched = match owner
@@ -733,7 +730,8 @@ impl AppServerModelDriver {
         if context.is_some() {
             pause_before_final_revalidation_for_test().await;
         }
-        if let Some(snapshot) = context.as_ref() {
+        if let Some(context) = context.as_ref() {
+            let snapshot = &context.snapshot;
             let revalidated = match owner.revalidate_cognitive_context(snapshot).await {
                 Ok(revalidated) => revalidated,
                 Err(error) => {
