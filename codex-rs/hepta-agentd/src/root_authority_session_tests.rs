@@ -302,8 +302,11 @@ async fn both_original_frontiers_finish_before_new_head_is_published() {
         "test released second frontier: boottime_ns={}",
         boottime_ns().unwrap()
     );
-    tokio::time::timeout(Duration::from_millis(300), async {
-        while session.revocations().is_err() {
+    let current = tokio::time::timeout(Duration::from_millis(300), async {
+        loop {
+            if let Ok(current) = session.revocations() {
+                break current;
+            }
             tokio::time::sleep(Duration::from_millis(2)).await;
         }
     })
@@ -317,7 +320,6 @@ async fn both_original_frontiers_finish_before_new_head_is_published() {
             second.wait.load(Ordering::Acquire),
         )
     });
-    let current = session.revocations().unwrap();
     assert_eq!(current.revision, 2);
     assert_eq!(device.revocation_head().unwrap(), current);
     assert_eq!(notes.revocation_head().unwrap(), current);
@@ -358,3 +360,6 @@ async fn uncertain_original_consumer_update_fences_even_with_fresh_root_response
     tokio::time::sleep(Duration::from_millis(20)).await;
     peer.join().unwrap();
 }
+
+#[path = "root_authority_resource_tests.rs"]
+mod resources;

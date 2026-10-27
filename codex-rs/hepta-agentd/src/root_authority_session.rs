@@ -239,6 +239,14 @@ impl Drop for AgentdRootAuthoritySession {
     fn drop(&mut self) {
         self.live.cache.fence();
         self.worker.abort();
+        // Each original consumer holds this SAME LiveRoot as its clock. Break
+        // the strong cycle after fencing; external owners remain independently
+        // alive and locked until their own original Arc handles retire.
+        let mut consumers = match self.live.consumers.lock() {
+            Ok(consumers) => consumers,
+            Err(poisoned) => poisoned.into_inner(),
+        };
+        consumers.clear();
     }
 }
 struct FenceOnDrop(Arc<LiveRoot>);
