@@ -72,7 +72,10 @@ fn windows_recovery_root_normalizes_only_the_namespace_spelling() {
     let os_canonical = canonical_path_without_redirection(&native)
         .expect("identity and reparse checks")
         .expect("real directory, not a redirection");
-    assert_ne!(native, os_canonical, "verify Windows verbatim prefix exercise");
+    assert_ne!(
+        native, os_canonical,
+        "verify Windows verbatim prefix exercise"
+    );
     let normalized = AbsolutePathBuf::try_from(os_canonical.clone())
         .expect("AbsolutePathBuf Windows spelling")
         .to_path_buf();
