@@ -40,6 +40,13 @@ terminate and reap this owned runner. Ordinary error paths report cleanup errors
 Drop is a fallback for unwinding. Killing the owned runner also closes its existing
 job handles; this does not add permission or loosen legacy isolation. The original
 command timeout and cancellation IPC remain responsible for live commands.
+During the native-exit interval, both real callers preserve cancellation. Their
+existing cancel/kill path also sets a private atomic request; the blocking waiter
+checks it at the capture writer's existing 50 ms responsiveness and terminates
+and reaps its own retained process. This object exposes neither a raw handle nor
+an arbitrary-process operation. The synchronous capture cancellation thread is
+joined only after real exit, including failure/cancellation. A natural-exit race
+with TerminateProcess is accepted only after the same retained handle is signaled.
 
 The original native run378 reported the elevated case as **LEAK**, even though its
 functional assertions succeeded. Retaining and reaping the process addresses a

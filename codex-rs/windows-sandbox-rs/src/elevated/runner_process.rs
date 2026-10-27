@@ -6,6 +6,9 @@ use anyhow::bail;
 use std::io;
 use std::os::windows::io::AsRawHandle;
 use std::os::windows::io::OwnedHandle;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use windows_sys::Win32::Foundation::WAIT_FAILED;
 use windows_sys::Win32::Foundation::WAIT_OBJECT_0;
 use windows_sys::Win32::Foundation::WAIT_TIMEOUT;
@@ -14,10 +17,23 @@ use windows_sys::Win32::System::Threading::INFINITE;
 use windows_sys::Win32::System::Threading::TerminateProcess;
 use windows_sys::Win32::System::Threading::WaitForSingleObject;
 
+// Preserve the capture cancellation writer's existing 50 ms responsiveness.
+const EXIT_CANCEL_POLL_MS: u32 = 50;
+
+#[derive(Clone)]
+pub(crate) struct RunnerCancellation(Arc<AtomicBool>);
+
+impl RunnerCancellation {
+    pub(crate) fn request_termination(&self) {
+        self.0.store(true, Ordering::SeqCst);
+    }
+}
+
 pub(crate) struct RunnerProcess {
     handle: OwnedHandle,
     pid: u32,
     reaped: bool,
+    cancellation: RunnerCancellation,
 }
 
 impl RunnerProcess {
@@ -26,16 +42,38 @@ impl RunnerProcess {
             handle,
             pid,
             reaped: false,
+            cancellation: RunnerCancellation(Arc::new(AtomicBool::new(false))),
         }
+    }
+
+    pub(crate) fn cancellation(&self) -> RunnerCancellation {
+        self.cancellation.clone()
     }
 
     pub(crate) fn wait_for_exit(&mut self, expected_exit: i32) -> Result<()> {
         // This runs on the existing blocking reader/capture thread. The command's
         // original timeout and termination IPC remain responsible for cancellation.
-        let wait = unsafe { WaitForSingleObject(self.handle.as_raw_handle() as _, INFINITE) };
-        if wait != WAIT_OBJECT_0 {
-            return Err(io::Error::last_os_error())
-                .with_context(|| format!("wait for runner process {} failed: {wait}", self.pid));
+        loop {
+            let wait = unsafe {
+                WaitForSingleObject(self.handle.as_raw_handle() as _, EXIT_CANCEL_POLL_MS)
+            };
+            match wait {
+                WAIT_OBJECT_0 => break,
+                WAIT_TIMEOUT => {
+                    if self.cancellation.0.load(Ordering::SeqCst) {
+                        self.terminate_and_wait()?;
+                        bail!(
+                            "runner process {} termination requested before native exit",
+                            self.pid
+                        );
+                    }
+                }
+                WAIT_FAILED => {
+                    return Err(io::Error::last_os_error())
+                        .with_context(|| format!("wait for runner process {} failed", self.pid));
+                }
+                other => bail!("unexpected runner process {} exit wait: {other}", self.pid),
+            }
         }
         self.reaped = true;
         let mut actual_exit = 0;
@@ -73,7 +111,14 @@ impl RunnerProcess {
             ),
         }
         if unsafe { TerminateProcess(handle, 1) } == 0 {
-            return Err(io::Error::last_os_error())
+            let terminate_error = io::Error::last_os_error();
+            // Natural exit can win between the non-signaled check and terminate.
+            // Only the same retained handle becoming signaled admits that race.
+            if unsafe { WaitForSingleObject(handle, 0) } == WAIT_OBJECT_0 {
+                self.reaped = true;
+                return Ok(());
+            }
+            return Err(terminate_error)
                 .with_context(|| format!("terminate owned runner process {}", self.pid));
         }
         let wait = unsafe { WaitForSingleObject(handle, INFINITE) };

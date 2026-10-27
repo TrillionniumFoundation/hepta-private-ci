@@ -68,3 +68,31 @@ fn dropped_unconsumed_runner_is_terminated_and_reaped() {
     );
     assert_eq!(exit, 1);
 }
+
+#[test]
+fn native_exit_wait_remains_cancellable_for_stalled_owned_runner() {
+    let child = owned_command()
+        .creation_flags(CREATE_SUSPENDED)
+        .spawn()
+        .expect("own stalled native command");
+    let pid = child.id();
+    let mut process = RunnerProcess::new(child.into(), pid);
+    let cancellation = process.cancellation();
+    let observer = process
+        .handle
+        .try_clone()
+        .expect("same exact owned process");
+    let waiter = std::thread::spawn(move || process.wait_for_exit(23));
+    cancellation.request_termination();
+    assert!(waiter.join().expect("owned native waiter joined").is_err());
+    assert_eq!(
+        unsafe { WaitForSingleObject(observer.as_raw_handle() as _, 0) },
+        WAIT_OBJECT_0
+    );
+    let mut exit = 0;
+    assert_ne!(
+        unsafe { GetExitCodeProcess(observer.as_raw_handle() as _, &mut exit) },
+        0
+    );
+    assert_eq!(exit, 1);
+}

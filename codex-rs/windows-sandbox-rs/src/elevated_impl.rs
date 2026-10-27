@@ -68,6 +68,7 @@ mod windows_impl {
     fn spawn_cancel_writer(
         pipe_write: &File,
         cancellation: Option<crate::WindowsSandboxCancellationToken>,
+        runner_cancellation: crate::runner_client::RunnerCancellation,
     ) -> Result<Option<(std::thread::JoinHandle<()>, Arc<AtomicBool>)>> {
         let Some(cancellation) = cancellation else {
             return Ok(None);
@@ -78,6 +79,7 @@ mod windows_impl {
         let handle = std::thread::spawn(move || {
             while !done_for_thread.load(Ordering::SeqCst) {
                 if cancellation.is_cancelled() {
+                    runner_cancellation.request_termination();
                     let _ = write_frame(
                         &mut pipe_write,
                         &FramedMessage {
@@ -227,7 +229,8 @@ mod windows_impl {
                 },
             )?;
             let (pipe_write, mut pipe_read, mut process) = transport.into_parts();
-            let cancel_writer = spawn_cancel_writer(&pipe_write, cancellation)?;
+            let cancel_writer =
+                spawn_cancel_writer(&pipe_write, cancellation, process.cancellation())?;
 
             let mut stdout = Vec::new();
             let mut stderr = Vec::new();
@@ -259,24 +262,28 @@ mod windows_impl {
                     }
                 }
             };
+            // Keep original cancellation active until the real runner has exited,
+            // including the interval after its final IPC frame was received.
+            let result = result.and_then(|(exit_code, timed_out)| {
+                process.wait_for_exit(exit_code)?;
+                Ok((exit_code, timed_out))
+            });
+            let result = match result {
+                Ok(result) => Ok(result),
+                Err(error) => match process.terminate_and_wait() {
+                    Ok(()) => Err(error),
+                    Err(cleanup) => {
+                        Err(error.context(format!("runner cleanup also failed: {cleanup}")))
+                    }
+                },
+            };
             if let Some((cancel_handle, done)) = cancel_writer {
                 done.store(true, Ordering::SeqCst);
                 cancel_handle.thread().unpark();
                 let _ = cancel_handle.join();
             }
             drop(pipe_write);
-            let (exit_code, timed_out) = match result {
-                Ok((exit_code, timed_out)) => {
-                    process.wait_for_exit(exit_code)?;
-                    (exit_code, timed_out)
-                }
-                Err(error) => {
-                    if let Err(cleanup) = process.terminate_and_wait() {
-                        return Err(error.context(format!("runner cleanup also failed: {cleanup}")));
-                    }
-                    return Err(error);
-                }
-            };
+            let (exit_code, timed_out) = result?;
 
             if exit_code == 0 {
                 log_success(&command, logs_base_dir);

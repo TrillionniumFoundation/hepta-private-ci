@@ -202,7 +202,9 @@ pub(crate) async fn spawn_windows_sandbox_session_elevated_for_permission_profil
     let writer_handle = start_runner_stdin_writer(writer_rx, outbound_tx.clone(), tty, stdin_open);
     let terminator = {
         let outbound_tx = outbound_tx.clone();
+        let cancellation = process.cancellation();
         Some(Box::new(move || {
+            cancellation.request_termination();
             let _ = outbound_tx.send(FramedMessage {
                 version: IPC_PROTOCOL_VERSION,
                 message: Message::Terminate {

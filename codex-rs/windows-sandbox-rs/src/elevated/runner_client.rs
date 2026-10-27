@@ -48,6 +48,7 @@ use windows_sys::Win32::System::Threading::WaitForSingleObject;
 
 #[path = "runner_process.rs"]
 mod runner_process;
+pub(crate) use runner_process::RunnerCancellation;
 pub(crate) use runner_process::RunnerProcess;
 
 const RUNNER_SPAWN_READY_TIMEOUT: Duration = Duration::from_secs(15);
