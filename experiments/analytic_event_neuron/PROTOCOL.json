@@ -161,5 +161,48 @@
     "old_gaussian_nll_degradation_margin": 0.02,
     "status": "secondary descriptive study",
     "gate": "replay worst-window seed-average old Gaussian NLL degradation <= 0.02 AND last-window new Gaussian NLL <= frozen"
+  },
+  "feedback_chain": {
+    "scope": "secondary original sparse two-tick causal execution; no production authority or function-class novelty claim",
+    "train_rows": 384,
+    "development_rows": 128,
+    "confirmation_rows": 256,
+    "data_seeds": "train=90000+s; development=100000+s; confirmation=110000+s",
+    "law": "A~N(0,1), E~N(0,.8^2), Y=A+E, S=Y+N(0,.6^2), readback R=S-A",
+    "repair": "A+kappa*R; kappa and conditional residual variance fitted on training only",
+    "repair_cost": 0.12,
+    "arms": [
+      "numeric",
+      "analytic_probability",
+      "zero",
+      "state_reset",
+      "matched_history"
+    ],
+    "native_head_dimensions": 21,
+    "head_updates": 600,
+    "head_learning_rate": 0.15,
+    "head_l2_candidates": [
+      0.001,
+      0.01,
+      0.1
+    ],
+    "development_probability_thresholds": [
+      0.0,
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      1.0
+    ],
+    "threshold_selection": "max dev realized utility; ties fewer repairs, stronger regularization, larger threshold",
+    "negative_control": "second native tick zero fresh drive; zero/reset ablations; full-feedback matched history",
+    "statistics": "paired two-stage empirical 95% intervals, descriptive secondary only",
+    "bootstrap_seed": 81827,
+    "confirmation_generated": false
   }
 }
