@@ -147,3 +147,8 @@ ordinary inference, original three rounds, descendant diagnostics and final lint
 to succeed. A failed, skipped or unavailable original gate keeps the job failed;
 model observations never substitute for that gate. Missing compiled model targets
 are recorded explicitly and cannot be counted as executed model experiments.
+
+Short owned fixture directories keep the original Fleet-derived Unix sockets
+inside Linux's pathname limit, without aliases or alternate owners. Cold setup
+records all derived control, matrix and app-server socket paths and their byte
+lengths before the real-model tests; this path check is not a model execution.

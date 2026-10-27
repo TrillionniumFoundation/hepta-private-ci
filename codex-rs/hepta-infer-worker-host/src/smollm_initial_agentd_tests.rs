@@ -341,11 +341,12 @@ async fn session(
 async fn real_selected_initial_serves_ordinary_context_then_refuses_revocation() -> TestResult<()> {
     let (input, mut worker, bytes) = input_and_worker("ordinary-selected-initial")?;
     let mut fixture = Fixture::with_profile(
-        input.output.join("ordinary-owner"),
+        // The original AF_UNIX layout must fit without socket aliases.
+        input.output.join("o"),
         &bytes,
         Digest32::of_bytes(SMOLLM_PUBLIC_INITIAL_PROFILE_V2),
     )?;
-    let config = fixture.config("ordinary-body")?;
+    let config = fixture.config("b")?;
     worker.action_completions = seed_actions(&config, i64::try_from(fixture.now)?).await?;
     let (material, current) = fixture.public_material()?;
     let report = session(

@@ -161,7 +161,7 @@ jobs:
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_public_initial_v2.py --chain "$GITHUB_WORKSPACE/chain" --materials "$RUNNER_TEMP/hepta-public-model" --output "$RUNNER_TEMP/hepta-public-initial-v2/genesis" --fetch-materials
           python3 -I -B - <<'PY'
-          import hashlib, json, os
+          import base64, hashlib, json, os, uuid
           from pathlib import Path
           root = Path(os.environ["RUNNER_TEMP"])
           parent = root / "hepta-public-initial-v2/genesis/parent-material.json"
@@ -169,7 +169,13 @@ jobs:
               python=str(root / "hepta-public-env/bin/python"), chain=str(Path(os.environ["GITHUB_WORKSPACE"]) / "chain"),
               materials=str(root / "hepta-public-model"), parent=str(parent),
               parent_sha256=hashlib.sha256(parent.read_bytes()).hexdigest(),
-              output=str(root / "hepta-public-initial-v2/native"))
+              output=str(root / "hepta-public-initial-v2/n"))
+          socket_key = "a" + base64.b32encode(uuid.UUID("00000000-0000-4000-8000-000000000219").bytes).decode().lower().rstrip("=")
+          sockets = [Path(config["output"]) / fixture / "fleet/run" / (socket_key + extension)
+              for fixture in ("o/b", "p/o/b") for extension in (".ctl", ".mx", ".app")]
+          socket_lengths = [dict(path=str(path), bytes=len(os.fsencode(path))) for path in sockets]
+          (root / "hepta-public-initial-v2/native-socket-paths.json").write_text(json.dumps(socket_lengths, indent=2) + "\n")
+          assert all(row["bytes"] <= 107 for row in socket_lengths), "original AF_UNIX paths exceed Linux bound"
           Path(os.environ["HEPTA_PN3_NEURAL_NATIVE_CONFIG"]).write_text(json.dumps(config, indent=2) + "\n")
           PY
       - name: Require real ordinary inference and independent revocation
@@ -195,7 +201,7 @@ jobs:
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/descendant-execution.json" --timeout-seconds 9000 --minimum-tests 0 -- "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_descendant_v2.py --native-input "$HEPTA_PN3_NEURAL_NATIVE_CONFIG" --ordinary-readback "$RUNNER_TEMP/hepta-public-initial-v2/native/public-initial-three-rounds/ordinary-0/ordinary-session-result.json" --output "$RUNNER_TEMP/hepta-public-initial-v2/descendant-diagnostics"
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/descendant-execution.json" --timeout-seconds 9000 --minimum-tests 0 -- "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_descendant_v2.py --native-input "$HEPTA_PN3_NEURAL_NATIVE_CONFIG" --ordinary-readback "$RUNNER_TEMP/hepta-public-initial-v2/n/p/ordinary-0/ordinary-session-result.json" --output "$RUNNER_TEMP/hepta-public-initial-v2/descendant-diagnostics"
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
       - name: Finish the scoped lint and formatting gate after tests
         id: lint

@@ -166,14 +166,15 @@ async fn train_round(
 #[ignore = "requires actual public V2 weights and three five-arm training/evaluation rounds"]
 async fn real_public_initial_three_rounds_hold_and_read_original_current() -> TestResult<()> {
     let (input, mut worker, bytes) = input_and_worker("public-loop-session-0")?;
-    let root = input.output.join("public-initial-three-rounds");
+    // Short owned fixture paths preserve the original AF_UNIX socket layout.
+    let root = input.output.join("p");
     fs::create_dir(&root)?;
     let fixture = Fixture::with_profile(
-        root.join("original-owner"),
+        root.join("o"),
         &bytes,
         Digest32::of_bytes(SMOLLM_PUBLIC_INITIAL_PROFILE_V2),
     )?;
-    let config = fixture.config("original-body")?;
+    let config = fixture.config("b")?;
     let identity = config.identity().clone();
     let actions = seed_actions(&config, i64::try_from(fixture.now)?).await?;
     worker.action_completions = actions.clone();
