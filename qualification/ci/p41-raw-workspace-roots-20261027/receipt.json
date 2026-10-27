@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.p41-raw-workspace-roots-integration-receipt.v1",
+  "observed_on": "2026-10-27",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_parent_sha": "34b3589893f850bba58df06486b77c005c941b8c",
+  "source_parent_tree": "6e57a4229cab5a4fdeb20cd79dcc7584427c0058",
+  "exact_source_failure": {
+    "run_id": 40578115302,
+    "job_id": 122450517920,
+    "platform": "windows-latest",
+    "target": "//codex-rs/app-server:app-server-all-test",
+    "test": "suite::v2::thread_resume::permission_roots_tests::changed_named_policy_preserves_explicit_typed_and_raw_roots",
+    "observed": "Raw config workspace_roots resolved to the historical root rather than the explicitly supplied requested root; original test failed on Windows."
+  },
+  "donor": {
+    "pr": 3480,
+    "commit_sha": "948e1c37523121314f03974327e5259ad50652f3",
+    "file": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+    "kind": "exact single-source-block transplant"
+  },
+  "code_change": {
+    "file": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+    "only_change": "Insert donor logic before load_and_apply_persisted_resume_metadata in cold thread/resume; remove raw workspace_roots from config overrides; parse typed absolute roots; reject invalid roots and typed/raw conflicts before applying persisted history.",
+    "inserted_characters": 1639,
+    "production_authority_unchanged": true,
+    "tests_removed_or_relaxed": false,
+    "required_ci_gates_changed": false,
+    "dependency_or_lock_changed": false
+  },
+  "validation_boundary": {
+    "offline_source_composition": "Exact donor block in unchanged owning method context; checked missing on source parent and full-source insertion reversibility.",
+    "own_windows_native_pass": false,
+    "own_appserver_rpc_pass": false,
+    "own_required_architecture_pass": false,
+    "native_ci_pending_on_new_commit": true,
+    "related_prior_architecture_run": 40578115024,
+    "no_production_qualification_claim": true
+  },
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "promotion": "HOLD_NO_GO"
+}
