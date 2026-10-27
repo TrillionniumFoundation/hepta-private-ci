@@ -193,6 +193,8 @@ def verify_group(group, archive, referenced, native_stream, bridge, corpus, obse
 def audit(args):
     root, started = args.run.resolve(), time.perf_counter_ns()
     frozen, done = json_load(root/"PRETEST_FREEZE.json"), json_load(root/"EVALUATION_COMPLETE.json")
+    evaluation_subdirectory = done.get("evaluation_subdirectory", "eval")
+    require(evaluation_subdirectory in {"eval", "eval_recovered"}, "Unregistered evaluation storage directory")
     sources, freeze_sha = source_freeze(), file_sha(root/"PRETEST_FREEZE.json")
     require(frozen["source_files"] == done["source_files"] == sources and
             done["pretest_freeze_sha256"] == freeze_sha and frozen["protocol_sha256"] == object_sha(P),
@@ -211,6 +213,7 @@ def audit(args):
         "model_hashes": {}, "archive_sha256": {}, "seed_completions_sha256": {},
         "unique_media_entries": 0, "unique_payload_bytes": 0, "source_files": sources,
         "pretest_freeze_sha256": freeze_sha, "audit_source_sha256": file_sha(Path(__file__)),
+        "evaluation_subdirectory": evaluation_subdirectory,
         "audit_support_sha256": file_sha(Path(__file__).with_name("primary_audit_support.py")),
         "observer_parameter_sha256": {name: parameter_hash(observer) for name, observer in observers.items()},
         "original_model_identities": identities, "corpus_manifest": corpus.manifest}
@@ -233,7 +236,7 @@ def audit(args):
     with NativeFastBridge(args.native, frozen["native_library_sha256"]) as bridge:
         require(bridge.binary_sha256 == P["native_library_sha256"], "Registered native library differs")
         for seed in P["seeds"]:
-            location, referenced = root/"eval"/str(seed), set()
+            location, referenced = root/evaluation_subdirectory/str(seed), set()
             complete = json_load(location/"COMPLETE.json")
             require(complete == done["seeds"][str(seed)] and complete["seed"] == seed and
                     complete["source_files"] == sources and complete["pretest_freeze_sha256"] == freeze_sha

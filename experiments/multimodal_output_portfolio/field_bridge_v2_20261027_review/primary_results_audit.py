@@ -30,14 +30,16 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def load_tables(root):
+def load_tables(root, evaluation_subdirectory="eval"):
+    if evaluation_subdirectory not in {"eval", "eval_recovered"}:
+        raise ValueError("Unregistered primary evaluation directory")
     values = {(split, observer, arm): np.full((3, PAIRS, len(conditions)), np.nan)
               for split, conditions in CONDITIONS.items() for observer in OBSERVERS for arm in ARMS}
     actions = {(split, arm): np.full((3, PAIRS, len(conditions)), -1, dtype=int)
                for split, conditions in CONDITIONS.items() for arm in ARMS}
     pair_identities, image_owner, seen, count, inputs = {}, {}, set(), 0, {}
     for seed in SEEDS:
-        path = root / "eval" / str(seed) / "rows.jsonl.gz"
+        path = root / evaluation_subdirectory / str(seed) / "rows.jsonl.gz"
         inputs[str(path.relative_to(root))] = digest(path)
         with gzip.open(path, "rt", encoding="utf-8") as stream:
             for line in stream:
@@ -197,7 +199,10 @@ def main():
     seed = protocol["bootstrap_seed"]
     if type(seed) is not int or seed < 0:
         raise ValueError("Invalid registered bootstrap seed")
-    values, actions, inputs = load_tables(args.run)
+    completion = json.loads((args.run / "EVALUATION_COMPLETE.json").read_text())
+    evaluation_subdirectory = completion.get("evaluation_subdirectory", "eval")
+    values, actions, inputs = load_tables(args.run, evaluation_subdirectory)
+    inputs["EVALUATION_COMPLETE.json"] = digest(args.run / "EVALUATION_COMPLETE.json")
     inputs[str(args.protocol)] = digest(args.protocol)
     results = calculate(values, actions, seed)
     error = None
@@ -208,6 +213,7 @@ def main():
               "rows": 84480, "independent_source_pairs": {"test": 512, "retention": 512},
               "unique_source_images": 2048, "input_files_sha256": inputs,
               "script_sha256": digest(Path(__file__)), "bootstrap_seed": seed, "maximum_result_discrepancy": error,
+              "evaluation_subdirectory": evaluation_subdirectory,
               "computed": results,
               "scope": "Independent arithmetic conditional on three fixed models, using paired source clusters. No analyzer import, model fit, observer call or scientific effect assumed in advance. Media/source authenticity checked separately."}
     args.out.parent.mkdir(parents=True, exist_ok=True)
