@@ -558,6 +558,25 @@ jobs:
               --output "$RUNNER_TEMP/ndu-native-synapse" --docker-socket /var/run/docker.sock
           fi
 
+      - name: Collect bounded nonsecret native ARM64 probe metadata
+        if: always()
+        continue-on-error: true
+        timeout-minutes: 1
+        run: >-
+          python3 -I scripts/ndu_synapse_probe_metadata.py
+          --input-root "$RUNNER_TEMP/ndu-native-synapse/preparation/tool-probe"
+          --output "$RUNNER_TEMP/ndu-arm64-probe-metadata.json"
+
+      - name: Retain bounded native ARM64 probe metadata separately
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-arm64-probe-metadata-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-arm64-probe-metadata.json
+          if-no-files-found: warn
+          retention-days: 21
+
       # The complete sealed archive is larger than the artifact reader limit.
       # Publish the original command output and all compact command receipts
       # separately without dropping, altering or relaxing the sealed archive.
