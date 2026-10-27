@@ -1,0 +1,56 @@
+{
+  "actual_source_roles_loaded": [],
+  "all_heads_checked": 60,
+  "bank_sha256": "f87666fc1b15505b43d686257050c9b821366da26bd98b139fd642075e3e1445",
+  "complete_sha256": "fdf66eb900b7ec0859975ce404e96ef04e8be85619a41342e78ad6037c48ba4d",
+  "controller_file_sha256": "9efa768f3de6d7913a9cf3447659d329bb9a8e6b7f63644d70832df46ca49215",
+  "fit_only_whole_trajectory_normalization_verified": true,
+  "helpers_sha256": "42c4136ae29e94d0e4ddd55e12d9678fc6776e837f5c25bdb35ad37a3c5cbeba",
+  "maximum_head_tensor_error": 3.8195259455253705e-11,
+  "passed": true,
+  "schema": "hepta.field-bridge.v3.independent-training-fit-audit.1",
+  "script_sha256": "d76b84d7eb8023aa8b3bf676862e7ae3e4a0787a3ec70490741379d386c4b20b",
+  "seed": 43,
+  "selections": {
+    "field": {
+      "cv_mse": [
+        0.0006624288360677462,
+        0.0003549340848208004,
+        0.00014004889068412003
+      ],
+      "ridge": 1.0,
+      "selected_index": 2
+    },
+    "generic": {
+      "cv_mse": [
+        0.00205154209588818,
+        0.0004180859133627453,
+        0.00012844038501969035
+      ],
+      "ridge": 1.0,
+      "selected_index": 2
+    },
+    "h7": {
+      "cv_mse": [
+        0.00011377969713480053,
+        0.00010018313276577476,
+        8.8780168484464e-05
+      ],
+      "ridge": 1.0,
+      "selected_index": 2
+    },
+    "richer": {
+      "cv_mse": [
+        0.020666748149022255,
+        0.0006804911276188852,
+        0.00012705108752914557
+      ],
+      "ridge": 1.0,
+      "selected_index": 2
+    }
+  },
+  "verification_gradient_microsteps": 0,
+  "verification_least_squares_solves": 60,
+  "verification_used_to_refit_controllers": false,
+  "verification_wall_ns": 54386506
+}
