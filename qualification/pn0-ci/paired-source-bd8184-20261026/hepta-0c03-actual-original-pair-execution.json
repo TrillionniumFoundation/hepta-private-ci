@@ -1,0 +1,132 @@
+{
+  "recorded_utc": "2026-10-27T02:07:08.303180+00:00",
+  "run": 40427967235,
+  "attempt": 1,
+  "source_head": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+  "actual_PR_preview": "0806e7ae5c555d327818fa0c044baa5e73884c91",
+  "separate_Chain_source": "bd81849bb47b10e912cfea84f7532ccc1175e4ee",
+  "separate_Chain_main": "9fedf7ecbbe07177069c030592b4e03dcffebb81",
+  "separate_Chain_main_qualification": "96175153365914375739e5ccf6dd47b84a9e97a2",
+  "Hepta_tree": "c3af0d319063c48e5425d53bd856011912bec0fc",
+  "Chain_tree": "f1dfaf1a5a4baf98f4796f3532b3e13e11565c7c",
+  "four_Linux_lanes_actual112_each": true,
+  "total_actual_wrapper_commands": 448,
+  "two_Windows_ledger_lanes_actual9_steps_each": true,
+  "all_original56_and9_steps_preserved_and_follow_actual_declared_conditions": true,
+  "three_legitimate_conditional_diagnostic_skips_not_native_command_skips": true,
+  "all_nestedprocesses_exit0": false,
+  "four_auxiliary_format_copy_exit1_retained": true,
+  "official_six_pair_ZIP_digest_and_member_CRC": true,
+  "results": [
+    {
+      "artifact_id": 12700213736,
+      "name": "hepta-windows-ledger-source-head-1",
+      "lane": "source-head",
+      "scope": "native Windows ledger regressions only",
+      "source_before_after_actual_tuples_verified": true,
+      "tests": [
+        {
+          "name": "witness",
+          "observed_passed": 6,
+          "minimum": 6,
+          "log_sha256": "1ea08607f60c2f5bb02f5079e4cd94b55645f668fcbc54140d987eaa2077f282",
+          "actual_native_return": 0
+        },
+        {
+          "name": "evaluated-shadow",
+          "observed_passed": 9,
+          "minimum": 7,
+          "log_sha256": "8bfab160f9e72f97a3360bf5201bf43722b9e50da27407a87c4994667ebde7d2",
+          "actual_native_return": 0
+        }
+      ],
+      "original20_Windows_isolation_closed": false
+    },
+    {
+      "artifact_id": 12700467550,
+      "name": "hepta-windows-ledger-base-merge-1",
+      "lane": "base-merge",
+      "scope": "native Windows ledger regressions only",
+      "source_before_after_actual_tuples_verified": true,
+      "tests": [
+        {
+          "name": "witness",
+          "observed_passed": 6,
+          "minimum": 6,
+          "log_sha256": "b070606b77f80f45b3229824d0b1e31e5d24a075f3c99241035c62d0cc3d3447",
+          "actual_native_return": 0
+        },
+        {
+          "name": "evaluated-shadow",
+          "observed_passed": 9,
+          "minimum": 7,
+          "log_sha256": "18e064e8be4e9bcf68830a59d91ae7007bb7ac59e6eea7268a8e81a440359a5c",
+          "actual_native_return": 0
+        }
+      ],
+      "original20_Windows_isolation_closed": false
+    },
+    {
+      "artifact_id": 12702104483,
+      "name": "hepta-pon-pair-ubuntu-24.04-arm-base-merge-1",
+      "lane": "base-merge",
+      "Hepta_tested": "0806e7ae5c555d327818fa0c044baa5e73884c91",
+      "Chain_tested": "96175153365914375739e5ccf6dd47b84a9e97a2",
+      "native_wrapper_command_receipts": 112,
+      "all112_returned0_and_log_SHA_minimum_counts_source_snapshots_verified": true,
+      "actual_from_zero_wait4_stream_records": 7,
+      "retained_learning_native_exit": 0,
+      "retained_learning_is_real_model_three_rounds": false,
+      "SCOPE": "Exact paired local native base-merge observation only. The separately retained three-generation study covers synthetic local tabular fits and installations only when its native execution and independent reader pass. No TaskFlow or PoN model installation, open-world future efficacy, independent operators, WAN, physical power loss or production acceptance. Running/missing/failed receipts grant no credit.",
+      "candidate_tuple_is_not_execution_alone": true
+    },
+    {
+      "artifact_id": 12703207529,
+      "name": "hepta-pon-pair-ubuntu-24.04-arm-source-head-1",
+      "lane": "source-head",
+      "Hepta_tested": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+      "Chain_tested": "bd81849bb47b10e912cfea84f7532ccc1175e4ee",
+      "native_wrapper_command_receipts": 112,
+      "all112_returned0_and_log_SHA_minimum_counts_source_snapshots_verified": true,
+      "actual_from_zero_wait4_stream_records": 7,
+      "retained_learning_native_exit": 0,
+      "retained_learning_is_real_model_three_rounds": false,
+      "SCOPE": "Exact paired local native source-head observation only. The separately retained three-generation study covers synthetic local tabular fits and installations only when its native execution and independent reader pass. No TaskFlow or PoN model installation, open-world future efficacy, independent operators, WAN, physical power loss or production acceptance. Running/missing/failed receipts grant no credit.",
+      "candidate_tuple_is_not_execution_alone": true
+    },
+    {
+      "artifact_id": 12702571585,
+      "name": "hepta-pon-pair-ubuntu-24.04-base-merge-1",
+      "lane": "base-merge",
+      "Hepta_tested": "0806e7ae5c555d327818fa0c044baa5e73884c91",
+      "Chain_tested": "96175153365914375739e5ccf6dd47b84a9e97a2",
+      "native_wrapper_command_receipts": 112,
+      "all112_returned0_and_log_SHA_minimum_counts_source_snapshots_verified": true,
+      "actual_from_zero_wait4_stream_records": 7,
+      "retained_learning_native_exit": 0,
+      "retained_learning_is_real_model_three_rounds": false,
+      "SCOPE": "Exact paired local native base-merge observation only. The separately retained three-generation study covers synthetic local tabular fits and installations only when its native execution and independent reader pass. No TaskFlow or PoN model installation, open-world future efficacy, independent operators, WAN, physical power loss or production acceptance. Running/missing/failed receipts grant no credit.",
+      "candidate_tuple_is_not_execution_alone": true
+    },
+    {
+      "artifact_id": 12702835519,
+      "name": "hepta-pon-pair-ubuntu-24.04-source-head-1",
+      "lane": "source-head",
+      "Hepta_tested": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+      "Chain_tested": "bd81849bb47b10e912cfea84f7532ccc1175e4ee",
+      "native_wrapper_command_receipts": 112,
+      "all112_returned0_and_log_SHA_minimum_counts_source_snapshots_verified": true,
+      "actual_from_zero_wait4_stream_records": 7,
+      "retained_learning_native_exit": 0,
+      "retained_learning_is_real_model_three_rounds": false,
+      "SCOPE": "Exact paired local native source-head observation only. The separately retained three-generation study covers synthetic local tabular fits and installations only when its native execution and independent reader pass. No TaskFlow or PoN model installation, open-world future efficacy, independent operators, WAN, physical power loss or production acceptance. Running/missing/failed receipts grant no credit.",
+      "candidate_tuple_is_not_execution_alone": true
+    }
+  ],
+  "per112command_kernel_birth_PID_ledger_available": false,
+  "actual_wait_statement_scope": "The448fixedsourceCIwrapperreceipts carryreal wait-derivedreturncodes/logSHA/nonemptycount/sourcebeforeafter; nestedcollector wait4streams independentlyrehashed. This is not independent kernelattestation for every112 leader birth or all descendant terminal resources.",
+  "no_archived_code_executed": true,
+  "real_model_three_ordinary_rounds_WAN_full_Windows_or_merge_qualified": false,
+  "overall_merge_ready": false,
+  "task_complete": false
+}

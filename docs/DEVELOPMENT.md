@@ -1873,8 +1873,16 @@ required. Restoring a previous helper cannot close the two original failures.
 On the same published0c source, the single transport-failure YAML retry actually
 passed the original ten response-context/terminal-owner tests,808 consumer tests
 and strict Clippy. Its original failed attempt remains. The new pair workflow
-reported SUCCESS; complete original execution artifacts are being verified
-separately. Neither result qualifies the later local source follow-up. A Mac
+reported SUCCESS. Its [new exact-source execution receipt](../qualification/pn0-ci/paired-source-bd8184-20261026/hepta-0c03-actual-original-pair-execution.json)
+independently verifies four Linux lanes with112 original wrapper commands each
+(448 total), all56 original steps per Linux lane, and both Windows-ledger lanes
+with9 original steps each. Six official artifact digests and all member CRCs,
+per-command log hashes, minimum test counts and before/after source were checked.
+Four original auxiliary format-copy exit1 results and conditional diagnostic
+skips remain; this does not mean every nested process exited0 or prove independent
+kernel birth/terminal accounting for each wrapper. The study remains synthetic
+local learning, not three ordinary real-model rounds or Windows isolation.
+Neither result qualifies the later local source follow-up. A Mac
 release job separately hit its original sixty-minute maximum before compilation
 finished; the cancelled result remains a failure observation without a restart
 or longer limit. All existing PN0–PN6 exits, four native lanes, original twenty
