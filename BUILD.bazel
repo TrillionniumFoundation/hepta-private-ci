@@ -81,6 +81,18 @@ platform(
         "@llvm//constraints/windows/abi:msvc",
     ],
     flags = ["--features=static_link_msvcrt"],
+    visibility = ["//visibility:public"],
+)
+
+platform(
+    name = "windows_aarch64_msvc",
+    constraint_values = [
+        "@platforms//cpu:aarch64",
+        "@platforms//os:windows",
+        "@llvm//constraints/windows/abi:msvc",
+    ],
+    flags = ["--features=static_link_msvcrt"],
+    visibility = ["//visibility:public"],
 )
 
 # Registered only by the keyless Windows cross wrapper. Native dependencies of
