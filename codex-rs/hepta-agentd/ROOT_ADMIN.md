@@ -121,3 +121,45 @@ preparation always repeats strict CURRENT grant-time verification and the live
 writer check; the saved cumulative end is also conservatively clamped from a
 trusted-clock sample to the original signed grant's own expiry. A retained
 observation/DTO can never enter a CAS as an authorization.
+
+## Development entry and bounded checks
+
+Implementations live in `authority_host_admin{,_protocol,_service,_effect,_deadline}.rs`.
+Only `PreparedHostAuthoritySession::enable_root_admin` may mint the route.
+`deployment_signed_grant.rs` verifies the same issuer's original artifact;
+`deployment_notes_revoke{,_observation}.rs` retains the existing exact effect
+identity. `deployment_notes_observation.rs` mirrors actual issue results only.
+`owner_writer_custody.rs` retains the same original process-owner file with
+escaped live writer/host verifiers; it delegates both original verification
+methods and introduces no new authority. Original session retirement fences and
+aborts before releasing the consumer references that otherwise retain its clock.
+
+From the selected Hepta checkout, run scoped checks through the original recipe:
+
+```sh
+just test -p codex-hepta-contracts --lib --locked --offline \
+  -E 'test(authority_lease::revoke::tests::)' --test-threads 1 --retries 0
+just test -p codex-hepta-agentd --lib --locked --offline \
+  -E 'test(authority_host_admin::) | test(deployment_issuer::original_grant::tests::) | test(deployment_issuer::notes::observation::tests::) | test(root_authority_session::tests::) | test(escaped_original_host_and_writer_retain_the_same_registered_owner_file)' \
+  --test-threads 1 --retries 0
+python3 -B qa/b4-no-bypass/test_root_admin_source_closure.py
+python3 -B scripts/verify_hepta_callers.py
+```
+
+Preserve the original timeout/watchdog and every failed countercase. A real
+late original mutex/clock must make zero state advance; real key/nonce/epoch and
+existing-lease binding negatives must fail. Ordinary fixtures create no actual
+Root/login/model authority. Positive same-live-Root and precise-revoke causality
+must use the installed explicit product entry, original live service and actual
+human/owner handles. They remain separately unqualified until executed; an API,
+a source proof or a passing component case never supplies that result.
+
+The consuming Root `prepare_root_handoff` retains all original actual UID/GID,
+Starting, path, mode and inode checks. Before pinning/changing custody or
+explicitly unlocking, it also refuses a non-unique private original File Arc.
+An uninstalled host opened through the existing public API can retain that
+same file, so an unconfigured Config alone is insufficient. The explicit
+`root_preparation_does_not_unlock_a_retained_uninstalled_original_writer`
+qualification is ignored by default: only actual UID0 with the selected private
+Root TMPDIR can execute it. Its compilation/ignored listing is not a pass;
+Root must preserve separate pre-guard failure and guard success artifacts.

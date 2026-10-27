@@ -88,6 +88,27 @@ class RootAdminSourceClosureTests(unittest.TestCase):
             "self.verify_original_artifact(signed, before, VerificationPurpose::RetainedObservation)",
         )
 
+    def test_root_preparation_cannot_unlock_shared_original_file_custody(self):
+        self.rejects(
+            "codex-rs/hepta-agentd/src/config_root_handoff.rs",
+            "std::sync::Arc::strong_count(&self._writer_lock) != 1",
+            "false",
+        )
+
+    def test_writer_custody_cannot_replace_original_verification(self):
+        self.rejects(
+            "codex-rs/hepta-agentd/src/owner_writer_custody.rs",
+            "self.inner.verify(authority, expected_agent)",
+            "Ok(())",
+        )
+
+    def test_retirement_cannot_release_consumers_before_fencing(self):
+        self.rejects(
+            "codex-rs/hepta-agentd/src/root_authority_session.rs",
+            "self.live.cache.fence();\n        self.worker.abort();",
+            "self.worker.abort();",
+        )
+
     def test_admin_activation_cannot_precede_original_ready_callback(self):
         self.rejects(
             "codex-rs/hepta-agentd/src/authority_host_session.rs",

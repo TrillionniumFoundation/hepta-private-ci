@@ -141,6 +141,9 @@ required_boundary_ids = [
   "root_live_admin_retained_artifact_observe",
   "root_live_admin_original_effect_state_observe",
   "root_live_admin_same_service_effect_state_observe",
+  "agentd_original_registered_writer_custody",
+  "agentd_original_recovered_writer_custody_factory",
+  "agentd_original_root_handoff_unique_file",
 ]
 
 [[boundary]]
@@ -440,6 +443,8 @@ caller_markers = ["put_lease"]
 [[boundary]]
 id = "authority_lease_revoke"
 symbol = "AuthorityLeaseRegistry::revoke"
+receiver_type = "AuthorityLeaseRegistry"
+receiver_methods = ["revoke"]
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn revoke(", "RevocationReceipt", "reason_sha256"]
 product_callers = []
@@ -1860,3 +1865,57 @@ path = "codex-rs/hepta-agentd/src/root_authority_session.rs"
 required = ["self.live.cache.fence()", "self.worker.abort()", "self.live.consumers.lock()", "consumers.clear()"]
 forbidden = []
 required_order = [["impl Drop for AgentdRootAuthoritySession", "self.live.cache.fence()", "self.worker.abort()", "self.live.consumers.lock()", "consumers.clear()"]]
+
+[[boundary]]
+id = "agentd_original_registered_writer_custody"
+symbol = "AgentdConfig::retain_production_verifier"
+call_pattern = '(?:\.\s*|AgentdConfig\s*::\s*)retain_production_verifier\s*\('
+definition_path = "codex-rs/hepta-agentd/src/owner_writer_custody.rs"
+definition_markers = ["struct RegisteredWriterVerifier", "inner: Arc<dyn ProductionAuthorityVerifier>", "_writer_lock: Arc<File>", "Arc::clone(&self._writer_lock)", "self.inner.verify(", "self.inner.verify_sender_process_binding("]
+product_callers = ["codex-rs/hepta-agentd/src/config.rs", "codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["retain_production_verifier"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/owner_writer_custody.rs"
+required = ["struct RegisteredWriterVerifier", "_writer_lock: Arc<File>", "Arc::clone(&self._writer_lock)", "self.inner.verify(authority, expected_agent)", "self.inner.verify_sender_process_binding("]
+forbidden = ["pub struct RegisteredWriterVerifier", "AsRawFd", "pub fn new(", "AllowVerifier", "permit_all"]
+required_order = [["inner: Arc<dyn ProductionAuthorityVerifier>", "_writer_lock: Arc<File>"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/config.rs"
+required = ["_writer_lock: std::sync::Arc<File>", "_writer_lock: std::sync::Arc::new(writer_lock)", "operations.verifier = self.retain_production_verifier(operations.verifier)"]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
+required = ["config.retain_production_verifier("]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/production_protected_host.rs"
+required = ["Self::from_recovered_store(", "            config,"]
+forbidden = []
+
+[[boundary]]
+id = "agentd_original_recovered_writer_custody_factory"
+symbol = "AgentdProductionWriterHost::from_recovered_store"
+call_pattern = '(?:\.|::)\s*from_recovered_store\s*\('
+definition_path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
+definition_markers = ["async fn from_recovered_store(", "config: &AgentdConfig", "let verifier = config.retain_production_verifier(verifier)"]
+product_callers = ["codex-rs/hepta-agentd/src/production_protected_host.rs"]
+caller_markers = ["Self::from_recovered_store(", "            config,"]
+
+[[boundary]]
+id = "agentd_original_root_handoff_unique_file"
+symbol = "AgentdConfig::prepare_root_handoff"
+call_pattern = '(?:\.\s*|AgentdConfig\s*::\s*)prepare_root_handoff\s*\('
+definition_path = "codex-rs/hepta-agentd/src/config_root_handoff.rs"
+definition_markers = ["pub fn prepare_root_handoff(", "libc::getuid()", "libc::geteuid()", "std::sync::Arc::strong_count(&self._writer_lock) != 1", "require_starting(&self.identity, &record)?", "self._writer_lock.unlock()?"]
+product_callers = ["codex-rs/hepta-agentd/src/production_launcher.rs"]
+caller_markers = ["config.prepare_root_handoff(uid, gid)?.drop_to_owner()?"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/config_root_handoff.rs"
+required = ["libc::getuid()", "libc::geteuid()", "matches!(expected_uid, 0 | u32::MAX)", "matches!(expected_gid, 0 | u32::MAX)", "std::sync::Arc::strong_count(&self._writer_lock) != 1", "descriptor.dev() != path.dev()", "descriptor.ino() != path.ino()", "require_starting(&self.identity, &record)?"]
+forbidden = []
+required_function_order = [{ function = "fn prepare_root_handoff(", sequence = ["libc::getuid()", "libc::geteuid()", "self.require_unconfigured_production_hosts()?", "std::sync::Arc::strong_count(&self._writer_lock) != 1", "pin_control_directory(", "self._writer_lock.metadata()", "require_starting(&self.identity, &record)?", "self._writer_lock.unlock()?"] }]
