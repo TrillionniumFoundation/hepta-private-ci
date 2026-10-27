@@ -43,6 +43,12 @@ impl AppServerDrainHandle {
         self.drained.load(Ordering::Acquire)
     }
 
+    /// Preserve clone-owner identity without exposing the mutable drain counters.
+    pub(super) fn shares_counters_with(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.running_turns, &other.running_turns)
+            && Arc::ptr_eq(&self.drained, &other.drained)
+    }
+
     /// True only after the original server future joined its owned tasks.
     /// Cancellation, a drain acknowledgement, or abort requests are insufficient.
     pub fn completed(&self) -> bool {
