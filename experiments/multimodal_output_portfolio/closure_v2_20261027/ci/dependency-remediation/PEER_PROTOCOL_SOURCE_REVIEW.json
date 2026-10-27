@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-27T10:47:39.266273+00:00",
+  "reviewer": "/root/native_continuation",
+  "scope": "Independent read-only source review; no remote execution or new regression runs",
+  "source_sha256": {
+    "scripts/ndu_protocol_fixture_candidate.py": "53c5eb75e4e27f3cd594291a602550b9583c239324923e63a182bd9b934eb2d5",
+    "scripts/ndu_dependency_candidate_common.py": "4d863c9435e78848bd1198ddf7f31e1b5cbe815eade17b4b582829b839b60daf",
+    "scripts/test_ndu_protocol_fixture_candidate.py": "ff381cd71f6edfe012d10f4ec7b1098a0c14f05c369978a848aa68426f93b985",
+    "scripts/test_ndu_dependency_candidate.py": "019a54c2cc4c405aba616b760632032a0cd81a15cbbdbef98340f50031d67fd3",
+    ".github/workflows/ndu-tls-lock-candidate.yml": "a6aa6ce73ea2c5f32307151c3bb4970da33ccd88a68350486924ee432a571d18"
+  },
+  "confirmed": [
+    "The consumer pins the exact producer source SHA and expected RESULT digest, checks every candidate snapshot and binary patch digest, compares policy/vendor bindings, and validates the patch path set before application.",
+    "Candidate snapshots, policy and vendor contents are checked after generation and regression; non-schema edits are rejected. Protocol source/test bytes are additionally bound independently.",
+    "Allowed schema paths must be canonical relative paths under the schema root and end in json/ts/zst. Regular-file checks reject file symlinks. Schema path sets and bytes are frozen before regressions and rechecked afterwards, including deletions.",
+    "Real subprocess commands are saved before invocation; combined stdout/stderr and exit code are retained. Regression failure still exports the generated schema snapshots and patch and returns a failing process status.",
+    "Workflow uses a single producer job artifact for the current run/attempt, exact checkout, read-only repository permission, disabled credential persistence, and upload on non-cancelled failures. Promotion remains explicitly false."
+  ],
+  "issue_closed_during_review": {
+    "finding": "A failed second policy check could leave an earlier original_dependency_policy_unchanged=True in the failed receipt.",
+    "fix_rechecked": "The current source now sets False before describing policy files and records the comparison result before raising. Missing/symlink policy errors therefore also cannot retain True.",
+    "new_regression_execution": "Owned by root; this reviewer did not repeat its tests."
+  },
+  "retained_scope_limits": [
+    "If a required schema-generation command fails before snapshot collection, its log/exit status are preserved, but partially generated schema files are not exported by this script. Full failure-output retention applies to post-generation regression failures.",
+    "An idempotent generation with no changed schema paths is deliberately rejected by the current scope guard; this is a conservative false-negative, not a bypass.",
+    "Cancellation and runner loss are excluded from upload by !cancelled(); neither this script nor the reviewed workflow guarantees those artifacts.",
+    "The current review does not establish that the remote generation command or protocol regressions have run successfully."
+  ],
+  "review_conclusion": "Source/artifact binding and failed-regression retention are coherent within the stated scope; the stale policy field was repaired. Remote execution remains pending."
+}
