@@ -95,9 +95,11 @@ through later worker exit or shutdown. Known fatal runtime owners add only a
 static task label while retaining the original authority error variant.
 
 These fields distinguish an unpolled next request from an in-flight reply or
-consumer synchronization. A controlled single-worker blocking fixture checks
-that stale authority stays fenced; it does not establish native scheduling or
-Root filesystem timing. Preserve each failed native attempt separately.
+consumer synchronization. A controlled fixture holds the real serial barrier,
+then confirms that stale authority stays fenced even after an actual late reply.
+The independent feed reactor and its application-executor isolation regressions
+are described in `ROOT_COMPOSITION.md`. These fixtures do not establish native
+scheduling or Root filesystem timing. Preserve each failed native attempt separately.
 
 `AgentdProductionWriterHost::open_with_protected_recovery` verifies the root's
 Current receipt against the exact original owner, spawn, lease and authority

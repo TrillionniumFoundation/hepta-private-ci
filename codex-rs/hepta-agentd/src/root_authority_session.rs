@@ -35,6 +35,9 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 use tokio::io::unix::AsyncFd;
 
+#[path = "root_observation_worker.rs"]
+mod worker;
+
 struct LiveRoot {
     proof: VerifiedRootWriterProof,
     cache: RootObservationCache,
@@ -156,7 +159,7 @@ impl ProductionAuthorityVerifier for LiveRoot {
 /// actual independently opened FinalUse consumers are installed and synced.
 pub struct AgentdRootAuthoritySession {
     live: Arc<LiveRoot>,
-    worker: tokio::task::JoinHandle<()>,
+    worker: worker::RootObservationWorker,
 }
 impl AgentdRootAuthoritySession {
     pub async fn connect(
@@ -204,24 +207,10 @@ impl AgentdRootAuthoritySession {
             consumers: Mutex::new(Vec::new()),
             serial: tokio::sync::Mutex::new(()),
         });
-        let mut next_refresh_at = refresh(&live, &stream).await?;
-        let background = Arc::clone(&live);
-        let worker = tokio::spawn(async move {
-            let _fence = FenceOnDrop(Arc::clone(&background));
-            loop {
-                background.cache.diagnostics.refresh(RefreshEvent::Sleeping);
-                tokio::time::sleep_until(next_refresh_at).await;
-                // Diagnostic-only endpoint: failure is ignored and this value
-                // never supplies an authority sample or changes a deadline.
-                background.cache.diagnostics.refresh(RefreshEvent::Woke {
-                    boottime_ns: boottime_ns().ok(),
-                });
-                next_refresh_at = match refresh(&background, &stream).await {
-                    Ok(next) => next,
-                    Err(_) => return,
-                };
-            }
-        });
+        let next_refresh_at = refresh(&live, &stream).await?;
+        let worker =
+            worker::RootObservationWorker::start(Arc::clone(&live), stream, next_refresh_at)
+                .await?;
         Ok(Self { live, worker })
     }
     pub(crate) fn diagnose_attach(&self, stage: AttachStage) {
@@ -299,7 +288,7 @@ impl Drop for AgentdRootAuthoritySession {
             stage: "session_drop",
             ..Default::default()
         });
-        self.worker.abort();
+        self.worker.stop();
     }
 }
 struct FenceOnDrop(Arc<LiveRoot>);

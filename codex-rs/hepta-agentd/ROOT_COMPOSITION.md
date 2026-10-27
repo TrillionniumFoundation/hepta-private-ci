@@ -88,6 +88,48 @@ cache mutex is held, that a contended reader never samples or gains authority,
 and that the actual Root session's post-refresh check preserves the feed only
 for Busy. Backward clocks, clock failure and poisoned locks remain permanently
 fenced alongside the existing expiry and revocation tests.
+
+### Application executor independence
+
+After the original bootstrap proof and first observation, the session moves its
+already connected Unix stream to one dedicated `hepta-root-feed` thread with a
+current-thread Tokio reactor. It duplicates the original held pidfd for that
+reactor; both descriptors refer to the original Root process. This transfer
+does not reconnect, repeat identity discovery, renew the session lifetime or
+change the request-start refresh schedule. The synchronous verifier keeps its
+original held pidfd and checks it directly. Transfer or startup failure fences
+the cache before returning an error.
+
+The read feed therefore does not need an application executor worker to wake
+its timer, service its socket or observe the original pidfd. It still requires
+OS scheduling and the original Root service to make progress. The existing
+500 ms cache and exchange bounds can still refuse under those delays. A
+successful later reply cannot revive an expired earlier observation.
+
+Session destruction fences authority synchronously, then sends cancellation
+to the dedicated reactor without joining on the caller's executor. Cancellation
+also interrupts an in-flight exchange and drops the original channel. An
+unexpected worker exit fences the cache. Startup owns the cancellation guard
+before awaiting readiness, so abandoning async bootstrap requests shutdown.
+Already running consumer synchronization may finish its existing blocking
+work after cancellation, but cannot clear the permanent authority fence.
+
+Development regressions in `src/root_observation_isolation_tests.rs` use the
+existing same-UID synthetic-key peer and original durable owners. They block
+both application executor workers while the peer continues on its own thread,
+check freshness beyond the original 500 ms window, and check immediate fencing
+and channel closure on session destruction. All blocking fixture threads have
+finite escape bounds and are released before assertions. Run the owning suite
+with `just test -p codex-hepta-agentd --lib --test-threads 2 --retries 0`.
+These fixtures do not qualify production deployment or the native guest.
+
+The progress regression holds the original activation/refresh serial barrier
+until a diagnostic confirms that the dedicated feed is actually waiting there.
+It retains the original 650 ms stall, 500 ms age refusal and frozen first-failure
+assertions. After releasing the barrier it waits for an actual late reply before
+checking that authority stays fenced. The former application-worker starvation
+fixture is obsolete because application work no longer owns the feed reactor;
+its earlier failing run remains evidence rather than a qualified result.
 The owning Agentd library passed 306 tests with 26 skipped qualifications in
 44.364 seconds for this stage. That includes the five new concurrency regressions;
 it is not a rerun of the privileged Root or native guest qualification.

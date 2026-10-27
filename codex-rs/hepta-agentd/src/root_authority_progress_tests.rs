@@ -1,17 +1,20 @@
-//! Controlled same-UID peer; deliberate single-worker starvation is a host
-//! scheduling fixture, not an original Root/HostStore or Native qualification.
+//! Controlled same-UID peer and the real activation/refresh serial barrier.
+//! This is not an original Root/HostStore or Native qualification.
 use super::*;
 use crate::root_observation_diagnostic::RefreshPhase;
 use pretty_assertions::assert_eq;
 
 #[tokio::test]
-async fn a_blocked_single_worker_reports_the_unstarted_next_poll_and_keeps_the_fence() {
+async fn a_blocked_serial_barrier_reports_the_unstarted_request_and_keeps_the_fence() {
     let (session, _, peer, _) = tests::connected().await;
     session.diagnose_attach(AttachStage::OpeningFrontiers);
+    // Block the actual feed's existing serial barrier. Blocking the application
+    // executor alone must no longer starve the independent observation reactor.
+    let barrier = session.live.serial.lock().await;
     let before = tokio::time::timeout(Duration::from_secs(1), async {
         loop {
             let progress = session.live.cache.diagnostics.progress().unwrap();
-            if progress.refresh_phase == RefreshPhase::Sleeping {
+            if progress.refresh_phase == RefreshPhase::WaitingSerial {
                 break progress;
             }
             tokio::task::yield_now().await;
@@ -19,9 +22,10 @@ async fn a_blocked_single_worker_reports_the_unstarted_next_poll_and_keeps_the_f
     })
     .await
     .unwrap();
-    assert_eq!(before.refresh_phase, RefreshPhase::Sleeping);
+    assert_eq!(before.refresh_phase, RefreshPhase::WaitingSerial);
     assert!(before.request_sequence >= 1);
-    // No await: the same sole async executor cannot poll its ready feed.
+    // The dedicated reactor has woken, but cannot begin its next observation
+    // while the original barrier is held. The original age limit still applies.
     std::thread::sleep(Duration::from_millis(650));
     assert!(session.clock().now_unix_ms().is_err());
     let first = session.live.cache.diagnostics.first().unwrap();
@@ -29,7 +33,23 @@ async fn a_blocked_single_worker_reports_the_unstarted_next_poll_and_keeps_the_f
     assert_eq!(first.progress, Some(before));
     assert!(first.now_ns.unwrap() - first.previous_started_ns.unwrap() > MAX_AGE_NS);
     assert!(before.reply_ended_ns.unwrap() >= before.request_started_ns.unwrap());
-    tokio::time::sleep(Duration::from_millis(20)).await;
+    drop(barrier);
+    // Observe a real late reply, rather than assuming a fixed sleep let the feed
+    // run. Receiving it must not revive the already fenced authority or replace
+    // the diagnostic captured at the original refusal.
+    tokio::time::timeout(Duration::from_secs(1), async {
+        loop {
+            let progress = session.live.cache.diagnostics.progress().unwrap();
+            if progress.request_sequence > before.request_sequence
+                && progress.reply_ended_ns.is_some()
+            {
+                break;
+            }
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .unwrap();
     assert!(session.clock().now_unix_ms().is_err());
     assert_eq!(session.live.cache.diagnostics.first(), Some(first));
     drop(session);

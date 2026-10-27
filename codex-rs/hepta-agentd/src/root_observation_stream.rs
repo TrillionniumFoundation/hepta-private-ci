@@ -40,6 +40,33 @@ pub(crate) struct RootObservationStream {
     diagnostics: Arc<ObservationDiagnostics>,
 }
 
+/// The already verified channel is moved between reactors, never reconnected.
+/// The pidfd duplicate refers to the original held open file description.
+pub(super) struct RootObservationTransfer {
+    stream: UnixStream,
+    root: OwnedFd,
+    timeout: Duration,
+    end: Instant,
+    diagnostics: Arc<ObservationDiagnostics>,
+}
+
+impl RootObservationTransfer {
+    pub(super) fn register(self) -> Result<RootObservationStream, AgentdRootAuthorityError> {
+        check_lifetime_diagnosed(&self.root, &self.diagnostics, "stream_transfer_lifetime")?;
+        let stream = tokio::net::UnixStream::from_std(self.stream)
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        let root = AsyncFd::with_interest(self.root, tokio::io::Interest::READABLE)
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        Ok(RootObservationStream {
+            stream: Mutex::new(Some(stream)),
+            root: Arc::new(root),
+            timeout: self.timeout,
+            end: self.end,
+            diagnostics: self.diagnostics,
+        })
+    }
+}
+
 impl RootObservationStream {
     /// Bootstrap inside the existing I/O-enabled runtime context, with sole
     /// ownership of an already connected stream and a pre-held root pidfd.
@@ -123,6 +150,27 @@ impl RootObservationStream {
 }
 
 impl RootObservationStream {
+    pub(super) fn into_transfer(self) -> Result<RootObservationTransfer, AgentdRootAuthorityError> {
+        let stream = self
+            .stream
+            .into_inner()
+            .ok_or(AgentdRootAuthorityError::Unavailable)?
+            .into_std()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        let root = self
+            .root
+            .get_ref()
+            .try_clone()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        Ok(RootObservationTransfer {
+            stream,
+            root,
+            timeout: self.timeout,
+            end: self.end,
+            diagnostics: self.diagnostics,
+        })
+    }
+
     pub(crate) fn root_lifetime(&self) -> Arc<AsyncFd<OwnedFd>> {
         Arc::clone(&self.root)
     }
