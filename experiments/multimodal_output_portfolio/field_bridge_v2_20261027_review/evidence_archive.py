@@ -41,6 +41,15 @@ BINARIES = {
     "bridge_native/build/target/release/examples/parameter_field_bridge": "a86032964bbab3a28150ffe58474d0d6c7fc7988caf3f0be4ecd46e37985cbd7"}
 BLOCK = 1024 * 1024
 RESERVE = 32 * BLOCK
+SYNTHETIC_GZIP = {
+    "path": "bridge_v2_review/primary-io-recovery-contracts-verified/synthetic-original.jsonl.gz",
+    "bytes": 125, "sha256": "2b64c99c73215025f427f98950340755a0fd70d341ef7b25b55c759fe68db7e3",
+    "expected_error": "EOFError", "scientific_evidence": False,
+    "construction": "parser_contract deliberately writes gzip.compress(synthetic JSON row)[:-8], removing the CRC32/ISIZE trailer",
+    "producer": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027_review/primary_recovery_tests.py",
+    "producer_sha256": "20d319fff55fec3f2bfee1cd2fe3baff520dc5985fbe8353acffdc38b70a2642",
+    "contract_receipt": "bridge_v2_review/primary-io-recovery-contracts-verified/PRIMARY_IO_RECOVERY_CONTRACT.json",
+    "contract_receipt_sha256": "b7a798f1e89b83c63cb87847d718948f90b19fe7ccfcf1f04f82e999f2d6e796"}
 
 
 def require(condition, message):
@@ -59,6 +68,29 @@ def json_bytes(value):
 
 def read(path):
     return json.loads(Path(path).read_text())
+
+
+def invalid_gzip_receipt():
+    return json_bytes({"schema": "hepta.field-bridge.v2.expected-invalid-synthetic-gzip.1",
+                       "fixtures": [SYNTHETIC_GZIP], "scientific_gzip_exemptions": []})
+
+
+def check_gzip(stream, name, entry):
+    fixture = SYNTHETIC_GZIP if name == SYNTHETIC_GZIP["path"] else None
+    require(entry.get("gzip_crc_required", True) is True, f"Gzip CRC bypass is forbidden: {name}")
+    require(entry.get("expected_invalid_gzip") == fixture, f"Unregistered expected-invalid gzip: {name}")
+    if fixture:
+        require(all(entry[key] == fixture[key] for key in ("bytes", "sha256")), f"Synthetic fixture identity differs: {name}")
+    try:
+        with gzip.GzipFile(fileobj=stream, mode="rb") as nested:
+            while nested.read(BLOCK):
+                pass
+    except (EOFError, OSError) as error:
+        if fixture and type(error).__name__ == fixture["expected_error"]:
+            return False
+        raise ValueError(f"Embedded gzip validation failed: {name}: {type(error).__name__}: {error}") from error
+    require(fixture is None, f"Expected-invalid synthetic fixture unexpectedly passed gzip validation: {name}")
+    return True
 
 
 def safe_name(name):
@@ -237,7 +269,7 @@ def verify_archive(path, expected_manifest=None, expected_archive=None, destinat
         require(not destination.exists() and patterns, "Selective restore requires a new directory and explicit patterns")
         destination.mkdir(parents=True)
     seen, checked_bytes, inner_gzip, restored, manifest_hash, expected = set(), 0, 0, [], None, None
-    interrupted_gzip = []
+    invalid_synthetic_gzip = []
     try:
         with gzip.open(path, "rb") as decompressed:
             with tarfile.open(fileobj=decompressed, mode="r|") as archive:
@@ -256,6 +288,11 @@ def verify_archive(path, expected_manifest=None, expected_archive=None, destinat
                         require(len({entry["path"] for entry in entries}) == len(entries), "Manifest contains duplicate paths")
                         expected = {entry["path"]: entry for entry in entries}
                         require("MANIFEST.json" not in expected, "Manifest cannot recursively hash itself")
+                        if SYNTHETIC_GZIP["path"] in expected:
+                            require(expected.get(SYNTHETIC_GZIP["contract_receipt"], {}).get("sha256") ==
+                                    SYNTHETIC_GZIP["contract_receipt_sha256"], "Synthetic gzip fixture lacks its pinned contract receipt")
+                            require(expected.get("EXPECTED_INVALID_GZIP.json", {}).get("sha256") ==
+                                    hashlib.sha256(invalid_gzip_receipt()).hexdigest(), "Synthetic gzip fixture lacks its explicit preservation receipt")
                         for name in expected:
                             safe_name(name)
                         if destination is not None:
@@ -266,9 +303,9 @@ def verify_archive(path, expected_manifest=None, expected_archive=None, destinat
                         continue
                     require(member.name in expected, "Archive contains an unregistered payload member")
                     entry = expected[member.name]
-                    require(member.size == entry["bytes"] and member.mode == entry["mode"], "Payload length or mode differs")
+                    require(member.size == entry["bytes"] and member.mode == entry["mode"], f"Payload length or mode differs: {member.name}")
                     output = None
-                    selected = destination is not None and (member.name in {"RESTORE_V2.txt", "SOURCE_PINS.json"}
+                    selected = destination is not None and (member.name in {"RESTORE_V2.txt", "SOURCE_PINS.json", "EXPECTED_INVALID_GZIP.json"}
                                or any(fnmatch.fnmatchcase(member.name, pattern) for pattern in patterns))
                     if selected:
                         target = destination / member.name
@@ -276,16 +313,11 @@ def verify_archive(path, expected_manifest=None, expected_archive=None, destinat
                         output = target.open("xb")
                     reader = HashingReader(incoming, output)
                     try:
-                        if member.name.endswith(".gz") and entry.get("gzip_crc_required", True):
-                            with gzip.GzipFile(fileobj=reader, mode="rb") as nested:
-                                while nested.read(BLOCK):
-                                    pass
-                            inner_gzip += 1
-                        elif member.name.endswith(".gz"):
-                            require(member.name.startswith("bridge_v2_primary/eval/")
-                                    and manifest["evaluation_subdirectory"] == "eval_recovered",
-                                    "Only the registered interrupted infrastructure attempt may retain incomplete gzip bytes")
-                            interrupted_gzip.append(member.name)
+                        if member.name.endswith(".gz"):
+                            if check_gzip(reader, member.name, entry):
+                                inner_gzip += 1
+                            else:
+                                invalid_synthetic_gzip.append(member.name)
                         while reader.read(BLOCK):
                             pass
                     finally:
@@ -304,7 +336,8 @@ def verify_archive(path, expected_manifest=None, expected_archive=None, destinat
             shutil.rmtree(destination)
         raise
     return {"all_member_sha256_verified": True, "outer_gzip_crc_verified": True,
-            "embedded_gzip_crc_checked": inner_gzip, "interrupted_attempt_gzip_preserved_by_sha256": interrupted_gzip,
+            "embedded_gzip_crc_checked": inner_gzip, "expected_invalid_synthetic_gzip_preserved_by_sha256": invalid_synthetic_gzip,
+            "interrupted_attempt_gzip_preserved_by_sha256": [],
             "manifest_sha256": manifest_hash,
             "tar_regular_members": len(seen), "verified_uncompressed_member_bytes": checked_bytes,
             "selectively_restored_files": restored, "full_raw_staging_copy_created": False}
@@ -328,6 +361,11 @@ def create(args):
         require(stat.S_ISREG(info.st_mode), "Evidence changed to a nonregular file")
         stats[name] = (info.st_size, info.st_mtime_ns, info.st_ino)
         entry = {"path": name, "bytes": info.st_size, "sha256": sha(path), "mode": stat.S_IMODE(info.st_mode)}
+        if name == SYNTHETIC_GZIP["path"]:
+            entry["expected_invalid_gzip"] = SYNTHETIC_GZIP
+        if name.endswith(".gz"):
+            with path.open("rb") as stream:
+                check_gzip(stream, name, entry)
         inventory.append(entry)
     pins = {"repository": REPOSITORY, "scientific_source_commit": SCIENTIFIC_COMMIT,
         "audit_and_archive_source_commit": args.audit_commit, "pretest_freeze_commit": pretest_commit,
@@ -341,6 +379,11 @@ def create(args):
         pins["io_recovery_commit"] = read(root / "bridge_v2_primary/EVALUATION_COMPLETE.json")["registered_recovery_commit"]
     generated = {"SOURCE_PINS.json": json_bytes(pins), "RESTORE_V2.txt": Path(__file__).with_name("RESTORE_V2.txt").read_text()
                  .replace("__AUDIT_SOURCE_COMMIT__", args.audit_commit).encode()}
+    if SYNTHETIC_GZIP["path"] in selected:
+        require(sha(root / SYNTHETIC_GZIP["contract_receipt"]) == SYNTHETIC_GZIP["contract_receipt_sha256"]
+                and sha(root / "bridge_repo" / SYNTHETIC_GZIP["producer"]) == SYNTHETIC_GZIP["producer_sha256"],
+                "Synthetic corruption fixture provenance changed")
+        generated["EXPECTED_INVALID_GZIP.json"] = invalid_gzip_receipt()
     for name, data in generated.items():
         inventory.append({"path": name, "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(), "mode": 0o644})
     manifest = {"schema": "hepta.field-bridge.v2.evidence-manifest.1", "source_code_included": False,

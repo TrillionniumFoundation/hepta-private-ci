@@ -48,17 +48,28 @@ Verify every tar member and compression CRC without extracting a raw duplicate:
     verify --archive "$V2_ARCHIVE" --receipt "$V2_RECEIPT" \
     --report /absolute/path/to/new_archive_check.json
 
-The outer gzip CRC and every member's exact SHA256 must pass. Every embedded
+The outer gzip CRC and every member's exact SHA256 must pass. Every scientific
 gzip stream, including the recorded interrupted eval/ streams, is decompressed
 to validate its CRC. The interruption did not corrupt their gzip containers;
 the original incomplete scientific grid is still identified separately from
 the complete eval_recovered/ cohort. No original evidence bytes are repaired.
 
+One synthetic parser-test fixture deliberately lacks its eight-byte gzip
+CRC32/ISIZE trailer: bridge_v2_review/primary-io-recovery-contracts-verified/
+synthetic-original.jsonl.gz. Its original 125 bytes are preserved with SHA256
+2b64c99c73215025f427f98950340755a0fd70d341ef7b25b55c759fe68db7e3.
+EXPECTED_INVALID_GZIP.json and its manifest entry bind the exact path, bytes,
+expected EOFError, producer source hash and successful original test receipt.
+The verifier requires that expected failure and the original byte identity;
+it grants no scientific gzip exemption. Creation checks all input gzip streams
+before packing so any unregistered failure reports its member path immediately.
+
 2. Selective restore or full restore into a NEW directory
 
 The verifier can extract a selected dependency set while checking the ENTIRE
 archive. It rejects duplicate/unsafe paths, symbolic links and existing output
-directories. MANIFEST.json, RESTORE_V2.txt and SOURCE_PINS.json accompany every
+directories. MANIFEST.json, RESTORE_V2.txt, SOURCE_PINS.json and the synthetic
+fixture preservation receipt (when present) accompany every
 selective restore. On a failed verification, its newly created restore directory
 is removed; original archive and input evidence are never changed.
 

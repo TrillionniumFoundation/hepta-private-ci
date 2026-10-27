@@ -8,8 +8,16 @@ from pathlib import Path
 import tarfile
 import tempfile
 import unittest
+from unittest.mock import patch
 
-from .evidence_archive import verify_archive, json_bytes, safe_name
+from .evidence_archive import verify_archive, json_bytes, safe_name, check_gzip, SYNTHETIC_GZIP, invalid_gzip_receipt
+
+
+# Exact deliberately truncated fixture that exposed the real packaging failure.
+TRUNCATED_FIXTURE = bytes.fromhex(
+    "1f8b0800166de06a02ff558bcb0ac2400c00ef7e45c959444b7de0cf2ceb6ed4c06e222655a4f4df9bd24b3d0e"
+    "3333802266b83687f3b6814f2c3d3aec77add33796125867e994319192b0e300496a2533cca10a8b09535acacecb9"
+    "86ce9404d5e30aee670fb196ae8ed7e99bdbce9411c0bac137dc6f678fad3e36602")
 
 
 class ArchiveContracts(unittest.TestCase):
@@ -20,11 +28,13 @@ class ArchiveContracts(unittest.TestCase):
     def tearDown(self):
         self.temporary.cleanup()
 
-    def archive(self, payload=None, *, override=None, duplicate=False, omit=False, extra=None):
+    def archive(self, payload=None, *, override=None, duplicate=False, omit=False, extra=None, entry_updates=None):
         payload = payload or {"data/rows.jsonl.gz": gzip.compress(b'{"value":3}\n'),
                               "data/opaque.bin": b"unchanged model bytes"}
         entries = [{"path": name, "bytes": len(data), "mode": 0o644,
                     "sha256": hashlib.sha256(data).hexdigest()} for name, data in payload.items()]
+        for entry in entries:
+            entry.update((entry_updates or {}).get(entry["path"], {}))
         manifest = json_bytes({"files": entries, "evaluation_subdirectory": "eval"})
         path = self.root / "synthetic.tar.gz"
         with tarfile.open(path, "w:gz") as archive:
@@ -85,8 +95,49 @@ class ArchiveContracts(unittest.TestCase):
         compressed = bytearray(gzip.compress(b"complete original data"))
         compressed[-8] ^= 1
         path, manifest = self.archive(payload={"data/bad.gz": bytes(compressed)})
-        with self.assertRaises(gzip.BadGzipFile):
+        with self.assertRaisesRegex(ValueError, "data/bad.gz: BadGzipFile"):
             verify_archive(path, manifest)
+
+    def test_exact_observed_truncation_and_input_preflight(self):
+        entry = {**SYNTHETIC_GZIP, "expected_invalid_gzip": SYNTHETIC_GZIP}
+        self.assertEqual(len(TRUNCATED_FIXTURE), entry["bytes"])
+        self.assertEqual(hashlib.sha256(TRUNCATED_FIXTURE).hexdigest(), entry["sha256"])
+        self.assertFalse(check_gzip(io.BytesIO(TRUNCATED_FIXTURE), entry["path"], entry))
+        with self.assertRaisesRegex(ValueError, "data/unregistered.gz: EOFError"):
+            check_gzip(io.BytesIO(TRUNCATED_FIXTURE), "data/unregistered.gz", {})
+
+    def test_registered_truncated_fixture_is_restored_with_exact_bytes(self):
+        provenance = b'{"synthetic_provenance_for_archive_contract":true}\n'
+        with patch.dict(SYNTHETIC_GZIP, contract_receipt_sha256=hashlib.sha256(provenance).hexdigest()):
+            payload = {SYNTHETIC_GZIP["path"]: TRUNCATED_FIXTURE,
+                       SYNTHETIC_GZIP["contract_receipt"]: provenance,
+                       "EXPECTED_INVALID_GZIP.json": invalid_gzip_receipt()}
+            updates = {SYNTHETIC_GZIP["path"]: {"expected_invalid_gzip": SYNTHETIC_GZIP}}
+            path, manifest = self.archive(payload, entry_updates=updates)
+            target = self.root / "registered"
+            result = verify_archive(path, manifest, destination=target, patterns=["*"])
+            self.assertEqual((target / SYNTHETIC_GZIP["path"]).read_bytes(), TRUNCATED_FIXTURE)
+            self.assertEqual(result["expected_invalid_synthetic_gzip_preserved_by_sha256"], [SYNTHETIC_GZIP["path"]])
+            self.assertEqual(result["embedded_gzip_crc_checked"], 0)
+            self.assertTrue(result["all_member_sha256_verified"])
+            self.assertTrue(result["outer_gzip_crc_verified"])
+            for omitted in (SYNTHETIC_GZIP["contract_receipt"], "EXPECTED_INVALID_GZIP.json"):
+                path, manifest = self.archive({k: v for k, v in payload.items() if k != omitted}, entry_updates=updates)
+                with self.assertRaisesRegex(ValueError, "fixture lacks"):
+                    verify_archive(path, manifest)
+            changed = bytearray(TRUNCATED_FIXTURE)
+            changed[4] ^= 1  # Header timestamp changes identity while retaining the same truncation.
+            path, manifest = self.archive({**payload, SYNTHETIC_GZIP["path"]: bytes(changed)}, entry_updates=updates)
+            with self.assertRaisesRegex(ValueError, "Synthetic fixture identity differs"):
+                verify_archive(path, manifest)
+
+    def test_completed_and_interrupted_scientific_gzip_cannot_receive_exception(self):
+        for directory in ("eval", "eval_recovered"):
+            name = f"bridge_v2_primary/{directory}/17/rows.jsonl.gz"
+            for metadata in ({}, {"gzip_crc_required": False}, {"expected_invalid_gzip": SYNTHETIC_GZIP}):
+                path, manifest = self.archive({name: TRUNCATED_FIXTURE}, entry_updates={name: metadata})
+                with self.assertRaisesRegex(ValueError, name):
+                    verify_archive(path, manifest)
 
     def test_outer_truncation_and_external_hashes_rejected(self):
         path, manifest = self.archive()
