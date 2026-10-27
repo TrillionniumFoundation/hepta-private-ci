@@ -14,6 +14,36 @@ platform(
     parents = ["@platforms//host"],
 )
 
+# The existing x86_64 musl target runs tests on GNU Linux execution hosts.
+# This marker serves workspace_root_test and the implicit test exec group.
+# Rust and C/C++ compilation keep their existing target and exec toolchains.
+config_setting(
+    name = "linux_x86_64_musl_test_target",
+    values = {
+        "platforms": str(Label("@rules_rs//rs/platforms:x86_64-unknown-linux-musl")),
+    },
+)
+
+toolchain(
+    name = "linux_x86_64_musl_tests_on_gnu_host_toolchain",
+    exec_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:linux",
+        "@rules_rs//rs/platforms/constraints:glibc",
+        "@llvm//constraints/libc:gnu.2.28",
+    ],
+    target_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:linux",
+        "@rules_rs//rs/platforms/constraints:musl",
+        "@llvm//constraints/libc:musl",
+        "@llvm//constraints/pie:off",
+    ],
+    target_settings = [":linux_x86_64_musl_test_target"],
+    toolchain = "@bazel_tools//tools/test:empty_toolchain",
+    toolchain_type = "@bazel_tools//tools/test:default_test_toolchain_type",
+)
+
 platform(
     name = "local_windows",
     constraint_values = [
