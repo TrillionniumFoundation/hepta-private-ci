@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.appserver.p38-cold-resume-composition.v1",
+  "date_utc": "2026-10-27",
+  "source_only": true,
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "parent_pr": 4060,
+  "parent_sha": "7ba6fbeef36c3e0f068d21c85364a77cf65c9bf6",
+  "source_donor_pr": 3118,
+  "source_donor_sha": "46e3a29e34a3e22e46a5cbe628828dec7cd4ad19",
+  "observation": {
+    "actions_run": 40438251787,
+    "job": 121972421454,
+    "result": "failure",
+    "test_counts": {
+      "executed": 17829,
+      "passed": 17613,
+      "failed": 209,
+      "timed_out": 7,
+      "skipped": 78
+    },
+    "specific_negative_failures": [
+      "cold_resume_reresolves_persisted_active_permission_profile: FAIL both attempts, stale writable roots with current read-only permission",
+      "thread_resume_rejects_unmaterialized_thread: FAIL both attempts, received JSONRPC success instead of original required error"
+    ]
+  },
+  "source_donor_blobs": {
+    "codex-rs/app-server/src/request_processors/thread_processor.rs": "3bad68745912077cc34a49ba12cf7cecb06840a5",
+    "codex-rs/app-server/src/request_processors/persisted_resume_settings.rs": "78302e2783189b2e8d0bee4963bbdf612a106fae",
+    "codex-rs/app-server/src/request_processors/persisted_resume_settings_tests.rs": "c59a68cb974d0e775edd46cac822b08b3d6a8926"
+  },
+  "source_parent_blobs": {
+    "codex-rs/app-server/src/request_processors/thread_processor.rs": "09d731ef987221a9618fad014997151305ff3e31",
+    "codex-rs/app-server/src/request_processors/persisted_resume_settings.rs": "78aa03e31be3216372aa60c30f404e013508f309",
+    "codex-rs/app-server/src/request_processors/persisted_resume_settings_tests.rs": "f628c0f5cfc8888af7de23f41d96ad0201b5ced8"
+  },
+  "composition": "Restore exact P38 policy-bound cold resume source and tests, preserving exact distinct live-thread lazy rollout persistence block added on #4060",
+  "static_checks": {
+    "unique_splice": true,
+    "preserves_later_logic": true,
+    "restores_policy_projection": true,
+    "restores_cold_reload": true,
+    "restores_owner_policy": true,
+    "restores_existing_negative_test": true,
+    "parent_absent_policy": true,
+    "later_original_persistence_kept": true
+  },
+  "rust_build_executed": false,
+  "owning_ci_passed": false,
+  "original_assertions_modified": false,
+  "denied_gates_bypassed": false,
+  "authority": "DENY_ALL",
+  "mode": "SHADOW_ONLY",
+  "promotion": "HOLD_NO_GO",
+  "remaining": "Original AppServer/RPC tests plus Windows/native/Bazel/Architecture/V8/Stem/cargo-deny and owner-backed policy/device gates must pass on applicable head/merge source. Standalone thread-unmaterialized failure remains open."
+}
