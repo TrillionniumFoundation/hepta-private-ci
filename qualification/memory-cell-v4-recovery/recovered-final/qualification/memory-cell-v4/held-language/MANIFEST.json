@@ -1,0 +1,49 @@
+{
+  "by_intent": {
+    "__reject__": 72,
+    "at": 24,
+    "change": 24,
+    "mean3": 24,
+    "peak3": 24,
+    "previous": 24,
+    "range3": 24
+  },
+  "date_format": "YYYY-MM",
+  "evaluation_only_fields": [
+    "intent",
+    "family",
+    "risk_group",
+    "operator",
+    "provenance_offsets",
+    "allow_read",
+    "result_type"
+  ],
+  "exact_v3_template_overlap": 0,
+  "file_bytes": 112340,
+  "fixture": "query-templates.json",
+  "root_materialization_only_after_source_and_protocol_freeze": true,
+  "router_evaluations_before_freeze": 0,
+  "schema": "memory-cell-v4.held-language-manifest.v1",
+  "sha256": "7c952dbcf3625200f748b7a18db432f5f4abccabae8c056eef81fe623abeb895",
+  "slots": [
+    "series",
+    "date"
+  ],
+  "supported": 144,
+  "templates": 216,
+  "unsupported_families": {
+    "cross_variable": 6,
+    "different_alignment": 6,
+    "different_window": 6,
+    "dispersion_or_fit": 6,
+    "forecast_or_estimate": 6,
+    "future_or_other_lag": 6,
+    "non_numeric_result_or_mutation": 6,
+    "other_averages": 6,
+    "other_differences": 6,
+    "rank_statistics": 6,
+    "ratio_and_normalization": 6,
+    "sums_and_cumulative": 6
+  },
+  "unsupported_near": 72
+}

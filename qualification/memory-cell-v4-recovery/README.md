@@ -1,15 +1,45 @@
 # V4 interrupted-delivery recovery
 
-Workspace maintenance removed the local research checkout and complete V4 evidence archive before the delivery branch was updated. This branch anchors the two bundle parts and one figure whose uploads were confirmed beforehand. The original PR #4004 remains at its complete V3 delivery.
+Workspace maintenance removed the local V4 checkout before its full archive was
+uploaded. The surviving two bundle parts and figure were anchored first. A
+separate read-only GitHub Actions task then verified the complete older V1/V2
+and V3 bundles and salvaged complete, individually hashed V4 objects.
 
-This is an incomplete 16,000,002-byte prefix of the 217,549,454-byte V4 history bundle. It must not be described as a complete V4 source or evidence release. Parts 3 and 28 were checked and were absent from the remote object store at recovery start. Library searches did not locate a complete backup.
+**Partial recovery: 190 original final-commit files / 30,434,818 bytes.**
+There are 32 missing tree/blob entries; some represent whole
+directories. Only 155 of the original 6181 formally
+sealed output files are currently present and hash-verified. The remaining
+6026 are absent. The full original V4 source tree, source snapshot and
+formal evidence are **not** restored. Job success means the recovery procedure
+completed; it does not change that conclusion.
 
-Known prior identities, retained as recovery targets (not proof that the full artifacts remain available):
+The recovered historical [RESULTS](recovered-final/qualification/memory-cell-v4/RESULTS.md),
+[QUALIFICATION](recovered-final/qualification/memory-cell-v4/QUALIFICATION.json),
+and [MEASURED_SUMMARY](recovered-final/qualification/memory-cell-v4/MEASURED_SUMMARY.json)
+are exact original bytes, not a fresh re-verification of missing artifacts.
+They already reported all_blockers_closed=false and production_admitted=false.
+Only a declared subset of small recovered files is mirrored here. The original
+formal MANIFEST is retained losslessly in ORIGINAL_FORMAL_MANIFEST.json.
 
-- Original executed V4 source: 6206dfba0a3219534dd1a0274431bf48fd23673c
-- Original final V4 evidence: 3c509f9bb9a9724cddbe6a917c728e022582fefe
-- Complete V4 bundle SHA-256: 9e5f6702eea7a0e9679885323278e61f8f08f8237c655220ecaf81e88d2fda93
-- Part 1: 8,000,001 bytes; SHA-256 0bcc3ffd312ce256dce8cb6c40ba694004e475f1891823861987ccaf5a011626
-- Part 2: 8,000,001 bytes; SHA-256 127c4989b832059e92bb88a4587454ee1dd0b12b4b69c6ebfde132840bcc0a1a
+- Original final evidence commit: `3c509f9bb9a9724cddbe6a917c728e022582fefe`.
+- Original executed source target: `6206dfba0a3219534dd1a0274431bf48fd23673c`.
+- Recovery control source: `c7aba9a0b06d3483257891b6d743b74fc7594604`.
+- [Actual recovery run](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40464059557).
+- [Complete recovery artifact](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40464059557/artifacts/12716196009),
+  SHA-256 `1c0e080770ed1658649fd5928a3a57650f7cb71d5f08c5613976e209d0c76859`.
+  GitHub retention currently expires 2026-11-10 06:56:53 UTC.
 
-Recovery must verify any salvaged object against its original Git identity and report missing objects explicitly. No old result may be reconstructed from reported metrics and presented as the original raw experiment. The scientific qualification was all_blockers_closed=false and production_admitted=false even before the interruption.
+RESTORED_INDEX.json maps each of the 190 exported files to its original commit
+path, Git object identity and SHA-256. RECOVERY_STATUS.json records missing paths,
+the precise formal coverage, all mirrored-file identities and scope limitations.
+
+The artifact's bare salvage store references a runner-specific alternate object
+directory. Exported files are portable; further Git reads require rebuilding the
+base from the included older bundles and repointing that alternate. No training
+or old result generation was run. Never fill missing historical outputs from
+reported metrics and present them as the old experiment.
+
+New V5 work is an explicitly new study built on recovered V3 code and the four
+verified saved numerical memories/layout. It does not overwrite missing V4
+history or claim that the missing typed-memory, maintenance and structure
+experiments have been recovered.
