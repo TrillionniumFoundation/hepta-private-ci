@@ -1,6 +1,6 @@
 {
   "schema": "hepta.ndu-closure-ledger.v2",
-  "updated_utc": "2026-10-27T11:51:43.416460+00:00",
+  "updated_utc": "2026-10-27T12:06:25.991606+00:00",
   "all_blockers_closed": false,
   "production_native_authority": "DENY_ALL",
   "qualification_policy": "Observed failures remain failures. Passing mechanics, source checks or isolated dependencies do not substitute for the stated outcome gates. No postqualification retuning is relabeled as preregistered evidence.",
@@ -106,7 +106,7 @@
       "mechanism": "active_remediation",
       "qualification": "pending",
       "blocking_for_general_claim": true,
-      "observed": "The unchanged cargo-deny scan fell from 22 to 15 errors after coherent Cargo/Bazel TLS updates. ZIP v2 passed core-plugins 426/426, i18n-config 3/3 and secrets 9/9. Unchanged protocol source/assertions with regenerated fixtures passed all 303 regression tests, and all three generated files are published. The nextest report/profile/store repair passed 20 targeted tests and real nextest 0.9.103 microprobes before publication. The unified port producer at exact head 1e4f8b5c failed Cargo resolution: Matrix store-encryption 0.19.1 requires blake3 ^1.8.7 while Starlark 0.14.2 pins =1.8.2; downstream qualifications therefore remain pending.",
+      "observed": "The unchanged cargo-deny scan fell from 22 to 15 errors after coherent Cargo/Bazel TLS updates. ZIP v2 passed core-plugins 426/426, i18n-config 3/3 and secrets 9/9. Unchanged protocol source/assertions with regenerated fixtures passed all 303 regression tests, and all three generated files are published. The nextest report/profile/store repair passed 20 targeted tests and real nextest 0.9.103 microprobes before publication. The unified port producer at exact head 1e4f8b5c failed Cargo resolution: Matrix store-encryption 0.19.1 requires blake3 ^1.8.7 while Starlark 0.14.2 pins =1.8.2; downstream qualifications therefore remain pending. The independent original Matrix 0.18 producer also failed before executing prepare: DeviceKey lacks Serialize. A v2 fixture now preserves complete key IDs and public-key encodings, retains every original equality assertion and adds a nonempty identity guard; static independent review passed, actual migration remains pending. The dependency edge audit additionally found the pagable 0.4.1 pin; official 0.4.2 removes that conflict without Rust source changes.",
       "evidence": [
         "ci/TLS_POST_UPDATE_SCAN.json",
         "ci/ZIP_I18N_QUALIFICATION_001.json",
@@ -117,7 +117,10 @@
         "ci/port-remediation/README.md",
         "ci/dependency-remediation/ZIP_I18N_88BCC7F_QUALIFICATION.json",
         "ci/port-remediation/RUNTIME_EVIDENCE_FIX.json",
-        "ci/port-remediation/PEER_RUNTIME_EVIDENCE_FIX.json"
+        "ci/port-remediation/PEER_RUNTIME_EVIDENCE_FIX.json",
+        "ci/port-remediation/FAILED_1E4F8B5_QUALIFICATION.json",
+        "ci/matrix-remediation/FIXTURE_SERIALIZATION_V2.json",
+        "ci/matrix-remediation/FIXTURE_SERIALIZATION_V2_PEER.json"
       ],
       "next_required": "Prepare and verify a narrowly scoped Starlark compatibility port, rerun the coherent candidate, full upstream AWS coverage, actual old Matrix migration, unchanged dependency policy, scoped Bazel and normal platform gates before activation. Complete the independent native ARM64 Linux Synapse qualification without changing the original Mac contract."
     },
@@ -126,15 +129,17 @@
       "priority": "P0",
       "goal": "Retain all qualification outputs, failures, independent audits and executed source in retrievable artifacts.",
       "mechanism": "verified",
-      "qualification": "five_scientific_archives_ci_checkpoint_and_runtime_increment_saved_and_restored",
+      "qualification": "five_scientific_archives_and_three_ci_increments_saved_and_restored",
       "blocking_for_general_claim": false,
-      "observed": "Five scientific archives totaling 510605199 bytes, a 45021371-byte CI checkpoint and a 9690743-byte runtime increment were saved successfully after actual restoration checks. Both the failed native restore and corrected path-isolated restore remain retained. The runtime increment retains the complete 88bcc7f logs including three old protocol failures and a real timeout, the independent 303/303 protocol success, and the nextest collector bugfix source/probes. New unified port run 40497632113 requires a subsequent evidence increment.",
+      "observed": "Five scientific archives totaling 510605199 bytes plus three CI evidence archives totaling 88437049 bytes are saved and individually restored. This includes the earlier storage timeout and protocol failures, independent 303/303 protocol success, nextest collector correction, and the complete failed port producer and old Matrix fixture compiler at exact head 1e4f8b5c. The latest CI increment also retains the fixture v2 correction, independent peer review, official ARM64 OCI research and verified formatter installation. Capture ends at 2026-10-27T12:03:46.638609Z; later candidate changes remain separately tracked.",
       "evidence": [
         "ARTIFACTS.json",
         "ci/CI_CHECKPOINT_001_RESTORE.json",
         "ci/CI_CHECKPOINT_001_SAVED.json",
         "ci/CI_INCREMENT_002_RESTORE.json",
-        "ci/CI_INCREMENT_002_SAVED.json"
+        "ci/CI_INCREMENT_002_SAVED.json",
+        "ci/CI_INCREMENT_003_RESTORE.json",
+        "ci/CI_INCREMENT_003_SAVED.json"
       ]
     }
   ]
