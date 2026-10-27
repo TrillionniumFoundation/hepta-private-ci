@@ -1,0 +1,100 @@
+{
+  "schema": "hepta.combined-port-source.preparation.v1",
+  "baseline_local_source": "19084bd4722a2b83bcd59e1a12b7877a9a38c079",
+  "worktree": "/workspace/scratch/95988d8d3ab1/ndu-ports-source-worktree",
+  "input_patches": [
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/zip-source-v2.patch",
+      "sha256": "1ddee3c9014e66add790ac80ea7ed6eee195d7789c3b1a9ab67192e0ef624fa2"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/yaml-remediation/yaml-source-v3.patch",
+      "sha256": "720a5789936b1fd0263391fc1f7d17cfae88ec38dfda87e7c02f98c806d4047d"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/yaml-remediation/yaml-manifest-v3.patch",
+      "sha256": "3e4e6cb3e01aabe73facdf39e52aae6b4377044459bd74fc872ec58156a40ca9"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-production.patch",
+      "sha256": "fd894e9a3094dbc44ca0eaeec37072535a8520f666b972d14efc74746307bd32"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-context-tests.patch",
+      "sha256": "a260db729a20f967cb3487b209d6897fff7be16a37e64953ba83fd8617ce5e6e"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-fixture-tests.patch",
+      "sha256": "dec3b6075c928a924e32754e1c310361fd231da3da2a3cdf3657a1a3a734b1fd"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/matrix-remediation/matrix-toolchain.patch",
+      "sha256": "2af11c81e112ae94e96461bfee22881e818413b00ff46064e622001a59441e2d"
+    }
+  ],
+  "status": "Final YAML v4 source integrated; coherent Cargo/Bazel resolution and execution remain pending.",
+  "initial_preparation_failure": {
+    "before_root_manifest_write": true,
+    "reason": "Exact-string precondition expected zstd 0.13.3, but the actual baseline manifest range is 0.13; corrected to the observed range."
+  },
+  "obsolete_vendor_builds": "Keep old source as filegroup provenance without resolving retired runtime targets after replacement.",
+  "yaml_v4_supersedes_v3": {
+    "source_patch": {
+      "bytes": 29322,
+      "sha256": "07c3bca397efb392b99e5c3039cd5704dee26cf309cbc27e05824b26b06e5922"
+    },
+    "prepared": {
+      "bytes": 96256,
+      "sha256": "76b3790b2dc19a5b12cfa93e17deb82801b53eb49b353a93fbe8fd124a814106"
+    }
+  },
+  "mechanical_eof_fix": {
+    "path": "codex-rs/utils/yaml/src/yaml_tests.rs",
+    "before_sha256": "be7e2261874ee656fcd0c4020fe6768313f36268dfab268960779a77054b0220",
+    "after": {
+      "bytes": 3649,
+      "sha256": "81be6c0dc3c175d9b3171a010a6f9a710a132074f09a70152306ea163c98c036"
+    },
+    "change": "Remove one extra empty line at end of file; frozen executed v4 evidence retained unchanged."
+  },
+  "combined_patch": {
+    "bytes": 68011,
+    "sha256": "53905176719cc3d55fa5aeb3c233afbb20d722bf4e1df80929a90d1c0f93ff12"
+  },
+  "exact_paths": [
+    "MODULE.bazel",
+    "codex-rs/Cargo.toml",
+    "codex-rs/core-plugins/Cargo.toml",
+    "codex-rs/core-plugins/src/command_migration.rs",
+    "codex-rs/core-plugins/src/plugin_metrics.rs",
+    "codex-rs/core-plugins/src/startup_sync.rs",
+    "codex-rs/core-plugins/src/startup_sync_zip_tests.rs",
+    "codex-rs/core-plugins/tests/fixtures/zipball_lzma.zip",
+    "codex-rs/ext/skills/Cargo.toml",
+    "codex-rs/ext/skills/src/loader/environment.rs",
+    "codex-rs/ext/skills/src/loader/metadata.rs",
+    "codex-rs/external-agent-migration/Cargo.toml",
+    "codex-rs/external-agent-migration/src/subagents.rs",
+    "codex-rs/hepta-matrix-sdk/Cargo.toml",
+    "codex-rs/hepta-matrix-sdk/src/config.rs",
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+    "codex-rs/hepta-matrix-sdk/tests/event_context_migration.rs",
+    "codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs",
+    "codex-rs/rust-toolchain.toml",
+    "codex-rs/skills/Cargo.toml",
+    "codex-rs/skills/src/parser.rs",
+    "codex-rs/third_party/imbl-6.1.0/BUILD.bazel",
+    "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/BUILD.bazel",
+    "codex-rs/utils/yaml/BUILD.bazel",
+    "codex-rs/utils/yaml/Cargo.toml",
+    "codex-rs/utils/yaml/src/key.rs",
+    "codex-rs/utils/yaml/src/lib.rs",
+    "codex-rs/utils/yaml/src/yaml_tests.rs",
+    "codex-rs/utils/yaml/tests/legacy_projection.rs"
+  ],
+  "independent_index_reconstructs_all_files": true,
+  "build_format_report": {
+    "path": "BUILD_FORMAT_ONLY.json",
+    "sha256": "5e16122105527fc3a93a8f5502dc35e3f257105318ac268c3078c7a2e61e808f"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "schema": "hepta.port-pipeline.format-only.v1",
+  "before": {
+    "scripts/ndu_port_aws_upstream.py": {
+      "bytes": 7477,
+      "sha256": "c83becf9e87341f677c20571a452ba9776d5f080b1367b7425659a9055040bf8",
+      "ast_sha256": "844ff38812afcb149d9be50eba2a6fecf0596c9828e516d130ec3b9964621c00"
+    },
+    "scripts/ndu_port_candidate.py": {
+      "bytes": 12127,
+      "sha256": "5fa10320fa939d697da9b8d51c02939e852c253506303c405c4a372139efa189",
+      "ast_sha256": "4ae4095560f6ae07d9799b23c2b20d206f7c3f6ef50261daf4381e9c8cb4ef4e"
+    },
+    "scripts/ndu_port_candidate_common.py": {
+      "bytes": 20755,
+      "sha256": "b1957d71bc123acf89e649155e911455bd8fdc262db65495adaed60a5ad6f81f",
+      "ast_sha256": "1a7d498f3d5ab8e7339a6851000c2bc1a790c3cfbf05ffbf22de52ed1b54d0b1"
+    },
+    "scripts/ndu_port_matrix_fixture.py": {
+      "bytes": 14453,
+      "sha256": "6f7f5af928ce1ce6f52d9728802b7e8c5eee89304b33edfb482d872f44cd6e0d",
+      "ast_sha256": "0bc9a3b4c067e9358b99c7eefe6cd18ff12fae3d7b1fdbc49090d76514561f25"
+    },
+    "scripts/test_ndu_port_aws_upstream.py": {
+      "bytes": 3242,
+      "sha256": "661ac8379f30b4388e10826fab6d6156c40ac857ec165570334906914caa0e4a",
+      "ast_sha256": "04d8d156ff3473f4e2bd1d5aa86057d2ecf943d3f945083a4bbe864dbba5a27b"
+    },
+    "scripts/test_ndu_port_candidate.py": {
+      "bytes": 13279,
+      "sha256": "28323d376877509229c577b7b7371932960dc2a864175286e6c847e51f9e3c89",
+      "ast_sha256": "69b72f8a9e628f5944aecdc7526968464cfa076138b2de8f3408b6db4fa6aa5a"
+    },
+    "scripts/test_ndu_port_matrix_fixture.py": {
+      "bytes": 7805,
+      "sha256": "066b7b8998b765361ba3b9b85b734316002eb716bb661d71fb04e1efcf5881a1",
+      "ast_sha256": "12c68bd0a6dacaefe345a315aded4f29266b74ec80e2a370a247579cb2875782"
+    }
+  },
+  "after": {
+    "scripts/ndu_port_aws_upstream.py": {
+      "bytes": 8189,
+      "sha256": "1294539078703aa0ec6802e84049487824e6de9b6e9d79e9cb85526c0f9f1e7e",
+      "ast_sha256": "844ff38812afcb149d9be50eba2a6fecf0596c9828e516d130ec3b9964621c00"
+    },
+    "scripts/ndu_port_candidate.py": {
+      "bytes": 13963,
+      "sha256": "49ff7501c3f4496864d72f9ab36add4678040c34569a0e77258a913338782c56",
+      "ast_sha256": "4ae4095560f6ae07d9799b23c2b20d206f7c3f6ef50261daf4381e9c8cb4ef4e"
+    },
+    "scripts/ndu_port_candidate_common.py": {
+      "bytes": 22490,
+      "sha256": "bf88d506b7859b3c6fc9e9fbe41a5db1a45b999761719df2fe8e6adfb26a8c4a",
+      "ast_sha256": "1a7d498f3d5ab8e7339a6851000c2bc1a790c3cfbf05ffbf22de52ed1b54d0b1"
+    },
+    "scripts/ndu_port_matrix_fixture.py": {
+      "bytes": 15932,
+      "sha256": "bb9cebcc6c55fb55e0f14610e130c50a8793658a99c260703964f388a67c2ef2",
+      "ast_sha256": "0bc9a3b4c067e9358b99c7eefe6cd18ff12fae3d7b1fdbc49090d76514561f25"
+    },
+    "scripts/test_ndu_port_aws_upstream.py": {
+      "bytes": 3693,
+      "sha256": "16abf09373af6974b1e50e53a126087acbb538bb99962fbd97a772b2c9b7d3d8",
+      "ast_sha256": "04d8d156ff3473f4e2bd1d5aa86057d2ecf943d3f945083a4bbe864dbba5a27b"
+    },
+    "scripts/test_ndu_port_candidate.py": {
+      "bytes": 14721,
+      "sha256": "43141c664d7ad23a88aa8c3fe686fe9fac05d8a3e3058198a533804c7b8eb738",
+      "ast_sha256": "69b72f8a9e628f5944aecdc7526968464cfa076138b2de8f3408b6db4fa6aa5a"
+    },
+    "scripts/test_ndu_port_matrix_fixture.py": {
+      "bytes": 8617,
+      "sha256": "50b138ded403dfbcd24ca60e3d0476e172eed14ab8149959c493c17c58c523ec",
+      "ast_sha256": "12c68bd0a6dacaefe345a315aded4f29266b74ec80e2a370a247579cb2875782"
+    }
+  },
+  "all_ast_equal": true,
+  "tests_before_format": {
+    "path": "TESTS_002.json",
+    "bytes": 1715,
+    "sha256": "60ee977ed287d761cbd851ddacc67074a442a62fd0b4bc9b0b21d6f97f2ff680"
+  },
+  "post_format_behavior_tests_run": false,
+  "global_final_just_fmt": "Still pending until all code changes are complete."
+}
