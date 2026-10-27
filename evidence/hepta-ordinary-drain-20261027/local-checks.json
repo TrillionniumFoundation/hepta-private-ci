@@ -1,0 +1,57 @@
+{
+  "schema": "hepta-ordinary-drain-local-checks-v1",
+  "base": "ebf8872efb7db39d63710d36ba16e4813f27c2af",
+  "commands": [
+    {
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host"
+      ],
+      "executed": false,
+      "error": "[Errno 2] No such file or directory: 'just'"
+    },
+    {
+      "argv": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host"
+      ],
+      "executed": false,
+      "error": "[Errno 2] No such file or directory: 'just'"
+    },
+    {
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "executed": false,
+      "error": "[Errno 2] No such file or directory: 'just'"
+    },
+    {
+      "argv": [
+        "/workspace/scratch/301262829a43/pon-build-inputs/unpacked/toolchain/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "skip_children=true",
+        "codex-rs/hepta-agentd/src/client.rs",
+        "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/smollm_initial_agentd_tests.rs"
+      ],
+      "exit_code": 0,
+      "scope": "Rust 1.95 syntax/format precheck only; fixed Rust 1.96 native gate not executed here"
+    }
+  ],
+  "native_tests_passed": false,
+  "same_source_model_run": "PENDING CI",
+  "production_abrupt_abort_cleanup": "OPEN and unchanged"
+}

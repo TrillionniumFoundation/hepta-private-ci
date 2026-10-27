@@ -1,0 +1,79 @@
+{
+  "schema": "hepta-ordinary-drain-original-red-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "f75bf1ac902ed73905e4daa49f9396df028a4254",
+  "source_tree": "a8052cd850dcbe6bb6dec4e434bae051cecc7b4c",
+  "run_id": 40492138476,
+  "job_id": 122148432828,
+  "original_zip_bytes": 114661707,
+  "original_zip_sha256": "a6674acfd78bc4172eb0cb2dbd7e39e1bf6506e50fbca30b04b6db19c7f6c276",
+  "selection": "Explicit diagnostics only; no issuer stores, private keys, runtime environments, or model checkpoints",
+  "observed_failure": "ordinary-1 after round-1: RuntimeOpen(StateLocked)",
+  "ordinary_first_session": "PASS with original CURRENT unchanged",
+  "three_round_test": "FAIL, 0 passed / 1 failed",
+  "lifecycle_cause_status": "Static missing original Drain RPC identified; new-source real three-round rerun required",
+  "selected_records": [
+    {
+      "path": "chain-source.txt",
+      "bytes": 82,
+      "sha256": "9a6b7d86ccfe5e182df6f315c74d6183c50c6a316b29d90f99dbde56297ab849"
+    },
+    {
+      "path": "hepta-source.txt",
+      "bytes": 82,
+      "sha256": "d7d221417c93f1a82381135b47144eee8be017643b24a85f5ba3cc7f6baf64c3"
+    },
+    {
+      "path": "model-target.json",
+      "bytes": 484,
+      "sha256": "3d5b44e6a9151c58d8c6830c4d4caa47ed63fcb3202efc617fa599905b99ca25"
+    },
+    {
+      "path": "n/p/loop-observations.json",
+      "bytes": 3515,
+      "sha256": "c7fa550cffd55419fee3d98a508cc490a30a1a846dd293f866a92b7550ea1838"
+    },
+    {
+      "path": "n/p/ordinary-0/ordinary-session-result.json",
+      "bytes": 2471,
+      "sha256": "c52d278a543754fadf2ad0c35287d0dfc7352d3c57d03bd95b77d34435660986"
+    },
+    {
+      "path": "n/p/ordinary-1/ordinary-failure.json",
+      "bytes": 395,
+      "sha256": "fd6c8918a18ce5aa6172d537a477b3672275ef1a40a6ceda8e1080c282b6ae26"
+    },
+    {
+      "path": "n/p/round-1/assessment.json",
+      "bytes": 32511,
+      "sha256": "f88ea0d1971e9304fe68d5e452b9315a59f824f33a6bb38f8067d897a1626185"
+    },
+    {
+      "path": "ordinary-native.json",
+      "bytes": 1707,
+      "sha256": "1222e905f066efefdb60acfd1c0d3cfd5ac6d4c034042c5a21f14c66d2de6204"
+    },
+    {
+      "path": "ordinary-native.json.f90c7f383239481483d29ca7ea0dab54.log",
+      "bytes": 33581,
+      "sha256": "4e6f7dc9aff6bdfec13c5f1265937ceacefbfdbe44582632a849456529bdc55f"
+    },
+    {
+      "path": "required-outcomes.json",
+      "bytes": 575,
+      "sha256": "57c7c96773d756fcf5a780fafd307920fe51245e2635dacb690396d2bc1d4668"
+    },
+    {
+      "path": "three-rounds-native.json",
+      "bytes": 1772,
+      "sha256": "b7e541d24e74a6559bf87ebe292375e2e3ca2336aac7626a6ca40e6082a422be"
+    },
+    {
+      "path": "three-rounds-native.json.9ed0d1f1e7864348a03c880cffb3cd82.log",
+      "bytes": 34643,
+      "sha256": "5e8633d8348bf6f0fef4c4bee72e7c2958dcb8fbdf00c231b1a43374c63823f7"
+    }
+  ],
+  "archive_bytes": 14233,
+  "archive_sha256": "156ef1af8dc6847ea75a531d21a453644e90fad7d8766cad48b0e281019a0d96"
+}

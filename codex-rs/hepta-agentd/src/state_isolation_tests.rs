@@ -87,6 +87,56 @@ fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> 
     Ok((temp, registry, state))
 }
 
+#[cfg(unix)]
+#[tokio::test]
+async fn original_drain_rpc_refuses_running_and_never_fabricates_quiescence() {
+    let (_temp, registry, state) = fixture().expect("runtime fixture");
+    let state = Arc::new(state);
+    let cancellation = tokio_util::sync::CancellationToken::new();
+    let _cancel_on_drop = cancellation.clone().drop_guard();
+    let server = crate::AgentdControlServer::bind(
+        state.identity.control_socket.clone(),
+        Arc::clone(&state),
+        cancellation.clone(),
+    )
+    .await
+    .expect("original control owner");
+    let mut tasks = tokio::task::JoinSet::new();
+    tasks.spawn(server.run());
+    let client = crate::AgentdClient::new(
+        state.identity.control_socket.clone(),
+        state.identity.agent_id.clone(),
+        state.identity.spawn_generation,
+    )
+    .expect("same-body client");
+    assert!(client.drain().await.is_err());
+    registry
+        .compare_and_transition(
+            &state.identity.agent_id,
+            /*expected_generation*/ 2,
+            AgentLifecycle::Draining,
+        )
+        .expect("original supervisor transition");
+    // There is no App Server acknowledgement or automation owner in this
+    // control. Zero reported turns must never substitute for the missing cut.
+    let expected = crate::DrainSnapshot {
+        admission_closed: true,
+        running_turns: 0,
+        drained: false,
+        lifecycle: AgentLifecycle::Draining,
+        fenced: false,
+    };
+    assert_eq!(client.drain().await.expect("drain response"), expected);
+    assert_eq!(client.drain().await.expect("repeat observation"), expected);
+    cancellation.cancel();
+    tokio::time::timeout(std::time::Duration::from_secs(2), tasks.join_next())
+        .await
+        .expect("bounded control shutdown")
+        .expect("owned task")
+        .expect("control join")
+        .expect("control shutdown");
+}
+
 #[tokio::test]
 async fn serving_agent_survives_unrelated_registry_corruption() {
     let (_temp, registry, state) = fixture().expect("runtime fixture");

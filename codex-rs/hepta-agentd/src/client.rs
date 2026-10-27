@@ -35,6 +35,7 @@ use crate::AgentdResponse;
 use crate::AuthBusObjectiveIngress;
 use crate::AutomationEffectReconcileSnapshot;
 use crate::AutomationEffectSnapshot;
+use crate::DrainSnapshot;
 use crate::EventBatch;
 use crate::HealthSnapshot;
 use crate::LifecycleSnapshot;
@@ -115,6 +116,22 @@ impl AgentdClient {
             .payload
         {
             AgentdPayload::Lifecycle(snapshot) => Ok(snapshot),
+            payload => unexpected(payload),
+        }
+    }
+
+    /// Request the existing owner drain after Supervisor enters Draining.
+    /// A drained response reports quiescence, not process exit or task joining.
+    pub async fn drain(&self) -> Result<DrainSnapshot, AgentdError> {
+        match self
+            .send(AgentdRequest::drain(
+                self.request_id(),
+                self.spawn_generation,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::Drain(snapshot) => Ok(snapshot),
             payload => unexpected(payload),
         }
     }

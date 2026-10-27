@@ -292,7 +292,10 @@ async fn session(
             "product_qualification_issued":false,"home_root":identity.home_root,"spawn_generation":identity.spawn_generation,
             "codex_executable":codex_executable}))
     }.await;
-    let stop_result: TestResult<()> = async {
+    let mut last_drain = None;
+    let mut stopped_generation = None;
+    let mut generation_fenced_join = false;
+    let stop_result = tokio::time::timeout(Duration::from_secs(20), async {
         if let Some(task) = running.as_mut() {
             let registry =
                 FleetRegistry::open_existing(HeptaFleetRoot::parse(&identity.fleet_root)?)?;
@@ -306,6 +309,35 @@ async fn session(
                 AgentLifecycle::Draining => record.lifecycle,
                 _ => return Err("ordinary runtime is outside its original drain lifecycle".into()),
             };
+            let client = AgentdClient::new(
+                identity.control_socket.clone(),
+                identity.agent_id.clone(),
+                identity.spawn_generation,
+            )?;
+            // A registry transition is not an App Server drain. Poll the same
+            // bounded RPC used by Supervisor, within the original total stop
+            // deadline. Its drained predicate also checks automation blockers.
+            let mut poll = tokio::time::interval(Duration::from_millis(20));
+            poll.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Delay);
+            loop {
+                poll.tick().await;
+                let observed = client.drain().await?;
+                let complete = observed.admission_closed
+                    && observed.drained
+                    && observed.running_turns == 0
+                    && !observed.fenced
+                    && observed.lifecycle == AgentLifecycle::Draining;
+                let invalid = observed.fenced
+                    || observed.lifecycle != AgentLifecycle::Draining
+                    || !observed.admission_closed;
+                last_drain = Some(observed);
+                if invalid {
+                    return Err("ordinary drain response did not retain its owner fence".into());
+                }
+                if complete {
+                    break;
+                }
+            }
             registry.compare_and_transition(
                 &identity.agent_id,
                 draining.generation,
@@ -318,15 +350,20 @@ async fn session(
                 )
                 .into());
             }
-            if registry.load_agent(&identity.agent_id)?.lifecycle.lifecycle
-                != AgentLifecycle::Stopped
-            {
+            generation_fenced_join = true;
+            let terminal = registry.load_agent(&identity.agent_id)?.lifecycle;
+            if terminal.lifecycle != AgentLifecycle::Stopped {
                 return Err("original registry did not retain Stopped".into());
             }
+            stopped_generation = Some(terminal.generation);
         }
-        Ok(())
-    }
+        Ok::<(), Box<dyn std::error::Error>>(())
+    })
     .await;
+    let stop_result: TestResult<()> = match stop_result {
+        Ok(result) => result,
+        Err(_) => Err("ordinary drain and stop exceeded the original 20s deadline".into()),
+    };
     if let Some(task) = running.as_mut() {
         task.abort_and_join().await;
     }
@@ -342,18 +379,32 @@ async fn session(
             Ok(())
         };
     let archived = archive_authority(&authority, effects);
+    let stop_record = fs::write(
+        effects.join("ordinary-runtime-stop.json"),
+        serde_json::to_vec_pretty(&serde_json::json!({
+            "schema":"hepta-ordinary-runtime-stop-v1","stop_budget_seconds":20,
+            "last_original_drain_response":last_drain,
+            "stopped_registry_generation":stopped_generation,
+            "generation_fenced_task_join":generation_fenced_join,
+            "error":stop_result.as_ref().err().map(ToString::to_string),
+            "product_qualification_issued":false
+        }))?,
+    );
     if result.is_err()
         || stop_result.is_err()
         || model_shutdown.is_err()
         || issuer_result.is_err()
         || archived.is_err()
+        || stop_record.is_err()
     {
         let failure = serde_json::json!({"schema":"hepta-ordinary-initial-session-failure-v2",
             "ordinary":result.as_ref().err().map(ToString::to_string),
             "runtime_stop":stop_result.as_ref().err().map(ToString::to_string),
             "model_shutdown":model_shutdown.as_ref().err().map(ToString::to_string),
             "issuer":issuer_result.as_ref().err().map(ToString::to_string),
-            "archive":archived.as_ref().err().map(ToString::to_string),"product_qualification_issued":false});
+            "archive":archived.as_ref().err().map(ToString::to_string),
+            "runtime_stop_record":stop_record.as_ref().err().map(ToString::to_string),
+            "product_qualification_issued":false});
         fs::write(
             effects.join("ordinary-failure.json"),
             serde_json::to_vec_pretty(&failure)?,
