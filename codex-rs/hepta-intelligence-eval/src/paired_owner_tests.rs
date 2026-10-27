@@ -302,12 +302,9 @@ fn actual_locked_file_replays_mixed_profiles_and_retains_rollback_anchor() {
     let legacy_anchor = owner.anchor();
     drop(owner);
     let backup = fs::read(&path).expect("backup");
-    let store = LockedFileFinalHoldoutCasStoreV1::recover(
-        open(),
-        d("binding"),
-        Some(legacy_anchor),
-    )
-    .expect("reopen legacy");
+    let store =
+        LockedFileFinalHoldoutCasStoreV1::recover(open(), d("binding"), Some(legacy_anchor))
+            .expect("reopen legacy");
     let mut owner = FencedFinalHoldoutOwnerV1::recover(store, d("binding"), fence(2))
         .expect("recover legacy owner");
     let plan = paired("p");
