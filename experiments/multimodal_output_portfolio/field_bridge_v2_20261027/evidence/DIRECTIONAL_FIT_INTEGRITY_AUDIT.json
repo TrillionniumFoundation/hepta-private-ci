@@ -1,0 +1,59 @@
+{
+  "active": false,
+  "additional_chosen_path_gradient_calls": 6912,
+  "additional_chosen_path_gradient_examples": 442368,
+  "additional_directional_measurement_work": {
+    "clean_probe_forward_calls": 864,
+    "clean_probe_forward_examples": 110592,
+    "clean_probe_reverse_calls": 864,
+    "clean_probe_reverse_examples": 110592,
+    "next_gradient_backward_calls": 864,
+    "next_gradient_backward_examples": 55296,
+    "next_gradient_forward_calls": 864,
+    "next_gradient_forward_examples": 55296,
+    "response_probe_forward_calls": 3456,
+    "response_probe_forward_examples": 442368,
+    "response_probe_reverse_calls": 1728,
+    "response_probe_reverse_examples": 884736,
+    "teacher_forward_calls": 864,
+    "teacher_forward_examples": 55296
+  },
+  "fresh_audit_trajectories": 0,
+  "inherited_fit_snapshots": 864,
+  "limitations": [
+    "Read-only integrity of inherited labels, receipt bindings, selected-path hashes and counts.",
+    "No new directional gradient replay, independently held-out prediction test or efficacy conclusion.",
+    "Recorded extra work remains in the research cost ledger even though D1 was not activated."
+  ],
+  "parent_H7_gate_sha256": "d52c3727e7adb791172c5c76ca25f159062e489742f226bd6790161ed42186be",
+  "passed": true,
+  "predictors_fitted": 0,
+  "primary_treatment": false,
+  "reason": "All original H7 development gates passed; the D1 activation condition is false.",
+  "schema": "hepta.field-bridge.v2.inactive-directional-fit-integrity.1",
+  "script_sha256": "0e9a591b1180f424004e7c598b51b2fa87a30a2be8d90e1c2072f3d03373bfea",
+  "seeds": [
+    {
+      "bank_sha256": "44fedec963a36fe7d17742f1b0868edfd3b08ed5ac4e80153a5291c979925143",
+      "directional_receipts_sha256": "046f385cc397479b5efc34bbf9a4480aac76c895b1110dc310f6c3adb9652f4c",
+      "recorded_wall_ns": 382970698030,
+      "rows": 288,
+      "seed": 17
+    },
+    {
+      "bank_sha256": "0bd35c6286ad9fd2f38a6e79b0ac5a1d33e8068e12c6acabfb0d4bc42c2f4fdd",
+      "directional_receipts_sha256": "d9efdcb0524906a1e3ae65b1d56f3b42e000186ec1d86d3f8368fad673370431",
+      "recorded_wall_ns": 384343211396,
+      "rows": 288,
+      "seed": 29
+    },
+    {
+      "bank_sha256": "6e5abb438daad7466accb6c112f31ddf0b7c4192ade48e0ff4a58c6e1452027b",
+      "directional_receipts_sha256": "5fc4203a7afaab4bec504f09c3dc804198a5a33c8644f42da84779899bb86eeb",
+      "recorded_wall_ns": 374018731022,
+      "rows": 288,
+      "seed": 43
+    }
+  ],
+  "source_files_per_bank": 31
+}
