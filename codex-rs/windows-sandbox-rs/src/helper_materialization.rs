@@ -192,6 +192,28 @@ fn sibling_source_path(kind: HelperExecutable) -> Result<PathBuf> {
 }
 
 pub(crate) fn bundled_executable_path_for_exe(exe: &Path, file_name: &str) -> Option<PathBuf> {
+    // A unit-test harness is in Cargo's deps directory or Bazel runfiles, not
+    // the installed product's bin/resources layout. Resolve only its two real
+    // built targets through the repository's Cargo/Bazel test resolver. Keep
+    // synthetic layout probes and every non-test production lookup unchanged.
+    #[cfg(test)]
+    if std::env::current_exe().ok().as_deref() == Some(exe) {
+        let target = match file_name {
+            "codex-command-runner.exe" => "codex-command-runner",
+            "codex-windows-sandbox-setup.exe" => "codex-windows-sandbox-setup",
+            _ => return None,
+        };
+        return match codex_utils_cargo_bin::cargo_bin(target) {
+            Ok(path) => {
+                eprintln!("HEPTA_REAL_TEST_HELPER={target}:{}", path.display());
+                Some(path)
+            }
+            Err(error) => {
+                eprintln!("HEPTA_REAL_TEST_HELPER_UNAVAILABLE={target}:{error}");
+                None
+            }
+        };
+    }
     let find = |exe: &Path| {
         let dir = exe.parent()?;
         let direct_candidate = dir.join(file_name);

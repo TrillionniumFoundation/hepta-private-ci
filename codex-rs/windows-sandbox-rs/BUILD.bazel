@@ -51,7 +51,7 @@ codex_rust_crate(
     # provide the link inputs and flags without the unsupported-directive warning.
     build_script_enabled = False,
     crate_name = "codex_windows_sandbox",
-    test_data_extra = [
+    unit_test_extra_binaries = [
         ":codex-command-runner",
         ":codex-windows-sandbox-setup",
     ],
