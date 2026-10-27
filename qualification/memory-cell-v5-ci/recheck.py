@@ -61,7 +61,9 @@ def require(condition, message):
 
 def frozen_snapshot():
     base = ROOT / "qualification/memory-cell-v5"
-    require(base.is_dir() and not base.is_symlink(), "V5 directory is missing or linked")
+    require(
+        base.is_dir() and not base.is_symlink(), "V5 directory is missing or linked"
+    )
     files = {}
     for path in sorted(base.rglob("*")):
         require(not path.is_symlink(), f"Linked V5 entry: {path}")
@@ -201,7 +203,14 @@ def recheck(report, output):
     ruff = ["uv", "run", "--frozen", "--project", "scripts", "ruff"]
     commands = [
         (
-            [sys.executable, "-B", "scripts/hepta-docs.py", "verify", "--profile", "development"],
+            [
+                sys.executable,
+                "-B",
+                "scripts/hepta-docs.py",
+                "verify",
+                "--profile",
+                "development",
+            ],
             ROOT,
         ),
         (["just", "fmt", "--base", FORMAT_BASE], ROOT / "codex-rs"),
@@ -227,7 +236,8 @@ def recheck(report, output):
             ),
             "v5_inventory_after": inventory_identity(after_frozen),
             "all_v5_files_unchanged": after_frozen == frozen,
-            "all_v5_files_match_prior_after": after_frozen == prior["all_v5_files_before"],
+            "all_v5_files_match_prior_after": after_frozen
+            == prior["all_v5_files_before"],
             "changed_paths": changed,
             "changes_limited_to_new_helper_formatter": set(changed) <= set(NEW_SOURCES),
         }
@@ -264,8 +274,14 @@ def main():
     except Exception as error:
         report["error"] = f"{type(error).__name__}: {error}"
         (output / "error.txt").write_text(traceback.format_exc())
-    (output / "RECHECK.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
-    print(json.dumps({key: report[key] for key in ("commit", "passed", "unit_tests_executed")}))
+    (output / "RECHECK.json").write_text(
+        json.dumps(report, indent=2, sort_keys=True) + "\n"
+    )
+    print(
+        json.dumps(
+            {key: report[key] for key in ("commit", "passed", "unit_tests_executed")}
+        )
+    )
     if "error" in report:
         print(report["error"])
     return 0 if report["passed"] else 1

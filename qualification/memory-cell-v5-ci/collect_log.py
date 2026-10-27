@@ -33,7 +33,9 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 
 def redact(text, token):
     text = ANSI_PATTERN.sub("", text).replace(token, "[REDACTED_TOKEN]")
-    text = re.sub(r"\b(?:github_pat_|gh[pousr]_)[A-Za-z0-9_]+", "[REDACTED_TOKEN]", text)
+    text = re.sub(
+        r"\b(?:github_pat_|gh[pousr]_)[A-Za-z0-9_]+", "[REDACTED_TOKEN]", text
+    )
     text = re.sub(
         r"(?i)(authorization\s*[:=]\s*)(?:bearer\s+|basic\s+)?\S+",
         r"\1[REDACTED]",
@@ -41,8 +43,10 @@ def redact(text, token):
     )
     return re.sub(
         r"https?://[^\s<>\"']+",
-        lambda match: re.split(r"[?#]", match.group(0), maxsplit=1)[0].split("@")[-1]
-        + ("?[REDACTED_QUERY]" if "?" in match.group(0) else ""),
+        lambda match: (
+            re.split(r"[?#]", match.group(0), maxsplit=1)[0].split("@")[-1]
+            + ("?[REDACTED_QUERY]" if "?" in match.group(0) else "")
+        ),
         text,
     )
 
@@ -137,7 +141,9 @@ def collect(output, receipt, token):
         "conclusion": "failure",
     }
     if any(job.get(key) != value for key, value in expected.items()):
-        raise RuntimeError("observed job identity or final result differs from fixed target")
+        raise RuntimeError(
+            "observed job identity or final result differs from fixed target"
+        )
     receipt["job"] = {
         key: job.get(key)
         for key in [*expected, "run_attempt", "started_at", "completed_at", "html_url"]
@@ -152,7 +158,10 @@ def collect(output, receipt, token):
         # A distinct opener and request carry no token or cookies and reject redirects.
         receipt["phase"] = "download_log_without_credentials"
         downloader = urllib.request.build_opener(NoRedirect())
-        with downloader.open(request(location), timeout=120) as response, raw.open("wb") as target:
+        with (
+            downloader.open(request(location), timeout=120) as response,
+            raw.open("wb") as target,
+        ):
             if response.status != 200:
                 raise RuntimeError("signed log download did not return HTTP 200")
             for chunk in iter(lambda: response.read(1024 * 1024), b""):
@@ -167,7 +176,9 @@ def collect(output, receipt, token):
         receipt["phase"] = "compress_and_extract_context"
         compressed = output / "cargo-deny-job-122077331825.log.gz"
         with raw.open("rb") as source, compressed.open("wb") as destination:
-            with gzip.GzipFile(filename="", mode="wb", fileobj=destination, mtime=0) as zipped:
+            with gzip.GzipFile(
+                filename="", mode="wb", fileobj=destination, mtime=0
+            ) as zipped:
                 shutil.copyfileobj(source, zipped)
         receipt["raw_log_preserved_in_gzip"] = True
         context, context_receipt = error_context(raw, token)
@@ -197,7 +208,9 @@ def main():
         "target_run_id": RUN_ID,
         "target_head_sha": EXPECTED_HEAD,
         "collector_head_sha": os.environ.get("GITHUB_SHA"),
-        "collector_source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "collector_source_sha256": hashlib.sha256(
+            Path(__file__).read_bytes()
+        ).hexdigest(),
         "api_credentials_forwarded_to_download_host": False,
         "redirects_followed_automatically": False,
         "signed_download_url_retained": False,

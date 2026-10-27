@@ -1,0 +1,111 @@
+{
+  "schema": "hepta.memory.v5.ci-repair-status.v1",
+  "baseline_commit": "332d8156d081e22405450dd607023689f68f03e1",
+  "verification_commit": "ccdb7ea7cb9c4adecf6f6607ea1570cb81ae0f78",
+  "repair_verification": {
+    "run_id": 40473598389,
+    "jobs": [
+      {
+        "id": 122086309664,
+        "name": "bazel-dependency",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122086309793,
+        "name": "repository-contract-and-format",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122086309821,
+        "name": "dependency-diagnostic",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122086309928,
+        "name": "codespell / Check for spelling errors",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "closed_findings": [
+    {
+      "id": "codespell_encoded_evidence",
+      "closure": "The actual reusable Codespell job passes with six exact encoded-file exclusions and three valid technical terms; prose remains checked."
+    },
+    {
+      "id": "complete_workflow_path_identity",
+      "closure": "Seven new filesystem behavior tests plus two existing tests passed before formatting. The complete development documentation check passes after preserving full nested workflow identities and placing archive member names inside their archive."
+    },
+    {
+      "id": "pinned_ubuntu_dependency_download",
+      "closure": "The same-version, same-checksum official fallback passes a fresh Bazel 9.0.0 rustc_lib build after the primary URL returned HTTP 503. Strict module resolution succeeds and the module lock is byte-identical."
+    }
+  ],
+  "frozen_v5_subtree_unchanged": {
+    "baseline_commit": "332d8156d081e22405450dd607023689f68f03e1",
+    "verification_commit": "ccdb7ea7cb9c4adecf6f6607ea1570cb81ae0f78",
+    "same_v5_subtree": true,
+    "trees": [
+      {
+        "root_tree": "a4cacb26cf694d7559eb855974ae52f46fecd240",
+        "qualification_tree": "a867e6e9bd9fab6f7a404f8015e09db20e6dbb9d",
+        "v5_tree": "e46a25ab3c26763acb7b4fb8231943a15594c625"
+      },
+      {
+        "root_tree": "2dbf5a543d119f71d66b344704e56a17dbc27a00",
+        "qualification_tree": "8a410d7f703a84f275c77e1d40921f84651ed5b4",
+        "v5_tree": "e46a25ab3c26763acb7b4fb8231943a15594c625"
+      }
+    ]
+  },
+  "prior_native_architecture": {
+    "source_head": "332d8156d081e22405450dd607023689f68f03e1",
+    "run_id": 40470653075,
+    "jobs": [
+      {
+        "id": 122076699002,
+        "name": "Architecture convergence (source-head)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122076699371,
+        "name": "Architecture convergence (base-merge)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122087852321,
+        "name": "Architecture required",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "source_head_native_steps_16_through_23_executed": true,
+    "base_merge_native_steps_skipped": true
+  },
+  "remaining_dependency_advisory_gate": {
+    "status": "failed",
+    "run_id": 40470653139,
+    "job_id": 122077331825,
+    "distinct_advisories": 22,
+    "vulnerability_errors": 16,
+    "unmaintained_errors": 6,
+    "distinct_crate_versions": 16,
+    "bans": "ok",
+    "licenses": "ok",
+    "sources": "ok",
+    "base_and_head_and_tested_merge_source_identities_equal": true,
+    "dependency_updates_validated": false,
+    "advisory_ignores_added": false
+  },
+  "all_repository_ci_closed": false,
+  "all_research_blockers_closed": false,
+  "all_six_memory_stages_complete": false,
+  "research_qualification_modified": false,
+  "production_admitted": false
+}

@@ -1,0 +1,46 @@
+{
+  "artifact_id": 12718768729,
+  "bazel_version": "bazel 9.0.0",
+  "command_stream_identities_verified": 6,
+  "download_cache_identity": {
+    "bytes": 62850,
+    "sha256": "7074b6a2f6367a10d280c00a1cb02e74277709180bab4f2491a2f355ab2d6c20"
+  },
+  "extracted_library_identity": {
+    "bytes": 113000,
+    "sha256": "9b64150b28505a33d6bc3ecf709c279f6de97a1c184dbda65d06ee4537f6d286"
+  },
+  "final_success_url_explicitly_logged": false,
+  "fresh_cache_root_initially_empty": true,
+  "head": "ccdb7ea7cb9c4adecf6f6607ea1570cb81ae0f78",
+  "job_conclusion": "success",
+  "job_id": 122086309664,
+  "job_status": "completed",
+  "local_library_hash_independently_matches_reported_hosted_extraction": true,
+  "local_library_source": "verification-first/dependency/verified-source-2.deb",
+  "lock_identity": {
+    "bytes": 1658169,
+    "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+  },
+  "lock_matches_checkout_commit": true,
+  "lock_unchanged": true,
+  "mirror_attribution": "Fallback use is supported by the two-source configuration, fresh caches, primary HTTP 503, verified payload and successful repository target; the log does not independently record the final successful host/redirect.",
+  "remote_repository_contents_cache_disabled": true,
+  "run_id": 40473598389,
+  "schema": "hepta.memory.v5.bazel-dependency-artifact-review.v1",
+  "scope": "Artifact integrity and recorded command/output review with local comparison to the already verified original-pin DEB. No second Bazel invocation, SDK compilation, or experiment re-execution was performed.",
+  "snapshot_503_observed_in_bazel_build_log": true,
+  "strict_mod_deps_exit": 0,
+  "strict_mod_deps_seconds": 19.150764371000037,
+  "target": "@@rules_rs++toolchains+rustc_linux_x86_64_1_95_0//:rustc_lib",
+  "target_build_exit": 0,
+  "target_build_seconds": 33.48535103900008,
+  "two_source_configuration_succeeded_under_snapshot_failure": true,
+  "zip": {
+    "bytes": 3440,
+    "crc_passed": true,
+    "matches_github_digest": true,
+    "members": 7,
+    "sha256": "409cb3fbfdbfc0e8eb67475b024bd54fff915525c41d42a3790f241b6a5cc04d"
+  }
+}
