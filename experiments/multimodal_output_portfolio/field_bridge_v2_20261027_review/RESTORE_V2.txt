@@ -1,0 +1,218 @@
+HEPTA PARAMETER-FIELD / NEURON BRIDGE V2 — EVIDENCE RESTORATION
+
+This bundle preserves raw data, model/optimizer checkpoints, all fitting and
+development candidates, selected media bytes, decision traces and audit
+receipts. It contains no Git repository, scientific/audit source tree, wheel
+cache or installed runtime. Obtain the pinned source below. Do not refit or
+regenerate results to substitute for the preserved historical observations.
+
+Source repository:
+  https://github.com/TrillionniumFoundation/hepta-private-ci
+Primary scientific execution source:
+  c5233ce581e8fc6b45ab52b6d4653e01be8aa93f
+Audit, recovery and archive source:
+  __AUDIT_SOURCE_COMMIT__
+
+SOURCE_PINS.json binds the actual pretest commit, all 35 frozen scientific file
+hashes and native binary identities. The audit/recovery checkout must retain
+those same 35 file bytes. Additional review modules do not replace their hashes.
+
+1. Obtain the source and authenticate the archive
+
+Use a new source directory. Private repository authentication is required.
+
+  git clone --depth 1 --filter=blob:none --no-checkout \
+    --branch research/parameter-field-neuron-bridge-20261027 \
+    https://github.com/TrillionniumFoundation/hepta-private-ci bridge_source
+  git -C bridge_source fetch --depth 1 origin __AUDIT_SOURCE_COMMIT__
+  git -C bridge_source sparse-checkout init --cone
+  git -C bridge_source sparse-checkout set \
+    experiments/multimodal_output_portfolio/field_bridge_20261027 \
+    experiments/multimodal_output_portfolio/field_bridge_v2_20261027 \
+    experiments/multimodal_output_portfolio/field_bridge_v2_20261027_review \
+    experiments/multimodal_output_portfolio/v6
+  git -C bridge_source checkout --detach __AUDIT_SOURCE_COMMIT__
+
+Define paths to the downloaded immutable archive and its separately published
+verification receipt. The receipt supplies archive bytes, archive SHA256 and
+MANIFEST.json SHA256. An embedded manifest cannot authenticate itself.
+
+  V2_SOURCE=/absolute/path/to/bridge_source
+  V2_ARCHIVE=/absolute/path/to/hepta_field_bridge_v2_20261027_evidence.tar.gz
+  V2_RECEIPT=/absolute/path/to/ARCHIVE_VERIFICATION.json
+
+Verify every tar member and compression CRC without extracting a raw duplicate:
+
+  PYTHONPATH="$V2_SOURCE" python3 -m \
+    experiments.multimodal_output_portfolio.field_bridge_v2_20261027_review.evidence_archive \
+    verify --archive "$V2_ARCHIVE" --receipt "$V2_RECEIPT" \
+    --report /absolute/path/to/new_archive_check.json
+
+The outer gzip CRC and every member's exact SHA256 must pass. Every embedded
+gzip stream, including the recorded interrupted eval/ streams, is decompressed
+to validate its CRC. The interruption did not corrupt their gzip containers;
+the original incomplete scientific grid is still identified separately from
+the complete eval_recovered/ cohort. No original evidence bytes are repaired.
+
+2. Selective restore or full restore into a NEW directory
+
+The verifier can extract a selected dependency set while checking the ENTIRE
+archive. It rejects duplicate/unsafe paths, symbolic links and existing output
+directories. MANIFEST.json, RESTORE_V2.txt and SOURCE_PINS.json accompany every
+selective restore. On a failed verification, its newly created restore directory
+is removed; original archive and input evidence are never changed.
+
+For a compact independent statistical check, restore only score rows, result
+and completion metadata (patterns match whichever completed eval directory is
+registered; the original interrupted attempt is preserved when present):
+
+  V2_BUNDLE=/absolute/path/to/new_statistics_restore
+  PYTHONPATH="$V2_SOURCE" python3 -m \
+    experiments.multimodal_output_portfolio.field_bridge_v2_20261027_review.evidence_archive \
+    verify --archive "$V2_ARCHIVE" --receipt "$V2_RECEIPT" \
+    --extract-to "$V2_BUNDLE" \
+    --select 'bridge_v2_primary/*/rows.jsonl.gz' \
+    --select 'bridge_v2_primary/*/COMPLETE.json' \
+    --select 'bridge_v2_primary/RESULT.json' \
+    --select 'bridge_v2_primary/EVALUATION_COMPLETE.json' \
+    --select 'verification/results_audit.json' \
+    --report /absolute/path/to/new_selective_restore_check.json
+
+For full byte/media/native audit, restore everything into a DIFFERENT new
+directory after checking adequate free disk space:
+
+  V2_BUNDLE=/absolute/path/to/new_full_restore
+  PYTHONPATH="$V2_SOURCE" python3 -m \
+    experiments.multimodal_output_portfolio.field_bridge_v2_20261027_review.evidence_archive \
+    verify --archive "$V2_ARCHIVE" --receipt "$V2_RECEIPT" \
+    --extract-to "$V2_BUNDLE" --select '*' \
+    --report /absolute/path/to/new_full_restore_check.json
+
+Keep audit outputs outside restored training/ and runtime/: their complete
+inventories are bound by PRETEST_FREEZE.json. Use a new report filename for each
+audit; existing original reports must not be overwritten.
+
+3. Runtime and minimum original assets
+
+The recorded environment is Python 3.12.14 on x86_64 Linux, torch 2.8.0+cpu,
+NumPy 2.3.5 and Pillow 12.3.0. The bundle includes observed dependency versions
+and exact-wheel/operational recovery receipts, but excludes wheel bytes.
+In a separate suitable Python environment, the historical package pins are:
+
+  python3 -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.8.0+cpu'
+  python3 -m pip install -r "$V2_BUNDLE/bridge_preservation/requirements-observed.txt"
+
+The nine included original assets are four MNIST gzip sources, the original
+terminal_entropic_ndu models for seeds 17/29/43, and frozen reward/audit observers.
+Their unchanged RESTORATION.json records the larger historical archive; other
+historical files listed in that registry are not needed for V2 setup. Original
+asset archive SHA256:
+  ddbdf10b4397c8538183df8fa7c16f08c5fba226a304ff7cb55574ddb97e951e
+
+Actual V2 FFI:
+  bridge_v2_native_clean/libhepta_field_bridge.so
+  bfad6ca9d91d958296fa47c7f8ace4414b7ddf659e079ae5394c37bd104ceac3
+Actual reference V1 executable:
+  bridge_native/build/target/release/examples/parameter_field_bridge
+  a86032964bbab3a28150ffe58474d0d6c7fc7988caf3f0be4ecd46e37985cbd7
+
+These binaries target the recorded platform. A source rebuild on a different
+platform is a separate reproduction and must not substitute a new binary hash
+for the historical execution identity. Likewise, matching package versions does
+not promise cross-platform bit-identical floating point behavior.
+
+4. Independent checks using the restored paths
+
+Use a new external audit output directory:
+
+  V2_CHECKS=/absolute/path/to/new_v2_audit_reports
+  mkdir "$V2_CHECKS"
+  export OPENBLAS_NUM_THREADS=1
+
+Independent arithmetic; this consumes actual row scores, makes no model calls
+and fits nothing:
+
+  PYTHONPATH="$V2_SOURCE" python3 -m \
+    experiments.multimodal_output_portfolio.field_bridge_v2_20261027_review.primary_results_audit \
+    --run "$V2_BUNDLE/bridge_v2_primary" \
+    --result "$V2_BUNDLE/bridge_v2_primary/RESULT.json" \
+    --protocol "$V2_SOURCE/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/PRIMARY_PROTOCOL.json" \
+    --out "$V2_CHECKS/STATISTICS.json"
+
+Training selection, complete optimizer and decision-trace audit:
+
+  PYTHONPATH="$V2_SOURCE" python3 -m \
+    experiments.multimodal_output_portfolio.field_bridge_v2_20261027_review.primary_training_audit \
+    --root "$V2_BUNDLE/bridge_v2_primary" \
+    --parent-bank "$V2_BUNDLE/bridge_v2_bank" \
+    --pilot "$V2_BUNDLE/bridge_v2_pilot" \
+    --source-root "$V2_SOURCE/experiments/multimodal_output_portfolio" \
+    --report "$V2_CHECKS/TRAINING.json"
+
+Predetermined two-block training replay, using original train/development data:
+
+  PYTHONPATH="$V2_SOURCE" python3 -m \
+    experiments.multimodal_output_portfolio.field_bridge_v2_20261027_review.primary_training_replay \
+    --assets "$V2_BUNDLE/bridge_assets/full002" \
+    --root "$V2_BUNDLE/bridge_v2_primary" \
+    --parent-bank "$V2_BUNDLE/bridge_v2_bank" \
+    --report "$V2_CHECKS/TRAINING_REPLAY.json"
+
+Runtime-bank hard-output arithmetic, matching feature matrices and all 432 heads:
+
+  PYTHONPATH="$V2_SOURCE" python3 -m \
+    experiments.multimodal_output_portfolio.field_bridge_v2_20261027_review.primary_runtime_audit \
+    --root "$V2_BUNDLE/bridge_v2_primary" \
+    --assets "$V2_BUNDLE/bridge_assets/full002" \
+    --ffi "$V2_BUNDLE/bridge_v2_native_clean/libhepta_field_bridge.so" \
+    --output "$V2_CHECKS/RUNTIME.json"
+
+Complete delivered-byte, public-feature, decision and native-kernel replay audit:
+
+  PYTHONPATH="$V2_SOURCE" python3 -m \
+    experiments.multimodal_output_portfolio.field_bridge_v2_20261027_review.primary_media_audit \
+    --run "$V2_BUNDLE/bridge_v2_primary" \
+    --assets "$V2_BUNDLE/bridge_assets/full002" \
+    --native "$V2_BUNDLE/bridge_v2_native_clean/libhepta_field_bridge.so" \
+    --out "$V2_CHECKS/MEDIA.json"
+
+The completed primary cohort contains 84,480 selected-output rows. The media
+audit reopens exact content-addressed PNG/UTF8 bytes and reconstructs both
+observers' scores and public inputs; it does not call the generator. All 61,440
+native ticks in that completed cohort are replayed. Additional audit work is
+verification cost, not a training or runtime benefit.
+
+If completion metadata registers eval_recovered, independently compare every
+complete original-attempt row and native receipt with its recovered counterpart:
+
+  PYTHONPATH="$V2_SOURCE" python3 -m \
+    experiments.multimodal_output_portfolio.field_bridge_v2_20261027_review.primary_recovery_parity \
+    --run "$V2_BUNDLE/bridge_v2_primary" \
+    --out "$V2_CHECKS/RECOVERY_PARITY.json"
+
+5. Preserved evidence and interpretation
+
+The bundle includes all 18 pilot candidate records/checkpoints, H7 fit and audit
+branch banks, all frozen predictors, inactive D1 enrichment, native/history/
+hybrid/momentum diagnostics, source-identity reservations, contracts/replays,
+final training states, all runtime heads and banks, and complete primary media,
+rows, decisions, provenance and independent audits. Failed/null diagnostics
+remain in the evidence. H7 passed its original gates, so D1 fresh audit was not
+activated. A primary null result is not converted to success by archiving it.
+
+If eval_recovered is registered in EVALUATION_COMPLETE.json, eval/ is retained
+as an infrastructure-interrupted attempt. The recovered cohort uses unchanged
+scientific files, models, readouts, source identities and random schedules;
+recovery/parity receipts document the storage-only repair. It is not an extra
+statistical replicate. Use only the registered completed directory for final
+statistics, with the supported audit alias selected by completion metadata.
+
+MANIFEST.json records each payload's path, length, mode and true SHA256. Its own
+SHA256 is external to avoid a recursive self-hash. The external archive receipt
+binds the whole compressed file. Same-host hashes and process chronology prove
+internal consistency; they are not independent execution attestation.
+
+The study remains a constructed historical MNIST text/image task conditional on
+three recovered model seeds. It does not establish a global parameter-field
+sufficiency theorem, LLM-scale benefit, unseen writers or production ownership.
+Original V1 raw evidence is preserved separately and is not duplicated here.
