@@ -3,11 +3,13 @@
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
+use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 use sha2::Digest;
 use sha2::Sha256;
 use tokio_util::sync::CancellationToken;
 
 use super::AppServerModelDriver;
+use super::NativeBoundaryStatus;
 use super::NativeOwnerAuthority;
 use super::NativeRunOutput;
 use super::NativeRunStatus;
@@ -226,6 +228,46 @@ fn native_source_payload_digest(
 
 pub(super) fn digest(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
+}
+
+/// Thread/read can establish terminal provider facts, but cannot erase an
+/// already observed local failure, cancellation intent, or authority loss.
+pub(super) fn retain_reconciliation_boundary(
+    record: &NativeRunRecord,
+    output: &mut NativeRunOutput,
+) {
+    let denied = record.observation.as_ref().filter(|previous| {
+        matches!(
+            previous.boundary_status,
+            NativeBoundaryStatus::Failed
+                | NativeBoundaryStatus::Interrupted
+                | NativeBoundaryStatus::Cancelled
+                | NativeBoundaryStatus::TimedOut
+                | NativeBoundaryStatus::Quarantined
+        )
+    });
+    if let Some(previous) = denied {
+        output.boundary_status = previous.boundary_status;
+        if previous.stop_reason.is_some() {
+            output.stop_reason.clone_from(&previous.stop_reason);
+        }
+    } else if record.cancel_requested {
+        // The durable marker records intent only. It cannot distinguish user
+        // cancellation from a deadline or a protocol failure before a crash.
+        output.boundary_status = NativeBoundaryStatus::Quarantined;
+        output.stop_reason = Some(
+            "durable cancellation requested; original boundary reason unavailable".to_string(),
+        );
+    }
+    if let Some(previous) = &record.observation {
+        output.observed_output_tokens = output
+            .observed_output_tokens
+            .or(previous.observed_output_tokens);
+        if matches!(previous.owner_authority, NativeOwnerAuthority::Lost { .. }) {
+            output.owner_authority.clone_from(&previous.owner_authority);
+            output.boundary_status = NativeBoundaryStatus::Quarantined;
+        }
+    }
 }
 
 #[cfg(test)]

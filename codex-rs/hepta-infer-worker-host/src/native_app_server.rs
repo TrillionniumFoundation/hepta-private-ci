@@ -412,6 +412,7 @@ impl AppServerModelDriver {
                     .to_string(),
             ),
         };
+        control::retain_reconciliation_boundary(record, &mut output);
         let _ =
             verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT).await;
         downgrade_for_owner_loss(&mut output);
@@ -945,6 +946,12 @@ impl AppServerModelDriver {
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
+            // Persist the observed boundary before any asynchronous cancel or
+            // interrupt. Recovery may learn terminal facts later, but a crash
+            // must not erase the failure that stopped this observation.
+            let failure_recorded = control
+                .settle_native(request_id, output.clone())
+                .map(|_| ());
             if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
                 if let Ok(cancelled) = owner
                     .run_cancel(
@@ -959,16 +966,6 @@ impl AppServerModelDriver {
             }
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
-            // Commit observed authority loss before waiting for interruption:
-            // a process crash must not erase it from a later settlement.
-            let loss_recorded =
-                if matches!(output.owner_authority, NativeOwnerAuthority::Lost { .. }) {
-                    control
-                        .settle_native(request_id, output.clone())
-                        .map(|_| ())
-                } else {
-                    Ok(())
-                };
             let cancel_recorded = control.cancel_native(request_id);
             interrupt(&mut client, &output).await;
             let grace = CancellationToken::new();
@@ -983,7 +980,7 @@ impl AppServerModelDriver {
                     &binding,
                 )
                 .await;
-            loss_recorded?;
+            failure_recorded?;
             cancel_recorded?;
             if !output.terminal_observed
                 && let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
@@ -1505,7 +1502,9 @@ fn observe_event(
                     .ok_or_else(|| "terminal receipt omitted correlation digest".to_string())?
                     .to_string(),
             );
-            if let Some(error) = &completed.turn.error {
+            if output.stop_reason.is_none()
+                && let Some(error) = &completed.turn.error
+            {
                 output.stop_reason = Some(error.message.chars().take(1024).collect());
             }
             output.terminal_observed = true;

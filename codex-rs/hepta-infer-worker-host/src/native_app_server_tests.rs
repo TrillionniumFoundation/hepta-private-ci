@@ -687,6 +687,27 @@ fn late_completed_cannot_upgrade_cancelled_or_timed_out_boundary() {
 }
 
 #[test]
+fn interrupt_grace_provider_failure_keeps_the_original_quarantine_reason() {
+    let mut value = output();
+    value.boundary_status = NativeBoundaryStatus::Quarantined;
+    value.stop_reason = Some("completed agent message changed".to_string());
+    let mut failed = terminal("thread-a", "turn-a", TurnStatus::Failed);
+    if let ServerNotification::TurnCompleted(notification) = &mut failed {
+        notification.turn.error = Some(codex_app_server_protocol::TurnError {
+            message: "provider stopped after interruption".to_string(),
+            codex_error_info: None,
+            additional_details: None,
+        });
+    }
+    assert!(observe_for_test(&mut value, failed).unwrap());
+    assert_eq!(value.status, NativeRunStatus::Failed);
+    assert_eq!(value.boundary_status, NativeBoundaryStatus::Quarantined);
+    assert_eq!(value.stop_reason.as_deref(), Some("completed agent message changed"));
+    assert!(value.terminal_observed);
+    assert!(!value.succeeded());
+}
+
+#[test]
 fn disconnect_event_lag_cancel_and_deadline_have_explicit_boundary_statuses() {
     assert_eq!(
         classify_observation_failure("provider events lost"),
