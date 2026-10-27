@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.memory.v7.addressing-held-lock.v1",
+  "sealed_at_utc": "2026-10-27T17:53:01.357456+00:00",
+  "source_commit": "f445e938a11a050006a721ff2b6c1a1b2b41d4e0",
+  "model": {
+    "schema": "hepta.memory.v7.model-transport.v1",
+    "manifest_sha256": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+    "weights_sha256": "1cc92df4e9ca259b4f3ee9edfcc98f802ec990f84ef37c00186b6769f60ca1e3",
+    "weights_bytes": 842102,
+    "parts": [
+      {
+        "path": "weights.npz.part-00",
+        "bytes": 400000,
+        "sha256": "e4a531d5148e2d439b8ac47c56de61dd5c7d0acd47d60b99bb43138e22f19f65"
+      },
+      {
+        "path": "weights.npz.part-01",
+        "bytes": 400000,
+        "sha256": "0192965453f2d99ed688fb547adf004d9b97950c2be3d35d138b3758cd02d62f"
+      },
+      {
+        "path": "weights.npz.part-02",
+        "bytes": 42102,
+        "sha256": "969c87ec1c1d1f9c7f191dcfd8018bb63b91bacf6127dccc18f050efa426e0b3"
+      }
+    ],
+    "source_commit": "f445e938a11a050006a721ff2b6c1a1b2b41d4e0"
+  },
+  "policy_sha256": "5de1b70ad2d23102cc8fbb91b61a3a88128f378d6911b8b02d69384fa893cdee",
+  "threshold": 0.7098737782192688,
+  "calibration_sha256": "5af8c7f9eef01ecc6e8702aabc3e5caccf5ff12a92747ee319cff72f91d01ef5",
+  "held_sha256": "61a3dcacfe7c3695e51e3ab0e228dafe1fd46b9854189be864fc9c990ca5c7c0",
+  "held_labels_opened": false,
+  "no_retune_after_calibration_or_held": true,
+  "scoring": {
+    "known_intent_correct_minimum": 0.8,
+    "near_ood_acceptance_maximum": 0.05,
+    "intent_rows": 360,
+    "address_rows": 80
+  },
+  "fixture_compatibility": {
+    "authored_max_cells": 32,
+    "runtime_max_cells": 8,
+    "report_strict_original_and_uniform_clamped_budget": true,
+    "adapter_uses_no_gold_operation": true,
+    "memory_values_not_scored": "Author semantic and procedure fixture fields do not match native V1 value contract; this run measures intent/address only. Real native write/read tests are separate."
+  }
+}

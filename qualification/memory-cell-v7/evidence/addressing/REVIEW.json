@@ -1,0 +1,124 @@
+{
+  "abstract_gold_check_is_native_execution": false,
+  "author_abstract_fixture_gold_matches": 40,
+  "complete_original_protocol_passed": false,
+  "findings": [
+    "80/240 (33.33%) is correct accepted intent coverage: all 160 abstentions remain in the denominator. Zero accepted wrong known intents is not 100% task accuracy.",
+    "Four OOD intents are accepted (4/120, 3.33%). They remain errors even if a later lookup or execution would fail; their fixed labels are consistent with unsupported percentage, causal explanation and synthetic-input requests.",
+    "The 360-row intent experiment substitutes entity/date markers and evaluates the composite intent/shape classifier plus fixed capability rules. It does not exercise actual alias/date binding or native memory execution for those rows.",
+    "All 80 original entity requests fail the max_cells boundary before name resolution. Negative-case syntax rejection is not evidence of unknown/ambiguous-name detection.",
+    "The pre-held lock separately declared uniform max_cells<=8 diagnostics. Its 40/40 exact alias resolutions and 40/40 negative rejections apply to synthetic owner-listed registries, not open-world entity linking or authenticated owner access.",
+    "The reported 11/40 complete plans mean correct operation and canonical entity only. They do not include memory values, native arithmetic, version admission, or final owner checks.",
+    "The abstract semantic fixture has factor/bias/limit instead of native factor/label, and its saved program representation is not native V1. The original complete-runtime protocol was not executed; all 440 rows retain executed=0.",
+    "Author VALIDATION passed its own structural checks, but did not validate max_cells against the runtime 1..8 bound. Preserve that original verdict together with this incompatibility rather than revising it.",
+    "Development-01 weak calibration (61/120 known, 1/120 OOD), development-02 unadmitted selection, and formal calibration (69/180 known, 6/240 OOD, one wrong accepted known) are retained. None is replaced by the final held result.",
+    "The binomial tolerance calculation needs independent identically distributed calibration sampling for its stated conditional population guarantee; arbitrary exchangeability alone is insufficient. These authored families establish neither assumption, and original reports correctly keep population_risk_established=false.",
+    "The initial development source snapshots were not committed at execution; development-01's later byte-preserving copy receipt remains archived. The formal run records committed source and all preserved source hashes match."
+  ],
+  "held_input_and_readout_labels_unchanged": true,
+  "held_intent": {
+    "known_correct": 80,
+    "known_correct_rate": 0.3333333333333333,
+    "known_rows": 240,
+    "known_wrong_accepted": 0,
+    "known_wrong_rate": 0.0,
+    "language_known_correct_rates": {
+      "en": 0.4,
+      "zh": 0.26666666666666666
+    },
+    "ood_acceptance_rate": 0.03333333333333333,
+    "ood_accepted": 4,
+    "ood_rows": 120
+  },
+  "held_readout_rows": 440,
+  "known_abstained": 160,
+  "known_explicit_capability_rejections": 1,
+  "known_raw_supported_but_below_threshold_or_margin": 67,
+  "labels_changed": 0,
+  "new_head_fit_calls": 0,
+  "new_model_calls": 0,
+  "ood_false_accepts": [
+    {
+      "decision": {
+        "capability_reason": null,
+        "margin": 0.43904852165504576,
+        "operation": "change",
+        "raw_operation": "change",
+        "required_margin": 0.0,
+        "score": 0.7156544641111425,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "threshold": 0.7098737782192688
+      },
+      "family": "held.baseline_fraction",
+      "id": "held-reject-zh-001",
+      "text": "交接单需要相对涨跌幅：{entity}最新读数比{since}的基准高或低百分之几？"
+    },
+    {
+      "decision": {
+        "capability_reason": null,
+        "margin": 0.4397761203136672,
+        "operation": "change",
+        "raw_operation": "change",
+        "required_margin": 0.0,
+        "score": 0.7168304548526818,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "threshold": 0.7098737782192688
+      },
+      "family": "held.driver_inference",
+      "id": "held-reject-en-028",
+      "text": "The inspection lead wants the factors driving {entity}'s increase or decrease since {since}."
+    },
+    {
+      "decision": {
+        "capability_reason": null,
+        "margin": 0.5221098091265393,
+        "operation": "apply",
+        "raw_operation": "apply",
+        "required_margin": 0.0,
+        "score": 0.7446543039596474,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "threshold": 0.7098737782192688
+      },
+      "family": "held.synthetic_input",
+      "id": "held-reject-zh-036",
+      "text": "给{entity}的已存程序送入模拟观测值33，参数沿用现存记录。"
+    },
+    {
+      "decision": {
+        "capability_reason": null,
+        "margin": 0.7874627407015037,
+        "operation": "apply",
+        "raw_operation": "apply",
+        "required_margin": 0.0,
+        "score": 0.8916147621716128,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "threshold": 0.7098737782192688
+      },
+      "family": "held.synthetic_input",
+      "id": "held-reject-en-036",
+      "text": "Feed a simulated observation of 33 into {entity}'s saved program with its existing parameters."
+    }
+  ],
+  "original_entity_requests": {
+    "all_max_cells": 32,
+    "budget_rejections": 80,
+    "rows": 80,
+    "runtime_max_cells": 8
+  },
+  "population_risk_established": false,
+  "predeclared_uniform_budget_diagnostic": {
+    "accepted_positive_plans": 11,
+    "correct_canonical_entities": 40,
+    "correct_operation_and_entity_plans": 11,
+    "incorrectly_resolved": 0,
+    "known_aliases": 40,
+    "native_answers_executed": 0,
+    "unknown_or_ambiguous": 40
+  },
+  "primary_known_gate_passed": false,
+  "reviewer_scope": "Saved evidence and evaluator source audit; no model execution or label changes.",
+  "sample_ood_gate_passed": true,
+  "schema": "hepta.memory.v7.language-evidence-review.v1",
+  "source_snapshot_hashes_match_all_three_runs": true,
+  "stored_selection_policies_recounted": 450
+}

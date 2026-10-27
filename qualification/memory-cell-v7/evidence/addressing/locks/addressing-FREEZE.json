@@ -1,0 +1,25 @@
+{
+  "address_denominator": 80,
+  "calibration_labels_opened_by_model_developer": false,
+  "candidate_selection_before_calibration": true,
+  "held_labels_opened_by_model_developer": false,
+  "independent_data_sha256": {
+    "PROTOCOL.json": "0974406559e1c27b592e8e25675c62d31f697afae7e9fa3a82564b74531dcb53",
+    "calibration.json": "5af8c7f9eef01ecc6e8702aabc3e5caccf5ff12a92747ee319cff72f91d01ef5",
+    "held.json": "61a3dcacfe7c3695e51e3ab0e228dafe1fd46b9854189be864fc9c990ca5c7c0"
+  },
+  "intents_denominators": {
+    "known": 240,
+    "ood": 120
+  },
+  "known_gate": 0.8,
+  "native_execution_scope": "Separate real daemon integration tests; this natural-language gate alone does not establish complete-runtime success.",
+  "no_retune_after_calibration_or_held": true,
+  "ood_gate": 0.05,
+  "protocol_opened": true,
+  "schema": "hepta.memory.v7.address-freeze.v1",
+  "sealed_at": "2026-10-27T17:49:16.190100+00:00",
+  "source_changed_after_handoff": "Only since<=at request contract alignment, before new data consumption; thirteen boundary tests passed.",
+  "source_commit": "f445e938a11a050006a721ff2b6c1a1b2b41d4e0",
+  "source_tree": "9a38bf66cfdfe6d7a06502746bf7fb29100fcb18"
+}

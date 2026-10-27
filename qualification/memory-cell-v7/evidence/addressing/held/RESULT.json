@@ -1,0 +1,420 @@
+{
+  "schema": "hepta.memory.v7.address-held-execution.v1",
+  "lock_sha256": "4848f67b0d1e543d242f7b8d8788dff7c362b0a976bab4df0210c4a73c561ced",
+  "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+  "policy_digest": "5de1b70ad2d23102cc8fbb91b61a3a88128f378d6911b8b02d69384fa893cdee",
+  "source_model_commit": "f445e938a11a050006a721ff2b6c1a1b2b41d4e0",
+  "evaluator_sha256": "b16a48b5ce19372cb3aabaec4dea58b8084f05e7154090d37c7b6bfcc5e117f6",
+  "execution_git_head": "50eaa9e5034806b812b174dec28078636dfaf2bd",
+  "held_opened": true,
+  "fixture_compatibility": {
+    "authored_max_cells": 32,
+    "runtime_max_cells": 8,
+    "report_strict_original_and_uniform_clamped_budget": true,
+    "adapter_uses_no_gold_operation": true,
+    "memory_values_not_scored": "Author semantic and procedure fixture fields do not match native V1 value contract; this run measures intent/address only. Real native write/read tests are separate."
+  },
+  "scoring": {
+    "known_intent_correct_minimum": 0.8,
+    "near_ood_acceptance_maximum": 0.05,
+    "intent_rows": 360,
+    "address_rows": 80
+  },
+  "held_sha256": "61a3dcacfe7c3695e51e3ab0e228dafe1fd46b9854189be864fc9c990ca5c7c0",
+  "intent_gate": {
+    "known_rows": 240,
+    "known_correct": 80,
+    "known_wrong_accepted": 0,
+    "known_correct_rate": 0.3333333333333333,
+    "known_wrong_rate": 0.0,
+    "ood_rows": 120,
+    "ood_accepted": 4,
+    "ood_acceptance_rate": 0.03333333333333333,
+    "language_known_correct_rates": {
+      "en": 0.4,
+      "zh": 0.26666666666666666
+    }
+  },
+  "intent_by_operation": {
+    "apply": {
+      "known_rows": 40,
+      "known_correct": 19,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.475,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 0,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {
+        "en": 0.6,
+        "zh": 0.35
+      }
+    },
+    "change": {
+      "known_rows": 40,
+      "known_correct": 13,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.325,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 0,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {
+        "en": 0.35,
+        "zh": 0.3
+      }
+    },
+    "current": {
+      "known_rows": 40,
+      "known_correct": 16,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.4,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 0,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {
+        "en": 0.55,
+        "zh": 0.25
+      }
+    },
+    "history": {
+      "known_rows": 40,
+      "known_correct": 8,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.2,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 0,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {
+        "en": 0.25,
+        "zh": 0.15
+      }
+    },
+    "procedure": {
+      "known_rows": 40,
+      "known_correct": 17,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.425,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 0,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {
+        "en": 0.5,
+        "zh": 0.35
+      }
+    },
+    "reject": {
+      "known_rows": 0,
+      "known_correct": 0,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.0,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 120,
+      "ood_accepted": 4,
+      "ood_acceptance_rate": 0.03333333333333333,
+      "language_known_correct_rates": {}
+    },
+    "semantic": {
+      "known_rows": 40,
+      "known_correct": 7,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.175,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 0,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {
+        "en": 0.15,
+        "zh": 0.2
+      }
+    }
+  },
+  "intent_by_language": {
+    "en": {
+      "known_rows": 120,
+      "known_correct": 48,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.4,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 60,
+      "ood_accepted": 2,
+      "ood_acceptance_rate": 0.03333333333333333,
+      "language_known_correct_rates": {
+        "en": 0.4
+      }
+    },
+    "zh": {
+      "known_rows": 120,
+      "known_correct": 32,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.26666666666666666,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 60,
+      "ood_accepted": 2,
+      "ood_acceptance_rate": 0.03333333333333333,
+      "language_known_correct_rates": {
+        "zh": 0.26666666666666666
+      }
+    }
+  },
+  "intent_by_family": {
+    "held.archive_freeze": {
+      "known_rows": 40,
+      "known_correct": 8,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.2,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 0,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {
+        "en": 0.25,
+        "zh": 0.15
+      }
+    },
+    "held.baseline_fraction": {
+      "known_rows": 0,
+      "known_correct": 0,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.0,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 10,
+      "ood_accepted": 1,
+      "ood_acceptance_rate": 0.1,
+      "language_known_correct_rates": {}
+    },
+    "held.configuration_card": {
+      "known_rows": 40,
+      "known_correct": 7,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.175,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 0,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {
+        "en": 0.15,
+        "zh": 0.2
+      }
+    },
+    "held.cross_owner_question": {
+      "known_rows": 0,
+      "known_correct": 0,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.0,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 10,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {}
+    },
+    "held.driver_inference": {
+      "known_rows": 0,
+      "known_correct": 0,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.0,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 10,
+      "ood_accepted": 1,
+      "ood_acceptance_rate": 0.1,
+      "language_known_correct_rates": {}
+    },
+    "held.handoff_number": {
+      "known_rows": 40,
+      "known_correct": 16,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.4,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 0,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {
+        "en": 0.55,
+        "zh": 0.25
+      }
+    },
+    "held.joined_readout": {
+      "known_rows": 0,
+      "known_correct": 0,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.0,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 10,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {}
+    },
+    "held.multi_observation_statistics": {
+      "known_rows": 0,
+      "known_correct": 0,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.0,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 10,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {}
+    },
+    "held.parameter_trial": {
+      "known_rows": 0,
+      "known_correct": 0,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.0,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 10,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {}
+    },
+    "held.persist_change": {
+      "known_rows": 0,
+      "known_correct": 0,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.0,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 10,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {}
+    },
+    "held.production_run": {
+      "known_rows": 40,
+      "known_correct": 19,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.475,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 0,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {
+        "en": 0.6,
+        "zh": 0.35
+      }
+    },
+    "held.projected_next": {
+      "known_rows": 0,
+      "known_correct": 0,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.0,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 10,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {}
+    },
+    "held.retired_program": {
+      "known_rows": 0,
+      "known_correct": 0,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.0,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 10,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {}
+    },
+    "held.retroactive_settings": {
+      "known_rows": 0,
+      "known_correct": 0,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.0,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 10,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {}
+    },
+    "held.routine_listing": {
+      "known_rows": 40,
+      "known_correct": 17,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.425,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 0,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {
+        "en": 0.5,
+        "zh": 0.35
+      }
+    },
+    "held.signed_ledger_gap": {
+      "known_rows": 40,
+      "known_correct": 13,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.325,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 0,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {
+        "en": 0.35,
+        "zh": 0.3
+      }
+    },
+    "held.synthetic_input": {
+      "known_rows": 0,
+      "known_correct": 0,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.0,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 10,
+      "ood_accepted": 2,
+      "ood_acceptance_rate": 0.2,
+      "language_known_correct_rates": {}
+    },
+    "held.unregistered_transform": {
+      "known_rows": 0,
+      "known_correct": 0,
+      "known_wrong_accepted": 0,
+      "known_correct_rate": 0.0,
+      "known_wrong_rate": 0.0,
+      "ood_rows": 10,
+      "ood_accepted": 0,
+      "ood_acceptance_rate": 0.0,
+      "language_known_correct_rates": {}
+    }
+  },
+  "strict_original_owner_resolution": {
+    "known_alias_rows": 40,
+    "known_alias_correct_owner": 0,
+    "known_alias_wrong_owner": 0,
+    "ambiguous_or_unknown_rows": 40,
+    "ambiguous_or_unknown_accepted": 0,
+    "errors": {
+      "invalid max cells": 80
+    }
+  },
+  "uniform_budget_diagnostic_owner_resolution": {
+    "known_alias_rows": 40,
+    "known_alias_correct_owner": 40,
+    "known_alias_wrong_owner": 0,
+    "ambiguous_or_unknown_rows": 40,
+    "ambiguous_or_unknown_accepted": 0,
+    "errors": {
+      "unknown-or-ambiguous-entity": 30,
+      "ambiguous-entity-alias": 10
+    }
+  },
+  "diagnostic_known_alias_complete_plan": {
+    "rows": 40,
+    "correct_operation_and_owner": 11
+  },
+  "native_fixture_execution": {
+    "rows": 440,
+    "executed": 0,
+    "status": "fixture-incompatible",
+    "reason": "Author semantic and procedure fixture fields do not match native V1 value contract; this run measures intent/address only. Real native write/read tests are separate."
+  },
+  "intent_criteria_met": false,
+  "complete_original_protocol_passed": false,
+  "head_fit_calls": 0,
+  "parameter_or_policy_changes": 0,
+  "wall_seconds_including_load": 3.786307893009507,
+  "cpu_seconds_including_load": 3.78300729,
+  "population_risk_established": false,
+  "qualification": "Fixed authored intent/address sample; native parameter execution and owner authority are qualified separately in real product CI."
+}

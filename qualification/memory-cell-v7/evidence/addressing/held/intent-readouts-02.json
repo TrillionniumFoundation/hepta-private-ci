@@ -1,0 +1,1502 @@
+[
+  {
+    "id": "held-procedure-zh-001",
+    "text": "检修员想查{entity}留存的程序清单，请调阅内容。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "检修员想查entity留存的程序清单,请调阅内容。",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.672328024821461,
+      "margin": 0.3629312677012719,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.672328024821461,
+      "margin": 0.3629312677012719,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-002",
+    "text": "请将{entity}绑定的现行运算步骤原样读出。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "请将entity绑定的现行运算步骤原样读出。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5326142074847232,
+      "margin": 0.2606449698856708,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5326142074847232,
+      "margin": 0.2606449698856708,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-003",
+    "text": "移交文件要附上{entity}已登记的那份规则定义。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "移交文件要附上entity已登记的那份规则定义。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.814792924036749,
+      "margin": 0.6626219169017366,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.814792924036749,
+      "margin": 0.6626219169017366,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-004",
+    "text": "{entity}的处理脚本现在存成什么内容？",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "entity的处理脚本现在存成什么内容?",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.846950810077235,
+      "margin": 0.6955746783181099,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.846950810077235,
+      "margin": 0.6955746783181099,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "procedure",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-005",
+    "text": "调阅{entity}留档的计算规程正文。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "调阅entity留档的计算规程正文。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.6311391947741573,
+      "margin": 0.41474905004281054,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.6311391947741573,
+      "margin": 0.41474905004281054,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-006",
+    "text": "请给我{entity}现存规则程序的完整文本。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "请给我entity现存规则程序的完整文本。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.6457662708210247,
+      "margin": 0.3404847241445557,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.6457662708210247,
+      "margin": 0.3404847241445557,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-007",
+    "text": "我要核验{entity}的流程登记，读出已保存的步骤列表。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "我要核验entity的流程登记,读出已保存的步骤列表。",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.8576363916858321,
+      "margin": 0.743642920854625,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.8576363916858321,
+      "margin": 0.743642920854625,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "procedure",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-008",
+    "text": "{entity}这份已存程序，请展示其定义。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "entity这份已存程序,请展示其定义。",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.848215737296104,
+      "margin": 0.6996258697152195,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.848215737296104,
+      "margin": 0.6996258697152195,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "procedure",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-009",
+    "text": "把{entity}登记的运算流程内容贴出来。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "把entity登记的运算流程内容贴出来。",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.4265451470478142,
+      "margin": 0.048972862919532956,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.4265451470478142,
+      "margin": 0.048972862919532956,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-010",
+    "text": "请翻到{entity}规则档案的现行版本，读取正文。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "请翻到entity规则档案的现行版本,读取正文。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7864960052913594,
+      "margin": 0.7095790234073203,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7864960052913594,
+      "margin": 0.7095790234073203,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-011",
+    "text": "维修手册需要引用{entity}已有的处理程序。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "维修手册需要引用entity已有的处理程序。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7285498886389999,
+      "margin": 0.5200864452611422,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7285498886389999,
+      "margin": 0.5200864452611422,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-012",
+    "text": "{entity}现在保留了哪套计算步骤？展示存下来的内容。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "entity现在保留了哪套计算步骤?展示存下来的内容。",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.4677320913434439,
+      "margin": 0.16770806768318242,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.4677320913434439,
+      "margin": 0.16770806768318242,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-013",
+    "text": "请取{entity}所关联的已存规则说明全文。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "请取entity所关联的已存规则说明全文。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5203629533877118,
+      "margin": 0.20980455596268682,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5203629533877118,
+      "margin": 0.20980455596268682,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-014",
+    "text": "查看{entity}目前的程序记录，返回它保存的指令序列。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "查看entity目前的程序记录,返回它保存的指令序列。",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.7130635894042502,
+      "margin": 0.5419325712931312,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.7130635894042502,
+      "margin": 0.5419325712931312,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "procedure",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-015",
+    "text": "交接检查要核对{entity}已有的规则文本。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "交接检查要核对entity已有的规则文本。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7775195488338755,
+      "margin": 0.6860476115536427,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7775195488338755,
+      "margin": 0.6860476115536427,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-016",
+    "text": "读出{entity}运算程序档案中的现行定义。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "读出entity运算程序档案中的现行定义。",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.822178757152033,
+      "margin": 0.661205813725934,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.822178757152033,
+      "margin": 0.661205813725934,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "procedure",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-017",
+    "text": "{entity}已登记的处理步骤清单是什么？",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "entity已登记的处理步骤清单是什么?",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.9599979974599869,
+      "margin": 0.9206434560666381,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.9599979974599869,
+      "margin": 0.9206434560666381,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "procedure",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-018",
+    "text": "我想查{entity}现有程序的内容，请提供完整保存版本。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "我想查entity现有程序的内容,请提供完整保存版本。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.806014907483482,
+      "margin": 0.6877899551539922,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.806014907483482,
+      "margin": 0.6877899551539922,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-019",
+    "text": "请读取{entity}留存的那份处理方案程序。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "请读取entity留存的那份处理方案程序。",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.8695683869632272,
+      "margin": 0.7647343239488884,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.8695683869632272,
+      "margin": 0.7647343239488884,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "procedure",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-zh-020",
+    "text": "为核验流程，调取{entity}当前存档的规则序列。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "held.routine_listing",
+    "normalized_text": "为核验流程,调取entity当前存档的规则序列。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5834389576607816,
+      "margin": 0.25885993611341357,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5834389576607816,
+      "margin": 0.25885993611341357,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-001",
+    "text": "The technician wants to inspect the program listing kept for {entity}.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "the technician wants to inspect the program listing kept for entity.",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.9281189683919202,
+      "margin": 0.8565537328472741,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.9281189683919202,
+      "margin": 0.8565537328472741,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "procedure",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-002",
+    "text": "Read out the existing sequence of operations attached to {entity}.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "read out the existing sequence of operations attached to entity.",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.8979935008715076,
+      "margin": 0.8170096195625199,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.8979935008715076,
+      "margin": 0.8170096195625199,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "procedure",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-003",
+    "text": "The transfer file needs the rule definition already registered for {entity}.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "the transfer file needs the rule definition already registered for entity.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7007642175582207,
+      "margin": 0.44220151246223516,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7007642175582207,
+      "margin": 0.44220151246223516,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-004",
+    "text": "What contents are saved in {entity}'s processing script?",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "what contents are saved in entity's processing script?",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.8428974281930046,
+      "margin": 0.7267146922467637,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.8428974281930046,
+      "margin": 0.7267146922467637,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "procedure",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-005",
+    "text": "Open the body of the calculation routine archived under {entity}.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "open the body of the calculation routine archived under entity.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7442570096844092,
+      "margin": 0.501008065486328,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7442570096844092,
+      "margin": 0.501008065486328,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-006",
+    "text": "Give me the full text of {entity}'s stored rule program.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "give me the full text of entity's stored rule program.",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.8534724095790941,
+      "margin": 0.7227773877969209,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.8534724095790941,
+      "margin": 0.7227773877969209,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "procedure",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-007",
+    "text": "For a procedure check, read the saved step list for {entity}.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "for a procedure check, read the saved step list for entity.",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.8638663758568786,
+      "margin": 0.729488927950392,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.8638663758568786,
+      "margin": 0.729488927950392,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "procedure",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-008",
+    "text": "Display the definition of the program kept in {entity}'s record.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "display the definition of the program kept in entity's record.",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.6539294410823833,
+      "margin": 0.3300425427980652,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.6539294410823833,
+      "margin": 0.3300425427980652,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-009",
+    "text": "Paste the contents of the computation routine registered to {entity}.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "paste the contents of the computation routine registered to entity.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.74796026161137,
+      "margin": 0.6205698122798289,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.74796026161137,
+      "margin": 0.6205698122798289,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-010",
+    "text": "Turn to the current version of {entity}'s rule record and read its contents.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "turn to the current version of entity's rule record and read its contents.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7928804031548286,
+      "margin": 0.6824033074877505,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7928804031548286,
+      "margin": 0.6824033074877505,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-011",
+    "text": "The repair manual needs a copy of the processing program already held for {entity}.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "the repair manual needs a copy of the processing program already held for entity.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7272331633798594,
+      "margin": 0.4906274905995667,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7272331633798594,
+      "margin": 0.4906274905995667,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-012",
+    "text": "Which calculation steps does {entity} retain? Show their saved definition.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "which calculation steps does entity retain? show their saved definition.",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.9446631842798028,
+      "margin": 0.9018637138534278,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.9446631842798028,
+      "margin": 0.9018637138534278,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "procedure",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-013",
+    "text": "Retrieve the entire stored rule specification associated with {entity}.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "retrieve the entire stored rule specification associated with entity.",
+    "hypothesis": {
+      "raw_operation": "semantic",
+      "score": 0.7009705286290636,
+      "margin": 0.4940003355026843,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "semantic",
+      "score": 0.7009705286290636,
+      "margin": 0.4940003355026843,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-014",
+    "text": "Inspect {entity}'s present program record and return the instruction sequence it holds.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "inspect entity's present program record and return the instruction sequence it holds.",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.664294434682276,
+      "margin": 0.3801255450527611,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.664294434682276,
+      "margin": 0.3801255450527611,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-015",
+    "text": "The handover check needs the existing rule text for {entity}.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "the handover check needs the existing rule text for entity.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.8327282127063553,
+      "margin": 0.7109869832136875,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.8327282127063553,
+      "margin": 0.7109869832136875,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-016",
+    "text": "Read the present definition from {entity}'s computation-program file.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "read the present definition from entity's computation-program file.",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.7258043056687399,
+      "margin": 0.4667066694274707,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.7258043056687399,
+      "margin": 0.4667066694274707,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "procedure",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-017",
+    "text": "What is the registered list of processing steps for {entity}?",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "what is the registered list of processing steps for entity?",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.9640171269515356,
+      "margin": 0.9339505222348049,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.9640171269515356,
+      "margin": 0.9339505222348049,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "procedure",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-018",
+    "text": "I want to inspect {entity}'s existing program; supply the complete saved version.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "i want to inspect entity's existing program; supply the complete saved version.",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.8203830156246845,
+      "margin": 0.6519005086079361,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.8203830156246845,
+      "margin": 0.6519005086079361,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "procedure",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-019",
+    "text": "Please read the processing routine preserved for {entity}.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "please read the processing routine preserved for entity.",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.853925224053927,
+      "margin": 0.7306727533806294,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.853925224053927,
+      "margin": 0.7306727533806294,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "procedure",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-procedure-en-020",
+    "text": "For a workflow check, fetch the sequence of rules currently archived for {entity}.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "held.routine_listing",
+    "normalized_text": "for a workflow check, fetch the sequence of rules currently archived for entity.",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.6173195505664355,
+      "margin": 0.26210351199259707,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.6173195505664355,
+      "margin": 0.26210351199259707,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-001",
+    "text": "交接单的增减栏，要填{entity}末次读数减去{since}截止读数的结果。",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "交接单的增减栏,要填entity末次读数减去date截止读数的结果。",
+    "hypothesis": {
+      "raw_operation": "change",
+      "score": 0.6357424914348736,
+      "margin": 0.3306703325832085,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "change",
+      "score": 0.6357424914348736,
+      "margin": 0.3306703325832085,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-002",
+    "text": "{entity}现有末笔数比{since}当时的末笔数净多出多少？",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "entity现有末笔数比date当时的末笔数净多出多少?",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.4993346316322422,
+      "margin": 0.2790093049999399,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.4993346316322422,
+      "margin": 0.2790093049999399,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-003",
+    "text": "从{since}的封存值走到最新值，{entity}发生了多少单位的净变化？",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "从date的封存值走到最新值,entity发生了多少单位的净变化?",
+    "hypothesis": {
+      "raw_operation": "change",
+      "score": 0.8612073713456425,
+      "margin": 0.7389871135994405,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "change",
+      "score": 0.8612073713456425,
+      "margin": 0.7389871135994405,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "change",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-004",
+    "text": "给我{entity}最新数字扣去截至{since}已知数字的差。",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "给我entity最新数字扣去截至date已知数字的差。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.6291272889183936,
+      "margin": 0.37933163476907256,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.6291272889183936,
+      "margin": 0.37933163476907256,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-005",
+    "text": "维修追溯需要{entity}最近观测相对{since}时观测的有符号变动量。",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "维修追溯需要entity最近观测相对date时观测的有符号变动量。",
+    "hypothesis": {
+      "raw_operation": "change",
+      "score": 0.734629816326621,
+      "margin": 0.5092581660611428,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "change",
+      "score": 0.734629816326621,
+      "margin": 0.5092581660611428,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "change",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-006",
+    "text": "以{entity}截至{since}的末次记录为起点，算最新记录比它增减多少。",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "以entity截至date的末次记录为起点,算最新记录比它增减多少。",
+    "hypothesis": {
+      "raw_operation": "change",
+      "score": 0.6168723371836081,
+      "margin": 0.2828020121435586,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "change",
+      "score": 0.6168723371836081,
+      "margin": 0.2828020121435586,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-007",
+    "text": "请填一个数：{entity}当前末笔值减掉{since}截点那笔值。",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "请填一个数:entity当前末笔值减掉date截点那笔值。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.805063072864913,
+      "margin": 0.672439801548688,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.805063072864913,
+      "margin": 0.672439801548688,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-008",
+    "text": "{entity}从{since}档案截点到最近条目，净变动几个数值单位？",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "entity从date档案截点到最近条目,净变动几个数值单位?",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.6120156283737234,
+      "margin": 0.30783397864397744,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.6120156283737234,
+      "margin": 0.30783397864397744,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-009",
+    "text": "求{entity}最近留档数字与{since}时留档数字之间的差，方向为现在减过去。",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "求entity最近留档数字与date时留档数字之间的差,方向为现在减过去。",
+    "hypothesis": {
+      "raw_operation": "change",
+      "score": 0.5465969779693938,
+      "margin": 0.09571665136867302,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "change",
+      "score": 0.5465969779693938,
+      "margin": 0.09571665136867302,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-010",
+    "text": "{entity}末次存档数扣除截至{since}的最后存档数，剩下多少？",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "entity末次存档数扣除截至date的最后存档数,剩下多少?",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5571906144771382,
+      "margin": 0.27404903145093223,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5571906144771382,
+      "margin": 0.27404903145093223,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-011",
+    "text": "在巡检交接中，我要{entity}最新读数相对{since}基准读数的增减量。",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "在巡检交接中,我要entity最新读数相对date基准读数的增减量。",
+    "hypothesis": {
+      "raw_operation": "change",
+      "score": 0.7378539558567496,
+      "margin": 0.4925889174777225,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "change",
+      "score": 0.7378539558567496,
+      "margin": 0.4925889174777225,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "change",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-012",
+    "text": "比较{entity}现有末笔值和截至{since}的值，只返回前者减后者。",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "比较entity现有末笔值和截至date的值,只返回前者减后者。",
+    "hypothesis": {
+      "raw_operation": "change",
+      "score": 0.6284344004738798,
+      "margin": 0.28812664927970877,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "change",
+      "score": 0.6284344004738798,
+      "margin": 0.28812664927970877,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-013",
+    "text": "{entity}从{since}时已知水平到最新观测水平的带符号差是多少？",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "entity从date时已知水平到最新观测水平的带符号差是多少?",
+    "hypothesis": {
+      "raw_operation": "change",
+      "score": 0.4436276328848886,
+      "margin": 0.07507242588249874,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "change",
+      "score": 0.4436276328848886,
+      "margin": 0.07507242588249874,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-014",
+    "text": "计算{entity}最新记录减去{since}截止所对应记录的差额。",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "计算entity最新记录减去date截止所对应记录的差额。",
+    "hypothesis": {
+      "raw_operation": "change",
+      "score": 0.7995359461460867,
+      "margin": 0.6028315118923788,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "change",
+      "score": 0.7995359461460867,
+      "margin": 0.6028315118923788,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "change",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-015",
+    "text": "请给{entity}填净增减单位数，基线用截至{since}的值，终点用最新值。",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "请给entity填净增减单位数,基线用截至date的值,终点用最新值。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.6063025246421504,
+      "margin": 0.2747893525839668,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.6063025246421504,
+      "margin": 0.2747893525839668,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-016",
+    "text": "{entity}最后一项观测较{since}封存点的观测净变化多少？",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "entity最后一项观测较date封存点的观测净变化多少?",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.34169821704134024,
+      "margin": 0.03796474236784947,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.34169821704134024,
+      "margin": 0.03796474236784947,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-017",
+    "text": "做交接核算：把{entity}最新记录的值减去截至{since}的记录值。",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "做交接核算:把entity最新记录的值减去截至date的记录值。",
+    "hypothesis": {
+      "raw_operation": "change",
+      "score": 0.6806423975005738,
+      "margin": 0.38583796300506734,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "change",
+      "score": 0.6806423975005738,
+      "margin": 0.38583796300506734,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-018",
+    "text": "{entity}现在的最后存值比{since}时最后存值高或低多少单位？",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "entity现在的最后存值比date时最后存值高或低多少单位?",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.489947889328252,
+      "margin": 0.11890150329548571,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.489947889328252,
+      "margin": 0.11890150329548571,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-019",
+    "text": "请取{entity}截至{since}的值与最新值之间的后减前差值。",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "请取entity截至date的值与最新值之间的后减前差值。",
+    "hypothesis": {
+      "raw_operation": "change",
+      "score": 0.7448504158987496,
+      "margin": 0.5150387213473866,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "change",
+      "score": 0.7448504158987496,
+      "margin": 0.5150387213473866,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "change",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-change-zh-020",
+    "text": "从{since}的档案数字到现有最新数字，{entity}的净增加量是多少，减少时用负数？",
+    "operation": "change",
+    "language": "zh",
+    "family": "held.signed_ledger_gap",
+    "normalized_text": "从date的档案数字到现有最新数字,entity的净增加量是多少,减少时用负数?",
+    "hypothesis": {
+      "raw_operation": "change",
+      "score": 0.7622745270923744,
+      "margin": 0.5356500780354707,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "change",
+      "score": 0.7622745270923744,
+      "margin": 0.5356500780354707,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "change",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  }
+]

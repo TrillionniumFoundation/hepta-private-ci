@@ -1,0 +1,107 @@
+{
+  "passed": true,
+  "counts": {
+    "calibration": {
+      "total": 420,
+      "known": 180,
+      "near_domain_ood": 240,
+      "operations": {
+        "current": 30,
+        "history": 30,
+        "semantic": 30,
+        "procedure": 30,
+        "change": 30,
+        "apply": 30,
+        "reject": 240
+      },
+      "languages": {
+        "zh": 210,
+        "en": 210
+      },
+      "ood_families": {
+        "cal.relative_comparison": 20,
+        "cal.sequence_summary": 20,
+        "cal.past_attributes": 20,
+        "cal.past_rule": 20,
+        "cal.future_estimate": 20,
+        "cal.explain_cause": 20,
+        "cal.override_attribute": 20,
+        "cal.override_observation": 20,
+        "cal.new_formula": 20,
+        "cal.multiple_entities": 20,
+        "cal.record_mutation": 20,
+        "cal.combined_deliverable": 20
+      }
+    },
+    "held_intents": {
+      "total": 360,
+      "known": 240,
+      "near_domain_ood": 120,
+      "operations": {
+        "current": 40,
+        "history": 40,
+        "semantic": 40,
+        "procedure": 40,
+        "change": 40,
+        "apply": 40,
+        "reject": 120
+      },
+      "languages": {
+        "zh": 180,
+        "en": 180
+      },
+      "ood_families": {
+        "held.baseline_fraction": 10,
+        "held.multi_observation_statistics": 10,
+        "held.retroactive_settings": 10,
+        "held.retired_program": 10,
+        "held.projected_next": 10,
+        "held.driver_inference": 10,
+        "held.parameter_trial": 10,
+        "held.synthetic_input": 10,
+        "held.unregistered_transform": 10,
+        "held.cross_owner_question": 10,
+        "held.persist_change": 10,
+        "held.joined_readout": 10
+      }
+    },
+    "held_entities": {
+      "total": 80,
+      "unique_new_alias": 40,
+      "ambiguous_alias": 20,
+      "unknown_name": 20,
+      "languages": {
+        "zh": 40,
+        "en": 40
+      }
+    },
+    "held_total": 440,
+    "total_rows": 860
+  },
+  "files": {
+    "calibration_source.py": {
+      "sha256": "2d63ecea6f603dd4bf47c9a3a433587cbd1889efd7ea55cf77d5b29c2b69de2c",
+      "bytes": 29732
+    },
+    "held_source.py": {
+      "sha256": "6e3aba9c7972ee6777ae80f82277fe34c0eff3a075791dc6f1a9e557e90e28a7",
+      "bytes": 30674
+    },
+    "build_eval.py": {
+      "sha256": "9670c3611b6f67bb9cc1662a723960d4aacd5a74844269d91666a8fecf3f033d",
+      "bytes": 31413
+    },
+    "calibration.json": {
+      "sha256": "5af8c7f9eef01ecc6e8702aabc3e5caccf5ff12a92747ee319cff72f91d01ef5",
+      "bytes": 87093
+    },
+    "held.json": {
+      "sha256": "61a3dcacfe7c3695e51e3ab0e228dafe1fd46b9854189be864fc9c990ca5c7c0",
+      "bytes": 466119
+    },
+    "PROTOCOL.json": {
+      "sha256": "0974406559e1c27b592e8e25675c62d31f697afae7e9fa3a82564b74531dcb53",
+      "bytes": 15015
+    }
+  }
+}
