@@ -1,0 +1,83 @@
+{
+  "scope": "Keyring 3.6.3 public API preservation with actual Secret Service zbus 6.1 port",
+  "status": "Local compatibility evidence passed; parent workspace/platform gates pending",
+  "parent_repo_head_at_packaging": "ad394cbf0a5608c98f35811ff6d8ca1a4a220160",
+  "parent_manifest_sha256_at_packaging": "0e3fc0b7dc3ec907e02059a1bc79579077c8e5d1a0ac936b4f1bd984e94afdb4",
+  "parent_manifests_or_locks_changed_by_this_agent": false,
+  "activation_patch": {
+    "path": "keyring-zbus6-manifest.patch",
+    "sha256": "bcc3ae5370550e3cb1195070bb616bd3b722d450aea0e07129b9b50386ecebe7"
+  },
+  "production_archive": {
+    "path": "production-source.tar.gz",
+    "sha256": "020873c154c5bb7168c766b1bb024a71e8e270e1cf85f9cc8b1347b3eec34903",
+    "bytes": 106151,
+    "restored_files": 56,
+    "logical_bytes": 454082,
+    "all_restored_bytes_and_modes_verified": true
+  },
+  "production_file_manifest_sha256": "1863e54365c72475c612c58fc256657bde549e1f17258ed0715196b127d598b1",
+  "upstream_source_manifest_sha256": "cc656ed5ab620c668187e40c17d217fdcfbc95d309b00313ecb28382daccf9b9",
+  "review_diff_sha256": "fa676e9d5a729295ee7bb4ed69e93af94892d134c3c165603fa6648d62764374",
+  "original_source_entries_rehashed": 52,
+  "keyring_original_rust_files_unchanged": 15,
+  "local_resolved_zbus_family": [
+    {
+      "name": "zbus",
+      "version": "6.1.0"
+    },
+    {
+      "name": "zbus_macros",
+      "version": "6.1.0"
+    },
+    {
+      "name": "zbus_utils",
+      "version": "6.0.0"
+    }
+  ],
+  "standalone_unmaintained_family_absent_from_isolated_lock": true,
+  "final_real_service_runs": [
+    {
+      "path": "evidence/real-dbus-007/RESULT.json",
+      "sha256": "c366e7be52ff2c308a60fc0ab58efe09e0c760975cd78beb2e97b669db6995d7",
+      "commands": 18,
+      "passed": true
+    },
+    {
+      "path": "evidence/real-dbus-tokio-001/RESULT.json",
+      "sha256": "8a996d30d6c1c600f093d58779c2ae0c94b6399612651ccd97ee781b8c988b4f",
+      "commands": 10,
+      "passed": true
+    },
+    {
+      "path": "evidence/actual-consumer-001/RESULT.json",
+      "sha256": "e73f1c198997e32b026a3eb2a68f8fc4b33af17d9e089532ddc5bc9b5a07c0e1",
+      "commands": 11,
+      "passed": true
+    }
+  ],
+  "platform_feature_graph": {
+    "path": "evidence/PLATFORM_FEATURES.json",
+    "sha256": "9ff14602533d968b4196ba217d6ab85e3dcf505ec3a144c37268fb5efec7bd4e",
+    "cross_platform_execution": false
+  },
+  "independent_peer": {
+    "path": "evidence/PEER_KEYRING_PORT.json",
+    "sha256": "2d0f32e31ffbebb0a259c4070af91e52b82ce2f5ce867cc9886e93bf158528c1"
+  },
+  "critical_preserved_boundaries": [
+    "Published default composite builder returns SsCredential; explicit composite implementation tested separately",
+    "Optional kernel persistent register is EOPNOTSUPP here; real native session cache and Secret Service tested",
+    "GNOME content-type and schema effects matched unchanged libdbus client",
+    "real-dbus-006 invalidated and retained; final runners freeze binary bytes",
+    "Earlier real-dbus-007 compilation lacks pre-build source binding; later builds include it",
+    "Foreign secret-service low-level payload types change with zbus 6; keyring application API remains intact"
+  ],
+  "pending_parent_gates": [
+    "Integrate source patches and resolve coherent Cargo.lock without advisory ignores",
+    "just bazel-lock-update, lock drift and explicit platform/runtime feature closure review",
+    "Linux/macOS/Windows compilation and applicable first-party keyring, login, secrets and OAuth tests through just test",
+    "Unchanged full-workspace cargo-deny/advisory policy",
+    "Final parent-owned fix/fmt after required tests"
+  ]
+}
