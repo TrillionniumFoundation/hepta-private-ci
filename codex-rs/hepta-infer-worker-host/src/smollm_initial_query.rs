@@ -1,5 +1,5 @@
 //! Initial-only query consumption by the original selected material/session owner.
-//! Observations are historical; this adds no Agentd route or evaluated admission.
+//! Observations are historical and cannot establish evaluated admission.
 use super::*;
 use crate::smollm_neural_read::SmolLmMeasuredForwardV1;
 use std::time::Duration;
@@ -7,8 +7,8 @@ use std::time::Duration;
 // Only this original owner module constructs this same-port borrowed permit.
 // It cannot be serialized, cloned, extracted or made from receipt/DTO fields.
 pub(crate) struct InitialReadPermitV1<'a> {
-    port: &'a SmolLmNeuralReadPortV1,
-    selection_digest: Digest32,
+    pub(super) port: &'a SmolLmNeuralReadPortV1,
+    pub(super) selection_digest: Digest32,
 }
 
 impl InitialReadPermitV1<'_> {

@@ -318,6 +318,28 @@ impl AgentdConfig {
         self.cognitive_ranker.clone()
     }
 
+    /// Attach the original selected genesis model to ordinary cognitive reads.
+    /// This distinct initial-only route preserves CURRENT/selector revalidation
+    /// and cannot satisfy the evaluated-child product qualification contract.
+    pub fn attach_selected_initial_neural_cognitive_bootstrap(
+        &mut self,
+        input: crate::InitialNeuralCognitiveBootstrapV2,
+    ) -> Result<(), AgentdError> {
+        if self.cognitive_ranker.is_some() {
+            return Err(AgentdError::Invalid(
+                "cognitive ranker already configured".to_owned(),
+            ));
+        }
+        let ranker = crate::PinnedCognitiveRanker::load_selected_initial_neural(
+            self.identity.agent_id.clone(),
+            self.identity.spawn_generation,
+            input,
+        )
+        .map_err(AgentdError::Invalid)?;
+        self.cognitive_ranker = Some(std::sync::Arc::new(ranker));
+        Ok(())
+    }
+
     /// Reconstruct independent selection from complete original owner inputs,
     /// then attach its exact published model to the ordinary cognitive request
     /// path. Missing or invalid inputs fail installation; no default is inferred.
