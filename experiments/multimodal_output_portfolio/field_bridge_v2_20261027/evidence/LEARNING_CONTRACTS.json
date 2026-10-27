@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.field-bridge.v2.learning-contracts.1",
+  "status": "pass",
+  "scope": "seed17, four existing validation source pairs at offset700; no efficacy selection",
+  "source_ids": [
+    [
+      "mnist:train:23160:f100cbe3d8b7889ce05ed5e65c50637d1c4418b99ead9977911ed01d6bbff855",
+      "mnist:train:14728:b0615e6fb9d018c99e140040e10313682602cc0e5e62a7fbfa8e733327f3d379"
+    ],
+    [
+      "mnist:train:29060:58882dc8e24d42cb18593e28844d069b48ee887e0661a7f09fb1990eb0a179b4",
+      "mnist:train:51736:c17b50f9d01f7a5ce3dc3db5a4c5b7fa76d33f3f793abae440bd8a8a123a0166"
+    ],
+    [
+      "mnist:train:39525:65d4c30a6525b96bfe69589e0f1d3e68df8de475c2ea0d267d0f4ee804972e61",
+      "mnist:train:53165:62ca0f7b287dcf6447afb93a7c1ad1fa64ba2c4ae880f294e356142bd7f11711"
+    ],
+    [
+      "mnist:train:55350:e354968b172234eb42a09120238a05c5ab828fbeb67678ae4efdc9f74e0845b4",
+      "mnist:train:36354:74c03644a9b8c6c4f12d2a2cd1a844f83e5b92c84e7b21a0bfe980e00c586fb8"
+    ]
+  ],
+  "audit_observer_loaded": false,
+  "test_retention_scored": false,
+  "recipes": [
+    {
+      "recipe": "decoder_r4_36_lr005",
+      "all_adapter_factors_changed": {
+        "pixel_decoder.0.down": true,
+        "pixel_decoder.0.up": true,
+        "text_initial.down": true,
+        "text_initial.up": true,
+        "text_projection.down": true,
+        "text_projection.up": true
+      },
+      "complete_optimizer_clone_continuation_exact": true,
+      "serialized_optimizer_continuation_exact": true,
+      "discarded_momentum_negative_control_detected": true,
+      "zero_action_preserves_parameters_momentum_and_hard_outputs": true,
+      "base_parameters_preserved": true,
+      "all_five_actions_raw_png_utf8_parity": true,
+      "maximum_value_discrepancy": 0.0
+    },
+    {
+      "recipe": "upstream_r8_144_lr02",
+      "all_adapter_factors_changed": {
+        "fuse.0.down": true,
+        "fuse.0.up": true,
+        "initial_image.down": true,
+        "initial_image.up": true,
+        "initial_text.down": true,
+        "initial_text.up": true,
+        "coupling_cell.0.down": true,
+        "coupling_cell.0.up": true,
+        "pixel_decoder.0.down": true,
+        "pixel_decoder.0.up": true,
+        "text_initial.down": true,
+        "text_initial.up": true,
+        "text_projection.down": true,
+        "text_projection.up": true,
+        "digit_head.down": true,
+        "digit_head.up": true
+      },
+      "complete_optimizer_clone_continuation_exact": true,
+      "serialized_optimizer_continuation_exact": true,
+      "discarded_momentum_negative_control_detected": true,
+      "zero_action_preserves_parameters_momentum_and_hard_outputs": true,
+      "base_parameters_preserved": true,
+      "all_five_actions_raw_png_utf8_parity": true,
+      "maximum_value_discrepancy": 0.0
+    }
+  ],
+  "source_sha256": "f796bfe9cb0e96087c377af37c6c798247ba2b778c2a6db805ed26f83c3b7341",
+  "protocol_sha256": "0d208d2fef23bd12952587d7d27adfce3b5fd74f51a52847bb3fc1b610365905"
+}
