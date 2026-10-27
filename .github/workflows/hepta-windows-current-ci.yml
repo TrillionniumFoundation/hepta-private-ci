@@ -67,6 +67,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -m unittest discover -s .github/scripts -p test_windows_real_test_helpers.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m unittest discover -s .github/scripts -p test_windows_native_verifier_controls.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build the real native sandbox helper targets
         id: real_helpers
         shell: pwsh
@@ -95,6 +97,13 @@ jobs:
           $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "hepta-windows-current-target"
           python .github/scripts/windows_private_artifacts.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --output "$env:RUNNER_TEMP/hepta-windows-private-artifacts"
           exit $LASTEXITCODE
+      - name: Run independent real owned-process and native verifier controls
+        if: always()
+        shell: pwsh
+        run: |
+          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "hepta-windows-current-target"
+          python .github/scripts/windows_native_verifier_controls.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --output "$env:RUNNER_TEMP/hepta-windows-native-verifier-controls"
+          exit $LASTEXITCODE
       - name: Verify original helper binaries and compiler stayed fixed after all scopes
         if: always()
         shell: pwsh
@@ -112,5 +121,6 @@ jobs:
             ${{ runner.temp }}/hepta-windows-final-safety/
             ${{ runner.temp }}/hepta-windows-private-artifacts/
             ${{ runner.temp }}/hepta-windows-real-test-helpers/
+            ${{ runner.temp }}/hepta-windows-native-verifier-controls/
           if-no-files-found: error
           retention-days: 14
