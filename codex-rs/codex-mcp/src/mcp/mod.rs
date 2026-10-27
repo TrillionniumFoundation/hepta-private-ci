@@ -314,6 +314,16 @@ pub fn effective_mcp_servers_from_configured(
     let mut servers = configured_servers
         .into_iter()
         .map(|(name, mut server)| {
+            if !server.is_local_environment()
+                && let McpServerTransportConfig::Stdio { cwd, .. } = &mut server.transport
+                && cwd.is_none()
+            {
+                *cwd = config
+                    .environment_cwds
+                    .get(&server.environment_id)
+                    .cloned()
+                    .map(Into::into);
+            }
             match server.auth.clone() {
                 McpServerAuth::ChatGpt => {
                     if !is_trusted_chatgpt_mcp_server(&server.transport, &config.chatgpt_base_url) {
