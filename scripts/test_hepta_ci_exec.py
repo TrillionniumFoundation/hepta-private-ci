@@ -280,6 +280,10 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
             RUNNER.with_name("hepta_ci_module_paths.py"),
             self.repo / "scripts/hepta_ci_module_paths.py",
         )
+        shutil.copyfile(
+            RUNNER.with_name("hepta_ci_native_binaries.py"),
+            self.repo / "scripts/hepta_ci_native_binaries.py",
+        )
         (self.repo / "codex-rs/Cargo.toml").write_text(
             '[workspace]\nmembers=["one", "two", "unrelated"]\n'
         )
@@ -308,6 +312,12 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
                 "import json, os, pathlib, sys\n"
                 "with open(os.environ['CALLS'], 'a') as stream:\n"
                 "    stream.write(json.dumps(sys.argv) + '\\n')\n"
+                "if pathlib.Path(sys.argv[0]).name == 'just' and sys.argv[1:2] == ['test-planned-binaries'] and os.environ.get('FAIL_TOOL') != 'just':\n"
+                "    target = pathlib.Path(os.environ['RUNNER_TEMP']).resolve()\n"
+                "    binary = pathlib.Path(sys.argv[0]).resolve()\n"
+                "    inventory = {'rust-build-meta': {'target-directory': str(target), 'non-test-binaries': {}},\n"
+                "                 'rust-binaries': {'fixture-test': {'binary-path': str(binary)}}}\n"
+                "    pathlib.Path(sys.argv[2]).write_text(json.dumps(inventory))\n"
                 "raise SystemExit(17 if os.environ.get('FAIL_TOOL') == pathlib.Path(sys.argv[0]).name else 0)\n"
             )
             command.chmod(0o755)
@@ -402,8 +412,12 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
         )
         self.assertEqual(result.returncode, 17, result.stderr)
         folder = self.root / "hepta-command-records"
-        test = json.loads((folder / "owner-test.json").read_text())
+        test = json.loads((folder / "owner-test.json.bindings.json").read_text())
+        build = json.loads((folder / "owner-test.json.build.json").read_text())
         self.assertEqual(test["status"], "failed")
+        self.assertEqual(test["build_exit_code"], 17)
+        self.assertEqual(build["command_exit_code"], 17)
+        self.assertFalse((folder / "owner-test.json").exists())
         self.assertFalse((folder / "clippy.json").exists())
 
 
