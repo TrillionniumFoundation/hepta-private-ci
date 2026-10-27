@@ -1,0 +1,52 @@
+{
+  "auditor_source_sha256": "ada35145fb075a1d5f1c1fc9a05d2f2768f83af5f5b554c7d0c265aa2acf7757",
+  "corruption_or_boundary_rejections": 23,
+  "models_or_observers_loaded": false,
+  "native_library_sha256": "253fb6a5d2115283148f99c83007363aa09ef3c66dcaf51e172563b0891d2a00",
+  "passed": true,
+  "registered_source_roles_opened": false,
+  "schema": "hepta.field-bridge.v3.native-session-audit-contract.1",
+  "source_sha256": "7d9d81a7f759ffa818b1f858e3b00682540a2c36f4ed0bcdfc40f4e208e14229",
+  "synthetic_exact_replay": {
+    "decision_coverage_sha256": "ff072f27cd4466e982576d49a467a0765e2a5620732eb79e000af5c7cb7d5e5f",
+    "journal_records": 14,
+    "per_arm": {
+      "native": {
+        "decisions": 9,
+        "feedback_packets": 5,
+        "recorded_native_ns": 166412,
+        "round_0_decisions": 4,
+        "round_1_decisions": 3,
+        "round_2_decisions": 2,
+        "selection_batches": 3,
+        "sessions": 4,
+        "sessions_with_2_ticks": 1,
+        "sessions_with_4_ticks": 1,
+        "sessions_with_6_ticks": 2,
+        "ticks": 18
+      },
+      "reset_native": {
+        "decisions": 9,
+        "feedback_packets": 5,
+        "recorded_native_ns": 145557,
+        "reset_calls": 5,
+        "round_0_decisions": 4,
+        "round_1_decisions": 3,
+        "round_2_decisions": 2,
+        "selection_batches": 3,
+        "sessions": 4,
+        "sessions_with_2_ticks": 1,
+        "sessions_with_4_ticks": 1,
+        "sessions_with_6_ticks": 2,
+        "ticks": 18
+      }
+    },
+    "stable_tick_ledger_sha256": "9043dee2f91167ba008c201cef5ed4a1d2b57d950706eafa539a906d15020236",
+    "verification_bridge_roundtrip_ns": 551732,
+    "verification_native_ns": 334132,
+    "verification_native_ticks": 36
+  },
+  "synthetic_only": true,
+  "three_seed_inventory_fixture_verification_ticks": 108,
+  "wall_ns": 313532171
+}
