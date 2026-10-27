@@ -1,0 +1,74 @@
+{
+  "schema": "hepta-neural-provenance-ci-repair-v1",
+  "failed_source": "6e5127ec2d128956b1770a64fd97ade6eb59426a",
+  "run_id": 40494601404,
+  "job_id": 122156744033,
+  "archive_sha256": "364419e8c9afef6e5cfeedf4c45e7ea0b884df9bade8dd7588d90000ebe86fb9",
+  "archive_bytes": 32769,
+  "failure": "E0432 undeclared pretty_assertions test import",
+  "tests_executed": 0,
+  "model_steps": "SKIPPED: scoped Rust test compilation did not produce a model test executable",
+  "model_target_detector_changed": false,
+  "required_outcomes_gate_changed": false,
+  "local_commands": [
+    {
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib"
+      ],
+      "executed": false,
+      "error": "[Errno 2] No such file or directory: 'just'"
+    },
+    {
+      "argv": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host"
+      ],
+      "executed": false,
+      "error": "[Errno 2] No such file or directory: 'just'"
+    },
+    {
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "executed": false,
+      "error": "[Errno 2] No such file or directory: 'just'"
+    },
+    {
+      "argv": [
+        "/workspace/scratch/301262829a43/pon-build-inputs/unpacked/toolchain/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "skip_children=true",
+        "codex-rs/hepta-agent-protocol/src/cognitive_execution_tests.rs",
+        "codex-rs/hepta-agent-protocol/src/lib.rs",
+        "codex-rs/hepta-agentd/src/client.rs",
+        "codex-rs/hepta-agentd/src/cognitive_execution_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+        "codex-rs/hepta-agentd/src/state_control.rs",
+        "codex-rs/hepta-infer-worker-host/src/smollm_neural_environment_tests.rs"
+      ],
+      "exit_code": 0,
+      "stderr": "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\nWarning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\nWarning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\nWarning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\nWarning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\nWarning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\nWarning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\n",
+      "scope": "Rust 1.95 syntax and formatting precheck only; not the required fixed Rust 1.96 native CI gate"
+    }
+  ],
+  "native_tests_passed": false,
+  "ordinary_restart_StateLocked": "independent prior f75 failure; not repaired by this compile/lint change",
+  "product_qualification": false
+}

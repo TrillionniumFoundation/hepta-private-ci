@@ -8,10 +8,7 @@ fn ambient_python_injection_cannot_enter_supervisor_or_descendant() {
     let marker = directory.path().join("ambient-imported");
     fs::write(
         directory.path().join("sitecustomize.py"),
-        format!(
-            "from pathlib import Path\nPath({:?}).write_text('injected')\n",
-            marker
-        ),
+        format!("from pathlib import Path\nPath({marker:?}).write_text('injected')\n"),
     )
     .unwrap();
     let script = directory.path().join("trusted-script.py");
@@ -30,7 +27,7 @@ fn ambient_python_injection_cannot_enter_supervisor_or_descendant() {
         .env("PYTHONUSERBASE", directory.path());
     configure_python_environment(&mut command);
     let output = command.arg(script).output().unwrap();
-    assert!(output.status.success(), "{:?}", output);
+    assert!(output.status.success(), "{output:?}");
     assert_eq!(
         String::from_utf8(output.stdout).unwrap(),
         "clean descendant\n"
