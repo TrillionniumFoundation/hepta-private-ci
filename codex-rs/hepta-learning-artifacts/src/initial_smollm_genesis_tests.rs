@@ -1,6 +1,9 @@
 //! Real original CURRENT/selector factories and durable temporary bytes.
 //! Fixed test signers establish no production identity, efficacy or loading.
 
+#[path = "selected_public_initial_smollm_tests.rs"]
+mod public_initial_tests;
+
 use super::*;
 use crate::test_support::FixtureError;
 use crate::test_support::FixtureValue;

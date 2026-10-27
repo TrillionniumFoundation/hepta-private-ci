@@ -1,5 +1,6 @@
 //! Initial-only physical load under the original selection/CURRENT/effect owners.
-//! This owner exposes neither a config/session/port conversion nor a task route.
+//! Its explicit initial-only Agentd adapter preserves the original owner checks
+//! and cannot convert this material into evaluated-child admission.
 
 use super::*;
 use crate::smollm_neural_read::SmolLmMeasuredLoadV1;
@@ -7,11 +8,19 @@ use crate::smollm_neural_read::runtime_identity::SmolLmRuntimeIdentityV1;
 use codex_hepta_agentd::AgentdIdentity;
 use codex_hepta_learning_artifacts::ArtifactOwnerCurrentReaderV1;
 use codex_hepta_learning_artifacts::SelectedInitialSmolLmMaterialV1;
+use codex_hepta_learning_artifacts::SelectedPublicInitialSmolLmMaterialV2;
+
+#[path = "smollm_initial_material.rs"]
+mod material;
+use material::InitialMaterial;
 
 #[path = "smollm_initial_query.rs"]
 mod query;
 pub(crate) use query::InitialReadPermitV1;
 pub use query::InitialSelectedReadObservationV1;
+#[path = "smollm_initial_agentd.rs"]
+mod agentd;
+pub use agentd::prepare_public_initial_smollm_agentd_v2;
 
 /// Original host-owned paths, bounded resources and executable expectations.
 /// No selector, issuer key, evaluation evidence or observed root is supplied.
@@ -29,8 +38,8 @@ pub struct SmolLmInitialHostInputsV1 {
 #[must_use = "retain the original owner and explicitly observe shutdown"]
 pub struct PreparedSelectedInitialSmolLmV1 {
     config: AgentdConfig,
-    material: Option<SelectedInitialSmolLmMaterialV1>,
-    current: ArtifactOwnerCurrentReaderV1,
+    material: Option<InitialMaterial>,
+    current: Arc<ArtifactOwnerCurrentReaderV1>,
     session: SmolLmCognitiveSessionV1,
     association: Option<(Digest32, String, String)>,
     cleanup: Option<tokio::task::JoinHandle<Result<(), String>>>,
@@ -142,8 +151,8 @@ impl PreparedSelectedInitialSmolLmV1 {
             .as_ref()
             .ok_or("initial session is closed")?;
         let (result, association) = port.with_measurements(|load, _| {
-            let fixed = load.fixed_initial_backbone()?;
-            let actual = fixed.measured();
+            material.validate_load(load)?;
+            let actual = load;
             let (request, reservation) = actual
                 .control_load_ids()
                 .ok_or("initial load was not settled")?;
@@ -222,6 +231,33 @@ pub async fn prepare_selected_initial_smollm_v1(
     current: ArtifactOwnerCurrentReaderV1,
     inputs: SmolLmInitialHostInputsV1,
 ) -> Result<PreparedSelectedInitialSmolLmV1, InitialSmolLmPreparationErrorV1> {
+    prepare_selected_initial_smollm(
+        config,
+        InitialMaterial::Historical(material),
+        current,
+        inputs,
+    )
+    .await
+}
+
+/// Public V2 genesis uses the same physical lifecycle and independent owners.
+/// Its distinct material type cannot satisfy the historical V1 entry point.
+pub async fn prepare_public_initial_smollm_v2(
+    config: AgentdConfig,
+    material: SelectedPublicInitialSmolLmMaterialV2,
+    current: ArtifactOwnerCurrentReaderV1,
+    inputs: SmolLmInitialHostInputsV1,
+) -> Result<PreparedSelectedInitialSmolLmV1, InitialSmolLmPreparationErrorV1> {
+    prepare_selected_initial_smollm(config, InitialMaterial::Public(material), current, inputs)
+        .await
+}
+
+async fn prepare_selected_initial_smollm(
+    config: AgentdConfig,
+    material: InitialMaterial,
+    current: ArtifactOwnerCurrentReaderV1,
+    inputs: SmolLmInitialHostInputsV1,
+) -> Result<PreparedSelectedInitialSmolLmV1, InitialSmolLmPreparationErrorV1> {
     let runtime = tokio::runtime::Handle::try_current().map_err(|e| e.to_string())?;
     let worker_runtime = runtime.clone();
     let cancellation = CancellationToken::new();
@@ -246,13 +282,14 @@ pub async fn prepare_selected_initial_smollm_v1(
 
 fn prepare_initial(
     config: AgentdConfig,
-    mut material: SelectedInitialSmolLmMaterialV1,
+    material: impl Into<InitialMaterial>,
     current: ArtifactOwnerCurrentReaderV1,
     inputs: SmolLmInitialHostInputsV1,
     runtime: tokio::runtime::Handle,
     cancellation: CancellationToken,
     mut clock: impl FnMut() -> Result<u64, String>,
 ) -> Result<PreparedSelectedInitialSmolLmV1, InitialSmolLmPreparationErrorV1> {
+    let mut material = material.into();
     if cancellation.is_cancelled() {
         return Err("initial preparation cancelled".to_owned().into());
     }
@@ -325,7 +362,7 @@ fn prepare_initial(
     let mut prepared = PreparedSelectedInitialSmolLmV1 {
         config,
         material: Some(material),
-        current,
+        current: Arc::new(current),
         session: SmolLmCognitiveSessionV1 {
             port: Some(port),
             runtime,

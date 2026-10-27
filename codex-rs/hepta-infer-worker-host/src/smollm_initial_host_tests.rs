@@ -41,6 +41,18 @@ struct Fixture {
 
 impl Fixture {
     fn new(root: PathBuf, bytes: &[u8]) -> TestResult<Self> {
+        Self::with_profile(
+            root,
+            bytes,
+            "561414aec8b51f2a18ae3948dd44a321f924b1e12961a8e0139774b42387fcf0".parse()?,
+        )
+    }
+
+    fn with_profile(
+        root: PathBuf,
+        bytes: &[u8],
+        compatibility_digest: Digest32,
+    ) -> TestResult<Self> {
         fs::create_dir(&root)?;
         let now = initial_now_seconds()?;
         let owner_key = SigningKey::from_bytes(&[71; 32]);
@@ -109,8 +121,7 @@ impl Fixture {
             runtime_tuple_digest: digest("original-f32-runtime"),
             device_profile_digest: digest("cpu"),
             objective_class_digest: digest("initial-material-without-efficacy"),
-            compatibility_digest:
-                "561414aec8b51f2a18ae3948dd44a321f924b1e12961a8e0139774b42387fcf0".parse()?,
+            compatibility_digest,
             schema_profile_digest: digest("canonical-positive-zero-v1"),
             normalization_digest: digest("positive-zero"),
             producer_id: id("initial-material-producer"),
@@ -208,6 +219,55 @@ impl Fixture {
         SelectedInitialSmolLmMaterialV1,
         ArtifactOwnerCurrentReaderV1,
     )> {
+        self.select(
+            revoked_at,
+            VerifiedArtifactSelectionV1::load_initial_smollm_material,
+        )
+    }
+
+    fn select<T>(
+        &self,
+        revoked_at: Option<u64>,
+        load: impl FnOnce(
+            VerifiedArtifactSelectionV1,
+            File,
+            File,
+            VerifiedCurrentRegistryViewV1,
+            u64,
+        ) -> Result<T, ArtifactSelectionError>,
+    ) -> TestResult<(T, ArtifactOwnerCurrentReaderV1)> {
+        self.select_at(revoked_at, self.now, self.now + 300, load)
+    }
+
+    fn public_material(
+        &self,
+    ) -> TestResult<(
+        SelectedPublicInitialSmolLmMaterialV2,
+        ArtifactOwnerCurrentReaderV1,
+    )> {
+        // A fresh operation obtains a newly signed bounded selection. Existing
+        // capsules retain their immutable original window and are never reset.
+        self.select_at(
+            /*revoked_at*/ None,
+            initial_now_seconds()?,
+            self.now + 3600,
+            VerifiedArtifactSelectionV1::load_public_initial_smollm_material_v2,
+        )
+    }
+
+    fn select_at<T>(
+        &self,
+        revoked_at: Option<u64>,
+        issued_at: u64,
+        selector_expires_at: u64,
+        load: impl FnOnce(
+            VerifiedArtifactSelectionV1,
+            File,
+            File,
+            VerifiedCurrentRegistryViewV1,
+            u64,
+        ) -> Result<T, ArtifactSelectionError>,
+    ) -> TestResult<(T, ArtifactOwnerCurrentReaderV1)> {
         let reader = ArtifactOwnerCurrentReaderV1::open(
             self.root.join("artifacts"),
             self.trust.clone(),
@@ -220,7 +280,7 @@ impl Fixture {
             .manifest(&id("selected-initial-zero"))
             .unwrap();
         let mut signed = SignedArtifactSelectionV1 {
-            selection_id: id("independent-initial-selection"),
+            selection_id: id(&format!("independent-initial-selection-{issued_at}")),
             artifact_id: m.artifact_id.clone(),
             registry_id: self.trust.registry_id.clone(),
             withdrawal_scope_digest: self.trust.withdrawal_scope_digest,
@@ -239,8 +299,8 @@ impl Fixture {
             selector_credential_digest: digest("initial-selector-credential"),
             signing_key_digest: Digest32::of_bytes(&self.selector_key.verifying_key().to_bytes()),
             authority_epoch: 1,
-            issued_at: self.now,
-            expires_at: self.now + 180,
+            issued_at,
+            expires_at: issued_at + 180,
             signature: [0; 64],
         };
         signed.signature = self.selector_key.sign(&signed.signing_bytes()).to_bytes();
@@ -255,7 +315,7 @@ impl Fixture {
                     minimum_authority_epoch: 1,
                     maximum_authority_epoch: 9,
                     valid_from: self.now,
-                    expires_at: self.now + 300,
+                    expires_at: selector_expires_at,
                     revoked_at,
                 }],
             },
@@ -271,7 +331,8 @@ impl Fixture {
             .root
             .join("artifacts/payloads")
             .join(format!("{}-{}.bin", m.artifact_id, m.content_digest));
-        let material = selected.load_initial_smollm_material(
+        let material = load(
+            selected,
             File::open(snapshot)?,
             File::open(payload)?,
             reader.current_registry_view(initial_now_seconds()?)?,
@@ -685,3 +746,9 @@ mod positive;
 
 #[path = "smollm_initial_query_tests.rs"]
 mod initial_query;
+
+#[path = "smollm_initial_agentd_tests.rs"]
+mod agentd_tests;
+
+#[path = "smollm_public_initial_loop_tests.rs"]
+mod public_initial_loop_tests;
