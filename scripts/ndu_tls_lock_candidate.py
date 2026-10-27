@@ -24,9 +24,10 @@ from ndu_dependency_candidate_common import verify_tree
 
 INPUTS = "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation"
 PATCHES = {
-    "zip-source.patch": "8bc968c54ea49960a4c14896b48e861b68b30b653613f2b440e4ef2b32791c35",
+    "zip-source-v2.patch": "1ddee3c9014e66add790ac80ea7ed6eee195d7789c3b1a9ab67192e0ef624fa2",
     "zip-zstd-manifest.patch": "f5394874a7a1ed42890ea35dc3b4534ae518d54c34ab71d1c3a1d6357da29dd7",
     "i18n-config-manifest.patch": "74a2c048d91c795114226d676575a3b04f4766bd13fba4e83111ad953b75e4dc",
+    "i18n-config-workspace.patch": "1ca3152032af6945653a261ada9f7da5915617f187e4572c27be546b559c2430",
 }
 UPDATES = (
     ("zip", "9.1.2"),

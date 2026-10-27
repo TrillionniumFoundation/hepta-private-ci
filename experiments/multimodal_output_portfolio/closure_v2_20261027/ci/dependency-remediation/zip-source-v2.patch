@@ -1,0 +1,289 @@
+diff --git a/codex-rs/core-plugins/src/startup_sync.rs b/codex-rs/core-plugins/src/startup_sync.rs
+--- a/codex-rs/core-plugins/src/startup_sync.rs
++++ b/codex-rs/core-plugins/src/startup_sync.rs
+@@ -36,6 +36,7 @@
+ const CURATED_PLUGINS_GIT_TIMEOUT: Duration = Duration::from_secs(30);
+ const CURATED_PLUGINS_HTTP_TIMEOUT: Duration = Duration::from_secs(30);
+ const CURATED_PLUGINS_BACKUP_ARCHIVE_TIMEOUT: Duration = Duration::from_secs(30);
++const ZIP_UTF8_FILENAME_FLAG: u16 = 1 << 11;
+ // Keep this comfortably above a normal sync attempt so we do not race another Codex process.
+ const CURATED_PLUGINS_STALE_TEMP_DIR_MAX_AGE: Duration = Duration::from_secs(10 * 60);
+ #[derive(Debug, Deserialize)]
+@@ -1051,10 +1052,22 @@
+         let mut entry = archive
+             .by_index(index)
+             .map_err(|err| format!("failed to read curated plugins zip entry: {err}"))?;
++        // The reader falls back to CP437 even when the ZIP flags declare UTF-8.
++        // Reject a false declaration before using the decoded name as a path.
++        if entry.flags().as_u16() & ZIP_UTF8_FILENAME_FLAG != 0
++            && std::str::from_utf8(entry.name_raw()).is_err()
++        {
++            return Err(
++                "curated plugins zip entry declares UTF-8 but has invalid filename bytes"
++                    .to_string(),
++            );
++        }
++        let name = entry
++            .name()
++            .map_err(|err| format!("failed to read curated plugins zip entry name: {err}"))?;
+         let Some(relative_path) = entry.enclosed_name() else {
+             return Err(format!(
+-                "curated plugins zip entry `{}` escapes extraction root",
+-                entry.name()
++                "curated plugins zip entry `{name}` escapes extraction root"
+             ));
+         };
+ 
+@@ -1111,13 +1124,18 @@
+ }
+ 
+ #[cfg(unix)]
+-fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> Result<(), String> {
++fn apply_zip_permissions<R: std::io::Read + ?Sized>(
++    entry: &zip::read::ZipFile<'_, R>,
++    output_path: &Path,
++) -> Result<(), String> {
+     use std::os::unix::fs::PermissionsExt;
+ 
+     let Some(mode) = entry.unix_mode() else {
+         return Ok(());
+     };
+-    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode)).map_err(|err| {
++    // ZIP metadata is untrusted. Preserve ordinary access and executable bits,
++    // but never restore setuid, setgid, or sticky bits from an archive.
++    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode & 0o777)).map_err(|err| {
+         format!(
+             "failed to set permissions on curated plugins file {}: {err}",
+             output_path.display()
+@@ -1126,8 +1144,8 @@
+ }
+ 
+ #[cfg(not(unix))]
+-fn apply_zip_permissions(
+-    _entry: &zip::read::ZipFile<'_>,
++fn apply_zip_permissions<R: std::io::Read + ?Sized>(
++    _entry: &zip::read::ZipFile<'_, R>,
+     _output_path: &Path,
+ ) -> Result<(), String> {
+     Ok(())
+@@ -1136,3 +1154,7 @@
+ #[cfg(test)]
+ #[path = "startup_sync_tests.rs"]
+ mod tests;
++
++#[cfg(test)]
++#[path = "startup_sync_zip_tests.rs"]
++mod zip_tests;
+diff --git a/codex-rs/core-plugins/src/startup_sync_zip_tests.rs b/codex-rs/core-plugins/src/startup_sync_zip_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/core-plugins/src/startup_sync_zip_tests.rs
+@@ -0,0 +1,196 @@
++use super::extract_zipball_to_dir;
++use pretty_assertions::assert_eq;
++use std::io::Cursor;
++use std::io::Write;
++use tempfile::tempdir;
++use zip::CompressionMethod;
++#[cfg(unix)]
++use zip::ZipArchive;
++use zip::ZipWriter;
++use zip::write::SimpleFileOptions;
++
++const CONTENTS: &[u8] = b"#!/bin/sh\nprintf 'curated plugin'\n";
++
++fn zipball_with_file(name: &str, method: CompressionMethod) -> Vec<u8> {
++    let mut writer = ZipWriter::new(Cursor::new(Vec::new()));
++    let options = SimpleFileOptions::default()
++        .compression_method(method)
++        .unix_permissions(0o755);
++    writer.start_file(name, options).expect("start ZIP entry");
++    writer.write_all(CONTENTS).expect("write ZIP entry");
++    writer.finish().expect("finish ZIP archive").into_inner()
++}
++
++#[test]
++fn zipball_extraction_preserves_contents_across_compression_methods() {
++    for method in [
++        CompressionMethod::Stored,
++        CompressionMethod::Deflated,
++        CompressionMethod::Bzip2,
++        CompressionMethod::Zstd,
++        CompressionMethod::Xz,
++    ] {
++        let destination = tempdir().expect("create extraction directory");
++        let archive = zipball_with_file("archive/plugin/run.sh", method);
++
++        extract_zipball_to_dir(&archive, destination.path()).expect("extract ZIP archive");
++
++        assert_eq!(
++            std::fs::read(destination.path().join("plugin/run.sh")).expect("read plugin"),
++            CONTENTS
++        );
++    }
++}
++
++#[test]
++fn zipball_extraction_reads_lzma_entries() {
++    let destination = tempdir().expect("create extraction directory");
++    let archive = include_bytes!("../tests/fixtures/zipball_lzma.zip");
++
++    extract_zipball_to_dir(archive, destination.path()).expect("extract LZMA ZIP archive");
++
++    assert_eq!(
++        std::fs::read(destination.path().join("plugin/run.sh")).expect("read plugin"),
++        CONTENTS
++    );
++}
++
++#[cfg(unix)]
++#[test]
++fn zipball_extraction_strips_privileged_bits_and_keeps_executable_access() {
++    use std::os::unix::fs::PermissionsExt;
++
++    let destination = tempdir().expect("create extraction directory");
++    let mut archive = zipball_with_file("archive/plugin/run.sh", CompressionMethod::Stored);
++    // ZipWriter intentionally strips privileged bits. Set the external Unix
++    // attributes in the central-directory record to model an untrusted ZIP.
++    let central = archive
++        .windows(4)
++        .position(|bytes| bytes == b"PK\x01\x02")
++        .expect("find central-directory record");
++    let mode = 0o107755_u32;
++    archive[central + 38..central + 42].copy_from_slice(&(mode << 16).to_le_bytes());
++    let mut reader = ZipArchive::new(Cursor::new(&archive)).expect("reopen hostile ZIP");
++    // unix_mode() already clears privileged bits in zip 9. Verify the actual
++    // untrusted header metadata instead, then check the resulting filesystem.
++    assert_eq!(
++        reader.by_index(0).expect("read hostile ZIP entry").external_attributes() >> 16,
++        mode
++    );
++
++    extract_zipball_to_dir(&archive, destination.path()).expect("extract hostile ZIP");
++
++    let output = destination.path().join("plugin/run.sh");
++    assert_eq!(std::fs::read(&output).expect("read extracted plugin"), CONTENTS);
++    assert_eq!(
++        std::fs::metadata(&output)
++            .expect("read extracted permissions")
++            .permissions()
++            .mode()
++            & 0o7777,
++        0o755
++    );
++}
++
++#[test]
++fn zipball_extraction_rejects_paths_outside_the_destination() {
++    let parent = tempdir().expect("create parent directory");
++    let destination = parent.path().join("destination");
++    let archive = zipball_with_file("archive/../../escaped", CompressionMethod::Stored);
++
++    let error = extract_zipball_to_dir(&archive, &destination).expect_err("reject escaping path");
++
++    assert!(error.contains("escapes extraction root"));
++    assert!(!parent.path().join("escaped").exists());
++}
++
++#[test]
++fn zipball_extraction_rejects_invalid_utf8_names() {
++    let destination = tempdir().expect("create extraction directory");
++    let mut archive = zipball_with_file("archive/plugin/run.sh", CompressionMethod::Stored);
++    let central = archive
++        .windows(4)
++        .position(|bytes| bytes == b"PK\x01\x02")
++        .expect("find central-directory record");
++    let local_flags = u16::from_le_bytes(archive[6..8].try_into().expect("local ZIP flags"));
++    let central_flags = u16::from_le_bytes(
++        archive[central + 8..central + 10].try_into().expect("central ZIP flags"),
++    );
++    archive[6..8].copy_from_slice(&(local_flags | 0x800).to_le_bytes());
++    archive[central + 8..central + 10].copy_from_slice(&(central_flags | 0x800).to_le_bytes());
++    archive[30] = 0xff;
++    archive[central + 46] = 0xff;
++
++    let error =
++        extract_zipball_to_dir(&archive, destination.path()).expect_err("reject invalid UTF-8 name");
++    assert!(error.contains("declares UTF-8"));
++
++    assert_eq!(
++        std::fs::read_dir(destination.path()).expect("read extraction directory").count(),
++        0
++    );
++}
++
++#[test]
++fn zipball_extraction_preserves_valid_utf8_names() {
++    let destination = tempdir().expect("create extraction directory");
++    let archive = zipball_with_file("archive/plugin/café-中文.sh", CompressionMethod::Stored);
++    let flags = u16::from_le_bytes(archive[6..8].try_into().expect("local ZIP flags"));
++    assert_ne!(flags & 0x800, 0, "fixture must declare UTF-8");
++
++    extract_zipball_to_dir(&archive, destination.path()).expect("extract valid UTF-8 name");
++
++    assert_eq!(
++        std::fs::read(destination.path().join("plugin/café-中文.sh")).expect("read UTF-8 plugin"),
++        CONTENTS
++    );
++}
++
++#[test]
++fn zipball_extraction_preserves_legacy_cp437_names() {
++    let destination = tempdir().expect("create extraction directory");
++    let mut archive = zipball_with_file("archive/plugin/cafX.sh", CompressionMethod::Stored);
++    let central = archive
++        .windows(4)
++        .position(|bytes| bytes == b"PK\x01\x02")
++        .expect("find central-directory record");
++    let flags = u16::from_le_bytes(archive[6..8].try_into().expect("local ZIP flags"));
++    assert_eq!(flags & 0x800, 0, "legacy fixture must not declare UTF-8");
++    let name_offset = b"archive/plugin/caf".len();
++    archive[30 + name_offset] = 0x82;
++    archive[central + 46 + name_offset] = 0x82;
++
++    extract_zipball_to_dir(&archive, destination.path()).expect("extract CP437 name");
++
++    assert_eq!(
++        std::fs::read(destination.path().join("plugin/café.sh")).expect("read CP437 plugin"),
++        CONTENTS
++    );
++}
++
++#[test]
++fn zipball_extraction_does_not_follow_archive_symlink_targets() {
++    let parent = tempdir().expect("create parent directory");
++    let outside = parent.path().join("outside");
++    std::fs::write(&outside, b"unchanged").expect("write outside file");
++    let destination = parent.path().join("destination");
++    let mut writer = ZipWriter::new(Cursor::new(Vec::new()));
++    writer
++        .add_symlink("archive/link", outside.to_string_lossy(), SimpleFileOptions::default())
++        .expect("add hostile symlink");
++    let archive = writer.finish().expect("finish ZIP archive").into_inner();
++
++    extract_zipball_to_dir(&archive, &destination).expect("extract symlink as regular content");
++
++    assert_eq!(std::fs::read(&outside).expect("read outside file"), b"unchanged");
++    assert!(
++        !std::fs::symlink_metadata(destination.join("link"))
++            .expect("read extracted file metadata")
++            .file_type()
++            .is_symlink()
++    );
++    assert_eq!(
++        std::fs::read_to_string(destination.join("link")).expect("read regular link content"),
++        outside.to_string_lossy()
++    );
++}
+diff --git a/codex-rs/core-plugins/tests/fixtures/zipball_lzma.zip b/codex-rs/core-plugins/tests/fixtures/zipball_lzma.zip
+new file mode 100644
+index 0000000000000000000000000000000000000000..e79330d38f7910431810ae0b97ec5678708f6543
+GIT binary patch
+literal 194
+zcmWIWW@fQxU}E57U|>*WaP2x>Wd>v^0kJ3$Cl)1VWR|7s7vz+tXXfb_mFDRcXK=Ex
+zGQ=`4G%zp-b~w4&ei1V%=Hgx6cE$hoL_2P6_BIBs2gL%t)=AfDiq9;!uI8Wr|C8-)
+mh5&CyCVOVwRsn4TgSU+!3aiBd-mGjONk$-a2GW@z4g&yE7A?O3
+
+literal 0
+HcmV?d00001
+

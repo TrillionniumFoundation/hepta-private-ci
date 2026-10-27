@@ -1,0 +1,149 @@
+{
+  "status": "repair prepared; corrected Rust tests have not run",
+  "original_run_source": "6215cb6a87f29623d4beaad24cdf7bcb6bb4fb2c",
+  "original_candidate_patch_sha256": "ee01fa0ef584a0fc8375f1dc0adbb17732653e747efee7f22663dff9df75be81",
+  "original_failures": {
+    "core_plugins": "422/424 passed; 2 failures retained",
+    "i18n_config": "not executed: nonmember dev-dependencies error"
+  },
+  "source_bindings": [
+    {
+      "path": "codex-rs/core-plugins/src/startup_sync.rs",
+      "failed_remote_sha256": "431e70e0533be89842aaa9affd27a73893449789423fa74d202e02bf0b21989c",
+      "repaired_sha256": "d7402cc77b21a4412b9b47683a422353d60d977b735961b096b841d9218edea4"
+    },
+    {
+      "path": "codex-rs/core-plugins/src/startup_sync_zip_tests.rs",
+      "failed_remote_sha256": "349542e520393e60567754965b6b7cc78fcf203cede7790090993312ccf8debd",
+      "repaired_sha256": "a273b864f58b584390bcc8dbffa090bc1deb98594566bb103e53ad3beab8ee31"
+    }
+  ],
+  "diagnosis": {
+    "utf8": "Zip 9.1.2 types.rs name() falls back to CP437 without consulting LanguageEncoding. Production extraction now rejects invalid reader filename bytes when bit 11 declares UTF-8, retaining unflagged CP437 and valid UTF-8.",
+    "permissions": "Zip 9.1.2 get_unix_mode() already clears 0o7000. The archive was hostile as intended; the old assertion incorrectly required unix_mode() to return unsanitized bits. The test now checks external_attributes() before keeping the same final 0o755 requirement.",
+    "i18n": "Path patch alone is not workspace membership; add the actual vendor package to members so its three parser tests can compile with dev-dependencies."
+  },
+  "artifacts": [
+    {
+      "path": "zip-source-v2.patch",
+      "bytes": 11660,
+      "sha256": "1ddee3c9014e66add790ac80ea7ed6eee195d7789c3b1a9ab67192e0ef624fa2"
+    },
+    {
+      "path": "zip-v1-to-v2.patch",
+      "bytes": 4479,
+      "sha256": "9eed373b40de7c358e99093c8d8369c7c7adfe80761f01ff611982ccee5346b1"
+    },
+    {
+      "path": "i18n-config-workspace.patch",
+      "bytes": 262,
+      "sha256": "1ca3152032af6945653a261ada9f7da5915617f187e4572c27be546b559c2430"
+    },
+    {
+      "path": "zip-i18n-failed-run-6215cb6.tar.gz",
+      "bytes": 31493,
+      "sha256": "93e282557569a041505c236fa223a13031960a2a0cfdeb222d6ffb32fcfa1719"
+    }
+  ],
+  "failure_log_member_sha256": {
+    "11-test-codex-core-plugins.log": "87da7c1256bd2e2acc5481a06b8f3ca22fce616fb4e9bd6c83abded8fa9f55a7",
+    "14-test-i18n-config.log": "c1e0d22c450ff8cf8f88edfacd60058be601ddedce37de4a901344ee18aaf3f9",
+    "RESULT.json": "04b6950853d8521b101a22397648c32ac0bdc98e8ad6f36aedcfaa34d98fe60d"
+  },
+  "patch_application_commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/zip-source-v2.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/zip-source-v2.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/zip-zstd-manifest.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/zip-zstd-manifest.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/i18n-config-manifest.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/i18n-config-manifest.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/i18n-config-workspace.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/i18n-config-workspace.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "delta_full_source_equivalent": true,
+  "unchanged_binary_fixture_sha256": "b6ce81e8450c7de591a4e4c7e2e9e975542cc709a07487e16d8f0dfaf7e3d30c",
+  "required_tests": [
+    "just test --locked --cargo-profile ci-test -p codex-core-plugins",
+    "just test --locked --cargo-profile ci-test -p i18n-config",
+    "just test --locked --cargo-profile ci-test -p codex-secrets"
+  ],
+  "rust_retest_status": "not run",
+  "cargo_bazel_locks": "must regenerate after workspace membership change",
+  "original_source_patch_preserved": "8bc968c54ea49960a4c14896b48e861b68b30b653613f2b440e4ef2b32791c35"
+}

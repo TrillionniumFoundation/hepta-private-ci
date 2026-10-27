@@ -11,8 +11,10 @@ on:
       - scripts/test_ndu_protocol_fixture_candidate.py
       - codex-rs/third_party/i18n-config-0.4.8/**
       - experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/zip-source.patch
+      - experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/zip-source-v2.patch
       - experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/zip-zstd-manifest.patch
       - experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/i18n-config-manifest.patch
+      - experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/i18n-config-workspace.patch
   workflow_dispatch:
 
 permissions:
