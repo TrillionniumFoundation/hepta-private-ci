@@ -3,7 +3,13 @@ load("@rules_rust//rust:defs.bzl", "rust_library")
 
 filegroup(
     name = "package-files",
-    srcs = glob(["**"], exclude = ["BUILD.bazel", "target/**"]),
+    srcs = glob(
+        ["**"],
+        exclude = [
+            "BUILD.bazel",
+            "target/**",
+        ],
+    ),
     visibility = ["//visibility:public"],
 )
 
@@ -14,8 +20,8 @@ rust_library(
     crate_name = "secret_service",
     crate_root = "src/lib.rs",
     edition = "2021",
+    proc_macro_deps = all_crate_deps(proc_macro = True),
     version = "4.0.0",
     visibility = ["//visibility:public"],
     deps = all_crate_deps(),
-    proc_macro_deps = all_crate_deps(proc_macro = True),
 )

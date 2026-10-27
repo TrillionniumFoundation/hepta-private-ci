@@ -3,7 +3,13 @@ load("@rules_rust//rust:defs.bzl", "rust_library")
 
 filegroup(
     name = "package-files",
-    srcs = glob(["**"], exclude = ["BUILD.bazel", "target/**"]),
+    srcs = glob(
+        ["**"],
+        exclude = [
+            "BUILD.bazel",
+            "target/**",
+        ],
+    ),
     visibility = ["//visibility:public"],
 )
 
@@ -22,8 +28,8 @@ rust_library(
     crate_name = "matrix_sdk_sqlite",
     crate_root = "src/lib.rs",
     edition = "2024",
+    proc_macro_deps = all_crate_deps(proc_macro = True),
     version = "0.19.1",
     visibility = ["//visibility:public"],
     deps = all_crate_deps(),
-    proc_macro_deps = all_crate_deps(proc_macro = True),
 )

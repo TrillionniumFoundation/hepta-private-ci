@@ -10,7 +10,13 @@ _SDK_FEATURES = [
 
 filegroup(
     name = "package-files",
-    srcs = glob(["**"], exclude = ["BUILD.bazel", "target/**"]),
+    srcs = glob(
+        ["**"],
+        exclude = [
+            "BUILD.bazel",
+            "target/**",
+        ],
+    ),
     visibility = ["//visibility:public"],
 )
 
@@ -33,13 +39,17 @@ cargo_build_script(
 rust_library(
     name = "matrix-sdk",
     srcs = glob(["src/**/*.rs"]),
-    compile_data = glob(["README.md", "src/**/*.md", ".cargo/mermaid.html"]),
+    compile_data = glob([
+        "README.md",
+        "src/**/*.md",
+        ".cargo/mermaid.html",
+    ]),
     crate_features = _SDK_FEATURES,
     crate_name = "matrix_sdk",
     crate_root = "src/lib.rs",
     edition = "2024",
+    proc_macro_deps = all_crate_deps(proc_macro = True),
     version = "0.19.1",
     visibility = ["//visibility:public"],
     deps = all_crate_deps() + [":matrix-sdk-build-script"],
-    proc_macro_deps = all_crate_deps(proc_macro = True),
 )
