@@ -69,3 +69,10 @@ stdout/stderr 均为空。随后 staged Git whitespace check 找到 `control/tra
 四份原文件的身份及该机制的范围。使用 CI 相同的 Codespell 2.4.3 和命令，
 本地已检出的仓库内容检查通过；随后再次执行 `just fmt`。科学实验和行为测试
 未重跑，原始归档未重写。完整远端 CI 状态以 PR 当前 head 的检查为准。
+
+远端 Codespell 与 blob-size gate 随后通过。全仓格式化检查另外指出基线
+`scripts/format.py` 和 `scripts/test_hepta_format_scope.py` 的排版问题。两文件
+在修订前与原基线 Git blob 完全相同；仅对这两文件应用仓库 lock 中的 Ruff，
+前后 AST 完全相同，并再次成功执行 `just fmt`。详情见
+[CI_FORMAT_AMENDMENT.json](CI_FORMAT_AMENDMENT.json)。没有改变研究实现、
+实验结果、依赖或权限逻辑，也未重跑行为测试。
