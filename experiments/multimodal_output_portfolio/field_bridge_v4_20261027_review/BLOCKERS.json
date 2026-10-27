@@ -1,0 +1,413 @@
+{
+  "all_original_substantive_blockers_closed": false,
+  "authority": "DENY_ALL",
+  "inherited_evidence_paths_base": "Inherited V1/V2/V3 evidence references retain the originating ledger context; new V4 evidence lives in ../field_bridge_v4_20261027/evidence/.",
+  "items": [
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027_review/TRAINING_INTERPRETATION.md"
+      ],
+      "baseline_problem": "The V1 value panel had held-out standard deviations below 2e-7, insufficient to identify a useful hard-value response.",
+      "closure_criteria": [
+        "Pass the frozen PILOT_PROTOCOL actuator gate: every seed has original-plus-candidate endpoint response-value range at least 0.005 and the selected candidate changes at least 5% of response-panel semantic/image decisions.",
+        "Pass the frozen ordinary pilot gate: select only candidates with nonnegative development gain and clean-development change >= -0.01 in every seed; selected pooled development gain must be >=0.005.",
+        "Before a new primary test, also pass the separate frozen-trajectory response gate: each seed has mean within-snapshot action spread >=0.001 and at least25% of snapshots with spread>=0.001. Do not apply an extra0.005 threshold to each branch snapshot.",
+        "Keep deterministic no-update controls, output-component changes, effective-operator movement, paired RNG and complete optimizer state. No-update branch hard value must equal current value within1e-12."
+      ],
+      "id": "B01",
+      "new_evidence": [
+        "../field_bridge_v2_20261027/evidence/PILOT_SUMMARY.json",
+        "../field_bridge_v2_20261027/evidence/PILOT_ARITHMETIC_AUDIT.json",
+        "../field_bridge_v2_20261027/evidence/H7_GATE_RESULT.json"
+      ],
+      "resolution": "All 18 pilot candidates complete; selected upstream rank8/288-step actuator passes the original hard-response and development gates in every seed. Frozen H7 within-snapshot action spread and zero-control/state tests also pass. Scope is this actuator and panel, not universal controllability.",
+      "status": "closed_for_registered_development",
+      "title": "Hard-output response identification",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "resolution": "V3 retains the same upstream rank8 actuator; complete development includes observable ordinary gains and253440 byte-verified actual outputs. No universal controllability claim.",
+        "status": "prior_registered_development_scope_preserved"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "No new response-bank fit. Previously demonstrated hard-response identification retains its bounded scope.",
+        "status": "prior_bounded_development_scope_preserved"
+      }
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027_review/TRAINING_INTERPRETATION.md"
+      ],
+      "baseline_problem": "V1 field reward RMSE exceeded the training-mean baseline for every seed.",
+      "closure_criteria": [
+        "Freeze representation, normalizers, predictor, candidate family and decision rule before inspecting complete audit trajectories.",
+        "Compare delta-value prediction with no-change/last-value, fitting-set mean-delta and action-conditioned mean-delta baselines. Compare decision regret with the strongest fixed action chosen without audit labels.",
+        "Report complete-trajectory-cluster paired uncertainty and results by original model seed; sequential rows are not independent units.",
+        "A new audit used for refitting or model selection becomes development evidence and requires a subsequent untouched audit.",
+        "Apply the frozen exact G3/G4 thresholds in gate_audit.py: pooled MSE<=0.9*best predetermined baseline with no seed worse; pooled regret<=0.8*fit-selected fixed regret; advantage>=0.001 and paired trajectory95% lower>0. Eight fit and eight audit trajectories per seed are required."
+      ],
+      "id": "B02",
+      "new_evidence": [
+        "../field_bridge_v2_20261027/evidence/H7_GATE_RESULT.json",
+        "../field_bridge_v2_20261027/evidence/H7_COMPLETE_INTEGRITY_AUDIT.json"
+      ],
+      "resolution": "All nine predictors frozen before audit. Original H7 G3/G4 thresholds pass: MSE 0.0000300344 versus baseline 0.0000464601; regret ratio 0.6158; action advantage 0.00155466, trajectory 95% CI[0.00119183,0.00194834]. This establishes local eight-step skill on the shared response panel and new optimizer trajectories, not source-disjoint panel generalization or final policy superiority.",
+      "status": "closed_for_registered_local_trajectory_skill",
+      "title": "Held-out predictive and decision skill",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "resolution": "V2 local8step result is unchanged. V3 full Qref targets and all180head fits are audited; H7 has lower CV MSE than prospective H12 in all3seeds. This does not establish closed-loop field superiority, which fails development.",
+        "status": "prior_local_skill_scope_preserved_terminal_increment_unqualified"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "108 complete V4 paths and all policy/rollback/checkpoint identities are verified; this is not a new sufficient-state or optimal-value claim.",
+        "status": "prior_local_trajectory_scope_preserved"
+      }
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/evidence/RESULT.json"
+      ],
+      "baseline_problem": "V1 B-A did not meet the gain criterion.",
+      "closure_criteria": [
+        "Run the preregistered B-A contrast on new source identities after all development choices are frozen.",
+        "Both observers must satisfy the declared adjusted confidence and per-model direction conditions, and B must meet independent retention noninferiority.",
+        "Give ordinary training the same action range, candidate opportunity, sample budget, trainable capacity and total search accounting."
+      ],
+      "id": "B03",
+      "new_evidence": [
+        "../field_bridge_v2_20261027/evidence/PRIMARY_RESULT.json",
+        "STUDY_COST_LEDGER.json"
+      ],
+      "resolution": "B-A test gains pass both observers and all three fixed-model signs: reward +0.0304028934, audit +0.0296216434. B retention lower bounds -0.0125661019/-0.0112045102 do not meet -0.01, so the original joint criterion remains unmet. Near-zero retention point estimates do not establish harm beyond the margin. Shared search and reused ordinary endpoints are charged once.",
+      "status": "not_established",
+      "title": "Ordinary local learning benefit",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "resolution": "V3 ordinary development gains are +0.0248120522/+0.0237154539. The coupled development gate failed for H12, so no new independent learning audit or final joint ordinary/retention confirmation ran. V2 joint criterion remains unmet.",
+        "status": "not_established"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "V4 ordinary-frozen task gain and qualification clean NI pass both observers. This is positive evidence within the new qualification scope; original final ordinary-gain/independent-retention closure remains unmet.",
+        "status": "not_established_for_original_final_joint_criterion"
+      }
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/evidence/RESULT.json"
+      ],
+      "baseline_problem": "V1 C-B and E-G did not meet the gain criterion.",
+      "closure_criteria": [
+        "Pass both C-B under fixed deployment and E-G under identical native deployment using the declared fresh evaluation and retention gates.",
+        "Keep generic/richer-state or strong adaptive controls diagnostic; do not relabel direct candidate search as field sufficiency.",
+        "Preserve total exploration, probe, model-fit, candidate-evaluation and final-training costs."
+      ],
+      "id": "B04",
+      "new_evidence": [
+        "../field_bridge_v2_20261027/evidence/PRIMARY_RESULT.json",
+        "PRIMARY_INTERPRETATION_REVIEW.md"
+      ],
+      "resolution": "C-B and E-G both fail the original superiority gates. Pooled effects are negative under both observers, but adjusted intervals include zero. C-B uses the same literal deployment action. E-G uses the same native fitting/search procedure on checkpoint-specific data, with separately calibrated heads; it includes downstream readout mediation.",
+      "status": "not_established",
+      "title": "Incremental parameter-field training benefit",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "resolution": "V3 H12-ordinary development means are -0.0098117194/-0.0076409023. Complete-source-disjoint development execution/score truth passes, but the increment gate fails. No final C-B or E-G was executed; no confirmatory inferiority is claimed.",
+        "status": "not_established"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "origin_field-ordinary and origin_field-origin_richer fail both adjusted lower endpoints and strict model-wise positivity. No final C-B or E-G was executed.",
+        "status": "not_established"
+      }
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/evidence/RESULT.json"
+      ],
+      "baseline_problem": "V1 D-A and E-C did not meet the gain criterion.",
+      "closure_criteria": [
+        "Run the fixed-checkpoint D-A and E-C paired contrasts with exactly matched observations, feasible actions, stochastic marks and external output scoring.",
+        "Count actual common and selected continuation work; any reduced computation must retain sufficient output quality.",
+        "The declared corrected intervals, model-wise signs and retention conditions must all pass."
+      ],
+      "id": "B05",
+      "new_evidence": [
+        "../field_bridge_v2_20261027/evidence/PRIMARY_RESULT.json",
+        "../field_bridge_v2_20261027/evidence/PRIMARY_INDEPENDENT_MEDIA_AUDIT.json"
+      ],
+      "resolution": "D-A passes reward gain only; audit gain is not established. E-C does not pass the dual-observer gain conditions. Both native candidates pass retention, which does not substitute for the missing gain. All actual selected continuation work is counted and artifacts audited.",
+      "status": "not_established",
+      "title": "Runtime state-control value",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "resolution": "Frozen V3 native-fixed reward gain passes; audit gain has interval crossing zero and a negative seed29. Both observers are required. Actual multiround feedback and later actions are fully verified. No E-C or final D-A confirmation ran.",
+        "status": "not_established"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "No new runtime holdout. Old-data honest-stage pilot is worse in all six model/controller comparisons. The prior dual-observer runtime gain failures stand.",
+        "status": "not_established"
+      }
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/evidence/MATCHED_INFORMATION_CHECK.json",
+        "../field_bridge_20261027/evidence/RESULT.json"
+      ],
+      "baseline_problem": "V1 E-F had no confirmed positive advantage.",
+      "closure_criteria": [
+        "Keep F on the exact same adapted model, public observation history, legal actions, fitting labels, tuning opportunities and capacity envelope.",
+        "Require the declared E-F superiority criterion on the fresh evaluation under both observers and independent retention.",
+        "Report measured state-update, readout, serialization, persistence and complete-deployment costs separately. State sensitivity or speed improvements alone cannot close this blocker."
+      ],
+      "id": "B06",
+      "new_evidence": [
+        "../field_bridge_v2_20261027/evidence/PRIMARY_RESULT.json",
+        "PRIMARY_RUNTIME_AUDIT_REVIEW.md",
+        "RECURRENCE_SCOPE_REVIEW.md"
+      ],
+      "resolution": "E-F effects are +0.0001265503/+0.0003625529 with adjusted intervals spanning zero and inconsistent fixed-model signs. This establishes neither native superiority nor equivalence. F shares E model and public information, labels, legal actions, capacity and 24-candidate tuning budget. State reset sensitivity and faster transport do not satisfy the superiority criterion.",
+      "status": "not_established",
+      "title": "Hepta-specific value beyond matched history",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "resolution": "Native-history mean gains +0.0009548572/+0.0001980213 have corrected intervals crossing zero and mixed seed signs. The actual full-public-history88dim,1335-coefficient,12-candidate control and native have equal specified opportunity. No superiority or equivalence is established.",
+        "status": "not_established"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "No new Hepta-versus-history confirmatory comparison. Active state and different actions do not establish incremental value.",
+        "status": "not_established"
+      }
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/evidence/RESULT.json"
+      ],
+      "baseline_problem": "V1 D/E/F/H did not establish retention noninferiority; damage exceeding the margin was not established either.",
+      "closure_criteria": [
+        "Freeze the 0.01 absolute-net-utility margin and comparison family before the new retention run.",
+        "Reserve retention-selection data separately if used by a training controller; never tune on the final retention set.",
+        "Require each candidate designated for acceptance to meet the declared family-adjusted lower endpoint under both observers."
+      ],
+      "id": "B07",
+      "new_evidence": [
+        "../field_bridge_v2_20261027/evidence/PRIMARY_RESULT.json",
+        "../field_bridge_v2_20261027/evidence/PRIMARY_INDEPENDENT_RESULTS_AUDIT.json"
+      ],
+      "resolution": "Original independent nine-comparison retention family and -0.01 margin preserved. Dual-observer noninferiority passes C,D,E,F,H,J (6/9); it is not established for B,G,K. These non-passes do not prove damage beyond the margin. No retention data was used to select or refit methods.",
+      "status": "partially_closed",
+      "title": "Independent retention noninferiority",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "resolution": "Both V3 runtime clean noninferiority comparisons pass under both observers at margin0.01. They are the clean condition of the runtime audit, not final independent retention. Final retention remains unopened; V2 remaining limits are unchanged.",
+        "status": "partially_closed"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "Three V4 qualification clean NI comparisons pass both observers at -0.01. They do not replace original independent final retention requirements.",
+        "status": "partially_closed_original_scope_unchanged"
+      }
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/evidence/MATCHED_INFORMATION_CHECK.json"
+      ],
+      "baseline_problem": "The V1 native path cost was dominated by bridge/recording rather than only sparse_tick.",
+      "closure_criteria": [
+        "Optimize a new isolated implementation; preserve frozen V1 source and outputs.",
+        "Prove exact original-kernel state/output parity on random, edge and reset cases; include invalid-input rejection and authority invariants.",
+        "Benchmark randomized interleaved repeated blocks including feature construction and readout, report distributions, warmup and host/threads.",
+        "Separate kernel-only, bridge, receipt serialization/persistence and total costs. Lower implementation overhead closes engineering overhead only, not B05/B06."
+      ],
+      "id": "B08",
+      "new_evidence": [
+        "../field_bridge_v2_20261027/evidence/NATIVE_FFI_BUILD.json",
+        "../field_bridge_v2_20261027/evidence/NATIVE_FFI_CONTRACT.json",
+        "../field_bridge_v2_20261027/evidence/NATIVE_TRANSPORT_BENCHMARK.json",
+        "NATIVE_INDEPENDENT_ARITHMETIC.json"
+      ],
+      "resolution": "Isolated ABI and exact original-kernel state/receipt parity pass. Randomized paired repeated benchmarks show lower full-record and compact transport overhead; compact native remains slower than matched history. No utility, complete-deployment speed, or owner-integration claim is inferred.",
+      "status": "closed_for_transport_overhead",
+      "title": "Native bridge overhead and parity",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "resolution": "V2 engineering transport result is unchanged. V3 full native fitting and selected-session original-kernel replay are exact, including DENY_ALL. No new interleaved total-latency superiority or efficacy claim is inferred.",
+        "status": "prior_transport_scope_preserved_v3_state_parity_verified"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "No new native/owner integration or latency superiority claim. DENY_ALL is preserved.",
+        "status": "prior_transport_scope_preserved"
+      }
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/PROTOCOL.json",
+        "../v6/data.py"
+      ],
+      "baseline_problem": "V1 source-disjointness was local to named experiments, not registry-wide secrecy or new-writer independence.",
+      "closure_criteria": [
+        "Retain the exact prior split prefixes or explicitly exclude all original pixel identities when expanding source pools.",
+        "Record disjoint pixel identities for development, trajectory audit, runtime calibration/development, primary test and retention; independently verify no overlapping hashes.",
+        "Commit the protocol and executable source before audit/test outcomes, freeze trained checkpoints and policies before primary test.",
+        "Define the scope as new relative to the recorded exposure registry; do not claim no model pretraining exposure or new writers."
+      ],
+      "id": "B09",
+      "new_evidence": [
+        "SOURCE_ALLOCATION.json",
+        "../field_bridge_v2_20261027/evidence/PRIMARY_PRETEST_FREEZE.json",
+        "../field_bridge_v2_20261027/evidence/PRIMARY_INDEPENDENT_MEDIA_AUDIT.json",
+        "../field_bridge_v2_20261027/evidence/PRIMARY_RECOVERY_PARITY_AUDIT.json"
+      ],
+      "resolution": "New primary and retention pixel identities are disjoint from each other and all 25000 original registered pixels; all original prefixes preserved. Scientific sources, final checkpoints/optimizer states and policies were frozen before primary outcomes, and complete audit/recovery parity passes. The original ledger additionally required disjoint source pixels between development and trajectory audit. Registered H7 fit/audit instead share the fixed response panel and hold out optimizer trajectories, so that stronger literal clause remains unmet. Preserve it as a documented ledger/protocol scope mismatch; do not reinterpret it as satisfied. No new-writer or global pretraining-secrecy claim.",
+      "status": "partially_closed",
+      "title": "Fresh evaluation identity and frozen access boundary",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "resolution": "V3 all28048assignedimages/23roles and253intersections are independently checked against the complete29000image V2 registry. Fit/development/runtime-audit are separated; failed gates leave8roles/12496images without task materialization. V2 shared response-panel limitation is not retroactively closed; unknown pretraining/writer independence remains outside scope.",
+        "status": "v3_executed_source_access_verified_prior_v2_limitation_preserved"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "6,352 new official-train image identities exclude the full prior 57,048 identities, including unused V3 allocations. Protocol/source precede model execution and all 108 training paths are sealed before endpoint opening. Historical shared-panel limitation and unknown pretraining/writers are unchanged.",
+        "status": "v4_source_and_access_boundary_verified_prior_limit_preserved"
+      }
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/evidence/INDEPENDENT_AUDIT.json",
+        "../field_bridge_20261027/evidence/RESULTS_REVIEW_CHECKS.json"
+      ],
+      "baseline_problem": "V1 has full independent checks; V2 requires equivalent evidence for its changed execution.",
+      "closure_criteria": [
+        "Persist complete declared run grid, all failed candidates, public observations, chosen actions, media readback, model/policy/source identities and cost receipts.",
+        "Independently reconstruct features and both observer scores from delivered artifacts without generator calls.",
+        "Independently rebuild paired estimates, multiplicity corrections and acceptance flags; verify frozen-source identity.",
+        "Save immutable complete evidence and verify restoration manifests."
+      ],
+      "id": "B10",
+      "new_evidence": [
+        "../field_bridge_v2_20261027/evidence/PRIMARY_EVALUATION_COMPLETE.json",
+        "../field_bridge_v2_20261027/evidence/PRIMARY_INDEPENDENT_MEDIA_AUDIT.json",
+        "../field_bridge_v2_20261027/evidence/PRIMARY_INDEPENDENT_RESULTS_AUDIT.json",
+        "../field_bridge_v2_20261027/evidence/PRIMARY_RECOVERY_PARITY_AUDIT.json",
+        "../field_bridge_v2_20261027/evidence/ARCHIVE_AND_RESTORE_VERIFICATION.json",
+        "../field_bridge_v2_20261027/evidence/PERSISTENCE_AUTHORIZATION_BLOCKER.json"
+      ],
+      "resolution": "Complete raw grid, all model/controller evidence, media/native reconstruction, independent arithmetic, recovery parity, full archive SHA/CRC checks, and selective-restoration arithmetic all pass. Archive contains2181 payload files and2182 total regular members; restored84480-row statistics match within3.24e-16. Durable upload is not complete: automatic approval review requires explicit user authorization for saving the private archive and verification report to the connected Library destination. No alternate egress was attempted, and the original persistence criterion remains open.",
+      "status": "partially_closed_pending_persistence_authorization",
+      "title": "Full evidence reproduction and independent arithmetic",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "local_verified_archive": {
+          "exact_statistical_reanalysis": true,
+          "inner_gzip_streams_verified": 129,
+          "ledger_bindings_preserved": 1181,
+          "payload_files": 2590,
+          "raw_archive_persisted": false,
+          "restore_files": 50,
+          "verification_receipt": "../field_bridge_v3_20261027/evidence/ARCHIVE_AND_RESTORE_VERIFICATION.json",
+          "verification_sha256": "198916ddf9f2ad281fcda54a79b79f9b0210cc56129a8dc77e054ee34a0c6351"
+        },
+        "resolution": "V3 actual fitting, media, both observer scores, native state, statistics, execution costs and stop decisions are independently verified. Complete raw archive integrity/restoration is reported by the external archive receipt. V2 archive/report upload was automatically rejected twice pending explicit named-file and Library-destination authorization; V3 archive persistence must also be concretely authorized. Git-backed sources/results do not equal durable raw archive storage.",
+        "status": "partially_closed_pending_persistence_authorization"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "Actual training identities, hard-media scores and statistical decision are preserved. Complete archive integrity/literal-restored exact reanalysis are bound by the external postpackage receipt. Automatic review rejected named-archive Library persistence; no further retry or alternate raw-data egress is authorized.",
+        "status": "partially_closed_pending_explicit_persistence_authorization"
+      }
+    }
+  ],
+  "native_owner_integration": false,
+  "original_closure_criteria_preserved_verbatim": true,
+  "original_scope_limits": [
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/README.md"
+      ],
+      "baseline_problem": "An empirical low-dimensional predictor is not a sufficient-state theorem, scalar FBSDE identification or HJB/Riccati certificate.",
+      "closure_criteria": [
+        "Specify the optimizer-state map, admissible policies, projection/information/actuation/coefficient errors and their quantified bounds for the implemented system.",
+        "Prove the necessary conditional transition/value assumptions or restrict claims to the empirical policy and tested task.",
+        "Any theorem-level closure requires mathematical work beyond a positive MNIST result."
+      ],
+      "id": "L01",
+      "is_v2_completion_gate": false,
+      "scope_rule": "This is a claim boundary, not an additional implementation task or a prerequisite for the bounded V2 experiment.",
+      "status": "not_established",
+      "title": "Formal parameter-field closure and paper theorem applicability"
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/README.md"
+      ],
+      "baseline_problem": "The bridge is a short two-preview MNIST-derived local-adapter task with a fixed native kernel.",
+      "closure_criteria": [
+        "Provide separately registered LLM or new-task experiments and externally arriving feedback with later legal decisions to claim those capabilities.",
+        "Production owner integration requires actual owner contracts and validated authority; preserve DENY_ALL while they are absent.",
+        "No speed, parity, source review or small-task gain automatically closes this broader scope."
+      ],
+      "id": "L02",
+      "is_v2_completion_gate": false,
+      "scope_rule": "This is a claim boundary, not an additional implementation task or a prerequisite for the bounded V2 experiment.",
+      "status": "not_established",
+      "title": "LLM-scale, long-horizon feedback and production deployment"
+    }
+  ],
+  "prior_ledger_path": "../field_bridge_v3_20261027_review/BLOCKERS.json",
+  "prior_ledger_sha256": "59c7c7aa111eb156291c76e76c1fdce389f7d517eed75b9df5b6aada72ee5a88",
+  "remaining_operational_blockers": [
+    "Explicit named V2/V3/V4 archive and verification-report authorization for ChatGPT Library; automatic approval rejection is preserved and no further upload is attempted."
+  ],
+  "remaining_scientific_claims": [
+    "B03",
+    "B04",
+    "B05",
+    "B06",
+    "B07",
+    "B09 historical/scope clause",
+    "L01",
+    "L02"
+  ],
+  "requires_calibration": true,
+  "schema": "hepta.field-bridge.v4.original-criteria-and-new-evidence.1",
+  "status_rule": "A blocker closes only when its stated substantive evidence exists; unsupported claims remain open or not_established. A failed gate is preserved, not reclassified as success.",
+  "terminal_disposition_sha256": "4caabe2966d62c8bad4b22ec69cf49b0dedfa10ca3c8d650a75c7603581bd8c6",
+  "v2_primary_joint_acceptance_unchanged": {
+    "accepted": 0,
+    "ordinary_retention_noninferiority_supported": false,
+    "ordinary_test_gain_supported": true,
+    "registered": 6,
+    "result_sha256": "ae10b12185c64d366019f3b73c522e9d6b364523174864a9424a65ffafc547e2"
+  },
+  "v3_archive_sha256": "37ef2e8de1a795ada43a92afc7403018e82ac23368e8ee6f7319569099abf4cf",
+  "v3_archive_verification_external_receipt": "../field_bridge_v3_20261027/evidence/ARCHIVE_AND_RESTORE_VERIFICATION.json",
+  "v3_archive_verification_sha256": "198916ddf9f2ad281fcda54a79b79f9b0210cc56129a8dc77e054ee34a0c6351",
+  "v3_development_gate_passed": false,
+  "v3_final_confirmation_executed": false,
+  "v3_frozen_runtime_gate_passed": false,
+  "v3_local_archive_and_restore_passed": true,
+  "v3_primary_comparisons_executed": 0,
+  "v3_primary_comparisons_not_established": [
+    "B-A",
+    "C-B",
+    "D-A",
+    "E-C",
+    "E-G",
+    "E-F"
+  ],
+  "v3_registered_execution_and_independent_integrity_complete": true,
+  "v4_qualification": {
+    "checks_passed": 4,
+    "checks_registered": 6,
+    "original_six_experiment_families_relabelled_as_checks": false,
+    "passed": false,
+    "result_sha256": "0634e0f89ad5c07dfa36c74c475b593b8b9aa8c29990bb86b078995ab63b3b58",
+    "status": "QUALIFICATION_FAILED"
+  }
+}
