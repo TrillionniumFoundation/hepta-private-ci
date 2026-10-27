@@ -149,7 +149,9 @@ impl MemoryReadoutV1 {
                     return Err(HnmfContractError::Invalid("partial failed readout"));
                 }
                 validate_text(
-                    self.reason.as_deref().ok_or(HnmfContractError::Missing("failure reason"))?,
+                    self.reason
+                        .as_deref()
+                        .ok_or(HnmfContractError::Missing("failure reason"))?,
                     1024,
                     "failure reason",
                 )?;

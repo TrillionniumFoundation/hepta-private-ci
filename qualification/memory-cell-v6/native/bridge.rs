@@ -5,18 +5,18 @@ use std::error::Error;
 use std::fs;
 use std::path::Path;
 
-use codex_hepta_cognitive_types::MemoryRequestV1;
 use codex_hepta_cognitive_types::decode_memory_readout_v1;
 use codex_hepta_cognitive_types::decode_memory_request_v1;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
 use codex_hepta_cognitive_types::hnmf::ContractGenerationV1;
 use codex_hepta_cognitive_types::hnmf::HnmfContractError;
+use codex_hepta_cognitive_types::MemoryRequestV1;
+use codex_hepta_context_compiler::compile;
 use codex_hepta_context_compiler::CompilationRequest;
 use codex_hepta_context_compiler::ContextItem;
 use codex_hepta_context_compiler::ContextRole;
-use codex_hepta_context_compiler::compile;
-use codex_hepta_memory_retrieval::MemorySourceVerifierV1;
 use codex_hepta_memory_retrieval::revalidate_memory_readout_v1;
+use codex_hepta_memory_retrieval::MemorySourceVerifierV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
@@ -52,14 +52,19 @@ impl MemorySourceVerifierV1 for OwnerExport {
         if snapshot != self.snapshot_digest {
             return Err(HnmfContractError::Conflict("owner snapshot"));
         }
-        let record = self.sources.iter().find(|row| row.source_id == source)
+        let record = self
+            .sources
+            .iter()
+            .find(|row| row.source_id == source)
             .ok_or(HnmfContractError::Missing("owned source"))?;
         if record.revoked
             || record.scope != request.scope.as_str()
             || record.entity != request.entity.as_str()
             || record.seq > self.source_cut
         {
-            return Err(HnmfContractError::Conflict("source owner rejected dependency"));
+            return Err(HnmfContractError::Conflict(
+                "source owner rejected dependency",
+            ));
         }
         Ok(())
     }
@@ -90,11 +95,21 @@ fn main() -> Result<(), Box<dyn Error>> {
     {
         return Err("invalid owner export".into());
     }
-    let source_ids = owner.sources.iter().map(|row| row.source_id).collect::<std::collections::BTreeSet<_>>();
+    let source_ids = owner
+        .sources
+        .iter()
+        .map(|row| row.source_id)
+        .collect::<std::collections::BTreeSet<_>>();
     if source_ids.len() != owner.sources.len() {
         return Err("duplicate source ownership".into());
     }
-    revalidate_memory_readout_v1(&request, &readout, owner.generation, owner.snapshot_digest, &owner)?;
+    revalidate_memory_readout_v1(
+        &request,
+        &readout,
+        owner.generation,
+        owner.snapshot_digest,
+        &owner,
+    )?;
     // Canonical serialization includes value, prediction_kind and all source /
     // model identities. Only its digest crosses this V1 compiler boundary.
     let content = serde_json::to_vec(&readout)?;
@@ -121,22 +136,25 @@ fn main() -> Result<(), Box<dyn Error>> {
     {
         return Err("context separation invariant failed".into());
     }
-    println!("{}", serde_json::to_string(&json!({
-        "schema": "hepta.memory.native-bridge-receipt.v1",
-        "query_id": request.query_id,
-        "operation": readout.operation,
-        "prediction_kind": readout.prediction_kind,
-        "value": readout.value,
-        "source_ids": readout.source_ids,
-        "cell_digests": readout.cell_digests,
-        "readout_sha256": Digest32::of_bytes(&readout_bytes).to_string(),
-        "owner_fixture_sha256": Digest32::of_bytes(&owner_bytes).to_string(),
-        "trusted_instruction_ids": [],
-        "untrusted_evidence_ids": receipt.untrusted_evidence_ids.iter().map(StableId::as_str).collect::<Vec<_>>(),
-        "context_digest": receipt.context_digest.to_string(),
-        "authority_granted": receipt.authority.grants_any(),
-        "token_charge_kind": "byte upper bound; no provider/tokenizer claim",
-        "scope": "leaf qualification caller; not full product integration"
-    }))?);
+    println!(
+        "{}",
+        serde_json::to_string(&json!({
+            "schema": "hepta.memory.native-bridge-receipt.v1",
+            "query_id": request.query_id,
+            "operation": readout.operation,
+            "prediction_kind": readout.prediction_kind,
+            "value": readout.value,
+            "source_ids": readout.source_ids,
+            "cell_digests": readout.cell_digests,
+            "readout_sha256": Digest32::of_bytes(&readout_bytes).to_string(),
+            "owner_fixture_sha256": Digest32::of_bytes(&owner_bytes).to_string(),
+            "trusted_instruction_ids": [],
+            "untrusted_evidence_ids": receipt.untrusted_evidence_ids.iter().map(StableId::as_str).collect::<Vec<_>>(),
+            "context_digest": receipt.context_digest.to_string(),
+            "authority_granted": receipt.authority.grants_any(),
+            "token_charge_kind": "byte upper bound; no provider/tokenizer claim",
+            "scope": "leaf qualification caller; not full product integration"
+        }))?
+    );
     Ok(())
 }

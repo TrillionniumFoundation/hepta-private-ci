@@ -35,7 +35,9 @@ pub fn revalidate_memory_readout_v1(
         || readout.hops > request.max_hops
         || readout.cell_digests.len() > usize::from(request.max_cells)
     {
-        return Err(HnmfContractError::Conflict("memory request/snapshot binding"));
+        return Err(HnmfContractError::Conflict(
+            "memory request/snapshot binding",
+        ));
     }
     if readout.status != MemoryReadStatusV1::Ok {
         return Err(HnmfContractError::Invalid("memory result unavailable"));

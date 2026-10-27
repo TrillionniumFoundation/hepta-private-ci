@@ -83,7 +83,13 @@ fn every_support_is_checked_without_upgrading_the_prediction() -> Result<(), Hnm
     let (request, readout, owner) = fixture()?;
     let original = readout.clone();
     assert_eq!(
-        revalidate_memory_readout_v1(&request, &readout, readout.generation, owner.snapshot, &owner),
+        revalidate_memory_readout_v1(
+            &request,
+            &readout,
+            readout.generation,
+            owner.snapshot,
+            &owner
+        ),
         Ok(())
     );
     assert_eq!(readout, original);
@@ -99,11 +105,23 @@ fn changed_request_epoch_or_budget_fails_before_source_access() -> Result<(), Hn
     mutations[1].generation = ContractGenerationV1::new(2)?;
     mutations[2].snapshot_digest = ContractDigestV1::from_digest(Digest32::of_bytes(b"other"))?;
     mutations[3].hops = 4;
-    mutations[4].cell_digests.push(ContractDigestV1::from_digest(Digest32::of_bytes(b"third-cell"))?);
+    mutations[4]
+        .cell_digests
+        .push(ContractDigestV1::from_digest(Digest32::of_bytes(
+            b"third-cell",
+        ))?);
     for changed in mutations {
         assert_eq!(
-            revalidate_memory_readout_v1(&request, &changed, readout.generation, owner.snapshot, &owner),
-            Err(HnmfContractError::Conflict("memory request/snapshot binding"))
+            revalidate_memory_readout_v1(
+                &request,
+                &changed,
+                readout.generation,
+                owner.snapshot,
+                &owner
+            ),
+            Err(HnmfContractError::Conflict(
+                "memory request/snapshot binding"
+            ))
         );
     }
     assert!(owner.checked.borrow().is_empty());
@@ -119,14 +137,26 @@ fn foreign_scope_entity_or_revoked_support_fails_closed() -> Result<(), HnmfCont
     foreign_entity.entity = ContractIdV1::new("sensor:other")?;
     for changed in [foreign_scope, foreign_entity] {
         assert_eq!(
-            revalidate_memory_readout_v1(&changed, &readout, readout.generation, owner.snapshot, &owner),
+            revalidate_memory_readout_v1(
+                &changed,
+                &readout,
+                readout.generation,
+                owner.snapshot,
+                &owner
+            ),
             Err(HnmfContractError::Conflict("source owner denied"))
         );
     }
     owner.checked.borrow_mut().clear();
     owner.live_sources.pop();
     assert_eq!(
-        revalidate_memory_readout_v1(&request, &readout, readout.generation, owner.snapshot, &owner),
+        revalidate_memory_readout_v1(
+            &request,
+            &readout,
+            readout.generation,
+            owner.snapshot,
+            &owner
+        ),
         Err(HnmfContractError::Conflict("source owner denied"))
     );
     assert_eq!(*owner.checked.borrow(), readout.source_ids);
@@ -143,7 +173,13 @@ fn an_unavailable_readout_cannot_supply_context() -> Result<(), HnmfContractErro
     readout.prediction_kind = MemoryPredictionKindV1::None;
     readout.reason = Some("source revoked".to_owned());
     assert_eq!(
-        revalidate_memory_readout_v1(&request, &readout, readout.generation, owner.snapshot, &owner),
+        revalidate_memory_readout_v1(
+            &request,
+            &readout,
+            readout.generation,
+            owner.snapshot,
+            &owner
+        ),
         Err(HnmfContractError::Invalid("memory result unavailable"))
     );
     assert!(owner.checked.borrow().is_empty());
