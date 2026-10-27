@@ -25,10 +25,29 @@ jobs:
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
 
       - name: Run cargo-deny
+        id: cargo_deny
         uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246 # v2
         with:
           rust-version: 1.95.0
           manifest-path: ./codex-rs/Cargo.toml
+
+      - name: Preserve a same-version host diagnostic after failure
+        if: failure() && steps.cargo_deny.outcome == 'failure'
+        timeout-minutes: 8
+        run: >-
+          python3 "$GITHUB_WORKSPACE/scripts/cargo_deny_diagnostics.py"
+          --repository "$GITHUB_WORKSPACE"
+          --output "$RUNNER_TEMP/cargo-deny-diagnostic"
+
+      - name: Retain cargo-deny diagnostic evidence
+        if: always() && !cancelled() && steps.cargo_deny.outcome == 'failure'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: cargo-deny-host-diagnostic
+          path: |
+            ${{ runner.temp }}/cargo-deny-diagnostic/*.json
+            ${{ runner.temp }}/cargo-deny-diagnostic/*.log
+          if-no-files-found: warn
 
       - name: Check for a clean worktree
         if: always() && !cancelled()
