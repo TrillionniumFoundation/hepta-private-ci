@@ -12,7 +12,7 @@
 | 1：类型化请求与寻址 | 严格 `MemoryRequestV1/MemoryReadoutV1`；固定模型 worker；owner registry 与完整请求绑定 | 独立 known 覆盖仅 80/240；日期适配补丁待真实时间链路验证 |
 | 2：事件、语义、过程 cell | SQLite 事件；真实参数语义/过程；`apply` 跨三类组合 | 实际写入→训练→socket 读回的 ignored 集成测试仍在 CI 中 |
 | 3：训练、回放、校准、清洁重建 | 有界 NumPy worker、父参数校验、纠错/撤销后 clean rebuild、真实 ledger 接口 | 训练诊断不等于未来任务改善；尚无长期遗忘或总体校准保证 |
-| 4：分裂、合并、休眠、预算竞争 | V2 population、实际 shard fit、驻留缓存、NoChange 与 topology proposal 桥 | 同允许计数空间内的最强固定方案胜出；全成本门未通过 |
+| 4：分裂、合并、休眠、预算竞争 | V2 population、实际 shard fit、驻留缓存、NoChange 与 topology proposal 桥 | 未通过偏向强固定的保守部分成本门；完整成本优势尚未建立 |
 | 5：多节点、迁移、一致发布 | Fleet owner/socket 验证；完整版本向量；OrganHost 只读路由迁移 | 本机多个 owner/control socket；未交付跨机器复制、共识或网络分区下可用性保证 |
 | 6：新领域、组合、专业化迁移 | 新实体自动地址分区、重训、typed 组合读回 | 确定性地址分片没有证明学习专业分工；不能以开发读回替代新任务族验收 |
 
@@ -120,6 +120,7 @@ loader 拒绝支持重叠、遗漏、未知 route、类型错误、lineage 不�
 [`evaluate_memory_structure_v1`](../../codex-rs/hepta-plasticity/src/memory_budget.rs) 要求 KeepFixed 和完整冻结固定库存。
 候选必须共享 source cut、task set、training profile 和评估量；所有成本权重必须为正，缺测不能填零。
 adaptive 方案计入全部候选的搜索、训练、回放、保留材料、读取、唤醒及通信，比较器取同预算下最强固定方案。
+固定比较器只计自身 fit、评估与材料，免计从固定库存中筛选它的搜索；这是刻意偏向固定的保守门，不是双方公平搜索总账。
 收益不为正或没有独立证据时保持 NoChange；通过也只由 `propose_memory_structure_v1` 生成待独立接受的 topology proposal。
 提案永远保留 NoChange，authority 为 DENY_ALL；实际激活仍需外部签名发布与 selector。
 真实 1→2→1 训练、签名发布、sleep/wake 和 source-cut 拒绝测试见 [`memory_cell_population_tests.rs`](../../codex-rs/hepta-agentd/src/memory_cell_population_tests.rs)，尚待相应 CI 完成。
@@ -215,10 +216,15 @@ just test -p codex-hepta-agentd --run-ignored only -E 'test(memory_cell_) & test
 
 CI5 再次遇到编译失败（`json!` 内数组索引表达式）；修复已提交，daemon 仍没有测试通过证明，CI6 结果待补。
 
-结构开发实验 [`population-costs-v2.json`](development/population-costs-v2.json) 比较固定 1–8 全计数空间；84 次真实 fit，最强固定为 fixed-1，决策 keep-fixed。
+结构开发实验 [`population-costs-v2.json`](development/population-costs-v2.json) 比较固定 1–8 全计数空间；84 次真实 fit，部分计费下的固定比较器为 fixed-1，保留 keep-fixed。
 该轮已测部分加权净收益为负；独立未来任务、原生全链路成本、源账本与通信/RSS 缺项不能由 NumPy 诊断补成完整验收。
+这只说明未通过偏向固定的保守部分成本门，不能推出公平搜索总成本下固定结构全局最优。
+按当前评估实现及已存计数复核，每个候选的 144 是评分输出数：24 个实体 × 2 轮 × semantic/procedure/apply 三个输出；同回合两个预测复用于 apply，共 96 次模型读取，不能当作 144 次独立产品请求或其单请求成本。
+Python development runner 固定输出 `selected_action=keep-fixed`、`full_cost_gate=not_passed`，没有调用 Rust budget→proposal 桥；它未验证自动 proposal/release 闭环。
 旧完整 42-fit 结果 [`population-costs.json`](development/population-costs.json) 原样保留；累计可核搜索 wall 为 4,293,320,888 ns，权重单位不是美元或 FLOPs。
+[`population-review.json`](evidence/population-review.json) 保存只读重算、原报告 hashes、评分单位与比较口径；现有分数和历史累计未发现重复计费或算术错误，未知维度仍为 null。
 [`population-first-run-summary.json`](development/population-first-run-summary.json) 记录一次详细 JSON 覆盖缺项；仅保存摘要可核，未知字节、fit 明细与 pins 不补猜值。
 v1/v2 实验没有预 fit 登记；未来 runner 已增加 create-only manifest、来源/代码 hashes、追加进度和失败 receipt，不把新机制追认到旧运行。
+两份完整数字报告记录的旧 runner hashes 不同于当前源码；仓库可达该路径历史中未找到对应旧源码快照。完整数字记录不是完整源码复现包，保留这一可复现性缺项，不反推或补猜旧源码。
 
 当前应保留研究分支。只有新独立任务上的可靠覆盖、遗忘控制、同预算全成本净收益和跨节点/最终消费验证同时成立，才可提升相应验收状态。

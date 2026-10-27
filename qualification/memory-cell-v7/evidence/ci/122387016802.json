@@ -1,0 +1,143 @@
+{
+  "schema": "hepta.memory.v7.provider-job-evidence.v1",
+  "run_id": 40560143963,
+  "job_id": 122387016802,
+  "group": "daemon",
+  "status": "completed",
+  "conclusion": "failure",
+  "source_commit": "13eadb8944c39b0a2aa71d74a8f65d5a442bf70e",
+  "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40560143963/job/122387016802",
+  "receipt": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-agent-protocol",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-context-compiler",
+      "-p",
+      "codex-hepta-infer-worker-host"
+    ],
+    "commands": [
+      [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-context-compiler",
+        "-p",
+        "codex-hepta-infer-worker-host"
+      ],
+      [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "-p",
+        "codex-hepta-agentd",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(memory_cell_) & test(actual_)"
+      ]
+    ],
+    "complete_workspace_test": false,
+    "executions": [
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agent-protocol",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-context-compiler",
+          "-p",
+          "codex-hepta-infer-worker-host"
+        ],
+        "exit_code": 101,
+        "wall_seconds": 184.383577824
+      }
+    ],
+    "exit_code": 101,
+    "final_tracked_changes": "",
+    "group": "daemon",
+    "initial_tracked_changes": "",
+    "lock_after": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "lock_before": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "log": {
+      "bytes": 49404,
+      "sha256": "963471dc5766993b223abe099cf6e595cf508620ecf986e7c7a95437f7efbd2b"
+    },
+    "mode": "test",
+    "passed": false,
+    "production_manifests_modified_for_test": false,
+    "request": {
+      "attempt": 5,
+      "groups": [
+        "daemon"
+      ],
+      "schema": "hepta.memory.v7.product-verification-request.v1",
+      "stage": "typed-memory-native-utc-cutoff",
+      "tests_before_final_fix_and_format": true
+    },
+    "schema": "hepta.memory.v7.product-ci-receipt.v1",
+    "source_commit": "13eadb8944c39b0a2aa71d74a8f65d5a442bf70e",
+    "source_tree": "5085862bb713c855cd1ba2636a4a4f649a62ba51",
+    "wall_seconds": 184.383734284
+  },
+  "test_summaries": [
+    "error[E0659]: `assert_eq` is ambiguous",
+    "error[E0659]: `assert_eq` is ambiguous",
+    "error[E0659]: `assert_eq` is ambiguous",
+    "error[E0659]: `assert_eq` is ambiguous",
+    "error: could not compile `codex-hepta-agentd` (lib test) due to 4 previous errors",
+    "error: command `/home/runner/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-agent-protocol --package codex-hepta-agentd --package codex-hepta-context-compiler --package codex-hepta-infer-worker-host --locked` exited with code 101",
+    "error: recipe `test` failed on line 89 with exit code 101"
+  ],
+  "test_counts": null,
+  "provider_log": {
+    "name": "122387016802.log",
+    "bytes": 185354,
+    "sha256": "3170e2a196932252765cae10001b1f95b88302ea5cd40b18d0e13bf3b8b8d89b"
+  },
+  "log_representation": "Exact UTF-8 encoding of decoded provider job log, preserving ANSI, BOM, line endings and final newline; distinct from execution.log whose identity is in the CI receipt.",
+  "tests_executed": false,
+  "ignored_profile_executed": false,
+  "failure_phase": "lib test compilation",
+  "primary_error": "E0659 assert_eq macro ambiguity from glob import",
+  "failure_sites": [
+    {
+      "path": "hepta-agentd/src/memory_cell_temporal_runtime_tests.rs",
+      "line": 23
+    },
+    {
+      "path": "hepta-agentd/src/memory_cell_temporal_runtime_tests.rs",
+      "line": 35
+    },
+    {
+      "path": "hepta-agentd/src/memory_cell_temporal_runtime_tests.rs",
+      "line": 40
+    },
+    {
+      "path": "hepta-agentd/src/memory_cell_temporal_runtime_tests.rs",
+      "line": 54
+    }
+  ],
+  "preparation_step_passed": true
+}
