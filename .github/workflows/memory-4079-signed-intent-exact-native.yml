@@ -1,0 +1,94 @@
+name: Supervisor digest-bound signed intent exact-source native qualification
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/memory-4079-signed-intent-exact-native.yml
+      - codex-rs/hepta-supervisor/src/supervisor.rs
+      - codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs
+
+permissions:
+  contents: read
+
+jobs:
+  supervisor-signed-intent:
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'automation/memory-4077-signed-intent-abort-integration-20261027-v1'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_TERM_COLOR: never
+      SOURCE_SHA: 62be9b15067663603faa56b79493a3a3740d4a2a
+      ORIGINAL_OWNER_BLOB: f854f1a0c40024a5fe01ea42b5139d8c77bfc778
+      ORIGINAL_TEST_BLOB: fe819a589a0e575849186de8b839793670dd1c99
+      DONOR_OWNER_BLOB: f663c7c4f10d2d0ea3d3e142d2beaa02bbe93307
+      DONOR_TEST_BLOB: 2a186f468fcac46df5f75a5565136982a3ee6de9
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Checkout exact candidate without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact signed-intent owner and donor identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git merge-base "$SOURCE_SHA" HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse "$SOURCE_SHA:codex-rs/hepta-supervisor/src/supervisor.rs")" = "$ORIGINAL_OWNER_BLOB"
+          test "$(git rev-parse "$SOURCE_SHA:codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs")" = "$ORIGINAL_TEST_BLOB"
+          test "$(git rev-parse "HEAD:codex-rs/hepta-supervisor/src/supervisor.rs")" = "$DONOR_OWNER_BLOB"
+          test "$(git rev-parse "HEAD:codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs")" = "$DONOR_TEST_BLOB"
+          test "$(git rev-parse "HEAD:codex-rs/Cargo.lock")" = "$(git rev-parse "$SOURCE_SHA:codex-rs/Cargo.lock")"
+          test "$(git rev-parse "HEAD:MODULE.bazel.lock")" = "$(git rev-parse "$SOURCE_SHA:MODULE.bazel.lock")"
+          changed="$(git diff --name-only "$SOURCE_SHA" HEAD)"
+          expected="$(printf '%s\n' \
+            '.github/workflows/memory-4079-signed-intent-exact-native.yml' \
+            'codex-rs/hepta-supervisor/src/supervisor.rs' \
+            'codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs')"
+          test "$changed" = "$expected"
+          git diff --check "$SOURCE_SHA" HEAD
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Install pinned native test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Run exact digest-bound abort regression without retries
+        working-directory: codex-rs
+        timeout-minutes: 50
+        run: |
+          just test --locked -p codex-hepta-supervisor --no-tests=fail --retries 0 --test signed_intent_recovery -E 'test(=exact_digest_abort_terminalizes_unresolved_intent)' --test-threads 1
+
+      - name: Reject stale signed-intent abort directive without retries
+        working-directory: codex-rs
+        timeout-minutes: 15
+        run: |
+          just test --locked -p codex-hepta-supervisor --no-tests=fail --retries 0 --test signed_intent_recovery -E 'test(=stale_abort_directive_cannot_terminalize_another_intent)' --test-threads 1
+
+      - name: Run complete Supervisor crate without retries
+        working-directory: codex-rs
+        timeout-minutes: 35
+        run: |
+          just test --locked -p codex-hepta-supervisor --no-tests=fail --retries 0 --test-threads 1
+
+      - name: Confirm source and locks unmodified
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          test "$(git rev-parse "HEAD:codex-rs/Cargo.lock")" = "$(git rev-parse "$SOURCE_SHA:codex-rs/Cargo.lock")"
+          test "$(git rev-parse "HEAD:MODULE.bazel.lock")" = "$(git rev-parse "$SOURCE_SHA:MODULE.bazel.lock")"
