@@ -540,9 +540,9 @@ impl PinnedCognitiveRanker {
                 "ranker CURRENT owner trust changed; independent reload required".to_string(),
             );
         }
-        let result = candidate
-            .with_current(current, current_unix_micros()? / 1_000_000, |_| consume())
-            .map_err(|error| error.to_string())??;
+        let result =
+            candidate
+                .with_current(current, current_unix_micros()? / 1_000_000, |_| consume())??;
         // Reobserve the original owner before making a computed permutation
         // visible. A publication or revocation while computing must extend the
         // same frontier and leave this exact candidate eligible. The outer
@@ -552,9 +552,7 @@ impl PinnedCognitiveRanker {
         if current_after.trust_digest() != self.current_owner_trust_digest {
             return Err("ranker CURRENT owner trust changed during read".to_owned());
         }
-        candidate
-            .with_current(current_after, current_unix_micros()? / 1_000_000, |_| ())
-            .map_err(|error| error.to_string())?;
+        candidate.with_current(current_after, current_unix_micros()? / 1_000_000, |_| ())?;
         let completed_at = current_unix_micros()?;
         current_validity
             .validate_at(completed_at / 1_000_000)

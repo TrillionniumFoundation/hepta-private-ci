@@ -100,6 +100,10 @@ impl AgentdState {
         // not gate core Agent readiness. The required cognitive owner is
         // represented by critical_stores_ready, which is frozen only after
         // owner-local startup completes under the generation fence.
+        let with_execution = matches!(
+            &method,
+            crate::AgentdMethod::CognitiveContextWithExecutionV1 { .. }
+        );
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
                 let mut capabilities = vec![
@@ -126,6 +130,14 @@ impl AgentdState {
                             .map_err(AgentdError::Protocol)?,
                     );
                 }
+                capabilities.push(
+                    crate::AgentdCapability::new(
+                        crate::COGNITIVE_CONTEXT_EXECUTION_CAPABILITY_V1,
+                        /*major*/ 1,
+                        /*minor*/ 0,
+                    )
+                    .map_err(AgentdError::Protocol)?,
+                );
                 capabilities.push(
                     crate::AgentdCapability::new(
                         crate::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY,
@@ -267,7 +279,8 @@ impl AgentdState {
                     crate::evidence_host::verify(self, request).await?,
                 )
             }
-            crate::AgentdMethod::CognitiveContext { query, limit } => {
+            crate::AgentdMethod::CognitiveContext { query, limit }
+            | crate::AgentdMethod::CognitiveContextWithExecutionV1 { query, limit } => {
                 require_cognitive_control_ready(
                     lifecycle,
                     app_server_ready,
@@ -286,6 +299,11 @@ impl AgentdState {
                 };
                 // The model and context plan bind to the body that was launched.
                 // Current lifecycle authority remains fenced before and after I/O.
+                if with_execution {
+                    execution
+                        .collect_settled_read_v1()
+                        .map_err(AgentdError::Protocol)?;
+                }
                 let result = crate::cognitive_context::read_with_retrieval_context_and_learning(
                     &store,
                     &self.identity.agent_id,
@@ -315,6 +333,9 @@ impl AgentdState {
                     )?;
                 }
                 match result {
+                    Ok(snapshot) if with_execution => AgentdPayload::CognitiveContextWithExecutionV1(
+                        Box::new(execution.context_with_execution_v1(snapshot).map_err(AgentdError::Protocol)?),
+                    ),
                     Ok(snapshot) => AgentdPayload::CognitiveContext(snapshot),
                     Err(CognitiveContextError::Store(error)) => {
                         return self.cognitive_error_response(

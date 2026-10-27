@@ -179,6 +179,40 @@ impl AgentdClient {
         }
     }
 
+    /// Read the unchanged owner snapshot and its original settled neural work
+    /// in the separately negotiated, bounded execution envelope.
+    pub async fn cognitive_context_with_execution_v1(
+        &self,
+        query: String,
+        limit: u16,
+    ) -> Result<crate::CognitiveContextExecutionV1, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::CognitiveContextWithExecutionV1 { query, limit },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::CognitiveContextWithExecutionV1(context) => {
+                crate::cognitive_execution::validate_context_execution_v1(&context)
+                    .map_err(AgentdError::Protocol)?;
+                if context.neural.as_ref().is_some_and(|neural| {
+                    neural.owner_id != self.expected_agent_id
+                        || neural.body_generation != self.spawn_generation
+                }) {
+                    return Err(AgentdError::Protocol(
+                        "cognitive execution owner mismatch".to_owned(),
+                    ));
+                }
+                Ok(*context)
+            }
+            payload => unexpected(payload),
+        }
+    }
+
     /// Reacquire the owner cut immediately before physical model attachment.
     /// Success is only a freshness observation for this instant, not a lease.
     pub async fn revalidate_cognitive_context(

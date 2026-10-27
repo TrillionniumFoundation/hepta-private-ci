@@ -121,6 +121,14 @@ impl NeuralCognitiveModelV1 {
         {
             return Err("neural cognitive observation differs from its exact request".to_owned());
         }
+        execution.match_settled_read_v1(crate::cognitive_execution::ExpectedNeuralReadV1 {
+            owner: owner_id,
+            body_generation,
+            parameter: request.pin.payload_digest,
+            model_generation: request.pin.generation.get(),
+            response: observation.execution_receipt_digest,
+            source: crate::CognitiveNeuralSourceV1::EvaluatedChild,
+        })?;
         Ok(observation.scores_q32)
     }
 }

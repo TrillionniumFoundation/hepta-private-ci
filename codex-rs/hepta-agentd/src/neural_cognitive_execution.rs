@@ -1,5 +1,7 @@
 //! A caller-owned execution window, never an authorization or receipt.
 
+use std::sync::Arc;
+use std::sync::Mutex;
 use std::time::Duration;
 use std::time::Instant;
 use tokio_util::sync::CancellationToken;
@@ -10,6 +12,7 @@ use tokio_util::sync::CancellationToken;
 pub struct NeuralCognitiveExecutionV1 {
     deadline: Instant,
     cancellation: CancellationToken,
+    pub(crate) observations: Arc<Mutex<Option<crate::cognitive_execution::ReadObservationV1>>>,
 }
 
 impl NeuralCognitiveExecutionV1 {
@@ -17,6 +20,7 @@ impl NeuralCognitiveExecutionV1 {
         Self {
             deadline,
             cancellation,
+            observations: Arc::new(Mutex::new(None)),
         }
     }
 
