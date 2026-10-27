@@ -1,0 +1,77 @@
+{
+  "schema": "hepta-ci-records-incremental-byte-pack-v1",
+  "source_sha": "60df5f93480e191cea88780d2ff394554182e30b",
+  "source_tree": "d595f57bc57b62e850dc37930fa92c7378284c0c",
+  "chain_sha": "c96022b897c1235fdbdbfcfa32764403511c6aab",
+  "run_id": 40498180354,
+  "job_id": 122168863797,
+  "original_workflow_conclusion": "failure",
+  "original_records_zip": {
+    "artifact_id": 12732017394,
+    "bytes": 117757882,
+    "sha256": "b53e83d157c07a713fc566087b32b48fd42c0ac388628e5835071207de942b36"
+  },
+  "original_checkpoints_zip": {
+    "artifact_id": 12732087231,
+    "bytes": 543693588,
+    "sha256": "cb6db5dad675a12723a7fd5a89600bb68f287a3c2a1d53796356dc9939c9b071",
+    "locally_downloaded": false,
+    "checkpoint_bytes_included": false
+  },
+  "base": {
+    "commit": "82b4c06add08c5e8e96871831eb6f80464d15968",
+    "tree": "2fca9bfbb86ef393fb8a0f7685dde47e94e5d3ce",
+    "directory": "qualification/public-initial-v2/ci-008-f75bf1ac",
+    "manifest_sha256": "f874ff5d9715413803daf9d097a6e85e9b69924bfe356945519493a5e7749a34",
+    "original_evidence_index_sha256": "bea0af1187ed5e7be548412c3487388b4c2f57a1652f59f9033d564423b80878"
+  },
+  "algorithm": "preserve original ZIP bytes in region order; split local-header/gap, raw-compressed-payload and central/tail regions at 256KiB; reuse byte-equal immutable ci008 chunks or store new chunks; no decompression/recompression",
+  "source_zip_recompressed": false,
+  "shared_chunks_compared_byte_for_byte": true,
+  "maximum_chunk_bytes": 262144,
+  "maximum_pack_bytes": 4194304,
+  "shared_original_stream_bytes": 110342516,
+  "shared_unique_chunks": 5589,
+  "shared_unique_bytes": 55461641,
+  "segments": 23258,
+  "unique_chunks": 11544,
+  "new_unique_bytes": 7415366,
+  "packs": [
+    {
+      "file": "records-000.pack",
+      "bytes": 3995317,
+      "sha256": "54f40c84ed56be6f1cec8f33bbd9de1569c90de0a9ff0b320ec43a0be42b3a19"
+    },
+    {
+      "file": "records-001.pack",
+      "bytes": 3420049,
+      "sha256": "52cee1a3975a080d24cae28229a3c40070a42e44dcdf50b412f36f9e6284b936"
+    }
+  ],
+  "recipe": {
+    "file": "records.recipe.json.gz",
+    "bytes": 582152,
+    "expanded_bytes": 1722725,
+    "sha256": "48fc4b44cd2b2657f32bdbf2e9273a67ae62abfa4fa3b58301bf365a1523eaad"
+  },
+  "archive_entries": 11499,
+  "evidence_index_sha256": "6c2dcf9749d98aa3e9a651bd545e44f583087b952394dbe52f65223d2d5c57ae",
+  "records_expanded_bytes": 209446857,
+  "separate_checkpoint_members": [
+    "campaign/round-2-train-cumulative-lora/artifact.safetensors",
+    "genesis/artifact.safetensors",
+    "reference/original/descendant-diagnostics/round-1/candidate-evaluation-input/artifact.safetensors",
+    "reference/original/descendant-diagnostics/round-1/train-budget-matched-full-tune/artifact.safetensors",
+    "reference/original/descendant-diagnostics/round-1/train-fresh-budget-matched-lora/artifact.safetensors",
+    "reference/original/descendant-diagnostics/round-2/candidate-evaluation-input/artifact.safetensors",
+    "reference/original/descendant-diagnostics/round-3/candidate-evaluation-input/artifact.safetensors"
+  ],
+  "additional_index_members": {
+    "reference/original/evidence-index.json": {
+      "bytes": 3041609,
+      "sha256": "bea0af1187ed5e7be548412c3487388b4c2f57a1652f59f9033d564423b80878"
+    }
+  },
+  "product_qualification": false,
+  "installed_children": 0
+}
