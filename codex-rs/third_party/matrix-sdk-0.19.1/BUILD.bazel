@@ -1,0 +1,45 @@
+load("@crates//:defs.bzl", "all_crate_deps")
+load("@rules_rust//cargo/private:cargo_build_script_wrapper.bzl", "cargo_build_script")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+_SDK_FEATURES = [
+    "e2e-encryption",
+    "rustls-aws-lc-rs",
+    "sqlite",
+]
+
+filegroup(
+    name = "package-files",
+    srcs = glob(["**"], exclude = ["BUILD.bazel", "target/**"]),
+    visibility = ["//visibility:public"],
+)
+
+cargo_build_script(
+    name = "matrix-sdk-build-script",
+    srcs = ["build.rs"],
+    crate_features = _SDK_FEATURES,
+    crate_name = "build_script_build",
+    crate_root = "build.rs",
+    edition = "2024",
+    pkg_name = "matrix-sdk",
+    version = "0.19.1",
+    visibility = ["//visibility:private"],
+    deps = all_crate_deps(build = True),
+)
+
+# These are the production features requested by the first-party Cargo
+# dependency. Keep the first-party migration tests in their workspace crate;
+# this nonmember vendor does not have a resolved upstream dev-dependency graph.
+rust_library(
+    name = "matrix-sdk",
+    srcs = glob(["src/**/*.rs"]),
+    compile_data = glob(["README.md", "src/**/*.md", ".cargo/mermaid.html"]),
+    crate_features = _SDK_FEATURES,
+    crate_name = "matrix_sdk",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    version = "0.19.1",
+    visibility = ["//visibility:public"],
+    deps = all_crate_deps() + [":matrix-sdk-build-script"],
+    proc_macro_deps = all_crate_deps(proc_macro = True),
+)
