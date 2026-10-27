@@ -39,7 +39,10 @@ use crate::load_pinned_candidate;
 mod initial_smollm_genesis;
 #[path = "selected_initial_smollm.rs"]
 mod selected_initial_smollm;
+pub use selected_initial_smollm::SMOLLM_PUBLIC_INITIAL_CONTRACT_V2;
+pub use selected_initial_smollm::SMOLLM_PUBLIC_INITIAL_PROFILE_V2;
 pub use selected_initial_smollm::SelectedInitialSmolLmMaterialV1;
+pub use selected_initial_smollm::SelectedPublicInitialSmolLmMaterialV2;
 
 const MAX_TRUSTED_SELECTORS: usize = 32;
 
