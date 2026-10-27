@@ -2,6 +2,9 @@
 
 from copy import deepcopy
 import json
+from pathlib import Path
+import subprocess
+import sys
 import unittest
 
 from population_training import address_partition, load_shards, sha, train_populations
@@ -53,6 +56,15 @@ class PopulationTests(unittest.TestCase):
         self.assertNotIn(old, json.loads(second["artifacts"]["semantic"]["native"])["lineage_sources"])
         with self.assertRaisesRegex(ValueError, "count"):
             address_partition(["one"], 2)
+
+    def test_bounded_process_preserves_exact_request_and_rejects_duplicate_fields(self):
+        worker = Path(__file__).with_name("population_worker.py")
+        raw = json.dumps({"schema": "hepta.memory.population-training-request.v2", "export": fixture(8), "configuration": CONFIG}).encode()
+        result = subprocess.run([sys.executable, "-I", "-u", "-B", str(worker)], input=raw, capture_output=True, timeout=20)
+        self.assertEqual(result.returncode, 0, result.stderr.decode())
+        self.assertEqual(json.loads(result.stdout)["request_digest"], sha(raw))
+        invalid = subprocess.run([sys.executable, str(worker)], input=b'{"schema":1,"schema":2}', capture_output=True, timeout=10)
+        self.assertEqual((invalid.returncode, invalid.stdout), (2, b""))
 
 
 if __name__ == "__main__":

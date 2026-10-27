@@ -62,6 +62,14 @@ impl ReleaseFixture {
     }
 
     pub(crate) fn from_models_with_training_code(snapshot: &MemoryCellOwnerSnapshotV1, semantic: &[u8], procedure: &[u8], training_code_digest: Digest32) -> Self {
+        Self::from_payloads_with_training_code(snapshot, semantic, procedure, training_code_digest, false)
+    }
+
+    pub(crate) fn from_populations_with_training_code(snapshot: &MemoryCellOwnerSnapshotV1, semantic: &[u8], procedure: &[u8], training_code_digest: Digest32) -> Self {
+        Self::from_payloads_with_training_code(snapshot, semantic, procedure, training_code_digest, true)
+    }
+
+    fn from_payloads_with_training_code(snapshot: &MemoryCellOwnerSnapshotV1, semantic: &[u8], procedure: &[u8], training_code_digest: Digest32, population: bool) -> Self {
         let directory = TempDir::new().expect("artifact root");
         let now = super::now().expect("test clock");
         let withdrawals = DatasetWithdrawalRegistry::new_scoped(DatasetWithdrawalScopeV1 {
@@ -96,7 +104,10 @@ impl ReleaseFixture {
         let service = Arc::new(Mutex::new(LearningArtifactOwnerService::open(config.clone()).expect("actual artifact owner")));
         let verifier = ArtifactSelectionVerifierV1::new(selection_trust(&config), &config.trust).expect("configured independent selector");
         let host = Arc::new(MemoryCellReleaseHostV1::new(Arc::clone(&service), verifier));
-        let candidate = MemoryCellBundleCandidateV1::from_owner_snapshot(snapshot, ContractGenerationV1::new(1).expect("generation"), semantic, procedure).expect("typed bundle");
+        let generation = ContractGenerationV1::new(1).expect("generation");
+        let candidate = if population {
+            MemoryCellBundleCandidateV1::from_owner_populations(snapshot, generation, semantic, procedure)
+        } else { MemoryCellBundleCandidateV1::from_owner_snapshot(snapshot, generation, semantic, procedure) }.expect("typed bundle");
         let request = prepare_request(&service, &config, &candidate, 1, training_code_digest);
         let fixture = Self { directory, service, host, initial_request: request, config };
         fixture.host.publish(fixture.initial_request.clone(), snapshot).expect("durable typed publication");
@@ -113,6 +124,13 @@ impl ReleaseFixture {
         semantic: &[u8], procedure: &[u8], training_code_digest: Digest32) -> LearningArtifactPublishRequestV1 {
         let candidate = MemoryCellBundleCandidateV1::from_owner_snapshot(snapshot, ContractGenerationV1::new(generation).expect("generation"),
             semantic, procedure).expect("successor bundle");
+        prepare_request(&self.service, &self.config, &candidate, generation, training_code_digest)
+    }
+
+    pub(crate) fn prepare_populations(&self, snapshot: &MemoryCellOwnerSnapshotV1, generation: u64,
+        semantic: &[u8], procedure: &[u8], training_code_digest: Digest32) -> LearningArtifactPublishRequestV1 {
+        let candidate = MemoryCellBundleCandidateV1::from_owner_populations(snapshot, ContractGenerationV1::new(generation).expect("generation"),
+            semantic, procedure).expect("successor population bundle");
         prepare_request(&self.service, &self.config, &candidate, generation, training_code_digest)
     }
 

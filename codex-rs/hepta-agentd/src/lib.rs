@@ -37,6 +37,8 @@ mod memory_cell_training_test_support;
 #[cfg(test)]
 mod memory_cell_training_tests;
 #[cfg(test)]
+mod memory_cell_population_tests;
+#[cfg(test)]
 mod memory_cell_language_runtime_tests;
 mod memory_cell_network;
 mod memory_cell_training;
