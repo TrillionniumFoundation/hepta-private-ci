@@ -206,7 +206,10 @@ mod tests {
                 accelerator_millis: 1_000,
             },
         });
-        assert!(admission.is_ok(), "test fixture should succeed: {admission:?}");
+        assert!(
+            admission.is_ok(),
+            "test fixture should succeed: {admission:?}"
+        );
         ledger
     }
 
