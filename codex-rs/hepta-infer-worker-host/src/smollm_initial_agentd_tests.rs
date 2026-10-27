@@ -209,8 +209,21 @@ async fn session(
         let client = AgentdClient::new(identity.control_socket.clone(), identity.agent_id.clone(), identity.spawn_generation)?;
         let registry = FleetRegistry::open_existing(HeptaFleetRoot::parse(&identity.fleet_root)?)?;
         registry.compare_and_transition(&identity.agent_id, identity.spawn_generation, AgentLifecycle::Running)?;
+        // This ignored real-model integration runs inside a test binary.
+        // Re-execs must use the real Codex CLI built and hashed by the workflow,
+        // never the test harness or an unconfigured default dispatch path.
+        let target = std::env::var_os("CARGO_TARGET_DIR")
+            .ok_or("real public V2 test requires an explicit Cargo target directory")?;
+        let codex_name = if cfg!(windows) { "codex.exe" } else { "codex" };
+        let codex_self_exe =
+            std::fs::canonicalize(std::path::PathBuf::from(target).join("debug").join(codex_name))?;
         running = Some(OwnedTask::new(tokio::spawn(codex_hepta_agentd::run(
-            config, codex_arg0::Arg0DispatchPaths::default()))));
+            config,
+            codex_arg0::Arg0DispatchPaths {
+                codex_self_exe: Some(codex_self_exe),
+                ..codex_arg0::Arg0DispatchPaths::default()
+            },
+        ))));
         tokio::time::timeout(Duration::from_secs(20), async {
             loop {
                 if client.health().await.is_ok_and(|health| health.ready) { break; }
