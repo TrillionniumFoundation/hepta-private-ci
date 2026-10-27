@@ -49,6 +49,26 @@ class ProtocolFixtureScopeTests(unittest.TestCase):
             with self.subTest(path=name):
                 self.assertFalse(protocol.schema_path(name))
 
+    def test_later_policy_failure_updates_the_record_and_keeps_partial_output(self):
+        runner = self.runner()
+        candidate = self.restore(runner)
+        name = protocol.SCHEMA_ROOT + "json/v2/Generated.json"
+        path = self.root / name
+        path.parent.mkdir(parents=True)
+        path.write_text('{"type":"object"}\n')
+        protocol.verify_scope(runner, candidate)
+        self.assertTrue(runner.record["original_dependency_policy_unchanged"])
+        policy = self.root / next(iter(candidate["policy_inputs"]))
+        policy.write_text("unapproved policy mutation\n")
+        with self.assertRaisesRegex(ValueError, "policy_inputs"):
+            protocol.verify_scope(runner, candidate)
+        self.assertFalse(runner.record["original_dependency_policy_unchanged"])
+        protocol.retain_partial_schema(runner)
+        self.assertEqual(
+            (runner.output / "partial-files" / name).read_bytes(), path.read_bytes()
+        )
+        self.assertFalse(runner.record["promotion_allowed"])
+
 
 if __name__ == "__main__":
     unittest.main()
