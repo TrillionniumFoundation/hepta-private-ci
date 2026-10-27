@@ -100,11 +100,13 @@ fn same_registry_busy_or_late_clock_cannot_revoke_after_original_deadline()
             }
             Ok(worker.join().map_err(|_| "revoke worker panic")?)
         })?;
-        assert_eq!(result, Err(AuthorityLeaseError::Unavailable));
-        assert_eq!(registry.frontier()?, frontier);
         assert_eq!(
-            std::fs::read(directory.path().join("authority-leases.json"))?,
-            bytes
+            (
+                result,
+                registry.frontier()?,
+                std::fs::read(directory.path().join("authority-leases.json"))?
+            ),
+            (Err(AuthorityLeaseError::Unavailable), frontier, bytes)
         );
         assert!(
             registry
