@@ -65,6 +65,16 @@ GROUPS = [
 ]
 
 
+# Reexecute this original case only as a separate process/stdio diagnostic.
+# Its result is never added to original91 or to the new4+4+2 control counts.
+LEAK_DIAGNOSTIC = {
+    "id": "original-elevated-stdio-leak",
+    "package": "codex-windows-sandbox",
+    "names": ["unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit"],
+    "runIgnored": False,
+}
+
+
 def command_for(group):
     command = [
         "just",
@@ -239,6 +249,7 @@ def main():
                 ".github/scripts/windows_native_exact_cases.py",
                 "codex-rs/Cargo.lock",
                 "MODULE.bazel.lock",
+                "codex-rs/hepta-operator-acceptance/src/test_support.rs",
                 "codex-rs/hepta-operator-acceptance/src/windows_openssh.rs",
                 "codex-rs/hepta-operator-acceptance/src/windows_openssh_identity.rs",
                 "codex-rs/hepta-operator-acceptance/src/windows_openssh_image.rs",
@@ -247,6 +258,8 @@ def main():
                 "codex-rs/hepta-operator-acceptance/src/windows_openssh_transport_tests.rs",
                 "codex-rs/windows-sandbox-rs/src/elevated/runner_process.rs",
                 "codex-rs/windows-sandbox-rs/src/elevated/runner_process_tests.rs",
+                "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+                "codex-rs/windows-sandbox-rs/src/elevated/runner_stdio_diagnostics.rs",
             )
         ]
         hashes = {
@@ -266,6 +279,14 @@ def main():
         }
         os.environ["TEMP"] = os.environ["TMP"] = str(native_temp)
         raw = execute_groups(root, output, GROUPS)
+        diagnostic_output = output / "runner-leak-diagnostic"
+        diagnostic_output.mkdir(exist_ok=False)
+        receipt["separateRunnerLeakDiagnostic"] = {
+            "groups": execute_groups(root, diagnostic_output, [LEAK_DIAGNOSTIC]),
+            "countedInOriginal91OrNew10": False,
+            "rootCauseProven": False,
+            "scope": "Read-only test-build parent/retained-runner PID and STD handle type/inherit flags; no env or command text; no stdio redirection or timeout change.",
+        }
         if [row["id"] for row in raw] != [group["id"] for group in GROUPS]:
             raise RuntimeError("missing, duplicate or unknown result group")
         results = []

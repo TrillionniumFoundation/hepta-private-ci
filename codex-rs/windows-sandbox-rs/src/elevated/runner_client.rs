@@ -48,6 +48,9 @@ use windows_sys::Win32::System::Threading::WaitForSingleObject;
 
 #[path = "runner_process.rs"]
 mod runner_process;
+#[cfg(test)]
+#[path = "runner_stdio_diagnostics.rs"]
+mod runner_stdio_diagnostics;
 pub(crate) use runner_process::RunnerCancellation;
 pub(crate) use runner_process::RunnerProcess;
 
@@ -348,6 +351,8 @@ pub(crate) fn spawn_runner_transport(
     let mut pi: PROCESS_INFORMATION = unsafe { std::mem::zeroed() };
     let env_block: Option<Vec<u16>> = None;
 
+    #[cfg(test)]
+    runner_stdio_diagnostics::record("before-logon", /*runner*/ None);
     let previous_error_mode = unsafe { SetErrorMode(RUNNER_ERROR_MODE_FLAGS) };
     // Sandbox users have no profile state that commands should inherit.
     let spawn_res = unsafe {
@@ -386,6 +391,11 @@ pub(crate) fn spawn_runner_transport(
     let mut process = RunnerProcess::new(
         unsafe { OwnedHandle::from_raw_handle(pi.hProcess as _) },
         expected_runner_pid,
+    );
+    #[cfg(test)]
+    runner_stdio_diagnostics::record(
+        "created-owned-runner",
+        Some((expected_runner_pid, pi.hProcess)),
     );
 
     let connect_result = (|| -> Result<()> {

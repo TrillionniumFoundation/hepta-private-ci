@@ -117,3 +117,34 @@ non-PASS cases, including LEAK, and duplicate/unknown summary items. It records
 the exact clean head/tree, native compiler/runners, System32 tool hash, protected
 source and actual before/after observations even on failure. The unchanged
 original driver and scope remain separate and must retain the original 91 IDs.
+
+## Actual 0ba5 result and successor limits
+
+The actual Windows [run 40460595505](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40460595505)
+used clean `0ba5adf28de1dd60010e2cc42bbf454cc435d195`, tree
+`043e60046d19e716ec3b454e63e9c9a383332b13`. Its unchanged original91 had
+83 PASS, 7 FAIL and 1 LEAK. The separate legacy-refusal3+3 and private-artifact9
+passed. The new runner4 selected zero tests because their exact names omitted
+`runner_client`; the collector refused that count drift. The new crypto4 and
+transport2 failed at real OpenSSH fixture filename signing before reaching the
+native backend. None of those six failures qualifies a native verifier result.
+
+The filename signer reported `Cannot open ...statement.sig: Broken pipe`.
+[Win32 OpenSSH's writer](https://github.com/PowerShell/openssh-portable/blob/v9.5.0.0/contrib/win32/win32compat/fileio.c#L304)
+uses `FILE_SHARE_WRITE` for `O_WRONLY`. The fixture's held `GENERIC_READ` observer
+conflicts with that writer's sharing choice. The successor retains a
+metadata-only `READ_CONTROL | FILE_READ_ATTRIBUTES` observer with read/write
+sharing and no delete sharing, preserving full identity/DACL checks across the
+original filename write. It does not repair an ACL or rewrite signed bytes.
+The error mapping is consistent with this mechanism; the successor still needs
+actual native execution to validate the repair and reach the backend controls.
+
+The original elevated command body passed but Nextest reported LEAK. Its root
+cause remains undetermined; waiting for the retained runner's real exit does
+not identify every external holder of Nextest's capture pipes. Test builds now
+record only parent/retained-runner PIDs, standard-handle type and inherit flags
+at creation/exit cuts. They read no environment, command body, credentials or
+pipe content and do not redirect stdio, duplicate handles or change process
+cleanup. A separate exact reexecution of that original case requests successful
+output for diagnosis. Its result is not added to original91 or new4+4+2, and a
+LEAK remains nonpassing. Merely suppressing capture output is not a fix.

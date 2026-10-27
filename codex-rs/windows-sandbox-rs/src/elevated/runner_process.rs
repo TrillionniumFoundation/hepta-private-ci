@@ -87,6 +87,11 @@ impl RunnerProcess {
                 self.pid
             );
         }
+        #[cfg(test)]
+        super::runner_stdio_diagnostics::record(
+            "owned-native-exit",
+            Some((self.pid, self.handle.as_raw_handle() as _)),
+        );
         Ok(())
     }
 
