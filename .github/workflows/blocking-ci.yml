@@ -164,6 +164,12 @@ jobs:
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 40
+    # Resource controls only: preserve the full affected-owner and reverse-consumer test set.
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -171,6 +177,19 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Reclaim preinstalled SDK disk not used by the Linux native Rust lane
+        shell: bash
+        run: |
+          set -euo pipefail
+          df -h "$GITHUB_WORKSPACE"
+          # Do not alter the checkout, Cargo.lock, test selection, or runtime evidence.
+          for unused_sdk in /usr/local/lib/android /opt/ghc; do
+            if [ -d "$unused_sdk" ]; then
+              sudo rm -rf -- "$unused_sdk"
+            fi
+          done
+          df -h "$GITHUB_WORKSPACE"
 
       - name: Prepare native test prerequisites before compilation
         run: |
@@ -201,6 +220,16 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/impact-test.json" --
           python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
           --output "$RUNNER_TEMP/cargo-impact.json" --run
+
+      - name: Record real disk usage after scoped impact testing
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          df -h "$GITHUB_WORKSPACE"
+          if [ -d codex-rs/target ]; then
+            du -sh codex-rs/target
+          fi
 
       - name: Retain dependency plan and real command output
         if: always()
