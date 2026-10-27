@@ -1,0 +1,114 @@
+{
+  "schema": "hepta-answer-eos-research-caller-local-validation-v1",
+  "base": "5cec842c70fc64cae8c2fad0a59f501038257481",
+  "prior_prepared_tree": "b3ec707a6a3e5554bcc31d703bfe683903c43dce",
+  "research_chain": "9035171271e9f437b7224b53532f41a2b2894be7",
+  "scope": "14 actual bounded control tests; no 135M research execution or Rust compilation",
+  "source_sha256": {
+    ".github/workflows/hepta-public-initial-v2.yml": "5eca74e9556d1ed62e6c79b31991738b0348ac5d57d94bc6d4ca650dba8641ef",
+    "scripts/hepta_smollm_three_rounds_v2.py": "46a70e92cbe7062ae5925833088016fde0416537c81f076207e5aa38806116ba",
+    "scripts/hepta_smollm_answer_eos_research_v3.py": "a3000d9d76a1693011015370572ac52b613942c3c6886cb6c53bc09515c86e46",
+    "scripts/test_hepta_smollm_answer_eos_research_v3.py": "db7b8110735740a51eed543543737a79209ea99776c8beb20e0c6a16d8203f31"
+  },
+  "invocations": [
+    {
+      "name": "research",
+      "argv": [
+        "python3",
+        "scripts/test_hepta_smollm_answer_eos_research_v3.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "tests": 8,
+      "source_sha256": "db7b8110735740a51eed543543737a79209ea99776c8beb20e0c6a16d8203f31"
+    },
+    {
+      "name": "descendant",
+      "argv": [
+        "python3",
+        "scripts/test_hepta_smollm_descendant_v2.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "tests": 4,
+      "source_sha256": "043034a8efb4c8390f28ed130b3d5727c923a4586d0e419540673a0167c220ae"
+    },
+    {
+      "name": "materials",
+      "argv": [
+        "python3",
+        "scripts/test_hepta_smollm_public_initial_v2.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "tests": 2,
+      "source_sha256": "f4b49fc6e15b8e2eee0e30167382f32d7165d4ae579583c299e83da5e654fb11"
+    }
+  ],
+  "checks": {
+    "python_ast": "PASS",
+    "yaml_and_gate_order": "PASS",
+    "four_source_files_equal_prior_b3ec": "PASS",
+    "full_135M_research": "NOT_RUN; awaits original model-lane gates",
+    "just test -p codex-hepta-infer-worker-host": "UNAVAILABLE: executable absent; no compilation claim",
+    "just fix -p codex-hepta-infer-worker-host": "UNAVAILABLE: executable absent; no compilation claim",
+    "just fmt": "UNAVAILABLE: executable absent; no compilation claim",
+    "original_control_source_bytes": "PASS; pilot, inherited verifier, CPU wheel lock, family bytes equal c960"
+  },
+  "archive": {
+    "path": "raw-controls.tar.gz",
+    "bytes": 1819,
+    "sha256": "9c0380c83c8ada50b038b7e4497d9413f6afec49dbdf0d7993e4e75d12136c32",
+    "files": [
+      {
+        "path": "baseline-source-comparison.json",
+        "bytes": 1032,
+        "sha256": "096db1ecf5e9e11b36a3ade6da142755172aced46fa5b60a374e73285e9943a4"
+      },
+      {
+        "path": "checks.json",
+        "bytes": 565,
+        "sha256": "53393638388355e7c48db245c4db8fcef14871d4c27dd82fc198299aa6d7dc45"
+      },
+      {
+        "path": "descendant.stderr.log",
+        "bytes": 756,
+        "sha256": "faf9d616fee55844a214406c4a440d2c4543f7f04367c7721a3879950b221267"
+      },
+      {
+        "path": "descendant.stdout.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "invocations.json",
+        "bytes": 793,
+        "sha256": "f8b414914a5b3d1fbe54abb4bdae203c15839f5aea20f53953a25a50e9ffdb30"
+      },
+      {
+        "path": "materials.stderr.log",
+        "bytes": 442,
+        "sha256": "f196925f51d2e2a8110fe70b78fdfb0453ce4b51585b91767bad5b11b4362dee"
+      },
+      {
+        "path": "materials.stdout.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "research.stderr.log",
+        "bytes": 1428,
+        "sha256": "66d3b12485326315fd16eb8861ffb2a032c7797bc75f1c0b2f7da1e925a6f521"
+      },
+      {
+        "path": "research.stdout.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "credential_content": "none; only synthetic boundary logs, source comparisons and invocation metadata",
+  "product_qualification": false,
+  "ordinary_child_installation": false,
+  "independent_future_quality": false
+}

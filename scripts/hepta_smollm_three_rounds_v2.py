@@ -77,12 +77,19 @@ def descendant_blockers(parent, incumbent, gain, incumbent_gain):
 
 
 def run(args):
+    research = None
+    research_context = None
+    if getattr(args, "research_profile", None) is not None:
+        import hepta_smollm_answer_eos_research_v3 as research
+
+        research_context = research.validate_request(args)
     observed_head = subprocess.check_output(
         ["git", "-C", str(args.chain), "rev-parse", "HEAD"], text=True
     ).strip()
     require(
-        observed_head == CHAIN_COMMIT,
-        "training source must be the exact public V2 commit",
+        observed_head == (research.CHAIN_COMMIT if research else CHAIN_COMMIT),
+        "training source must be the exact research profile commit" if research
+        else "training source must be the exact public V2 commit",
     )
     subprocess.run(
         [
@@ -213,6 +220,20 @@ def run(args):
     output.mkdir(mode=0o700, parents=False, exist_ok=False)
     plan_path = output / "experiment-plan.json"
     plan_path.write_bytes(plan_raw)
+    research_plan = None
+    research_pin = None
+    if research:
+        import llm_answer_eos_research_v3 as objective
+
+        require(objective.PROFILE == research.PROFILE, "named research objective")
+        research_plan = output / "research-plan-v3.json"
+        runtime.save(research_plan, objective.plan_record(dict(
+            files=dict(plan=str(plan_path)),
+            parent={key: parent[key] for key in ("contract", "adapter", "file_sha256")},
+            initial_setup=dict(parent_material=dict(
+                path=str(args.parent), sha256=args.parent_sha256)),
+        )))
+        research_pin = runtime.file_sha(research_plan)
     freeze = dict(
         schema="hepta-controlled-real-round-freeze-v2",
         round=args.round,
@@ -246,6 +267,11 @@ def run(args):
         production_qualification=False,
         installation_authorized=False,
     )
+    if research:
+        freeze.update(schema="hepta-controlled-answer-eos-round-freeze-v3",
+                      research_context=research_context, research_plan_sha256=research_pin,
+                      candidate_recipe=objective.RECIPE,
+                      experiment_scope="unchanged-material-and-control-plan-not-v3-candidate-recipe")
     runtime.save(output / "round-freeze.json", freeze)
     phases = []
 
@@ -292,7 +318,8 @@ def run(args):
         trainer.run(
             SimpleNamespace(
                 operation="train",
-                initial_setup_profile=parent_step.PROFILE if initial_setup else None,
+                initial_setup_profile=(research.PROFILE if research else
+                                       parent_step.PROFILE if initial_setup else None),
                 parent_material=str(args.parent) if initial_setup else None,
                 parent_material_sha256=args.parent_sha256 if initial_setup else None,
                 materials=str(args.materials),
@@ -311,12 +338,14 @@ def run(args):
                 expected_candidate_file_sha256=None,
                 expected_candidate_record_sha256=None,
                 expected_candidate_result_sha256=None,
+                research_plan=str(research_plan) if research else None,
+                research_plan_sha256=research_pin,
             )
         )
         completion = runtime.read_json(
             candidate_output
             / (
-                "parent-step-result-v2.json"
+                "parent-step-result-v3.json" if research else "parent-step-result-v2.json"
                 if initial_setup
                 else "parent-step-result.json"
             )
@@ -330,6 +359,12 @@ def run(args):
         phases.append(dict(name="train-candidate", **completion["supervisor"]))
         runtime.save(output / "phase-outcomes.json", phases)
         trained = runtime.read_json(candidate_output / "execution/actual-receipt.json")
+        if research:
+            objective.verify_training(trained["training"])
+            require(trained["schema"] == "llm-runtime-parent-step-actual-v3"
+                    and trained["research"] == dict(plan_sha256=research_pin,
+                        recipe=runtime.identity(objective.RECIPE), profile=research.PROFILE),
+                    "source-bound V3 candidate objective and receipt required")
         require(
             trained["parent_readback"] == parent["adapter"]
             and (
@@ -577,6 +612,14 @@ def run(args):
             )
             if not cumulative_schedule_matched:
                 assessment["blockers"].append("CumulativeBudgetMismatch")
+        if research:
+            require(research.validate_request(args) == research_context,
+                    "original research gate/readback inputs changed during execution")
+            assessment.update(schema="hepta-controlled-answer-eos-six-arm-assessment-v3",
+                              research_context=research_context,
+                              research_plan_sha256=research_pin,
+                              candidate_recipe=objective.RECIPE,
+                              experiment_scope="unchanged-material-and-control-plan-not-v3-candidate-recipe")
         runtime.save(output / "assessment.json", assessment)
         if not diagnostic:
             require(

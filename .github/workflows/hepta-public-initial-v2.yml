@@ -35,6 +35,7 @@ jobs:
       BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
       HEPTA_CI_LANE: source-head
       CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+      RESEARCH_CHAIN_SHA: 9035171271e9f437b7224b53532f41a2b2894be7
       CARGO_BUILD_JOBS: "2"
       CARGO_PROFILE_DEV_DEBUG: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
@@ -59,6 +60,12 @@ jobs:
           ref: ${{ env.CHAIN_SHA }}
           path: chain
           persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: TrillionniumFoundation/Trillionnium-Chain
+          ref: ${{ env.RESEARCH_CHAIN_SHA }}
+          path: chain-answer-eos
+          persist-credentials: false
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: "3.12.3"
@@ -75,8 +82,10 @@ jobs:
           mkdir -m 700 "$RUNNER_TEMP/hepta-public-initial-v2"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test "$(git -C ../chain rev-parse HEAD)" = "$CHAIN_SHA"
+          test "$(git -C ../chain-answer-eos rev-parse HEAD)" = "$RESEARCH_CHAIN_SHA"
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/hepta-source.txt"
           git -C ../chain rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/chain-source.txt"
+          git -C ../chain-answer-eos rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/research-chain-source.txt"
           rustc -vV > "$RUNNER_TEMP/hepta-public-initial-v2/rustc.txt"
           python3 -I -B scripts/hepta_smollm_host_resources.py --output "$RUNNER_TEMP/hepta-public-initial-v2/host.json"
           python3 -I -B - <<'PY'
@@ -152,6 +161,7 @@ jobs:
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/material-download-controls.json" --timeout-seconds 60 --minimum-tests 2 -- python3 scripts/test_hepta_smollm_public_initial_v2.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/descendant-boundary-controls.json" --timeout-seconds 60 --minimum-tests 4 -- python3 scripts/test_hepta_smollm_descendant_v2.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/research-boundary-controls.json" --timeout-seconds 60 --minimum-tests 8 -- python3 scripts/test_hepta_smollm_answer_eos_research_v3.py -v
           python3 -I -B -m venv "$RUNNER_TEMP/hepta-public-env"
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B -m pip install --require-hashes --only-binary=:all: --no-compile --index-url https://pypi.org/simple --report "$RUNNER_TEMP/hepta-public-initial-v2/pip-install.json" -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B -m pip check
@@ -244,8 +254,19 @@ jobs:
           if not passed:
               raise SystemExit("at least one required outcome failed, skipped, or was unavailable")
           PY
+      - name: Run one frozen answer-EOS research comparison after all original gates
+        id: answer_eos_research
+        if: ${{ success() && steps.ordinary.outcome == 'success' && steps.proposal_rounds.outcome == 'success' }}
+        timeout-minutes: 35
+        run: |
+          set -euo pipefail
+          unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/answer-eos-research-execution.json" --timeout-seconds 1800 --minimum-tests 0 -- "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_answer_eos_research_v3.py --native-input "$HEPTA_PN3_NEURAL_NATIVE_CONFIG" --ordinary-readback "$RUNNER_TEMP/hepta-public-initial-v2/n/p/ordinary-0/ordinary-session-result.json" --original-gates "$RUNNER_TEMP/hepta-public-initial-v2" --chain "$GITHUB_WORKSPACE/chain-answer-eos" --output "$RUNNER_TEMP/hepta-public-initial-v2/answer-eos-research-v3"
+          "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
       - name: Preserve actual outcome and any formatter patch
         if: always()
+        env:
+          ANSWER_EOS_RESEARCH_OUTCOME: ${{ steps.answer_eos_research.outcome }}
         run: |
           git diff --binary > "$RUNNER_TEMP/hepta-public-initial-v2/final-source-diff.patch"
           python3 -I -B - <<'PY'
@@ -259,7 +280,9 @@ jobs:
                       sha = hashlib.file_digest(handle, "sha256").hexdigest()
                   rows[str(path.relative_to(root))] = dict(sha256=sha, bytes=path.stat().st_size)
           (root / "evidence-index.json").write_text(json.dumps(dict(source=os.environ["SOURCE_SHA"],
-              chain=os.environ["CHAIN_SHA"], files=rows, product_qualification=False,
+              chain=os.environ["CHAIN_SHA"], research_chain=os.environ["RESEARCH_CHAIN_SHA"],
+              answer_eos_research_outcome=os.environ.get("ANSWER_EOS_RESEARCH_OUTCOME", "unavailable"),
+              files=rows, product_qualification=False,
               three_installed_upgrades_proven=False, held_runtime_closure_proven=False), indent=2) + "\n")
           PY
       - name: Retain all execution records, including failures
