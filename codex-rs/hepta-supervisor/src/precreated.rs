@@ -184,7 +184,10 @@ impl ProcessDriver for PrecreatedProcessDriver {
             startup_descriptor,
             pin,
             ..
-        } = self.pending.pop_front().unwrap();
+        } = self
+            .pending
+            .pop_front()
+            .ok_or_else(|| ProcessDriverError::new("no unused precreated child"))?;
         let outcome = (|| {
             verify_command(pin.pid, &command)?;
             let reply = channel
