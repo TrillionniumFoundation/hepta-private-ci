@@ -188,6 +188,10 @@ embedding host 必须准备真实 cognitive owner、artifact owner/selector、�
 memory_ci_profile=/tmp/hepta-memory-v7-language-profile
 python3.12 qualification/memory-cell-v7/prepare_language_ci.py "$memory_ci_profile"
 source "$memory_ci_profile/environment.sh"
+export CARGO_TARGET_DIR="$memory_ci_profile/cargo-target"
+cargo build --locked --manifest-path codex-rs/Cargo.toml -p codex-app-server --bin codex-app-server
+export HEPTA_TEST_CODEX_EXECUTABLE="$CARGO_TARGET_DIR/debug/codex-app-server"
+export MEMORY_CELL_LANGUAGE_RECEIPT_PATH="$memory_ci_profile/language-runtime-receipt.json"
 export MEMORY_CELL_TRAINING_RECEIPT_PATH="$memory_ci_profile/training-runtime-receipt.json"
 export MEMORY_CELL_POPULATION_RECEIPT_PATH="$memory_ci_profile/population-runtime-receipt.json"
 just test -p codex-hepta-cognitive-types -p codex-hepta-neuron -p codex-hepta-plasticity
@@ -199,6 +203,7 @@ just test -p codex-hepta-agentd --run-ignored only -E 'test(memory_cell_) & test
 
 [`prepare_language_ci.py`](prepare_language_ci.py) 输出 `PREPARATION.json`、`environment.sh`、`github.env`；formal Python 为 3.12.14，其他 3.12 patch 会如实记录，不宣称逐位等价。
 `--model-only` 只校验并重建冻结模型 transport，不创建可运行环境；不要据此跳过真实 worker 测试。
+上述 `cargo build` 仅构建同源 App Server 可执行文件，为真实 exec/filesystem helper 提供正确的 arg0 路径；它不运行测试。
 仓库测试入口是 `just test`；ignored 测试必须显式执行，普通套件 skipped 不能当通过。
 预算重跑使用 [`population_benchmark.py`](population_benchmark.py)，必须新输出路径，传入每份历史 receipt，不能覆盖已有负结果。
 
@@ -212,9 +217,9 @@ just test -p codex-hepta-agentd --run-ignored only -E 'test(memory_cell_) & test
 | release owner | 92 passed，1 skipped | [`122358149222.json`](evidence/ci/122358149222.json) |
 | source owner | 301 passed，7 skipped | 最新通过 [`122371741205.json`](evidence/ci/122371741205.json)；原 300/301 失败仍保留于 [`122356498801.json`](evidence/ci/122356498801.json) |
 | population | 149 passed | [`122371741084.json`](evidence/ci/122371741084.json) |
-| daemon / consumer / actual ignored | CI 仍在进行；不提前写通过 | 后续填入真实训练、语言、population、context 结果 |
+| daemon / consumer / actual ignored | CI7：334 passed、7 failed、9 skipped；通过中 1 flaky；actual ignored 未执行 | [`122390658657.json`](evidence/ci/122390658657.json)，修复后等待 CI8 |
 
-CI5 再次遇到编译失败（`json!` 内数组索引表达式）；修复已提交，daemon 仍没有测试通过证明，CI6 结果待补。
+CI5 的 `json!` 表达式与 CI6 的断言宏导入编译错误均保留原始记录。CI7 已编译并运行 341 项普通测试，7 项失败包括真实 App Server executable 配置、ledger 必需 abstain、节点旧 owner 锁释放、SQLite 关闭与恢复生命周期，以及旧源码顺序断言。另有一次立即多帧 worker 测试重试后通过，保留 flaky 标记。相应修复已提交，CI8 同时验证 source-owner 与 daemon；三个 actual ignored 测试仍未执行，不能提前记为通过。
 
 结构开发实验 [`population-costs-v2.json`](development/population-costs-v2.json) 比较固定 1–8 全计数空间；84 次真实 fit，部分计费下的固定比较器为 fixed-1，保留 keep-fixed。
 该轮已测部分加权净收益为负；独立未来任务、原生全链路成本、源账本与通信/RSS 缺项不能由 NumPy 诊断补成完整验收。
