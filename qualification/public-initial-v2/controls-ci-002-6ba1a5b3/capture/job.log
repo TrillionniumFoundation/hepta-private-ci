@@ -1,0 +1,1343 @@
+﻿2026-10-27T12:11:16.5899497Z Current runner version: '2.338.0'
+2026-10-27T12:11:16.5949345Z ##[group]Runner Image Provisioner
+2026-10-27T12:11:16.5950490Z Hosted Compute Agent
+2026-10-27T12:11:16.5951096Z Version: 20261021.618
+2026-10-27T12:11:16.5951821Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-27T12:11:16.5952550Z Build Date: 2026-10-21T00:45:21Z
+2026-10-27T12:11:16.5953300Z Worker ID: {d590d6a6-d581-4ddb-a344-5f49ea5a86f8}
+2026-10-27T12:11:16.5954031Z Region: eastus
+2026-10-27T12:11:16.5954574Z Cloud: Azure
+2026-10-27T12:11:16.5955166Z ##[endgroup]
+2026-10-27T12:11:16.5956690Z ##[group]Operating System
+2026-10-27T12:11:16.5957449Z Ubuntu
+2026-10-27T12:11:16.5957985Z 24.04.5
+2026-10-27T12:11:16.5958484Z LTS
+2026-10-27T12:11:16.5959057Z ##[endgroup]
+2026-10-27T12:11:16.5959603Z ##[group]Runner Image
+2026-10-27T12:11:16.5960706Z Image: ubuntu-24.04
+2026-10-27T12:11:16.5961330Z Version: 20261012.334.1
+2026-10-27T12:11:16.5962696Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-27T12:11:16.5964274Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+2026-10-27T12:11:16.5965307Z ##[endgroup]
+2026-10-27T12:11:16.5966508Z ##[group]GITHUB_TOKEN Permissions
+2026-10-27T12:11:16.5968602Z Actions: read
+2026-10-27T12:11:16.5969266Z Contents: read
+2026-10-27T12:11:16.5970276Z Metadata: read
+2026-10-27T12:11:16.5971046Z ##[endgroup]
+2026-10-27T12:11:16.5973186Z Secret source: Actions
+2026-10-27T12:11:16.5974203Z Cache mode: write
+2026-10-27T12:11:16.5974937Z Prepare workflow directory
+2026-10-27T12:11:16.6533352Z Prepare all required actions
+2026-10-27T12:11:16.6585299Z Getting action download info
+2026-10-27T12:11:16.9134290Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-10-27T12:11:17.0504452Z Download action repository 'actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405' (SHA:a309ff8b426b58ec0e2a45f0f869d46889d02405)
+2026-10-27T12:11:17.1542049Z Download action repository 'taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532' (SHA:44c6d64aa62cd779e873306675c7a58e86d6d532)
+2026-10-27T12:11:17.2914150Z Download action repository 'astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b' (SHA:08807647e7069bb48b6ef5acd8ec9567f424441b)
+2026-10-27T12:11:17.4726881Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-27T12:11:17.7129724Z Complete job name: cumulative-controls-only
+2026-10-27T12:11:17.8183584Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-10-27T12:11:17.8184757Z with:
+2026-10-27T12:11:17.8185292Z   ref: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:17.8185932Z   path: hepta
+2026-10-27T12:11:17.8186394Z   fetch-depth: 10
+2026-10-27T12:11:17.8186893Z   persist-credentials: false
+2026-10-27T12:11:17.8187546Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-10-27T12:11:17.8191984Z   token: ***
+2026-10-27T12:11:17.8192472Z   ssh-strict: true
+2026-10-27T12:11:17.8192956Z   ssh-user: git
+2026-10-27T12:11:17.8193410Z   clean: true
+2026-10-27T12:11:17.8193950Z   sparse-checkout-cone-mode: true
+2026-10-27T12:11:17.8194567Z   fetch-tags: false
+2026-10-27T12:11:17.8195062Z   show-progress: true
+2026-10-27T12:11:17.8195549Z   lfs: false
+2026-10-27T12:11:17.8195996Z   submodules: false
+2026-10-27T12:11:17.8196489Z   set-safe-directory: true
+2026-10-27T12:11:17.8197268Z env:
+2026-10-27T12:11:17.8197849Z   SOURCE_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:17.8198604Z   TESTED_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:17.8199332Z   BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:11:17.8200149Z   HEPTA_CI_LANE: source-head
+2026-10-27T12:11:17.8200759Z   CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:11:17.8201400Z   PYTHONNOUSERSITE: 1
+2026-10-27T12:11:17.8201914Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-27T12:11:17.8202729Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+2026-10-27T12:11:17.8203300Z   PIP_NO_CACHE_DIR: 1
+2026-10-27T12:11:17.8203781Z   HF_HUB_OFFLINE: 1
+2026-10-27T12:11:17.8204281Z   TRANSFORMERS_OFFLINE: 1
+2026-10-27T12:11:17.8204803Z ##[endgroup]
+2026-10-27T12:11:18.1124144Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-10-27T12:11:18.1128474Z ##[group]Getting Git version info
+2026-10-27T12:11:18.1130778Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci/hepta'
+2026-10-27T12:11:18.1132940Z [command]/usr/bin/git version
+2026-10-27T12:11:18.1195995Z git version 2.55.0
+2026-10-27T12:11:18.1223705Z ##[endgroup]
+2026-10-27T12:11:18.1239284Z Temporarily overriding HOME='/home/runner/work/_temp/7238d0e4-161d-444f-b3f8-4e57aa12fb8c' before making global git config changes
+2026-10-27T12:11:18.1243481Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-27T12:11:18.1248388Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci/hepta
+2026-10-27T12:11:18.1322787Z ##[group]Initializing the repository
+2026-10-27T12:11:18.1334823Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci/hepta
+2026-10-27T12:11:18.1457117Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-27T12:11:18.1461666Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-27T12:11:18.1465562Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-27T12:11:18.1468884Z hint: call:
+2026-10-27T12:11:18.1471524Z hint:
+2026-10-27T12:11:18.1473484Z hint: 	git config --global init.defaultBranch <name>
+2026-10-27T12:11:18.1475806Z hint:
+2026-10-27T12:11:18.1478173Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-27T12:11:18.1482566Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-27T12:11:18.1485610Z hint:
+2026-10-27T12:11:18.1487285Z hint: 	git branch -m <name>
+2026-10-27T12:11:18.1489064Z hint:
+2026-10-27T12:11:18.1491571Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-27T12:11:18.1495487Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/hepta/.git/
+2026-10-27T12:11:18.1502665Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-10-27T12:11:18.1568375Z ##[endgroup]
+2026-10-27T12:11:18.1571518Z ##[group]Disabling automatic garbage collection
+2026-10-27T12:11:18.1574378Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-27T12:11:18.1611527Z ##[endgroup]
+2026-10-27T12:11:18.1613887Z ##[group]Setting up auth
+2026-10-27T12:11:18.1615670Z Removing SSH command configuration
+2026-10-27T12:11:18.1621372Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-27T12:11:18.1670762Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-27T12:11:18.2050827Z Removing HTTP extra header
+2026-10-27T12:11:18.2059456Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-27T12:11:18.2101280Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-27T12:11:18.2325795Z Removing includeIf entries pointing to credentials config files
+2026-10-27T12:11:18.2331633Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-27T12:11:18.2371566Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-27T12:11:18.2606743Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-7fb513be-7094-4e32-8d98-31538463ef4d.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-27T12:11:18.2654000Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/hepta/.git.path /home/runner/work/_temp/git-credentials-7fb513be-7094-4e32-8d98-31538463ef4d.config
+2026-10-27T12:11:18.2694068Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/hepta/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-7fb513be-7094-4e32-8d98-31538463ef4d.config
+2026-10-27T12:11:18.2734635Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/hepta/.git.path /github/runner_temp/git-credentials-7fb513be-7094-4e32-8d98-31538463ef4d.config
+2026-10-27T12:11:18.2770743Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/hepta/.git/worktrees/*.path /github/runner_temp/git-credentials-7fb513be-7094-4e32-8d98-31538463ef4d.config
+2026-10-27T12:11:18.2804541Z ##[endgroup]
+2026-10-27T12:11:18.2806237Z ##[group]Fetching the repository
+2026-10-27T12:11:18.2813955Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=10 origin 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:22.5308293Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-10-27T12:11:22.5310583Z  * branch            6ba1a5b352568250edcec5975972d7d67d30e295 -> FETCH_HEAD
+2026-10-27T12:11:22.5318626Z [command]/usr/bin/git rev-parse --verify --quiet 6ba1a5b352568250edcec5975972d7d67d30e295^{object}
+2026-10-27T12:11:22.5348812Z 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:22.5359311Z ##[endgroup]
+2026-10-27T12:11:22.5366764Z ##[group]Determining the checkout info
+2026-10-27T12:11:22.5367717Z ##[endgroup]
+2026-10-27T12:11:22.5368278Z [command]/usr/bin/git sparse-checkout disable
+2026-10-27T12:11:22.5412933Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-27T12:11:22.5445464Z ##[group]Checking out the ref
+2026-10-27T12:11:22.5449758Z [command]/usr/bin/git checkout --progress --force 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:23.3254817Z Note: switching to '6ba1a5b352568250edcec5975972d7d67d30e295'.
+2026-10-27T12:11:23.3255380Z 
+2026-10-27T12:11:23.3255646Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-27T12:11:23.3256207Z changes and commit them, and you can discard any commits you make in this
+2026-10-27T12:11:23.3256729Z state without impacting any branches by switching back to a branch.
+2026-10-27T12:11:23.3257016Z 
+2026-10-27T12:11:23.3257566Z If you want to create a new branch to retain commits you create, you may
+2026-10-27T12:11:23.3258095Z do so (now or later) by using -c with the switch command. Example:
+2026-10-27T12:11:23.3258385Z 
+2026-10-27T12:11:23.3258501Z   git switch -c <new-branch-name>
+2026-10-27T12:11:23.3258729Z 
+2026-10-27T12:11:23.3258884Z Or undo this operation with:
+2026-10-27T12:11:23.3259048Z 
+2026-10-27T12:11:23.3259139Z   git switch -
+2026-10-27T12:11:23.3259278Z 
+2026-10-27T12:11:23.3259501Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-27T12:11:23.3259823Z 
+2026-10-27T12:11:23.3260428Z HEAD is now at 6ba1a5b Fix isolated cumulative evaluator sibling imports
+2026-10-27T12:11:23.3283912Z ##[endgroup]
+2026-10-27T12:11:23.3330917Z [command]/usr/bin/git log -1 --format=%H
+2026-10-27T12:11:23.3360351Z 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:23.3370179Z ##[group]Removing auth
+2026-10-27T12:11:23.3370712Z Removing SSH command configuration
+2026-10-27T12:11:23.3377026Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-27T12:11:23.3413351Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-27T12:11:23.3656837Z Removing HTTP extra header
+2026-10-27T12:11:23.3661763Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-27T12:11:23.3699083Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-27T12:11:23.3938348Z Removing includeIf entries pointing to credentials config files
+2026-10-27T12:11:23.3943091Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-27T12:11:23.3974317Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/hepta/.git.path
+2026-10-27T12:11:23.3975448Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/hepta/.git/worktrees/*.path
+2026-10-27T12:11:23.3976072Z includeif.gitdir:/github/workspace/hepta/.git.path
+2026-10-27T12:11:23.3976521Z includeif.gitdir:/github/workspace/hepta/.git/worktrees/*.path
+2026-10-27T12:11:23.3985837Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/hepta/.git.path
+2026-10-27T12:11:23.4014910Z /home/runner/work/_temp/git-credentials-7fb513be-7094-4e32-8d98-31538463ef4d.config
+2026-10-27T12:11:23.4026381Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/hepta/.git.path /home/runner/work/_temp/git-credentials-7fb513be-7094-4e32-8d98-31538463ef4d.config
+2026-10-27T12:11:23.4066053Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/hepta/.git/worktrees/*.path
+2026-10-27T12:11:23.4110712Z /home/runner/work/_temp/git-credentials-7fb513be-7094-4e32-8d98-31538463ef4d.config
+2026-10-27T12:11:23.4113499Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/hepta/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-7fb513be-7094-4e32-8d98-31538463ef4d.config
+2026-10-27T12:11:23.4150326Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/hepta/.git.path
+2026-10-27T12:11:23.4176448Z /github/runner_temp/git-credentials-7fb513be-7094-4e32-8d98-31538463ef4d.config
+2026-10-27T12:11:23.4185148Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/hepta/.git.path /github/runner_temp/git-credentials-7fb513be-7094-4e32-8d98-31538463ef4d.config
+2026-10-27T12:11:23.4229391Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/hepta/.git/worktrees/*.path
+2026-10-27T12:11:23.4255298Z /github/runner_temp/git-credentials-7fb513be-7094-4e32-8d98-31538463ef4d.config
+2026-10-27T12:11:23.4262769Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/hepta/.git/worktrees/*.path /github/runner_temp/git-credentials-7fb513be-7094-4e32-8d98-31538463ef4d.config
+2026-10-27T12:11:23.4304171Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-27T12:11:23.4568378Z Removing credentials config '/home/runner/work/_temp/git-credentials-7fb513be-7094-4e32-8d98-31538463ef4d.config'
+2026-10-27T12:11:23.4579661Z ##[endgroup]
+2026-10-27T12:11:23.4840329Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-10-27T12:11:23.4840751Z with:
+2026-10-27T12:11:23.4841019Z   repository: TrillionniumFoundation/Trillionnium-Chain
+2026-10-27T12:11:23.4841380Z   ref: c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:11:23.4841660Z   path: chain
+2026-10-27T12:11:23.4841872Z   persist-credentials: false
+2026-10-27T12:11:23.4844219Z   token: ***
+2026-10-27T12:11:23.4844424Z   ssh-strict: true
+2026-10-27T12:11:23.4844628Z   ssh-user: git
+2026-10-27T12:11:23.4844825Z   clean: true
+2026-10-27T12:11:23.4845035Z   sparse-checkout-cone-mode: true
+2026-10-27T12:11:23.4845292Z   fetch-depth: 1
+2026-10-27T12:11:23.4845493Z   fetch-tags: false
+2026-10-27T12:11:23.4845706Z   show-progress: true
+2026-10-27T12:11:23.4845915Z   lfs: false
+2026-10-27T12:11:23.4846100Z   submodules: false
+2026-10-27T12:11:23.4846503Z   set-safe-directory: true
+2026-10-27T12:11:23.4846727Z env:
+2026-10-27T12:11:23.4846998Z   SOURCE_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:23.4847346Z   TESTED_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:23.4847677Z   BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:11:23.4847976Z   HEPTA_CI_LANE: source-head
+2026-10-27T12:11:23.4848246Z   CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:11:23.4848538Z   PYTHONNOUSERSITE: 1
+2026-10-27T12:11:23.4848760Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-27T12:11:23.4849018Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+2026-10-27T12:11:23.4849267Z   PIP_NO_CACHE_DIR: 1
+2026-10-27T12:11:23.4849474Z   HF_HUB_OFFLINE: 1
+2026-10-27T12:11:23.4849680Z   TRANSFORMERS_OFFLINE: 1
+2026-10-27T12:11:23.4849898Z ##[endgroup]
+2026-10-27T12:11:23.5745456Z Syncing repository: TrillionniumFoundation/Trillionnium-Chain
+2026-10-27T12:11:23.5746589Z ##[group]Getting Git version info
+2026-10-27T12:11:23.5747573Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci/chain'
+2026-10-27T12:11:23.5774152Z [command]/usr/bin/git version
+2026-10-27T12:11:23.5818940Z git version 2.55.0
+2026-10-27T12:11:23.5874929Z ##[endgroup]
+2026-10-27T12:11:23.5890280Z Temporarily overriding HOME='/home/runner/work/_temp/2bbfec72-52b3-44e7-9ace-b87f1df8e9fe' before making global git config changes
+2026-10-27T12:11:23.5891701Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-27T12:11:23.5897233Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci/chain
+2026-10-27T12:11:23.5933902Z ##[group]Initializing the repository
+2026-10-27T12:11:23.5939066Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci/chain
+2026-10-27T12:11:23.5983904Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-27T12:11:23.5985978Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-27T12:11:23.5987115Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-27T12:11:23.5988028Z hint: call:
+2026-10-27T12:11:23.5988499Z hint:
+2026-10-27T12:11:23.5989062Z hint: 	git config --global init.defaultBranch <name>
+2026-10-27T12:11:23.5989728Z hint:
+2026-10-27T12:11:23.5990735Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-27T12:11:23.5991824Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-27T12:11:23.5992664Z hint:
+2026-10-27T12:11:23.5993192Z hint: 	git branch -m <name>
+2026-10-27T12:11:23.5993738Z hint:
+2026-10-27T12:11:23.6040482Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-27T12:11:23.6052816Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/chain/.git/
+2026-10-27T12:11:23.6055899Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/Trillionnium-Chain
+2026-10-27T12:11:23.6058318Z ##[endgroup]
+2026-10-27T12:11:23.6059232Z ##[group]Disabling automatic garbage collection
+2026-10-27T12:11:23.6060159Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-27T12:11:23.6080974Z ##[endgroup]
+2026-10-27T12:11:23.6081776Z ##[group]Setting up auth
+2026-10-27T12:11:23.6082673Z Removing SSH command configuration
+2026-10-27T12:11:23.6092050Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-27T12:11:23.6129197Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-27T12:11:23.6390785Z Removing HTTP extra header
+2026-10-27T12:11:23.6411030Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-27T12:11:23.6430542Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-27T12:11:23.6688886Z Removing includeIf entries pointing to credentials config files
+2026-10-27T12:11:23.6697115Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-27T12:11:23.6739004Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-27T12:11:23.6974408Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-28cb85dd-827b-4f9a-baee-42aa91ad9cc2.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-27T12:11:23.7017615Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/chain/.git.path /home/runner/work/_temp/git-credentials-28cb85dd-827b-4f9a-baee-42aa91ad9cc2.config
+2026-10-27T12:11:23.7061135Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/chain/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-28cb85dd-827b-4f9a-baee-42aa91ad9cc2.config
+2026-10-27T12:11:23.7098382Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/chain/.git.path /github/runner_temp/git-credentials-28cb85dd-827b-4f9a-baee-42aa91ad9cc2.config
+2026-10-27T12:11:23.7133642Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/chain/.git/worktrees/*.path /github/runner_temp/git-credentials-28cb85dd-827b-4f9a-baee-42aa91ad9cc2.config
+2026-10-27T12:11:23.7164100Z ##[endgroup]
+2026-10-27T12:11:23.7164494Z ##[group]Fetching the repository
+2026-10-27T12:11:23.7174415Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:11:26.8322315Z From https://github.com/TrillionniumFoundation/Trillionnium-Chain
+2026-10-27T12:11:26.8323003Z  * branch            c96022b897c1235fdbdbfcfa32764403511c6aab -> FETCH_HEAD
+2026-10-27T12:11:26.8333709Z [command]/usr/bin/git rev-parse --verify --quiet c96022b897c1235fdbdbfcfa32764403511c6aab^{object}
+2026-10-27T12:11:26.8362900Z c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:11:26.8366930Z ##[endgroup]
+2026-10-27T12:11:26.8367422Z ##[group]Determining the checkout info
+2026-10-27T12:11:26.8368650Z ##[endgroup]
+2026-10-27T12:11:26.8374147Z [command]/usr/bin/git sparse-checkout disable
+2026-10-27T12:11:26.8417541Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-27T12:11:26.8448570Z ##[group]Checking out the ref
+2026-10-27T12:11:26.8452916Z [command]/usr/bin/git checkout --progress --force c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:11:27.8580834Z Updating files:  58% (3265/5607)
+2026-10-27T12:11:27.8601477Z Updating files:  59% (3309/5607)
+2026-10-27T12:11:27.8719788Z Updating files:  60% (3365/5607)
+2026-10-27T12:11:27.8746929Z Updating files:  61% (3421/5607)
+2026-10-27T12:11:27.8771783Z Updating files:  62% (3477/5607)
+2026-10-27T12:11:27.8800960Z Updating files:  63% (3533/5607)
+2026-10-27T12:11:27.8833190Z Updating files:  64% (3589/5607)
+2026-10-27T12:11:27.8900228Z Updating files:  65% (3645/5607)
+2026-10-27T12:11:27.8958795Z Updating files:  66% (3701/5607)
+2026-10-27T12:11:27.8987486Z Updating files:  67% (3757/5607)
+2026-10-27T12:11:27.9025204Z Updating files:  68% (3813/5607)
+2026-10-27T12:11:27.9047840Z Updating files:  69% (3869/5607)
+2026-10-27T12:11:27.9404722Z Updating files:  70% (3925/5607)
+2026-10-27T12:11:27.9423317Z Updating files:  71% (3981/5607)
+2026-10-27T12:11:27.9545849Z Updating files:  72% (4038/5607)
+2026-10-27T12:11:27.9766007Z Updating files:  73% (4094/5607)
+2026-10-27T12:11:27.9809218Z Updating files:  74% (4150/5607)
+2026-10-27T12:11:27.9856665Z Updating files:  75% (4206/5607)
+2026-10-27T12:11:27.9904476Z Updating files:  76% (4262/5607)
+2026-10-27T12:11:27.9958234Z Updating files:  77% (4318/5607)
+2026-10-27T12:11:28.0011878Z Updating files:  78% (4374/5607)
+2026-10-27T12:11:28.0072239Z Updating files:  79% (4430/5607)
+2026-10-27T12:11:28.0110214Z Updating files:  80% (4486/5607)
+2026-10-27T12:11:28.0153625Z Updating files:  81% (4542/5607)
+2026-10-27T12:11:28.0209764Z Updating files:  82% (4598/5607)
+2026-10-27T12:11:28.0258088Z Updating files:  83% (4654/5607)
+2026-10-27T12:11:28.0289493Z Updating files:  84% (4710/5607)
+2026-10-27T12:11:28.0315138Z Updating files:  85% (4766/5607)
+2026-10-27T12:11:28.0339114Z Updating files:  86% (4823/5607)
+2026-10-27T12:11:28.0390769Z Updating files:  87% (4879/5607)
+2026-10-27T12:11:28.0445612Z Updating files:  88% (4935/5607)
+2026-10-27T12:11:28.0525571Z Updating files:  89% (4991/5607)
+2026-10-27T12:11:28.0593209Z Updating files:  90% (5047/5607)
+2026-10-27T12:11:28.0654708Z Updating files:  91% (5103/5607)
+2026-10-27T12:11:28.0716453Z Updating files:  92% (5159/5607)
+2026-10-27T12:11:28.0763656Z Updating files:  93% (5215/5607)
+2026-10-27T12:11:28.0820663Z Updating files:  94% (5271/5607)
+2026-10-27T12:11:28.0853683Z Updating files:  95% (5327/5607)
+2026-10-27T12:11:28.0885916Z Updating files:  96% (5383/5607)
+2026-10-27T12:11:28.0919741Z Updating files:  97% (5439/5607)
+2026-10-27T12:11:28.0947098Z Updating files:  98% (5495/5607)
+2026-10-27T12:11:28.0973652Z Updating files:  99% (5551/5607)
+2026-10-27T12:11:28.0974121Z Updating files: 100% (5607/5607)
+2026-10-27T12:11:28.0974570Z Updating files: 100% (5607/5607), done.
+2026-10-27T12:11:28.1036533Z Note: switching to 'c96022b897c1235fdbdbfcfa32764403511c6aab'.
+2026-10-27T12:11:28.1037267Z 
+2026-10-27T12:11:28.1037624Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-27T12:11:28.1038455Z changes and commit them, and you can discard any commits you make in this
+2026-10-27T12:11:28.1039274Z state without impacting any branches by switching back to a branch.
+2026-10-27T12:11:28.1039752Z 
+2026-10-27T12:11:28.1040292Z If you want to create a new branch to retain commits you create, you may
+2026-10-27T12:11:28.1041045Z do so (now or later) by using -c with the switch command. Example:
+2026-10-27T12:11:28.1041507Z 
+2026-10-27T12:11:28.1041685Z   git switch -c <new-branch-name>
+2026-10-27T12:11:28.1041990Z 
+2026-10-27T12:11:28.1042167Z Or undo this operation with:
+2026-10-27T12:11:28.1042444Z 
+2026-10-27T12:11:28.1042583Z   git switch -
+2026-10-27T12:11:28.1042789Z 
+2026-10-27T12:11:28.1043151Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-27T12:11:28.1043699Z 
+2026-10-27T12:11:28.1044091Z HEAD is now at c96022b ci(pn1): bind retained guards to reviewed storage source
+2026-10-27T12:11:28.1095575Z ##[endgroup]
+2026-10-27T12:11:28.1141678Z [command]/usr/bin/git log -1 --format=%H
+2026-10-27T12:11:28.1171073Z c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:11:28.1181477Z ##[group]Removing auth
+2026-10-27T12:11:28.1181980Z Removing SSH command configuration
+2026-10-27T12:11:28.1187038Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-27T12:11:28.1227607Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-27T12:11:28.1465631Z Removing HTTP extra header
+2026-10-27T12:11:28.1471538Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-27T12:11:28.1509024Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-27T12:11:28.1742769Z Removing includeIf entries pointing to credentials config files
+2026-10-27T12:11:28.1747086Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-27T12:11:28.1774409Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/chain/.git.path
+2026-10-27T12:11:28.1775391Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/chain/.git/worktrees/*.path
+2026-10-27T12:11:28.1776260Z includeif.gitdir:/github/workspace/chain/.git.path
+2026-10-27T12:11:28.1776704Z includeif.gitdir:/github/workspace/chain/.git/worktrees/*.path
+2026-10-27T12:11:28.1784708Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/chain/.git.path
+2026-10-27T12:11:28.1810806Z /home/runner/work/_temp/git-credentials-28cb85dd-827b-4f9a-baee-42aa91ad9cc2.config
+2026-10-27T12:11:28.1822238Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/chain/.git.path /home/runner/work/_temp/git-credentials-28cb85dd-827b-4f9a-baee-42aa91ad9cc2.config
+2026-10-27T12:11:28.1861670Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/chain/.git/worktrees/*.path
+2026-10-27T12:11:28.1895600Z /home/runner/work/_temp/git-credentials-28cb85dd-827b-4f9a-baee-42aa91ad9cc2.config
+2026-10-27T12:11:28.1905395Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/chain/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-28cb85dd-827b-4f9a-baee-42aa91ad9cc2.config
+2026-10-27T12:11:28.1940650Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/chain/.git.path
+2026-10-27T12:11:28.1965100Z /github/runner_temp/git-credentials-28cb85dd-827b-4f9a-baee-42aa91ad9cc2.config
+2026-10-27T12:11:28.1974594Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/chain/.git.path /github/runner_temp/git-credentials-28cb85dd-827b-4f9a-baee-42aa91ad9cc2.config
+2026-10-27T12:11:28.2015778Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/chain/.git/worktrees/*.path
+2026-10-27T12:11:28.2040533Z /github/runner_temp/git-credentials-28cb85dd-827b-4f9a-baee-42aa91ad9cc2.config
+2026-10-27T12:11:28.2052379Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/chain/.git/worktrees/*.path /github/runner_temp/git-credentials-28cb85dd-827b-4f9a-baee-42aa91ad9cc2.config
+2026-10-27T12:11:28.2090451Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-27T12:11:28.2317722Z Removing credentials config '/home/runner/work/_temp/git-credentials-28cb85dd-827b-4f9a-baee-42aa91ad9cc2.config'
+2026-10-27T12:11:28.2326382Z ##[endgroup]
+2026-10-27T12:11:28.2502861Z ##[group]Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+2026-10-27T12:11:28.2503263Z with:
+2026-10-27T12:11:28.2503462Z   python-version: 3.12.3
+2026-10-27T12:11:28.2503700Z   check-latest: false
+2026-10-27T12:11:28.2505976Z   token: ***
+2026-10-27T12:11:28.2506191Z   update-environment: true
+2026-10-27T12:11:28.2506435Z   allow-prereleases: false
+2026-10-27T12:11:28.2506662Z   freethreaded: false
+2026-10-27T12:11:28.2506871Z env:
+2026-10-27T12:11:28.2507097Z   SOURCE_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:28.2507438Z   TESTED_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:28.2507791Z   BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:11:28.2508089Z   HEPTA_CI_LANE: source-head
+2026-10-27T12:11:28.2508355Z   CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:11:28.2508641Z   PYTHONNOUSERSITE: 1
+2026-10-27T12:11:28.2508858Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-27T12:11:28.2509129Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+2026-10-27T12:11:28.2509378Z   PIP_NO_CACHE_DIR: 1
+2026-10-27T12:11:28.2509578Z   HF_HUB_OFFLINE: 1
+2026-10-27T12:11:28.2509804Z   TRANSFORMERS_OFFLINE: 1
+2026-10-27T12:11:28.2510351Z ##[endgroup]
+2026-10-27T12:11:28.3849672Z ##[group]Installed versions
+2026-10-27T12:11:28.3871769Z Version 3.12.3 was not found in the local cache
+2026-10-27T12:11:29.0135647Z Version 3.12.3 is available for downloading
+2026-10-27T12:11:29.0137374Z Download from "https://github.com/actions/python-versions/releases/download/3.12.3-11057844995/python-3.12.3-linux-24.04-x64.tar.gz"
+2026-10-27T12:11:29.7237571Z Extract downloaded archive
+2026-10-27T12:11:29.7383259Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/7ceda997-470a-4dc1-bf6e-e17822b73881 -f /home/runner/work/_temp/e2be422a-9504-4bfc-84dd-5815ffe727d5
+2026-10-27T12:11:31.7467252Z Execute installation script
+2026-10-27T12:11:31.7579255Z Check if Python hostedtoolcache folder exist...
+2026-10-27T12:11:31.7580670Z Create Python 3.12.3 folder
+2026-10-27T12:11:31.7592884Z Copy Python binaries to hostedtoolcache folder
+2026-10-27T12:11:32.2702058Z Create additional symlinks (Required for the UsePythonVersion Azure Pipelines task and the setup-python GitHub Action)
+2026-10-27T12:11:32.2738733Z Upgrading pip...
+2026-10-27T12:11:35.4526046Z Looking in links: /tmp/tmprzq62avq
+2026-10-27T12:11:35.4535339Z Requirement already satisfied: pip in /opt/hostedtoolcache/Python/3.12.3/x64/lib/python3.12/site-packages (24.0)
+2026-10-27T12:11:37.7243452Z Collecting pip
+2026-10-27T12:11:37.7688907Z Downloading pip-26.2.2-py3-none-any.whl.metadata (4.6 kB)
+2026-10-27T12:11:37.7745128Z Downloading pip-26.2.2-py3-none-any.whl (1.8 MB)
+2026-10-27T12:11:37.8161802Z ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.8/1.8 MB 46.6 MB/s eta 0:00:00
+2026-10-27T12:11:37.8165359Z 
+2026-10-27T12:11:37.8777597Z Installing collected packages: pip
+2026-10-27T12:11:37.8779035Z Attempting uninstall: pip
+2026-10-27T12:11:37.8803427Z Found existing installation: pip 24.0
+2026-10-27T12:11:37.9238923Z Uninstalling pip-24.0:
+2026-10-27T12:11:37.9302894Z Successfully uninstalled pip-24.0
+2026-10-27T12:11:39.0981633Z Successfully installed pip-26.2.2
+2026-10-27T12:11:39.1567008Z Create complete file
+2026-10-27T12:11:39.1606589Z Successfully set up CPython (3.12.3)
+2026-10-27T12:11:39.1608907Z ##[endgroup]
+2026-10-27T12:11:39.1830738Z ##[group]Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+2026-10-27T12:11:39.1831441Z with:
+2026-10-27T12:11:39.1831763Z   tool: just@1.59.0
+2026-10-27T12:11:39.1832111Z   checksum: true
+2026-10-27T12:11:39.1832480Z   fallback: cargo-binstall
+2026-10-27T12:11:39.1832852Z env:
+2026-10-27T12:11:39.1833232Z   SOURCE_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:39.1833829Z   TESTED_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:39.1834412Z   BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:11:39.1834948Z   HEPTA_CI_LANE: source-head
+2026-10-27T12:11:39.1835258Z   CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:11:39.1835558Z   PYTHONNOUSERSITE: 1
+2026-10-27T12:11:39.1835791Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-27T12:11:39.1836045Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+2026-10-27T12:11:39.1836300Z   PIP_NO_CACHE_DIR: 1
+2026-10-27T12:11:39.1836501Z   HF_HUB_OFFLINE: 1
+2026-10-27T12:11:39.1836863Z   TRANSFORMERS_OFFLINE: 1
+2026-10-27T12:11:39.1837368Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:39.1838144Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-10-27T12:11:39.1838869Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:39.1839529Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:39.1840390Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:39.1841067Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-10-27T12:11:39.1841623Z ##[endgroup]
+2026-10-27T12:11:39.1920387Z ##[start-action display=Run set -eu;id=__taiki-e_install-action.__run]
+2026-10-27T12:11:39.2222911Z ##[group]Run set -eu
+2026-10-27T12:11:39.2223228Z [36;1mset -eu[0m
+2026-10-27T12:11:39.2223486Z [36;1mif ! command -v bash >/dev/null; then[0m
+2026-10-27T12:11:39.2223846Z [36;1m  if grep -Eq '^ID=alpine' /etc/os-release; then[0m
+2026-10-27T12:11:39.2224317Z [36;1m    printf '::group::Install packages required for install-action (bash)\n'[0m
+2026-10-27T12:11:39.2225054Z [36;1m    # NB: sync with apk_install in main.sh[0m
+2026-10-27T12:11:39.2225609Z [36;1m    if command -v sudo >/dev/null; then[0m
+2026-10-27T12:11:39.2226425Z [36;1m      sudo apk --no-cache add bash[0m
+2026-10-27T12:11:39.2226960Z [36;1m    elif command -v doas >/dev/null; then[0m
+2026-10-27T12:11:39.2227435Z [36;1m      doas apk --no-cache add bash[0m
+2026-10-27T12:11:39.2227850Z [36;1m    else[0m
+2026-10-27T12:11:39.2228167Z [36;1m      apk --no-cache add bash[0m
+2026-10-27T12:11:39.2228552Z [36;1m    fi[0m
+2026-10-27T12:11:39.2228870Z [36;1m    printf '::endgroup::\n'[0m
+2026-10-27T12:11:39.2229241Z [36;1m  else[0m
+2026-10-27T12:11:39.2229642Z [36;1m    printf '::error::install-action requires bash\n'[0m
+2026-10-27T12:11:39.2230425Z [36;1m    exit 1[0m
+2026-10-27T12:11:39.2230766Z [36;1m  fi[0m
+2026-10-27T12:11:39.2231073Z [36;1mfi[0m
+2026-10-27T12:11:39.2273213Z shell: /usr/bin/sh -e {0}
+2026-10-27T12:11:39.2273590Z env:
+2026-10-27T12:11:39.2273942Z   SOURCE_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:39.2274515Z   TESTED_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:39.2275090Z   BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:11:39.2275621Z   HEPTA_CI_LANE: source-head
+2026-10-27T12:11:39.2276079Z   CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:11:39.2276585Z   PYTHONNOUSERSITE: 1
+2026-10-27T12:11:39.2276965Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-27T12:11:39.2277408Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+2026-10-27T12:11:39.2277834Z   PIP_NO_CACHE_DIR: 1
+2026-10-27T12:11:39.2278182Z   HF_HUB_OFFLINE: 1
+2026-10-27T12:11:39.2278528Z   TRANSFORMERS_OFFLINE: 1
+2026-10-27T12:11:39.2279014Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:39.2279721Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-10-27T12:11:39.2280945Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:39.2281605Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:39.2282269Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:39.2282935Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-10-27T12:11:39.2283494Z ##[endgroup]
+2026-10-27T12:11:39.2395089Z ##[end-action id=__taiki-e_install-action.__run;outcome=success;conclusion=success;duration_ms=47]
+2026-10-27T12:11:39.2417229Z ##[start-action display=Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh";id=__taiki-e_install-action.__run_2]
+2026-10-27T12:11:39.3672723Z ##[group]Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"
+2026-10-27T12:11:39.3673555Z [36;1mbash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"[0m
+2026-10-27T12:11:39.6160292Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T12:11:39.6160854Z env:
+2026-10-27T12:11:39.6161167Z   SOURCE_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:39.6161813Z   TESTED_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:39.6162513Z   BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:11:39.6163167Z   HEPTA_CI_LANE: source-head
+2026-10-27T12:11:39.6163734Z   CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:11:39.6164380Z   PYTHONNOUSERSITE: 1
+2026-10-27T12:11:39.6164844Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-27T12:11:39.6165373Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+2026-10-27T12:11:39.6165915Z   PIP_NO_CACHE_DIR: 1
+2026-10-27T12:11:39.6166342Z   HF_HUB_OFFLINE: 1
+2026-10-27T12:11:39.6166784Z   TRANSFORMERS_OFFLINE: 1
+2026-10-27T12:11:39.6167399Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:39.6168291Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-10-27T12:11:39.6169091Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:39.6169795Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:39.6170640Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:39.6171321Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-10-27T12:11:39.6171880Z   INPUT_TOOL: just@1.59.0
+2026-10-27T12:11:39.6172264Z   INPUT_CHECKSUM: true
+2026-10-27T12:11:39.6172870Z   INPUT_FALLBACK: cargo-binstall
+2026-10-27T12:11:39.6177261Z   DEFAULT_GITHUB_TOKEN: ***
+2026-10-27T12:11:39.6177781Z   ACTION_USER_AGENT: taiki-e/install-action (44c6d64aa62cd779e873306675c7a58e86d6d532)
+2026-10-27T12:11:39.6178219Z ##[endgroup]
+2026-10-27T12:11:39.6732516Z info: host platform: x86_64_linux
+2026-10-27T12:11:39.6845519Z ##[warning]just@1.59.0 for 'x86_64_linux' is not supported; fallback to cargo-binstall
+2026-10-27T12:11:39.6846242Z info: install-action does not support just@1.59.0; fallback to cargo-binstall
+2026-10-27T12:11:39.6870169Z info: installing cargo-binstall@latest (1.15.11)
+2026-10-27T12:11:39.7204037Z info: downloading https://github.com/cargo-bins/cargo-binstall/releases/download/v1.15.11/cargo-binstall-x86_64-unknown-linux-musl.tgz
+2026-10-27T12:11:39.9586249Z info: verifying sha256 checksum for cargo-binstall-x86_64-unknown-linux-musl.tgz
+2026-10-27T12:11:40.0919088Z info: cargo-binstall installed at /home/runner/.cargo/bin/cargo-binstall
+2026-10-27T12:11:40.0922973Z + cargo-binstall binstall -V
+2026-10-27T12:11:40.0932471Z 1.15.11
+2026-10-27T12:11:40.1071691Z  INFO resolve: Resolving package: 'just@=1.59.0'
+2026-10-27T12:11:41.1444870Z  WARN The package just v1.59.0 (x86_64-unknown-linux-musl) has been downloaded from github.com
+2026-10-27T12:11:41.1445853Z  INFO This will install the following binaries:
+2026-10-27T12:11:41.1446497Z  INFO   - just => /home/runner/.cargo/bin/just
+2026-10-27T12:11:41.1447079Z  INFO Installing binaries...
+2026-10-27T12:11:41.1462974Z  INFO Done in 1.051595616s
+2026-10-27T12:11:41.1482828Z ##[end-action id=__taiki-e_install-action.__run_2;outcome=success;conclusion=success;duration_ms=1906]
+2026-10-27T12:11:41.1587974Z ##[group]Run astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+2026-10-27T12:11:41.1588391Z with:
+2026-10-27T12:11:41.1588590Z   version: 0.11.3
+2026-10-27T12:11:41.1588798Z   enable-cache: false
+2026-10-27T12:11:41.1589028Z   activate-environment: false
+2026-10-27T12:11:41.1589271Z   no-project: false
+2026-10-27T12:11:41.1589619Z   working-directory: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-27T12:11:41.1592290Z   github-token: ***
+2026-10-27T12:11:41.1592858Z   cache-dependency-glob: **/*requirements*.txt
+**/*requirements*.in
+**/*constraints*.txt
+**/*constraints*.in
+**/pyproject.toml
+**/uv.lock
+**/*.py.lock
+
+2026-10-27T12:11:41.1593465Z   restore-cache: true
+2026-10-27T12:11:41.1593675Z   save-cache: true
+2026-10-27T12:11:41.1593875Z   prune-cache: true
+2026-10-27T12:11:41.1594077Z   cache-python: false
+2026-10-27T12:11:41.1594302Z   ignore-nothing-to-cache: false
+2026-10-27T12:11:41.1594563Z   ignore-empty-workdir: false
+2026-10-27T12:11:41.1594845Z   add-problem-matchers: true
+2026-10-27T12:11:41.1595088Z   resolution-strategy: highest
+2026-10-27T12:11:41.1595316Z env:
+2026-10-27T12:11:41.1595537Z   SOURCE_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:41.1595872Z   TESTED_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:41.1596200Z   BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:11:41.1596511Z   HEPTA_CI_LANE: source-head
+2026-10-27T12:11:41.1596777Z   CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:11:41.1597073Z   PYTHONNOUSERSITE: 1
+2026-10-27T12:11:41.1597305Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-27T12:11:41.1597555Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+2026-10-27T12:11:41.1597804Z   PIP_NO_CACHE_DIR: 1
+2026-10-27T12:11:41.1598003Z   HF_HUB_OFFLINE: 1
+2026-10-27T12:11:41.1598209Z   TRANSFORMERS_OFFLINE: 1
+2026-10-27T12:11:41.1598494Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:41.1598914Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-10-27T12:11:41.1599334Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:41.1599702Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:41.1600334Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:41.1600718Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-10-27T12:11:41.1601218Z ##[endgroup]
+2026-10-27T12:11:41.3409426Z Fetching manifest data from https://raw.githubusercontent.com/astral-sh/versions/main/v1/uv.ndjson ...
+2026-10-27T12:11:41.4199165Z Downloading uv from "https://releases.astral.sh/github/uv/releases/download/0.11.3/uv-x86_64-unknown-linux-gnu.tar.gz" ...
+2026-10-27T12:11:41.7105969Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/579335ed-bcf7-4247-99fb-d86416eedb3e -f /home/runner/work/_temp/11fc793d-6a18-43df-a6d3-a79b7e8e8968
+2026-10-27T12:11:42.1492598Z Added /home/runner/.local/bin to the path
+2026-10-27T12:11:42.1496626Z Added /opt/hostedtoolcache/uv/0.11.3/x86_64 to the path
+2026-10-27T12:11:42.1498667Z Set UV_PYTHON_INSTALL_DIR to /home/runner/work/_temp/uv-python-dir
+2026-10-27T12:11:42.1499398Z Added /home/runner/work/_temp/uv-python-dir to the path
+2026-10-27T12:11:42.1508496Z Successfully installed uv version 0.11.3
+2026-10-27T12:11:42.4369759Z ##[group]Run set -euo pipefail
+2026-10-27T12:11:42.4370419Z [36;1mset -euo pipefail[0m
+2026-10-27T12:11:42.4370729Z [36;1munset PYTHONPATH PYTHONHOME PYTHONUSERBASE[0m
+2026-10-27T12:11:42.4371091Z [36;1mmkdir -m 700 "$RUNNER_TEMP/hepta-cumulative"[0m
+2026-10-27T12:11:42.4371570Z [36;1mtest "$(git rev-parse HEAD)" = "$SOURCE_SHA"[0m
+2026-10-27T12:11:42.4371979Z [36;1mtest "$(git -C ../chain rev-parse HEAD)" = "$CHAIN_SHA"[0m
+2026-10-27T12:11:42.4372473Z [36;1mgit rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-cumulative/hepta-source.txt"[0m
+2026-10-27T12:11:42.4373086Z [36;1mgit -C ../chain rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-cumulative/chain-source.txt"[0m
+2026-10-27T12:11:42.4373773Z [36;1mpython3 -I -B scripts/hepta_smollm_host_resources.py --output "$RUNNER_TEMP/hepta-cumulative/host.json"[0m
+2026-10-27T12:11:42.4374644Z [36;1mprintf 'HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT=%s/hepta-cumulative/runtime-snapshot.json\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"[0m
+2026-10-27T12:11:42.4375471Z [36;1mcp qualification/cumulative-controls/source-pin.json "$RUNNER_TEMP/hepta-cumulative/source-pin.json"[0m
+2026-10-27T12:11:42.4439159Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T12:11:42.4439508Z env:
+2026-10-27T12:11:42.4439772Z   SOURCE_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:42.4440441Z   TESTED_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:42.4440813Z   BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:11:42.4441121Z   HEPTA_CI_LANE: source-head
+2026-10-27T12:11:42.4441394Z   CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:11:42.4441693Z   PYTHONNOUSERSITE: 1
+2026-10-27T12:11:42.4441918Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-27T12:11:42.4442166Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+2026-10-27T12:11:42.4442414Z   PIP_NO_CACHE_DIR: 1
+2026-10-27T12:11:42.4442622Z   HF_HUB_OFFLINE: 1
+2026-10-27T12:11:42.4442826Z   TRANSFORMERS_OFFLINE: 1
+2026-10-27T12:11:42.4443119Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:42.4443550Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-10-27T12:11:42.4443969Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:42.4444342Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:42.4444748Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:42.4445134Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-10-27T12:11:42.4445542Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+2026-10-27T12:11:42.4445880Z ##[endgroup]
+2026-10-27T12:11:42.6652241Z ##[group]Run set -euo pipefail
+2026-10-27T12:11:42.6652595Z [36;1mset -euo pipefail[0m
+2026-10-27T12:11:42.6652845Z [36;1mpython3 -I -B - <<'PY'[0m
+2026-10-27T12:11:42.6653128Z [36;1mimport hashlib, json, os, subprocess[0m
+2026-10-27T12:11:42.6653442Z [36;1mfrom pathlib import Path[0m
+2026-10-27T12:11:42.6653921Z [36;1mpin = json.loads(Path("qualification/cumulative-controls/source-pin.json").read_bytes())[0m
+2026-10-27T12:11:42.6654590Z [36;1mbaseline = pin["source_sha"][0m
+2026-10-27T12:11:42.6654992Z [36;1massert len(baseline) == 40 and all(c in "0123456789abcdef" for c in baseline)[0m
+2026-10-27T12:11:42.6655614Z [36;1mif subprocess.run(["git", "cat-file", "-e", baseline + "^{commit}"], capture_output=True).returncode:[0m
+2026-10-27T12:11:42.6656498Z [36;1m    subprocess.run(["git", "fetch", "--no-tags", "--depth=1", "https://github.com/TrillionniumFoundation/hepta-private-ci.git", baseline], check=True)[0m
+2026-10-27T12:11:42.6657316Z [36;1mrequired = {"scripts/" + name for name in ("hepta_cumulative_controls.py",[0m
+2026-10-27T12:11:42.6657849Z [36;1m    "hepta_cumulative_control_child.py", "hepta_cumulative_campaign.py",[0m
+2026-10-27T12:11:42.6658398Z [36;1m    "hepta_cumulative_source.py", "test_hepta_cumulative_controls.py",[0m
+2026-10-27T12:11:42.6658906Z [36;1m    "test_hepta_cumulative_source.py", "hepta_cumulative_pilot_entry.py",[0m
+2026-10-27T12:11:42.6659346Z [36;1m    "test_hepta_cumulative_pilot_entry.py")}[0m
+2026-10-27T12:11:42.6659791Z [36;1mallowed = required | {".github/workflows/hepta-cumulative-controls.yml",[0m
+2026-10-27T12:11:42.6660755Z [36;1m    "qualification/cumulative-controls/README.md", "qualification/cumulative-controls/source-pin.json"}[0m
+2026-10-27T12:11:42.6661540Z [36;1mchanged = set(subprocess.check_output(["git", "diff", "--name-only", "-z", baseline, "HEAD"]).decode().split("\0")) - {""}[0m
+2026-10-27T12:11:42.6662359Z [36;1massert required <= changed <= allowed, "formatting scope is empty, incomplete, or includes original runtime changes"[0m
+2026-10-27T12:11:42.6663109Z [36;1mrecord = dict(baseline=baseline, changed=sorted(changed), source=os.environ["SOURCE_SHA"],[0m
+2026-10-27T12:11:42.6663782Z [36;1m    files={name: hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in sorted(required)})[0m
+2026-10-27T12:11:42.6664566Z [36;1m(Path(os.environ["RUNNER_TEMP"]) / "hepta-cumulative/format-scope.json").write_text(json.dumps(record, indent=2) + "\n")[0m
+2026-10-27T12:11:42.6665231Z [36;1mwith Path(os.environ["GITHUB_ENV"]).open("a") as environment:[0m
+2026-10-27T12:11:42.6665669Z [36;1m    environment.write(f"FORMAT_BASE_SHA={baseline}\n")[0m
+2026-10-27T12:11:42.6665997Z [36;1mPY[0m
+2026-10-27T12:11:42.6666572Z [36;1mFORMAT_BASE_SHA="$(python3 -I -B -c 'import json; print(json.load(open("qualification/cumulative-controls/source-pin.json"))["source_sha"])')"[0m
+2026-10-27T12:11:42.6667263Z [36;1mjust fmt --base "$FORMAT_BASE_SHA" --check[0m
+2026-10-27T12:11:42.6667570Z [36;1mgit diff --exit-code[0m
+2026-10-27T12:11:42.6731301Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T12:11:42.6731645Z env:
+2026-10-27T12:11:42.6731893Z   SOURCE_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:42.6732252Z   TESTED_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:42.6732596Z   BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:11:42.6732902Z   HEPTA_CI_LANE: source-head
+2026-10-27T12:11:42.6733188Z   CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:11:42.6733489Z   PYTHONNOUSERSITE: 1
+2026-10-27T12:11:42.6733723Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-27T12:11:42.6733973Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+2026-10-27T12:11:42.6734224Z   PIP_NO_CACHE_DIR: 1
+2026-10-27T12:11:42.6734427Z   HF_HUB_OFFLINE: 1
+2026-10-27T12:11:42.6734631Z   TRANSFORMERS_OFFLINE: 1
+2026-10-27T12:11:42.6734924Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:42.6735575Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-10-27T12:11:42.6736061Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:42.6736440Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:42.6736829Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:42.6737212Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-10-27T12:11:42.6737615Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+2026-10-27T12:11:42.6738318Z   HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT: /home/runner/work/_temp/hepta-cumulative/runtime-snapshot.json
+2026-10-27T12:11:42.6738809Z ##[endgroup]
+2026-10-27T12:11:44.2364980Z ##[group]Run set -euo pipefail
+2026-10-27T12:11:44.2365314Z [36;1mset -euo pipefail[0m
+2026-10-27T12:11:44.2365611Z [36;1munset PYTHONPATH PYTHONHOME PYTHONUSERBASE[0m
+2026-10-27T12:11:44.2366510Z [36;1mpython3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-cumulative/parent-controls.json" --timeout-seconds 60 --minimum-tests 5 -- python3 -B scripts/test_hepta_cumulative_controls.py -v[0m
+2026-10-27T12:11:44.2367903Z [36;1mpython3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-cumulative/archive-controls.json" --timeout-seconds 60 --minimum-tests 9 -- python3 -B scripts/test_hepta_cumulative_source.py -v[0m
+2026-10-27T12:11:44.2369412Z [36;1mpython3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-cumulative/import-controls.json" --timeout-seconds 60 --minimum-tests 9 -- python3 -B scripts/test_hepta_cumulative_pilot_entry.py --chain "$GITHUB_WORKSPACE/chain" -v[0m
+2026-10-27T12:11:44.2433401Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T12:11:44.2433769Z env:
+2026-10-27T12:11:44.2434015Z   SOURCE_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:44.2434367Z   TESTED_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:44.2434699Z   BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:11:44.2435005Z   HEPTA_CI_LANE: source-head
+2026-10-27T12:11:44.2435283Z   CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:11:44.2435583Z   PYTHONNOUSERSITE: 1
+2026-10-27T12:11:44.2435816Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-27T12:11:44.2436065Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+2026-10-27T12:11:44.2436316Z   PIP_NO_CACHE_DIR: 1
+2026-10-27T12:11:44.2436514Z   HF_HUB_OFFLINE: 1
+2026-10-27T12:11:44.2436720Z   TRANSFORMERS_OFFLINE: 1
+2026-10-27T12:11:44.2437000Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:44.2437434Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-10-27T12:11:44.2437864Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:44.2438239Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:44.2438616Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:44.2438993Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-10-27T12:11:44.2439389Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+2026-10-27T12:11:44.2440141Z   HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT: /home/runner/work/_temp/hepta-cumulative/runtime-snapshot.json
+2026-10-27T12:11:44.2440712Z   FORMAT_BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:11:44.2441033Z ##[endgroup]
+2026-10-27T12:11:45.4848302Z test_changed_checkpoint_is_rejected (__main__.ParentBindings.test_changed_checkpoint_is_rejected) ... ok
+2026-10-27T12:11:45.4870473Z test_changed_receipt_count_cannot_reuse_a_stale_ledger (__main__.ParentBindings.test_changed_receipt_count_cannot_reuse_a_stale_ledger) ... ok
+2026-10-27T12:11:45.4886890Z test_cross_role_parent_is_rejected (__main__.ParentBindings.test_cross_role_parent_is_rejected) ... ok
+2026-10-27T12:11:45.4909787Z test_receipts_supply_the_cumulative_counts (__main__.ParentBindings.test_receipts_supply_the_cumulative_counts) ... ok
+2026-10-27T12:11:45.4932596Z test_restarted_second_round_cannot_claim_parent_continuation (__main__.ParentBindings.test_restarted_second_round_cannot_claim_parent_continuation) ... ok
+2026-10-27T12:11:45.4933552Z 
+2026-10-27T12:11:45.4933754Z ----------------------------------------------------------------------
+2026-10-27T12:11:45.4934175Z Ran 5 tests in 0.011s
+2026-10-27T12:11:45.4934339Z 
+2026-10-27T12:11:45.4934438Z OK
+2026-10-27T12:11:46.1513955Z {"after": {"commit": "6ba1a5b352568250edcec5975972d7d67d30e295", "dirty": false, "parents": ["60df5f93480e191cea88780d2ff394554182e30b"], "tree": "1e6cc38a6f1bb78ce78a01049dfd1066d11e3a65"}, "base_sha": "f75bf1ac902ed73905e4daa49f9396df028a4254", "before": {"commit": "6ba1a5b352568250edcec5975972d7d67d30e295", "dirty": false, "parents": ["60df5f93480e191cea88780d2ff394554182e30b"], "tree": "1e6cc38a6f1bb78ce78a01049dfd1066d11e3a65"}, "command": ["python3", "-B", "scripts/test_hepta_cumulative_controls.py", "-v"], "command_exit_code": 0, "elapsed_seconds": 1.6689181390000272, "exit_code": 0, "finished_at": "2026-10-27T12:11:46.149226+00:00", "job": "cumulative-controls-only", "lane": "source-head", "log_bytes": 723, "log_file": "parent-controls.json.59323732f40a46a6bf34bb1f72786348.log", "log_sha256": "712ae3a47c01a91448b9c1488a325e100a56514dd1c05f4e2313d854527f5105", "minimum_tests": 5, "observed_failed_tests": 0, "observed_passed_tests": 5, "output_limit_exceeded": false, "returncode": 0, "run_attempt": "1", "run_id": "40501186161", "schema_version": 1, "source_sha": "6ba1a5b352568250edcec5975972d7d67d30e295", "started_at": "2026-10-27T12:11:44.475071+00:00", "status": "passed", "tested_sha": "6ba1a5b352568250edcec5975972d7d67d30e295", "timed_out": false, "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci/hepta"}
+2026-10-27T12:11:47.5888881Z test_authenticated_metadata_redirect_fails_before_any_second_request (__main__.RetainedSource.test_authenticated_metadata_redirect_fails_before_any_second_request) ... ok
+2026-10-27T12:11:47.5916996Z test_link_members_are_not_materialized (__main__.RetainedSource.test_link_members_are_not_materialized) ... ok
+2026-10-27T12:11:47.5924512Z test_missing_selected_checkpoint_cannot_count_as_verified (__main__.RetainedSource.test_missing_selected_checkpoint_cannot_count_as_verified) ... ok
+2026-10-27T12:11:47.5955183Z test_object_redirect_cannot_downgrade_https_or_create_a_second_fetch (__main__.RetainedSource.test_object_redirect_cannot_downgrade_https_or_create_a_second_fetch) ... ok
+2026-10-27T12:11:47.5986900Z test_partial_archive_is_recorded_and_signed_object_receives_no_token (__main__.RetainedSource.test_partial_archive_is_recorded_and_signed_object_receives_no_token) ... ok
+2026-10-27T12:11:47.5999790Z test_pinned_member_and_expansion_budgets_are_enforced_before_writes (__main__.RetainedSource.test_pinned_member_and_expansion_budgets_are_enforced_before_writes) ... ok
+2026-10-27T12:11:47.6006214Z test_replaced_index_digest_is_rejected (__main__.RetainedSource.test_replaced_index_digest_is_rejected) ... ok
+2026-10-27T12:11:47.6019423Z test_selected_bytes_are_verified_again_before_consumption (__main__.RetainedSource.test_selected_bytes_are_verified_again_before_consumption) ... ok
+2026-10-27T12:11:47.6026642Z test_traversal_cannot_write_outside_the_owned_output (__main__.RetainedSource.test_traversal_cannot_write_outside_the_owned_output) ... ok
+2026-10-27T12:11:47.6027582Z 
+2026-10-27T12:11:47.6027838Z ----------------------------------------------------------------------
+2026-10-27T12:11:47.6028356Z Ran 9 tests in 0.018s
+2026-10-27T12:11:47.6028565Z 
+2026-10-27T12:11:47.6028684Z OK
+2026-10-27T12:11:48.2744747Z {"after": {"commit": "6ba1a5b352568250edcec5975972d7d67d30e295", "dirty": false, "parents": ["60df5f93480e191cea88780d2ff394554182e30b"], "tree": "1e6cc38a6f1bb78ce78a01049dfd1066d11e3a65"}, "base_sha": "f75bf1ac902ed73905e4daa49f9396df028a4254", "before": {"commit": "6ba1a5b352568250edcec5975972d7d67d30e295", "dirty": false, "parents": ["60df5f93480e191cea88780d2ff394554182e30b"], "tree": "1e6cc38a6f1bb78ce78a01049dfd1066d11e3a65"}, "command": ["python3", "-B", "scripts/test_hepta_cumulative_source.py", "-v"], "command_exit_code": 0, "elapsed_seconds": 1.8891151349999973, "exit_code": 0, "finished_at": "2026-10-27T12:11:48.272450+00:00", "job": "cumulative-controls-only", "lane": "source-head", "log_bytes": 1439, "log_file": "archive-controls.json.db3de2784a554fb4a3f46e959e06811e.log", "log_sha256": "97a18d58b5dd9e16e4fe65bb969bc3016b17a2e30f2c0e781d03edeff9e7764b", "minimum_tests": 9, "observed_failed_tests": 0, "observed_passed_tests": 9, "output_limit_exceeded": false, "returncode": 0, "run_attempt": "1", "run_id": "40501186161", "schema_version": 1, "source_sha": "6ba1a5b352568250edcec5975972d7d67d30e295", "started_at": "2026-10-27T12:11:46.382779+00:00", "status": "passed", "tested_sha": "6ba1a5b352568250edcec5975972d7d67d30e295", "timed_out": false, "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci/hepta"}
+2026-10-27T12:11:49.5599174Z Import-only source c96022b897c1235fdbdbfcfa32764403511c6aab; entry SHA256 cb59036cb8e121baa2ad2453021c6065e0baf1d8263d2422b69c2e25b89e8cb7
+2026-10-27T12:11:49.8438797Z test_a_different_real_commit_is_rejected (__main__.RealIsolatedImports.test_a_different_real_commit_is_rejected) ... ok
+2026-10-27T12:11:50.2821204Z test_actual_evaluation_still_requires_the_cold_runtime_snapshot (__main__.RealIsolatedImports.test_actual_evaluation_still_requires_the_cold_runtime_snapshot) ... ok
+2026-10-27T12:11:50.5096677Z test_changed_tracked_sibling_is_rejected_before_execution (__main__.RealIsolatedImports.test_changed_tracked_sibling_is_rejected_before_execution) ... ok
+2026-10-27T12:11:50.7594887Z test_ignored_untracked_package_cannot_shadow_the_checked_sibling (__main__.RealIsolatedImports.test_ignored_untracked_package_cannot_shadow_the_checked_sibling) ... ok
+2026-10-27T12:11:51.1176505Z test_isolation_and_no_bytecode_flags_are_required (__main__.RealIsolatedImports.test_isolation_and_no_bytecode_flags_are_required) ... ok
+2026-10-27T12:11:51.3815313Z test_original_isolated_entry_reproduces_the_sibling_import_failure (__main__.RealIsolatedImports.test_original_isolated_entry_reproduces_the_sibling_import_failure) ... ok
+2026-10-27T12:11:51.5763720Z test_other_commands_phases_and_roles_do_not_reach_the_model (__main__.RealIsolatedImports.test_other_commands_phases_and_roles_do_not_reach_the_model) ... ok
+2026-10-27T12:11:52.1878517Z test_real_original_parser_imports_with_and_without_path_pollution (__main__.RealIsolatedImports.test_real_original_parser_imports_with_and_without_path_pollution) ... ok
+2026-10-27T12:11:52.2529600Z test_semantically_equal_but_unpinned_plan_bytes_are_rejected (__main__.RealIsolatedImports.test_semantically_equal_but_unpinned_plan_bytes_are_rejected) ... ok
+2026-10-27T12:11:52.2633435Z 
+2026-10-27T12:11:52.2633884Z ----------------------------------------------------------------------
+2026-10-27T12:11:52.2634472Z Ran 9 tests in 2.777s
+2026-10-27T12:11:52.2634686Z 
+2026-10-27T12:11:52.2634806Z OK
+2026-10-27T12:11:52.9386439Z {"after": {"commit": "6ba1a5b352568250edcec5975972d7d67d30e295", "dirty": false, "parents": ["60df5f93480e191cea88780d2ff394554182e30b"], "tree": "1e6cc38a6f1bb78ce78a01049dfd1066d11e3a65"}, "base_sha": "f75bf1ac902ed73905e4daa49f9396df028a4254", "before": {"commit": "6ba1a5b352568250edcec5975972d7d67d30e295", "dirty": false, "parents": ["60df5f93480e191cea88780d2ff394554182e30b"], "tree": "1e6cc38a6f1bb78ce78a01049dfd1066d11e3a65"}, "command": ["python3", "-B", "scripts/test_hepta_cumulative_pilot_entry.py", "--chain", "/home/runner/work/hepta-private-ci/hepta-private-ci/chain", "-v"], "command_exit_code": 0, "elapsed_seconds": 4.428966599999967, "exit_code": 0, "finished_at": "2026-10-27T12:11:52.936408+00:00", "job": "cumulative-controls-only", "lane": "source-head", "log_bytes": 1643, "log_file": "import-controls.json.6bba0f0cf0104fa580ab655d4489f2b8.log", "log_sha256": "e86b7555afd61011e1b1369fe63491d449a525292078b1753352b08ad9e21ce6", "minimum_tests": 9, "observed_failed_tests": 0, "observed_passed_tests": 9, "output_limit_exceeded": false, "returncode": 0, "run_attempt": "1", "run_id": "40501186161", "schema_version": 1, "source_sha": "6ba1a5b352568250edcec5975972d7d67d30e295", "started_at": "2026-10-27T12:11:48.506727+00:00", "status": "passed", "tested_sha": "6ba1a5b352568250edcec5975972d7d67d30e295", "timed_out": false, "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci/hepta"}
+2026-10-27T12:11:52.9523994Z ##[group]Run set -euo pipefail
+2026-10-27T12:11:52.9524352Z [36;1mset -euo pipefail[0m
+2026-10-27T12:11:52.9524689Z [36;1munset PYTHONPATH PYTHONHOME PYTHONUSERBASE[0m
+2026-10-27T12:11:52.9525566Z [36;1mpython3 -I -B scripts/hepta_cumulative_source.py --pin qualification/cumulative-controls/source-pin.json --output "$RUNNER_TEMP/hepta-cumulative/reference"[0m
+2026-10-27T12:11:52.9589368Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T12:11:52.9589719Z env:
+2026-10-27T12:11:52.9590137Z   SOURCE_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:52.9590497Z   TESTED_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:11:52.9590841Z   BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:11:52.9591142Z   HEPTA_CI_LANE: source-head
+2026-10-27T12:11:52.9591411Z   CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:11:52.9591709Z   PYTHONNOUSERSITE: 1
+2026-10-27T12:11:52.9591933Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-27T12:11:52.9592233Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+2026-10-27T12:11:52.9592485Z   PIP_NO_CACHE_DIR: 1
+2026-10-27T12:11:52.9592684Z   HF_HUB_OFFLINE: 1
+2026-10-27T12:11:52.9592887Z   TRANSFORMERS_OFFLINE: 1
+2026-10-27T12:11:52.9593169Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:52.9593604Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-10-27T12:11:52.9594019Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:52.9594395Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:52.9594775Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:11:52.9595151Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-10-27T12:11:52.9595546Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+2026-10-27T12:11:52.9596098Z   HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT: /home/runner/work/_temp/hepta-cumulative/runtime-snapshot.json
+2026-10-27T12:11:52.9596661Z   FORMAT_BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:11:52.9599102Z   GH_TOKEN: ***
+2026-10-27T12:11:52.9599307Z ##[endgroup]
+2026-10-27T12:12:19.2759165Z ##[group]Run set -euo pipefail
+2026-10-27T12:12:19.2759485Z [36;1mset -euo pipefail[0m
+2026-10-27T12:12:19.2759794Z [36;1munset PYTHONPATH PYTHONHOME PYTHONUSERBASE[0m
+2026-10-27T12:12:19.2760521Z [36;1mpython3 -I -B -m venv "$RUNNER_TEMP/hepta-cumulative-env"[0m
+2026-10-27T12:12:19.2761701Z [36;1m"$RUNNER_TEMP/hepta-cumulative-env/bin/python" -I -B -m pip install --require-hashes --only-binary=:all: --no-compile --index-url https://pypi.org/simple --report "$RUNNER_TEMP/hepta-cumulative/pip-install.json" -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt[0m
+2026-10-27T12:12:19.2762889Z [36;1m"$RUNNER_TEMP/hepta-cumulative-env/bin/python" -I -B -m pip check[0m
+2026-10-27T12:12:19.2764130Z [36;1m"$RUNNER_TEMP/hepta-cumulative-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py record --lock ../chain/scripts/ci/model-runtime-cpu-requirements.txt --installation "$RUNNER_TEMP/hepta-cumulative/pip-install.json" --output "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"[0m
+2026-10-27T12:12:19.2828377Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T12:12:19.2828724Z env:
+2026-10-27T12:12:19.2828960Z   SOURCE_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:12:19.2829305Z   TESTED_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:12:19.2829633Z   BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:12:19.2830259Z   HEPTA_CI_LANE: source-head
+2026-10-27T12:12:19.2830583Z   CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:12:19.2830892Z   PYTHONNOUSERSITE: 1
+2026-10-27T12:12:19.2831124Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-27T12:12:19.2831377Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+2026-10-27T12:12:19.2831624Z   PIP_NO_CACHE_DIR: 1
+2026-10-27T12:12:19.2831828Z   HF_HUB_OFFLINE: 1
+2026-10-27T12:12:19.2832029Z   TRANSFORMERS_OFFLINE: 1
+2026-10-27T12:12:19.2832308Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:12:19.2832729Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-10-27T12:12:19.2833160Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:12:19.2833734Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:12:19.2834112Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:12:19.2834490Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-10-27T12:12:19.2834886Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+2026-10-27T12:12:19.2835438Z   HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT: /home/runner/work/_temp/hepta-cumulative/runtime-snapshot.json
+2026-10-27T12:12:19.2835987Z   FORMAT_BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:12:19.2836318Z ##[endgroup]
+2026-10-27T12:12:23.8498522Z Collecting torch@ https://download-r2.pytorch.org/whl/cpu/torch-2.9.1%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 67))
+2026-10-27T12:12:23.9188116Z   Downloading https://download-r2.pytorch.org/whl/cpu/torch-2.9.1%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl (184.4 MB)
+2026-10-27T12:12:24.7411495Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 184.4/184.4 MB 253.9 MB/s eta 0:00:00
+2026-10-27T12:12:25.1327816Z Ignoring torch: markers 'platform_machine == "aarch64"' don't match your environment
+2026-10-27T12:12:25.1900544Z Collecting accelerate==1.15.0 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 4))
+2026-10-27T12:12:25.2266049Z   Downloading accelerate-1.15.0-py3-none-any.whl (394 kB)
+2026-10-27T12:12:25.2501638Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 394.3/394.3 kB 18.1 MB/s eta 0:00:00
+2026-10-27T12:12:25.2758196Z Collecting certifi==2026.10.23 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 6))
+2026-10-27T12:12:25.2790365Z   Downloading certifi-2026.10.23-py3-none-any.whl (135 kB)
+2026-10-27T12:12:25.2815638Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 135.1/135.1 kB 269.3 MB/s eta 0:00:00
+2026-10-27T12:12:25.4168144Z Collecting cffi==2.0.0 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 8))
+2026-10-27T12:12:25.4202792Z   Downloading cffi-2.0.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (219 kB)
+2026-10-27T12:12:25.4237979Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 219.6/219.6 kB 151.6 MB/s eta 0:00:00
+2026-10-27T12:12:25.5871551Z Collecting charset-normalizer==3.5.2 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 11))
+2026-10-27T12:12:25.5910731Z   Downloading charset_normalizer-3.5.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (257 kB)
+2026-10-27T12:12:25.5941088Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 257.6/257.6 kB 297.6 MB/s eta 0:00:00
+2026-10-27T12:12:25.8673091Z Collecting cryptography==50.0.2 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 14))
+2026-10-27T12:12:25.8708421Z   Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_34_x86_64.whl (4.8 MB)
+2026-10-27T12:12:25.8950935Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.8/4.8 MB 215.5 MB/s eta 0:00:00
+2026-10-27T12:12:25.9367327Z Collecting filelock==4.2.4 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 17))
+2026-10-27T12:12:25.9400013Z   Downloading filelock-4.2.4-py3-none-any.whl (162 kB)
+2026-10-27T12:12:25.9426831Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 162.5/162.5 kB 286.3 MB/s eta 0:00:00
+2026-10-27T12:12:25.9702825Z Collecting fsspec==2026.9.0 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 19))
+2026-10-27T12:12:25.9737740Z   Downloading fsspec-2026.9.0-py3-none-any.whl (221 kB)
+2026-10-27T12:12:25.9765955Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 221.7/221.7 kB 322.7 MB/s eta 0:00:00
+2026-10-27T12:12:26.0558139Z Collecting hf-xet==1.7.0 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 21))
+2026-10-27T12:12:26.0598005Z   Downloading hf_xet-1.7.0-cp38-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (4.2 MB)
+2026-10-27T12:12:26.0761840Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.2/4.2 MB 293.7 MB/s eta 0:00:00
+2026-10-27T12:12:26.1561559Z Collecting huggingface-hub==0.36.2 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 24))
+2026-10-27T12:12:26.1595757Z   Downloading huggingface_hub-0.36.2-py3-none-any.whl (566 kB)
+2026-10-27T12:12:26.1634834Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 566.4/566.4 kB 308.1 MB/s eta 0:00:00
+2026-10-27T12:12:26.1851143Z Collecting idna==3.20 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 26))
+2026-10-27T12:12:26.1883046Z   Downloading idna-3.20-py3-none-any.whl (69 kB)
+2026-10-27T12:12:26.1906898Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 69.6/69.6 kB 221.8 MB/s eta 0:00:00
+2026-10-27T12:12:26.2094780Z Collecting jinja2==3.1.6 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 28))
+2026-10-27T12:12:26.2380317Z   Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+2026-10-27T12:12:26.2406590Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 134.9/134.9 kB 276.4 MB/s eta 0:00:00
+2026-10-27T12:12:26.3116893Z Collecting markupsafe==3.0.4 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 30))
+2026-10-27T12:12:26.3153725Z   Downloading markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+2026-10-27T12:12:26.3317802Z Collecting mpmath==1.3.0 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 33))
+2026-10-27T12:12:26.3349844Z   Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
+2026-10-27T12:12:26.3422354Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.2/536.2 kB 106.4 MB/s eta 0:00:00
+2026-10-27T12:12:26.3701133Z Collecting networkx==3.7 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 35))
+2026-10-27T12:12:26.3735629Z   Downloading networkx-3.7-py3-none-any.whl (2.1 MB)
+2026-10-27T12:12:26.3825495Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 308.1 MB/s eta 0:00:00
+2026-10-27T12:12:26.6462975Z Collecting numpy==1.26.4 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 37))
+2026-10-27T12:12:26.6501321Z   Downloading numpy-1.26.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (18.0 MB)
+2026-10-27T12:12:26.7187663Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 18.0/18.0 MB 270.3 MB/s eta 0:00:00
+2026-10-27T12:12:26.7662674Z Collecting packaging==26.3 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 40))
+2026-10-27T12:12:26.7707013Z   Downloading packaging-26.3-py3-none-any.whl (129 kB)
+2026-10-27T12:12:26.7732441Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 130.0/130.0 kB 303.5 MB/s eta 0:00:00
+2026-10-27T12:12:26.7918560Z Collecting peft==0.18.0 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 42))
+2026-10-27T12:12:26.7959029Z   Downloading peft-0.18.0-py3-none-any.whl (556 kB)
+2026-10-27T12:12:26.7997891Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 556.4/556.4 kB 316.2 MB/s eta 0:00:00
+2026-10-27T12:12:26.8888038Z Collecting psutil==7.2.2 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 44))
+2026-10-27T12:12:26.8929197Z   Downloading psutil-7.2.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl (155 kB)
+2026-10-27T12:12:26.8955563Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 155.6/155.6 kB 314.4 MB/s eta 0:00:00
+2026-10-27T12:12:26.9095951Z Collecting pycparser==2.23 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 47))
+2026-10-27T12:12:26.9126809Z   Downloading pycparser-2.23-py3-none-any.whl (118 kB)
+2026-10-27T12:12:26.9150544Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 118.1/118.1 kB 308.1 MB/s eta 0:00:00
+2026-10-27T12:12:26.9590415Z Collecting pyyaml==6.0.3 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 49))
+2026-10-27T12:12:26.9624279Z   Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+2026-10-27T12:12:26.9669868Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 807.9/807.9 kB 320.3 MB/s eta 0:00:00
+2026-10-27T12:12:27.5300211Z Collecting regex==2026.9.29 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 52))
+2026-10-27T12:12:27.5336919Z   Downloading regex-2026.9.29-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+2026-10-27T12:12:27.5387037Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 807.8/807.8 kB 301.1 MB/s eta 0:00:00
+2026-10-27T12:12:27.5693577Z Collecting requests==2.34.2 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 55))
+2026-10-27T12:12:27.5729772Z   Downloading requests-2.34.2-py3-none-any.whl (73 kB)
+2026-10-27T12:12:27.5755309Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 73.1/73.1 kB 266.6 MB/s eta 0:00:00
+2026-10-27T12:12:27.7217164Z Collecting safetensors==0.7.0 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 57))
+2026-10-27T12:12:27.7253300Z   Downloading safetensors-0.7.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (507 kB)
+2026-10-27T12:12:27.7291459Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 507.2/507.2 kB 302.4 MB/s eta 0:00:00
+2026-10-27T12:12:27.8684954Z Collecting setuptools==84.2.1 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 60))
+2026-10-27T12:12:27.8718943Z   Downloading setuptools-84.2.1-py3-none-any.whl (876 kB)
+2026-10-27T12:12:27.8771328Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 876.3/876.3 kB 294.6 MB/s eta 0:00:00
+2026-10-27T12:12:27.9007989Z Collecting sympy==1.14.0 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 62))
+2026-10-27T12:12:27.9040991Z   Downloading sympy-1.14.0-py3-none-any.whl (6.3 MB)
+2026-10-27T12:12:27.9284498Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.3/6.3 MB 283.6 MB/s eta 0:00:00
+2026-10-27T12:12:28.1766257Z Collecting tokenizers==0.22.2 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 64))
+2026-10-27T12:12:28.1800449Z   Downloading tokenizers-0.22.2-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.3 MB)
+2026-10-27T12:12:28.1942493Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.3/3.3 MB 271.2 MB/s eta 0:00:00
+2026-10-27T12:12:28.2431751Z Collecting tqdm==4.70.1 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 71))
+2026-10-27T12:12:28.2463786Z   Downloading tqdm-4.70.1-py3-none-any.whl (80 kB)
+2026-10-27T12:12:28.2487911Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 80.2/80.2 kB 209.5 MB/s eta 0:00:00
+2026-10-27T12:12:28.3085010Z Collecting transformers==4.57.3 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 73))
+2026-10-27T12:12:28.3177424Z   Downloading transformers-4.57.3-py3-none-any.whl (12.0 MB)
+2026-10-27T12:12:28.4031405Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.0/12.0 MB 133.4 MB/s eta 0:00:00
+2026-10-27T12:12:28.4475346Z Collecting typing-extensions==4.16.0 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 75))
+2026-10-27T12:12:28.4506526Z   Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-10-27T12:12:28.4529852Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45.6/45.6 kB 239.9 MB/s eta 0:00:00
+2026-10-27T12:12:28.4858329Z Collecting urllib3==2.8.0 (from -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt (line 77))
+2026-10-27T12:12:28.4891928Z   Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+2026-10-27T12:12:28.4918061Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 135.7/135.7 kB 281.0 MB/s eta 0:00:00
+2026-10-27T12:12:30.3169179Z Installing collected packages: mpmath, urllib3, typing-extensions, tqdm, sympy, setuptools, safetensors, regex, pyyaml, pycparser, psutil, packaging, numpy, networkx, markupsafe, idna, hf-xet, fsspec, filelock, charset-normalizer, certifi, requests, jinja2, cffi, torch, huggingface-hub, cryptography, tokenizers, accelerate, transformers, peft
+2026-10-27T12:12:36.8774585Z Successfully installed accelerate-1.15.0 certifi-2026.10.23 cffi-2.0.0 charset-normalizer-3.5.2 cryptography-50.0.2 filelock-4.2.4 fsspec-2026.9.0 hf-xet-1.7.0 huggingface-hub-0.36.2 idna-3.20 jinja2-3.1.6 markupsafe-3.0.4 mpmath-1.3.0 networkx-3.7 numpy-1.26.4 packaging-26.3 peft-0.18.0 psutil-7.2.2 pycparser-2.23 pyyaml-6.0.3 regex-2026.9.29 requests-2.34.2 safetensors-0.7.0 setuptools-84.2.1 sympy-1.14.0 tokenizers-0.22.2 torch-2.9.1+cpu tqdm-4.70.1 transformers-4.57.3 typing-extensions-4.16.0 urllib3-2.8.0
+2026-10-27T12:12:38.8047093Z No broken requirements found.
+2026-10-27T12:12:57.3726928Z {"snapshot_sha256": "c2afa7383f72a7c2c21a0b8867b03d085308fdbfc68ed45832a2c6bd036f0939", "files": 27198, "wheels": 31, "held_runtime_closure": false}
+2026-10-27T12:12:57.9008879Z ##[group]Run set -euo pipefail
+2026-10-27T12:12:57.9009422Z [36;1mset -euo pipefail[0m
+2026-10-27T12:12:57.9010254Z [36;1munset PYTHONPATH PYTHONHOME PYTHONUSERBASE[0m
+2026-10-27T12:12:57.9012205Z [36;1m"$RUNNER_TEMP/hepta-cumulative-env/bin/python" -I -B scripts/hepta_smollm_public_initial_v2.py --chain "$GITHUB_WORKSPACE/chain" --materials "$RUNNER_TEMP/hepta-cumulative-model" --output "$RUNNER_TEMP/hepta-cumulative/genesis" --fetch-materials[0m
+2026-10-27T12:12:57.9085575Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T12:12:57.9086190Z env:
+2026-10-27T12:12:57.9086618Z   SOURCE_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:12:57.9087273Z   TESTED_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:12:57.9087915Z   BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:12:57.9088518Z   HEPTA_CI_LANE: source-head
+2026-10-27T12:12:57.9089010Z   CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:12:57.9089590Z   PYTHONNOUSERSITE: 1
+2026-10-27T12:12:57.9090327Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-27T12:12:57.9090793Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+2026-10-27T12:12:57.9091240Z   PIP_NO_CACHE_DIR: 1
+2026-10-27T12:12:57.9091619Z   HF_HUB_OFFLINE: 1
+2026-10-27T12:12:57.9091990Z   TRANSFORMERS_OFFLINE: 1
+2026-10-27T12:12:57.9092517Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:12:57.9093318Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-10-27T12:12:57.9094114Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:12:57.9094825Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:12:57.9095553Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:12:57.9096436Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-10-27T12:12:57.9096877Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+2026-10-27T12:12:57.9097450Z   HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT: /home/runner/work/_temp/hepta-cumulative/runtime-snapshot.json
+2026-10-27T12:12:57.9098009Z   FORMAT_BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:12:57.9098329Z ##[endgroup]
+2026-10-27T12:13:11.4537335Z {"actual_inference":false,"backbone":"c320c094769446c21d7e4a33795d7f9310b5e4c8ca5a6fecca40207b1f735b7c","compatibility":"695d12e8dce5c289a063effdbcc2289148b4708a4a6ead77199da734e0dba2c8","contract":"c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f","installation":false,"plan":"4eb748aee63bb946b93c5df6780833691dc3a90e91dd1d8e6d29d1c93b9c7420","product_qualification":false,"schema":"hepta-smollm-public-material-derivation-v2","tokenizer":"a1883207efeacecee399f4dc699d2b547eb2d6ddb7500522933ed76c1521fb93","training":false,"upstream_verified":true}
+2026-10-27T12:13:11.4737496Z ##[group]Run set -euo pipefail
+2026-10-27T12:13:11.4737826Z [36;1mset -euo pipefail[0m
+2026-10-27T12:13:11.4738111Z [36;1munset PYTHONPATH PYTHONHOME PYTHONUSERBASE[0m
+2026-10-27T12:13:11.4740286Z [36;1mpython3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-cumulative/actual-execution.json" --timeout-seconds 10800 --minimum-tests 0 -- "$RUNNER_TEMP/hepta-cumulative-env/bin/python" -I -B scripts/hepta_cumulative_campaign.py --chain "$GITHUB_WORKSPACE/chain" --materials "$RUNNER_TEMP/hepta-cumulative-model" --source "$RUNNER_TEMP/hepta-cumulative/reference" --source-pin "$GITHUB_WORKSPACE/hepta/qualification/cumulative-controls/source-pin.json" --output "$RUNNER_TEMP/hepta-cumulative/campaign"[0m
+2026-10-27T12:13:11.4742583Z [36;1m"$RUNNER_TEMP/hepta-cumulative-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"[0m
+2026-10-27T12:13:11.4806184Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T12:13:11.4806530Z env:
+2026-10-27T12:13:11.4806763Z   SOURCE_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:13:11.4807099Z   TESTED_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:13:11.4807424Z   BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:13:11.4807726Z   HEPTA_CI_LANE: source-head
+2026-10-27T12:13:11.4807996Z   CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:13:11.4808290Z   PYTHONNOUSERSITE: 1
+2026-10-27T12:13:11.4808509Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-27T12:13:11.4808751Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+2026-10-27T12:13:11.4808991Z   PIP_NO_CACHE_DIR: 1
+2026-10-27T12:13:11.4809191Z   HF_HUB_OFFLINE: 1
+2026-10-27T12:13:11.4809396Z   TRANSFORMERS_OFFLINE: 1
+2026-10-27T12:13:11.4809676Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:13:11.4810252Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-10-27T12:13:11.4810664Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:13:11.4811030Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:13:11.4811403Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:13:11.4811770Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-10-27T12:13:11.4812155Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+2026-10-27T12:13:11.4812691Z   HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT: /home/runner/work/_temp/hepta-cumulative/runtime-snapshot.json
+2026-10-27T12:13:11.4813225Z   FORMAT_BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:13:11.4813530Z ##[endgroup]
+2026-10-27T12:13:15.4898778Z {"unchanged_observed_files": 27198, "snapshot_sha256": "c2afa7383f72a7c2c21a0b8867b03d085308fdbfc68ed45832a2c6bd036f0939", "held_runtime_closure": false}
+2026-10-27T12:13:19.4381264Z {"unchanged_observed_files": 27198, "snapshot_sha256": "c2afa7383f72a7c2c21a0b8867b03d085308fdbfc68ed45832a2c6bd036f0939", "held_runtime_closure": false}
+2026-10-27T12:14:07.5436740Z {"unchanged_observed_files": 27198, "snapshot_sha256": "c2afa7383f72a7c2c21a0b8867b03d085308fdbfc68ed45832a2c6bd036f0939", "held_runtime_closure": false}
+2026-10-27T12:14:35.9589513Z {"unchanged_observed_files": 27198, "snapshot_sha256": "c2afa7383f72a7c2c21a0b8867b03d085308fdbfc68ed45832a2c6bd036f0939", "held_runtime_closure": false}
+2026-10-27T12:14:39.2412503Z {"unchanged_observed_files": 27198, "snapshot_sha256": "c2afa7383f72a7c2c21a0b8867b03d085308fdbfc68ed45832a2c6bd036f0939", "held_runtime_closure": false}
+2026-10-27T12:15:35.7049200Z {"unchanged_observed_files": 27198, "snapshot_sha256": "c2afa7383f72a7c2c21a0b8867b03d085308fdbfc68ed45832a2c6bd036f0939", "held_runtime_closure": false}
+2026-10-27T12:16:03.9413784Z {"unchanged_observed_files": 27198, "snapshot_sha256": "c2afa7383f72a7c2c21a0b8867b03d085308fdbfc68ed45832a2c6bd036f0939", "held_runtime_closure": false}
+2026-10-27T12:16:07.3466381Z {"unchanged_observed_files": 27198, "snapshot_sha256": "c2afa7383f72a7c2c21a0b8867b03d085308fdbfc68ed45832a2c6bd036f0939", "held_runtime_closure": false}
+2026-10-27T12:16:55.5514409Z {"unchanged_observed_files": 27198, "snapshot_sha256": "c2afa7383f72a7c2c21a0b8867b03d085308fdbfc68ed45832a2c6bd036f0939", "held_runtime_closure": false}
+2026-10-27T12:17:24.0545274Z {"unchanged_observed_files": 27198, "snapshot_sha256": "c2afa7383f72a7c2c21a0b8867b03d085308fdbfc68ed45832a2c6bd036f0939", "held_runtime_closure": false}
+2026-10-27T12:17:27.3791752Z {"unchanged_observed_files": 27198, "snapshot_sha256": "c2afa7383f72a7c2c21a0b8867b03d085308fdbfc68ed45832a2c6bd036f0939", "held_runtime_closure": false}
+2026-10-27T12:18:24.0184597Z {"unchanged_observed_files": 27198, "snapshot_sha256": "c2afa7383f72a7c2c21a0b8867b03d085308fdbfc68ed45832a2c6bd036f0939", "held_runtime_closure": false}
+2026-10-27T12:18:52.3805554Z {"unchanged_observed_files": 27198, "snapshot_sha256": "c2afa7383f72a7c2c21a0b8867b03d085308fdbfc68ed45832a2c6bd036f0939", "held_runtime_closure": false}
+2026-10-27T12:18:53.5263488Z {"after": {"commit": "6ba1a5b352568250edcec5975972d7d67d30e295", "dirty": false, "parents": ["60df5f93480e191cea88780d2ff394554182e30b"], "tree": "1e6cc38a6f1bb78ce78a01049dfd1066d11e3a65"}, "base_sha": "f75bf1ac902ed73905e4daa49f9396df028a4254", "before": {"commit": "6ba1a5b352568250edcec5975972d7d67d30e295", "dirty": false, "parents": ["60df5f93480e191cea88780d2ff394554182e30b"], "tree": "1e6cc38a6f1bb78ce78a01049dfd1066d11e3a65"}, "command": ["/home/runner/work/_temp/hepta-cumulative-env/bin/python", "-I", "-B", "scripts/hepta_cumulative_campaign.py", "--chain", "/home/runner/work/hepta-private-ci/hepta-private-ci/chain", "--materials", "/home/runner/work/_temp/hepta-cumulative-model", "--source", "/home/runner/work/_temp/hepta-cumulative/reference", "--source-pin", "/home/runner/work/hepta-private-ci/hepta-private-ci/hepta/qualification/cumulative-controls/source-pin.json", "--output", "/home/runner/work/_temp/hepta-cumulative/campaign"], "command_exit_code": 0, "elapsed_seconds": 341.847651858, "exit_code": 0, "finished_at": "2026-10-27T12:18:53.427549+00:00", "job": "cumulative-controls-only", "lane": "source-head", "log_bytes": 2002, "log_file": "actual-execution.json.d9760eb575c343c9a7389f6e54fe3fac.log", "log_sha256": "23abbec6717a43f9cb09d9fb4db22e40abac3ffb36453d7065440bc61955f273", "minimum_tests": 0, "observed_failed_tests": 0, "observed_passed_tests": 0, "output_limit_exceeded": false, "returncode": 0, "run_attempt": "1", "run_id": "40501186161", "schema_version": 1, "source_sha": "6ba1a5b352568250edcec5975972d7d67d30e295", "started_at": "2026-10-27T12:13:11.579118+00:00", "status": "passed", "tested_sha": "6ba1a5b352568250edcec5975972d7d67d30e295", "timed_out": false, "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci/hepta"}
+2026-10-27T12:18:56.4401844Z {"unchanged_observed_files": 27198, "snapshot_sha256": "c2afa7383f72a7c2c21a0b8867b03d085308fdbfc68ed45832a2c6bd036f0939", "held_runtime_closure": false}
+2026-10-27T12:18:56.4575719Z ##[group]Run python3 -I -B - <<'PY'
+2026-10-27T12:18:56.4576292Z [36;1mpython3 -I -B - <<'PY'[0m
+2026-10-27T12:18:56.4576553Z [36;1mimport hashlib, json, os[0m
+2026-10-27T12:18:56.4576811Z [36;1mfrom pathlib import Path[0m
+2026-10-27T12:18:56.4577149Z [36;1mroot = Path(os.environ["RUNNER_TEMP"]) / "hepta-cumulative"[0m
+2026-10-27T12:18:56.4577513Z [36;1mroot.mkdir(exist_ok=True)[0m
+2026-10-27T12:18:56.4577895Z [36;1mnames = ("CONTROLS_OUTCOME", "ORIGINAL_OUTCOME", "COLD_RUNTIME_OUTCOME",[0m
+2026-10-27T12:18:56.4578396Z [36;1m    "MATERIALS_OUTCOME", "CAMPAIGN_OUTCOME", "FORMATTING_OUTCOME")[0m
+2026-10-27T12:18:56.4578889Z [36;1moutcomes = {name: os.environ.get(name, "unavailable") for name in names}[0m
+2026-10-27T12:18:56.4579318Z [36;1mreport = root / "campaign/campaign.json"[0m
+2026-10-27T12:18:56.4579627Z [36;1mcampaign, report_error = {}, None[0m
+2026-10-27T12:18:56.4579891Z [36;1mtry:[0m
+2026-10-27T12:18:56.4580713Z [36;1m    campaign = json.loads(report.read_bytes()) if report.is_file() else {}[0m
+2026-10-27T12:18:56.4581179Z [36;1mexcept (OSError, ValueError) as error:[0m
+2026-10-27T12:18:56.4581491Z [36;1m    report_error = type(error).__name__[0m
+2026-10-27T12:18:56.4581791Z [36;1mif not isinstance(campaign, dict):[0m
+2026-10-27T12:18:56.4582145Z [36;1m    campaign, report_error = {}, "unexpected-report-type"[0m
+2026-10-27T12:18:56.4582963Z [36;1mcomplete = all(value == "success" for value in outcomes.values()) and campaign.get("status") == "completed-diagnostic-no-installation" and campaign.get("completed_rounds") == 3[0m
+2026-10-27T12:18:56.4583873Z [36;1mrecord = dict(schema="hepta-cumulative-required-outcomes-v1", outcomes=outcomes,[0m
+2026-10-27T12:18:56.4584508Z [36;1m    actual_diagnostic_completed=complete, installed_children=0, product_qualification=False,[0m
+2026-10-27T12:18:56.4585098Z [36;1m    total_resource_cost_matched=False, original_native_gates_replaced=False,[0m
+2026-10-27T12:18:56.4585527Z [36;1m    campaign_report_error=report_error)[0m
+2026-10-27T12:18:56.4585960Z [36;1m(root / "required-outcomes.json").write_text(json.dumps(record, indent=2) + "\n")[0m
+2026-10-27T12:18:56.4586374Z [36;1mfiles = {}[0m
+2026-10-27T12:18:56.4586608Z [36;1mfor path in sorted(root.rglob("*")):[0m
+2026-10-27T12:18:56.4587043Z [36;1m    if path.is_file() and path.suffix != ".zip" and path.name != "evidence-index.json":[0m
+2026-10-27T12:18:56.4587496Z [36;1m        with path.open("rb") as handle:[0m
+2026-10-27T12:18:56.4587860Z [36;1m            sha = hashlib.file_digest(handle, "sha256").hexdigest()[0m
+2026-10-27T12:18:56.4588353Z [36;1m        files[str(path.relative_to(root))] = dict(sha256=sha, bytes=path.stat().st_size)[0m
+2026-10-27T12:18:56.4588955Z [36;1m(root / "evidence-index.json").write_text(json.dumps(dict(source=os.environ["SOURCE_SHA"],[0m
+2026-10-27T12:18:56.4589582Z [36;1m    chain=os.environ["CHAIN_SHA"], files=files, product_qualification=False), indent=2) + "\n")[0m
+2026-10-27T12:18:56.4590209Z [36;1mif not complete:[0m
+2026-10-27T12:18:56.4590591Z [36;1m    raise SystemExit("cumulative diagnostic failed, skipped or unavailable")[0m
+2026-10-27T12:18:56.4590997Z [36;1mPY[0m
+2026-10-27T12:18:56.4653153Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T12:18:56.4653497Z env:
+2026-10-27T12:18:56.4653736Z   SOURCE_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:18:56.4654080Z   TESTED_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:18:56.4654408Z   BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:18:56.4654709Z   HEPTA_CI_LANE: source-head
+2026-10-27T12:18:56.4654982Z   CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:18:56.4655272Z   PYTHONNOUSERSITE: 1
+2026-10-27T12:18:56.4655492Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-27T12:18:56.4655741Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+2026-10-27T12:18:56.4655988Z   PIP_NO_CACHE_DIR: 1
+2026-10-27T12:18:56.4656186Z   HF_HUB_OFFLINE: 1
+2026-10-27T12:18:56.4656390Z   TRANSFORMERS_OFFLINE: 1
+2026-10-27T12:18:56.4656856Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:18:56.4657409Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-10-27T12:18:56.4657831Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:18:56.4658202Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:18:56.4658575Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:18:56.4658946Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-10-27T12:18:56.4659340Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+2026-10-27T12:18:56.4660048Z   HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT: /home/runner/work/_temp/hepta-cumulative/runtime-snapshot.json
+2026-10-27T12:18:56.4660602Z   FORMAT_BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:18:56.4660925Z   CONTROLS_OUTCOME: success
+2026-10-27T12:18:56.4661159Z   ORIGINAL_OUTCOME: success
+2026-10-27T12:18:56.4661394Z   COLD_RUNTIME_OUTCOME: success
+2026-10-27T12:18:56.4661649Z   MATERIALS_OUTCOME: success
+2026-10-27T12:18:56.4661885Z   CAMPAIGN_OUTCOME: success
+2026-10-27T12:18:56.4662111Z   FORMATTING_OUTCOME: success
+2026-10-27T12:18:56.4662338Z ##[endgroup]
+2026-10-27T12:19:00.1842057Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-10-27T12:19:00.1842776Z with:
+2026-10-27T12:19:00.1843346Z   name: hepta-cumulative-records-6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:19:00.1844057Z   retention-days: 14
+2026-10-27T12:19:00.1844449Z   include-hidden-files: true
+2026-10-27T12:19:00.1845635Z   path: /home/runner/work/_temp/hepta-cumulative/**
+!/home/runner/work/_temp/hepta-cumulative/**/*.safetensors
+!/home/runner/work/_temp/hepta-cumulative/reference/*.zip
+
+2026-10-27T12:19:00.1846954Z   if-no-files-found: warn
+2026-10-27T12:19:00.1847376Z   compression-level: 6
+2026-10-27T12:19:00.1847730Z   overwrite: false
+2026-10-27T12:19:00.1848017Z env:
+2026-10-27T12:19:00.1848397Z   SOURCE_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:19:00.1848981Z   TESTED_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:19:00.1849577Z   BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:19:00.1850396Z   HEPTA_CI_LANE: source-head
+2026-10-27T12:19:00.1850867Z   CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:19:00.1851425Z   PYTHONNOUSERSITE: 1
+2026-10-27T12:19:00.1851824Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-27T12:19:00.1852271Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+2026-10-27T12:19:00.1852716Z   PIP_NO_CACHE_DIR: 1
+2026-10-27T12:19:00.1853080Z   HF_HUB_OFFLINE: 1
+2026-10-27T12:19:00.1853442Z   TRANSFORMERS_OFFLINE: 1
+2026-10-27T12:19:00.1853947Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:19:00.1854687Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-10-27T12:19:00.1855451Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:19:00.1856107Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:19:00.1856755Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:19:00.1857424Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-10-27T12:19:00.1858192Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+2026-10-27T12:19:00.1858768Z   HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT: /home/runner/work/_temp/hepta-cumulative/runtime-snapshot.json
+2026-10-27T12:19:00.1859336Z   FORMAT_BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:19:00.1859649Z ##[endgroup]
+2026-10-27T12:19:00.3547942Z (node:3604) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-27T12:19:00.3548905Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-27T12:19:03.5534700Z With the provided path, there will be 11544 files uploaded
+2026-10-27T12:19:03.5542202Z Artifact name is valid!
+2026-10-27T12:19:03.5542683Z Root directory input is valid!
+2026-10-27T12:19:03.8771020Z Beginning upload of artifact content to blob storage
+2026-10-27T12:19:04.8493740Z (node:3604) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-27T12:19:05.0767148Z Uploaded bytes 8388608
+2026-10-27T12:19:05.2945877Z Uploaded bytes 16777216
+2026-10-27T12:19:05.6501397Z Uploaded bytes 25165824
+2026-10-27T12:19:06.5826887Z Uploaded bytes 33554432
+2026-10-27T12:19:07.3077165Z Uploaded bytes 41943040
+2026-10-27T12:19:08.5229498Z Uploaded bytes 50331648
+2026-10-27T12:19:09.6250478Z Uploaded bytes 58720256
+2026-10-27T12:19:09.8371680Z Uploaded bytes 67108864
+2026-10-27T12:19:10.0528468Z Uploaded bytes 75497472
+2026-10-27T12:19:10.5538771Z Uploaded bytes 83886080
+2026-10-27T12:19:11.2056812Z Uploaded bytes 92274688
+2026-10-27T12:19:12.2412850Z Uploaded bytes 100663296
+2026-10-27T12:19:13.2968447Z Uploaded bytes 109051904
+2026-10-27T12:19:14.4179968Z Uploaded bytes 117440512
+2026-10-27T12:19:14.4406530Z Uploaded bytes 117865750
+2026-10-27T12:19:14.4681322Z Finished uploading artifact content to blob storage!
+2026-10-27T12:19:14.4686207Z SHA256 digest of uploaded artifact zip is 9e9ff51116ad1e6b51500212f4fb57e0bfd6911f4833b14613a1ecd03609d05c
+2026-10-27T12:19:14.4688675Z Finalizing artifact upload
+2026-10-27T12:19:14.9229669Z Artifact hepta-cumulative-records-6ba1a5b352568250edcec5975972d7d67d30e295.zip successfully finalized. Artifact ID 12733098307
+2026-10-27T12:19:14.9232083Z Artifact hepta-cumulative-records-6ba1a5b352568250edcec5975972d7d67d30e295 has been successfully uploaded! Final size is 117865750 bytes. Artifact ID is 12733098307
+2026-10-27T12:19:14.9238617Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40501186161/artifacts/12733098307
+2026-10-27T12:19:14.9658283Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-10-27T12:19:14.9658714Z with:
+2026-10-27T12:19:14.9659068Z   name: hepta-cumulative-checkpoints-6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:19:14.9659500Z   retention-days: 14
+2026-10-27T12:19:14.9659753Z   compression-level: 0
+2026-10-27T12:19:14.9660415Z   path: /home/runner/work/_temp/hepta-cumulative/**/*.safetensors
+2026-10-27T12:19:14.9660787Z   if-no-files-found: warn
+2026-10-27T12:19:14.9661014Z   overwrite: false
+2026-10-27T12:19:14.9661229Z   include-hidden-files: false
+2026-10-27T12:19:14.9661455Z env:
+2026-10-27T12:19:14.9661686Z   SOURCE_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:19:14.9662019Z   TESTED_SHA: 6ba1a5b352568250edcec5975972d7d67d30e295
+2026-10-27T12:19:14.9662347Z   BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:19:14.9662645Z   HEPTA_CI_LANE: source-head
+2026-10-27T12:19:14.9662940Z   CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+2026-10-27T12:19:14.9663236Z   PYTHONNOUSERSITE: 1
+2026-10-27T12:19:14.9663461Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-27T12:19:14.9671998Z   PIP_DISABLE_PIP_VERSION_CHECK: 1
+2026-10-27T12:19:14.9672516Z   PIP_NO_CACHE_DIR: 1
+2026-10-27T12:19:14.9672892Z   HF_HUB_OFFLINE: 1
+2026-10-27T12:19:14.9673211Z   TRANSFORMERS_OFFLINE: 1
+2026-10-27T12:19:14.9673672Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:19:14.9674417Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-10-27T12:19:14.9675197Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:19:14.9675869Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:19:14.9676524Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-10-27T12:19:14.9677109Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-10-27T12:19:14.9677512Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+2026-10-27T12:19:14.9678074Z   HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT: /home/runner/work/_temp/hepta-cumulative/runtime-snapshot.json
+2026-10-27T12:19:14.9678628Z   FORMAT_BASE_SHA: f75bf1ac902ed73905e4daa49f9396df028a4254
+2026-10-27T12:19:14.9678947Z ##[endgroup]
+2026-10-27T12:19:15.1408130Z (node:3621) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-27T12:19:15.1409462Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-27T12:19:15.2456885Z With the provided path, there will be 10 files uploaded
+2026-10-27T12:19:15.2466172Z Artifact name is valid!
+2026-10-27T12:19:15.2467232Z Root directory input is valid!
+2026-10-27T12:19:15.4884629Z Beginning upload of artifact content to blob storage
+2026-10-27T12:19:15.5415954Z (node:3621) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-27T12:19:15.8164774Z Uploaded bytes 8388608
+2026-10-27T12:19:15.8963760Z Uploaded bytes 16777216
+2026-10-27T12:19:15.9511016Z Uploaded bytes 25165824
+2026-10-27T12:19:15.9841234Z Uploaded bytes 33554432
+2026-10-27T12:19:15.9937382Z Uploaded bytes 41943040
+2026-10-27T12:19:16.0904439Z Uploaded bytes 50331648
+2026-10-27T12:19:16.1969841Z Uploaded bytes 58720256
+2026-10-27T12:19:16.2110898Z Uploaded bytes 67108864
+2026-10-27T12:19:16.2589085Z Uploaded bytes 75497472
+2026-10-27T12:19:16.2917617Z Uploaded bytes 83886080
+2026-10-27T12:19:16.4206366Z Uploaded bytes 92274688
+2026-10-27T12:19:16.4543218Z Uploaded bytes 100663296
+2026-10-27T12:19:16.4651327Z Uploaded bytes 109051904
+2026-10-27T12:19:16.4864669Z Uploaded bytes 117440512
+2026-10-27T12:19:16.6517458Z Uploaded bytes 125829120
+2026-10-27T12:19:16.6661125Z Uploaded bytes 134217728
+2026-10-27T12:19:16.6774064Z Uploaded bytes 142606336
+2026-10-27T12:19:16.6909378Z Uploaded bytes 150994944
+2026-10-27T12:19:16.8771423Z Uploaded bytes 159383552
+2026-10-27T12:19:16.8811629Z Uploaded bytes 167772160
+2026-10-27T12:19:16.9331994Z Uploaded bytes 176160768
+2026-10-27T12:19:16.9500794Z Uploaded bytes 184549376
+2026-10-27T12:19:17.1253101Z Uploaded bytes 192937984
+2026-10-27T12:19:17.1352690Z Uploaded bytes 201326592
+2026-10-27T12:19:17.1859859Z Uploaded bytes 209715200
+2026-10-27T12:19:17.1961308Z Uploaded bytes 218103808
+2026-10-27T12:19:17.3342904Z Uploaded bytes 226492416
+2026-10-27T12:19:17.3673366Z Uploaded bytes 234881024
+2026-10-27T12:19:17.3772548Z Uploaded bytes 243269632
+2026-10-27T12:19:17.4725974Z Uploaded bytes 251658240
+2026-10-27T12:19:17.5412400Z Uploaded bytes 260046848
+2026-10-27T12:19:17.5538191Z Uploaded bytes 268435456
+2026-10-27T12:19:17.5617486Z Uploaded bytes 276824064
+2026-10-27T12:19:17.7349276Z Uploaded bytes 285212672
+2026-10-27T12:19:17.7599609Z Uploaded bytes 293601280
+2026-10-27T12:19:17.7989331Z Uploaded bytes 301989888
+2026-10-27T12:19:17.8852706Z Uploaded bytes 310378496
+2026-10-27T12:19:17.9267211Z Uploaded bytes 318767104
+2026-10-27T12:19:17.9353567Z Uploaded bytes 327155712
+2026-10-27T12:19:17.9941336Z Uploaded bytes 335544320
+2026-10-27T12:19:18.0884616Z Uploaded bytes 343932928
+2026-10-27T12:19:18.1344700Z Uploaded bytes 352321536
+2026-10-27T12:19:18.1422561Z Uploaded bytes 360710144
+2026-10-27T12:19:18.1701672Z Uploaded bytes 369098752
+2026-10-27T12:19:18.2493039Z Uploaded bytes 377487360
+2026-10-27T12:19:18.3056447Z Uploaded bytes 385875968
+2026-10-27T12:19:18.3453596Z Uploaded bytes 394264576
+2026-10-27T12:19:18.4396176Z Uploaded bytes 402653184
+2026-10-27T12:19:18.4651145Z Uploaded bytes 411041792
+2026-10-27T12:19:18.4995710Z Uploaded bytes 419430400
+2026-10-27T12:19:18.5165563Z Uploaded bytes 427819008
+2026-10-27T12:19:18.6131104Z Uploaded bytes 436207616
+2026-10-27T12:19:18.6178595Z Uploaded bytes 444596224
+2026-10-27T12:19:18.8003320Z Uploaded bytes 452984832
+2026-10-27T12:19:18.8112335Z Uploaded bytes 461373440
+2026-10-27T12:19:18.8433497Z Uploaded bytes 469762048
+2026-10-27T12:19:18.8820612Z Uploaded bytes 478150656
+2026-10-27T12:19:19.0100684Z Uploaded bytes 486539264
+2026-10-27T12:19:19.0181708Z Uploaded bytes 494927872
+2026-10-27T12:19:19.0569112Z Uploaded bytes 503316480
+2026-10-27T12:19:19.0681396Z Uploaded bytes 511705088
+2026-10-27T12:19:19.2095171Z Uploaded bytes 520093696
+2026-10-27T12:19:19.2241001Z Uploaded bytes 528482304
+2026-10-27T12:19:19.2377234Z Uploaded bytes 536870912
+2026-10-27T12:19:19.2952771Z Uploaded bytes 545259520
+2026-10-27T12:19:19.3807621Z Uploaded bytes 553648128
+2026-10-27T12:19:19.4666817Z Uploaded bytes 562036736
+2026-10-27T12:19:19.4748924Z Uploaded bytes 570425344
+2026-10-27T12:19:19.4897802Z Uploaded bytes 578813952
+2026-10-27T12:19:19.5788587Z Uploaded bytes 587202560
+2026-10-27T12:19:19.6757727Z Uploaded bytes 595591168
+2026-10-27T12:19:19.7257236Z Uploaded bytes 603979776
+2026-10-27T12:19:19.7645222Z Uploaded bytes 612368384
+2026-10-27T12:19:19.8040570Z Uploaded bytes 620756992
+2026-10-27T12:19:19.9169145Z Uploaded bytes 629145600
+2026-10-27T12:19:19.9281287Z Uploaded bytes 637534208
+2026-10-27T12:19:20.0004427Z Uploaded bytes 645922816
+2026-10-27T12:19:20.0734374Z Uploaded bytes 654311424
+2026-10-27T12:19:20.1768441Z Uploaded bytes 662700032
+2026-10-27T12:19:20.1846558Z Uploaded bytes 671088640
+2026-10-27T12:19:20.1941024Z Uploaded bytes 679477248
+2026-10-27T12:19:20.2209616Z Uploaded bytes 687865856
+2026-10-27T12:19:20.4038462Z Uploaded bytes 696254464
+2026-10-27T12:19:20.4180985Z Uploaded bytes 704643072
+2026-10-27T12:19:20.4281230Z Uploaded bytes 713031680
+2026-10-27T12:19:20.4466020Z Uploaded bytes 721420288
+2026-10-27T12:19:20.5818223Z Uploaded bytes 729808896
+2026-10-27T12:19:20.6213081Z Uploaded bytes 738197504
+2026-10-27T12:19:20.6293740Z Uploaded bytes 746586112
+2026-10-27T12:19:20.7061303Z Uploaded bytes 754974720
+2026-10-27T12:19:20.8070788Z Uploaded bytes 763363328
+2026-10-27T12:19:20.8158976Z Uploaded bytes 771751936
+2026-10-27T12:19:20.8841160Z Uploaded bytes 780140544
+2026-10-27T12:19:20.9276852Z Uploaded bytes 788529152
+2026-10-27T12:19:20.9595975Z Uploaded bytes 796917760
+2026-10-27T12:19:21.0326079Z Uploaded bytes 805306368
+2026-10-27T12:19:21.0789595Z Uploaded bytes 813694976
+2026-10-27T12:19:21.1966726Z Uploaded bytes 822083584
+2026-10-27T12:19:21.2221527Z Uploaded bytes 830472192
+2026-10-27T12:19:21.2343943Z Uploaded bytes 838860800
+2026-10-27T12:19:21.2530947Z Uploaded bytes 847249408
+2026-10-27T12:19:21.3550952Z Uploaded bytes 855638016
+2026-10-27T12:19:21.4008505Z Uploaded bytes 864026624
+2026-10-27T12:19:21.4263714Z Uploaded bytes 872415232
+2026-10-27T12:19:21.5013066Z Uploaded bytes 880803840
+2026-10-27T12:19:21.5501450Z Uploaded bytes 889192448
+2026-10-27T12:19:21.5787201Z Uploaded bytes 897581056
+2026-10-27T12:19:21.6901079Z Uploaded bytes 905969664
+2026-10-27T12:19:21.7240813Z Uploaded bytes 914358272
+2026-10-27T12:19:21.7491212Z Uploaded bytes 922746880
+2026-10-27T12:19:21.8001889Z Uploaded bytes 931135488
+2026-10-27T12:19:21.9031449Z Uploaded bytes 939524096
+2026-10-27T12:19:21.9326353Z Uploaded bytes 947912704
+2026-10-27T12:19:21.9809997Z Uploaded bytes 956301312
+2026-10-27T12:19:22.0820511Z Uploaded bytes 964689920
+2026-10-27T12:19:22.0908401Z Uploaded bytes 973078528
+2026-10-27T12:19:22.1051011Z Uploaded bytes 981467136
+2026-10-27T12:19:22.1865821Z Uploaded bytes 989855744
+2026-10-27T12:19:22.3166613Z Uploaded bytes 998244352
+2026-10-27T12:19:22.3798060Z Uploaded bytes 1006632960
+2026-10-27T12:19:22.3875003Z Uploaded bytes 1015021568
+2026-10-27T12:19:22.3949030Z Uploaded bytes 1023410176
+2026-10-27T12:19:22.5608356Z Uploaded bytes 1031798784
+2026-10-27T12:19:22.5812033Z Uploaded bytes 1040187392
+2026-10-27T12:19:22.6178114Z Uploaded bytes 1048576000
+2026-10-27T12:19:22.6301049Z Uploaded bytes 1056964608
+2026-10-27T12:19:22.7268097Z Uploaded bytes 1065353216
+2026-10-27T12:19:22.8112545Z Uploaded bytes 1073741824
+2026-10-27T12:19:22.8871780Z Uploaded bytes 1082130432
+2026-10-27T12:19:22.9005276Z Uploaded bytes 1090519040
+2026-10-27T12:19:22.9567332Z Uploaded bytes 1098907648
+2026-10-27T12:19:23.0620802Z Uploaded bytes 1107296256
+2026-10-27T12:19:23.1314361Z Uploaded bytes 1115684864
+2026-10-27T12:19:23.1451000Z Uploaded bytes 1124073472
+2026-10-27T12:19:23.3091280Z Uploaded bytes 1132462080
+2026-10-27T12:19:23.3294150Z Uploaded bytes 1140850688
+2026-10-27T12:19:23.4505591Z Uploaded bytes 1149239296
+2026-10-27T12:19:23.4803386Z Uploaded bytes 1157627904
+2026-10-27T12:19:23.4884821Z Uploaded bytes 1166016512
+2026-10-27T12:19:23.6093311Z Uploaded bytes 1174405120
+2026-10-27T12:19:23.6451661Z Uploaded bytes 1182793728
+2026-10-27T12:19:23.7726555Z Uploaded bytes 1191182336
+2026-10-27T12:19:23.8000623Z Uploaded bytes 1199570944
+2026-10-27T12:19:23.8228450Z Uploaded bytes 1207959552
+2026-10-27T12:19:23.8737788Z Uploaded bytes 1216348160
+2026-10-27T12:19:23.9462311Z Uploaded bytes 1224736768
+2026-10-27T12:19:24.0575267Z Uploaded bytes 1233125376
+2026-10-27T12:19:24.0691006Z Uploaded bytes 1241513984
+2026-10-27T12:19:24.0900786Z Uploaded bytes 1249902592
+2026-10-27T12:19:24.1720752Z Uploaded bytes 1258291200
+2026-10-27T12:19:24.2234703Z Uploaded bytes 1266679808
+2026-10-27T12:19:24.2720210Z Uploaded bytes 1275068416
+2026-10-27T12:19:24.2850923Z Uploaded bytes 1283457024
+2026-10-27T12:19:24.3722106Z Uploaded bytes 1291845632
+2026-10-27T12:19:24.4615839Z Uploaded bytes 1300234240
+2026-10-27T12:19:24.5048570Z Uploaded bytes 1308622848
+2026-10-27T12:19:24.5580364Z Uploaded bytes 1317011456
+2026-10-27T12:19:24.5863254Z Uploaded bytes 1325400064
+2026-10-27T12:19:24.6484234Z Uploaded bytes 1333788672
+2026-10-27T12:19:24.6712260Z Uploaded bytes 1342177280
+2026-10-27T12:19:24.8067676Z Uploaded bytes 1350565888
+2026-10-27T12:19:24.8211169Z Uploaded bytes 1358954496
+2026-10-27T12:19:24.8347141Z Uploaded bytes 1367343104
+2026-10-27T12:19:24.8752002Z Uploaded bytes 1375731712
+2026-10-27T12:19:25.0340272Z Uploaded bytes 1384120320
+2026-10-27T12:19:25.0616279Z Uploaded bytes 1392508928
+2026-10-27T12:19:25.0988148Z Uploaded bytes 1400897536
+2026-10-27T12:19:25.1068365Z Uploaded bytes 1409286144
+2026-10-27T12:19:25.2110731Z Uploaded bytes 1417674752
+2026-10-27T12:19:25.2767544Z Uploaded bytes 1426063360
+2026-10-27T12:19:25.2915196Z Uploaded bytes 1434451968
+2026-10-27T12:19:25.3348732Z Uploaded bytes 1442840576
+2026-10-27T12:19:25.4153899Z Uploaded bytes 1451229184
+2026-10-27T12:19:25.4541870Z Uploaded bytes 1459617792
+2026-10-27T12:19:25.5001172Z Uploaded bytes 1468006400
+2026-10-27T12:19:25.5729602Z Uploaded bytes 1476395008
+2026-10-27T12:19:25.6646623Z Uploaded bytes 1484783616
+2026-10-27T12:19:25.6737465Z Uploaded bytes 1493172224
+2026-10-27T12:19:25.6870995Z Uploaded bytes 1501560832
+2026-10-27T12:19:25.7554505Z Uploaded bytes 1509949440
+2026-10-27T12:19:25.8694171Z Uploaded bytes 1518338048
+2026-10-27T12:19:25.9176067Z Uploaded bytes 1526726656
+2026-10-27T12:19:25.9253818Z Uploaded bytes 1535115264
+2026-10-27T12:19:25.9327364Z Uploaded bytes 1543503872
+2026-10-27T12:19:26.1038224Z Uploaded bytes 1551892480
+2026-10-27T12:19:26.1149000Z Uploaded bytes 1560281088
+2026-10-27T12:19:26.1414709Z Uploaded bytes 1568669696
+2026-10-27T12:19:26.2185626Z Uploaded bytes 1577058304
+2026-10-27T12:19:26.2772090Z Uploaded bytes 1585446912
+2026-10-27T12:19:26.3131879Z Uploaded bytes 1593835520
+2026-10-27T12:19:26.3881649Z Uploaded bytes 1602224128
+2026-10-27T12:19:26.4250433Z Uploaded bytes 1610612736
+2026-10-27T12:19:26.4384742Z Uploaded bytes 1619001344
+2026-10-27T12:19:26.5207907Z Uploaded bytes 1620808534
+2026-10-27T12:19:26.5476531Z Finished uploading artifact content to blob storage!
+2026-10-27T12:19:26.5479930Z SHA256 digest of uploaded artifact zip is c59aa037568af65560e9c5e08e28bac383e959b4af2619d0dba63bef9a5cdc56
+2026-10-27T12:19:26.5482966Z Finalizing artifact upload
+2026-10-27T12:19:26.9758591Z Artifact hepta-cumulative-checkpoints-6ba1a5b352568250edcec5975972d7d67d30e295.zip successfully finalized. Artifact ID 12733108352
+2026-10-27T12:19:26.9760956Z Artifact hepta-cumulative-checkpoints-6ba1a5b352568250edcec5975972d7d67d30e295 has been successfully uploaded! Final size is 1620808534 bytes. Artifact ID is 12733108352
+2026-10-27T12:19:26.9767745Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40501186161/artifacts/12733108352
+2026-10-27T12:19:27.0041159Z Post job cleanup.
+2026-10-27T12:19:27.1152035Z UV_PYTHON_INSTALL_DIR is already set to /home/runner/work/_temp/uv-python-dir
+2026-10-27T12:19:27.1289655Z Post job cleanup.
+2026-10-27T12:19:27.2720773Z Post job cleanup.
+2026-10-27T12:19:27.3646587Z [command]/usr/bin/git version
+2026-10-27T12:19:27.3694257Z git version 2.55.0
+2026-10-27T12:19:27.3742556Z Temporarily overriding HOME='/home/runner/work/_temp/1695cd82-ff9a-4291-a809-fb591ae9a12a' before making global git config changes
+2026-10-27T12:19:27.3744207Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-27T12:19:27.3750725Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci/chain
+2026-10-27T12:19:27.3784970Z Removing SSH command configuration
+2026-10-27T12:19:27.3794117Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-27T12:19:27.3843125Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-27T12:19:27.4120795Z Removing HTTP extra header
+2026-10-27T12:19:27.4125376Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-27T12:19:27.4164980Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-27T12:19:27.4438565Z Removing includeIf entries pointing to credentials config files
+2026-10-27T12:19:27.4448658Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-27T12:19:27.4525496Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-27T12:19:27.4968460Z Post job cleanup.
+2026-10-27T12:19:27.5853001Z [command]/usr/bin/git version
+2026-10-27T12:19:27.5897689Z git version 2.55.0
+2026-10-27T12:19:27.5971946Z Temporarily overriding HOME='/home/runner/work/_temp/3a6ad217-2efa-46a9-b188-0c69a0c8e555' before making global git config changes
+2026-10-27T12:19:27.5973356Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-27T12:19:27.5977315Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci/hepta
+2026-10-27T12:19:27.6021901Z Removing SSH command configuration
+2026-10-27T12:19:27.6038424Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-27T12:19:27.6083476Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-27T12:19:27.6386805Z Removing HTTP extra header
+2026-10-27T12:19:27.6388793Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-27T12:19:27.6429327Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-27T12:19:27.6711295Z Removing includeIf entries pointing to credentials config files
+2026-10-27T12:19:27.6723159Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-27T12:19:27.6765732Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-27T12:19:27.7174839Z Cleaning up orphan processes
+2026-10-27T12:19:27.7508835Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
