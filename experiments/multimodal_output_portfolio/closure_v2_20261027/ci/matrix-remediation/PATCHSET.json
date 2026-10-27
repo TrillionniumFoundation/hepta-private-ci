@@ -1,0 +1,329 @@
+{
+  "schema": "hepta.matrix_dependency_candidate.v1",
+  "status": "prepared; Rust compilation and migration qualification have not run",
+  "base_local_head": "77477ac788022ff738f82a83ef678c27423fd643",
+  "base_tree": "4273d55bc2cf375cf249869774db9c57ba05337c",
+  "generator_sha256": "e8b56a0b5f20d74fcf88160282ed6cc048f0e84965b3e536047fdc0d1b9b0804",
+  "patch_files": [
+    {
+      "patch": "matrix-fixture-tests.patch",
+      "path": "codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs",
+      "before_sha256": null,
+      "after_sha256": "28d08e3ad133d1ae95838329b280e24dac11047a4f59b9537f6d957daf73339f"
+    },
+    {
+      "patch": "matrix-context-tests.patch",
+      "path": "codex-rs/hepta-matrix-sdk/Cargo.toml",
+      "before_sha256": "6549a89657123c455da1d1b91736aaf887885c98f9b3ac5635d4332c12c8e400",
+      "after_sha256": "281ad225f084f63fc35f2f6238d7931d4fdb05b31c99cc6ee8544f5815ce2fa3"
+    },
+    {
+      "patch": "matrix-context-tests.patch",
+      "path": "codex-rs/hepta-matrix-sdk/tests/event_context_migration.rs",
+      "before_sha256": null,
+      "after_sha256": "6f4bdff30fd7966fd8a2ba69fbf0e3276a513c2fb43a312ba320b7e787dbce06"
+    },
+    {
+      "patch": "matrix-production.patch",
+      "path": "codex-rs/hepta-matrix-sdk/src/config.rs",
+      "before_sha256": "06c09a5273903b65a00c156ea92b5155bde18a39456d67f2cf6efa183b74daab",
+      "after_sha256": "bdd4dd626b548e16964dc18f138d4c889f972d527efeccb79d0bcea9444bc395"
+    },
+    {
+      "patch": "matrix-production.patch",
+      "path": "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+      "before_sha256": "165f54a1ea6e41156113f560b5f64468ed22b665580a6cdc52f575f2267e7d75",
+      "after_sha256": "6cc077a47917da7ff7c261de2b77b61bcddd3caf24c4cec868eb513ffb33c3b4"
+    },
+    {
+      "patch": "matrix-manifest.patch",
+      "path": "codex-rs/Cargo.toml",
+      "before_sha256": "0e3fc0b7dc3ec907e02059a1bc79579077c8e5d1a0ac936b4f1bd984e94afdb4",
+      "after_sha256": "52ec90f0c453a1c3521dbb0d27a3a07a1f7bffce2822475b69d8b7035c34fb6f"
+    },
+    {
+      "patch": "matrix-toolchain.patch",
+      "path": "MODULE.bazel",
+      "before_sha256": "aaae03b0fc03055cecd7ef060ab53299e1e62abba7082daf513e5c2d3feb0d5f",
+      "after_sha256": "4c1a9c92bfc4f8b0280db54f7f276b0140e342a8626db053ef9d75b9bfca08e5"
+    },
+    {
+      "patch": "matrix-toolchain.patch",
+      "path": "codex-rs/rust-toolchain.toml",
+      "before_sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64",
+      "after_sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/cargo-deny.yml",
+      "before_sha256": "9e0d8388810a90f12776687b64e050d8110a025ff504f41f6c9f992b7f5b2959",
+      "after_sha256": "9f6a38523d4b5f59ef375df009486177aabdbabb8725b6335bf45aeb28171049"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/hepta-diagnostic-source-export.yml",
+      "before_sha256": "5b1ef27c5fb40e5acc04f75ec8ad4cbcf660273147983e23e46d0acf8e940b4e",
+      "after_sha256": "741a4b762cf98f77a1792416109683b1f1fbb7c91ba1a4504b5e1584c4e2f82b"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/hepta-integration-diagnostics.yml",
+      "before_sha256": "1852411bc5a11df5927a248e2ee7e93e672be7746c2d4ef86ba2ba2659797b2b",
+      "after_sha256": "3466fd9cd81ce0bf3708f32810d3e5cadc23e78f4c483a4544db7c98653280ef"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/hepta-intuition-qualification.yml",
+      "before_sha256": "78da2191ccf83a01da37e51f0f4cea245b10d7483b5f65ae29590dc0a7723c5b",
+      "after_sha256": "20c4932d6bcc28c4351ba2af7cf9bf857432d4774464df8a9ec95c0f9f975de9"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/hepta-kernel-evidence-qualification.yml",
+      "before_sha256": "53f34825b703305167cc222713f848a4f6236bf02381aa3c8170b75888c1247e",
+      "after_sha256": "3a67f67982ceca43c968b27928c61580fe4fb60e5b7187370b272c52e306beee"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/hepta-lane-e-gap-closure.yml",
+      "before_sha256": "0e8bf4c50b84e10388aab12698a5bbbf7dd91655e313f53417cecdd1db8b2f09",
+      "after_sha256": "daf35eb7128789e6619e5fb50c9ce6eae1b233ddd489e5332358ede1c40fd0cc"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/hepta-offline-build-inputs.yml",
+      "before_sha256": "3fde10f81d5fb9a1aca8af4c3790e203a5fbe07406b69585d50e370c441bf374",
+      "after_sha256": "f7135d311e96728da029fba302e374e5b7b7258b80cf06e2372ec56ff6e49c8c"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/hepta-vnext-qualification.yml",
+      "before_sha256": "7f496c8bc41af3ec5799f0c62aa0daae8b7d2986948a92f4ad563177e1a5866b",
+      "after_sha256": "e3c67fc35d1d377dd0cd29b1e64aeda2403e4f4815676b37a599c9218ff71654"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/ndu-tls-lock-candidate.yml",
+      "before_sha256": "96f01a536266eb2e9babf94ae89d21b7d05b61a9ad38c1253d699f37ee4719a9",
+      "after_sha256": "2176141b89fc5a443e10d1628eeea948c33fae8826949482c3c21ebcaee0e459"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/repo-checks.yml",
+      "before_sha256": "ee6a2c1204698740ca8420fbf9859f4b4248e44f08d5e05050b8d846036dd081",
+      "after_sha256": "be712fbe289f42c91b6b0480cf035b95a8dab4119950b164d0cfc3752401888b"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/rust-ci-full-nextest-platform.yml",
+      "before_sha256": "d648480316e0106f5037aea6f39091093952b78618b230b0ccf94b7a221c7ec2",
+      "after_sha256": "b8e38de81a7a701e61b853e8e2b2cd26fb1d77dbabe0e8ecee7310111605ce0e"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/rust-ci-full.yml",
+      "before_sha256": "9e3b84356b7dad20c9b4847a27f3d588c24e243b9fb243374777cb49bd66b431",
+      "after_sha256": "103c8a27d8410c9e20204afcad4c9b7773843bb9e2b0983e6169c6eccf077a7d"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/rust-ci.yml",
+      "before_sha256": "76ce84512f019867e9513c74e01877d47ba5e2b1ec554fa35175e9f0e9c6e373",
+      "after_sha256": "e6fb26daaed0be7c5b03b5662c03f342acc05efefcf2819474000db55bc2e7db"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/rust-release-argument-comment-lint.yml",
+      "before_sha256": "429254911e199f41a2ec8b2ed3d1a0469c65e6cdd025dfbdda1263f9173477cb",
+      "after_sha256": "31831cff49789cd4395cc3988bbaf8fe1b8d186d646bd282c1f0d9dda493aaec"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/rust-release-windows.yml",
+      "before_sha256": "00153ad5e174cb4979b7801bf77988fc51e58c1ce86b5b2f4d551ba4bae0f9cd",
+      "after_sha256": "ce7636c2cda13b616cb834111d3e4104bcff83b4b5c5e68df7323e624f220818"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/rust-release.yml",
+      "before_sha256": "513e3225388b7a2ba694e184e277854403eccb3e1ca01248cbbbb8364a38f9d0",
+      "after_sha256": "0365bd374dbf21c12d98aadd3ceaed43ac4aa37865e1aa6c628d055bb65033c2"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/rusty-v8-release.yml",
+      "before_sha256": "41417489a73fddce4aa396a8e8d6acc280331b430906fbdea9373eb2fdf9dfcf",
+      "after_sha256": "3bbc2a10c5e6f9d39d5cd54077a398d19316b1eb2f8eea16e198c982eb1dfe50"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/single-main-consolidation.yml",
+      "before_sha256": "dc7be5bbd1366233786f10939aa749cb0d5c12e029ac54c4c73c5f519d362a1e",
+      "after_sha256": "8aeab9cc89535bb29a1c72800e5edf6dca0b7e6d97a4240c4a614d866c04e2a2"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/single-main-foundation.yml",
+      "before_sha256": "9a0dba6ba5120188c778254fa016ca74e5b195a23210e3aefd09e3d8b0502977",
+      "after_sha256": "125d061707f08cadb068d2100591f8795d13f4b52fc4787f9c23a35ec758a251"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/single-main-maintenance.yml",
+      "before_sha256": "1adcdca9c6900edd969fb30cedc5e75ff92ca4a611bdf63a28e5fb249bc5bb98",
+      "after_sha256": "554ad61adb4daddb2d579a2bff746130adbad64be62a2e087ff88fabbc83b1bc"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": ".github/workflows/v8-canary.yml",
+      "before_sha256": "2516afbaa5538004406c0d92179665aba1b541e68944df53ad71d674ecd89cd4",
+      "after_sha256": "9f8eb1759867587f26f55251b86b78ddc1d4bb6b5914a62520e84b8b291083d0"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": "scripts/test_hepta_ci_v8.py",
+      "before_sha256": "a29d67aeeef462955a2be60bd8aa52b53cf71df6b17d15e78b3043068c72ae0b",
+      "after_sha256": "27cca9c975433d6e4bbf6fb0c4a217bef3f69fe5d3acbc9376f3d30b54ee938e"
+    },
+    {
+      "patch": "matrix-toolchain-ci.patch",
+      "path": "codex-rs/scripts/setup-windows.ps1",
+      "before_sha256": "9e4d142a1c4d20b01fa72e8131d19bbdd00416aef0f4feb1a44a3eb8c3a5b471",
+      "after_sha256": "b670cc0894ba5da17e004d25b76ea595445ee4a155bfaa7d6286b17e6e09e8c7"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "VENDOR_INVENTORY.json",
+      "bytes": 90515,
+      "sha256": "387245dded5116a47ca6ba74819dac829e0ff01ce59fd6483392a1c7ea608a44"
+    },
+    {
+      "path": "matrix-context-tests.patch",
+      "bytes": 5365,
+      "sha256": "a260db729a20f967cb3487b209d6897fff7be16a37e64953ba83fd8617ce5e6e"
+    },
+    {
+      "path": "matrix-fixture-tests.patch",
+      "bytes": 10455,
+      "sha256": "dec3b6075c928a924e32754e1c310361fd231da3da2a3cdf3657a1a3a734b1fd"
+    },
+    {
+      "path": "matrix-manifest.patch",
+      "bytes": 1866,
+      "sha256": "9a5601c485bdb029c8afc1c4fd968449cc56e0e1310f9ec47eacaa7cc3a765aa"
+    },
+    {
+      "path": "matrix-production.patch",
+      "bytes": 1193,
+      "sha256": "fd894e9a3094dbc44ca0eaeec37072535a8520f666b972d14efc74746307bd32"
+    },
+    {
+      "path": "matrix-toolchain-ci.patch",
+      "bytes": 27705,
+      "sha256": "1ebb20708197b19d377488a55e8fdc2afdcfe2f45746533be85cd1d88619cf69"
+    },
+    {
+      "path": "matrix-toolchain.patch",
+      "bytes": 610,
+      "sha256": "2af11c81e112ae94e96461bfee22881e818413b00ff46064e622001a59441e2d"
+    },
+    {
+      "path": "matrix-vendor.tar.gz",
+      "bytes": 1149755,
+      "sha256": "2dd85d6c71f9174253f48242d82a1a71b5a03ab2c16864de6a9a7f246b9848a4"
+    },
+    {
+      "path": "upstream-evidence.tar.gz",
+      "bytes": 3180289,
+      "sha256": "e0385d9883471f14559f3e90516345319bb49dddaeeadefb5749ec3f49b2929e"
+    }
+  ],
+  "vendor_changed": [
+    {
+      "path": "codex-rs/third_party/matrix-sdk-0.19.1/BUILD.bazel",
+      "bytes": 223,
+      "sha256": "77a9957a6f7295fcde1af80aa349a9b24afcb9b9baa710ab34845396b6431f3e",
+      "upstream_sha256": null,
+      "status": "added"
+    },
+    {
+      "path": "codex-rs/third_party/matrix-sdk-0.19.1/Cargo.toml",
+      "bytes": 12598,
+      "sha256": "a6aebcb617bc2cdafb795ca6ba9efe0561a9d385a048190902b10de131d9e021",
+      "upstream_sha256": "a2e68b948c26633c9b22b6bcb5be1cecaedb50f6eb5359aaed54402697aa8e62",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/third_party/matrix-sdk-0.19.1/Cargo.toml.orig",
+      "bytes": 7483,
+      "sha256": "ac4933bb79af3d3827ba3998706b329f6464848b8648d37fa4c9d743b5124811",
+      "upstream_sha256": "3badb42576dc47ac68338aa2a98d99be62fd92ab649532755d091b6f69ba6692",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/third_party/matrix-sdk-0.19.1/HEPTA_PATCH.md",
+      "bytes": 1625,
+      "sha256": "b1bd9e66852de12d683e5962cfdfd99daaf62de0a587196f3ac61f691366a439",
+      "upstream_sha256": null,
+      "status": "added"
+    },
+    {
+      "path": "codex-rs/third_party/matrix-sdk-0.19.1/LICENSE",
+      "bytes": 10174,
+      "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+      "upstream_sha256": null,
+      "status": "added"
+    },
+    {
+      "path": "codex-rs/third_party/matrix-sdk-0.19.1/src/event_handler/mod.rs",
+      "bytes": 46886,
+      "sha256": "1a1740f91accfde1daed879c96bb39836e86ff894013c509ba5e43518b8e5562",
+      "upstream_sha256": "0c29f6941bb97fc5cc115df745888b2e36022f78c346e01cb8c74b635d1835e4",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/third_party/matrix-sdk-sqlite-0.19.1/BUILD.bazel",
+      "bytes": 209,
+      "sha256": "fcb58619c7913bddb70ba41695a0ff8feb8c7f6c2728eb2b9e6a8aabe1f02467",
+      "upstream_sha256": null,
+      "status": "added"
+    },
+    {
+      "path": "codex-rs/third_party/matrix-sdk-sqlite-0.19.1/Cargo.toml",
+      "bytes": 5564,
+      "sha256": "9ca466a289177dd71d0b37b1d3bc308023975de9e5df509e4c1539c349ae4488",
+      "upstream_sha256": "d0714a65585690a924811221c55439663f7c16587e47b19d8c429e2af1143b30",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/third_party/matrix-sdk-sqlite-0.19.1/Cargo.toml.orig",
+      "bytes": 2299,
+      "sha256": "9b7c78a6b13cde7d07fdcc46b27224e3e74d35882a0405f472a3243f31a557d2",
+      "upstream_sha256": "b3916f966a3974857b9be832e657a5a1be2e5a13c7e57726397c9b3cb5f1daa6",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/third_party/matrix-sdk-sqlite-0.19.1/HEPTA_PATCH.md",
+      "bytes": 1774,
+      "sha256": "9a22b7da32dfd60b0bc57ceb363ac9b134bfbf2b033e86182ef1ae0729063de1",
+      "upstream_sha256": null,
+      "status": "added"
+    },
+    {
+      "path": "codex-rs/third_party/matrix-sdk-sqlite-0.19.1/LICENSE",
+      "bytes": 10174,
+      "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+      "upstream_sha256": null,
+      "status": "added"
+    }
+  ],
+  "validation": {
+    "archive_roundtrip_all_member_hashes": true,
+    "upstream_source_files_omitted": 0,
+    "rust_compilation": "not run",
+    "old_to_new_store_migration": "not run",
+    "cargo_and_bazel_lock_generation": "not run",
+    "cargo_deny": "not run"
+  }
+}

@@ -1,0 +1,591 @@
+diff --git a/.github/workflows/cargo-deny.yml b/.github/workflows/cargo-deny.yml
+--- a/.github/workflows/cargo-deny.yml
++++ b/.github/workflows/cargo-deny.yml
+@@ -22,13 +22,13 @@
+       - uses: ./.github/actions/setup-ci-build
+ 
+       - name: Install Rust toolchain
+-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+ 
+       - name: Run cargo-deny
+         id: cargo_deny
+         uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246 # v2
+         with:
+-          rust-version: 1.95.0
++          rust-version: 1.96.0
+           manifest-path: ./codex-rs/Cargo.toml
+ 
+       - name: Preserve a same-version host diagnostic after failure
+diff --git a/.github/workflows/hepta-diagnostic-source-export.yml b/.github/workflows/hepta-diagnostic-source-export.yml
+--- a/.github/workflows/hepta-diagnostic-source-export.yml
++++ b/.github/workflows/hepta-diagnostic-source-export.yml
+@@ -61,7 +61,7 @@
+       - uses: ./.github/actions/setup-ci-build
+ 
+       - name: Install Rust toolchain
+-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
++        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+ 
+       - name: Install cargo-shear
+         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+diff --git a/.github/workflows/hepta-integration-diagnostics.yml b/.github/workflows/hepta-integration-diagnostics.yml
+--- a/.github/workflows/hepta-integration-diagnostics.yml
++++ b/.github/workflows/hepta-integration-diagnostics.yml
+@@ -58,7 +58,7 @@
+         run: |
+           set -euo pipefail
+           python3 scripts/hepta_workspace.py 2>&1 | tee "$RUNNER_TEMP/hepta-source-preflight/workspace-preflight.log"
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+         if: ${{ !cancelled() && steps.manifest.outcome == 'success' }}
+       - name: Resolve the exact checkout without updating the lockfile
+         id: metadata
+diff --git a/.github/workflows/hepta-intuition-qualification.yml b/.github/workflows/hepta-intuition-qualification.yml
+--- a/.github/workflows/hepta-intuition-qualification.yml
++++ b/.github/workflows/hepta-intuition-qualification.yml
+@@ -29,7 +29,7 @@
+           persist-credentials: false
+           fetch-depth: 0
+       - uses: ./.github/actions/setup-ci
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+         with:
+           components: rustfmt,clippy
+       - name: Verify exact source identity
+@@ -105,7 +105,7 @@
+           author-email: hepta-intuition-ci@users.noreply.github.com
+           message: Synthetic merge
+       - uses: ./.github/actions/setup-ci
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+         with:
+           components: rustfmt
+       - name: Verify exact merge identity
+diff --git a/.github/workflows/hepta-kernel-evidence-qualification.yml b/.github/workflows/hepta-kernel-evidence-qualification.yml
+--- a/.github/workflows/hepta-kernel-evidence-qualification.yml
++++ b/.github/workflows/hepta-kernel-evidence-qualification.yml
+@@ -28,7 +28,7 @@
+ 
+       - uses: ./.github/actions/setup-ci
+ 
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+ 
+       - name: Run exact-source qualification commands
+         env:
+@@ -94,7 +94,7 @@
+ 
+       - uses: ./.github/actions/setup-ci
+ 
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+ 
+       - name: Run synthetic-merge qualification commands
+         env:
+diff --git a/.github/workflows/hepta-lane-e-gap-closure.yml b/.github/workflows/hepta-lane-e-gap-closure.yml
+--- a/.github/workflows/hepta-lane-e-gap-closure.yml
++++ b/.github/workflows/hepta-lane-e-gap-closure.yml
+@@ -41,9 +41,9 @@
+           tool: cargo-llvm-cov@0.9.0
+ 
+       - name: Install pinned Rust toolchain
+-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+-        with:
+-          toolchain: 1.95.0
++        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
++        with:
++          toolchain: 1.96.0
+           components: clippy,rustfmt,llvm-tools-preview
+ 
+       - name: Bind exact source
+@@ -243,9 +243,9 @@
+           tool: just@1.51.0,nextest@0.9.103
+ 
+       - name: Install pinned Rust toolchain
+-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+-        with:
+-          toolchain: 1.95.0
++        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
++        with:
++          toolchain: 1.96.0
+           components: clippy,rustfmt
+ 
+       - name: Materialize ordered-parent synthetic merge
+@@ -405,9 +405,9 @@
+           tool: just@1.51.0,nextest@0.9.103,cargo-llvm-cov@0.9.1
+ 
+       - name: Install pinned Rust toolchain
+-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+-        with:
+-          toolchain: 1.95.0
++        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
++        with:
++          toolchain: 1.96.0
+           components: llvm-tools-preview
+ 
+       - name: Bind exact source and production surface
+@@ -539,7 +539,7 @@
+               },
+               "tooling": {
+                   "cargoLlvmCov": "0.9.1",
+-                  "rust": "1.95.0",
++                  "rust": "1.96.0",
+               },
+               "coverage": {
+                   "report": ".hepta-evidence/learning-eval/coverage.json",
+diff --git a/.github/workflows/hepta-offline-build-inputs.yml b/.github/workflows/hepta-offline-build-inputs.yml
+--- a/.github/workflows/hepta-offline-build-inputs.yml
++++ b/.github/workflows/hepta-offline-build-inputs.yml
+@@ -26,10 +26,10 @@
+       - name: Resolve the exact locked dependency sources
+         working-directory: codex-rs
+         env:
+-          RUSTUP_TOOLCHAIN: 1.95.0
++          RUSTUP_TOOLCHAIN: 1.96.0
+         run: |
+           set -euo pipefail
+-          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
++          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
+           mkdir -p "$RUNNER_TEMP/hepta-offline-inputs"
+           cargo vendor --locked --versioned-dirs "$RUNNER_TEMP/hepta-offline-inputs/vendor" > "$RUNNER_TEMP/hepta-offline-inputs/offline-config.toml"
+           sha256sum Cargo.lock > "$RUNNER_TEMP/hepta-offline-inputs/lock.sha256"
+@@ -38,7 +38,7 @@
+       - name: Diagnose failed resolution in a separate non-qualifying worktree
+         if: failure()
+         env:
+-          RUSTUP_TOOLCHAIN: 1.95.0
++          RUSTUP_TOOLCHAIN: 1.96.0
+         run: |
+           set -euo pipefail
+           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+@@ -85,8 +85,8 @@
+       - name: Package the pinned host compiler and repository test entry points
+         run: |
+           set -euo pipefail
+-          rustup toolchain install 1.95.0-x86_64-unknown-linux-gnu --force-non-host --profile minimal --component rustfmt --component clippy
+-          tar -C "$HOME/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu" -czf "$RUNNER_TEMP/hepta-offline-inputs/compiler.tar.gz" .
++          rustup toolchain install 1.96.0-x86_64-unknown-linux-gnu --force-non-host --profile minimal --component rustfmt --component clippy
++          tar -C "$HOME/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu" -czf "$RUNNER_TEMP/hepta-offline-inputs/compiler.tar.gz" .
+           mkdir -p "$RUNNER_TEMP/hepta-offline-inputs/bin"
+           cd "$RUNNER_TEMP/hepta-offline-inputs"
+           curl --fail --location --retry 3 --max-time 120 --output just.tar.gz \
+diff --git a/.github/workflows/hepta-vnext-qualification.yml b/.github/workflows/hepta-vnext-qualification.yml
+--- a/.github/workflows/hepta-vnext-qualification.yml
++++ b/.github/workflows/hepta-vnext-qualification.yml
+@@ -38,7 +38,7 @@
+           sudo apt-get update -y
+           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libcap-dev bubblewrap
+ 
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+         with:
+           components: rustfmt, clippy
+ 
+@@ -99,7 +99,7 @@
+ 
+       - uses: ./.github/actions/setup-ci
+ 
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+         with:
+           components: rustfmt, clippy
+ 
+@@ -179,7 +179,7 @@
+ 
+       - uses: ./.github/actions/setup-ci
+ 
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+         with:
+           components: rustfmt
+ 
+diff --git a/.github/workflows/ndu-tls-lock-candidate.yml b/.github/workflows/ndu-tls-lock-candidate.yml
+--- a/.github/workflows/ndu-tls-lock-candidate.yml
++++ b/.github/workflows/ndu-tls-lock-candidate.yml
+@@ -45,7 +45,7 @@
+           cache-scope: ndu-dependency-candidate
+ 
+       - name: Install the repository Rust toolchain
+-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
++        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+ 
+       - name: Apply fixed source and manifest patches and resolve both locks
+         id: generate
+@@ -95,7 +95,7 @@
+           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libcap-dev bubblewrap
+ 
+       - name: Install the repository Rust toolchain
+-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
++        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+ 
+       - name: Install the same nextest version as normal platform CI
+         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+diff --git a/.github/workflows/repo-checks.yml b/.github/workflows/repo-checks.yml
+--- a/.github/workflows/repo-checks.yml
++++ b/.github/workflows/repo-checks.yml
+@@ -109,7 +109,7 @@
+ 
+       - uses: ./.github/actions/setup-ci
+ 
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+ 
+       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+         with:
+diff --git a/.github/workflows/rust-ci-full-nextest-platform.yml b/.github/workflows/rust-ci-full-nextest-platform.yml
+--- a/.github/workflows/rust-ci-full-nextest-platform.yml
++++ b/.github/workflows/rust-ci-full-nextest-platform.yml
+@@ -88,7 +88,7 @@
+             sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libcap-dev bubblewrap
+           fi
+ 
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+         with:
+           targets: ${{ inputs.target }}
+ 
+@@ -308,7 +308,7 @@
+             sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libcap-dev bubblewrap
+           fi
+ 
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+         with:
+           targets: ${{ inputs.target }}
+ 
+diff --git a/.github/workflows/rust-ci-full.yml b/.github/workflows/rust-ci-full.yml
+--- a/.github/workflows/rust-ci-full.yml
++++ b/.github/workflows/rust-ci-full.yml
+@@ -29,7 +29,7 @@
+         with:
+           persist-credentials: false
+       - uses: ./.github/actions/setup-ci
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+         with:
+           components: rustfmt
+       - name: cargo fmt
+@@ -49,7 +49,7 @@
+         with:
+           persist-credentials: false
+       - uses: ./.github/actions/setup-ci
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+         with:
+           tool: cargo-shear@1.11.2
+@@ -68,7 +68,7 @@
+         with:
+           persist-credentials: false
+       - uses: ./.github/actions/setup-ci
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+         with:
+           toolchain: nightly-2025-09-18
+           components: llvm-tools-preview, rustc-dev, rust-src
+@@ -238,7 +238,7 @@
+             sudo apt-get update -y
+             sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libcap-dev
+           fi
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+         with:
+           targets: ${{ matrix.target }}
+           components: clippy
+diff --git a/.github/workflows/rust-ci.yml b/.github/workflows/rust-ci.yml
+--- a/.github/workflows/rust-ci.yml
++++ b/.github/workflows/rust-ci.yml
+@@ -87,7 +87,7 @@
+           persist-credentials: false
+       - name: Check local manifest graph before installing native prerequisites
+         run: python3 scripts/hepta_workspace.py
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+       - name: Validate Cargo metadata for the actual checkout
+         working-directory: codex-rs
+         shell: bash
+@@ -115,7 +115,7 @@
+         with:
+           persist-credentials: false
+       - uses: ./.github/actions/setup-ci
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+         with:
+           components: rustfmt
+       - name: cargo fmt
+@@ -139,7 +139,7 @@
+         with:
+           persist-credentials: false
+       - uses: ./.github/actions/setup-ci
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+       - name: Rust benchmark smoke test
+         run: just bench-smoke
+       - name: Check for a clean worktree
+@@ -160,7 +160,7 @@
+         with:
+           persist-credentials: false
+       - uses: ./.github/actions/setup-ci
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+         with:
+           tool: cargo-shear@1.11.2
+@@ -187,7 +187,7 @@
+         with:
+           persist-credentials: false
+       - uses: ./.github/actions/setup-ci
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+       - name: Install nightly argument-comment-lint toolchain
+         shell: bash
+         run: |
+diff --git a/.github/workflows/rust-release-argument-comment-lint.yml b/.github/workflows/rust-release-argument-comment-lint.yml
+--- a/.github/workflows/rust-release-argument-comment-lint.yml
++++ b/.github/workflows/rust-release-argument-comment-lint.yml
+@@ -69,7 +69,7 @@
+         with:
+           persist-credentials: false
+ 
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+         with:
+           toolchain: nightly-2025-09-18
+           targets: ${{ matrix.target }}
+diff --git a/.github/workflows/rust-release-windows.yml b/.github/workflows/rust-release-windows.yml
+--- a/.github/workflows/rust-release-windows.yml
++++ b/.github/workflows/rust-release-windows.yml
+@@ -87,7 +87,7 @@
+           Write-Host "Total RAM: $ramGiB GiB"
+           Write-Host "Disk usage:"
+           Get-PSDrive -PSProvider FileSystem | Format-Table -AutoSize Name, @{Name='Size(GB)';Expression={[math]::Round(($_.Used + $_.Free) / 1GB, 1)}}, @{Name='Free(GB)';Expression={[math]::Round($_.Free / 1GB, 1)}}
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+         with:
+           targets: ${{ matrix.target }}
+ 
+diff --git a/.github/workflows/rust-release.yml b/.github/workflows/rust-release.yml
+--- a/.github/workflows/rust-release.yml
++++ b/.github/workflows/rust-release.yml
+@@ -34,7 +34,7 @@
+       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+         with:
+           persist-credentials: false
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+       - name: Validate tag matches Cargo.toml version
+         shell: bash
+         run: |
+@@ -177,7 +177,7 @@
+           set -euo pipefail
+           sudo apt-get update -y
+           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends binutils pkg-config libcap-dev
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+         with:
+           targets: ${{ matrix.target }}
+ 
+diff --git a/.github/workflows/rusty-v8-release.yml b/.github/workflows/rusty-v8-release.yml
+--- a/.github/workflows/rusty-v8-release.yml
++++ b/.github/workflows/rusty-v8-release.yml
+@@ -177,9 +177,9 @@
+           python-version: "3.12"
+ 
+       - name: Set up Rust toolchain for Cargo smoke
+-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+-        with:
+-          toolchain: "1.95.0"
++        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
++        with:
++          toolchain: "1.96.0"
+ 
+       - name: Build Bazel V8 release pair
+         env:
+@@ -331,9 +331,9 @@
+           architecture: x64
+ 
+       - name: Set up Codex Rust toolchain for Cargo smoke
+-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+-        with:
+-          toolchain: "1.95.0"
++        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
++        with:
++          toolchain: "1.96.0"
+           targets: ${{ matrix.target }}
+ 
+       - name: Install rusty_v8 Rust toolchain
+@@ -422,7 +422,7 @@
+             cd codex-rs
+             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
+             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
+-            cargo +1.95.0 test -p codex-v8-poc --target "${TARGET}" --features sandbox --no-run
++            cargo +1.96.0 test -p codex-v8-poc --target "${TARGET}" --features sandbox --no-run
+           )
+ 
+       - name: Upload staged artifacts
+diff --git a/.github/workflows/single-main-consolidation.yml b/.github/workflows/single-main-consolidation.yml
+--- a/.github/workflows/single-main-consolidation.yml
++++ b/.github/workflows/single-main-consolidation.yml
+@@ -64,9 +64,9 @@
+           ref: a8f71be5d5eccd39090e054dc441e3e5f2a842a6
+           fetch-depth: 0
+           persist-credentials: false
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+         with:
+-          toolchain: 1.95.0
++          toolchain: 1.96.0
+           components: rustfmt
+       - name: Check exact source, regressions and Rust formatting
+         shell: bash
+diff --git a/.github/workflows/single-main-foundation.yml b/.github/workflows/single-main-foundation.yml
+--- a/.github/workflows/single-main-foundation.yml
++++ b/.github/workflows/single-main-foundation.yml
+@@ -67,9 +67,9 @@
+           ref: a8f71be5d5eccd39090e054dc441e3e5f2a842a6
+           fetch-depth: 0
+           persist-credentials: false
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+         with:
+-          toolchain: 1.95.0
++          toolchain: 1.96.0
+           components: rustfmt
+       - name: Execute source regressions and check Rust formatting without weakening either gate
+         shell: bash
+@@ -129,9 +129,9 @@
+           ref: a8f71be5d5eccd39090e054dc441e3e5f2a842a6
+           fetch-depth: 0
+           persist-credentials: false
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+         with:
+-          toolchain: 1.95.0
++          toolchain: 1.96.0
+           components: clippy
+       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+         with:
+diff --git a/.github/workflows/single-main-maintenance.yml b/.github/workflows/single-main-maintenance.yml
+--- a/.github/workflows/single-main-maintenance.yml
++++ b/.github/workflows/single-main-maintenance.yml
+@@ -13,19 +13,19 @@
+     runs-on: ubuntu-24.04
+     timeout-minutes: 15
+     steps:
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+         with:
+-          toolchain: 1.95.0
++          toolchain: 1.96.0
+           components: clippy,rustfmt
+       - name: Preserve only the public compiler distribution for offline integration
+         shell: bash
+         run: |
+           set -euo pipefail
+           mkdir -p "$RUNNER_TEMP/compiler-tools"
+-          sysroot="$(rustc +1.95.0 --print sysroot)"
+-          rustc +1.95.0 --version --verbose > "$RUNNER_TEMP/compiler-tools/version.txt"
+-          tar -C "$sysroot" -czf "$RUNNER_TEMP/compiler-tools/rust-1.95.0-linux.tar.gz" bin lib libexec
+-          sha256sum "$RUNNER_TEMP/compiler-tools/rust-1.95.0-linux.tar.gz" > "$RUNNER_TEMP/compiler-tools/compiler.sha256"
++          sysroot="$(rustc +1.96.0 --print sysroot)"
++          rustc +1.96.0 --version --verbose > "$RUNNER_TEMP/compiler-tools/version.txt"
++          tar -C "$sysroot" -czf "$RUNNER_TEMP/compiler-tools/rust-1.96.0-linux.tar.gz" bin lib libexec
++          sha256sum "$RUNNER_TEMP/compiler-tools/rust-1.96.0-linux.tar.gz" > "$RUNNER_TEMP/compiler-tools/compiler.sha256"
+       - uses: actions/upload-artifact@v4
+         with:
+           name: single-main-compiler-${{ github.run_id }}
+@@ -46,9 +46,9 @@
+           ref: a8f71be5d5eccd39090e054dc441e3e5f2a842a6
+           fetch-depth: 0
+           persist-credentials: false
+-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
++      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+         with:
+-          toolchain: 1.95.0
++          toolchain: 1.96.0
+           components: clippy
+       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+         with:
+diff --git a/.github/workflows/v8-canary.yml b/.github/workflows/v8-canary.yml
+--- a/.github/workflows/v8-canary.yml
++++ b/.github/workflows/v8-canary.yml
+@@ -190,18 +190,18 @@
+           python-version: "3.12"
+ 
+       - name: Set up Rust toolchain for Cargo smoke
+-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+-        with:
+-          toolchain: "1.95.0"
++        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
++        with:
++          toolchain: "1.96.0"
+ 
+       - name: Pin installed Cargo binary
+         shell: bash
+         run: |
+           set -euo pipefail
+           rustup_home="${RUSTUP_HOME:-${HOME}/.rustup}"
+-          cargo_bin="$(find "${rustup_home}/toolchains" -path '*/1.95.0-*/bin/cargo' -type f -print -quit)"
++          cargo_bin="$(find "${rustup_home}/toolchains" -path '*/1.96.0-*/bin/cargo' -type f -print -quit)"
+           if [[ -z "${cargo_bin}" || ! -x "${cargo_bin}" ]]; then
+-            echo "Rust 1.95.0 Cargo binary is not installed under ${rustup_home}." >&2
++            echo "Rust 1.96.0 Cargo binary is not installed under ${rustup_home}." >&2
+             exit 1
+           fi
+           echo "CARGO_1_95=${cargo_bin}" >> "${GITHUB_ENV}"
+@@ -380,9 +380,9 @@
+           architecture: x64
+ 
+       - name: Set up Codex Rust toolchain for Cargo smoke
+-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+-        with:
+-          toolchain: "1.95.0"
++        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
++        with:
++          toolchain: "1.96.0"
+           targets: ${{ matrix.target }}
+ 
+       - name: Install rusty_v8 Rust toolchain
+@@ -471,7 +471,7 @@
+             cd codex-rs
+             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
+             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
+-            cargo +1.95.0 test -p codex-v8-poc --target "${TARGET}" --features sandbox --no-run
++            cargo +1.96.0 test -p codex-v8-poc --target "${TARGET}" --features sandbox --no-run
+           )
+ 
+       - name: Upload staged artifacts
+diff --git a/scripts/test_hepta_ci_v8.py b/scripts/test_hepta_ci_v8.py
+--- a/scripts/test_hepta_ci_v8.py
++++ b/scripts/test_hepta_ci_v8.py
+@@ -25,7 +25,7 @@
+         self.host = mock.patch.object(
+             hepta_ci_v8.subprocess,
+             "check_output",
+-            return_value="rustc 1.95.0\nhost: aarch64-unknown-linux-gnu\n",
++            return_value="rustc 1.96.0\nhost: aarch64-unknown-linux-gnu\n",
+         )
+         self.host_mock = self.host.start()
+         self.addCleanup(self.host.stop)
+@@ -55,7 +55,7 @@
+         )
+ 
+     def test_unknown_missing_or_ambiguous_host_never_resolves_or_writes(self) -> None:
+-        for version in ("rustc 1.95.0", "host: unsupported", "host: x\nhost: y"):
++        for version in ("rustc 1.96.0", "host: unsupported", "host: x\nhost: y"):
+             with self.subTest(version=version):
+                 self.host_mock.return_value = version
+                 with self.assertRaisesRegex(RuntimeError, "supported Rust host"):
+diff --git a/codex-rs/scripts/setup-windows.ps1 b/codex-rs/scripts/setup-windows.ps1
+--- a/codex-rs/scripts/setup-windows.ps1
++++ b/codex-rs/scripts/setup-windows.ps1
+@@ -179,7 +179,7 @@
+ Write-Host "==> Configuring Rust toolchain per rust-toolchain.toml" -ForegroundColor Cyan
+ 
+ # Pin to the workspace toolchain and install components
+-$toolchain = '1.95.0'
++$toolchain = '1.96.0'
+ & rustup toolchain install $toolchain --profile minimal | Out-Host
+ & rustup default $toolchain | Out-Host
+ & rustup component add clippy rustfmt rust-src --toolchain $toolchain | Out-Host
