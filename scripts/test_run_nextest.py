@@ -18,6 +18,18 @@ SPEC.loader.exec_module(RUNNER)
 
 
 class FilterMetadataStrategyTests(unittest.TestCase):
+    def test_planned_inventory_rejects_nonplanner_arguments_before_building(self):
+        for args in (
+            [],
+            ["--workspace"],
+            ["--locked"],
+            ["--locked", "-p", "name", "--features", "extra"],
+            ["--locked", "-p", "name", "-p", "name"],
+            ["--locked", "-p", "*"],
+        ):
+            with self.subTest(args=args), self.assertRaises(ValueError):
+                RUNNER.planned_inventory("must-not-be-written.json", args)
+
     def test_graph_words_inside_matchers_do_not_become_dependencies(self):
         for expression in (
             "test(deps) | test(rdeps)",
@@ -109,6 +121,22 @@ class ScopedNextestTests(unittest.TestCase):
         self.stack.enter_context(
             patch.object(RUNNER.subprocess, "call", side_effect=observe)
         )
+
+    def test_planned_list_uses_the_same_native_metadata_strategy(self):
+        self.assertEqual(
+            RUNNER.run(["-p", "hepta-nextest-fixture", "--offline", "--lib"]), 0
+        )
+        for full in ("0", "1"):
+            output = self.root / f"inventory-{full}.json"
+            with patch.dict(os.environ, {"HEPTA_NEXTTEST_FULL_METADATA": full}):
+                self.assertEqual(
+                    RUNNER.planned_inventory(
+                        output, ["--locked", "-p", "hepta-nextest-fixture"]
+                    ),
+                    0,
+                )
+            self.assertEqual("--cargo-metadata" in self.commands[-1], full == "0")
+            self.assertIn('"rust-binaries"', output.read_text())
 
     def test_scoped_test_reaches_real_nextest_and_propagates_feature_failure(self):
         self.assertEqual(

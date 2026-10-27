@@ -88,6 +88,15 @@ install:
 test *args:
     RUST_MIN_STACK={{ rust_min_stack }} NEXTEST_PROFILE=local {{ python }} ../scripts/run-nextest.py "$@"
 
+# Planner preflight: use the identical test environment and native Cargo graph.
+[unix]
+test-planned-binaries output *args:
+    RUST_MIN_STACK={{ rust_min_stack }} NEXTEST_PROFILE=local {{ python }} ../scripts/run-nextest.py --hepta-planner-inventory "$@"
+
+[windows]
+test-planned-binaries output *args:
+    $env:RUST_MIN_STACK="{{ rust_min_stack }}"; $env:NEXTEST_PROFILE="local"; {{ python }} ../scripts/run-nextest.py --hepta-planner-inventory @($args | Select-Object -Skip 1)
+
 [windows]
 test *args:
     $env:RUST_MIN_STACK = "{{ rust_min_stack }}"; $env:NEXTEST_PROFILE = "local"; {{ python }} ../scripts/run-nextest.py @($args | Select-Object -Skip 1)
