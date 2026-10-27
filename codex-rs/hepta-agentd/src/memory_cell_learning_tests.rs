@@ -19,7 +19,8 @@ fn memory_training_ledger_retains_signed_candidate_and_independent_outcome_after
     let first = fixture.sink.append_training(Digest32::ZERO, &prepared, &signed, /*now*/ 50).unwrap();
     let retry = fixture.sink.append_training(Digest32::ZERO, &prepared, &signed, /*now*/ 50).unwrap();
     assert_eq!((retry.event_digest, retry.disposition), (first.event_digest, AppendDisposition::IdempotentReplay));
-    assert_eq!(prepared.decision().completeness.candidate_count, 1);
+    assert_eq!(prepared.decision().completeness.candidate_count, 2);
+    assert_eq!(prepared.decision().candidate_ids, vec![id("abstain"), prepared.decision().selected_candidate_id.clone()]);
     let observation = digest("separately-acquired-test-outcome");
     for principal in ["generator", "same-controller"] {
         let outcome = fixture.outcome(&prepared, principal, observation);

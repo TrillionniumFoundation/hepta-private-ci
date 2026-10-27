@@ -52,6 +52,13 @@ async fn malicious_python_decisions_are_rejected_and_the_process_is_not_reused()
         assert_eq!(worker.resolve(&good, &snapshot).await.unwrap().unwrap().request, good);
     }
     assert_eq!(worker.metrics().process_starts, attacks.len() as u64 + 1);
+    // The first response is complete and valid. Only after the next stdin
+    // request does the mock emit the previous digest, with no timing sleeps.
+    let mut delayed = good.clone(); delayed.text = "delayed-unsolicited".to_string();
+    assert_eq!(worker.resolve(&delayed, &snapshot).await.unwrap().unwrap().request, delayed);
+    assert!(worker.resolve(&good, &snapshot).await.is_err(), "late stale response must not answer the next request");
+    assert_eq!(worker.resolve(&good, &snapshot).await.unwrap().unwrap().request, good);
+    assert_eq!(worker.metrics().process_starts, attacks.len() as u64 + 2);
     owner.finish().await;
 }
 

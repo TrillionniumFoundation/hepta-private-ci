@@ -88,6 +88,7 @@ impl CognitiveTestHost {
         validate_config_scalar(provider_base_url, "provider base URL")?;
         std::fs::create_dir_all(&root)?;
         let root = root.canonicalize()?;
+        let arg0_paths = qualification_arg0_paths(&root)?;
         let fleet_path = root.join("fleet");
         let fleet_root = HeptaFleetRoot::parse(fleet_path.clone())?;
         let registry = FleetRegistry::initialize(fleet_root.clone())?;
@@ -140,7 +141,7 @@ impl CognitiveTestHost {
         let control_task = tokio::spawn(control.run());
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            arg0_paths,
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,
@@ -302,6 +303,35 @@ impl Drop for CognitiveTestHost {
             task.abort();
         }
     }
+}
+
+/// The test harness cannot serve the hidden exec/filesystem helper modes.
+/// Supply a real, same-source Codex App Server executable and its arg0 aliases;
+/// keep the product sandbox and runtime-path validation intact.
+fn qualification_arg0_paths(root: &Path) -> TestResult<Arg0DispatchPaths> {
+    let executable = PathBuf::from(std::env::var_os("HEPTA_TEST_CODEX_EXECUTABLE")
+        .ok_or("HEPTA_TEST_CODEX_EXECUTABLE must name a built Codex App Server executable")?);
+    if !executable.is_absolute() || !executable.is_file() {
+        return Err("qualification runtime executable must be an existing absolute file".into());
+    }
+    let executable = executable.canonicalize()?;
+    let mut paths = Arg0DispatchPaths {
+        codex_self_exe: Some(executable.clone()),
+        ..Arg0DispatchPaths::default()
+    };
+    #[cfg(unix)]
+    {
+        let wrapper = root.join("codex-execve-wrapper");
+        std::os::unix::fs::symlink(&executable, &wrapper)?;
+        paths.main_execve_wrapper_exe = Some(wrapper);
+    }
+    #[cfg(target_os = "linux")]
+    {
+        let sandbox = root.join("codex-linux-sandbox");
+        std::os::unix::fs::symlink(&executable, &sandbox)?;
+        paths.codex_linux_sandbox_exe = Some(sandbox);
+    }
+    Ok(paths)
 }
 
 fn validate_config_scalar(value: &str, label: &str) -> TestResult<()> {

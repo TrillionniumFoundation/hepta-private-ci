@@ -45,6 +45,24 @@ from a query. Use the explicit configured embedding. An unconfigured owner
 rejects a memory read; snapshot export is separately available for authorized
 training data acquisition.
 
+## Address worker response framing
+
+The host serializes worker exchanges and checks for buffered or readable pipe
+output both after a complete response and before writing the next request.
+Unexpected output, malformed frames, and response bindings that differ from
+the current complete request discard the child. A later request must start a
+fresh pinned process after such a failure; stale bytes are never reused as a
+new request's answer.
+
+The frozen JSON-lines protocol has no end-of-response acknowledgement beyond
+the newline. Returning a complete valid frame cannot prove that the process
+will never write more bytes in the future. The host therefore also validates
+the query, full request digest, registry cut and model for every subsequent
+response. The transport tests separate an immediately available atomic double
+frame from a delayed old response emitted after the next request arrives.
+Neither a valid address frame nor transport ordering grants source access or
+execution authority; the owner and final-use checks remain required.
+
 ## Evidence, final use, and failure behavior
 
 After preparatory thread creation, the worker acquires a real typed owner read.

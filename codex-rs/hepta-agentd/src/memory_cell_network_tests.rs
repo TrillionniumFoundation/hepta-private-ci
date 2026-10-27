@@ -21,8 +21,8 @@ use super::MemoryCellVersionPinV1;
 use super::test_support::NetworkFixture;
 
 fn network(fixture: &NetworkFixture, deployment: MemoryCellDeploymentV1) -> Arc<MemoryCellNetworkV1> {
-    Arc::new(MemoryCellNetworkV1::new(fixture.registry.clone(), fixture.consumer.state.identity().agent_id.clone(),
-        fixture.consumer.state.identity().spawn_generation, deployment).expect("configured network"))
+    Arc::new(MemoryCellNetworkV1::new(fixture.registry.clone(), fixture.consumer.state().identity().agent_id.clone(),
+        fixture.consumer.state().identity().spawn_generation, deployment).expect("configured network"))
 }
 
 #[tokio::test]
@@ -121,7 +121,7 @@ async fn partial_parameter_publication_never_activates_a_mixed_vector_and_retry_
         entity: ContractIdV1::new("meter:network").expect("entity"), kind: MemoryCellKindV1::Semantic,
         effective_at: 20, value: json!({"factor":5,"label":"corrected peer"}) };
     let node_b = &fixture.nodes[1];
-    node_b.store.write_memory_cell(&CognitiveAccess::agent_private(node_b.state.identity().agent_id.clone()), &CognitiveScope::AgentPrivate,
+    node_b.store.write_memory_cell(&CognitiveAccess::agent_private(node_b.state().identity().agent_id.clone()), &CognitiveScope::AgentPrivate,
         &corrected, MemoryCellWriteModeV1::Correct { expected_revision: 1 }).await.expect("actual source correction");
     let snapshot_b = node_b.snapshot().await;
     let release_b = node_b.release.as_ref().expect("release B");
@@ -163,7 +163,7 @@ async fn live_federation_revocation_and_real_fleet_rotation_require_new_route_ad
     fixture.nodes[1].client.memory_federation_revoke(MemoryFederationCapabilityId::parse(cap).expect("capability id")).await.expect("actual source authority revoke");
     assert!(network.revalidate(&old).await.is_err());
     assert!(network.recover(version).await.is_err());
-    let consumer = fixture.consumer.state.identity().agent_id.clone();
+    let consumer = fixture.consumer.state().identity().agent_id.clone();
     fixture.nodes[1].grant_to(&consumer).await;
     let second = network.migrate(version, fixture.deployment(2)).await.expect("new grant generation in complete vector");
     assert!(network.revalidate(&old).await.is_err());

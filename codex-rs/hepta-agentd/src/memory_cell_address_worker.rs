@@ -6,11 +6,13 @@ use std::pin::Pin;
 use std::process::Stdio;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
+use std::task::Poll;
 use std::time::Instant;
 
 use codex_hepta_cognitive_store::MemoryCellOwnerSnapshotV1;
 use codex_hepta_cognitive_types::MemoryRequestV1;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
+use tokio::io::AsyncBufRead;
 use tokio::io::AsyncBufReadExt;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
@@ -122,6 +124,7 @@ impl MemoryCellAddressWorkerV1 {
         // while the shared slot stays empty for the next explicitly new spawn.
         let mut session = match slot.take() { Some(session) => session, None => self.spawn().await? };
         if session.child.try_wait().map_err(|_| "address worker status failed")?.is_some() { return Err("address worker has exited".to_string()); }
+        session.require_idle(&self.counters.stdout).await?;
         let mut written = 0;
         while written < bound.bytes.len() {
             let count = session.stdin.write(&bound.bytes[written..]).await.map_err(|_| "address worker input failed")?;
@@ -132,11 +135,16 @@ impl MemoryCellAddressWorkerV1 {
         session.stdin.flush().await.map_err(|_| "address worker input flush failed")?;
         let mut response = Vec::new();
         let read = (&mut session.stdout).take((MAX_RESPONSE_BODY + 2) as u64).read_until(b'\n', &mut response).await;
-        self.counters.stdout.fetch_add((response.len() + session.stdout.buffer().len()) as u64, Ordering::Relaxed);
-        read.map_err(|_| "address worker output failed")?;
-        if response.len() > MAX_RESPONSE_BODY + 1 || !response.ends_with(b"\n") || !session.stdout.buffer().is_empty() {
+        self.counters.stdout.fetch_add(response.len() as u64, Ordering::Relaxed);
+        if read.is_err() {
+            self.counters.stdout.fetch_add(session.stdout.buffer().len() as u64, Ordering::Relaxed);
+            return Err("address worker output failed".to_string());
+        }
+        if response.len() > MAX_RESPONSE_BODY + 1 || !response.ends_with(b"\n") {
+            self.counters.stdout.fetch_add(session.stdout.buffer().len() as u64, Ordering::Relaxed);
             return Err("address worker returned an oversized, incomplete or unsolicited frame".to_string());
         }
+        session.require_idle(&self.counters.stdout).await?;
         let (decision, cost) = bound.validate_response(&response, self.config.model_digest, request)?;
         self.counters.responses.fetch_add(1, Ordering::Relaxed);
         self.counters.cpu.fetch_add((cost.processing_cpu_seconds * 1_000_000_000.0) as u64, Ordering::Relaxed);
@@ -163,6 +171,31 @@ impl MemoryCellAddressResolverV1 for MemoryCellAddressWorkerV1 {
 }
 
 struct WorkerSession { child: Child, stdin: ChildStdin, stdout: BufReader<ChildStdout>, stderr_task: JoinHandle<()> }
+
+impl WorkerSession {
+    /// Check both the reader buffer and bytes already available in the pipe.
+    /// JSON-lines has no end ACK: a pending read does not prove that the child
+    /// will never write again. Check again before the next request, and bind
+    /// every response to that request even when a late frame arrives afterward.
+    async fn require_idle(&mut self, received: &AtomicU64) -> Result<(), String> {
+        let ready = std::future::poll_fn(|cx| {
+            Poll::Ready(match Pin::new(&mut self.stdout).poll_fill_buf(cx) {
+                Poll::Pending => None,
+                Poll::Ready(Ok(bytes)) => Some(Ok(bytes.len())),
+                Poll::Ready(Err(_)) => Some(Err("address worker output failed")),
+            })
+        }).await;
+        match ready {
+            None => Ok(()),
+            Some(Ok(0)) => Err("address worker output closed".to_string()),
+            Some(Ok(count)) => {
+                received.fetch_add(count as u64, Ordering::Relaxed);
+                Err("address worker returned unsolicited output".to_string())
+            }
+            Some(Err(reason)) => Err(reason.to_string()),
+        }
+    }
+}
 
 impl Drop for WorkerSession {
     fn drop(&mut self) {

@@ -57,6 +57,15 @@ def main():
     output.mkdir(exist_ok=False)
     commands = [command]
     if mode == "test" and group == "daemon":
+        # App Server helpers must re-exec an actual product binary, not a test
+        # harness. Building it changes neither features nor sandbox policy.
+        commands.insert(0, ["cargo", "build", "--locked", "--manifest-path", "codex-rs/Cargo.toml",
+                            "-p", "codex-app-server", "--bin", "codex-app-server"])
+        target = Path(os.environ["CARGO_TARGET_DIR"])
+        if not target.is_absolute():
+            raise ValueError("the qualification cargo target must be absolute")
+        executable = target / "debug" / ("codex-app-server.exe" if os.name == "nt" else "codex-app-server")
+        os.environ["HEPTA_TEST_CODEX_EXECUTABLE"] = str(executable)
         commands.append(["just", "test", "--locked", "--lib", "-p", "codex-hepta-agentd",
                          "--run-ignored", "only", "-E", "test(memory_cell_) & test(actual_)"])
         os.environ["MEMORY_CELL_TRAINING_RECEIPT_PATH"] = str(output / "training-receipt.json")
@@ -89,6 +98,8 @@ def main():
             executions.append({"command": command, "exit_code": process.wait(), "wall_seconds": time.monotonic() - before})
             if executions[-1]["exit_code"] != 0:
                 break
+            if command[:2] == ["cargo", "build"]:
+                receipt["runtime_executable"] = {"path": str(executable), **identity(executable)}
         receipt["executions"] = executions
         receipt["exit_code"] = next((item["exit_code"] for item in executions if item["exit_code"] != 0), 0)
     receipt["wall_seconds"] = time.monotonic() - started

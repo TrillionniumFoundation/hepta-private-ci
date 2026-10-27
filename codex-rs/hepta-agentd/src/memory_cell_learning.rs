@@ -28,9 +28,10 @@ pub struct MemoryCellTrainingDecisionContextV1 {
     pub generator_id: StableId,
 }
 
-/// Prepared only from an actual training host candidate. The single candidate
-/// is the output of one completed fit, not a claim of complete architecture or
-/// deployment search. A Generator must sign its existing V2 payload to append.
+/// Prepared only from an actual training host candidate. The candidate set is
+/// the output of one completed fit plus the ledger's required abstain option,
+/// not a claim of complete architecture or deployment search. A Generator must
+/// sign its existing V2 payload to append.
 pub struct MemoryCellLearningDecisionV1 {
     decision: ProductionDecisionV2,
 }
@@ -108,7 +109,8 @@ fn prepare(context: MemoryCellTrainingDecisionContextV1, cut: Digest32, code: Di
     }
     let support = Digest32::of_parts(&[b"hepta.memory.training-candidate-support.v1", cut.as_array(), code.as_array(), receipt.as_array(), bundle.as_array()]);
     let candidate = StableId::new(format!("memory-bundle:{bundle}")).map_err(|error| error.to_string())?;
-    let candidates = vec![candidate.clone()];
+    let abstain = StableId::new("abstain").map_err(|error| error.to_string())?;
+    let candidates = vec![abstain, candidate.clone()];
     let set_id = StableId::new(format!("memory-training-result:{support}")).map_err(|error| error.to_string())?;
     let decision = ProductionDecisionV2 {
         record_id: context.record_id, episode_id: context.episode_id, run_snapshot_digest: cut,
@@ -116,10 +118,10 @@ fn prepare(context: MemoryCellTrainingDecisionContextV1, cut: Digest32, code: Di
         selected_candidate_id: candidate, selected_propensity: ProbabilityQ32::ONE, support_digest: support,
         completeness: CandidateSetCompletenessReceiptV1 {
             set_id, state_digest: cut, generator_id: context.generator_id, generator_code_digest: code,
-            grammar_digest: Digest32::of_bytes(b"hepta.memory.training-one-completed-fit.v1"),
+            grammar_digest: Digest32::of_bytes(b"hepta.memory.training-completed-fit-or-abstain.v1"),
             hard_filter_digest: Digest32::of_bytes(b"hepta.memory.native-bundle-owner-binding.v1"),
             truncation_digest: Digest32::of_bytes(b"hepta.memory.no-training-output-omissions.v1"),
-            candidates_digest: candidate_ids_digest_v2(&candidates), candidate_count: 1, omitted_count_bound: 0,
+            candidates_digest: candidate_ids_digest_v2(&candidates), candidate_count: 2, omitted_count_bound: 0,
             canonical_order_digest: candidate_order_digest_v2(&candidates), complete_for_generator: true,
         },
     };

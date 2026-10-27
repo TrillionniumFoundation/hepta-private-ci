@@ -7,6 +7,7 @@ use std::pin::Pin;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
+use std::time::Duration;
 
 use codex_hepta_cognitive_store::DurableCognitiveStore;
 use codex_hepta_cognitive_types::MemoryCellKindV1;
@@ -80,7 +81,7 @@ impl MemoryCellAddressResolverV1 for GateResolver {
 }
 
 pub(super) struct Node {
-    pub state: Arc<AgentdState>,
+    state: Option<Arc<AgentdState>>,
     pub store: Arc<DurableCognitiveStore>,
     pub client: AgentdClient,
     pub release: Option<ReleaseFixture>,
@@ -130,8 +131,10 @@ impl Node {
         let server = AgentdControlServer::bind(identity.control_socket.clone(), Arc::clone(&state), cancellation.clone()).await.expect("real socket");
         let control = Some(tokio::spawn(server.run()));
         let client = AgentdClient::new(identity.control_socket, owner, /*spawn_generation*/ 1).expect("real client");
-        Self { state, store, client, release, grant: None, gate, label: StableId::new(label).expect("node label"), cancellation, control }
+        Self { state: Some(state), store, client, release, grant: None, gate, label: StableId::new(label).expect("node label"), cancellation, control }
     }
+
+    pub fn state(&self) -> &Arc<AgentdState> { self.state.as_ref().expect("live node state") }
 
     pub fn binding(&self) -> MemoryCellNodeBindingV1 {
         let bundle = self.release.as_ref().expect("source release").host.load_current().expect("selected bundle");
@@ -142,11 +145,11 @@ impl Node {
 
     pub fn binding_with_pin(&self, pin: MemoryCellVersionPinV1) -> MemoryCellNodeBindingV1 {
         MemoryCellNodeBindingV1::new(self.label.clone(), self.grant.clone().expect("real grant"),
-            self.state.identity().spawn_generation, pin.clone(), request(pin.scope)).expect("node binding")
+            self.state().identity().spawn_generation, pin.clone(), request(pin.scope)).expect("node binding")
     }
 
     pub async fn snapshot(&self) -> MemoryCellOwnerSnapshotV1 {
-        self.store.memory_cell_snapshot(&CognitiveAccess::agent_private(self.state.identity().agent_id.clone()), &CognitiveScope::AgentPrivate,
+        self.store.memory_cell_snapshot(&CognitiveAccess::agent_private(self.state().identity().agent_id.clone()), &CognitiveScope::AgentPrivate,
             super::unix_seconds().expect("time")).await.expect("real owner snapshot")
     }
 
@@ -164,15 +167,27 @@ impl Node {
     pub async fn restart_socket(&mut self) {
         assert!(self.control.is_none());
         self.cancellation = CancellationToken::new();
-        let server = AgentdControlServer::bind(self.state.identity().control_socket.clone(), Arc::clone(&self.state), self.cancellation.clone()).await.expect("restored real socket");
+        let server = AgentdControlServer::bind(self.state().identity().control_socket.clone(), Arc::clone(self.state()), self.cancellation.clone()).await.expect("restored real socket");
         self.control = Some(tokio::spawn(server.run()));
     }
 
     pub async fn rotate_spawn(&mut self, registry: &FleetRegistry) {
         self.stop().await;
-        let mut identity = self.state.identity().clone();
+        let mut identity = self.state().identity().clone();
         let old = registry.load_agent(&identity.agent_id).expect("old lifecycle").lifecycle.generation;
         registry.compare_and_transition(&identity.agent_id, old, AgentLifecycle::Draining).expect("draining");
+        // Stopping the listener leaves already accepted control connections alive.
+        // Release their state and its exclusive durable owners before a successor
+        // opens the same directories, just as a real predecessor process must exit.
+        let mut predecessor = self.state.take().expect("predecessor state");
+        tokio::time::timeout(Duration::from_secs(5), async move {
+            loop {
+                match Arc::try_unwrap(predecessor) {
+                    Ok(state) => { drop(state); break; }
+                    Err(state) => { predecessor = state; tokio::task::yield_now().await; }
+                }
+            }
+        }).await.expect("predecessor control connections release all state owners");
         registry.compare_and_transition(&identity.agent_id, old + 1, AgentLifecycle::Stopped).expect("stopped");
         registry.compare_and_transition(&identity.agent_id, old + 2, AgentLifecycle::Starting).expect("new starting spawn");
         identity.spawn_generation = old + 3;
@@ -186,7 +201,7 @@ impl Node {
         state.mark_runtime_prerequisites_ready().expect("successor stores and ports");
         state.mark_app_server_ready().expect("explicit successor test readiness");
         self.client = AgentdClient::new(identity.control_socket, identity.agent_id, identity.spawn_generation).expect("successor client");
-        self.state = state;
+        self.state = Some(state);
         self.restart_socket().await;
     }
 }

@@ -61,12 +61,17 @@ digest = lambda value: hashlib.sha256(canonical(value)).hexdigest()
 manifest = json.loads((Path(args.model) / 'manifest.json').read_bytes())
 print(json.dumps({'schema':'hepta.memory.v7.address-worker-ready.v1','model_digest':args.model_digest,'policy_digest':manifest['policy_digest'],'max_frame_bytes':2097152,'max_response_bytes':32768}), file=sys.stderr, flush=True)
 first_cut = None
+delayed_response = None
 for raw in sys.stdin.buffer:
     frame = json.loads(raw)
     request, registry = frame['request'], frame['registry']
     assert set(frame) == {'schema', 'request', 'registry'}
     assert 'schema' not in request and 'operation' not in request
     assert all(set(row) == {'entity', 'aliases'} for row in registry['entities'])
+    if delayed_response is not None:
+        sys.stdout.buffer.write(delayed_response + b'\n'); sys.stdout.buffer.flush()
+        delayed_response = None
+        continue
     text, cut, reg = request['text'], registry['source_cut'], digest(registry)
     if first_cut is None: first_cut = cut
     if text == 'hang': time.sleep(10)
@@ -101,7 +106,13 @@ for raw in sys.stdin.buffer:
     if text == 'duplicate': output = b'{"schema":"hepta.memory.v7.address-decision.v1",' + output[1:]
     if text == 'duplicate-score': output = output.replace(b'"score":0.9', b'"score":0.9,"score":0.9')
     if text == 'incomplete': sys.stdout.buffer.write(output); sys.stdout.buffer.flush(); raise SystemExit(4)
+    if text == 'unsolicited':
+        # One atomic malformed response; no scheduling gap between its frames.
+        frames = output + b'\n' + output + b'\n'
+        assert len(frames) <= os.fpathconf(sys.stdout.fileno(), 'PC_PIPE_BUF')
+        assert os.write(sys.stdout.fileno(), frames) == len(frames)
+        continue
+    if text == 'delayed-unsolicited': delayed_response = output
     sys.stdout.buffer.write(output + b'\n')
-    if text == 'unsolicited': sys.stdout.buffer.write(output + b'\n')
     sys.stdout.buffer.flush()
 "#;
