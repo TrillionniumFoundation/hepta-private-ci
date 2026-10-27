@@ -1,0 +1,138 @@
+{
+  "schema": "hepta.matrix-fixture-serialization-fix.v2",
+  "recorded_utc": "2026-10-27T11:55:10.704479+00:00",
+  "qualification_status": "pending_actual_old_produce_and_new_reopen",
+  "production_logic_modified": false,
+  "old_failure": {
+    "run_id": 40497632113,
+    "job_id": 122166998773,
+    "attempt": 1,
+    "driver_source_commit": "1e4f8b5c37474c61a5b58a655d5885dced887bf9",
+    "old_source_commit": "6215cb6a87f29623d4beaad24cdf7bcb6bb4fb2c",
+    "toolchain": "1.95.0",
+    "compiled_source_tree": "4c42b927f57afa49c9d655a56df5db788c544b2e",
+    "artifact_id": 12731982590,
+    "archive": {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-port-remote-1e4f8b5/raw/ndu-matrix-018-fixture-40497632113-1.zip",
+      "bytes": 30421442,
+      "sha256": "6544ea2fc066618a4bb42dce69c10feedaf44fd1d8b2963e931f22a2a6cd36ac"
+    },
+    "result_sha256": "b0bc870b61aef66f1e651a7207696fbe77794f34c2af784e249f57430caf1541",
+    "command_count": 14,
+    "successful_commands_before_failure": 13,
+    "failed_command": [
+      "cargo",
+      "nextest",
+      "list",
+      "--manifest-path",
+      "/home/runner/work/hepta-private-ci/hepta-private-ci/baseline/codex-rs/Cargo.toml",
+      "--locked",
+      "--cargo-profile",
+      "ci-test",
+      "-p",
+      "codex-hepta-matrix-sdk",
+      "--test",
+      "store_version_migration",
+      "--tool-config-file",
+      "hepta-port:/home/runner/work/_temp/ndu-matrix-018-fixture/nextest-store.toml",
+      "--list-type",
+      "binaries-only",
+      "--message-format",
+      "json"
+    ],
+    "failed_log": {
+      "name": "13-prepare_old_version_fixture-binaries.log",
+      "sha256": "3a6ad969c1c412d155df9353141d171348d97cd27d4b6c565d53988930b4c929"
+    },
+    "error": "E0277: DeviceKey does not implement serde::Serialize; json!(device.keys()) cannot compile on Matrix 0.18.0.",
+    "actual_prepare_test_executed": false,
+    "old_database_migration_proven": false,
+    "all_recorded_command_logs_hash_verified": true,
+    "archived_old_test_equals_v1_patch": true
+  },
+  "fix": {
+    "old_patch_sha256": "dec3b6075c928a924e32754e1c310361fd231da3da2a3cdf3657a1a3a734b1fd",
+    "new_patch_name": "matrix-fixture-tests-v2.patch",
+    "new_patch_sha256": "e2dfb517cd07278eef6b0fced8c7e61db3b0e6fd3ffde61da717301116721027",
+    "new_test_source_sha256": "bed1d7e870e9cca66518985ebd34ccbc0562216ebbb86e0a95f81a4a08bbbe5c",
+    "changed_behavior": "Encode every actual public device key with its complete key ID and the upstream to_base64 representation into a BTreeMap before JSON serialization; reject empty identity evidence. No key filtering, truncation, hashes, debug-only formatting or fixture substitution.",
+    "all_five_original_equality_assertions_preserved": true,
+    "all_other_original_body_lines_preserved": true,
+    "source_reversible_to_exact_old_bytes_by_three_substitutions": true,
+    "patch_apply_check_passed": true,
+    "original_v1_patch_preserved": true
+  },
+  "upstream": {
+    "receipt_sha256": "f148f1557702ef1db6a9ea05581d028e8e81fe24dce3fc34d2e52704159476b0",
+    "official_crate_records": [
+      {
+        "version": "0.18.0",
+        "url": "https://static.crates.io/crates/matrix-sdk-crypto/matrix-sdk-crypto-0.18.0.crate",
+        "bytes": 521545,
+        "sha256": "c54afd2a326f51c13a6ad44ec86315a688fffeb3f1e287fb343e0e1836a3bdaf",
+        "files": [
+          {
+            "path": "Cargo.toml",
+            "bytes": 7462,
+            "sha256": "98ce2b8539759300ebc3d29dec537801bd689473d51bb29b9570bcad335d565e"
+          },
+          {
+            "path": ".cargo_vcs_info.json",
+            "bytes": 118,
+            "sha256": "7205b8da9a5eee62d76da48b05a3230191e745bd2154fd931af2abe09e9cc768"
+          },
+          {
+            "path": "src/types/device_keys.rs",
+            "bytes": 12878,
+            "sha256": "3c7b73b97e346b717aa4e57a42d50b95bc5b23690e5853b1483d3c9b05fc6878"
+          },
+          {
+            "path": "src/identities/device.rs",
+            "bytes": 46319,
+            "sha256": "5ba8ea85fcac92d8e964e39462dd355ae64b25b62ea08ed4917c6134fe5de982"
+          }
+        ]
+      },
+      {
+        "version": "0.19.1",
+        "url": "https://static.crates.io/crates/matrix-sdk-crypto/matrix-sdk-crypto-0.19.1.crate",
+        "bytes": 543746,
+        "sha256": "6851a6f102574c52430bd3617f86fb0def62f912fd2aed5356dcb8ff06a9fbc3",
+        "files": [
+          {
+            "path": "Cargo.toml",
+            "bytes": 8854,
+            "sha256": "c446da06c51485ded0aa35f2278688fe66b8aed0444d84ffe232423e581a38d4"
+          },
+          {
+            "path": ".cargo_vcs_info.json",
+            "bytes": 118,
+            "sha256": "da48ce90df53211cb5c6f3248c8d7ac0a7fac62f2fcebe7e0d76a17134888cc1"
+          },
+          {
+            "path": "src/types/device_keys.rs",
+            "bytes": 12834,
+            "sha256": "32323421cec5ccdf2cd7fbed9d729defe1717d90845c579cad1b30d88fde8685"
+          },
+          {
+            "path": "src/identities/device.rs",
+            "bytes": 50766,
+            "sha256": "e682ab2a37bb57223066b45b597a56448bdd7e06d77183c81a4bd51a91debb7c"
+          }
+        ]
+      }
+    ],
+    "to_base64_method_sha256": {
+      "0.18.0": "70c6ed5a8db8e7fbe2aa48e9466d14e58d6f9e2944e4a109e548e2683f1410de",
+      "0.19.1": "70c6ed5a8db8e7fbe2aa48e9466d14e58d6f9e2944e4a109e548e2683f1410de"
+    },
+    "known_key_encoding": "Curve25519 and Ed25519 upstream public-key base64",
+    "unknown_key_encoding": "Original complete string unchanged"
+  },
+  "required_execution": [
+    "Prepare under fixed original Matrix 0.18.0 source and original Cargo.lock with exactly one passing prepare testcase and no retries.",
+    "Retain actual database files, actual compiled binary, source tree and fresh JUnit.",
+    "Reopen only an independently copied and hash-verified old fixture under the qualified 0.19.1 candidate; require every original session, identity, cursor, outbox and continuation assertion."
+  ],
+  "scope_limit": "This source/API correction and patch check are not a successful compilation or migration qualification."
+}
