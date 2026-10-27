@@ -54,6 +54,10 @@ pub type TestResult<T> = Result<T, Box<dyn StdError + Send + Sync>>;
 const READY_TIMEOUT: Duration = Duration::from_secs(10);
 const EVENT_CAPACITY: usize = 32;
 
+#[cfg(test)]
+#[path = "memory_cell_context_test_support.rs"]
+pub(crate) mod memory_cells;
+
 #[derive(Clone, Debug)]
 pub struct SeededMemory {
     memory_id: StableMemoryId,
@@ -66,6 +70,8 @@ pub struct CognitiveTestHost {
     agent_id: AgentId,
     layout: HeptaAgentLayout,
     store: Arc<CognitiveStore>,
+    #[cfg(test)]
+    state: Arc<AgentdState>,
     cancellation: CancellationToken,
     control_task: Option<JoinHandle<Result<(), crate::AgentdError>>>,
     app_server_task: Option<JoinHandle<std::io::Result<()>>>,
@@ -116,6 +122,7 @@ impl CognitiveTestHost {
         )?);
         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
         state.attach_cognitive_store(Arc::clone(&store))?;
+        state.mark_runtime_prerequisites_ready()?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
 
@@ -171,6 +178,8 @@ impl CognitiveTestHost {
             agent_id,
             layout: identity.layout,
             store,
+            #[cfg(test)]
+            state,
             cancellation,
             control_task: Some(control_task),
             app_server_task: Some(app_server_task),
