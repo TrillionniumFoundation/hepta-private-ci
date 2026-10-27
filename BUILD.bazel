@@ -1,4 +1,5 @@
 load("@apple_support//xcode:xcode_config.bzl", "xcode_config")
+load("//:test_platform_labels.bzl", "MUSL_TEST_PLATFORM")
 
 xcode_config(name = "disable_xcode")
 
@@ -20,7 +21,7 @@ platform(
 config_setting(
     name = "linux_x86_64_musl_test_target",
     values = {
-        "platforms": str(Label("@rules_rs//rs/platforms:x86_64-unknown-linux-musl")),
+        "platforms": MUSL_TEST_PLATFORM,
     },
 )
 
