@@ -1,0 +1,43 @@
+{
+  "compatibility_questions_requiring_differential_regression": [
+    {
+      "examples": [
+        "true: one\nTrue: two\n",
+        "null: one\n~: two\n",
+        "1.0: one\n1.00: two\n"
+      ],
+      "finding": "The upstream key fingerprint canonicalizes integers, but retains raw scalar spelling for bool/null/float keys. The new Vec visitor has no second semantic equality check. It may accept true/True, null/~, or 1.0/1.00 in one map where the former serde_yaml::Value map rejects repeated resolved keys. Existing six utility tests cover exact same-string duplicates, not these aliases.",
+      "id": "semantic_duplicate_keys",
+      "severity": "medium",
+      "status": "Source-inferred compatibility risk; old parser runtime not executed by this reviewer."
+    },
+    {
+      "example": "description: TrUe\n",
+      "finding": "strict_booleans uses eq_ignore_ascii_case; TrUe parses as bool. Do not claim full YAML1.2 spelling equivalence without comparing the old parser and defining this behavior.",
+      "id": "mixed_case_boolean",
+      "severity": "low",
+      "status": "New behavior verified from implementation, old differential pending."
+    }
+  ],
+  "confirmed_from_primary_source": [
+    "Tagged captures parser-resolved tags and delegates kind parsing with the existing configuration; root/key tag transparency and application value-tag suppression match the explicit consumer design.",
+    "Strict booleans preserves yes/OFF as strings; true/false are recognized case-insensitively.",
+    "Integer/f64 dispatch matches the implemented visitor variants; nonfinite floats pass to the explicit canonical rendering.",
+    "Duplicate key processing occurs in MapAccess before the Vec visitor, so exact duplicated string keys and integer spelling aliases are not silently admitted.",
+    "The visitor consumes every nested sequence and mapping even when keys/values are discarded; invalid UTF8 is rejected by from_slice.",
+    "AsOrdinary prevents merge expansion. Default budgets and alias limits remain enabled; optional include/property resolvers remain unset."
+  ],
+  "executed_tests_by_this_reviewer": false,
+  "production_sources_changed": false,
+  "review": "Independent read-only source semantics review",
+  "review_conclusion": "Prepared parser follows the intended bounded scalar extraction, tags and merge design; do not mark full compatibility/promotion passed until differential boundaries and real consumers are verified. No production activation inferred.",
+  "reviewed_source_hashes": {
+    "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/upstream/serde-saphyr-2.0.0/src/de/api.rs": "1abfbe2e7f169de796d3a72d9f1e6e3cb3cf46049c119ec5cb7d6dcb78e754a0",
+    "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/upstream/serde-saphyr-2.0.0/src/de/deserializer.rs": "4759b704305e5dfcdce38a288458f35b30a32641424a77f5f13c33d0fd84dab9",
+    "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/upstream/serde-saphyr-2.0.0/src/de/key_nodes.rs": "9fcafffe4974001abcc5349ee22b2c9128d4d448a2be35368d366b5229eed1f5",
+    "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/upstream/serde-saphyr-2.0.0/src/de/options.rs": "dda16a2c8928a986e39649301874681555fa1dea73b7fe70cdb07f5861e95fd7",
+    "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/upstream/serde-saphyr-2.0.0/src/de/tagged_deser.rs": "359e2ac170ac6889bb7471dd93289086d3deb99eda66db76cd0f2bdf5ffb6d82",
+    "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/yaml-migration/proposed/codex-rs/utils/yaml/src/lib.rs": "7f94cc3eebf0d15005c768380bbaacee2e39c5e831c37b56d9342d475ae87d89",
+    "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/yaml-migration/proposed/codex-rs/utils/yaml/src/yaml_tests.rs": "81be6c0dc3c175d9b3171a010a6f9a710a132074f09a70152306ea163c98c036"
+  }
+}

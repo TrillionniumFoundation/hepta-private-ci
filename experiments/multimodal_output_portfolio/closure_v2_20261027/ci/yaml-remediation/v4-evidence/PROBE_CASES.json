@@ -1,0 +1,155 @@
+{
+  "cases": [
+    {
+      "name": "boolean-key-alias",
+      "input": "true: a\nTrue: b\n"
+    },
+    {
+      "name": "null-key-alias",
+      "input": "null: a\n~: b\n"
+    },
+    {
+      "name": "float-key-alias",
+      "input": "1.0: a\n1.00: b\n"
+    },
+    {
+      "name": "nan-key-alias",
+      "input": ".NaN: a\n.nan: b\n"
+    },
+    {
+      "name": "signed-zero-key",
+      "input": "0: a\n-0: b\n"
+    },
+    {
+      "name": "integer-and-float-key",
+      "input": "1: a\n1.0: b\n"
+    },
+    {
+      "name": "mixed-case-bool",
+      "input": "description: TrUe\n"
+    },
+    {
+      "name": "mixed-case-null",
+      "input": "description: NuLl\n"
+    },
+    {
+      "name": "sequence-key-alias",
+      "input": "? [true, 1.0]\n: a\n? [True, 1.00]\n: b\n"
+    },
+    {
+      "name": "mapping-key-alias",
+      "input": "? {a: true, b: 1.0}\n: a\n? {b: 1.00, a: True}\n: b\n"
+    },
+    {
+      "name": "empty",
+      "input": ""
+    },
+    {
+      "name": "comments-only",
+      "input": "# comment\n"
+    },
+    {
+      "name": "empty-document",
+      "input": "---\n"
+    },
+    {
+      "name": "tagged-key",
+      "input": "!local description: hello\n"
+    },
+    {
+      "name": "different-tags",
+      "input": "!first description: first\n!second description: second\n"
+    },
+    {
+      "name": "standard-binary",
+      "input": "description: !!binary aGVsbG8=\n"
+    },
+    {
+      "name": "explicit-float",
+      "input": "description: !!float 1\n"
+    },
+    {
+      "name": "large-integer",
+      "input": "description: 18446744073709551616\n"
+    },
+    {
+      "name": "merge-key",
+      "input": "base: &b {description: hello}\n<<: *b\nname: example\n"
+    },
+    {
+      "name": "uppercase-hex-prefix",
+      "input": "description: 0X10\n"
+    },
+    {
+      "name": "uppercase-octal-prefix",
+      "input": "description: 0O10\n"
+    },
+    {
+      "name": "uppercase-binary-prefix",
+      "input": "description: 0B10\n"
+    },
+    {
+      "name": "hex-u64-overflow",
+      "input": "description: 0x10000000000000000\n"
+    },
+    {
+      "name": "octal-u64-overflow",
+      "input": "description: 0o2000000000000000000000\n"
+    },
+    {
+      "name": "binary-u64-overflow",
+      "input": "description: 0b10000000000000000000000000000000000000000000000000000000000000000\n"
+    },
+    {
+      "name": "negative-hex-i64-overflow",
+      "input": "description: -0x8000000000000001\n"
+    },
+    {
+      "name": "decimal-underscore",
+      "input": "description: 1_000\n"
+    },
+    {
+      "name": "hex-underscore",
+      "input": "description: 0x1_0\n"
+    },
+    {
+      "name": "float-overflow",
+      "input": "description: 1e999\n"
+    },
+    {
+      "name": "decimal-u128-overflow",
+      "input": "description: 340282366920938463463374607431768211456\n"
+    },
+    {
+      "name": "leading-zero-decimal",
+      "input": "description: 0123\n"
+    },
+    {
+      "name": "uppercase-prefix-key-distinct",
+      "input": "0X10: first\n16: second\n"
+    },
+    {
+      "name": "underscored-key-distinct",
+      "input": "1_0: first\n10: second\n"
+    },
+    {
+      "name": "u64-upper-bound",
+      "input": "description: 18446744073709551615\n"
+    },
+    {
+      "name": "i64-lower-bound",
+      "input": "description: -9223372036854775808\n"
+    },
+    {
+      "name": "quoted-overflow",
+      "input": "description: '0x10000000000000000'\n"
+    },
+    {
+      "name": "mixed-case-infinity",
+      "input": "description: .iNf\n"
+    }
+  ],
+  "count": 37,
+  "source_sha256": "fca92f4270d84f5310ca4ac69df961f1d63558db676198806d3371b0859680b4",
+  "frozen_before_v3_new_boundary_execution": true
+}

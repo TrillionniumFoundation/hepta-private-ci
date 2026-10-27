@@ -1,0 +1,77 @@
+{
+  "schema": "ndu-yaml-parser-remediation-v1",
+  "base_local_commit": "792980f941e1d76f51cd05b9161b80d2ad3e81dd",
+  "source_files": {
+    "codex-rs/skills/src/parser.rs": {
+      "sha256": "7c7e4970b4318eadfebab3420bdb82dd001558abfa9471441d420eeb1a205cf5",
+      "bytes": 7253
+    },
+    "codex-rs/core-plugins/src/plugin_metrics.rs": {
+      "sha256": "1e95bcc40a790f933bdd14d4e5ac1c8b17778966b375acaee91d132b2de53d7c",
+      "bytes": 5603
+    },
+    "codex-rs/core-plugins/src/command_migration.rs": {
+      "sha256": "1dbb263aa6136621f9d7c895a02082ac727b878b8f724c0cda6e4fb0c6b7e783",
+      "bytes": 12071
+    },
+    "codex-rs/external-agent-migration/src/subagents.rs": {
+      "sha256": "5aa90bd0f5eb5721a80c1bd8c82ab3de84f3736e5ffed38ccb9ff767a5aa8bc1",
+      "bytes": 8752
+    },
+    "codex-rs/ext/skills/src/loader/environment.rs": {
+      "sha256": "cb049ed3640dafda1d457b7bfb28e85f7089813d70af750f2649bb0acb459732",
+      "bytes": 13832
+    },
+    "codex-rs/ext/skills/src/loader/metadata.rs": {
+      "sha256": "49a2e2de83ac7bee1ee11023d9b065cc22ff449db48ee6fd571fa052c2ccefda",
+      "bytes": 7994
+    },
+    "codex-rs/utils/yaml/BUILD.bazel": {
+      "sha256": "35ab6843c2552bbe1cd3a6142f93124935daec0889db4fe35b90439196294f85",
+      "bytes": 117
+    },
+    "codex-rs/utils/yaml/Cargo.toml": {
+      "sha256": "218a23490413409123d33daa92ff774c1844c75dadc2749e85ba074391176fb8",
+      "bytes": 381
+    },
+    "codex-rs/utils/yaml/src/lib.rs": {
+      "sha256": "7f94cc3eebf0d15005c768380bbaacee2e39c5e831c37b56d9342d475ae87d89",
+      "bytes": 5732
+    },
+    "codex-rs/utils/yaml/src/yaml_tests.rs": {
+      "sha256": "81be6c0dc3c175d9b3171a010a6f9a710a132074f09a70152306ea163c98c036",
+      "bytes": 3649
+    }
+  },
+  "patches": [
+    {
+      "path": "yaml-source.patch",
+      "sha256": "742c6baff247d40cfa23ef49f16cfcd3835dd8a78f837b4171758e002bbe7e94",
+      "bytes": 19326,
+      "apply_check_returncode": 0,
+      "stderr": "",
+      "against": "isolated index at pinned base, no unrelated workspace files"
+    },
+    {
+      "path": "yaml-manifest.patch",
+      "sha256": "1d50473e8ebeb9f86935a3d768e668bbef3b529ee10311e76add1498fe937299",
+      "bytes": 2865,
+      "apply_check_returncode": 0,
+      "stderr": "",
+      "against": "isolated index at pinned base, no unrelated workspace files"
+    }
+  ],
+  "behavior_tests_executed": true,
+  "promotion_eligible": false,
+  "reason": "Utility tests pass in the full repository; consumer regressions and refreshed Cargo/Bazel dependency verification remain required.",
+  "revision": 2,
+  "behavior_tests": {
+    "command": "just test -p codex-utils-yaml",
+    "nextest": "0.9.103",
+    "rust": "1.95.0",
+    "tests": 6,
+    "passed": 6,
+    "skipped": 0,
+    "first_compile_failure_preserved": true
+  }
+}

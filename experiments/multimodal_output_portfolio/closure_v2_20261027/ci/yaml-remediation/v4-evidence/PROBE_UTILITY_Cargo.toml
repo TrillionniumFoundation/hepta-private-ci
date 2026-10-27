@@ -1,0 +1,21 @@
+[package]
+name = "codex-utils-yaml"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+ryu = { workspace = true }
+serde = { workspace = true }
+serde-saphyr = { workspace = true, features = ["hepta-legacy-scalars"] }
+
+[dev-dependencies]
+pretty_assertions = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+legacy_yaml = { package = "serde_yaml", version = "=0.9.34" }

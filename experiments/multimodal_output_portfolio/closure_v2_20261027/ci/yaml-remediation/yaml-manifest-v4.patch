@@ -1,0 +1,90 @@
+diff --git a/codex-rs/Cargo.toml b/codex-rs/Cargo.toml
+index d2703b5..6ab63e4 100644
+--- a/codex-rs/Cargo.toml
++++ b/codex-rs/Cargo.toml
+@@ -164,6 +164,7 @@ members = [
+     "utils/redacted-string",
+     "utils/rustls-provider",
+     "utils/string",
++    "utils/yaml",
+     "utils/cli",
+     "utils/elapsed",
+     "utils/sandbox-summary",
+@@ -349,6 +350,7 @@ codex-utils-sandbox-summary = { path = "utils/sandbox-summary" }
+ codex-utils-sleep-inhibitor = { path = "utils/sleep-inhibitor" }
+ codex-utils-stream-parser = { path = "utils/stream-parser" }
+ codex-utils-string = { path = "utils/string" }
++codex-utils-yaml = { path = "utils/yaml" }
+ codex-utils-template = { path = "utils/template" }
+ codex-v8-poc = { path = "v8-poc" }
+ codex-workload-identity = { path = "workload-identity" }
+@@ -490,7 +492,8 @@ serde_ignored = "0.1.14"
+ serde_json = "1"
+ serde_path_to_error = "0.1.20"
+ serde_with = "3.17"
+-serde_yaml = "0.9"
++serde-saphyr = "2.0.0"
++ryu = "1.0.20"
+ serial_test = "3.2.0"
+ sha1 = "0.10.6"
+ scopeguard = "1.2.0"
+@@ -661,6 +664,7 @@ inherits = "test"
+ opt-level = 0
+ 
+ [patch.crates-io]
++serde-saphyr = { path = "third_party/serde-saphyr-2.0.0" }
+ # Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
+ # bitmap import and patched chunk dependency without changing their public API.
+ imbl = { path = "third_party/imbl-6.1.0" }
+diff --git a/codex-rs/core-plugins/Cargo.toml b/codex-rs/core-plugins/Cargo.toml
+index 0899163..d363106 100644
+--- a/codex-rs/core-plugins/Cargo.toml
++++ b/codex-rs/core-plugins/Cargo.toml
+@@ -45,7 +45,7 @@ semver = { workspace = true }
+ serde = { workspace = true, features = ["derive"] }
+ serde_json = { workspace = true }
+ serde_with = { workspace = true }
+-serde_yaml = { workspace = true }
++codex-utils-yaml = { workspace = true }
+ sha2 = { workspace = true }
+ tar = { workspace = true }
+ tempfile = { workspace = true }
+diff --git a/codex-rs/ext/skills/Cargo.toml b/codex-rs/ext/skills/Cargo.toml
+index 256d0aa..571b032 100644
+--- a/codex-rs/ext/skills/Cargo.toml
++++ b/codex-rs/ext/skills/Cargo.toml
+@@ -31,7 +31,7 @@ futures = { workspace = true }
+ schemars = { workspace = true }
+ serde = { workspace = true, features = ["derive"] }
+ serde_json = { workspace = true }
+-serde_yaml = { workspace = true }
++codex-utils-yaml = { workspace = true }
+ tokio = { workspace = true, features = ["sync", "time"] }
+ toml = { workspace = true }
+ tracing = { workspace = true }
+diff --git a/codex-rs/external-agent-migration/Cargo.toml b/codex-rs/external-agent-migration/Cargo.toml
+index 3db7399..caa18c3 100644
+--- a/codex-rs/external-agent-migration/Cargo.toml
++++ b/codex-rs/external-agent-migration/Cargo.toml
+@@ -30,7 +30,7 @@ codex-thread-store = { workspace = true }
+ codex-utils-output-truncation = { workspace = true }
+ serde = { workspace = true, features = ["derive"] }
+ serde_json = { workspace = true }
+-serde_yaml = { workspace = true }
++codex-utils-yaml = { workspace = true }
+ sha2 = { workspace = true }
+ toml = { workspace = true }
+ tokio = { workspace = true, features = ["rt", "sync"] }
+diff --git a/codex-rs/skills/Cargo.toml b/codex-rs/skills/Cargo.toml
+index 7342975..0b2f1e6 100644
+--- a/codex-rs/skills/Cargo.toml
++++ b/codex-rs/skills/Cargo.toml
+@@ -20,7 +20,7 @@ codex-utils-absolute-path = { workspace = true }
+ codex-utils-path-uri = { workspace = true }
+ include_dir = { workspace = true }
+ serde = { workspace = true, features = ["derive"] }
+-serde_yaml = { workspace = true }
++codex-utils-yaml = { workspace = true }
+ shlex = { workspace = true }
+ thiserror = { workspace = true }
+ tracing = { workspace = true }

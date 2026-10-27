@@ -1,0 +1,25 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+   Compiling codex-utils-yaml v0.0.0 (/workspace/scratch/95988d8d3ab1/ndu-yaml-candidate-worktree/codex-rs/utils/yaml)
+error[E0432]: unresolved import `legacy_yaml`
+ --> utils/yaml/tests/legacy_projection.rs:2:5
+  |
+2 | use legacy_yaml::Value;
+  |     ^^^^^^^^^^^ use of unresolved module or unlinked crate `legacy_yaml`
+  |
+  = help: if you wanted to use a crate named `legacy_yaml`, use `cargo add legacy_yaml` to add it to your `Cargo.toml`
+
+error[E0433]: cannot find module or crate `legacy_yaml` in this scope
+ --> utils/yaml/tests/legacy_projection.rs:5:25
+  |
+5 |     let parsed: Value = legacy_yaml::from_str(input).map_err(|_| ())?;
+  |                         ^^^^^^^^^^^ use of unresolved module or unlinked crate `legacy_yaml`
+  |
+  = help: if you wanted to use a crate named `legacy_yaml`, use `cargo add legacy_yaml` to add it to your `Cargo.toml`
+
+Some errors have detailed explanations: E0432, E0433.
+For more information about an error, try `rustc --explain E0432`.
+error: could not compile `codex-utils-yaml` (test "legacy_projection") due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: command `/workspace/scratch/95988d8d3ab1/native_toolchain_20261027/installed/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-utils-yaml` exited with code 101
+error: Recipe `test` failed on line 89 with exit code 101

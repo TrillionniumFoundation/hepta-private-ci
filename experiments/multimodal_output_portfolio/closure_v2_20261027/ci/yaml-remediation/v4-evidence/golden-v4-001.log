@@ -1,0 +1,25 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+   Compiling serde-saphyr v2.0.0 (/workspace/scratch/95988d8d3ab1/ndu-yaml-candidate-worktree/codex-rs/third_party/serde-saphyr-2.0.0)
+   Compiling codex-utils-yaml v0.0.0 (/workspace/scratch/95988d8d3ab1/ndu-yaml-candidate-worktree/codex-rs/utils/yaml)
+    Finished `test` profile [unoptimized] target(s) in 3.48s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.228` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 28c31492-8a3a-44a3-b0ff-dbc102a4bd14 with nextest profile: local
+    Starting 9 tests across 2 binaries
+        PASS [   0.007s] codex-utils-yaml tests::application_tags_survive_until_scalar_selection
+        PASS [   0.007s] codex-utils-yaml tests::scalar_resolution_keeps_yaml12_and_number_rendering
+        PASS [   0.009s] codex-utils-yaml tests::typed_manifests_and_utf8_slices_share_the_same_parser
+        PASS [   0.009s] codex-utils-yaml tests::anchors_work_without_implicitly_expanding_merge_keys
+        PASS [   0.009s] codex-utils-yaml tests::arbitrary_mapping_keys_do_not_hide_string_fields
+        PASS [   0.009s] codex-utils-yaml tests::malformed_and_duplicate_nested_values_fail_the_whole_document
+        PASS [   0.010s] codex-utils-yaml::legacy_projection preserves_scalar_spellings_verified_against_the_previous_parser
+        PASS [   0.010s] codex-utils-yaml::legacy_projection frozen_legacy_numeric_projection_boundaries
+        PASS [   0.004s] codex-utils-yaml::legacy_projection rejects_semantically_duplicate_scalar_and_composite_keys
+────────────
+     Summary [   0.011s] 9 tests run: 9 passed, 0 skipped

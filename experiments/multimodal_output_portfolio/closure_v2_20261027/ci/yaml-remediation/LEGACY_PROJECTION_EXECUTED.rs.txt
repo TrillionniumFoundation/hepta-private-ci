@@ -1,0 +1,50 @@
+use codex_utils_yaml::scalar_mapping;
+use legacy_yaml::Value;
+
+fn previous(input: &str) -> Result<Option<Vec<(String, Option<String>)>>, ()> {
+    let parsed: Value = legacy_yaml::from_str(input).map_err(|_| ())?;
+    let Some(mapping) = parsed.as_mapping() else { return Ok(None) };
+    Ok(Some(mapping.iter().filter_map(|(key, value)| {
+        let key = key.as_str()?.to_string();
+        let text = match value {
+            Value::String(s) => Some(s.trim().to_string()),
+            Value::Bool(b) => Some(b.to_string()),
+            Value::Number(n) => Some(n.to_string()),
+            Value::Null | Value::Sequence(_) | Value::Mapping(_) | Value::Tagged(_) => None,
+        };
+        Some((key, text))
+    }).collect()))
+}
+
+#[test]
+fn legacy_parser_projection_boundaries() {
+    let cases = [
+        ("boolean-key-alias", "true: a\nTrue: b\n"),
+        ("null-key-alias", "null: a\n~: b\n"),
+        ("float-key-alias", "1.0: a\n1.00: b\n"),
+        ("nan-key-alias", ".NaN: a\n.nan: b\n"),
+        ("signed-zero-key", "0: a\n-0: b\n"),
+        ("integer-and-float-key", "1: a\n1.0: b\n"),
+        ("mixed-case-bool", "description: TrUe\n"),
+        ("mixed-case-null", "description: NuLl\n"),
+        ("sequence-key-alias", "? [true, 1.0]\n: a\n? [True, 1.00]\n: b\n"),
+        ("mapping-key-alias", "? {a: true, b: 1.0}\n: a\n? {b: 1.00, a: True}\n: b\n"),
+        ("empty", ""),
+        ("comments-only", "# comment\n"),
+        ("empty-document", "---\n"),
+        ("tagged-key", "!local description: hello\n"),
+        ("different-tags", "!first description: first\n!second description: second\n"),
+        ("standard-binary", "description: !!binary aGVsbG8=\n"),
+        ("explicit-float", "description: !!float 1\n"),
+        ("large-integer", "description: 18446744073709551616\n"),
+        ("merge-key", "base: &b {description: hello}\n<<: *b\nname: example\n"),
+    ];
+    let mut mismatches = Vec::new();
+    for (name, input) in cases {
+        let expected = previous(input);
+        let actual = scalar_mapping(input).map_err(|_| ());
+        println!("{name}: old={expected:?}; candidate={actual:?}");
+        if expected != actual { mismatches.push(name); }
+    }
+    assert!(mismatches.is_empty(), "compatibility differences: {mismatches:?}");
+}

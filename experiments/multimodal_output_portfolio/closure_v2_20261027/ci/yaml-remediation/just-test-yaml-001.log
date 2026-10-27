@@ -1,0 +1,204 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+    Updating git repository `https://github.com/openai-oss-forks/tungstenite-rs`
+    Updating git repository `https://github.com/openai-oss-forks/crossterm`
+    Updating git repository `https://github.com/openai-oss-forks/tokio-tungstenite`
+    Updating crates.io index
+    Updating git repository `https://github.com/dzbarsky/rules_rust`
+    Updating git repository `https://github.com/helix-editor/nucleo.git`
+    Updating git repository `https://github.com/openai-oss-forks/tungstenite-rs`
+     Locking 6 packages to latest compatible versions
+      Adding annotate-snippets v0.12.5 (available: v0.12.17)
+      Adding arraydeque v0.5.1
+      Adding encoding_rs_io v0.1.8
+      Adding granit-parser v2.0.0
+      Adding nohash-hasher v0.2.0
+      Adding serde-saphyr v2.0.0
+ Downloading crates ...
+  Downloaded diff v0.1.13
+  Downloaded encoding_rs_io v0.1.8
+  Downloaded smallvec v1.15.1
+  Downloaded nohash-hasher v0.2.0
+  Downloaded cfg-if v1.0.4
+  Downloaded autocfg v1.5.0
+  Downloaded num-traits v0.2.19
+  Downloaded annotate-snippets v0.12.5
+  Downloaded zmij v1.0.19
+  Downloaded arraydeque v0.5.1
+  Downloaded yansi v1.0.1
+  Downloaded anstyle v1.0.13
+  Downloaded unicode-width v0.2.1
+  Downloaded base64 v0.23.0
+  Downloaded serde_core v1.0.228
+  Downloaded ryu v1.0.22
+  Downloaded encoding_rs v0.8.35
+  Downloaded serde v1.0.228
+  Downloaded granit-parser v2.0.0
+  Downloaded serde-saphyr v2.0.0
+  Downloaded pretty_assertions v1.4.1
+   Compiling autocfg v1.5.0
+   Compiling serde_core v1.0.228
+   Compiling zmij v1.0.19
+   Compiling num-traits v0.2.19
+   Compiling cfg-if v1.0.4
+   Compiling encoding_rs v0.8.35
+   Compiling unicode-width v0.2.1
+   Compiling serde v1.0.228
+   Compiling smallvec v1.15.1
+   Compiling anstyle v1.0.13
+   Compiling arraydeque v0.5.1
+   Compiling annotate-snippets v0.12.5
+   Compiling granit-parser v2.0.0
+   Compiling encoding_rs_io v0.1.8
+   Compiling base64 v0.23.0
+   Compiling diff v0.1.13
+   Compiling yansi v1.0.1
+   Compiling nohash-hasher v0.2.0
+   Compiling pretty_assertions v1.4.1
+   Compiling serde-saphyr v2.0.0
+   Compiling ryu v1.0.22
+   Compiling codex-utils-yaml v0.0.0 (/workspace/scratch/95988d8d3ab1/ndu-yaml-candidate-worktree/codex-rs/utils/yaml)
+error: cannot find derive macro `Deserialize` in this scope
+  --> utils/yaml/src/yaml_tests.rs:96:17
+   |
+96 | #[derive(Debug, Deserialize, PartialEq)]
+   |                 ^^^^^^^^^^^
+   |
+note: `Deserialize` is imported here, but it is only a trait, without a derive macro
+  --> utils/yaml/src/yaml_tests.rs:6:5
+   |
+ 6 | use serde::Deserialize;
+   |     ^^^^^^^^^^^^^^^^^^
+
+error[E0639]: cannot create non-exhaustive struct using struct expression
+  --> utils/yaml/src/lib.rs:25:5
+   |
+25 | /     Options {
+26 | |         strict_booleans: true,
+27 | |         merge_keys: MergeKeyPolicy::AsOrdinary,
+28 | |         non_finite_float_policy: NonFiniteFloatPolicy::PassThrough,
+29 | |         ..Options::default()
+30 | |     }
+   | |_____^
+
+error[E0277]: the trait bound `Manifest: serde::Deserialize<'de>` is not satisfied
+   --> utils/yaml/src/yaml_tests.rs:109:27
+    |
+109 |     assert_eq!(from_str::<Manifest>(input).unwrap(), expected);
+    |                           ^^^^^^^^ unsatisfied trait bound
+    |
+help: the trait `Deserialize<'_>` is not implemented for `Manifest`
+   --> utils/yaml/src/yaml_tests.rs:97:1
+    |
+ 97 | struct Manifest {
+    | ^^^^^^^^^^^^^^^
+    = note: for local types consider adding `#[derive(serde::Deserialize)]` to your `Manifest` type
+    = note: for types from other crates check whether the crate offers a `serde` feature flag
+    = help: the following other types implement trait `Deserialize<'de>`:
+              &'a Path
+              &'a [u8]
+              &'a str
+              ()
+              (T,)
+              (T0, T1)
+              (T0, T1, T2)
+              (T0, T1, T2, T3)
+            and 165 others
+note: required by a bound in `from_str`
+   --> utils/yaml/src/lib.rs:34:25
+    |
+ 34 | pub fn from_str<'de, T: Deserialize<'de>>(input: &'de str) -> Result<T, Error> {
+    |                         ^^^^^^^^^^^^^^^^ required by this bound in `from_str`
+
+error[E0277]: the trait bound `Manifest: serde::Deserialize<'de>` is not satisfied
+   --> utils/yaml/src/yaml_tests.rs:110:29
+    |
+110 |     assert_eq!(from_slice::<Manifest>(input.as_bytes()).unwrap(), expected);
+    |                             ^^^^^^^^ unsatisfied trait bound
+    |
+help: the trait `Deserialize<'_>` is not implemented for `Manifest`
+   --> utils/yaml/src/yaml_tests.rs:97:1
+    |
+ 97 | struct Manifest {
+    | ^^^^^^^^^^^^^^^
+    = note: for local types consider adding `#[derive(serde::Deserialize)]` to your `Manifest` type
+    = note: for types from other crates check whether the crate offers a `serde` feature flag
+    = help: the following other types implement trait `Deserialize<'de>`:
+              &'a Path
+              &'a [u8]
+              &'a str
+              ()
+              (T,)
+              (T0, T1)
+              (T0, T1, T2)
+              (T0, T1, T2, T3)
+            and 165 others
+note: required by a bound in `from_slice`
+   --> utils/yaml/src/lib.rs:39:27
+    |
+ 39 | pub fn from_slice<'de, T: Deserialize<'de>>(input: &'de [u8]) -> Result<T, Error> {
+    |                           ^^^^^^^^^^^^^^^^ required by this bound in `from_slice`
+
+error[E0277]: the trait bound `Manifest: serde::Deserialize<'de>` is not satisfied
+   --> utils/yaml/src/yaml_tests.rs:111:26
+    |
+111 |     assert!(from_slice::<Manifest>(&[0xff, 0xfe]).is_err());
+    |                          ^^^^^^^^ unsatisfied trait bound
+    |
+help: the trait `Deserialize<'_>` is not implemented for `Manifest`
+   --> utils/yaml/src/yaml_tests.rs:97:1
+    |
+ 97 | struct Manifest {
+    | ^^^^^^^^^^^^^^^
+    = note: for local types consider adding `#[derive(serde::Deserialize)]` to your `Manifest` type
+    = note: for types from other crates check whether the crate offers a `serde` feature flag
+    = help: the following other types implement trait `Deserialize<'de>`:
+              &'a Path
+              &'a [u8]
+              &'a str
+              ()
+              (T,)
+              (T0, T1)
+              (T0, T1, T2)
+              (T0, T1, T2, T3)
+            and 165 others
+note: required by a bound in `from_slice`
+   --> utils/yaml/src/lib.rs:39:27
+    |
+ 39 | pub fn from_slice<'de, T: Deserialize<'de>>(input: &'de [u8]) -> Result<T, Error> {
+    |                           ^^^^^^^^^^^^^^^^ required by this bound in `from_slice`
+
+error[E0277]: the trait bound `Manifest: serde::Deserialize<'de>` is not satisfied
+   --> utils/yaml/src/yaml_tests.rs:112:24
+    |
+112 |     assert!(from_str::<Manifest>("name: demo\ndescription: [wrong]").is_err());
+    |                        ^^^^^^^^ unsatisfied trait bound
+    |
+help: the trait `Deserialize<'_>` is not implemented for `Manifest`
+   --> utils/yaml/src/yaml_tests.rs:97:1
+    |
+ 97 | struct Manifest {
+    | ^^^^^^^^^^^^^^^
+    = note: for local types consider adding `#[derive(serde::Deserialize)]` to your `Manifest` type
+    = note: for types from other crates check whether the crate offers a `serde` feature flag
+    = help: the following other types implement trait `Deserialize<'de>`:
+              &'a Path
+              &'a [u8]
+              &'a str
+              ()
+              (T,)
+              (T0, T1)
+              (T0, T1, T2)
+              (T0, T1, T2, T3)
+            and 165 others
+note: required by a bound in `from_str`
+   --> utils/yaml/src/lib.rs:34:25
+    |
+ 34 | pub fn from_str<'de, T: Deserialize<'de>>(input: &'de str) -> Result<T, Error> {
+    |                         ^^^^^^^^^^^^^^^^ required by this bound in `from_str`
+
+Some errors have detailed explanations: E0277, E0639.
+For more information about an error, try `rustc --explain E0277`.
+error: could not compile `codex-utils-yaml` (lib test) due to 6 previous errors
+error: command `/workspace/scratch/95988d8d3ab1/native_toolchain_20261027/installed/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-utils-yaml` exited with code 101
+error: Recipe `test` failed on line 89 with exit code 101

@@ -1,0 +1,333 @@
+{
+  "expected_source": "Actual old parser output from frozen 37-case probe; candidate results were compared independently",
+  "probe_log_sha256": "d24ee08df607dd28c67ae76b7d5932a7bdb511425a0c019eec6439ffe6e6a2b0",
+  "cases": [
+    {
+      "name": "boolean-key-alias",
+      "input": "true: a\nTrue: b\n",
+      "valid": false
+    },
+    {
+      "name": "null-key-alias",
+      "input": "null: a\n~: b\n",
+      "valid": false
+    },
+    {
+      "name": "float-key-alias",
+      "input": "1.0: a\n1.00: b\n",
+      "valid": false
+    },
+    {
+      "name": "nan-key-alias",
+      "input": ".NaN: a\n.nan: b\n",
+      "valid": false
+    },
+    {
+      "name": "signed-zero-key",
+      "input": "0: a\n-0: b\n",
+      "valid": false
+    },
+    {
+      "name": "integer-and-float-key",
+      "input": "1: a\n1.0: b\n",
+      "valid": true,
+      "mapping": []
+    },
+    {
+      "name": "mixed-case-bool",
+      "input": "description: TrUe\n",
+      "valid": true,
+      "mapping": [
+        [
+          "description",
+          "TrUe"
+        ]
+      ]
+    },
+    {
+      "name": "mixed-case-null",
+      "input": "description: NuLl\n",
+      "valid": true,
+      "mapping": [
+        [
+          "description",
+          "NuLl"
+        ]
+      ]
+    },
+    {
+      "name": "sequence-key-alias",
+      "input": "? [true, 1.0]\n: a\n? [True, 1.00]\n: b\n",
+      "valid": false
+    },
+    {
+      "name": "mapping-key-alias",
+      "input": "? {a: true, b: 1.0}\n: a\n? {b: 1.00, a: True}\n: b\n",
+      "valid": false
+    },
+    {
+      "name": "empty",
+      "input": "",
+      "valid": true,
+      "mapping": null
+    },
+    {
+      "name": "comments-only",
+      "input": "# comment\n",
+      "valid": true,
+      "mapping": null
+    },
+    {
+      "name": "empty-document",
+      "input": "---\n",
+      "valid": true,
+      "mapping": null
+    },
+    {
+      "name": "tagged-key",
+      "input": "!local description: hello\n",
+      "valid": true,
+      "mapping": [
+        [
+          "description",
+          "hello"
+        ]
+      ]
+    },
+    {
+      "name": "different-tags",
+      "input": "!first description: first\n!second description: second\n",
+      "valid": true,
+      "mapping": [
+        [
+          "description",
+          "first"
+        ],
+        [
+          "description",
+          "second"
+        ]
+      ]
+    },
+    {
+      "name": "standard-binary",
+      "input": "description: !!binary aGVsbG8=\n",
+      "valid": true,
+      "mapping": [
+        [
+          "description",
+          "aGVsbG8="
+        ]
+      ]
+    },
+    {
+      "name": "explicit-float",
+      "input": "description: !!float 1\n",
+      "valid": true,
+      "mapping": [
+        [
+          "description",
+          "1.0"
+        ]
+      ]
+    },
+    {
+      "name": "large-integer",
+      "input": "description: 18446744073709551616\n",
+      "valid": false
+    },
+    {
+      "name": "merge-key",
+      "input": "base: &b {description: hello}\n<<: *b\nname: example\n",
+      "valid": true,
+      "mapping": [
+        [
+          "base",
+          null
+        ],
+        [
+          "<<",
+          null
+        ],
+        [
+          "name",
+          "example"
+        ]
+      ]
+    },
+    {
+      "name": "uppercase-hex-prefix",
+      "input": "description: 0X10\n",
+      "valid": true,
+      "mapping": [
+        [
+          "description",
+          "0X10"
+        ]
+      ]
+    },
+    {
+      "name": "uppercase-octal-prefix",
+      "input": "description: 0O10\n",
+      "valid": true,
+      "mapping": [
+        [
+          "description",
+          "0O10"
+        ]
+      ]
+    },
+    {
+      "name": "uppercase-binary-prefix",
+      "input": "description: 0B10\n",
+      "valid": true,
+      "mapping": [
+        [
+          "description",
+          "0B10"
+        ]
+      ]
+    },
+    {
+      "name": "hex-u64-overflow",
+      "input": "description: 0x10000000000000000\n",
+      "valid": false
+    },
+    {
+      "name": "octal-u64-overflow",
+      "input": "description: 0o2000000000000000000000\n",
+      "valid": false
+    },
+    {
+      "name": "binary-u64-overflow",
+      "input": "description: 0b10000000000000000000000000000000000000000000000000000000000000000\n",
+      "valid": false
+    },
+    {
+      "name": "negative-hex-i64-overflow",
+      "input": "description: -0x8000000000000001\n",
+      "valid": false
+    },
+    {
+      "name": "decimal-underscore",
+      "input": "description: 1_000\n",
+      "valid": true,
+      "mapping": [
+        [
+          "description",
+          "1_000"
+        ]
+      ]
+    },
+    {
+      "name": "hex-underscore",
+      "input": "description: 0x1_0\n",
+      "valid": true,
+      "mapping": [
+        [
+          "description",
+          "0x1_0"
+        ]
+      ]
+    },
+    {
+      "name": "float-overflow",
+      "input": "description: 1e999\n",
+      "valid": true,
+      "mapping": [
+        [
+          "description",
+          "1e999"
+        ]
+      ]
+    },
+    {
+      "name": "decimal-u128-overflow",
+      "input": "description: 340282366920938463463374607431768211456\n",
+      "valid": true,
+      "mapping": [
+        [
+          "description",
+          "3.402823669209385e38"
+        ]
+      ]
+    },
+    {
+      "name": "leading-zero-decimal",
+      "input": "description: 0123\n",
+      "valid": true,
+      "mapping": [
+        [
+          "description",
+          "0123"
+        ]
+      ]
+    },
+    {
+      "name": "uppercase-prefix-key-distinct",
+      "input": "0X10: first\n16: second\n",
+      "valid": true,
+      "mapping": [
+        [
+          "0X10",
+          "first"
+        ]
+      ]
+    },
+    {
+      "name": "underscored-key-distinct",
+      "input": "1_0: first\n10: second\n",
+      "valid": true,
+      "mapping": [
+        [
+          "1_0",
+          "first"
+        ]
+      ]
+    },
+    {
+      "name": "u64-upper-bound",
+      "input": "description: 18446744073709551615\n",
+      "valid": true,
+      "mapping": [
+        [
+          "description",
+          "18446744073709551615"
+        ]
+      ]
+    },
+    {
+      "name": "i64-lower-bound",
+      "input": "description: -9223372036854775808\n",
+      "valid": true,
+      "mapping": [
+        [
+          "description",
+          "-9223372036854775808"
+        ]
+      ]
+    },
+    {
+      "name": "quoted-overflow",
+      "input": "description: '0x10000000000000000'\n",
+      "valid": true,
+      "mapping": [
+        [
+          "description",
+          "0x10000000000000000"
+        ]
+      ]
+    },
+    {
+      "name": "mixed-case-infinity",
+      "input": "description: .iNf\n",
+      "valid": true,
+      "mapping": [
+        [
+          "description",
+          ".iNf"
+        ]
+      ]
+    }
+  ]
+}

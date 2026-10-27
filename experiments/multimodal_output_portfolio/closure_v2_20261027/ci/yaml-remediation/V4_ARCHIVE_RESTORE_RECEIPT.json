@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.yaml-v4.actual-disk-restore.v1",
+  "at": "2026-10-27T11:03:21.835098+00:00",
+  "status": "passed",
+  "archive": {
+    "path": "/workspace/scratch/95988d8d3ab1/hepta_yaml_scalar_compatibility_v4_20261027.tar.gz",
+    "bytes": 3602419,
+    "sha256": "c4abef177dd3474a6d392d907e1052c1215107462ae5880c1d28d352983ad460"
+  },
+  "index": {
+    "path": "/workspace/scratch/95988d8d3ab1/hepta_yaml_scalar_compatibility_v4_20261027.index.json",
+    "bytes": 174903,
+    "sha256": "d4de63cd2fe723804d877ad4d25889b6ec944ab06da01b7a88117190bf078b3e"
+  },
+  "members_restored": 911,
+  "payload_bytes_restored": 9491071,
+  "maximum_live_member_bytes": 914509,
+  "method": "Each regular member streamed to a unique temporary disk file; flush/fsync/close; independently reopened and SHA-256 hashed; checked exact size and digest; removed before next member. Full member set and archive hash checked again. This is actual disk restoration, not merely hashing tar input streams.",
+  "original_prepared_source_unchanged": true,
+  "test_rerun": false,
+  "promotion_eligible": false
+}
