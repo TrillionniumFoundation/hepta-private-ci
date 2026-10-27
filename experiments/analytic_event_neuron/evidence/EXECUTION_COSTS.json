@@ -1,0 +1,4724 @@
+{
+  "action_tariff_schedule": {
+    "do_not_add_to_compute": "Tariff sums are separate policy-accounting values and cannot be added to seconds, CPU or bytes.",
+    "feedback_repair": 0.12,
+    "main_base_repair": 0.12,
+    "main_base_wait": 0.07,
+    "main_public_multipliers": [
+      0.5,
+      1,
+      2,
+      4
+    ],
+    "unit": "declared task utility units; no monetary conversion"
+  },
+  "feedback_confirmation": {
+    "aggregate": {
+      "adapter_non_tick_residual_ns_sum": 909849852,
+      "archive_bytes_sum": 10499716,
+      "archive_wall_ns_sum": 18235940610,
+      "evaluation_parent_python_cpu_ns_sum": 58253254704,
+      "evaluation_wall_ns_including_archive_sum": 59009609711,
+      "independent_audit_original_sparse_ticks_replayed_sum": 10240,
+      "independent_audit_wall_ns_sum": 20429035298,
+      "measured_nonoverlapping_evaluation_plus_audit_subtotal_ns": 79438645009,
+      "native_accounting_sum": {
+        "adapter_roundtrip_ns": 1165806041,
+        "kernel_tick_ns": 255956189,
+        "original_sparse_ticks": 10240,
+        "requests": 5120
+      },
+      "policy_episode_costs": {
+        "mean_action_tariff_units": 0.08549999999999999,
+        "paid_action_tariff_units": 547.1999999999999,
+        "parent_python_cpu_ns": 39690642545,
+        "repair_count": 4560,
+        "rows": 6400,
+        "wait_count": 0,
+        "wall_ns": 40420510586
+      },
+      "rows": 6400,
+      "scope_total_wall_ns_all_scopes": null,
+      "seed_count": 5
+    },
+    "native_count_scope": "native_accounting counts evaluation calls. The additional original-native ticks replayed by independent audits are listed separately and are not charged twice to evaluation.",
+    "non_additivity": "Policy, native roundtrip, native tick and archive durations are nested in SUMMARY wall. Tick is nested in roundtrip. Independent audit is a separate interval. The evaluation-plus-audit sum is only a known nonoverlapping subtotal, not a whole-driver total.",
+    "policy_totals_by_arm": {
+      "analytic_probability": {
+        "mean_action_tariff_units": 0.0635625,
+        "paid_action_tariff_units": 81.36,
+        "parent_python_cpu_ns": 7255824722,
+        "repair_count": 678,
+        "rows": 1280,
+        "wait_count": 0,
+        "wall_ns": 7430585477
+      },
+      "matched_history": {
+        "mean_action_tariff_units": 0.05840624999999999,
+        "paid_action_tariff_units": 74.75999999999999,
+        "parent_python_cpu_ns": 6771439209,
+        "repair_count": 623,
+        "rows": 1280,
+        "wait_count": 0,
+        "wall_ns": 6772327498
+      },
+      "numeric": {
+        "mean_action_tariff_units": 0.06553125,
+        "paid_action_tariff_units": 83.88,
+        "parent_python_cpu_ns": 8664709799,
+        "repair_count": 699,
+        "rows": 1280,
+        "wait_count": 0,
+        "wall_ns": 8864017361
+      },
+      "state_reset": {
+        "mean_action_tariff_units": 0.12,
+        "paid_action_tariff_units": 153.6,
+        "parent_python_cpu_ns": 9206233585,
+        "repair_count": 1280,
+        "rows": 1280,
+        "wait_count": 0,
+        "wall_ns": 9386634455
+      },
+      "zero": {
+        "mean_action_tariff_units": 0.12,
+        "paid_action_tariff_units": 153.6,
+        "parent_python_cpu_ns": 7792435230,
+        "repair_count": 1280,
+        "rows": 1280,
+        "wait_count": 0,
+        "wall_ns": 7966945795
+      }
+    },
+    "scopes": [
+      {
+        "adapter_non_tick_residual_ns": 193092094,
+        "archive_bytes": 2095650,
+        "archive_delivery_count": 3840,
+        "archive_observation_count": 1280,
+        "archive_verified_files": 8962,
+        "archive_wall_ns": 3803902921,
+        "evaluation_parent_python_cpu_ns": 11900881148,
+        "evaluation_wall_ns_including_archive": 12057440592,
+        "independent_audit_original_sparse_ticks_replayed": 2048,
+        "independent_audit_parent_cpu_ns": null,
+        "independent_audit_wall_ns": 3913926739,
+        "measured_nonoverlapping_evaluation_plus_audit_subtotal_ns": 15971367331,
+        "native_accounting": {
+          "adapter_roundtrip_ns": 242060419,
+          "kernel_tick_ns": 48968325,
+          "original_sparse_ticks": 2048,
+          "requests": 1024
+        },
+        "native_child_cpu_ns": null,
+        "policy_and_native_accounting_recomputed_and_verified": true,
+        "policy_episode_costs": {
+          "analytic_probability": {
+            "mean_action_tariff_units": 0.05109375,
+            "mean_episode_parent_cpu_ns": 5665481.03125,
+            "mean_episode_wall_ns": 5798234.88671875,
+            "paid_action_tariff_units": 13.08,
+            "parent_python_cpu_ns": 1450363144,
+            "repair_count": 109,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1484348131
+          },
+          "matched_history": {
+            "mean_action_tariff_units": 0.05015625,
+            "mean_episode_parent_cpu_ns": 5348348.078125,
+            "mean_episode_wall_ns": 5349361.57421875,
+            "paid_action_tariff_units": 12.84,
+            "parent_python_cpu_ns": 1369177108,
+            "repair_count": 107,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1369436563
+          },
+          "numeric": {
+            "mean_action_tariff_units": 0.05109375,
+            "mean_episode_parent_cpu_ns": 6826983.98046875,
+            "mean_episode_wall_ns": 7003368.953125,
+            "paid_action_tariff_units": 13.08,
+            "parent_python_cpu_ns": 1747707899,
+            "repair_count": 109,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1792862452
+          },
+          "state_reset": {
+            "mean_action_tariff_units": 0.12,
+            "mean_episode_parent_cpu_ns": 7493815.49609375,
+            "mean_episode_wall_ns": 7621782.04296875,
+            "paid_action_tariff_units": 30.72,
+            "parent_python_cpu_ns": 1918416767,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1951176203
+          },
+          "zero": {
+            "mean_action_tariff_units": 0.12,
+            "mean_episode_parent_cpu_ns": 6060914.8671875,
+            "mean_episode_wall_ns": 6205795.69140625,
+            "paid_action_tariff_units": 30.72,
+            "parent_python_cpu_ns": 1551594206,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1588683697
+          }
+        },
+        "rows": 1280,
+        "scope_total_wall_ns_including_driver_io_and_audit": null,
+        "seed": 11,
+        "source_audit": "feedback_confirmation/seed_11/AUDIT.json",
+        "source_rows": "feedback_confirmation/seed_11/ROWS.jsonl",
+        "source_summary": "feedback_confirmation/seed_11/SUMMARY.json",
+        "trajectories": 256
+      },
+      {
+        "adapter_non_tick_residual_ns": 190777972,
+        "archive_bytes": 2097649,
+        "archive_delivery_count": 3840,
+        "archive_observation_count": 1280,
+        "archive_verified_files": 8962,
+        "archive_wall_ns": 3911081692,
+        "evaluation_parent_python_cpu_ns": 12600384722,
+        "evaluation_wall_ns_including_archive": 12775469162,
+        "independent_audit_original_sparse_ticks_replayed": 2048,
+        "independent_audit_parent_cpu_ns": null,
+        "independent_audit_wall_ns": 4002570305,
+        "measured_nonoverlapping_evaluation_plus_audit_subtotal_ns": 16778039467,
+        "native_accounting": {
+          "adapter_roundtrip_ns": 249671050,
+          "kernel_tick_ns": 58893078,
+          "original_sparse_ticks": 2048,
+          "requests": 1024
+        },
+        "native_child_cpu_ns": null,
+        "policy_and_native_accounting_recomputed_and_verified": true,
+        "policy_episode_costs": {
+          "analytic_probability": {
+            "mean_action_tariff_units": 0.0534375,
+            "mean_episode_parent_cpu_ns": 6050226.0859375,
+            "mean_episode_wall_ns": 6187529.15234375,
+            "paid_action_tariff_units": 13.68,
+            "parent_python_cpu_ns": 1548857878,
+            "repair_count": 114,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1584007463
+          },
+          "matched_history": {
+            "mean_action_tariff_units": 0.05671875,
+            "mean_episode_parent_cpu_ns": 6218263.30859375,
+            "mean_episode_wall_ns": 6216165.5078125,
+            "paid_action_tariff_units": 14.52,
+            "parent_python_cpu_ns": 1591875407,
+            "repair_count": 121,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1591338370
+          },
+          "numeric": {
+            "mean_action_tariff_units": 0.06375,
+            "mean_episode_parent_cpu_ns": 6625036.03125,
+            "mean_episode_wall_ns": 6803710.875,
+            "paid_action_tariff_units": 16.32,
+            "parent_python_cpu_ns": 1696009224,
+            "repair_count": 136,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1741749984
+          },
+          "state_reset": {
+            "mean_action_tariff_units": 0.12,
+            "mean_episode_parent_cpu_ns": 8316380.0390625,
+            "mean_episode_wall_ns": 8498060.578125,
+            "paid_action_tariff_units": 30.72,
+            "parent_python_cpu_ns": 2128993290,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 2175503508
+          },
+          "zero": {
+            "mean_action_tariff_units": 0.12,
+            "mean_episode_parent_cpu_ns": 6501824.97265625,
+            "mean_episode_wall_ns": 6658408.890625,
+            "paid_action_tariff_units": 30.72,
+            "parent_python_cpu_ns": 1664467193,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1704552676
+          }
+        },
+        "rows": 1280,
+        "scope_total_wall_ns_including_driver_io_and_audit": null,
+        "seed": 23,
+        "source_audit": "feedback_confirmation/seed_23/AUDIT.json",
+        "source_rows": "feedback_confirmation/seed_23/ROWS.jsonl",
+        "source_summary": "feedback_confirmation/seed_23/SUMMARY.json",
+        "trajectories": 256
+      },
+      {
+        "adapter_non_tick_residual_ns": 200753206,
+        "archive_bytes": 2099268,
+        "archive_delivery_count": 3840,
+        "archive_observation_count": 1280,
+        "archive_verified_files": 8962,
+        "archive_wall_ns": 3369712700,
+        "evaluation_parent_python_cpu_ns": 11364025468,
+        "evaluation_wall_ns_including_archive": 11518888192,
+        "independent_audit_original_sparse_ticks_replayed": 2048,
+        "independent_audit_parent_cpu_ns": null,
+        "independent_audit_wall_ns": 3989239779,
+        "measured_nonoverlapping_evaluation_plus_audit_subtotal_ns": 15508127971,
+        "native_accounting": {
+          "adapter_roundtrip_ns": 254947167,
+          "kernel_tick_ns": 54193961,
+          "original_sparse_ticks": 2048,
+          "requests": 1024
+        },
+        "native_child_cpu_ns": null,
+        "policy_and_native_accounting_recomputed_and_verified": true,
+        "policy_episode_costs": {
+          "analytic_probability": {
+            "mean_action_tariff_units": 0.07781249999999999,
+            "mean_episode_parent_cpu_ns": 5277638.12109375,
+            "mean_episode_wall_ns": 5415448.6875,
+            "paid_action_tariff_units": 19.919999999999998,
+            "parent_python_cpu_ns": 1351075359,
+            "repair_count": 166,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1386354864
+          },
+          "matched_history": {
+            "mean_action_tariff_units": 0.057187499999999995,
+            "mean_episode_parent_cpu_ns": 4894080.125,
+            "mean_episode_wall_ns": 4895681.71875,
+            "paid_action_tariff_units": 14.639999999999999,
+            "parent_python_cpu_ns": 1252884512,
+            "repair_count": 122,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1253294520
+          },
+          "numeric": {
+            "mean_action_tariff_units": 0.07546875,
+            "mean_episode_parent_cpu_ns": 7232701.7890625,
+            "mean_episode_wall_ns": 7401502.72265625,
+            "paid_action_tariff_units": 19.32,
+            "parent_python_cpu_ns": 1851571658,
+            "repair_count": 161,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1894784697
+          },
+          "state_reset": {
+            "mean_action_tariff_units": 0.12,
+            "mean_episode_parent_cpu_ns": 6840814.09765625,
+            "mean_episode_wall_ns": 6975890.7890625,
+            "paid_action_tariff_units": 30.72,
+            "parent_python_cpu_ns": 1751248409,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1785828042
+          },
+          "zero": {
+            "mean_action_tariff_units": 0.12,
+            "mean_episode_parent_cpu_ns": 6732255.3203125,
+            "mean_episode_wall_ns": 6882507.62890625,
+            "paid_action_tariff_units": 30.72,
+            "parent_python_cpu_ns": 1723457362,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1761921953
+          }
+        },
+        "rows": 1280,
+        "scope_total_wall_ns_including_driver_io_and_audit": null,
+        "seed": 37,
+        "source_audit": "feedback_confirmation/seed_37/AUDIT.json",
+        "source_rows": "feedback_confirmation/seed_37/ROWS.jsonl",
+        "source_summary": "feedback_confirmation/seed_37/SUMMARY.json",
+        "trajectories": 256
+      },
+      {
+        "adapter_non_tick_residual_ns": 152192509,
+        "archive_bytes": 2097027,
+        "archive_delivery_count": 3840,
+        "archive_observation_count": 1280,
+        "archive_verified_files": 8962,
+        "archive_wall_ns": 3314438250,
+        "evaluation_parent_python_cpu_ns": 10797496497,
+        "evaluation_wall_ns_including_archive": 10919514847,
+        "independent_audit_original_sparse_ticks_replayed": 2048,
+        "independent_audit_parent_cpu_ns": null,
+        "independent_audit_wall_ns": 4281630983,
+        "measured_nonoverlapping_evaluation_plus_audit_subtotal_ns": 15201145830,
+        "native_accounting": {
+          "adapter_roundtrip_ns": 193885351,
+          "kernel_tick_ns": 41692842,
+          "original_sparse_ticks": 2048,
+          "requests": 1024
+        },
+        "native_child_cpu_ns": null,
+        "policy_and_native_accounting_recomputed_and_verified": true,
+        "policy_episode_costs": {
+          "analytic_probability": {
+            "mean_action_tariff_units": 0.05578125,
+            "mean_episode_parent_cpu_ns": 5486215.38671875,
+            "mean_episode_wall_ns": 5590981.578125,
+            "paid_action_tariff_units": 14.28,
+            "parent_python_cpu_ns": 1404471139,
+            "repair_count": 119,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1431291284
+          },
+          "matched_history": {
+            "mean_action_tariff_units": 0.056249999999999994,
+            "mean_episode_parent_cpu_ns": 5414822.80859375,
+            "mean_episode_wall_ns": 5416216.5234375,
+            "paid_action_tariff_units": 14.399999999999999,
+            "parent_python_cpu_ns": 1386194639,
+            "repair_count": 120,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1386551430
+          },
+          "numeric": {
+            "mean_action_tariff_units": 0.0684375,
+            "mean_episode_parent_cpu_ns": 5916987.65625,
+            "mean_episode_wall_ns": 6031720.953125,
+            "paid_action_tariff_units": 17.52,
+            "parent_python_cpu_ns": 1514748840,
+            "repair_count": 146,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1544120564
+          },
+          "state_reset": {
+            "mean_action_tariff_units": 0.12,
+            "mean_episode_parent_cpu_ns": 6654940.203125,
+            "mean_episode_wall_ns": 6794592.0,
+            "paid_action_tariff_units": 30.72,
+            "parent_python_cpu_ns": 1703664692,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1739415552
+          },
+          "zero": {
+            "mean_action_tariff_units": 0.12,
+            "mean_episode_parent_cpu_ns": 5473102.78125,
+            "mean_episode_wall_ns": 5572493.53125,
+            "paid_action_tariff_units": 30.72,
+            "parent_python_cpu_ns": 1401114312,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1426558344
+          }
+        },
+        "rows": 1280,
+        "scope_total_wall_ns_including_driver_io_and_audit": null,
+        "seed": 53,
+        "source_audit": "feedback_confirmation/seed_53/AUDIT.json",
+        "source_rows": "feedback_confirmation/seed_53/ROWS.jsonl",
+        "source_summary": "feedback_confirmation/seed_53/SUMMARY.json",
+        "trajectories": 256
+      },
+      {
+        "adapter_non_tick_residual_ns": 173034071,
+        "archive_bytes": 2110122,
+        "archive_delivery_count": 3840,
+        "archive_observation_count": 1280,
+        "archive_verified_files": 8962,
+        "archive_wall_ns": 3836805047,
+        "evaluation_parent_python_cpu_ns": 11590466869,
+        "evaluation_wall_ns_including_archive": 11738296918,
+        "independent_audit_original_sparse_ticks_replayed": 2048,
+        "independent_audit_parent_cpu_ns": null,
+        "independent_audit_wall_ns": 4241667492,
+        "measured_nonoverlapping_evaluation_plus_audit_subtotal_ns": 15979964410,
+        "native_accounting": {
+          "adapter_roundtrip_ns": 225242054,
+          "kernel_tick_ns": 52207983,
+          "original_sparse_ticks": 2048,
+          "requests": 1024
+        },
+        "native_child_cpu_ns": null,
+        "policy_and_native_accounting_recomputed_and_verified": true,
+        "policy_episode_costs": {
+          "analytic_probability": {
+            "mean_action_tariff_units": 0.0796875,
+            "mean_episode_parent_cpu_ns": 5863504.6953125,
+            "mean_episode_wall_ns": 6033530.21484375,
+            "paid_action_tariff_units": 20.4,
+            "parent_python_cpu_ns": 1501057202,
+            "repair_count": 170,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1544583735
+          },
+          "matched_history": {
+            "mean_action_tariff_units": 0.07171875,
+            "mean_episode_parent_cpu_ns": 4575420.08984375,
+            "mean_episode_wall_ns": 4576978.96484375,
+            "paid_action_tariff_units": 18.36,
+            "parent_python_cpu_ns": 1171307543,
+            "repair_count": 153,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1171706615
+          },
+          "numeric": {
+            "mean_action_tariff_units": 0.06890625,
+            "mean_episode_parent_cpu_ns": 7244813.1953125,
+            "mean_episode_wall_ns": 7384764.3125,
+            "paid_action_tariff_units": 17.64,
+            "parent_python_cpu_ns": 1854672178,
+            "repair_count": 147,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1890499664
+          },
+          "state_reset": {
+            "mean_action_tariff_units": 0.12,
+            "mean_episode_parent_cpu_ns": 6655900.10546875,
+            "mean_episode_wall_ns": 6776215.4296875,
+            "paid_action_tariff_units": 30.72,
+            "parent_python_cpu_ns": 1703910427,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1734711150
+          },
+          "zero": {
+            "mean_action_tariff_units": 0.12,
+            "mean_episode_parent_cpu_ns": 5671102.17578125,
+            "mean_episode_wall_ns": 5801676.26953125,
+            "paid_action_tariff_units": 30.72,
+            "parent_python_cpu_ns": 1451802157,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1485229125
+          }
+        },
+        "rows": 1280,
+        "scope_total_wall_ns_including_driver_io_and_audit": null,
+        "seed": 71,
+        "source_audit": "feedback_confirmation/seed_71/AUDIT.json",
+        "source_rows": "feedback_confirmation/seed_71/ROWS.jsonl",
+        "source_summary": "feedback_confirmation/seed_71/SUMMARY.json",
+        "trajectories": 256
+      }
+    ],
+    "timer_boundaries": "SUMMARY wall/cpu covers evaluate_feedback_chain including episode transport, model calls, aggregation, archive creation/member verification/cleanup. Driver dataset creation, ROWS/SUMMARY persistence and independent audit lie outside it."
+  },
+  "freeze_verification": {
+    "all_sha256_match": true,
+    "evaluation_or_training_rerun_for_this_report": false,
+    "freeze_sha256": "825b5d4ffd3fae2ab03851ea8792d272b886490e7a3ea7d9bd1a478a25e6e5f4",
+    "preconfirmation_source_commit": "9b111ae4916cebbe2c6142aaa97c50235f8782e5",
+    "source_files": 30,
+    "source_or_model_modifications": false,
+    "trained_files": 57
+  },
+  "main_confirmation": {
+    "aggregate": {
+      "archive_compressed_bytes_sum": 109210133,
+      "control_rows": 49920,
+      "enclosing_evaluation_cpu_ns": null,
+      "evaluation_wall_ns_sum": 361528538795,
+      "independent_audit_outer_wall_ns_sum": 270223098709,
+      "native_adapter_roundtrip_ns_sum": 6391637964,
+      "native_requests_sum": 17626,
+      "native_tick_timer_ns": null,
+      "original_sparse_ticks_sum": 114682,
+      "policy_episode_costs": {
+        "mean_action_tariff_units": 0.1887265625,
+        "paid_action_tariff_units": 9421.23,
+        "parent_python_cpu_ns": 345107928386,
+        "repair_count": 32425,
+        "rows": 49920,
+        "wait_count": 35503,
+        "wall_ns": 348732855047
+      },
+      "prediction_rows": 34560,
+      "scope_count": 15,
+      "scope_total_wall_ns_all_scopes": null,
+      "scope_total_wall_ns_missing_scopes": [
+        "seed_11_student_t"
+      ],
+      "scope_total_wall_ns_observed_count": 14,
+      "scope_total_wall_ns_observed_sum": 717436053197,
+      "transport_counts_sum": {
+        "deliveries": 99840,
+        "files": 367448,
+        "observations": 167768
+      }
+    },
+    "measurement_environment_groups": {
+      "temporary_directory_following_twelve": {
+        "evaluation_wall_ns_sum": 300617554112,
+        "policy_episode_wall_ns_sum": 289814027102,
+        "policy_parent_cpu_ns_sum": 286896269252,
+        "scopes": [
+          "seed_23_gaussian",
+          "seed_23_drift_shift",
+          "seed_23_student_t",
+          "seed_37_gaussian",
+          "seed_37_drift_shift",
+          "seed_37_student_t",
+          "seed_53_gaussian",
+          "seed_53_drift_shift",
+          "seed_53_student_t",
+          "seed_71_gaussian",
+          "seed_71_drift_shift",
+          "seed_71_student_t"
+        ]
+      },
+      "workspace_initial_three": {
+        "evaluation_wall_ns_sum": 60910984683,
+        "policy_episode_wall_ns_sum": 58918827945,
+        "policy_parent_cpu_ns_sum": 58211659134,
+        "scopes": [
+          "seed_11_gaussian",
+          "seed_11_drift_shift",
+          "seed_11_student_t"
+        ]
+      }
+    },
+    "missing_total": "seed_11_student_t has no valid scope total after ENOTEMPTY cleanup recovery. All original per-episode wall/CPU/tariff and the evaluation/audit intervals remain available. No total is imputed.",
+    "non_additivity": "Prediction and policy times, and native roundtrip time, are nested within evaluation_wall_ns. Audit outer time is nested in scope_total; audit internal time is nested in audit outer time. Remaining outer interval includes serialization/analysis/archive/cleanup and is not a standalone archive timer.",
+    "policy_totals_by_arm": {
+      "always_repair": {
+        "mean_action_tariff_units": 0.2241875,
+        "paid_action_tariff_units": 860.88,
+        "parent_python_cpu_ns": 22219155101,
+        "repair_count": 3840,
+        "rows": 3840,
+        "wait_count": 0,
+        "wall_ns": 22230410502
+      },
+      "always_stop": {
+        "mean_action_tariff_units": 0.0,
+        "paid_action_tariff_units": 0.0,
+        "parent_python_cpu_ns": 18072223317,
+        "repair_count": 0,
+        "rows": 3840,
+        "wait_count": 0,
+        "wall_ns": 18079799038
+      },
+      "always_wait": {
+        "mean_action_tariff_units": 0.13077604166666668,
+        "paid_action_tariff_units": 502.18000000000006,
+        "parent_python_cpu_ns": 19845657752,
+        "repair_count": 0,
+        "rows": 3840,
+        "wait_count": 3840,
+        "wall_ns": 19864532083
+      },
+      "always_wait_repair": {
+        "mean_action_tariff_units": 0.35496354166666666,
+        "paid_action_tariff_units": 1363.06,
+        "parent_python_cpu_ns": 24838495193,
+        "repair_count": 3840,
+        "rows": 3840,
+        "wait_count": 3840,
+        "wall_ns": 24876997788
+      },
+      "analytic": {
+        "mean_action_tariff_units": 0.10970312500000001,
+        "paid_action_tariff_units": 421.26000000000005,
+        "parent_python_cpu_ns": 24575397365,
+        "repair_count": 2024,
+        "rows": 3840,
+        "wait_count": 2771,
+        "wall_ns": 24612583783
+      },
+      "equivalent_gaussian": {
+        "mean_action_tariff_units": 0.10970312500000001,
+        "paid_action_tariff_units": 421.26000000000005,
+        "parent_python_cpu_ns": 21363986207,
+        "repair_count": 2024,
+        "rows": 3840,
+        "wait_count": 2771,
+        "wall_ns": 21379001866
+      },
+      "fixed": {
+        "mean_action_tariff_units": 0.21022395833333332,
+        "paid_action_tariff_units": 807.26,
+        "parent_python_cpu_ns": 26228050944,
+        "repair_count": 2902,
+        "rows": 3840,
+        "wait_count": 3463,
+        "wall_ns": 26249918418
+      },
+      "history": {
+        "mean_action_tariff_units": 0.1859453125,
+        "paid_action_tariff_units": 714.03,
+        "parent_python_cpu_ns": 24522246572,
+        "repair_count": 2666,
+        "rows": 3840,
+        "wait_count": 3135,
+        "wall_ns": 24535668096
+      },
+      "mean_drive": {
+        "mean_action_tariff_units": 0.25126302083333335,
+        "paid_action_tariff_units": 964.85,
+        "parent_python_cpu_ns": 36812470501,
+        "repair_count": 3289,
+        "rows": 3840,
+        "wait_count": 3235,
+        "wall_ns": 36833519361
+      },
+      "native": {
+        "mean_action_tariff_units": 0.21949088541666667,
+        "paid_action_tariff_units": 842.845,
+        "parent_python_cpu_ns": 27317670837,
+        "repair_count": 2945,
+        "rows": 3840,
+        "wait_count": 3161,
+        "wall_ns": 30718249894
+      },
+      "oracle": {
+        "mean_action_tariff_units": 0.117953125,
+        "paid_action_tariff_units": 452.94,
+        "parent_python_cpu_ns": 19952135000,
+        "repair_count": 2121,
+        "rows": 3840,
+        "wait_count": 2830,
+        "wall_ns": 19964238016
+      },
+      "pulse": {
+        "mean_action_tariff_units": 0.26956640625,
+        "paid_action_tariff_units": 1035.135,
+        "parent_python_cpu_ns": 41812270893,
+        "repair_count": 3397,
+        "rows": 3840,
+        "wait_count": 3227,
+        "wall_ns": 41834589399
+      },
+      "pulse_no_reset": {
+        "mean_action_tariff_units": 0.2696692708333333,
+        "paid_action_tariff_units": 1035.53,
+        "parent_python_cpu_ns": 37548168704,
+        "repair_count": 3377,
+        "rows": 3840,
+        "wait_count": 3230,
+        "wall_ns": 37553346803
+      }
+    },
+    "policy_totals_by_law": {
+      "drift_shift": {
+        "always_repair": {
+          "mean_action_tariff_units": 0.22743750000000001,
+          "paid_action_tariff_units": 291.12,
+          "parent_python_cpu_ns": 7009400398,
+          "repair_count": 1280,
+          "rows": 1280,
+          "wait_count": 0,
+          "wall_ns": 7014429475
+        },
+        "always_stop": {
+          "mean_action_tariff_units": 0.0,
+          "paid_action_tariff_units": 0.0,
+          "parent_python_cpu_ns": 5467653326,
+          "repair_count": 0,
+          "rows": 1280,
+          "wait_count": 0,
+          "wall_ns": 5468608459
+        },
+        "always_wait": {
+          "mean_action_tariff_units": 0.13267187500000002,
+          "paid_action_tariff_units": 169.82000000000002,
+          "parent_python_cpu_ns": 6384185698,
+          "repair_count": 0,
+          "rows": 1280,
+          "wait_count": 1280,
+          "wall_ns": 6393228292
+        },
+        "always_wait_repair": {
+          "mean_action_tariff_units": 0.360109375,
+          "paid_action_tariff_units": 460.94,
+          "parent_python_cpu_ns": 7638132813,
+          "repair_count": 1280,
+          "rows": 1280,
+          "wait_count": 1280,
+          "wall_ns": 7648520562
+        },
+        "analytic": {
+          "mean_action_tariff_units": 0.10989062499999999,
+          "paid_action_tariff_units": 140.66,
+          "parent_python_cpu_ns": 8359198271,
+          "repair_count": 657,
+          "rows": 1280,
+          "wait_count": 918,
+          "wall_ns": 8363212174
+        },
+        "equivalent_gaussian": {
+          "mean_action_tariff_units": 0.10989062499999999,
+          "paid_action_tariff_units": 140.66,
+          "parent_python_cpu_ns": 7211352156,
+          "repair_count": 657,
+          "rows": 1280,
+          "wait_count": 918,
+          "wall_ns": 7211870386
+        },
+        "fixed": {
+          "mean_action_tariff_units": 0.21207812499999998,
+          "paid_action_tariff_units": 271.46,
+          "parent_python_cpu_ns": 8692148779,
+          "repair_count": 964,
+          "rows": 1280,
+          "wait_count": 1145,
+          "wall_ns": 8695459482
+        },
+        "history": {
+          "mean_action_tariff_units": 0.1919296875,
+          "paid_action_tariff_units": 245.67000000000002,
+          "parent_python_cpu_ns": 8185856595,
+          "repair_count": 888,
+          "rows": 1280,
+          "wait_count": 1052,
+          "wall_ns": 8187993781
+        },
+        "mean_drive": {
+          "mean_action_tariff_units": 0.26706640625,
+          "paid_action_tariff_units": 341.845,
+          "parent_python_cpu_ns": 12843863347,
+          "repair_count": 1124,
+          "rows": 1280,
+          "wait_count": 1071,
+          "wall_ns": 12856901885
+        },
+        "native": {
+          "mean_action_tariff_units": 0.22927734375000003,
+          "paid_action_tariff_units": 293.475,
+          "parent_python_cpu_ns": 9884491191,
+          "repair_count": 998,
+          "rows": 1280,
+          "wait_count": 1068,
+          "wall_ns": 11064835802
+        },
+        "oracle": {
+          "mean_action_tariff_units": 0.117484375,
+          "paid_action_tariff_units": 150.38,
+          "parent_python_cpu_ns": 7023312002,
+          "repair_count": 687,
+          "rows": 1280,
+          "wait_count": 935,
+          "wall_ns": 7028077698
+        },
+        "pulse": {
+          "mean_action_tariff_units": 0.28233593749999997,
+          "paid_action_tariff_units": 361.39,
+          "parent_python_cpu_ns": 13476723081,
+          "repair_count": 1160,
+          "rows": 1280,
+          "wait_count": 1059,
+          "wall_ns": 13486052943
+        },
+        "pulse_no_reset": {
+          "mean_action_tariff_units": 0.2866484375,
+          "paid_action_tariff_units": 366.91,
+          "parent_python_cpu_ns": 11799900506,
+          "repair_count": 1152,
+          "rows": 1280,
+          "wait_count": 1086,
+          "wall_ns": 11800576812
+        }
+      },
+      "gaussian": {
+        "always_repair": {
+          "mean_action_tariff_units": 0.22181249999999997,
+          "paid_action_tariff_units": 283.91999999999996,
+          "parent_python_cpu_ns": 7609291899,
+          "repair_count": 1280,
+          "rows": 1280,
+          "wait_count": 0,
+          "wall_ns": 7613063843
+        },
+        "always_stop": {
+          "mean_action_tariff_units": 0.0,
+          "paid_action_tariff_units": 0.0,
+          "parent_python_cpu_ns": 6183538072,
+          "repair_count": 0,
+          "rows": 1280,
+          "wait_count": 0,
+          "wall_ns": 6185142422
+        },
+        "always_wait": {
+          "mean_action_tariff_units": 0.129390625,
+          "paid_action_tariff_units": 165.62,
+          "parent_python_cpu_ns": 6799387201,
+          "repair_count": 0,
+          "rows": 1280,
+          "wait_count": 1280,
+          "wall_ns": 6803643534
+        },
+        "always_wait_repair": {
+          "mean_action_tariff_units": 0.351203125,
+          "paid_action_tariff_units": 449.54,
+          "parent_python_cpu_ns": 9036825881,
+          "repair_count": 1280,
+          "rows": 1280,
+          "wait_count": 1280,
+          "wall_ns": 9042802381
+        },
+        "analytic": {
+          "mean_action_tariff_units": 0.108203125,
+          "paid_action_tariff_units": 138.5,
+          "parent_python_cpu_ns": 8109089339,
+          "repair_count": 693,
+          "rows": 1280,
+          "wait_count": 924,
+          "wall_ns": 8139222074
+        },
+        "equivalent_gaussian": {
+          "mean_action_tariff_units": 0.108203125,
+          "paid_action_tariff_units": 138.5,
+          "parent_python_cpu_ns": 6796297653,
+          "repair_count": 693,
+          "rows": 1280,
+          "wait_count": 924,
+          "wall_ns": 6808237595
+        },
+        "fixed": {
+          "mean_action_tariff_units": 0.207171875,
+          "paid_action_tariff_units": 265.18,
+          "parent_python_cpu_ns": 8831724752,
+          "repair_count": 963,
+          "rows": 1280,
+          "wait_count": 1165,
+          "wall_ns": 8845047125
+        },
+        "history": {
+          "mean_action_tariff_units": 0.17953125,
+          "paid_action_tariff_units": 229.8,
+          "parent_python_cpu_ns": 7245590990,
+          "repair_count": 892,
+          "rows": 1280,
+          "wait_count": 1033,
+          "wall_ns": 7253523844
+        },
+        "mean_drive": {
+          "mean_action_tariff_units": 0.23796875,
+          "paid_action_tariff_units": 304.6,
+          "parent_python_cpu_ns": 11230613052,
+          "repair_count": 1080,
+          "rows": 1280,
+          "wait_count": 1066,
+          "wall_ns": 11232438678
+        },
+        "native": {
+          "mean_action_tariff_units": 0.21201171875,
+          "paid_action_tariff_units": 271.375,
+          "parent_python_cpu_ns": 8143181500,
+          "repair_count": 971,
+          "rows": 1280,
+          "wait_count": 1042,
+          "wall_ns": 9186209531
+        },
+        "oracle": {
+          "mean_action_tariff_units": 0.11456250000000001,
+          "paid_action_tariff_units": 146.64000000000001,
+          "parent_python_cpu_ns": 6149661954,
+          "repair_count": 717,
+          "rows": 1280,
+          "wait_count": 941,
+          "wall_ns": 6153314931
+        },
+        "pulse": {
+          "mean_action_tariff_units": 0.25710937500000003,
+          "paid_action_tariff_units": 329.1,
+          "parent_python_cpu_ns": 13668002957,
+          "repair_count": 1113,
+          "rows": 1280,
+          "wait_count": 1072,
+          "wall_ns": 13676751957
+        },
+        "pulse_no_reset": {
+          "mean_action_tariff_units": 0.25439453125,
+          "paid_action_tariff_units": 325.625,
+          "parent_python_cpu_ns": 12368628128,
+          "repair_count": 1109,
+          "rows": 1280,
+          "wait_count": 1048,
+          "wall_ns": 12371997688
+        }
+      },
+      "student_t": {
+        "always_repair": {
+          "mean_action_tariff_units": 0.22331249999999997,
+          "paid_action_tariff_units": 285.84,
+          "parent_python_cpu_ns": 7600462804,
+          "repair_count": 1280,
+          "rows": 1280,
+          "wait_count": 0,
+          "wall_ns": 7602917184
+        },
+        "always_stop": {
+          "mean_action_tariff_units": 0.0,
+          "paid_action_tariff_units": 0.0,
+          "parent_python_cpu_ns": 6421031919,
+          "repair_count": 0,
+          "rows": 1280,
+          "wait_count": 0,
+          "wall_ns": 6426048157
+        },
+        "always_wait": {
+          "mean_action_tariff_units": 0.130265625,
+          "paid_action_tariff_units": 166.74,
+          "parent_python_cpu_ns": 6662084853,
+          "repair_count": 0,
+          "rows": 1280,
+          "wait_count": 1280,
+          "wall_ns": 6667660257
+        },
+        "always_wait_repair": {
+          "mean_action_tariff_units": 0.35357812499999997,
+          "paid_action_tariff_units": 452.58,
+          "parent_python_cpu_ns": 8163536499,
+          "repair_count": 1280,
+          "rows": 1280,
+          "wait_count": 1280,
+          "wall_ns": 8185674845
+        },
+        "analytic": {
+          "mean_action_tariff_units": 0.11101562500000002,
+          "paid_action_tariff_units": 142.10000000000002,
+          "parent_python_cpu_ns": 8107109755,
+          "repair_count": 674,
+          "rows": 1280,
+          "wait_count": 929,
+          "wall_ns": 8110149535
+        },
+        "equivalent_gaussian": {
+          "mean_action_tariff_units": 0.11101562500000002,
+          "paid_action_tariff_units": 142.10000000000002,
+          "parent_python_cpu_ns": 7356336398,
+          "repair_count": 674,
+          "rows": 1280,
+          "wait_count": 929,
+          "wall_ns": 7358893885
+        },
+        "fixed": {
+          "mean_action_tariff_units": 0.211421875,
+          "paid_action_tariff_units": 270.62,
+          "parent_python_cpu_ns": 8704177413,
+          "repair_count": 975,
+          "rows": 1280,
+          "wait_count": 1153,
+          "wall_ns": 8709411811
+        },
+        "history": {
+          "mean_action_tariff_units": 0.186375,
+          "paid_action_tariff_units": 238.56,
+          "parent_python_cpu_ns": 9090798987,
+          "repair_count": 886,
+          "rows": 1280,
+          "wait_count": 1050,
+          "wall_ns": 9094150471
+        },
+        "mean_drive": {
+          "mean_action_tariff_units": 0.24875390625,
+          "paid_action_tariff_units": 318.405,
+          "parent_python_cpu_ns": 12737994102,
+          "repair_count": 1085,
+          "rows": 1280,
+          "wait_count": 1098,
+          "wall_ns": 12744178798
+        },
+        "native": {
+          "mean_action_tariff_units": 0.21718359375000001,
+          "paid_action_tariff_units": 277.995,
+          "parent_python_cpu_ns": 9289998146,
+          "repair_count": 976,
+          "rows": 1280,
+          "wait_count": 1051,
+          "wall_ns": 10467204561
+        },
+        "oracle": {
+          "mean_action_tariff_units": 0.12181250000000002,
+          "paid_action_tariff_units": 155.92000000000002,
+          "parent_python_cpu_ns": 6779161044,
+          "repair_count": 717,
+          "rows": 1280,
+          "wait_count": 954,
+          "wall_ns": 6782845387
+        },
+        "pulse": {
+          "mean_action_tariff_units": 0.26925390625,
+          "paid_action_tariff_units": 344.645,
+          "parent_python_cpu_ns": 14667544855,
+          "repair_count": 1124,
+          "rows": 1280,
+          "wait_count": 1096,
+          "wall_ns": 14671784499
+        },
+        "pulse_no_reset": {
+          "mean_action_tariff_units": 0.26796484375,
+          "paid_action_tariff_units": 342.995,
+          "parent_python_cpu_ns": 13379640070,
+          "repair_count": 1116,
+          "rows": 1280,
+          "wait_count": 1096,
+          "wall_ns": 13380772303
+        }
+      }
+    },
+    "scope": "15 seed/law scopes; 49,920 policy episodes and 34,560 stored prediction rows (each prediction row contains three horizons).",
+    "scopes": [
+      {
+        "actual_transport_counts": {
+          "deliveries": 6656,
+          "files": 24706,
+          "observations": 11394
+        },
+        "archive": {
+          "all_member_hashes_verified": true,
+          "compressed_bytes": 7349875,
+          "file_count": 24716,
+          "sha256": "7acd9146cd9f655091b600843046e4c307a4777554ce9a3b28bea014be7f4ad7"
+        },
+        "archive_standalone_wall_ns": null,
+        "control_member": "CONTROL.jsonl",
+        "control_member_sha256": "b2c1f69613c22bc9c8a943d8881f55cee677ec107087a3394fc62a7920c04709",
+        "control_rows": 3328,
+        "evaluation_parent_cpu_ns": null,
+        "evaluation_wall_ns": 18801012411,
+        "independent_audit_cpu_ns": null,
+        "independent_audit_internal_wall_ns": 18168130468,
+        "independent_audit_native_call_counts": null,
+        "independent_audit_outer_wall_ns": 18206592079,
+        "law": "gaussian",
+        "measurement_environment_group": "workspace_initial_three",
+        "native_adapter_roundtrip_ns": 412272862,
+        "native_child_cpu_ns": null,
+        "native_requests": 1186,
+        "native_tick_timer_ns": null,
+        "operational_recovery_applied": false,
+        "original_sparse_ticks": 7731,
+        "policy_episode_costs": {
+          "always_repair": {
+            "mean_action_tariff_units": 0.20671874999999998,
+            "mean_episode_parent_cpu_ns": 3910495.5546875,
+            "mean_episode_wall_ns": 3914370.6796875,
+            "paid_action_tariff_units": 52.919999999999995,
+            "parent_python_cpu_ns": 1001086862,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1002078894
+          },
+          "always_stop": {
+            "mean_action_tariff_units": 0.0,
+            "mean_episode_parent_cpu_ns": 3937886.21875,
+            "mean_episode_wall_ns": 3942632.74609375,
+            "paid_action_tariff_units": 0.0,
+            "parent_python_cpu_ns": 1008098872,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1009313983
+          },
+          "always_wait": {
+            "mean_action_tariff_units": 0.12058593750000002,
+            "mean_episode_parent_cpu_ns": 3900965.80859375,
+            "mean_episode_wall_ns": 3902779.375,
+            "paid_action_tariff_units": 30.870000000000005,
+            "parent_python_cpu_ns": 998647247,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 999111520
+          },
+          "always_wait_repair": {
+            "mean_action_tariff_units": 0.3273046875,
+            "mean_episode_parent_cpu_ns": 4232046.61328125,
+            "mean_episode_wall_ns": 4232109.80078125,
+            "paid_action_tariff_units": 83.79,
+            "parent_python_cpu_ns": 1083403933,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1083420109
+          },
+          "analytic": {
+            "mean_action_tariff_units": 0.1051171875,
+            "mean_episode_parent_cpu_ns": 4587499.75,
+            "mean_episode_wall_ns": 4590999.52734375,
+            "paid_action_tariff_units": 26.91,
+            "parent_python_cpu_ns": 1174399936,
+            "repair_count": 144,
+            "rows": 256,
+            "wait_count": 191,
+            "wall_ns": 1175295879
+          },
+          "equivalent_gaussian": {
+            "mean_action_tariff_units": 0.1051171875,
+            "mean_episode_parent_cpu_ns": 4944761.1015625,
+            "mean_episode_wall_ns": 4949745.125,
+            "paid_action_tariff_units": 26.91,
+            "parent_python_cpu_ns": 1265858842,
+            "repair_count": 144,
+            "rows": 256,
+            "wait_count": 191,
+            "wall_ns": 1267134752
+          },
+          "fixed": {
+            "mean_action_tariff_units": 0.20011718750000002,
+            "mean_episode_parent_cpu_ns": 5035997.0625,
+            "mean_episode_wall_ns": 5037859.203125,
+            "paid_action_tariff_units": 51.230000000000004,
+            "parent_python_cpu_ns": 1289215248,
+            "repair_count": 201,
+            "rows": 256,
+            "wait_count": 234,
+            "wall_ns": 1289691956
+          },
+          "history": {
+            "mean_action_tariff_units": 0.190234375,
+            "mean_episode_parent_cpu_ns": 5103107.02734375,
+            "mean_episode_wall_ns": 5107132.08203125,
+            "paid_action_tariff_units": 48.7,
+            "parent_python_cpu_ns": 1306395399,
+            "repair_count": 198,
+            "rows": 256,
+            "wait_count": 219,
+            "wall_ns": 1307425813
+          },
+          "mean_drive": {
+            "mean_action_tariff_units": 0.2638671875,
+            "mean_episode_parent_cpu_ns": 8226378.0546875,
+            "mean_episode_wall_ns": 8228083.7421875,
+            "paid_action_tariff_units": 67.55,
+            "parent_python_cpu_ns": 2105952782,
+            "repair_count": 235,
+            "rows": 256,
+            "wait_count": 234,
+            "wall_ns": 2106389438
+          },
+          "native": {
+            "mean_action_tariff_units": 0.20623046875,
+            "mean_episode_parent_cpu_ns": 5325676.03125,
+            "mean_episode_wall_ns": 6208641.29296875,
+            "paid_action_tariff_units": 52.795,
+            "parent_python_cpu_ns": 1363373064,
+            "repair_count": 210,
+            "rows": 256,
+            "wait_count": 208,
+            "wall_ns": 1589412171
+          },
+          "oracle": {
+            "mean_action_tariff_units": 0.11519531250000001,
+            "mean_episode_parent_cpu_ns": 4575068.2265625,
+            "mean_episode_wall_ns": 4577621.23046875,
+            "paid_action_tariff_units": 29.490000000000002,
+            "parent_python_cpu_ns": 1171217466,
+            "repair_count": 153,
+            "rows": 256,
+            "wait_count": 194,
+            "wall_ns": 1171871035
+          },
+          "pulse": {
+            "mean_action_tariff_units": 0.2942578125,
+            "mean_episode_parent_cpu_ns": 8520905.7265625,
+            "mean_episode_wall_ns": 8532099.43359375,
+            "paid_action_tariff_units": 75.33,
+            "parent_python_cpu_ns": 2181351866,
+            "repair_count": 248,
+            "rows": 256,
+            "wait_count": 239,
+            "wall_ns": 2184217455
+          },
+          "pulse_no_reset": {
+            "mean_action_tariff_units": 0.27548828125,
+            "mean_episode_parent_cpu_ns": 7933269.76171875,
+            "mean_episode_wall_ns": 7939218.8203125,
+            "paid_action_tariff_units": 70.525,
+            "parent_python_cpu_ns": 2030917059,
+            "repair_count": 242,
+            "rows": 256,
+            "wait_count": 229,
+            "wall_ns": 2032440018
+          }
+        },
+        "policy_episode_costs_recomputed_and_verified": true,
+        "prediction_rows": 2304,
+        "prediction_wall_ns_by_arm": {
+          "analytic": 1117187,
+          "equivalent_gaussian": 10649952,
+          "fixed": 755181,
+          "history": 1159220,
+          "mean_drive": 140409865,
+          "native": 63952245,
+          "oracle": 796302,
+          "pulse": 157283234,
+          "pulse_no_reset": 132773433
+        },
+        "recorded_execution_root": "experiments/analytic_event_neuron/evidence/run-20261027",
+        "remaining_outer_interval_ns_including_serialization_archive_cleanup": 8545026851,
+        "scope": "seed_11_gaussian",
+        "scope_total_wall_ns_including_audit_and_archive": 45552631341,
+        "source_control_archive": "archives/seed_11_gaussian.tar.gz",
+        "source_summary": "scope_summaries/seed_11_gaussian.json",
+        "training_seed": 11,
+        "trajectories": 256
+      },
+      {
+        "actual_transport_counts": {
+          "deliveries": 6656,
+          "files": 24514,
+          "observations": 11202
+        },
+        "archive": {
+          "all_member_hashes_verified": true,
+          "compressed_bytes": 7234156,
+          "file_count": 24524,
+          "sha256": "3e9a46caebca34a9cac27de0d1da5abc0796c513bede36c7a42458bea8134756"
+        },
+        "archive_standalone_wall_ns": null,
+        "control_member": "CONTROL.jsonl",
+        "control_member_sha256": "127961baddb498430376479533a80c96c61e00bcb8af2dccb437434970cf520b",
+        "control_rows": 3328,
+        "evaluation_parent_cpu_ns": null,
+        "evaluation_wall_ns": 21243429704,
+        "independent_audit_cpu_ns": null,
+        "independent_audit_internal_wall_ns": 18289118919,
+        "independent_audit_native_call_counts": null,
+        "independent_audit_outer_wall_ns": 18336460987,
+        "law": "drift_shift",
+        "measurement_environment_group": "workspace_initial_three",
+        "native_adapter_roundtrip_ns": 407479949,
+        "native_child_cpu_ns": null,
+        "native_requests": 1162,
+        "native_tick_timer_ns": null,
+        "operational_recovery_applied": false,
+        "original_sparse_ticks": 7554,
+        "policy_episode_costs": {
+          "always_repair": {
+            "mean_action_tariff_units": 0.235078125,
+            "mean_episode_parent_cpu_ns": 3905294.8359375,
+            "mean_episode_wall_ns": 3904892.2890625,
+            "paid_action_tariff_units": 60.18,
+            "parent_python_cpu_ns": 999755478,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 999652426
+          },
+          "always_stop": {
+            "mean_action_tariff_units": 0.0,
+            "mean_episode_parent_cpu_ns": 3610863.09375,
+            "mean_episode_wall_ns": 3610060.50390625,
+            "paid_action_tariff_units": 0.0,
+            "parent_python_cpu_ns": 924380952,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 924175489
+          },
+          "always_wait": {
+            "mean_action_tariff_units": 0.13712890625000002,
+            "mean_episode_parent_cpu_ns": 3853705.6171875,
+            "mean_episode_wall_ns": 3870525.52734375,
+            "paid_action_tariff_units": 35.105000000000004,
+            "parent_python_cpu_ns": 986548638,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 990854535
+          },
+          "always_wait_repair": {
+            "mean_action_tariff_units": 0.37220703125,
+            "mean_episode_parent_cpu_ns": 4560485.62890625,
+            "mean_episode_wall_ns": 4572273.14453125,
+            "paid_action_tariff_units": 95.285,
+            "parent_python_cpu_ns": 1167484321,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1170501925
+          },
+          "analytic": {
+            "mean_action_tariff_units": 0.09916015625,
+            "mean_episode_parent_cpu_ns": 5316631.99609375,
+            "mean_episode_wall_ns": 5318980.1328125,
+            "paid_action_tariff_units": 25.385,
+            "parent_python_cpu_ns": 1361057791,
+            "repair_count": 125,
+            "rows": 256,
+            "wait_count": 174,
+            "wall_ns": 1361658914
+          },
+          "equivalent_gaussian": {
+            "mean_action_tariff_units": 0.09916015625,
+            "mean_episode_parent_cpu_ns": 5691187.90625,
+            "mean_episode_wall_ns": 5691943.74609375,
+            "paid_action_tariff_units": 25.385,
+            "parent_python_cpu_ns": 1456944104,
+            "repair_count": 125,
+            "rows": 256,
+            "wait_count": 174,
+            "wall_ns": 1457137599
+          },
+          "fixed": {
+            "mean_action_tariff_units": 0.20517578125,
+            "mean_episode_parent_cpu_ns": 5367009.2265625,
+            "mean_episode_wall_ns": 5368177.5703125,
+            "paid_action_tariff_units": 52.525,
+            "parent_python_cpu_ns": 1373954362,
+            "repair_count": 185,
+            "rows": 256,
+            "wait_count": 225,
+            "wall_ns": 1374253458
+          },
+          "history": {
+            "mean_action_tariff_units": 0.18482421875000002,
+            "mean_episode_parent_cpu_ns": 7981263.1640625,
+            "mean_episode_wall_ns": 7986672.32421875,
+            "paid_action_tariff_units": 47.315000000000005,
+            "parent_python_cpu_ns": 2043203370,
+            "repair_count": 164,
+            "rows": 256,
+            "wait_count": 221,
+            "wall_ns": 2044588115
+          },
+          "mean_drive": {
+            "mean_action_tariff_units": 0.30142578125,
+            "mean_episode_parent_cpu_ns": 10051308.38671875,
+            "mean_episode_wall_ns": 10082676.5859375,
+            "paid_action_tariff_units": 77.165,
+            "parent_python_cpu_ns": 2573134947,
+            "repair_count": 234,
+            "rows": 256,
+            "wait_count": 229,
+            "wall_ns": 2581165206
+          },
+          "native": {
+            "mean_action_tariff_units": 0.20638671875,
+            "mean_episode_parent_cpu_ns": 7371766.5703125,
+            "mean_episode_wall_ns": 8232756.7421875,
+            "paid_action_tariff_units": 52.835,
+            "parent_python_cpu_ns": 1887172242,
+            "repair_count": 195,
+            "rows": 256,
+            "wait_count": 199,
+            "wall_ns": 2107585726
+          },
+          "oracle": {
+            "mean_action_tariff_units": 0.11345703125,
+            "mean_episode_parent_cpu_ns": 4218672.13671875,
+            "mean_episode_wall_ns": 4225649.24609375,
+            "paid_action_tariff_units": 29.045,
+            "parent_python_cpu_ns": 1079980067,
+            "repair_count": 135,
+            "rows": 256,
+            "wait_count": 182,
+            "wall_ns": 1081766207
+          },
+          "pulse": {
+            "mean_action_tariff_units": 0.33126953125,
+            "mean_episode_parent_cpu_ns": 8516820.5703125,
+            "mean_episode_wall_ns": 8536604.19921875,
+            "paid_action_tariff_units": 84.805,
+            "parent_python_cpu_ns": 2180306066,
+            "repair_count": 247,
+            "rows": 256,
+            "wait_count": 234,
+            "wall_ns": 2185370675
+          },
+          "pulse_no_reset": {
+            "mean_action_tariff_units": 0.32126953125,
+            "mean_episode_parent_cpu_ns": 8615957.40625,
+            "mean_episode_wall_ns": 8619549.76953125,
+            "paid_action_tariff_units": 82.245,
+            "parent_python_cpu_ns": 2205685096,
+            "repair_count": 244,
+            "rows": 256,
+            "wait_count": 230,
+            "wall_ns": 2206604741
+          }
+        },
+        "policy_episode_costs_recomputed_and_verified": true,
+        "prediction_rows": 2304,
+        "prediction_wall_ns_by_arm": {
+          "analytic": 1057284,
+          "equivalent_gaussian": 13247569,
+          "fixed": 1177686,
+          "history": 1225158,
+          "mean_drive": 183174027,
+          "native": 71485481,
+          "oracle": 938015,
+          "pulse": 182966269,
+          "pulse_no_reset": 187797474
+        },
+        "recorded_execution_root": "experiments/analytic_event_neuron/evidence/run-20261027",
+        "remaining_outer_interval_ns_including_serialization_archive_cleanup": 8893312388,
+        "scope": "seed_11_drift_shift",
+        "scope_total_wall_ns_including_audit_and_archive": 48473203079,
+        "source_control_archive": "archives/seed_11_drift_shift.tar.gz",
+        "source_summary": "scope_summaries/seed_11_drift_shift.json",
+        "training_seed": 11,
+        "trajectories": 256
+      },
+      {
+        "actual_transport_counts": {
+          "deliveries": 6656,
+          "files": 24509,
+          "observations": 11197
+        },
+        "archive": {
+          "all_member_hashes_verified": true,
+          "compressed_bytes": 7287139,
+          "file_count": 24519,
+          "sha256": "f7dd78784328ffefe724f017e824d55e75af17094d9a908212bf4a99e0e9a6b5"
+        },
+        "archive_standalone_wall_ns": null,
+        "control_member": "CONTROL.jsonl",
+        "control_member_sha256": "314d561f13240ba4532ebcaed69cfc8f25142bb1f3e1456ea0133d6e1bf08b64",
+        "control_rows": 3328,
+        "evaluation_parent_cpu_ns": null,
+        "evaluation_wall_ns": 20866542568,
+        "independent_audit_cpu_ns": null,
+        "independent_audit_internal_wall_ns": 17503457193,
+        "independent_audit_native_call_counts": null,
+        "independent_audit_outer_wall_ns": 17565069430,
+        "law": "student_t",
+        "measurement_environment_group": "workspace_initial_three",
+        "native_adapter_roundtrip_ns": 384330970,
+        "native_child_cpu_ns": null,
+        "native_requests": 1170,
+        "native_tick_timer_ns": null,
+        "operational_recovery_applied": true,
+        "original_sparse_ticks": 7614,
+        "policy_episode_costs": {
+          "always_repair": {
+            "mean_action_tariff_units": 0.238125,
+            "mean_episode_parent_cpu_ns": 4096871.921875,
+            "mean_episode_wall_ns": 4101846.9765625,
+            "paid_action_tariff_units": 60.96,
+            "parent_python_cpu_ns": 1048799212,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1050072826
+          },
+          "always_stop": {
+            "mean_action_tariff_units": 0.0,
+            "mean_episode_parent_cpu_ns": 3965401.44140625,
+            "mean_episode_wall_ns": 3984904.66796875,
+            "paid_action_tariff_units": 0.0,
+            "parent_python_cpu_ns": 1015142769,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1020135595
+          },
+          "always_wait": {
+            "mean_action_tariff_units": 0.13890625,
+            "mean_episode_parent_cpu_ns": 4086344.23046875,
+            "mean_episode_wall_ns": 4090314.359375,
+            "paid_action_tariff_units": 35.56,
+            "parent_python_cpu_ns": 1046104123,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1047120476
+          },
+          "always_wait_repair": {
+            "mean_action_tariff_units": 0.37703125,
+            "mean_episode_parent_cpu_ns": 4951127.24609375,
+            "mean_episode_wall_ns": 4951102.0703125,
+            "paid_action_tariff_units": 96.52,
+            "parent_python_cpu_ns": 1267488575,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1267482130
+          },
+          "analytic": {
+            "mean_action_tariff_units": 0.100078125,
+            "mean_episode_parent_cpu_ns": 4360358.37890625,
+            "mean_episode_wall_ns": 4361033.4453125,
+            "paid_action_tariff_units": 25.62,
+            "parent_python_cpu_ns": 1116251745,
+            "repair_count": 122,
+            "rows": 256,
+            "wait_count": 172,
+            "wall_ns": 1116424562
+          },
+          "equivalent_gaussian": {
+            "mean_action_tariff_units": 0.100078125,
+            "mean_episode_parent_cpu_ns": 6098128.3984375,
+            "mean_episode_wall_ns": 6098603.63671875,
+            "paid_action_tariff_units": 25.62,
+            "parent_python_cpu_ns": 1561120870,
+            "repair_count": 122,
+            "rows": 256,
+            "wait_count": 172,
+            "wall_ns": 1561242531
+          },
+          "fixed": {
+            "mean_action_tariff_units": 0.214375,
+            "mean_episode_parent_cpu_ns": 5779141.90625,
+            "mean_episode_wall_ns": 5780657.421875,
+            "paid_action_tariff_units": 54.88,
+            "parent_python_cpu_ns": 1479460328,
+            "repair_count": 185,
+            "rows": 256,
+            "wait_count": 229,
+            "wall_ns": 1479848300
+          },
+          "history": {
+            "mean_action_tariff_units": 0.2049609375,
+            "mean_episode_parent_cpu_ns": 7881299.7421875,
+            "mean_episode_wall_ns": 7885127.328125,
+            "paid_action_tariff_units": 52.47,
+            "parent_python_cpu_ns": 2017612734,
+            "repair_count": 176,
+            "rows": 256,
+            "wait_count": 218,
+            "wall_ns": 2018592596
+          },
+          "mean_drive": {
+            "mean_action_tariff_units": 0.279375,
+            "mean_episode_parent_cpu_ns": 8813075.9765625,
+            "mean_episode_wall_ns": 8835111.8984375,
+            "paid_action_tariff_units": 71.52,
+            "parent_python_cpu_ns": 2256147450,
+            "repair_count": 222,
+            "rows": 256,
+            "wait_count": 225,
+            "wall_ns": 2261788646
+          },
+          "native": {
+            "mean_action_tariff_units": 0.232109375,
+            "mean_episode_parent_cpu_ns": 4934310.5390625,
+            "mean_episode_wall_ns": 5749144.046875,
+            "paid_action_tariff_units": 59.42,
+            "parent_python_cpu_ns": 1263183498,
+            "repair_count": 203,
+            "rows": 256,
+            "wait_count": 199,
+            "wall_ns": 1471780876
+          },
+          "oracle": {
+            "mean_action_tariff_units": 0.11703125,
+            "mean_episode_parent_cpu_ns": 4943827.44140625,
+            "mean_episode_wall_ns": 4943423.203125,
+            "paid_action_tariff_units": 29.96,
+            "parent_python_cpu_ns": 1265619825,
+            "repair_count": 136,
+            "rows": 256,
+            "wait_count": 179,
+            "wall_ns": 1265516340
+          },
+          "pulse": {
+            "mean_action_tariff_units": 0.32453125,
+            "mean_episode_parent_cpu_ns": 8545644.296875,
+            "mean_episode_wall_ns": 8547746.40234375,
+            "paid_action_tariff_units": 83.08,
+            "parent_python_cpu_ns": 2187684940,
+            "repair_count": 235,
+            "rows": 256,
+            "wait_count": 244,
+            "wall_ns": 2188223079
+          },
+          "pulse_no_reset": {
+            "mean_action_tariff_units": 0.32439453125,
+            "mean_episode_parent_cpu_ns": 9638738.49609375,
+            "mean_episode_wall_ns": 9638601.36328125,
+            "paid_action_tariff_units": 83.045,
+            "parent_python_cpu_ns": 2467517055,
+            "repair_count": 235,
+            "rows": 256,
+            "wait_count": 243,
+            "wall_ns": 2467481949
+          }
+        },
+        "policy_episode_costs_recomputed_and_verified": true,
+        "prediction_rows": 2304,
+        "prediction_wall_ns_by_arm": {
+          "analytic": 1203954,
+          "equivalent_gaussian": 10878930,
+          "fixed": 835019,
+          "history": 848269,
+          "mean_drive": 166984552,
+          "native": 65431478,
+          "oracle": 806626,
+          "pulse": 143423209,
+          "pulse_no_reset": 143618403
+        },
+        "recorded_execution_root": "experiments/analytic_event_neuron/evidence/run-20261027",
+        "remaining_outer_interval_ns_including_serialization_archive_cleanup": null,
+        "scope": "seed_11_student_t",
+        "scope_total_wall_ns_including_audit_and_archive": null,
+        "source_control_archive": "archives/seed_11_student_t.tar.gz",
+        "source_summary": "scope_summaries/seed_11_student_t.json",
+        "training_seed": 11,
+        "trajectories": 256
+      },
+      {
+        "actual_transport_counts": {
+          "deliveries": 6656,
+          "files": 24333,
+          "observations": 11021
+        },
+        "archive": {
+          "all_member_hashes_verified": true,
+          "compressed_bytes": 7227162,
+          "file_count": 24343,
+          "sha256": "e55b03ff5c192ecc75279868d85ba0a2074723c43f4531973559a57e80adf79b"
+        },
+        "archive_standalone_wall_ns": null,
+        "control_member": "CONTROL.jsonl",
+        "control_member_sha256": "23fd417d3f9ad7d53205ca0e3019ff3188101ea2577c0cefd5efcf71df96bd1f",
+        "control_rows": 3328,
+        "evaluation_parent_cpu_ns": null,
+        "evaluation_wall_ns": 21235864244,
+        "independent_audit_cpu_ns": null,
+        "independent_audit_internal_wall_ns": 16775635134,
+        "independent_audit_native_call_counts": null,
+        "independent_audit_outer_wall_ns": 16827155580,
+        "law": "gaussian",
+        "measurement_environment_group": "temporary_directory_following_twelve",
+        "native_adapter_roundtrip_ns": 382315267,
+        "native_child_cpu_ns": null,
+        "native_requests": 1142,
+        "native_tick_timer_ns": null,
+        "operational_recovery_applied": false,
+        "original_sparse_ticks": 7395,
+        "policy_episode_costs": {
+          "always_repair": {
+            "mean_action_tariff_units": 0.23484375,
+            "mean_episode_parent_cpu_ns": 4317503.15625,
+            "mean_episode_wall_ns": 4317131.2734375,
+            "paid_action_tariff_units": 60.12,
+            "parent_python_cpu_ns": 1105280808,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1105185606
+          },
+          "always_stop": {
+            "mean_action_tariff_units": 0.0,
+            "mean_episode_parent_cpu_ns": 4713024.8125,
+            "mean_episode_wall_ns": 4712611.8515625,
+            "paid_action_tariff_units": 0.0,
+            "parent_python_cpu_ns": 1206534352,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1206428634
+          },
+          "always_wait": {
+            "mean_action_tariff_units": 0.1369921875,
+            "mean_episode_parent_cpu_ns": 5629391.69140625,
+            "mean_episode_wall_ns": 5635257.0625,
+            "paid_action_tariff_units": 35.07,
+            "parent_python_cpu_ns": 1441124273,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1442625808
+          },
+          "always_wait_repair": {
+            "mean_action_tariff_units": 0.3718359375,
+            "mean_episode_parent_cpu_ns": 6904937.3203125,
+            "mean_episode_wall_ns": 6917341.078125,
+            "paid_action_tariff_units": 95.19,
+            "parent_python_cpu_ns": 1767663954,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1770839316
+          },
+          "analytic": {
+            "mean_action_tariff_units": 0.09816406250000001,
+            "mean_episode_parent_cpu_ns": 5351186.9296875,
+            "mean_episode_wall_ns": 5352920.44921875,
+            "paid_action_tariff_units": 25.130000000000003,
+            "parent_python_cpu_ns": 1369903854,
+            "repair_count": 124,
+            "rows": 256,
+            "wait_count": 179,
+            "wall_ns": 1370347635
+          },
+          "equivalent_gaussian": {
+            "mean_action_tariff_units": 0.09816406250000001,
+            "mean_episode_parent_cpu_ns": 4923940.62890625,
+            "mean_episode_wall_ns": 4929330.70703125,
+            "paid_action_tariff_units": 25.130000000000003,
+            "parent_python_cpu_ns": 1260528801,
+            "repair_count": 124,
+            "rows": 256,
+            "wait_count": 179,
+            "wall_ns": 1261908661
+          },
+          "fixed": {
+            "mean_action_tariff_units": 0.2119921875,
+            "mean_episode_parent_cpu_ns": 6253807.75390625,
+            "mean_episode_wall_ns": 6254130.953125,
+            "paid_action_tariff_units": 54.27,
+            "parent_python_cpu_ns": 1600974785,
+            "repair_count": 183,
+            "rows": 256,
+            "wait_count": 235,
+            "wall_ns": 1601057524
+          },
+          "history": {
+            "mean_action_tariff_units": 0.1853515625,
+            "mean_episode_parent_cpu_ns": 5117537.328125,
+            "mean_episode_wall_ns": 5121417.34375,
+            "paid_action_tariff_units": 47.45,
+            "parent_python_cpu_ns": 1310089556,
+            "repair_count": 182,
+            "rows": 256,
+            "wait_count": 194,
+            "wall_ns": 1311082840
+          },
+          "mean_drive": {
+            "mean_action_tariff_units": 0.2251171875,
+            "mean_episode_parent_cpu_ns": 7181436.74609375,
+            "mean_episode_wall_ns": 7184647.88671875,
+            "paid_action_tariff_units": 57.63,
+            "parent_python_cpu_ns": 1838447807,
+            "repair_count": 202,
+            "rows": 256,
+            "wait_count": 211,
+            "wall_ns": 1839269859
+          },
+          "native": {
+            "mean_action_tariff_units": 0.209140625,
+            "mean_episode_parent_cpu_ns": 4816879.36328125,
+            "mean_episode_wall_ns": 5553259.8671875,
+            "paid_action_tariff_units": 53.54,
+            "parent_python_cpu_ns": 1233121117,
+            "repair_count": 173,
+            "rows": 256,
+            "wait_count": 201,
+            "wall_ns": 1421634526
+          },
+          "oracle": {
+            "mean_action_tariff_units": 0.1062109375,
+            "mean_episode_parent_cpu_ns": 4626850.96484375,
+            "mean_episode_wall_ns": 4627481.44140625,
+            "paid_action_tariff_units": 27.19,
+            "parent_python_cpu_ns": 1184473847,
+            "repair_count": 132,
+            "rows": 256,
+            "wait_count": 180,
+            "wall_ns": 1184635249
+          },
+          "pulse": {
+            "mean_action_tariff_units": 0.25359375,
+            "mean_episode_parent_cpu_ns": 8837319.18359375,
+            "mean_episode_wall_ns": 8840864.46875,
+            "paid_action_tariff_units": 64.92,
+            "parent_python_cpu_ns": 2262353711,
+            "repair_count": 212,
+            "rows": 256,
+            "wait_count": 211,
+            "wall_ns": 2263261304
+          },
+          "pulse_no_reset": {
+            "mean_action_tariff_units": 0.2394921875,
+            "mean_episode_parent_cpu_ns": 10606631.8046875,
+            "mean_episode_wall_ns": 10614310.41796875,
+            "paid_action_tariff_units": 61.31,
+            "parent_python_cpu_ns": 2715297742,
+            "repair_count": 208,
+            "rows": 256,
+            "wait_count": 211,
+            "wall_ns": 2717263467
+          }
+        },
+        "policy_episode_costs_recomputed_and_verified": true,
+        "prediction_rows": 2304,
+        "prediction_wall_ns_by_arm": {
+          "analytic": 1203424,
+          "equivalent_gaussian": 15819719,
+          "fixed": 1679783,
+          "history": 1145898,
+          "mean_drive": 155247276,
+          "native": 89491930,
+          "oracle": 1029291,
+          "pulse": 166628143,
+          "pulse_no_reset": 225689323
+        },
+        "recorded_execution_root": "/tmp/aen-confirm-live-20261027",
+        "remaining_outer_interval_ns_including_serialization_archive_cleanup": 9977718562,
+        "scope": "seed_23_gaussian",
+        "scope_total_wall_ns_including_audit_and_archive": 48040738386,
+        "source_control_archive": "archives/seed_23_gaussian.tar.gz",
+        "source_summary": "scope_summaries/seed_23_gaussian.json",
+        "training_seed": 23,
+        "trajectories": 256
+      },
+      {
+        "actual_transport_counts": {
+          "deliveries": 6656,
+          "files": 24439,
+          "observations": 11127
+        },
+        "archive": {
+          "all_member_hashes_verified": true,
+          "compressed_bytes": 7237304,
+          "file_count": 24449,
+          "sha256": "5c2e0a28440ede5491c2129ff09dcc0160cc843241078a56cdc05ecea750e8b4"
+        },
+        "archive_standalone_wall_ns": null,
+        "control_member": "CONTROL.jsonl",
+        "control_member_sha256": "400d849dae0ef85704b171def6e077ee67cac845f2230e53ad6eedaf12d18532",
+        "control_rows": 3328,
+        "evaluation_parent_cpu_ns": null,
+        "evaluation_wall_ns": 25334881868,
+        "independent_audit_cpu_ns": null,
+        "independent_audit_internal_wall_ns": 18826095904,
+        "independent_audit_native_call_counts": null,
+        "independent_audit_outer_wall_ns": 18886601929,
+        "law": "drift_shift",
+        "measurement_environment_group": "temporary_directory_following_twelve",
+        "native_adapter_roundtrip_ns": 485085227,
+        "native_child_cpu_ns": null,
+        "native_requests": 1161,
+        "native_tick_timer_ns": null,
+        "operational_recovery_applied": false,
+        "original_sparse_ticks": 7540,
+        "policy_episode_costs": {
+          "always_repair": {
+            "mean_action_tariff_units": 0.232734375,
+            "mean_episode_parent_cpu_ns": 4823996.48046875,
+            "mean_episode_wall_ns": 4824177.625,
+            "paid_action_tariff_units": 59.58,
+            "parent_python_cpu_ns": 1234943099,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1234989472
+          },
+          "always_stop": {
+            "mean_action_tariff_units": 0.0,
+            "mean_episode_parent_cpu_ns": 4469752.8671875,
+            "mean_episode_wall_ns": 4469080.546875,
+            "paid_action_tariff_units": 0.0,
+            "parent_python_cpu_ns": 1144256734,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1144084620
+          },
+          "always_wait": {
+            "mean_action_tariff_units": 0.13576171875,
+            "mean_episode_parent_cpu_ns": 5933313.5703125,
+            "mean_episode_wall_ns": 5940851.35546875,
+            "paid_action_tariff_units": 34.755,
+            "parent_python_cpu_ns": 1518928274,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1520857947
+          },
+          "always_wait_repair": {
+            "mean_action_tariff_units": 0.36849609375000003,
+            "mean_episode_parent_cpu_ns": 7112690.73046875,
+            "mean_episode_wall_ns": 7122149.71484375,
+            "paid_action_tariff_units": 94.33500000000001,
+            "parent_python_cpu_ns": 1820848827,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1823270327
+          },
+          "analytic": {
+            "mean_action_tariff_units": 0.10263671875000001,
+            "mean_episode_parent_cpu_ns": 6075655.94140625,
+            "mean_episode_wall_ns": 6079437.0859375,
+            "paid_action_tariff_units": 26.275000000000002,
+            "parent_python_cpu_ns": 1555367921,
+            "repair_count": 125,
+            "rows": 256,
+            "wait_count": 179,
+            "wall_ns": 1556335894
+          },
+          "equivalent_gaussian": {
+            "mean_action_tariff_units": 0.10263671875000001,
+            "mean_episode_parent_cpu_ns": 5856691.60546875,
+            "mean_episode_wall_ns": 5855925.82421875,
+            "paid_action_tariff_units": 26.275000000000002,
+            "parent_python_cpu_ns": 1499313051,
+            "repair_count": 125,
+            "rows": 256,
+            "wait_count": 179,
+            "wall_ns": 1499117011
+          },
+          "fixed": {
+            "mean_action_tariff_units": 0.21474609375,
+            "mean_episode_parent_cpu_ns": 6015837.53515625,
+            "mean_episode_wall_ns": 6016467.18359375,
+            "paid_action_tariff_units": 54.975,
+            "parent_python_cpu_ns": 1540054409,
+            "repair_count": 188,
+            "rows": 256,
+            "wait_count": 232,
+            "wall_ns": 1540215599
+          },
+          "history": {
+            "mean_action_tariff_units": 0.20917968750000002,
+            "mean_episode_parent_cpu_ns": 6581907.28515625,
+            "mean_episode_wall_ns": 6581675.68359375,
+            "paid_action_tariff_units": 53.550000000000004,
+            "parent_python_cpu_ns": 1684968265,
+            "repair_count": 187,
+            "rows": 256,
+            "wait_count": 211,
+            "wall_ns": 1684908975
+          },
+          "mean_drive": {
+            "mean_action_tariff_units": 0.25787109375,
+            "mean_episode_parent_cpu_ns": 10198209.37890625,
+            "mean_episode_wall_ns": 10198365.0625,
+            "paid_action_tariff_units": 66.015,
+            "parent_python_cpu_ns": 2610741601,
+            "repair_count": 213,
+            "rows": 256,
+            "wait_count": 226,
+            "wall_ns": 2610781456
+          },
+          "native": {
+            "mean_action_tariff_units": 0.224921875,
+            "mean_episode_parent_cpu_ns": 8708357.47265625,
+            "mean_episode_wall_ns": 9730930.640625,
+            "paid_action_tariff_units": 57.58,
+            "parent_python_cpu_ns": 2229339513,
+            "repair_count": 185,
+            "rows": 256,
+            "wait_count": 208,
+            "wall_ns": 2491118244
+          },
+          "oracle": {
+            "mean_action_tariff_units": 0.11669921875,
+            "mean_episode_parent_cpu_ns": 7837382.82421875,
+            "mean_episode_wall_ns": 7838133.84375,
+            "paid_action_tariff_units": 29.875,
+            "parent_python_cpu_ns": 2006370003,
+            "repair_count": 140,
+            "rows": 256,
+            "wait_count": 179,
+            "wall_ns": 2006562264
+          },
+          "pulse": {
+            "mean_action_tariff_units": 0.27189453125,
+            "mean_episode_parent_cpu_ns": 11141864.47265625,
+            "mean_episode_wall_ns": 11144721.93359375,
+            "paid_action_tariff_units": 69.605,
+            "parent_python_cpu_ns": 2852317305,
+            "repair_count": 228,
+            "rows": 256,
+            "wait_count": 198,
+            "wall_ns": 2853048815
+          },
+          "pulse_no_reset": {
+            "mean_action_tariff_units": 0.28013671875,
+            "mean_episode_parent_cpu_ns": 9622276.5625,
+            "mean_episode_wall_ns": 9623031.953125,
+            "paid_action_tariff_units": 71.715,
+            "parent_python_cpu_ns": 2463302800,
+            "repair_count": 225,
+            "rows": 256,
+            "wait_count": 219,
+            "wall_ns": 2463496180
+          }
+        },
+        "policy_episode_costs_recomputed_and_verified": true,
+        "prediction_rows": 2304,
+        "prediction_wall_ns_by_arm": {
+          "analytic": 1374952,
+          "equivalent_gaussian": 16452849,
+          "fixed": 1129343,
+          "history": 1199738,
+          "mean_drive": 211976215,
+          "native": 97257344,
+          "oracle": 951384,
+          "pulse": 225143901,
+          "pulse_no_reset": 210588393
+        },
+        "recorded_execution_root": "/tmp/aen-confirm-live-20261027",
+        "remaining_outer_interval_ns_including_serialization_archive_cleanup": 9209715568,
+        "scope": "seed_23_drift_shift",
+        "scope_total_wall_ns_including_audit_and_archive": 53431199365,
+        "source_control_archive": "archives/seed_23_drift_shift.tar.gz",
+        "source_summary": "scope_summaries/seed_23_drift_shift.json",
+        "training_seed": 23,
+        "trajectories": 256
+      },
+      {
+        "actual_transport_counts": {
+          "deliveries": 6656,
+          "files": 24456,
+          "observations": 11144
+        },
+        "archive": {
+          "all_member_hashes_verified": true,
+          "compressed_bytes": 7301401,
+          "file_count": 24466,
+          "sha256": "d31c0f0c2622d0f3657c6ee1e5c504b29c41aa3cda22d6966bde4e287642cc0c"
+        },
+        "archive_standalone_wall_ns": null,
+        "control_member": "CONTROL.jsonl",
+        "control_member_sha256": "0b9348eb1b9e8b677fb224bad339038d773e30be3a09b9797bf542902e2f805c",
+        "control_rows": 3328,
+        "evaluation_parent_cpu_ns": null,
+        "evaluation_wall_ns": 23302058728,
+        "independent_audit_cpu_ns": null,
+        "independent_audit_internal_wall_ns": 16922650442,
+        "independent_audit_native_call_counts": null,
+        "independent_audit_outer_wall_ns": 16971522855,
+        "law": "student_t",
+        "measurement_environment_group": "temporary_directory_following_twelve",
+        "native_adapter_roundtrip_ns": 377550434,
+        "native_child_cpu_ns": null,
+        "native_requests": 1152,
+        "native_tick_timer_ns": null,
+        "operational_recovery_applied": false,
+        "original_sparse_ticks": 7475,
+        "policy_episode_costs": {
+          "always_repair": {
+            "mean_action_tariff_units": 0.226875,
+            "mean_episode_parent_cpu_ns": 4811102.06640625,
+            "mean_episode_wall_ns": 4810644.1796875,
+            "paid_action_tariff_units": 58.08,
+            "parent_python_cpu_ns": 1231642129,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1231524910
+          },
+          "always_stop": {
+            "mean_action_tariff_units": 0.0,
+            "mean_episode_parent_cpu_ns": 4053314.3515625,
+            "mean_episode_wall_ns": 4052261.91796875,
+            "paid_action_tariff_units": 0.0,
+            "parent_python_cpu_ns": 1037648474,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1037379051
+          },
+          "always_wait": {
+            "mean_action_tariff_units": 0.13234375,
+            "mean_episode_parent_cpu_ns": 5418299.12109375,
+            "mean_episode_wall_ns": 5419675.7421875,
+            "paid_action_tariff_units": 33.88,
+            "parent_python_cpu_ns": 1387084575,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1387436990
+          },
+          "always_wait_repair": {
+            "mean_action_tariff_units": 0.35921875000000003,
+            "mean_episode_parent_cpu_ns": 6086373.59765625,
+            "mean_episode_wall_ns": 6094793.51953125,
+            "paid_action_tariff_units": 91.96000000000001,
+            "parent_python_cpu_ns": 1558111641,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1560267141
+          },
+          "analytic": {
+            "mean_action_tariff_units": 0.105546875,
+            "mean_episode_parent_cpu_ns": 6234478.5859375,
+            "mean_episode_wall_ns": 6237669.25,
+            "paid_action_tariff_units": 27.02,
+            "parent_python_cpu_ns": 1596026518,
+            "repair_count": 126,
+            "rows": 256,
+            "wait_count": 186,
+            "wall_ns": 1596843328
+          },
+          "equivalent_gaussian": {
+            "mean_action_tariff_units": 0.105546875,
+            "mean_episode_parent_cpu_ns": 6025688.99609375,
+            "mean_episode_wall_ns": 6029562.30078125,
+            "paid_action_tariff_units": 27.02,
+            "parent_python_cpu_ns": 1542576383,
+            "repair_count": 126,
+            "rows": 256,
+            "wait_count": 186,
+            "wall_ns": 1543567949
+          },
+          "fixed": {
+            "mean_action_tariff_units": 0.21156250000000001,
+            "mean_episode_parent_cpu_ns": 5692336.77734375,
+            "mean_episode_wall_ns": 5694371.5625,
+            "paid_action_tariff_units": 54.160000000000004,
+            "parent_python_cpu_ns": 1457238215,
+            "repair_count": 193,
+            "rows": 256,
+            "wait_count": 229,
+            "wall_ns": 1457759120
+          },
+          "history": {
+            "mean_action_tariff_units": 0.20380859375000002,
+            "mean_episode_parent_cpu_ns": 6681959.58984375,
+            "mean_episode_wall_ns": 6684788.03515625,
+            "paid_action_tariff_units": 52.175000000000004,
+            "parent_python_cpu_ns": 1710581655,
+            "repair_count": 185,
+            "rows": 256,
+            "wait_count": 214,
+            "wall_ns": 1711305737
+          },
+          "mean_drive": {
+            "mean_action_tariff_units": 0.25078125,
+            "mean_episode_parent_cpu_ns": 8123441.2421875,
+            "mean_episode_wall_ns": 8123747.9921875,
+            "paid_action_tariff_units": 64.2,
+            "parent_python_cpu_ns": 2079600958,
+            "repair_count": 212,
+            "rows": 256,
+            "wait_count": 228,
+            "wall_ns": 2079679486
+          },
+          "native": {
+            "mean_action_tariff_units": 0.20537109375,
+            "mean_episode_parent_cpu_ns": 7174353.5859375,
+            "mean_episode_wall_ns": 7938429.44140625,
+            "paid_action_tariff_units": 52.575,
+            "parent_python_cpu_ns": 1836634518,
+            "repair_count": 182,
+            "rows": 256,
+            "wait_count": 202,
+            "wall_ns": 2032237937
+          },
+          "oracle": {
+            "mean_action_tariff_units": 0.116953125,
+            "mean_episode_parent_cpu_ns": 5925879.41796875,
+            "mean_episode_wall_ns": 5931156.00390625,
+            "paid_action_tariff_units": 29.94,
+            "parent_python_cpu_ns": 1517025131,
+            "repair_count": 137,
+            "rows": 256,
+            "wait_count": 188,
+            "wall_ns": 1518375937
+          },
+          "pulse": {
+            "mean_action_tariff_units": 0.2589453125,
+            "mean_episode_parent_cpu_ns": 9646194.73828125,
+            "mean_episode_wall_ns": 9648739.85546875,
+            "paid_action_tariff_units": 66.29,
+            "parent_python_cpu_ns": 2469425853,
+            "repair_count": 220,
+            "rows": 256,
+            "wait_count": 213,
+            "wall_ns": 2470077403
+          },
+          "pulse_no_reset": {
+            "mean_action_tariff_units": 0.25677734375,
+            "mean_episode_parent_cpu_ns": 10904015.765625,
+            "mean_episode_wall_ns": 10905612.19921875,
+            "paid_action_tariff_units": 65.735,
+            "parent_python_cpu_ns": 2791428036,
+            "repair_count": 220,
+            "rows": 256,
+            "wait_count": 217,
+            "wall_ns": 2791836723
+          }
+        },
+        "policy_episode_costs_recomputed_and_verified": true,
+        "prediction_rows": 2304,
+        "prediction_wall_ns_by_arm": {
+          "analytic": 963642,
+          "equivalent_gaussian": 11262586,
+          "fixed": 887207,
+          "history": 1081280,
+          "mean_drive": 184429700,
+          "native": 70172307,
+          "oracle": 1931301,
+          "pulse": 169274117,
+          "pulse_no_reset": 161547892
+        },
+        "recorded_execution_root": "/tmp/aen-confirm-live-20261027",
+        "remaining_outer_interval_ns_including_serialization_archive_cleanup": 8626618967,
+        "scope": "seed_23_student_t",
+        "scope_total_wall_ns_including_audit_and_archive": 48900200550,
+        "source_control_archive": "archives/seed_23_student_t.tar.gz",
+        "source_summary": "scope_summaries/seed_23_student_t.json",
+        "training_seed": 23,
+        "trajectories": 256
+      },
+      {
+        "actual_transport_counts": {
+          "deliveries": 6656,
+          "files": 24415,
+          "observations": 11103
+        },
+        "archive": {
+          "all_member_hashes_verified": true,
+          "compressed_bytes": 7271776,
+          "file_count": 24425,
+          "sha256": "e3d84d5a968c8bca1356fe9a50e3510c10a1bb2c141816501e0976186eb5c83c"
+        },
+        "archive_standalone_wall_ns": null,
+        "control_member": "CONTROL.jsonl",
+        "control_member_sha256": "09d782629780fef323783354c2024e399e9ab4d8bdb31666b22b49fed1e0d30d",
+        "control_rows": 3328,
+        "evaluation_parent_cpu_ns": null,
+        "evaluation_wall_ns": 27254376202,
+        "independent_audit_cpu_ns": null,
+        "independent_audit_internal_wall_ns": 18884318893,
+        "independent_audit_native_call_counts": null,
+        "independent_audit_outer_wall_ns": 18936166196,
+        "law": "gaussian",
+        "measurement_environment_group": "temporary_directory_following_twelve",
+        "native_adapter_roundtrip_ns": 389517713,
+        "native_child_cpu_ns": null,
+        "native_requests": 1156,
+        "native_tick_timer_ns": null,
+        "operational_recovery_applied": false,
+        "original_sparse_ticks": 7504,
+        "policy_episode_costs": {
+          "always_repair": {
+            "mean_action_tariff_units": 0.235078125,
+            "mean_episode_parent_cpu_ns": 7893977.63671875,
+            "mean_episode_wall_ns": 7900175.73828125,
+            "paid_action_tariff_units": 60.18,
+            "parent_python_cpu_ns": 2020858275,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 2022444989
+          },
+          "always_stop": {
+            "mean_action_tariff_units": 0.0,
+            "mean_episode_parent_cpu_ns": 5444625.38671875,
+            "mean_episode_wall_ns": 5445451.16015625,
+            "paid_action_tariff_units": 0.0,
+            "parent_python_cpu_ns": 1393824099,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1394035497
+          },
+          "always_wait": {
+            "mean_action_tariff_units": 0.13712890625000002,
+            "mean_episode_parent_cpu_ns": 5513745.23046875,
+            "mean_episode_wall_ns": 5517557.8984375,
+            "paid_action_tariff_units": 35.105000000000004,
+            "parent_python_cpu_ns": 1411518779,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1412494822
+          },
+          "always_wait_repair": {
+            "mean_action_tariff_units": 0.37220703125,
+            "mean_episode_parent_cpu_ns": 8813093.36328125,
+            "mean_episode_wall_ns": 8820109.7421875,
+            "paid_action_tariff_units": 95.285,
+            "parent_python_cpu_ns": 2256151901,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 2257948094
+          },
+          "analytic": {
+            "mean_action_tariff_units": 0.10244140625,
+            "mean_episode_parent_cpu_ns": 7990407.76171875,
+            "mean_episode_wall_ns": 8058133.921875,
+            "paid_action_tariff_units": 26.225,
+            "parent_python_cpu_ns": 2045544387,
+            "repair_count": 124,
+            "rows": 256,
+            "wait_count": 179,
+            "wall_ns": 2062882284
+          },
+          "equivalent_gaussian": {
+            "mean_action_tariff_units": 0.10244140625,
+            "mean_episode_parent_cpu_ns": 6179608.2734375,
+            "mean_episode_wall_ns": 6215350.63671875,
+            "paid_action_tariff_units": 26.225,
+            "parent_python_cpu_ns": 1581979718,
+            "repair_count": 124,
+            "rows": 256,
+            "wait_count": 179,
+            "wall_ns": 1591129763
+          },
+          "fixed": {
+            "mean_action_tariff_units": 0.21798828125,
+            "mean_episode_parent_cpu_ns": 8122223.1796875,
+            "mean_episode_wall_ns": 8160032.07421875,
+            "paid_action_tariff_units": 55.805,
+            "parent_python_cpu_ns": 2079289134,
+            "repair_count": 186,
+            "rows": 256,
+            "wait_count": 235,
+            "wall_ns": 2088968211
+          },
+          "history": {
+            "mean_action_tariff_units": 0.19048828125,
+            "mean_episode_parent_cpu_ns": 5989057.6875,
+            "mean_episode_wall_ns": 6007701.00390625,
+            "paid_action_tariff_units": 48.765,
+            "parent_python_cpu_ns": 1533198768,
+            "repair_count": 164,
+            "rows": 256,
+            "wait_count": 227,
+            "wall_ns": 1537971457
+          },
+          "mean_drive": {
+            "mean_action_tariff_units": 0.24345703125,
+            "mean_episode_parent_cpu_ns": 9197840.12109375,
+            "mean_episode_wall_ns": 9199364.37109375,
+            "paid_action_tariff_units": 62.325,
+            "parent_python_cpu_ns": 2354647071,
+            "repair_count": 202,
+            "rows": 256,
+            "wait_count": 224,
+            "wall_ns": 2355037279
+          },
+          "native": {
+            "mean_action_tariff_units": 0.20525390625,
+            "mean_episode_parent_cpu_ns": 7189715.17578125,
+            "mean_episode_wall_ns": 7958790.09375,
+            "paid_action_tariff_units": 52.545,
+            "parent_python_cpu_ns": 1840567085,
+            "repair_count": 183,
+            "rows": 256,
+            "wait_count": 205,
+            "wall_ns": 2037450264
+          },
+          "oracle": {
+            "mean_action_tariff_units": 0.11462890625000001,
+            "mean_episode_parent_cpu_ns": 4783260.03515625,
+            "mean_episode_wall_ns": 4786338.5625,
+            "paid_action_tariff_units": 29.345000000000002,
+            "parent_python_cpu_ns": 1224514569,
+            "repair_count": 137,
+            "rows": 256,
+            "wait_count": 179,
+            "wall_ns": 1225302672
+          },
+          "pulse": {
+            "mean_action_tariff_units": 0.2649609375,
+            "mean_episode_parent_cpu_ns": 13898963.84375,
+            "mean_episode_wall_ns": 13909635.7109375,
+            "paid_action_tariff_units": 67.83,
+            "parent_python_cpu_ns": 3558134744,
+            "repair_count": 215,
+            "rows": 256,
+            "wait_count": 216,
+            "wall_ns": 3560866742
+          },
+          "pulse_no_reset": {
+            "mean_action_tariff_units": 0.29498046875,
+            "mean_episode_parent_cpu_ns": 10267601.40625,
+            "mean_episode_wall_ns": 10267785.375,
+            "paid_action_tariff_units": 75.515,
+            "parent_python_cpu_ns": 2628505960,
+            "repair_count": 224,
+            "rows": 256,
+            "wait_count": 220,
+            "wall_ns": 2628553056
+          }
+        },
+        "policy_episode_costs_recomputed_and_verified": true,
+        "prediction_rows": 2304,
+        "prediction_wall_ns_by_arm": {
+          "analytic": 1048720,
+          "equivalent_gaussian": 10930452,
+          "fixed": 1542084,
+          "history": 1445659,
+          "mean_drive": 211537652,
+          "native": 83977002,
+          "oracle": 1252668,
+          "pulse": 222726893,
+          "pulse_no_reset": 223021033
+        },
+        "recorded_execution_root": "/tmp/aen-confirm-live-20261027",
+        "remaining_outer_interval_ns_including_serialization_archive_cleanup": 8509587239,
+        "scope": "seed_37_gaussian",
+        "scope_total_wall_ns_including_audit_and_archive": 54700129637,
+        "source_control_archive": "archives/seed_37_gaussian.tar.gz",
+        "source_summary": "scope_summaries/seed_37_gaussian.json",
+        "training_seed": 37,
+        "trajectories": 256
+      },
+      {
+        "actual_transport_counts": {
+          "deliveries": 6656,
+          "files": 24529,
+          "observations": 11217
+        },
+        "archive": {
+          "all_member_hashes_verified": true,
+          "compressed_bytes": 7275324,
+          "file_count": 24539,
+          "sha256": "c4355c7cf8f2acb44375614753d727983b57f02476c256c388b8ec249b62e575"
+        },
+        "archive_standalone_wall_ns": null,
+        "control_member": "CONTROL.jsonl",
+        "control_member_sha256": "f653a92950b1e3c3261294445a74aeb4b7a3023e90f5875f2dd0e613fbcd6a97",
+        "control_rows": 3328,
+        "evaluation_parent_cpu_ns": null,
+        "evaluation_wall_ns": 25060263466,
+        "independent_audit_cpu_ns": null,
+        "independent_audit_internal_wall_ns": 17963039503,
+        "independent_audit_native_call_counts": null,
+        "independent_audit_outer_wall_ns": 18014204923,
+        "law": "drift_shift",
+        "measurement_environment_group": "temporary_directory_following_twelve",
+        "native_adapter_roundtrip_ns": 411882630,
+        "native_child_cpu_ns": null,
+        "native_requests": 1184,
+        "native_tick_timer_ns": null,
+        "operational_recovery_applied": false,
+        "original_sparse_ticks": 7707,
+        "policy_episode_costs": {
+          "always_repair": {
+            "mean_action_tariff_units": 0.228515625,
+            "mean_episode_parent_cpu_ns": 6006311.45703125,
+            "mean_episode_wall_ns": 6009224.2734375,
+            "paid_action_tariff_units": 58.5,
+            "parent_python_cpu_ns": 1537615733,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1538361414
+          },
+          "always_stop": {
+            "mean_action_tariff_units": 0.0,
+            "mean_episode_parent_cpu_ns": 4370860.6953125,
+            "mean_episode_wall_ns": 4370306.65625,
+            "paid_action_tariff_units": 0.0,
+            "parent_python_cpu_ns": 1118940338,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1118798504
+          },
+          "always_wait": {
+            "mean_action_tariff_units": 0.13330078125,
+            "mean_episode_parent_cpu_ns": 4907463.875,
+            "mean_episode_wall_ns": 4908396.19921875,
+            "paid_action_tariff_units": 34.125,
+            "parent_python_cpu_ns": 1256310752,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1256549427
+          },
+          "always_wait_repair": {
+            "mean_action_tariff_units": 0.36181640625,
+            "mean_episode_parent_cpu_ns": 6047966.046875,
+            "mean_episode_wall_ns": 6053104.53515625,
+            "paid_action_tariff_units": 92.625,
+            "parent_python_cpu_ns": 1548279308,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1549594761
+          },
+          "analytic": {
+            "mean_action_tariff_units": 0.10275390625,
+            "mean_episode_parent_cpu_ns": 7304134.95703125,
+            "mean_episode_wall_ns": 7303322.42578125,
+            "paid_action_tariff_units": 26.305,
+            "parent_python_cpu_ns": 1869858549,
+            "repair_count": 122,
+            "rows": 256,
+            "wait_count": 183,
+            "wall_ns": 1869650541
+          },
+          "equivalent_gaussian": {
+            "mean_action_tariff_units": 0.10275390625,
+            "mean_episode_parent_cpu_ns": 5880930.1484375,
+            "mean_episode_wall_ns": 5881736.6484375,
+            "paid_action_tariff_units": 26.305,
+            "parent_python_cpu_ns": 1505518118,
+            "repair_count": 122,
+            "rows": 256,
+            "wait_count": 183,
+            "wall_ns": 1505724582
+          },
+          "fixed": {
+            "mean_action_tariff_units": 0.21744140625,
+            "mean_episode_parent_cpu_ns": 7705279.46484375,
+            "mean_episode_wall_ns": 7711383.92578125,
+            "paid_action_tariff_units": 55.665,
+            "parent_python_cpu_ns": 1972551543,
+            "repair_count": 193,
+            "rows": 256,
+            "wait_count": 232,
+            "wall_ns": 1974114285
+          },
+          "history": {
+            "mean_action_tariff_units": 0.20431640625,
+            "mean_episode_parent_cpu_ns": 6638593.57421875,
+            "mean_episode_wall_ns": 6639640.0859375,
+            "paid_action_tariff_units": 52.305,
+            "parent_python_cpu_ns": 1699479955,
+            "repair_count": 181,
+            "rows": 256,
+            "wait_count": 223,
+            "wall_ns": 1699747862
+          },
+          "mean_drive": {
+            "mean_action_tariff_units": 0.27494140625,
+            "mean_episode_parent_cpu_ns": 11253209.9375,
+            "mean_episode_wall_ns": 11270507.6015625,
+            "paid_action_tariff_units": 70.385,
+            "parent_python_cpu_ns": 2880821744,
+            "repair_count": 225,
+            "rows": 256,
+            "wait_count": 228,
+            "wall_ns": 2885249946
+          },
+          "native": {
+            "mean_action_tariff_units": 0.2191015625,
+            "mean_episode_parent_cpu_ns": 7704073.54296875,
+            "mean_episode_wall_ns": 8568542.27734375,
+            "paid_action_tariff_units": 56.09,
+            "parent_python_cpu_ns": 1972242827,
+            "repair_count": 188,
+            "rows": 256,
+            "wait_count": 228,
+            "wall_ns": 2193546823
+          },
+          "oracle": {
+            "mean_action_tariff_units": 0.11119140625,
+            "mean_episode_parent_cpu_ns": 4587678.60546875,
+            "mean_episode_wall_ns": 4588792.0546875,
+            "paid_action_tariff_units": 28.465,
+            "parent_python_cpu_ns": 1174445723,
+            "repair_count": 131,
+            "rows": 256,
+            "wait_count": 183,
+            "wall_ns": 1174730766
+          },
+          "pulse": {
+            "mean_action_tariff_units": 0.27666015625,
+            "mean_episode_parent_cpu_ns": 11798355.171875,
+            "mean_episode_wall_ns": 11806169.96875,
+            "paid_action_tariff_units": 70.825,
+            "parent_python_cpu_ns": 3020378924,
+            "repair_count": 228,
+            "rows": 256,
+            "wait_count": 213,
+            "wall_ns": 3022379512
+          },
+          "pulse_no_reset": {
+            "mean_action_tariff_units": 0.31640625,
+            "mean_episode_parent_cpu_ns": 8931146.75,
+            "mean_episode_wall_ns": 8929970.5,
+            "paid_action_tariff_units": 81.0,
+            "parent_python_cpu_ns": 2286373568,
+            "repair_count": 236,
+            "rows": 256,
+            "wait_count": 238,
+            "wall_ns": 2286072448
+          }
+        },
+        "policy_episode_costs_recomputed_and_verified": true,
+        "prediction_rows": 2304,
+        "prediction_wall_ns_by_arm": {
+          "analytic": 1116693,
+          "equivalent_gaussian": 11697729,
+          "fixed": 963071,
+          "history": 969461,
+          "mean_drive": 161319803,
+          "native": 71565439,
+          "oracle": 783371,
+          "pulse": 178617826,
+          "pulse_no_reset": 205664380
+        },
+        "recorded_execution_root": "/tmp/aen-confirm-live-20261027",
+        "remaining_outer_interval_ns_including_serialization_archive_cleanup": 8287058362,
+        "scope": "seed_37_drift_shift",
+        "scope_total_wall_ns_including_audit_and_archive": 51361526751,
+        "source_control_archive": "archives/seed_37_drift_shift.tar.gz",
+        "source_summary": "scope_summaries/seed_37_drift_shift.json",
+        "training_seed": 37,
+        "trajectories": 256
+      },
+      {
+        "actual_transport_counts": {
+          "deliveries": 6656,
+          "files": 24597,
+          "observations": 11285
+        },
+        "archive": {
+          "all_member_hashes_verified": true,
+          "compressed_bytes": 7335372,
+          "file_count": 24607,
+          "sha256": "73152b5cfa24ea0225d41bb2b0f42ea02f4763633d4792b372420e39619209d0"
+        },
+        "archive_standalone_wall_ns": null,
+        "control_member": "CONTROL.jsonl",
+        "control_member_sha256": "7e358063cccbd9702984ae07e229fa0ad04efa6dc0592d5a8c3b09ac03cd3da4",
+        "control_rows": 3328,
+        "evaluation_parent_cpu_ns": null,
+        "evaluation_wall_ns": 25758081518,
+        "independent_audit_cpu_ns": null,
+        "independent_audit_internal_wall_ns": 17195238463,
+        "independent_audit_native_call_counts": null,
+        "independent_audit_outer_wall_ns": 17242394996,
+        "law": "student_t",
+        "measurement_environment_group": "temporary_directory_following_twelve",
+        "native_adapter_roundtrip_ns": 423433332,
+        "native_child_cpu_ns": null,
+        "native_requests": 1184,
+        "native_tick_timer_ns": null,
+        "operational_recovery_applied": false,
+        "original_sparse_ticks": 7710,
+        "policy_episode_costs": {
+          "always_repair": {
+            "mean_action_tariff_units": 0.20859375,
+            "mean_episode_parent_cpu_ns": 6411931.3203125,
+            "mean_episode_wall_ns": 6413605.8828125,
+            "paid_action_tariff_units": 53.4,
+            "parent_python_cpu_ns": 1641454418,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1641883106
+          },
+          "always_stop": {
+            "mean_action_tariff_units": 0.0,
+            "mean_episode_parent_cpu_ns": 5134973.09375,
+            "mean_episode_wall_ns": 5133722.6328125,
+            "paid_action_tariff_units": 0.0,
+            "parent_python_cpu_ns": 1314553112,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1314232994
+          },
+          "always_wait": {
+            "mean_action_tariff_units": 0.12167968750000001,
+            "mean_episode_parent_cpu_ns": 5518819.3515625,
+            "mean_episode_wall_ns": 5533075.19140625,
+            "paid_action_tariff_units": 31.150000000000002,
+            "parent_python_cpu_ns": 1412817754,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1416467249
+          },
+          "always_wait_repair": {
+            "mean_action_tariff_units": 0.3302734375,
+            "mean_episode_parent_cpu_ns": 7916237.22265625,
+            "mean_episode_wall_ns": 7934073.02734375,
+            "paid_action_tariff_units": 84.55,
+            "parent_python_cpu_ns": 2026556729,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 2031122695
+          },
+          "analytic": {
+            "mean_action_tariff_units": 0.10855468750000001,
+            "mean_episode_parent_cpu_ns": 6105103.6015625,
+            "mean_episode_wall_ns": 6106415.21875,
+            "paid_action_tariff_units": 27.790000000000003,
+            "parent_python_cpu_ns": 1562906522,
+            "repair_count": 140,
+            "rows": 256,
+            "wait_count": 196,
+            "wall_ns": 1563242296
+          },
+          "equivalent_gaussian": {
+            "mean_action_tariff_units": 0.10855468750000001,
+            "mean_episode_parent_cpu_ns": 5372572.3125,
+            "mean_episode_wall_ns": 5374125.21484375,
+            "paid_action_tariff_units": 27.790000000000003,
+            "parent_python_cpu_ns": 1375378512,
+            "repair_count": 140,
+            "rows": 256,
+            "wait_count": 196,
+            "wall_ns": 1375776055
+          },
+          "fixed": {
+            "mean_action_tariff_units": 0.2082421875,
+            "mean_episode_parent_cpu_ns": 7316599.44140625,
+            "mean_episode_wall_ns": 7321123.71484375,
+            "paid_action_tariff_units": 53.31,
+            "parent_python_cpu_ns": 1873049457,
+            "repair_count": 202,
+            "rows": 256,
+            "wait_count": 237,
+            "wall_ns": 1874207671
+          },
+          "history": {
+            "mean_action_tariff_units": 0.17908203125,
+            "mean_episode_parent_cpu_ns": 7238648.5546875,
+            "mean_episode_wall_ns": 7240908.41015625,
+            "paid_action_tariff_units": 45.845,
+            "parent_python_cpu_ns": 1853094030,
+            "repair_count": 180,
+            "rows": 256,
+            "wait_count": 224,
+            "wall_ns": 1853672553
+          },
+          "mean_drive": {
+            "mean_action_tariff_units": 0.2268359375,
+            "mean_episode_parent_cpu_ns": 9807903.4453125,
+            "mean_episode_wall_ns": 9808537.046875,
+            "paid_action_tariff_units": 58.07,
+            "parent_python_cpu_ns": 2510823282,
+            "repair_count": 211,
+            "rows": 256,
+            "wait_count": 230,
+            "wall_ns": 2510985484
+          },
+          "native": {
+            "mean_action_tariff_units": 0.19794921875000002,
+            "mean_episode_parent_cpu_ns": 7324288.51953125,
+            "mean_episode_wall_ns": 8240429.6875,
+            "paid_action_tariff_units": 50.675000000000004,
+            "parent_python_cpu_ns": 1875017861,
+            "repair_count": 193,
+            "rows": 256,
+            "wait_count": 223,
+            "wall_ns": 2109550000
+          },
+          "oracle": {
+            "mean_action_tariff_units": 0.1222265625,
+            "mean_episode_parent_cpu_ns": 5115703.54296875,
+            "mean_episode_wall_ns": 5115399.515625,
+            "paid_action_tariff_units": 31.29,
+            "parent_python_cpu_ns": 1309620107,
+            "repair_count": 154,
+            "rows": 256,
+            "wait_count": 197,
+            "wall_ns": 1309542276
+          },
+          "pulse": {
+            "mean_action_tariff_units": 0.231875,
+            "mean_episode_parent_cpu_ns": 11950855.2734375,
+            "mean_episode_wall_ns": 11955667.8359375,
+            "paid_action_tariff_units": 59.36,
+            "parent_python_cpu_ns": 3059418950,
+            "repair_count": 222,
+            "rows": 256,
+            "wait_count": 211,
+            "wall_ns": 3060650966
+          },
+          "pulse_no_reset": {
+            "mean_action_tariff_units": 0.25634765625,
+            "mean_episode_parent_cpu_ns": 11448259.16796875,
+            "mean_episode_wall_ns": 11450356.05859375,
+            "paid_action_tariff_units": 65.625,
+            "parent_python_cpu_ns": 2930754347,
+            "repair_count": 227,
+            "rows": 256,
+            "wait_count": 222,
+            "wall_ns": 2931291151
+          }
+        },
+        "policy_episode_costs_recomputed_and_verified": true,
+        "prediction_rows": 2304,
+        "prediction_wall_ns_by_arm": {
+          "analytic": 1038715,
+          "equivalent_gaussian": 9882804,
+          "fixed": 764041,
+          "history": 859506,
+          "mean_drive": 133222952,
+          "native": 61890236,
+          "oracle": 780887,
+          "pulse": 144103820,
+          "pulse_no_reset": 137992401
+        },
+        "recorded_execution_root": "/tmp/aen-confirm-live-20261027",
+        "remaining_outer_interval_ns_including_serialization_archive_cleanup": 8853182953,
+        "scope": "seed_37_student_t",
+        "scope_total_wall_ns_including_audit_and_archive": 51853659467,
+        "source_control_archive": "archives/seed_37_student_t.tar.gz",
+        "source_summary": "scope_summaries/seed_37_student_t.json",
+        "training_seed": 37,
+        "trajectories": 256
+      },
+      {
+        "actual_transport_counts": {
+          "deliveries": 6656,
+          "files": 24360,
+          "observations": 11048
+        },
+        "archive": {
+          "all_member_hashes_verified": true,
+          "compressed_bytes": 7248474,
+          "file_count": 24370,
+          "sha256": "d2631f4683d5a6692aa8931e6e39be167ab5145849bc0494513e74776c33606e"
+        },
+        "archive_standalone_wall_ns": null,
+        "control_member": "CONTROL.jsonl",
+        "control_member_sha256": "6fda952edb80ea3b9e3cfa9481fe0873f59aba8b9dcab4af4432d689c2291f28",
+        "control_rows": 3328,
+        "evaluation_parent_cpu_ns": null,
+        "evaluation_wall_ns": 23872699440,
+        "independent_audit_cpu_ns": null,
+        "independent_audit_internal_wall_ns": 18380761295,
+        "independent_audit_native_call_counts": null,
+        "independent_audit_outer_wall_ns": 18440762290,
+        "law": "gaussian",
+        "measurement_environment_group": "temporary_directory_following_twelve",
+        "native_adapter_roundtrip_ns": 388265345,
+        "native_child_cpu_ns": null,
+        "native_requests": 1158,
+        "native_tick_timer_ns": null,
+        "operational_recovery_applied": false,
+        "original_sparse_ticks": 7507,
+        "policy_episode_costs": {
+          "always_repair": {
+            "mean_action_tariff_units": 0.222421875,
+            "mean_episode_parent_cpu_ns": 6945596.62109375,
+            "mean_episode_wall_ns": 6948063.72265625,
+            "paid_action_tariff_units": 56.94,
+            "parent_python_cpu_ns": 1778072735,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1778704313
+          },
+          "always_stop": {
+            "mean_action_tariff_units": 0.0,
+            "mean_episode_parent_cpu_ns": 4821672.73828125,
+            "mean_episode_wall_ns": 4822265.88671875,
+            "paid_action_tariff_units": 0.0,
+            "parent_python_cpu_ns": 1234348221,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1234500067
+          },
+          "always_wait": {
+            "mean_action_tariff_units": 0.12974609375,
+            "mean_episode_parent_cpu_ns": 5247087.83203125,
+            "mean_episode_wall_ns": 5248292.36328125,
+            "paid_action_tariff_units": 33.215,
+            "parent_python_cpu_ns": 1343254485,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1343562845
+          },
+          "always_wait_repair": {
+            "mean_action_tariff_units": 0.35216796875,
+            "mean_episode_parent_cpu_ns": 7362904.67578125,
+            "mean_episode_wall_ns": 7364098.8203125,
+            "paid_action_tariff_units": 90.155,
+            "parent_python_cpu_ns": 1884903597,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1885209298
+          },
+          "analytic": {
+            "mean_action_tariff_units": 0.12794921875,
+            "mean_episode_parent_cpu_ns": 6658710.97265625,
+            "mean_episode_wall_ns": 6698055.8828125,
+            "paid_action_tariff_units": 32.755,
+            "parent_python_cpu_ns": 1704630009,
+            "repair_count": 156,
+            "rows": 256,
+            "wait_count": 183,
+            "wall_ns": 1714702306
+          },
+          "equivalent_gaussian": {
+            "mean_action_tariff_units": 0.12794921875,
+            "mean_episode_parent_cpu_ns": 4915295.1328125,
+            "mean_episode_wall_ns": 4915985.609375,
+            "paid_action_tariff_units": 32.755,
+            "parent_python_cpu_ns": 1258315554,
+            "repair_count": 156,
+            "rows": 256,
+            "wait_count": 183,
+            "wall_ns": 1258492316
+          },
+          "fixed": {
+            "mean_action_tariff_units": 0.20498046875,
+            "mean_episode_parent_cpu_ns": 6743140.8359375,
+            "mean_episode_wall_ns": 6748195.265625,
+            "paid_action_tariff_units": 52.475,
+            "parent_python_cpu_ns": 1726244054,
+            "repair_count": 195,
+            "rows": 256,
+            "wait_count": 226,
+            "wall_ns": 1727537988
+          },
+          "history": {
+            "mean_action_tariff_units": 0.149765625,
+            "mean_episode_parent_cpu_ns": 5574612.33203125,
+            "mean_episode_wall_ns": 5576853.98828125,
+            "paid_action_tariff_units": 38.34,
+            "parent_python_cpu_ns": 1427100757,
+            "repair_count": 165,
+            "rows": 256,
+            "wait_count": 174,
+            "wall_ns": 1427674621
+          },
+          "mean_drive": {
+            "mean_action_tariff_units": 0.20544921875,
+            "mean_episode_parent_cpu_ns": 9543135.296875,
+            "mean_episode_wall_ns": 9545097.16796875,
+            "paid_action_tariff_units": 52.595,
+            "parent_python_cpu_ns": 2443042636,
+            "repair_count": 209,
+            "rows": 256,
+            "wait_count": 199,
+            "wall_ns": 2443544875
+          },
+          "native": {
+            "mean_action_tariff_units": 0.19822265625,
+            "mean_episode_parent_cpu_ns": 6988012.63671875,
+            "mean_episode_wall_ns": 7790151.63671875,
+            "paid_action_tariff_units": 50.745,
+            "parent_python_cpu_ns": 1788931235,
+            "repair_count": 186,
+            "rows": 256,
+            "wait_count": 204,
+            "wall_ns": 1994278819
+          },
+          "oracle": {
+            "mean_action_tariff_units": 0.11974609375,
+            "mean_episode_parent_cpu_ns": 5023782.23046875,
+            "mean_episode_wall_ns": 5025151.93359375,
+            "paid_action_tariff_units": 30.655,
+            "parent_python_cpu_ns": 1286088251,
+            "repair_count": 142,
+            "rows": 256,
+            "wait_count": 192,
+            "wall_ns": 1286438895
+          },
+          "pulse": {
+            "mean_action_tariff_units": 0.19732421875,
+            "mean_episode_parent_cpu_ns": 9138456.82421875,
+            "mean_episode_wall_ns": 9143951.40625,
+            "paid_action_tariff_units": 50.515,
+            "parent_python_cpu_ns": 2339444947,
+            "repair_count": 201,
+            "rows": 256,
+            "wait_count": 201,
+            "wall_ns": 2340851560
+          },
+          "pulse_no_reset": {
+            "mean_action_tariff_units": 0.19513671875,
+            "mean_episode_parent_cpu_ns": 9900574.0,
+            "mean_episode_wall_ns": 9900767.9140625,
+            "paid_action_tariff_units": 49.955,
+            "parent_python_cpu_ns": 2534546944,
+            "repair_count": 200,
+            "rows": 256,
+            "wait_count": 196,
+            "wall_ns": 2534596586
+          }
+        },
+        "policy_episode_costs_recomputed_and_verified": true,
+        "prediction_rows": 2304,
+        "prediction_wall_ns_by_arm": {
+          "analytic": 1060167,
+          "equivalent_gaussian": 12217349,
+          "fixed": 790711,
+          "history": 1042371,
+          "mean_drive": 182930507,
+          "native": 66559141,
+          "oracle": 1665290,
+          "pulse": 173339776,
+          "pulse_no_reset": 148957367
+        },
+        "recorded_execution_root": "/tmp/aen-confirm-live-20261027",
+        "remaining_outer_interval_ns_including_serialization_archive_cleanup": 8637311934,
+        "scope": "seed_53_gaussian",
+        "scope_total_wall_ns_including_audit_and_archive": 50950773664,
+        "source_control_archive": "archives/seed_53_gaussian.tar.gz",
+        "source_summary": "scope_summaries/seed_53_gaussian.json",
+        "training_seed": 53,
+        "trajectories": 256
+      },
+      {
+        "actual_transport_counts": {
+          "deliveries": 6656,
+          "files": 24526,
+          "observations": 11214
+        },
+        "archive": {
+          "all_member_hashes_verified": true,
+          "compressed_bytes": 7264736,
+          "file_count": 24536,
+          "sha256": "829461f85e130ddf501df3fee72c20761d16ff20a781113b537316b4f9c3b3cf"
+        },
+        "archive_standalone_wall_ns": null,
+        "control_member": "CONTROL.jsonl",
+        "control_member_sha256": "a7ee9ba061b8e758608364255ad1c0c2a9bcae108483d92164b5e71a520cb4f7",
+        "control_rows": 3328,
+        "evaluation_parent_cpu_ns": null,
+        "evaluation_wall_ns": 23897842229,
+        "independent_audit_cpu_ns": null,
+        "independent_audit_internal_wall_ns": 16276463472,
+        "independent_audit_native_call_counts": null,
+        "independent_audit_outer_wall_ns": 16328026550,
+        "law": "drift_shift",
+        "measurement_environment_group": "temporary_directory_following_twelve",
+        "native_adapter_roundtrip_ns": 385268101,
+        "native_child_cpu_ns": null,
+        "native_requests": 1183,
+        "native_tick_timer_ns": null,
+        "operational_recovery_applied": false,
+        "original_sparse_ticks": 7704,
+        "policy_episode_costs": {
+          "always_repair": {
+            "mean_action_tariff_units": 0.21140625,
+            "mean_episode_parent_cpu_ns": 5724407.06640625,
+            "mean_episode_wall_ns": 5733021.171875,
+            "paid_action_tariff_units": 54.12,
+            "parent_python_cpu_ns": 1465448209,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1467653420
+          },
+          "always_stop": {
+            "mean_action_tariff_units": 0.0,
+            "mean_episode_parent_cpu_ns": 4132133.28125,
+            "mean_episode_wall_ns": 4138593.01953125,
+            "paid_action_tariff_units": 0.0,
+            "parent_python_cpu_ns": 1057826120,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1059479813
+          },
+          "always_wait": {
+            "mean_action_tariff_units": 0.12332031250000001,
+            "mean_episode_parent_cpu_ns": 4887280.1640625,
+            "mean_episode_wall_ns": 4896751.765625,
+            "paid_action_tariff_units": 31.570000000000004,
+            "parent_python_cpu_ns": 1251143722,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1253568452
+          },
+          "always_wait_repair": {
+            "mean_action_tariff_units": 0.3347265625,
+            "mean_episode_parent_cpu_ns": 7669677.48046875,
+            "mean_episode_wall_ns": 7681516.8046875,
+            "paid_action_tariff_units": 85.69,
+            "parent_python_cpu_ns": 1963437435,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1966468302
+          },
+          "analytic": {
+            "mean_action_tariff_units": 0.1345703125,
+            "mean_episode_parent_cpu_ns": 7452983.86328125,
+            "mean_episode_wall_ns": 7459277.50390625,
+            "paid_action_tariff_units": 34.45,
+            "parent_python_cpu_ns": 1907963869,
+            "repair_count": 159,
+            "rows": 256,
+            "wait_count": 192,
+            "wall_ns": 1909575041
+          },
+          "equivalent_gaussian": {
+            "mean_action_tariff_units": 0.1345703125,
+            "mean_episode_parent_cpu_ns": 5370292.69921875,
+            "mean_episode_wall_ns": 5369802.859375,
+            "paid_action_tariff_units": 34.45,
+            "parent_python_cpu_ns": 1374794931,
+            "repair_count": 159,
+            "rows": 256,
+            "wait_count": 192,
+            "wall_ns": 1374669532
+          },
+          "fixed": {
+            "mean_action_tariff_units": 0.2103515625,
+            "mean_episode_parent_cpu_ns": 7531596.546875,
+            "mean_episode_wall_ns": 7532589.359375,
+            "paid_action_tariff_units": 53.85,
+            "parent_python_cpu_ns": 1928088716,
+            "repair_count": 206,
+            "rows": 256,
+            "wait_count": 228,
+            "wall_ns": 1928342876
+          },
+          "history": {
+            "mean_action_tariff_units": 0.1604296875,
+            "mean_episode_parent_cpu_ns": 5186056.75,
+            "mean_episode_wall_ns": 5186608.77734375,
+            "paid_action_tariff_units": 41.07,
+            "parent_python_cpu_ns": 1327630528,
+            "repair_count": 176,
+            "rows": 256,
+            "wait_count": 185,
+            "wall_ns": 1327771847
+          },
+          "mean_drive": {
+            "mean_action_tariff_units": 0.2150390625,
+            "mean_episode_parent_cpu_ns": 9821757.53125,
+            "mean_episode_wall_ns": 9824565.6171875,
+            "paid_action_tariff_units": 55.05,
+            "parent_python_cpu_ns": 2514369928,
+            "repair_count": 217,
+            "rows": 256,
+            "wait_count": 210,
+            "wall_ns": 2515088798
+          },
+          "native": {
+            "mean_action_tariff_units": 0.22353515625,
+            "mean_episode_parent_cpu_ns": 6834371.12109375,
+            "mean_episode_wall_ns": 7670302.4375,
+            "paid_action_tariff_units": 57.225,
+            "parent_python_cpu_ns": 1749599007,
+            "repair_count": 212,
+            "rows": 256,
+            "wait_count": 203,
+            "wall_ns": 1963597424
+          },
+          "oracle": {
+            "mean_action_tariff_units": 0.1263671875,
+            "mean_episode_parent_cpu_ns": 5824954.54296875,
+            "mean_episode_wall_ns": 5828686.2578125,
+            "paid_action_tariff_units": 32.35,
+            "parent_python_cpu_ns": 1491188363,
+            "repair_count": 145,
+            "rows": 256,
+            "wait_count": 201,
+            "wall_ns": 1492143682
+          },
+          "pulse": {
+            "mean_action_tariff_units": 0.2194140625,
+            "mean_episode_parent_cpu_ns": 10143407.2265625,
+            "mean_episode_wall_ns": 10147768.3828125,
+            "paid_action_tariff_units": 56.17,
+            "parent_python_cpu_ns": 2596712250,
+            "repair_count": 215,
+            "rows": 256,
+            "wait_count": 214,
+            "wall_ns": 2597828706
+          },
+          "pulse_no_reset": {
+            "mean_action_tariff_units": 0.2112890625,
+            "mean_episode_parent_cpu_ns": 8401100.81640625,
+            "mean_episode_wall_ns": 8402416.421875,
+            "paid_action_tariff_units": 54.09,
+            "parent_python_cpu_ns": 2150681809,
+            "repair_count": 206,
+            "rows": 256,
+            "wait_count": 214,
+            "wall_ns": 2151018604
+          }
+        },
+        "policy_episode_costs_recomputed_and_verified": true,
+        "prediction_rows": 2304,
+        "prediction_wall_ns_by_arm": {
+          "analytic": 1148091,
+          "equivalent_gaussian": 14413962,
+          "fixed": 2111022,
+          "history": 1210234,
+          "mean_drive": 128051415,
+          "native": 64045381,
+          "oracle": 901569,
+          "pulse": 176278767,
+          "pulse_no_reset": 169454975
+        },
+        "recorded_execution_root": "/tmp/aen-confirm-live-20261027",
+        "remaining_outer_interval_ns_including_serialization_archive_cleanup": 8659953467,
+        "scope": "seed_53_drift_shift",
+        "scope_total_wall_ns_including_audit_and_archive": 48885822246,
+        "source_control_archive": "archives/seed_53_drift_shift.tar.gz",
+        "source_summary": "scope_summaries/seed_53_drift_shift.json",
+        "training_seed": 53,
+        "trajectories": 256
+      },
+      {
+        "actual_transport_counts": {
+          "deliveries": 6656,
+          "files": 24469,
+          "observations": 11157
+        },
+        "archive": {
+          "all_member_hashes_verified": true,
+          "compressed_bytes": 7281690,
+          "file_count": 24479,
+          "sha256": "b65b49f80f85392184f2d15558cc3c66def4792bb5e3b1e7e8a581aa25e1f161"
+        },
+        "archive_standalone_wall_ns": null,
+        "control_member": "CONTROL.jsonl",
+        "control_member_sha256": "d7222c6156897a9987049e7c43776ae626f051a73ac87c765ab1fd6c0e2be62f",
+        "control_rows": 3328,
+        "evaluation_parent_cpu_ns": null,
+        "evaluation_wall_ns": 29830445031,
+        "independent_audit_cpu_ns": null,
+        "independent_audit_internal_wall_ns": 19712466388,
+        "independent_audit_native_call_counts": null,
+        "independent_audit_outer_wall_ns": 19768361864,
+        "law": "student_t",
+        "measurement_environment_group": "temporary_directory_following_twelve",
+        "native_adapter_roundtrip_ns": 526316989,
+        "native_child_cpu_ns": null,
+        "native_requests": 1178,
+        "native_tick_timer_ns": null,
+        "operational_recovery_applied": false,
+        "original_sparse_ticks": 7666,
+        "policy_episode_costs": {
+          "always_repair": {
+            "mean_action_tariff_units": 0.219609375,
+            "mean_episode_parent_cpu_ns": 7402374.81640625,
+            "mean_episode_wall_ns": 7404193.65625,
+            "paid_action_tariff_units": 56.22,
+            "parent_python_cpu_ns": 1895007953,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1895473576
+          },
+          "always_stop": {
+            "mean_action_tariff_units": 0.0,
+            "mean_episode_parent_cpu_ns": 6831864.8984375,
+            "mean_episode_wall_ns": 6831937.421875,
+            "paid_action_tariff_units": 0.0,
+            "parent_python_cpu_ns": 1748957414,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1748975980
+          },
+          "always_wait": {
+            "mean_action_tariff_units": 0.12810546875,
+            "mean_episode_parent_cpu_ns": 6386102.26953125,
+            "mean_episode_wall_ns": 6387234.31640625,
+            "paid_action_tariff_units": 32.795,
+            "parent_python_cpu_ns": 1634842181,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1635131985
+          },
+          "always_wait_repair": {
+            "mean_action_tariff_units": 0.34771484375,
+            "mean_episode_parent_cpu_ns": 7530881.22265625,
+            "mean_episode_wall_ns": 7564409.73046875,
+            "paid_action_tariff_units": 89.015,
+            "parent_python_cpu_ns": 1927905593,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1936488891
+          },
+          "analytic": {
+            "mean_action_tariff_units": 0.12974609375,
+            "mean_episode_parent_cpu_ns": 7660985.57421875,
+            "mean_episode_wall_ns": 7667622.98046875,
+            "paid_action_tariff_units": 33.215,
+            "parent_python_cpu_ns": 1961212307,
+            "repair_count": 152,
+            "rows": 256,
+            "wait_count": 185,
+            "wall_ns": 1962911483
+          },
+          "equivalent_gaussian": {
+            "mean_action_tariff_units": 0.12974609375,
+            "mean_episode_parent_cpu_ns": 6100387.51171875,
+            "mean_episode_wall_ns": 6101795.9921875,
+            "paid_action_tariff_units": 33.215,
+            "parent_python_cpu_ns": 1561699203,
+            "repair_count": 152,
+            "rows": 256,
+            "wait_count": 185,
+            "wall_ns": 1562059774
+          },
+          "fixed": {
+            "mean_action_tariff_units": 0.20740234375,
+            "mean_episode_parent_cpu_ns": 8969591.1171875,
+            "mean_episode_wall_ns": 8975467.12890625,
+            "paid_action_tariff_units": 53.095,
+            "parent_python_cpu_ns": 2296215326,
+            "repair_count": 201,
+            "rows": 256,
+            "wait_count": 222,
+            "wall_ns": 2297719585
+          },
+          "history": {
+            "mean_action_tariff_units": 0.1512109375,
+            "mean_episode_parent_cpu_ns": 7993583.5546875,
+            "mean_episode_wall_ns": 7997171.8203125,
+            "paid_action_tariff_units": 38.71,
+            "parent_python_cpu_ns": 2046357390,
+            "repair_count": 168,
+            "rows": 256,
+            "wait_count": 177,
+            "wall_ns": 2047275986
+          },
+          "mean_drive": {
+            "mean_action_tariff_units": 0.23177734375,
+            "mean_episode_parent_cpu_ns": 12140258.5625,
+            "mean_episode_wall_ns": 12140313.50390625,
+            "paid_action_tariff_units": 59.335,
+            "parent_python_cpu_ns": 3107906192,
+            "repair_count": 217,
+            "rows": 256,
+            "wait_count": 210,
+            "wall_ns": 3107920257
+          },
+          "native": {
+            "mean_action_tariff_units": 0.21888671875000001,
+            "mean_episode_parent_cpu_ns": 9309313.4921875,
+            "mean_episode_wall_ns": 10409075.09765625,
+            "paid_action_tariff_units": 56.035000000000004,
+            "parent_python_cpu_ns": 2383184254,
+            "repair_count": 197,
+            "rows": 256,
+            "wait_count": 213,
+            "wall_ns": 2664723225
+          },
+          "oracle": {
+            "mean_action_tariff_units": 0.12708984375000001,
+            "mean_episode_parent_cpu_ns": 5448423.2265625,
+            "mean_episode_wall_ns": 5448098.1640625,
+            "paid_action_tariff_units": 32.535000000000004,
+            "parent_python_cpu_ns": 1394796346,
+            "repair_count": 141,
+            "rows": 256,
+            "wait_count": 199,
+            "wall_ns": 1394713130
+          },
+          "pulse": {
+            "mean_action_tariff_units": 0.24068359375,
+            "mean_episode_parent_cpu_ns": 15125097.1640625,
+            "mean_episode_wall_ns": 15129451.53515625,
+            "paid_action_tariff_units": 61.615,
+            "parent_python_cpu_ns": 3872024874,
+            "repair_count": 216,
+            "rows": 256,
+            "wait_count": 219,
+            "wall_ns": 3873139593
+          },
+          "pulse_no_reset": {
+            "mean_action_tariff_units": 0.23138671875,
+            "mean_episode_parent_cpu_ns": 11453074.6171875,
+            "mean_episode_wall_ns": 11454486.421875,
+            "paid_action_tariff_units": 59.235,
+            "parent_python_cpu_ns": 2931987102,
+            "repair_count": 209,
+            "rows": 256,
+            "wait_count": 214,
+            "wall_ns": 2932348524
+          }
+        },
+        "policy_episode_costs_recomputed_and_verified": true,
+        "prediction_rows": 2304,
+        "prediction_wall_ns_by_arm": {
+          "analytic": 1044184,
+          "equivalent_gaussian": 11986554,
+          "fixed": 895580,
+          "history": 1035791,
+          "mean_drive": 150159054,
+          "native": 88805228,
+          "oracle": 965796,
+          "pulse": 178488438,
+          "pulse_no_reset": 179478725
+        },
+        "recorded_execution_root": "/tmp/aen-confirm-live-20261027",
+        "remaining_outer_interval_ns_including_serialization_archive_cleanup": 9491053713,
+        "scope": "seed_53_student_t",
+        "scope_total_wall_ns_including_audit_and_archive": 59089860608,
+        "source_control_archive": "archives/seed_53_student_t.tar.gz",
+        "source_summary": "scope_summaries/seed_53_student_t.json",
+        "training_seed": 53,
+        "trajectories": 256
+      },
+      {
+        "actual_transport_counts": {
+          "deliveries": 6656,
+          "files": 24592,
+          "observations": 11280
+        },
+        "archive": {
+          "all_member_hashes_verified": true,
+          "compressed_bytes": 7314989,
+          "file_count": 24602,
+          "sha256": "69cf8e9f06f4f2495bf3e0deb34defbee12ae20ec4ae255b02b74451817c4e02"
+        },
+        "archive_standalone_wall_ns": null,
+        "control_member": "CONTROL.jsonl",
+        "control_member_sha256": "b48c5c01dc2cd0977654c4737d7d408fee649d1364781aaff018d9e01630dccb",
+        "control_rows": 3328,
+        "evaluation_parent_cpu_ns": null,
+        "evaluation_wall_ns": 26456786430,
+        "independent_audit_cpu_ns": null,
+        "independent_audit_internal_wall_ns": 19255607974,
+        "independent_audit_native_call_counts": null,
+        "independent_audit_outer_wall_ns": 19303769746,
+        "law": "gaussian",
+        "measurement_environment_group": "temporary_directory_following_twelve",
+        "native_adapter_roundtrip_ns": 461160877,
+        "native_child_cpu_ns": null,
+        "native_requests": 1211,
+        "native_tick_timer_ns": null,
+        "operational_recovery_applied": false,
+        "original_sparse_ticks": 7915,
+        "policy_episode_costs": {
+          "always_repair": {
+            "mean_action_tariff_units": 0.21,
+            "mean_episode_parent_cpu_ns": 6656223.51171875,
+            "mean_episode_wall_ns": 6658789.22265625,
+            "paid_action_tariff_units": 53.76,
+            "parent_python_cpu_ns": 1703993219,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1704650041
+          },
+          "always_stop": {
+            "mean_action_tariff_units": 0.0,
+            "mean_episode_parent_cpu_ns": 5237236.4375,
+            "mean_episode_wall_ns": 5237750.94140625,
+            "paid_action_tariff_units": 0.0,
+            "parent_python_cpu_ns": 1340732528,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1340864241
+          },
+          "always_wait": {
+            "mean_action_tariff_units": 0.12250000000000001,
+            "mean_episode_parent_cpu_ns": 6268915.69140625,
+            "mean_episode_wall_ns": 6272845.85546875,
+            "paid_action_tariff_units": 31.360000000000003,
+            "parent_python_cpu_ns": 1604842417,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1605848539
+          },
+          "always_wait_repair": {
+            "mean_action_tariff_units": 0.3325,
+            "mean_episode_parent_cpu_ns": 7987119.125,
+            "mean_episode_wall_ns": 7989787.359375,
+            "paid_action_tariff_units": 85.12,
+            "parent_python_cpu_ns": 2044702496,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 2045385564
+          },
+          "analytic": {
+            "mean_action_tariff_units": 0.10734375,
+            "mean_episode_parent_cpu_ns": 7088324.81640625,
+            "mean_episode_wall_ns": 7093726.4453125,
+            "paid_action_tariff_units": 27.48,
+            "parent_python_cpu_ns": 1814611153,
+            "repair_count": 145,
+            "rows": 256,
+            "wait_count": 192,
+            "wall_ns": 1815993970
+          },
+          "equivalent_gaussian": {
+            "mean_action_tariff_units": 0.10734375,
+            "mean_episode_parent_cpu_ns": 5584432.5703125,
+            "mean_episode_wall_ns": 5584266.02734375,
+            "paid_action_tariff_units": 27.48,
+            "parent_python_cpu_ns": 1429614738,
+            "repair_count": 145,
+            "rows": 256,
+            "wait_count": 192,
+            "wall_ns": 1429572103
+          },
+          "fixed": {
+            "mean_action_tariff_units": 0.20078125,
+            "mean_episode_parent_cpu_ns": 8343755.98046875,
+            "mean_episode_wall_ns": 8350747.8359375,
+            "paid_action_tariff_units": 51.4,
+            "parent_python_cpu_ns": 2136001531,
+            "repair_count": 198,
+            "rows": 256,
+            "wait_count": 235,
+            "wall_ns": 2137791446
+          },
+          "history": {
+            "mean_action_tariff_units": 0.18181640625,
+            "mean_episode_parent_cpu_ns": 6518775.4296875,
+            "mean_episode_wall_ns": 6520973.09765625,
+            "paid_action_tariff_units": 46.545,
+            "parent_python_cpu_ns": 1668806510,
+            "repair_count": 183,
+            "rows": 256,
+            "wait_count": 219,
+            "wall_ns": 1669369113
+          },
+          "mean_drive": {
+            "mean_action_tariff_units": 0.251953125,
+            "mean_episode_parent_cpu_ns": 9720792.015625,
+            "mean_episode_wall_ns": 9719520.41796875,
+            "paid_action_tariff_units": 64.5,
+            "parent_python_cpu_ns": 2488522756,
+            "repair_count": 232,
+            "rows": 256,
+            "wait_count": 198,
+            "wall_ns": 2488197227
+          },
+          "native": {
+            "mean_action_tariff_units": 0.2412109375,
+            "mean_episode_parent_cpu_ns": 7489019.52734375,
+            "mean_episode_wall_ns": 8372788.08984375,
+            "paid_action_tariff_units": 61.75,
+            "parent_python_cpu_ns": 1917188999,
+            "repair_count": 219,
+            "rows": 256,
+            "wait_count": 224,
+            "wall_ns": 2143433751
+          },
+          "oracle": {
+            "mean_action_tariff_units": 0.11703125,
+            "mean_episode_parent_cpu_ns": 5013155.55078125,
+            "mean_episode_wall_ns": 5019793.28125,
+            "paid_action_tariff_units": 29.96,
+            "parent_python_cpu_ns": 1283367821,
+            "repair_count": 153,
+            "rows": 256,
+            "wait_count": 196,
+            "wall_ns": 1285067080
+          },
+          "pulse": {
+            "mean_action_tariff_units": 0.27541015625,
+            "mean_episode_parent_cpu_ns": 12994990.97265625,
+            "mean_episode_wall_ns": 12998261.3125,
+            "paid_action_tariff_units": 70.505,
+            "parent_python_cpu_ns": 3326717689,
+            "repair_count": 237,
+            "rows": 256,
+            "wait_count": 205,
+            "wall_ns": 3327554896
+          },
+          "pulse_no_reset": {
+            "mean_action_tariff_units": 0.26687500000000003,
+            "mean_episode_parent_cpu_ns": 9606876.65234375,
+            "mean_episode_wall_ns": 9606033.44140625,
+            "paid_action_tariff_units": 68.32000000000001,
+            "parent_python_cpu_ns": 2459360423,
+            "repair_count": 235,
+            "rows": 256,
+            "wait_count": 192,
+            "wall_ns": 2459144561
+          }
+        },
+        "policy_episode_costs_recomputed_and_verified": true,
+        "prediction_rows": 2304,
+        "prediction_wall_ns_by_arm": {
+          "analytic": 1020539,
+          "equivalent_gaussian": 10472702,
+          "fixed": 1092518,
+          "history": 886107,
+          "mean_drive": 196997123,
+          "native": 106578651,
+          "oracle": 4556811,
+          "pulse": 355771028,
+          "pulse_no_reset": 187442430
+        },
+        "recorded_execution_root": "/tmp/aen-confirm-live-20261027",
+        "remaining_outer_interval_ns_including_serialization_archive_cleanup": 9240795511,
+        "scope": "seed_71_gaussian",
+        "scope_total_wall_ns_including_audit_and_archive": 55001351687,
+        "source_control_archive": "archives/seed_71_gaussian.tar.gz",
+        "source_summary": "scope_summaries/seed_71_gaussian.json",
+        "training_seed": 71,
+        "trajectories": 256
+      },
+      {
+        "actual_transport_counts": {
+          "deliveries": 6656,
+          "files": 24491,
+          "observations": 11179
+        },
+        "archive": {
+          "all_member_hashes_verified": true,
+          "compressed_bytes": 7261862,
+          "file_count": 24501,
+          "sha256": "0a67291fe710115820429149eb3f0ca7310bb62f02bd9be1e937cf4c9f293b61"
+        },
+        "archive_standalone_wall_ns": null,
+        "control_member": "CONTROL.jsonl",
+        "control_member_sha256": "b695fa8b7864f0c8caa658e82ec16cc802a4de14ce61c507c80b1bc27d88dec0",
+        "control_rows": 3328,
+        "evaluation_parent_cpu_ns": null,
+        "evaluation_wall_ns": 24204167083,
+        "independent_audit_cpu_ns": null,
+        "independent_audit_internal_wall_ns": 17223004417,
+        "independent_audit_native_call_counts": null,
+        "independent_audit_outer_wall_ns": 17272154371,
+        "law": "drift_shift",
+        "measurement_environment_group": "temporary_directory_following_twelve",
+        "native_adapter_roundtrip_ns": 505677155,
+        "native_child_cpu_ns": null,
+        "native_requests": 1216,
+        "native_tick_timer_ns": null,
+        "operational_recovery_applied": false,
+        "original_sparse_ticks": 7955,
+        "policy_episode_costs": {
+          "always_repair": {
+            "mean_action_tariff_units": 0.22945312499999998,
+            "mean_episode_parent_cpu_ns": 6920460.46484375,
+            "mean_episode_wall_ns": 6928799.77734375,
+            "paid_action_tariff_units": 58.739999999999995,
+            "parent_python_cpu_ns": 1771637879,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1773772743
+          },
+          "always_stop": {
+            "mean_action_tariff_units": 0.0,
+            "mean_episode_parent_cpu_ns": 4774410.8671875,
+            "mean_episode_wall_ns": 4773711.06640625,
+            "paid_action_tariff_units": 0.0,
+            "parent_python_cpu_ns": 1222249182,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1222070033
+          },
+          "always_wait": {
+            "mean_action_tariff_units": 0.13384765625,
+            "mean_episode_parent_cpu_ns": 5356462.15625,
+            "mean_episode_wall_ns": 5357023.16796875,
+            "paid_action_tariff_units": 34.265,
+            "parent_python_cpu_ns": 1371254312,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1371397931
+          },
+          "always_wait_repair": {
+            "mean_action_tariff_units": 0.36330078125,
+            "mean_episode_parent_cpu_ns": 4445636.4140625,
+            "mean_episode_wall_ns": 4447989.24609375,
+            "paid_action_tariff_units": 93.005,
+            "parent_python_cpu_ns": 1138082922,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1138685247
+          },
+          "analytic": {
+            "mean_action_tariff_units": 0.11033203125,
+            "mean_episode_parent_cpu_ns": 6503711.48828125,
+            "mean_episode_wall_ns": 6507780.40625,
+            "paid_action_tariff_units": 28.245,
+            "parent_python_cpu_ns": 1664950141,
+            "repair_count": 126,
+            "rows": 256,
+            "wait_count": 190,
+            "wall_ns": 1665991784
+          },
+          "equivalent_gaussian": {
+            "mean_action_tariff_units": 0.11033203125,
+            "mean_episode_parent_cpu_ns": 5370242.0,
+            "mean_episode_wall_ns": 5371959.6171875,
+            "paid_action_tariff_units": 28.245,
+            "parent_python_cpu_ns": 1374781952,
+            "repair_count": 126,
+            "rows": 256,
+            "wait_count": 190,
+            "wall_ns": 1375221662
+          },
+          "fixed": {
+            "mean_action_tariff_units": 0.21267578125,
+            "mean_episode_parent_cpu_ns": 7333983.39453125,
+            "mean_episode_wall_ns": 7338020.5625,
+            "paid_action_tariff_units": 54.445,
+            "parent_python_cpu_ns": 1877499749,
+            "repair_count": 192,
+            "rows": 256,
+            "wait_count": 228,
+            "wall_ns": 1878533264
+          },
+          "history": {
+            "mean_action_tariff_units": 0.2008984375,
+            "mean_episode_parent_cpu_ns": 5588181.55078125,
+            "mean_episode_wall_ns": 5589753.8359375,
+            "paid_action_tariff_units": 51.43,
+            "parent_python_cpu_ns": 1430574477,
+            "repair_count": 180,
+            "rows": 256,
+            "wait_count": 212,
+            "wall_ns": 1430976982
+          },
+          "mean_drive": {
+            "mean_action_tariff_units": 0.2860546875,
+            "mean_episode_parent_cpu_ns": 8846855.96484375,
+            "mean_episode_wall_ns": 8846158.12109375,
+            "paid_action_tariff_units": 73.23,
+            "parent_python_cpu_ns": 2264795127,
+            "repair_count": 235,
+            "rows": 256,
+            "wait_count": 178,
+            "wall_ns": 2264616479
+          },
+          "native": {
+            "mean_action_tariff_units": 0.27244140625,
+            "mean_episode_parent_cpu_ns": 7992725.0078125,
+            "mean_episode_wall_ns": 9019482.75390625,
+            "paid_action_tariff_units": 69.745,
+            "parent_python_cpu_ns": 2046137602,
+            "repair_count": 218,
+            "rows": 256,
+            "wait_count": 230,
+            "wall_ns": 2308987585
+          },
+          "oracle": {
+            "mean_action_tariff_units": 0.11970703125,
+            "mean_episode_parent_cpu_ns": 4966124.3984375,
+            "mean_episode_wall_ns": 4972167.10546875,
+            "paid_action_tariff_units": 30.645,
+            "parent_python_cpu_ns": 1271327846,
+            "repair_count": 136,
+            "rows": 256,
+            "wait_count": 190,
+            "wall_ns": 1272874779
+          },
+          "pulse": {
+            "mean_action_tariff_units": 0.31244140625,
+            "mean_episode_parent_cpu_ns": 11043002.09375,
+            "mean_episode_wall_ns": 11044629.82421875,
+            "paid_action_tariff_units": 79.985,
+            "parent_python_cpu_ns": 2827008536,
+            "repair_count": 242,
+            "rows": 256,
+            "wait_count": 200,
+            "wall_ns": 2827425235
+          },
+          "pulse_no_reset": {
+            "mean_action_tariff_units": 0.304140625,
+            "mean_episode_parent_cpu_ns": 10522879.81640625,
+            "mean_episode_wall_ns": 10521034.52734375,
+            "paid_action_tariff_units": 77.86,
+            "parent_python_cpu_ns": 2693857233,
+            "repair_count": 241,
+            "rows": 256,
+            "wait_count": 185,
+            "wall_ns": 2693384839
+          }
+        },
+        "policy_episode_costs_recomputed_and_verified": true,
+        "prediction_rows": 2304,
+        "prediction_wall_ns_by_arm": {
+          "analytic": 938655,
+          "equivalent_gaussian": 9638989,
+          "fixed": 889270,
+          "history": 954369,
+          "mean_drive": 177820828,
+          "native": 90593616,
+          "oracle": 801988,
+          "pulse": 179479787,
+          "pulse_no_reset": 184838116
+        },
+        "recorded_execution_root": "/tmp/aen-confirm-live-20261027",
+        "remaining_outer_interval_ns_including_serialization_archive_cleanup": 8158130511,
+        "scope": "seed_71_drift_shift",
+        "scope_total_wall_ns_including_audit_and_archive": 49634451965,
+        "source_control_archive": "archives/seed_71_drift_shift.tar.gz",
+        "source_summary": "scope_summaries/seed_71_drift_shift.json",
+        "training_seed": 71,
+        "trajectories": 256
+      },
+      {
+        "actual_transport_counts": {
+          "deliveries": 6656,
+          "files": 24512,
+          "observations": 11200
+        },
+        "archive": {
+          "all_member_hashes_verified": true,
+          "compressed_bytes": 7318873,
+          "file_count": 24522,
+          "sha256": "4e14b0fe9104efd516c5ba8c72c5770d122b860be90ad808b4f4da64da210666"
+        },
+        "archive_standalone_wall_ns": null,
+        "control_member": "CONTROL.jsonl",
+        "control_member_sha256": "d9ab323c6f9c3d0152897deaa1f5213de942619d4333214cd2f13d9e6567f5ec",
+        "control_rows": 3328,
+        "evaluation_parent_cpu_ns": null,
+        "evaluation_wall_ns": 24410087873,
+        "independent_audit_cpu_ns": null,
+        "independent_audit_internal_wall_ns": 18060916953,
+        "independent_audit_native_call_counts": null,
+        "independent_audit_outer_wall_ns": 18123854913,
+        "law": "student_t",
+        "measurement_environment_group": "temporary_directory_following_twelve",
+        "native_adapter_roundtrip_ns": 451081113,
+        "native_child_cpu_ns": null,
+        "native_requests": 1183,
+        "native_tick_timer_ns": null,
+        "operational_recovery_applied": false,
+        "original_sparse_ticks": 7705,
+        "policy_episode_costs": {
+          "always_repair": {
+            "mean_action_tariff_units": 0.223359375,
+            "mean_episode_parent_cpu_ns": 6967027.703125,
+            "mean_episode_wall_ns": 6968604.5546875,
+            "paid_action_tariff_units": 57.18,
+            "parent_python_cpu_ns": 1783559092,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1783962766
+          },
+          "always_stop": {
+            "mean_action_tariff_units": 0.0,
+            "mean_episode_parent_cpu_ns": 5096602.1484375,
+            "mean_episode_wall_ns": 5098923.97265625,
+            "paid_action_tariff_units": 0.0,
+            "parent_python_cpu_ns": 1304730150,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 0,
+            "wall_ns": 1305324537
+          },
+          "always_wait": {
+            "mean_action_tariff_units": 0.13029296875000002,
+            "mean_episode_parent_cpu_ns": 4614203.984375,
+            "mean_episode_wall_ns": 4615248.26953125,
+            "paid_action_tariff_units": 33.355000000000004,
+            "parent_python_cpu_ns": 1181236220,
+            "repair_count": 0,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1181503557
+          },
+          "always_wait_repair": {
+            "mean_action_tariff_units": 0.35365234375,
+            "mean_episode_parent_cpu_ns": 5404195.16015625,
+            "mean_episode_wall_ns": 5430914.015625,
+            "paid_action_tariff_units": 90.535,
+            "parent_python_cpu_ns": 1383473961,
+            "repair_count": 256,
+            "rows": 256,
+            "wait_count": 256,
+            "wall_ns": 1390313988
+          },
+          "analytic": {
+            "mean_action_tariff_units": 0.11115234375000001,
+            "mean_episode_parent_cpu_ns": 7307471.33984375,
+            "mean_episode_wall_ns": 7307530.7265625,
+            "paid_action_tariff_units": 28.455000000000002,
+            "parent_python_cpu_ns": 1870712663,
+            "repair_count": 134,
+            "rows": 256,
+            "wait_count": 190,
+            "wall_ns": 1870727866
+          },
+          "equivalent_gaussian": {
+            "mean_action_tariff_units": 0.11115234375000001,
+            "mean_episode_parent_cpu_ns": 5138911.8359375,
+            "mean_episode_wall_ns": 5141592.09375,
+            "paid_action_tariff_units": 28.455000000000002,
+            "parent_python_cpu_ns": 1315561430,
+            "repair_count": 134,
+            "rows": 256,
+            "wait_count": 190,
+            "wall_ns": 1316247576
+          },
+          "fixed": {
+            "mean_action_tariff_units": 0.21552734375000002,
+            "mean_episode_parent_cpu_ns": 6243023.77734375,
+            "mean_episode_wall_ns": 6249520.05859375,
+            "paid_action_tariff_units": 55.175000000000004,
+            "parent_python_cpu_ns": 1598214087,
+            "repair_count": 194,
+            "rows": 256,
+            "wait_count": 236,
+            "wall_ns": 1599877135
+          },
+          "history": {
+            "mean_action_tariff_units": 0.1928125,
+            "mean_episode_parent_cpu_ns": 5715442.1015625,
+            "mean_episode_wall_ns": 5716029.68359375,
+            "paid_action_tariff_units": 49.36,
+            "parent_python_cpu_ns": 1463153178,
+            "repair_count": 177,
+            "rows": 256,
+            "wait_count": 217,
+            "wall_ns": 1463303599
+          },
+          "mean_drive": {
+            "mean_action_tariff_units": 0.255,
+            "mean_episode_parent_cpu_ns": 10873110.234375,
+            "mean_episode_wall_ns": 10874237.98828125,
+            "paid_action_tariff_units": 65.28,
+            "parent_python_cpu_ns": 2783516220,
+            "repair_count": 223,
+            "rows": 256,
+            "wait_count": 205,
+            "wall_ns": 2783804925
+          },
+          "native": {
+            "mean_action_tariff_units": 0.2316015625,
+            "mean_episode_parent_cpu_ns": 7546789.12109375,
+            "mean_episode_wall_ns": 8550439.54296875,
+            "paid_action_tariff_units": 59.29,
+            "parent_python_cpu_ns": 1931978015,
+            "repair_count": 201,
+            "rows": 256,
+            "wait_count": 214,
+            "wall_ns": 2188912523
+          },
+          "oracle": {
+            "mean_action_tariff_units": 0.12576171875,
+            "mean_episode_parent_cpu_ns": 5047264.19921875,
+            "mean_episode_wall_ns": 5057412.90625,
+            "paid_action_tariff_units": 32.195,
+            "parent_python_cpu_ns": 1292099635,
+            "repair_count": 149,
+            "rows": 256,
+            "wait_count": 191,
+            "wall_ns": 1294697704
+          },
+          "pulse": {
+            "mean_action_tariff_units": 0.290234375,
+            "mean_episode_parent_cpu_ns": 12027305.6171875,
+            "mean_episode_wall_ns": 12030052.5703125,
+            "paid_action_tariff_units": 74.3,
+            "parent_python_cpu_ns": 3078990238,
+            "repair_count": 231,
+            "rows": 256,
+            "wait_count": 209,
+            "wall_ns": 3079693458
+          },
+          "pulse_no_reset": {
+            "mean_action_tariff_units": 0.27091796875,
+            "mean_episode_parent_cpu_ns": 8820130.9765625,
+            "mean_episode_wall_ns": 8819585.765625,
+            "paid_action_tariff_units": 69.355,
+            "parent_python_cpu_ns": 2257953530,
+            "repair_count": 225,
+            "rows": 256,
+            "wait_count": 200,
+            "wall_ns": 2257813956
+          }
+        },
+        "policy_episode_costs_recomputed_and_verified": true,
+        "prediction_rows": 2304,
+        "prediction_wall_ns_by_arm": {
+          "analytic": 1004885,
+          "equivalent_gaussian": 9951840,
+          "fixed": 830091,
+          "history": 1260921,
+          "mean_drive": 166306376,
+          "native": 68916880,
+          "oracle": 845624,
+          "pulse": 169353779,
+          "pulse_no_reset": 146874146
+        },
+        "recorded_execution_root": "/tmp/aen-confirm-live-20261027",
+        "remaining_outer_interval_ns_including_serialization_archive_cleanup": 9026561665,
+        "scope": "seed_71_student_t",
+        "scope_total_wall_ns_including_audit_and_archive": 51560504451,
+        "source_control_archive": "archives/seed_71_student_t.tar.gz",
+        "source_summary": "scope_summaries/seed_71_student_t.json",
+        "training_seed": 71,
+        "trajectories": 256
+      }
+    ],
+    "timer_boundaries": "evaluation_wall_ns starts before scope directory/data creation and ends after prediction/control evaluation, before summary/analysis writes, independent audit and archiving. scope_total adds those later steps through cleanup. Native counters cover evaluation calls only; audit replay is outside those counters."
+  },
+  "measurement_context": {
+    "aggregation": "Sums combine recorded operation intervals; concurrent work prevents interpreting sums as a single elapsed project timeline.",
+    "currency_conversion": null,
+    "engineering_total_cost": "Not estimated. Training/prototyping/debugging, unrecorded orchestration, relocation, recovery, and reporting are not a complete development engineering budget.",
+    "mixed_execution_environment": "The first three main scopes were executed under the workspace; the following twelve main scopes and feedback/retention artifacts were retained under /tmp. Concurrent jobs shared CPU and I/O resources.",
+    "performance_inference": "Do not attribute latency differences to the model alone or compare these measurements as controlled hardware benchmarks.",
+    "qualification": "shared host measured; not an isolated hardware benchmark"
+  },
+  "operational_recovery": {
+    "analysis_arrays_reverified": 167,
+    "archive_members_reverified": 24518,
+    "audit_passed": true,
+    "cost_handling": "The affected enclosing scope duration remains null. No training/evaluation rerun or timing replacement is performed; extra recovery wall/CPU cost is unavailable.",
+    "evaluation_repeated": false,
+    "model_or_protocol_changed": false,
+    "reason": "shutil.rmtree raised ENOTEMPTY after complete scoring, independent audit, archive creation and member verification",
+    "schema": "hepta.analytic-event.operational-recovery.v1",
+    "scope": "seed_11_student_t",
+    "scope_wall_ns_unavailable_due_to_cleanup_failure": true,
+    "source": "OPERATIONAL_RECOVERY.json"
+  },
+  "reporting_compatibility": {
+    "boolean_indicator_arrays_checked": 195,
+    "frozen_source_modified": false,
+    "original_analysis_modified": false,
+    "original_analysis_sha256_and_exact_0_1_conversion_reverified": true,
+    "primary_bootstrap_or_acceptance_rules_modified": false,
+    "reason": "NumPy quantile cannot subtract Boolean severe-loss indicators",
+    "report_generation_cpu_ns": null,
+    "report_generation_wall_ns": null,
+    "scope_count": 15,
+    "source": "REPORTING_COMPATIBILITY.json",
+    "transformation": "severe_loss Boolean -> exact float64 0/1 in temporary derived input only",
+    "unchanged_arrays_recorded": 2310,
+    "utility_effect": "Only temporary severe-loss Boolean indicators were represented as exact float64 0/1 for NumPy reporting. Original utility, decisions, paid tariff, predictions, timing, and frozen inputs were unchanged."
+  },
+  "retention": {
+    "optimizer_wall_ns_sum": 967436736,
+    "optimizer_wall_ns_sum_by_arm": {
+      "online": 540784992,
+      "replay": 426651744
+    },
+    "per_window": [
+      {
+        "artifact_io_wall_ns": null,
+        "evaluation_wall_ns": null,
+        "law": "drift_shift",
+        "optimizer_calls_by_arm": {
+          "online": 68,
+          "replay": 60
+        },
+        "optimizer_wall_ns_by_arm": {
+          "online": 28693257,
+          "replay": 25260742
+        },
+        "parent_cpu_ns": null,
+        "seed": 11,
+        "source_receipt": "retention/seed_11_window_0.json",
+        "total_window_wall_ns": null,
+        "training_rows_by_arm": {
+          "online": 256,
+          "replay": 256
+        },
+        "window": 0
+      },
+      {
+        "artifact_io_wall_ns": null,
+        "evaluation_wall_ns": null,
+        "law": "gaussian",
+        "optimizer_calls_by_arm": {
+          "online": 56,
+          "replay": 56
+        },
+        "optimizer_wall_ns_by_arm": {
+          "online": 37803815,
+          "replay": 26822026
+        },
+        "parent_cpu_ns": null,
+        "seed": 11,
+        "source_receipt": "retention/seed_11_window_1.json",
+        "total_window_wall_ns": null,
+        "training_rows_by_arm": {
+          "online": 256,
+          "replay": 256
+        },
+        "window": 1
+      },
+      {
+        "artifact_io_wall_ns": null,
+        "evaluation_wall_ns": null,
+        "law": "drift_shift",
+        "optimizer_calls_by_arm": {
+          "online": 64,
+          "replay": 56
+        },
+        "optimizer_wall_ns_by_arm": {
+          "online": 57487467,
+          "replay": 22722464
+        },
+        "parent_cpu_ns": null,
+        "seed": 11,
+        "source_receipt": "retention/seed_11_window_2.json",
+        "total_window_wall_ns": null,
+        "training_rows_by_arm": {
+          "online": 256,
+          "replay": 256
+        },
+        "window": 2
+      },
+      {
+        "artifact_io_wall_ns": null,
+        "evaluation_wall_ns": null,
+        "law": "drift_shift",
+        "optimizer_calls_by_arm": {
+          "online": 56,
+          "replay": 52
+        },
+        "optimizer_wall_ns_by_arm": {
+          "online": 63095363,
+          "replay": 46854283
+        },
+        "parent_cpu_ns": null,
+        "seed": 23,
+        "source_receipt": "retention/seed_23_window_0.json",
+        "total_window_wall_ns": null,
+        "training_rows_by_arm": {
+          "online": 256,
+          "replay": 256
+        },
+        "window": 0
+      },
+      {
+        "artifact_io_wall_ns": null,
+        "evaluation_wall_ns": null,
+        "law": "gaussian",
+        "optimizer_calls_by_arm": {
+          "online": 60,
+          "replay": 44
+        },
+        "optimizer_wall_ns_by_arm": {
+          "online": 31094679,
+          "replay": 16056402
+        },
+        "parent_cpu_ns": null,
+        "seed": 23,
+        "source_receipt": "retention/seed_23_window_1.json",
+        "total_window_wall_ns": null,
+        "training_rows_by_arm": {
+          "online": 256,
+          "replay": 256
+        },
+        "window": 1
+      },
+      {
+        "artifact_io_wall_ns": null,
+        "evaluation_wall_ns": null,
+        "law": "drift_shift",
+        "optimizer_calls_by_arm": {
+          "online": 56,
+          "replay": 60
+        },
+        "optimizer_wall_ns_by_arm": {
+          "online": 26101850,
+          "replay": 28076658
+        },
+        "parent_cpu_ns": null,
+        "seed": 23,
+        "source_receipt": "retention/seed_23_window_2.json",
+        "total_window_wall_ns": null,
+        "training_rows_by_arm": {
+          "online": 256,
+          "replay": 256
+        },
+        "window": 2
+      },
+      {
+        "artifact_io_wall_ns": null,
+        "evaluation_wall_ns": null,
+        "law": "drift_shift",
+        "optimizer_calls_by_arm": {
+          "online": 56,
+          "replay": 60
+        },
+        "optimizer_wall_ns_by_arm": {
+          "online": 36989969,
+          "replay": 22812440
+        },
+        "parent_cpu_ns": null,
+        "seed": 37,
+        "source_receipt": "retention/seed_37_window_0.json",
+        "total_window_wall_ns": null,
+        "training_rows_by_arm": {
+          "online": 256,
+          "replay": 256
+        },
+        "window": 0
+      },
+      {
+        "artifact_io_wall_ns": null,
+        "evaluation_wall_ns": null,
+        "law": "gaussian",
+        "optimizer_calls_by_arm": {
+          "online": 56,
+          "replay": 60
+        },
+        "optimizer_wall_ns_by_arm": {
+          "online": 41472327,
+          "replay": 20984072
+        },
+        "parent_cpu_ns": null,
+        "seed": 37,
+        "source_receipt": "retention/seed_37_window_1.json",
+        "total_window_wall_ns": null,
+        "training_rows_by_arm": {
+          "online": 256,
+          "replay": 256
+        },
+        "window": 1
+      },
+      {
+        "artifact_io_wall_ns": null,
+        "evaluation_wall_ns": null,
+        "law": "drift_shift",
+        "optimizer_calls_by_arm": {
+          "online": 64,
+          "replay": 48
+        },
+        "optimizer_wall_ns_by_arm": {
+          "online": 37499617,
+          "replay": 31460701
+        },
+        "parent_cpu_ns": null,
+        "seed": 37,
+        "source_receipt": "retention/seed_37_window_2.json",
+        "total_window_wall_ns": null,
+        "training_rows_by_arm": {
+          "online": 256,
+          "replay": 256
+        },
+        "window": 2
+      },
+      {
+        "artifact_io_wall_ns": null,
+        "evaluation_wall_ns": null,
+        "law": "drift_shift",
+        "optimizer_calls_by_arm": {
+          "online": 60,
+          "replay": 52
+        },
+        "optimizer_wall_ns_by_arm": {
+          "online": 41391326,
+          "replay": 34747487
+        },
+        "parent_cpu_ns": null,
+        "seed": 53,
+        "source_receipt": "retention/seed_53_window_0.json",
+        "total_window_wall_ns": null,
+        "training_rows_by_arm": {
+          "online": 256,
+          "replay": 256
+        },
+        "window": 0
+      },
+      {
+        "artifact_io_wall_ns": null,
+        "evaluation_wall_ns": null,
+        "law": "gaussian",
+        "optimizer_calls_by_arm": {
+          "online": 64,
+          "replay": 36
+        },
+        "optimizer_wall_ns_by_arm": {
+          "online": 38845717,
+          "replay": 23092011
+        },
+        "parent_cpu_ns": null,
+        "seed": 53,
+        "source_receipt": "retention/seed_53_window_1.json",
+        "total_window_wall_ns": null,
+        "training_rows_by_arm": {
+          "online": 256,
+          "replay": 256
+        },
+        "window": 1
+      },
+      {
+        "artifact_io_wall_ns": null,
+        "evaluation_wall_ns": null,
+        "law": "drift_shift",
+        "optimizer_calls_by_arm": {
+          "online": 44,
+          "replay": 36
+        },
+        "optimizer_wall_ns_by_arm": {
+          "online": 15887397,
+          "replay": 32324002
+        },
+        "parent_cpu_ns": null,
+        "seed": 53,
+        "source_receipt": "retention/seed_53_window_2.json",
+        "total_window_wall_ns": null,
+        "training_rows_by_arm": {
+          "online": 256,
+          "replay": 256
+        },
+        "window": 2
+      },
+      {
+        "artifact_io_wall_ns": null,
+        "evaluation_wall_ns": null,
+        "law": "drift_shift",
+        "optimizer_calls_by_arm": {
+          "online": 56,
+          "replay": 60
+        },
+        "optimizer_wall_ns_by_arm": {
+          "online": 19851054,
+          "replay": 21782196
+        },
+        "parent_cpu_ns": null,
+        "seed": 71,
+        "source_receipt": "retention/seed_71_window_0.json",
+        "total_window_wall_ns": null,
+        "training_rows_by_arm": {
+          "online": 256,
+          "replay": 256
+        },
+        "window": 0
+      },
+      {
+        "artifact_io_wall_ns": null,
+        "evaluation_wall_ns": null,
+        "law": "gaussian",
+        "optimizer_calls_by_arm": {
+          "online": 60,
+          "replay": 56
+        },
+        "optimizer_wall_ns_by_arm": {
+          "online": 41648909,
+          "replay": 20390979
+        },
+        "parent_cpu_ns": null,
+        "seed": 71,
+        "source_receipt": "retention/seed_71_window_1.json",
+        "total_window_wall_ns": null,
+        "training_rows_by_arm": {
+          "online": 256,
+          "replay": 256
+        },
+        "window": 1
+      },
+      {
+        "artifact_io_wall_ns": null,
+        "evaluation_wall_ns": null,
+        "law": "drift_shift",
+        "optimizer_calls_by_arm": {
+          "online": 64,
+          "replay": 60
+        },
+        "optimizer_wall_ns_by_arm": {
+          "online": 22922245,
+          "replay": 53265281
+        },
+        "parent_cpu_ns": null,
+        "seed": 71,
+        "source_receipt": "retention/seed_71_window_2.json",
+        "total_window_wall_ns": null,
+        "training_rows_by_arm": {
+          "online": 256,
+          "replay": 256
+        },
+        "window": 2
+      }
+    ],
+    "scope": "Five seeds, three registered supervised retention windows, two optimizer arms per window. Only the retained optimizer-plus-immediate-receipt timer is reported; history construction, scoring, artifact writing, whole-window and CPU timers were not retained. This is not production uptime or indefinite retention.",
+    "total_parent_cpu_ns": null,
+    "total_retention_wall_ns": null,
+    "window_count": 15
+  },
+  "schema": "hepta.analytic-event.execution-costs.v1",
+  "source_paths_relative_to_run_root_except_repo_prefixed_paths": true,
+  "source_root_at_measurement": "/tmp/aen-confirm-live-20261027",
+  "sources": {
+    "FREEZE.json": {
+      "bytes": 9769,
+      "sha256": "825b5d4ffd3fae2ab03851ea8792d272b886490e7a3ea7d9bd1a478a25e6e5f4"
+    },
+    "FREEZE_AUDIT.json": {
+      "bytes": 188,
+      "sha256": "d6218f44e7673d99b2f23d00f4c28513038a759bcbce6f447b8e11f31bc46250"
+    },
+    "OPERATIONAL_RECOVERY.json": {
+      "bytes": 455,
+      "sha256": "b143c2d9be7d2f4dc12b6b311cddc17dc641d0567337bd3bdacf8a1d05af3f81"
+    },
+    "REPORTING_COMPATIBILITY.json": {
+      "bytes": 67220,
+      "sha256": "a31968286379d756311125b59f7b503aa8cfa2ad131fe8573a3381f856162b32"
+    },
+    "RUN_INDEX.json": {
+      "bytes": 10295,
+      "sha256": "e55e41f1f53ad6f4c30e9e6a7e83fff6774a49f5def200e8a78f5adeec474170"
+    },
+    "archives/seed_11_drift_shift.tar.gz": {
+      "bytes": 7234156,
+      "sha256": "3e9a46caebca34a9cac27de0d1da5abc0796c513bede36c7a42458bea8134756"
+    },
+    "archives/seed_11_gaussian.tar.gz": {
+      "bytes": 7349875,
+      "sha256": "7acd9146cd9f655091b600843046e4c307a4777554ce9a3b28bea014be7f4ad7"
+    },
+    "archives/seed_11_student_t.tar.gz": {
+      "bytes": 7287139,
+      "sha256": "f7dd78784328ffefe724f017e824d55e75af17094d9a908212bf4a99e0e9a6b5"
+    },
+    "archives/seed_23_drift_shift.tar.gz": {
+      "bytes": 7237304,
+      "sha256": "5c2e0a28440ede5491c2129ff09dcc0160cc843241078a56cdc05ecea750e8b4"
+    },
+    "archives/seed_23_gaussian.tar.gz": {
+      "bytes": 7227162,
+      "sha256": "e55b03ff5c192ecc75279868d85ba0a2074723c43f4531973559a57e80adf79b"
+    },
+    "archives/seed_23_student_t.tar.gz": {
+      "bytes": 7301401,
+      "sha256": "d31c0f0c2622d0f3657c6ee1e5c504b29c41aa3cda22d6966bde4e287642cc0c"
+    },
+    "archives/seed_37_drift_shift.tar.gz": {
+      "bytes": 7275324,
+      "sha256": "c4355c7cf8f2acb44375614753d727983b57f02476c256c388b8ec249b62e575"
+    },
+    "archives/seed_37_gaussian.tar.gz": {
+      "bytes": 7271776,
+      "sha256": "e3d84d5a968c8bca1356fe9a50e3510c10a1bb2c141816501e0976186eb5c83c"
+    },
+    "archives/seed_37_student_t.tar.gz": {
+      "bytes": 7335372,
+      "sha256": "73152b5cfa24ea0225d41bb2b0f42ea02f4763633d4792b372420e39619209d0"
+    },
+    "archives/seed_53_drift_shift.tar.gz": {
+      "bytes": 7264736,
+      "sha256": "829461f85e130ddf501df3fee72c20761d16ff20a781113b537316b4f9c3b3cf"
+    },
+    "archives/seed_53_gaussian.tar.gz": {
+      "bytes": 7248474,
+      "sha256": "d2631f4683d5a6692aa8931e6e39be167ab5145849bc0494513e74776c33606e"
+    },
+    "archives/seed_53_student_t.tar.gz": {
+      "bytes": 7281690,
+      "sha256": "b65b49f80f85392184f2d15558cc3c66def4792bb5e3b1e7e8a581aa25e1f161"
+    },
+    "archives/seed_71_drift_shift.tar.gz": {
+      "bytes": 7261862,
+      "sha256": "0a67291fe710115820429149eb3f0ca7310bb62f02bd9be1e937cf4c9f293b61"
+    },
+    "archives/seed_71_gaussian.tar.gz": {
+      "bytes": 7314989,
+      "sha256": "69cf8e9f06f4f2495bf3e0deb34defbee12ae20ec4ae255b02b74451817c4e02"
+    },
+    "archives/seed_71_student_t.tar.gz": {
+      "bytes": 7318873,
+      "sha256": "4e14b0fe9104efd516c5ba8c72c5770d122b860be90ad808b4f4da64da210666"
+    },
+    "experiments/analytic_event_neuron/PROTOCOL.json": {
+      "bytes": 6069,
+      "sha256": "73e18acc4eb593a89f4dfd7bd6396e528b40a9a6d4751ef915bd5aee3de573fc"
+    },
+    "feedback_confirmation/seed_11/AUDIT.json": {
+      "bytes": 1114,
+      "sha256": "19c6b69a97383adf188388ba85048629a5bfbf620c3595aac17dc89bd097d4e6"
+    },
+    "feedback_confirmation/seed_11/ROWS.jsonl": {
+      "bytes": 5003845,
+      "sha256": "18287ddf45d39f149d74ca5a8e3c4b47a50f00a72ed97b68676c69a3358496c1"
+    },
+    "feedback_confirmation/seed_11/SUMMARY.json": {
+      "bytes": 4267,
+      "sha256": "ec3098cdc5cc00d147d70fc468a5ad2ba0f862045b8768da35023edb37addf29"
+    },
+    "feedback_confirmation/seed_11/evaluation_readbacks.tar.gz": {
+      "bytes": 2095650,
+      "sha256": "7ac9f3da7b49078115d7903a97ecf1d39ced79298ff4ed7a85422af43d97291c"
+    },
+    "feedback_confirmation/seed_23/AUDIT.json": {
+      "bytes": 1114,
+      "sha256": "86816e408145987fb9bfcfddba36c275c4f30945451922029dd43610ac42299e"
+    },
+    "feedback_confirmation/seed_23/ROWS.jsonl": {
+      "bytes": 5004117,
+      "sha256": "3e969170059696ffbcdc0d99d4274a4ca3cdbf8de4cb94584d33d701ab56877d"
+    },
+    "feedback_confirmation/seed_23/SUMMARY.json": {
+      "bytes": 4288,
+      "sha256": "8338ee7eccff3b348e1ba81aa131080f17df620549dbe160fc911c28a2166b64"
+    },
+    "feedback_confirmation/seed_23/evaluation_readbacks.tar.gz": {
+      "bytes": 2097649,
+      "sha256": "8a94551c8f3414f395e703d107492208166c1438c6db0a4efbd2bcbf344e8085"
+    },
+    "feedback_confirmation/seed_37/AUDIT.json": {
+      "bytes": 1114,
+      "sha256": "8c6a88404a8b258a3bb601d8052111a76d0e8c62cf5d1f5f416b16bce6b1ff2c"
+    },
+    "feedback_confirmation/seed_37/ROWS.jsonl": {
+      "bytes": 5003875,
+      "sha256": "61265c4fc1ed5d5a5f9b82e2b2c2a1a031522ccbe6124934e4aeda04161b7517"
+    },
+    "feedback_confirmation/seed_37/SUMMARY.json": {
+      "bytes": 4269,
+      "sha256": "099d945381ffa3043d141bb9526bbc8f05f9eeaab792c6f30f990e17f3f2d5e2"
+    },
+    "feedback_confirmation/seed_37/evaluation_readbacks.tar.gz": {
+      "bytes": 2099268,
+      "sha256": "ee0a59c1eb35bf8c4ed3a85de9bc54beb9d0cbee91c84d013fb792adc6faa210"
+    },
+    "feedback_confirmation/seed_53/AUDIT.json": {
+      "bytes": 1114,
+      "sha256": "44a37a18ea565f5738c2eabdb52a7c88cebe7e077f35044d46d446a7db0a8d29"
+    },
+    "feedback_confirmation/seed_53/ROWS.jsonl": {
+      "bytes": 5004408,
+      "sha256": "0438d5f7f788e8ac8a3e1f8b2b608819825d554b8bc4eb51effd1ccb2e8f4f05"
+    },
+    "feedback_confirmation/seed_53/SUMMARY.json": {
+      "bytes": 4317,
+      "sha256": "f23a74049e6b4c42a44458ff45a153a45ea839042d74c502f7e0bee0f163c8bf"
+    },
+    "feedback_confirmation/seed_53/evaluation_readbacks.tar.gz": {
+      "bytes": 2097027,
+      "sha256": "45368d9f0a5ed6e8e85d2228a75bcf21f39d0f8e4901d52e3e8783b443cb155b"
+    },
+    "feedback_confirmation/seed_71/AUDIT.json": {
+      "bytes": 1114,
+      "sha256": "ac8e2cca49549bd3c7eaef73f2b38824acfe9c6051f16230e3dab63a97ccf85d"
+    },
+    "feedback_confirmation/seed_71/ROWS.jsonl": {
+      "bytes": 5003996,
+      "sha256": "8a19cda65f01c802e7d744aacd38742a53a2ffebf3bdf3243b9c2a7450a93277"
+    },
+    "feedback_confirmation/seed_71/SUMMARY.json": {
+      "bytes": 4273,
+      "sha256": "b0373c45e4eb3591250d2ee8ee9a215882bb4919c158cb20d22c4eabf2b6a6e6"
+    },
+    "feedback_confirmation/seed_71/evaluation_readbacks.tar.gz": {
+      "bytes": 2110122,
+      "sha256": "066c3251e913735175dfbc90b08d19e544b2b846dac6e974dc0c249f82fb897b"
+    },
+    "retention/seed_11_window_0.json": {
+      "bytes": 6802,
+      "sha256": "2fd9f887a59c929313a1631a266f5a9d9adcdfe1f10a1b2d6fed4adab12b187f"
+    },
+    "retention/seed_11_window_1.json": {
+      "bytes": 6359,
+      "sha256": "c7dcfd4c599a8e2de52a5fef4ed06aed806f340420f2d4fab08c69768c72ddc3"
+    },
+    "retention/seed_11_window_2.json": {
+      "bytes": 6584,
+      "sha256": "78a1c26fbb2df8f2c1e7d3674eee1c152e9dd9f2acd8cc91df8d39e98f5b6ea4"
+    },
+    "retention/seed_23_window_0.json": {
+      "bytes": 6228,
+      "sha256": "1bde283bf596256bf6924e3ed5929f63d69f110c5475fc3d3666560406b63a17"
+    },
+    "retention/seed_23_window_1.json": {
+      "bytes": 6127,
+      "sha256": "becbf0c826bb7a518200d5f2d5d1a9f703f75e179366daa00241d0cca7471f14"
+    },
+    "retention/seed_23_window_2.json": {
+      "bytes": 6460,
+      "sha256": "63154bece801ade94438d4fad8176d0aadcdb15c883350329364183aac80ec01"
+    },
+    "retention/seed_37_window_0.json": {
+      "bytes": 6462,
+      "sha256": "a56c2ecde66e52246ab919a325b6d6a22d5eede136716c37b65c34253386597d"
+    },
+    "retention/seed_37_window_1.json": {
+      "bytes": 6477,
+      "sha256": "047627d4556d9f6a03b934916cbb6191971b269ddd6d0433e4525b9dca25977f"
+    },
+    "retention/seed_37_window_2.json": {
+      "bytes": 6353,
+      "sha256": "3c604972510dad0c38606571191aa069e87a17dad1723e4b15711c89ecabcce4"
+    },
+    "retention/seed_53_window_0.json": {
+      "bytes": 6346,
+      "sha256": "98b58a39433e7d27f16ec0f80fe333db52bbe29db5681f6959f066720b3d132b"
+    },
+    "retention/seed_53_window_1.json": {
+      "bytes": 6012,
+      "sha256": "b54a06852bd40d292ac4f0b33e9fccbbd406ef267250ffda845992e7e9646d29"
+    },
+    "retention/seed_53_window_2.json": {
+      "bytes": 5456,
+      "sha256": "759281219c68739e3faa14da4d0ff06ec860803b70b4640be0b33de09a80c560"
+    },
+    "retention/seed_71_window_0.json": {
+      "bytes": 6463,
+      "sha256": "3fd9f21fa46239b81953070f28edbc161270463647f9b8387a88ec0fba43f5e2"
+    },
+    "retention/seed_71_window_1.json": {
+      "bytes": 6467,
+      "sha256": "9f9c56bc34faca8d0fecb43140e0e55f8152c4838a9064c4ae4b48ad1a1e177e"
+    },
+    "retention/seed_71_window_2.json": {
+      "bytes": 6693,
+      "sha256": "94009114ac7a51cd52a9170512fb9eb097fa3cd9f6cf75c4c55bfd3c8a859922"
+    },
+    "scope_summaries/seed_11_drift_shift.json": {
+      "bytes": 12633,
+      "sha256": "12ddd342e093908eac33811556d851dbc6a25d0cd32a3e4d73d814f8dfd9ac45"
+    },
+    "scope_summaries/seed_11_gaussian.json": {
+      "bytes": 12638,
+      "sha256": "1d75608e42aac6e27af6ca77d47519a86502eb3f061f3df17122be4fe731562b"
+    },
+    "scope_summaries/seed_11_student_t.json": {
+      "bytes": 12613,
+      "sha256": "e15beeda851559ad2834787dfc4f1043e7fdcf86bcae2eb8b532e921065468ae"
+    },
+    "scope_summaries/seed_23_drift_shift.json": {
+      "bytes": 12588,
+      "sha256": "d1f72bf3ab95bda3c468f45f7d17fbc969899fc7e3faeccf41e191042184c479"
+    },
+    "scope_summaries/seed_23_gaussian.json": {
+      "bytes": 12588,
+      "sha256": "8d73c08faa621ec760ec563703377255615ddf2cd20ef4f9d0183b243620a178"
+    },
+    "scope_summaries/seed_23_student_t.json": {
+      "bytes": 12603,
+      "sha256": "a7e1a049844e0d56851e6d7a1630f02eab90273aff0dbc85a4ec5d3cfe9487a1"
+    },
+    "scope_summaries/seed_37_drift_shift.json": {
+      "bytes": 12548,
+      "sha256": "82637cfdc63ad6578ae0ffe1a2807ba202b624497eceba88f0690db373455f89"
+    },
+    "scope_summaries/seed_37_gaussian.json": {
+      "bytes": 12595,
+      "sha256": "12ea8d8b955ff05c26e4a34af232152ffa7239c072891af031219e8bf0eb6ad8"
+    },
+    "scope_summaries/seed_37_student_t.json": {
+      "bytes": 12566,
+      "sha256": "d2fd667cb965ef42fb53ea7496f7fa43200024b647dfa713ce8cadd88e44ec84"
+    },
+    "scope_summaries/seed_53_drift_shift.json": {
+      "bytes": 12600,
+      "sha256": "b324b94162fccf69938c98e5d0338a74fdc7087ea6845cedec2bdca3287606d0"
+    },
+    "scope_summaries/seed_53_gaussian.json": {
+      "bytes": 12618,
+      "sha256": "c8d471def774bc8fec4e564adf5d40e1cb360a8ca9c9d2b3b603397080dec7a9"
+    },
+    "scope_summaries/seed_53_student_t.json": {
+      "bytes": 12617,
+      "sha256": "ccaa9c3229eab60d7dedf220f44e407fd898957a0d0d3203a85f766b9043a111"
+    },
+    "scope_summaries/seed_71_drift_shift.json": {
+      "bytes": 12595,
+      "sha256": "61523fea66a71f509938d084513bdf0930e9238797b21f98d9b0a15bae9ab345"
+    },
+    "scope_summaries/seed_71_gaussian.json": {
+      "bytes": 12602,
+      "sha256": "d112f6c84abf76491098b56b3e63a7e110afd6f073c668b14b97aab07ab0b93e"
+    },
+    "scope_summaries/seed_71_student_t.json": {
+      "bytes": 12572,
+      "sha256": "5e472915fc86edf2ba0311aa7522b9bcc37dff63aeba4f5c62aaea69088be385"
+    }
+  },
+  "status": "completed_frozen_confirmation_cost_inventory",
+  "time_and_cost_definitions": {
+    "missing": "null means not retained/measured for that timer boundary; it never means zero.",
+    "native_roundtrip": "Python persistent-process request intervals including serialization, pipe I/O, native work, response parsing, and scheduling.",
+    "native_tick_timer": "Retained native_ns measured around original sparse_tick and bookkeeping before the Rust timer sample; not pure CPU time or an isolated hardware kernel measurement.",
+    "non_tick_residual": "Native adapter roundtrip minus tick timer, encompassing several bookkeeping and IPC components; not solely IPC latency.",
+    "parent_cpu": "Original Python process_time_ns intervals, including same-process threads and extension code; separate Rust subprocess CPU is not measured.",
+    "policy_wall": "Sum of original per-episode elapsed_ns, including actual observation/delivery readbacks and decision/scoring work within the episode timer.",
+    "tariff": "Declared utility-unit action charges, distinct from compute time, CPU, artifact bytes and currency."
+  },
+  "training_costs_reference": {
+    "repo_relative_path": "experiments/analytic_event_neuron/evidence/TRAINING_COSTS.json",
+    "separation": "The training report is unchanged. Neither report is a full development engineering cost estimate.",
+    "sha256": "49923c3cb703de9621ccba2a2d7f8607e70837626a412bd73eef7d1f2ef03b08"
+  }
+}

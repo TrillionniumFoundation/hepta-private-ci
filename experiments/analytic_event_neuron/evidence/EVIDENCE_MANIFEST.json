@@ -1,0 +1,112 @@
+{
+  "schema": "hepta.analytic-event.evidence-manifest.v1",
+  "archives": {
+    "ANALYSIS_RETENTION_EVIDENCE.tar.gz": {
+      "sha256": "f76e8797d2bd1ae3f71daba0d9df40ab52eb3172a0d893314a93af62704b53df",
+      "bytes": 8641077
+    },
+    "DEVELOPMENT_PIPELINE.tar.gz": {
+      "sha256": "13e99dee42c208f341cdcd252c62743ec86694e5bcc222686f1f950d47e15fde",
+      "bytes": 112818
+    },
+    "FEEDBACK_CONFIRMATION_EVIDENCE.tar.gz": {
+      "sha256": "269ae5716dc3b6a13f85f17bd7b90442dbe934fb80de28cb1fdc43a5b13f6380",
+      "bytes": 14753554,
+      "storage": "concatenated_byte_parts",
+      "parts": [
+        {
+          "path": "FEEDBACK_CONFIRMATION_EVIDENCE.tar.gz.part-01",
+          "bytes": 8388608,
+          "sha256": "f928c6be366aa9020e492f072ccd60618d6ec6011325b6b6669b05b48d931593",
+          "git_blob_sha": "100b6a1e9c9e9e298e84371e0b5af57cffd8108e"
+        },
+        {
+          "path": "FEEDBACK_CONFIRMATION_EVIDENCE.tar.gz.part-02",
+          "bytes": 6364946,
+          "sha256": "3c08e539a38a058d4c8c4b9b4df0b5656f5e12cf89c5d81dc3791234b5bb9ce9",
+          "git_blob_sha": "8b537839936bdec1456a2c7d6ffada8600e9601d"
+        }
+      ],
+      "storage_note": "Concatenate parts in listed order; verify each part and reconstructed archive before extraction. Original archive bytes and scientific evidence are unchanged."
+    },
+    "FROZEN_TRAINING.tar.gz": {
+      "sha256": "5acce03394a95bafd718b5bc0b6bd2903b5a829f2c04554417276f6ff3c98ac3",
+      "bytes": 10400590
+    },
+    "NATIVE_RUNTIME_EVIDENCE.tar.gz": {
+      "sha256": "58ef6033c4fbd4791d51cd09b7bdacdb015c6f8e3a09557a4c331cd3462330e4",
+      "bytes": 804117
+    },
+    "TRAINED_RUNTIME_EVIDENCE.tar.gz": {
+      "sha256": "80ec988bb5f7ff65db6684e8e755fdf8585b8331334763525acedad0804696c8",
+      "bytes": 402195
+    },
+    "run-20261027/archives/seed_11_drift_shift.tar.gz": {
+      "sha256": "3e9a46caebca34a9cac27de0d1da5abc0796c513bede36c7a42458bea8134756",
+      "bytes": 7234156
+    },
+    "run-20261027/archives/seed_11_gaussian.tar.gz": {
+      "sha256": "7acd9146cd9f655091b600843046e4c307a4777554ce9a3b28bea014be7f4ad7",
+      "bytes": 7349875
+    },
+    "run-20261027/archives/seed_11_student_t.tar.gz": {
+      "sha256": "f7dd78784328ffefe724f017e824d55e75af17094d9a908212bf4a99e0e9a6b5",
+      "bytes": 7287139
+    },
+    "run-20261027/archives/seed_23_drift_shift.tar.gz": {
+      "sha256": "5c2e0a28440ede5491c2129ff09dcc0160cc843241078a56cdc05ecea750e8b4",
+      "bytes": 7237304
+    },
+    "run-20261027/archives/seed_23_gaussian.tar.gz": {
+      "sha256": "e55b03ff5c192ecc75279868d85ba0a2074723c43f4531973559a57e80adf79b",
+      "bytes": 7227162
+    },
+    "run-20261027/archives/seed_23_student_t.tar.gz": {
+      "sha256": "d31c0f0c2622d0f3657c6ee1e5c504b29c41aa3cda22d6966bde4e287642cc0c",
+      "bytes": 7301401
+    },
+    "run-20261027/archives/seed_37_drift_shift.tar.gz": {
+      "sha256": "c4355c7cf8f2acb44375614753d727983b57f02476c256c388b8ec249b62e575",
+      "bytes": 7275324
+    },
+    "run-20261027/archives/seed_37_gaussian.tar.gz": {
+      "sha256": "e3d84d5a968c8bca1356fe9a50e3510c10a1bb2c141816501e0976186eb5c83c",
+      "bytes": 7271776
+    },
+    "run-20261027/archives/seed_37_student_t.tar.gz": {
+      "sha256": "73152b5cfa24ea0225d41bb2b0f42ea02f4763633d4792b372420e39619209d0",
+      "bytes": 7335372
+    },
+    "run-20261027/archives/seed_53_drift_shift.tar.gz": {
+      "sha256": "829461f85e130ddf501df3fee72c20761d16ff20a781113b537316b4f9c3b3cf",
+      "bytes": 7264736
+    },
+    "run-20261027/archives/seed_53_gaussian.tar.gz": {
+      "sha256": "d2631f4683d5a6692aa8931e6e39be167ab5145849bc0494513e74776c33606e",
+      "bytes": 7248474
+    },
+    "run-20261027/archives/seed_53_student_t.tar.gz": {
+      "sha256": "b65b49f80f85392184f2d15558cc3c66def4792bb5e3b1e7e8a581aa25e1f161",
+      "bytes": 7281690
+    },
+    "run-20261027/archives/seed_71_drift_shift.tar.gz": {
+      "sha256": "0a67291fe710115820429149eb3f0ca7310bb62f02bd9be1e937cf4c9f293b61",
+      "bytes": 7261862
+    },
+    "run-20261027/archives/seed_71_gaussian.tar.gz": {
+      "sha256": "69cf8e9f06f4f2495bf3e0deb34defbee12ae20ec4ae255b02b74451817c4e02",
+      "bytes": 7314989
+    },
+    "run-20261027/archives/seed_71_student_t.tar.gz": {
+      "sha256": "4e14b0fe9104efd516c5ba8c72c5770d122b860be90ad808b4f4da64da210666",
+      "bytes": 7318873
+    }
+  },
+  "primary_scopes": 15,
+  "primary_control_episodes": 49920,
+  "feedback_control_episodes": 6400,
+  "all_primary_audits_passed": true,
+  "all_feedback_audits_passed": true,
+  "evaluation_source_commit": "9b111ae4916cebbe2c6142aaa97c50235f8782e5",
+  "freeze_receipt_commit": "b6ac31433c5744ae3421ed513d008f776177919e"
+}

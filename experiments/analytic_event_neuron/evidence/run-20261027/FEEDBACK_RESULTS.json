@@ -1,0 +1,175 @@
+{
+  "contrasts": {
+    "analytic_probability_vs_matched_history": {
+      "descriptive_only": true,
+      "interval": [
+        -0.001994030297536895,
+        0.01031959950540629
+      ],
+      "interval_alpha": 0.05,
+      "mean_difference": 0.0031190345497049497,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        0.0020510170738567,
+        0.0014135061610527047,
+        0.011702627990928506,
+        -0.0008667733114200746,
+        0.0012947948341069135
+      ],
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 256
+    },
+    "analytic_probability_vs_numeric": {
+      "descriptive_only": true,
+      "interval": [
+        -0.011401654774599921,
+        0.005212303170595418
+      ],
+      "interval_alpha": 0.05,
+      "mean_difference": -0.0022838586095085163,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        0.0,
+        -0.0028603841243017535,
+        0.00323756669756904,
+        -0.016495449295615843,
+        0.004698973674805975
+      ],
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 256
+    },
+    "analytic_probability_vs_state_reset": {
+      "descriptive_only": true,
+      "interval": [
+        0.008630184477452143,
+        0.033799586892669396
+      ],
+      "interval_alpha": 0.05,
+      "mean_difference": 0.022057950312352394,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        0.016795079236886445,
+        0.030521166361147666,
+        0.033130732537959104,
+        0.00395010323705122,
+        0.025892670188717548
+      ],
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 256
+    },
+    "analytic_probability_vs_zero": {
+      "descriptive_only": true,
+      "interval": [
+        0.00853344435151183,
+        0.033711854110700865
+      ],
+      "interval_alpha": 0.05,
+      "mean_difference": 0.022057950312352394,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        0.016795079236886445,
+        0.030521166361147666,
+        0.033130732537959104,
+        0.00395010323705122,
+        0.025892670188717548
+      ],
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 256
+    }
+  },
+  "independent_audits_passed": true,
+  "population_advantage_established": false,
+  "primary": false,
+  "scope": "secondary original sparse two-tick causal execution; no production authority or function-class novelty claim",
+  "summary": {
+    "analytic_probability": {
+      "action_disagreements_with_numeric": 79,
+      "cpu_ns": 7255824722,
+      "mean_action_cost": 0.0635625,
+      "mean_utility": 0.664684100530799,
+      "native_ticks": 2560,
+      "per_seed_mean_utility": [
+        0.6894515378130357,
+        0.6629364306246354,
+        0.6843276742381998,
+        0.6155744238862597,
+        0.6711304360918644
+      ],
+      "repair_count": 678,
+      "state_value_disagreements_with_numeric": 1280,
+      "wall_ns": 7430585477
+    },
+    "matched_history": {
+      "action_disagreements_with_numeric": 92,
+      "cpu_ns": 6771439209,
+      "mean_action_cost": 0.05840624999999999,
+      "mean_utility": 0.6615650659810941,
+      "native_ticks": 0,
+      "per_seed_mean_utility": [
+        0.687400520739179,
+        0.6615229244635827,
+        0.6726250462472713,
+        0.6164411971976798,
+        0.6698356412577573
+      ],
+      "repair_count": 623,
+      "state_value_disagreements_with_numeric": null,
+      "wall_ns": 6772327498
+    },
+    "numeric": {
+      "action_disagreements_with_numeric": 0,
+      "cpu_ns": 8664709799,
+      "mean_action_cost": 0.06553125000000001,
+      "mean_utility": 0.6669679591403075,
+      "native_ticks": 2560,
+      "per_seed_mean_utility": [
+        0.6894515378130357,
+        0.6657968147489373,
+        0.6810901075406308,
+        0.6320698731818756,
+        0.6664314624170583
+      ],
+      "repair_count": 699,
+      "state_value_disagreements_with_numeric": 0,
+      "wall_ns": 8864017361
+    },
+    "state_reset": {
+      "action_disagreements_with_numeric": 581,
+      "cpu_ns": 9206233585,
+      "mean_action_cost": 0.12000000000000006,
+      "mean_utility": 0.6426261502184467,
+      "native_ticks": 2560,
+      "per_seed_mean_utility": [
+        0.6726564585761494,
+        0.6324152642634877,
+        0.6511969417002407,
+        0.6116243206492085,
+        0.6452377659031467
+      ],
+      "repair_count": 1280,
+      "state_value_disagreements_with_numeric": 1280,
+      "wall_ns": 9386634455
+    },
+    "zero": {
+      "action_disagreements_with_numeric": 581,
+      "cpu_ns": 7792435230,
+      "mean_action_cost": 0.12000000000000006,
+      "mean_utility": 0.6426261502184467,
+      "native_ticks": 2560,
+      "per_seed_mean_utility": [
+        0.6726564585761494,
+        0.6324152642634877,
+        0.6511969417002407,
+        0.6116243206492085,
+        0.6452377659031467
+      ],
+      "repair_count": 1280,
+      "state_value_disagreements_with_numeric": 1280,
+      "wall_ns": 7966945795
+    }
+  }
+}

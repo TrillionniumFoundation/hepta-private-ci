@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.analytic-event.acceptance.v1",
+  "research_work_packages_delivered": 6,
+  "production_promotion": false,
+  "decision": "KEEP_RESEARCH",
+  "mathematical_contract": "implemented; terminal/first-passage/missing/neutral/spike semantics separated",
+  "analytic_kernel": "10 independent numerical checks passed",
+  "training": "five seeds; nine prediction models; driving distributions and readouts fitted; fixed recurrent constants",
+  "primary_gates": {
+    "analytic_vs_history": true,
+    "analytic_vs_native": true,
+    "pulse_vs_probability": false
+  },
+  "sequential_control": "49,920 actual artifact-controlled episodes; registered Gaussian analytic gains pass",
+  "original_hepta_feedback": "6,400 episodes; native two-tick causal chain verified; additional analytic encoding gain not established",
+  "runtime": "147 checks plus 81 trained-adapter checks passed; local research owners, no Agentd production integration",
+  "retention_gate": false,
+  "retention_worst_old_nll_degradation": 0.08064524865500133,
+  "retention_limit": 0.02,
+  "calibration": "measured, not production confidence qualification",
+  "latency": "descriptive mixed-directory shared-host measurements",
+  "novel_function_class_established": false,
+  "existing_hepta_blockers_closed": false,
+  "operational_records": [
+    "run-20261027/OPERATIONAL_RECOVERY.json",
+    "run-20261027/REPORTING_COMPATIBILITY.json"
+  ]
+}
