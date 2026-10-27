@@ -1,0 +1,21 @@
+{
+  "check_count": 6,
+  "checks": [
+    "builder_to_independent_full_integrity_and_literal_selective_restore",
+    "same_explicit_inputs_deterministic_archive_bytes",
+    "existing_archive_not_overwritten",
+    "duplicate_input_name_no_partial",
+    "strict_provenance_preflight_no_partial",
+    "strict_root_only_path_preflight_no_partial"
+  ],
+  "passed": true,
+  "schema": "hepta.field-bridge.v3.archive-build-contract.1",
+  "scientific_model_observer_native_network_calls": 0,
+  "source_files": {
+    "archive_build.py": "47a2a51bc2a39bf0e07680f22b34683d25463e4d185a5af5e13758088e2f9e10",
+    "archive_build_tests.py": "7ffdb054843790e9061f2bec437fae15d2d8c744985a511319b1aa7d554c2a99",
+    "archive_integrity.py": "4a6e84a996145ed1a389f9b736b876216d26595d6db9f2bb6071cc252581e8c8"
+  },
+  "synthetic_only": true,
+  "verification_wall_ns": 10595297
+}
