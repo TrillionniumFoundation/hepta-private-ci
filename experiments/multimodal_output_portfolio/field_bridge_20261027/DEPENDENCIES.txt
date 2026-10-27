@@ -24,9 +24,10 @@ Original source:
 From the repository root, choose a new output destination:
 
   python experiments/multimodal_output_portfolio/field_bridge_20261027/restore_native.py \
-    --destination ./native-reproduction-new --run-controls-tests
+    --source-root . --destination ./native-reproduction-new --run-controls-tests
 
-This fetches the exact source pin, checks official compiler component checksums,
+This copies and verifies the exact source pin from the checked-out repository,
+checks official compiler component checksums,
 installs the compiler only inside the chosen destination, and downloads the
 24 checksum-pinned registry crates into a verified local vendor directory.
 The actual compilation is always cargo build --offline --locked --release.
