@@ -7,6 +7,7 @@ use std::os::fd::AsRawFd;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 use std::path::Path;
+use std::sync::Mutex;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -18,7 +19,6 @@ use codex_hepta_memory::ObjectiveSenderCheckpointError;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::io::unix::AsyncFd;
-use tokio::sync::Mutex;
 
 #[path = "cognitive_checkpoint_initial.rs"]
 mod initial;
@@ -129,13 +129,14 @@ impl CognitiveCheckpointTransport for AgentdUnixCognitiveCheckpointTransport {
         }
         let request: CognitiveCheckpointRequest = serde_json::from_slice(request_json)
             .map_err(|_| ObjectiveSenderCheckpointError::Refused)?;
-        let mut slot = self
-            .stream
-            .try_lock()
-            .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
-        let mut stream = slot
-            .take()
-            .ok_or(ObjectiveSenderCheckpointError::Unavailable)?;
+        let mut stream = {
+            let mut slot = self
+                .stream
+                .try_lock()
+                .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
+            slot.take()
+                .ok_or(ObjectiveSenderCheckpointError::Unavailable)?
+        };
         // From this point cancellation or every uncertain error leaves None.
         check_lifetime(self.root.get_ref())?;
         let deadline = (Instant::now() + self.timeout).min(self.end);
@@ -159,7 +160,12 @@ impl CognitiveCheckpointTransport for AgentdUnixCognitiveCheckpointTransport {
         {
             return Err(ObjectiveSenderCheckpointError::Unavailable);
         }
-        *slot = Some(stream);
+        // None remains the exclusive token through framing and complete
+        // response validation. No slot guard spans I/O or an await.
+        *self
+            .stream
+            .lock()
+            .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)? = Some(stream);
         Ok(response)
     }
 }

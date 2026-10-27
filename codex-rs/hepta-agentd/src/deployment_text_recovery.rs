@@ -16,7 +16,7 @@ impl DeploymentFinalUseIssuer {
             return Err(io::Error::other("invalid original text recovery range"));
         }
         let prefix = format!("{namespace}:");
-        let mut found: Option<(u64, &RetainedTextSignature)> = None;
+        let mut found: Option<(u64, &RetainedTextSignature, &AuthBusTextBody)> = None;
         for retained in &state.text_signatures {
             if retained.agent_id != identity.agent_id.as_str()
                 || !retained.request_id.starts_with(&prefix)
@@ -41,22 +41,14 @@ impl DeploymentFinalUseIssuer {
             {
                 return Err(io::Error::other("original text recovery identity mismatch"));
             }
-            if found.as_ref().is_none_or(|(prior, _)| number < *prior) {
-                found = Some((number, retained));
+            if found.as_ref().is_none_or(|(prior, _, _)| number < *prior) {
+                found = Some((number, retained, body));
             }
         }
-        Ok(found.map(|(_, retained)| {
+        Ok(found.map(|(_, retained, body)| {
             (
                 retained.request_id.clone(),
-                envelope(
-                    &state.signer_id,
-                    retained,
-                    retained
-                        .body
-                        .as_ref()
-                        .expect("validated original body")
-                        .clone(),
-                ),
+                envelope(&state.signer_id, retained, body.clone()),
             )
         }))
     }

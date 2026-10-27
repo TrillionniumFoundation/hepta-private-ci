@@ -4,6 +4,7 @@ use super::*;
 use codex_hepta_memory::CognitiveCheckpointCommand;
 use std::io::Write;
 use std::os::fd::FromRawFd;
+use std::sync::Arc;
 
 #[path = "cognitive_checkpoint_initial_tests.rs"]
 mod initial;
@@ -160,6 +161,40 @@ async fn exact_framing_keeps_a_complete_refusal_lane_usable_without_retrying() {
     });
     assert_eq!(transport.exchange(&request()).await.unwrap(), response());
     // Two explicit read calls, never an automatic retry of a failed mutation.
+    assert_eq!(transport.exchange(&request()).await.unwrap(), response());
+    peer.join().unwrap();
+}
+
+#[tokio::test]
+async fn concurrent_checkpoint_read_cannot_consume_the_original_inflight_reply() {
+    let (transport, mut server) = fixture(Duration::from_secs(1));
+    let transport = Arc::new(transport);
+    let (requested_tx, requested_rx) = tokio::sync::oneshot::channel();
+    let (release_tx, release_rx) = std::sync::mpsc::channel();
+    let peer = std::thread::spawn(move || {
+        read_request(&mut server);
+        requested_tx.send(()).unwrap();
+        release_rx.recv().unwrap();
+        for index in 0..2 {
+            if index != 0 {
+                read_request(&mut server);
+            }
+            let response = response();
+            server
+                .write_all(&(response.len() as u32).to_be_bytes())
+                .unwrap();
+            server.write_all(&response).unwrap();
+        }
+    });
+    let first_transport = Arc::clone(&transport);
+    let first = tokio::spawn(async move { first_transport.exchange(&request()).await });
+    requested_rx.await.unwrap();
+    assert!(matches!(
+        transport.exchange(&request()).await,
+        Err(ObjectiveSenderCheckpointError::Unavailable)
+    ));
+    release_tx.send(()).unwrap();
+    assert_eq!(first.await.unwrap().unwrap(), response());
     assert_eq!(transport.exchange(&request()).await.unwrap(), response());
     peer.join().unwrap();
 }
