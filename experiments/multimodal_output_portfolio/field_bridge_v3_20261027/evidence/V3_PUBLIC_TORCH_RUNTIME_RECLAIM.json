@@ -1,0 +1,89 @@
+{
+  "accessible_process_maps_referencing_target": [],
+  "archival_sequence": "Public runtime cleanup occurred after evidence archive construction; this external operational receipt does not change archived scientific bytes.",
+  "complete_identity_receipt": {
+    "gzip_bytes": 978350,
+    "gzip_sha256": "80dfbaa885d57ce345aca102dff2cbf3667138e100c06361dc1d853e8c40f21f",
+    "path": "V3_PUBLIC_TORCH_RUNTIME_RECLAIM_IDENTITIES.json.gz",
+    "uncompressed_bytes": 3562686,
+    "uncompressed_sha256": "583d4e7be7e3d02020f91b53ff7d8d67d694a9ca44a8f9dfd43f25ad66bcf098"
+  },
+  "file_count": 19239,
+  "free_bytes_after": 1062547456,
+  "free_bytes_before": 208162816,
+  "not_scientific_evidence": true,
+  "package_versions": [
+    {
+      "name": "filelock",
+      "version": "3.32.3"
+    },
+    {
+      "name": "fsspec",
+      "version": "2026.7.0"
+    },
+    {
+      "name": "Jinja2",
+      "version": "3.1.6"
+    },
+    {
+      "name": "MarkupSafe",
+      "version": "3.0.3"
+    },
+    {
+      "name": "mpmath",
+      "version": "1.3.0"
+    },
+    {
+      "name": "networkx",
+      "version": "3.6.1"
+    },
+    {
+      "name": "setuptools",
+      "version": "78.1.0"
+    },
+    {
+      "name": "sympy",
+      "version": "1.14.0"
+    },
+    {
+      "name": "torch",
+      "version": "2.8.0+cpu"
+    },
+    {
+      "name": "typing_extensions",
+      "version": "4.16.0"
+    }
+  ],
+  "payload_bytes": 821983724,
+  "pinned_model_assets_removed": false,
+  "process_map_permission_denied": [
+    1,
+    3,
+    4,
+    5,
+    6,
+    7,
+    102,
+    153,
+    290,
+    885120,
+    885121,
+    885126
+  ],
+  "process_scope_limitation": "Some unrelated protected process maps are inaccessible; all task scientific workers finished and the archive-verification worker confirmed system NumPy only.",
+  "protected_archives": [
+    "/tmp/hepta-v2-final-20261027/hepta_field_bridge_v2_20261027_evidence.tar.gz",
+    "/tmp/hepta-v3-final-20261027/hepta_field_bridge_v3_20261027_evidence.tar.gz"
+  ],
+  "raw_run_removed": false,
+  "reason": "All actual model execution and synthetic contracts finished; remaining archive verification/reanalysis uses system NumPy 2.3.5 only. Shared disk headroom protects unique V2/V3 evidence.",
+  "recovery": [
+    "Use Python 3.12 and create a new isolated target",
+    "Install the exact recorded package versions; torch==2.8.0+cpu is the public CPU wheel from https://download.pytorch.org/whl/cpu",
+    "Do not count a rebuilt runtime as new scientific evidence without a distinct authorized run"
+  ],
+  "removed": true,
+  "schema": "hepta.field-bridge.v3.public-runtime-cache-reclaim.1",
+  "source_files_removed": false,
+  "target": "/tmp/hepta-field-v3-python"
+}
