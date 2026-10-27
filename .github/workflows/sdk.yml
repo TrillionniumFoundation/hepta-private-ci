@@ -175,7 +175,15 @@ jobs:
           "${CODEX_EXEC_PATH%/*}/codex-code-mode-host" --help >/dev/null
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        # Initialize the exact packageManager integrity pin for the offline
+        # canonical conformance rebuild, as well as the frozen dependency graph.
+        run: corepack pnpm install --frozen-lockfile
+
+      - name: Verify conformance execution source identity
+        env:
+          CI: "true"
+          COREPACK_ENABLE_NETWORK: "0"
+        run: node --test scripts/tests/verify-mcp-conformance-profile.test.mjs
 
       - name: Build SDK packages
         run: pnpm -r --filter ./sdk/typescript run build
