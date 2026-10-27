@@ -97,12 +97,11 @@ def main():
                 print(line, end="", flush=True)
             executions.append({"command": command, "exit_code": process.wait(), "wall_seconds": time.monotonic() - before})
             if executions[-1]["exit_code"] != 0:
-                # A completed ordinary nextest run can fail assertions while
-                # the independently selected real-training profile remains
-                # executable. Retain both outcomes; either failure still
-                # fails the combined receipt. Build/setup failures stop here.
-                if (mode == "test" and group == "daemon" and command == receipt["command"]
-                        and executions[-1]["exit_code"] == 100):
+                # The ordinary and real-training targets are independent
+                # checks after the executable prerequisite. A compile or
+                # assertion failure in one must not hide the other's result;
+                # either failure still fails the combined receipt.
+                if mode == "test" and group == "daemon" and command[:2] == ["just", "test"]:
                     continue
                 break
             if command[:2] == ["cargo", "build"]:
