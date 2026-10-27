@@ -15,8 +15,8 @@ use tokio_util::sync::CancellationToken;
 #[derive(Clone)]
 pub struct AppServerDrainHandle {
     request: CancellationToken,
-    running_turns: Arc<AtomicUsize>,
-    drained: Arc<AtomicBool>,
+    pub(super) running_turns: Arc<AtomicUsize>,
+    pub(super) drained: Arc<AtomicBool>,
     completed: Arc<AtomicBool>,
 }
 
