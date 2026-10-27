@@ -1,6 +1,9 @@
+#[cfg(not(windows))]
 use std::io::Write;
 use std::path::Path;
+#[cfg(not(windows))]
 use std::process::Command;
+#[cfg(not(windows))]
 use std::process::Stdio;
 
 use base64::Engine as _;
@@ -23,6 +26,7 @@ pub(crate) const SIGNATURE_ALGORITHM: &str = "openssh-sshsig-ed25519";
 pub(crate) const TRUST_POLICY_SCOPE: &str =
     "externally_pinned_single_ed25519_external_revocation_responsibility_no_local_krl_v1";
 const TRUST_POLICY_SCHEMA: &str = "hepta_operator_acceptance_trust_policy_v1";
+#[cfg(not(windows))]
 const SSH_KEYGEN: &str = "/usr/bin/ssh-keygen";
 const MAX_TRUST_FILE_BYTES: usize = 16 * 1024;
 const MAX_SIGNATURE_BYTES: usize = 4 * 1024;
@@ -30,6 +34,8 @@ const MAX_SIGNATURE_BYTES: usize = 4 * 1024;
 pub(crate) struct TrustAnchor {
     pub binding: OperatorBinding,
     allowed_signers_bytes: Vec<u8>,
+    #[cfg(windows)]
+    windows_owner: crate::windows_openssh::WindowsVerifierOwner,
 }
 
 pub(crate) struct TrustInputs<'a> {
@@ -118,6 +124,11 @@ impl TrustAnchor {
                 trust_root_revision: policy.trust_root_revision,
             },
             allowed_signers_bytes,
+            #[cfg(windows)]
+            windows_owner: crate::windows_openssh::WindowsVerifierOwner::capture(
+                &policy_path,
+                inputs.externally_pinned_trust_policy_sha256,
+            )?,
         })
     }
 
@@ -169,31 +180,42 @@ impl TrustAnchor {
             &self.binding.principal,
             SSHSIG_NAMESPACE,
         )?;
-        let allowed_signers = InheritedPipe::new(&self.allowed_signers_bytes)?;
-        let signature = InheritedPipe::new(signature_bytes)?;
-        let mut child = Command::new(SSH_KEYGEN)
-            .args(["-Y", "verify", "-f"])
-            .arg(allowed_signers.child_path())
-            .args(["-I", &self.binding.principal, "-n", SSHSIG_NAMESPACE, "-s"])
-            .arg(signature.child_path())
-            .env_clear()
-            .env("LANG", "C")
-            .env("LC_ALL", "C")
-            .stdin(Stdio::piped())
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .spawn()
-            .map_err(|error| invalid(format!("failed to start trusted ssh-keygen: {error}")))?;
-        let write_result = child
-            .stdin
-            .take()
-            .ok_or_else(|| invalid("ssh-keygen verification stdin is unavailable"))?
-            .write_all(statement);
-        let status = child.wait();
-        write_result?;
-        let status = status?;
-        if !status.success() {
-            return Err(invalid("OpenSSH SSHSIG verification failed"));
+        #[cfg(windows)]
+        self.windows_owner.verify_openssh(
+            statement,
+            signature_bytes,
+            &self.allowed_signers_bytes,
+            &self.binding.principal,
+            SSHSIG_NAMESPACE,
+        )?;
+        #[cfg(not(windows))]
+        {
+            let allowed_signers = InheritedPipe::new(&self.allowed_signers_bytes)?;
+            let signature = InheritedPipe::new(signature_bytes)?;
+            let mut child = Command::new(SSH_KEYGEN)
+                .args(["-Y", "verify", "-f"])
+                .arg(allowed_signers.child_path())
+                .args(["-I", &self.binding.principal, "-n", SSHSIG_NAMESPACE, "-s"])
+                .arg(signature.child_path())
+                .env_clear()
+                .env("LANG", "C")
+                .env("LC_ALL", "C")
+                .stdin(Stdio::piped())
+                .stdout(Stdio::null())
+                .stderr(Stdio::null())
+                .spawn()
+                .map_err(|error| invalid(format!("failed to start trusted ssh-keygen: {error}")))?;
+            let write_result = child
+                .stdin
+                .take()
+                .ok_or_else(|| invalid("ssh-keygen verification stdin is unavailable"))?
+                .write_all(statement);
+            let status = child.wait();
+            write_result?;
+            let status = status?;
+            if !status.success() {
+                return Err(invalid("OpenSSH SSHSIG verification failed"));
+            }
         }
         Ok(VerifiedSignature {
             detached_signature_sha256: sha256(signature_bytes),
@@ -370,10 +392,10 @@ fn clear_close_on_exec(fd: &std::os::fd::OwnedFd) -> Result<(), AcceptanceError>
     Ok(())
 }
 
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 struct InheritedPipe;
 
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 impl InheritedPipe {
     fn new(_bytes: &[u8]) -> Result<Self, AcceptanceError> {
         Err(invalid(

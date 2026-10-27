@@ -141,6 +141,7 @@ impl Fixture {
 }
 
 #[test]
+#[ignore = "independent native Windows verifier controls; preserve original26 scope"]
 fn real_system32_child_and_strict_rust_accept_identical_original_bytes() {
     let fixture = Fixture::new();
     let owner = fixture.owner();
@@ -148,6 +149,7 @@ fn real_system32_child_and_strict_rust_accept_identical_original_bytes() {
 }
 
 #[test]
+#[ignore = "independent native Windows verifier controls; preserve original26 scope"]
 fn changed_body_is_rejected_by_strict_rust_and_actual_native_child() {
     let fixture = Fixture::new();
     let owner = fixture.owner();
@@ -181,6 +183,7 @@ fn changed_body_is_rejected_by_strict_rust_and_actual_native_child() {
 }
 
 #[test]
+#[ignore = "independent native Windows verifier controls; preserve original26 scope"]
 fn wrong_namespace_is_rejected_by_actual_native_child() {
     let fixture = Fixture::new();
     let owner = fixture.owner();
@@ -200,6 +203,7 @@ fn wrong_namespace_is_rejected_by_actual_native_child() {
 }
 
 #[test]
+#[ignore = "independent native Windows verifier controls; preserve original26 scope"]
 fn captured_original_policy_dacl_change_is_refused_on_the_same_full_file_id() {
     let fixture = Fixture::new();
     let owner = fixture.owner();

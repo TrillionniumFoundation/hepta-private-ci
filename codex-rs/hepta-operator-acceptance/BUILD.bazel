@@ -19,6 +19,7 @@ rust_library(
     ] + select({
         "@platforms//os:windows": [
             "//codex-rs/utils/path-utils",
+            "@crates//:windows-sys-0.52.0",
         ],
         "//conditions:default": [],
     }),

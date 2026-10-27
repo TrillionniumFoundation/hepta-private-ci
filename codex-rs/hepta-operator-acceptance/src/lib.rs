@@ -10,6 +10,8 @@ mod qualification_runs;
 mod receipt_store;
 mod sshsig_strict;
 mod trust;
+#[cfg(windows)]
+mod windows_openssh;
 
 use serde::Deserialize;
 use serde::Serialize;

@@ -35,13 +35,64 @@ Early unsupported APIs, missing OpenSSH, pipe errors, wrong image/token/PID or
 timeouts cannot satisfy the body/namespace negative cases. These are additional
 controls; original failed runs and original test IDs remain intact.
 
-This test-only source is prepared independently before the production backend
-is combined. It is not runnable in its base tree because that tree intentionally
-has no `windows_openssh` production module. The combined clean source must pass
-the repository formatting/lint/build checks and run these cases on real Windows.
-Linux/GNU cross compilation and parser-only results supply no native qualification.
+The original test-only commit had no backend. The combined source wires these
+controls to the production backend. They are explicitly ignored by default so
+the original package-wide 26-case selection remains identical. A separate exact
+filter with `--run-ignored ignored-only` must select all four, once each, with zero
+retries. The combined clean source must pass repository formatting/lint/build
+checks and run these cases on real Windows. Linux/GNU cross compilation and
+parser-only results supply no native qualification.
 
 Further actual Windows controls remain necessary for unrelated-client PID
 rejection, cancellation/timeout cleanup and EOF/worker retirement. They should
 exercise actual pipe connections and the spawned child HANDLE, not mocked PIDs,
 metadata-only records or synthetic file descriptors.
+
+## Production contract
+
+`windows_openssh.rs` is the single Windows backend shared by Operator trust and
+G5. Both callers first retain the original strict Rust SSHSIG verification;
+native verification is an additional independent check. Unix retains its
+original inherited-descriptor path. Windows uses its own actual child/pipe
+contract and does not claim Unix inherited descriptors.
+
+The owner captures the original externally pinned policy as a canonical
+`PrivateFile`, its full identity and owner/DACL, and the effective user/owner
+token SIDs. The retained policy must still verify before and after each native
+operation. No policy ACL is repaired and no new policy or signing authority is
+created. Statement, signature and allowed-signers bytes retain their original
+bounds and are written unchanged. The fixture producer uses its precreated
+private filename; it never repairs stdout CRLF or a generated signature.
+
+`windows_openssh_image.rs` obtains System32 through `GetSystemDirectoryW`, not
+PATH or a caller environment variable. It holds the installed OpenSSH image
+read-only without write/delete sharing and verifies full 128-bit file identity
+and owner/DACL before and after use. Its OS-image integrity predicate is
+separate from private-file custody: only SYSTEM, Builtin Administrators and
+TrustedInstaller may own/write/control the system image; foreign grants are
+limited to read/execute. Unknown ACL forms fail closed. The actual child HANDLE,
+PID, image full identity and TokenUser/TokenOwner must match before any bytes
+reach either pipe. This does not authorize a process merely because its pathname
+or tool version matches.
+
+`windows_openssh_pipe.rs` creates two unpredictable, first-instance, local-only,
+non-inherited, single-client pipes with the original private policy descriptor.
+The canonical private owner/DACL predicate checks each real pipe object. It
+checks the actual connected client PID against the retained live child before
+writing. Original bytes are written exactly, flushed until consumed, then
+disconnected to supply EOF. Only the already-closed-client error 233 after an
+exact write and successful flush is accepted. A parent-cancelled lane that never
+connected is separately typed; it cannot satisfy signature consumption or a
+successful verification. A naturally failing child can leave the allowed-signers
+lane unused only after it consumed the signature and the body write succeeded.
+Timeouts, identity/PID failures and other I/O errors never become the specific
+cryptographic-rejection result.
+
+The native operation has a five-second deadline. It does not modify any original
+Nextest deadline or retry setting. Stdin and both pipes have scoped workers. On
+normal exit, timeout or error the parent retains/reaps the real child and aborts
+pipe I/O before joining workers. Overlapped state and buffers remain alive until
+actual completion/cancellation. Unwinding repeats owned cleanup; an error is not
+published as success. No raw HANDLE, writable process port or adopt-existing-file
+API is exported. Real Windows EOF, cancellation, client PID and worker-retirement
+qualification remains required for each exact clean source.

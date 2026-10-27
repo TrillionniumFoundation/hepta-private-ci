@@ -252,6 +252,8 @@ struct LoadedG5Trust {
     policy: G5TrustPolicy,
     revocation: G5RevocationState,
     allowed_signers: Vec<u8>,
+    #[cfg(windows)]
+    windows_owner: crate::windows_openssh::WindowsVerifierOwner,
 }
 
 /// Create a canonical challenge only.  This function has no signing path and
@@ -435,13 +437,32 @@ fn assess_signature(
         ));
     }
     let digest = sha256(&bytes);
-    match verify_sshsig_bytes(
+    #[cfg(not(windows))]
+    let verification = verify_sshsig_bytes(
         statement,
         &bytes,
         &trust.allowed_signers,
         &trust.binding.principal,
         SSHSIG_NAMESPACE,
-    ) {
+    );
+    #[cfg(windows)]
+    let verification = crate::sshsig_strict::verify_ed25519_sshsig(
+        statement,
+        &bytes,
+        &trust.allowed_signers,
+        &trust.binding.principal,
+        SSHSIG_NAMESPACE,
+    )
+    .and_then(|()| {
+        trust.windows_owner.verify_openssh(
+            statement,
+            &bytes,
+            &trust.allowed_signers,
+            &trust.binding.principal,
+            SSHSIG_NAMESPACE,
+        )
+    });
+    match verification {
         Ok(()) => Ok((
             ASSESSMENT_STATUS_SIGNATURE_VERIFIED.to_string(),
             true,
@@ -518,6 +539,11 @@ fn load_g5_trust(inputs: G5TrustInputs<'_>) -> Result<LoadedG5Trust, AcceptanceE
         policy,
         revocation,
         allowed_signers,
+        #[cfg(windows)]
+        windows_owner: crate::windows_openssh::WindowsVerifierOwner::capture(
+            &policy_path,
+            inputs.externally_pinned_policy_sha256,
+        )?,
     })
 }
 
@@ -834,6 +860,7 @@ fn take_ssh_string(bytes: &[u8]) -> Result<(&[u8], &[u8]), AcceptanceError> {
     Ok((value, rest))
 }
 
+#[cfg(not(windows))]
 fn verify_sshsig_bytes(
     statement: &[u8],
     signature_bytes: &[u8],
