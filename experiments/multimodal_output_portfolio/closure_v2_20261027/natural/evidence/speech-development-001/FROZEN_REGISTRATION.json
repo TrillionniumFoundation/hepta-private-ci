@@ -1,0 +1,95 @@
+{
+  "assets_sha256": "2c8be8501f34412bb1acb7e09fa01b5f4ef142052e2225183e0decfb91b0eab0",
+  "heldout_generation_not_started": true,
+  "protocol": {
+    "CI": "5000 paired speaker-cluster bootstrap resamples with seed2821; repetitions averaged within utterance; pooled WER numerator and denominator resampled jointly",
+    "cost": "Full audio decode, features, encoder, every decoder, gate, transcript/metadata delivery/readback/hash; model loading/warmup/selection reported separately. No privileged reference or high-model answer before allocation.",
+    "cpu_threads": 1,
+    "dataset": "openslr/librispeech_asr",
+    "dataset_revision": "71cacbfb7e2354c4226d01e70d77d5fca3d04ba1",
+    "model": "Systran/faster-whisper-base.en",
+    "model_revision": "a08d1be94e78dfc43a1c66e9167ed1322c234611",
+    "primary_gates": "Against fixed_beam5: WER95percentCI upperdifference<=0.01, CPU and wall upperdifference<0. Against same-policy reencoded: nonzero continuation, exact transcript equality and CPU/wall upperdifference<0. Zero continuation leaves cache identification failed, never relabeled passed.",
+    "quality_noninferiority_margin_absolute_WER": 0.01,
+    "schema": "hepta.ndu.closure-v2.natural.speech.protocol.v1",
+    "scope": "Frozen neural natural speech transcription and quality-constrained continuation; no speech synthesis, neural weight training or original Hepta integration claim",
+    "selection": "Execute every candidate on the prior cascade's8 validation speakers24 utterances; among candidates whose paired speaker95percentCI upper WER difference versus actual fixed beam5 <=0.01 choose lowest actual whole CPU. Zero continuation and full continuation remain valid options; no mandatory second pass introduced.",
+    "stopping": "Source split, threshold, exact source and models frozen before one new qualification; no test retuning; preserve zero/nonzero allocation and all failures",
+    "test_arms": [
+      "fixed_greedy",
+      "fixed_beam5",
+      "cached_continuation",
+      "reencoded_continuation"
+    ],
+    "test_source_selection": "Ascending public upstream test rows, first4 duration<=29s utterances per unused speaker, eight speakers each from clean and other; exclude all earlier fit/validation/test speakers and waveforms",
+    "test_speakers_each_config": 8,
+    "thresholds": [
+      -1000,
+      -0.3,
+      -0.15,
+      -0.05,
+      1000
+    ],
+    "timing_repetitions": 2,
+    "utterances_per_speaker": 4
+  },
+  "registered_ns": 1793091030750500881,
+  "source_files": [
+    {
+      "bytes": 82,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/__init__.py",
+      "sha256": "2dc5cf76711291eaaf73ef7a2192cb75ca8b4fd04a58383d8674d3b6f8adb911"
+    },
+    {
+      "bytes": 3327,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/common.py",
+      "sha256": "214cc23db94ea5fe64aaf43f27bec866f0710f07cb873f4e53bdff8160dfe4d7"
+    },
+    {
+      "bytes": 3597,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/document_develop.py",
+      "sha256": "4d2abc9d5bc7ba2e02622d8f5727c52036c426a9dcc8aa6070e559b660bde66d"
+    },
+    {
+      "bytes": 4062,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/document_model.py",
+      "sha256": "53a597b66245bdfe2cf1dc97ff97a256526fc1b99ac19b7159b7c954d299b76e"
+    },
+    {
+      "bytes": 5108,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/document_study.py",
+      "sha256": "1135719faaff58cefa7366d7a15ff592a258cc7f808a5a8c4cad077ba463a8a6"
+    },
+    {
+      "bytes": 3168,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/fetch_document.py",
+      "sha256": "a7f8993d6bfc3f34810b145ee901ab9055ada5c9c34b591069255957a676bd76"
+    },
+    {
+      "bytes": 8891,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/fetch_video.py",
+      "sha256": "9a482179eb969ccf7425827210cf581db2691284fc731f85a170d0bd9b0821f8"
+    },
+    {
+      "bytes": 4377,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/speech_develop.py",
+      "sha256": "e70153cf3e21bdf89a13fb9d46d80a6df685b61104800c3d96f0a78eafca3ba3"
+    },
+    {
+      "bytes": 3191,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_develop.py",
+      "sha256": "51bab5b85e985a056ad2141ddada4caa286bcacf6b065195d4d77c0b77e32091"
+    },
+    {
+      "bytes": 4812,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_engine.py",
+      "sha256": "7681e6277c50f848a0b4b04a98e198c02cea45b08f3e9c8a544f02e833213354"
+    },
+    {
+      "bytes": 4191,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_study.py",
+      "sha256": "e213010df668cb209b6c125e86f363e3e1008a53bccdc6220f12b5ca1a52438b"
+    }
+  ],
+  "source_snapshot": "/workspace/scratch/95988d8d3ab1/natural-v2-runs/speech-development-001/executed-source"
+}

@@ -1,0 +1,32 @@
+{
+  "imports_experiment_scorer_or_model": false,
+  "reports": {
+    "document": {
+      "actual_answer_image_pairs_reopened": 192,
+      "independent_merchants": 24,
+      "maximum_interval_discrepancy": 0.0,
+      "maximum_score_discrepancy": 5.551115123125783e-17,
+      "quality_cost_gate": true,
+      "strong_baseline_gate": false
+    },
+    "speech": {
+      "actual_transcripts_reopened": 640,
+      "all_WER_and_interval_values_match": true,
+      "encoder_quality_cost_gate": true,
+      "fixed_beam5_gate": false,
+      "full_FLACs_decoded": 64,
+      "independent_speakers": 16,
+      "same_policy_cache_gate": true
+    },
+    "video": {
+      "actual_PNGs_reopened": 640,
+      "canonical_frames_reconstructed": 192,
+      "independent_source_clusters": 8,
+      "maximum_interval_discrepancy": 3.6637359812630166e-15,
+      "maximum_score_discrepancy": 0.0,
+      "quality_cost_gate": true,
+      "training_attribution_gate": true
+    }
+  },
+  "status": "passed"
+}

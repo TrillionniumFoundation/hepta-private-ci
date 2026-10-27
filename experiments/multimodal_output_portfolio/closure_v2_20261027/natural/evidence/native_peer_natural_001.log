@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/control/peer_natural.py", line 300, in <module>
+    run(args.workspace, args.output)
+  File "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/control/peer_natural.py", line 287, in run
+    "document_replication": documents(workspace, True), "speech": speech(workspace)}
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/control/peer_natural.py", line 185, in documents
+    max_difference = max(max_difference, close(actual["difference"], observed["difference"]), close(actual["interval"], observed["CI97_5"]))
+                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/control/peer_natural.py", line 56, in close
+    raise ValueError(f"Independent arithmetic differs: {discrepancy}")
+ValueError: Independent arithmetic differs: 0.00024395949157961921

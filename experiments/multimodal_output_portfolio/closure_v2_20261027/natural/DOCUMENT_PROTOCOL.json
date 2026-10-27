@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.ndu.closure-v2.natural.document.protocol.v1",
+  "dataset": "jsdnrs/ICDAR2019-SROIE",
+  "dataset_revision": "bffe40c26759f3376ec2b3ae9031dbba54cd587c",
+  "test_merchants": 24,
+  "source_selection": "First new normalized company per ascending upstream test row, excluding every historical and first-continuation merchant and exact image hash; fixed before model outputs",
+  "model": "Four field-specific ridge models predicting actual quality gain over original rules,128 weights; preserve original rule output as a candidate; missing references masked; fit only old24 training merchants",
+  "selection": "Old12 validation merchants select ridge from0.1,1,10,100 and correction threshold from0,0.05,0.1,0.2,1000 by entropic CE(gamma2); ties fewer changes then stronger regularization then larger threshold",
+  "actual_output": "Four text fields plus corresponding annotated RGB JPEG; no reference box in inference",
+  "test_arms": ["original_rules", "old_learned_base", "old_all_refine", "rule_residual"],
+  "timing_repetitions": 2,
+  "quality": "Per-document mean over observed fields of0.5 exact match plus0.5 normalized edit similarity; separately report exact field accuracy and missing labels",
+  "cost_price": 0.01,
+  "acceptance": "Against original_rules: positive95percentCI lower bound of quality-minus0.01*actualCPU. Against old_all_refine: quality95percentCI lower difference>=-0.02 and CPU/wall95percentCI upper differences<0. Preserve original margins and strong baseline.",
+  "uncertainty": "5000 paired merchant cluster bootstrap resamples seed2811; repetitions averaged inside source",
+  "scope": "Learned structured text correction and corresponding image annotation over natural OCR evidence; no foundation visual-language reasoning or natural audio/video synthesis claim",
+  "stopping": "One frozen new-source qualification; retain all failure/negative results, no test-dependent parameter or protocol changes"
+}

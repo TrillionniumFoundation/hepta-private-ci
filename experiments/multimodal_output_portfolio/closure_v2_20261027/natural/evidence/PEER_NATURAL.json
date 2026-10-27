@@ -1,0 +1,117 @@
+{
+  "generator_model_reruns": 0,
+  "imports_producer_scorer_statistics_or_auditor": false,
+  "passed": true,
+  "read_only_peer_review": true,
+  "reports": {
+    "document": {
+      "actual_JSON_JPEG_pairs": 192,
+      "confirmed_alias": {
+        "ids": [
+          "X51005361906",
+          "X51005361908"
+        ],
+        "same_address": "NO53JALANBESAR45600BATANGBERJUNTAISELANGORDARULEHSAN",
+        "same_source_header": "TEO HENG STATIONERY & BOOKS"
+      },
+      "cost_scope": "Both arms time OCR including child CPU, selection, JSON/JPEG delivery/readback/hash; destination mkdir and trailing PUBLIC_RESULT metadata write excluded symmetrically",
+      "declared_normalized_merchant_groups": 24,
+      "group_scope": "ASCII-normalized annotated company strings; corporate entity and template independence not established",
+      "maximum_contrast_discrepancy": 0.0,
+      "maximum_score_discrepancy": 5.551115123125783e-17,
+      "model_sha256": "d5f19f9ddcc408831a31976df1ff28a8b17f01e4701b5493b54dfefed759471d",
+      "old_all_refine_gate": true,
+      "posthoc_23_cluster_sensitivity_not_new_gate": {
+        "cost_adjusted_return": {
+          "clusters": 23,
+          "difference": 0.01854575281079992,
+          "interval": [
+            0.000409599876940776,
+            0.04392048362285152
+          ]
+        },
+        "quality": {
+          "clusters": 23,
+          "difference": 0.018366778149386847,
+          "interval": [
+            0.00027173913043478164,
+            0.04376079988851722
+          ]
+        }
+      },
+      "strong_rules_gate": false
+    },
+    "document_replication": {
+      "actual_JSON_JPEG_pairs": 512,
+      "cost_scope": "Both arms time OCR including child CPU, selection, JSON/JPEG delivery/readback/hash; destination mkdir and trailing PUBLIC_RESULT metadata write excluded symmetrically",
+      "declared_normalized_merchant_groups": 128,
+      "group_scope": "ASCII-normalized annotated company strings; corporate entity and template independence not established",
+      "maximum_contrast_discrepancy": 6.938893903907228e-18,
+      "maximum_score_discrepancy": 1.1102230246251565e-16,
+      "model_sha256": "d5f19f9ddcc408831a31976df1ff28a8b17f01e4701b5493b54dfefed759471d",
+      "old_inconclusive_cohort_not_pooled": true,
+      "primary_contrast": {
+        "cost_adjusted_return": {
+          "CI97_5": [
+            0.010193986599416732,
+            0.03151800065651168
+          ],
+          "difference": 0.020291430395451684
+        },
+        "cpu_seconds": {
+          "CI97_5": [
+            -0.007584673458943076,
+            0.03093013657006365
+          ],
+          "difference": 0.010469959890620592
+        },
+        "field_exact": {
+          "CI97_5": [
+            0.001953125,
+            0.01953125
+          ],
+          "difference": 0.009765625
+        },
+        "quality": {
+          "CI97_5": [
+            0.010327121544749638,
+            0.031670659613386824
+          ],
+          "difference": 0.020396129994357894
+        },
+        "wall_seconds": {
+          "CI97_5": [
+            -0.013494580050497973,
+            0.038872563663007745
+          ],
+          "difference": 0.010660986883351597
+        }
+      },
+      "strong_rules_replication_gate": true
+    },
+    "speech": {
+      "actual_transcripts": 640,
+      "all_actual_transcripts_and_source_cluster_intervals_verified": true,
+      "cost_scope": "Full audio decode/features/encoder/gate/all decoders/transcript and public metadata readback; excludes destination mkdir and shared model loading/warmup; no neural parameter update",
+      "encoder_gate": true,
+      "postdecoder_cache_vs_single_beam5_gate": false,
+      "same_input_cached_cold_and_all_arm_encoded_hashes_match": true,
+      "same_policy_cache_gate": true,
+      "speakers": 16,
+      "stronger_cheap_control_limitation": "Fixed greedy also satisfies cohort WER noninferiority and is cheaper; encoder controller superiority over every fixed policy not established",
+      "utterances": 64
+    },
+    "video": {
+      "actual_PNGs": 640,
+      "actual_target_endpoint_overlap": 0,
+      "cost_scope": "After destination.mkdir: endpoint decode, two flow calls, warps, mixing, PNG readback/hash and public metadata; excludes model/process load, directory creation, network, private score; source preparation separately shared",
+      "fitted_parameter_count": 1,
+      "historical_scope": "David/Dudek/Faceocc2 include previously retired test material already designated development; no reuse of prior natural qualification realshort/vtest/cockatoo for new selection",
+      "maximum_contrast_discrepancy": 3.6637359812630166e-15,
+      "maximum_score_discrepancy": 7.105427357601002e-15,
+      "quality_cost_gate": true,
+      "source_clusters": 8,
+      "training_attribution_gate": true
+    }
+  }
+}

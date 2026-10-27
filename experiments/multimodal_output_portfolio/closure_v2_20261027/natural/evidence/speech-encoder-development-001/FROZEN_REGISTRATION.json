@@ -1,0 +1,121 @@
+{
+  "assets_sha256": "2c8be8501f34412bb1acb7e09fa01b5f4ef142052e2225183e0decfb91b0eab0",
+  "heldout_generation_not_started": true,
+  "protocol": {
+    "fresh_test_outputs_exist": false,
+    "purpose": "Remove redundant first decoder by choosing beam from observed encoder state",
+    "ridge_lambda": 10.0,
+    "selection": "Validation paired speaker95percentWER upper difference<=0.01 versus actual beam5, then minimum actualCPU; fixedbeam5 is an eligible deployment fallback",
+    "test_not_received": true,
+    "thresholds": "Training gain quartiles plus all-beam5/all-beam1 endpoints",
+    "training_speakers": [
+      116,
+      777,
+      1988,
+      2035,
+      2086,
+      3660,
+      6455,
+      8288
+    ],
+    "validation_speakers": [
+      84,
+      1651,
+      1673,
+      1686,
+      5536,
+      6345,
+      7601,
+      7641
+    ]
+  },
+  "registered_ns": 1793091494319756217,
+  "source_files": [
+    {
+      "bytes": 82,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/__init__.py",
+      "sha256": "2dc5cf76711291eaaf73ef7a2192cb75ca8b4fd04a58383d8674d3b6f8adb911"
+    },
+    {
+      "bytes": 12535,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/audit_outputs.py",
+      "sha256": "de4a378a090e8b0ae0aa9b83f9e4ee317051ebdf8774e86d715895693dbb5f9a"
+    },
+    {
+      "bytes": 3327,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/common.py",
+      "sha256": "214cc23db94ea5fe64aaf43f27bec866f0710f07cb873f4e53bdff8160dfe4d7"
+    },
+    {
+      "bytes": 3597,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/document_develop.py",
+      "sha256": "4d2abc9d5bc7ba2e02622d8f5727c52036c426a9dcc8aa6070e559b660bde66d"
+    },
+    {
+      "bytes": 4062,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/document_model.py",
+      "sha256": "53a597b66245bdfe2cf1dc97ff97a256526fc1b99ac19b7159b7c954d299b76e"
+    },
+    {
+      "bytes": 5108,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/document_study.py",
+      "sha256": "1135719faaff58cefa7366d7a15ff592a258cc7f808a5a8c4cad077ba463a8a6"
+    },
+    {
+      "bytes": 3168,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/fetch_document.py",
+      "sha256": "a7f8993d6bfc3f34810b145ee901ab9055ada5c9c34b591069255957a676bd76"
+    },
+    {
+      "bytes": 5780,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/fetch_speech.py",
+      "sha256": "cddf9110074e2018daa1cdb1e1b23e40e818590bb9d843bbc910aa0688709373"
+    },
+    {
+      "bytes": 8891,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/fetch_video.py",
+      "sha256": "9a482179eb969ccf7425827210cf581db2691284fc731f85a170d0bd9b0821f8"
+    },
+    {
+      "bytes": 4377,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/speech_develop.py",
+      "sha256": "e70153cf3e21bdf89a13fb9d46d80a6df685b61104800c3d96f0a78eafca3ba3"
+    },
+    {
+      "bytes": 5010,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/speech_encoder_develop.py",
+      "sha256": "29c1215e612e588b929cbdcdfe1f717bf2cb11eb95652b71d103ea564496b5b7"
+    },
+    {
+      "bytes": 3361,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/speech_encoder_gate.py",
+      "sha256": "f0b7052442cea1e339ebf073c851d25e067fdda6c74e0679e93ecdab3f01f8db"
+    },
+    {
+      "bytes": 6452,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/speech_study.py",
+      "sha256": "b5226e74f48399ffcb84a234e21617862c7b761299695d5d95351a1c6f340a5f"
+    },
+    {
+      "bytes": 3477,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/test_boundaries.py",
+      "sha256": "a9a1540ecbea331d3c7f3f818de3f237fb9436348430c325cc6362107a481cdc"
+    },
+    {
+      "bytes": 3191,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_develop.py",
+      "sha256": "51bab5b85e985a056ad2141ddada4caa286bcacf6b065195d4d77c0b77e32091"
+    },
+    {
+      "bytes": 4812,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_engine.py",
+      "sha256": "7681e6277c50f848a0b4b04a98e198c02cea45b08f3e9c8a544f02e833213354"
+    },
+    {
+      "bytes": 4191,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_study.py",
+      "sha256": "e213010df668cb209b6c125e86f363e3e1008a53bccdc6220f12b5ca1a52438b"
+    }
+  ],
+  "source_snapshot": "/workspace/scratch/95988d8d3ab1/natural-v2-runs/speech-encoder-development-001/executed-source"
+}

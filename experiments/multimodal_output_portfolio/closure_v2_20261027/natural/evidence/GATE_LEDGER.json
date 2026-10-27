@@ -1,0 +1,144 @@
+{
+  "additional_same_output_timing_measurements": 256,
+  "all_raw_outputs_preserved": true,
+  "all_scientific_runs_completed": true,
+  "claims": [
+    {
+      "id": "video_original_quality_margin_and_actual_cost",
+      "passed": true,
+      "result": "video-qualification-001/RESULT.json",
+      "scope": "Fixed validation-selected optimizer; no adaptive allocation superiority",
+      "source_unit": "8 DAVIS sequence families"
+    },
+    {
+      "id": "video_fitted_scalar_vs_same_solver_initialization",
+      "passed": true,
+      "result": "video-qualification-001/RESULT.json",
+      "scope": "Actual RGB generation gain attributable to one fitted coefficient"
+    },
+    {
+      "id": "speech_encoder_gate_vs_fixed_beam5",
+      "passed": true,
+      "result": "speech-qualification-001/RESULT.json",
+      "scope": "Original +0.01 WER margin with actual CPU and wall reductions on 16 speakers"
+    },
+    {
+      "id": "speech_same_policy_nonzero_continuation_cache",
+      "passed": true,
+      "result": "speech-qualification-001/RESULT.json",
+      "scope": "57/64 nonzero continuations; identical actual transcripts; duplicate encoding removed"
+    },
+    {
+      "id": "speech_postdecoder_policy_vs_fixed_beam5",
+      "passed": false,
+      "result": "speech-qualification-001/RESULT.json",
+      "scope": "Identical transcripts; added first-decoder cost remains"
+    },
+    {
+      "id": "speech_learned_gate_dominates_cheapest_fixed_policy",
+      "passed": false,
+      "result": "SPEECH_CHEAP_BASELINE_DIAGNOSTIC.json",
+      "scope": "Fixed greedy also satisfies the margin on the new cohort and costs less; descriptive postqualification diagnostic"
+    },
+    {
+      "id": "document_first24_strong_rules",
+      "passed": false,
+      "result": "document-qualification-001/RESULT.json",
+      "scope": "Inconclusive original result preserved; not pooled into replication"
+    },
+    {
+      "id": "document_original_all_refinement_quality_and_cost",
+      "passed": true,
+      "result": "document-qualification-001/RESULT.json",
+      "scope": "Actual CPU/wall reduction against old learned refinement, separate from strong rules"
+    },
+    {
+      "id": "document_fixed_model_one128_replication_vs_strong_rules",
+      "passed": true,
+      "result": "document-replication-001/RESULT.json",
+      "scope": "Original 97.5% normalized-name-group gate is positive; the entity audit identifies 126 physical components and prior overlaps. Original protocol/CI unchanged. No CPU speedup or prospective entity-disjoint qualification claim."
+    },
+    {
+      "id": "general_natural_speech_synthesis_or_semantic_video_synthesis",
+      "passed": false,
+      "scope": "Not implemented or tested by these adapters"
+    },
+    {
+      "id": "original_hepta_neuron_integration_in_natural_adapters",
+      "passed": false,
+      "scope": "Separate native study exists; these natural components do not establish this integration"
+    },
+    {
+      "id": "global_dynamic_optimal_multimodal_portfolio",
+      "passed": false,
+      "scope": "No global NDU/HJB optimum inferred from bounded empirical gates"
+    },
+    {
+      "id": "document_replication_strictly_entity_disjoint_128_merchants",
+      "passed": false,
+      "result": "DOCUMENT_ALIAS_SOURCE_SEAL.json",
+      "scope": "Three prior physical-store overlaps plus three additional corporate/family overlaps; original 128 name groups form 126 audited physical components."
+    },
+    {
+      "id": "document_entity_overlap_sensitivity",
+      "passed": true,
+      "result": "DOCUMENT_ALIAS_SENSITIVITY.json",
+      "scope": "Posthoc diagnostic only: after source-only fixed exclusions, 122 images /120 audited components retain positive 97.5% quality and cost-adjusted-return intervals. Not a fresh confirmatory gate."
+    },
+    {
+      "id": "speech_common_boundary_measurement_correction",
+      "passed": true,
+      "result": "speech-timer-correction-001/RESULT.json",
+      "scope": "One256-episode same-output measurement correction; both shared-core and metadata-inclusive paired speaker CPU/wall CIs are negative. All transcript/encoder hashes and beam choices match originals. No new cohort or policy selection."
+    }
+  ],
+  "fixed_replication_primary": {
+    "cost_adjusted_return": {
+      "CI97_5": [
+        0.010193986599416732,
+        0.03151800065651168
+      ],
+      "difference": 0.020291430395451684
+    },
+    "cpu_seconds": {
+      "CI97_5": [
+        -0.007584673458943076,
+        0.03093013657006365
+      ],
+      "difference": 0.010469959890620592
+    },
+    "field_exact": {
+      "CI97_5": [
+        0.001953125,
+        0.01953125
+      ],
+      "difference": 0.009765625
+    },
+    "quality": {
+      "CI97_5": [
+        0.010327121544749638,
+        0.031670659613386824
+      ],
+      "difference": 0.020396129994357894
+    },
+    "wall_seconds": {
+      "CI97_5": [
+        -0.013494580050497973,
+        0.038872563663007745
+      ],
+      "difference": 0.010660986883351597
+    }
+  },
+  "limitations": [
+    "Pretrained-model prior exposure to public evaluation corpora is unknown",
+    "Merchant labels are string groups, not verified corporate/template groups",
+    "Video population has eight source families",
+    "Per-policy CPU/wall excludes common startup/network/preprocessing",
+    "One external public Whisper checkpoint is required for neural regeneration",
+    "Merchant aliases include identified fitting/test source overlap; prospective entity-resolved isolation remains unqualified even though fixed existing-output sensitivity stays positive."
+  ],
+  "qualification_delivery_records": 1984,
+  "recorded_ns": 1793093895917501389,
+  "schema": "hepta.ndu.closure-v2.natural.gate-ledger.v1",
+  "total_actual_qualification_and_measurement_records": 2240
+}

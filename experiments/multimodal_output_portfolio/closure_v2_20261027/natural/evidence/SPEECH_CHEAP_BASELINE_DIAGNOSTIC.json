@@ -1,0 +1,42 @@
+{
+  "kind": "postqualification_strong-cheap-baseline-diagnostic",
+  "not_a_new_qualification": true,
+  "qualification_rows_sha256": "cccddfa560a61238c833ab0592ac317da8b05391e4a1a0bf0249e50f7d49c914",
+  "reports": {
+    "encoder_gate minus fixed_greedy": {
+      "CPU_CI95": [
+        0.004655589724218734,
+        0.10796703554374994
+      ],
+      "CPU_difference": 0.05202353813281252,
+      "WER_CI95": [
+        -0.0026551030352567626,
+        0.0
+      ],
+      "WER_difference": -0.00078125,
+      "wall_CI95": [
+        0.009152174242968651,
+        0.11151673708300777
+      ],
+      "wall_difference": 0.05694116630468747
+    },
+    "fixed_greedy minus fixed_beam5": {
+      "CPU_CI95": [
+        -0.16391103120195313,
+        -0.07859548713671877
+      ],
+      "CPU_difference": -0.11999550600781249,
+      "WER_CI95": [
+        0.0,
+        0.006796410263942536
+      ],
+      "WER_difference": 0.003125,
+      "wall_CI95": [
+        -0.16599143232695313,
+        -0.08470990382421882
+      ],
+      "wall_difference": -0.12450186885937502
+    }
+  },
+  "test_policy_or_primary_gates_changed": false
+}

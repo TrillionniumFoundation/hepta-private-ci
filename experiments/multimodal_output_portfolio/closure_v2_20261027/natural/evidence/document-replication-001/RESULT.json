@@ -1,0 +1,79 @@
+{
+  "actual_output_pairs": 512,
+  "changed_fields_per_repetition": 43,
+  "frozen_registration_sha256": "4c1cf275fea062702c5b93b24f8db5eb1c9c9fec44c7ab33f5dd9fc9ca88d623",
+  "independent_normalized_merchants": 128,
+  "model_refitted": false,
+  "model_sha256": "d5f19f9ddcc408831a31976df1ff28a8b17f01e4701b5493b54dfefed759471d",
+  "observed_reference_fields_per_repetition": 512,
+  "old24_primary_result_pooled": false,
+  "primary_contrast": {
+    "cost_adjusted_return": {
+      "CI97_5": [
+        0.010193986599416732,
+        0.03151800065651168
+      ],
+      "difference": 0.020291430395451684
+    },
+    "cpu_seconds": {
+      "CI97_5": [
+        -0.007584673458943076,
+        0.03093013657006365
+      ],
+      "difference": 0.010469959890620592
+    },
+    "field_exact": {
+      "CI97_5": [
+        0.001953125,
+        0.01953125
+      ],
+      "difference": 0.009765625
+    },
+    "quality": {
+      "CI97_5": [
+        0.010327121544749638,
+        0.031670659613386824
+      ],
+      "difference": 0.020396129994357894
+    },
+    "wall_seconds": {
+      "CI97_5": [
+        -0.013494580050497973,
+        0.038872563663007745
+      ],
+      "difference": 0.010660986883351597
+    }
+  },
+  "schema": "hepta.ndu.closure-v2.natural.document.replication.result.v1",
+  "source_manifest_sha256": "42878ce729c40e1762eef581a32ce5f6dc8b02badf7174e0ace4df6079d4a842",
+  "status": "completed",
+  "strong_rules_replication_gate_passed": true,
+  "summary": {
+    "original_rules": {
+      "cost_adjusted_return": 0.5098791580339666,
+      "cpu_seconds": 1.009546710898439,
+      "field_exact": 0.408203125,
+      "quality": 0.5199746251429509,
+      "wall_seconds": 1.0452252342538486
+    },
+    "rule_residual": {
+      "cost_adjusted_return": 0.5301705884294181,
+      "cpu_seconds": 1.0200166707890597,
+      "field_exact": 0.41796875,
+      "quality": 0.5403707551373089,
+      "wall_seconds": 1.0558862211372002
+    }
+  },
+  "upstream_subgroups": {
+    "test": {
+      "merchants": 76,
+      "quality_difference": 0.026151279460874075,
+      "role": "descriptive, not a separately selected acceptance test"
+    },
+    "train": {
+      "merchants": 52,
+      "quality_difference": 0.011984757697141931,
+      "role": "descriptive, not a separately selected acceptance test"
+    }
+  }
+}

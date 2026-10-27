@@ -1,0 +1,50 @@
+{
+  "document_confirmed_alias": {
+    "evidence": "Same printed TEO HENG header in reference_words and same normalized address; annotated company has TED versus TEO spelling.",
+    "ids": [
+      "X51005361906",
+      "X51005361908"
+    ],
+    "original_24_group_primary_gate_unchanged": true,
+    "posthoc_23_cluster_diagnostic": "See PEER_NATURAL.json; not used as a replacement gate."
+  },
+  "document_groups": "Merchant identity is a normalized annotated company string. Similar or misspelled names may denote related stores or receipt templates; independent corporate-family separation is not established.",
+  "expanded_document_source_audit": {
+    "all_exact_images_distinct": true,
+    "conservative_remaining_components": 120,
+    "conservative_remaining_images": 122,
+    "posthoc_sensitivity_only": true,
+    "prior_physical_corporate_family_overlapping_images": 6,
+    "prior_physical_overlapping_images": 3,
+    "prospective_entity_disjoint_qualification_remains_open": true,
+    "replication_confirmed_physical_components": 126,
+    "replication_normalized_names": 128,
+    "seal_sha256": "faa1a52f3b6f423d1277b0eca4d1146211186a16f155ad747afae0a91fc1ccd9",
+    "source_documents": 230
+  },
+  "immutable_protocols_and_raw_outputs_unchanged": true,
+  "kind": "scope_clarification_without_changing_frozen_runs",
+  "recorded_ns": 1793093303671391725,
+  "speech_baselines": "The encoder gate passes the prespecified beam-5 quality/cost contrast. Fixed greedy also passes a postqualification 0.01 WER diagnostic and is cheaper; no learned-policy global-optimality or superiority-to-all-fixed-policies claim.",
+  "speech_model_annotation": "The initial copied revision annotation was corrected before test source fetching. The actual base checkpoint always had SHA 2a166925539a16005f14ff328359f9b9adb9dc4fb631bb3b227526862e93e2ef; see SPEECH_PRETEST_ANNOTATION.json.",
+  "speech_timer_correction": {
+    "actual_same_output_episodes": 256,
+    "all_original_hashes_and_beams_equal": true,
+    "common_boundary_and_metadata_inclusive_cost_conditions_passed": true,
+    "cross_run_absolute_timing_difference_not_attributed_to_JSON": true,
+    "not_a_new_quality_qualification": true,
+    "original_result_unchanged": true,
+    "protocol": "SPEECH_TIMER_CORRECTION_PROTOCOL.json"
+  },
+  "timing": {
+    "excluded": "Output directory creation precedes the policy timer; process/model startup, source network/preparation, private evaluation and statistical aggregation are separate. These are policy execution times on this observed CPU host, not total service or interactive startup latency.",
+    "included": "Actual endpoint/audio/image decode, all selected model/flow/OCR operations, gate computation, output serialization/readback and digest. Video metadata write is included. Every speech arm writes its public metadata and reopens the actual delivered transcript; original-engine arms additionally reopen the metadata inside the timer, while the encoder-gate metadata is reopened by the later auditor. Document final public-result bookkeeping is outside the returned timer.",
+    "same_arm_directory_preparation": true,
+    "speech_metadata_readback_asymmetry_disclosed": true
+  },
+  "updated_ns": 1793093895916223094,
+  "video_development": {
+    "clarification": "David/Dudek/Faceocc2 were already development in continuation_20261027. Some were older historical test clips which had explicitly been retired before this work. No realshort/vtest/cockatoo prior qualification frames were used for the new fit or selection. The frozen protocol phrase no historical test frame is too absolute and is qualified here.",
+    "new_qualification_sources": "Eight untouched DAVIS sequence families; 192 source frame images; no earlier experimental source overlap."
+  }
+}

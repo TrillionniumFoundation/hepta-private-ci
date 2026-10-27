@@ -1,0 +1,39 @@
+{
+  "assets_sha256": "a3ba37e14ee6beb969d219df45c33bcea3d9e081c7784a92319e74a5d784d389",
+  "heldout_generation_not_started": true,
+  "protocol": {
+    "selection": "Lowest measured validation CPU among candidates with mean PSNR >= original flow minus 0.25 dB; ties by higher PSNR then solver name",
+    "solvers": [
+      "dis_ultrafast",
+      "dis_fast",
+      "dis_medium"
+    ],
+    "test_not_received": true,
+    "training": "Only existing development train-role targets",
+    "validation": "Only existing development validation-role targets"
+  },
+  "registered_ns": 1793090675698688509,
+  "source_files": [
+    {
+      "bytes": 82,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/__init__.py",
+      "sha256": "2dc5cf76711291eaaf73ef7a2192cb75ca8b4fd04a58383d8674d3b6f8adb911"
+    },
+    {
+      "bytes": 3327,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/common.py",
+      "sha256": "214cc23db94ea5fe64aaf43f27bec866f0710f07cb873f4e53bdff8160dfe4d7"
+    },
+    {
+      "bytes": 3191,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_develop.py",
+      "sha256": "51bab5b85e985a056ad2141ddada4caa286bcacf6b065195d4d77c0b77e32091"
+    },
+    {
+      "bytes": 4616,
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/experiments/multimodal_output_portfolio/closure_v2_20261027/natural/video_engine.py",
+      "sha256": "ac097e9c457edabf53eb164e4a8b40256eb584839e82dfbe502b439e58e77104"
+    }
+  ],
+  "source_snapshot": "/workspace/scratch/95988d8d3ab1/natural-v2-runs/video-development-001/executed-source"
+}

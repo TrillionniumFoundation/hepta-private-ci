@@ -1,0 +1,351 @@
+{
+  "actual_output_records": 640,
+  "adaptive_allocation_superiority_established": false,
+  "comparisons": {
+    "efficient_learned__minus__efficient_initial": {
+      "PSNR": {
+        "CI95": [
+          0.25812508677965557,
+          1.693380816001227
+        ],
+        "difference": 0.9716311468258476,
+        "independent_source_clusters": 8,
+        "source_level_differences": {
+          "bear": 2.756026798884216,
+          "bike-packing": -0.48648497016035375,
+          "blackswan": 1.862779188839622,
+          "bmx-bumps": 0.23619883770576866,
+          "boat": 1.1121734209216312,
+          "boxing-fisheye": 1.1027577540745779,
+          "breakdance": -0.19695722082784206,
+          "bus": 1.3865553651691607
+        }
+      },
+      "cpu_seconds": {
+        "CI95": [
+          -0.00043363602089815934,
+          0.0003509029708986987
+        ],
+        "difference": -1.1588632812275113e-05,
+        "independent_source_clusters": 8,
+        "source_level_differences": {
+          "bear": -0.0011724794374998494,
+          "bike-packing": 0.00032325118750006765,
+          "blackswan": -0.00047279331250010825,
+          "bmx-bumps": 0.0001543888750001332,
+          "boat": 0.0001996951875007369,
+          "boxing-fisheye": 0.00031419493750012295,
+          "breakdance": 0.0007623511250003379,
+          "bus": -0.0002013176249996418
+        }
+      },
+      "pixel_MSE": {
+        "CI95": [
+          -0.0010872891147114924,
+          -4.478412350980988e-06
+        ],
+        "difference": -0.0005754596660719992,
+        "independent_source_clusters": 8,
+        "source_level_differences": {
+          "bear": -0.0010627313785785738,
+          "bike-packing": 0.0008137069120494962,
+          "blackswan": -0.0011759203879417371,
+          "bmx-bumps": -0.0006128638361747888,
+          "boat": -0.00012259023291767232,
+          "boxing-fisheye": -0.0011868889166448625,
+          "breakdance": 0.00037509719457749584,
+          "bus": -0.0016314866829453506
+        }
+      },
+      "wall_seconds": {
+        "CI95": [
+          -0.001784654821562981,
+          0.0011430622740533608
+        ],
+        "difference": -0.00044339730504816544,
+        "independent_source_clusters": 8,
+        "source_level_differences": {
+          "bear": -0.0013966186224934063,
+          "bike-packing": -0.0011300215664959978,
+          "blackswan": -0.0031985718806026853,
+          "bmx-bumps": -0.0015090451852302067,
+          "boat": 0.003926628687622724,
+          "boxing-fisheye": -0.00020520581165328622,
+          "breakdance": 0.0017071709999072482,
+          "bus": -0.0017415150614397135
+        }
+      }
+    },
+    "efficient_learned__minus__fixed_blend": {
+      "PSNR": {
+        "CI95": [
+          1.4841351403459517,
+          4.485937511829524
+        ],
+        "difference": 3.0152808777580997,
+        "independent_source_clusters": 8,
+        "source_level_differences": {
+          "bear": 6.204384522850782,
+          "bike-packing": -0.0206916219667459,
+          "blackswan": 5.0791089680847765,
+          "bmx-bumps": 1.6734103849863389,
+          "boat": 3.5746501721923125,
+          "boxing-fisheye": 3.5073957625567407,
+          "breakdance": -0.03365968724830504,
+          "bus": 4.137648520608899
+        }
+      },
+      "cpu_seconds": {
+        "CI95": [
+          0.007674495828125367,
+          0.00829070854101586
+        ],
+        "difference": 0.007982810734375312,
+        "independent_source_clusters": 8,
+        "source_level_differences": {
+          "bear": 0.00793254931250038,
+          "bike-packing": 0.007306116874999824,
+          "blackswan": 0.00865185537500035,
+          "bmx-bumps": 0.008143957562499693,
+          "boat": 0.008104159562500268,
+          "boxing-fisheye": 0.007776035312500595,
+          "breakdance": 0.008506849187500443,
+          "bus": 0.0074409626875009405
+        }
+      },
+      "pixel_MSE": {
+        "CI95": [
+          -0.0053576445594127175,
+          -0.0014840617697377322
+        ],
+        "difference": -0.0034729468910352397,
+        "independent_source_clusters": 8,
+        "source_level_differences": {
+          "bear": -0.0038804067343111443,
+          "bike-packing": 0.00032162795144080337,
+          "blackswan": -0.004924260887350129,
+          "bmx-bumps": -0.005668914928330628,
+          "boat": -0.0005566651861163174,
+          "boxing-fisheye": -0.005562195643791739,
+          "breakdance": 9.018994875546488e-05,
+          "bus": -0.007602949648578226
+        }
+      },
+      "wall_seconds": {
+        "CI95": [
+          0.008188110671906657,
+          0.009212528552848199
+        ],
+        "difference": 0.008807538892142475,
+        "independent_source_clusters": 8,
+        "source_level_differences": {
+          "bear": 0.009308261441219656,
+          "bike-packing": 0.008836414250254165,
+          "blackswan": 0.006803600998864567,
+          "bmx-bumps": 0.009497199066572648,
+          "boat": 0.00895506043707428,
+          "boxing-fisheye": 0.008882428876859194,
+          "breakdance": 0.008993329689474194,
+          "bus": 0.009184016376821091
+        }
+      }
+    },
+    "efficient_learned__minus__old_learned_mixer": {
+      "PSNR": {
+        "CI95": [
+          -0.18436110008698298,
+          0.4252502402289177
+        ],
+        "difference": 0.11723360936926744,
+        "independent_source_clusters": 8,
+        "source_level_differences": {
+          "bear": -0.3111580219545096,
+          "bike-packing": 0.08247475456006814,
+          "blackswan": 0.7131644281518277,
+          "bmx-bumps": 0.5453030011923656,
+          "boat": -0.5447322041492053,
+          "boxing-fisheye": -0.16491391380680964,
+          "breakdance": -0.03024373979204409,
+          "bus": 0.6479745707524467
+        }
+      },
+      "cpu_seconds": {
+        "CI95": [
+          -0.016580675507812295,
+          -0.01471568298437489
+        ],
+        "difference": -0.015666758062499682,
+        "independent_source_clusters": 8,
+        "source_level_differences": {
+          "bear": -0.017908125937499894,
+          "bike-packing": -0.0138079536875,
+          "blackswan": -0.016127218874999905,
+          "bmx-bumps": -0.01376729650000047,
+          "boat": -0.016505499749999264,
+          "boxing-fisheye": -0.01647786568749887,
+          "breakdance": -0.015370016874999393,
+          "bus": -0.01537008718749966
+        }
+      },
+      "pixel_MSE": {
+        "CI95": [
+          -0.001165275841905963,
+          -2.751167906430014e-05
+        ],
+        "difference": -0.0005428070209300437,
+        "independent_source_clusters": 8,
+        "source_level_differences": {
+          "bear": 7.72351331997487e-05,
+          "bike-packing": -0.0003409990066439307,
+          "blackswan": -0.00037705215861932553,
+          "bmx-bumps": -0.0021723822765705326,
+          "boat": 4.468160713983758e-05,
+          "boxing-fisheye": 0.00012159821064636808,
+          "breakdance": 4.377727830931293e-05,
+          "bus": -0.001739314954901828
+        }
+      },
+      "wall_seconds": {
+        "CI95": [
+          -0.020838740019641477,
+          -0.01646840155401321
+        ],
+        "difference": -0.018515167115083386,
+        "independent_source_clusters": 8,
+        "source_level_differences": {
+          "bear": -0.024684326997885364,
+          "bike-packing": -0.015887422620835423,
+          "blackswan": -0.021073319000606716,
+          "bmx-bumps": -0.01485186668105598,
+          "boat": -0.019777224499193835,
+          "boxing-fisheye": -0.018194505501014646,
+          "breakdance": -0.015196613183434238,
+          "bus": -0.018456058436640888
+        }
+      }
+    },
+    "efficient_learned__minus__old_pure_flow": {
+      "PSNR": {
+        "CI95": [
+          -0.2819648444131775,
+          0.46562187030629154
+        ],
+        "difference": 0.10197702574590059,
+        "independent_source_clusters": 8,
+        "source_level_differences": {
+          "bear": -0.7316380579869719,
+          "bike-packing": 0.26314244942021237,
+          "blackswan": 0.7075787431882081,
+          "bmx-bumps": 0.6218042446836958,
+          "boat": -0.6030155793991461,
+          "boxing-fisheye": -0.16489651427869845,
+          "breakdance": 0.034488369829406285,
+          "bus": 0.6883525505104986
+        }
+      },
+      "cpu_seconds": {
+        "CI95": [
+          -0.01844902391406223,
+          -0.013645300914062547
+        ],
+        "difference": -0.015429161640624786,
+        "independent_source_clusters": 8,
+        "source_level_differences": {
+          "bear": -0.014006880562499706,
+          "bike-packing": -0.012676691312500099,
+          "blackswan": -0.013988553312499763,
+          "bmx-bumps": -0.013791302125000293,
+          "boat": -0.014450775937499771,
+          "boxing-fisheye": -0.015307651062499428,
+          "breakdance": -0.025349009437499626,
+          "bus": -0.013862429374999596
+        }
+      },
+      "pixel_MSE": {
+        "CI95": [
+          -0.0013174855070054248,
+          -4.676309631081999e-05
+        ],
+        "difference": -0.0006285289981483223,
+        "independent_source_clusters": 8,
+        "source_level_differences": {
+          "bear": 0.00017421858591157963,
+          "bike-packing": -0.0006106088707572112,
+          "blackswan": -0.0003743502793841755,
+          "bmx-bumps": -0.0024131420891136957,
+          "boat": 4.853497338875181e-05,
+          "boxing-fisheye": 8.804308469654643e-05,
+          "breakdance": -8.212884436919674e-05,
+          "bus": -0.0018587985455591773
+        }
+      },
+      "wall_seconds": {
+        "CI95": [
+          -0.02144103034999887,
+          -0.015313510632543626
+        ],
+        "difference": -0.01791827953036318,
+        "independent_source_clusters": 8,
+        "source_level_differences": {
+          "bear": -0.0176966439375974,
+          "bike-packing": -0.0184924682489509,
+          "blackswan": -0.01784199343819637,
+          "bmx-bumps": -0.01706560993443418,
+          "boat": -0.012037162563501624,
+          "boxing-fisheye": -0.015784547248586023,
+          "breakdance": -0.028642675995797617,
+          "bus": -0.015785134875841322
+        }
+      }
+    }
+  },
+  "independent_test_sources": 8,
+  "quality_cost_gate_passed": true,
+  "schema": "hepta.ndu.closure-v2.natural.video.result.v1",
+  "semantic_video_synthesis": false,
+  "source_preparation_wall_seconds": 76.35229198800516,
+  "status": "completed",
+  "summary": {
+    "efficient_initial": {
+      "PSNR": 24.153527635782403,
+      "cpu_seconds": 0.025292378468749932,
+      "pixel_MSE": 0.0059774514316353125,
+      "records": 128,
+      "sources": 8,
+      "wall_seconds": 0.029090313032611448
+    },
+    "efficient_learned": {
+      "PSNR": 25.125158782608246,
+      "cpu_seconds": 0.025280789835937657,
+      "pixel_MSE": 0.005401991765563314,
+      "records": 128,
+      "sources": 8,
+      "wall_seconds": 0.028646915727563282
+    },
+    "fixed_blend": {
+      "PSNR": 22.109877904850148,
+      "cpu_seconds": 0.017297979101562347,
+      "pixel_MSE": 0.008874938656598552,
+      "records": 128,
+      "sources": 8,
+      "wall_seconds": 0.019839376835420808
+    },
+    "old_learned_mixer": {
+      "PSNR": 25.00792517323898,
+      "cpu_seconds": 0.04094754789843734,
+      "pixel_MSE": 0.005944798786493358,
+      "records": 128,
+      "sources": 8,
+      "wall_seconds": 0.04716208284264667
+    },
+    "old_pure_flow": {
+      "PSNR": 25.02318175686235,
+      "cpu_seconds": 0.04070995147656244,
+      "pixel_MSE": 0.006030520763711636,
+      "records": 128,
+      "sources": 8,
+      "wall_seconds": 0.04656519525792646
+    }
+  },
+  "training_attribution_gate_passed": true
+}

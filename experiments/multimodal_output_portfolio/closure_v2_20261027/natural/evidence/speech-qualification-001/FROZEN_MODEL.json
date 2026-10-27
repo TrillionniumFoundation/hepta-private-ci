@@ -1,0 +1,92 @@
+{
+  "base_model_directory": "/workspace/scratch/95988d8d3ab1/natural-continuation-assets/cascade/base_model",
+  "base_model_sha256": "2a166925539a16005f14ff328359f9b9adb9dc4fb631bb3b227526862e93e2ef",
+  "candidates": [
+    {
+      "WER_difference_CI95": [
+        -0.03520509505943185,
+        0.020955812201857844
+      ],
+      "continued_utterances": 0,
+      "mean_CPU": 1.45086550875,
+      "reference_words": 545,
+      "threshold": -1000,
+      "validation_quality_feasible": false,
+      "word_errors": 42
+    },
+    {
+      "WER_difference_CI95": [
+        0.0,
+        0.02385685884691849
+      ],
+      "continued_utterances": 5,
+      "mean_CPU": 1.5803340994166668,
+      "reference_words": 545,
+      "threshold": -0.3,
+      "validation_quality_feasible": false,
+      "word_errors": 51
+    },
+    {
+      "WER_difference_CI95": [
+        0.0,
+        0.02385685884691849
+      ],
+      "continued_utterances": 8,
+      "mean_CPU": 1.6732802130416664,
+      "reference_words": 545,
+      "threshold": -0.15,
+      "validation_quality_feasible": false,
+      "word_errors": 51
+    },
+    {
+      "WER_difference_CI95": [
+        0.0,
+        0.0
+      ],
+      "continued_utterances": 23,
+      "mean_CPU": 2.0762341715,
+      "reference_words": 545,
+      "threshold": -0.05,
+      "validation_quality_feasible": true,
+      "word_errors": 45
+    },
+    {
+      "WER_difference_CI95": [
+        0.0,
+        0.0
+      ],
+      "continued_utterances": 24,
+      "mean_CPU": 2.137485403041667,
+      "reference_words": 545,
+      "threshold": 1000,
+      "validation_quality_feasible": true,
+      "word_errors": 45
+    }
+  ],
+  "choice": {
+    "WER_difference_CI95": [
+      0.0,
+      0.0
+    ],
+    "continued_utterances": 23,
+    "mean_CPU": 2.0762341715,
+    "reference_words": 545,
+    "threshold": -0.05,
+    "validation_quality_feasible": true,
+    "word_errors": 45
+  },
+  "frozen_ns": 1793091390244591192,
+  "heldout_generation_not_started": true,
+  "model_parameters_updated": false,
+  "selected_threshold": -0.05,
+  "validation_speakers": [
+    84,
+    1651,
+    1673,
+    1686,
+    5536,
+    6345,
+    7601,
+    7641
+  ]
+}
