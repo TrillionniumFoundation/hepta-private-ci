@@ -1,0 +1,204 @@
+name: Hepta cumulative public-task controls
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-cumulative-controls.yml
+      - scripts/hepta_cumulative_*.py
+      - scripts/test_hepta_cumulative_*.py
+      - qualification/cumulative-controls/source-pin.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-cumulative-controls-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  cumulative-controls-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    defaults:
+      run:
+        working-directory: hepta
+        shell: bash
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
+      HEPTA_CI_LANE: source-head
+      CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+      PYTHONNOUSERSITE: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      PIP_NO_CACHE_DIR: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          path: hepta
+          fetch-depth: 10
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: TrillionniumFoundation/Trillionnium-Chain
+          ref: ${{ env.CHAIN_SHA }}
+          path: chain
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.3"
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.59.0
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+          enable-cache: false
+      - name: Record exact source and observed host capacity
+        run: |
+          set -euo pipefail
+          unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          mkdir -m 700 "$RUNNER_TEMP/hepta-cumulative"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git -C ../chain rev-parse HEAD)" = "$CHAIN_SHA"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-cumulative/hepta-source.txt"
+          git -C ../chain rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-cumulative/chain-source.txt"
+          python3 -I -B scripts/hepta_smollm_host_resources.py --output "$RUNNER_TEMP/hepta-cumulative/host.json"
+          printf 'HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT=%s/hepta-cumulative/runtime-snapshot.json\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          cp qualification/cumulative-controls/source-pin.json "$RUNNER_TEMP/hepta-cumulative/source-pin.json"
+      - name: Verify a nonempty exact formatting scope before expensive execution
+        id: formatting
+        run: |
+          set -euo pipefail
+          python3 -I -B - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          pin = json.loads(Path("qualification/cumulative-controls/source-pin.json").read_bytes())
+          baseline = pin["source_sha"]
+          assert len(baseline) == 40 and all(c in "0123456789abcdef" for c in baseline)
+          if subprocess.run(["git", "cat-file", "-e", baseline + "^{commit}"], capture_output=True).returncode:
+              subprocess.run(["git", "fetch", "--no-tags", "--depth=1", "https://github.com/TrillionniumFoundation/hepta-private-ci.git", baseline], check=True)
+          required = {"scripts/" + name for name in ("hepta_cumulative_controls.py",
+              "hepta_cumulative_control_child.py", "hepta_cumulative_campaign.py",
+              "hepta_cumulative_source.py", "test_hepta_cumulative_controls.py",
+              "test_hepta_cumulative_source.py", "hepta_cumulative_pilot_entry.py",
+              "test_hepta_cumulative_pilot_entry.py")}
+          allowed = required | {".github/workflows/hepta-cumulative-controls.yml",
+              "qualification/cumulative-controls/README.md", "qualification/cumulative-controls/source-pin.json"}
+          changed = set(subprocess.check_output(["git", "diff", "--name-only", "-z", baseline, "HEAD"]).decode().split("\0")) - {""}
+          assert required <= changed <= allowed, "formatting scope is empty, incomplete, or includes original runtime changes"
+          record = dict(baseline=baseline, changed=sorted(changed), source=os.environ["SOURCE_SHA"],
+              files={name: hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in sorted(required)})
+          (Path(os.environ["RUNNER_TEMP"]) / "hepta-cumulative/format-scope.json").write_text(json.dumps(record, indent=2) + "\n")
+          with Path(os.environ["GITHUB_ENV"]).open("a") as environment:
+              environment.write(f"FORMAT_BASE_SHA={baseline}\n")
+          PY
+          FORMAT_BASE_SHA="$(python3 -I -B -c 'import json; print(json.load(open("qualification/cumulative-controls/source-pin.json"))["source_sha"])')"
+          just fmt --base "$FORMAT_BASE_SHA" --check
+          git diff --exit-code
+      - name: Exercise metadata and archive attack controls
+        id: controls
+        run: |
+          set -euo pipefail
+          unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-cumulative/parent-controls.json" --timeout-seconds 60 --minimum-tests 5 -- python3 -B scripts/test_hepta_cumulative_controls.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-cumulative/archive-controls.json" --timeout-seconds 60 --minimum-tests 9 -- python3 -B scripts/test_hepta_cumulative_source.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-cumulative/import-controls.json" --timeout-seconds 60 --minimum-tests 9 -- python3 -B scripts/test_hepta_cumulative_pilot_entry.py --chain "$GITHUB_WORKSPACE/chain" -v
+      - name: Fetch and verify the complete pinned original artifact ZIPs
+        id: original
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          python3 -I -B scripts/hepta_cumulative_source.py --pin qualification/cumulative-controls/source-pin.json --output "$RUNNER_TEMP/hepta-cumulative/reference"
+      - name: Install the exact CPU wheel closure in a fresh environment
+        id: cold_runtime
+        run: |
+          set -euo pipefail
+          unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          python3 -I -B -m venv "$RUNNER_TEMP/hepta-cumulative-env"
+          "$RUNNER_TEMP/hepta-cumulative-env/bin/python" -I -B -m pip install --require-hashes --only-binary=:all: --no-compile --index-url https://pypi.org/simple --report "$RUNNER_TEMP/hepta-cumulative/pip-install.json" -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt
+          "$RUNNER_TEMP/hepta-cumulative-env/bin/python" -I -B -m pip check
+          "$RUNNER_TEMP/hepta-cumulative-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py record --lock ../chain/scripts/ci/model-runtime-cpu-requirements.txt --installation "$RUNNER_TEMP/hepta-cumulative/pip-install.json" --output "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
+      - name: Rebuild the unchanged public model and target
+        id: materials
+        run: |
+          set -euo pipefail
+          unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          "$RUNNER_TEMP/hepta-cumulative-env/bin/python" -I -B scripts/hepta_smollm_public_initial_v2.py --chain "$GITHUB_WORKSPACE/chain" --materials "$RUNNER_TEMP/hepta-cumulative-model" --output "$RUNNER_TEMP/hepta-cumulative/genesis" --fetch-materials
+      - name: Continue both real controls for rounds two and three
+        id: campaign
+        run: |
+          set -euo pipefail
+          unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-cumulative/actual-execution.json" --timeout-seconds 10800 --minimum-tests 0 -- "$RUNNER_TEMP/hepta-cumulative-env/bin/python" -I -B scripts/hepta_cumulative_campaign.py --chain "$GITHUB_WORKSPACE/chain" --materials "$RUNNER_TEMP/hepta-cumulative-model" --source "$RUNNER_TEMP/hepta-cumulative/reference" --source-pin "$GITHUB_WORKSPACE/hepta/qualification/cumulative-controls/source-pin.json" --output "$RUNNER_TEMP/hepta-cumulative/campaign"
+          "$RUNNER_TEMP/hepta-cumulative-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
+      - name: Preserve actual result and all original failures
+        if: always()
+        env:
+          CONTROLS_OUTCOME: ${{ steps.controls.outcome }}
+          ORIGINAL_OUTCOME: ${{ steps.original.outcome }}
+          COLD_RUNTIME_OUTCOME: ${{ steps.cold_runtime.outcome }}
+          MATERIALS_OUTCOME: ${{ steps.materials.outcome }}
+          CAMPAIGN_OUTCOME: ${{ steps.campaign.outcome }}
+          FORMATTING_OUTCOME: ${{ steps.formatting.outcome }}
+        run: |
+          python3 -I -B - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"]) / "hepta-cumulative"
+          root.mkdir(exist_ok=True)
+          names = ("CONTROLS_OUTCOME", "ORIGINAL_OUTCOME", "COLD_RUNTIME_OUTCOME",
+              "MATERIALS_OUTCOME", "CAMPAIGN_OUTCOME", "FORMATTING_OUTCOME")
+          outcomes = {name: os.environ.get(name, "unavailable") for name in names}
+          report = root / "campaign/campaign.json"
+          campaign, report_error = {}, None
+          try:
+              campaign = json.loads(report.read_bytes()) if report.is_file() else {}
+          except (OSError, ValueError) as error:
+              report_error = type(error).__name__
+          if not isinstance(campaign, dict):
+              campaign, report_error = {}, "unexpected-report-type"
+          complete = all(value == "success" for value in outcomes.values()) and campaign.get("status") == "completed-diagnostic-no-installation" and campaign.get("completed_rounds") == 3
+          record = dict(schema="hepta-cumulative-required-outcomes-v1", outcomes=outcomes,
+              actual_diagnostic_completed=complete, installed_children=0, product_qualification=False,
+              total_resource_cost_matched=False, original_native_gates_replaced=False,
+              campaign_report_error=report_error)
+          (root / "required-outcomes.json").write_text(json.dumps(record, indent=2) + "\n")
+          files = {}
+          for path in sorted(root.rglob("*")):
+              if path.is_file() and path.suffix != ".zip" and path.name != "evidence-index.json":
+                  with path.open("rb") as handle:
+                      sha = hashlib.file_digest(handle, "sha256").hexdigest()
+                  files[str(path.relative_to(root))] = dict(sha256=sha, bytes=path.stat().st_size)
+          (root / "evidence-index.json").write_text(json.dumps(dict(source=os.environ["SOURCE_SHA"],
+              chain=os.environ["CHAIN_SHA"], files=files, product_qualification=False), indent=2) + "\n")
+          if not complete:
+              raise SystemExit("cumulative diagnostic failed, skipped or unavailable")
+          PY
+      - name: Retain original and new records even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-cumulative-records-${{ env.SOURCE_SHA }}
+          retention-days: 14
+          include-hidden-files: true
+          path: |
+            ${{ runner.temp }}/hepta-cumulative/**
+            !${{ runner.temp }}/hepta-cumulative/**/*.safetensors
+            !${{ runner.temp }}/hepta-cumulative/reference/*.zip
+      - name: Retain every original input and newly trained checkpoint
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-cumulative-checkpoints-${{ env.SOURCE_SHA }}
+          retention-days: 14
+          compression-level: 0
+          path: ${{ runner.temp }}/hepta-cumulative/**/*.safetensors

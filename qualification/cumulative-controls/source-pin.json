@@ -1,0 +1,94 @@
+{
+  "schema": "hepta-cumulative-original-run-pin-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "run_id": 40492138476,
+  "source_sha": "f75bf1ac902ed73905e4daa49f9396df028a4254",
+  "chain_sha": "c96022b897c1235fdbdbfcfa32764403511c6aab",
+  "source_workflow_conclusion": "failure",
+  "source_required_outcomes": {
+    "schema": "hepta-public-initial-required-outcomes-v2",
+    "outcomes": {
+      "REQUIRED_CLI_OUTCOME": "success",
+      "SCOPED_RUST_OUTCOME": "success",
+      "COLD_RUNTIME_OUTCOME": "success",
+      "MATERIALS_OUTCOME": "success",
+      "ORDINARY_OUTCOME": "success",
+      "PROPOSAL_ROUNDS_OUTCOME": "failure",
+      "DESCENDANTS_OUTCOME": "success",
+      "LINT_OUTCOME": "skipped"
+    },
+    "model_target_available": true,
+    "all_required_outcomes_passed": false,
+    "original_full_rust_gate_required": true,
+    "product_qualification": false,
+    "three_installed_upgrades_proven": false
+  },
+  "evidence_index_sha256": "bea0af1187ed5e7be548412c3487388b4c2f57a1652f59f9033d564423b80878",
+  "artifacts": {
+    "records": {
+      "id": 12730179885,
+      "name": "hepta-public-v2-records-f75bf1ac902ed73905e4daa49f9396df028a4254",
+      "bytes": 114661707,
+      "sha256": "a6674acfd78bc4172eb0cb2dbd7e39e1bf6506e50fbca30b04b6db19c7f6c276",
+      "extraction_budget": {
+        "maximum_members": 11465,
+        "maximum_uncompressed_bytes": 193733440
+      }
+    },
+    "checkpoints": {
+      "id": 12730991407,
+      "name": "hepta-public-v2-checkpoints-f75bf1ac902ed73905e4daa49f9396df028a4254",
+      "bytes": 2175707854,
+      "sha256": "f0be7ec34123a2ce2d89716168608e50bec8c7cbc6a1b8bbc071cb5436adc4a9",
+      "extraction_budget": {
+        "maximum_members": 10000,
+        "maximum_uncompressed_bytes": 3221225472
+      }
+    }
+  },
+  "selected_checkpoints": [
+    "descendant-diagnostics/round-1/candidate-evaluation-input/artifact.safetensors",
+    "descendant-diagnostics/round-2/candidate-evaluation-input/artifact.safetensors",
+    "descendant-diagnostics/round-3/candidate-evaluation-input/artifact.safetensors",
+    "descendant-diagnostics/round-1/train-fresh-budget-matched-lora/artifact.safetensors",
+    "descendant-diagnostics/round-1/train-budget-matched-full-tune/artifact.safetensors"
+  ],
+  "selected_checkpoint_index_pins": {
+    "descendant-diagnostics/round-1/candidate-evaluation-input/artifact.safetensors": {
+      "sha256": "2a1c51e820c6f3d93477e11d3d91317a2aa0addcc08696e841d5d7d120c516c4",
+      "bytes": 933544
+    },
+    "descendant-diagnostics/round-2/candidate-evaluation-input/artifact.safetensors": {
+      "sha256": "300cc55c0a87f8cb436ae9a29a4982090d73877dbe63b31f62e7fa85a8e5e0f0",
+      "bytes": 933544
+    },
+    "descendant-diagnostics/round-3/candidate-evaluation-input/artifact.safetensors": {
+      "sha256": "4e3dfd7f06b3e7d76caf5576ec5d80ad2e792907f35f6012db9220f5c8f92358",
+      "bytes": 933544
+    },
+    "descendant-diagnostics/round-1/train-fresh-budget-matched-lora/artifact.safetensors": {
+      "sha256": "7e1df3f1747e7580e4df43b1bdb43fff8ce2af3bc37d73b740a8a606e3c10ab8",
+      "bytes": 933544
+    },
+    "descendant-diagnostics/round-1/train-budget-matched-full-tune/artifact.safetensors": {
+      "sha256": "e02c2d1b50860fa7b88f3f2f166de645bee8c7ad21012862398366ce8a50d151",
+      "bytes": 538090376
+    }
+  },
+  "local_verification": {
+    "records_complete_zip_and_all_members_verified": true,
+    "checkpoints_complete_zip_verified": false,
+    "checkpoint_bytes_verified": false,
+    "checkpoint_verification_required_actor": "fresh-hosted-cumulative-controls-runner"
+  },
+  "source_diagnostic_completed_rounds": 3,
+  "source_diagnostic_candidate_ordinals": [
+    2,
+    3,
+    4
+  ],
+  "source_installed_children": 0,
+  "product_qualification": false,
+  "retention_days": 14,
+  "retention_is_permanent_decentralized_storage": false
+}
