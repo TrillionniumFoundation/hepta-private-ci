@@ -1,0 +1,136 @@
+{
+  "ready_for_root_review_and_publication": true,
+  "scope": "ZIP/zstd and i18n-config only; YAML excluded",
+  "full_rust_regressions_pending_remote_run": true,
+  "local_orchestration_tests": "8 passed; REMOTE_PREFLIGHT.log retains raw output",
+  "no_fmt_commit_or_push_by_agent": true,
+  "production_zip_source_held_in_patch_not_active_in_head": true,
+  "publication_files": [
+    {
+      "path": "scripts/ndu_tls_lock_candidate.py",
+      "bytes": 10862,
+      "sha256": "cb838fea76521f6d33dbbc3f3f6b92945e9a69596471ee65165cf4ab46519761"
+    },
+    {
+      "path": "scripts/ndu_dependency_candidate_common.py",
+      "bytes": 7942,
+      "sha256": "4d863c9435e78848bd1198ddf7f31e1b5cbe815eade17b4b582829b839b60daf"
+    },
+    {
+      "path": "scripts/test_ndu_dependency_candidate.py",
+      "bytes": 9982,
+      "sha256": "019a54c2cc4c405aba616b760632032a0cd81a15cbbdbef98340f50031d67fd3"
+    },
+    {
+      "path": ".github/workflows/ndu-tls-lock-candidate.yml",
+      "bytes": 5389,
+      "sha256": "96f01a536266eb2e9babf94ae89d21b7d05b61a9ad38c1253d699f37ee4719a9"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/zip-source.patch",
+      "bytes": 9330,
+      "sha256": "8bc968c54ea49960a4c14896b48e861b68b30b653613f2b440e4ef2b32791c35"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/zip-zstd-manifest.patch",
+      "bytes": 236,
+      "sha256": "f5394874a7a1ed42890ea35dc3b4534ae518d54c34ab71d1c3a1d6357da29dd7"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/i18n-config-manifest.patch",
+      "bytes": 441,
+      "sha256": "74a2c048d91c795114226d676575a3b04f4766bd13fba4e83111ad953b75e4dc"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/.cargo_vcs_info.json",
+      "bytes": 105,
+      "sha256": "fb077bb9c5d1c6bd9d26bc4c2c26595df4ab1bfd4f9be800daffc548212b3392"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/.gitignore",
+      "bytes": 37,
+      "sha256": "b821dfe599e6f75093a5ffe4162968da3be6c12ef46a8d8fbbd5c826cd80bc7f"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/BUILD.bazel",
+      "bytes": 147,
+      "sha256": "97d7c6381e499d2c26a4f6b3f2a3e50845b882094b35e325fdd5efa4a2575167"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/CHANGELOG.md",
+      "bytes": 2402,
+      "sha256": "d43722d4e4526cdd6263bf195e13dc22b73eb22fd45b792d4d5f297e59e4ff54"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/Cargo.lock",
+      "bytes": 3912,
+      "sha256": "8dc88a299e6340b8602f03bcfd16b0d3b71a4481990163352698d4e59180a5c2"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/Cargo.toml",
+      "bytes": 1572,
+      "sha256": "9c1da72d8e35a43ae6adeaf28bc414fcfa27ef31266bc6e8cab466e315b0707f"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/Cargo.toml.orig",
+      "bytes": 875,
+      "sha256": "83619c9644c346a0c7b841220a01f97db4215a0df6280422e28de2d4f6128afb"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/HEPTA_PATCH.md",
+      "bytes": 1778,
+      "sha256": "51e24e25603bdad1c3f274ed47e0c7e9a25f75905a1e1640d348e9a19a09ca9d"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/LICENSE.txt",
+      "bytes": 1072,
+      "sha256": "a1d2bd09632724b23c62b05e2fd0dc26c5c9d21b409594cf7da1a1aba555f802"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/README.md",
+      "bytes": 796,
+      "sha256": "bdadc28dd4a62f5b8c7c4c759c7b3cf2b33181700563c3083f8515f1638c12f2"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/src/fluent.rs",
+      "bytes": 691,
+      "sha256": "fdf091a54559e437dd0ee0f2a291b2e18c42a7857e9bbecfd338b038b320f9f7"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/src/gettext.rs",
+      "bytes": 4286,
+      "sha256": "3626b50f396f0a83e7d5aab702d4d18d078dff7620108db80ffa7ed9da0b5991"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/src/lib.rs",
+      "bytes": 14747,
+      "sha256": "60f6bf0687e5e277aa7c79f3903ef93aa85c1bcc52a87f4d7ceb217597ddd7d3"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/src/parser_tests.rs",
+      "bytes": 3457,
+      "sha256": "bb6de4ff3415c5e56efb4cdb26003ed8403ec25e64e27a8c4d25227d0c5b1e5f"
+    }
+  ],
+  "root_after_test_formatting": {
+    "tool": "ruff format",
+    "files": [
+      {
+        "path": "scripts/ndu_tls_lock_candidate.py",
+        "tested_source_sha256": "744e5bdf9fe8942eff81470a0c304280dd22d79add7890b6911dd914a5da4a13",
+        "formatted_source_sha256": "cb838fea76521f6d33dbbc3f3f6b92945e9a69596471ee65165cf4ab46519761"
+      },
+      {
+        "path": "scripts/ndu_dependency_candidate_common.py",
+        "tested_source_sha256": "ba2a3a737177a42423bd550b6704b86cca4528a1d5a942383f2f3c26af646d0d",
+        "formatted_source_sha256": "4d863c9435e78848bd1198ddf7f31e1b5cbe815eade17b4b582829b839b60daf"
+      },
+      {
+        "path": "scripts/test_ndu_dependency_candidate.py",
+        "tested_source_sha256": "7379034ec9e7c3119b0cb2d630588ac40fd9582da95e9f17f815360c08b363e6",
+        "formatted_source_sha256": "019a54c2cc4c405aba616b760632032a0cd81a15cbbdbef98340f50031d67fd3"
+      }
+    ],
+    "local_tests_rerun_after_formatting": false
+  }
+}

@@ -1,0 +1,34 @@
+test_bound_binary_patch_reconstructs_all_exact_snapshots (test_ndu_dependency_candidate.CandidateBindingTests.test_bound_binary_patch_reconstructs_all_exact_snapshots) ... Running source-head: git rev-parse HEAD
+Running clean-checkout: git status --porcelain
+Running patch-paths: git apply --numstat /tmp/tmp6yb8et5c/artifact/candidate.patch
+Running check-candidate-patch: git apply --check --index /tmp/tmp6yb8et5c/artifact/candidate.patch
+Running apply-candidate-patch: git apply --index /tmp/tmp6yb8et5c/artifact/candidate.patch
+Running changed-paths: git diff HEAD --name-only
+Running untracked-paths: git ls-files --others --exclude-standard
+ok
+test_even_a_resealed_policy_patch_is_rejected_before_apply (test_ndu_dependency_candidate.CandidateBindingTests.test_even_a_resealed_policy_patch_is_rejected_before_apply) ... Running source-head: git rev-parse HEAD
+Running clean-checkout: git status --porcelain
+Running patch-paths: git apply --numstat /tmp/tmpj72y4ziq/artifact/candidate.patch
+ok
+test_new_checkout_head_cannot_consume_the_old_artifact (test_ndu_dependency_candidate.CandidateBindingTests.test_new_checkout_head_cannot_consume_the_old_artifact) ... Running source-head: git rev-parse HEAD
+ok
+test_post_apply_vendor_or_policy_mutation_is_rejected (test_ndu_dependency_candidate.CandidateBindingTests.test_post_apply_vendor_or_policy_mutation_is_rejected) ... Running source-head: git rev-parse HEAD
+Running clean-checkout: git status --porcelain
+Running patch-paths: git apply --numstat /tmp/tmp0ou76mrb/artifact/candidate.patch
+Running check-candidate-patch: git apply --check --index /tmp/tmp0ou76mrb/artifact/candidate.patch
+Running apply-candidate-patch: git apply --index /tmp/tmp0ou76mrb/artifact/candidate.patch
+Running changed-paths: git diff HEAD --name-only
+Running untracked-paths: git ls-files --others --exclude-standard
+ok
+test_tampered_result_patch_or_snapshot_is_rejected_before_apply (test_ndu_dependency_candidate.CandidateBindingTests.test_tampered_result_patch_or_snapshot_is_rejected_before_apply) ... ok
+test_failure_stdout_stderr_and_later_success_are_retained (test_ndu_dependency_candidate.ProcessEvidenceTests.test_failure_stdout_stderr_and_later_success_are_retained) ... Running failing-process: /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 -c import sys; print('failed output'); print('failed detail', file=sys.stderr); sys.exit(7)
+Running later-process: /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 -c print('later command ran')
+ok
+test_required_failure_raises_after_persisting_actual_exit (test_ndu_dependency_candidate.ProcessEvidenceTests.test_required_failure_raises_after_persisting_actual_exit) ... Running resolver: /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 -c raise SystemExit(19)
+ok
+test_old_parallel_version_or_registry_parser_cannot_masquerade_as_repair (test_ndu_dependency_candidate.ResolvedGraphTests.test_old_parallel_version_or_registry_parser_cannot_masquerade_as_repair) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.466s
+
+OK

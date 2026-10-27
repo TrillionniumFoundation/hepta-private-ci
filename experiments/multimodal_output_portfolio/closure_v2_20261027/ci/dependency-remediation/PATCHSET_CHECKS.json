@@ -1,0 +1,129 @@
+{
+  "status": "prepared_not_yet_workspace_tested",
+  "checks": {
+    "zip-zstd-manifest.patch": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "i18n-config-manifest.patch": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "unchanged_upstream_source_license_and_original_manifest": true,
+    "only_declared_parser_source_changes": true,
+    "independent_lzma_fixture_reopened_and_payload_verified": true
+  },
+  "rust_tests_executed": false,
+  "local_cargo_target_or_cache_created": false,
+  "workspace_manifest_modified_by_agent": false,
+  "cargo_or_bazel_lock_modified_by_agent": false,
+  "ignore_policy_or_feature_removal": false,
+  "files": [
+    {
+      "path": "codex-rs/core-plugins/src/startup_sync.rs",
+      "bytes": 39297,
+      "sha256": "431e70e0533be89842aaa9affd27a73893449789423fa74d202e02bf0b21989c"
+    },
+    {
+      "path": "codex-rs/core-plugins/src/startup_sync_zip_tests.rs",
+      "bytes": 5866,
+      "sha256": "349542e520393e60567754965b6b7cc78fcf203cede7790090993312ccf8debd"
+    },
+    {
+      "path": "codex-rs/core-plugins/tests/fixtures/zipball_lzma.zip",
+      "bytes": 194,
+      "sha256": "b6ce81e8450c7de591a4e4c7e2e9e975542cc709a07487e16d8f0dfaf7e3d30c"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/.cargo_vcs_info.json",
+      "bytes": 105,
+      "sha256": "fb077bb9c5d1c6bd9d26bc4c2c26595df4ab1bfd4f9be800daffc548212b3392"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/.gitignore",
+      "bytes": 37,
+      "sha256": "b821dfe599e6f75093a5ffe4162968da3be6c12ef46a8d8fbbd5c826cd80bc7f"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/BUILD.bazel",
+      "bytes": 147,
+      "sha256": "97d7c6381e499d2c26a4f6b3f2a3e50845b882094b35e325fdd5efa4a2575167"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/CHANGELOG.md",
+      "bytes": 2402,
+      "sha256": "d43722d4e4526cdd6263bf195e13dc22b73eb22fd45b792d4d5f297e59e4ff54"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/Cargo.lock",
+      "bytes": 3912,
+      "sha256": "8dc88a299e6340b8602f03bcfd16b0d3b71a4481990163352698d4e59180a5c2"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/Cargo.toml",
+      "bytes": 1572,
+      "sha256": "9c1da72d8e35a43ae6adeaf28bc414fcfa27ef31266bc6e8cab466e315b0707f"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/Cargo.toml.orig",
+      "bytes": 875,
+      "sha256": "83619c9644c346a0c7b841220a01f97db4215a0df6280422e28de2d4f6128afb"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/HEPTA_PATCH.md",
+      "bytes": 1778,
+      "sha256": "51e24e25603bdad1c3f274ed47e0c7e9a25f75905a1e1640d348e9a19a09ca9d"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/LICENSE.txt",
+      "bytes": 1072,
+      "sha256": "a1d2bd09632724b23c62b05e2fd0dc26c5c9d21b409594cf7da1a1aba555f802"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/README.md",
+      "bytes": 796,
+      "sha256": "bdadc28dd4a62f5b8c7c4c759c7b3cf2b33181700563c3083f8515f1638c12f2"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/src/fluent.rs",
+      "bytes": 691,
+      "sha256": "fdf091a54559e437dd0ee0f2a291b2e18c42a7857e9bbecfd338b038b320f9f7"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/src/gettext.rs",
+      "bytes": 4286,
+      "sha256": "3626b50f396f0a83e7d5aab702d4d18d078dff7620108db80ffa7ed9da0b5991"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/src/lib.rs",
+      "bytes": 14747,
+      "sha256": "60f6bf0687e5e277aa7c79f3903ef93aa85c1bcc52a87f4d7ceb217597ddd7d3"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/src/parser_tests.rs",
+      "bytes": 3457,
+      "sha256": "bb6de4ff3415c5e56efb4cdb26003ed8403ec25e64e27a8c4d25227d0c5b1e5f"
+    }
+  ],
+  "required_root_actions": [
+    "Apply the two independent manifest patches in coordinated stages.",
+    "Resolve and verify complete Cargo and Bazel lock graphs.",
+    "Run the full-repository targeted just test commands and platform CI.",
+    "Rerun unchanged cargo-deny and retain the original negative diagnostic.",
+    "Perform final repository formatting and publication."
+  ],
+  "upstream_source_archive": {
+    "file": "i18n-config-0.4.8.upstream.crate",
+    "bytes": 9082,
+    "sha256": "3e06b90c8a0d252e203c94344b21e35a30f3a3a85dc7db5af8f8df9f3e0c63ef"
+  },
+  "file_hash_scope": "At this agent handoff, before root-coordinated tests and final repository formatting.",
+  "source_changes_held_in_fixed_patch": {
+    "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/dependency-remediation/zip-source.patch",
+    "bytes": 9330,
+    "sha256": "8bc968c54ea49960a4c14896b48e861b68b30b653613f2b440e4ef2b32791c35",
+    "application_check": true,
+    "base_commit": "792980f941e1d76f51cd05b9161b80d2ad3e81dd"
+  },
+  "source_files_in_file_hashes_describe_candidate_after_patch": true
+}
