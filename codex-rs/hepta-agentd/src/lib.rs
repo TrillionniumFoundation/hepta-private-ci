@@ -117,6 +117,7 @@ pub use codex_hepta_agent_protocol::CognitiveContextRevalidation;
 pub use codex_hepta_agent_protocol::CognitiveContextSnapshot;
 pub use codex_hepta_agent_protocol::CognitiveNeuralExecutionV1;
 pub use codex_hepta_agent_protocol::CognitiveNeuralSourceV1;
+pub use codex_hepta_agent_protocol::DrainSnapshot;
 pub use codex_hepta_agent_protocol::EventBatch;
 pub use codex_hepta_agent_protocol::HealthSnapshot;
 pub use codex_hepta_agent_protocol::KernelEvidenceAppendIngress;
