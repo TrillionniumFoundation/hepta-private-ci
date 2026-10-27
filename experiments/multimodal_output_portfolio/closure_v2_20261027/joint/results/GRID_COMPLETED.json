@@ -1,0 +1,118 @@
+{
+  "audit_or_new_test_used": false,
+  "budget_sha256": "8c33d06d926e9b1a51c94f571e8f706c74461943abd1290519f663a396f57cb8",
+  "grid": {
+    "candidate_standard_deviations": [
+      0.15,
+      0.05
+    ],
+    "checkpoints_per_candidate": [
+      200,
+      400,
+      600
+    ],
+    "fallback_work": "Every objective pays both complete training grids and all validation calls even if the selected deployment is unchanged.",
+    "new_qualification_outputs_seen_at_amendment": false,
+    "new_test_seed_namespace": "qualification_guard.QUALIFICATION_CONTRACT, separate from all development randomness",
+    "no_update_scope": "The likelihood-ratio gradient claim applies only to the trained stochastic actor; a selected deterministic original fallback is explicitly marked and receives no such gradient claim.",
+    "objectives": [
+      "direct_mean",
+      "direct_risk"
+    ],
+    "prior_failed_or_less_effective_attempts_preserved": true,
+    "reason": "The first development grid showed that sigma 0.15 itself reduced validation retention and that direct-risk benefits differed across fixed seeds. Before any new qualification prediction, evaluate one additional, equally budgeted sigma 0.05 grid in both objective arms.",
+    "schema": "hepta.ndu.direct-gradient-pretest-grid.v1",
+    "seeds": [
+      17,
+      29,
+      43
+    ],
+    "selection": "Across both candidate runs, retain only checkpoints that meet the same clean validation retention threshold, then maximize actual validation CE. Tie favors smaller sigma, then earlier checkpoint. The exact prior original is a no-update fallback when no candidate improves its validation quality.",
+    "total_training_steps_per_seed_per_objective": 1200,
+    "training_steps_per_candidate_per_seed_per_objective": 600
+  },
+  "grid_specification_sha256": "332a9c65bcafc10138167961d6cf4f0a4aedb4faf7e67a48f315588e29f5ffb1",
+  "runs": [
+    {
+      "development_pins": {
+        "baselines_sha256": "7979db2acf683daad49e92fb83ef5daab80a34f9a384969f1419d4a9f1a7b3fd",
+        "completed_sha256": "f694532e6aebb378e05410c50e0275ded3e0c82ad5733af3c79732c22ec4e4fb",
+        "runtime_sha256": "df848ed1cbd933c191ac6fd664e515740d3c21ad74b1e60dada750050b0914d7",
+        "training": {
+          "17/direct_mean": {
+            "selection_sha256": "52e13ff5f00afe790128190b49d943d4fac5fa749955b1bc54c6b4265672e6fe",
+            "training_sha256": "b39ff0795aabddd887dc6c67eb13b6725d625670d548f643ddea22d3b7293b62"
+          },
+          "17/direct_risk": {
+            "selection_sha256": "23b97c509af4ac3f07494f674cf4792c62142d62c1772e8e4e8f151a04ebea2e",
+            "training_sha256": "ae3f1e46df047904aed3ab3d9cc30a65cf4007153a4fc9573ab4f6f964c43543"
+          },
+          "29/direct_mean": {
+            "selection_sha256": "70e8b4c762708990e317aec3222e30288f148ab78e39f0b5d1af4eea0eff1ffe",
+            "training_sha256": "bdd7384430f57f04215170fe5148e1f0ea85465231ec9d28dd3558a6705a281e"
+          },
+          "29/direct_risk": {
+            "selection_sha256": "77a72522d2252218a277163405684393ffdd6e010d96e46188f6f9fd4a722328",
+            "training_sha256": "b3eb3e0d3cc9e19110b315c87f3f28d21211210cd0346ae34ecb1924ab841b56"
+          },
+          "43/direct_mean": {
+            "selection_sha256": "c1b2edf9d73a182971b3a640e86d2741c6e61b81b3f06913e6e725ecc40663bf",
+            "training_sha256": "a9774624e5caa24750cde65305ef4dc6683d8fe20e9bf37c7b1bbf7ed7cb60c1"
+          },
+          "43/direct_risk": {
+            "selection_sha256": "3a1e3ea87b1c2e963f73ac7fff411d1e53b0d44cd53c6706a09e64488d8efd9a",
+            "training_sha256": "c53482bccad075e8c742b08504b3745c219e850022542d63d106d9b3ddfe429b"
+          }
+        }
+      },
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+      "protocol_sha256": "9c08615afabad4d3f074c0805b87c30d7844e38cdc30ea1e23c725eda988ddb7",
+      "selection_sha256": "1e8761bdc8c09dc7b36d1c8d47b393968d97b6c2d2d3c4f19c0fc2bcbd4b76fb"
+    },
+    {
+      "development_pins": {
+        "baselines_sha256": "7979db2acf683daad49e92fb83ef5daab80a34f9a384969f1419d4a9f1a7b3fd",
+        "completed_sha256": "d0e860c3612abed2807cd688e964bd4cb05f06206bdf33db0256e5f6a941ed96",
+        "runtime_sha256": "c3fb1b221602278b26f631aac5b66cd8dd4c7c9693cbd56c032aeab6b214e883",
+        "training": {
+          "17/direct_mean": {
+            "selection_sha256": "69992b618dbb30aca0c92fa464871673c63b7ed6de52dc2c63bbddeffa69ad38",
+            "training_sha256": "a9c0befb5a916ee704647744d37638ad9d6593f39e01e291f3e5af67b061427c"
+          },
+          "17/direct_risk": {
+            "selection_sha256": "5f832abd0c00da151fd6d4c7c97b1b600deba2f1e1d695f2ce74f9d14b5f2233",
+            "training_sha256": "b71e20700eaa9e511c6988294b699d00f2870224384e3c571034be53faea2a42"
+          },
+          "29/direct_mean": {
+            "selection_sha256": "43c72892c870874240b186d648f85e2828d052d81a935771aa410e88bca59216",
+            "training_sha256": "63104d9258dfa7511be18dc749e4344770ee959d0ed2884f8eed37bdc5b1f61e"
+          },
+          "29/direct_risk": {
+            "selection_sha256": "ac1b852d5cedbd70f1d8c79a2249a24e07201fc045cc284018362815a2238d18",
+            "training_sha256": "3f8c7adab000ba2083d9d99a4bf9b9945fce64797696a73872c79f3cb4ff41a4"
+          },
+          "43/direct_mean": {
+            "selection_sha256": "dfafc19e4cb5418e4cf996201bee5aa1866e358045188f6603b51330ae9f649b",
+            "training_sha256": "bcdb8e97fdeba3db2905f0ad05cfe3fc9094bf47263556c0ea29817e8e92759b"
+          },
+          "43/direct_risk": {
+            "selection_sha256": "41e91c61df30d122c3392a34fe34bcc5692dd2db9b787c24d456bb63ca527d9f",
+            "training_sha256": "e66c61e2d367409e50fd888aa7b417c31dc1abe55ec9d497818b2d3590bdfd4d"
+          }
+        }
+      },
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+      "protocol_sha256": "d2aa9e962bc4d7659c8cf6ca5ea5c90be04ff38c34072ee002f96609da33c8e1",
+      "selection_sha256": "60271204d29ac55b6979519b1195a1e44fdaea89a5aef0128e9c7529684a9e61"
+    }
+  ],
+  "schema": "hepta.ndu.direct-grid-selection.v1",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "selection_sha256": "372139aa15e8beeedaf1d89de6b58d8b19bc253f29d1e3e4c1af6847dd5e18c9",
+  "steps_per_run": 600,
+  "total_steps_per_seed_per_objective": 1200
+}

@@ -1,0 +1,560 @@
+[
+  {
+    "arm": "direct_mean",
+    "candidates": [
+      {
+        "checkpoint": null,
+        "eligible": false,
+        "quality_ce": 0.6894960848769423,
+        "retention_ce": 0.7093224393688244,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 0
+      },
+      {
+        "checkpoint": "seed-17-direct_mean-step-200.pt",
+        "eligible": true,
+        "quality_ce": 0.7255172431533161,
+        "retention_ce": 0.7310134767797787,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 200
+      },
+      {
+        "checkpoint": "seed-17-direct_mean-step-400.pt",
+        "eligible": true,
+        "quality_ce": 0.7332289552354312,
+        "retention_ce": 0.72348780927465,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 400
+      },
+      {
+        "checkpoint": "seed-17-direct_mean-step-600.pt",
+        "eligible": true,
+        "quality_ce": 0.7421895914660694,
+        "retention_ce": 0.7342535369826331,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 600
+      },
+      {
+        "checkpoint": null,
+        "eligible": false,
+        "quality_ce": 0.7099093885199268,
+        "retention_ce": 0.7203607401096372,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 0
+      },
+      {
+        "checkpoint": "seed-17-direct_mean-step-200.pt",
+        "eligible": false,
+        "quality_ce": 0.7229987447411015,
+        "retention_ce": 0.7203393913330318,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 200
+      },
+      {
+        "checkpoint": "seed-17-direct_mean-step-400.pt",
+        "eligible": true,
+        "quality_ce": 0.7484069416305144,
+        "retention_ce": 0.7368645569886285,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 400
+      },
+      {
+        "checkpoint": "seed-17-direct_mean-step-600.pt",
+        "eligible": true,
+        "quality_ce": 0.7303013059883989,
+        "retention_ce": 0.7292466667342652,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 600
+      }
+    ],
+    "kind": "stochastic_actor",
+    "original_ce": {
+      "quality": 0.717114419966834,
+      "retention": 0.725537076335008
+    },
+    "seed": 17,
+    "selected_ce": {
+      "quality": 0.7484069416305144,
+      "retention": 0.7368645569886285
+    },
+    "selected_eligible": true,
+    "selected_path": "seed-17-direct_mean-selected.pt",
+    "selected_sha256": "9548ace14aed6f552277367daea2153d7e9c22d0fee1142c06e6a05acef2748c",
+    "selected_step": 400,
+    "sigma": 0.05,
+    "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002"
+  },
+  {
+    "arm": "direct_risk",
+    "candidates": [
+      {
+        "checkpoint": null,
+        "eligible": false,
+        "quality_ce": 0.6894960848769423,
+        "retention_ce": 0.7093224393688244,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 0
+      },
+      {
+        "checkpoint": "seed-17-direct_risk-step-200.pt",
+        "eligible": false,
+        "quality_ce": 0.7097341116148275,
+        "retention_ce": 0.7156455027382496,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 200
+      },
+      {
+        "checkpoint": "seed-17-direct_risk-step-400.pt",
+        "eligible": true,
+        "quality_ce": 0.7279913289719351,
+        "retention_ce": 0.7436035181126603,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 400
+      },
+      {
+        "checkpoint": "seed-17-direct_risk-step-600.pt",
+        "eligible": true,
+        "quality_ce": 0.7460941284213347,
+        "retention_ce": 0.7344254233178631,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 600
+      },
+      {
+        "checkpoint": null,
+        "eligible": false,
+        "quality_ce": 0.7099093885199268,
+        "retention_ce": 0.7203607401096372,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 0
+      },
+      {
+        "checkpoint": "seed-17-direct_risk-step-200.pt",
+        "eligible": false,
+        "quality_ce": 0.732267613912392,
+        "retention_ce": 0.7202571589719697,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 200
+      },
+      {
+        "checkpoint": "seed-17-direct_risk-step-400.pt",
+        "eligible": true,
+        "quality_ce": 0.7377321558730292,
+        "retention_ce": 0.7330019952375835,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 400
+      },
+      {
+        "checkpoint": "seed-17-direct_risk-step-600.pt",
+        "eligible": false,
+        "quality_ce": 0.7344355699747507,
+        "retention_ce": 0.7151059662512336,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 600
+      }
+    ],
+    "kind": "stochastic_actor",
+    "original_ce": {
+      "quality": 0.717114419966834,
+      "retention": 0.725537076335008
+    },
+    "seed": 17,
+    "selected_ce": {
+      "quality": 0.7460941284213347,
+      "retention": 0.7344254233178631
+    },
+    "selected_eligible": true,
+    "selected_path": "seed-17-direct_risk-selected.pt",
+    "selected_sha256": "ad86e1f40d8a45796d01401f419b99679923154adf1efc33a97e3d4a1c8b253e",
+    "selected_step": 600,
+    "sigma": 0.15,
+    "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001"
+  },
+  {
+    "arm": "direct_mean",
+    "candidates": [
+      {
+        "checkpoint": null,
+        "eligible": false,
+        "quality_ce": 0.7285703245485249,
+        "retention_ce": 0.7071857580347232,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 0
+      },
+      {
+        "checkpoint": "seed-29-direct_mean-step-200.pt",
+        "eligible": false,
+        "quality_ce": 0.7449705897135095,
+        "retention_ce": 0.7878711123761148,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 200
+      },
+      {
+        "checkpoint": "seed-29-direct_mean-step-400.pt",
+        "eligible": false,
+        "quality_ce": 0.7400161487888774,
+        "retention_ce": 0.7734114984608786,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 400
+      },
+      {
+        "checkpoint": "seed-29-direct_mean-step-600.pt",
+        "eligible": true,
+        "quality_ce": 0.7544325948465407,
+        "retention_ce": 0.8085618217993289,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 600
+      },
+      {
+        "checkpoint": null,
+        "eligible": false,
+        "quality_ce": 0.7447284873290985,
+        "retention_ce": 0.7849190016787687,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 0
+      },
+      {
+        "checkpoint": "seed-29-direct_mean-step-200.pt",
+        "eligible": false,
+        "quality_ce": 0.7354587066878124,
+        "retention_ce": 0.7677197213216125,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 200
+      },
+      {
+        "checkpoint": "seed-29-direct_mean-step-400.pt",
+        "eligible": false,
+        "quality_ce": 0.7581477693030967,
+        "retention_ce": 0.7831533972579865,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 400
+      },
+      {
+        "checkpoint": "seed-29-direct_mean-step-600.pt",
+        "eligible": true,
+        "quality_ce": 0.7538752638390056,
+        "retention_ce": 0.8210729488668936,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 600
+      }
+    ],
+    "kind": "stochastic_actor",
+    "original_ce": {
+      "quality": 0.740841133963982,
+      "retention": 0.8009604387739921
+    },
+    "seed": 29,
+    "selected_ce": {
+      "quality": 0.7544325948465407,
+      "retention": 0.8085618217993289
+    },
+    "selected_eligible": true,
+    "selected_path": "seed-29-direct_mean-selected.pt",
+    "selected_sha256": "05237b3953aa18b2509fdfe48654e5700054f8b7f85352908223d2717ed207c6",
+    "selected_step": 600,
+    "sigma": 0.15,
+    "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001"
+  },
+  {
+    "arm": "direct_risk",
+    "candidates": [
+      {
+        "checkpoint": null,
+        "eligible": false,
+        "quality_ce": 0.7285703245485249,
+        "retention_ce": 0.7071857580347232,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 0
+      },
+      {
+        "checkpoint": "seed-29-direct_risk-step-200.pt",
+        "eligible": false,
+        "quality_ce": 0.7414482238902642,
+        "retention_ce": 0.7395634963290576,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 200
+      },
+      {
+        "checkpoint": "seed-29-direct_risk-step-400.pt",
+        "eligible": false,
+        "quality_ce": 0.7421357309673817,
+        "retention_ce": 0.7640078512470239,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 400
+      },
+      {
+        "checkpoint": "seed-29-direct_risk-step-600.pt",
+        "eligible": true,
+        "quality_ce": 0.7329793725955214,
+        "retention_ce": 0.8012965066868676,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 600
+      },
+      {
+        "checkpoint": null,
+        "eligible": false,
+        "quality_ce": 0.7447284873290985,
+        "retention_ce": 0.7849190016787687,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 0
+      },
+      {
+        "checkpoint": "seed-29-direct_risk-step-200.pt",
+        "eligible": false,
+        "quality_ce": 0.7433831641587438,
+        "retention_ce": 0.7739892102323194,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 200
+      },
+      {
+        "checkpoint": "seed-29-direct_risk-step-400.pt",
+        "eligible": false,
+        "quality_ce": 0.7516901007476502,
+        "retention_ce": 0.7748342889815351,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 400
+      },
+      {
+        "checkpoint": "seed-29-direct_risk-step-600.pt",
+        "eligible": false,
+        "quality_ce": 0.7408148710782212,
+        "retention_ce": 0.7596056323159197,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 600
+      }
+    ],
+    "kind": "original_fallback",
+    "original_ce": {
+      "quality": 0.740841133963982,
+      "retention": 0.8009604387739921
+    },
+    "seed": 29,
+    "selected_ce": {
+      "quality": 0.740841133963982,
+      "retention": 0.8009604387739921
+    },
+    "selected_eligible": true,
+    "selected_path": null,
+    "selected_sha256": null,
+    "selected_step": 0,
+    "sigma": 0.0,
+    "source_run": null
+  },
+  {
+    "arm": "direct_mean",
+    "candidates": [
+      {
+        "checkpoint": null,
+        "eligible": false,
+        "quality_ce": 0.6479076604937402,
+        "retention_ce": 0.7463992936465199,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 0
+      },
+      {
+        "checkpoint": "seed-43-direct_mean-step-200.pt",
+        "eligible": true,
+        "quality_ce": 0.650843577975426,
+        "retention_ce": 0.7854111542696909,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 200
+      },
+      {
+        "checkpoint": "seed-43-direct_mean-step-400.pt",
+        "eligible": true,
+        "quality_ce": 0.6448103493573127,
+        "retention_ce": 0.7891290025501487,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 400
+      },
+      {
+        "checkpoint": "seed-43-direct_mean-step-600.pt",
+        "eligible": true,
+        "quality_ce": 0.65581959575498,
+        "retention_ce": 0.7654249281436588,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 600
+      },
+      {
+        "checkpoint": null,
+        "eligible": false,
+        "quality_ce": 0.660015047967726,
+        "retention_ce": 0.7521349165152955,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 0
+      },
+      {
+        "checkpoint": "seed-43-direct_mean-step-200.pt",
+        "eligible": true,
+        "quality_ce": 0.6521134807340379,
+        "retention_ce": 0.7843149885261784,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 200
+      },
+      {
+        "checkpoint": "seed-43-direct_mean-step-400.pt",
+        "eligible": true,
+        "quality_ce": 0.6488269274895964,
+        "retention_ce": 0.7995093820594757,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 400
+      },
+      {
+        "checkpoint": "seed-43-direct_mean-step-600.pt",
+        "eligible": true,
+        "quality_ce": 0.6564600704979822,
+        "retention_ce": 0.7842712718462039,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 600
+      }
+    ],
+    "kind": "stochastic_actor",
+    "original_ce": {
+      "quality": 0.656133717549791,
+      "retention": 0.7589250464365352
+    },
+    "seed": 43,
+    "selected_ce": {
+      "quality": 0.6564600704979822,
+      "retention": 0.7842712718462039
+    },
+    "selected_eligible": true,
+    "selected_path": "seed-43-direct_mean-selected.pt",
+    "selected_sha256": "b6f3988f74f1113abb6f2d3e0f83d2c8a6af206135fca39cdbfc1a7fd95827be",
+    "selected_step": 600,
+    "sigma": 0.05,
+    "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002"
+  },
+  {
+    "arm": "direct_risk",
+    "candidates": [
+      {
+        "checkpoint": null,
+        "eligible": false,
+        "quality_ce": 0.6479076604937402,
+        "retention_ce": 0.7463992936465199,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 0
+      },
+      {
+        "checkpoint": "seed-43-direct_risk-step-200.pt",
+        "eligible": true,
+        "quality_ce": 0.6538406489601776,
+        "retention_ce": 0.775528721389592,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 200
+      },
+      {
+        "checkpoint": "seed-43-direct_risk-step-400.pt",
+        "eligible": true,
+        "quality_ce": 0.6314013851945404,
+        "retention_ce": 0.7549799568000891,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 400
+      },
+      {
+        "checkpoint": "seed-43-direct_risk-step-600.pt",
+        "eligible": true,
+        "quality_ce": 0.6297466083952177,
+        "retention_ce": 0.7588247760929576,
+        "sigma": 0.15,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-001",
+        "step": 600
+      },
+      {
+        "checkpoint": null,
+        "eligible": false,
+        "quality_ce": 0.660015047967726,
+        "retention_ce": 0.7521349165152955,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 0
+      },
+      {
+        "checkpoint": "seed-43-direct_risk-step-200.pt",
+        "eligible": true,
+        "quality_ce": 0.669537868184733,
+        "retention_ce": 0.76941836834995,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 200
+      },
+      {
+        "checkpoint": "seed-43-direct_risk-step-400.pt",
+        "eligible": true,
+        "quality_ce": 0.6709224429546619,
+        "retention_ce": 0.7656534835881555,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 400
+      },
+      {
+        "checkpoint": "seed-43-direct_risk-step-600.pt",
+        "eligible": true,
+        "quality_ce": 0.6588281100074824,
+        "retention_ce": 0.7727149476065373,
+        "sigma": 0.05,
+        "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002",
+        "step": 600
+      }
+    ],
+    "kind": "stochastic_actor",
+    "original_ce": {
+      "quality": 0.656133717549791,
+      "retention": 0.7589250464365352
+    },
+    "seed": 43,
+    "selected_ce": {
+      "quality": 0.6709224429546619,
+      "retention": 0.7656534835881555
+    },
+    "selected_eligible": true,
+    "selected_path": "seed-43-direct_risk-selected.pt",
+    "selected_sha256": "99617cec6822c59fcb9947222cbbb0a5512dd615be5161d343a6a43639c46598",
+    "selected_step": 400,
+    "sigma": 0.05,
+    "source_run": "/workspace/scratch/95988d8d3ab1/ndu-direct-gradient-v2/development-full-002"
+  }
+]

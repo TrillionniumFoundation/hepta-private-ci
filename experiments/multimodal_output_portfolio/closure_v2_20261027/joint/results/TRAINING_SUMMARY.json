@@ -1,0 +1,668 @@
+[
+  {
+    "run": "development-001",
+    "actor_after": "9664ad5cfeb04355bc3b5d8eacd8a3c12f5a62f545d3ed9e2787cf0d60089cfd",
+    "actor_before": "7e2b30f0a190fe4ac32169e5198a9021cd6c37cf00a099c97c26bf9e4bad99e6",
+    "actor_parameters": 19068,
+    "actual_output_stream_sha256": "404de4ea4441f962690f04e4617fa6c0654baf7a665b54985cd83790637ab596",
+    "arm": "direct_mean",
+    "checkpoints": [
+      {
+        "path": "seed-17-direct_mean-step-100.pt",
+        "sha256": "5b75c4d7e474dc48fd795921fe2f967073ceee03338d01cd356d9240e17d0a66",
+        "step": 100
+      }
+    ],
+    "cpu_ns": 19278116438,
+    "frozen_model_gate_reward_hashes": [
+      "cc40ccc2ed9fadd2e1bc0257cf0b04e1014b499dbbc3aa537bdf1202d6a29368",
+      "d0e4805e2ba9d318c1881bfce4dfe458fb1c42d694e5b4121f2b8ebe91e6ffe7",
+      "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0"
+    ],
+    "optimizer_globally_optimal": false,
+    "schedule_sha256": "4a1da6a9ab8dd8e87e8f6f35fc027e78d3e50df849fa55271cb36271f29274eb",
+    "seed": 17,
+    "steps": 100,
+    "trace_sha256": "e21fe6fbc6cc5a316cbbc7a209e90fa763199666834a7048d8bd650512cf7dcd",
+    "training_counts": {
+      "actor_examples": 1600,
+      "actual_png_roundtrips": 25600,
+      "decoder_examples": 25600,
+      "encoder_examples": 1600,
+      "gate_examples": 1600,
+      "observer_digit_examples": 51200,
+      "optimizer_updates": 100,
+      "transition_examples": 3200
+    },
+    "training_media_retention": "actual PNG/UTF8 roundtrips scored, stream hash and paired cost/gradient traces retained; individual training media reproducible from frozen sources/RNG, not all individually archived",
+    "unbiased_reward_gradient_before_clipping": true,
+    "wall_ns": 21345937490
+  },
+  {
+    "run": "development-001",
+    "actor_after": "5fefc198ac9c5164a61e14d1c4eeb4776e8f8a1c7cbc0cb144131b45ff217c5a",
+    "actor_before": "7e2b30f0a190fe4ac32169e5198a9021cd6c37cf00a099c97c26bf9e4bad99e6",
+    "actor_parameters": 19068,
+    "actual_output_stream_sha256": "f783e2510aa58f49ff48945ede2a402be6d0867e870ae7366a278774bedc0733",
+    "arm": "direct_risk",
+    "checkpoints": [
+      {
+        "path": "seed-17-direct_risk-step-100.pt",
+        "sha256": "e6416743f1ddea88d487a80c87a76baa0ed57b924821e44005c8ab866880fe60",
+        "step": 100
+      }
+    ],
+    "cpu_ns": 18871773285,
+    "frozen_model_gate_reward_hashes": [
+      "cc40ccc2ed9fadd2e1bc0257cf0b04e1014b499dbbc3aa537bdf1202d6a29368",
+      "d0e4805e2ba9d318c1881bfce4dfe458fb1c42d694e5b4121f2b8ebe91e6ffe7",
+      "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0"
+    ],
+    "optimizer_globally_optimal": false,
+    "schedule_sha256": "4a1da6a9ab8dd8e87e8f6f35fc027e78d3e50df849fa55271cb36271f29274eb",
+    "seed": 17,
+    "steps": 100,
+    "trace_sha256": "91c5805dbf648a563dae5331fd4c758bc7b47d0b9db428cebc2c16568c8fd91b",
+    "training_counts": {
+      "actor_examples": 1600,
+      "actual_png_roundtrips": 25600,
+      "decoder_examples": 25600,
+      "encoder_examples": 1600,
+      "gate_examples": 1600,
+      "observer_digit_examples": 51200,
+      "optimizer_updates": 100,
+      "transition_examples": 3200
+    },
+    "training_media_retention": "actual PNG/UTF8 roundtrips scored, stream hash and paired cost/gradient traces retained; individual training media reproducible from frozen sources/RNG, not all individually archived",
+    "unbiased_reward_gradient_before_clipping": true,
+    "wall_ns": 21093746919
+  },
+  {
+    "run": "development-full-001",
+    "actor_after": "16ab7ff6f6cf1af1561d78ca93dd9651d221e962ddfd02cf8f3ae66b58bbad7b",
+    "actor_before": "7e2b30f0a190fe4ac32169e5198a9021cd6c37cf00a099c97c26bf9e4bad99e6",
+    "actor_parameters": 19068,
+    "actual_output_stream_sha256": "243062a4c7b40663467e738e1c0aca10405b4cc34451cb4088ed6eacf22829dd",
+    "arm": "direct_mean",
+    "checkpoints": [
+      {
+        "path": "seed-17-direct_mean-step-200.pt",
+        "sha256": "e34a019934dc08a45badccec55fa1ce7b869f4e3c3179650e16ca47da6999810",
+        "step": 200
+      },
+      {
+        "path": "seed-17-direct_mean-step-400.pt",
+        "sha256": "30ac980a7559768c7f996cd5f7b936d7258bb9e1e741f3f81aa06e412ac5e1a7",
+        "step": 400
+      },
+      {
+        "path": "seed-17-direct_mean-step-600.pt",
+        "sha256": "3c359236ae96bfdb3882b27ab547b4251c7b945822c35dff59e61717e650fc16",
+        "step": 600
+      }
+    ],
+    "cpu_ns": 115601894320,
+    "frozen_model_gate_reward_hashes": [
+      "cc40ccc2ed9fadd2e1bc0257cf0b04e1014b499dbbc3aa537bdf1202d6a29368",
+      "d0e4805e2ba9d318c1881bfce4dfe458fb1c42d694e5b4121f2b8ebe91e6ffe7",
+      "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0"
+    ],
+    "optimizer_globally_optimal": false,
+    "schedule_sha256": "5270ecb86876bcd2a98644782d3d911aa7b1188b831b7a53439df749e55e655b",
+    "seed": 17,
+    "steps": 600,
+    "trace_sha256": "c2db8ea6a1607e1790703dd63807c6ee454cc6d7a7d86f6f6baf0a1b9ad73a45",
+    "training_counts": {
+      "actor_examples": 9600,
+      "actual_png_roundtrips": 153600,
+      "decoder_examples": 153600,
+      "encoder_examples": 9600,
+      "gate_examples": 9600,
+      "observer_digit_examples": 307200,
+      "optimizer_updates": 600,
+      "transition_examples": 19200
+    },
+    "training_media_retention": "actual PNG/UTF8 roundtrips scored, stream hash and paired cost/gradient traces retained; individual training media reproducible from frozen sources/RNG, not all individually archived",
+    "unbiased_reward_gradient_before_clipping": true,
+    "wall_ns": 148357870115
+  },
+  {
+    "run": "development-full-001",
+    "actor_after": "07bc355c93431189986efe91048d7d1cce1d9d09fae6b65135ddf38aa69447a5",
+    "actor_before": "7e2b30f0a190fe4ac32169e5198a9021cd6c37cf00a099c97c26bf9e4bad99e6",
+    "actor_parameters": 19068,
+    "actual_output_stream_sha256": "a0224dcc2925a8e406fbc51fad27d0888615e6cfea8bb6a884180c97b926d4aa",
+    "arm": "direct_risk",
+    "checkpoints": [
+      {
+        "path": "seed-17-direct_risk-step-200.pt",
+        "sha256": "098fc8ae70f27a0224a0b7261b26aab169f50ee47a9bc0c64186823856be00b3",
+        "step": 200
+      },
+      {
+        "path": "seed-17-direct_risk-step-400.pt",
+        "sha256": "8daee75e2307b3f424cfa4627baa5a61ffa634935ad309aeca73a1e55bf0c905",
+        "step": 400
+      },
+      {
+        "path": "seed-17-direct_risk-step-600.pt",
+        "sha256": "ad86e1f40d8a45796d01401f419b99679923154adf1efc33a97e3d4a1c8b253e",
+        "step": 600
+      }
+    ],
+    "cpu_ns": 118115575097,
+    "frozen_model_gate_reward_hashes": [
+      "cc40ccc2ed9fadd2e1bc0257cf0b04e1014b499dbbc3aa537bdf1202d6a29368",
+      "d0e4805e2ba9d318c1881bfce4dfe458fb1c42d694e5b4121f2b8ebe91e6ffe7",
+      "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0"
+    ],
+    "optimizer_globally_optimal": false,
+    "schedule_sha256": "5270ecb86876bcd2a98644782d3d911aa7b1188b831b7a53439df749e55e655b",
+    "seed": 17,
+    "steps": 600,
+    "trace_sha256": "d46dee2404e43b9d4bc9d607ced8b6b8890cbfdfc02acc674b932bc32b53b965",
+    "training_counts": {
+      "actor_examples": 9600,
+      "actual_png_roundtrips": 153600,
+      "decoder_examples": 153600,
+      "encoder_examples": 9600,
+      "gate_examples": 9600,
+      "observer_digit_examples": 307200,
+      "optimizer_updates": 600,
+      "transition_examples": 19200
+    },
+    "training_media_retention": "actual PNG/UTF8 roundtrips scored, stream hash and paired cost/gradient traces retained; individual training media reproducible from frozen sources/RNG, not all individually archived",
+    "unbiased_reward_gradient_before_clipping": true,
+    "wall_ns": 162962066374
+  },
+  {
+    "run": "development-full-001",
+    "actor_after": "cad65aea2e8efaa7f8c42389952c0096738db1523b38a4a26b71d1b058bcdbac",
+    "actor_before": "914781ef097212723a5eb85b64213449a720e7bdd4b62cf2520df1755ade7ec7",
+    "actor_parameters": 19068,
+    "actual_output_stream_sha256": "e335c8aca321bc4c9f888b0f4a734869347db2c0f6ed0027a7806e2adc5059a9",
+    "arm": "direct_mean",
+    "checkpoints": [
+      {
+        "path": "seed-29-direct_mean-step-200.pt",
+        "sha256": "67856eb1396a35ad68c9ce112874afeb38787f35648b6cf01785dff206d36a47",
+        "step": 200
+      },
+      {
+        "path": "seed-29-direct_mean-step-400.pt",
+        "sha256": "f8aee9bb5d3dbb24ab15da7ce3187363fc96205384cbca181387a6f8947473bd",
+        "step": 400
+      },
+      {
+        "path": "seed-29-direct_mean-step-600.pt",
+        "sha256": "05237b3953aa18b2509fdfe48654e5700054f8b7f85352908223d2717ed207c6",
+        "step": 600
+      }
+    ],
+    "cpu_ns": 128327924263,
+    "frozen_model_gate_reward_hashes": [
+      "503ee25d3cf8e878cf292b5394ba9799f877d4da70ff0208e9ae677755689e25",
+      "518feff814afda6a79f37c54b9d2bc53605bad985216b8702918a8444c8b441a",
+      "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0"
+    ],
+    "optimizer_globally_optimal": false,
+    "schedule_sha256": "e8abac9373432b6d41cfa7daf48155adbaee37ef08df22669006e5e5dbac08d6",
+    "seed": 29,
+    "steps": 600,
+    "trace_sha256": "1d66661a27da7c9f69199dcde0ccddaa138cd958f6e83f2b19c0afe62e40b552",
+    "training_counts": {
+      "actor_examples": 9600,
+      "actual_png_roundtrips": 153600,
+      "decoder_examples": 153600,
+      "encoder_examples": 9600,
+      "gate_examples": 9600,
+      "observer_digit_examples": 307200,
+      "optimizer_updates": 600,
+      "transition_examples": 19200
+    },
+    "training_media_retention": "actual PNG/UTF8 roundtrips scored, stream hash and paired cost/gradient traces retained; individual training media reproducible from frozen sources/RNG, not all individually archived",
+    "unbiased_reward_gradient_before_clipping": true,
+    "wall_ns": 205620756560
+  },
+  {
+    "run": "development-full-001",
+    "actor_after": "8b8a5043df65f52a31e41b98e6802d4f2fd325e3502ba75ca52db33e800e0399",
+    "actor_before": "914781ef097212723a5eb85b64213449a720e7bdd4b62cf2520df1755ade7ec7",
+    "actor_parameters": 19068,
+    "actual_output_stream_sha256": "a754c541eca949849c3e8d4879361e25c1900b9eb7891cff4e353787d675b445",
+    "arm": "direct_risk",
+    "checkpoints": [
+      {
+        "path": "seed-29-direct_risk-step-200.pt",
+        "sha256": "e03452098d8765e826ff04f3bc6c81a3c671cf65fa03092b2854ada85c1dfd50",
+        "step": 200
+      },
+      {
+        "path": "seed-29-direct_risk-step-400.pt",
+        "sha256": "94928d0a197bbe7a49dc1c647b48e190a6febb8620e977f9d1a8f28b1a75d3ed",
+        "step": 400
+      },
+      {
+        "path": "seed-29-direct_risk-step-600.pt",
+        "sha256": "5a3bf264dbdd0929540a95c60995a59c2f6ad24d569c0e652d06cb1e89295df8",
+        "step": 600
+      }
+    ],
+    "cpu_ns": 123946062612,
+    "frozen_model_gate_reward_hashes": [
+      "503ee25d3cf8e878cf292b5394ba9799f877d4da70ff0208e9ae677755689e25",
+      "518feff814afda6a79f37c54b9d2bc53605bad985216b8702918a8444c8b441a",
+      "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0"
+    ],
+    "optimizer_globally_optimal": false,
+    "schedule_sha256": "e8abac9373432b6d41cfa7daf48155adbaee37ef08df22669006e5e5dbac08d6",
+    "seed": 29,
+    "steps": 600,
+    "trace_sha256": "1d63a969995869cb208a3db4be5c32fdfa8256a89359ab9c6fa146840d5dfbba",
+    "training_counts": {
+      "actor_examples": 9600,
+      "actual_png_roundtrips": 153600,
+      "decoder_examples": 153600,
+      "encoder_examples": 9600,
+      "gate_examples": 9600,
+      "observer_digit_examples": 307200,
+      "optimizer_updates": 600,
+      "transition_examples": 19200
+    },
+    "training_media_retention": "actual PNG/UTF8 roundtrips scored, stream hash and paired cost/gradient traces retained; individual training media reproducible from frozen sources/RNG, not all individually archived",
+    "unbiased_reward_gradient_before_clipping": true,
+    "wall_ns": 153190371958
+  },
+  {
+    "run": "development-full-001",
+    "actor_after": "0a39f98de1be6574c8df8d4e4a63bf2cd196b9d7e94e52430a7dc193948f66de",
+    "actor_before": "b7caceed64b8ef04429ae85defea64a2de7d42c31cf41f5620427ef816cb72b1",
+    "actor_parameters": 19068,
+    "actual_output_stream_sha256": "4a12c3cf041d49a7139c31e4ca5eae2a8ef8da82c6d8796a89b9011c9b272761",
+    "arm": "direct_mean",
+    "checkpoints": [
+      {
+        "path": "seed-43-direct_mean-step-200.pt",
+        "sha256": "1d9e375fc70e09f6fbc622d5bf5822f0419483e2054fea7dddf497380c83d042",
+        "step": 200
+      },
+      {
+        "path": "seed-43-direct_mean-step-400.pt",
+        "sha256": "5be41abbbdce649f768c62200fa92a2e949653a5855d2cc168667f39ba14ac58",
+        "step": 400
+      },
+      {
+        "path": "seed-43-direct_mean-step-600.pt",
+        "sha256": "7e6601099d0759423436bce6d8544ec3629aa066e41a8bc32545ae216388b837",
+        "step": 600
+      }
+    ],
+    "cpu_ns": 116168808079,
+    "frozen_model_gate_reward_hashes": [
+      "e65b30af8286ef583857a01dc2bc9d6bf56d3787796588ae2a3b0ac2ddafd96e",
+      "d310802f9a09af9133b36c2ab1daac1ed4977533767779e6017945b62f39b35f",
+      "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0"
+    ],
+    "optimizer_globally_optimal": false,
+    "schedule_sha256": "1e7d6050859adb5e1ba5cd3f24e647d077c0fecb115b2b468af3d5c1b7a2c2ff",
+    "seed": 43,
+    "steps": 600,
+    "trace_sha256": "abe12004b82fd9349e56d0c95302a0b8fb27901ba79952060b3ca5477e838b43",
+    "training_counts": {
+      "actor_examples": 9600,
+      "actual_png_roundtrips": 153600,
+      "decoder_examples": 153600,
+      "encoder_examples": 9600,
+      "gate_examples": 9600,
+      "observer_digit_examples": 307200,
+      "optimizer_updates": 600,
+      "transition_examples": 19200
+    },
+    "training_media_retention": "actual PNG/UTF8 roundtrips scored, stream hash and paired cost/gradient traces retained; individual training media reproducible from frozen sources/RNG, not all individually archived",
+    "unbiased_reward_gradient_before_clipping": true,
+    "wall_ns": 116199900660
+  },
+  {
+    "run": "development-full-001",
+    "actor_after": "78cb2fa8b2903be5a85fac259ac1c0a8c1a74ffaa5d01ce1dfd898b9b93c2e3f",
+    "actor_before": "b7caceed64b8ef04429ae85defea64a2de7d42c31cf41f5620427ef816cb72b1",
+    "actor_parameters": 19068,
+    "actual_output_stream_sha256": "d6d8b6585df615d1a5f7c646a9c4da7032b58183025cff2a0aad91ab41e3fdbb",
+    "arm": "direct_risk",
+    "checkpoints": [
+      {
+        "path": "seed-43-direct_risk-step-200.pt",
+        "sha256": "7411b7a6365abd5386e41a070d459400f8b71a1500a39b595de2c0a439289d32",
+        "step": 200
+      },
+      {
+        "path": "seed-43-direct_risk-step-400.pt",
+        "sha256": "435fb36d845a0e5cdad40025e6c627689e2d0111ae6455808b243fd71ce1c23a",
+        "step": 400
+      },
+      {
+        "path": "seed-43-direct_risk-step-600.pt",
+        "sha256": "01b51bc4d50eef06c88aed31d6b25513dc400ca0a0badcb6f2c00a1d2742b6a9",
+        "step": 600
+      }
+    ],
+    "cpu_ns": 116830647244,
+    "frozen_model_gate_reward_hashes": [
+      "e65b30af8286ef583857a01dc2bc9d6bf56d3787796588ae2a3b0ac2ddafd96e",
+      "d310802f9a09af9133b36c2ab1daac1ed4977533767779e6017945b62f39b35f",
+      "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0"
+    ],
+    "optimizer_globally_optimal": false,
+    "schedule_sha256": "1e7d6050859adb5e1ba5cd3f24e647d077c0fecb115b2b468af3d5c1b7a2c2ff",
+    "seed": 43,
+    "steps": 600,
+    "trace_sha256": "16b4cbfca1e559d103a75c12c339b3de26e5b5591a1f313a33d233e3b9bee468",
+    "training_counts": {
+      "actor_examples": 9600,
+      "actual_png_roundtrips": 153600,
+      "decoder_examples": 153600,
+      "encoder_examples": 9600,
+      "gate_examples": 9600,
+      "observer_digit_examples": 307200,
+      "optimizer_updates": 600,
+      "transition_examples": 19200
+    },
+    "training_media_retention": "actual PNG/UTF8 roundtrips scored, stream hash and paired cost/gradient traces retained; individual training media reproducible from frozen sources/RNG, not all individually archived",
+    "unbiased_reward_gradient_before_clipping": true,
+    "wall_ns": 116892309187
+  },
+  {
+    "run": "development-full-002",
+    "actor_after": "6bb062f6cc66ce612310bd9d5e36e2ab5202912859037162ecac3971d8fdf597",
+    "actor_before": "7e2b30f0a190fe4ac32169e5198a9021cd6c37cf00a099c97c26bf9e4bad99e6",
+    "actor_parameters": 19068,
+    "actual_output_stream_sha256": "5feafa5075ddf8d310e53537b8c7857c8f3a9341692451df9ac511fc84cc547a",
+    "arm": "direct_mean",
+    "checkpoints": [
+      {
+        "path": "seed-17-direct_mean-step-200.pt",
+        "sha256": "f0e71b62047c8c3a3fc3b966bb1038027474a1f9c369a406a5c8c34553de1b30",
+        "step": 200
+      },
+      {
+        "path": "seed-17-direct_mean-step-400.pt",
+        "sha256": "9548ace14aed6f552277367daea2153d7e9c22d0fee1142c06e6a05acef2748c",
+        "step": 400
+      },
+      {
+        "path": "seed-17-direct_mean-step-600.pt",
+        "sha256": "a8d5e90a0d7011080c6cf72f32e54a4816b55451fca597d59937da86ba19b0b3",
+        "step": 600
+      }
+    ],
+    "cpu_ns": 118316653725,
+    "frozen_model_gate_reward_hashes": [
+      "cc40ccc2ed9fadd2e1bc0257cf0b04e1014b499dbbc3aa537bdf1202d6a29368",
+      "d0e4805e2ba9d318c1881bfce4dfe458fb1c42d694e5b4121f2b8ebe91e6ffe7",
+      "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0"
+    ],
+    "optimizer_globally_optimal": false,
+    "schedule_sha256": "5270ecb86876bcd2a98644782d3d911aa7b1188b831b7a53439df749e55e655b",
+    "seed": 17,
+    "steps": 600,
+    "trace_sha256": "2f7bf5fdaa1e7cb05cdb450e2c78e0767c49caf3aecf178411d618b19b711a0d",
+    "training_counts": {
+      "actor_examples": 9600,
+      "actual_png_roundtrips": 153600,
+      "decoder_examples": 153600,
+      "encoder_examples": 9600,
+      "gate_examples": 9600,
+      "observer_digit_examples": 307200,
+      "optimizer_updates": 600,
+      "transition_examples": 19200
+    },
+    "training_media_retention": "actual PNG/UTF8 roundtrips scored, stream hash and paired cost/gradient traces retained; individual training media reproducible from frozen sources/RNG, not all individually archived",
+    "unbiased_reward_gradient_before_clipping": true,
+    "wall_ns": 118458285203
+  },
+  {
+    "run": "development-full-002",
+    "actor_after": "a39f833c625433b0bd8e472f05d190e8ff2654baf90c735372249c3d21019867",
+    "actor_before": "7e2b30f0a190fe4ac32169e5198a9021cd6c37cf00a099c97c26bf9e4bad99e6",
+    "actor_parameters": 19068,
+    "actual_output_stream_sha256": "6278b9661f31fe88ea5e10c8112b0cc9435ced186cfe0ed156f4697e0971e517",
+    "arm": "direct_risk",
+    "checkpoints": [
+      {
+        "path": "seed-17-direct_risk-step-200.pt",
+        "sha256": "9b774272488a5c20d185527805c6e5203fec5ee040a8ed3d48d93f0032e389cb",
+        "step": 200
+      },
+      {
+        "path": "seed-17-direct_risk-step-400.pt",
+        "sha256": "a505be5558869cc054ea5243f7c165788fb347c725e3220582574b59b24b3f7f",
+        "step": 400
+      },
+      {
+        "path": "seed-17-direct_risk-step-600.pt",
+        "sha256": "5bc5e26bcba3a37af512cc54efef36c8efdfe43fab0fb6b368a28b5bd5ad246c",
+        "step": 600
+      }
+    ],
+    "cpu_ns": 119113931053,
+    "frozen_model_gate_reward_hashes": [
+      "cc40ccc2ed9fadd2e1bc0257cf0b04e1014b499dbbc3aa537bdf1202d6a29368",
+      "d0e4805e2ba9d318c1881bfce4dfe458fb1c42d694e5b4121f2b8ebe91e6ffe7",
+      "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0"
+    ],
+    "optimizer_globally_optimal": false,
+    "schedule_sha256": "5270ecb86876bcd2a98644782d3d911aa7b1188b831b7a53439df749e55e655b",
+    "seed": 17,
+    "steps": 600,
+    "trace_sha256": "3e3a353c815015366bb8481b6d545a0c41fec42e6154f228c2cc40e127784a15",
+    "training_counts": {
+      "actor_examples": 9600,
+      "actual_png_roundtrips": 153600,
+      "decoder_examples": 153600,
+      "encoder_examples": 9600,
+      "gate_examples": 9600,
+      "observer_digit_examples": 307200,
+      "optimizer_updates": 600,
+      "transition_examples": 19200
+    },
+    "training_media_retention": "actual PNG/UTF8 roundtrips scored, stream hash and paired cost/gradient traces retained; individual training media reproducible from frozen sources/RNG, not all individually archived",
+    "unbiased_reward_gradient_before_clipping": true,
+    "wall_ns": 119148059375
+  },
+  {
+    "run": "development-full-002",
+    "actor_after": "4392c44279d443bf6b93e15599474297900f65ed3f9c2aa09fe2aeb5c530be8e",
+    "actor_before": "914781ef097212723a5eb85b64213449a720e7bdd4b62cf2520df1755ade7ec7",
+    "actor_parameters": 19068,
+    "actual_output_stream_sha256": "1ab1fb4ac2a996ce9e0ef94c8143139cb0d31330c7265821b7f08d429bdd6ccd",
+    "arm": "direct_mean",
+    "checkpoints": [
+      {
+        "path": "seed-29-direct_mean-step-200.pt",
+        "sha256": "ab1b17ab3d855c8fb5a6e3f1d8f220ae87cc8334778a18c22f80d8ba74dbe418",
+        "step": 200
+      },
+      {
+        "path": "seed-29-direct_mean-step-400.pt",
+        "sha256": "e174a6ca2646edac738249df9b1ebd1dc278f50e3018c0803dedd14ad92f854f",
+        "step": 400
+      },
+      {
+        "path": "seed-29-direct_mean-step-600.pt",
+        "sha256": "b42de1ba4373e0523a8b47b676c6248e325c099043052987eb0c1bcf32afd60f",
+        "step": 600
+      }
+    ],
+    "cpu_ns": 117006236505,
+    "frozen_model_gate_reward_hashes": [
+      "503ee25d3cf8e878cf292b5394ba9799f877d4da70ff0208e9ae677755689e25",
+      "518feff814afda6a79f37c54b9d2bc53605bad985216b8702918a8444c8b441a",
+      "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0"
+    ],
+    "optimizer_globally_optimal": false,
+    "schedule_sha256": "e8abac9373432b6d41cfa7daf48155adbaee37ef08df22669006e5e5dbac08d6",
+    "seed": 29,
+    "steps": 600,
+    "trace_sha256": "85ec8951ff0d8a7348e101e0d751e3c371fd60b58691a94aacd72af5788560f4",
+    "training_counts": {
+      "actor_examples": 9600,
+      "actual_png_roundtrips": 153600,
+      "decoder_examples": 153600,
+      "encoder_examples": 9600,
+      "gate_examples": 9600,
+      "observer_digit_examples": 307200,
+      "optimizer_updates": 600,
+      "transition_examples": 19200
+    },
+    "training_media_retention": "actual PNG/UTF8 roundtrips scored, stream hash and paired cost/gradient traces retained; individual training media reproducible from frozen sources/RNG, not all individually archived",
+    "unbiased_reward_gradient_before_clipping": true,
+    "wall_ns": 117020478360
+  },
+  {
+    "run": "development-full-002",
+    "actor_after": "a971ffefbec4394ae0a111b4a8cf2fd18cbfb53682a3c59016c32e6402d59df2",
+    "actor_before": "914781ef097212723a5eb85b64213449a720e7bdd4b62cf2520df1755ade7ec7",
+    "actor_parameters": 19068,
+    "actual_output_stream_sha256": "a7654432b854577b9ce8fb767873e3cfb037ccaa425222c490e14e10ba6bbed9",
+    "arm": "direct_risk",
+    "checkpoints": [
+      {
+        "path": "seed-29-direct_risk-step-200.pt",
+        "sha256": "b820c3fe5f9cd032767cb25dd35bd2029bdbe7874c2e1a45053014e4d8626778",
+        "step": 200
+      },
+      {
+        "path": "seed-29-direct_risk-step-400.pt",
+        "sha256": "d0d779a728eef6ecf1c389c8f1e3a7433098bde12e147973338d0458479f1fd2",
+        "step": 400
+      },
+      {
+        "path": "seed-29-direct_risk-step-600.pt",
+        "sha256": "cd62d46841715cf4b7a8144c6a9b147b51f1c2184f5d4d9f442c582f9b6df1a9",
+        "step": 600
+      }
+    ],
+    "cpu_ns": 116931437156,
+    "frozen_model_gate_reward_hashes": [
+      "503ee25d3cf8e878cf292b5394ba9799f877d4da70ff0208e9ae677755689e25",
+      "518feff814afda6a79f37c54b9d2bc53605bad985216b8702918a8444c8b441a",
+      "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0"
+    ],
+    "optimizer_globally_optimal": false,
+    "schedule_sha256": "e8abac9373432b6d41cfa7daf48155adbaee37ef08df22669006e5e5dbac08d6",
+    "seed": 29,
+    "steps": 600,
+    "trace_sha256": "5c7a82c28964bf4a41f2903e8c8f549564fe90d2193211cef570a0a6e1653d95",
+    "training_counts": {
+      "actor_examples": 9600,
+      "actual_png_roundtrips": 153600,
+      "decoder_examples": 153600,
+      "encoder_examples": 9600,
+      "gate_examples": 9600,
+      "observer_digit_examples": 307200,
+      "optimizer_updates": 600,
+      "transition_examples": 19200
+    },
+    "training_media_retention": "actual PNG/UTF8 roundtrips scored, stream hash and paired cost/gradient traces retained; individual training media reproducible from frozen sources/RNG, not all individually archived",
+    "unbiased_reward_gradient_before_clipping": true,
+    "wall_ns": 117006193974
+  },
+  {
+    "run": "development-full-002",
+    "actor_after": "57a19cc77a409aa99ea586cc0d9992f85a52364dae932f5d05ae0af41935d4e0",
+    "actor_before": "b7caceed64b8ef04429ae85defea64a2de7d42c31cf41f5620427ef816cb72b1",
+    "actor_parameters": 19068,
+    "actual_output_stream_sha256": "89f717bd3d627f0391e04da50e5deaf0e7ba9e64988bcabb1a137ec8ee608465",
+    "arm": "direct_mean",
+    "checkpoints": [
+      {
+        "path": "seed-43-direct_mean-step-200.pt",
+        "sha256": "322f3570b3c7d930c84e235ada937e69f981429f16d2032755f39349c3fb43b9",
+        "step": 200
+      },
+      {
+        "path": "seed-43-direct_mean-step-400.pt",
+        "sha256": "fc9fa2c325718ba8fd938c5a283b8a3002e9cddbbd916e6c5d0ab01e854abc63",
+        "step": 400
+      },
+      {
+        "path": "seed-43-direct_mean-step-600.pt",
+        "sha256": "b6f3988f74f1113abb6f2d3e0f83d2c8a6af206135fca39cdbfc1a7fd95827be",
+        "step": 600
+      }
+    ],
+    "cpu_ns": 128204372490,
+    "frozen_model_gate_reward_hashes": [
+      "e65b30af8286ef583857a01dc2bc9d6bf56d3787796588ae2a3b0ac2ddafd96e",
+      "d310802f9a09af9133b36c2ab1daac1ed4977533767779e6017945b62f39b35f",
+      "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0"
+    ],
+    "optimizer_globally_optimal": false,
+    "schedule_sha256": "1e7d6050859adb5e1ba5cd3f24e647d077c0fecb115b2b468af3d5c1b7a2c2ff",
+    "seed": 43,
+    "steps": 600,
+    "trace_sha256": "be458f655f555199b98dac0023ba710d67cd70102e25171d4e499a3b06ed2f31",
+    "training_counts": {
+      "actor_examples": 9600,
+      "actual_png_roundtrips": 153600,
+      "decoder_examples": 153600,
+      "encoder_examples": 9600,
+      "gate_examples": 9600,
+      "observer_digit_examples": 307200,
+      "optimizer_updates": 600,
+      "transition_examples": 19200
+    },
+    "training_media_retention": "actual PNG/UTF8 roundtrips scored, stream hash and paired cost/gradient traces retained; individual training media reproducible from frozen sources/RNG, not all individually archived",
+    "unbiased_reward_gradient_before_clipping": true,
+    "wall_ns": 133597411886
+  },
+  {
+    "run": "development-full-002",
+    "actor_after": "d5b7c3cd3029464e41ecfc287821e566f9c50d4d083171fb9a4f5078ec6aa314",
+    "actor_before": "b7caceed64b8ef04429ae85defea64a2de7d42c31cf41f5620427ef816cb72b1",
+    "actor_parameters": 19068,
+    "actual_output_stream_sha256": "450f3d34b860b406b498a5f328957fda006e4d499ea58f9a6e3e41ca15de4d11",
+    "arm": "direct_risk",
+    "checkpoints": [
+      {
+        "path": "seed-43-direct_risk-step-200.pt",
+        "sha256": "b183a041c0d24d1e5990e5bbae06dfaa305d7fa93d8a5bcf964d80453f93749e",
+        "step": 200
+      },
+      {
+        "path": "seed-43-direct_risk-step-400.pt",
+        "sha256": "99617cec6822c59fcb9947222cbbb0a5512dd615be5161d343a6a43639c46598",
+        "step": 400
+      },
+      {
+        "path": "seed-43-direct_risk-step-600.pt",
+        "sha256": "68f891c79a723c91499388110c941d3e783270330816670c3b4059b74ba681cf",
+        "step": 600
+      }
+    ],
+    "cpu_ns": 118018049147,
+    "frozen_model_gate_reward_hashes": [
+      "e65b30af8286ef583857a01dc2bc9d6bf56d3787796588ae2a3b0ac2ddafd96e",
+      "d310802f9a09af9133b36c2ab1daac1ed4977533767779e6017945b62f39b35f",
+      "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0"
+    ],
+    "optimizer_globally_optimal": false,
+    "schedule_sha256": "1e7d6050859adb5e1ba5cd3f24e647d077c0fecb115b2b468af3d5c1b7a2c2ff",
+    "seed": 43,
+    "steps": 600,
+    "trace_sha256": "9356d890e66728e60ed34349050ab73c0e82124d402602e4386e3e4f266bebdc",
+    "training_counts": {
+      "actor_examples": 9600,
+      "actual_png_roundtrips": 153600,
+      "decoder_examples": 153600,
+      "encoder_examples": 9600,
+      "gate_examples": 9600,
+      "observer_digit_examples": 307200,
+      "optimizer_updates": 600,
+      "transition_examples": 19200
+    },
+    "training_media_retention": "actual PNG/UTF8 roundtrips scored, stream hash and paired cost/gradient traces retained; individual training media reproducible from frozen sources/RNG, not all individually archived",
+    "unbiased_reward_gradient_before_clipping": true,
+    "wall_ns": 125509061513
+  }
+]
