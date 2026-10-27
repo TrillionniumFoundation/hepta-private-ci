@@ -76,18 +76,10 @@ jobs:
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/hepta-source.txt"
           git -C ../chain rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/chain-source.txt"
           rustc -vV > "$RUNNER_TEMP/hepta-public-initial-v2/rustc.txt"
-          python3 -I -B - "$RUNNER_TEMP/hepta-public-initial-v2/host.json" <<'PY'
-          import json, os, platform, sys
+          python3 -I -B scripts/hepta_smollm_host_resources.py --output "$RUNNER_TEMP/hepta-public-initial-v2/host.json"
+          python3 -I -B - <<'PY'
+          import os
           from pathlib import Path
-          physical = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
-          limit = Path("/sys/fs/cgroup/memory.max")
-          cgroup = limit.read_text().strip() if limit.exists() else "max"
-          available = min(physical, int(cgroup)) if cgroup != "max" else physical
-          record = dict(python=sys.version, platform=platform.platform(), physical_memory=physical,
-                        cgroup_memory_max=cgroup, effective_memory=available, cpu_count=os.cpu_count())
-          Path(sys.argv[1]).write_text(json.dumps(record, indent=2) + "\n")
-          assert sys.version_info[:3] == (3, 12, 3)
-          assert available >= 12 * 1024**3, "full-tune campaign needs the hosted memory window"
           temporary = Path(os.environ["RUNNER_TEMP"])
           values = dict(CARGO_TARGET_DIR=temporary / "hepta-public-target",
               HEPTA_PN3_NEURAL_NATIVE_CONFIG=temporary / "hepta-public-initial-v2/native-input.json",

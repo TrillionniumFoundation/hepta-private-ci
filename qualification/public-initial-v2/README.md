@@ -129,3 +129,12 @@ cumulative budget. That separate experiment requires additional fresh and full
 tuning controls at twenty and thirty steps, while retaining the existing ten-step
 controls and original source records; this diagnostic does not silently change
 their training plans.
+
+Host resource probes record the actual process cgroup, mount mapping, and readable
+v1/v2 limit files. Missing or unreadable files remain `null`/`unavailable`; they
+never imply an unlimited cgroup. The twelve-GiB physical capacity check is only a
+prerequisite. Visible limits provide upper bounds and can reject an insufficient
+runner, but do not prove hidden-ancestor limits or available memory. The isolated
+experiment therefore retains `resource_limit_unknown` and does not issue a
+resource-capacity qualification. Earlier immutable host records are preserved
+with their original source and must not be reinterpreted as controlled capacity.
