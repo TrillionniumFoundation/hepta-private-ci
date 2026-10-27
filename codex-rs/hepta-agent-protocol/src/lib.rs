@@ -5,6 +5,13 @@
 mod authbus;
 mod capabilities;
 mod evidence;
+mod memory_cells;
+pub use memory_cells::MAX_MEMORY_CELL_PAGE_ROWS;
+pub use memory_cells::MAX_MEMORY_CELL_PAYLOAD_BYTES;
+pub use memory_cells::MEMORY_CELL_CONTROL_CAPABILITY_V1;
+pub use memory_cells::MemoryCellSnapshotPageV1;
+pub use memory_cells::MemoryCellSnapshotSourceV1;
+pub use memory_cells::MemoryCellSnapshotValueV1;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
 pub use authbus::AuthBusTextBody;
@@ -599,6 +606,14 @@ pub enum AgentdMethod {
         query: String,
         limit: u16,
     },
+    MemoryCellSnapshot {
+        after: Option<codex_hepta_cognitive_types::hnmf::ContractDigestV1>,
+        expected_owner_cut: Option<codex_hepta_cognitive_types::hnmf::ContractDigestV1>,
+        limit: u16,
+    },
+    MemoryCellRead {
+        request: codex_hepta_cognitive_types::MemoryRequestV1,
+    },
     CognitiveContextRevalidate {
         snapshot_digest: String,
         read_digest: String,
@@ -746,6 +761,10 @@ pub enum AgentdPayload {
         conflict_digest: String,
     },
     CognitiveContext(CognitiveContextSnapshot),
+    MemoryCellSnapshot(MemoryCellSnapshotPageV1),
+    MemoryCellRead {
+        readout_json: String,
+    },
     CognitiveContextRevalidated(CognitiveContextRevalidation),
     AuthBusTextStatus(AuthBusTextStatus),
     KernelEvidenceResult(KernelEvidenceResult),
