@@ -1,0 +1,55 @@
+name: Memory cell V5 CI repair verification
+
+on:
+  push:
+    branches:
+      - research/memory-cell-v5-ci-20261027
+    paths:
+      - .github/workflows/memory-cell-v5-ci-verify.yml
+      - qualification/memory-cell-v5-ci/VERIFY_REQUEST.json
+
+permissions:
+  contents: read
+
+jobs:
+  repository-contract-and-format:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 64
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: 0.11.3
+          enable-cache: false
+      - run: python3 qualification/memory-cell-v5-ci/verify.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-v5-ci-source-${{ github.sha }}
+          path: memory-ci-output/
+          if-no-files-found: error
+          retention-days: 14
+  codespell:
+    uses: ./.github/workflows/codespell.yml
+  dependency-diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - run: python3 qualification/memory-cell-v5-ci/probe_dependency.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-v5-ci-dependency-${{ github.sha }}
+          path: dependency-probe-output/
+          if-no-files-found: error
+          retention-days: 14
