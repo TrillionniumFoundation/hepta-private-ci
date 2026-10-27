@@ -1,6 +1,6 @@
 {
   "schema": "hepta.ndu-closure-ledger.v2",
-  "updated_utc": "2026-10-27T12:06:25.991606+00:00",
+  "updated_utc": "2026-10-27T13:07:38.590252+00:00",
   "all_blockers_closed": false,
   "production_native_authority": "DENY_ALL",
   "qualification_policy": "Observed failures remain failures. Passing mechanics, source checks or isolated dependencies do not substitute for the stated outcome gates. No postqualification retuning is relabeled as preregistered evidence.",
@@ -104,9 +104,9 @@
       "priority": "P0",
       "goal": "Close observed dependency and build failures without weakening policy or dropping features.",
       "mechanism": "active_remediation",
-      "qualification": "pending",
+      "qualification": "v2_real_consumers_partial_pass_v3_repairs_await_new_remote_run",
       "blocking_for_general_claim": true,
-      "observed": "The unchanged cargo-deny scan fell from 22 to 15 errors after coherent Cargo/Bazel TLS updates. ZIP v2 passed core-plugins 426/426, i18n-config 3/3 and secrets 9/9. Unchanged protocol source/assertions with regenerated fixtures passed all 303 regression tests, and all three generated files are published. The nextest report/profile/store repair passed 20 targeted tests and real nextest 0.9.103 microprobes before publication. The unified port producer at exact head 1e4f8b5c failed Cargo resolution: Matrix store-encryption 0.19.1 requires blake3 ^1.8.7 while Starlark 0.14.2 pins =1.8.2; downstream qualifications therefore remain pending. The independent original Matrix 0.18 producer also failed before executing prepare: DeviceKey lacks Serialize. A v2 fixture now preserves complete key IDs and public-key encodings, retains every original equality assertion and adds a nonempty identity guard; static independent review passed, actual migration remains pending. The dependency edge audit additionally found the pagable 0.4.1 pin; official 0.4.2 removes that conflict without Rust source changes.",
+      "observed": "The v2 producer at 3a779a6e52138d63056fdb00e1e477c8db6517f8 resolved all 52 expected packages, verified 1971 vendor files, generated and checked both Cargo/Bazel locks, and passed independent complete candidate-tree replay. The fixed original Matrix 0.18 source executed its actual state-preparation test (1 pass, no skip/retry), retaining database sidecars and actual ELF identity; new-version reopen remains pending. Real v2 workspace tests passed YAML 825/825, AWS first-party 209/209 and execpolicy 34/34. Observed failures remain preserved: keyring had zero tests; upstream AWS stopped before execution on a misspelled original ignored name; Bazel rejected direct deleted-package labels and an obsolete zstd patch; the separate pinned full-scope cargo-deny host diagnostic found one unapproved libbz2-rs-sys license while advisories/bans/sources passed. V3 adds a real first-party keyring integration test, corrects strict AWS inventory spelling without changing 245/244/1 coverage, addresses production Bazel aliases, and versions the zstd patch without changing the active old patch. Independent source replay confirms the same 29-path scope with only the candidate MODULE patch reference changed from v2. 54 unique Python/Git/socket regressions passed across preserved attempts after one fixture correction; actual final just fmt passed. Native ARM64 Synapse and post-qualification scoped Clippy are now wired for actual remote execution. No new-version full gate, native business qualification, dependency activation or normal-platform success is inferred.",
       "evidence": [
         "ci/TLS_POST_UPDATE_SCAN.json",
         "ci/ZIP_I18N_QUALIFICATION_001.json",
@@ -120,18 +120,50 @@
         "ci/port-remediation/PEER_RUNTIME_EVIDENCE_FIX.json",
         "ci/port-remediation/FAILED_1E4F8B5_QUALIFICATION.json",
         "ci/matrix-remediation/FIXTURE_SERIALIZATION_V2.json",
-        "ci/matrix-remediation/FIXTURE_SERIALIZATION_V2_PEER.json"
+        "ci/matrix-remediation/FIXTURE_SERIALIZATION_V2_PEER.json",
+        "ci/port-remediation/RECIPE.v2.json",
+        "ci/port-remediation/V2_IMPLEMENTATION.json",
+        "ci/port-remediation/PEER_STARLARK_V2.json",
+        "ci/port-remediation/INDEPENDENT_SOURCE_INTEGRATION_V2.json",
+        "ci/port-remediation/PRODUCER_3A779A6_VERIFIED.json",
+        "ci/matrix-remediation/OLD_PRODUCER_3A779A6_PEER.json",
+        "ci/port-remediation/PORT_V3_IMPLEMENTATION.json",
+        "ci/port-remediation/INDEPENDENT_SOURCE_INTEGRATION_V3.json",
+        "ci/port-remediation/INTEGRATED_LOCAL_QUALIFICATION_V3.json",
+        "ci/port-remediation/FINAL_FORMAT_V3.json",
+        "ci/port-remediation/evidence/V2_REMOTE_CONSUMERS_VERIFICATION.json",
+        "ci/zstd-remediation/HANDOFF.json",
+        "ci/linux-synapse-qualification/HANDOFF.json",
+        "ci/post-qualification-fix/HANDOFF_V3.json"
       ],
-      "next_required": "Prepare and verify a narrowly scoped Starlark compatibility port, rerun the coherent candidate, full upstream AWS coverage, actual old Matrix migration, unchanged dependency policy, scoped Bazel and normal platform gates before activation. Complete the independent native ARM64 Linux Synapse qualification without changing the original Mac contract."
+      "next_required": "Run the new exact-head v3 producer and unchanged original consumer gates, complete actual old Matrix state reopen and native ARM64 Synapse. Review scoped Clippy output separately from its before-source qualification. Activate coherent locks/source/toolchains only after the applicable gates and approved license-policy decision; then obtain normal platform CI on the activated source."
+    },
+    {
+      "id": "ENG-license-policy",
+      "priority": "P0",
+      "goal": "Resolve the actual BZIP2 license-policy failure without concealing the license or reducing codec features.",
+      "mechanism": "exact_package_version_proposal_prepared",
+      "qualification": "explicit_owner_decision_required_not_applied",
+      "blocking_for_general_claim": true,
+      "observed": "Pinned cargo-deny 0.19.0 full-scope host diagnostic rejects libbz2-rs-sys 0.2.5 under bzip2-1.0.6. The prior locked C bzip2-sys also bundles the original license; switching back to its wrapper metadata would not eliminate the source license. Original policy is unchanged. A one-line package/version-specific exception is prepared and verified against official parser source, but not applied or executed.",
+      "proposal": "{ crate = \"libbz2-rs-sys@0.2.5\", allow = [\"bzip2-1.0.6\"] },",
+      "evidence": [
+        "ci/license-policy/REVIEW.json",
+        "ci/license-policy/PROPOSED_EXACT_EXCEPTION.patch",
+        "ci/license-policy/OLD_BZIP2_LICENSE",
+        "ci/license-policy/CANDIDATE_BZIP2_LICENSE",
+        "ci/license-policy/FULL_LICENSE_TEXT.diff"
+      ],
+      "next_required": "Explicit project-owner decision on the exact exception, followed by the unchanged full gate. Source-text comparison is not project approval."
     },
     {
       "id": "ENG-evidence-custody",
       "priority": "P0",
       "goal": "Retain all qualification outputs, failures, independent audits and executed source in retrievable artifacts.",
       "mechanism": "verified",
-      "qualification": "five_scientific_archives_and_three_ci_increments_saved_and_restored",
-      "blocking_for_general_claim": false,
-      "observed": "Five scientific archives totaling 510605199 bytes plus three CI evidence archives totaling 88437049 bytes are saved and individually restored. This includes the earlier storage timeout and protocol failures, independent 303/303 protocol success, nextest collector correction, and the complete failed port producer and old Matrix fixture compiler at exact head 1e4f8b5c. The latest CI increment also retains the fixture v2 correction, independent peer review, official ARM64 OCI research and verified formatter installation. Capture ends at 2026-10-27T12:03:46.638609Z; later candidate changes remain separately tracked.",
+      "qualification": "five_scientific_archives_and_ci_001_to_003_saved_004_local_restore_passed_upload_blocked",
+      "blocking_for_general_claim": true,
+      "observed": "Five scientific archives totaling 510605199 bytes plus three CI evidence archives totaling 88437049 bytes are saved and individually restored. This includes the earlier storage timeout and protocol failures, independent 303/303 protocol success, nextest collector correction, and the complete failed port producer and old Matrix fixture compiler at exact head 1e4f8b5c. The latest CI increment also retains the fixture v2 correction, independent peer review, official ARM64 OCI research and verified formatter installation. Capture ends at 2026-10-27T12:03:46.638609Z; later candidate changes remain separately tracked. Increment 004 captures the frozen Starlark/BLAKE3/pagable repair, final independent reviews, validator negative regressions, current original dependency/formatter failures and exact-tree publication. All 18 members totaling 27099806 payload bytes were simultaneously restored and rehashed; its 13902301-byte archive is retained locally. Automatic approval review rejected the proposed Library upload of these private source/CI artifacts; no alternate transfer was attempted.",
       "evidence": [
         "ARTIFACTS.json",
         "ci/CI_CHECKPOINT_001_RESTORE.json",
@@ -139,8 +171,11 @@
         "ci/CI_INCREMENT_002_RESTORE.json",
         "ci/CI_INCREMENT_002_SAVED.json",
         "ci/CI_INCREMENT_003_RESTORE.json",
-        "ci/CI_INCREMENT_003_SAVED.json"
-      ]
+        "ci/CI_INCREMENT_003_SAVED.json",
+        "ci/CI_INCREMENT_004_RESTORE.json",
+        "ci/CI_INCREMENT_004_SAVE_BLOCKED.json"
+      ],
+      "next_required": "Obtain explicit user authorization for the exact private increment 004 archive and companion files to the user ChatGPT Library, then save using the approved route and retain returned identities. Continue qualifying new CI independently."
     }
   ]
 }

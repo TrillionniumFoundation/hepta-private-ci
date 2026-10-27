@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.port-v3.integrated-local-qualification.v1",
+  "created_at": "2026-10-27T13:07:38.589806+00:00",
+  "status": "all_54_unique_tests_passed_across_preserved_attempts_then_formatted",
+  "actual_test_executions": 66,
+  "unique_test_cases": 54,
+  "groups": [
+    {
+      "group": "port",
+      "passed": 25,
+      "attempt": "initial"
+    },
+    {
+      "group": "linux",
+      "passed": 17,
+      "attempt": "initial"
+    },
+    {
+      "group": "post-qualification-fix",
+      "passed": 12,
+      "attempt": "fixture-correction-003"
+    }
+  ],
+  "initial_integration": {
+    "bytes": 2537,
+    "sha256": "da4aad498da2c9c02a061e3471a9388d7b1d022ff16a5cc61cf0d04585b8f5fa"
+  },
+  "initial_failure": "Clippy helper fixture retained ecs::tests::real_dns_lookup; v3 correctly rejects it. Initial 12-case attempt failed and remains fully preserved.",
+  "correction": "One fixture string changed to the actual ecs::test::real_dns_lookup; exact one-substitution byte comparison independently verified. No production guard changed.",
+  "correction_result": {
+    "bytes": 730,
+    "sha256": "5b640fe958890a626198c328af4469895f50abaa3dfe5acd04840583edbd0972"
+  },
+  "format_result": {
+    "bytes": 29686,
+    "sha256": "dce134b0605e68971add4e73c1aa7da0cbe5065062c00ac42d2443b5d7b9829e"
+  },
+  "final_just_fmt_passed": true,
+  "python_ast_and_workflow_structure_preserved": true,
+  "six_byte_bound_scientific_sources_unchanged": true,
+  "behavioral_tests_after_formatter": false,
+  "limits": [
+    "No native ARM64 or Synapse execution is claimed by the local Python/socket tests.",
+    "Real scoped Clippy is wired after successful remote consumer tests; it has not executed locally.",
+    "The dependency candidate is not activated; original cargo-deny and normal platform gates remain required."
+  ]
+}

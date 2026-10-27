@@ -1,0 +1,36 @@
+{
+  "arm64_qualification": false,
+  "changed_inputs_after_execution": [],
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse",
+    "-t",
+    "codex-rs/hepta-matrixd/tests/fixtures",
+    "-p",
+    "test_*.py",
+    "-v"
+  ],
+  "docker_executed": false,
+  "exit_code": 0,
+  "finished_ns": 1793104876022562525,
+  "frozen_inputs_path": "/workspace/scratch/95988d8d3ab1/ndu-linux-synapse-candidate-001/batch-004-pretest/FROZEN_INPUTS.json",
+  "frozen_inputs_sha256": "689a2a78ca7e111eb61ae9d1850685fa84c01712a8ddb250661d07cc2957b3bc",
+  "rust_compiled": false,
+  "schema": "hepta.synapse.linux.lightweight-result.v1",
+  "scope": "Same frozen 17 Python/Git tests with permission for a private temporary AF_UNIX socket; no Docker server or Rust build",
+  "source_bound": true,
+  "started_ns": 1793104870638166713,
+  "tests.stderr": {
+    "bytes": 2855,
+    "sha256": "d1e925c30c92a8a23ca3b8bc0d4e9b8115ca356c76fb18b8aa79360421a0bdd7"
+  },
+  "tests.stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

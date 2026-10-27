@@ -1,0 +1,10 @@
+--- a/codex-rs/deny.toml
++++ b/codex-rs/deny.toml
+@@ -156,6 +156,7 @@
+     # Each entry is the crate and version constraint, and its specific allow
+     # list
+     #{ allow = ["Zlib"], crate = "adler32" },
++    { crate = "libbz2-rs-sys@0.2.5", allow = ["bzip2-1.0.6"] },
+ ]
+ 
+ # Some crates don't have (easily) machine readable licensing information,

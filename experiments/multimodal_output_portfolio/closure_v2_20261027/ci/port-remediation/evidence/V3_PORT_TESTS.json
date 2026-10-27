@@ -1,0 +1,24 @@
+{
+  "started_at": "2026-10-27T13:02:24.367245+00:00",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts",
+    "-p",
+    "test_ndu_port*.py",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/95988d8d3ab1/hepta-private-ci",
+  "exit_code": 0,
+  "pre_execution_full_snapshot_count": 12,
+  "snapshot_sha256": "7da46b6b6c28e1e9db44abc8229d26770ffdecdcd8d435d98c2c5266648a7ef4",
+  "log": {
+    "bytes": 11502,
+    "sha256": "cadcae1534253eac682188994ce607edf8625c397220747fceea7e5fbcb8344e"
+  },
+  "sources_unchanged_after_execution": true,
+  "scope": "Real small Git/parser transport regressions; no Cargo/Bazel/provider/database execution."
+}

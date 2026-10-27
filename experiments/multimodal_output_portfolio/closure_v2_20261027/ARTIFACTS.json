@@ -148,8 +148,34 @@
           "saved": true
         }
       ]
+    },
+    {
+      "file_name": "hepta_ci_port_v2_increment_20261027_004.tar.gz",
+      "scope": "Complete frozen Starlark/BLAKE3/pagable v2 small probes, Python regressions, peer audits and source binding; current-head original cargo-deny and formatter failures; exact-tree publication identities. Full remote Rust1.96 workspace, Bazel and native Synapse qualification not claimed.",
+      "bytes": 13902301,
+      "sha256": "25e052789ef3d2ab41e2682c0f231de3faa5300f7db04d38241fb5beaedcee7e",
+      "saved": false,
+      "save_status": "automatic_approval_review_rejected_upload_pending_explicit_user_authorization",
+      "full_actual_disk_restore_verified": true,
+      "local_file_retained": true,
+      "companion_files": [
+        {
+          "file_name": "hepta_ci_port_v2_increment_20261027_004.index.json",
+          "bytes": 4127,
+          "sha256": "753fd9b26a9ffafd351af1b8773b7ef06861364cf9cc0a192f109bd4b0d30a04",
+          "saved": false,
+          "local_file_retained": true
+        },
+        {
+          "file_name": "hepta_ci_port_v2_increment_20261027_004.restore.json",
+          "bytes": 659,
+          "sha256": "8a1f41d188b5ca958d846316944ba4b6b90b466491d7817c8f904d16bee7c27c",
+          "saved": false,
+          "local_file_retained": true
+        }
+      ]
     }
   ],
-  "all_saved": true,
-  "note": "Archives preserve immutable execution evidence, including negative results and exact executed source snapshots. The CI checkpoint is explicitly bounded by its capture time; later CI results require an additional record. Natural archive retains an immutable URL and hash for the external frozen Whisper model."
+  "all_saved": false,
+  "note": "Five scientific archives and CI increments 001–003 have verified saved identities. Increment 004 is complete and actually restored locally, but its attempted Library upload was rejected by automatic approval review; no remote identity or successful save is claimed."
 }

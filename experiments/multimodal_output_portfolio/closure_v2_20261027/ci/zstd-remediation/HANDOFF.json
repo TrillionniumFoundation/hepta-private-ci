@@ -1,0 +1,71 @@
+{
+  "behavior_receipt": {
+    "bytes": 1372,
+    "path": "/workspace/scratch/95988d8d3ab1/ndu-zstd-212-patch-001/behavior-001/RESULT.json",
+    "sha256": "cea50de7dcf3b78c8d6c4551539760b354a927e73a8e1fa08504e09a7208a914"
+  },
+  "candidate_only_change": "Change zstd-sys crate annotation patch label to //patches:zstd-sys_2_1_windows_msvc_include_dirs.patch. Main manifests and locks remain inactive.",
+  "captured_unix": 1793105924.494065,
+  "failure": {
+    "artifact_zip_sha256": "a8dab6bde10dea87f35b8d80103b9bb6848a7b9c9b38170f85910b52cf419b55",
+    "error": "Old zstd Windows patch visibility hunk does not match new upstream build.rs.",
+    "job_id": 122187796472,
+    "log_sha256": "b9272d8be001c68313abade62441f71f7b64967bbd7f73e55f5867f8fd6ea97c",
+    "run_id": 40503203294,
+    "source_commit": "3a779a6e52138d63056fdb00e1e477c8db6517f8"
+  },
+  "files": {
+    "CONFIGURATION_RESULT.json": {
+      "bytes": 1372,
+      "sha256": "cea50de7dcf3b78c8d6c4551539760b354a927e73a8e1fa08504e09a7208a914"
+    },
+    "FROZEN_INPUTS.json": {
+      "bytes": 868,
+      "sha256": "0a7a4d997483ace237245482cb37ffb7d986c7d9d1b3e72f116c19f8647881fd"
+    },
+    "NEW_PATCHED_BUILD.rs.txt": {
+      "bytes": 18608,
+      "sha256": "b4d324c3020334d34236e5974bbdc9fe7c05b30532d9527910ea8a50e61968b5"
+    },
+    "NEW_UPSTREAM_BUILD.rs.txt": {
+      "bytes": 18223,
+      "sha256": "ff97fca52b72ba76c2c71f0d4ca3475d5fa746e184e7d01c6085f9efee360171"
+    },
+    "OLD_PATCH_REJECTION.stderr": {
+      "bytes": 71,
+      "sha256": "c00de82f46d1b6a8fedbe3af3dab58eb3dd47de47520affb8dc7053fe8380e6f"
+    },
+    "SOURCE_RECEIPT.json": {
+      "bytes": 3687,
+      "sha256": "bfdb6d95c4dfd349744d59025677aac0898e7ab2cb932b777e5c5bde308d6e46"
+    }
+  },
+  "main_MODULE_unchanged": true,
+  "new_patch": {
+    "bytes": 688,
+    "path": "patches/zstd-sys_2_1_windows_msvc_include_dirs.patch",
+    "sha256": "219979f4a3ed36e39f281d4da0a22f5735f38b56aeb81b9e4bd7eb3565df8f24"
+  },
+  "new_source_checksum": "481ada9c543b2323cbb7bbdbb5249177fbf0188ed959ed2c15e4b22421c84ed3",
+  "not_proven": [
+    "Actual Windows C or MSVC linker compilation",
+    "Repaired remote Bazel full target qualification",
+    "CMake execution (its upstream bytes are unchanged)"
+  ],
+  "preserved_behavior": [
+    "MSVC compress/decompress includes and feature-gated dictBuilder/legacy/seekable includes",
+    "Upstream target_is_msvc uses target environment, not host cfg",
+    "No GNU visibility flag under MSVC",
+    "Upstream NO_HIDE_SYMBOLS opt-out and all other build.rs bytes unchanged"
+  ],
+  "proof": "Actual git apply rejection/success; exact old/new build.rs compiled into 24 host trace executables with cc/pkg_config recording substitutes; 192 configuration executions. Eight optional-include feature combinations, four target configurations, two NO_HIDE_SYMBOLS states, and three source variants.",
+  "repo_head": "78efa8bd41f20da93c7abab64669fd21b87cd8a5",
+  "schema": 1,
+  "task_evidence": "/workspace/scratch/95988d8d3ab1/ndu-zstd-212-patch-001",
+  "unchanged_old_patch": {
+    "bytes": 1513,
+    "matches_HEAD": true,
+    "path": "patches/zstd-sys_windows_msvc_include_dirs.patch",
+    "sha256": "a4b70e82eb982ed76d9733bbe10d8a53a70910f93c316586c020c92a7128dbcb"
+  }
+}

@@ -1,0 +1,1137 @@
+{
+  "scope": "Independent read-only verification and private-index application of actual v2 producer evidence. No Cargo/Bazel/test execution, gate change, or promotion.",
+  "passed": true,
+  "verified_at": "2026-10-27T12:31:05.967879+00:00",
+  "source_head": "3a779a6e52138d63056fdb00e1e477c8db6517f8",
+  "source_tree": "a61a696172d71c3bd6eb657773b5282406893cc2",
+  "local_base_with_identical_tree": "78efa8bd",
+  "candidate_tree": "9dd38b369496305e07309d886c81ce1c26fc7c5e",
+  "archive": {
+    "path": "/workspace/scratch/95988d8d3ab1/ndu-port-remote-3a779a6/raw/ndu-port-candidate-40503203294-1.zip",
+    "bytes": 1911775,
+    "sha256": "5e8845d5a8ba479141c387a910292c9a8d9f3bbcaa866498e884570d3ca8ab50"
+  },
+  "producer_result": {
+    "bytes": 30824,
+    "sha256": "d22f12700c3fd455b325b366162eb90cd65150e49de8fc252a567b782509feab"
+  },
+  "job_log": {
+    "bytes": 124049,
+    "sha256": "3bb3cbb7c290479855da1526d32083311b3eb182b5d358d85d311855ccccdee9"
+  },
+  "reopened_archive_files": 68,
+  "archive_modes": "68 regular files, mode 100644; no symlinks or traversal",
+  "verified_actual_command_logs": 31,
+  "expected_packages": [
+    {
+      "name": "zip",
+      "version": "9.1.2",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "_bzip2_any",
+        "_deflate-any",
+        "aes-crypto",
+        "bzip2",
+        "default",
+        "deflate",
+        "deflate-flate2",
+        "deflate-flate2-zlib-rs",
+        "deflate-zopfli",
+        "deflate64",
+        "lzma",
+        "ppmd",
+        "time",
+        "xz",
+        "zstd"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#zip@9.1.2"
+    },
+    {
+      "name": "zstd",
+      "version": "0.14.3",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "arrays",
+        "default",
+        "legacy",
+        "zdict_builder"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#zstd@0.14.3"
+    },
+    {
+      "name": "zstd-safe",
+      "version": "8.2.0",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "arrays",
+        "legacy",
+        "std",
+        "zdict_builder"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#zstd-safe@8.2.0"
+    },
+    {
+      "name": "zstd-sys",
+      "version": "2.1.2+zstd.1.5.7",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "legacy",
+        "std",
+        "zdict_builder"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7"
+    },
+    {
+      "name": "rustls",
+      "version": "0.23.46",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "aws-lc-rs",
+        "aws_lc_rs",
+        "log",
+        "logging",
+        "prefer-post-quantum",
+        "ring",
+        "std",
+        "tls12"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46"
+    },
+    {
+      "name": "rustls-webpki",
+      "version": "0.103.16",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "alloc",
+        "aws-lc-rs",
+        "ring",
+        "std"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#rustls-webpki@0.103.16"
+    },
+    {
+      "name": "i18n-config",
+      "version": "0.4.8",
+      "source": "path",
+      "required_features": [],
+      "actual_features": [],
+      "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/i18n-config-0.4.8#i18n-config@0.4.8"
+    },
+    {
+      "name": "serde-saphyr",
+      "version": "2.0.0",
+      "source": "path",
+      "required_features": [
+        "default",
+        "deserialize",
+        "serialize",
+        "comments",
+        "hepta-legacy-scalars"
+      ],
+      "actual_features": [
+        "comments",
+        "default",
+        "deserialize",
+        "hepta-legacy-scalars",
+        "serialize"
+      ],
+      "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/serde-saphyr-2.0.0#serde-saphyr@2.0.0"
+    },
+    {
+      "name": "matrix-sdk",
+      "version": "0.19.1",
+      "source": "path",
+      "required_features": [
+        "e2e-encryption",
+        "sqlite",
+        "rustls-aws-lc-rs"
+      ],
+      "actual_features": [
+        "e2e-encryption",
+        "rustls-aws-lc-rs",
+        "sqlite"
+      ],
+      "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1#matrix-sdk@0.19.1"
+    },
+    {
+      "name": "matrix-sdk-sqlite",
+      "version": "0.19.1",
+      "source": "path",
+      "required_features": [
+        "crypto-store",
+        "event-cache-store",
+        "media-store",
+        "state-store"
+      ],
+      "actual_features": [
+        "crypto-store",
+        "event-cache-store",
+        "media-store",
+        "state-store"
+      ],
+      "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/matrix-sdk-sqlite-0.19.1#matrix-sdk-sqlite@0.19.1"
+    },
+    {
+      "name": "aws-config",
+      "version": "1.8.12",
+      "source": "path",
+      "required_features": [
+        "default-https-client",
+        "rt-tokio",
+        "credentials-process",
+        "sso",
+        "credentials-login"
+      ],
+      "actual_features": [
+        "credentials-login",
+        "credentials-process",
+        "default",
+        "default-https-client",
+        "rt-tokio",
+        "sso"
+      ],
+      "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-config-1.8.12#aws-config@1.8.12"
+    },
+    {
+      "name": "keyring",
+      "version": "3.6.3",
+      "source": "path",
+      "required_features": [
+        "async-secret-service",
+        "crypto-rust",
+        "linux-native",
+        "linux-native-async-persistent"
+      ],
+      "actual_features": [
+        "apple-native",
+        "async-secret-service",
+        "crypto-rust",
+        "linux-native",
+        "linux-native-async-persistent",
+        "sync-secret-service",
+        "windows-native"
+      ],
+      "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/keyring-3.6.3#keyring@3.6.3"
+    },
+    {
+      "name": "secret-service",
+      "version": "4.0.0",
+      "source": "path",
+      "required_features": [
+        "crypto-rust"
+      ],
+      "actual_features": [
+        "crypto-rust"
+      ],
+      "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/secret-service-4.0.0#secret-service@4.0.0"
+    },
+    {
+      "name": "matrix-sdk-crypto",
+      "version": "0.19.1",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "default",
+        "js"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#matrix-sdk-crypto@0.19.1"
+    },
+    {
+      "name": "anymap3",
+      "version": "1.1.0",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "std"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#anymap3@1.1.0"
+    },
+    {
+      "name": "rusqlite",
+      "version": "0.39.0",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "cache",
+        "fallible_uint",
+        "hashlink",
+        "limits"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#rusqlite@0.39.0"
+    },
+    {
+      "name": "libsqlite3-sys",
+      "version": "0.37.0",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "bundled",
+        "bundled_bindings",
+        "cc",
+        "default",
+        "min_sqlite_version_3_34_1",
+        "pkg-config",
+        "vcpkg"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.37.0"
+    },
+    {
+      "name": "p256",
+      "version": "0.14.0",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "alloc",
+        "arithmetic",
+        "default",
+        "digest",
+        "ecdsa",
+        "ecdsa-core",
+        "getrandom",
+        "pem",
+        "pkcs8",
+        "precomputed-tables",
+        "sha2",
+        "sha256",
+        "std"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#p256@0.14.0"
+    },
+    {
+      "name": "elliptic-curve",
+      "version": "0.14.3",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "alloc",
+        "arithmetic",
+        "digest",
+        "ff",
+        "getrandom",
+        "group",
+        "pem",
+        "pkcs8",
+        "sec1",
+        "std"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#elliptic-curve@0.14.3"
+    },
+    {
+      "name": "crypto-bigint",
+      "version": "0.7.10",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "getrandom",
+        "hybrid-array",
+        "rand_core",
+        "subtle",
+        "zeroize"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#crypto-bigint@0.7.10"
+    },
+    {
+      "name": "zbus",
+      "version": "6.1.0",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "comms",
+        "default",
+        "default-rt",
+        "object-manager",
+        "proxy",
+        "service",
+        "tracing"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#zbus@6.1.0"
+    },
+    {
+      "name": "zbus_macros",
+      "version": "6.1.0",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "comms",
+        "proxy",
+        "service"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#zbus_macros@6.1.0"
+    },
+    {
+      "name": "zbus_utils",
+      "version": "6.0.0",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "default"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#zbus_utils@6.0.0"
+    },
+    {
+      "name": "aws-credential-types",
+      "version": "1.2.11",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "test-util"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-credential-types@1.2.11"
+    },
+    {
+      "name": "aws-lc-rs",
+      "version": "1.18.1",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "alloc",
+        "aws-lc-sys",
+        "default",
+        "prebuilt-nasm",
+        "ring-io",
+        "ring-sig-verify"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.1"
+    },
+    {
+      "name": "aws-lc-sys",
+      "version": "0.45.0",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "prebuilt-nasm"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.45.0"
+    },
+    {
+      "name": "aws-runtime",
+      "version": "1.5.17",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-runtime@1.5.17"
+    },
+    {
+      "name": "aws-sdk-signin",
+      "version": "1.2.0",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-sdk-signin@1.2.0"
+    },
+    {
+      "name": "aws-sdk-sso",
+      "version": "1.91.0",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-sdk-sso@1.91.0"
+    },
+    {
+      "name": "aws-sdk-ssooidc",
+      "version": "1.93.0",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-sdk-ssooidc@1.93.0"
+    },
+    {
+      "name": "aws-sdk-sts",
+      "version": "1.95.0",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-sdk-sts@1.95.0"
+    },
+    {
+      "name": "aws-sigv4",
+      "version": "1.3.7",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "default",
+        "http0-compat",
+        "http1",
+        "sign-http"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-sigv4@1.3.7"
+    },
+    {
+      "name": "aws-smithy-async",
+      "version": "1.2.14",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "rt-tokio"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-async@1.2.14"
+    },
+    {
+      "name": "aws-smithy-http",
+      "version": "0.62.6",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-http@0.62.6"
+    },
+    {
+      "name": "aws-smithy-http-client",
+      "version": "1.1.12",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "default-client",
+        "rustls-aws-lc"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-http-client@1.1.12"
+    },
+    {
+      "name": "aws-smithy-json",
+      "version": "0.61.9",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-json@0.61.9"
+    },
+    {
+      "name": "aws-smithy-observability",
+      "version": "0.1.5",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-observability@0.1.5"
+    },
+    {
+      "name": "aws-smithy-query",
+      "version": "0.60.9",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-query@0.60.9"
+    },
+    {
+      "name": "aws-smithy-runtime",
+      "version": "1.9.5",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "client",
+        "default-https-client",
+        "rt-tokio"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-runtime@1.9.5"
+    },
+    {
+      "name": "aws-smithy-runtime-api",
+      "version": "1.12.0",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "client",
+        "default",
+        "http-02x",
+        "http-1x",
+        "http-auth",
+        "test-util"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-runtime-api@1.12.0"
+    },
+    {
+      "name": "aws-smithy-runtime-api-macros",
+      "version": "1.0.0",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-runtime-api-macros@1.0.0"
+    },
+    {
+      "name": "aws-smithy-types",
+      "version": "1.4.7",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "byte-stream-poll-next",
+        "http-body-0-4-x",
+        "http-body-1-x",
+        "test-util"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-types@1.4.7"
+    },
+    {
+      "name": "aws-smithy-xml",
+      "version": "0.60.13",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-xml@0.60.13"
+    },
+    {
+      "name": "aws-types",
+      "version": "1.3.11",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#aws-types@1.3.11"
+    },
+    {
+      "name": "imbl",
+      "version": "7.0.2",
+      "source": "registry",
+      "required_features": [],
+      "actual_features": [
+        "serde"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#imbl@7.0.2"
+    },
+    {
+      "name": "starlark",
+      "version": "0.14.2",
+      "source": "path",
+      "required_features": [],
+      "exact_features": [],
+      "actual_features": [],
+      "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/starlark-0.14.2#starlark@0.14.2"
+    },
+    {
+      "name": "blake3",
+      "version": "1.8.7",
+      "source": "registry",
+      "required_features": [
+        "default",
+        "rayon",
+        "std",
+        "traits-preview"
+      ],
+      "actual_features": [
+        "default",
+        "rayon",
+        "std",
+        "traits-preview"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.7"
+    },
+    {
+      "name": "starlark_derive",
+      "version": "0.14.2",
+      "source": "registry",
+      "required_features": [],
+      "exact_features": [],
+      "actual_features": [],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#starlark_derive@0.14.2"
+    },
+    {
+      "name": "starlark_map",
+      "version": "0.14.2",
+      "source": "registry",
+      "required_features": [
+        "default",
+        "pagable_dep"
+      ],
+      "exact_features": [
+        "default",
+        "pagable_dep"
+      ],
+      "actual_features": [
+        "default",
+        "pagable_dep"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2"
+    },
+    {
+      "name": "starlark_syntax",
+      "version": "0.14.2",
+      "source": "registry",
+      "required_features": [],
+      "exact_features": [],
+      "actual_features": [],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#starlark_syntax@0.14.2"
+    },
+    {
+      "name": "pagable",
+      "version": "0.4.2",
+      "source": "registry",
+      "required_features": [
+        "default"
+      ],
+      "exact_features": [
+        "default"
+      ],
+      "actual_features": [
+        "default"
+      ],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#pagable@0.4.2"
+    },
+    {
+      "name": "pagable_derive",
+      "version": "0.4.2",
+      "source": "registry",
+      "required_features": [],
+      "exact_features": [],
+      "actual_features": [],
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#pagable_derive@0.4.2"
+    }
+  ],
+  "forbidden_packages_absent_from_metadata_and_lock": [
+    "anymap2",
+    "basic-toml",
+    "serde_yaml",
+    "unsafe-libyaml",
+    "zbus_names",
+    "zvariant",
+    "zvariant_derive"
+  ],
+  "metadata_packages": 1529,
+  "resolved_nodes": 1529,
+  "before_and_after_bazel_metadata_identical": true,
+  "final_metadata_was_generated_after_bazel_update_and_check": true,
+  "vendor_directories": 8,
+  "vendor_files": 1971,
+  "source_and_lock_files": 31,
+  "all_new_blobs_and_modes_reconstructed": true,
+  "unchanged_index_entries_preserved": 12666,
+  "write_tree_missing_ok_scope": "Only inherited, unchanged promisor objects may be absent; every changed blob was materialized, read back and matched against its actual artifact bytes.",
+  "locks": {
+    "MODULE.bazel.lock": {
+      "bytes": 1723213,
+      "sha256": "1ae3334cd93e9390ae81601f4eb13943e2c9fa20591194ca1b56d8c3273311e7"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 420292,
+      "sha256": "96bd4cab2615471fdba80652a73e9cb7c1572e88a678d68dae3b8618e344793c"
+    }
+  },
+  "original_policy_unchanged": true,
+  "audit_git_commands": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "78efa8bd^{tree}"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "dee122cdf3d37bdf45f4a34fbac54c39292f05fde733b88fd770135314fe08c4",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "ls-tree",
+        "-r",
+        "-z",
+        "78efa8bd"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "58fb511085f584b32231df7f7e2045843ed3592620dd172f99ebacd91e8d8bf4",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "read-tree",
+        "78efa8bd"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--cached",
+        "--check",
+        "/workspace/scratch/95988d8d3ab1/ndu-port-remote-3a779a6/producer/candidate.patch"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--cached",
+        "/workspace/scratch/95988d8d3ab1/ndu-port-remote-3a779a6/producer/candidate.patch"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "ls-files",
+        "--stage",
+        "-z"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "8b451270b1de81d3cbe83c90b5fecb91590a7d5af601bd686a3a785f2fcea5bb",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "a847477644b84a8eb0daf05ab1caa650b8fa2d64"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "1ae3334cd93e9390ae81601f4eb13943e2c9fa20591194ca1b56d8c3273311e7",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "6c58193841db4cb2f7976963301a72ea2652c9b1"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "bed1d7e870e9cca66518985ebd34ccbc0562216ebbb86e0a95f81a4a08bbbe5c",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "16b673436e080014497df6be7d9cef234f598d28"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "cb049ed3640dafda1d457b7bfb28e85f7089813d70af750f2649bb0acb459732",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "07ea25a86a206656718624ce130a1a56bd1366a3"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "49a2e2de83ac7bee1ee11023d9b065cc22ff449db48ee6fd571fa052c2ccefda",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "a207f6053efacd081535ac4435c5f763d204dc75"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "778cb731c9007e7a6a1b692e07ead52073df639c5a64d9b6a0a2150cd484de06",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "904257bad3a3da0194d72e884351a34af0f8139b"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "1e95bcc40a790f933bdd14d4e5ac1c8b17778966b375acaee91d132b2de53d7c",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "ce26d941009ddca023ea2cf044378b1c6ea2e02d"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "5aa90bd0f5eb5721a80c1bd8c82ab3de84f3736e5ffed38ccb9ff767a5aa8bc1",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "d363106ab519afafc4a5edd86542ecfdbad6bbc9"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "63132e583a6a888c05536b9fabfb489d0a8da0f4681379b6b0a356e115c380f0",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "917d2492264a35bc9c0feaef41878d8825870866"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "e2572d1ebcd710581d16ac047249768d805636f3"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "58529693be27ff59d7b98d8eb258618834a9444df49bca596e100653576f2e73",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "e79330d38f7910431810ae0b97ec5678708f6543"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "b6ce81e8450c7de591a4e4c7e2e9e975542cc709a07487e16d8f0dfaf7e3d30c",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "571b032636a02631b70c9a919bf388f6944fb69d"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "4159f5f83864714f0b593247ea5322f3bc13bfc69b2e8d555bafef71d8a19847",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "0d89a25fbcb48fb6a2cc7c296a09b9642d85ef64"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "6f4bdff30fd7966fd8a2ba69fbf0e3276a513c2fb43a312ba320b7e787dbce06",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "caa18c3e422608cb6d58577e1e227802845202db"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "b890e0b170700951a96369e5e84fc906864ddf621cf548f0c7586deb57c6ccfb",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "5501edd7e424d21c9dc3bb4bbf0638ec0e67633d"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "ff6f72f59bd318d37f2b0473b0fc84b5241b52096f0a81525a928bdbd336d111",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "c7f281bf363f5d34d1bde1f442784add7e037bc4"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "35ab6843c2552bbe1cd3a6142f93124935daec0889db4fe35b90439196294f85",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "eda22bbe077300e333b44aa95d94242350a6f13e"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "4c1a9c92bfc4f8b0280db54f7f276b0140e342a8626db053ef9d75b9bfca08e5",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "742a18d1b027edc5941c903756d76a9af755d2e7"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d7402cc77b21a4412b9b47683a422353d60d977b735961b096b841d9218edea4",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "073c6813fb1911f87790699c25fcb3d178df8969"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "bdd4dd626b548e16964dc18f138d4c889f972d527efeccb79d0bcea9444bc395",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "8fc4309ca4b4a5ee0c80c4d09a5beccb9c7776c9"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "96bd4cab2615471fdba80652a73e9cb7c1572e88a678d68dae3b8618e344793c",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "6cbe0aee9a9d5fdfc9ec9231cf529480a871d120"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "c8afe9db3266267d3a5e2448550a1c408026d8951b1d06733707c3c0cae182f2",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "2b07e26b883ccd8695370499c4ba4975e2edc422"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "a273b864f58b584390bcc8dbffa090bc1deb98594566bb103e53ad3beab8ee31",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "9cfc66f8a6df96f98261b9c33ecae74d9017cea7"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "81be6c0dc3c175d9b3171a010a6f9a710a132074f09a70152306ea163c98c036",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "c38ca58e7024e3f96fa1e4aef86d06dfa284f844"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "39c0a2eabf2052add31543d71f081e0667603ad397aca8dbcc075f544a3271be",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "4dd4538afa9d80cc1962a83ae8acb7f7eaeaabc2"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "374d0b7e32b09af6c69a9eb6d6851301999460cdb3eb66fd5b9168155a7437e8",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "9108e65772a71b9b015dba60f354382f5e0dfa8d"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "281ad225f084f63fc35f2f6238d7931d4fdb05b31c99cc6ee8544f5815ce2fa3",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "cff28675154032ff7e8f7b1e393259af9d4743d2"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "1dbb263aa6136621f9d7c895a02082ac727b878b8f724c0cda6e4fb0c6b7e783",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "895641866c6f32f12db743948eb42739b4014b48"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "7c7e4970b4318eadfebab3420bdb82dd001558abfa9471441d420eeb1a205cf5",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "0b2f1e622547ac47c84d948b3f676ea5907f28a9"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "68403ab839b55f57c345a2cded3ba129e0661d399ab4f257be923cc798f684a2",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "3bd27de9e13f5c1998e49aa9710f8b19852ced05"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "6cc077a47917da7ff7c261de2b77b61bcddd3caf24c4cec868eb513ffb33c3b4",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "5501edd7e424d21c9dc3bb4bbf0638ec0e67633d"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "ff6f72f59bd318d37f2b0473b0fc84b5241b52096f0a81525a928bdbd336d111",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "write-tree",
+        "--missing-ok"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "90d9f0a095b086ee41531cde9e3ad3a166735db188ee2ec4757e3c3b8548131a",
+      "stderr": ""
+    }
+  ],
+  "not_proven": [
+    "workspace tests",
+    "Bazel library builds",
+    "cargo-deny pass",
+    "old/new database compatibility",
+    "platform behavior",
+    "promotion"
+  ]
+}

@@ -1,0 +1,287 @@
+{
+  "schema": "hepta.native-postfix-wiring.read-only-peer.v1",
+  "completed_at": "2026-10-27T13:04:02.122940+00:00",
+  "status": "no_new_actionable_static_blocker_identified",
+  "scope": "Only new native ARM64 CI job, cleanup and post-qualification matrix/YAML wiring, plus split helper compatibility with original artifacts/inventory/source guards.",
+  "reviewer_executed_tests": false,
+  "reviewer_executed_formatter": false,
+  "reviewer_changed_implementation_or_policy": false,
+  "source_custody": "Full post-review readback copied at audit completion; no pre-execution seal is implied because no behavior was executed. Later formatting/publication has its own source identity.",
+  "source": {
+    ".github/workflows/ndu-port-candidate.yml": {
+      "bytes": 25216,
+      "sha256": "e4062bb91f8ecb51324c30354273fb15e8debe0c15e8e28e39b19fe1dc7a7927"
+    },
+    ".github/actions/setup-ci/action.yml": {
+      "bytes": 4141,
+      "sha256": "6d29a131641a739983b3aea22c0febbf20d1d0ee21b356570f3763ddafced9ba"
+    },
+    "scripts/ndu_post_qualification_fix.py": {
+      "bytes": 11817,
+      "sha256": "407cfc8f480ebc5348fbfd24a48747d6300f617ee88929ce5aa8d861aef65200"
+    },
+    "scripts/ndu_post_qualification_evidence.py": {
+      "bytes": 6223,
+      "sha256": "492820585e8758eb94c88242321bb1cf4a1bf35dc8d2ada084849e566f4c3d8b"
+    },
+    "scripts/ndu_post_qualification_test_support.py": {
+      "bytes": 12055,
+      "sha256": "3649184581e17166bceb1358c6f2060fad624fdfc7b0d9ff01b73b58be15a70c"
+    },
+    "scripts/test_ndu_post_qualification_fix.py": {
+      "bytes": 7212,
+      "sha256": "5fc4c9ba27d04517e852e8b5042995604e6befc5f1b75fc4182d7f2289a0c71e"
+    },
+    "scripts/ndu_port_candidate.py": {
+      "bytes": 14111,
+      "sha256": "81469925bd9ffa4bd0f58265e724c4018b945db16a4e6403d28e8bfedd81254c"
+    },
+    "scripts/ndu_port_candidate_common.py": {
+      "bytes": 23593,
+      "sha256": "b160cd40b45eebeaf6c676d7704e4cf93e0d358c6c0727228bc8429886aa546d"
+    },
+    "scripts/ndu_port_matrix_fixture.py": {
+      "bytes": 16690,
+      "sha256": "21862146157207b82bd9d36777d6afca3afa6c5b167ff84e6aeb21698ee2f5ce"
+    },
+    "scripts/run-nextest.py": {
+      "bytes": 10206,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    "justfile": {
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    "codex-rs/.config/nextest.toml": {
+      "bytes": 5044,
+      "sha256": "78b998d1fcb16dfef6b243a4b18748c1b28ce2d5a28d57f1f477adf0546e5ac6"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse-linux.py": {
+      "bytes": 11597,
+      "sha256": "38fb11c8de2873f15fc263594144cbf24292d2a7ed37a8dd4aee4192ce4b28df"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/ci.py": {
+      "bytes": 4059,
+      "sha256": "aafc8707fc6cec61ea913ef1a962d20eaa243d28b9232d5bac85e000c0a52c17"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/recovery.py": {
+      "bytes": 2896,
+      "sha256": "645ae8fcd7ebd699cec7ecd7eb0825ada0691faf39a185cf1c8ea32d1c69c0bd"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/contract.py": {
+      "bytes": 7957,
+      "sha256": "0f04661ac3b1b114f64b6361e780d07b4f4c08331f19d4ef497ca4fc7cf316a9"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/source.py": {
+      "bytes": 11770,
+      "sha256": "b943fee71044167ceee34209572ef49b9a64f9d5d20f845dc7894192bd3264f6"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/orchestrate.py": {
+      "bytes": 14107,
+      "sha256": "b3a2e00bdfe2f5a4007093a491669386de376907cf479f5fd78e89ca442363c6"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/docker_control.py": {
+      "bytes": 11972,
+      "sha256": "9449961ad40ca32801ae3e20d3751f2760f5fbfb7ab92c6dbc6a8dedcb4659f2"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/runtime.py": {
+      "bytes": 6971,
+      "sha256": "c1b45e7448960b1840979a7e1eae7c3450ec6b87b01201ca13fc755a9a411756"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/build.py": {
+      "bytes": 9635,
+      "sha256": "0d5c1ae0f5234c98746e30b2de37b82e21e59104f4bf30eab97196f6cd6185db"
+    }
+  },
+  "workflow_anchor_lines": {
+    "native-arm64-synapse:": [
+      515
+    ],
+    "env -u CARGO_PROFILE_DEV_DEBUG": [
+      538,
+      554
+    ],
+    "cleanup-ci": [
+      555
+    ],
+    "--group yaml --test-result": [
+      225
+    ],
+    "--group matrix --test-result": [
+      315
+    ],
+    "ndu-port-fix-yaml-": [
+      242
+    ],
+    "ndu-port-fix-matrix-": [
+      332
+    ],
+    "matrix.group == 'yaml'": [
+      211,
+      216
+    ]
+  },
+  "blocking_findings": [],
+  "verified_connections": [
+    {
+      "area": "Native CLI and recovery",
+      "references": [
+        ".github/workflows/ndu-port-candidate.yml::native-arm64-synapse",
+        "run-hermetic-synapse-linux.py::parser/main",
+        "linux_synapse/recovery.py::recover"
+      ],
+      "finding": "ci supplies all six required values; cleanup-ci supplies its four required values. Cleanup restores host_tools and its SHA from BOOTSTRAP_AUTHORITY at the same evidence output. No producer/worktree flags are required for recovery. The authority existence check prevents cleanup bootstrap before resources could be created."
+    },
+    {
+      "area": "Global profile overrides",
+      "references": [
+        "workflow env and both native invocations",
+        "linux_synapse/contract.py::reject_compiler_overrides"
+      ],
+      "finding": "Both ci and cleanup invocations remove CARGO_PROFILE_DEV_DEBUG and CARGO_PROFILE_TEST_DEBUG. These are the only CARGO_PROFILE_* keys declared by this workflow. The native job has no preceding setup action that intentionally adds compiler/profile overrides. Any unexpected host override still fails closed."
+    },
+    {
+      "area": "Producer source binding",
+      "references": [
+        "linux_synapse/source.py::trusted_common/load_verified_helper/restore_source/replay_candidate_tree",
+        "run-hermetic-synapse-linux.py::bootstrap_modules"
+      ],
+      "finding": "Isolated Python and HEAD-bound in-memory module loading remain. The source adapter dynamically compiles only verified HEAD common-helper bytes, so the v3 recipe constant is obtained from the actual new source. Complete candidate-patch tree replay retains modes and preserves original HEAD/index identity in the reviewed paths."
+    },
+    {
+      "area": "Native execution identity and inventory",
+      "references": [
+        "linux_synapse/build.py::build_inside",
+        "linux_synapse/runtime.py::validate_test_listing/run_inside",
+        "scripts/run-nextest.py reuse path"
+      ],
+      "finding": "Runtime passes both metadata files and target remapping, explicit linux-synapse profile, exact binary/test filter and no-tests=fail. It checks full cold-build testcase inventory, selected nonignored original business case, actual relocated executable path/hash, metadata pre/post bytes and fresh one-pass JUnit. The workflow invokes ci, which requires the qualified status tied to the same candidate tree/producer before success."
+    },
+    {
+      "area": "Cleanup and artifact separation",
+      "references": [
+        "workflow native always cleanup/upload",
+        "linux_synapse/orchestrate.py::run",
+        "linux_synapse/recovery.py::recover"
+      ],
+      "finding": "Recovery has a separate teardown-only status and does not rewrite CI_RESULT into a qualification pass. It uses the original host tool/socket/owner label and checks ownership before deletion. Native evidence uploads always; matrix and YAML fix artifacts use distinct output directories/names from original test artifacts."
+    },
+    {
+      "area": "Matrix/YAML Clippy scope",
+      "references": [
+        "ndu_post_qualification_evidence.py::GROUPS",
+        "ndu_post_qualification_fix.py::execute",
+        "workflow scoped Clippy steps"
+      ],
+      "finding": "Matrix fixes only codex-hepta-matrix-sdk and codex-hepta-matrixd with codex-hepta-matrixd/real-synapse-e2e explicitly enabled. YAML fixes exactly the five tested consumers and no extra feature. Both install Clippy 1.96 and pass the original producer source/RESULT authority and the correct successful consumer RESULT path."
+    },
+    {
+      "area": "Consumer data compatibility",
+      "references": [
+        "ndu_port_candidate.py::workspace_tests/main",
+        "ndu_port_matrix_fixture.py::run_phase/consume_old_fixture",
+        "ndu_post_qualification_evidence.py::validate_tests"
+      ],
+      "finding": "status=targeted_tests_passed, mode=test, same-run identity, actual command argv/cwd, package ordering and log/stdout descriptions match. Matrix reopen names/command/profile/retries/config path/binary path/JUnit fields align exactly; CARGO_TARGET_DIR matches setup-ci and the recorded migration target."
+    },
+    {
+      "area": "Frozen source after helper split",
+      "references": [
+        "ndu_post_qualification_fix.py::freeze_before/capture_after",
+        "ndu_post_qualification_evidence.py::validate_tests"
+      ],
+      "finding": "Extraction retained each function AST, supported by the already preserved extraction proof. The current helper still rejects unstaged or ignored/untracked inputs before fixing, replays complete candidate patch using copied indexes, binds actual tools and captures partial edits after failure. Nonempty source delta gets review_required and cannot inherit original behavioral qualification; lock/policy/vendor and source membership/modes remain protected."
+    }
+  ],
+  "nonblocking_boundaries": [
+    "The ordinary workspace consumer uses profile local and historically stores empty per-package junit arrays. The helper verifies exact package commands, exit codes and complete logs; it does not claim strict per-case inventory/no-retry qualification for those ordinary package runs. The Matrix reopen and native business run have separate strict actual JUnit/inventory gates.",
+    "The earlier YAML consumer RESULT does not record its inherited CARGO_TARGET_DIR. Reuse is supported by unchanged same-job setup-ci environment; the helper explicitly records this weaker binding. Matrix target reuse is also checked against the actual migration phase.",
+    "A nonempty Clippy fix exits successfully as a reviewable proposal, with status clippy_passed_review_required and prior_behavioral_qualification_applies_to_after_source=false. No automatic source promotion exists in this workflow; downstream review must continue to honor this status.",
+    "This is static wiring review. Actual native ARM64 cold build/Synapse runtime, resource sufficiency and actual Clippy behavior remain remote qualifications. Existing unit/probe results are not represented as those qualifications."
+  ],
+  "existing_yaml_receipt_shape": {
+    "source": "/workspace/scratch/95988d8d3ab1/ndu-port-remote-3a779a6/yaml/RESULT.json",
+    "bytes": 23194,
+    "sha256": "5e13ce1625ceb74b6a6290f257fd6eb21a9f7b740e05d79e94ebd101d5364ca4",
+    "status": "targeted_tests_passed",
+    "test_group": "yaml",
+    "test_results": [
+      {
+        "package": "codex-utils-yaml",
+        "exit_code": 0,
+        "junit": [],
+        "actual_command": [
+          "just",
+          "test",
+          "--locked",
+          "--cargo-profile",
+          "ci-test",
+          "-p",
+          "codex-utils-yaml"
+        ]
+      },
+      {
+        "package": "codex-skills",
+        "exit_code": 0,
+        "junit": [],
+        "actual_command": [
+          "just",
+          "test",
+          "--locked",
+          "--cargo-profile",
+          "ci-test",
+          "-p",
+          "codex-skills"
+        ]
+      },
+      {
+        "package": "codex-skills-extension",
+        "exit_code": 0,
+        "junit": [],
+        "actual_command": [
+          "just",
+          "test",
+          "--locked",
+          "--cargo-profile",
+          "ci-test",
+          "-p",
+          "codex-skills-extension"
+        ]
+      },
+      {
+        "package": "codex-core-plugins",
+        "exit_code": 0,
+        "junit": [],
+        "actual_command": [
+          "just",
+          "test",
+          "--locked",
+          "--cargo-profile",
+          "ci-test",
+          "-p",
+          "codex-core-plugins"
+        ]
+      },
+      {
+        "package": "codex-external-agent-migration",
+        "exit_code": 0,
+        "junit": [],
+        "actual_command": [
+          "just",
+          "test",
+          "--locked",
+          "--cargo-profile",
+          "ci-test",
+          "-p",
+          "codex-external-agent-migration"
+        ]
+      }
+    ],
+    "boundary": "Existing remote v2 receipt was read for actual field/argv compatibility only; no helper execution or fresh v3 package qualification is claimed."
+  },
+  "minimal_required_changes": [],
+  "original_policy_identity": {
+    "bytes": 18803,
+    "sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352"
+  }
+}

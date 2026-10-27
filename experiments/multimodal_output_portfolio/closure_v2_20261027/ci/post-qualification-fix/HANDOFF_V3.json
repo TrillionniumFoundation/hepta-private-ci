@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.post-qualification-handoff.v3",
+  "status": "ready_for_root_final_format",
+  "source_snapshot": "/workspace/scratch/95988d8d3ab1/ndu-post-qualification-fix-001/pretest-003/executed-source",
+  "source": {
+    "scripts/ndu_post_qualification_fix.py": {
+      "bytes": 11817,
+      "sha256": "407cfc8f480ebc5348fbfd24a48747d6300f617ee88929ce5aa8d861aef65200"
+    },
+    "scripts/ndu_post_qualification_evidence.py": {
+      "bytes": 6223,
+      "sha256": "492820585e8758eb94c88242321bb1cf4a1bf35dc8d2ada084849e566f4c3d8b"
+    },
+    "scripts/ndu_post_qualification_test_support.py": {
+      "bytes": 12054,
+      "sha256": "c4bbbb3c2d1323eabcc963f9fd87473c3b42ec4aa69b84b38660a788af356e41"
+    },
+    "scripts/test_ndu_post_qualification_fix.py": {
+      "bytes": 7212,
+      "sha256": "5fc4c9ba27d04517e852e8b5042995604e6befc5f1b75fc4182d7f2289a0c71e"
+    },
+    "scripts/ndu_port_candidate_common.py": {
+      "bytes": 23593,
+      "sha256": "b160cd40b45eebeaf6c676d7704e4cf93e0d358c6c0727228bc8429886aa546d"
+    },
+    "scripts/ndu_port_matrix_fixture.py": {
+      "bytes": 16690,
+      "sha256": "21862146157207b82bd9d36777d6afca3afa6c5b167ff84e6aeb21698ee2f5ce"
+    }
+  },
+  "regression_result": {
+    "bytes": 730,
+    "sha256": "5b640fe958890a626198c328af4469895f50abaa3dfe5acd04840583edbd0972"
+  },
+  "original_12_passed": true,
+  "root_integrated_failure_preserved": "/workspace/scratch/95988d8d3ab1/closure_v2_preformat_tests_20261027",
+  "real_clippy_performed_locally": false,
+  "formatter_performed_by_owner": false,
+  "previous_handoff_preserved": "HANDOFF.json",
+  "followup_peer": {
+    "bytes": 2133,
+    "sha256": "42661b7700205e5bfbafc21f27f686604dcb811ff8ef6fe8f363e8a4618a1bdb"
+  }
+}

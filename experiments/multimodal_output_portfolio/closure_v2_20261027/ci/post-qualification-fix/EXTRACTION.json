@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.postfix.extraction-proof.v1",
+  "scope": "Mechanical function/constant extraction; imports and test class inheritance rewired. No formatter run.",
+  "production_functions_ast_identical": [
+    "bind_tools",
+    "capture_after",
+    "execute",
+    "freeze_before",
+    "index_entries",
+    "index_path",
+    "main",
+    "private_tree",
+    "require",
+    "text",
+    "validate_tests"
+  ],
+  "groups_ast_identical": true,
+  "test_and_fixture_methods_ast_identical": [
+    "make_test_receipt",
+    "make_tools",
+    "put",
+    "run_fix",
+    "setUp",
+    "test_changed_original_evidence_is_rejected",
+    "test_failed_clippy_retains_partial_patch_and_original_result",
+    "test_ignored_extra_input_prevents_fix",
+    "test_new_ignored_file_after_fix_is_rejected",
+    "test_nonempty_matrix_delta_does_not_inherit_behavior_pass",
+    "test_protected_or_other_group_source_edits_are_rejected",
+    "test_skipped_reopen_junit_prevents_fix",
+    "test_staged_mode_change_rejected_even_with_same_file_bytes",
+    "test_unchanged_source_keeps_original_identity",
+    "test_wrong_receipt_or_old_reopen_cannot_authorize_fix",
+    "test_wrong_version_prevents_fix",
+    "test_yaml_scope_has_five_packages_without_matrix_features",
+    "write_receipt"
+  ],
+  "git_helper_ast_identical": true,
+  "files": {
+    "scripts/ndu_post_qualification_fix.py": {
+      "bytes": 11817,
+      "sha256": "407cfc8f480ebc5348fbfd24a48747d6300f617ee88929ce5aa8d861aef65200",
+      "lines": 213
+    },
+    "scripts/ndu_post_qualification_evidence.py": {
+      "bytes": 6223,
+      "sha256": "492820585e8758eb94c88242321bb1cf4a1bf35dc8d2ada084849e566f4c3d8b",
+      "lines": 114
+    },
+    "scripts/test_ndu_post_qualification_fix.py": {
+      "bytes": 7212,
+      "sha256": "5fc4c9ba27d04517e852e8b5042995604e6befc5f1b75fc4182d7f2289a0c71e",
+      "lines": 130
+    },
+    "scripts/ndu_post_qualification_test_support.py": {
+      "bytes": 12055,
+      "sha256": "3649184581e17166bceb1358c6f2060fad624fdfc7b0d9ff01b73b58be15a70c",
+      "lines": 205
+    }
+  }
+}

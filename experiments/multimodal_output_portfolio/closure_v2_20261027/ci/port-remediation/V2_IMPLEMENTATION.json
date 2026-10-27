@@ -93,7 +93,12 @@
       "sha256": "27907fca00bfab84c3a797487815fd2f151382a0b1d7a631854ef59af68060cb"
     },
     "full_source_before_tests": "/workspace/scratch/95988d8d3ab1/ndu-starlark-blake3-candidate/pipeline-v2/executed/source",
-    "scope": "Actual Git transport and controlled subprocess graphs; no claim that these solve the real Cargo dependency graph."
+    "scope": "Actual Git transport and controlled subprocess graphs; no claim that these solve the real Cargo dependency graph.",
+    "specific_fixed_rejections": [
+      "Reject effective features beyond an explicitly frozen exact_features set, including an empty Starlark set.",
+      "Reject an expected package absent from resolve.nodes even when its required/exact feature set is empty.",
+      "Reject an untyped exact_features value before execution; feature constraints must be lists of nonempty names."
+    ]
   },
   "format": {
     "receipt": {
@@ -162,5 +167,22 @@
     "pipeline-v2/assembly-001/FAILURE.json: normal write-tree attempted an unrelated unmaterialized promisor blob; final isolated indexes preserve all unmodified tuples and materially hash every modified blob."
   ],
   "promotion_allowed": false,
-  "remaining_gate": "Real remote candidate execution and review; this packet does not claim all blockers closed."
+  "remaining_gate": "Real remote candidate execution and review; this packet does not claim all blockers closed.",
+  "raw_archive": {
+    "archive": {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-starlark-port-v2-20261027.tar.gz",
+      "bytes": 11966957,
+      "sha256": "19dbe9b2b9ea55f31dae521f9e5734e1e7a38d73b3c0e3e73657f1db5624ae84"
+    },
+    "logical_files": 1712,
+    "logical_bytes": 34087041,
+    "manifest": {
+      "bytes": 313078,
+      "sha256": "82eed569339a87c8a58d0ee9fabac04385711710cd4c8e2f52f9b65e21a1e7dc"
+    },
+    "actual_disk_restore_every_logical_file_verified": true,
+    "restored_path": "/workspace/scratch/95988d8d3ab1/ndu-starlark-port-v2-restore-check",
+    "no_behavior_tests_rerun": true
+  },
+  "source_freeze": "No further changes after the recorded final formatter; only this report gained explicit regression descriptions and the immutable archive identity."
 }

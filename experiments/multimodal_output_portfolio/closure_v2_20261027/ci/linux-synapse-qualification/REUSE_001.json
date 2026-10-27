@@ -1,0 +1,132 @@
+{
+  "actual_binary": {
+    "bytes": 1059400,
+    "sha256": "5b642a75f632c8fb919298420e9b07cf635a7378cb4dc56780a8200eac4e842c"
+  },
+  "actual_relocated_binary_path": "/workspace/scratch/95988d8d3ab1/ndu-linux-synapse-candidate-001/actual-reuse-probe-001/frozen-target/debug/deps/ndu_aws_profile_probe-a4b7ebada89d9f06",
+  "arm64_qualification": false,
+  "commands": [
+    {
+      "actual_tool": {
+        "bytes": 42185192,
+        "sha256": "841072d1d92f9e841d9ba5b0814182a0adf064acf4527cd120967b7bc49dcb66"
+      },
+      "args": [
+        "metadata",
+        "--offline",
+        "--locked",
+        "--no-deps",
+        "--format-version",
+        "1",
+        "--manifest-path",
+        "/workspace/scratch/95988d8d3ab1/ndu-port-ci-evidence/bugfix-003/actual-profile-probes-003/aws-source/codex-rs/Cargo.toml"
+      ],
+      "exit_code": 0,
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1734,
+        "sha256": "a572e2b0c50cdc7cc7e47feb6dc1372cd045a1f22e59c0025b21b78877c0be14"
+      },
+      "tool": "cargo",
+      "wall_seconds": 0.07519579200015869
+    },
+    {
+      "actual_tool": {
+        "bytes": 24038232,
+        "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+      },
+      "args": [
+        "nextest",
+        "list",
+        "--cargo-metadata",
+        "/workspace/scratch/95988d8d3ab1/ndu-linux-synapse-candidate-001/actual-reuse-probe-001/cargo-metadata.json",
+        "--binaries-metadata",
+        "/workspace/scratch/95988d8d3ab1/ndu-linux-synapse-candidate-001/actual-reuse-probe-001/binaries-metadata.json",
+        "--target-dir-remap",
+        "/workspace/scratch/95988d8d3ab1/ndu-linux-synapse-candidate-001/actual-reuse-probe-001/frozen-target",
+        "--profile",
+        "linux-synapse",
+        "--tool-config-file",
+        "hepta-linux:/workspace/scratch/95988d8d3ab1/ndu-linux-synapse-candidate-001/actual-reuse-probe-001/nextest.toml",
+        "-E",
+        "binary_id(=ndu-aws-profile-probe) & test(=actual_profile_probe)",
+        "--message-format",
+        "json"
+      ],
+      "exit_code": 0,
+      "stderr": {
+        "bytes": 225,
+        "sha256": "54a0ac3932e432ea077ef606ce0bcf12912b00293ac29ee823abdcbd90c17f05"
+      },
+      "stdout": {
+        "bytes": 1388,
+        "sha256": "77f1eb6d6eb08db2efa6ffc41049a20c9b1a592dfa2d687dfa20834f9d5563d3"
+      },
+      "tool": "cargo-nextest",
+      "wall_seconds": 0.026484672009246424
+    },
+    {
+      "actual_tool": {
+        "bytes": 4779120,
+        "sha256": "67ac1a1c905d4de14293bed368dd1f272423375d5f7132f522c0e8385061fd8c"
+      },
+      "args": [
+        "--justfile",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/justfile",
+        "test",
+        "--cargo-metadata",
+        "/workspace/scratch/95988d8d3ab1/ndu-linux-synapse-candidate-001/actual-reuse-probe-001/cargo-metadata.json",
+        "--binaries-metadata",
+        "/workspace/scratch/95988d8d3ab1/ndu-linux-synapse-candidate-001/actual-reuse-probe-001/binaries-metadata.json",
+        "--target-dir-remap",
+        "/workspace/scratch/95988d8d3ab1/ndu-linux-synapse-candidate-001/actual-reuse-probe-001/frozen-target",
+        "--profile",
+        "linux-synapse",
+        "--tool-config-file",
+        "hepta-linux:/workspace/scratch/95988d8d3ab1/ndu-linux-synapse-candidate-001/actual-reuse-probe-001/nextest.toml",
+        "-E",
+        "binary_id(=ndu-aws-profile-probe) & test(=actual_profile_probe)",
+        "--retries",
+        "0",
+        "--test-threads",
+        "1",
+        "--no-tests",
+        "fail"
+      ],
+      "exit_code": 0,
+      "stderr": {
+        "bytes": 633,
+        "sha256": "9492ccb441dd3e65904c712da1a02d8d9f5c8239d0f7bd45722a5e5aff906632"
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "tool": "just",
+      "wall_seconds": 0.09298508199572098
+    }
+  ],
+  "compiled": false,
+  "existing_binary_origin": {
+    "bytes": 1059400,
+    "path": "/workspace/scratch/95988d8d3ab1/ndu-port-ci-evidence/bugfix-003/actual-profile-probes-003/aws-target/debug/deps/ndu_aws_profile_probe-a4b7ebada89d9f06",
+    "sha256": "5b642a75f632c8fb919298420e9b07cf635a7378cb4dc56780a8200eac4e842c"
+  },
+  "junit": {
+    "bytes": 483,
+    "sha256": "78db3a7d0e91b1054a14c3e9ed0c1f33eae9f86987ab997d319f5ac219ccc9c2"
+  },
+  "metadata_and_binary_unchanged": true,
+  "original_copy_target_absent_after_execution": true,
+  "original_copy_target_deleted_before_execution": true,
+  "real_synapse_qualification": false,
+  "schema": "hepta.linux.nextest-relocation-probe.v1",
+  "scope": "x86_64 local reuse API only; existing frozen std-only test binary; no new Rust compilation",
+  "status": "passed",
+  "tests_failed": 0,
+  "tests_passed": 1,
+  "tests_skipped": 0
+}

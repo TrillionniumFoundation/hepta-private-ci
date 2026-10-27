@@ -1,0 +1,35 @@
+{
+  "arm64_qualification": false,
+  "changed_inputs_after_execution": [],
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse",
+    "-t",
+    "codex-rs/hepta-matrixd/tests/fixtures",
+    "-p",
+    "test_*.py",
+    "-v"
+  ],
+  "docker_executed": false,
+  "exit_code": 0,
+  "finished_ns": 1793105141391519333,
+  "frozen_inputs_sha256": "afae07a065aab8f1587db69a29f492fe2438c025704cefd575781631f90281f7",
+  "private_af_unix_test_facility_allowed": true,
+  "rust_compiled": false,
+  "schema": "hepta.synapse.linux.lightweight-result.v1",
+  "source_bound": true,
+  "started_ns": 1793105135896628754,
+  "tests.stderr": {
+    "bytes": 2855,
+    "sha256": "5c434349434cba9cbe7a9d4267fd565ff37d2711e20ad61a7972165d506e3228"
+  },
+  "tests.stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

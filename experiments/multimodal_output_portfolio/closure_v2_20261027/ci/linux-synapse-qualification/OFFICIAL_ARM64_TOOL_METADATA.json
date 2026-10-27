@@ -1,0 +1,71 @@
+{
+  "schema": "hepta.native-arm64-tools-primary-metadata.v1",
+  "recorded_utc": "2026-10-27T11:59:11.422790+00:00",
+  "assets": [
+    {
+      "repository": "casey/just",
+      "release_id": 320068206,
+      "tag": "1.51.0",
+      "asset_id": 416466462,
+      "asset_name": "just-1.51.0-aarch64-unknown-linux-musl.tar.gz",
+      "url": "https://github.com/casey/just/releases/download/1.51.0/just-1.51.0-aarch64-unknown-linux-musl.tar.gz",
+      "bytes": 2054214,
+      "sha256": "ed7ec466b77709198fd4afed253dba0270203ba5eb1c006bee2b0139090284f5",
+      "api_url": "https://api.github.com/repos/casey/just/releases/tags/1.51.0",
+      "metadata": {
+        "file": "just-1.51.0-release.json",
+        "bytes": 24817,
+        "sha256": "71b622956078df7cefe2c54bf27153ba4058ba2a8817a8d35cdaf175a991c3ce"
+      }
+    },
+    {
+      "repository": "nextest-rs/nextest",
+      "release_id": 242137938,
+      "tag": "cargo-nextest-0.9.103",
+      "asset_id": 285847256,
+      "asset_name": "cargo-nextest-0.9.103-aarch64-unknown-linux-gnu.tar.gz",
+      "url": "https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.103/cargo-nextest-0.9.103-aarch64-unknown-linux-gnu.tar.gz",
+      "bytes": 6920070,
+      "sha256": "caf1cbf376a485a30795d08dad21f1d9d2baddc6c102d24b60432e7ae7d9d7a4",
+      "api_url": "https://api.github.com/repos/nextest-rs/nextest/releases/tags/cargo-nextest-0.9.103",
+      "metadata": {
+        "file": "cargo-nextest-0.9.103-release.json",
+        "bytes": 54437,
+        "sha256": "4b14ee0d2106c47b8b92ee339c96c2758b029cf6afa2942c6796e8de5d5cafdf"
+      }
+    },
+    {
+      "repository": "facebook/dotslash",
+      "release_id": 307315086,
+      "tag": "v0.5.9",
+      "asset_id": 392802347,
+      "asset_name": "dotslash-ubuntu-22.04.arm64.v0.5.9.tar.gz",
+      "url": "https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.arm64.v0.5.9.tar.gz",
+      "bytes": 691131,
+      "sha256": "6e358adfd2125ab3f49967107a60a2683231d4f07f0e136735328fa1f21809b2",
+      "api_url": "https://api.github.com/repos/facebook/dotslash/releases/tags/v0.5.9",
+      "metadata": {
+        "file": "dotslash-v0.5.9-release.json",
+        "bytes": 68888,
+        "sha256": "ce9d6f3639d98a866c20f9a1e4796f830a68b8009afd3b409187cdd37780aee3"
+      }
+    }
+  ],
+  "checksums": {
+    "just-1.51.0-SHA256SUMS": {
+      "file": "just-1.51.0-SHA256SUMS",
+      "bytes": 1184,
+      "sha256": "00d8e0876f5fa089b2f6b8c8e48f9ee8888078a45ea0902a63b863d03feb0b13"
+    },
+    "nextest-0.9.103-aarch64-linux.sha256": {
+      "file": "nextest-0.9.103-aarch64-linux.sha256",
+      "bytes": 121,
+      "sha256": "9731b97dcaef41e457238d64911f3084abefa4357264ef7a2299c0bc0fad6eb9"
+    }
+  },
+  "archives_downloaded": false,
+  "binaries_executed": false,
+  "qualification": false,
+  "compatibility_caveat": "These are official native ARM64 assets. Runtime libc/loader compatibility, exact archive members, installed binary identities and actual versions must be verified by the native ARM64 preparation job. No x86 or emulation result is substituted.",
+  "dotslash_version_selection": "The repo-pinned install action calls latest-release when no explicit version is supplied; this observation pins v0.5.9 for reproducibility, rather than pretending the action hardcodes it."
+}

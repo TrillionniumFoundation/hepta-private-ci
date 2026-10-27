@@ -1,0 +1,214 @@
+{
+  "schema": "hepta.port-remediation.v3-implementation.v1",
+  "at": "2026-10-27T13:05:08.067377+00:00",
+  "status": "source_frozen_pending_root_integration_format_and_real_remote_v3_qualification",
+  "recipe": {
+    "bytes": 336513,
+    "sha256": "b3936e6c2385d8fe93e30cc2ebb904dda43a9e86174fd3e9d427459ddd69629c"
+  },
+  "patch": {
+    "bytes": 68691,
+    "sha256": "7c29b73fb1c284d921eecd333f690c8453dd034b058139c40990ff9c5db4ec0f"
+  },
+  "source_path_count": 29,
+  "vendor_directories": 8,
+  "vendor_files": 1971,
+  "source_before_final_root_format": {
+    "scripts/ndu_port_candidate.py": {
+      "bytes": 14111,
+      "sha256": "81469925bd9ffa4bd0f58265e724c4018b945db16a4e6403d28e8bfedd81254c"
+    },
+    "scripts/ndu_port_candidate_common.py": {
+      "bytes": 23593,
+      "sha256": "b160cd40b45eebeaf6c676d7704e4cf93e0d358c6c0727228bc8429886aa546d"
+    },
+    "scripts/ndu_port_aws_upstream.py": {
+      "bytes": 8903,
+      "sha256": "bd85181f989d4a4377fb536c403dcd4c14d3918bd0e4913b5c205ccdcd9a53da"
+    },
+    "scripts/test_ndu_port_candidate.py": {
+      "bytes": 20373,
+      "sha256": "70973a0f8a3ecb4042d6fd2901381e85a8250e19e420f19ab809d3a753f7ed12"
+    },
+    "scripts/test_ndu_port_aws_upstream.py": {
+      "bytes": 4542,
+      "sha256": "e1532b0b767522b332d1d6217930969a7fd83f6337baddb83da96fb7ee8e5977"
+    },
+    "codex-rs/keyring-store/tests/store_contract.rs": {
+      "bytes": 8436,
+      "sha256": "4a16c50e7d6d71c7d0650e4d683e14f32b2def8ad4efa039ecb13e43d124091e"
+    }
+  },
+  "operational_recipe_differences_from_v2": [
+    "aws_qualification.ignored_tests",
+    "patch_path",
+    "patch_sha256"
+  ],
+  "provenance_difference": "revision.number=3 and exact v2 parent identities, actual failed v2 run and purpose; all other execution fields unchanged.",
+  "changes": {
+    "aws": {
+      "reason": "Actual full listing used module ecs::test, while recipe and both strict guards used ecs::tests; original guard correctly rejected before any of 244 tests ran.",
+      "correct_original_ignored": "ecs::test::real_dns_lookup",
+      "inventory": {
+        "total": 245,
+        "executed": 244,
+        "ignored": 1
+      },
+      "source": {
+        "bytes": 36060,
+        "sha256": "73619b4c268d0f3c9d5fd1e86eab63b9b643642f5e26f6fc3ac3d7853635987b"
+      },
+      "module_line": 493,
+      "test_line": 937,
+      "actual_failed_listing": {
+        "bytes": 28749,
+        "sha256": "be5d3bd72793047cd9b1871e29dffa5711a743be6ee7ace6afe16554b4f40e28"
+      },
+      "new_regressions": [
+        "actual remote 245-case inventory replay accepts exactly 244 unignored names",
+        "recipe rejects old spelling, extra or missing ignore, and reduced or changed inventory"
+      ],
+      "full_upstream_runtime_still_pending": true
+    },
+    "keyring": {
+      "reason": "The selected first-party crate deliberately had lib test=false and no integration target, so actual just test correctly failed with zero tests.",
+      "new_target": "codex-rs/keyring-store/tests/store_contract.rs",
+      "actual_contract": [
+        "Persistence across separate Entry and DefaultKeyringStore instances sharing service/account",
+        "Independent service/account namespaces; serialized Unicode, NUL and newline values; empty overwrite",
+        "Missing, successful and repeated delete and load behavior",
+        "Entry-construction and credential-operation error mapping with original variant payload and inner error types"
+      ],
+      "isolated_backend": "One testcase owns process-global CredentialBuilder and a shared in-memory map keyed by service/account; no platform credential store or user credentials accessed.",
+      "local_runtime": {
+        "rust": "1.95.0",
+        "executed": 1,
+        "passed": 1,
+        "skipped": 0,
+        "retries": 0,
+        "packages": [
+          {
+            "name": "codex-keyring-store",
+            "version": "0.0.0",
+            "source": null,
+            "manifest_path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/codex-rs/keyring-store/Cargo.toml",
+            "features": []
+          },
+          {
+            "name": "keyring",
+            "version": "3.6.3",
+            "source": null,
+            "manifest_path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+            "features": [
+              "apple-native",
+              "async-secret-service",
+              "crypto-rust",
+              "linux-native",
+              "linux-native-async-persistent",
+              "sync-secret-service",
+              "windows-native"
+            ]
+          },
+          {
+            "name": "secret-service",
+            "version": "4.0.0",
+            "source": null,
+            "manifest_path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/Cargo.toml",
+            "features": [
+              "crypto-rust"
+            ]
+          },
+          {
+            "name": "zbus",
+            "version": "6.1.0",
+            "source": "registry+https://github.com/rust-lang/crates.io-index",
+            "manifest_path": "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/yaml-migration/cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/zbus-6.1.0/Cargo.toml",
+            "features": [
+              "comms",
+              "default",
+              "default-rt",
+              "object-manager",
+              "proxy",
+              "service",
+              "tracing"
+            ]
+          }
+        ],
+        "saved_actual_binary_sha256": "5456a7fc1ba3e4c2496df7ad7812a8fcae404ff28be542c32e805f749152a8da"
+      },
+      "complete_preexecution_sources": 65,
+      "no_production_manifest_or_feature_changes": true,
+      "limits": "This tests the actual wrapper through a controlled backend, not native credential persistence; remote Rust1.96/full workspace and original native platform gates remain independent."
+    },
+    "bazel": {
+      "reason": "Seven local third_party direct labels are intentionally removed by the production package traversal rule. The same dependencies are generated in the external crate hub.",
+      "replacement": "Seven exact name-version @crates aliases from pinned official rules_rs 0.0.96 generator; all five first-party and all seven vendor libraries retained.",
+      "deleted_packages_unchanged": true,
+      "next_remote_build_pending": true
+    },
+    "zstd": {
+      "source_difference": "Only candidate MODULE.bazel references patches/zstd-sys_2_1_windows_msvc_include_dirs.patch; prior Windows patch and base MODULE remain unchanged.",
+      "new_patch": {
+        "bytes": 688,
+        "sha256": "219979f4a3ed36e39f281d4da0a22f5735f38b56aeb81b9e4bd7eb3565df8f24"
+      },
+      "delegated_validation_receipt": "/workspace/scratch/95988d8d3ab1/ndu-zstd-212-patch-001/behavior-001/RESULT.json",
+      "scope": "Native agent verified official source/apply and cc-recorder behavior; real C/Windows and remote Bazel remain separate."
+    }
+  },
+  "validation": {
+    "port_python_tests": 25,
+    "pre_execution_snapshot_manifest": "/workspace/scratch/95988d8d3ab1/ndu-keyring-store-contract-001/revision-v3/tests-002/PRE_EXECUTION_SNAPSHOT.json",
+    "pre_execution_snapshot_manifest_identity": {
+      "bytes": 2021,
+      "sha256": "7da46b6b6c28e1e9db44abc8229d26770ffdecdcd8d435d98c2c5266648a7ef4"
+    },
+    "test_log": {
+      "bytes": 11502,
+      "sha256": "cadcae1534253eac682188994ce607edf8625c397220747fceea7e5fbcb8344e"
+    },
+    "keyring_actual_result": {
+      "bytes": 18139,
+      "sha256": "f53254fe50d8653644f146f6b2c3b4111722034e34118b202669b8c3415ffc8b"
+    },
+    "old_negative_evidence": "Original v2 ZIPs/logs and preliminary typo-only guard failure remain intact."
+  },
+  "components": {
+    "V3_SOURCE_ASSEMBLY.json": {
+      "bytes": 39185,
+      "sha256": "46b3a6038ffdd711e99b5735129a662ce4cfb9ce69296aae5f4c10588a9528ca"
+    },
+    "V3_RECIPE_PROVENANCE.json": {
+      "bytes": 1261,
+      "sha256": "1a7ac4a0bbfddf1f1538be861468c477f99956876b79b91d75b45abcbe99fe85"
+    },
+    "V3_PORT_TESTS.json": {
+      "bytes": 677,
+      "sha256": "fe3e980efdad126caaa760197452692fb9e13d68d92e514b3308e9defabd1154"
+    },
+    "V3_BAZEL_TARGET_MAPPING.json": {
+      "bytes": 6304,
+      "sha256": "79b2c5ee6cdefe891f765d4ef0a1f6ee6b7c60f41d523ef3b824cbac7be65d5b"
+    },
+    "V3_KEYRING_CONTRACT_RESULT.json": {
+      "bytes": 18139,
+      "sha256": "f53254fe50d8653644f146f6b2c3b4111722034e34118b202669b8c3415ffc8b"
+    },
+    "V3_KEYRING_CONTRACT_HANDOFF.json": {
+      "bytes": 1166,
+      "sha256": "0c245d07a0195185f129e773a9abe10759ad83a985169af03759f05dac307f9f"
+    },
+    "V2_REMOTE_CONSUMERS_VERIFICATION.json": {
+      "bytes": 8225,
+      "sha256": "8852e1fbbbd3b952c87df09ec33d44f33a0badce1e43915fb85f6b0807accc74"
+    }
+  },
+  "raw_evidence_root": "/workspace/scratch/95988d8d3ab1/ndu-keyring-store-contract-001",
+  "remote_original_evidence_root": "/workspace/scratch/95988d8d3ab1/ndu-port-remote-3a779a6",
+  "pending": [
+    "Root combined Python integration and final formatter; no retesting after final formatting",
+    "Actual v3 Rust1.96 producer/consumer and full upstream AWS244 runtime",
+    "Actual v3 complete Bazel gate and unchanged-scope dependency scan",
+    "Current v2 Matrix consumer is still running; its original database producer already passed and is independently audited"
+  ]
+}

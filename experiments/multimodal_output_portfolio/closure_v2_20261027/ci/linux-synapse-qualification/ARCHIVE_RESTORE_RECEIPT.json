@@ -1,0 +1,18 @@
+{
+  "actual_restored_bytes": 8042308,
+  "actual_restored_members": 301,
+  "aggregate_restored_identity_sha256": "3614b1f51f5aec1e5de75a15c6d77334d2b70b19def333f2be25b0cfd99345e4",
+  "archive": {
+    "bytes": 2030027,
+    "path": "/workspace/scratch/95988d8d3ab1/ndu-linux-synapse-handoff-001/LINUX_SYNAPSE_IMPLEMENTATION_001.tar.gz",
+    "sha256": "507efd2c0b3acde0eaa9195ddefec2a13df22ad9c8b55747f1ff4e9e18f9f169"
+  },
+  "index_sha256": "1879c5b205f4a6286d685f53c5cd7200f0774f8eaa3668a0075915ae2f4a3fef",
+  "native_arm64_qualification": false,
+  "peak_restore_member_bytes": 1658174,
+  "per_member_log_sha256": "8d0d048bd2563e5e126555e9d088d98eaa6cc736106483a6ba2b6c05cc02a3db",
+  "restore_method": "Stream each regular member to a real temporary file; flush/fsync/close; reopen/hash and verify mode; remove only after verification.",
+  "schema": "hepta.linux-synapse.actual-restore.v1",
+  "status": "restored_and_verified",
+  "temporary_restore_removed": true
+}

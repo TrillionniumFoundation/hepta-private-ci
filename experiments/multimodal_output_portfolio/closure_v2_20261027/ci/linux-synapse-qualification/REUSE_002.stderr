@@ -1,0 +1,7 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+────────────
+ Nextest run ID d5140c55-167b-4db4-8829-5110b33282f6 with nextest profile: linux-synapse
+    Starting 1 test across 1 binary
+        PASS [   0.003s] ndu-aws-profile-probe actual_profile_probe
+────────────
+     Summary [   0.004s] 1 test run: 1 passed, 0 skipped

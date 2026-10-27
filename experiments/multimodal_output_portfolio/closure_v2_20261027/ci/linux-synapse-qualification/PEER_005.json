@@ -1,0 +1,289 @@
+{
+  "actual_nextest_reuse_probes": {
+    "001": {
+      "api_execution": {
+        "cold_copy_absent_on_readback": true,
+        "exact_actual_relocated_path": "/workspace/scratch/95988d8d3ab1/ndu-linux-synapse-candidate-001/actual-reuse-probe-001/frozen-target/debug/deps/ndu_aws_profile_probe-a4b7ebada89d9f06",
+        "no_compile": true,
+        "passed": 1,
+        "skipped": 0
+      },
+      "binary": {
+        "bytes": 1059400,
+        "sha256": "5b642a75f632c8fb919298420e9b07cf635a7378cb4dc56780a8200eac4e842c"
+      },
+      "inputs": {
+        "bytes": 2145,
+        "sha256": "1beacbc8ec5af58bb004d63249e7dc7651a765aef9388255e905eacc8eb776c4"
+      },
+      "result": {
+        "bytes": 4900,
+        "sha256": "05b7c5c9094aa11a812bf6e6d5f71d5e30ab177057c7b643043ff1b6cad3a5a4"
+      },
+      "scope": "Existing x86_64 std-only executable; no ARM64, package or Synapse qualification"
+    },
+    "002": {
+      "api_execution": {
+        "cold_copy_absent_on_readback": true,
+        "exact_actual_relocated_path": "/workspace/scratch/95988d8d3ab1/ndu-linux-synapse-candidate-001/actual-reuse-probe-002/frozen-target/debug/deps/ndu_aws_profile_probe-a4b7ebada89d9f06",
+        "no_compile": true,
+        "passed": 1,
+        "skipped": 0
+      },
+      "binary": {
+        "bytes": 1059400,
+        "sha256": "5b642a75f632c8fb919298420e9b07cf635a7378cb4dc56780a8200eac4e842c"
+      },
+      "inputs": {
+        "bytes": 2453,
+        "sha256": "9e021ea4a128a03e5c481903b734bab1937563187d93b4766c30cb8fa149a8d7"
+      },
+      "result": {
+        "bytes": 4897,
+        "sha256": "73a98839837b7c1e98fbf43f261cfc4c47b11260e06a320c58f91a48d3c01ba7"
+      },
+      "scope": "Existing x86_64 std-only executable; no ARM64, package or Synapse qualification"
+    }
+  },
+  "body_audit_unchanged": {
+    "bytes": 1255,
+    "sha256": "8ab30c17637ed197a5475bcd7e0fd817dcf933dca600becf080f862777b8bf1c"
+  },
+  "conclusion": "No additional static blocker found for publishing the reviewed candidate workflow. Actual native ARM64 cold compilation, fixed Synapse business execution, cache deletion/relocation, exact original business assertions and teardown must still pass remotely; this is not qualification approval.",
+  "every_pretest_snapshot_and_current_source_matches": true,
+  "final_static_checks": [
+    "Original port load/restore/graph/policy guards are invoked before private qualification commit construction.",
+    "Original candidate HEAD remains fixed; private qualification commit has exactly the replayed candidate tree and no test overlay.",
+    "Complete actual cold executable and Cargo/nextest metadata are retained before target reclamation.",
+    "Cold build and business containers have network none, nonroot UID, readonly image/source, cap-drop ALL and no Docker socket/client mount.",
+    "Only the trusted controller/transport sidecar retains broad Docker authority, explicitly disclosed.",
+    "Cleanup records command failures and uses generated random exact labels; zero remaining owned resources is required for success.",
+    "Same source tree and producer RESULT bind online preparation and independent offline execution.",
+    "Original macOS runner/proxy and original business assertion body remain byte-identical under the earlier four-addition mechanical audit.",
+    "Rust adapter and entire actual ARM64 business flow remain uncompiled/unexecuted at this review point."
+  ],
+  "fixed_findings": {
+    "F1": "Verified HEAD helper bytes are compiled directly; timestamp/size pyc cache is not consumed.",
+    "F2": "Entry requires Python -I and only memory-loads Git-bound driver modules; helper stdlib path excludes source shadows.",
+    "F3": "Complete candidate patch is replayed in a private index including Git modes; original index is copied before write-tree.",
+    "F4": "Runtime verifies all three frozen metadata identities before/after, actual listed executable path and bytes.",
+    "F5": "Nextest 0.9.103 flattened binary-path field matches official pinned source and actual JSON.",
+    "F6": "Rust rustc -Vv reads multiline stdout without the single-line helper.",
+    "F7": "Catchable termination enters ordinary finally; owner label persists before create, recovery discovers owned resources and independently inspects labels before removal.",
+    "F8": "Full cold executable test inventory retained; filter must match exactly the original nonignored business testcase.",
+    "F9": "Unsupported profile inherits key removed; second actual reuse probe preserves retries/threads and completes without unknown-key warning."
+  },
+  "frozen_inputs": {
+    "bytes": 9429,
+    "sha256": "afae07a065aab8f1587db69a29f492fe2438c025704cefd575781631f90281f7"
+  },
+  "frozen_source_count": 36,
+  "limitations": [
+    "The x86_64 reuse probe proves the pinned nextest reuse path with a small existing binary, not full crate runtime resources or ARM64 execution.",
+    "Probe 001 driver source was captured after execution with its custody timing explicitly recorded; probe 002 driver capture timing is being supplied by the owner.",
+    "Host/container tool and Docker architecture claims remain enforced runtime gates until observed in the remote run.",
+    "Ordinary signal recovery is reviewed and small control behavior tested; SIGKILL/host loss cannot be presented as already proven cleanup.",
+    "Post-format changes require a separately recorded identity/semantics comparison; this receipt binds pre-format batch005 bytes."
+  ],
+  "mode": "Read-only source, artifact and log verification. Reviewer did not execute behavior tests, Rust, Docker, formatting or implementation edits.",
+  "owner_execution_receipts": {
+    "batch-004-local-socket-permitted": {
+      "bytes": 1218,
+      "sha256": "077a4b3ddbcb1c9605307791aaf0872b52b7b9a8645e9a9338c22971a6262acb"
+    },
+    "batch-004-pretest": {
+      "bytes": 957,
+      "sha256": "2b324550cc0f208cbcc23edb8038eac2ac555faae545ba4bdbb0e30571d1dad5"
+    },
+    "batch-005-pretest": {
+      "bytes": 1006,
+      "sha256": "38ad46b2e176cefa06b431692bc100cb2db80f7421984e5b47a3acf3c70d71ff"
+    }
+  },
+  "owner_lightweight_tests": {
+    "docker_executed": false,
+    "executed": 17,
+    "initial_batch004_AF_UNIX_sandbox_failure_retained": true,
+    "passed": 17,
+    "rust_compiled": false,
+    "same_batch004_bytes_passed_after_private_socket_permission": true
+  },
+  "recorded_utc": "2026-10-27T12:47:23.400371+00:00",
+  "reviewed_source_commit": "78efa8bd41f20da93c7abab64669fd21b87cd8a5",
+  "schema": "hepta.linux-synapse-final-independent-peer.v1",
+  "source_files": {
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_qualification/host.rs": {
+      "bytes": 6926,
+      "sha256": "a98b72bffa5a64a16ed65ff74857ba26c6e606fe8062bbb4b3402029447b0eca"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_qualification/mod.rs": {
+      "bytes": 9421,
+      "sha256": "9d6a3c54249ea5702ad3645ecb0ca38955841bdfa2b86710dcaae51342d8f144"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_qualification/types.rs": {
+      "bytes": 1736,
+      "sha256": "a77bd6c602e94f5f8b5cf5174887fe588e46bbb3b59fb917660b344eaafcfb9e"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/README.md": {
+      "bytes": 8893,
+      "sha256": "f74f1b8d43f7fc549b0a1be5339e07244d87315c9158f91400e7ff1d2c6a93fe"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/__init__.py": {
+      "ast_sha256": "1f1984dc3490c0763b12cca07dea7edbaed7a7cac533b859e32a5a1b77852302",
+      "bytes": 61,
+      "sha256": "f773a0171be7727e671997a2d5d933f006331dcdcaedfa0cadd1e49cb4760076"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/build.py": {
+      "ast_sha256": "1e29cd33fe7abe32f96f612a418bac61a9a740a2d602ac771e4f0a9f74956ad6",
+      "bytes": 9635,
+      "sha256": "0d5c1ae0f5234c98746e30b2de37b82e21e59104f4bf30eab97196f6cd6185db"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/ci.py": {
+      "ast_sha256": "ebe77b35fd1207066f60eeac9dbb839b7bca8e8cb4eb82da00c47d57a58e7959",
+      "bytes": 4059,
+      "sha256": "aafc8707fc6cec61ea913ef1a962d20eaa243d28b9232d5bac85e000c0a52c17"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/commands.py": {
+      "ast_sha256": "62daf395fbac878cfe867ac66a28180c7cc55a1c36a9d8b9963cc02e3aa30e56",
+      "bytes": 5483,
+      "sha256": "112a8f2efbe21a1cb31abfdc255a0d7562d66a0b6dad3a87574476a099dab08c"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/contract.py": {
+      "ast_sha256": "f4efe0f4bfbef49af670e2760f06f2828ed475ec3db1155f16fbfc0ae18118aa",
+      "bytes": 7957,
+      "sha256": "0f04661ac3b1b114f64b6361e780d07b4f4c08331f19d4ef497ca4fc7cf316a9"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/docker_control.py": {
+      "ast_sha256": "a8d507792889d116796b3a638608ec97f39afd4bff9d9e4e783531e32e2508eb",
+      "bytes": 11972,
+      "sha256": "9449961ad40ca32801ae3e20d3751f2760f5fbfb7ab92c6dbc6a8dedcb4659f2"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/files.py": {
+      "ast_sha256": "05e6f7ec936308e6315688d8f9644aa2a3d65337a8b130e6aa179cdb36d334f0",
+      "bytes": 6265,
+      "sha256": "a10116d14ebbf33fa26786ac7c33f4c882465f207478e32e7acb04a88d068146"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/inputs.py": {
+      "ast_sha256": "3d7b6039758dbefa17025f13ad0499e390d4063f1b5455352ff931ba9448557b",
+      "bytes": 9131,
+      "sha256": "1941af76514d9b53f084fe486508d5dceec132739914d47f9175a2ea266ec05f"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/orchestrate.py": {
+      "ast_sha256": "f9f040d8a9a7f8a7053fe59c7303446b43235fa77e208311f7bd64f1928b0459",
+      "bytes": 14107,
+      "sha256": "b3a2e00bdfe2f5a4007093a491669386de376907cf479f5fd78e89ca442363c6"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/prep_inside.py": {
+      "ast_sha256": "71220e16daa4a458228b921d8f56f3018b4bf27963804f4d999a4d020b2fdf69",
+      "bytes": 6299,
+      "sha256": "56969c99e5eec7b8523fb3126e376e3d7b5427929d0233fd40f3bb8285b7d90b"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/prep_tools.py": {
+      "ast_sha256": "c57d9c13d03490f18757a3a202820bea25ec5376e03d4fbfa6fce81c037e595a",
+      "bytes": 4622,
+      "sha256": "a3347d82ca4b45651068e721bd4f3736feb683641668546c9c8e13fa6ba70a74"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/prepare.py": {
+      "ast_sha256": "5adbf3f8a9361654f43b13d9b75d89dab3887580a5bb052c97a1be0ccc2db309",
+      "bytes": 14799,
+      "sha256": "201bba6c4d29b23e4eccfe30bbe2ef17ab029a2d0b0bf333c148286f3c360481"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/receipts.py": {
+      "ast_sha256": "3afea6c840a4c3b6141ee5ec3a5223ffcf95f779654b2ef8e0cc902b29113b50",
+      "bytes": 4023,
+      "sha256": "d002689223e368e59a56eea82d48672b22c0dc323387e37e082ac1fd61c0c034"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/recovery.py": {
+      "ast_sha256": "a1f2a5ce84edb758722814fb9873b41ecc9dfbcf113365bd5f6e3f26be94b6f1",
+      "bytes": 2896,
+      "sha256": "645ae8fcd7ebd699cec7ecd7eb0825ada0691faf39a185cf1c8ea32d1c69c0bd"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/runtime.py": {
+      "ast_sha256": "a0096388334ae27dbcce98d02203ab25d359ba3d646f5940cef2c4de2e047a39",
+      "bytes": 6971,
+      "sha256": "c1b45e7448960b1840979a7e1eae7c3450ec6b87b01201ca13fc755a9a411756"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/source.py": {
+      "ast_sha256": "0431f607b3c667ea633b650b74baa2b06f878cbcbfae657828cdb3aa7d1644bf",
+      "bytes": 11770,
+      "sha256": "b943fee71044167ceee34209572ef49b9a64f9d5d20f845dc7894192bd3264f6"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/synapse.py": {
+      "ast_sha256": "8c6decf8fe3045d3c341cdd1c62c47b311ef7f703bf2a5c06ed2ac80ae804a56",
+      "bytes": 8933,
+      "sha256": "8a1254e2f522908c729eebd6eb31d24d554feab126aca3d479f633654d974b3a"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_boundaries.py": {
+      "ast_sha256": "426679a393628bb5d7ef5d3cf4481e2cbbee950bab23739f6ecb9790a193e53a",
+      "bytes": 7178,
+      "sha256": "4c24ca145fc9609fb52eb5549380e9883de4489cb7816365c3e0b3ee01e1111f"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_cleanup.py": {
+      "ast_sha256": "79c05061fdcce440e043346b11e0aa899334be4024ab2ad81efb6d1544dbe278",
+      "bytes": 4863,
+      "sha256": "50b150864dd723d26b69950f0bbd0e17ff0eb6659d20ed8d19b5bcc1a1f8f394"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_execution.py": {
+      "ast_sha256": "5705e16c7ea24a604e9e91badbab5fe5d7ee7f6d5e9472d7931f6a7d36f93ad2",
+      "bytes": 4175,
+      "sha256": "6d8fcea44cb542111ec07385d5e778f24656e8afeadcba5da4644bbf853fa0a7"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_restore.py": {
+      "ast_sha256": "c9b5049675771328447a4914a553fdb428353a5c80848ec81ac907310b8d7181",
+      "bytes": 4511,
+      "sha256": "cad5fe927b1ca863fe0da73ba490c929beab0dea8502ff664e3026c5fadf4c9a"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_source.py": {
+      "ast_sha256": "e223c773064f41d5f2a73e0f9866b28546494cfb47fa683a839d1cb3059523c7",
+      "bytes": 9902,
+      "sha256": "837cb2413d4ad668e2c326d47eb2157643de20e880fcc22d716be4b5dadea9ee"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse-linux.py": {
+      "ast_sha256": "a55c6f8273eb7a126361a36b028b1621e5e4ab72d9b4234ff38f789373ec3009",
+      "bytes": 11597,
+      "sha256": "38fb11c8de2873f15fc263594144cbf24292d2a7ed37a8dd4aee4192ce4b28df"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh": {
+      "bytes": 124460,
+      "sha256": "2c733cafbe5cece9697ef08c6a5ecf5747ec69ab3dfa227c3273ce38d2c2a610"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/synapse-loopback-proxy.py": {
+      "ast_sha256": "b1d1e66b0925f65d61f3695ce93a5f0914ef9187037ee4c18a0cf886ac4fefd9",
+      "bytes": 14182,
+      "sha256": "4ca56154c2e31b3476df6e2663af3d0d327fd2c000da7c8dcecb8dc486d15f67"
+    },
+    "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs": {
+      "bytes": 236636,
+      "sha256": "68894e5411cb47a5b4b9bfad6d2c50963148b48986d4b0ac60914bbf63efc264"
+    },
+    "justfile": {
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    "scripts/just-shell.py": {
+      "ast_sha256": "d162d93ded3da8c6d2731f06bf342259efb64b4bd422235a4c9e24d6d18f5e38",
+      "bytes": 2030,
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    "scripts/ndu_port_candidate.py": {
+      "ast_sha256": "e92e0d2da00d8a889ceaa136fc350ed6318af517e329c2f9a0de0c7b43c1c1ed",
+      "bytes": 14287,
+      "sha256": "e5413a7413bfbdee4087656620f77d2ff018b2a31a64d9123754202a01a04340"
+    },
+    "scripts/ndu_port_candidate_common.py": {
+      "ast_sha256": "cf7ddb6933b1ed3ec6ff77132c3e2c2b7672b8571234f68013368d28e85d85d3",
+      "bytes": 23594,
+      "sha256": "c260cf29b2681bc99077730bc80b744ff53a28f4d402dbe379a801a20af881dd"
+    },
+    "scripts/run-nextest.py": {
+      "ast_sha256": "567eff2305195fb7302b5409a6b12b93ba1f240ab0ee46fa65b37d49bbd1680e",
+      "bytes": 10206,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    "scripts/test_ndu_port_candidate.py": {
+      "ast_sha256": "c922b6cfea300e5d2138bb4d9e386830f1d0807badc334148692ec2e0df95627",
+      "bytes": 19499,
+      "sha256": "cdbfc7e6fe695f3d403a06a5832c56013f4c62d234bcbe13174d4a1d4c623783"
+    }
+  }
+}

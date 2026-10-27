@@ -1,0 +1,406 @@
+{
+  "started_at": "2026-10-27T12:54:44.477084+00:00",
+  "status": "passed",
+  "commands": [
+    {
+      "command": [
+        "/workspace/scratch/95988d8d3ab1/native_toolchain_20261027/installed/bin/cargo",
+        "metadata",
+        "--manifest-path",
+        "/workspace/scratch/95988d8d3ab1/ndu-keyring-store-contract-001/qualification-001/source/Cargo.toml",
+        "--locked",
+        "--format-version",
+        "1"
+      ],
+      "cwd": "/workspace/scratch/95988d8d3ab1/hepta-private-ci",
+      "started_at": "2026-10-27T12:54:44.478023+00:00",
+      "log": "metadata.log",
+      "stdout": {
+        "path": "metadata.json",
+        "bytes": 648422,
+        "sha256": "2377bb8a7e0c77ad9dc7598d4b5f823c305756aa8675955c2c7fb17651b64360"
+      },
+      "exit_code": 0,
+      "seconds": 1.144259582986706,
+      "identity": {
+        "bytes": 3726,
+        "sha256": "a075d88583db63f3253ae7dab70c5609f83159b4b2a8eae6cfe4e29e1413061c"
+      }
+    },
+    {
+      "command": [
+        "/workspace/scratch/95988d8d3ab1/native_toolchain_20261027/installed/bin/cargo",
+        "nextest",
+        "list",
+        "--manifest-path",
+        "/workspace/scratch/95988d8d3ab1/ndu-keyring-store-contract-001/qualification-001/source/Cargo.toml",
+        "--locked",
+        "--cargo-profile",
+        "ci-test",
+        "-p",
+        "hepta-keyring-contract-qualification",
+        "--test",
+        "store_contract",
+        "--config-file",
+        "/workspace/scratch/95988d8d3ab1/ndu-keyring-store-contract-001/qualification-001/nextest.toml",
+        "--tool-config-file",
+        "hepta-contract:/workspace/scratch/95988d8d3ab1/ndu-keyring-store-contract-001/qualification-001/store.toml",
+        "--profile",
+        "default",
+        "--list-type",
+        "binaries-only",
+        "--message-format",
+        "json"
+      ],
+      "cwd": "/workspace/scratch/95988d8d3ab1/hepta-private-ci",
+      "started_at": "2026-10-27T12:54:45.622912+00:00",
+      "log": "binaries.log",
+      "stdout": {
+        "path": "binaries.json",
+        "bytes": 1093,
+        "sha256": "938b5ff9cedb2503c027a269a0b6e49978df04954b8cb21850cab8fd69354e78"
+      },
+      "exit_code": 0,
+      "seconds": 36.34861972599174,
+      "identity": {
+        "bytes": 2650,
+        "sha256": "fddb30f38e420e0906d2433b5735cd3570e0fad7b0f8d09c85b7ba044d68a411"
+      }
+    },
+    {
+      "command": [
+        "/workspace/scratch/95988d8d3ab1/continuation_format_tools_20261027/just",
+        "--justfile",
+        "/workspace/scratch/95988d8d3ab1/hepta-private-ci/justfile",
+        "test",
+        "--manifest-path",
+        "/workspace/scratch/95988d8d3ab1/ndu-keyring-store-contract-001/qualification-001/source/Cargo.toml",
+        "--locked",
+        "--cargo-profile",
+        "ci-test",
+        "-p",
+        "hepta-keyring-contract-qualification",
+        "--test",
+        "store_contract",
+        "--config-file",
+        "/workspace/scratch/95988d8d3ab1/ndu-keyring-store-contract-001/qualification-001/nextest.toml",
+        "--tool-config-file",
+        "hepta-contract:/workspace/scratch/95988d8d3ab1/ndu-keyring-store-contract-001/qualification-001/store.toml",
+        "--profile",
+        "default",
+        "--retries",
+        "0",
+        "--no-tests",
+        "fail"
+      ],
+      "cwd": "/workspace/scratch/95988d8d3ab1/hepta-private-ci",
+      "started_at": "2026-10-27T12:55:22.005486+00:00",
+      "log": "test.log",
+      "exit_code": 0,
+      "seconds": 0.25269154900161084,
+      "identity": {
+        "bytes": 541,
+        "sha256": "d32aefb9d78d71f18d7c0befcfd5ea4291ccd2bb98357b1099ccd3a02a2e01dd"
+      }
+    }
+  ],
+  "scope": "Actual public DefaultKeyringStore integration test under an isolated in-memory CredentialBuilder, with existing Rust 1.95.0 and frozen port sources. Does not qualify native credential storage or the full 1.96 candidate workspace.",
+  "lock_before": {
+    "bytes": 28146,
+    "sha256": "deb9a38e2f65feb26044c6de6afcc5f8cf7e52208372c8bb9f6835df5fa5a0ec"
+  },
+  "runner_source_before": {
+    "bytes": 5777,
+    "sha256": "58be17abf56b70e44b8febcd3a9aba551fb75c09de482f72ccf47742f6128517"
+  },
+  "source_inputs_before": {
+    "hepta-private-ci/codex-rs/keyring-store/Cargo.toml": {
+      "bytes": 780,
+      "sha256": "f2cbc150f0ccb0dd3108ecf7603d1854d16a4c252535ec0b84414a67651c313e"
+    },
+    "hepta-private-ci/codex-rs/keyring-store/src/lib.rs": {
+      "bytes": 7487,
+      "sha256": "8e345522aa87967a0ce36e6f58c09f5cbc2cd775fbccd7dd5fba2ab0e35b76ba"
+    },
+    "hepta-private-ci/codex-rs/Cargo.toml": {
+      "bytes": 21574,
+      "sha256": "0e3fc0b7dc3ec907e02059a1bc79579077c8e5d1a0ac936b4f1bd984e94afdb4"
+    },
+    "hepta-private-ci/justfile": {
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    "hepta-private-ci/scripts/run-nextest.py": {
+      "bytes": 10206,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    "ndu-keyring-store-contract-001/proposed/codex-rs/keyring-store/tests/store_contract.rs": {
+      "bytes": 8436,
+      "sha256": "4a16c50e7d6d71c7d0650e4d683e14f32b2def8ad4efa039ecb13e43d124091e"
+    },
+    "ndu-keyring-store-contract-001/qualification-001/source/Cargo.toml": {
+      "bytes": 778,
+      "sha256": "4495f049358be68da227aca105ad0fa72aa89a6c175f98074559a612cda9938a"
+    },
+    "ndu-keyring-store-contract-001/qualification-001/nextest.toml": {
+      "bytes": 128,
+      "sha256": "f8bd97997b46a50f611b81dd8912bba2c36350d47b2309b557a1df17a775c3a5"
+    },
+    "ndu-keyring-store-contract-001/qualification-001/store.toml": {
+      "bytes": 111,
+      "sha256": "70350e9c9dc025ceeaa2c1e4168a34827b436ea753a27bc0236cdf65abb72b56"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/LICENSE-APACHE": {
+      "bytes": 10842,
+      "sha256": "78ebc2ea2a1cec9cbec2e1a6fc15e73474fe22bdad7575518e7f4628651d49c4"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/Cargo.toml.orig": {
+      "bytes": 3077,
+      "sha256": "435cc9ea9a2c68ff007da37f6072c3b1321fbefbef0ead36e4476d39eebb43b6"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/Cargo.toml": {
+      "bytes": 4518,
+      "sha256": "95b57c3cdf4ba433fe34efa0cab02aee68a4d381945f5a160610e4fb84feec4d"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/.cargo_vcs_info.json": {
+      "bytes": 94,
+      "sha256": "3d8cabe043619def2ab90c6207adbdb375a9d9f559516a73e7a85c325c1b2a78"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/HEPTA_PATCH.md": {
+      "bytes": 2998,
+      "sha256": "47cf6acb736bd5cc6ee37257d095843775d65e8d33fa330aabf8e475aad46dec"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/README.md": {
+      "bytes": 10429,
+      "sha256": "8f9b54161398c84d413630047fd47532d49fcc96fb65111b2d67ad29116badad"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/CHANGELOG.md": {
+      "bytes": 6357,
+      "sha256": "02fb0a66ad0b0bdf89348f01cb0a89171aa4ed128db66e02c096399216f6dd5c"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/BUILD.bazel": {
+      "bytes": 1143,
+      "sha256": "a40a53395df44ed2b99fe214955c8d35a7314b5fc6bc840e6887bc51f8b7e8a8"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/.gitignore": {
+      "bytes": 385,
+      "sha256": "62582c97e1caa20ae5aa4b804f0e185d152d46a3677fc8266b5429b100725dc1"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/release.toml": {
+      "bytes": 26,
+      "sha256": "13b66535f82147d43b9e18e0ff21cd6c8976b4c05dbfcb11c3ee04ae8da68a01"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/Cargo.lock": {
+      "bytes": 52321,
+      "sha256": "f47769c4fd9938e6f7a9aea4a95c39b7d0719490db2c68be6f344ebc79cbb09c"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/LICENSE-MIT": {
+      "bytes": 1062,
+      "sha256": "157cc607717b1b372a69f6b4526f6ad18c1279af9f3267835cca2943f37bc07d"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/examples/ios.rs": {
+      "bytes": 4136,
+      "sha256": "ba0d429ae50f267e2e325cfd952bddea226e6d6e6cfda7b79b8005466f49a167"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/examples/cli.rs": {
+      "bytes": 11532,
+      "sha256": "47133da405865eb91a0d27d022ee186bc5304d6b9852448a8ccac9c45898c8da"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/tests/basic.rs": {
+      "bytes": 4437,
+      "sha256": "646c6682e54f3e8c2b14b13c22345a3780893ec5f5776a9707b1bd98e30242ec"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/tests/threading.rs": {
+      "bytes": 7608,
+      "sha256": "0c6d3680c10f790a8c61acc185765a5413e52bc9037d0abfc2d24b640be94eff"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/src/error.rs": {
+      "bytes": 4783,
+      "sha256": "6c5797d0a2cfeea3641397f23777c90e8ef38d9fa89d57644b3b5f3d2c967b54"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/src/keyutils.rs": {
+      "bytes": 15711,
+      "sha256": "ae7f1915437ed091afd2e0addd5fb1890caf60c4ae9c55d665cf87b44ac5e778"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/src/secret_service.rs": {
+      "bytes": 34878,
+      "sha256": "1f3e0dab29e3805e2e2c17a17e3504997128444f50cd15b29e921bb3562b0d19"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/src/lib.rs": {
+      "bytes": 29865,
+      "sha256": "dfa7fa25141b5cfa6d6000fa753bcdd956679dabc7c55293d0b9ebd5f9eaa8fc"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/src/credential.rs": {
+      "bytes": 7766,
+      "sha256": "41185066e93511028e724fa1189ff95f221f371960f943761da84e4a0431030f"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/src/mock.rs": {
+      "bytes": 11148,
+      "sha256": "444b47c1cc9ecb38cb2fdc23a38a67181702f7c71ab5a98a00ea58471ad0a8dd"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/src/macos.rs": {
+      "bytes": 13280,
+      "sha256": "7a78829f057fdb2b620684fecf0b7f617ebc3305fb426484d4c11b0847f2b03b"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/src/windows.rs": {
+      "bytes": 30752,
+      "sha256": "bca6eec1115989c04607a0e303b8b44702b656e469c885deb93e8a0607e8e42f"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/src/keyutils_persistent.rs": {
+      "bytes": 8822,
+      "sha256": "e0e23b80f8547a278ff9786892b3b61d92c671ea4af8643f344e3d92a80636c4"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/src/ios.rs": {
+      "bytes": 7301,
+      "sha256": "c673178218ce2b42719e1a1f3e7a2c424b16a69de27db54091456de1521e510a"
+    },
+    "hepta-private-ci/codex-rs/third_party/keyring-3.6.3/tests/common/mod.rs": {
+      "bytes": 1347,
+      "sha256": "06d00b5f2e8d860ce8172b694bcbd54f7ae3248a832f9845f9caa493f5bec93a"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/LICENSE-APACHE": {
+      "bytes": 10847,
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/Cargo.toml.orig": {
+      "bytes": 1567,
+      "sha256": "df11b9dd5f8f41c1eec1cabd271c4a79ddd77dcb7238c2fdac63ec18b5d3ac3a"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/Cargo.toml": {
+      "bytes": 2282,
+      "sha256": "01f36603539c397a6f8d0dfeaf23117c69a05de1a43c9242e8c2adc603204606"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/.cargo_vcs_info.json": {
+      "bytes": 94,
+      "sha256": "b7d9d269df50a049ac007d08d29a6c41e6e8a7466fddd3c956e609a6a740f2dd"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/HEPTA_PATCH.md": {
+      "bytes": 2892,
+      "sha256": "1fd2e1e2d600bbbc7a2b0c342403e525e2235854239edef562d08015d407615b"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/README.md": {
+      "bytes": 3930,
+      "sha256": "0520eb4d187c4af674712d6f5503acf8605983049bf37c3da693efa4155079b2"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/CHANGELOG.md": {
+      "bytes": 114,
+      "sha256": "151a8a23a5e48a51959d19cfd630c94d53be83fa34ccd01e57a3df92f70957a6"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/BUILD.bazel": {
+      "bytes": 660,
+      "sha256": "02a6e61ea01309c48f5e8746fdf904e427b1bf30d235440c39d97b233d187522"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/.gitignore": {
+      "bytes": 31,
+      "sha256": "db9d1819da2b92de288874ed2648b89e8f9a542381877ed611a9db81023e414c"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/Cargo.lock": {
+      "bytes": 38323,
+      "sha256": "a151616882ea213fe4205db81297bf41663406dd37ecb0792a93917f3ddab6a7"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/LICENSE-MIT": {
+      "bytes": 1069,
+      "sha256": "0d13fdf5615ccc7e7123b58b5c88b0d2bbabe345cd70b94e094ee44034db5be6"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/NOTES_ON_PORT.md": {
+      "bytes": 2184,
+      "sha256": "02132c378add48a1820a4774c1f8b3f40a8a78bf3bacd90fb4d95f7768749265"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/examples/example.rs": {
+      "bytes": 2144,
+      "sha256": "71de96120de155629a3028af21198dcbca37241f666d0bc1c73b11a0d7cc1ae7"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/src/collection.rs": {
+      "bytes": 10574,
+      "sha256": "123e99678e9deac14795cac9afaf4f248cd40762e602e3a30331518868dbc7e5"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/src/ss.rs": {
+      "bytes": 871,
+      "sha256": "2a20bf32a95b0bbdcce6b494ea232e31ed60201a1f83b9eec875d84ec8e32205"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/src/error.rs": {
+      "bytes": 2510,
+      "sha256": "87c5642da8bae38518cc0e1daca061bda3649c15ef6f4ec154420646d28d8c50"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/src/lib.rs": {
+      "bytes": 14452,
+      "sha256": "55e81002fc3ad7967f9b3a14072ce1e55352fda59b113b08aac108d4080f099e"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/src/item.rs": {
+      "bytes": 14263,
+      "sha256": "6d14c25ab607f21bda767efd3e338ee283394616644f527b129317062241ff74"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/src/session.rs": {
+      "bytes": 10772,
+      "sha256": "e886a06f14729f915ed8e408671553d1f4ba141a7510e7620b446e84f9cbc456"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/src/util.rs": {
+      "bytes": 4059,
+      "sha256": "e51d1d1f8b38b7896facf2ee91229b483372457b72883269c6abd6eff69992b8"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/.github/workflows/ci.yaml": {
+      "bytes": 3966,
+      "sha256": "71e8ec73fa36fda497982fea8f3458d18cc9a79c301bdad3ef7256f379d43d92"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/src/proxy/collection.rs": {
+      "bytes": 1920,
+      "sha256": "f48b642f40051668c2395292e926111e18e0c41503497db34ec136849970c6fb"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/src/proxy/item.rs": {
+      "bytes": 1580,
+      "sha256": "9a59eb15c8d1ba50d5bb9717b85c6bd526b733bcd944d767475bebaa636f3f8a"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/src/proxy/service.rs": {
+      "bytes": 2563,
+      "sha256": "b2ec9526ee5921fa68da0c2131940f6b97d5d456e672b6269fa50e3800056b6a"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/src/proxy/prompt.rs": {
+      "bytes": 991,
+      "sha256": "b059816fb56db2e4cd9907a1065f84abbcde19ccdcc4babb39a6552bec2f7a67"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/src/proxy/mod.rs": {
+      "bytes": 705,
+      "sha256": "e7799d6d20c9b75b2e5fa2cb298b402e273555c7b983f0687ca362f72a2afe45"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/src/blocking/collection.rs": {
+      "bytes": 10154,
+      "sha256": "57fd2c4107d552785e1fc5f596694f4c59c52076299e8a55411e26ae3a92a646"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/src/blocking/item.rs": {
+      "bytes": 13134,
+      "sha256": "461f60f94e433bd3768af36e6402ca2e746d9a4b4f03bd30806b8cf3c8553456"
+    },
+    "hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/src/blocking/mod.rs": {
+      "bytes": 9854,
+      "sha256": "2a8a30e29440a5a7a5078ac22f67e2103466f6b89274f3e6793d63f791803a16"
+    }
+  },
+  "environment_overrides": {
+    "PATH": "/workspace/scratch/95988d8d3ab1/native_toolchain_20261027/installed/bin:/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/yaml-migration/bin:/workspace/scratch/95988d8d3ab1/continuation_format_tools_20261027:/root/.codex/tmp/arg0/codex-arg0GMFUlX:/opt/codex/codex-path:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/override:/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/fallback",
+    "CARGO_HOME": "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/yaml-migration/cargo-home",
+    "CARGO_TARGET_DIR": "/workspace/scratch/95988d8d3ab1/ndu-keyring-store-contract-001/target",
+    "RUSTC": "/workspace/scratch/95988d8d3ab1/native_toolchain_20261027/installed/bin/rustc",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "binary_before": {
+    "path": "/workspace/scratch/95988d8d3ab1/ndu-keyring-store-contract-001/target/ci-test/deps/store_contract-3b484b82471cbf4c",
+    "bytes": 8958640,
+    "sha256": "5456a7fc1ba3e4c2496df7ad7812a8fcae404ff28be542c32e805f749152a8da"
+  },
+  "observed": {
+    "executed": 1,
+    "passed": 1,
+    "skipped": 0,
+    "retries": 0
+  },
+  "junit": {
+    "bytes": 589,
+    "sha256": "65ce74d6172fe6f8161d3bb6698e8313563a45dd45743f55d1fb6c8453daaf43"
+  },
+  "binary_unchanged": true,
+  "sources_and_lock_unchanged": true
+}

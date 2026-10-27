@@ -1,0 +1,357 @@
+{
+  "schema": "hepta.dependency.license-policy-finding.v1",
+  "created_at": "2026-10-27T12:55:58.337235+00:00",
+  "status": "owner_decision_required_unapplied_proposal",
+  "blocking_gate_closed": false,
+  "repository_policy_modified": false,
+  "dependency_or_feature_or_codec_changed": false,
+  "scope": "Read-only review of the existing v2 candidate failure and official source bytes. No cargo-deny rerun under a changed policy; no legal approval inferred.",
+  "inputs": {
+    "old_lock": {
+      "path": "evidence/old-Cargo.lock",
+      "bytes": 418040,
+      "sha256": "56ed52d9789f01abda5bad96f25dd9d48b837108653cb2f3474ee5e0dbc790de"
+    },
+    "candidate_lock": {
+      "path": "evidence/candidate-Cargo.lock",
+      "bytes": 420292,
+      "sha256": "96bd4cab2615471fdba80652a73e9cb7c1572e88a678d68dae3b8618e344793c"
+    },
+    "original_policy": {
+      "path": "evidence/deny.original.toml",
+      "bytes": 18803,
+      "sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352"
+    },
+    "bazel_module": {
+      "path": "evidence/MODULE.bazel",
+      "bytes": 21895,
+      "sha256": "aaae03b0fc03055cecd7ef060ab53299e1e62abba7082daf513e5c2d3feb0d5f"
+    },
+    "old_bzip2_windows_patch": {
+      "path": "evidence/bzip2_windows_stack_args.patch",
+      "bytes": 586,
+      "sha256": "8ace989a58a300587ba6fa8b2b76c5d8f035155be5ed818de663b31cdfb0c00a"
+    },
+    "deny_RESULT.json": {
+      "path": "evidence/host-diagnostic/RESULT.json",
+      "bytes": 663,
+      "sha256": "821ba3e2aa703d1bb7fca04e1f18133b4e5858f4147073706a78558a2463b18c"
+    },
+    "deny_ENVIRONMENT.json": {
+      "path": "evidence/host-diagnostic/ENVIRONMENT.json",
+      "bytes": 327,
+      "sha256": "cd792e286bd4bdb55221a22137f8e7d3bbe0997590988b9d77363e6b346bafa3"
+    },
+    "deny_cargo-deny.log": {
+      "path": "evidence/host-diagnostic/cargo-deny.log",
+      "bytes": 15344860,
+      "sha256": "505f2fea4ae4fc1901a98f804a1d365815dad5b6eb84955e485f136898c843f4"
+    }
+  },
+  "locked_packages": {
+    "old": {
+      "bzip2": {
+        "name": "bzip2",
+        "version": "0.5.2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "49ecfb22d906f800d4fe833b6282cf4dc1c298f5057ca0b5445e5c209735ca47",
+        "dependencies": [
+          "bzip2-sys"
+        ]
+      },
+      "bzip2-sys": {
+        "name": "bzip2-sys",
+        "version": "0.1.13+1.0.8",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "225bff33b2141874fe80d71e07d6eec4f85c5c216453dd96388240f96e1acc14",
+        "dependencies": [
+          "cc",
+          "pkg-config"
+        ]
+      },
+      "zip": {
+        "name": "zip",
+        "version": "2.4.2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "fabe6324e908f85a1c52063ce7aa26b68dcb7eb6dbc83a2d148403c9bc3eba50",
+        "dependencies": [
+          "aes",
+          "arbitrary",
+          "bzip2",
+          "constant_time_eq",
+          "crc32fast",
+          "crossbeam-utils",
+          "deflate64",
+          "displaydoc",
+          "flate2",
+          "getrandom 0.3.4",
+          "hmac 0.12.1",
+          "indexmap 2.14.0",
+          "lzma-rs",
+          "memchr",
+          "pbkdf2",
+          "sha1 0.10.6",
+          "thiserror 2.0.18",
+          "time",
+          "xz2",
+          "zeroize",
+          "zopfli",
+          "zstd"
+        ]
+      }
+    },
+    "candidate": {
+      "bzip2": {
+        "name": "bzip2",
+        "version": "0.6.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "f3a53fac24f34a81bc9954b5d6cfce0c21e18ec6959f44f56e8e90e4bb7c346c",
+        "dependencies": [
+          "libbz2-rs-sys"
+        ]
+      },
+      "libbz2-rs-sys": {
+        "name": "libbz2-rs-sys",
+        "version": "0.2.5",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "34b357333733e8260735ba5894eb928c02ecc69c78715f01a8019e7fa7f2db4c"
+      },
+      "zip": {
+        "name": "zip",
+        "version": "9.1.2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "ec2e3161de27091f18a831d9494e9c53378a34833af5c1dda35ad85849da18d6",
+        "dependencies": [
+          "aes 0.9.3",
+          "bzip2",
+          "constant_time_eq 0.6.1",
+          "crc32fast",
+          "deflate64",
+          "flate2",
+          "getrandom 0.4.3",
+          "hmac 0.13.0",
+          "indexmap 2.14.2",
+          "lzma-rust2",
+          "memchr",
+          "nix 0.31.3",
+          "pbkdf2 0.13.0",
+          "ppmd-rust",
+          "sha1 0.11.0",
+          "time",
+          "typed-path",
+          "windows-sys 0.61.2",
+          "zeroize",
+          "zopfli",
+          "zstd"
+        ]
+      }
+    }
+  },
+  "old_lock_matches_independent_018_producer": true,
+  "old_rust_backend_present": false,
+  "actual_backend_change": "Old active Cargo graph: zip 2.4.2 -> bzip2 0.5.2 -> bzip2-sys 0.1.13+1.0.8 (bundled C 1.0.8). Candidate active graph: zip 9.1.2 -> bzip2 0.6.1 -> libbz2-rs-sys 0.2.5 (Rust translation).",
+  "bazel_note": "The existing MODULE.bazel bzip2 1.0.8.bcr.3 / bzip2-sys annotation and bzip2_windows_stack_args.patch concern the C library; the patch is not evidence that the old Cargo graph selected libbz2-rs-sys.",
+  "metadata_evidence": {
+    "path": "evidence/RELEVANT_METADATA.json",
+    "bytes": 74035,
+    "sha256": "dfb82a9fb194deaf11672697688e0a809459ef62d583e34b2e9a48cc7a5da85c"
+  },
+  "cargo_deny_observation": {
+    "version": "0.19.0",
+    "command": [
+      "/home/runner/work/_temp/ndu-port-deny/host-diagnostic/cargo-deny",
+      "--log-level",
+      "warn",
+      "--manifest-path",
+      "./codex-rs/Cargo.toml",
+      "--all-features",
+      "check"
+    ],
+    "exit_code": 4,
+    "error_count": 1,
+    "errors": [
+      {
+        "line": 1,
+        "text": "error[rejected]: failed to satisfy license requirements"
+      }
+    ],
+    "summary": "advisories ok, bans ok, licenses FAILED, sources ok",
+    "scope": "Pinned same-version/arguments host diagnostic; not the unavailable original Docker action log.",
+    "log": {
+      "path": "evidence/host-diagnostic/cargo-deny.log",
+      "bytes": 15344860,
+      "sha256": "505f2fea4ae4fc1901a98f804a1d365815dad5b6eb84955e485f136898c843f4"
+    },
+    "license": "bzip2-1.0.6",
+    "package": "libbz2-rs-sys",
+    "version_of_package": "0.2.5",
+    "path_to_firstparty": [
+      "libbz2-rs-sys@0.2.5",
+      "bzip2@0.6.1",
+      "zip@9.1.2",
+      "codex-core-plugins@0.0.0"
+    ],
+    "candidate_lock_unchanged_during_scan": true
+  },
+  "official_release_statement": {
+    "url": "https://github.com/trifectatechfoundation/bzip2-rs/releases/tag/v0.6.0",
+    "raw_file": "upstream/bzip2-0.6.0-release.json",
+    "description": "The official 0.6.0 release states that the Rust implementation became the default and the C backend remains selectable; it also states that the original C wrapper arguably should have declared the same bzip2 license, because it wraps the original implementation and the Rust backend is derivative. This is upstream provenance commentary, not project approval."
+  },
+  "license_text_comparison": {
+    "scope": "Literal source-text comparison, not a finding of legal approval or fulfillment of notices.",
+    "original_license": {
+      "path": "upstream/bzip2-sys/bzip2-1.0.8/LICENSE",
+      "bytes": 1896,
+      "sha256": "c6dbbf828498be844a89eaa3b84adbab3199e342eb5cb2ed2f0d4ba7ec0f38a3"
+    },
+    "candidate_license": {
+      "path": "upstream/libbz2-rs-sys/LICENSE",
+      "bytes": 2123,
+      "sha256": "54e1fd7bd53273e601c9599eb162a004dacddee031ae297ee7109a7beb93b1c2"
+    },
+    "complete_unified_diff": {
+      "path": "evidence/FULL_LICENSE_TEXT.diff",
+      "bytes": 2242,
+      "sha256": "f8dc3ae7a69040276f66a42e626fd938fa900a9ec447d1dff587e2c4eef3e9a6"
+    },
+    "normalization": "Extract from Redistribution and use through the warranty/liability paragraph, excluding following Julian Seward attribution/footer; collapse only whitespace to single spaces.",
+    "normalized_conditions_and_disclaimer_equal": true,
+    "normalized_clause_sha256": "5e68b10a23d4f3b3b8ec7a6ae0067bd82ba89a69063684f25d54627ba059cc38",
+    "condition_changes_detected": [],
+    "notice_changes": [
+      "Old header: Julian R Seward copyright 1996–2019 and All rights reserved.",
+      "New header: Julian R Seward 1996–2021, Federico Mena Quintero 2019–2020, Micah Snyder 2021.",
+      "New header additionally identifies the Rust translation as a derived work with 2024–2025 Trifecta Tech Foundation and contributors copyright.",
+      "Upstream footer changes from version 1.0.8 of 13 July 2019 to the literal version 1.1.0 of 6 September 2010; preserved without correction."
+    ],
+    "four_conditions_in_plain_language": [
+      "Retain copyright notices, conditions and disclaimer in source redistributions.",
+      "Do not misrepresent origin or claim original authorship; product-documentation acknowledgment is appreciated but not required by this clause.",
+      "Mark altered source and do not present it as original.",
+      "Obtain prior written permission to use the author name to endorse or promote derived products."
+    ],
+    "review_boundary": "The unchanged condition text does not establish that the repository has satisfied every notice obligation or that a project policy exception has been approved. New copyright notices remain part of the text to review and retain as applicable."
+  },
+  "backend_alternatives": {
+    "zip_official_tag": "v9.1.2",
+    "bzip2_feature": [
+      "dep:bzip2",
+      "bzip2/default",
+      "_bzip2_any"
+    ],
+    "bzip2_rs_feature": [
+      "dep:bzip2",
+      "bzip2/bzip2-sys",
+      "_bzip2_any"
+    ],
+    "bzip2_native_feature_exists": false,
+    "c_backend_assessment": "The feature named bzip2-rs forwards bzip2/bzip2-sys despite its name. Switching to C cannot be claimed to eliminate the inherited license conditions; no such switch was applied.",
+    "crabz2_assessment": "Official README explicitly rejects legacy randomized blocks. Replacing the codec would reduce supported decoding behavior and has not been integrated or qualified. No such replacement was applied."
+  },
+  "unapplied_proposal": {
+    "kind": "Single package/version-specific license exception; no global allowlist addition",
+    "line": "{ crate = \"libbz2-rs-sys@0.2.5\", allow = [\"bzip2-1.0.6\"] },",
+    "package_match": "libbz2-rs-sys@0.2.5",
+    "license": "bzip2-1.0.6",
+    "patch": {
+      "path": "proposal/PROPOSED_EXACT_EXCEPTION.patch",
+      "bytes": 352,
+      "sha256": "19cc821cc6944492d986793c57e091ed7b7f242c3192022b0ec64d88527e67e9"
+    },
+    "full_review_copy": {
+      "path": "proposal/deny.proposed.toml",
+      "bytes": 18867,
+      "sha256": "b94ada46a6aebf8d3614dd1e96ba456450086509d23ab8451c8ad8e4d7f3468d"
+    },
+    "added_lines": 1,
+    "deleted_lines": 0,
+    "original_policy_identity": {
+      "path": "evidence/deny.original.toml",
+      "bytes": 18803,
+      "sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352"
+    },
+    "requires": "Explicit project owner approval after reviewing the complete old/new license and notice delta. After approval, integrate as a separately reviewed policy change and rerun the unchanged full gate; this report does not mark that gate passed.",
+    "future_version_scope": "The 0.19.0 PackageSpec parser turns @ into semver Op::Exact; later normal versions (for example 0.2.6) do not inherit this exception. Existing registry/source and lock guards remain in force.",
+    "schema_verification": "Official 0.19.0 Exception deserializer accepts PackageSpec plus allow; PackageSpec supports crate=\"name@version\" and converts @ comparator to Exact. Static full-TOML parse proves only licenses.exceptions changes. No unrecognized reason field, SPDX clarification, graph exclusion or new ignore is proposed.",
+    "official_tag_commit": "09faadcea2d0d1742492e6872b743d1e4d151a27",
+    "runtime_schema_probe_performed": false
+  },
+  "primary_sources": {
+    "upstream/bzip2-0.6.0-release.json": {
+      "bytes": 3342,
+      "sha256": "e095946694c2ef048804eb7b08f0aa403d95433fb37c6fd04165d475174fc562"
+    },
+    "upstream/zip-9.1.2-Cargo.toml": {
+      "bytes": 6116,
+      "sha256": "6a660b7ed6685850ca80a0089bd21fd77ab1cd609e07ab9a83e2cfe0fa9dbd48"
+    },
+    "upstream/bzip2-sys-0.1.13+1.0.8.crate": {
+      "bytes": 633818,
+      "sha256": "225bff33b2141874fe80d71e07d6eec4f85c5c216453dd96388240f96e1acc14"
+    },
+    "upstream/libbz2-rs-sys-0.2.5.crate": {
+      "bytes": 51638,
+      "sha256": "34b357333733e8260735ba5894eb928c02ecc69c78715f01a8019e7fa7f2db4c"
+    },
+    "upstream/bzip2-sys/Cargo.toml": {
+      "bytes": 1257,
+      "sha256": "a4c184b25d61fa988423fd3282c0da7637980ab92f81e8b14067f850e822ea0f"
+    },
+    "upstream/libbz2-rs-sys/Cargo.toml": {
+      "bytes": 1332,
+      "sha256": "710d50ea93fc5979f7d9428537067b39bd617bc4427ba1f209b12e86aa799e10"
+    },
+    "upstream/bzip2-sys/LICENSE-APACHE": {
+      "bytes": 10847,
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+    },
+    "upstream/bzip2-sys/LICENSE-MIT": {
+      "bytes": 1079,
+      "sha256": "c8c6324cf2f0f076e3ed5dea4a21f00bd4dd6fce44f72b110bc52e7fe06f6e1e"
+    },
+    "upstream/crabz2-main-README.md": {
+      "bytes": 23210,
+      "sha256": "177a792f3e8330e448928250183f3da5b0483df6e320af3c3367c6d39ec33779"
+    },
+    "upstream/crabz2-main-Cargo.toml": {
+      "bytes": 4294,
+      "sha256": "9e0b291c1a87725d7c5ac9894556c1b9bcb24b3c4879ed2a0cf3fda36029fe2d"
+    },
+    "upstream/cargo-deny-0.19.0-licenses-cfg.rs": {
+      "bytes": 19019,
+      "sha256": "e3fe2ccf9e39774e2f849326a337ffd08ea326a6e7bd498904a256e5695cbcb5"
+    },
+    "upstream/cargo-deny-0.19.0-package-spec.rs": {
+      "bytes": 13927,
+      "sha256": "7adfb20fa5f2a9254bf9b1703b118bf254bb9a47b81f6317d4702da6bb638d2d"
+    },
+    "upstream/cargo-deny-0.19.0-config-doc.md": {
+      "bytes": 7062,
+      "sha256": "5f30590ca41b4ddee4a0f412f754c1d3c4306dc0c051b3a3fc2825ca44fb9f6b"
+    },
+    "upstream/cargo-deny-0.19.0-license-doc.md": {
+      "bytes": 9112,
+      "sha256": "14b577c07eaf48d26ecc94e7cf6ba60100fdf083380192df207d5e1ec04bafc2"
+    },
+    "upstream/cargo-deny-0.19.0-tag-ref.json": {
+      "bytes": 351,
+      "sha256": "35fc827cf17a693d85425370dc49caef9dfbad736e6ddcdb868aefaf69e9d1d1"
+    },
+    "upstream/cargo-deny-0.19.0-tag-object.json": {
+      "bytes": 688,
+      "sha256": "259d4da0278e72dcbbd79302f3607fd6f8a9e63439d59e6e29ece3d1703dbd5b"
+    }
+  },
+  "retrieval_receipts": [
+    "upstream/RETRIEVAL.json",
+    "upstream/GITHUB_RETRIEVAL.json",
+    "upstream/CARGO_DENY_RETRIEVAL.json"
+  ],
+  "limitations": [
+    "This review does not certify distribution notice compliance or supply legal advice.",
+    "The host diagnostic is separate from the original Docker action log.",
+    "A machine gate passing after an authorized exception would not remove the full license conditions.",
+    "No updated dependency graph, feature set, codec implementation, original policy or original gate was modified."
+  ]
+}
