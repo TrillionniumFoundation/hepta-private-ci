@@ -1,0 +1,48 @@
+{
+  "existing_aggregate_replay": {
+    "known_single_event_columns": 10,
+    "meaning": "structural support repair; no new waveform/CNN observation or empirical probability transfer",
+    "old_impossible_mass_by_equal_target": [
+      0.2861224489795919,
+      0.37591836734693884,
+      0.48857142857142843,
+      0.2861224489795919,
+      0.2861224489795919,
+      0.2861224489795919,
+      0.45428571428571435,
+      0.23877551020408166,
+      0.33183673469387753,
+      0.2861224489795918
+    ],
+    "recorded_old_recordings": 300,
+    "recorded_old_speakers": 133,
+    "repaired_impossible_mass": 0.0,
+    "source_sha256": "1fff72a9ad1470b1ead327a82811642f0b14c45ca61f454b2f60292e246d5946",
+    "unidentified_distinct_target_columns": 90
+  },
+  "implementation_tests": {
+    "log": "test_actual_historical_alias_support_and_unidentified_couplings (experiments.multimodal_output_portfolio.repair_20261026.evidence.test_evidence.EvidenceTests.test_actual_historical_alias_support_and_unidentified_couplings) ... ok\ntest_arrival_alias_is_counted_once_and_not_exposed_before_arrival (experiments.multimodal_output_portfolio.repair_20261026.evidence.test_evidence.EvidenceTests.test_arrival_alias_is_counted_once_and_not_exposed_before_arrival) ... ok\ntest_joint_event_law_executes_existing_dynamic_terminal_rule (experiments.multimodal_output_portfolio.repair_20261026.evidence.test_evidence.EvidenceTests.test_joint_event_law_executes_existing_dynamic_terminal_rule) ... ok\ntest_joint_fit_keeps_distinct_event_dependence_and_reuse (experiments.multimodal_output_portfolio.repair_20261026.evidence.test_evidence.EvidenceTests.test_joint_fit_keeps_distinct_event_dependence_and_reuse) ... ok\ntest_joint_forecast_connects_to_explicit_owner_cost_branches (experiments.multimodal_output_portfolio.repair_20261026.evidence.test_evidence.EvidenceTests.test_joint_forecast_connects_to_explicit_owner_cost_branches) ... ok\ntest_joint_gradient_against_independent_finite_differences (experiments.multimodal_output_portfolio.repair_20261026.evidence.test_evidence.EvidenceTests.test_joint_gradient_against_independent_finite_differences) ... ok\ntest_train_full_joint_dependence_with_identical_marginals (experiments.multimodal_output_portfolio.repair_20261026.evidence.test_evidence.EvidenceTests.test_train_full_joint_dependence_with_identical_marginals) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 0.076s\n\nOK\n",
+    "passed": 7
+  },
+  "schema": "hepta.repair.joint-evidence-verification.v1",
+  "scope": {
+    "fresh_source_training_or_qualification": false,
+    "native_owner_execution": false,
+    "production_authority": false,
+    "same_speaker_joint_law_estimated_from_real_pairs": false,
+    "synthetic_joint_training_test_executed": true
+  },
+  "source_sha256": {
+    "__init__.py": "11c71ff6fa6153df775efa4d87749cc1e0e44b6bbe65497a4b92bae02884b348",
+    "audit_real_audio.py": "29125abdfd35b24fbd759a016fd2e61811ed86b082cd4750444e26962a2e8e26",
+    "audit_real_v6.py": "aff755ec42d5c9376f826949c6b3b719b080139fdd92d331323d7b11511fdfae",
+    "dynamic.py": "7bd8097507ce470709936ef4d8ca16a18527a5410b946c1551f9c8295a1af363",
+    "joint.py": "41c17d03366de389b14f6392d937a3da94fa3d9eedc28e4b61a1234018cceb18",
+    "prior.py": "f05db19ae9c25333dfbc216be3f1fd171ed924c83aea24bda2d2711e1df25dd3",
+    "real_audio.py": "7c969dd60769a94d2be087bb16a2c449f9396b648fc78c294519b55e93c1408f",
+    "real_v6.py": "1b6737376bbec3add15059a8ab96f8cf86ce52734a7d53799003a98d3cc351a8",
+    "test_evidence.py": "9cddee333e33bdd9977963332ee2ba83ce1655b67ffcafa6eecd8e4d37aa13e5",
+    "train.py": "74438fa1e219608637a9f795f894389448690f5a5731767620872297edf73d84",
+    "verify.py": "5069f97a5e38a44ebd8e717c93ac5b0409441195079e77c3191959dfceb9680d"
+  }
+}
