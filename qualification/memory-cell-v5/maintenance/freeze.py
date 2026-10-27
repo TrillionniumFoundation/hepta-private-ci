@@ -46,26 +46,18 @@ def source_freeze(commit):
 
 
 def seal_selected(training_root):
+    from v5.joint_selection import SEALED_ROUTER_FIELDS, selected_identity
+
     frozen, freeze_identity = verify_freeze(PROJECT / "FREEZE.json")
     root = Path(training_root).resolve()
     routers = {}
     mapping = {}
     for seed in SEEDS:
         directory = root / f"seed-{seed}" / "selected"
-        manifest = json.loads((directory / "manifest.json").read_bytes())
-        candidate = manifest["candidate"]
-        training = manifest["training_identity"]
-        if training["seed"] != seed or training["source_commit"] != frozen["source_commit"]:
-            raise ValueError("selected training identity differs from the freeze")
-        receipt = directory.parent / "candidate-diagnostics" / candidate["name"] / "RECEIPT.json"
-        routers[str(seed)] = {
-            "files": {name: file_identity(directory / name) for name in ("manifest.json", *manifest["files"])},
-            "candidate": candidate, "training_identity": training,
-            "selection_receipt_sha256": file_identity(receipt)["sha256"],
-            "primary_sha256": file_identity(directory.parent / "PRIMARY.json")["sha256"],
-            "candidates_sha256": file_identity(directory.parent / "CANDIDATES.json")["sha256"],
-            "training_source_sha256": file_identity(root / "SOURCE.json")["sha256"],
-        }
+        identity = selected_identity(directory, expected_seed=seed,
+                                     expected_source_commit=frozen["source_commit"],
+                                     frozen_source_files=frozen["source_files"])
+        routers[str(seed)] = {key: identity[key] for key in SEALED_ROUTER_FIELDS}
         mapping[str(seed)] = str(directory)
     document = {"schema": "hepta.memory.v5.selected-before-held.v1", "source_commit": frozen["source_commit"],
                 "freeze_sha256": freeze_identity["sha256"], "routers": routers,
