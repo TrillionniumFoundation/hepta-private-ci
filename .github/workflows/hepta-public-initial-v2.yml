@@ -103,6 +103,13 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}/hepta
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
+      - name: Build Codex executable required by unchanged native integration tests
+        run: |
+          set -euo pipefail
+          unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/cli-build.json" --timeout-seconds 1800 --minimum-tests 0 -- cargo build --locked --manifest-path codex-rs/Cargo.toml -p codex-cli --bin codex
+          test -x "$CARGO_TARGET_DIR/debug/codex"
+          sha256sum "$CARGO_TARGET_DIR/debug/codex" > "$RUNNER_TEMP/hepta-public-initial-v2/cli-executable.sha256"
       - name: Execute the complete three changed Rust packages
         run: |
           set -euo pipefail
