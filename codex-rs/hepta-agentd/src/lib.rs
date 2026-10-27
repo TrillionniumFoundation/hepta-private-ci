@@ -29,6 +29,14 @@ mod intelligence_ingress;
 mod intelligence_product;
 mod intuition_policy;
 mod lane_b_runtime;
+mod memory_cell_release;
+mod memory_cell_runtime;
+#[cfg(test)]
+mod memory_cell_test_support;
+#[cfg(test)]
+mod memory_cell_control_tests;
+#[cfg(test)]
+mod memory_cell_runtime_tests;
 mod neuron_runtime;
 mod objective_runtime;
 mod plasticity_anchor_journal;
@@ -62,6 +70,13 @@ pub use browser_servo::BrowserServoProcessConfig;
 pub use browser_servo::BrowserServoTransport;
 pub use browser_servo::ChildBrowserTransport;
 pub use client::AgentdClient;
+pub use memory_cell_release::LoadedMemoryCellBundleV1;
+pub use memory_cell_release::MemoryCellBundleCandidateV1;
+pub use memory_cell_release::MemoryCellReleaseHostV1;
+pub use memory_cell_runtime::AgentdMemoryCellRuntimeV1;
+pub use memory_cell_runtime::MemoryCellAddressResolverV1;
+pub use memory_cell_runtime::MemoryCellResolvedAddressV1;
+pub use codex_hepta_agent_protocol::MemoryCellSnapshotPageV1;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1;
