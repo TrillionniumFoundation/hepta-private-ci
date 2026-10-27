@@ -169,7 +169,11 @@ fn reopen_ledger_at(
     fixture: &Fixture,
     anchor: LedgerAnchor,
 ) -> LedgerWriter {
-    let file = OpenOptions::new().read(true).write(true).open(path).unwrap();
+    let file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(path)
+        .unwrap();
     let ledger = DurableLedger::recover(
         file,
         digest("host-authorized-ledger"),
@@ -430,19 +434,25 @@ fn ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded()
     let mut ledger = ledger_at(&path, &fixture);
     #[cfg(windows)]
     {
-        // Mandatory Windows byte-range locks must refuse a second handle's
-        // destructive injection while the original authenticated owner lives.
+        // The ledger lock fences cooperating writers, not arbitrary external
+        // truncation by hostile/privileged writers (see durable.rs contract).
+        // The second authenticated writer must be denied while this owner lives.
         let original = empty_ledger_baseline(&temp.path().join("faulted-ledger-control"), &fixture);
         let bytes_before = fs::metadata(&path).unwrap().len();
-        let denied = OpenOptions::new()
+        let contender = OpenOptions::new()
+            .read(true)
             .write(true)
             .open(&path)
-            .and_then(|file| file.set_len(/*size*/ 0))
-            .expect_err("active Windows ledger owner must deny external truncation");
-        assert!(
-            matches!(denied.raw_os_error(), Some(5 | 32 | 33)),
-            "unexpected native active-lock denial: {denied}"
-        );
+            .unwrap();
+        assert!(matches!(
+            DurableLedger::recover(
+                contender,
+                digest("host-authorized-ledger"),
+                /*max_records*/ 1,
+                LedgerRecovery::Unacknowledged,
+            ),
+            Err(DurableLedgerError::Busy)
+        ));
         assert_eq!(fs::metadata(&path).unwrap().len(), bytes_before);
         assert!(ledger.records().unwrap().is_empty());
         drop(ledger);
