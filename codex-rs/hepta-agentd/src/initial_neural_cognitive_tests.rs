@@ -84,12 +84,12 @@ fn initial_observation_binds_selection_query_actions_receipt_and_complete_scores
             &NeuralCognitiveExecutionV1::bounded_read(),
         );
         if matches!(fault, Fault::None) {
-            assert_eq!(observed, Ok(Some(vec![7, -3])));
+            std::assert_eq!(observed, Ok(Some(vec![7, -3])));
         } else {
             assert!(observed.is_err());
         }
-        assert_eq!(port.calls.load(Ordering::SeqCst), 1);
-        assert_eq!(
+        std::assert_eq!(port.calls.load(Ordering::SeqCst), 1);
+        std::assert_eq!(
             model.score(
                 &owner,
                 1,
@@ -110,6 +110,6 @@ fn initial_observation_binds_selection_query_actions_receipt_and_complete_scores
                 )
                 .is_err()
         );
-        assert_eq!(port.calls.load(Ordering::SeqCst), 1);
+        std::assert_eq!(port.calls.load(Ordering::SeqCst), 1);
     }
 }
