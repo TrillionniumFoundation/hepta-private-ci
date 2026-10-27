@@ -1,4 +1,7 @@
 //! Same-UID/synthetic-key qualification with the original durable owners.
+#[path = "root_observation_isolation_tests.rs"]
+mod isolation_tests;
+
 use super::*;
 use crate::root_writer_proof::tests::fixture;
 use crate::root_writer_proof::tests::observation;
