@@ -3,7 +3,7 @@ load("//:defs.bzl", "codex_rust_crate")
 codex_rust_crate(
     name = "v8-poc",
     crate_features = select({
-        "@llvm//constraints/windows/abi:msvc": [],
+        "@llvm//constraints/windows/abi:msvc": ["sandbox"],
         "//conditions:default": ["sandbox"],
     }),
     crate_name = "codex_v8_poc",
