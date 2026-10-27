@@ -1,0 +1,82 @@
+{
+  "schema": "hepta.ci.real-fixture-mode-restoration.v1",
+  "time": "2026-10-27T15:39:07.784923+00:00",
+  "status": "exact_file_modes_and_bytes_restored_on_new_copy",
+  "source_result_sha256": "b3a732c86a7d1574b09c6388cea9574f456bb731f859dbbd95bfab6efe7fe5c6",
+  "source_zip": "/workspace/scratch/95988d8d3ab1/ndu-port-remote-3a779a6/raw/ndu-matrix-018-fixture-40503203294-1.zip",
+  "file_count": 9,
+  "directory_count": 7,
+  "files_changed_only_in_mode": {
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/session.json": {
+      "transport": "0o644",
+      "restored": "0o600"
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix_1.sqlite3": {
+      "transport": "0o644",
+      "restored": "0o600"
+    }
+  },
+  "original_snapshot_unchanged": true,
+  "restored_snapshot": {
+    "schema": "hepta.ci.fixture-layout.v1",
+    "root_mode": 493,
+    "directories": {
+      "fleet": 493,
+      "fleet/agents": 493,
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12": 493,
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix": 493,
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18": 493,
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache": 493,
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state": 493
+    },
+    "files": {
+      "expected.json": {
+        "bytes": 1690,
+        "sha256": "2dcd8dcf267a60ff51d10b680fcbf46c5d29d75dc0f3fd9fc1d688e5d13a077d",
+        "mode": 420
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-event-cache.sqlite3": {
+        "bytes": 69632,
+        "sha256": "73032a6b7cc752dd0c5498c520db919c1ba0ad58c4c4d378086d43dd3b9b239e",
+        "mode": 420
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-media.sqlite3": {
+        "bytes": 36864,
+        "sha256": "2e8b4bc1f4c4181a22f21b54adf61858099242277438f897cccca5f774b17e24",
+        "mode": 420
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/session.json": {
+        "bytes": 151,
+        "sha256": "195167ce802c9630ae49edf1ffe97397c71d33d42273de6a8cb02697877abe17",
+        "mode": 384
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-crypto.sqlite3": {
+        "bytes": 180224,
+        "sha256": "eafa0f63f46baacc32f60fcfbc3a5c94d18b4a235b87a19b8e15ced0f4dae954",
+        "mode": 420
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3": {
+        "bytes": 131072,
+        "sha256": "472787f24d7e914fa49a48060e5137f938e0aa1486cfa0ced8fc184cceb1f571",
+        "mode": 420
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3-shm": {
+        "bytes": 32768,
+        "sha256": "a848a19cfea0a8a420d6e9728554b25c705bbdd59f50f3998072ef3d14d835a0",
+        "mode": 420
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3-wal": {
+        "bytes": 24752,
+        "sha256": "d98dd7e8a5f4de9d39fe20132b24cec26fa68a11ffaff0c63beb9d76e76c99da",
+        "mode": 420
+      },
+      "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix_1.sqlite3": {
+        "bytes": 196608,
+        "sha256": "ea9603990ea0b362d17892583fa9f2023d6b0487ea1105f7ae534c91bbbb2e9c",
+        "mode": 384
+      }
+    }
+  },
+  "helper_sha256": "b316327be4316a4d8d97cd76a3fcc7d5c68cdc316e71343ad14d46fa5f4fc8ac",
+  "scope": "All nine real old 0.18 producer file identities and ZIP file permissions; directory modes use the received tree because old v1 did not record their producer modes. This is a copy/permission check only, not Matrix runtime migration or a recreated historical v2 manifest."
+}

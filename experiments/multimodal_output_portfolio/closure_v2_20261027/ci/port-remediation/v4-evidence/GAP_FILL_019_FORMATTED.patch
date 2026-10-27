@@ -1,0 +1,70 @@
+--- a/codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs
++++ b/codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs
+@@ -340,7 +340,7 @@
+ }
+ 
+ #[test]
+-fn sdk_bundled_metadata_is_dropped_instead_of_retained_outside_raw_bounds() {
++fn sdk_metadata_is_dropped_instead_of_retained_outside_raw_bounds() {
+     let mut baseline = GapFillAccumulator::new(plan()).expect("plan");
+     append(
+         &mut baseline,
+@@ -365,7 +365,22 @@
+         .pop()
+         .expect("bundle");
+     assert!(bundled.raw().json().get().len() > MAX_BYTES);
+-    enriched.chunk[0].bundled_latest_thread_event = Some(Box::new(bundled));
++    // SDK 0.19 derives the latest thread event from the raw unsigned relations.
++    // Push actions remain SDK metadata outside raw(), so attach an oversized
++    // value there to preserve the accepted-page retention boundary exercised here.
++    enriched.chunk[0].set_push_actions(vec![
++        serde_json::from_value(json!({
++            "set_tweak": "sound",
++            "value": bundled.raw().json().get(),
++        }))
++        .expect("SDK push action"),
++    ]);
++    assert!(
++        serde_json::to_vec(enriched.chunk[0].push_actions().expect("SDK metadata"))
++            .expect("metadata JSON")
++            .len()
++            > MAX_BYTES
++    );
+     let mut accumulator = GapFillAccumulator::new(plan()).expect("plan");
+     assert_eq!(
+         append(&mut accumulator, enriched),
+@@ -376,6 +391,34 @@
+         accumulator.pages[0].chunk[0].json().get().len(),
+         accumulator.observation.event_bytes
+     );
++}
++
++#[test]
++fn sdk_bundled_latest_event_is_counted_in_raw_bounds_before_acceptance() {
++    let mut accumulator = GapFillAccumulator::new(plan()).expect("plan");
++    let before = snapshot(&accumulator);
++    let mut large = event("$bundled");
++    large["content"]["body"] = json!("x".repeat(MAX_BYTES + 1));
++    let mut root = event("$visible");
++    root["unsigned"] = json!({
++        "m.relations": {
++            "m.thread": {
++                "latest_event": large,
++                "count": 1,
++                "current_user_participated": false,
++            },
++        },
++    });
++    let enriched = page("s-source", Some("t-target"), vec![root], vec![]);
++    let bundled = enriched.chunk[0]
++        .bundled_latest_thread_event()
++        .expect("actual SDK bundled latest event");
++    assert!(bundled.raw().json().get().len() > MAX_BYTES);
++    assert_eq!(
++        append(&mut accumulator, enriched),
++        Err(GapFillError::Bounds)
++    );
++    assert_eq!(snapshot(&accumulator), before);
+ }
+ 
+ #[test]

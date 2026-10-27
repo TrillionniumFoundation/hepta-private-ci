@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.matrix-startup-budget.candidate.v1",
+  "status": "source_candidate_not_compiled_or_qualified",
+  "rustfmt_command": [
+    "/workspace/scratch/95988d8d3ab1/ndu-rust196-format-tools/installed/bin/rustfmt",
+    "--edition",
+    "2024",
+    "--config-path",
+    "/workspace/scratch/95988d8d3ab1/hepta-private-ci/codex-rs/rustfmt.toml",
+    "/workspace/scratch/95988d8d3ab1/ndu-matrix-reopen-diagnosis-v4-001/startup-budget-proposal-001/proposed-formatted/codex-rs/hepta-matrix-sdk/src/sdk.rs"
+  ],
+  "rustfmt_exit_code": 0,
+  "before": {
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs": {
+      "bytes": 25629,
+      "sha256": "6cc077a47917da7ff7c261de2b77b61bcddd3caf24c4cec868eb513ffb33c3b4",
+      "git_blob": "3bd27de9e13f5c1998e49aa9710f8b19852ced05"
+    }
+  },
+  "after": {
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs": {
+      "bytes": 28070,
+      "sha256": "8f6ed35c3a360da6893758c5bb7f357f5dd3b880e8008bd84c9983f1c61078d5",
+      "git_blob": "4c143c27959a044d9777da0f4bb2e4355c651c5b"
+    },
+    "codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs": {
+      "bytes": 3181,
+      "sha256": "499c164c841a64c8f9ba6e7c917fb3e7ac5cc713b159cf2558b70512dc1f1849",
+      "git_blob": "32e57e8105560f72d1ac56511a1336e41306470a"
+    }
+  },
+  "patch": {
+    "bytes": 10644,
+    "sha256": "7e6844e4ee6001bafbb343daf461ce45ad3cc9f5f6ed6812c27346f69fca5e8f",
+    "git_blob": "dc044a68017495e067f0db10488b9fd87fc04e46"
+  },
+  "semantics": [
+    "One absolute 20s Tokio startup deadline across store initialization, authentication and fresh-client fallback.",
+    "Each authentication request is capped at min(original deadline, now + unchanged 5s).",
+    "Reject expired deadlines before starting work and late Ready results before reporting success.",
+    "The original crypto KDF, fixture, paths, identities, queue assertions and all vendor bytes remain unchanged."
+  ],
+  "validation_limits": [
+    "Original sealed CI ELF diagnostics are not a test of this source candidate.",
+    "New-source Rust compilation/tests and old-fixture reopen remain required in CI.",
+    "Tokio timers cannot preempt synchronous KDF work. Budgets bound acceptance, not a hard real-time stop.",
+    "20s startup + 35s first-sync is a configured allocation, not an unconditional 55s wall-clock guarantee."
+  ]
+}

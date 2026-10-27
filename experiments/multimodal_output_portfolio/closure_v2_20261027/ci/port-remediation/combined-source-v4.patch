@@ -1,0 +1,2032 @@
+diff --git a/MODULE.bazel b/MODULE.bazel
+index a49ef6c1cf4cf6b12f76296cd488c93f0753905b..cc1b7f627cff8cfccf6d386b25aa01ab758a270c 100644
+--- a/MODULE.bazel
++++ b/MODULE.bazel
+@@ -296,7 +296,7 @@ toolchains.toolchain(
+         "aarch64-pc-windows-msvc": ["-Ctarget-feature=+crt-static"],
+         "x86_64-pc-windows-msvc": ["-Ctarget-feature=+crt-static"],
+     },
+-    version = "1.95.0",
++    version = "1.96.0",
+ )
+ use_repo(toolchains, "default_rust_toolchains")
+ 
+@@ -368,7 +368,7 @@ crate.annotation(
+     gen_build_script = "on",
+     patch_args = ["-p1"],
+     patches = [
+-        "//patches:zstd-sys_windows_msvc_include_dirs.patch",
++        "//patches:zstd-sys_2_1_windows_msvc_include_dirs.patch",
+     ],
+ )
+ crate.annotation(
+diff --git a/codex-rs/Cargo.toml b/codex-rs/Cargo.toml
+index d2703b590935ab17316e6c258657c0ce5ab7412a..e2572d1ebcd710581d16ac047249768d805636f3 100644
+--- a/codex-rs/Cargo.toml
++++ b/codex-rs/Cargo.toml
+@@ -164,6 +164,7 @@ members = [
+     "utils/redacted-string",
+     "utils/rustls-provider",
+     "utils/string",
++    "utils/yaml",
+     "utils/cli",
+     "utils/elapsed",
+     "utils/sandbox-summary",
+@@ -187,8 +188,11 @@ members = [
+     "codex-experimental-api-macros",
+     "plugin",
+     "model-provider",
++    "third_party/i18n-config-0.4.8",
+ ]
+ resolver = "2"
++# Upstream provider tests use a separate qualification graph.
++exclude = ["third_party/aws-config-1.8.12"]
+ 
+ [workspace.package]
+ version = "0.0.0"
+@@ -349,6 +353,7 @@ codex-utils-sandbox-summary = { path = "utils/sandbox-summary" }
+ codex-utils-sleep-inhibitor = { path = "utils/sleep-inhibitor" }
+ codex-utils-stream-parser = { path = "utils/stream-parser" }
+ codex-utils-string = { path = "utils/string" }
++codex-utils-yaml = { path = "utils/yaml" }
+ codex-utils-template = { path = "utils/template" }
+ codex-v8-poc = { path = "v8-poc" }
+ codex-workload-identity = { path = "workload-identity" }
+@@ -367,7 +372,7 @@ assert_matches = "1.5.0"
+ async-channel = "2.3.1"
+ async-io = "2.6.0"
+ async-stream = "0.3.6"
+-aws-config = "1"
++aws-config = "=1.8.12"
+ aws-credential-types = "1"
+ aws-sigv4 = "1"
+ aws-types = "1"
+@@ -437,7 +442,7 @@ libsqlite3-sys = { version = "0.37", default-features = false }
+ log = "0.4"
+ lru = "0.18.2"
+ maplit = "1.0.2"
+-matrix-sdk = { version = "0.18.0", default-features = false, features = ["e2e-encryption", "sqlite"] }
++matrix-sdk = { version = "=0.19.1", default-features = false, features = ["e2e-encryption", "sqlite", "rustls-aws-lc-rs"] }
+ memchr = "2.7.6"
+ mime_guess = "2.0.5"
+ multimap = "0.10.0"
+@@ -490,7 +495,8 @@ serde_ignored = "0.1.14"
+ serde_json = "1"
+ serde_path_to_error = "0.1.20"
+ serde_with = "3.17"
+-serde_yaml = "0.9"
++serde-saphyr = "2.0.0"
++ryu = "1.0.20"
+ serial_test = "3.2.0"
+ sha1 = "0.10.6"
+ scopeguard = "1.2.0"
+@@ -568,8 +574,8 @@ which = "8"
+ whoami = "1.6.1"
+ wildmatch = "2.6.1"
+ winapi-util = "0.1.11"
+-zip = "2.4.2"
+-zstd = "0.13"
++zip = "9.1.2"
++zstd = "0.14.3"
+ 
+ wiremock = "0.6"
+ zeroize = "1.8.2"
+@@ -661,15 +667,18 @@ inherits = "test"
+ opt-level = 0
+ 
+ [patch.crates-io]
+-# Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
+-# bitmap import and patched chunk dependency without changing their public API.
+-imbl = { path = "third_party/imbl-6.1.0" }
+-# Matrix SDK 0.18.0 pins rusqlite 0.37/libsqlite3-sys 0.35. Hepta's SQLx 0.9
+-# deliberately uses libsqlite3-sys 0.37 for the WAL-reset corruption fix, and
+-# Cargo permits only one native SQLite `links` crate in a graph. The vendored
+-# crate is upstream matrix-sdk-sqlite 0.18.0 with only its rusqlite constraint
+-# advanced to 0.39, which uses the already-selected libsqlite3-sys 0.37.
+-matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.18.0" }
++# Preserve providers and platform APIs while replacing retired dependencies.
++aws-config = { path = "third_party/aws-config-1.8.12" }
++i18n-config = { path = "third_party/i18n-config-0.4.8" }
++keyring = { path = "third_party/keyring-3.6.3" }
++secret-service = { path = "third_party/secret-service-4.0.0" }
++serde-saphyr = { path = "third_party/serde-saphyr-2.0.0" }
++# Preserve Starlark Rust sources while accepting Matrix's maintained BLAKE3.
++starlark = { path = "third_party/starlark-0.14.2" }
++# Matrix 0.19 uses maintained imbl; the SDK contains the official anymap3 port.
++matrix-sdk = { path = "third_party/matrix-sdk-0.19.1" }
++# Keep SQLx 0.9 and Matrix on the patched libsqlite3-sys 0.37 native graph.
++matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.19.1" }
+ # Uncomment to debug local changes.
+ # ratatui = { path = "../../ratatui" }
+ crossterm = { git = "https://github.com/openai-oss-forks/crossterm", rev = "45fecb9508105988f42fe6ff0441783ed3717f92" }
+diff --git a/codex-rs/core-plugins/Cargo.toml b/codex-rs/core-plugins/Cargo.toml
+index 0899163accb0edc3e98b27b9b9fdfd86adab46ae..d363106ab519afafc4a5edd86542ecfdbad6bbc9 100644
+--- a/codex-rs/core-plugins/Cargo.toml
++++ b/codex-rs/core-plugins/Cargo.toml
+@@ -45,7 +45,7 @@ semver = { workspace = true }
+ serde = { workspace = true, features = ["derive"] }
+ serde_json = { workspace = true }
+ serde_with = { workspace = true }
+-serde_yaml = { workspace = true }
++codex-utils-yaml = { workspace = true }
+ sha2 = { workspace = true }
+ tar = { workspace = true }
+ tempfile = { workspace = true }
+diff --git a/codex-rs/core-plugins/src/command_migration.rs b/codex-rs/core-plugins/src/command_migration.rs
+index 1544b252962b705a31f83ce5a696ded0cea59871..cff28675154032ff7e8f7b1e393259af9d4743d2 100644
+--- a/codex-rs/core-plugins/src/command_migration.rs
++++ b/codex-rs/core-plugins/src/command_migration.rs
+@@ -4,7 +4,6 @@ mod render;
+ use render::rewrite_terms;
+ use render::slugify_name;
+ use render::yaml_string;
+-use serde_yaml::Value as YamlValue;
+ use std::collections::BTreeMap;
+ use std::fs;
+ use std::io;
+@@ -314,28 +313,16 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
+ }
+ 
+ fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
+-    let parsed: YamlValue = serde_yaml::from_str(raw_frontmatter).ok()?;
+-    let mapping = parsed.as_mapping()?;
+-    mapping.iter().find_map(|(key, value)| {
+-        if key.as_str()?.trim() == "description" {
+-            yaml_scalar(value)
++    let mapping = codex_utils_yaml::scalar_mapping(raw_frontmatter).ok()??;
++    mapping.into_iter().find_map(|(key, value)| {
++        if key.trim() == "description" {
++            value
+         } else {
+             None
+         }
+     })
+ }
+ 
+-fn yaml_scalar(value: &YamlValue) -> Option<String> {
+-    match value {
+-        YamlValue::String(value) => Some(value.trim().to_string()),
+-        YamlValue::Bool(value) => Some(value.to_string()),
+-        YamlValue::Number(value) => Some(value.to_string()),
+-        YamlValue::Null | YamlValue::Sequence(_) | YamlValue::Mapping(_) | YamlValue::Tagged(_) => {
+-            None
+-        }
+-    }
+-}
+-
+ fn command_skill_name(source_name: &str) -> String {
+     slugify_name(&format!("{COMMAND_SKILL_PREFIX}-{source_name}"))
+ }
+diff --git a/codex-rs/core-plugins/src/plugin_metrics.rs b/codex-rs/core-plugins/src/plugin_metrics.rs
+index b7df81196849800dcc038d131fdacdd1501ee567..904257bad3a3da0194d72e884351a34af0f8139b 100644
+--- a/codex-rs/core-plugins/src/plugin_metrics.rs
++++ b/codex-rs/core-plugins/src/plugin_metrics.rs
+@@ -74,7 +74,7 @@ pub(crate) fn load_plugin_metrics_operations(
+     if contents.len() as u64 > MAX_ANALYTICS_MANIFEST_BYTES {
+         return None;
+     }
+-    let manifest: AnalyticsManifest = serde_yaml::from_slice(&contents).ok()?;
++    let manifest: AnalyticsManifest = codex_utils_yaml::from_slice(&contents).ok()?;
+     validate_manifest(manifest, plugin_root)
+ }
+ 
+diff --git a/codex-rs/core-plugins/src/startup_sync.rs b/codex-rs/core-plugins/src/startup_sync.rs
+index 19234e6a5fdbe3c34ee9ad1f0d56a128f96455a1..742a18d1b027edc5941c903756d76a9af755d2e7 100644
+--- a/codex-rs/core-plugins/src/startup_sync.rs
++++ b/codex-rs/core-plugins/src/startup_sync.rs
+@@ -36,6 +36,7 @@ const CURATED_PLUGINS_BACKUP_ARCHIVE_FALLBACK_VERSION: &str = "export-backup";
+ const CURATED_PLUGINS_GIT_TIMEOUT: Duration = Duration::from_secs(30);
+ const CURATED_PLUGINS_HTTP_TIMEOUT: Duration = Duration::from_secs(30);
+ const CURATED_PLUGINS_BACKUP_ARCHIVE_TIMEOUT: Duration = Duration::from_secs(30);
++const ZIP_UTF8_FILENAME_FLAG: u16 = 1 << 11;
+ // Keep this comfortably above a normal sync attempt so we do not race another Codex process.
+ const CURATED_PLUGINS_STALE_TEMP_DIR_MAX_AGE: Duration = Duration::from_secs(10 * 60);
+ #[derive(Debug, Deserialize)]
+@@ -1051,10 +1052,22 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
+         let mut entry = archive
+             .by_index(index)
+             .map_err(|err| format!("failed to read curated plugins zip entry: {err}"))?;
++        // The reader falls back to CP437 even when the ZIP flags declare UTF-8.
++        // Reject a false declaration before using the decoded name as a path.
++        if entry.flags().as_u16() & ZIP_UTF8_FILENAME_FLAG != 0
++            && std::str::from_utf8(entry.name_raw()).is_err()
++        {
++            return Err(
++                "curated plugins zip entry declares UTF-8 but has invalid filename bytes"
++                    .to_string(),
++            );
++        }
++        let name = entry
++            .name()
++            .map_err(|err| format!("failed to read curated plugins zip entry name: {err}"))?;
+         let Some(relative_path) = entry.enclosed_name() else {
+             return Err(format!(
+-                "curated plugins zip entry `{}` escapes extraction root",
+-                entry.name()
++                "curated plugins zip entry `{name}` escapes extraction root"
+             ));
+         };
+ 
+@@ -1111,13 +1124,18 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
+ }
+ 
+ #[cfg(unix)]
+-fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> Result<(), String> {
++fn apply_zip_permissions<R: std::io::Read + ?Sized>(
++    entry: &zip::read::ZipFile<'_, R>,
++    output_path: &Path,
++) -> Result<(), String> {
+     use std::os::unix::fs::PermissionsExt;
+ 
+     let Some(mode) = entry.unix_mode() else {
+         return Ok(());
+     };
+-    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode)).map_err(|err| {
++    // ZIP metadata is untrusted. Preserve ordinary access and executable bits,
++    // but never restore setuid, setgid, or sticky bits from an archive.
++    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode & 0o777)).map_err(|err| {
+         format!(
+             "failed to set permissions on curated plugins file {}: {err}",
+             output_path.display()
+@@ -1126,8 +1144,8 @@ fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) ->
+ }
+ 
+ #[cfg(not(unix))]
+-fn apply_zip_permissions(
+-    _entry: &zip::read::ZipFile<'_>,
++fn apply_zip_permissions<R: std::io::Read + ?Sized>(
++    _entry: &zip::read::ZipFile<'_, R>,
+     _output_path: &Path,
+ ) -> Result<(), String> {
+     Ok(())
+@@ -1136,3 +1154,7 @@ fn apply_zip_permissions(
+ #[cfg(test)]
+ #[path = "startup_sync_tests.rs"]
+ mod tests;
++
++#[cfg(test)]
++#[path = "startup_sync_zip_tests.rs"]
++mod zip_tests;
+diff --git a/codex-rs/core-plugins/src/startup_sync_zip_tests.rs b/codex-rs/core-plugins/src/startup_sync_zip_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..2b07e26b883ccd8695370499c4ba4975e2edc422
+--- /dev/null
++++ b/codex-rs/core-plugins/src/startup_sync_zip_tests.rs
+@@ -0,0 +1,196 @@
++use super::extract_zipball_to_dir;
++use pretty_assertions::assert_eq;
++use std::io::Cursor;
++use std::io::Write;
++use tempfile::tempdir;
++use zip::CompressionMethod;
++#[cfg(unix)]
++use zip::ZipArchive;
++use zip::ZipWriter;
++use zip::write::SimpleFileOptions;
++
++const CONTENTS: &[u8] = b"#!/bin/sh\nprintf 'curated plugin'\n";
++
++fn zipball_with_file(name: &str, method: CompressionMethod) -> Vec<u8> {
++    let mut writer = ZipWriter::new(Cursor::new(Vec::new()));
++    let options = SimpleFileOptions::default()
++        .compression_method(method)
++        .unix_permissions(0o755);
++    writer.start_file(name, options).expect("start ZIP entry");
++    writer.write_all(CONTENTS).expect("write ZIP entry");
++    writer.finish().expect("finish ZIP archive").into_inner()
++}
++
++#[test]
++fn zipball_extraction_preserves_contents_across_compression_methods() {
++    for method in [
++        CompressionMethod::Stored,
++        CompressionMethod::Deflated,
++        CompressionMethod::Bzip2,
++        CompressionMethod::Zstd,
++        CompressionMethod::Xz,
++    ] {
++        let destination = tempdir().expect("create extraction directory");
++        let archive = zipball_with_file("archive/plugin/run.sh", method);
++
++        extract_zipball_to_dir(&archive, destination.path()).expect("extract ZIP archive");
++
++        assert_eq!(
++            std::fs::read(destination.path().join("plugin/run.sh")).expect("read plugin"),
++            CONTENTS
++        );
++    }
++}
++
++#[test]
++fn zipball_extraction_reads_lzma_entries() {
++    let destination = tempdir().expect("create extraction directory");
++    let archive = include_bytes!("../tests/fixtures/zipball_lzma.zip");
++
++    extract_zipball_to_dir(archive, destination.path()).expect("extract LZMA ZIP archive");
++
++    assert_eq!(
++        std::fs::read(destination.path().join("plugin/run.sh")).expect("read plugin"),
++        CONTENTS
++    );
++}
++
++#[cfg(unix)]
++#[test]
++fn zipball_extraction_strips_privileged_bits_and_keeps_executable_access() {
++    use std::os::unix::fs::PermissionsExt;
++
++    let destination = tempdir().expect("create extraction directory");
++    let mut archive = zipball_with_file("archive/plugin/run.sh", CompressionMethod::Stored);
++    // ZipWriter intentionally strips privileged bits. Set the external Unix
++    // attributes in the central-directory record to model an untrusted ZIP.
++    let central = archive
++        .windows(4)
++        .position(|bytes| bytes == b"PK\x01\x02")
++        .expect("find central-directory record");
++    let mode = 0o107755_u32;
++    archive[central + 38..central + 42].copy_from_slice(&(mode << 16).to_le_bytes());
++    let mut reader = ZipArchive::new(Cursor::new(&archive)).expect("reopen hostile ZIP");
++    // unix_mode() already clears privileged bits in zip 9. Verify the actual
++    // untrusted header metadata instead, then check the resulting filesystem.
++    assert_eq!(
++        reader.by_index(0).expect("read hostile ZIP entry").external_attributes() >> 16,
++        mode
++    );
++
++    extract_zipball_to_dir(&archive, destination.path()).expect("extract hostile ZIP");
++
++    let output = destination.path().join("plugin/run.sh");
++    assert_eq!(std::fs::read(&output).expect("read extracted plugin"), CONTENTS);
++    assert_eq!(
++        std::fs::metadata(&output)
++            .expect("read extracted permissions")
++            .permissions()
++            .mode()
++            & 0o7777,
++        0o755
++    );
++}
++
++#[test]
++fn zipball_extraction_rejects_paths_outside_the_destination() {
++    let parent = tempdir().expect("create parent directory");
++    let destination = parent.path().join("destination");
++    let archive = zipball_with_file("archive/../../escaped", CompressionMethod::Stored);
++
++    let error = extract_zipball_to_dir(&archive, &destination).expect_err("reject escaping path");
++
++    assert!(error.contains("escapes extraction root"));
++    assert!(!parent.path().join("escaped").exists());
++}
++
++#[test]
++fn zipball_extraction_rejects_invalid_utf8_names() {
++    let destination = tempdir().expect("create extraction directory");
++    let mut archive = zipball_with_file("archive/plugin/run.sh", CompressionMethod::Stored);
++    let central = archive
++        .windows(4)
++        .position(|bytes| bytes == b"PK\x01\x02")
++        .expect("find central-directory record");
++    let local_flags = u16::from_le_bytes(archive[6..8].try_into().expect("local ZIP flags"));
++    let central_flags = u16::from_le_bytes(
++        archive[central + 8..central + 10].try_into().expect("central ZIP flags"),
++    );
++    archive[6..8].copy_from_slice(&(local_flags | 0x800).to_le_bytes());
++    archive[central + 8..central + 10].copy_from_slice(&(central_flags | 0x800).to_le_bytes());
++    archive[30] = 0xff;
++    archive[central + 46] = 0xff;
++
++    let error =
++        extract_zipball_to_dir(&archive, destination.path()).expect_err("reject invalid UTF-8 name");
++    assert!(error.contains("declares UTF-8"));
++
++    assert_eq!(
++        std::fs::read_dir(destination.path()).expect("read extraction directory").count(),
++        0
++    );
++}
++
++#[test]
++fn zipball_extraction_preserves_valid_utf8_names() {
++    let destination = tempdir().expect("create extraction directory");
++    let archive = zipball_with_file("archive/plugin/café-中文.sh", CompressionMethod::Stored);
++    let flags = u16::from_le_bytes(archive[6..8].try_into().expect("local ZIP flags"));
++    assert_ne!(flags & 0x800, 0, "fixture must declare UTF-8");
++
++    extract_zipball_to_dir(&archive, destination.path()).expect("extract valid UTF-8 name");
++
++    assert_eq!(
++        std::fs::read(destination.path().join("plugin/café-中文.sh")).expect("read UTF-8 plugin"),
++        CONTENTS
++    );
++}
++
++#[test]
++fn zipball_extraction_preserves_legacy_cp437_names() {
++    let destination = tempdir().expect("create extraction directory");
++    let mut archive = zipball_with_file("archive/plugin/cafX.sh", CompressionMethod::Stored);
++    let central = archive
++        .windows(4)
++        .position(|bytes| bytes == b"PK\x01\x02")
++        .expect("find central-directory record");
++    let flags = u16::from_le_bytes(archive[6..8].try_into().expect("local ZIP flags"));
++    assert_eq!(flags & 0x800, 0, "legacy fixture must not declare UTF-8");
++    let name_offset = b"archive/plugin/caf".len();
++    archive[30 + name_offset] = 0x82;
++    archive[central + 46 + name_offset] = 0x82;
++
++    extract_zipball_to_dir(&archive, destination.path()).expect("extract CP437 name");
++
++    assert_eq!(
++        std::fs::read(destination.path().join("plugin/café.sh")).expect("read CP437 plugin"),
++        CONTENTS
++    );
++}
++
++#[test]
++fn zipball_extraction_does_not_follow_archive_symlink_targets() {
++    let parent = tempdir().expect("create parent directory");
++    let outside = parent.path().join("outside");
++    std::fs::write(&outside, b"unchanged").expect("write outside file");
++    let destination = parent.path().join("destination");
++    let mut writer = ZipWriter::new(Cursor::new(Vec::new()));
++    writer
++        .add_symlink("archive/link", outside.to_string_lossy(), SimpleFileOptions::default())
++        .expect("add hostile symlink");
++    let archive = writer.finish().expect("finish ZIP archive").into_inner();
++
++    extract_zipball_to_dir(&archive, &destination).expect("extract symlink as regular content");
++
++    assert_eq!(std::fs::read(&outside).expect("read outside file"), b"unchanged");
++    assert!(
++        !std::fs::symlink_metadata(destination.join("link"))
++            .expect("read extracted file metadata")
++            .file_type()
++            .is_symlink()
++    );
++    assert_eq!(
++        std::fs::read_to_string(destination.join("link")).expect("read regular link content"),
++        outside.to_string_lossy()
++    );
++}
+diff --git a/codex-rs/core-plugins/tests/fixtures/zipball_lzma.zip b/codex-rs/core-plugins/tests/fixtures/zipball_lzma.zip
+new file mode 100644
+index 0000000000000000000000000000000000000000..e79330d38f7910431810ae0b97ec5678708f6543
+GIT binary patch
+literal 194
+zcmWIWW@fQxU}E57U|>*WaP2x>Wd>v^0kJ3$Cl)1VWR|7s7vz+tXXfb_mFDRcXK=Ex
+zGQ=`4G%zp-b~w4&ei1V%=Hgx6cE$hoL_2P6_BIBs2gL%t)=AfDiq9;!uI8Wr|C8-)
+mh5&CyCVOVwRsn4TgSU+!3aiBd-mGjONk$-a2GW@z4g&yE7A?O3
+
+literal 0
+HcmV?d00001
+
+diff --git a/codex-rs/ext/skills/Cargo.toml b/codex-rs/ext/skills/Cargo.toml
+index 256d0aaa8710fff8d7a9d5c8eba242cd282b868e..571b032636a02631b70c9a919bf388f6944fb69d 100644
+--- a/codex-rs/ext/skills/Cargo.toml
++++ b/codex-rs/ext/skills/Cargo.toml
+@@ -31,7 +31,7 @@ futures = { workspace = true }
+ schemars = { workspace = true }
+ serde = { workspace = true, features = ["derive"] }
+ serde_json = { workspace = true }
+-serde_yaml = { workspace = true }
++codex-utils-yaml = { workspace = true }
+ tokio = { workspace = true, features = ["sync", "time"] }
+ toml = { workspace = true }
+ tracing = { workspace = true }
+diff --git a/codex-rs/ext/skills/src/loader/environment.rs b/codex-rs/ext/skills/src/loader/environment.rs
+index 3b7ca9ed2b49e9da76061d5911b1dff3c04af5e9..16b673436e080014497df6be7d9cef234f598d28 100644
+--- a/codex-rs/ext/skills/src/loader/environment.rs
++++ b/codex-rs/ext/skills/src/loader/environment.rs
+@@ -268,7 +268,7 @@ pub fn load_environment_skills_from_discovery(
+             .metadata
+             .as_ref()
+             .and_then(|metadata| {
+-                serde_yaml::from_str::<SkillMetadataFile>(&metadata.contents)
++                codex_utils_yaml::from_str::<SkillMetadataFile>(&metadata.contents)
+                     .map_err(|error| {
+                         tracing::warn!(
+                             path = %metadata.path,
+@@ -378,7 +378,7 @@ async fn read_skill_metadata(
+             return (None, None);
+         }
+     };
+-    let parsed: SkillMetadataFile = match serde_yaml::from_str(&contents) {
++    let parsed: SkillMetadataFile = match codex_utils_yaml::from_str(&contents) {
+         Ok(parsed) => parsed,
+         Err(error) => {
+             tracing::warn!("ignoring {metadata_path}: invalid metadata: {error}");
+diff --git a/codex-rs/ext/skills/src/loader/metadata.rs b/codex-rs/ext/skills/src/loader/metadata.rs
+index 0527b3c8819675654149f5af1dd2a8588433274b..07ea25a86a206656718624ce130a1a56bd1366a3 100644
+--- a/codex-rs/ext/skills/src/loader/metadata.rs
++++ b/codex-rs/ext/skills/src/loader/metadata.rs
+@@ -127,7 +127,7 @@ pub(super) async fn load_host_skill_metadata(
+         }
+     };
+ 
+-    let parsed: SkillMetadataFile = match serde_yaml::from_str(&contents) {
++    let parsed: SkillMetadataFile = match codex_utils_yaml::from_str(&contents) {
+         Ok(parsed) => parsed,
+         Err(error) => {
+             tracing::warn!(
+diff --git a/codex-rs/external-agent-migration/Cargo.toml b/codex-rs/external-agent-migration/Cargo.toml
+index 3db739977ce9e94f66a3c4c9f22ce869610fa910..caa18c3e422608cb6d58577e1e227802845202db 100644
+--- a/codex-rs/external-agent-migration/Cargo.toml
++++ b/codex-rs/external-agent-migration/Cargo.toml
+@@ -30,7 +30,7 @@ codex-thread-store = { workspace = true }
+ codex-utils-output-truncation = { workspace = true }
+ serde = { workspace = true, features = ["derive"] }
+ serde_json = { workspace = true }
+-serde_yaml = { workspace = true }
++codex-utils-yaml = { workspace = true }
+ sha2 = { workspace = true }
+ toml = { workspace = true }
+ tokio = { workspace = true, features = ["rt", "sync"] }
+diff --git a/codex-rs/external-agent-migration/src/subagents.rs b/codex-rs/external-agent-migration/src/subagents.rs
+index 949079936e3dfe8a2f9b237959ff3c7c3c934140..ce26d941009ddca023ea2cf044378b1c6ea2e02d 100644
+--- a/codex-rs/external-agent-migration/src/subagents.rs
++++ b/codex-rs/external-agent-migration/src/subagents.rs
+@@ -1,7 +1,6 @@
+ use crate::RewriteProfile;
+ use crate::invalid_data_error;
+ use crate::scope::is_redirected_destination;
+-use serde_yaml::Value as YamlValue;
+ use std::collections::BTreeMap;
+ use std::fs;
+ use std::io;
+@@ -164,11 +163,11 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
+ fn parse_frontmatter(
+     raw_frontmatter: &str,
+ ) -> (BTreeMap<String, FrontmatterValue>, Option<String>) {
+-    let parsed: YamlValue = match serde_yaml::from_str(raw_frontmatter) {
++    let mapping = match codex_utils_yaml::scalar_mapping(raw_frontmatter) {
+         Ok(parsed) => parsed,
+         Err(err) => return (BTreeMap::new(), Some(err.to_string())),
+     };
+-    let Some(mapping) = parsed.as_mapping() else {
++    let Some(mapping) = mapping else {
+         return (
+             BTreeMap::new(),
+             Some("frontmatter is not a YAML mapping".to_string()),
+@@ -177,26 +176,21 @@ fn parse_frontmatter(
+ 
+     let mut frontmatter = BTreeMap::new();
+     for (key, value) in mapping {
+-        let Some(key) = key.as_str().map(str::trim).filter(|key| !key.is_empty()) else {
++        let key = key.trim();
++        if key.is_empty() {
+             continue;
+-        };
+-        frontmatter.insert(key.to_string(), frontmatter_value_from_yaml(value));
++        }
++        frontmatter.insert(
++            key.to_string(),
++            value
++                .map(FrontmatterValue::Scalar)
++                .unwrap_or(FrontmatterValue::Other),
++        );
+     }
+ 
+     (frontmatter, None)
+ }
+ 
+-fn frontmatter_value_from_yaml(value: &YamlValue) -> FrontmatterValue {
+-    match value {
+-        YamlValue::String(value) => FrontmatterValue::Scalar(value.trim().to_string()),
+-        YamlValue::Bool(value) => FrontmatterValue::Scalar(value.to_string()),
+-        YamlValue::Number(value) => FrontmatterValue::Scalar(value.to_string()),
+-        YamlValue::Null | YamlValue::Sequence(_) | YamlValue::Mapping(_) | YamlValue::Tagged(_) => {
+-            FrontmatterValue::Other
+-        }
+-    }
+-}
+-
+ pub(crate) fn agent_metadata(document: &ParsedDocument) -> Option<AgentMetadata> {
+     if document.frontmatter_error.is_some() || document.body.trim().is_empty() {
+         return None;
+diff --git a/codex-rs/hepta-matrix-sdk/Cargo.toml b/codex-rs/hepta-matrix-sdk/Cargo.toml
+index 1a8864fd643349c4db345b0e2dfbcb4a4d53719a..9108e65772a71b9b015dba60f354382f5e0dfa8d 100644
+--- a/codex-rs/hepta-matrix-sdk/Cargo.toml
++++ b/codex-rs/hepta-matrix-sdk/Cargo.toml
+@@ -33,3 +33,4 @@ url = { workspace = true }
+ pretty_assertions = { workspace = true }
+ serde = { workspace = true, features = ["derive"] }
+ tempfile = { workspace = true }
++wiremock = { workspace = true }
+diff --git a/codex-rs/hepta-matrix-sdk/src/config.rs b/codex-rs/hepta-matrix-sdk/src/config.rs
+index 8469e53a1e15b960a94d53def731ba028e21a543..073c6813fb1911f87790699c25fcb3d178df8969 100644
+--- a/codex-rs/hepta-matrix-sdk/src/config.rs
++++ b/codex-rs/hepta-matrix-sdk/src/config.rs
+@@ -57,6 +57,8 @@ impl MatrixSdkPaths {
+         config: &MatrixSidecarConfig,
+     ) -> Result<Self, MatrixSidecarConfigError> {
+         config.validate(layout)?;
++        // This is the existing on-disk identity, not a dependency-version selector.
++        // Keep it stable so SDK upgrades reopen the same session and encryption keys.
+         let root = layout.matrix_root().join("matrix-sdk-0.18");
+         let state = root.join("state");
+         let cache = root.join("cache");
+diff --git a/codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs b/codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs
+index d85e7b4c22ecf666e37013f4f25faa75be26addb..ae3d0b71f2ce9ccbf1209881bc3d541b8fb5582b 100644
+--- a/codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs
++++ b/codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs
+@@ -340,7 +340,7 @@ fn duplicate_or_null_scope_fields_are_rejected_in_both_raw_page_vectors() {
+ }
+ 
+ #[test]
+-fn sdk_bundled_metadata_is_dropped_instead_of_retained_outside_raw_bounds() {
++fn sdk_metadata_is_dropped_instead_of_retained_outside_raw_bounds() {
+     let mut baseline = GapFillAccumulator::new(plan()).expect("plan");
+     append(
+         &mut baseline,
+@@ -365,7 +365,22 @@ fn sdk_bundled_metadata_is_dropped_instead_of_retained_outside_raw_bounds() {
+         .pop()
+         .expect("bundle");
+     assert!(bundled.raw().json().get().len() > MAX_BYTES);
+-    enriched.chunk[0].bundled_latest_thread_event = Some(Box::new(bundled));
++    // SDK 0.19 derives the latest thread event from the raw unsigned relations.
++    // Push actions remain SDK metadata outside raw(), so attach an oversized
++    // value there to preserve the accepted-page retention boundary exercised here.
++    enriched.chunk[0].set_push_actions(vec![
++        serde_json::from_value(json!({
++            "set_tweak": "sound",
++            "value": bundled.raw().json().get(),
++        }))
++        .expect("SDK push action"),
++    ]);
++    assert!(
++        serde_json::to_vec(enriched.chunk[0].push_actions().expect("SDK metadata"))
++            .expect("metadata JSON")
++            .len()
++            > MAX_BYTES
++    );
+     let mut accumulator = GapFillAccumulator::new(plan()).expect("plan");
+     assert_eq!(
+         append(&mut accumulator, enriched),
+@@ -378,6 +393,34 @@ fn sdk_bundled_metadata_is_dropped_instead_of_retained_outside_raw_bounds() {
+     );
+ }
+ 
++#[test]
++fn sdk_bundled_latest_event_is_counted_in_raw_bounds_before_acceptance() {
++    let mut accumulator = GapFillAccumulator::new(plan()).expect("plan");
++    let before = snapshot(&accumulator);
++    let mut large = event("$bundled");
++    large["content"]["body"] = json!("x".repeat(MAX_BYTES + 1));
++    let mut root = event("$visible");
++    root["unsigned"] = json!({
++        "m.relations": {
++            "m.thread": {
++                "latest_event": large,
++                "count": 1,
++                "current_user_participated": false,
++            },
++        },
++    });
++    let enriched = page("s-source", Some("t-target"), vec![root], vec![]);
++    let bundled = enriched.chunk[0]
++        .bundled_latest_thread_event()
++        .expect("actual SDK bundled latest event");
++    assert!(bundled.raw().json().get().len() > MAX_BYTES);
++    assert_eq!(
++        append(&mut accumulator, enriched),
++        Err(GapFillError::Bounds)
++    );
++    assert_eq!(snapshot(&accumulator), before);
++}
++
+ #[test]
+ fn page_and_accumulated_count_and_byte_limits_include_ancillary_state() {
+     let mut accumulator = GapFillAccumulator::new(plan()).expect("plan");
+diff --git a/codex-rs/hepta-matrix-sdk/src/sdk.rs b/codex-rs/hepta-matrix-sdk/src/sdk.rs
+index 9a9ceda53d884ae337bd8bfb1349d7a3f4efedaa..4c143c27959a044d9777da0f4bb2e4355c651c5b 100644
+--- a/codex-rs/hepta-matrix-sdk/src/sdk.rs
++++ b/codex-rs/hepta-matrix-sdk/src/sdk.rs
+@@ -42,6 +42,12 @@ const MATRIX_ROOM_ENCRYPTED_EVENT_TYPE: &str = "m.room.encrypted";
+ // startup paths may otherwise consume several transport attempts and their
+ // individual timeouts before matrixd can bind its control socket.
+ const MATRIX_STARTUP_REQUEST_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(5);
++// Opening four encrypted stores performs strong local KDFs and schema
++// migrations before the client can make any request. The request deadline must
++// not also be their aggregate budget. Keep one startup deadline across local
++// initialization, authentication, and any fresh-client fallback; individual
++// requests retain the shorter timeout above.
++const MATRIX_STARTUP_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(20);
+ const MATRIX_SESSION_MAX_BYTES: u64 = 16 * 1024;
+ 
+ pub struct MatrixSdkClient {
+@@ -59,17 +65,13 @@ impl MatrixSdkClient {
+         store_passphrase: Option<&str>,
+     ) -> Result<Self, MatrixSdkError> {
+         verify_session_identity(&config, &session)?;
+-        let sidecar = tokio::time::timeout(
+-            MATRIX_STARTUP_REQUEST_TIMEOUT,
+-            Self::build(layout, config, store_passphrase),
++        let startup_deadline = tokio::time::Instant::now() + MATRIX_STARTUP_TIMEOUT;
++        let sidecar = Self::build_until(layout, config, store_passphrase, startup_deadline).await?;
++        Self::authenticate_until(
++            startup_deadline,
++            sidecar.client.restore_session(session.clone()),
+         )
+-        .await
+-        .map_err(|_| MatrixSdkError::Initialization)??;
+-        sidecar
+-            .client
+-            .restore_session(session.clone())
+-            .await
+-            .map_err(|_| MatrixSdkError::Authentication)?;
++        .await?;
+         persist_session(sidecar.paths.session(), &session)?;
+         sidecar.verify_authenticated_identity()?;
+         sidecar.enable_event_cache()?;
+@@ -83,12 +85,26 @@ impl MatrixSdkClient {
+         store_passphrase: Option<&str>,
+         device_display_name: Option<&str>,
+     ) -> Result<(Self, MatrixSession), MatrixSdkError> {
+-        let sidecar = tokio::time::timeout(
+-            MATRIX_STARTUP_REQUEST_TIMEOUT,
+-            Self::build(layout, config, store_passphrase),
++        Self::login_password_until(
++            layout,
++            config,
++            password,
++            store_passphrase,
++            device_display_name,
++            tokio::time::Instant::now() + MATRIX_STARTUP_TIMEOUT,
+         )
+         .await
+-        .map_err(|_| MatrixSdkError::Initialization)??;
++    }
++
++    async fn login_password_until(
++        layout: &HeptaAgentLayout,
++        config: MatrixSidecarConfig,
++        password: &str,
++        store_passphrase: Option<&str>,
++        device_display_name: Option<&str>,
++        startup_deadline: tokio::time::Instant,
++    ) -> Result<(Self, MatrixSession), MatrixSdkError> {
++        let sidecar = Self::build_until(layout, config, store_passphrase, startup_deadline).await?;
+         let mut login = sidecar
+             .client
+             .matrix_auth()
+@@ -102,10 +118,7 @@ impl MatrixSdkClient {
+         // SDK's own three-attempt policy (whose individual timeout defaults
+         // to 30s).  Bound the whole startup login so an offline replacement
+         // returns to Supervisor instead of occupying the health window.
+-        let response = tokio::time::timeout(MATRIX_STARTUP_REQUEST_TIMEOUT, login.send())
+-            .await
+-            .map_err(|_| MatrixSdkError::Authentication)?
+-            .map_err(|_| MatrixSdkError::Authentication)?;
++        let response = Self::authenticate_until(startup_deadline, login.send()).await?;
+         let session = MatrixSession::from(&response);
+         verify_session_identity(&sidecar.config, &session)?;
+         persist_session(sidecar.paths.session(), &session)?;
+@@ -126,21 +139,18 @@ impl MatrixSdkClient {
+         store_passphrase: Option<&str>,
+         device_display_name: Option<&str>,
+     ) -> Result<(Self, MatrixSession), MatrixSdkError> {
+-        let sidecar = tokio::time::timeout(
+-            MATRIX_STARTUP_REQUEST_TIMEOUT,
+-            Self::build(layout, config.clone(), store_passphrase),
+-        )
+-        .await
+-        .map_err(|_| MatrixSdkError::Initialization)??;
++        let startup_deadline = tokio::time::Instant::now() + MATRIX_STARTUP_TIMEOUT;
++        let sidecar =
++            Self::build_until(layout, config.clone(), store_passphrase, startup_deadline).await?;
+ 
+         if let Some(session) = load_session(sidecar.paths.session())? {
+             verify_session_identity(&sidecar.config, &session)?;
+-            let restore = tokio::time::timeout(
+-                MATRIX_STARTUP_REQUEST_TIMEOUT,
++            let restore = Self::authenticate_until(
++                startup_deadline,
+                 sidecar.client.restore_session(session.clone()),
+             )
+             .await;
+-            if matches!(restore, Ok(Ok(()))) {
++            if restore.is_ok() {
+                 sidecar.verify_authenticated_identity()?;
+                 sidecar.enable_event_cache()?;
+                 return Ok((sidecar, session));
+@@ -148,16 +158,59 @@ impl MatrixSdkClient {
+         }
+ 
+         drop(sidecar);
+-        Self::login_password(
++        Self::login_password_until(
+             layout,
+             config,
+             password,
+             store_passphrase,
+             device_display_name,
++            startup_deadline,
+         )
+         .await
+     }
+ 
++    async fn build_until(
++        layout: &HeptaAgentLayout,
++        config: MatrixSidecarConfig,
++        store_passphrase: Option<&str>,
++        startup_deadline: tokio::time::Instant,
++    ) -> Result<Self, MatrixSdkError> {
++        if tokio::time::Instant::now() >= startup_deadline {
++            return Err(MatrixSdkError::Initialization);
++        }
++        let sidecar = tokio::time::timeout_at(
++            startup_deadline,
++            Self::build(layout, config, store_passphrase),
++        )
++        .await
++        .map_err(|_| MatrixSdkError::Initialization)??;
++        // A synchronous KDF can finish a poll after the timer expires. Reject
++        // that result before activating a session or starting a fresh request.
++        if tokio::time::Instant::now() >= startup_deadline {
++            return Err(MatrixSdkError::Initialization);
++        }
++        Ok(sidecar)
++    }
++
++    async fn authenticate_until<T, E>(
++        startup_deadline: tokio::time::Instant,
++        request: impl std::future::Future<Output = Result<T, E>>,
++    ) -> Result<T, MatrixSdkError> {
++        let now = tokio::time::Instant::now();
++        if now >= startup_deadline {
++            return Err(MatrixSdkError::Authentication);
++        }
++        let request_deadline = startup_deadline.min(now + MATRIX_STARTUP_REQUEST_TIMEOUT);
++        let response = tokio::time::timeout_at(request_deadline, request)
++            .await
++            .map_err(|_| MatrixSdkError::Authentication)?
++            .map_err(|_| MatrixSdkError::Authentication)?;
++        if tokio::time::Instant::now() >= request_deadline {
++            return Err(MatrixSdkError::Authentication);
++        }
++        Ok(response)
++    }
++
+     async fn build(
+         layout: &HeptaAgentLayout,
+         config: MatrixSidecarConfig,
+@@ -431,8 +484,6 @@ fn classify_http_error(error: &HttpError) -> MatrixTransportError {
+             .unwrap_or(MatrixTransportError::Permanent),
+         HttpError::Cached(error) => classify_http_error(error),
+         HttpError::IntoHttp(_) | HttpError::RefreshToken(_) => MatrixTransportError::Permanent,
+-        #[cfg(target_os = "android")]
+-        HttpError::VerifierBuilder(_) => MatrixTransportError::Permanent,
+     }
+ }
+ 
+@@ -682,3 +733,7 @@ mod tests {
+         );
+     }
+ }
++
++#[cfg(test)]
++#[path = "startup_deadline_tests.rs"]
++mod startup_deadline_tests;
+diff --git a/codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs b/codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..32e57e8105560f72d1ac56511a1336e41306470a
+--- /dev/null
++++ b/codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs
+@@ -0,0 +1,83 @@
++use std::cell::Cell;
++use std::error::Error;
++use std::time::Duration;
++
++use codex_hepta_contracts::AgentId;
++use codex_hepta_matrix_protocol::MATRIX_BINDING_SCHEMA_VERSION;
++use codex_hepta_matrix_protocol::MatrixBindingV1;
++use codex_hepta_matrix_protocol::MatrixDeviceId;
++use codex_hepta_matrix_protocol::MatrixHomeserverUrl;
++use codex_hepta_matrix_protocol::MatrixRoomId;
++use codex_hepta_matrix_protocol::MatrixUserId;
++use codex_hepta_paths::HeptaFleetRoot;
++use pretty_assertions::assert_eq;
++
++use super::MatrixSdkClient;
++use super::MatrixSdkError;
++use super::MatrixSidecarConfig;
++
++#[tokio::test]
++async fn fresh_login_cannot_renew_expired_startup_budget() -> Result<(), Box<dyn Error>> {
++    let root = tempfile::tempdir()?;
++    let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
++    let layout = HeptaFleetRoot::parse(root.path().canonicalize()?)?
++        .layout()
++        .agent(&agent_id);
++    let config = MatrixSidecarConfig {
++        binding: MatrixBindingV1 {
++            schema_version: MATRIX_BINDING_SCHEMA_VERSION,
++            agent_id,
++            revision: 1,
++            homeserver: MatrixHomeserverUrl::parse("https://example.test")?,
++            expected_mxid: MatrixUserId::parse("@deadline:example.test")?,
++            expected_device_id: MatrixDeviceId::parse("DEADLINE")?,
++            allowed_rooms: vec![MatrixRoomId::parse("!deadline:example.test")?],
++            allowed_senders: vec![MatrixUserId::parse("@owner:example.test")?],
++            require_explicit_mention: true,
++        },
++        matrix_generation: 1,
++        sync_timeline_limit: 32,
++        sync_timeout: Duration::from_secs(1),
++    };
++    config.validate(&layout)?;
++    let result = MatrixSdkClient::login_password_until(
++        &layout,
++        config,
++        "must not be sent after the original startup deadline",
++        Some("full-strength human passphrase"),
++        /*device_display_name*/ None,
++        tokio::time::Instant::now(),
++    )
++    .await;
++    assert_eq!(result.map(|_| ()), Err(MatrixSdkError::Initialization));
++    assert!(!layout.matrix_root().exists());
++    Ok(())
++}
++
++#[tokio::test]
++async fn expired_authentication_does_not_poll_the_request() {
++    let polled = Cell::new(false);
++    let result = MatrixSdkClient::authenticate_until(tokio::time::Instant::now(), async {
++        polled.set(true);
++        Ok::<_, ()>("a request must not start after its startup budget")
++    })
++    .await;
++    assert_eq!(result, Err(MatrixSdkError::Authentication));
++    assert!(!polled.get());
++}
++
++#[tokio::test]
++async fn authentication_returning_late_ready_cannot_activate_a_session() {
++    let polled = Cell::new(false);
++    let startup_deadline = tokio::time::Instant::now() + Duration::from_secs(1);
++    let result = MatrixSdkClient::authenticate_until(startup_deadline, async {
++        polled.set(true);
++        // Model a synchronous SDK operation that returns Ready in its first
++        // poll, after the shared deadline. Tokio's timer cannot preempt it.
++        std::thread::sleep(Duration::from_millis(1_100));
++        Ok::<_, ()>("late session")
++    })
++    .await;
++    assert!(polled.get());
++    assert_eq!(result, Err(MatrixSdkError::Authentication));
++}
+diff --git a/codex-rs/hepta-matrix-sdk/tests/event_context_migration.rs b/codex-rs/hepta-matrix-sdk/tests/event_context_migration.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..0d89a25fbcb48fb6a2cc7c296a09b9642d85ef64
+--- /dev/null
++++ b/codex-rs/hepta-matrix-sdk/tests/event_context_migration.rs
+@@ -0,0 +1,127 @@
++use std::error::Error;
++use std::sync::Arc;
++use std::sync::atomic::AtomicUsize;
++use std::sync::atomic::Ordering;
++
++use matrix_sdk::Client;
++use matrix_sdk::SessionMeta;
++use matrix_sdk::SessionTokens;
++use matrix_sdk::authentication::matrix::MatrixSession;
++use matrix_sdk::config::SyncSettings;
++use matrix_sdk::event_handler::Ctx;
++use matrix_sdk::ruma::api::MatrixVersion;
++use matrix_sdk::ruma::events::room::message::OriginalSyncRoomMessageEvent;
++use pretty_assertions::assert_eq;
++use serde_json::json;
++use tokio::sync::Mutex;
++use wiremock::Mock;
++use wiremock::MockServer;
++use wiremock::ResponseTemplate;
++use wiremock::matchers::method;
++use wiremock::matchers::path;
++
++#[derive(Clone)]
++struct Label(String);
++
++#[derive(Clone)]
++struct InitiallyMissing;
++
++type Deliveries = Arc<Mutex<Vec<(String, String)>>>;
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn event_context_preserves_types_clones_and_replacement()
++-> Result<(), Box<dyn Error>> {
++    let server = MockServer::start().await;
++    let client = Client::builder()
++        .homeserver_url(server.uri())
++        .server_versions([MatrixVersion::V1_11])
++        .build()
++        .await?;
++    client
++        .restore_session(MatrixSession {
++            meta: SessionMeta {
++                user_id: "@migration:example.test".try_into()?,
++                device_id: "MIGRATION".into(),
++            },
++            tokens: SessionTokens {
++                access_token: "local-context-test".to_owned(),
++                refresh_token: None,
++            },
++        })
++        .await?;
++    Mock::given(method("POST"))
++        .and(path("/_matrix/client/v3/keys/upload"))
++        .respond_with(ResponseTemplate::new(200).set_body_json(json!({
++            "one_time_key_counts": {"signed_curve25519": 50}
++        })))
++        .mount(&server)
++        .await;
++    let delivered: Deliveries = Arc::new(Mutex::new(Vec::new()));
++    let previously_missing = Arc::new(AtomicUsize::new(0));
++    client.add_event_handler_context(delivered.clone());
++    client.add_event_handler(
++        |event: OriginalSyncRoomMessageEvent,
++         Ctx(label): Ctx<Label>,
++         Ctx(deliveries): Ctx<Deliveries>| async move {
++            deliveries
++                .lock()
++                .await
++                .push((event.event_id.to_string(), label.0));
++        },
++    );
++    let missing_calls = previously_missing.clone();
++    client.add_event_handler(
++        move |_event: OriginalSyncRoomMessageEvent, _context: Ctx<InitiallyMissing>| {
++            let calls = missing_calls.clone();
++            async move {
++                calls.fetch_add(1, Ordering::SeqCst);
++            }
++        },
++    );
++    for (index, label) in ["before replacement", "after replacement"].into_iter().enumerate() {
++        client.add_event_handler_context(Label(label.to_owned()));
++        if index == 1 {
++            client.add_event_handler_context(InitiallyMissing);
++        }
++        Mock::given(method("GET"))
++            .and(path("/_matrix/client/v3/sync"))
++            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
++                "next_batch": format!("batch-{index}"),
++                "rooms": {"join": {"!context:example.test": {
++                    "state": {"events": [{
++                        "type": "m.room.member",
++                        "event_id": "$membership",
++                        "sender": "@migration:example.test",
++                        "state_key": "@migration:example.test",
++                        "origin_server_ts": 1,
++                        "content": {"membership": "join"}
++                    }]},
++                    "timeline": {
++                        "limited": false,
++                        "prev_batch": format!("previous-{index}"),
++                        "events": [{
++                            "type": "m.room.message",
++                            "event_id": format!("$event-{index}"),
++                            "sender": "@owner:example.test",
++                            "origin_server_ts": 2,
++                            "content": {"msgtype": "m.text", "body": "context delivery"}
++                        }]
++                    }
++                }}}
++            })))
++            .up_to_n_times(1)
++            .expect(1)
++            .mount(&server)
++            .await;
++        client.sync_once(SyncSettings::default()).await?;
++        assert_eq!(previously_missing.load(Ordering::SeqCst), index);
++    }
++    assert_eq!(
++        *delivered.lock().await,
++        vec![
++            ("$event-0".to_owned(), "before replacement".to_owned()),
++            ("$event-1".to_owned(), "after replacement".to_owned()),
++        ]
++    );
++    Ok(())
++}
+diff --git a/codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs b/codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..6c58193841db4cb2f7976963301a72ea2652c9b1
+--- /dev/null
++++ b/codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs
+@@ -0,0 +1,274 @@
++use std::collections::BTreeMap;
++use std::error::Error;
++use std::fs;
++use std::path::Path;
++use std::path::PathBuf;
++use std::time::Duration;
++
++use codex_hepta_contracts::AgentId;
++use codex_hepta_matrix_protocol::MATRIX_BINDING_SCHEMA_VERSION;
++use codex_hepta_matrix_protocol::MatrixBindingV1;
++use codex_hepta_matrix_protocol::MatrixDeviceId;
++use codex_hepta_matrix_protocol::MatrixEventId;
++use codex_hepta_matrix_protocol::MatrixHomeserverUrl;
++use codex_hepta_matrix_protocol::MatrixRoomId;
++use codex_hepta_matrix_protocol::MatrixUserId;
++use codex_hepta_matrix_protocol::outbox_id;
++use codex_hepta_matrix_protocol::transaction_id;
++use codex_hepta_matrix_sdk::MatrixSdkClient;
++use codex_hepta_matrix_sdk::MatrixSession;
++use codex_hepta_matrix_sdk::MatrixSidecarConfig;
++use codex_hepta_matrix_store::InboxDraft;
++use codex_hepta_matrix_store::MatrixDurableConfig;
++use codex_hepta_matrix_store::MatrixDurableStore;
++use codex_hepta_matrix_store::OutboxDraft;
++use codex_hepta_matrix_store::OutboxKind;
++use codex_hepta_matrix_store::RoomBindingDraft;
++use codex_hepta_paths::HeptaAgentLayout;
++use codex_hepta_paths::HeptaFleetRoot;
++use matrix_sdk::SessionMeta;
++use matrix_sdk::SessionTokens;
++use pretty_assertions::assert_eq;
++use serde_json::Value;
++use serde_json::json;
++
++type TestResult<T = ()> = Result<T, Box<dyn Error>>;
++const AGENT: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
++const USER: &str = "@migration:example.test";
++const ROOM: &str = "!migration:example.test";
++const PASSPHRASE: &str = "human passphrase for the migration fixture";
++const CUSTOM_KEY: &[u8] = b"hepta-migration-state";
++const CUSTOM_VALUE: &[u8] = b"persisted before the SDK dependency update";
++
++fn fixture_config(root: &Path) -> TestResult<(HeptaAgentLayout, MatrixSidecarConfig)> {
++    let fleet = root.join("fleet");
++    fs::create_dir_all(&fleet)?;
++    let agent = AgentId::parse(AGENT)?;
++    let layout = HeptaFleetRoot::parse(fleet.canonicalize()?)?
++        .layout()
++        .agent(&agent);
++    let config = MatrixSidecarConfig {
++        binding: MatrixBindingV1 {
++            schema_version: MATRIX_BINDING_SCHEMA_VERSION,
++            agent_id: agent,
++            revision: 1,
++            homeserver: MatrixHomeserverUrl::parse("https://example.test")?,
++            expected_mxid: MatrixUserId::parse(USER)?,
++            expected_device_id: MatrixDeviceId::parse("MIGRATION")?,
++            allowed_rooms: vec![MatrixRoomId::parse(ROOM)?],
++            allowed_senders: vec![MatrixUserId::parse("@owner:example.test")?],
++            require_explicit_mention: true,
++        },
++        matrix_generation: 1,
++        sync_timeline_limit: 32,
++        sync_timeout: Duration::from_secs(1),
++    };
++    Ok((layout, config))
++}
++
++fn fixture_session() -> TestResult<MatrixSession> {
++    Ok(MatrixSession {
++        meta: SessionMeta {
++            user_id: USER.try_into()?,
++            device_id: "MIGRATION".into(),
++        },
++        tokens: SessionTokens {
++            access_token: "local-fixture-access-token".to_owned(),
++            refresh_token: Some("local-fixture-refresh-token".to_owned()),
++        },
++    })
++}
++
++fn inbox_event() -> TestResult<InboxDraft> {
++    Ok(InboxDraft {
++        event_id: MatrixEventId::parse("$migration-event")?,
++        room_id: MatrixRoomId::parse(ROOM)?,
++        sender: MatrixUserId::parse("@owner:example.test")?,
++        event_type: "m.room.message".to_owned(),
++        payload: br#"{"msgtype":"m.text","body":"durable migration input"}"#.to_vec(),
++        binding_revision: 1,
++        generation: 1,
++        origin_server_ts_ms: 10,
++        received_at_ms: 11,
++    })
++}
++
++fn outbox_draft() -> TestResult<OutboxDraft> {
++    let room = MatrixRoomId::parse(ROOM)?;
++    let logical_id = outbox_id(
++        &AgentId::parse(AGENT)?,
++        &room,
++        "thread-migration",
++        "turn-migration",
++        "item-migration",
++        "final",
++    );
++    Ok(OutboxDraft {
++        txn_id: transaction_id(&logical_id, /*revision*/ 1)?,
++        logical_outbox_id: logical_id,
++        revision: 1,
++        room_id: room,
++        kind: OutboxKind::Final,
++        payload: b"durable migration output".to_vec(),
++        binding_revision: 1,
++        generation: 1,
++        created_at_ms: 12,
++    })
++}
++
++async fn stored_values(
++    client: &MatrixSdkClient,
++    store: &MatrixDurableStore,
++) -> TestResult<Value> {
++    let device = client
++        .client()
++        .encryption()
++        .get_own_device()
++        .await?
++        .ok_or("missing persisted encryption identity")?;
++    let device_keys: BTreeMap<_, _> = device
++        .keys()
++        .iter()
++        .map(|(key_id, key)| (key_id.to_string(), key.to_base64()))
++        .collect();
++    assert!(!device_keys.is_empty(), "missing persisted encryption keys");
++    let checkpoint = store
++        .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
++        .await?
++        .ok_or("missing durable sync cursor")?;
++    let outbox = store
++        .outbox_for_txn(&outbox_draft()?.txn_id)
++        .await?
++        .ok_or("missing pending outbox")?;
++    Ok(json!({
++        "session": client.client().matrix_auth().session(),
++        "device_keys": device_keys,
++        "custom_value": client.client().state_store().get_custom_value(CUSTOM_KEY).await?,
++        "checkpoint": {
++            "owner": checkpoint.owner_agent_id,
++            "binding_revision": checkpoint.binding_revision,
++            "generation": checkpoint.generation,
++            "next_batch": checkpoint.next_batch,
++            "updated_at_ms": checkpoint.updated_at_ms,
++        },
++        "outbox": {
++            "id": outbox.outbox_id,
++            "txn": outbox.stable_txn_id,
++            "room": outbox.room_id,
++            "kind": outbox.kind,
++            "payload": outbox.payload,
++            "logical_txn_count": outbox.logical_txn_count,
++            "binding_revision": outbox.binding_revision,
++            "generation": outbox.generation,
++            "state": outbox.state,
++            "attempts": outbox.attempts,
++            "next_attempt_at_ms": outbox.next_attempt_at_ms,
++            "lease_until_ms": outbox.lease_until_ms,
++            "created_at_ms": outbox.created_at_ms,
++            "updated_at_ms": outbox.updated_at_ms,
++            "sent_event_id": outbox.sent_event_id,
++            "replaces_event_id": outbox.replaces_event_id,
++        },
++    }))
++}
++
++async fn prepare_fixture(root: &Path) -> TestResult {
++    let expected_path = root.join("expected.json");
++    assert!(!expected_path.exists(), "refuse to overwrite a baseline fixture");
++    let (layout, config) = fixture_config(root)?;
++    let client =
++        MatrixSdkClient::restore(&layout, config, fixture_session()?, Some(PASSPHRASE)).await?;
++    client
++        .client()
++        .state_store()
++        .set_custom_value(CUSTOM_KEY, CUSTOM_VALUE.to_vec())
++        .await?;
++    let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
++    store
++        .bind_room(&RoomBindingDraft {
++            room_id: MatrixRoomId::parse(ROOM)?,
++            agent_user_id: MatrixUserId::parse(USER)?,
++            expected_revision: None,
++            generation: 1,
++            changed_at_ms: 1,
++        })
++        .await?;
++    let commit = store
++        .commit_sync_batch(
++            /*binding_revision*/ 1,
++            /*generation*/ 1,
++            /*expected_next_batch*/ None,
++            "before-sdk-upgrade",
++            &[inbox_event()?],
++            /*updated_at_ms*/ 11,
++        )
++        .await?;
++    assert_eq!((commit.accepted, commit.duplicates), (1, 0));
++    store.enqueue_outbox(&outbox_draft()?).await?;
++    let expected = stored_values(&client, &store).await?;
++    fs::write(expected_path, serde_json::to_vec_pretty(&expected)?)?;
++    Ok(())
++}
++
++async fn reopen_fixture(root: &Path) -> TestResult {
++    let expected: Value = serde_json::from_slice(&fs::read(root.join("expected.json"))?)?;
++    let (layout, config) = fixture_config(root)?;
++    let (client, session) = MatrixSdkClient::login_or_restore(
++        &layout,
++        config,
++        "a password that cannot log in to this nonexistent server",
++        Some(PASSPHRASE),
++        /*device_display_name*/ None,
++    )
++    .await?;
++    assert_eq!(serde_json::to_value(session)?, expected["session"]);
++    let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
++    assert_eq!(stored_values(&client, &store).await?, expected);
++    assert!(client.client().event_cache().has_subscribed());
++    // The SDK may rebuild its event cache. The authoritative Hepta cursor and
++    // inbox must still accept a continuation and deduplicate the old event.
++    let continuation = store
++        .commit_sync_batch(
++            /*binding_revision*/ 1,
++            /*generation*/ 1,
++            Some("before-sdk-upgrade"),
++            "after-sdk-upgrade",
++            &[inbox_event()?],
++            /*updated_at_ms*/ 20,
++        )
++        .await?;
++    assert_eq!((continuation.accepted, continuation.duplicates), (0, 1));
++    assert_eq!(continuation.checkpoint.next_batch, "after-sdk-upgrade");
++    Ok(())
++}
++
++#[tokio::test]
++async fn encrypted_state_identity_session_and_queues_survive_restart() -> TestResult {
++    let temp = tempfile::tempdir()?;
++    prepare_fixture(temp.path()).await?;
++    reopen_fixture(temp.path()).await
++}
++
++fn external_fixture_directory() -> TestResult<PathBuf> {
++    let path = PathBuf::from(std::env::var("HEPTA_MATRIX_MIGRATION_FIXTURE")?);
++    if !path.is_absolute() || !path.is_dir() {
++        return Err("migration fixture must be an existing absolute directory".into());
++    }
++    Ok(path)
++}
++
++// The candidate runner must invoke these two phases explicitly in separate
++// processes, binding the first phase to the original 0.18 Cargo.lock and the
++// second phase to the 0.19 candidate. Ordinary tests only prove same-version
++// restart; they are not evidence that an old store migrated.
++#[tokio::test]
++#[ignore = "requires the source-bound old-version fixture producer"]
++async fn prepare_old_version_fixture() -> TestResult {
++    prepare_fixture(&external_fixture_directory()?).await
++}
++
++#[tokio::test]
++#[ignore = "requires the independently retained old-version fixture"]
++async fn reopen_old_version_fixture() -> TestResult {
++    reopen_fixture(&external_fixture_directory()?).await
++}
+diff --git a/codex-rs/rust-toolchain.toml b/codex-rs/rust-toolchain.toml
+index 910c65114ec128a8317ee8257428451f3cd28230..917d2492264a35bc9c0feaef41878d8825870866 100644
+--- a/codex-rs/rust-toolchain.toml
++++ b/codex-rs/rust-toolchain.toml
+@@ -1,3 +1,3 @@
+ [toolchain]
+-channel = "1.95.0"
++channel = "1.96.0"
+ components = ["clippy", "rustfmt", "rust-src"]
+diff --git a/codex-rs/skills/Cargo.toml b/codex-rs/skills/Cargo.toml
+index 7342975aaea0e3ecc61da41f145674cd154a12c9..0b2f1e622547ac47c84d948b3f676ea5907f28a9 100644
+--- a/codex-rs/skills/Cargo.toml
++++ b/codex-rs/skills/Cargo.toml
+@@ -20,7 +20,7 @@ codex-utils-absolute-path = { workspace = true }
+ codex-utils-path-uri = { workspace = true }
+ include_dir = { workspace = true }
+ serde = { workspace = true, features = ["derive"] }
+-serde_yaml = { workspace = true }
++codex-utils-yaml = { workspace = true }
+ shlex = { workspace = true }
+ thiserror = { workspace = true }
+ tracing = { workspace = true }
+diff --git a/codex-rs/skills/src/parser.rs b/codex-rs/skills/src/parser.rs
+index aef295cd03cc37ca712f1c62c1dbda07127a8277..895641866c6f32f12db743948eb42739b4014b48 100644
+--- a/codex-rs/skills/src/parser.rs
++++ b/codex-rs/skills/src/parser.rs
+@@ -33,7 +33,7 @@ pub enum SkillParseError {
+     #[error("missing YAML frontmatter delimited by ---")]
+     MissingFrontmatter,
+     #[error("invalid YAML: {0}")]
+-    InvalidYaml(#[source] serde_yaml::Error),
++    InvalidYaml(#[source] codex_utils_yaml::Error),
+     #[error("missing field `{0}`")]
+     MissingField(&'static str),
+     #[error("invalid {field}: {reason}")]
+@@ -47,14 +47,14 @@ pub fn parse_skill_frontmatter_metadata(
+ ) -> Result<ParsedSkillFrontmatter, SkillParseError> {
+     let frontmatter = extract_frontmatter(contents).ok_or(SkillParseError::MissingFrontmatter)?;
+ 
+-    let parsed: SkillFrontmatter = match serde_yaml::from_str(&frontmatter) {
++    let parsed: SkillFrontmatter = match codex_utils_yaml::from_str(&frontmatter) {
+         Ok(parsed) => Ok(parsed),
+         Err(original_error) => match repair_frontmatter_scalar_fields(&frontmatter) {
+             // Some third-party skills use prose like `description: Build for AWS: ECS`
+             // or `argument-hint: <duration: e.g. 7d>`. Keep the repair line-oriented
+             // so unrelated invalid YAML still surfaces.
+             Some(repaired_frontmatter) => {
+-                serde_yaml::from_str(&repaired_frontmatter).map_err(|_| original_error)
++                codex_utils_yaml::from_str(&repaired_frontmatter).map_err(|_| original_error)
+             }
+             None => Err(original_error),
+         },
+@@ -165,7 +165,7 @@ fn repair_frontmatter_scalar_fields(frontmatter: &str) -> Option<String> {
+             }
+         }
+         let invalid_flow_like_scalar = matches!(first_char, '[' | '{' | '@' | '`')
+-            && serde_yaml::from_str::<serde_yaml::Value>(scalar).is_err();
++            && codex_utils_yaml::validate(scalar).is_err();
+         if !has_colon_separator && !invalid_flow_like_scalar {
+             repaired_lines.push(line.to_string());
+             continue;
+diff --git a/codex-rs/third_party/imbl-6.1.0/BUILD.bazel b/codex-rs/third_party/imbl-6.1.0/BUILD.bazel
+index 93502ad8c74ff7e16f1afbe5498c3daec6060672..5501edd7e424d21c9dc3bb4bbf0638ec0e67633d 100644
+--- a/codex-rs/third_party/imbl-6.1.0/BUILD.bazel
++++ b/codex-rs/third_party/imbl-6.1.0/BUILD.bazel
+@@ -1,7 +1,13 @@
+-load("//:defs.bzl", "codex_rust_crate")
+-
+-codex_rust_crate(
+-    name = "imbl",
+-    crate_edition = "2018",
+-    crate_name = "imbl",
++# Historical source is retained for provenance. The active replacement has its
++# own production BUILD target and dependency graph.
++filegroup(
++    name = "package-files",
++    srcs = glob(
++        ["**"],
++        exclude = [
++            "BUILD.bazel",
++            "target/**",
++        ],
++    ),
++    visibility = ["//visibility:public"],
+ )
+diff --git a/codex-rs/third_party/matrix-sdk-sqlite-0.18.0/BUILD.bazel b/codex-rs/third_party/matrix-sdk-sqlite-0.18.0/BUILD.bazel
+index b2c4037eff0296c2682aff7034af04fa838203a8..5501edd7e424d21c9dc3bb4bbf0638ec0e67633d 100644
+--- a/codex-rs/third_party/matrix-sdk-sqlite-0.18.0/BUILD.bazel
++++ b/codex-rs/third_party/matrix-sdk-sqlite-0.18.0/BUILD.bazel
+@@ -1,8 +1,13 @@
+-load("//:defs.bzl", "codex_rust_crate")
+-
+-codex_rust_crate(
+-    name = "matrix-sdk-sqlite",
+-    compile_data = glob(["migrations/**/*.sql"]),
+-    crate_edition = "2024",
+-    crate_name = "matrix_sdk_sqlite",
++# Historical source is retained for provenance. The active replacement has its
++# own production BUILD target and dependency graph.
++filegroup(
++    name = "package-files",
++    srcs = glob(
++        ["**"],
++        exclude = [
++            "BUILD.bazel",
++            "target/**",
++        ],
++    ),
++    visibility = ["//visibility:public"],
+ )
+diff --git a/codex-rs/utils/yaml/BUILD.bazel b/codex-rs/utils/yaml/BUILD.bazel
+new file mode 100644
+index 0000000000000000000000000000000000000000..c7f281bf363f5d34d1bde1f442784add7e037bc4
+--- /dev/null
++++ b/codex-rs/utils/yaml/BUILD.bazel
+@@ -0,0 +1,6 @@
++load("//:defs.bzl", "codex_rust_crate")
++
++codex_rust_crate(
++    name = "yaml",
++    crate_name = "codex_utils_yaml",
++)
+diff --git a/codex-rs/utils/yaml/Cargo.toml b/codex-rs/utils/yaml/Cargo.toml
+new file mode 100644
+index 0000000000000000000000000000000000000000..6cbe0aee9a9d5fdfc9ec9231cf529480a871d120
+--- /dev/null
++++ b/codex-rs/utils/yaml/Cargo.toml
+@@ -0,0 +1,20 @@
++[package]
++name = "codex-utils-yaml"
++version.workspace = true
++edition.workspace = true
++license.workspace = true
++
++[lib]
++doctest = false
++
++[lints]
++workspace = true
++
++[dependencies]
++ryu = { workspace = true }
++serde = { workspace = true }
++serde-saphyr = { workspace = true, features = ["hepta-legacy-scalars"] }
++
++[dev-dependencies]
++pretty_assertions = { workspace = true }
++serde = { workspace = true, features = ["derive"] }
+diff --git a/codex-rs/utils/yaml/src/key.rs b/codex-rs/utils/yaml/src/key.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..4dd4538afa9d80cc1962a83ae8acb7f7eaeaabc2
+--- /dev/null
++++ b/codex-rs/utils/yaml/src/key.rs
+@@ -0,0 +1,43 @@
++//! Semantic key identity for YAML's scalar and composite mapping keys.
++
++use crate::Kind;
++use crate::Node;
++
++#[derive(Eq, Hash, Ord, PartialEq, PartialOrd)]
++pub(super) enum Key {
++    String(String),
++    Scalar(String),
++    Null,
++    Sequence(Vec<Key>),
++    Mapping(Vec<(Key, Key)>),
++    Tagged(String, Box<Key>),
++}
++
++impl Node {
++    pub(super) fn identity(&self) -> Key {
++        let identity = match &self.kind {
++            Kind::String(value) => Key::String(value.clone()),
++            // Floating zero signs compare equal in the previous YAML Number.
++            // Keep their original spelling for display, normalize only identity.
++            Kind::Scalar(value) => Key::Scalar(if value == "-0.0" {
++                "0.0".to_string()
++            } else {
++                value.clone()
++            }),
++            Kind::Null => Key::Null,
++            Kind::Sequence(values) => Key::Sequence(values.iter().map(Node::identity).collect()),
++            Kind::Mapping(entries) => {
++                let mut values: Vec<_> = entries
++                    .iter()
++                    .map(|(key, value)| (key.identity(), value.identity()))
++                    .collect();
++                values.sort_unstable();
++                Key::Mapping(values)
++            }
++        };
++        match &self.application_tag {
++            Some(tag) => Key::Tagged(tag.clone(), Box::new(identity)),
++            None => identity,
++        }
++    }
++}
+diff --git a/codex-rs/utils/yaml/src/lib.rs b/codex-rs/utils/yaml/src/lib.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..a207f6053efacd081535ac4435c5f763d204dc75
+--- /dev/null
++++ b/codex-rs/utils/yaml/src/lib.rs
+@@ -0,0 +1,197 @@
++//! YAML parsing for plugin manifests and imported frontmatter.
++//!
++//! Keep YAML 1.2 scalar resolution and explicit merge handling consistent across
++//! consumers. The private visitor accepts arbitrary YAML mapping keys and keeps
++//! application tags distinct from ordinary scalar values.
++
++use serde::Deserialize;
++use serde::Deserializer;
++use serde::de::MapAccess;
++use serde::de::SeqAccess;
++use serde::de::Visitor;
++use serde_saphyr::MergeKeyPolicy;
++use serde_saphyr::NonFiniteFloatPolicy;
++use serde_saphyr::Options;
++use serde_saphyr::Tagged;
++use std::collections::HashSet;
++use std::fmt;
++
++mod key;
++
++pub use serde_saphyr::Error;
++
++/// Ordered string keys and their ordinary scalar values. A missing value means
++/// that the YAML node is null, a collection, or an application-tagged scalar.
++pub type ScalarMapping = Vec<(String, Option<String>)>;
++
++fn options() -> Options {
++    let mut options = Options::default();
++    options.strict_booleans = true;
++    options.merge_keys = MergeKeyPolicy::AsOrdinary;
++    options.non_finite_float_policy = NonFiniteFloatPolicy::PassThrough;
++    options.ignore_binary_tag_for_string = true;
++    options
++}
++
++/// Deserialize a typed YAML document using the shared compatibility options.
++pub fn from_str<'de, T: Deserialize<'de>>(input: &'de str) -> Result<T, Error> {
++    serde_saphyr::from_str_with_options(input, options())
++}
++
++/// Deserialize a UTF-8 YAML document using the same options as [`from_str`].
++pub fn from_slice<'de, T: Deserialize<'de>>(input: &'de [u8]) -> Result<T, Error> {
++    serde_saphyr::from_slice_with_options(input, options())
++}
++
++/// Validate a complete YAML value, including nested mappings and non-string keys.
++pub fn validate(input: &str) -> Result<(), Error> {
++    from_str::<Node>(input).map(|_| ())
++}
++
++/// Extract string-keyed scalar frontmatter while accepting other valid YAML.
++/// Non-string keys are ignored; their values are still fully parsed. Root and
++/// key tags are transparent, as in the previous Value accessors. Application
++/// tags on values are retained as non-scalar values, rather than silently lost.
++pub fn scalar_mapping(input: &str) -> Result<Option<ScalarMapping>, Error> {
++    let root: Node = from_str(input)?;
++    let Kind::Mapping(entries) = root.kind else {
++        return Ok(None);
++    };
++    let fields = entries
++        .into_iter()
++        .filter_map(|(key, value)| {
++            let Kind::String(key) = key.kind else {
++                return None;
++            };
++            let scalar = if value.application_tag.is_some() {
++                None
++            } else {
++                match value.kind {
++                    Kind::String(text) => Some(text.trim().to_string()),
++                    Kind::Scalar(text) => Some(text),
++                    Kind::Mapping(_) | Kind::Sequence(_) | Kind::Null => None,
++                }
++            };
++            Some((key, scalar))
++        })
++        .collect();
++    Ok(Some(fields))
++}
++
++struct Node {
++    kind: Kind,
++    application_tag: Option<String>,
++}
++
++enum Kind {
++    String(String),
++    Scalar(String),
++    Mapping(Vec<(Node, Node)>),
++    Sequence(Vec<Node>),
++    Null,
++}
++
++impl<'de> Deserialize<'de> for Node {
++    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
++        let Tagged(kind, tag) = Tagged::<Kind>::deserialize(deserializer)?;
++        let ordinary_tag = matches!(
++            tag.as_deref(),
++            None | Some(
++                "!"
++                    | "tag:yaml.org,2002:str"
++                    | "tag:yaml.org,2002:bool"
++                    | "tag:yaml.org,2002:int"
++                    | "tag:yaml.org,2002:float"
++                    | "tag:yaml.org,2002:null"
++                    | "tag:yaml.org,2002:seq"
++                    | "tag:yaml.org,2002:map"
++                    | "tag:yaml.org,2002:binary"
++            )
++        );
++        Ok(Self {
++            kind,
++            application_tag: if ordinary_tag { None } else { tag },
++        })
++    }
++}
++
++impl<'de> Deserialize<'de> for Kind {
++    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
++        deserializer.deserialize_any(NodeVisitor)
++    }
++}
++
++struct NodeVisitor;
++
++impl<'de> Visitor<'de> for NodeVisitor {
++    type Value = Kind;
++
++    fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
++        formatter.write_str("a YAML value")
++    }
++
++    fn visit_unit<E>(self) -> Result<Kind, E> {
++        Ok(Kind::Null)
++    }
++
++    fn visit_none<E>(self) -> Result<Kind, E> {
++        Ok(Kind::Null)
++    }
++
++    fn visit_bool<E>(self, value: bool) -> Result<Kind, E> {
++        Ok(Kind::Scalar(value.to_string()))
++    }
++
++    fn visit_i64<E>(self, value: i64) -> Result<Kind, E> {
++        Ok(Kind::Scalar(value.to_string()))
++    }
++
++    fn visit_u64<E>(self, value: u64) -> Result<Kind, E> {
++        Ok(Kind::Scalar(value.to_string()))
++    }
++
++    fn visit_f64<E>(self, value: f64) -> Result<Kind, E> {
++        let text = if value.is_nan() {
++            ".nan".to_string()
++        } else if value == f64::INFINITY {
++            ".inf".to_string()
++        } else if value == f64::NEG_INFINITY {
++            "-.inf".to_string()
++        } else {
++            ryu::Buffer::new().format_finite(value).to_string()
++        };
++        Ok(Kind::Scalar(text))
++    }
++
++    fn visit_str<E>(self, value: &str) -> Result<Kind, E> {
++        Ok(Kind::String(value.to_string()))
++    }
++
++    fn visit_string<E>(self, value: String) -> Result<Kind, E> {
++        Ok(Kind::String(value))
++    }
++
++    fn visit_seq<A: SeqAccess<'de>>(self, mut sequence: A) -> Result<Kind, A::Error> {
++        let mut entries = Vec::new();
++        while let Some(entry) = sequence.next_element::<Node>()? {
++            entries.push(entry);
++        }
++        Ok(Kind::Sequence(entries))
++    }
++
++    fn visit_map<A: MapAccess<'de>>(self, mut mapping: A) -> Result<Kind, A::Error> {
++        let mut entries = Vec::new();
++        let mut keys = HashSet::new();
++        while let Some((key, value)) = mapping.next_entry::<Node, Node>()? {
++            if !keys.insert(key.identity()) {
++                return Err(serde::de::Error::custom("duplicate YAML mapping key"));
++            }
++            entries.push((key, value));
++        }
++        Ok(Kind::Mapping(entries))
++    }
++}
++
++#[cfg(test)]
++#[path = "yaml_tests.rs"]
++mod tests;
+diff --git a/codex-rs/utils/yaml/src/yaml_tests.rs b/codex-rs/utils/yaml/src/yaml_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..9cfc66f8a6df96f98261b9c33ecae74d9017cea7
+--- /dev/null
++++ b/codex-rs/utils/yaml/src/yaml_tests.rs
+@@ -0,0 +1,113 @@
++use super::from_slice;
++use super::from_str;
++use super::scalar_mapping;
++use super::validate;
++use pretty_assertions::assert_eq;
++use serde::Deserialize;
++
++#[test]
++fn arbitrary_mapping_keys_do_not_hide_string_fields() {
++    let actual = scalar_mapping(
++        "? [one, two]\n: ignored\n? {nested: key}\n: ignored\n7: ignored\ntrue: ignored\nnull: ignored\nname: demo\ndescription: ' a document '\n",
++    )
++    .unwrap();
++    assert_eq!(
++        actual,
++        Some(vec![
++            ("name".to_string(), Some("demo".to_string())),
++            ("description".to_string(), Some("a document".to_string())),
++        ])
++    );
++}
++
++#[test]
++fn scalar_resolution_keeps_yaml12_and_number_rendering() {
++    let actual = scalar_mapping(
++        "a: yes\nb: OFF\nc: True\nd: FALSE\ne: 0x10\nf: 1.0\ng: .NaN\nh: -.Inf\ni: null\nj: ' null '\nk: !!str 0x10\nl: -0.0\n",
++    )
++    .unwrap()
++    .unwrap();
++    let expected = [
++        ("a", Some("yes")),
++        ("b", Some("OFF")),
++        ("c", Some("true")),
++        ("d", Some("false")),
++        ("e", Some("16")),
++        ("f", Some("1.0")),
++        ("g", Some(".nan")),
++        ("h", Some("-.inf")),
++        ("i", None),
++        ("j", Some("null")),
++        ("k", Some("0x10")),
++        ("l", Some("-0.0")),
++    ]
++    .map(|(key, value)| (key.to_string(), value.map(str::to_string)))
++    .to_vec();
++    assert_eq!(actual, expected);
++}
++
++#[test]
++fn application_tags_survive_until_scalar_selection() {
++    let actual = scalar_mapping(
++        "!root\n!key name: demo\ndescription: !secret hidden\narray: !items [a, b]\nmap: !entry {a: b}\nordinary: !!str visible\n",
++    )
++    .unwrap();
++    assert_eq!(
++        actual,
++        Some(vec![
++            ("name".to_string(), Some("demo".to_string())),
++            ("description".to_string(), None),
++            ("array".to_string(), None),
++            ("map".to_string(), None),
++            ("ordinary".to_string(), Some("visible".to_string())),
++        ])
++    );
++}
++
++#[test]
++fn anchors_work_without_implicitly_expanding_merge_keys() {
++    assert_eq!(
++        scalar_mapping("defaults: &defaults {description: inherited}\n<<: *defaults\nname: &name demo\ncopy: *name\n").unwrap(),
++        Some(vec![
++            ("defaults".to_string(), None),
++            ("<<".to_string(), None),
++            ("name".to_string(), Some("demo".to_string())),
++            ("copy".to_string(), Some("demo".to_string())),
++        ])
++    );
++}
++
++#[test]
++fn malformed_and_duplicate_nested_values_fail_the_whole_document() {
++    for input in [
++        "name: demo\nname: other\n",
++        "ignored: [{a: 1, a: 2}]\nname: demo\n",
++        "name: demo\n---\nname: second\n",
++        "ignored: [unterminated\n",
++        "ignored: *undefined\n",
++    ] {
++        assert!(validate(input).is_err(), "accepted invalid input: {input}");
++        assert!(scalar_mapping(input).is_err(), "accepted invalid input: {input}");
++    }
++    assert_eq!(scalar_mapping("[one, two]").unwrap(), None);
++    assert_eq!(scalar_mapping("null").unwrap(), None);
++}
++
++#[derive(Debug, Deserialize, PartialEq)]
++struct Manifest {
++    name: String,
++    description: String,
++}
++
++#[test]
++fn typed_manifests_and_utf8_slices_share_the_same_parser() {
++    let input = "name: demo\ndescription: |\n  line one\n  line two\n";
++    let expected = Manifest {
++        name: "demo".to_string(),
++        description: "line one\nline two\n".to_string(),
++    };
++    assert_eq!(from_str::<Manifest>(input).unwrap(), expected);
++    assert_eq!(from_slice::<Manifest>(input.as_bytes()).unwrap(), expected);
++    assert!(from_slice::<Manifest>(&[0xff, 0xfe]).is_err());
++    assert!(from_str::<Manifest>("name: demo\ndescription: [wrong]").is_err());
++}
+diff --git a/codex-rs/utils/yaml/tests/legacy_projection.rs b/codex-rs/utils/yaml/tests/legacy_projection.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..c38ca58e7024e3f96fa1e4aef86d06dfa284f844
+--- /dev/null
++++ b/codex-rs/utils/yaml/tests/legacy_projection.rs
+@@ -0,0 +1,115 @@
++//! Golden compatibility cases obtained from the archived old/new parser run.
++//! The legacy parser is deliberately absent from this crate's dependency graph.
++use codex_utils_yaml::from_str;
++use codex_utils_yaml::scalar_mapping;
++use pretty_assertions::assert_eq;
++use serde::Deserialize;
++
++#[derive(Debug, Deserialize, PartialEq)]
++struct Manifest {
++    name: String,
++    description: String,
++}
++
++#[test]
++fn rejects_semantically_duplicate_scalar_and_composite_keys() {
++    for input in [
++        "true: a\nTrue: b\n",
++        "null: a\n~: b\n",
++        "1.0: a\n1.00: b\n",
++        ".NaN: a\n.nan: b\n",
++        "0: a\n-0: b\n",
++        "0.0: a\n-0.0: b\n",
++        "? [true, 1.0]\n: a\n? [True, 1.00]\n: b\n",
++        "? {a: true, b: 1.0}\n: a\n? {b: 1.00, a: True}\n: b\n",
++    ] {
++        assert!(scalar_mapping(input).is_err(), "accepted duplicate keys: {input}");
++    }
++    assert_eq!(scalar_mapping("1: a\n1.0: b\n").unwrap(), Some(vec![]));
++}
++
++#[test]
++fn preserves_scalar_spellings_verified_against_the_previous_parser() {
++    for (input, expected) in [
++        ("description: TrUe\n", "TrUe"),
++        ("description: NuLl\n", "NuLl"),
++        ("description: !!binary aGVsbG8=\n", "aGVsbG8="),
++        ("description: !!float 1\n", "1.0"),
++    ] {
++        assert_eq!(
++            scalar_mapping(input).unwrap(),
++            Some(vec![("description".to_string(), Some(expected.to_string()))])
++        );
++    }
++    for input in ["", "# comment\n", "---\n"] {
++        assert_eq!(scalar_mapping(input).unwrap(), None);
++    }
++    assert!(scalar_mapping("description: 18446744073709551616\n").is_err());
++    assert_eq!(
++        from_str::<Manifest>("name: demo\ndescription: !!binary aGVsbG8=\n").unwrap(),
++        Manifest { name: "demo".to_string(), description: "aGVsbG8=".to_string() }
++    );
++}
++
++// Fixed outcomes from the archived 37-case old/new differential run.
++enum Expected {
++    Invalid,
++    NonMapping,
++    Mapping(&'static [(&'static str, Option<&'static str>)]),
++}
++
++#[test]
++fn frozen_legacy_numeric_projection_boundaries() {
++    let cases = [
++        ("boolean-key-alias", "true: a\nTrue: b\n", Expected::Invalid),
++        ("null-key-alias", "null: a\n~: b\n", Expected::Invalid),
++        ("float-key-alias", "1.0: a\n1.00: b\n", Expected::Invalid),
++        ("nan-key-alias", ".NaN: a\n.nan: b\n", Expected::Invalid),
++        ("signed-zero-key", "0: a\n-0: b\n", Expected::Invalid),
++        ("integer-and-float-key", "1: a\n1.0: b\n", Expected::Mapping(&[])),
++        ("mixed-case-bool", "description: TrUe\n", Expected::Mapping(&[("description", Some("TrUe"))])),
++        ("mixed-case-null", "description: NuLl\n", Expected::Mapping(&[("description", Some("NuLl"))])),
++        ("sequence-key-alias", "? [true, 1.0]\n: a\n? [True, 1.00]\n: b\n", Expected::Invalid),
++        ("mapping-key-alias", "? {a: true, b: 1.0}\n: a\n? {b: 1.00, a: True}\n: b\n", Expected::Invalid),
++        ("empty", "", Expected::NonMapping),
++        ("comments-only", "# comment\n", Expected::NonMapping),
++        ("empty-document", "---\n", Expected::NonMapping),
++        ("tagged-key", "!local description: hello\n", Expected::Mapping(&[("description", Some("hello"))])),
++        ("different-tags", "!first description: first\n!second description: second\n", Expected::Mapping(&[("description", Some("first")), ("description", Some("second"))])),
++        ("standard-binary", "description: !!binary aGVsbG8=\n", Expected::Mapping(&[("description", Some("aGVsbG8="))])),
++        ("explicit-float", "description: !!float 1\n", Expected::Mapping(&[("description", Some("1.0"))])),
++        ("large-integer", "description: 18446744073709551616\n", Expected::Invalid),
++        ("merge-key", "base: &b {description: hello}\n<<: *b\nname: example\n", Expected::Mapping(&[("base", None), ("<<", None), ("name", Some("example"))])),
++        ("uppercase-hex-prefix", "description: 0X10\n", Expected::Mapping(&[("description", Some("0X10"))])),
++        ("uppercase-octal-prefix", "description: 0O10\n", Expected::Mapping(&[("description", Some("0O10"))])),
++        ("uppercase-binary-prefix", "description: 0B10\n", Expected::Mapping(&[("description", Some("0B10"))])),
++        ("hex-u64-overflow", "description: 0x10000000000000000\n", Expected::Invalid),
++        ("octal-u64-overflow", "description: 0o2000000000000000000000\n", Expected::Invalid),
++        ("binary-u64-overflow", "description: 0b10000000000000000000000000000000000000000000000000000000000000000\n", Expected::Invalid),
++        ("negative-hex-i64-overflow", "description: -0x8000000000000001\n", Expected::Invalid),
++        ("decimal-underscore", "description: 1_000\n", Expected::Mapping(&[("description", Some("1_000"))])),
++        ("hex-underscore", "description: 0x1_0\n", Expected::Mapping(&[("description", Some("0x1_0"))])),
++        ("float-overflow", "description: 1e999\n", Expected::Mapping(&[("description", Some("1e999"))])),
++        ("decimal-u128-overflow", "description: 340282366920938463463374607431768211456\n", Expected::Mapping(&[("description", Some("3.402823669209385e38"))])),
++        ("leading-zero-decimal", "description: 0123\n", Expected::Mapping(&[("description", Some("0123"))])),
++        ("uppercase-prefix-key-distinct", "0X10: first\n16: second\n", Expected::Mapping(&[("0X10", Some("first"))])),
++        ("underscored-key-distinct", "1_0: first\n10: second\n", Expected::Mapping(&[("1_0", Some("first"))])),
++        ("u64-upper-bound", "description: 18446744073709551615\n", Expected::Mapping(&[("description", Some("18446744073709551615"))])),
++        ("i64-lower-bound", "description: -9223372036854775808\n", Expected::Mapping(&[("description", Some("-9223372036854775808"))])),
++        ("quoted-overflow", "description: '0x10000000000000000'\n", Expected::Mapping(&[("description", Some("0x10000000000000000"))])),
++        ("mixed-case-infinity", "description: .iNf\n", Expected::Mapping(&[("description", Some(".iNf"))])),
++    ];
++    for (name, input, expected) in cases {
++        let actual = scalar_mapping(input);
++        match expected {
++            Expected::Invalid => assert!(actual.is_err(), "accepted {name}: {actual:?}"),
++            Expected::NonMapping => assert_eq!(actual.unwrap(), None, "case {name}"),
++            Expected::Mapping(fields) => {
++                let expected: Vec<_> = fields.iter().map(|(key, value)| {
++                    (key.to_string(), value.map(str::to_string))
++                }).collect();
++                assert_eq!(actual.unwrap(), Some(expected), "case {name}");
++            }
++        }
++    }
++}

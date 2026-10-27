@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.matrix-gapfill-019.source-port.v1",
+  "at": "2026-10-27T15:30:26.732331+00:00",
+  "status": "prepared_not_runtime_qualified",
+  "source_file": "codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs",
+  "before_sha256": "1f20af32fa1f95dbabbff219f72ecda9aa93c4aa33741a5066f7491d969e287d",
+  "after_sha256": "b614baef4080a56f407bdf8046bafba28fdb4775d2f0944e09541b46bda25e91",
+  "patch_sha256": "019a024215008ac512b6b8ebf5e6c5708da1e06fedc1e8a4b62a6fc0dd7e9cdb",
+  "official_crate": {
+    "url": "https://static.crates.io/crates/matrix-sdk-common/matrix-sdk-common-0.19.1.crate",
+    "bytes": 133456,
+    "sha256": "457c2b3c8995cb0f20b882ece41f5a31f07e4e556bafbe37c2c8f3f2d02f638f",
+    "candidate_lock_checksum_matched": true,
+    "at": "2026-10-27T13:12:20.300474+00:00",
+    "selected_files": {
+      "matrix-sdk-common-0.19.1/.cargo_vcs_info.json": {
+        "bytes": 118,
+        "sha256": "e12af7cfea9c9dc9b5ae60eac57d072ea7dea48c49e9efa605a37aee1f8746c8"
+      },
+      "matrix-sdk-common-0.19.1/Cargo.toml": {
+        "bytes": 5907,
+        "sha256": "40cc03a70ff0605094517db8bd5b8b037006e6337440089bdc1a84d8bc49c8dc"
+      },
+      "matrix-sdk-common-0.19.1/README.md": {
+        "bytes": 295,
+        "sha256": "be6bae1547b7b2dc6ccf1957b3d26afc2c35e8dcaddae7af49a20519d4dc9318"
+      },
+      "matrix-sdk-common-0.19.1/src/deserialized_responses.rs": {
+        "bytes": 89608,
+        "sha256": "211556fc8207be5dbdb694a0b128843f7e7b524c6b0eb72735d08e3af9306b82"
+      }
+    }
+  },
+  "official_source_api": {
+    "TimelineEvent.bundled_latest_thread_event": "Derived from raw unsigned m.relations.m.thread.latest_event; no writable side field remains.",
+    "TimelineEvent.set_push_actions": "Public setter for SDK-only metadata kept separately from raw event.",
+    "TimelineEvent.push_actions": "Public accessor to prove the attached real SDK metadata exceeds the original byte cap."
+  },
+  "preserved_original_body": "All original assertions remain byte-identical; the only additional formatter change affects the newly added Bounds assertion. Reversing that whitespace change, deleting the new test, restoring the single replaced assignment and original test name reconstructs the old source exactly.",
+  "added_boundary": "The actual SDK 0.19 bundled thread event is present in raw JSON; oversized raw latest_event must return Bounds without mutating the accumulator.",
+  "non_vacuous_metadata_guard": "New assertion verifies serialized actual push_actions metadata is larger than MAX_BYTES before the original acceptance/retention assertions run.",
+  "changes_to_runtime_implementation": false,
+  "original_frozen_recipe_or_patch_modified": false,
+  "local_compile_or_test_executed": false,
+  "required_remote": "Actual codex-hepta-matrix-sdk just test under frozen candidate Rust 1.96/source/locks; no local source audit substitutes for execution.",
+  "prior_unformatted_review_sha256": "ad3e98d8dc34158ec365bf4facd3fa6d5cab8ef278fb239cb79b130f9c4d9b1c",
+  "formatting": {
+    "tool": "installed official Rust1.96 rustfmt",
+    "source": "RUSTFMT_SOURCE_CHECK.json",
+    "exact_delta": "Only the added Bounds assert_eq invocation split across lines; removing rustfmt stdout file header and reversing this whitespace change reproduces the first reviewed proposal exactly.",
+    "existing_repo_source_modified": false
+  }
+}

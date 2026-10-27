@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="1" failures="1" errors="0" uuid="5237a4be-7821-4c5a-9960-4dc7edef12fc" timestamp="2026-10-27T17:33:40.881+02:00" time="5.927">
+    <testsuite name="codex-hepta-matrix-sdk::store_version_migration" tests="1" disabled="0" errors="0" failures="1">
+        <testcase name="reopen_old_version_fixture" classname="codex-hepta-matrix-sdk::store_version_migration" timestamp="2026-10-27T17:33:40.882+02:00" time="5.924">
+            <failure message="Error: Initialization" type="test failure with exit code 101">Error: Initialization</failure>
+            <system-out>
+running 1 test
+test reopen_old_version_fixture ... FAILED
+
+failures:
+
+failures:
+    reopen_old_version_fixture
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 5.90s
+
+</system-out>
+            <system-err>Error: Initialization
+</system-err>
+        </testcase>
+    </testsuite>
+</testsuites>

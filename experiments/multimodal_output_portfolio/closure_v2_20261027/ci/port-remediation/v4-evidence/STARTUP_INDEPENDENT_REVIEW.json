@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.port-v4.startup-independent-source-review.v1",
+  "time": "2026-10-27T15:45:35.197908+00:00",
+  "status": "reviewed_source_candidate_not_compiled",
+  "input": {
+    "patch_path": "/workspace/scratch/95988d8d3ab1/ndu-matrix-reopen-diagnosis-v4-001/startup-budget-proposal-001/STARTUP_BUDGET_FORMATTED.patch",
+    "patch_sha256": "7e6844e4ee6001bafbb343daf461ce45ad3cc9f5f6ed6812c27346f69fca5e8f",
+    "sources": {
+      "codex-rs/hepta-matrix-sdk/src/sdk.rs": {
+        "path": "/workspace/scratch/95988d8d3ab1/ndu-matrix-reopen-diagnosis-v4-001/startup-budget-proposal-001/proposed-formatted/codex-rs/hepta-matrix-sdk/src/sdk.rs",
+        "bytes": 28070,
+        "sha256": "8f6ed35c3a360da6893758c5bb7f357f5dd3b880e8008bd84c9983f1c61078d5"
+      },
+      "codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs": {
+        "path": "/workspace/scratch/95988d8d3ab1/ndu-matrix-reopen-diagnosis-v4-001/startup-budget-proposal-001/proposed-formatted/codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs",
+        "bytes": 3181,
+        "sha256": "499c164c841a64c8f9ba6e7c917fb3e7ac5cc713b159cf2558b70512dc1f1849"
+      }
+    }
+  },
+  "verified": [
+    "Original SDK build implementation and entire subsequent source/test body are byte-identical; only new test module declaration follows.",
+    "All 3 startup entry points use shared deadline authentication, and fresh-client fallback receives the same deadline.",
+    "Build rejects expiry before and after future execution. Authentication refuses expired work before polling and rejects late Ready using its original request deadline.",
+    "Original five-second request limit is byte-identical. Crypto, stores, session validation, fixture source and vendor files are untouched."
+  ],
+  "new_tests": [
+    "expired fresh fallback cannot create Matrix store paths",
+    "expired authentication does not poll request",
+    "synchronous late Ready cannot report authentication success"
+  ],
+  "limits": [
+    "This review and the sibling rustfmt check are not execution of the new Rust source.",
+    "Synchronous work is not preempted; the deadline bounds acceptance, not a hard real-time termination."
+  ]
+}

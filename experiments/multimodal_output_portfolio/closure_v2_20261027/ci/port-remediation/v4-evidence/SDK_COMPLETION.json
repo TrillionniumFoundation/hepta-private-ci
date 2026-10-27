@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.port-v4.sdk-completion.v1",
+  "time": "2026-10-27T15:47:08.196256+00:00",
+  "status": "source_and_driver_repairs_sealed_pending_new_ci_qualification",
+  "recipe": {
+    "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v4.json",
+    "bytes": 336879,
+    "sha256": "5bd5cd193ba9824c2010157be58bc775c984fd8211d77c6e8df0d4c1b275e2d5"
+  },
+  "patch": {
+    "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/combined-source-v4.patch",
+    "bytes": 82809,
+    "sha256": "015f55fb042a049923156ce028dfb81cb734fabeb9cbabf691280dcf9a0b3fa8"
+  },
+  "source_delta_from_v3": [
+    "codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs",
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+    "codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs"
+  ],
+  "allowed_paths": 31,
+  "expected_packages": 52,
+  "vendor_files": 1971,
+  "aws_constraints": {
+    "total": 245,
+    "executed": 244,
+    "ignored": 1
+  },
+  "verification": {
+    "fixture_layout_python_tests_passed": 12,
+    "actual_old_018_files_restored_and_byte_bound": 9,
+    "new_sdk_rust_tests_executed": 0,
+    "new_sdk_old_fixture_migration_pass": false,
+    "head_index_unchanged_during_assembly": true,
+    "all_changed_blobs_read_and_rehashed": 31
+  },
+  "required_followup": [
+    "Run exact new candidate SDK package tests, including preserved gap fill assertions and three startup deadline regressions.",
+    "Produce a fresh original 0.18 fixture with the new mode manifest, then reopen a new copy with the actual newly built 0.19 executable.",
+    "Retain every failed and successful CI attempt, source tree, command, executable and JUnit binding."
+  ],
+  "not_changed": [
+    "Frozen recipes and patches v1/v2/v3",
+    "Cryptography, KDF strength, original fixture assertions and session identity checks",
+    "Dependency policies, main dependency activation and upstream vendor source bytes"
+  ]
+}

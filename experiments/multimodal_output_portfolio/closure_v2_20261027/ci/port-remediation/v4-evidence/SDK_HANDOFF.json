@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.port-v4.sdk-handoff.v1",
+  "time": "2026-10-27T15:40:19.672876+00:00",
+  "status": "gapfill_source_and_fixture_mode_fixes_ready_pending_initialization_fix",
+  "reviewed_files": {
+    "GAP_FILL_019_FORMATTED.patch": {
+      "bytes": 2570,
+      "sha256": "019a024215008ac512b6b8ebf5e6c5708da1e06fedc1e8a4b62a6fc0dd7e9cdb"
+    },
+    "GAP_FILL_019_FORMATTED_REVIEW.json": {
+      "bytes": 3349,
+      "sha256": "25a6d8d6980a2ddfbea37a18ad6b406e5d63b3753b3d53a88ced7b5217b0a9a2"
+    },
+    "PRIMARY_API_FOLLOWUP.json": {
+      "bytes": 3095,
+      "sha256": "9f1bc6b7fcdebe16853e546caedfde78622f738da35e4c6281972c756eeac9e2"
+    },
+    "GAP_FILL_RUSTFMT_SOURCE_CHECK.json": {
+      "bytes": 686,
+      "sha256": "429e3c7a7789d61e15fb1dfd7ec1fae18646ffce8c389ebf3432b6f8a0d3b4fe"
+    },
+    "FIXTURE_MODE_TESTS.json": {
+      "bytes": 1555,
+      "sha256": "ef5b1a1762e67255abcf1ccc2c26bc25b4b21a26b42884feb2ff1489bd22ab49"
+    },
+    "FIXTURE_MODE_TESTS.log": {
+      "bytes": 2335,
+      "sha256": "a6b57cd18039fa655c79573f003fd78e36f3fbce44a277c1787bdf05ed916589"
+    },
+    "REAL_FIXTURE_MODE_RESTORATION.json": {
+      "bytes": 3935,
+      "sha256": "f3f834a9e17c710d6284cd37743f130d4c03fe8e48ed3dae7697cfa16eda535f"
+    }
+  },
+  "test_status": {
+    "affected_fixture_layout_python_cases": 12,
+    "actual_old_fixture_file_copy_checks": 9,
+    "actual_rust_builds_or_new_sdk_test_passes": 0
+  },
+  "gapfill_after_sha256": "b614baef4080a56f407bdf8046bafba28fdb4775d2f0944e09541b46bda25e91",
+  "boundaries": [
+    "The old gap-fill test assertions remain intact; one additional real SDK raw bundle limit test was added.",
+    "Official matrix-sdk-common and Ruma source confirm the API; source review and rustfmt are not compilation.",
+    "All nine real 0.18 producer files matched original RESULT hashes and ZIP file modes after restoring a new copy; old v1 did not record original directory modes.",
+    "Old artifacts and frozen v1/v2/v3 recipes remain unchanged.",
+    "No root-branch, Cargo lock, dependency policy, feature, main code activation or runtime migration pass is implied."
+  ]
+}

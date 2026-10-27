@@ -1,0 +1,61 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+info: using target runner `/workspace/scratch/95988d8d3ab1/ndu-matrix-reopen-diagnosis-v4-001/execution-005/restored-mode-0600/nextest-gdb-runner.py` defined by environment variable `CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUNNER`
+────────────
+ Nextest run ID 3f82c08b-a9f2-44f5-a7b4-924ee025df68 with nextest profile: default
+    Starting 1 test across 1 binary (2 tests skipped)
+        FAIL [   7.146s] codex-hepta-matrix-sdk::store_version_migration reopen_old_version_fixture
+  stdout ───
+
+    This GDB supports auto-downloading debuginfo from the following URLs:
+      <https://debuginfod.ubuntu.com>
+    Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+    Debuginfod has been disabled.
+    To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+    To enable execution of this file add
+    add-auto-load-safe-path /workspace/scratch/95988d8d3ab1/ndu-matrix-reopen-diagnosis-v4-001/execution-005/relocated-target/ci-test/deps/store_version_migration-2b9150d9beed835e
+    line to your configuration file "/root/.config/gdb/gdbinit".
+    To completely disable this security protection add
+    set auto-load safe-path /
+    line to your configuration file "/root/.config/gdb/gdbinit".
+    For more information about this security protection see the
+    "Auto-loading safe path" section in the GDB manual.  E.g., run from the shell:
+    info "(gdb)Auto-loading safe path"
+    Breakpoint 1 at 0x1ac39d0
+    Breakpoint 2 at 0x1b5c440
+    [Thread debugging using libthread_db enabled]
+    Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+    running 1 test
+    [Switching to Thread 0x7ffff7c866c0 (LWP 1054433)]
+    HEPTA_DIAG_BUILD_TIMEOUT_ERROR_BRANCH
+    #0  0x00005555570179d0 in codex_hepta_matrix_sdk::sdk::MatrixSdkClient::login_or_restore::{{closure}}::{{closure}} ()
+    #1  0x0000555556fcf71a in core::result::Result<T,E>::map_err ()
+    #2  0x00007ffff7c70c58 in ?? ()
+    #3  0x00007ffff7c64858 in ?? ()
+    #4  0x00007ffff7c64858 in ?? ()
+    #5  0x000055555a8afd0e in core::mem::drop ()
+    #6  0x00007ffff000bb80 in ?? ()
+    #7  0x000055555a8984a0 in tokio::util::wake::drop_arc_raw ()
+    test reopen_old_version_fixture ... FAILED
+
+    failures:
+
+    failures:
+        reopen_old_version_fixture
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 6.64s
+
+    [Inferior 1 (process 1054430) exited with code 0145]
+  stderr ───
+    warning: Missing auto-load script at offset 0 in section .debug_gdb_scripts
+    of file /workspace/scratch/95988d8d3ab1/ndu-matrix-reopen-diagnosis-v4-001/execution-005/relocated-target/ci-test/deps/store_version_migration-2b9150d9beed835e.
+    Use `info auto-load python-scripts [REGEXP]' to list them.
+    warning: File "/workspace/scratch/95988d8d3ab1/ndu-matrix-reopen-diagnosis-v4-001/execution-005/relocated-target/ci-test/deps/store_version_migration-2b9150d9beed835e" auto-loading has been declined by your `auto-load safe-path' set to "$debugdir:$datadir/auto-load".
+    Error: Initialization
+
+────────────
+     Summary [   7.147s] 1 test run: 0 passed, 1 failed, 2 skipped
+        FAIL [   7.146s] codex-hepta-matrix-sdk::store_version_migration reopen_old_version_fixture
+error: test run failed
+error: Recipe `test` failed on line 89 with exit code 100

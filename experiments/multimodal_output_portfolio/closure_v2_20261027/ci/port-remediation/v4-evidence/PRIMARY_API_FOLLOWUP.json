@@ -1,0 +1,94 @@
+{
+  "schema": "hepta.gapfill-019.primary-api-followup.v1",
+  "at": "2026-10-27T15:32:08.416300+00:00",
+  "candidate_actual_lock": {
+    "bytes": 420292,
+    "sha256": "96bd4cab2615471fdba80652a73e9cb7c1572e88a678d68dae3b8618e344793c"
+  },
+  "locked_packages": {
+    "matrix-sdk-common": {
+      "name": "matrix-sdk-common",
+      "version": "0.19.1",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "457c2b3c8995cb0f20b882ece41f5a31f07e4e556bafbe37c2c8f3f2d02f638f",
+      "dependencies": [
+        "eyeball-im",
+        "futures-core",
+        "futures-executor",
+        "futures-util",
+        "gloo-timers 0.4.0",
+        "imbl",
+        "ruma",
+        "serde",
+        "serde_json",
+        "thiserror 2.0.21",
+        "tokio",
+        "tracing",
+        "tracing-subscriber",
+        "wasm-bindgen",
+        "wasm-bindgen-futures",
+        "web-sys"
+      ]
+    },
+    "ruma-common": {
+      "name": "ruma-common",
+      "version": "0.20.2",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "5b496f80bc1cca375294fba5170bfb5d00f0de0ed655675dc72fa782643f54ea",
+      "dependencies": [
+        "as_variant",
+        "base64 0.23.1",
+        "bytes",
+        "date_header",
+        "form_urlencoded",
+        "getrandom 0.4.3",
+        "http 1.5.0",
+        "indexmap 2.14.2",
+        "js_int",
+        "konst",
+        "percent-encoding",
+        "rand 0.10.3",
+        "regex",
+        "ruma-identifiers-validation",
+        "ruma-macros",
+        "serde",
+        "serde_html_form 0.4.1",
+        "serde_json",
+        "thiserror 2.0.21",
+        "time",
+        "tracing",
+        "url",
+        "uuid",
+        "web-time",
+        "wildmatch",
+        "zeroize"
+      ]
+    }
+  },
+  "official_ruma_archive": {
+    "bytes": 200329,
+    "sha256": "5b496f80bc1cca375294fba5170bfb5d00f0de0ed655675dc72fa782643f54ea"
+  },
+  "official_common_archive": {
+    "bytes": 133456,
+    "sha256": "457c2b3c8995cb0f20b882ece41f5a31f07e4e556bafbe37c2c8f3f2d02f638f"
+  },
+  "action_source": {
+    "bytes": 12962,
+    "sha256": "ed2c22d66d84086624481023868df7d34549288829111cc333ac4cbdb8e34024"
+  },
+  "action_serde_source": {
+    "bytes": 2403,
+    "sha256": "388586f9f88f8d8b5731641e99c285929b4811bbcc8ba17b955b67ccf22d8e82"
+  },
+  "source_observations": [
+    "Action Deserialize calls Action::new(CustomActionData); a set_tweak object is parsed as Tweak.",
+    "Tweak::new for sound decodes its raw value as SoundTweakValue, a StringEnum with a custom owned-string variant.",
+    "Action/Tweak serialization retains the set_tweak and sound value, so the oversized value is actual serialized SDK metadata, not an ignored field.",
+    "TimelineEvent exposes set_push_actions and push_actions separately from its raw event; bundled_latest_thread_event instead derives its event from raw unsigned relations."
+  ],
+  "limits": [
+    "Static API and format proof only; no Rust compilation or actual accumulator test is claimed.",
+    "The complete codex-hepta-matrix-sdk test gate must run on the frozen v4 source."
+  ]
+}

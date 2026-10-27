@@ -1,0 +1,694 @@
+{
+  "old": {
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix_1.sqlite3": {
+      "source_sha256": "ea9603990ea0b362d17892583fa9f2023d6b0487ea1105f7ae534c91bbbb2e9c",
+      "tables": [
+        [
+          "_sqlx_migrations",
+          "CREATE TABLE _sqlx_migrations (\n    version BIGINT PRIMARY KEY,\n    description TEXT NOT NULL,\n    installed_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    success BOOLEAN NOT NULL,\n    checksum BLOB NOT NULL,\n    execution_time BIGINT NOT NULL\n)"
+        ],
+        [
+          "change_log",
+          "CREATE TABLE change_log (\n    cursor INTEGER PRIMARY KEY AUTOINCREMENT,\n    kind TEXT NOT NULL,\n    room_id TEXT,\n    event_id TEXT,\n    txn_id TEXT,\n    recorded_at_ms INTEGER NOT NULL CHECK (recorded_at_ms >= 0)\n) STRICT"
+        ],
+        [
+          "inbox_dispatches",
+          "CREATE TABLE inbox_dispatches (\n    event_id TEXT PRIMARY KEY,\n    client_user_message_id TEXT NOT NULL UNIQUE,\n    room_id TEXT NOT NULL,\n    binding_revision INTEGER NOT NULL CHECK (binding_revision > 0),\n    generation INTEGER NOT NULL CHECK (generation > 0),\n    project_id TEXT NOT NULL,\n    state TEXT NOT NULL CHECK (state IN ('begun', 'queued', 'admitted', 'completed')),\n    thread_id TEXT,\n    queued_submission_id TEXT,\n    turn_id TEXT,\n    begun_at_ms INTEGER NOT NULL CHECK (begun_at_ms >= 0),\n    updated_at_ms INTEGER NOT NULL CHECK (updated_at_ms >= begun_at_ms),\n    completed_at_ms INTEGER,\n    FOREIGN KEY (event_id) REFERENCES inbox_events(event_id) ON DELETE RESTRICT,\n    FOREIGN KEY (room_id) REFERENCES room_bindings(room_id) ON DELETE RESTRICT,\n    CHECK (\n        (state = 'begun' AND queued_submission_id IS NULL AND turn_id IS NULL) OR\n        (state = 'queued' AND thread_id IS NOT NULL\n            AND queued_submission_id IS NOT NULL AND turn_id IS NULL) OR\n        (state IN ('admitted', 'completed')\n            AND thread_id IS NOT NULL AND turn_id IS NOT NULL)\n    ),\n    CHECK (\n        (state = 'completed' AND completed_at_ms IS NOT NULL\n            AND completed_at_ms = updated_at_ms) OR\n        (state != 'completed' AND completed_at_ms IS NULL)\n    )\n) STRICT"
+        ],
+        [
+          "inbox_events",
+          "CREATE TABLE inbox_events (\n    inbox_cursor INTEGER PRIMARY KEY AUTOINCREMENT,\n    event_id TEXT NOT NULL UNIQUE,\n    room_id TEXT NOT NULL,\n    sender_user_id TEXT NOT NULL,\n    event_type TEXT NOT NULL,\n    payload BLOB NOT NULL,\n    payload_sha256 TEXT NOT NULL CHECK (\n        length(payload_sha256) = 64 AND payload_sha256 NOT GLOB '*[^0-9a-f]*'\n    ),\n    binding_revision INTEGER NOT NULL CHECK (binding_revision > 0),\n    generation INTEGER NOT NULL CHECK (generation > 0),\n    origin_server_ts_ms INTEGER NOT NULL CHECK (origin_server_ts_ms >= 0),\n    received_at_ms INTEGER NOT NULL CHECK (received_at_ms >= 0),\n    state TEXT NOT NULL CHECK (state IN ('pending', 'processed')),\n    processed_at_ms INTEGER,\n    FOREIGN KEY (room_id) REFERENCES room_bindings(room_id) ON DELETE RESTRICT,\n    CHECK (\n        (state = 'pending' AND processed_at_ms IS NULL) OR\n        (state = 'processed' AND processed_at_ms IS NOT NULL)\n    )\n) STRICT"
+        ],
+        [
+          "matrix_control_events",
+          "CREATE TABLE matrix_control_events (\n    cursor INTEGER PRIMARY KEY AUTOINCREMENT,\n    event_json TEXT NOT NULL CHECK (length(event_json) BETWEEN 2 AND 8192),\n    recorded_at_ms INTEGER NOT NULL CHECK (recorded_at_ms > 0)\n) STRICT"
+        ],
+        [
+          "matrix_control_state",
+          "CREATE TABLE matrix_control_state (\n    singleton INTEGER PRIMARY KEY CHECK (singleton = 1),\n    active_thread_id TEXT,\n    active_turn_id TEXT,\n    CHECK ((active_thread_id IS NULL) = (active_turn_id IS NULL))\n) STRICT"
+        ],
+        [
+          "matrix_meta",
+          "CREATE TABLE matrix_meta (\n    singleton INTEGER PRIMARY KEY CHECK (singleton = 1),\n    schema_version INTEGER NOT NULL CHECK (schema_version = 1),\n    owner_agent_id TEXT NOT NULL CHECK (length(owner_agent_id) = 36)\n) STRICT"
+        ],
+        [
+          "matrix_sync_checkpoint",
+          "CREATE TABLE matrix_sync_checkpoint (\n    singleton INTEGER PRIMARY KEY CHECK (singleton = 1),\n    owner_agent_id TEXT NOT NULL CHECK (length(owner_agent_id) = 36),\n    binding_revision INTEGER NOT NULL CHECK (binding_revision > 0),\n    generation INTEGER NOT NULL CHECK (generation > 0),\n    next_batch TEXT NOT NULL CHECK (\n        length(next_batch) BETWEEN 1 AND 4096\n        AND next_batch NOT GLOB '*[^ -~]*'\n    ),\n    updated_at_ms INTEGER NOT NULL CHECK (updated_at_ms >= 0)\n) STRICT"
+        ],
+        [
+          "matrix_sync_decision_outcomes_v2",
+          "CREATE TABLE matrix_sync_decision_outcomes_v2 (\n    outcome_seq INTEGER PRIMARY KEY AUTOINCREMENT CHECK (\n        outcome_seq BETWEEN 1 AND 33554432\n    ),\n    decision_seq INTEGER NOT NULL,\n    outcome_index INTEGER NOT NULL CHECK (outcome_index BETWEEN 0 AND 511),\n    source_event_id TEXT NOT NULL,\n    disposition TEXT NOT NULL CHECK (\n        disposition IN ('applied', 'duplicate', 'missing', 'tombstoned')\n    ),\n    UNIQUE (decision_seq, outcome_index),\n    UNIQUE (decision_seq, source_event_id),\n    FOREIGN KEY (decision_seq) REFERENCES matrix_sync_decisions_v2(decision_seq)\n        ON DELETE RESTRICT,\n    FOREIGN KEY (source_event_id) REFERENCES matrix_sync_mutations_v2(source_event_id)\n        ON DELETE RESTRICT\n) STRICT"
+        ],
+        [
+          "matrix_sync_decisions_v2",
+          "CREATE TABLE matrix_sync_decisions_v2 (\n    decision_seq INTEGER PRIMARY KEY AUTOINCREMENT CHECK (decision_seq BETWEEN 1 AND 65536),\n    operation_id TEXT NOT NULL UNIQUE CHECK (\n        length(operation_id) BETWEEN 1 AND 128\n        AND operation_id NOT GLOB '*[^A-Za-z0-9._:-]*'\n    ),\n    decision_kind TEXT NOT NULL CHECK (decision_kind IN ('commit', 'cancel')),\n    decision_sha256 TEXT NOT NULL CHECK (\n        length(decision_sha256) = 64 AND decision_sha256 NOT GLOB '*[^0-9a-f]*'\n    ),\n    schema_version INTEGER NOT NULL CHECK (schema_version = 2),\n    checkpoint_revision INTEGER NOT NULL CHECK (checkpoint_revision > 0),\n    checkpoint_generation INTEGER NOT NULL CHECK (checkpoint_generation > 0),\n    expected_next_batch TEXT,\n    next_batch TEXT,\n    retained_next_batch TEXT,\n    outcome_count INTEGER NOT NULL CHECK (outcome_count BETWEEN 0 AND 512),\n    CHECK (\n        (decision_kind = 'commit' AND next_batch IS NOT NULL\n            AND retained_next_batch IS NULL) OR\n        (decision_kind = 'cancel' AND next_batch IS NULL AND outcome_count = 0)\n    )\n) STRICT"
+        ],
+        [
+          "matrix_sync_mutations_v2",
+          "CREATE TABLE matrix_sync_mutations_v2 (\n    ledger_seq INTEGER PRIMARY KEY AUTOINCREMENT CHECK (ledger_seq BETWEEN 1 AND 65536),\n    source_event_id TEXT NOT NULL UNIQUE,\n    room_id TEXT NOT NULL,\n    sender_user_id TEXT NOT NULL,\n    mutation_kind TEXT NOT NULL CHECK (\n        mutation_kind IN ('timeline', 'redaction', 'room_leave', 'room_tombstone')\n    ),\n    mutation_sha256 TEXT NOT NULL CHECK (\n        length(mutation_sha256) = 64 AND mutation_sha256 NOT GLOB '*[^0-9a-f]*'\n    ),\n    tombstone_scope_kind TEXT CHECK (tombstone_scope_kind IN ('event', 'room')),\n    tombstone_scope_id TEXT,\n    tombstone_reason_kind TEXT CHECK (\n        tombstone_reason_kind IN ('redaction', 'room_leave', 'room_replacement')\n    ),\n    replacement_room_id TEXT,\n    binding_revision INTEGER NOT NULL CHECK (binding_revision > 0),\n    generation INTEGER NOT NULL CHECK (generation > 0),\n    origin_server_ts_ms INTEGER NOT NULL CHECK (origin_server_ts_ms >= 0),\n    received_at_ms INTEGER NOT NULL CHECK (received_at_ms >= 0),\n    FOREIGN KEY (room_id) REFERENCES room_bindings(room_id) ON DELETE RESTRICT,\n    CHECK (\n        (mutation_kind = 'timeline' AND tombstone_scope_kind IS NULL\n            AND tombstone_scope_id IS NULL AND tombstone_reason_kind IS NULL\n            AND replacement_room_id IS NULL) OR\n        (mutation_kind = 'redaction' AND tombstone_scope_kind = 'event'\n            AND tombstone_scope_id IS NOT NULL AND tombstone_reason_kind = 'redaction'\n            AND replacement_room_id IS NULL AND tombstone_scope_id != source_event_id) OR\n        (mutation_kind = 'room_leave' AND tombstone_scope_kind = 'room'\n            AND tombstone_scope_id = room_id AND tombstone_reason_kind = 'room_leave'\n            AND replacement_room_id IS NULL) OR\n        (mutation_kind = 'room_tombstone' AND tombstone_scope_kind = 'room'\n            AND tombstone_scope_id = room_id AND tombstone_reason_kind = 'room_replacement'\n            AND replacement_room_id IS NOT NULL AND replacement_room_id != room_id)\n    )\n) STRICT"
+        ],
+        [
+          "outbox_messages",
+          "CREATE TABLE outbox_messages (\n    outbox_id INTEGER PRIMARY KEY AUTOINCREMENT,\n    stable_txn_id TEXT NOT NULL UNIQUE,\n    room_id TEXT NOT NULL,\n    kind TEXT NOT NULL CHECK (\n        kind IN ('text_delta', 'final', 'tool_transition', 'approval', 'terminal')\n    ),\n    payload BLOB NOT NULL,\n    payload_sha256 TEXT NOT NULL CHECK (\n        length(payload_sha256) = 64 AND payload_sha256 NOT GLOB '*[^0-9a-f]*'\n    ),\n    logical_txn_count INTEGER NOT NULL CHECK (logical_txn_count > 0),\n    binding_revision INTEGER NOT NULL CHECK (binding_revision > 0),\n    generation INTEGER NOT NULL CHECK (generation > 0),\n    state TEXT NOT NULL CHECK (\n        state IN ('pending', 'in_flight', 'retry_scheduled', 'sent', 'permanent_failure')\n    ),\n    attempts INTEGER NOT NULL CHECK (attempts >= 0),\n    next_attempt_at_ms INTEGER NOT NULL CHECK (next_attempt_at_ms >= 0),\n    lease_until_ms INTEGER,\n    created_at_ms INTEGER NOT NULL CHECK (created_at_ms >= 0),\n    updated_at_ms INTEGER NOT NULL CHECK (updated_at_ms >= created_at_ms),\n    sent_event_id TEXT, logical_outbox_id TEXT,\n    FOREIGN KEY (room_id) REFERENCES room_bindings(room_id) ON DELETE RESTRICT,\n    CHECK (\n        (state = 'in_flight' AND lease_until_ms IS NOT NULL) OR\n        (state != 'in_flight' AND lease_until_ms IS NULL)\n    ),\n    CHECK (\n        (state = 'sent' AND sent_event_id IS NOT NULL) OR\n        (state != 'sent' AND sent_event_id IS NULL)\n    )\n) STRICT"
+        ],
+        [
+          "outbox_txns",
+          "CREATE TABLE outbox_txns (\n    txn_id TEXT PRIMARY KEY,\n    logical_outbox_id TEXT NOT NULL,\n    revision INTEGER NOT NULL CHECK (revision > 0),\n    outbox_id INTEGER NOT NULL,\n    room_id TEXT NOT NULL,\n    kind TEXT NOT NULL,\n    fragment BLOB NOT NULL,\n    fragment_sha256 TEXT NOT NULL CHECK (\n        length(fragment_sha256) = 64 AND fragment_sha256 NOT GLOB '*[^0-9a-f]*'\n    ),\n    binding_revision INTEGER NOT NULL CHECK (binding_revision > 0),\n    generation INTEGER NOT NULL CHECK (generation > 0),\n    FOREIGN KEY (outbox_id) REFERENCES outbox_messages(outbox_id) ON DELETE RESTRICT,\n    FOREIGN KEY (room_id) REFERENCES room_bindings(room_id) ON DELETE RESTRICT\n) STRICT"
+        ],
+        [
+          "pending_approvals",
+          "CREATE TABLE pending_approvals (\n    approval_key TEXT PRIMARY KEY,\n    pending_json TEXT NOT NULL CHECK (length(pending_json) BETWEEN 2 AND 8192),\n    request_id_json TEXT NOT NULL UNIQUE CHECK (length(request_id_json) BETWEEN 1 AND 1024),\n    request_kind TEXT NOT NULL CHECK (request_kind IN ('command_execution', 'file_change')),\n    attached_agent_generation INTEGER NOT NULL CHECK (attached_agent_generation > 0),\n    process_incarnation TEXT NOT NULL CHECK (length(process_incarnation) BETWEEN 1 AND 512),\n    created_at_ms INTEGER NOT NULL CHECK (created_at_ms > 0),\n    resolution_decision TEXT CHECK (\n        resolution_decision IS NULL OR\n        resolution_decision IN ('accept', 'accept_for_session', 'decline', 'cancel')\n    ),\n    resolving_at_ms INTEGER,\n    CHECK ((resolution_decision IS NULL) = (resolving_at_ms IS NULL)),\n    CHECK (resolving_at_ms IS NULL OR resolving_at_ms >= created_at_ms)\n) STRICT"
+        ],
+        [
+          "room_bindings",
+          "CREATE TABLE room_bindings (\n    room_id TEXT PRIMARY KEY,\n    owner_agent_id TEXT NOT NULL,\n    agent_user_id TEXT NOT NULL,\n    revision INTEGER NOT NULL CHECK (revision > 0),\n    generation INTEGER NOT NULL CHECK (generation > 0),\n    changed_at_ms INTEGER NOT NULL CHECK (changed_at_ms >= 0)\n) STRICT"
+        ],
+        [
+          "room_threads",
+          "CREATE TABLE room_threads (\n    room_id TEXT NOT NULL,\n    binding_revision INTEGER NOT NULL CHECK (binding_revision > 0),\n    generation INTEGER NOT NULL CHECK (generation > 0),\n    project_id TEXT NOT NULL,\n    thread_id TEXT,\n    changed_at_ms INTEGER NOT NULL CHECK (changed_at_ms >= 0),\n    PRIMARY KEY (room_id, binding_revision, generation),\n    FOREIGN KEY (room_id) REFERENCES room_bindings(room_id) ON DELETE RESTRICT\n) STRICT"
+        ],
+        [
+          "sqlite_sequence",
+          "CREATE TABLE sqlite_sequence(name,seq)"
+        ]
+      ],
+      "user_version": 0
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3": {
+      "source_sha256": "472787f24d7e914fa49a48060e5137f938e0aa1486cfa0ced8fc184cceb1f571",
+      "tables": [
+        [
+          "dependent_send_queue_events",
+          "CREATE TABLE \"dependent_send_queue_events\" (\n    -- This is used as a key, thus hashed.\n    \"room_id\" BLOB NOT NULL,\n\n    -- This is used as both a key and a value, thus neither encrypted/decrypted/hashed.\n    -- This is the transaction id for the *parent* transaction, not our own.\n    \"parent_transaction_id\" BLOB NOT NULL,\n\n    -- This is used as both a key and a value, thus neither encrypted/decrypted/hashed.\n    -- This is a transaction id used for the dependent event itself, not the parent.\n    \"own_transaction_id\" BLOB NOT NULL,\n\n    -- Used as a value (thus encrypted/decrypted), can be null.\n    \"parent_key\" BLOB NULL,\n\n    -- Serialized `DependentQueuedRequestKind`, used as a value (thus encrypted/decrypted).\n    \"content\" BLOB NOT NULL\n, \"created_at\" INTEGER DEFAULT NULL)"
+        ],
+        [
+          "display_name",
+          "CREATE TABLE \"display_name\" (\n    \"room_id\" BLOB NOT NULL,\n    \"name\" BLOB NOT NULL,\n    \"data\" BLOB NOT NULL,\n\n    PRIMARY KEY (\"room_id\", \"name\")\n)"
+        ],
+        [
+          "global_account_data",
+          "CREATE TABLE \"global_account_data\" (\n    \"event_type\" BLOB PRIMARY KEY NOT NULL,\n    \"data\" BLOB NOT NULL\n)"
+        ],
+        [
+          "kv",
+          "CREATE TABLE \"kv\" (\n    \"key\" TEXT PRIMARY KEY NOT NULL,\n    \"value\" BLOB NOT NULL\n)"
+        ],
+        [
+          "kv_blob",
+          "CREATE TABLE \"kv_blob\" (\n    \"key\" BLOB PRIMARY KEY NOT NULL,\n    \"value\" BLOB NOT NULL\n)"
+        ],
+        [
+          "member",
+          "CREATE TABLE \"member\" (\n    \"room_id\" BLOB NOT NULL,\n    \"user_id\" BLOB NOT NULL,\n    \"membership\" BLOB NOT NULL,\n    \"stripped\" BOOLEAN NOT NULL,\n    \"data\" BLOB NOT NULL,\n\n    PRIMARY KEY (\"room_id\", \"user_id\")\n)"
+        ],
+        [
+          "profile",
+          "CREATE TABLE \"profile\" (\n    \"room_id\" BLOB NOT NULL,\n    \"user_id\" BLOB NOT NULL,\n    \"data\" BLOB NOT NULL,\n\n    PRIMARY KEY (\"room_id\", \"user_id\")\n)"
+        ],
+        [
+          "receipt",
+          "CREATE TABLE \"receipt\" (\n    \"room_id\" BLOB NOT NULL,\n    \"user_id\" BLOB NOT NULL,\n    \"receipt_type\" BLOB NOT NULL,\n    \"thread\" BLOB NOT NULL,\n    \"event_id\" BLOB NOT NULL,\n    \"data\" BLOB NOT NULL,\n\n    PRIMARY KEY (\"room_id\", \"user_id\", \"receipt_type\", \"thread\")\n)"
+        ],
+        [
+          "room_account_data",
+          "CREATE TABLE \"room_account_data\" (\n    \"room_id\" BLOB NOT NULL,\n    \"event_type\" BLOB NOT NULL,\n    \"data\" BLOB NOT NULL,\n\n    PRIMARY KEY (\"room_id\", \"event_type\")\n)"
+        ],
+        [
+          "room_info",
+          "CREATE TABLE \"room_info\" (\n    \"room_id\" BLOB PRIMARY KEY NOT NULL,\n    \"state\" BLOB NOT NULL,\n    \"data\" BLOB NOT NULL\n)"
+        ],
+        [
+          "send_queue_events",
+          "CREATE TABLE \"send_queue_events\" (\n    -- This is used as a key, thus hashed.\n    \"room_id\" BLOB NOT NULL,\n\n    -- This is used as a value (thus encrypted/decrypted).\n    \"room_id_val\" BLOB NOT NULL,\n\n    -- This is used as both a key and a value, thus neither encrypted/decrypted/hashed.\n    \"transaction_id\" BLOB NOT NULL,\n\n    -- Used as a value, thus encrypted/decrypted.\n    \"content\" BLOB NOT NULL,\n\n    -- In clear.\n    \"wedge_reason\" BLOB, \"priority\" INTEGER NOT NULL DEFAULT 0, \"created_at\" INTEGER DEFAULT NULL,\n\n    PRIMARY KEY (\"room_id\", \"transaction_id\")\n)"
+        ],
+        [
+          "sqlite_stat1",
+          "CREATE TABLE sqlite_stat1(tbl,idx,stat)"
+        ],
+        [
+          "sqlite_stat4",
+          "CREATE TABLE sqlite_stat4(tbl,idx,neq,nlt,ndlt,sample)"
+        ],
+        [
+          "state_event",
+          "CREATE TABLE \"state_event\" (\n    \"room_id\" BLOB NOT NULL,\n    \"event_type\" BLOB NOT NULL,\n    \"state_key\" BLOB NOT NULL,\n    \"stripped\" BOOLEAN NOT NULL,\n    \"event_id\" BLOB,\n    \"data\" BLOB NOT NULL,\n\n    PRIMARY KEY (\"room_id\", \"event_type\", \"state_key\")\n)"
+        ],
+        [
+          "thread_subscriptions",
+          "CREATE TABLE \"thread_subscriptions\" (\n    \"room_id\" BLOB NOT NULL,\n    -- Event ID of the thread root.\n    \"event_id\" BLOB NOT NULL,\n    \"status\" TEXT NOT NULL, \"bump_stamp\" INTEGER,\n\n    PRIMARY KEY (\"room_id\", \"event_id\")\n)"
+        ]
+      ],
+      "user_version": 0,
+      "kv": [
+        [
+          "version",
+          1,
+          "dc0e9c3658a1a3ed1ec94274d8b19925c93e1abb7ddba294923ad9bde30f8cb8"
+        ],
+        [
+          "cipher",
+          312,
+          "802c40483e1d2a655740ecd3e49831e9814e11397296bfe3ac3c56c682e63205"
+        ]
+      ]
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-crypto.sqlite3": {
+      "source_sha256": "eafa0f63f46baacc32f60fcfbc3a5c94d18b4a235b87a19b8e15ced0f4dae954",
+      "tables": [
+        [
+          "device",
+          "CREATE TABLE \"device\" (\n    \"user_id\" BLOB NOT NULL,\n    \"device_id\" BLOB NOT NULL,\n    \"data\" BLOB NOT NULL,\n\n    PRIMARY KEY (\"user_id\", \"device_id\")\n)"
+        ],
+        [
+          "direct_withheld_info",
+          "CREATE TABLE \"direct_withheld_info\" (\n    \"session_id\" BLOB PRIMARY KEY NOT NULL,\n    \"room_id\" BLOB NOT NULL,\n    \"data\" BLOB NOT NULL\n)"
+        ],
+        [
+          "identity",
+          "CREATE TABLE \"identity\" (\n    \"user_id\" BLOB PRIMARY KEY NOT NULL,\n    \"data\" BLOB NOT NULL\n)"
+        ],
+        [
+          "inbound_group_session",
+          "CREATE TABLE \"inbound_group_session\" (\n    \"session_id\" BLOB PRIMARY KEY NOT NULL,\n    \"room_id\" BLOB NOT NULL,\n    \"backed_up\" INTEGER NOT NULL,\n    \"data\" BLOB NOT NULL\n, \"sender_key\" BLOB, \"sender_data_type\" INTEGER)"
+        ],
+        [
+          "key_requests",
+          "CREATE TABLE \"key_requests\" (\n    \"request_id\" BLOB PRIMARY KEY NOT NULL,\n    \"sent_out\" INTEGER NOT NULL,\n    \"data\" BLOB NOT NULL\n)"
+        ],
+        [
+          "kv",
+          "CREATE TABLE \"kv\" (\n    \"key\" TEXT PRIMARY KEY NOT NULL,\n    \"value\" BLOB NOT NULL\n)"
+        ],
+        [
+          "lease_locks",
+          "CREATE TABLE \"lease_locks\" (\n    \"key\" TEXT PRIMARY KEY NOT NULL,\n    \"holder\" TEXT NOT NULL,\n    \"expiration\" REAL NOT NULL\n, \"generation\" INTEGER NOT NULL DEFAULT 1)"
+        ],
+        [
+          "olm_hash",
+          "CREATE TABLE \"olm_hash\" (\n    \"data\" BLOB PRIMARY KEY NOT NULL\n)"
+        ],
+        [
+          "outbound_group_session",
+          "CREATE TABLE \"outbound_group_session\" (\n    \"room_id\" BLOB PRIMARY KEY NOT NULL,\n    \"data\" BLOB NOT NULL\n)"
+        ],
+        [
+          "received_room_key_bundle",
+          "CREATE TABLE \"received_room_key_bundle\"\n(\n    \"room_id\"        BLOB NOT NULL,\n    \"sender_user_id\" BLOB NOT NULL,\n    \"bundle_data\"    BLOB NOT NULL\n)"
+        ],
+        [
+          "room_key_backups_fully_downloaded",
+          "CREATE TABLE room_key_backups_fully_downloaded (\n    \"room_id\" BLOB PRIMARY KEY NOT NULL\n)"
+        ],
+        [
+          "room_settings",
+          "CREATE TABLE room_settings(\n    \"room_id\" BLOB PRIMARY KEY NOT NULL,\n    \"data\" BLOB NOT NULL\n)"
+        ],
+        [
+          "rooms_pending_key_bundle",
+          "CREATE TABLE \"rooms_pending_key_bundle\"\n(\n    \"room_id\" BLOB PRIMARY KEY NOT NULL,\n    \"data\"    BLOB             NOT NULL\n)"
+        ],
+        [
+          "secrets_inbox",
+          "CREATE TABLE \"secrets_inbox\" (\n    \"secret_name\" BLOB NOT NULL,\n    \"secret\" BLOB NOT NULL\n)"
+        ],
+        [
+          "session",
+          "CREATE TABLE \"session\" (\n    \"session_id\" BLOB PRIMARY KEY NOT NULL,\n    \"sender_key\" BLOB NOT NULL,\n    \"data\" BLOB NOT NULL\n)"
+        ],
+        [
+          "sqlite_stat1",
+          "CREATE TABLE sqlite_stat1(tbl,idx,stat)"
+        ],
+        [
+          "sqlite_stat4",
+          "CREATE TABLE sqlite_stat4(tbl,idx,neq,nlt,ndlt,sample)"
+        ],
+        [
+          "tracked_user",
+          "CREATE TABLE \"tracked_user\" (\n    \"user_id\" BLOB PRIMARY KEY NOT NULL,\n    \"data\" BLOB NOT NULL\n)"
+        ]
+      ],
+      "user_version": 0,
+      "kv": [
+        [
+          "version",
+          1,
+          "4a64a107f0cb32536e5bce6c98c393db21cca7f4ea187ba8c4dca8b51d4ea80a"
+        ],
+        [
+          "cipher",
+          322,
+          "3ad027b59884f07baf430c11033b392296705269fa746a2c3e4f493793f6b71f"
+        ],
+        [
+          "account",
+          8542,
+          "67440b4448457f3e4c3b9b853078de94047d58a93f64308ecb385c4f568a42b0"
+        ],
+        [
+          "HAS_MIGRATED_VERIFICATION_LATCH",
+          100,
+          "78768b7e1945b34fb22ae7ec9ca6e35be5803f5378be6bdc3b943031a377df2e"
+        ]
+      ]
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-media.sqlite3": {
+      "source_sha256": "2e8b4bc1f4c4181a22f21b54adf61858099242277438f897cccca5f774b17e24",
+      "tables": [
+        [
+          "kv",
+          "CREATE TABLE \"kv\" (\n    \"key\" TEXT PRIMARY KEY NOT NULL,\n    \"value\" BLOB NOT NULL\n)"
+        ],
+        [
+          "lease_locks",
+          "CREATE TABLE \"lease_locks\" (\n    \"key\" TEXT PRIMARY KEY NOT NULL,\n    \"holder\" TEXT NOT NULL,\n    \"expiration\" REAL NOT NULL\n, \"generation\" INTEGER NOT NULL DEFAULT 1)"
+        ],
+        [
+          "media",
+          "CREATE TABLE \"media\" (\n    \"uri\" BLOB NOT NULL,\n    \"format\" BLOB NOT NULL,\n    \"data\" BLOB NOT NULL,\n    \"last_access\" INTEGER NOT NULL,\n    \"ignore_policy\" BOOLEAN NOT NULL DEFAULT FALSE,\n\n    PRIMARY KEY (\"uri\", \"format\")\n)"
+        ],
+        [
+          "sqlite_stat1",
+          "CREATE TABLE sqlite_stat1(tbl,idx,stat)"
+        ],
+        [
+          "sqlite_stat4",
+          "CREATE TABLE sqlite_stat4(tbl,idx,neq,nlt,ndlt,sample)"
+        ]
+      ],
+      "user_version": 0,
+      "kv": [
+        [
+          "version",
+          1,
+          "dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986"
+        ],
+        [
+          "cipher",
+          330,
+          "f0a1a7714a5ab8d448f0432c73b139cbdb5077ae4c8f7190940812db03aa0446"
+        ]
+      ]
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-event-cache.sqlite3": {
+      "source_sha256": "73032a6b7cc752dd0c5498c520db919c1ba0ad58c4c4d378086d43dd3b9b239e",
+      "tables": [
+        [
+          "event_chunks",
+          "CREATE TABLE \"event_chunks\" (\n    -- Which linked chunk does this event belong to? (hashed key shared with linked_chunks)\n    \"linked_chunk_id\" BLOB NOT NULL,\n    -- Which chunk does this event refer to? Corresponds to a `ChunkIdentifier`.\n    \"chunk_id\" INTEGER NOT NULL,\n\n    -- `OwnedEventId` for events.\n    \"event_id\" BLOB NOT NULL,\n    -- Position (index) in the chunk.\n    \"position\" INTEGER NOT NULL,\n\n    -- We need a uniqueness constraint over the `linked_chunk_id`, `chunk_id` and\n    -- `position` tuple because (i) they must be unique, (ii) it dramatically\n    -- improves the performance. Also, we don't have a ROWID, so we must use a PRIMARY KEY, hence\n    -- we use this composite key as the primary key.\n    PRIMARY KEY (linked_chunk_id, chunk_id, position),\n\n    -- If the owning chunk gets deleted, delete the entry too.\n    FOREIGN KEY (linked_chunk_id, chunk_id) REFERENCES linked_chunks(linked_chunk_id, id) ON DELETE CASCADE\n)\nWITHOUT ROWID"
+        ],
+        [
+          "events",
+          "CREATE TABLE \"events\" (\n    -- The room in which the event is located.\n    \"room_id\" BLOB NOT NULL,\n\n    -- The `OwnedEventId` of this event.\n    \"event_id\" BLOB NOT NULL,\n\n    -- The event type of this event.\n    \"event_type\" BLOB NOT NULL,\n\n    -- The ID of the session that was used to encrypt this event, may be null if\n    -- the event wasn't encrypted.\n    \"session_id\" BLOB NULL,\n\n    -- JSON serialized `TimelineEvent` (encrypted value).\n    \"content\" BLOB NOT NULL,\n\n    -- If this event is an aggregation (related event), the event id of the event it relates to.\n    -- Can be null if this event isn't an aggregation.\n    \"relates_to\" BLOB,\n\n    -- If this event is an aggregation (related event), the kind of relation it has to the event it\n    -- relates to.\n    -- Can be null if this event isn't an aggregation.\n    \"rel_type\" BLOB,\n\n    -- Primary key is the event ID.\n    PRIMARY KEY (event_id)\n)\nWITHOUT ROWID"
+        ],
+        [
+          "gap_chunks",
+          "CREATE TABLE \"gap_chunks\" (\n    -- Which linked chunk does this event belong to? (hashed key shared with linked_chunks)\n    \"linked_chunk_id\" BLOB NOT NULL,\n    -- Which chunk does this gap refer to? Corresponds to a `ChunkIdentifier`.\n    \"chunk_id\" INTEGER NOT NULL,\n\n    -- The previous batch token of a gap (encrypted value).\n    \"prev_token\" BLOB NOT NULL,\n\n    -- Primary key is composed of the linked chunk ID and the chunk identifier.\n    -- Such pairs must be unique.\n    PRIMARY KEY (linked_chunk_id, chunk_id),\n\n    -- If the owning chunk gets deleted, delete the entry too.\n    FOREIGN KEY (chunk_id, linked_chunk_id) REFERENCES linked_chunks(id, linked_chunk_id) ON DELETE CASCADE\n)\nWITHOUT ROWID"
+        ],
+        [
+          "kv",
+          "CREATE TABLE \"kv\" (\n    \"key\" TEXT PRIMARY KEY NOT NULL,\n    \"value\" BLOB NOT NULL\n)"
+        ],
+        [
+          "lease_locks",
+          "CREATE TABLE \"lease_locks\" (\n    \"key\" TEXT PRIMARY KEY NOT NULL,\n    \"holder\" TEXT NOT NULL,\n    \"expiration\" REAL NOT NULL\n, \"generation\" INTEGER NOT NULL DEFAULT 1)"
+        ],
+        [
+          "linked_chunks",
+          "CREATE TABLE \"linked_chunks\" (\n    -- Which linked chunk does this chunk belong to? (hashed key shared with the two other tables)\n    \"linked_chunk_id\" BLOB NOT NULL,\n    -- Identifier of the chunk, unique per room. Corresponds to a `ChunkIdentifier`.\n    \"id\" INTEGER NOT NULL,\n\n    -- Previous chunk in the linked list. Corresponds to a `ChunkIdentifier`.\n    \"previous\" INTEGER,\n    -- Next chunk in the linked list. Corresponds to a `ChunkIdentifier`.\n    \"next\" INTEGER,\n    -- Type of underlying entries: E for events, G for gaps\n    \"type\" TEXT CHECK(\"type\" IN ('E', 'G')) NOT NULL,\n\n    -- Primary key is composed of the linked chunk ID and the chunk identifier.\n    -- Such pairs must be unique.\n    PRIMARY KEY (linked_chunk_id, id)\n)\nWITHOUT ROWID"
+        ],
+        [
+          "sqlite_stat1",
+          "CREATE TABLE sqlite_stat1(tbl,idx,stat)"
+        ],
+        [
+          "sqlite_stat4",
+          "CREATE TABLE sqlite_stat4(tbl,idx,neq,nlt,ndlt,sample)"
+        ]
+      ],
+      "user_version": 0,
+      "kv": [
+        [
+          "version",
+          1,
+          "4d7b3ef7300acf70c892d8327db8272f54434adbc61a4e130a563cb59a0d0f47"
+        ],
+        [
+          "cipher",
+          313,
+          "4ab1d16547654fea08f234819473d76a8f84eabb975d1c401b462a3ea2922e1b"
+        ]
+      ]
+    }
+  },
+  "failed": {
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix_1.sqlite3": {
+      "source_sha256": "ea9603990ea0b362d17892583fa9f2023d6b0487ea1105f7ae534c91bbbb2e9c",
+      "tables": [
+        [
+          "_sqlx_migrations",
+          "CREATE TABLE _sqlx_migrations (\n    version BIGINT PRIMARY KEY,\n    description TEXT NOT NULL,\n    installed_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    success BOOLEAN NOT NULL,\n    checksum BLOB NOT NULL,\n    execution_time BIGINT NOT NULL\n)"
+        ],
+        [
+          "change_log",
+          "CREATE TABLE change_log (\n    cursor INTEGER PRIMARY KEY AUTOINCREMENT,\n    kind TEXT NOT NULL,\n    room_id TEXT,\n    event_id TEXT,\n    txn_id TEXT,\n    recorded_at_ms INTEGER NOT NULL CHECK (recorded_at_ms >= 0)\n) STRICT"
+        ],
+        [
+          "inbox_dispatches",
+          "CREATE TABLE inbox_dispatches (\n    event_id TEXT PRIMARY KEY,\n    client_user_message_id TEXT NOT NULL UNIQUE,\n    room_id TEXT NOT NULL,\n    binding_revision INTEGER NOT NULL CHECK (binding_revision > 0),\n    generation INTEGER NOT NULL CHECK (generation > 0),\n    project_id TEXT NOT NULL,\n    state TEXT NOT NULL CHECK (state IN ('begun', 'queued', 'admitted', 'completed')),\n    thread_id TEXT,\n    queued_submission_id TEXT,\n    turn_id TEXT,\n    begun_at_ms INTEGER NOT NULL CHECK (begun_at_ms >= 0),\n    updated_at_ms INTEGER NOT NULL CHECK (updated_at_ms >= begun_at_ms),\n    completed_at_ms INTEGER,\n    FOREIGN KEY (event_id) REFERENCES inbox_events(event_id) ON DELETE RESTRICT,\n    FOREIGN KEY (room_id) REFERENCES room_bindings(room_id) ON DELETE RESTRICT,\n    CHECK (\n        (state = 'begun' AND queued_submission_id IS NULL AND turn_id IS NULL) OR\n        (state = 'queued' AND thread_id IS NOT NULL\n            AND queued_submission_id IS NOT NULL AND turn_id IS NULL) OR\n        (state IN ('admitted', 'completed')\n            AND thread_id IS NOT NULL AND turn_id IS NOT NULL)\n    ),\n    CHECK (\n        (state = 'completed' AND completed_at_ms IS NOT NULL\n            AND completed_at_ms = updated_at_ms) OR\n        (state != 'completed' AND completed_at_ms IS NULL)\n    )\n) STRICT"
+        ],
+        [
+          "inbox_events",
+          "CREATE TABLE inbox_events (\n    inbox_cursor INTEGER PRIMARY KEY AUTOINCREMENT,\n    event_id TEXT NOT NULL UNIQUE,\n    room_id TEXT NOT NULL,\n    sender_user_id TEXT NOT NULL,\n    event_type TEXT NOT NULL,\n    payload BLOB NOT NULL,\n    payload_sha256 TEXT NOT NULL CHECK (\n        length(payload_sha256) = 64 AND payload_sha256 NOT GLOB '*[^0-9a-f]*'\n    ),\n    binding_revision INTEGER NOT NULL CHECK (binding_revision > 0),\n    generation INTEGER NOT NULL CHECK (generation > 0),\n    origin_server_ts_ms INTEGER NOT NULL CHECK (origin_server_ts_ms >= 0),\n    received_at_ms INTEGER NOT NULL CHECK (received_at_ms >= 0),\n    state TEXT NOT NULL CHECK (state IN ('pending', 'processed')),\n    processed_at_ms INTEGER,\n    FOREIGN KEY (room_id) REFERENCES room_bindings(room_id) ON DELETE RESTRICT,\n    CHECK (\n        (state = 'pending' AND processed_at_ms IS NULL) OR\n        (state = 'processed' AND processed_at_ms IS NOT NULL)\n    )\n) STRICT"
+        ],
+        [
+          "matrix_control_events",
+          "CREATE TABLE matrix_control_events (\n    cursor INTEGER PRIMARY KEY AUTOINCREMENT,\n    event_json TEXT NOT NULL CHECK (length(event_json) BETWEEN 2 AND 8192),\n    recorded_at_ms INTEGER NOT NULL CHECK (recorded_at_ms > 0)\n) STRICT"
+        ],
+        [
+          "matrix_control_state",
+          "CREATE TABLE matrix_control_state (\n    singleton INTEGER PRIMARY KEY CHECK (singleton = 1),\n    active_thread_id TEXT,\n    active_turn_id TEXT,\n    CHECK ((active_thread_id IS NULL) = (active_turn_id IS NULL))\n) STRICT"
+        ],
+        [
+          "matrix_meta",
+          "CREATE TABLE matrix_meta (\n    singleton INTEGER PRIMARY KEY CHECK (singleton = 1),\n    schema_version INTEGER NOT NULL CHECK (schema_version = 1),\n    owner_agent_id TEXT NOT NULL CHECK (length(owner_agent_id) = 36)\n) STRICT"
+        ],
+        [
+          "matrix_sync_checkpoint",
+          "CREATE TABLE matrix_sync_checkpoint (\n    singleton INTEGER PRIMARY KEY CHECK (singleton = 1),\n    owner_agent_id TEXT NOT NULL CHECK (length(owner_agent_id) = 36),\n    binding_revision INTEGER NOT NULL CHECK (binding_revision > 0),\n    generation INTEGER NOT NULL CHECK (generation > 0),\n    next_batch TEXT NOT NULL CHECK (\n        length(next_batch) BETWEEN 1 AND 4096\n        AND next_batch NOT GLOB '*[^ -~]*'\n    ),\n    updated_at_ms INTEGER NOT NULL CHECK (updated_at_ms >= 0)\n) STRICT"
+        ],
+        [
+          "matrix_sync_decision_outcomes_v2",
+          "CREATE TABLE matrix_sync_decision_outcomes_v2 (\n    outcome_seq INTEGER PRIMARY KEY AUTOINCREMENT CHECK (\n        outcome_seq BETWEEN 1 AND 33554432\n    ),\n    decision_seq INTEGER NOT NULL,\n    outcome_index INTEGER NOT NULL CHECK (outcome_index BETWEEN 0 AND 511),\n    source_event_id TEXT NOT NULL,\n    disposition TEXT NOT NULL CHECK (\n        disposition IN ('applied', 'duplicate', 'missing', 'tombstoned')\n    ),\n    UNIQUE (decision_seq, outcome_index),\n    UNIQUE (decision_seq, source_event_id),\n    FOREIGN KEY (decision_seq) REFERENCES matrix_sync_decisions_v2(decision_seq)\n        ON DELETE RESTRICT,\n    FOREIGN KEY (source_event_id) REFERENCES matrix_sync_mutations_v2(source_event_id)\n        ON DELETE RESTRICT\n) STRICT"
+        ],
+        [
+          "matrix_sync_decisions_v2",
+          "CREATE TABLE matrix_sync_decisions_v2 (\n    decision_seq INTEGER PRIMARY KEY AUTOINCREMENT CHECK (decision_seq BETWEEN 1 AND 65536),\n    operation_id TEXT NOT NULL UNIQUE CHECK (\n        length(operation_id) BETWEEN 1 AND 128\n        AND operation_id NOT GLOB '*[^A-Za-z0-9._:-]*'\n    ),\n    decision_kind TEXT NOT NULL CHECK (decision_kind IN ('commit', 'cancel')),\n    decision_sha256 TEXT NOT NULL CHECK (\n        length(decision_sha256) = 64 AND decision_sha256 NOT GLOB '*[^0-9a-f]*'\n    ),\n    schema_version INTEGER NOT NULL CHECK (schema_version = 2),\n    checkpoint_revision INTEGER NOT NULL CHECK (checkpoint_revision > 0),\n    checkpoint_generation INTEGER NOT NULL CHECK (checkpoint_generation > 0),\n    expected_next_batch TEXT,\n    next_batch TEXT,\n    retained_next_batch TEXT,\n    outcome_count INTEGER NOT NULL CHECK (outcome_count BETWEEN 0 AND 512),\n    CHECK (\n        (decision_kind = 'commit' AND next_batch IS NOT NULL\n            AND retained_next_batch IS NULL) OR\n        (decision_kind = 'cancel' AND next_batch IS NULL AND outcome_count = 0)\n    )\n) STRICT"
+        ],
+        [
+          "matrix_sync_mutations_v2",
+          "CREATE TABLE matrix_sync_mutations_v2 (\n    ledger_seq INTEGER PRIMARY KEY AUTOINCREMENT CHECK (ledger_seq BETWEEN 1 AND 65536),\n    source_event_id TEXT NOT NULL UNIQUE,\n    room_id TEXT NOT NULL,\n    sender_user_id TEXT NOT NULL,\n    mutation_kind TEXT NOT NULL CHECK (\n        mutation_kind IN ('timeline', 'redaction', 'room_leave', 'room_tombstone')\n    ),\n    mutation_sha256 TEXT NOT NULL CHECK (\n        length(mutation_sha256) = 64 AND mutation_sha256 NOT GLOB '*[^0-9a-f]*'\n    ),\n    tombstone_scope_kind TEXT CHECK (tombstone_scope_kind IN ('event', 'room')),\n    tombstone_scope_id TEXT,\n    tombstone_reason_kind TEXT CHECK (\n        tombstone_reason_kind IN ('redaction', 'room_leave', 'room_replacement')\n    ),\n    replacement_room_id TEXT,\n    binding_revision INTEGER NOT NULL CHECK (binding_revision > 0),\n    generation INTEGER NOT NULL CHECK (generation > 0),\n    origin_server_ts_ms INTEGER NOT NULL CHECK (origin_server_ts_ms >= 0),\n    received_at_ms INTEGER NOT NULL CHECK (received_at_ms >= 0),\n    FOREIGN KEY (room_id) REFERENCES room_bindings(room_id) ON DELETE RESTRICT,\n    CHECK (\n        (mutation_kind = 'timeline' AND tombstone_scope_kind IS NULL\n            AND tombstone_scope_id IS NULL AND tombstone_reason_kind IS NULL\n            AND replacement_room_id IS NULL) OR\n        (mutation_kind = 'redaction' AND tombstone_scope_kind = 'event'\n            AND tombstone_scope_id IS NOT NULL AND tombstone_reason_kind = 'redaction'\n            AND replacement_room_id IS NULL AND tombstone_scope_id != source_event_id) OR\n        (mutation_kind = 'room_leave' AND tombstone_scope_kind = 'room'\n            AND tombstone_scope_id = room_id AND tombstone_reason_kind = 'room_leave'\n            AND replacement_room_id IS NULL) OR\n        (mutation_kind = 'room_tombstone' AND tombstone_scope_kind = 'room'\n            AND tombstone_scope_id = room_id AND tombstone_reason_kind = 'room_replacement'\n            AND replacement_room_id IS NOT NULL AND replacement_room_id != room_id)\n    )\n) STRICT"
+        ],
+        [
+          "outbox_messages",
+          "CREATE TABLE outbox_messages (\n    outbox_id INTEGER PRIMARY KEY AUTOINCREMENT,\n    stable_txn_id TEXT NOT NULL UNIQUE,\n    room_id TEXT NOT NULL,\n    kind TEXT NOT NULL CHECK (\n        kind IN ('text_delta', 'final', 'tool_transition', 'approval', 'terminal')\n    ),\n    payload BLOB NOT NULL,\n    payload_sha256 TEXT NOT NULL CHECK (\n        length(payload_sha256) = 64 AND payload_sha256 NOT GLOB '*[^0-9a-f]*'\n    ),\n    logical_txn_count INTEGER NOT NULL CHECK (logical_txn_count > 0),\n    binding_revision INTEGER NOT NULL CHECK (binding_revision > 0),\n    generation INTEGER NOT NULL CHECK (generation > 0),\n    state TEXT NOT NULL CHECK (\n        state IN ('pending', 'in_flight', 'retry_scheduled', 'sent', 'permanent_failure')\n    ),\n    attempts INTEGER NOT NULL CHECK (attempts >= 0),\n    next_attempt_at_ms INTEGER NOT NULL CHECK (next_attempt_at_ms >= 0),\n    lease_until_ms INTEGER,\n    created_at_ms INTEGER NOT NULL CHECK (created_at_ms >= 0),\n    updated_at_ms INTEGER NOT NULL CHECK (updated_at_ms >= created_at_ms),\n    sent_event_id TEXT, logical_outbox_id TEXT,\n    FOREIGN KEY (room_id) REFERENCES room_bindings(room_id) ON DELETE RESTRICT,\n    CHECK (\n        (state = 'in_flight' AND lease_until_ms IS NOT NULL) OR\n        (state != 'in_flight' AND lease_until_ms IS NULL)\n    ),\n    CHECK (\n        (state = 'sent' AND sent_event_id IS NOT NULL) OR\n        (state != 'sent' AND sent_event_id IS NULL)\n    )\n) STRICT"
+        ],
+        [
+          "outbox_txns",
+          "CREATE TABLE outbox_txns (\n    txn_id TEXT PRIMARY KEY,\n    logical_outbox_id TEXT NOT NULL,\n    revision INTEGER NOT NULL CHECK (revision > 0),\n    outbox_id INTEGER NOT NULL,\n    room_id TEXT NOT NULL,\n    kind TEXT NOT NULL,\n    fragment BLOB NOT NULL,\n    fragment_sha256 TEXT NOT NULL CHECK (\n        length(fragment_sha256) = 64 AND fragment_sha256 NOT GLOB '*[^0-9a-f]*'\n    ),\n    binding_revision INTEGER NOT NULL CHECK (binding_revision > 0),\n    generation INTEGER NOT NULL CHECK (generation > 0),\n    FOREIGN KEY (outbox_id) REFERENCES outbox_messages(outbox_id) ON DELETE RESTRICT,\n    FOREIGN KEY (room_id) REFERENCES room_bindings(room_id) ON DELETE RESTRICT\n) STRICT"
+        ],
+        [
+          "pending_approvals",
+          "CREATE TABLE pending_approvals (\n    approval_key TEXT PRIMARY KEY,\n    pending_json TEXT NOT NULL CHECK (length(pending_json) BETWEEN 2 AND 8192),\n    request_id_json TEXT NOT NULL UNIQUE CHECK (length(request_id_json) BETWEEN 1 AND 1024),\n    request_kind TEXT NOT NULL CHECK (request_kind IN ('command_execution', 'file_change')),\n    attached_agent_generation INTEGER NOT NULL CHECK (attached_agent_generation > 0),\n    process_incarnation TEXT NOT NULL CHECK (length(process_incarnation) BETWEEN 1 AND 512),\n    created_at_ms INTEGER NOT NULL CHECK (created_at_ms > 0),\n    resolution_decision TEXT CHECK (\n        resolution_decision IS NULL OR\n        resolution_decision IN ('accept', 'accept_for_session', 'decline', 'cancel')\n    ),\n    resolving_at_ms INTEGER,\n    CHECK ((resolution_decision IS NULL) = (resolving_at_ms IS NULL)),\n    CHECK (resolving_at_ms IS NULL OR resolving_at_ms >= created_at_ms)\n) STRICT"
+        ],
+        [
+          "room_bindings",
+          "CREATE TABLE room_bindings (\n    room_id TEXT PRIMARY KEY,\n    owner_agent_id TEXT NOT NULL,\n    agent_user_id TEXT NOT NULL,\n    revision INTEGER NOT NULL CHECK (revision > 0),\n    generation INTEGER NOT NULL CHECK (generation > 0),\n    changed_at_ms INTEGER NOT NULL CHECK (changed_at_ms >= 0)\n) STRICT"
+        ],
+        [
+          "room_threads",
+          "CREATE TABLE room_threads (\n    room_id TEXT NOT NULL,\n    binding_revision INTEGER NOT NULL CHECK (binding_revision > 0),\n    generation INTEGER NOT NULL CHECK (generation > 0),\n    project_id TEXT NOT NULL,\n    thread_id TEXT,\n    changed_at_ms INTEGER NOT NULL CHECK (changed_at_ms >= 0),\n    PRIMARY KEY (room_id, binding_revision, generation),\n    FOREIGN KEY (room_id) REFERENCES room_bindings(room_id) ON DELETE RESTRICT\n) STRICT"
+        ],
+        [
+          "sqlite_sequence",
+          "CREATE TABLE sqlite_sequence(name,seq)"
+        ]
+      ],
+      "user_version": 0
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3": {
+      "source_sha256": "f266ece8e1ad87de82e854e3899efd6e63862d9c1e5753796f296affd3459abb",
+      "tables": [
+        [
+          "dependent_send_queue_events",
+          "CREATE TABLE \"dependent_send_queue_events\" (\n    -- This is used as a key, thus hashed.\n    \"room_id\" BLOB NOT NULL,\n\n    -- This is used as both a key and a value, thus neither encrypted/decrypted/hashed.\n    -- This is the transaction id for the *parent* transaction, not our own.\n    \"parent_transaction_id\" BLOB NOT NULL,\n\n    -- This is used as both a key and a value, thus neither encrypted/decrypted/hashed.\n    -- This is a transaction id used for the dependent event itself, not the parent.\n    \"own_transaction_id\" BLOB NOT NULL,\n\n    -- Used as a value (thus encrypted/decrypted), can be null.\n    \"parent_key\" BLOB NULL,\n\n    -- Serialized `DependentQueuedRequestKind`, used as a value (thus encrypted/decrypted).\n    \"content\" BLOB NOT NULL\n, \"created_at\" INTEGER DEFAULT NULL)"
+        ],
+        [
+          "display_name",
+          "CREATE TABLE \"display_name\" (\n    \"room_id\" BLOB NOT NULL,\n    \"name\" BLOB NOT NULL,\n    \"data\" BLOB NOT NULL,\n\n    PRIMARY KEY (\"room_id\", \"name\")\n)"
+        ],
+        [
+          "global_account_data",
+          "CREATE TABLE \"global_account_data\" (\n    \"event_type\" BLOB PRIMARY KEY NOT NULL,\n    \"data\" BLOB NOT NULL\n)"
+        ],
+        [
+          "global_profiles",
+          "CREATE TABLE global_profiles (\n    user_id BLOB PRIMARY KEY NOT NULL,\n    profile_data BLOB NOT NULL\n)"
+        ],
+        [
+          "kv",
+          "CREATE TABLE \"kv\" (\n    \"key\" TEXT PRIMARY KEY NOT NULL,\n    \"value\" BLOB NOT NULL\n)"
+        ],
+        [
+          "kv_blob",
+          "CREATE TABLE \"kv_blob\" (\n    \"key\" BLOB PRIMARY KEY NOT NULL,\n    \"value\" BLOB NOT NULL\n)"
+        ],
+        [
+          "member",
+          "CREATE TABLE \"member\" (\n    \"room_id\" BLOB NOT NULL,\n    \"user_id\" BLOB NOT NULL,\n    \"membership\" BLOB NOT NULL,\n    \"stripped\" BOOLEAN NOT NULL,\n    \"data\" BLOB NOT NULL,\n\n    PRIMARY KEY (\"room_id\", \"user_id\")\n)"
+        ],
+        [
+          "profile",
+          "CREATE TABLE \"profile\" (\n    \"room_id\" BLOB NOT NULL,\n    \"user_id\" BLOB NOT NULL,\n    \"data\" BLOB NOT NULL,\n\n    PRIMARY KEY (\"room_id\", \"user_id\")\n)"
+        ],
+        [
+          "receipt",
+          "CREATE TABLE \"receipt\" (\n    \"room_id\" BLOB NOT NULL,\n    \"user_id\" BLOB NOT NULL,\n    \"receipt_type\" BLOB NOT NULL,\n    \"thread\" BLOB NOT NULL,\n    \"event_id\" BLOB NOT NULL,\n    \"data\" BLOB NOT NULL,\n\n    PRIMARY KEY (\"room_id\", \"user_id\", \"receipt_type\", \"thread\")\n)"
+        ],
+        [
+          "room_account_data",
+          "CREATE TABLE \"room_account_data\" (\n    \"room_id\" BLOB NOT NULL,\n    \"event_type\" BLOB NOT NULL,\n    \"data\" BLOB NOT NULL,\n\n    PRIMARY KEY (\"room_id\", \"event_type\")\n)"
+        ],
+        [
+          "room_info",
+          "CREATE TABLE \"room_info\" (\n    \"room_id\" BLOB PRIMARY KEY NOT NULL,\n    \"state\" BLOB NOT NULL,\n    \"data\" BLOB NOT NULL\n)"
+        ],
+        [
+          "send_queue_events",
+          "CREATE TABLE \"send_queue_events\" (\n    -- This is used as a key, thus hashed.\n    \"room_id\" BLOB NOT NULL,\n\n    -- This is used as a value (thus encrypted/decrypted).\n    \"room_id_val\" BLOB NOT NULL,\n\n    -- This is used as both a key and a value, thus neither encrypted/decrypted/hashed.\n    \"transaction_id\" BLOB NOT NULL,\n\n    -- Used as a value, thus encrypted/decrypted.\n    \"content\" BLOB NOT NULL,\n\n    -- In clear.\n    \"wedge_reason\" BLOB, \"priority\" INTEGER NOT NULL DEFAULT 0, \"created_at\" INTEGER DEFAULT NULL,\n\n    PRIMARY KEY (\"room_id\", \"transaction_id\")\n)"
+        ],
+        [
+          "sqlite_stat1",
+          "CREATE TABLE sqlite_stat1(tbl,idx,stat)"
+        ],
+        [
+          "sqlite_stat4",
+          "CREATE TABLE sqlite_stat4(tbl,idx,neq,nlt,ndlt,sample)"
+        ],
+        [
+          "state_event",
+          "CREATE TABLE \"state_event\" (\n    \"room_id\" BLOB NOT NULL,\n    \"event_type\" BLOB NOT NULL,\n    \"state_key\" BLOB NOT NULL,\n    \"stripped\" BOOLEAN NOT NULL,\n    \"event_id\" BLOB,\n    \"data\" BLOB NOT NULL,\n\n    PRIMARY KEY (\"room_id\", \"event_type\", \"state_key\")\n)"
+        ],
+        [
+          "thread_subscriptions",
+          "CREATE TABLE \"thread_subscriptions\" (\n    \"room_id\" BLOB NOT NULL,\n    -- Event ID of the thread root.\n    \"event_id\" BLOB NOT NULL,\n    \"status\" TEXT NOT NULL, \"bump_stamp\" INTEGER,\n\n    PRIMARY KEY (\"room_id\", \"event_id\")\n)"
+        ]
+      ],
+      "user_version": 0,
+      "kv": [
+        [
+          "version",
+          1,
+          "c555eab45d08845ae9f10d452a99bfcb06f74a50b988fe7e48dd323789b88ee3"
+        ],
+        [
+          "cipher",
+          312,
+          "802c40483e1d2a655740ecd3e49831e9814e11397296bfe3ac3c56c682e63205"
+        ]
+      ]
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-crypto.sqlite3": {
+      "source_sha256": "e1441a8b0b5c046dbe68479ca19dcb8ad7ac4eba917974e0b3edf26830928e45",
+      "tables": [
+        [
+          "device",
+          "CREATE TABLE \"device\" (\n    \"user_id\" BLOB NOT NULL,\n    \"device_id\" BLOB NOT NULL,\n    \"data\" BLOB NOT NULL,\n\n    PRIMARY KEY (\"user_id\", \"device_id\")\n)"
+        ],
+        [
+          "direct_withheld_info",
+          "CREATE TABLE \"direct_withheld_info\" (\n    \"session_id\" BLOB PRIMARY KEY NOT NULL,\n    \"room_id\" BLOB NOT NULL,\n    \"data\" BLOB NOT NULL\n)"
+        ],
+        [
+          "identity",
+          "CREATE TABLE \"identity\" (\n    \"user_id\" BLOB PRIMARY KEY NOT NULL,\n    \"data\" BLOB NOT NULL\n)"
+        ],
+        [
+          "inbound_group_session",
+          "CREATE TABLE \"inbound_group_session\" (\n    \"session_id\" BLOB PRIMARY KEY NOT NULL,\n    \"room_id\" BLOB NOT NULL,\n    \"backed_up\" INTEGER NOT NULL,\n    \"data\" BLOB NOT NULL\n, \"sender_key\" BLOB, \"sender_data_type\" INTEGER)"
+        ],
+        [
+          "key_requests",
+          "CREATE TABLE \"key_requests\" (\n    \"request_id\" BLOB PRIMARY KEY NOT NULL,\n    \"sent_out\" INTEGER NOT NULL,\n    \"data\" BLOB NOT NULL\n, \"info\" BLOB)"
+        ],
+        [
+          "kv",
+          "CREATE TABLE \"kv\" (\n    \"key\" TEXT PRIMARY KEY NOT NULL,\n    \"value\" BLOB NOT NULL\n)"
+        ],
+        [
+          "lease_locks",
+          "CREATE TABLE \"lease_locks\" (\n    \"key\" TEXT PRIMARY KEY NOT NULL,\n    \"holder\" TEXT NOT NULL,\n    \"expiration\" REAL NOT NULL\n, \"generation\" INTEGER NOT NULL DEFAULT 1)"
+        ],
+        [
+          "olm_hash",
+          "CREATE TABLE \"olm_hash\" (\n    \"data\" BLOB PRIMARY KEY NOT NULL\n)"
+        ],
+        [
+          "outbound_group_session",
+          "CREATE TABLE \"outbound_group_session\" (\n    \"room_id\" BLOB PRIMARY KEY NOT NULL,\n    \"data\" BLOB NOT NULL\n)"
+        ],
+        [
+          "received_room_key_bundle",
+          "CREATE TABLE \"received_room_key_bundle\"\n(\n    \"room_id\"        BLOB NOT NULL,\n    \"sender_user_id\" BLOB NOT NULL,\n    \"bundle_data\"    BLOB NOT NULL\n)"
+        ],
+        [
+          "room_key_backups_fully_downloaded",
+          "CREATE TABLE room_key_backups_fully_downloaded (\n    \"room_id\" BLOB PRIMARY KEY NOT NULL\n)"
+        ],
+        [
+          "room_settings",
+          "CREATE TABLE room_settings(\n    \"room_id\" BLOB PRIMARY KEY NOT NULL,\n    \"data\" BLOB NOT NULL\n)"
+        ],
+        [
+          "rooms_pending_key_bundle",
+          "CREATE TABLE \"rooms_pending_key_bundle\"\n(\n    \"room_id\" BLOB PRIMARY KEY NOT NULL,\n    \"data\"    BLOB             NOT NULL\n)"
+        ],
+        [
+          "secrets_inbox",
+          "CREATE TABLE \"secrets_inbox\" (\n    \"secret_name\" BLOB NOT NULL,\n    \"secret\" BLOB NOT NULL\n)"
+        ],
+        [
+          "session",
+          "CREATE TABLE \"session\" (\n    \"session_id\" BLOB PRIMARY KEY NOT NULL,\n    \"sender_key\" BLOB NOT NULL,\n    \"data\" BLOB NOT NULL\n)"
+        ],
+        [
+          "sqlite_stat1",
+          "CREATE TABLE sqlite_stat1(tbl,idx,stat)"
+        ],
+        [
+          "sqlite_stat4",
+          "CREATE TABLE sqlite_stat4(tbl,idx,neq,nlt,ndlt,sample)"
+        ],
+        [
+          "tracked_user",
+          "CREATE TABLE \"tracked_user\" (\n    \"user_id\" BLOB PRIMARY KEY NOT NULL,\n    \"data\" BLOB NOT NULL\n)"
+        ]
+      ],
+      "user_version": 0,
+      "kv": [
+        [
+          "version",
+          1,
+          "f299791cddd3d6664f6670842812ef6053eb6501bd6282a476bbbf3ee91e750c"
+        ],
+        [
+          "cipher",
+          322,
+          "3ad027b59884f07baf430c11033b392296705269fa746a2c3e4f493793f6b71f"
+        ],
+        [
+          "account",
+          8542,
+          "67440b4448457f3e4c3b9b853078de94047d58a93f64308ecb385c4f568a42b0"
+        ],
+        [
+          "HAS_MIGRATED_VERIFICATION_LATCH",
+          100,
+          "78768b7e1945b34fb22ae7ec9ca6e35be5803f5378be6bdc3b943031a377df2e"
+        ]
+      ]
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-media.sqlite3": {
+      "source_sha256": "2e8b4bc1f4c4181a22f21b54adf61858099242277438f897cccca5f774b17e24",
+      "tables": [
+        [
+          "kv",
+          "CREATE TABLE \"kv\" (\n    \"key\" TEXT PRIMARY KEY NOT NULL,\n    \"value\" BLOB NOT NULL\n)"
+        ],
+        [
+          "lease_locks",
+          "CREATE TABLE \"lease_locks\" (\n    \"key\" TEXT PRIMARY KEY NOT NULL,\n    \"holder\" TEXT NOT NULL,\n    \"expiration\" REAL NOT NULL\n, \"generation\" INTEGER NOT NULL DEFAULT 1)"
+        ],
+        [
+          "media",
+          "CREATE TABLE \"media\" (\n    \"uri\" BLOB NOT NULL,\n    \"format\" BLOB NOT NULL,\n    \"data\" BLOB NOT NULL,\n    \"last_access\" INTEGER NOT NULL,\n    \"ignore_policy\" BOOLEAN NOT NULL DEFAULT FALSE,\n\n    PRIMARY KEY (\"uri\", \"format\")\n)"
+        ],
+        [
+          "sqlite_stat1",
+          "CREATE TABLE sqlite_stat1(tbl,idx,stat)"
+        ],
+        [
+          "sqlite_stat4",
+          "CREATE TABLE sqlite_stat4(tbl,idx,neq,nlt,ndlt,sample)"
+        ]
+      ],
+      "user_version": 0,
+      "kv": [
+        [
+          "version",
+          1,
+          "dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986"
+        ],
+        [
+          "cipher",
+          330,
+          "f0a1a7714a5ab8d448f0432c73b139cbdb5077ae4c8f7190940812db03aa0446"
+        ]
+      ]
+    },
+    "fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-event-cache.sqlite3": {
+      "source_sha256": "c014cf3b357448f3cfea7b6762e5fc7a8d1899aef1f0c29a64f0e5a39e11bc28",
+      "tables": [
+        [
+          "event_chunks",
+          "CREATE TABLE \"event_chunks\" (\n    -- Which linked chunk does this event belong to? (hashed key shared with linked_chunks)\n    \"linked_chunk_id\" BLOB NOT NULL,\n    -- Which chunk does this event refer to? Corresponds to a `ChunkIdentifier`.\n    \"chunk_id\" INTEGER NOT NULL,\n\n    -- `OwnedEventId` for events.\n    \"event_id\" BLOB NOT NULL,\n    -- Position (index) in the chunk.\n    \"position\" INTEGER NOT NULL,\n\n    -- We need a uniqueness constraint over the `linked_chunk_id`, `chunk_id` and\n    -- `position` tuple because (i) they must be unique, (ii) it dramatically\n    -- improves the performance. Also, we don't have a ROWID, so we must use a PRIMARY KEY, hence\n    -- we use this composite key as the primary key.\n    PRIMARY KEY (linked_chunk_id, chunk_id, position),\n\n    -- If the owning chunk gets deleted, delete the entry too.\n    FOREIGN KEY (linked_chunk_id, chunk_id) REFERENCES linked_chunks(linked_chunk_id, id) ON DELETE CASCADE\n)\nWITHOUT ROWID"
+        ],
+        [
+          "events",
+          "CREATE TABLE \"events\" (\n    -- The room in which the event is located.\n    \"room_id\" BLOB NOT NULL,\n\n    -- The `OwnedEventId` of this event.\n    \"event_id\" BLOB NOT NULL,\n\n    -- The event type of this event.\n    \"event_type\" BLOB NOT NULL,\n\n    -- The ID of the session that was used to encrypt this event, may be null if\n    -- the event wasn't encrypted.\n    \"session_id\" BLOB NULL,\n\n    -- JSON serialized `TimelineEvent` (encrypted value).\n    \"content\" BLOB NOT NULL,\n\n    -- If this event is an aggregation (related event), the event id of the event it relates to.\n    -- Can be null if this event isn't an aggregation.\n    \"relates_to\" BLOB,\n\n    -- If this event is an aggregation (related event), the kind of relation it has to the event it\n    -- relates to.\n    -- Can be null if this event isn't an aggregation.\n    \"rel_type\" BLOB,\n\n    -- Primary key is the event ID.\n    PRIMARY KEY (event_id)\n)\nWITHOUT ROWID"
+        ],
+        [
+          "gap_chunks",
+          "CREATE TABLE \"gap_chunks\" (\n    -- Which linked chunk does this event belong to? (hashed key shared with linked_chunks)\n    \"linked_chunk_id\" BLOB NOT NULL,\n    -- Which chunk does this gap refer to? Corresponds to a `ChunkIdentifier`.\n    \"chunk_id\" INTEGER NOT NULL,\n\n    -- The previous batch token of a gap (encrypted value).\n    \"prev_token\" BLOB NOT NULL,\n\n    -- Primary key is composed of the linked chunk ID and the chunk identifier.\n    -- Such pairs must be unique.\n    PRIMARY KEY (linked_chunk_id, chunk_id),\n\n    -- If the owning chunk gets deleted, delete the entry too.\n    FOREIGN KEY (chunk_id, linked_chunk_id) REFERENCES linked_chunks(id, linked_chunk_id) ON DELETE CASCADE\n)\nWITHOUT ROWID"
+        ],
+        [
+          "kv",
+          "CREATE TABLE \"kv\" (\n    \"key\" TEXT PRIMARY KEY NOT NULL,\n    \"value\" BLOB NOT NULL\n)"
+        ],
+        [
+          "lease_locks",
+          "CREATE TABLE \"lease_locks\" (\n    \"key\" TEXT PRIMARY KEY NOT NULL,\n    \"holder\" TEXT NOT NULL,\n    \"expiration\" REAL NOT NULL\n, \"generation\" INTEGER NOT NULL DEFAULT 1)"
+        ],
+        [
+          "linked_chunks",
+          "CREATE TABLE \"linked_chunks\" (\n    -- Which linked chunk does this chunk belong to? (hashed key shared with the two other tables)\n    \"linked_chunk_id\" BLOB NOT NULL,\n    -- Identifier of the chunk, unique per room. Corresponds to a `ChunkIdentifier`.\n    \"id\" INTEGER NOT NULL,\n\n    -- Previous chunk in the linked list. Corresponds to a `ChunkIdentifier`.\n    \"previous\" INTEGER,\n    -- Next chunk in the linked list. Corresponds to a `ChunkIdentifier`.\n    \"next\" INTEGER,\n    -- Type of underlying entries: E for events, G for gaps\n    \"type\" TEXT CHECK(\"type\" IN ('E', 'G')) NOT NULL,\n\n    -- Primary key is composed of the linked chunk ID and the chunk identifier.\n    -- Such pairs must be unique.\n    PRIMARY KEY (linked_chunk_id, id)\n)\nWITHOUT ROWID"
+        ],
+        [
+          "sqlite_stat1",
+          "CREATE TABLE sqlite_stat1(tbl,idx,stat)"
+        ],
+        [
+          "sqlite_stat4",
+          "CREATE TABLE sqlite_stat4(tbl,idx,neq,nlt,ndlt,sample)"
+        ],
+        [
+          "threads",
+          "CREATE TABLE \"threads\" (\n    -- This table offers a mapping between encoded `LinkedChunkId::Thread` and\n    -- encoded `RoomId`.\n    --\n    -- Given a `RoomId`, it can be encoded, and then, thanks to this table,\n    -- the encoded `LinkedChunkId` can be retrieved, which allows to query the\n    -- other tables, like `linked_chunks`. In addition, the `EventId` can be\n    -- retrieved, decoded, and used to built back the `LinkedChunkId`.\n\n    -- The encoded `LinkedChunkId` (which is necessarily a `Thread` variant).\n    --\n    -- This value cannot be decoded.\n    linked_chunk_id BLOB NOT NULL,\n\n    -- The encoded `RoomId` from `LinkedChunkId::room_id()`.\n    --\n    -- This value cannot be decoded.\n    room_id BLOB NOT NULL,\n\n    -- The encoded `EventId` from `LinkedChunkId::Thread(_, event_id)`, so it is\n    -- the thread root.\n    --\n    -- This value can be decoded.\n    event_id BLOB NOT NULL,\n\n    -- The encoded `ThreadInfo`.\n    --\n    -- This value can be decodedd.\n    info BLOB NOT NULL,\n\n    -- The unique values are `linked_chunk_id` and `event_id` (`room_id`\n    -- cannot be unique \u2014 imagine two threads for the same room, the room ID is\n    -- repeated twice). Having `event_id` in the primary key is not necessary.\n    -- However, having `room_id` in the primary key is important to provide fast\n    -- query from `room_id` to `linked_chunk_id`, which the primary purpose of\n    -- this table (because a `PRIMARY KEY` will create an index automatically)!\n    PRIMARY KEY (linked_chunk_id, room_id)\n)\nWITHOUT ROWID"
+        ]
+      ],
+      "user_version": 0,
+      "kv": [
+        [
+          "version",
+          1,
+          "4a64a107f0cb32536e5bce6c98c393db21cca7f4ea187ba8c4dca8b51d4ea80a"
+        ],
+        [
+          "cipher",
+          313,
+          "4ab1d16547654fea08f234819473d76a8f84eabb975d1c401b462a3ea2922e1b"
+        ]
+      ]
+    }
+  }
+}
