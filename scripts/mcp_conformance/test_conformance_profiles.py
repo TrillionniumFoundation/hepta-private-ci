@@ -141,6 +141,7 @@ def test_cli_rejects_a_cross_profile_baseline_before_starting_conformance(
         "new_failure",
         "missing_known_failure",
         "cross_profile",
+        "missing_vendor_only_pass",
     ],
 )
 def test_vendor_input_baseline_is_strictly_checked_before_any_product_process(
@@ -150,7 +151,19 @@ def test_vendor_input_baseline_is_strictly_checked_before_any_product_process(
     capsys,
 ) -> None:
     report = vendor_candidate()
-    if mutation == "missing_old_pass":
+    if mutation == "missing_vendor_only_pass":
+        report = json.loads(
+            Path(profiles.__file__)
+            .with_name("regression-baseline-c37-sdk132-v1.json")
+            .read_bytes()
+        )
+        old_records = profiles.legacy_baseline()["checks"]
+        old = old_records["passing"] + old_records["failing"]
+        record = next(
+            record for record in report["checks"]["passing"] if record not in old
+        )
+        report["checks"]["passing"].remove(record)
+    elif mutation == "missing_old_pass":
         report["checks"]["passing"].remove(
             profiles.legacy_baseline()["checks"]["passing"][0]
         )
