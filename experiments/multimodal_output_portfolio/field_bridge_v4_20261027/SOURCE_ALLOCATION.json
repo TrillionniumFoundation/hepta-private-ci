@@ -1,0 +1,122 @@
+{
+  "allocation_model_calls": 0,
+  "allocation_observer_calls": 0,
+  "allocation_salt": "hepta-field-v4-20261027-panel-origin-qualification-1",
+  "assigned_by_origin": {
+    "test": 0,
+    "train": 6352
+  },
+  "available_after_exclusion": {
+    "test": 3952,
+    "train": 9000
+  },
+  "conflicting_pixel_identities_excluded": 0,
+  "cross_role_pixel_overlap": 0,
+  "dataset_files": [
+    {
+      "bytes": 9912422,
+      "name": "train-images-idx3-ubyte.gz",
+      "sha256": "440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609"
+    },
+    {
+      "bytes": 28881,
+      "name": "train-labels-idx1-ubyte.gz",
+      "sha256": "3552534a0a558bbed6aed32b30c495cca23d567ec52cac8be1a0730e8010255c"
+    },
+    {
+      "bytes": 1648877,
+      "name": "t10k-images-idx3-ubyte.gz",
+      "sha256": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6"
+    },
+    {
+      "bytes": 4542,
+      "name": "t10k-labels-idx1-ubyte.gz",
+      "sha256": "f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6"
+    }
+  ],
+  "endpoint_access_rule": "Endpoint tensors and audit observer only after all 108 complete training paths are frozen and independently verified",
+  "excluded_prior_unique_images": 57048,
+  "excluded_v2_images": 29000,
+  "excluded_v3_images": 28048,
+  "freshness_scope": "Disjoint from every recorded V2 and V3 role, including unused roles; no unknown-pretraining or new-writer guarantee",
+  "label_use_during_allocation": "Only duplicate-label conflict exclusion; no outcome/class stratification",
+  "manifest_sha256": "12fd285712a2c2d241c016a495b1eefd3995e02e6a1bcbff1fa3fce85141ae1f",
+  "ordering": "ascending (SHA256(UTF8(salt+':train:'+pixel_sha256)), pixel_sha256); consecutive prefixes; adjacent pairs",
+  "phase_roles": {
+    "adaptation": [
+      "qualification_gradient",
+      "qualification_rehearsal",
+      "qualification_probe",
+      "qualification_guard"
+    ],
+    "endpoints": [
+      "qualification_task",
+      "qualification_clean"
+    ]
+  },
+  "prior_allocations": {
+    "v2_registry_sha256": "c574b21f216deabe1dc3f90ab9d57276c9e54aea75dcc781d317435ebcdeb1ef",
+    "v3_manifest_sha256": "9bfcb279d5efdc7bd6c14af41c64c04a78fc97f7827f7464280d8997d8fead41",
+    "v3_registry_sha256": "8cb6a2dbdcf468d15ea75602c05916c5b71a535f2b8a60a91104946253f7a636"
+  },
+  "prior_pixel_overlap": 0,
+  "registry_gzip_sha256": "4dc43625c90a7d2b8ff5c93f6ef4c4e4f9b688dd37d5f15c41aae84c3e3ca88f",
+  "registry_sha256": "f40a9ccec7a738cd374137d6242fd3506c2f13ff8d0b0b15d191018e5632a982",
+  "role_assignment_order": [
+    "qualification_gradient",
+    "qualification_rehearsal",
+    "qualification_probe",
+    "qualification_guard",
+    "qualification_task",
+    "qualification_clean"
+  ],
+  "roles": {
+    "qualification_clean": {
+      "identity_sha256": "41d45d1abcad63c93a1681e50ef24f99ded5aa396d59c9c46dc4d9ecab9bb530",
+      "images": 2048,
+      "official_partition": "train",
+      "pairs": 1024,
+      "pixel_set_sha256": "6b9d344f43b63c67ee98246906eb91b079f7f91143b1cf8f47052dcda2dc9583"
+    },
+    "qualification_gradient": {
+      "identity_sha256": "f4e5aa23726c0110064e9000f57a15260d6dc1acbd02fee9f9fca6b030a6fd9e",
+      "images": 2000,
+      "official_partition": "train",
+      "pairs": 1000,
+      "pixel_set_sha256": "6902afc695a7e6c330dbaa40bd3ac9f5ff3745acef3837b3dba904a426c4353f"
+    },
+    "qualification_guard": {
+      "identity_sha256": "48875f69d2554923e71dd8a5c83c268ed7180072ce0bd53bc8fe2b51ea39ca36",
+      "images": 512,
+      "official_partition": "train",
+      "pairs": 256,
+      "pixel_set_sha256": "fc64f8dd3d64d80e22c5b827ca7f43f0063c4bfd7c01c51f4b7a6497818082c9"
+    },
+    "qualification_probe": {
+      "identity_sha256": "e15ec6b7686c0eecef9bed9fa57ecc9065d51c2a6ce582ed5b30e8657eb31be3",
+      "images": 256,
+      "official_partition": "train",
+      "pairs": 128,
+      "pixel_set_sha256": "3061fd9554ac7bdecb81d1816973d52e146a13dd8c245c2d19272639837b83ea"
+    },
+    "qualification_rehearsal": {
+      "identity_sha256": "216397f68d99c88039adccaf7c9cbfdfdd3ab4207f49ff8f74a3d9401eb4a5dc",
+      "images": 512,
+      "official_partition": "train",
+      "pairs": 256,
+      "pixel_set_sha256": "1b21339148b1ec3a37ff1455f719d96736480a250818293c4027c1a9ada20ccb"
+    },
+    "qualification_task": {
+      "identity_sha256": "918f0bb4ec231c1b1fa979fe868dff50266a50ac5c6412b8d46b82a368821caa",
+      "images": 1024,
+      "official_partition": "train",
+      "pairs": 512,
+      "pixel_set_sha256": "cb784097391a53ab96f0cc186d63ec1a30f1062cdb635f097496e59cdcd477d7"
+    }
+  },
+  "schema": "hepta.field-bridge.v4.source-allocation.1",
+  "unassigned_by_origin": {
+    "test": 3952,
+    "train": 2648
+  }
+}
