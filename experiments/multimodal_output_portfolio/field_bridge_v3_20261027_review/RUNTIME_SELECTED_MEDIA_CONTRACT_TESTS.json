@@ -1,0 +1,38 @@
+{
+  "additional_synthetic_replay_native_ticks": 120,
+  "checks": [
+    "all stop depths and complete decision histories",
+    "original-kernel versus actual-media coverage digest join",
+    "fixed/current/history frozen actions",
+    "both observer full score records",
+    "exact selected-work counters",
+    "physical dedup and common initial outputs",
+    "private/future evidence and source/byte/chronology corruption rejection",
+    "three-seed COMPLETE-before-outcome gate"
+  ],
+  "elapsed_seconds": 3.120827973005362,
+  "errors": 0,
+  "failures": 0,
+  "log": "test_final_media_decision_scores_identity_and_chronology_rejected (runtime_media_trace_tests.SelectedMediaTests.test_final_media_decision_scores_identity_and_chronology_rejected) ... ok\ntest_frozen_head_action_private_access_and_feature_hash_rejected (runtime_media_trace_tests.SelectedMediaTests.test_frozen_head_action_private_access_and_feature_hash_rejected) ... ok\ntest_full_causal_actual_media_score_path_and_resource_coverage (runtime_media_trace_tests.SelectedMediaTests.test_full_causal_actual_media_score_path_and_resource_coverage) ... ok\ntest_incomplete_extra_and_wrong_source_order_rejected (runtime_media_trace_tests.SelectedMediaTests.test_incomplete_extra_and_wrong_source_order_rejected) ... ok\ntest_media_derived_native_coverage_matches_original_kernel_replay (runtime_media_trace_tests.SelectedMediaTests.test_media_derived_native_coverage_matches_original_kernel_replay) ... ok\ntest_mixed_stop_and_continuation_preserve_causal_active_subset (runtime_media_trace_tests.SelectedMediaTests.test_mixed_stop_and_continuation_preserve_causal_active_subset) ... ok\ntest_premature_feedback_and_uncommitted_revisions_rejected (runtime_media_trace_tests.SelectedMediaTests.test_premature_feedback_and_uncommitted_revisions_rejected) ... ok\ntest_public_history_and_native_record_cannot_add_hidden_evidence (runtime_media_trace_tests.SelectedMediaTests.test_public_history_and_native_record_cannot_add_hidden_evidence) ... ok\ntest_selected_outcome_access_gate_precedes_missing_freeze (runtime_media_trace_tests.SelectedMediaTests.test_selected_outcome_access_gate_precedes_missing_freeze) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 3.120s\n\nOK\n",
+  "main_synthetic_dual_observer_scores": 120,
+  "main_synthetic_episodes": 60,
+  "main_synthetic_logical_media_deliveries": 168,
+  "mixed_stop_and_continuation_contract": true,
+  "passed": true,
+  "registered_source_roles_loaded": [],
+  "schema": "hepta.field-bridge.v3.selected-media-contracts.1",
+  "source_files": {
+    "feedback_evidence.py": "e0e2b472d4427dfc163c4a42903b55380e297412bc06ef4f358fa4d551d61686",
+    "native_session_audit.py": "ada35145fb075a1d5f1c1fc9a05d2f2768f83af5f5b554c7d0c265aa2acf7757",
+    "runtime_audit_support.py": "54cffe180ee2fef003a3489803124e180e0faf08ca4d877efece4b85cdda8867",
+    "runtime_bank_media_audit.py": "01377f5c7596299f1eaef06791936fec5a0d89d6a090d3c39178e5f79a73190b",
+    "runtime_media_audit.py": "21b4ebecd36af6fc3cb6ef5d896715a7769a468c358ef7bcd24234928973b3ff",
+    "runtime_media_context.py": "969d535244cbfdd0423208395874154aad2316bb26f1c304286f245ebc503215",
+    "runtime_media_trace.py": "321424b8f92f5deb9021f1024a52728b0920344656cc5a87fabcd048dc1b50c3",
+    "runtime_media_trace_tests.py": "a18a249721c7eb9e50c8fce800805fa7838c522fee9301ac0c81e7949f8e30b9"
+  },
+  "synthetic_only": true,
+  "synthetic_selected_native_ticks": 120,
+  "tests_run": 9,
+  "trained_models_loaded": false
+}
