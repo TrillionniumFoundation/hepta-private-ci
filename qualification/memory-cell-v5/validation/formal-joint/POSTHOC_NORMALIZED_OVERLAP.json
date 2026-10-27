@@ -1,0 +1,143 @@
+{
+  "actual_formal_serialized_public_corpora_used": true,
+  "created_utc": "2026-10-27T07:51:53.522861+00:00",
+  "formal_models_reselected_or_rerun": false,
+  "freeze_sha256": "9e10b723c13a0243aa8d652a192809f73b8c4dc8e7ae41959625383e4ec80afa",
+  "held": {
+    "known": 144,
+    "ood": 72,
+    "rows": 216,
+    "unique_normalized_utterances": 216
+  },
+  "input_files": {
+    "FREEZE.json": {
+      "bytes": 7422,
+      "sha256": "9e10b723c13a0243aa8d652a192809f73b8c4dc8e7ae41959625383e4ec80afa"
+    },
+    "held/SEAL.json": {
+      "bytes": 2828,
+      "sha256": "287762002bef1892f22e8672345354c61db142fe68f654767b0ff0bf90bcb75b"
+    },
+    "held/queries.en.json": {
+      "bytes": 148772,
+      "sha256": "d48195b3bc3a4f639db31a7a400a3e6eb79b3d879e7ba19ae96217224aeaacbf"
+    },
+    "results/formal/routing/TRAINING_RUN.json": {
+      "bytes": 98227,
+      "sha256": "29f6167a287b8a8c13f8144ad127aea4d622000e6dd3ca311292b459bcdb0106"
+    },
+    "results/formal/routing/public-corpus/CORPUS.json": {
+      "bytes": 2923,
+      "sha256": "ed540b7d3110e16e2523e6f20ad9bf5cd88c4abe7c6573f60dae2a140fc44b8c"
+    },
+    "results/formal/routing/public-corpus/development.json.zlib.part001": {
+      "bytes": 8634,
+      "sha256": "82264daaf57cc1e4536b37002a93b4df85cf0fb61e2535e9203d72afe89db96b"
+    },
+    "results/formal/routing/public-corpus/selection.json.zlib.part001": {
+      "bytes": 10789,
+      "sha256": "0c9c86d596c723b5d6769457948f83883c5790156cb8775e9a3f440b2fd6881c"
+    },
+    "results/formal/routing/public-corpus/train.json.zlib.part001": {
+      "bytes": 47621,
+      "sha256": "5471bb22e87f5ee52ba2164f2cfad4daf8292f545f8c7042f568b48b3fd733ac"
+    }
+  },
+  "interpretation": [
+    "Independent authorship does not imply guaranteed exact-text disjointness. Any exact normalized overlap is retained and reported rather than removed from the preregistered primary corpus.",
+    "This posthoc check is not a new performance gate and supplies no model repair or retuning recommendation.",
+    "Only exact runtime-normalized strings are compared; semantic paraphrase overlap and real-user generalization are not measured."
+  ],
+  "matches": [],
+  "models_executed": 0,
+  "normalization": {
+    "formal_case_parity_verified": 20,
+    "formal_normalized_request_sha256": "768c86a48aaa6d9087c8e88282173ddcfb1debcf524f6e6f99beaff80c4d2d5c",
+    "held_slot_instantiation_only_for_normalization": {
+      "date": "2020-07",
+      "series_name": "monthly quantity R17"
+    },
+    "operations": [
+      "Unicode NFKC and casefold on utterance and series slot",
+      "replace supplied series slot by [series] with separating spaces",
+      "replace supplied date slot by [date] with separating spaces",
+      "collapse whitespace"
+    ],
+    "punctuation_removed": false,
+    "semantic_or_fuzzy_matching": false
+  },
+  "overlap_summary": {
+    "by_public_fold": {
+      "development": {
+        "distinct_held_queries": 0,
+        "matched_pairs": 0
+      },
+      "selection": {
+        "distinct_held_queries": 0,
+        "matched_pairs": 0
+      },
+      "train": {
+        "distinct_held_queries": 0,
+        "matched_pairs": 0
+      }
+    },
+    "exact_matched_held_queries": 0,
+    "known_matched_held_queries": 0,
+    "label_conflicts": 0,
+    "matched_pairs": 0,
+    "nonoverlapping_held_queries": 216,
+    "ood_matched_held_queries": 0
+  },
+  "posthoc_after_formal_joint_completed": true,
+  "primary_gates_changed": false,
+  "public_corpus_generator_executed": false,
+  "public_folds": {
+    "development": {
+      "canonical_rows_sha256": "eff604d656c59a8887c5609c452ee7e2a17bd2ff0bf2c4f199883ae0ae4e487a",
+      "label_counts": {
+        "__reject__": 72,
+        "at": 12,
+        "change": 12,
+        "mean3": 12,
+        "peak3": 12,
+        "previous": 12,
+        "range3": 12
+      },
+      "rows": 144,
+      "unique_normalized_utterances": 144
+    },
+    "selection": {
+      "canonical_rows_sha256": "419c042cfbbf7cf9aed5017bf6c893f9a3a612c641bbb84374780558c92df3b9",
+      "label_counts": {
+        "__reject__": 96,
+        "at": 16,
+        "change": 16,
+        "mean3": 16,
+        "peak3": 16,
+        "previous": 16,
+        "range3": 16
+      },
+      "rows": 192,
+      "unique_normalized_utterances": 192
+    },
+    "train": {
+      "canonical_rows_sha256": "cc343731c68fe2b0bcd989f4950aab853c99be69e17585fae1845314132b78fd",
+      "label_counts": {
+        "__reject__": 810,
+        "at": 68,
+        "change": 68,
+        "mean3": 212,
+        "peak3": 212,
+        "previous": 68,
+        "range3": 212
+      },
+      "rows": 1650,
+      "unique_normalized_utterances": 1650
+    }
+  },
+  "read_only_source_file_checks": 47,
+  "schema": "hepta.memory.v5.posthoc-normalized-overlap.v1",
+  "sealed_source_or_held_modified": false,
+  "source_commit": "21da14adf9910fa5218696f6451f517fa0ef46a7",
+  "used_for_training_selection_or_thresholds": false
+}
