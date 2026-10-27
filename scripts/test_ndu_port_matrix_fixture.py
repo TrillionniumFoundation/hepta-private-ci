@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 import ndu_port_candidate_common as common
 import ndu_port_matrix_fixture as fixture
+import ndu_port_fixture_layout as layout
 
 
 def junit(
@@ -75,6 +76,11 @@ class OldFixtureBindingTests(unittest.TestCase):
         (old / "store.db").write_bytes(b"synthetic fixture unit-test bytes")
         (old / "store.db-wal").write_bytes(b"synthetic WAL bytes")
         (old / "store.db-shm").write_bytes(b"synthetic SHM bytes")
+        (old / "session.json").write_text('{"identity":"synthetic saved session"}')
+        (old / "session.json").chmod(0o600)
+        (self.artifact / layout.MANIFEST).write_text(
+            json.dumps(layout.snapshot_layout(old))
+        )
         for name, data in {
             "fixture-only.patch": patch_bytes,
             "compiled-source.tar.gz": b"source archive binding unit-test bytes",
@@ -107,6 +113,7 @@ class OldFixtureBindingTests(unittest.TestCase):
                 self.artifact,
                 (
                     "fixture-only.patch",
+                    layout.MANIFEST,
                     "compiled-source.tar.gz",
                     "binary",
                     "producer-junit.xml",
@@ -209,6 +216,73 @@ class OldFixtureBindingTests(unittest.TestCase):
         )
         self.assertEqual(
             common.tree_files(self.artifact / "fixture"), self.record["fixture_files"]
+        )
+
+    def test_consumer_restores_bound_session_mode_before_actual_phase_dispatch(self):
+        original = self.artifact / "fixture"
+        (original / "session.json").chmod(0o644)
+        transported = layout.snapshot_layout(original)
+        expected = json.loads((self.artifact / layout.MANIFEST).read_text())
+        runner = self.runner()
+
+        def reopen(recording, name, working):
+            self.assertEqual(layout.snapshot_layout(working), expected)
+            self.assertEqual(layout.snapshot_layout(original), transported)
+            self.assertEqual(working.stat().st_ino == original.stat().st_ino, False)
+
+        with patch.object(fixture, "run_phase", side_effect=reopen) as phase:
+            self.consume(runner)
+        phase.assert_called_once()
+        self.assertEqual(
+            runner.record["old_fixture_input"]["layout_before_reopen"], expected
+        )
+        self.assertEqual(layout.snapshot_layout(original), transported)
+
+    def test_unbound_or_tampered_permission_manifest_is_rejected_before_phase(self):
+        entry = self.record["artifacts"].pop(layout.MANIFEST)
+        self.seal()
+        with (
+            patch.object(fixture, "run_phase") as phase,
+            self.assertRaisesRegex(ValueError, "permission manifest"),
+        ):
+            self.consume(self.runner("unbound-layout"))
+        phase.assert_not_called()
+        self.record["artifacts"][layout.MANIFEST] = entry
+        self.seal()
+        manifest = self.artifact / layout.MANIFEST
+        original = manifest.read_text()
+        altered = json.loads(original)
+        altered["files"]["session.json"]["mode"] = 0o644
+        manifest.write_text(json.dumps(altered))
+        with (
+            patch.object(fixture, "run_phase") as phase,
+            self.assertRaisesRegex(ValueError, "artifact bytes"),
+        ):
+            self.consume(self.runner("tampered-layout"))
+        phase.assert_not_called()
+        manifest.unlink()
+        with (
+            patch.object(fixture, "run_phase") as phase,
+            self.assertRaisesRegex(ValueError, "regular file"),
+        ):
+            self.consume(self.runner("missing-layout"))
+        phase.assert_not_called()
+
+    def test_consumer_detects_permission_changes_to_preserved_original(self):
+        runner = self.runner()
+
+        def tamper_original(recording, name, working):
+            (self.artifact / "fixture/session.json").chmod(0o644)
+
+        with (
+            patch.object(fixture, "run_phase", side_effect=tamper_original),
+            self.assertRaisesRegex(ValueError, "preserved original"),
+        ):
+            self.consume(runner)
+        self.assertFalse(
+            runner.record["old_fixture_input"][
+                "producer_fixture_unchanged_after_reopen"
+            ]
         )
 
 

@@ -22,9 +22,14 @@ from ndu_port_candidate_common import load_recipe
 from ndu_port_candidate_common import patch_paths
 from ndu_port_candidate_common import prepare_nextest_storage
 from ndu_port_candidate_common import tree_files
+from ndu_port_fixture_layout import MANIFEST
+from ndu_port_fixture_layout import file_identities
+from ndu_port_fixture_layout import restore_copy
+from ndu_port_fixture_layout import snapshot_layout
+from ndu_port_fixture_layout import validate_layout
 
 
-SCHEMA = "hepta.ci.matrix-old-fixture.v1"
+SCHEMA = "hepta.ci.matrix-old-fixture.v2"
 TEST_PATH = "codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs"
 OLD_PACKAGES = ("matrix-sdk", "matrix-sdk-crypto", "matrix-sdk-sqlite")
 
@@ -209,6 +214,7 @@ def produce_old_fixture(runner, driver_root, driver_source):
                 RECIPE,
                 "scripts/ndu_port_matrix_fixture.py",
                 "scripts/ndu_port_candidate_common.py",
+                "scripts/ndu_port_fixture_layout.py",
             ),
         ),
     )
@@ -282,11 +288,13 @@ def produce_old_fixture(runner, driver_root, driver_source):
         "old-source-unstaged", ["git", "diff", "--name-only"]
     ):
         raise ValueError("The compiled old checkout changed beyond the sole test patch")
-    inventory = tree_files(fixture)
+    layout = snapshot_layout(fixture)
+    inventory = file_identities(layout)
     if "expected.json" not in inventory or len(inventory) < 2:
         raise ValueError(
             "The old producer did not deliver both expected state and database files"
         )
+    (runner.output / MANIFEST).write_text(json.dumps(layout, indent=2) + "\n")
     runner.record.update(
         fixture_files=inventory,
         sidecar_files=[
@@ -298,6 +306,7 @@ def produce_old_fixture(runner, driver_root, driver_source):
             runner.output,
             (
                 "recipe.json",
+                MANIFEST,
                 "fixture-only.patch",
                 "compiled-source.tar.gz",
                 "old-metadata.json",
@@ -339,8 +348,13 @@ def consume_old_fixture(
     for key in ("github_run_id", "github_run_attempt"):
         if os.environ.get(key.upper()) and record.get(key) != os.environ[key.upper()]:
             raise ValueError("Old fixture came from another workflow run/attempt")
+    if MANIFEST not in record["artifacts"]:
+        raise ValueError("Old producer did not bind the fixture permission manifest")
     if describe(artifact, record["artifacts"]) != record["artifacts"]:
         raise ValueError("Old source/lock/binary/artifact bytes differ")
+    layout = validate_layout(json.loads((artifact / MANIFEST).read_text()))
+    if file_identities(layout) != record["fixture_files"]:
+        raise ValueError("Old database inventory differs from its permission manifest")
     if (
         record["artifacts"]["fixture-only.patch"]["sha256"]
         != recipe["matrix_baseline"]["fixture_patch_sha256"]
@@ -352,30 +366,24 @@ def consume_old_fixture(
         raise ValueError("Old producer did not retain a successful actual executable")
     parse_phase_junit(artifact / phase["junit"]["file"], "prepare_old_version_fixture")
     original = artifact / "fixture"
-    if tree_files(original) != record["fixture_files"]:
-        raise ValueError("Old database file set or bytes differ from the producer")
     working = runner.output / "writable-old-fixture"
-    shutil.copytree(original, working)
-    if tree_files(working) != record["fixture_files"]:
-        raise ValueError("The independent writable copy differs before migration")
-    for path in (original, *original.rglob("*")):
-        path.chmod(path.stat().st_mode & ~0o222)
-    working.chmod(working.stat().st_mode | 0o200)
-    for path in working.rglob("*"):
-        path.chmod(path.stat().st_mode | 0o200)
+    transported = restore_copy(original, working, layout)
     runner.record["old_fixture_input"] = {
         "producer_result_sha256": expected_result,
         "old_source": OLD_SOURCE,
         "driver_source": expected_driver_source,
         "recipe_sha256": record["recipe_sha256"],
         "files_before_reopen": record["fixture_files"],
+        "producer_layout_manifest": record["artifacts"][MANIFEST],
+        "layout_before_reopen": layout,
+        "transport_layout_before_reopen": transported,
         "compiled_source_tree": record["compiled_source_tree"],
         "producer_binary_sha256": phase["binary_sha256"],
     }
     try:
         run_phase(runner, "reopen_old_version_fixture", working)
     finally:
-        unchanged = tree_files(original) == record["fixture_files"]
+        unchanged = snapshot_layout(original) == transported
         runner.record["old_fixture_input"][
             "producer_fixture_unchanged_after_reopen"
         ] = unchanged
