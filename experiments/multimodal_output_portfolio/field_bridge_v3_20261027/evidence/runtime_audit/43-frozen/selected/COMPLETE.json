@@ -1,0 +1,66 @@
+{
+  "arms": [
+    "fixed",
+    "current",
+    "history",
+    "native",
+    "reset_native"
+  ],
+  "authority": "DENY_ALL",
+  "controller_sha256": {
+    "current": "dcd3e47a9c29497cc50aa95c29a0c510a44df9c64d61c6d18991847b3617f216",
+    "fixed": "2e0c7785950dc3c307c174c9582e34552c8daa6191bd200be6d3f45b1d05019f",
+    "history": "75ece727da8699bba07349abea2f08969d02ab15180322d9d3b3a985647f6cb4",
+    "native": "6c0e33c9a7b8a39a1a83a1d431a1c4aa4a964a255b6969ca96b2372dceafd9fd",
+    "reset_native": "88f53bb727c3cf390899698d5da78dae73c4212ca3e733c30630adda8d726aa7"
+  },
+  "cpu_ns": 126618298823,
+  "episodes": 10240,
+  "files": {
+    "events.jsonl.gz": "985fb6af702c3d6dbdd54eb507ca35edd86b0d127e25cba0e19575178e209759",
+    "media.h3m": "c66390bbc2ee9588f0d3703ddc43ee7eebde5b083027fb70812573f417f9aade",
+    "rows.jsonl.gz": "be105dfada48f5a8f46bee2e32e9d6b9cbea05e4581f7432ab38ea55f632dc61"
+  },
+  "metadata": {
+    "profile": "frozen",
+    "protocol_sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7",
+    "registered_commit": "6a8f3a94082482488d6b4937d8baa446d866c3f0",
+    "seed": 43,
+    "source_manifest_sha256": "9bfcb279d5efdc7bd6c14af41c64c04a78fc97f7827f7464280d8997d8fead41"
+  },
+  "model_parameter_sha256": "dbf04f714b5209b1157dd70a991d94a9bc4a6620b51ed8ad45ccced5037c65bc",
+  "native_owner_integration": false,
+  "observer_parameter_sha256": {
+    "audit": "b02514987ea2986321e00652e0823111d30ebb79104ff85eb88ef0eae9e35474",
+    "reward": "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0"
+  },
+  "profile": "frozen",
+  "resources": {
+    "audit_outcome_observer_digit_examples": 20480,
+    "decoder_batches": 24684,
+    "decoder_examples": 24684,
+    "encoder_batches": 10240,
+    "encoder_examples": 10240,
+    "media_logical_deliveries_read_back": 24684,
+    "native_ns": 197131481,
+    "native_tick_calls": 17714,
+    "physical_media_bytes": 14217864,
+    "physical_media_records": 12871,
+    "public_feature_observer_digit_examples": 43004,
+    "reward_outcome_observer_digit_examples": 20480,
+    "select_python_cpu_ns": 3577884914,
+    "select_wall_ns": 4483401460,
+    "selection_batches": 896,
+    "selection_rows": 21502,
+    "simulated_feedback_packets": 11262,
+    "transition_batches": 24684,
+    "transition_examples": 24684,
+    "unchosen_continuations_executed": 0
+  },
+  "role": "runtime_audit",
+  "schema": "hepta.field-bridge.v3.selected-feedback-complete.1",
+  "seed": 43,
+  "source_manifest_sha256": "9bfcb279d5efdc7bd6c14af41c64c04a78fc97f7827f7464280d8997d8fead41",
+  "unchosen_continuations_executed": 0,
+  "wall_ns": 152675226614
+}
