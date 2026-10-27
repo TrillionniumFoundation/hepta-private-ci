@@ -178,8 +178,8 @@ class TaskExpert:
                 raise ValueError("compiled graph integrity mismatch")
             if source.cut != self.cut:
                 raise StaleSource("source cut changed")
-            for cell in self.cells.values():
-                source.validate_support(cell.lineage_sources, scope=self.scope, cut=self.cut)
+            for kind, cell in self.cells.items():
+                source.validate_support(cell.lineage_sources, scope=self.scope, cut=self.cut, expected_kind=kind)
             for node in graph["nodes"]:
                 if node["op"] == "read":
                     if reads + 1 > maximum_reads:
@@ -192,7 +192,7 @@ class TaskExpert:
                         charge(1)
                         row = source.resolve(self.scope, node["entity"], kind, at=node["at"], cut=self.cut)
                         value = row["value"]
-                        supports.append(row["source_id"])
+                        leaf_sources = [row["source_id"]]
                     else:
                         cell = self.cells[kind]
                         charge(cell.dimension * cell.hidden + cell.hidden * len(cell.catalog))
@@ -201,8 +201,16 @@ class TaskExpert:
                             raise StaleSource("parameter cell abstained")
                         value = row["value"]
                         validate_typed_value(kind, value)
-                        supports.extend(row["support_ids"])
+                        leaf_sources = row["support_ids"]
                         models.append(cell.parameters_digest())
+                    source.validate_support(
+                        leaf_sources,
+                        scope=self.scope,
+                        cut=self.cut,
+                        expected_entity=node["entity"],
+                        expected_kind=kind,
+                    )
+                    supports.extend(leaf_sources)
                 else:
                     args = [values[index] for index in node["inputs"]]
                     charge(1)
@@ -223,6 +231,7 @@ class TaskExpert:
             result = values[graph["root"]]
         except (StaleSource, OverflowError, ValueError) as error:
             reason = str(error)
+            result, supports, models = None, [], []
         return {
             "value": result,
             "abstain": reason,

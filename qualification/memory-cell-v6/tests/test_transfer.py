@@ -5,6 +5,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
+from v6.cells import key_digest
 from v6.store import EventStore
 from v6.transfer import FeedbackRouter, TaskExpert, TypedTaskCompiler, run_transfer_study
 
@@ -79,6 +80,26 @@ class TransferTests(unittest.TestCase):
                 self.assertIsNone(limited["value"])
                 self.assertIn("budget", limited["abstain"])
                 self.assertLessEqual(limited["work_proxy"], 1)
+                partial = expert.execute(graph, source, maximum_reads=2)
+                self.assertEqual(
+                    (partial["value"], partial["support_ids"], partial["parameter_digests"], partial["reads"]),
+                    (None, [], [], 2),
+                )
+                self.assertIn("read budget", partial["abstain"])
+                self.assertGreater(partial["work_proxy"], 1)
+                for invalid_source, reason in ((supports["sensor-2"][2], "entity"), (supports["sensor-3"][0], "type")):
+                    tampered = TaskExpert.from_bytes(expert.to_bytes())
+                    semantic = tampered.cells["semantic"]
+                    semantic.supports[key_digest("sensor-3")] = [invalid_source]
+                    semantic.lineage_sources = sorted(set(semantic.lineage_sources) | {invalid_source})
+                    # Valid artifact hashes cannot confer entity/type authority.
+                    tampered = TaskExpert.from_bytes(tampered.to_bytes())
+                    rejected = tampered.execute(graph, source)
+                    self.assertIn(reason, rejected["abstain"])
+                    self.assertEqual(
+                        (rejected["value"], rejected["support_ids"], rejected["parameter_digests"]),
+                        (None, [], []),
+                    )
                 source.revoke(supports["sensor-3"][0], "development revocation")
                 self.assertIn("cut", expert.execute(graph, source)["abstain"])
             finally:
