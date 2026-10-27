@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.p41-macos-cold-recovery-composed-review.v1",
+  "observed_at_utc": "2026-10-27",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "production_activation": "HOLD_NO_GO",
+  "parent_pr": 4065,
+  "parent_exact_head": "cdd28f8a52b88c0436efa09df95310c24759c8b3",
+  "patch_commit": "f6066b18c27de12bfcf093dde91d22b7b664e7c8",
+  "original_file": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+  "original_blob": "b6f2d1b35b708cadae9db5978efd4dfea71a0ded",
+  "exact_upstream_donor": {
+    "pr": 3583,
+    "head": "842685349b48089349b8b858b1f837d57b4e127b",
+    "blob": "3d11af372fb267d661569a524f91e8f2e88bfa0d",
+    "also_composed_in_pr": 3621
+  },
+  "source_change": "Copy the exact upstream test-only canonical child fleet root postimage; production canonical/symlink rejection is unchanged.",
+  "trigger": {
+    "run": 40488922363,
+    "job": 122138013582,
+    "platform": "macos-15 aarch64-apple-darwin",
+    "observed": "Original crash_reopen_refuses_pending_wal child panicked at line 183: per-agent cognitive root not canonical/symlink; job later cancelled",
+    "test": "cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal"
+  },
+  "supported_diagnosis": "Parent helper canonicalizes created fleet root, whereas crash subprocess env previously used the noncanonical tempfile pathname; macOS /var path alias can redirect to /private/var.",
+  "preservation": [
+    "child exit code 73",
+    "pending WAL exists",
+    "read-only recovery yields Indeterminate",
+    "untouched owner and permission checks",
+    "all original positive and negative assertions",
+    "no Rust dependency change",
+    "no gate change"
+  ],
+  "additional_current_native_failures_not_fixed": [
+    "macOS hepta-supervisor paired_process_product agentd drain ACK missing / peer PID churn in same cancelled job",
+    "macOS http-client redirect local server timeout / incomplete message",
+    "Windows outside-root DELETE matrix",
+    "cargo-deny RustSec advisories"
+  ],
+  "validation": {
+    "static": "exact blob equality to #3583 tested upstream source image; one test-only hunk",
+    "owning_macos": "PENDING_NATIVE",
+    "required_combination_ci": "OPEN",
+    "target_device": "NOT_EXECUTED"
+  },
+  "frozen_p39_research": "CLOSED_FOR_DECLARED_SOURCE_PAIRING_RESEARCH_TASK",
+  "full_policy": "OPEN_MISSING_AUTHENTIC_OWNER_EPISODES",
+  "target_device_latency_energy": "OPEN",
+  "no_production_claim": true
+}
