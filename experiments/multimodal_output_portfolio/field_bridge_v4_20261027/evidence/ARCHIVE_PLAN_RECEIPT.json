@@ -1,0 +1,38 @@
+{
+  "archive_built": false,
+  "checkpoints": 108,
+  "config_sha256": "1e99c92182f7a3f5a691b02441b2daa67191e0d4525ba9cd1165631141145c04",
+  "exclusions": [
+    {
+      "category": "prior V2/V3 tar payloads",
+      "reason": "explicit identities only; no nested multi-gigabyte historical archives"
+    },
+    {
+      "category": "temporary Torch/dependency runtime",
+      "reason": "reproducible environment; exact restoration source/receipt retained; no 612MB runtime payload",
+      "source": "/tmp/hepta-field-v4-python"
+    },
+    {
+      "category": "archive, manifest-self and postpackage archive receipts",
+      "reason": "kept outside the package; independent receipts bind the final archive without a hash cycle"
+    }
+  ],
+  "full_trace_files": 108,
+  "full_v4_run_enumeration": true,
+  "input_files_copied": 0,
+  "library_upload_attempts": 0,
+  "media_files": 222,
+  "members": 945,
+  "old_inputs": 25,
+  "payload_bytes": 487105575,
+  "planned": true,
+  "planning_wall_ns": 1126876971,
+  "restore_files": 280,
+  "restore_payload_bytes": 15622988,
+  "restored_original_asset_selected_files": 28,
+  "schema": "hepta.field-bridge.v4.archive-input-coverage.1",
+  "scope": "Complete terminal V4 raw execution, original restored assets, all frozen inputs and source bindings; exact archived statistical replay. Earlier V1-V3 generated histories and large prior archives are referenced by identity, not nested. This is not a complete historical model-training rerun.",
+  "script_sha256": "f128af1dfbf88e85a7d0916b6fe446b3eb30c21d09e86b56e2e8bafb6facf2a6",
+  "source_freeze_sources": 58,
+  "terminal_access_authorized": true
+}

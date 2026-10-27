@@ -1,0 +1,282 @@
+{
+  "all_original_substantive_blockers_closed": false,
+  "archive": {
+    "bytes": 415960474,
+    "filename": "hepta_field_bridge_v4_20261027_evidence.tar.gz",
+    "manifest_bytes": 237115,
+    "manifest_sha256": "fd05cac4184a7c468b4da057ea0f84e7ffe0e8978dd25287840f6117fb215cd0",
+    "path": "/tmp/hepta-v4-final-20261027/hepta_field_bridge_v4_20261027_evidence.tar.gz",
+    "payload_bytes": 487105575,
+    "payload_members": 945,
+    "regular_members_including_manifest": 946,
+    "sha256": "716b1291ee2fe1271f50589222fec9793b87a5bcae156c7af8e498c6c80f9df7"
+  },
+  "durable_raw_archive_copy_confirmed": false,
+  "input_postflight": {
+    "all_expected_bytes_sha256_unchanged": true,
+    "checked_files": 945,
+    "checked_payload_bytes": 487105575,
+    "complete_tree_membership_unchanged": [
+      "run",
+      "repository/experiments/multimodal_output_portfolio/field_bridge_v4_20261027",
+      "repository/experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review",
+      "freezes",
+      "assets/full002"
+    ],
+    "files_by_root": {
+      "assets": 29,
+      "freezes": 4,
+      "legacy": 28,
+      "operations": 13,
+      "repository": 160,
+      "run": 711
+    },
+    "receipt": {
+      "bytes": 892,
+      "filename": "ARCHIVE_INPUT_POSTFLIGHT.json",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_INPUT_POSTFLIGHT.json",
+      "sha256": "1ca0de5ef61cb0891ca01178c8daf5b3b2282dac90a65d4f1cf08826f7d232f3"
+    },
+    "run_science_review_freezes_assets_unchanged_since_collect": true
+  },
+  "integrity": {
+    "all_inner_gzip_crc_verified": true,
+    "all_payload_bytes_sha256_verified": true,
+    "exception_allowlist": [],
+    "inner_gzip_files": 119,
+    "outer_gzip_crc_verified_to_physical_eof": true,
+    "receipt": {
+      "bytes": 314321,
+      "filename": "ARCHIVE_INTEGRITY.json",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_INTEGRITY.json",
+      "sha256": "4c6908684d98c7fa0b521b38be80a42ec72e25060a5bf91e27753e908887328e"
+    }
+  },
+  "literal_restore": {
+    "actual_archived_script_execution": true,
+    "files": 280,
+    "manifest_restored": true,
+    "payload_bytes": 15622988,
+    "restored_analyzer_sha256": "af3dee4c0b2870810d0fe2fee937499319ff93f8aa0e0ebabcf8d3c900d79998",
+    "root": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/literal-restore"
+  },
+  "new_library_upload_attempts": 0,
+  "operations": {
+    "actual_archive_builds": 1,
+    "all_success_and_failure_logs_preserved": true,
+    "archive_chain_new_uploads": 0,
+    "collection_attempts": 2,
+    "complete_integrity_passes": 1,
+    "first_collection_attempt": {
+      "archive_or_partial_created": false,
+      "collector_code_changed": false,
+      "log_preserved": {
+        "bytes": 856,
+        "filename": "collection.log",
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/collection.log",
+        "sha256": "2fea7e87dae6e5a1775c6908f90bf19932dbe0c85ff8a4cd0628dbba188d378a"
+      },
+      "receipt_preserved": {
+        "bytes": 10329,
+        "filename": "ARCHIVE_COLLECTION_ATTEMPT1.json",
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_COLLECTION_ATTEMPT1.json",
+        "sha256": "da3221cad60d35b7898a798070936b254efd5bd92974cf5211c347941e3e6746"
+      },
+      "scientific_inputs_affected": 0,
+      "status": "correctly_refused_19_historical_zero_byte_placeholders"
+    },
+    "literal_restore_publications": 1,
+    "literal_statistical_verification_runs": 1,
+    "original_asset_recovery": {
+      "all_28_original_assets_exact": true,
+      "before_after_identities_receipt": {
+        "bytes": 9943,
+        "filename": "ORIGINAL_ASSET_GAP_RESTORATION.json",
+        "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ORIGINAL_ASSET_GAP_RESTORATION.json",
+        "sha256": "01ba741904a5c7ef2e76cd4e0f54646b74bc67c5ac025d20de451cc795a4378f"
+      },
+      "library_file_id": "libfile_07ecbd6ae3208191a9d87172d1188d23",
+      "original_archive_sha256": "ddbdf10b4397c8538183df8fa7c16f08c5fba226a304ff7cb55574ddb97e951e",
+      "original_large_archive_nested": false,
+      "original_manifest_sha256": "c452c96798d45618d6509695e52b8587a080ac26e721b2a566e6d3746e425205",
+      "read_only_download_of_preexisting_archive": true,
+      "restoration_metadata_unchanged": true,
+      "restored_bytes": 62146791,
+      "restored_files": 19,
+      "untouched_scientific_inputs": 9
+    },
+    "scientific_model_observer_optimizer_calls": 0,
+    "scientific_retry_or_policy_change": false
+  },
+  "passed": true,
+  "postpackage_receipts_excluded_from_archive_to_avoid_hash_cycle": true,
+  "raw_archive_uploaded": false,
+  "raw_v4_coverage": {
+    "frozen_old_inputs": 25,
+    "frozen_source_files": 58,
+    "full_trace_files": 108,
+    "media_files": 222,
+    "original_assets": 28,
+    "trained_checkpoints": 108
+  },
+  "receipts": {
+    "ARCHIVE_BUILD_RECEIPT.json": {
+      "bytes": 53484,
+      "filename": "ARCHIVE_BUILD_RECEIPT.json",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_BUILD_RECEIPT.json",
+      "sha256": "5f3ba181ec00735b4bbfcd4e34a6419049b498ed2062af88a5102cd3ed4eb7b1"
+    },
+    "ARCHIVE_COLLECTION_ATTEMPT1.json": {
+      "bytes": 10329,
+      "filename": "ARCHIVE_COLLECTION_ATTEMPT1.json",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_COLLECTION_ATTEMPT1.json",
+      "sha256": "da3221cad60d35b7898a798070936b254efd5bd92974cf5211c347941e3e6746"
+    },
+    "ARCHIVE_COLLECTION_CONFIG.json": {
+      "bytes": 5309,
+      "filename": "ARCHIVE_COLLECTION_CONFIG.json",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_COLLECTION_CONFIG.json",
+      "sha256": "1e99c92182f7a3f5a691b02441b2daa67191e0d4525ba9cd1165631141145c04"
+    },
+    "ARCHIVE_COLLECTION_CONFIG_ATTEMPT1.json": {
+      "bytes": 2248,
+      "filename": "ARCHIVE_COLLECTION_CONFIG_ATTEMPT1.json",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_COLLECTION_CONFIG_ATTEMPT1.json",
+      "sha256": "75cd75aba4c2e59478c073deef98f8d2b2d3feaa635da999487741a24c8e2fc3"
+    },
+    "ARCHIVE_INPUTS.json": {
+      "bytes": 440565,
+      "filename": "ARCHIVE_INPUTS.json",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_INPUTS.json",
+      "sha256": "358baa650c000b1f2a7d304b3f13aa9344351d3acbf08716327d15e416912db8"
+    },
+    "ARCHIVE_INPUT_POSTFLIGHT.json": {
+      "bytes": 892,
+      "filename": "ARCHIVE_INPUT_POSTFLIGHT.json",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_INPUT_POSTFLIGHT.json",
+      "sha256": "1ca0de5ef61cb0891ca01178c8daf5b3b2282dac90a65d4f1cf08826f7d232f3"
+    },
+    "ARCHIVE_INTEGRITY.json": {
+      "bytes": 314321,
+      "filename": "ARCHIVE_INTEGRITY.json",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_INTEGRITY.json",
+      "sha256": "4c6908684d98c7fa0b521b38be80a42ec72e25060a5bf91e27753e908887328e"
+    },
+    "ARCHIVE_PLAN_RECEIPT.json": {
+      "bytes": 1630,
+      "filename": "ARCHIVE_PLAN_RECEIPT.json",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_PLAN_RECEIPT.json",
+      "sha256": "8a9ec1249c3900355f29bba12e252aad8ca1f15b4a57cd947e7b51c0f4ef701d"
+    },
+    "ARCHIVE_REANALYSIS.json": {
+      "bytes": 12500,
+      "filename": "ARCHIVE_REANALYSIS.json",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_REANALYSIS.json",
+      "sha256": "9e14fd53c756759060224d9690d6e4ceb798ef1af878b879626f29f18890e15f"
+    },
+    "ARCHIVE_SELECTIVE_RESTORE.json": {
+      "bytes": 17109,
+      "filename": "ARCHIVE_SELECTIVE_RESTORE.json",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_SELECTIVE_RESTORE.json",
+      "sha256": "66a8761130c90bd8e7fd628912c5b75787d43132992ce92efbb479a1c96ed909"
+    },
+    "ARCHIVE_STORAGE_PLAN.json": {
+      "bytes": 2541,
+      "filename": "ARCHIVE_STORAGE_PLAN.json",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_STORAGE_PLAN.json",
+      "sha256": "ce2f833d90e174e9dbc307ac9f0c0d8fd980e0b992e0aa89e18be00cea7247f8"
+    },
+    "ORIGINAL_ASSET_ARCHIVE_READ.json": {
+      "bytes": 1052,
+      "filename": "ORIGINAL_ASSET_ARCHIVE_READ.json",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ORIGINAL_ASSET_ARCHIVE_READ.json",
+      "sha256": "4384c305881956a130f1503b70099a603d0ecdda224d95ad31b0c79534fea78b"
+    },
+    "ORIGINAL_ASSET_GAP_RESTORATION.json": {
+      "bytes": 9943,
+      "filename": "ORIGINAL_ASSET_GAP_RESTORATION.json",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ORIGINAL_ASSET_GAP_RESTORATION.json",
+      "sha256": "01ba741904a5c7ef2e76cd4e0f54646b74bc67c5ac025d20de451cc795a4378f"
+    },
+    "ORIGINAL_ASSET_GAP_RESTORATION_START.json": {
+      "bytes": 7126,
+      "filename": "ORIGINAL_ASSET_GAP_RESTORATION_START.json",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ORIGINAL_ASSET_GAP_RESTORATION_START.json",
+      "sha256": "6e06c8750d52fea510be90c252b3e3ca4499de93b720a64854a9e45e59a2fea5"
+    },
+    "ORIGINAL_ASSET_MANIFEST.json": {
+      "bytes": 3453828,
+      "filename": "ORIGINAL_ASSET_MANIFEST.json",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ORIGINAL_ASSET_MANIFEST.json",
+      "sha256": "c452c96798d45618d6509695e52b8587a080ac26e721b2a566e6d3746e425205"
+    },
+    "archive_plan_v4_attempt1.py": {
+      "bytes": 20728,
+      "filename": "archive_plan_v4_attempt1.py",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/archive_plan_v4_attempt1.py",
+      "sha256": "f128af1dfbf88e85a7d0916b6fe446b3eb30c21d09e86b56e2e8bafb6facf2a6"
+    },
+    "build.log": {
+      "bytes": 518,
+      "filename": "build.log",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/build.log",
+      "sha256": "3abae90c6b647b857b7e2c6d80c2f337b1a303a02cbf399cec98d7a43104032f"
+    },
+    "collection.log": {
+      "bytes": 856,
+      "filename": "collection.log",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/collection.log",
+      "sha256": "2fea7e87dae6e5a1775c6908f90bf19932dbe0c85ff8a4cd0628dbba188d378a"
+    },
+    "collection_attempt2.log": {
+      "bytes": 127,
+      "filename": "collection_attempt2.log",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/collection_attempt2.log",
+      "sha256": "b5627df0bb56f3d5675fd8165407e183226581f2a4549c834e298a75e1935337"
+    },
+    "integrity.log": {
+      "bytes": 191,
+      "filename": "integrity.log",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/integrity.log",
+      "sha256": "a62f8041bd7f7cecf3b81898798109cf580a0d0aa42ee35657b152f6f969ac05"
+    },
+    "original_asset_recovery.log": {
+      "bytes": 101,
+      "filename": "original_asset_recovery.log",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/original_asset_recovery.log",
+      "sha256": "ef1ef90a4277b8073832d5705cb8a35d38f9d6edfd3ecbe8c9c1cd1d43f320ab"
+    },
+    "reanalysis.log": {
+      "bytes": 132,
+      "filename": "reanalysis.log",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/reanalysis.log",
+      "sha256": "4718be9c6257cfa717ac7cb2735cab12045a02353305a65cbb7df9c56b2191cd"
+    },
+    "restore_original_asset_gaps.py": {
+      "bytes": 8796,
+      "filename": "restore_original_asset_gaps.py",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/restore_original_asset_gaps.py",
+      "sha256": "2323e81e562bc4a4c43c8573652cce3b3668c79f6a0f94b3d314a8bdb1aaa703"
+    }
+  },
+  "recorded_unix_ns": 1793118566439943774,
+  "registered_statistics": {
+    "bindings_sha256": "669cf62064a02f07f8cec4817c62e09aa7a34d57af9acf3ad1284d7023fb18ca",
+    "exact_reanalysis_match": true,
+    "new_outcome_look": false,
+    "new_policy_selection": false,
+    "original_numpy_version": "2.3.5",
+    "qualification_passed": false,
+    "qualification_sha256": "0634e0f89ad5c07dfa36c74c475b593b8b9aa8c29990bb86b078995ab63b3b58",
+    "qualification_status": "QUALIFICATION_FAILED",
+    "receipt": {
+      "bytes": 12500,
+      "filename": "ARCHIVE_REANALYSIS.json",
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_REANALYSIS.json",
+      "sha256": "9e14fd53c756759060224d9690d6e4ceb798ef1af878b879626f29f18890e15f"
+    },
+    "replay_numpy_version": "2.3.5"
+  },
+  "schema": "hepta.field-bridge.v4.archive-and-restore-verification.1",
+  "scope": "Complete local V4 raw preservation, full-stream SHA/CRC/EOF, literal selected recovery and exact replay of the existing registered six-comparison result. Earlier full generated histories remain separately referenced."
+}
