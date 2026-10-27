@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-27T10:37:35.341420+00:00",
+  "archive": "/workspace/scratch/95988d8d3ab1/hepta_aws_login_p256_candidate_20261027.tar.gz",
+  "archive_sha256": "f7f8d92a14e1a384ed446a5df4b12fc4e5b5ae84ab7fd8934d16984a526cd2a2",
+  "archive_bytes": 13381184,
+  "index": "/workspace/scratch/95988d8d3ab1/hepta_aws_login_p256_candidate_20261027.tar.gz.index.json",
+  "index_sha256": "88691daed848d470bba6bba920505363f29e60811a755d47efdd41c7d115fcd7",
+  "passed": true,
+  "actual_disk_restored_members": 1100,
+  "actual_disk_restored_bytes": 48181276,
+  "maximum_single_restored_file_bytes": 40786224,
+  "procedure": "Each member written to a unique path, flushed, fsynced, closed, reopened, SHA256 checked, then deleted; archive hash checked again.",
+  "seconds": 1.6140802720037755,
+  "full_upstream_and_workspace_gate_passed": false,
+  "unchanged_remaining_failures": 2
+}

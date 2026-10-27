@@ -1,0 +1,428 @@
+{
+  "at": "2026-10-27T10:27:51.842181+00:00",
+  "reviewer": "/root/natural_efficiency_v2",
+  "mode": "independent read-only source and existing execution-log review; no new tests or mutations of AWS files",
+  "code_review_passed": true,
+  "source_rows": [
+    {
+      "path": "src/credential_process.rs",
+      "upstream_sha256": "49729faf74d7e05a80299637c48c8547d3d8ed3aca555364c758202b9427c7c7",
+      "candidate_sha256": "49729faf74d7e05a80299637c48c8547d3d8ed3aca555364c758202b9427c7c7",
+      "unchanged": true
+    },
+    {
+      "path": "src/default_provider/account_id_endpoint_mode.rs",
+      "upstream_sha256": "d11802e61bef8de799e8dc7bc12b9018794b057a744bf04acca3bbc0d3f4248e",
+      "candidate_sha256": "d11802e61bef8de799e8dc7bc12b9018794b057a744bf04acca3bbc0d3f4248e",
+      "unchanged": true
+    },
+    {
+      "path": "src/default_provider/app_name.rs",
+      "upstream_sha256": "443c543d055858acce09bd3dafe2ff47c85f8192302131dbeb2923248cbc6c49",
+      "candidate_sha256": "443c543d055858acce09bd3dafe2ff47c85f8192302131dbeb2923248cbc6c49",
+      "unchanged": true
+    },
+    {
+      "path": "src/default_provider/auth_scheme_preference.rs",
+      "upstream_sha256": "2a3a659b933a558bb09406b157766b4c3d4d65b68c27793053934a11e71eb16e",
+      "candidate_sha256": "2a3a659b933a558bb09406b157766b4c3d4d65b68c27793053934a11e71eb16e",
+      "unchanged": true
+    },
+    {
+      "path": "src/default_provider/checksums.rs",
+      "upstream_sha256": "4ff1625c651244fda1bd858f583c70e8c33151c86b8c3985d9b2de0242b1f056",
+      "candidate_sha256": "4ff1625c651244fda1bd858f583c70e8c33151c86b8c3985d9b2de0242b1f056",
+      "unchanged": true
+    },
+    {
+      "path": "src/default_provider/credentials.rs",
+      "upstream_sha256": "6891442d0996b4fbae8bc08c66e4579460a34d3dc390a5c428b2d7345b71b31d",
+      "candidate_sha256": "6891442d0996b4fbae8bc08c66e4579460a34d3dc390a5c428b2d7345b71b31d",
+      "unchanged": true
+    },
+    {
+      "path": "src/default_provider/disable_request_compression.rs",
+      "upstream_sha256": "7e8565f13f4f1ccb778667f39afa5df5e5516b8b91329a009567931c61fdffad",
+      "candidate_sha256": "7e8565f13f4f1ccb778667f39afa5df5e5516b8b91329a009567931c61fdffad",
+      "unchanged": true
+    },
+    {
+      "path": "src/default_provider/endpoint_url.rs",
+      "upstream_sha256": "97126239464b6f3c86362fa6bfd4d106442946f45af0f744544fc879879f2445",
+      "candidate_sha256": "97126239464b6f3c86362fa6bfd4d106442946f45af0f744544fc879879f2445",
+      "unchanged": true
+    },
+    {
+      "path": "src/default_provider/ignore_configured_endpoint_urls.rs",
+      "upstream_sha256": "0777af9be48754dcef193d41c208e9d19acc08baba57e03d9d111db73abc3733",
+      "candidate_sha256": "0777af9be48754dcef193d41c208e9d19acc08baba57e03d9d111db73abc3733",
+      "unchanged": true
+    },
+    {
+      "path": "src/default_provider/region.rs",
+      "upstream_sha256": "4a27e86a79467f7a869057474caa53efc690422d1b8090c1c1be0a4dc8977b64",
+      "candidate_sha256": "4a27e86a79467f7a869057474caa53efc690422d1b8090c1c1be0a4dc8977b64",
+      "unchanged": true
+    },
+    {
+      "path": "src/default_provider/request_min_compression_size_bytes.rs",
+      "upstream_sha256": "5cfcac5679aa50184ee09c34cc9f017d7d780c2b21065f606dd0c2391ce3ede0",
+      "candidate_sha256": "5cfcac5679aa50184ee09c34cc9f017d7d780c2b21065f606dd0c2391ce3ede0",
+      "unchanged": true
+    },
+    {
+      "path": "src/default_provider/retry_config.rs",
+      "upstream_sha256": "e4f272c4f410efefaa32e5a657fc8c5811204edaa8158731d83ee72e7b60f5d3",
+      "candidate_sha256": "e4f272c4f410efefaa32e5a657fc8c5811204edaa8158731d83ee72e7b60f5d3",
+      "unchanged": true
+    },
+    {
+      "path": "src/default_provider/timeout_config.rs",
+      "upstream_sha256": "658f2475f9f696f364702431807ec62b74877bffdbe814d50149b3858a66771e",
+      "candidate_sha256": "658f2475f9f696f364702431807ec62b74877bffdbe814d50149b3858a66771e",
+      "unchanged": true
+    },
+    {
+      "path": "src/default_provider/token.rs",
+      "upstream_sha256": "9f69300c72ae491efd6a2b2062658bffc941c7a9d90ca99ee4b8b899930e9bc4",
+      "candidate_sha256": "9f69300c72ae491efd6a2b2062658bffc941c7a9d90ca99ee4b8b899930e9bc4",
+      "unchanged": true
+    },
+    {
+      "path": "src/default_provider/use_dual_stack.rs",
+      "upstream_sha256": "5ad7b593c52795007c500921d6b3d7520c60f0d5787fdf006ae2bf8b74ee7968",
+      "candidate_sha256": "5ad7b593c52795007c500921d6b3d7520c60f0d5787fdf006ae2bf8b74ee7968",
+      "unchanged": true
+    },
+    {
+      "path": "src/default_provider/use_fips.rs",
+      "upstream_sha256": "384073aaaeaf3036d8b3e0a32fffc03f5d109dcea8706166ed4bb490b2a23047",
+      "candidate_sha256": "384073aaaeaf3036d8b3e0a32fffc03f5d109dcea8706166ed4bb490b2a23047",
+      "unchanged": true
+    },
+    {
+      "path": "src/default_provider.rs",
+      "upstream_sha256": "c89e08ae70b9f81e6cf5625e35c90b716229f37f6f8eb796827e61d158f97504",
+      "candidate_sha256": "c89e08ae70b9f81e6cf5625e35c90b716229f37f6f8eb796827e61d158f97504",
+      "unchanged": true
+    },
+    {
+      "path": "src/ecs.rs",
+      "upstream_sha256": "73619b4c268d0f3c9d5fd1e86eab63b9b643642f5e26f6fc3ac3d7853635987b",
+      "candidate_sha256": "73619b4c268d0f3c9d5fd1e86eab63b9b643642f5e26f6fc3ac3d7853635987b",
+      "unchanged": true
+    },
+    {
+      "path": "src/env_service_config.rs",
+      "upstream_sha256": "ca46a9633e09ecfbafaa6256d3106883cbec34443f62b9dec208727fb433bd28",
+      "candidate_sha256": "ca46a9633e09ecfbafaa6256d3106883cbec34443f62b9dec208727fb433bd28",
+      "unchanged": true
+    },
+    {
+      "path": "src/environment/credentials.rs",
+      "upstream_sha256": "8bdaa9c13151b0ef7a3cd012254944b533a4c686400ba3e348679737601dda52",
+      "candidate_sha256": "8bdaa9c13151b0ef7a3cd012254944b533a4c686400ba3e348679737601dda52",
+      "unchanged": true
+    },
+    {
+      "path": "src/environment/mod.rs",
+      "upstream_sha256": "4c24ed0dc22a121854dba1f5c6986b762cee511725f4e6b0e8ebe647ee38eb23",
+      "candidate_sha256": "4c24ed0dc22a121854dba1f5c6986b762cee511725f4e6b0e8ebe647ee38eb23",
+      "unchanged": true
+    },
+    {
+      "path": "src/environment/region.rs",
+      "upstream_sha256": "0a29aef2afb21048a30715cd7f1e7e842229974de653760162dfd0ab5502400a",
+      "candidate_sha256": "0a29aef2afb21048a30715cd7f1e7e842229974de653760162dfd0ab5502400a",
+      "unchanged": true
+    },
+    {
+      "path": "src/http_credential_provider.rs",
+      "upstream_sha256": "d1dd9f93e6a047554a65631a7c3653622f83973839aa2f3de6e07b85c2ab9577",
+      "candidate_sha256": "d1dd9f93e6a047554a65631a7c3653622f83973839aa2f3de6e07b85c2ab9577",
+      "unchanged": true
+    },
+    {
+      "path": "src/imds/client/error.rs",
+      "upstream_sha256": "bd57e80523b7fff263432d21eb258df43d0deed908ff448b855d7497397e848b",
+      "candidate_sha256": "bd57e80523b7fff263432d21eb258df43d0deed908ff448b855d7497397e848b",
+      "unchanged": true
+    },
+    {
+      "path": "src/imds/client/token.rs",
+      "upstream_sha256": "e4cbe082f4de92f4f1078859823b11d0a32a286dcbe508e84944bc821a2ea014",
+      "candidate_sha256": "e4cbe082f4de92f4f1078859823b11d0a32a286dcbe508e84944bc821a2ea014",
+      "unchanged": true
+    },
+    {
+      "path": "src/imds/client.rs",
+      "upstream_sha256": "03ca367643ad8d96691b23f122f10413f4519d83364729e574d8c60f2bbe50e3",
+      "candidate_sha256": "03ca367643ad8d96691b23f122f10413f4519d83364729e574d8c60f2bbe50e3",
+      "unchanged": true
+    },
+    {
+      "path": "src/imds/credentials.rs",
+      "upstream_sha256": "ea17f0df84951b605b50c0ce74c4be4dc4e74e59cc3b33506d61027847caa113",
+      "candidate_sha256": "ea17f0df84951b605b50c0ce74c4be4dc4e74e59cc3b33506d61027847caa113",
+      "unchanged": true
+    },
+    {
+      "path": "src/imds/mod.rs",
+      "upstream_sha256": "f93ea52649615a9dc64dec3a7f1e8e14739847920a2babf131c45bed67539bef",
+      "candidate_sha256": "f93ea52649615a9dc64dec3a7f1e8e14739847920a2babf131c45bed67539bef",
+      "unchanged": true
+    },
+    {
+      "path": "src/imds/region.rs",
+      "upstream_sha256": "3d1e7000c4d00ac3d55c1995cabdbc1ee76363f164b3f3ffbab48288c01d4e2f",
+      "candidate_sha256": "3d1e7000c4d00ac3d55c1995cabdbc1ee76363f164b3f3ffbab48288c01d4e2f",
+      "unchanged": true
+    },
+    {
+      "path": "src/json_credentials.rs",
+      "upstream_sha256": "d9e8b63fa227c120d454ebba5a6b64f2a2019ab23edc054cd7e27a30e75c5667",
+      "candidate_sha256": "d9e8b63fa227c120d454ebba5a6b64f2a2019ab23edc054cd7e27a30e75c5667",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib.rs",
+      "upstream_sha256": "9dc4be8a839f8c4822e6c070a7593ebfeaadbfb4ba7fafc1c9f49fa356ee7fc9",
+      "candidate_sha256": "9dc4be8a839f8c4822e6c070a7593ebfeaadbfb4ba7fafc1c9f49fa356ee7fc9",
+      "unchanged": true
+    },
+    {
+      "path": "src/login/cache.rs",
+      "upstream_sha256": "017b2533788e28ff7585f17e809ba401784e1d900eb0e4b8d0ce3dbcdf1612d0",
+      "candidate_sha256": "017b2533788e28ff7585f17e809ba401784e1d900eb0e4b8d0ce3dbcdf1612d0",
+      "unchanged": true
+    },
+    {
+      "path": "src/login/dpop.rs",
+      "upstream_sha256": "193b7f82596039443f000001f76bf1c74fc9ae78d5f74d2b6c266953a20da4e7",
+      "candidate_sha256": "2a90d722cea78dab69c1324bebd4bd0bb796119b0940a799b3aa98eee6d81ab9",
+      "unchanged": false
+    },
+    {
+      "path": "src/login/token.rs",
+      "upstream_sha256": "f2dbc7cba0d4dafb0d1193335b60f35ebcd145bf1888dff37c102c1667cfb769",
+      "candidate_sha256": "f2dbc7cba0d4dafb0d1193335b60f35ebcd145bf1888dff37c102c1667cfb769",
+      "unchanged": true
+    },
+    {
+      "path": "src/login.rs",
+      "upstream_sha256": "d0d691425803f0ca151b3368af3634033d40a4116d7124cf45ffd598fdc574fa",
+      "candidate_sha256": "d0d691425803f0ca151b3368af3634033d40a4116d7124cf45ffd598fdc574fa",
+      "unchanged": true
+    },
+    {
+      "path": "src/meta/credentials/chain.rs",
+      "upstream_sha256": "0de948f14e5ad47695e45402663492511e882eedab3bbbcd10c24e061bb07dbe",
+      "candidate_sha256": "0de948f14e5ad47695e45402663492511e882eedab3bbbcd10c24e061bb07dbe",
+      "unchanged": true
+    },
+    {
+      "path": "src/meta/credentials/mod.rs",
+      "upstream_sha256": "7e1948ede841eaeb123b7182053f670d73ccb828cbea3ab87dc6092990f776d7",
+      "candidate_sha256": "7e1948ede841eaeb123b7182053f670d73ccb828cbea3ab87dc6092990f776d7",
+      "unchanged": true
+    },
+    {
+      "path": "src/meta/mod.rs",
+      "upstream_sha256": "cb074f95d8b84b1f6ed562e4e9105fad235e9de79dec1d3c72e33daded09fd56",
+      "candidate_sha256": "cb074f95d8b84b1f6ed562e4e9105fad235e9de79dec1d3c72e33daded09fd56",
+      "unchanged": true
+    },
+    {
+      "path": "src/meta/region.rs",
+      "upstream_sha256": "0ebdfe050412410674621cd6bdf7d9a790de0b223659616d508bea277000f6f9",
+      "candidate_sha256": "0ebdfe050412410674621cd6bdf7d9a790de0b223659616d508bea277000f6f9",
+      "unchanged": true
+    },
+    {
+      "path": "src/meta/token.rs",
+      "upstream_sha256": "bf04f2789e1986283585e5ee7e72215e9331bfd50308a839f9615022de6d6a28",
+      "candidate_sha256": "bf04f2789e1986283585e5ee7e72215e9331bfd50308a839f9615022de6d6a28",
+      "unchanged": true
+    },
+    {
+      "path": "src/profile/credentials/exec.rs",
+      "upstream_sha256": "a6bb2d9ee9270a3616b54246c48fd9bf7c134a2a41d3d0f54195483f347be38a",
+      "candidate_sha256": "a6bb2d9ee9270a3616b54246c48fd9bf7c134a2a41d3d0f54195483f347be38a",
+      "unchanged": true
+    },
+    {
+      "path": "src/profile/credentials/repr.rs",
+      "upstream_sha256": "1075d8a5cd8466eb6a3cc8304e10b975ff683ad9d9b933dfe7c2eb52892e40bc",
+      "candidate_sha256": "1075d8a5cd8466eb6a3cc8304e10b975ff683ad9d9b933dfe7c2eb52892e40bc",
+      "unchanged": true
+    },
+    {
+      "path": "src/profile/credentials.rs",
+      "upstream_sha256": "04aebc5c7136de4ffef523a1265aec19547c1ce7cb0a0eb0297c4c1cab0954c8",
+      "candidate_sha256": "04aebc5c7136de4ffef523a1265aec19547c1ce7cb0a0eb0297c4c1cab0954c8",
+      "unchanged": true
+    },
+    {
+      "path": "src/profile/parser.rs",
+      "upstream_sha256": "171ac77cbcd518f1dfe45b03ba08208b492211089619cea1290bf0857d4abc63",
+      "candidate_sha256": "171ac77cbcd518f1dfe45b03ba08208b492211089619cea1290bf0857d4abc63",
+      "unchanged": true
+    },
+    {
+      "path": "src/profile/profile_file.rs",
+      "upstream_sha256": "23af94d712cdbba5e50537e61a14d6f5ddef77ae9104f12bba3dfb95369ec308",
+      "candidate_sha256": "23af94d712cdbba5e50537e61a14d6f5ddef77ae9104f12bba3dfb95369ec308",
+      "unchanged": true
+    },
+    {
+      "path": "src/profile/region.rs",
+      "upstream_sha256": "c3ed62ad62565b2a4a07e8e6b1d72655e13e888b9404c13b7139f95772181151",
+      "candidate_sha256": "c3ed62ad62565b2a4a07e8e6b1d72655e13e888b9404c13b7139f95772181151",
+      "unchanged": true
+    },
+    {
+      "path": "src/profile/token.rs",
+      "upstream_sha256": "369b40b088f15f3c92cd80e1ae92e5a476ec985c09a75cfc92a5a2aa7226b2e8",
+      "candidate_sha256": "369b40b088f15f3c92cd80e1ae92e5a476ec985c09a75cfc92a5a2aa7226b2e8",
+      "unchanged": true
+    },
+    {
+      "path": "src/profile.rs",
+      "upstream_sha256": "a502a05d47aa8f8d5d06ecad21ce34e417126585741513a1554fe8a8a30394d8",
+      "candidate_sha256": "a502a05d47aa8f8d5d06ecad21ce34e417126585741513a1554fe8a8a30394d8",
+      "unchanged": true
+    },
+    {
+      "path": "src/provider_config.rs",
+      "upstream_sha256": "63f637a186615d1226e76330ff3f14164ca69b0cc80a8a47b4a610e77eaad33f",
+      "candidate_sha256": "63f637a186615d1226e76330ff3f14164ca69b0cc80a8a47b4a610e77eaad33f",
+      "unchanged": true
+    },
+    {
+      "path": "src/retry.rs",
+      "upstream_sha256": "ebe0bbd2fcad5f272757ef7ee59347ea0d348b0f095ad40e854a771ab3886bda",
+      "candidate_sha256": "ebe0bbd2fcad5f272757ef7ee59347ea0d348b0f095ad40e854a771ab3886bda",
+      "unchanged": true
+    },
+    {
+      "path": "src/sensitive_command.rs",
+      "upstream_sha256": "d35fa08df7a9ac493e7d04112a213ddef42bd46a15640c1cacd20b59e2696aed",
+      "candidate_sha256": "d35fa08df7a9ac493e7d04112a213ddef42bd46a15640c1cacd20b59e2696aed",
+      "unchanged": true
+    },
+    {
+      "path": "src/sso/cache.rs",
+      "upstream_sha256": "19256b3d264dba6e227bf36224be3ddc3c05eaeaa772b007371799223e9e03e8",
+      "candidate_sha256": "19256b3d264dba6e227bf36224be3ddc3c05eaeaa772b007371799223e9e03e8",
+      "unchanged": true
+    },
+    {
+      "path": "src/sso/credentials.rs",
+      "upstream_sha256": "2e0e300dc54d4799a9a114fe1b7099bbbdf9090c92e45097922f16e94f00e412",
+      "candidate_sha256": "2e0e300dc54d4799a9a114fe1b7099bbbdf9090c92e45097922f16e94f00e412",
+      "unchanged": true
+    },
+    {
+      "path": "src/sso/token.rs",
+      "upstream_sha256": "84ed63f5d5ece55d7620ab7ed7f05e8c0050fc9c8965e5517fdc547a1453d459",
+      "candidate_sha256": "84ed63f5d5ece55d7620ab7ed7f05e8c0050fc9c8965e5517fdc547a1453d459",
+      "unchanged": true
+    },
+    {
+      "path": "src/sso.rs",
+      "upstream_sha256": "a09486d3edbc9b9e73ff44f497f5a45aa9478d68d4e391c06a8d009b2822d1e8",
+      "candidate_sha256": "a09486d3edbc9b9e73ff44f497f5a45aa9478d68d4e391c06a8d009b2822d1e8",
+      "unchanged": true
+    },
+    {
+      "path": "src/stalled_stream_protection.rs",
+      "upstream_sha256": "49b8f97bc6fc9d0373b51c61728a651bf3697ccb4eb7e9c62e52219268382a29",
+      "candidate_sha256": "49b8f97bc6fc9d0373b51c61728a651bf3697ccb4eb7e9c62e52219268382a29",
+      "unchanged": true
+    },
+    {
+      "path": "src/sts/assume_role.rs",
+      "upstream_sha256": "258decd06335d432d4658d8142801e992829c4315a8591600f57d0b4e5e2b398",
+      "candidate_sha256": "258decd06335d432d4658d8142801e992829c4315a8591600f57d0b4e5e2b398",
+      "unchanged": true
+    },
+    {
+      "path": "src/sts/util.rs",
+      "upstream_sha256": "34d0bc992165368b8b9976226daf2b182926a4a001b653dbd52ee6c310f90053",
+      "candidate_sha256": "34d0bc992165368b8b9976226daf2b182926a4a001b653dbd52ee6c310f90053",
+      "unchanged": true
+    },
+    {
+      "path": "src/sts.rs",
+      "upstream_sha256": "dcb7c17d00e139249ef402477724407afba1a8e2cd66555982c72870deb55854",
+      "candidate_sha256": "dcb7c17d00e139249ef402477724407afba1a8e2cd66555982c72870deb55854",
+      "unchanged": true
+    },
+    {
+      "path": "src/test_case.rs",
+      "upstream_sha256": "ffc45801858a583d8d0d8e8a08772c88fe63a6c32957d8d98cce350d0e41456d",
+      "candidate_sha256": "ffc45801858a583d8d0d8e8a08772c88fe63a6c32957d8d98cce350d0e41456d",
+      "unchanged": true
+    },
+    {
+      "path": "src/timeout.rs",
+      "upstream_sha256": "834c8a0a82a953082642ea082f6225611643fc7681945967f3ce208913d65e3b",
+      "candidate_sha256": "834c8a0a82a953082642ea082f6225611643fc7681945967f3ce208913d65e3b",
+      "unchanged": true
+    },
+    {
+      "path": "src/web_identity_token.rs",
+      "upstream_sha256": "c3554a189a91e88ca009a8261e2a3f31fca9bf312a72363c9fe8fa5ba7b173a5",
+      "candidate_sha256": "c3554a189a91e88ca009a8261e2a3f31fca9bf312a72363c9fe8fa5ba7b173a5",
+      "unchanged": true
+    }
+  ],
+  "source_files": [
+    {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/aws-login-port/proposed/codex-rs/third_party/aws-config-1.8.12/Cargo.toml",
+      "sha256": "29089cb772cec63dfab32f9729ef524719a4b23723db9de9ee79964f06f5b441"
+    },
+    {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/aws-login-port/proposed/codex-rs/third_party/aws-config-1.8.12/src/login/dpop.rs",
+      "sha256": "2a90d722cea78dab69c1324bebd4bd0bb796119b0940a799b3aa98eee6d81ab9"
+    },
+    {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/aws-login-port/proposed/codex-rs/third_party/aws-config-1.8.12/src/login/signing_rng.rs",
+      "sha256": "27107ca8c8c05f267b8b775128ea788a53c9a3201ca65dedaf97599f6652ef80"
+    },
+    {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/aws-login-port/proposed/codex-rs/third_party/aws-config-1.8.12/src/login/dpop_port_tests.rs",
+      "sha256": "198267a2f549dc24649598cef48583e248a28fa442a6e33dff0e6028c070282b"
+    },
+    {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/aws-login-port/proposed/codex-rs/third_party/aws-config-1.8.12/src/login/dpop_provider_tests.rs",
+      "sha256": "23152bf35538e755e8cb3cfa33a604c15d2c5abd6638275ad90b1769c694737c"
+    },
+    {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/aws-login-port/upstream-003/source/rand_core-0.10.1/src/lib.rs",
+      "sha256": "b4df43985896bf2f38e595f7574c4d7e0df1c562e40c6a92133d9eef1cc01908"
+    },
+    {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/aws-login-port/test-003.log",
+      "sha256": "ad35c78226200b8a2a48a0f4b8a4760206e1496c6cc6a3d2be36243b8e1ab098"
+    },
+    {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/aws-login-port/test-006-all-providers.log",
+      "sha256": "3b79f3b4381ae6c9a316bd3525692f298a8acc01cfe96352dec86953695f2534"
+    }
+  ],
+  "findings": [
+    "61 of 62 original Rust source files are byte-identical; only login/dpop.rs changes, plus three new private/test files.",
+    "All published feature definitions and rand 0.8.5 dependency configuration match exactly; p256 0.13.2 to 0.14.0 is the only production dependency change.",
+    "SigningRng forwards next_u32, next_u64 and fill_bytes directly to the same OS-seeded StdRng; no entropy substitution, buffering, truncation or seed reuse was introduced. Infallible correctly enables rand_core 0.10 blanket Rng/CryptoRng implementations.",
+    "DPoP remains SEC1 input, uncompressed SEC1 public coordinates, ES256 and 64-byte r||s URL-safe unpadded signature encoding. New tests verify with the upgraded p256 and independently with ring when sso is enabled.",
+    "Provider tests call actual LoginCredentialsProvider, observe actual outbound signed refresh requests, preserve dpopKey/clientId, instantiate a new provider from the cache, reject expired credentials inside the throttle window and retain cache bytes on a 403 response.",
+    "Provider tests inject an in-memory Fs and recording HTTP connector: these prove real provider/cache/serialization behavior, not real AWS network authentication or an OS-process/disk restart.",
+    "test-003 log reports 19 login tests passed. test-006 reports 242 of 244 run tests passed, two failures and one pre-existing skip. The failures contain HTTP 503 responses with server envoy to endpoints expected to time out; the all-provider gate remains failed, not waived."
+  ],
+  "remaining_boundaries": [
+    "No remote full workspace Cargo/Bazel lock graph verification performed by this reviewer.",
+    "No actual AWS service call, cross-platform verification or cryptographic implementation audit beyond the narrow adapter.",
+    "The two network-environment test failures remain in the required regression record."
+  ]
+}

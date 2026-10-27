@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-27T10:36:36.599766+00:00",
+  "status": "source-only verification; no Bazel build/test executed",
+  "source_files": {
+    "tracing_subscriber_formatter": {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/yaml-migration/cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/tracing-subscriber-0.3.22/src/fmt/fmt_layer.rs",
+      "sha256": "188daad40459b34988593aecd18931a9afa0cda44d8b1cb9204f34e8947f6489"
+    },
+    "shared_bazel_rules": {
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/defs.bzl",
+      "sha256": "0e6a2e5b63f9456ac77f900d0e6be8fde1b57f577973c6069ae680814106f9c4"
+    },
+    "candidate_bazel_build": {
+      "path": "/workspace/scratch/95988d8d3ab1/ndu-dependency-remediation/aws-login-port/candidate-root/codex-rs/third_party/aws-config-1.8.12/BUILD.bazel",
+      "sha256": "b07d5ca0495cbdb1a7044f01962b74256cf4603d8e8ab144d9c6e81d995db56d"
+    },
+    "workspace_root_test_launcher.sh.tpl": {
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/workspace_root_test_launcher.sh.tpl",
+      "sha256": "e292867c613d853887a64ca09bca231e66cc65d48806985c1f16c1c69c1169e5"
+    },
+    "workspace_root_test_launcher.bat.tpl": {
+      "path": "/workspace/scratch/95988d8d3ab1/hepta-private-ci/workspace_root_test_launcher.bat.tpl",
+      "sha256": "4d509f1a57ffb4a890a96b775468af8e2d0d83538af76d358d10628d8b442dae"
+    }
+  },
+  "ansi_predicate": "cfg!(feature = \"ansi\") && env::var(\"NO_COLOR\").map_or(true, |v| v.is_empty())",
+  "upstream_own_test_cases": {
+    "NO_COLOR_unset": true,
+    "NO_COLOR_empty": true,
+    "NO_COLOR_nonempty": false
+  },
+  "requires_compiled_ansi_feature": true,
+  "all_default_provider_and_credentials_login_features_explicit": true,
+  "both_inner_and_outer_unit_test_targets_manual": true,
+  "upstream_dev_dependency_graph_qualification_only": true,
+  "production_full_metadata_validated": false
+}

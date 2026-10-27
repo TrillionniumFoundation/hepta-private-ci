@@ -1,0 +1,95 @@
+{
+  "at": "2026-10-27T10:33:39.510871+00:00",
+  "candidate_vendor_inventory_sha256": "ecfa51c9f6fc1697e604ed30de391b3b56f1f0c76de29751813b36f91c8b2ae1",
+  "pre_test_003_inventory_sha256": "10ed6fdea2f3bc7c623a1120e9baf2aace58e1f17ca8e3a4400657cc79acd34d",
+  "all_77_pre_test_003_files_unchanged_after_final_run": true,
+  "all_235_official_fixture_files_reopened_and_unchanged": true,
+  "actual_test_binary": {
+    "path": "frozen-binaries/1080e3b4bba95ee1828b25490abdec47c890a7fd6395ca604e72eb05969fa6a8",
+    "bytes": 40786224,
+    "sha256": "1080e3b4bba95ee1828b25490abdec47c890a7fd6395ca604e72eb05969fa6a8"
+  },
+  "test_entrypoint": "repository just test -> scripts/run-nextest.py; never cargo test directly",
+  "package_scope": "Complete standalone upstream aws-config 1.8.12, all default providers plus credentials-login; no first-party workspace trimming.",
+  "attempts": [
+    {
+      "log": "test-001.log",
+      "sha256": "4f798d6da12546e68b9ccdc383b237bafcd5862588d5d040d4961245878bd77c",
+      "tests_run": 0,
+      "status": "nextest configuration error before test execution",
+      "exit_code": 96
+    },
+    {
+      "log": "test-002.log",
+      "sha256": "d0dba9a54f4293c24d42e859a4eb21b23653c9c4ae1a5473d535e9e6f8ba17e2",
+      "tests_run": 0,
+      "status": "nextest configuration error before test execution",
+      "exit_code": 96
+    },
+    {
+      "log": "test-003.log",
+      "sha256": "ad35c78226200b8a2a48a0f4b8a4760206e1496c6cc6a3d2be36243b8e1ab098",
+      "tests_run": 19,
+      "passed": 19,
+      "failed": 0,
+      "not_selected_or_ignored": 226
+    },
+    {
+      "log": "test-004-all-providers.log",
+      "sha256": "fcf6801ba92466aff3354f7083eee27e69d9fb82798cb3277ff1ea091e670aec",
+      "tests_run": 244,
+      "passed": 241,
+      "failed": 3,
+      "not_selected_or_ignored": 1
+    },
+    {
+      "log": "test-005-environment-check.log",
+      "sha256": "b85c2cedfa12609a220e3e2b118f4a1c80737fba1d6a066280a0af6ac54d8579",
+      "tests_run": 3,
+      "passed": 2,
+      "failed": 1,
+      "not_selected_or_ignored": 242
+    },
+    {
+      "log": "test-006-all-providers.log",
+      "sha256": "3b79f3b4381ae6c9a316bd3525692f298a8acc01cfe96352dec86953695f2534",
+      "tests_run": 244,
+      "passed": 242,
+      "failed": 2,
+      "not_selected_or_ignored": 1
+    }
+  ],
+  "login_selected_suite": {
+    "run": 19,
+    "passed": 19,
+    "includes": [
+      "New 9 tests for RNG byte forwarding, SEC1/PEM and JWK compatibility, p256 and ring verification of actual randomized DPoP signatures, request claims, cache refresh/reopen, failure preservation, and 30-second throttle.",
+      "Unchanged upstream login tests, including the original eight-case JSON fixture."
+    ]
+  },
+  "full_final_suite": {
+    "run": 244,
+    "passed": 242,
+    "failed": 2,
+    "unchanged_upstream_ignored": 1,
+    "failed_names": [
+      "imds::client::test::one_second_connect_timeout",
+      "imds::credentials::test::read_timeout_during_credentials_refresh_should_error_without_last_retrieved_credentials"
+    ]
+  },
+  "unchanged_upstream_ignore": "ecs::tests::real_dns_lookup",
+  "failed_environment_assumption": "Both failed tests expect timeout classification from HTTP 240.0.0.0. The sandbox first returned EPERM; the permitted network run instead received transparent Envoy HTTP 503 without the token TTL header. Neither response satisfies the upstream blackhole-network assumption.",
+  "no_assertions_or_ignores_relaxed": true,
+  "network_run_no_color_handling": "Only NO_COLOR was removed for that test process to retain the original ANSI-log assertion. No sandbox environment variable or production behavior was changed.",
+  "no_color_baseline_failure_retained": "test-004-all-providers.log includes loader::test::provider_config_used failure with inherited NO_COLOR=1; it passes in test-005 and test-006 with the original assertion.",
+  "provider_test_scope": "Actual SDK provider and signing code with injected in-memory Fs and recording HttpClient; new provider objects are exercised. This is not a real AWS service request or an OS process/disk restart.",
+  "full_first_party_workspace_tests_passed": false,
+  "bazel_tests_passed": false,
+  "promotion_eligible": false,
+  "remaining_gates": [
+    "Run the complete unchanged upstream suite on an independent runner whose timeout endpoint really stalls; preserve both failures if they recur.",
+    "Regenerate and inspect the full first-party Cargo and Bazel lock graph; no legacy vulnerable crypto-bigint branch or advisory ignore.",
+    "Compile and test actual codex-aws-auth consumers using the nonmember production vendor, then relevant workspace/platform CI.",
+    "Validate the prepared Bazel target and its qualification-only dev dependency metadata without expanding production features."
+  ]
+}
