@@ -283,3 +283,6 @@ fn captured_original_policy_dacl_change_is_refused_on_the_same_full_file_id() {
         "native-openssh-control policy_changed=true same_full_file_id=true actual_dacl_changed=true canonical_private=true refused_before_service=true"
     );
 }
+
+#[path = "windows_openssh_transport_tests.rs"]
+mod transport;

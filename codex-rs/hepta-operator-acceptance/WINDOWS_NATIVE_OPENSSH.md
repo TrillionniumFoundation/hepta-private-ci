@@ -96,3 +96,24 @@ actual completion/cancellation. Unwinding repeats owned cleanup; an error is not
 published as success. No raw HANDLE, writable process port or adopt-existing-file
 API is exported. Real Windows EOF, cancellation, client PID and worker-retirement
 qualification remains required for each exact clean source.
+
+## Independent transport controls
+
+Two additional ignored cases use a real installed OpenSSH child whose original
+stdin stays open, and bind its actual kernel image, token, HANDLE and PID. The
+unrelated-client case connects from the real test process, starts a one-byte
+native overlapped read before the server attempts any data, requires the exact
+client-PID refusal, and checks that read is still incomplete with zero bytes
+before disconnect. It then collects the actual cancellation/EOF completion.
+The other case uses the original five-second deadline for a real pending native
+connect, requires its precise timeout, then reaps the real owned child through
+production cleanup. Neither case uses a supplied PID or fake BoundChild. These
+are independent client/connection/cleanup controls; they do not qualify a whole
+backend timeout with a client blocked in FlushFileBuffers.
+
+The separate Windows collector preserves exact 4/4/2 scopes for runner lifetime,
+dual SSHSIG and transport. It rejects unknown, missing, duplicate, skipped or
+non-PASS cases, including LEAK, and duplicate/unknown summary items. It records
+the exact clean head/tree, native compiler/runners, System32 tool hash, protected
+source and actual before/after observations even on failure. The unchanged
+original driver and scope remain separate and must retain the original 91 IDs.
