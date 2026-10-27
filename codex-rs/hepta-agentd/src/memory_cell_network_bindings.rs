@@ -14,6 +14,7 @@ use codex_hepta_memory::memory_cell_scope_id;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use serde::Serialize;
+use serde::Serializer;
 
 pub const MAX_MEMORY_CELL_NETWORK_NODES: usize = 16;
 
@@ -36,6 +37,7 @@ pub struct MemoryCellVersionPinV1 {
 /// owner's control service for its current capability revision and generation.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct MemoryCellNodeBindingV1 {
+    #[serde(serialize_with = "serialize_node_id")]
     pub(super) node_id: StableId,
     pub(super) grant: FederationCapability,
     pub(super) spawn_generation: u64,
@@ -126,9 +128,18 @@ impl From<String> for MemoryCellNetworkErrorV1 {
 
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct MemoryCellNodeReadoutV1 {
+    #[serde(serialize_with = "serialize_node_id")]
     pub node_id: StableId,
     pub owner_agent_id: AgentId,
     pub readout: MemoryReadoutV1,
+}
+
+// Keep the validated ID opaque in memory; only this metadata field is a string.
+fn serialize_node_id<S>(node_id: &StableId, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    serializer.serialize_str(node_id.as_str())
 }
 
 /// Read evidence from one unchanged deployment admission epoch. The network's

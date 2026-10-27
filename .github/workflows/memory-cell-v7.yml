@@ -53,7 +53,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            ${{ github.workspace }}/memory-v7-target
+            ${{ env.CARGO_TARGET_DIR }}
           key: memory-v7-rust-1.95-${{ matrix.group }}-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ github.sha }}
           restore-keys: |
             memory-v7-rust-1.95-${{ matrix.group }}-${{ hashFiles('codex-rs/Cargo.lock') }}-
@@ -73,7 +73,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            ${{ github.workspace }}/memory-v7-target
+            ${{ env.CARGO_TARGET_DIR }}
           key: memory-v7-rust-1.95-${{ matrix.group }}-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ github.sha }}
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always() && matrix.group == 'daemon'

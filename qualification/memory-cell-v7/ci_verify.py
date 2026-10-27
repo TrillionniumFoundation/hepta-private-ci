@@ -15,7 +15,8 @@ GROUPS = {
     "typed-native": ["codex-hepta-cognitive-types", "codex-hepta-neuron"],
     "source-owner": ["codex-hepta-memory", "codex-hepta-cognitive-store"],
     "release-owner": ["codex-hepta-learning-artifacts"],
-    "daemon": ["codex-hepta-agent-protocol", "codex-hepta-agentd"],
+    "daemon": ["codex-hepta-agent-protocol", "codex-hepta-agentd",
+               "codex-hepta-context-compiler", "codex-hepta-infer-worker-host"],
     "population": ["codex-hepta-neuron", "codex-hepta-plasticity"],
 }
 
@@ -43,7 +44,9 @@ def main():
     if mode == "test":
         if group not in groups:
             raise ValueError("test group not requested")
-        command = ["just", "test", "--locked", "--lib"]
+        command = ["just", "test", "--locked"]
+        if group != "daemon":
+            command.append("--lib")
         for package in GROUPS[group]:
             command.extend(["-p", package])
     elif mode == "lock":
