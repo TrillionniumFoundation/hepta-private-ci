@@ -332,3 +332,71 @@ retention, adversarial filesystem ownership, production Agentd integration,
 and cross-platform recovery require their own evidence. The present artifacts
 make those remaining limits inspectable instead of assigning them a pass from
 the algebra or from a successful trait call.
+
+## 7. Frozen trained forecast adapter qualification
+
+`trained_runtime.py` now connects actual trained artifacts to both executable
+owners. `FrozenForecastAdapter` loads the `analytic` filter from a frozen
+`MODELS.json`, checks the file SHA256 and the selected model-entry digest, and
+uses the existing trained forecast implementation to produce the conditional
+mean and variance. It then passes those actual numbers through the unchanged
+v6 `Native.typed` head and through `EventRuntime.step` with explicit conditioning
+and target times. Trained weights remain in the Python filter; this adapter
+does not claim that they have been embedded in the Rust executable.
+
+The reusable public input consists exactly of `id`, `observations`, `times`,
+`mask`, and `obs_var` for one trajectory. Horizons are fixed to `0.5`, `1.0`, and
+`2.0`; thresholds are fixed to `-0.6` and `0.6`. Hidden states, future labels,
+repair counterfactuals, or arbitrary extra fields are not accepted. Masked
+payloads are normalized to zero before filtering and history hashing. The
+dataset archive SHA256 binds artifact ownership and provenance; it is not a
+numerical feature or a source of RNG marks. The RNG subject uses only frozen
+model identity, public trajectory identity, horizon, generation, and seed.
+
+Each combined receipt records the actual model-file SHA256, selected model
+digest and learned parameters, dataset archive digest, public-history digest,
+generation, RNG identity, horizon, conditioning and target times, original Rust
+binary SHA256, complete native receipt, and complete pulse receipt. Different
+horizons have distinct subjects and owners. The native numeric request binds
+the forecast parameters; the combined receipt additionally binds the complete
+upstream history and timing contract.
+
+The qualification used only the already created `DEVELOPMENT.npz` files for
+seeds `11, 23, 37, 53, 71`: the first four public histories per seed at all three
+horizons produced **60 trained forecast executions**. No confirmation data was
+opened, no new task-effect comparison was made, and no parameters were retuned.
+Every original native output remained `abstain=True`, legacy confidence zero,
+and `DENY_ALL`.
+
+Both the native subprocess and Python adapter instances were then replaced.
+For one subject per seed, exact replay returned the stored combined receipt
+without another native append. Five additional `forecast.recovery.2` ticks
+verified native and pulse predecessor checkpoint continuity, identical forecast
+probabilities, and identical native Q24 probability vectors after recovery.
+These additional ticks deliberately reuse the same history, physical time,
+and prediction target. They are new **computational ticks and Monte Carlo
+drives**, not new independent observations. They neither accumulate event
+likelihood nor increase confidence, and they do not represent samples from a
+newly observed or jointly simulated physical trajectory.
+
+The run passed **81 qualification assertions**. Across the 60 forecast cases,
+the maximum native CDF error relative to the independent probability reference
+at decoded Q24 parameters was `1.1102230246251565e-16`; output Q24 error was
+`3.6951485954395125e-8`. The separately measured probability change caused by
+input parameter quantization was `3.9231035753317656e-8` on these development
+fixtures. These are adapter qualification measurements, not calibration or
+generalization results.
+
+Raw combined receipts, source artifact identities, the 81 checks, and all
+actual owner files are retained under `evidence/trained_runtime/`, principally
+`TRAINED_RUNTIME_VALIDATION.json`, `FORECAST_RECEIPTS.json`,
+`RECOVERY_RECEIPTS.json`, and `owners/`.
+
+The adapter serializes cooperating callers and uses durable combined receipts
+for exact duplicate replay. The native journal and Python pulse checkpoint
+remain **two separate transactions**. A durable pending marker is created before
+either owner is advanced; an interrupted partial commit fails closed on retry
+and requires explicit reconciliation. This is not a cross-owner atomic
+transaction, and no automatic reconciliation or production Agentd owner
+integration is claimed. A stored complete receipt can be replayed after a lost
+acknowledgement without adding another computational tick.

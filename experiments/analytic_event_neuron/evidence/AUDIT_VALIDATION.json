@@ -1,0 +1,18 @@
+{
+  "negative_checks": {
+    "cost_tamper": {
+      "error": "AssertionError: cost: ('analytic', 'development_audit:gaussian:67301:0') total",
+      "passed": false
+    },
+    "rehashed_png_disagrees_with_text": {
+      "error": "AssertionError: png_bit_replay: ('development_audit:gaussian:67301:0', 'analytic', 'delivery', 'initial')",
+      "passed": false
+    },
+    "target_before_delivery": {
+      "error": "AssertionError: chronology: ('analytic', 'development_audit:gaussian:67301:0') target boundary",
+      "passed": false
+    }
+  },
+  "restored_scope_passed": true,
+  "source_sha256": "00f2df0d998b6d882ef7de0cf2529969553e7d305cf5c99581c3874e50355f37"
+}
