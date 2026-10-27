@@ -37,9 +37,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 0c804e9f5bcf6e972bbb4524c744d4b3c8801c34
+      CHAIN_SOURCE_SHA: ac469237422d43805845e8b9a6839ad14e1028e7
       CHAIN_BASE_SHA: 57c1ed545d067937cbd7aaa7570d5f22123265e6
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '0c804e9f5bcf6e972bbb4524c744d4b3c8801c34' || 'e22045b22fcda846d826243210c998a97d4559a3' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && 'ac469237422d43805845e8b9a6839ad14e1028e7' || '47727c4f8335427710b4f3608768b4e9cc7c2a64' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -229,7 +229,7 @@ jobs:
           set -euo pipefail
           cd ../chain
           python3 scripts/ci/test_run_from_zero_native.py 2>&1 | tee "$RUNNER_TEMP/pon-pair/from-zero-reader.log"
-          python3 scripts/ci/run_from_zero_native.py --out "$RUNNER_TEMP/pon-pair/chain-from-zero-native"
+          python3 scripts/ci/run_from_zero_host.py -- python3 scripts/ci/run_from_zero_native.py --out "$RUNNER_TEMP/pon-pair/chain-from-zero-native"
       - name: Require paired actual CPU depletion and public recovery
         env:
           TRNM_PUBLIC_V3_DEPLETION_DIR: ${{ runner.temp }}/pon-pair/chain-depletion

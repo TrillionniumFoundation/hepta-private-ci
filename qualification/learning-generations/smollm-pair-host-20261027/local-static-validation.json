@@ -1,0 +1,24 @@
+{
+  "schema": "hepta-original-host-pair-static-validation-v1",
+  "source_state": "dirty-candidate-before-commit",
+  "published_parent": "2bfceaa3226611a72f43d24e67d13e30091c7449",
+  "workflow_before_sha256": "d9c944187fd5280f7000baaf8a14b82bfda65f9ff04bd5c9acabbdf1d263d3e7",
+  "workflow_after_sha256": "90614854bcd8893b6b82c8f3ff9b355fd1ac1a2e6ca495cd1d4ddb700842477d",
+  "exact_workflow_delta": "two pin lines and the single original from-zero command prefix only",
+  "original_budgets_selectors_conditions_and_zero_retries_unchanged": true,
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "-v",
+    "scripts.tests.test_hepta_ci_smollm_pair"
+  ],
+  "exit_code": 0,
+  "test_count": 9,
+  "log_sha256": "1e8f79595b5abb7f964476fa6a40e059c301313d39b3aca046d3b132de5d269e",
+  "pair_receipt_sha256": "6b5924cbbc91d639e5e892e90826a6393e5855fa8bcf32e60ac3672ee9d0d5a5",
+  "hepta_rust_cargo_bazel_executed_locally": false,
+  "model_executed_locally": false,
+  "hosted_ci_accepted": false,
+  "production_activation": false
+}
