@@ -134,6 +134,14 @@ class FrozenBindingMechanisms(unittest.TestCase):
                           "held_opened": False, "routers": {str(seed): {key: identity[key] for key in SEALED_ROUTER_FIELDS}}}
                 write_json(root / "SELECTED_MODELS.json", sealed)
                 self.assertEqual(verify_selected_models({seed: selected}, frozen, freeze_identity)[0][seed], identity)
+                source_file = selected.parent.parent / "SOURCE.json"
+                source_raw = source_file.read_bytes()
+                source = json.loads(source_raw)
+                source["files"]["v5/never_frozen.py"] = None
+                source_file.write_bytes(canonical(source))
+                with self.assertRaisesRegex(ValueError, "training source differs from the frozen source"):
+                    selected_identity(selected, **options)
+                source_file.write_bytes(source_raw)
                 with self.assertRaisesRegex(ValueError, "training source"):
                     selected_identity(selected, **{**options, "expected_source_commit": "2" * 40})
                 with self.assertRaisesRegex(ValueError, "training seed"):

@@ -26,8 +26,7 @@ def source_freeze(commit):
     files = set(PROJECT.glob("*.py"))
     for directory in ("v5", "legacy_v3", "maintenance", "tests", "validation"):
         files.update((PROJECT / directory).glob("*.py"))
-    files.update(PROJECT / name for name in ("PROTOCOL.json", "VENDOR.json", "V5B_PREDECLARATION.md"))
-    files.update(path for path in (PROJECT / "assets").rglob("*") if path.is_file())
+    files.update(PROJECT / name for name in ("PROTOCOL.json", "VENDOR.json", "V5B_PREDECLARATION.md", "requirements.txt", "assets/ASSETS.json"))
     if any(path.is_symlink() for path in files):
         raise ValueError("linked source or asset")
     seal = file_identity(PROJECT / "held/SEAL.json")

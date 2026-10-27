@@ -48,6 +48,10 @@ No third candidate family was added to this increment.
 
 After final source formatting and remote source delivery, the reproducible order is:
 
+Use Python 3.12.14 and the pinned scientific dependencies in `requirements.txt`.
+The experiment uses CPU execution with one BLAS/OpenMP thread. The pretrained
+encoder download, ONNX runtime and a GPU are not required by this increment.
+
 ```bash
 python -m maintenance.freeze source --commit <verified-source-commit>
 # Commit and verify FREEZE.json remotely before formal training.

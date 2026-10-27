@@ -31,11 +31,11 @@ def selection_evidence(path, manifest, files, router, seed, source_commit, froze
     source = values["training_source"]
     if source["source_commit"] != source_commit or source["development"] is not False:
         raise ValueError("selected model was not produced by the declared formal source")
-    if not isinstance(frozen_source_files, dict) or not source["files"]:
+    if not isinstance(frozen_source_files, dict) or not isinstance(source["files"], dict) or not source["files"]:
         raise ValueError("formal selection requires the complete frozen source inventory")
     for relative, identity in source["files"].items():
         relative_path(relative)
-        if frozen_source_files.get(relative) != identity:
+        if relative not in frozen_source_files or frozen_source_files[relative] != identity:
             raise ValueError("model training source differs from the frozen source: " + relative)
     training = manifest["training_identity"]
     if training["source_inventory_sha256"] != sha256(canonical(source["files"])):
