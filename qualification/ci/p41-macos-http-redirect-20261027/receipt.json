@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.p41-macos-http-redirect-read-fix.v1",
+  "observed_date_utc": "2026-10-27",
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "release": "HOLD_NO_GO",
+  "parent_draft_pr": 4119,
+  "parent_head_sha": "7a963c4a45de196a311b7b35e03fd0ec8268a5d7",
+  "source_commit": "501fc5fa266ca4c218b9dd5e5d6c607b05fb81e0",
+  "changed_path": "codex-rs/http-client/src/route_aware_client_pool_tests.rs",
+  "preimage_blob": "e3848397bd5b646cb99cacda2ae6a21f1170e0cc",
+  "postimage_blob": "bffc6cae8701c393646dbfc7867fd1692efeaac9",
+  "donor_pr": 2982,
+  "donor_head": "86df62990c48984566dbb95c4726b10dd618a52e",
+  "source_is_exact_donor_file": true,
+  "original_failure": {
+    "run": 40488922363,
+    "job": 122138013582,
+    "platform": "macos-15",
+    "test": "route_aware_client_pool::tests::reqwest_default_route_preserves_transport_redirects",
+    "original_result": "84 PASS / 1 FAIL",
+    "error": "macOS accepted stream read returned Os code 35 WouldBlock; client reported hyper IncompleteMessage"
+  },
+  "correction": "Reset accepted stream to blocking mode and add two-second socket read timeout; preserve original redirect, request, response and assertions",
+  "production_code_modified": false,
+  "required_ci_modified": false,
+  "lockfiles_modified": false,
+  "security_assertions_removed": false,
+  "verification": {
+    "exact_donor_blob_confirmed": true,
+    "native_owning_on_composed_head": "PENDING",
+    "full_blocking_ci": "PENDING",
+    "rustfmt_clippy": "PENDING",
+    "qualification": "NOT_CLOSED"
+  },
+  "remaining_blockers": [
+    "exact-source macOS redirect owning PASS",
+    "Windows outside-root DELETE",
+    "AppServer plugin TTL",
+    "five RustSec advisories",
+    "P38–P41 combined native/required gates",
+    "authentic owner-backed state/action/outcome policy episodes",
+    "target-device p95/p99/energy"
+  ]
+}
