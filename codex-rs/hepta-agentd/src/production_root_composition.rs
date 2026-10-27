@@ -37,6 +37,7 @@ use crate::AgentdUnixCognitiveCheckpointTransport;
 use crate::AgentdUnixFinalUseGrantProvider;
 use crate::HOST_AUTHORITY_BOOTSTRAP_V1;
 use crate::HostAuthorityPublicBootstrapV1;
+use crate::root_failure_report::RootClientPhase;
 use crate::root_observation_diagnostic::AttachStage;
 use crate::root_writer_proof::VerifiedRootWriterProof;
 
@@ -173,7 +174,13 @@ pub async fn attach_root_production_host(
     .map_err(protocol)?;
     session.diagnose_attach(AttachStage::Connected);
     if session.authority() != *bootstrap_proof.authority()
-        || session.revocations().map_err(protocol)? != bundle.revocations
+        || session
+            .revocations()
+            .inspect_err(|error| {
+                session.diagnose_failure(RootClientPhase::InitialRevocations, *error);
+            })
+            .map_err(protocol)?
+            != bundle.revocations
     {
         return Err(refused("bootstrap differs from original Root observation"));
     }
@@ -258,6 +265,9 @@ pub async fn attach_root_production_host(
     session
         .activate_final_use_owners(vec![device.clone(), notes.clone()])
         .await
+        .inspect_err(|error| {
+            session.diagnose_failure(RootClientPhase::ActivateConsumers, *error);
+        })
         .map_err(protocol)?;
     session.diagnose_attach(AttachStage::ReadingCurrent);
     let current_receipt = read_original_current(&transport, &bundle).await?;

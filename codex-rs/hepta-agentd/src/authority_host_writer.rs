@@ -9,6 +9,8 @@ use crate::HostAuthorityWriterObservationV2;
 use crate::HostAuthorityWriterRegistration;
 use crate::HostSignedWriterAuthorizationV1;
 use crate::HostWriterAuthorizationReadResponseV1;
+use crate::root_failure_report::RootServicePhase;
+use crate::root_failure_report::service_io_failure;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
 
@@ -118,15 +120,20 @@ impl RegisteredWriter {
             (1, HOST_WRITER_AUTHORIZATION_V1) | (2, HOST_AUTHORITY_OBSERVATION_V2) => {}
             _ => return Err(HostIssuerTransportError::InvalidRequest),
         }
+        // Local scalar only; reporting happens after with_live releases its fence.
+        let failed_phase = std::cell::Cell::new(RootServicePhase::WriterObservation);
         self.registration
             .with_live(&self.leases, |store_revision| {
+                failed_phase.set(RootServicePhase::WriterProof);
                 let proof = issuer.retained_writer_authorization(&self.registration)?;
                 if proof != self.proof {
                     return Err(io::Error::other("retained writer proof changed"));
                 }
+                failed_phase.set(RootServicePhase::WriterRevocations);
                 let revocations = issuer.revocations()?;
                 // All blocking reads precede this final projection. Nothing after
                 // it writes a clock or substitutes a durable future ceiling for now.
+                failed_phase.set(RootServicePhase::WriterProjection);
                 let observation = if request.operation == HOST_AUTHORITY_OBSERVATION_V2 {
                     // Cover the complete request-start freshness lifetime with
                     // the already durable projection. This is a fixed producer
@@ -138,11 +145,13 @@ impl RegisteredWriter {
                     clock.refresh_projection()
                 }
                 .map_err(io::Error::other)?;
+                failed_phase.set(RootServicePhase::WriterLeaseAfter);
                 validate_observation_lease(
                     &self.registration.authority_lease,
                     &revocations,
                     observation.observed_unix_ms,
                 )?;
+                failed_phase.set(RootServicePhase::WriterEncoding);
                 if request.operation == HOST_WRITER_AUTHORIZATION_V1 {
                     return encode_bounded(
                         &HostWriterAuthorizationReadResponseV1 {
@@ -177,6 +186,9 @@ impl RegisteredWriter {
                     16 * 1024,
                 )
                 .map_err(io::Error::other)
+            })
+            .inspect_err(|error| {
+                service_io_failure(failed_phase.get(), error);
             })
             .map_err(unavailable)
     }

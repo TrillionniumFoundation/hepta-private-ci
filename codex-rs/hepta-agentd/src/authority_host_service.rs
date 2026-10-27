@@ -21,6 +21,8 @@ use crate::AgentdIdentity;
 use crate::AuthBusObjectiveBody;
 use crate::AuthBusObjectiveIngress;
 use crate::DeploymentFinalUseIssuer;
+use crate::root_failure_report::RootServicePhase;
+use crate::root_failure_report::service_failure;
 
 #[path = "authority_host_launch.rs"]
 pub(super) mod launch;
@@ -156,10 +158,23 @@ impl HostAuthorityService {
         if matches!(lane, HostAuthorityLane::Checkpoint)
             && let Some(checkpoint) = &self.checkpoint
         {
-            checkpoint.validate_peer(policy.peer).map_err(unavailable)?;
+            checkpoint
+                .validate_peer(policy.peer)
+                .map_err(unavailable)
+                .inspect_err(|error| {
+                    service_failure(lane, RootServicePhase::CheckpointPeer, *error);
+                })?;
         }
-        let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)?;
-        while channel.exchange(|bytes| self.handle(lane, bytes))? {}
+        let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)
+            .inspect_err(|error| {
+                service_failure(lane, RootServicePhase::ChannelOpen, *error);
+            })?;
+        while channel
+            .exchange(|bytes| self.handle(lane, bytes))
+            .inspect_err(|error| {
+                service_failure(lane, RootServicePhase::Exchange, *error);
+            })?
+        {}
         Ok(())
     }
 

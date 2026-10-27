@@ -91,6 +91,8 @@ pub use authority_host_service::HostAuthorityService;
 #[cfg(target_os = "linux")]
 mod root_authority_session;
 #[cfg(target_os = "linux")]
+mod root_failure_report;
+#[cfg(target_os = "linux")]
 mod root_observation_cache;
 #[cfg(target_os = "linux")]
 mod root_observation_diagnostic;

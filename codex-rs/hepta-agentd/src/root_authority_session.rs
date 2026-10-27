@@ -9,6 +9,8 @@ use crate::HostAuthorityObservationRequestV2;
 use crate::HostAuthorityObservationResponseV2;
 use crate::HostWriterAuthorizationReadRequestV1;
 use crate::HostWriterAuthorizationReadResponseV1;
+use crate::root_failure_report::RootClientPhase;
+use crate::root_failure_report::client_failure;
 use crate::root_observation_cache::MAX_AGE_NS;
 use crate::root_observation_cache::ObservationReadError;
 use crate::root_observation_cache::RootObservationCache;
@@ -170,10 +172,15 @@ impl AgentdRootAuthoritySession {
         lifetime: Duration,
         trust: AgentdRootWriterTrust,
     ) -> Result<Self, AgentdRootAuthorityError> {
-        let created = boottime_ns()?;
+        let created = boottime_ns().inspect_err(|error| {
+            client_failure(RootClientPhase::BootstrapClock, *error, None);
+        })?;
         let boot_id = peer.boot_id.clone();
         let stream =
-            RootObservationStream::from_stream(stream, peer, root_pidfd, timeout, lifetime)?;
+            RootObservationStream::from_stream(stream, peer, root_pidfd, timeout, lifetime)
+                .inspect_err(|error| {
+                    client_failure(RootClientPhase::BootstrapStream, *error, None);
+                })?;
         Self::connect_owned_stream(stream, boot_id, created, lifetime, trust).await
     }
     async fn connect_owned_stream(
@@ -183,16 +190,32 @@ impl AgentdRootAuthoritySession {
         lifetime: Duration,
         trust: AgentdRootWriterTrust,
     ) -> Result<Self, AgentdRootAuthorityError> {
+        let diagnostics = stream.diagnostics();
         let response: HostWriterAuthorizationReadResponseV1 = stream
             .read(&HostWriterAuthorizationReadRequestV1 {
                 schema_version: 1,
                 operation: HOST_WRITER_AUTHORIZATION_V1.into(),
             })
-            .await?;
+            .await
+            .inspect_err(|error| {
+                client_failure(RootClientPhase::WriterProofRead, *error, Some(&diagnostics));
+            })?;
         if response.schema_version != 1 || response.operation != HOST_WRITER_AUTHORIZATION_V1 {
+            client_failure(
+                RootClientPhase::WriterProofShape,
+                AgentdRootAuthorityError::Refused,
+                Some(&diagnostics),
+            );
             return Err(AgentdRootAuthorityError::Refused);
         }
-        let proof = VerifiedRootWriterProof::verify(response.proof, &trust)?;
+        let proof =
+            VerifiedRootWriterProof::verify(response.proof, &trust).inspect_err(|error| {
+                client_failure(
+                    RootClientPhase::WriterProofVerification,
+                    *error,
+                    Some(&diagnostics),
+                );
+            })?;
         let live = Arc::new(LiveRoot {
             proof,
             cache: RootObservationCache::with_diagnostics(boot_id, stream.diagnostics()),
@@ -207,14 +230,26 @@ impl AgentdRootAuthoritySession {
             consumers: Mutex::new(Vec::new()),
             serial: tokio::sync::Mutex::new(()),
         });
-        let next_refresh_at = refresh(&live, &stream).await?;
+        let next_refresh_at = refresh(&live, &stream).await.inspect_err(|error| {
+            client_failure(
+                RootClientPhase::InitialObservation,
+                *error,
+                Some(&diagnostics),
+            );
+        })?;
         let worker =
             worker::RootObservationWorker::start(Arc::clone(&live), stream, next_refresh_at)
-                .await?;
+                .await
+                .inspect_err(|error| {
+                    client_failure(RootClientPhase::ReactorStart, *error, Some(&diagnostics));
+                })?;
         Ok(Self { live, worker })
     }
     pub(crate) fn diagnose_attach(&self, stage: AttachStage) {
         self.live.cache.diagnostics.attach(stage);
+    }
+    pub(crate) fn diagnose_failure(&self, phase: RootClientPhase, error: AgentdRootAuthorityError) {
+        client_failure(phase, error, Some(&self.live.cache.diagnostics));
     }
     pub fn clock(&self) -> Arc<dyn AuthorityClock> {
         self.live.clone()
