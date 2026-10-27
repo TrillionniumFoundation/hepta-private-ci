@@ -1,0 +1,44 @@
+{
+  "bazel_execution_completed_locally": false,
+  "blank_context_line_style": "Empty context line omits the optional single-space marker; strict git apply and GNU patch --fuzz=0 both pass.",
+  "cargo_dependencies_or_deny_policy_changed": false,
+  "earlier_fuzzy_check_preserved": "ZLIB_INITIAL_PATCH_CHECK.json",
+  "git_apply_check_exit": 0,
+  "observed_failure": {
+    "cause": "snapshot.ubuntu.com fixed zlib download returned HTTP 503",
+    "jobs": [
+      122083800688,
+      122083800213
+    ],
+    "run": 40472591263
+  },
+  "patch_apply": "patching file rs/private/rustc_repository.bzl\n",
+  "patch_dry_run": "checking file rs/private/rustc_repository.bzl\n",
+  "patched_file_sha256": "6264c2735940560b45f6f0bea37556f6ca6dc65abbfc1aa0db63ecc435950fd4",
+  "repository_patch_sha256": "0dcc8525c68136b9572d832e28b8df601601368ff1d0b9de411d32adbc4afa5c",
+  "schema": "hepta.ci.zlib-mirror-byte-proof.v1",
+  "strict_context_fix": "Regenerated three-context-line hunk, preserving actual bytes; first handwritten hunk incorrectly omitted a trailing context line.",
+  "upstream_file_sha256": "c4a9921766e040c48ee39f7d07523b5864c861e040cb0634d3191ee370939cea",
+  "upstream_git_blob": "b7f73bea047983de9b728e811609db04c2c308cd",
+  "upstream_tag": "v0.0.96",
+  "verified_packages": [
+    {
+      "architecture": "aarch64",
+      "bytes": 61736,
+      "fallback": "https://snapshot.ubuntu.com/ubuntu/20260801T000000Z/pool/main/z/zlib/zlib1g_1.3.dfsg-3.1ubuntu2.1_arm64.deb",
+      "http_status": 200,
+      "sha256": "cbe3d39ec32d3cc27c021ae4af11e7c67bdf9d700d573207e0941d4038056278",
+      "unchanged_pinned_digest": true,
+      "url": "https://launchpad.net/ubuntu/+archive/primary/+files/zlib1g_1.3.dfsg-3.1ubuntu2.1_arm64.deb"
+    },
+    {
+      "architecture": "x86_64",
+      "bytes": 62850,
+      "fallback": "https://snapshot.ubuntu.com/ubuntu/20260801T000000Z/pool/main/z/zlib/zlib1g_1.3.dfsg-3.1ubuntu2.1_amd64.deb",
+      "http_status": 200,
+      "sha256": "7074b6a2f6367a10d280c00a1cb02e74277709180bab4f2491a2f355ab2d6c20",
+      "unchanged_pinned_digest": true,
+      "url": "https://launchpad.net/ubuntu/+archive/primary/+files/zlib1g_1.3.dfsg-3.1ubuntu2.1_amd64.deb"
+    }
+  ]
+}
