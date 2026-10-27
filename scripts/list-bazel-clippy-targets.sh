@@ -19,27 +19,52 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Resolve the dynamic targets before printing anything so callers do not
-# continue with a partial list if `bazel query` fails. Target discovery is
-# local on all platforms.
-manual_rust_test_targets="$(
-  ./.github/scripts/run-bazel-query-ci.sh \
-    --output=label \
-    -- 'kind("rust_test rule", attr(tags, "manual", //codex-rs/... except //codex-rs/v8-poc/...))'
+# Reuse the build wrapper's target, host/exec, cache, and credential policy.
+# Configured discovery is required: loading-only query also returns helpers
+# whose target_compatible_with rejects the platform used by the Clippy build.
+query_wrapper_args=(--configured-query)
+query_bazel_args=(--config=clippy)
+case "${RUNNER_OS:-}" in
+  Windows)
+    if [[ $windows_cross_compile -eq 1 ]]; then
+      query_wrapper_args+=(--windows-cross-compile)
+    else
+      query_wrapper_args+=(--windows-msvc-host-platform)
+      query_bazel_args+=(--platforms=//:windows_x86_64_msvc)
+    fi
+    ;;
+  Linux | macOS)
+    if [[ $windows_cross_compile -eq 1 ]]; then
+      echo "Windows cross discovery requires RUNNER_OS=Windows." >&2
+      exit 1
+    fi
+    ;;
+  "")
+    if [[ $windows_cross_compile -eq 1 ]]; then
+      echo "Windows cross discovery requires RUNNER_OS=Windows." >&2
+      exit 1
+    fi
+    # The public local recipe invokes plain bazel build --config=clippy.
+    query_wrapper_args+=(--local-default-config)
+    ;;
+  *)
+    echo "Unknown Bazel Clippy runner role: ${RUNNER_OS}" >&2
+    exit 1
+    ;;
+esac
+
+manual_rust_test_records="$(
+  ./.github/scripts/run-bazel-ci.sh \
+    "${query_wrapper_args[@]}" -- cquery \
+    "${query_bazel_args[@]}" \
+    --output=starlark \
+    --starlark:expr='("incompatible" if "IncompatiblePlatformProvider" in providers(target) else "compatible") + "\t" + str(target.label)' \
+    -- 'config(kind("rust_test rule", attr(tags, "manual", //codex-rs/... except //codex-rs/v8-poc/...)), target)'
 )"
-if [[ "${RUNNER_OS:-}" != "Windows" ]]; then
-  # Non-Windows clippy jobs lint the native test binaries; the
-  # Windows-cross binaries exist only for the fast Windows test leg.
-  manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -v -- '-windows-cross-bin$' || true)"
-elif [[ $windows_cross_compile -eq 1 ]]; then
-  # `bazel query` is intentionally pre-analysis and does not remove targets
-  # made incompatible by `target_compatible_with`. Sharded integration tests
-  # add native-only manual helpers such as `core-all-test-bin`, plus separate
-  # `core-all-test-windows-cross-bin` helpers for the Windows cross leg. Keep
-  # the Windows helpers and unit-test helpers, but do not pass the native-only
-  # sharded integration helpers as explicit clippy targets.
-  manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -v -- '-test-bin$' || true)"
-fi
+manual_rust_test_targets="$(
+  printf '%s\n' "${manual_rust_test_records}" \
+    | python3 ./.github/scripts/bazel_clippy_target_records.py
+)"
 
 printf '%s\n' \
   "//codex-rs/..." \
