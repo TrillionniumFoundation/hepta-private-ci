@@ -89,6 +89,18 @@ and that the actual Root session's post-refresh check preserves the feed only
 for Busy. Backward clocks, clock failure and poisoned locks remain permanently
 fenced alongside the existing expiry and revocation tests.
 
+The earlier cache-lock concurrency stage passed 306 Agentd library tests with
+26 skipped qualifications in 44.364 seconds, including its five concurrency
+regressions. These historical results do not qualify the independent-reactor
+change below or a privileged Root or native guest run.
+
+The earlier `root-launch-actual-root-01` failure remains unclassified: it logged
+only `root writer observation is unavailable or fenced`, without the failing
+phase, sample age or cache reason. Its successful `02` comparison used the same
+test executable but a different client-helper ELF. The cache fixes establish two
+reachable concurrency defects; they do not retrospectively establish either as
+the cause of that particular failure. Preserve both original runs.
+
 ### Application executor independence
 
 After the original bootstrap proof and first observation, the session moves its
@@ -130,16 +142,6 @@ assertions. After releasing the barrier it waits for an actual late reply before
 checking that authority stays fenced. The former application-worker starvation
 fixture is obsolete because application work no longer owns the feed reactor;
 its earlier failing run remains evidence rather than a qualified result.
-The owning Agentd library passed 306 tests with 26 skipped qualifications in
-44.364 seconds for this stage. That includes the five new concurrency regressions;
-it is not a rerun of the privileged Root or native guest qualification.
-
-The earlier `root-launch-actual-root-01` failure remains unclassified: it logged
-only `root writer observation is unavailable or fenced`, without the failing
-phase, sample age or cache reason. Its successful `02` comparison used the same
-test executable but a different client-helper ELF. These fixes establish two
-reachable concurrency defects; they do not retrospectively establish either as
-the cause of that particular failure. Preserve both original runs.
 
 
 ## Bounded authority failure diagnostics
