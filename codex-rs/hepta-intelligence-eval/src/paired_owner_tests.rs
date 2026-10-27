@@ -297,7 +297,19 @@ fn actual_locked_file_replays_mixed_profiles_and_retains_rollback_anchor() {
     owner
         .consume(&ope("legacy", d("old cohort")))
         .expect("legacy");
+    // On Windows the exclusive owner lock also excludes another file handle
+    // from reading a backup. Close the owner before snapshotting committed bytes.
+    let legacy_anchor = owner.anchor();
+    drop(owner);
     let backup = fs::read(&path).expect("backup");
+    let store = LockedFileFinalHoldoutCasStoreV1::recover(
+        open(),
+        d("binding"),
+        Some(legacy_anchor),
+    )
+    .expect("reopen legacy");
+    let mut owner = FencedFinalHoldoutOwnerV1::recover(store, d("binding"), fence(2))
+        .expect("recover legacy owner");
     let plan = paired("p");
     let receipt = owner.consume_paired(&plan).expect("paired");
     let anchor = owner.anchor();
@@ -305,7 +317,7 @@ fn actual_locked_file_replays_mixed_profiles_and_retains_rollback_anchor() {
     let store = LockedFileFinalHoldoutCasStoreV1::recover(open(), d("binding"), Some(anchor))
         .expect("reopen");
     let mut owner =
-        FencedFinalHoldoutOwnerV1::recover(store, d("binding"), fence(2)).expect("recover owner");
+        FencedFinalHoldoutOwnerV1::recover(store, d("binding"), fence(3)).expect("recover owner");
     assert_eq!(
         owner.consume_paired(&plan).expect("replay").record_digest,
         receipt.record_digest
