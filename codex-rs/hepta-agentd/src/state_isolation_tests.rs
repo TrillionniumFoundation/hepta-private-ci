@@ -119,7 +119,7 @@ async fn original_drain_rpc_refuses_running_and_never_fabricates_quiescence() {
         .expect("original supervisor transition");
     // There is no App Server acknowledgement or automation owner in this
     // control. Zero reported turns must never substitute for the missing cut.
-    let expected = crate::DrainSnapshot {
+    let expected = codex_hepta_agent_protocol::DrainSnapshot {
         admission_closed: true,
         running_turns: 0,
         drained: false,

@@ -3,6 +3,7 @@ use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
+use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_automation::AuthorizedEffectIntent;
 use codex_hepta_automation::AutomationCalendarScheduleV2;
 use codex_hepta_automation::AutomationMissedRunPolicy;
@@ -35,7 +36,6 @@ use crate::AgentdResponse;
 use crate::AuthBusObjectiveIngress;
 use crate::AutomationEffectReconcileSnapshot;
 use crate::AutomationEffectSnapshot;
-use crate::DrainSnapshot;
 use crate::EventBatch;
 use crate::HealthSnapshot;
 use crate::LifecycleSnapshot;

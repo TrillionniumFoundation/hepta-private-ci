@@ -1,0 +1,63 @@
+{
+  "scope": "real local command attempts; no Rust1.96 compile/test claim",
+  "checks": [
+    {
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--no-capture"
+      ],
+      "status": "UNAVAILABLE",
+      "error": "[Errno 2] No such file or directory: 'just'"
+    },
+    {
+      "argv": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host"
+      ],
+      "status": "UNAVAILABLE",
+      "error": "[Errno 2] No such file or directory: 'just'"
+    },
+    {
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "status": "UNAVAILABLE",
+      "error": "[Errno 2] No such file or directory: 'just'"
+    },
+    {
+      "argv": [
+        "/workspace/scratch/301262829a43/pon-build-inputs/unpacked/toolchain/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "skip_children=true",
+        "--check",
+        "codex-rs/hepta-agentd/src/client.rs",
+        "codex-rs/hepta-agentd/src/state_isolation_tests.rs"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\nWarning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\n",
+      "scope": "Rust1.95 syntax-format precheck, not required Rust1.96 compile or just gate"
+    }
+  ],
+  "actual_type_paths": {
+    "DrainSnapshot": "codex_hepta_agent_protocol::DrainSnapshot; protocol/src/lib.rs actual public type",
+    "AgentdControlServer": "crate::AgentdControlServer is imported by lib.rs from original private control owner",
+    "AgentdClient": "crate::AgentdClient is original lib.rs public re-export",
+    "predicate": "complete original fields and automation-dependent drained semantics unchanged"
+  },
+  "api_conclusion_correction": "continue-on-error step API conclusion=success did not establish actual scoped_rust success; actual log is compilation exit101 with zero tests"
+}
