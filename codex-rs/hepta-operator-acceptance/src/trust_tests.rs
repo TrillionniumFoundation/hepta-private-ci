@@ -261,3 +261,7 @@ fn set_private_permissions(_path: &Path) {
 #[cfg(unix)]
 #[path = "sshsig_differential_tests.rs"]
 mod differential;
+
+#[cfg(windows)]
+#[path = "trust_windows_signature_trace_tests.rs"]
+mod windows_signature_trace;

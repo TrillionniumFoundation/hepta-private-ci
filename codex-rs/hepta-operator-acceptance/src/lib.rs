@@ -428,3 +428,6 @@ mod test_support;
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(all(test, windows))]
+mod windows_signature_trace;

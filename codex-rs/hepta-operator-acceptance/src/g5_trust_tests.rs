@@ -392,3 +392,7 @@ fn set_private_permissions(_path: &Path) {
             .expect("private signature permissions");
     }
 }
+
+#[cfg(windows)]
+#[path = "g5_windows_signature_trace_tests.rs"]
+mod windows_signature_trace;

@@ -26,3 +26,14 @@ See [canonical API, callers and evidence](../utils/path-utils/PRIVATE_ARTIFACTS_
 and [SSHSIG contract](SSHSIG_NATIVE.md). Receipt formats, identity, signer policy,
 nonce/replay and acknowledged-history rules are unchanged; a failed partial
 write cannot be silently replayed or acknowledged as successful.
+
+The separate `hepta-windows-signature-trace` diagnostic runs two ignored
+collectors using the unchanged original trust/G5 fixture generation and original
+production verification calls. It records same-held-object full 128-bit file ID,
+owner/DACL, effective token user/owner, canonical admission errors, and the actual
+OpenSSH fixture executable. It never reads private-key contents or changes an
+existing ACL. Original functional cases and their criteria remain unchanged.
+`COLLECTED_DIAGNOSTIC_ONLY` means both observations are complete and source/tool
+identities stayed fixed; an observed private-identity or SSHSIG refusal remains
+a functional failure. This trace does not qualify Windows inherited input or
+the original 26-case scope. Keep the original 91-case driver and scope bytes.

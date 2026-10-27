@@ -38,7 +38,7 @@ rust_test(
         "@crates//:pretty_assertions",
         "@crates//:tempfile",
     ] + select({
-        "@platforms//os:windows": ["@crates//:windows-sys"],
+        "@platforms//os:windows": ["@crates//:windows-sys-0.52.0"],
         "//conditions:default": [],
     }),
 )
