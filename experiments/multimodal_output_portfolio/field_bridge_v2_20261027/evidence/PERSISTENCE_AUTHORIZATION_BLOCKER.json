@@ -1,0 +1,35 @@
+{
+  "action": "Save the verified V2 archive and its verification report to the connected ChatGPT Library account.",
+  "alternative_egress_attempted": false,
+  "approval_source": "exec_command automatic escalation review",
+  "attempts": [
+    {
+      "result": "network request failed before preparation or mutation",
+      "stage": "sandboxed hosted-app tools/list"
+    },
+    {
+      "result": "automatic approval rejected before process creation",
+      "stage": "network-enabled helper launch"
+    }
+  ],
+  "files": [
+    {
+      "bytes": 550161476,
+      "local_path": "/tmp/hepta-v2-final-20261027/hepta_field_bridge_v2_20261027_evidence.tar.gz",
+      "name": "hepta_field_bridge_v2_20261027_evidence.tar.gz",
+      "sha256": "7351ff2b694bb37bcd50e7d5be08e601f525516c9ba214a8d912d34f007a4607"
+    },
+    {
+      "bytes": 56583,
+      "local_path": "/workspace/scratch/9b2cd2b58376/bridge_v2_archive/ARCHIVE_AND_RESTORE_VERIFICATION.json",
+      "name": "ARCHIVE_AND_RESTORE_VERIFICATION.json",
+      "sha256": "02db4d2386e1b2b092a1e2e784ab39f83a4131addcd77c11eaa82c4b78c41e82"
+    }
+  ],
+  "library_file_created": false,
+  "local_archive_and_restore_passed": true,
+  "required_user_confirmation": "Allow these two verified files to be saved to your ChatGPT Library.",
+  "schema": "hepta.field-bridge.v2.persistence-authorization-blocker.1",
+  "status": "awaiting_explicit_user_authorization",
+  "why_approval_is_required": "Automatic approval review rejected the network-enabled upload: the files contain private experimental/model data and the user has not explicitly authorized these specific files for this destination."
+}
