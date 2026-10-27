@@ -340,11 +340,18 @@ async fn session(
 async fn real_selected_initial_serves_ordinary_context_then_refuses_revocation() -> TestResult<()> {
     let (input, mut worker, bytes) = input_and_worker("ordinary-selected-initial")?;
     let mut fixture = Fixture::with_profile(
-        input.output.join("ordinary-owner"),
+        input.output.join("o"),
         &bytes,
         Digest32::of_bytes(SMOLLM_PUBLIC_INITIAL_PROFILE_V2),
     )?;
-    let config = fixture.config("ordinary-body")?;
+    let config = fixture.config("b")?;
+    // A real Agentd binds this pathname: retain a bound below the Unix sun_path
+    // budget, rather than silently skipping the ordinary-session integration test.
+    #[cfg(unix)]
+    std::assert!(
+        config.identity().control_socket.as_os_str().as_encoded_bytes().len() < 104,
+        "ordinary Agentd socket path must fit the shortest supported Unix sun_path"
+    );
     worker.action_completions = seed_actions(&config, i64::try_from(fixture.now)?).await?;
     let (material, current) = fixture.public_material()?;
     let report = session(
