@@ -1,0 +1,249 @@
+name: Hepta frozen lifecycle and policy qualification
+
+# CI-only PR: qualify the frozen product source, never the workflow PR's tree.
+# This opt-in hosted-runner fixture job does not replace any existing gate or
+# qualify a deployed Root ceremony, native device, policy trial, or product.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/hepta-lifecycle-policy-qualification.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-lifecycle-policy-qualification-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: 4223fc77944e9beb5651df063158b22ae1a4f701
+  SOURCE_TREE: 7c19c9903d4e82baf3a61111214ff3fe46605cef
+  FORMAT_BASE_SHA: de0ddaa41bd91c4f46a2f1b6034d25fa84c4469c
+  HEPTA_CI_LANE: source-head
+  RUSTUP_TOOLCHAIN: 1.96.0
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_TERM_COLOR: never
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  qualification:
+    name: Frozen 4223fc lifecycle and policy (Rust 1.96)
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out the exact frozen product without retained credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Record separate workflow and tested identities
+        id: source
+        env:
+          WORKFLOW_SHA: ${{ github.workflow_sha }}
+          WORKFLOW_REF: ${{ github.workflow_ref }}
+          WORKFLOW_PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          WORKFLOW_PR_BASE: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(id -u)" -ne 0
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$SOURCE_TREE"
+          test -z "$(git status --porcelain)"
+          export HEPTA_QUALIFICATION_DIR="$RUNNER_TEMP/hepta-lifecycle-policy-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          export HEPTA_CHECKPOINT_TEST_ROOT="$RUNNER_TEMP/hepta-checkpoint-fixtures-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$HEPTA_QUALIFICATION_DIR"
+          {
+            printf 'TESTED_SHA=%s\n' "$SOURCE_SHA"
+            printf 'HEPTA_QUALIFICATION_DIR=%s\n' "$HEPTA_QUALIFICATION_DIR"
+            printf 'HEPTA_CHECKPOINT_TEST_ROOT=%s\n' "$HEPTA_CHECKPOINT_TEST_ROOT"
+          } >> "$GITHUB_ENV"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import tomllib
+
+          toolchain = tomllib.loads(Path("codex-rs/rust-toolchain.toml").read_text())
+          if toolchain["toolchain"]["channel"] != "1.96.0":
+              raise SystemExit("frozen source no longer selects Rust 1.96.0")
+          record = {
+              "source_sha": os.environ["SOURCE_SHA"],
+              "source_tree": os.environ["SOURCE_TREE"],
+              "format_base_sha": os.environ["FORMAT_BASE_SHA"],
+              "workflow_sha": os.environ["WORKFLOW_SHA"],
+              "workflow_ref": os.environ["WORKFLOW_REF"],
+              "workflow_pr_head": os.environ["WORKFLOW_PR_HEAD"],
+              "workflow_pr_base": os.environ["WORKFLOW_PR_BASE"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "toolchain": toolchain["toolchain"],
+              "minimum_passing_tests": {
+                  "fleet": 4, "memory_root": 3, "current_cas_root": 1,
+                  "policy_and_reconciler": 24,
+              },
+              "scope": "original repository component fixtures on a hosted Linux runner",
+              "product_qualified": False,
+              "physical_device_qualified": False,
+          }
+          path = Path(os.environ["HEPTA_QUALIFICATION_DIR"]) / "scope.json"
+          path.write_text(json.dumps(record, indent=2) + "\n")
+          PY
+
+      - name: Fetch only the exact formatting comparison input
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/hepta_ci_history.py --commit "$FORMAT_BASE_SHA"
+
+      - name: Prepare the original project build environment
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: lifecycle-policy-qualification
+
+      - name: Install the frozen repository compiler
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+          components: clippy,rustfmt,rust-src
+
+      - name: Install the existing project nextest version
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: nextest@0.9.103
+
+      - name: Install the original native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo -n apt-get update
+          sudo -n apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          test -x /usr/bin/setpriv
+
+      - name: Resolve the original checksum-verified V8 pair
+        env:
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Record tool versions and require unchanged prepared source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(id -u)" -ne 0
+          test "$(rustc --version | cut -d ' ' -f 2)" = "1.96.0"
+          {
+            rustc -vV
+            cargo --version
+            just --version
+            cargo nextest --version
+          } | tee "$HEPTA_QUALIFICATION_DIR/tools.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$SOURCE_TREE"
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
+          df -h "$CARGO_TARGET_DIR" | tee "$HEPTA_QUALIFICATION_DIR/disk-before.txt"
+          python3 - <<'PY'
+          import os
+          import shutil
+
+          if shutil.disk_usage(os.environ["CARGO_TARGET_DIR"]).free < 22 * 1024**3:
+              raise SystemExit("at least 22 GiB required for scoped Agentd build and clippy")
+          PY
+          # Only fixture data, never a service root or an installation prefix.
+          sudo -n install -d -o root -g root -m 0700 -- "$HEPTA_CHECKPOINT_TEST_ROOT"
+
+      - name: Format the original changed sources without accepting rewritten bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$HEPTA_QUALIFICATION_DIR/format.json" --timeout-seconds 600 -- \
+            just fmt --base "$FORMAT_BASE_SHA"
+
+      - name: Run the four original Fleet lifecycle regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$HEPTA_QUALIFICATION_DIR/fleet.json" --minimum-tests 4 \
+            --timeout-seconds 3600 -- \
+            just test --locked -p codex-hepta-fleet --test spawn_lifecycle --retries 0
+
+      - name: Run original Agentd CPU policy and same-K-D reconciler tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$HEPTA_QUALIFICATION_DIR/policy-and-reconciler.json" --minimum-tests 24 \
+            --timeout-seconds 5400 -- \
+            just test --locked -p codex-hepta-agentd --lib --retries 0 \
+            -E 'test(cpu_policy) or test(actual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend_unknown)'
+
+      # Cargo and build scripts still run as the ordinary runner user. Nextest
+      # applies this runner only when listing/running the selected test binary.
+      # Preserve only the named fixture path and the original just stack limit.
+      - name: Run only the three original Root installation fixtures
+        env:
+          CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUNNER: sudo -n --preserve-env=HEPTA_CHECKPOINT_TEST_ROOT,RUST_MIN_STACK --
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$HEPTA_QUALIFICATION_DIR/memory-root.json" --minimum-tests 3 \
+            --timeout-seconds 1800 -- \
+            just test --locked -p codex-hepta-memory --test root_install_reentry \
+            --run-ignored only --test-threads 1 --retries 0 \
+            -E 'test(=killed_installer_reopens_exact_inode_and_pointer_without_republication) or test(=a_different_valid_independent_image_cannot_replace_an_unreleased_installation) or test(=ambiguous_partial_and_aliased_installations_are_preserved_and_refused)'
+
+      - name: Run only the original Root Current CAS reentry fixture
+        env:
+          CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUNNER: sudo -n --preserve-env=HEPTA_CHECKPOINT_TEST_ROOT,RUST_MIN_STACK --
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$HEPTA_QUALIFICATION_DIR/current-cas-root.json" --minimum-tests 1 \
+            --timeout-seconds 900 -- \
+            just test --locked -p codex-hepta-agentd --lib \
+            --run-ignored only --test-threads 1 --retries 0 \
+            -E 'test(interrupted_install_resumes_same_original_current_cas_without_republication)'
+
+      - name: Run the original owning-package lint fixer after the selected tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$HEPTA_QUALIFICATION_DIR/fix.json" --timeout-seconds 2700 -- \
+            just fix -p codex-hepta-fleet -p codex-hepta-memory -p codex-hepta-agentd --locked
+
+      - name: Require the frozen source to remain unchanged
+        if: always() && steps.source.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Keep any formatter/fixer changes for review. Do not restore them
+          # and then attach earlier passing tests to different source bytes.
+          git diff --binary HEAD > "$HEPTA_QUALIFICATION_DIR/source-changes.patch"
+          git status --porcelain > "$HEPTA_QUALIFICATION_DIR/source-status-after.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$SOURCE_TREE"
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
+          df -h "$CARGO_TARGET_DIR" > "$HEPTA_QUALIFICATION_DIR/disk-after.txt"
+          printf '%s %s\n' "$SOURCE_SHA" "$SOURCE_TREE" > "$HEPTA_QUALIFICATION_DIR/source-after.txt"
+
+      - name: Retain original command records and raw test logs
+        if: always() && steps.source.outcome == 'success'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-frozen-4223fc-lifecycle-policy-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.HEPTA_QUALIFICATION_DIR }}
+          if-no-files-found: error
+          retention-days: 14
