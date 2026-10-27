@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.appserver.unmaterialized-resume-guard.v1",
+  "date_utc": "2026-10-27",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "parent_pr": 4061,
+  "parent_head": "f30d5b6ff57412539a770fd494bee9e0a53064aa",
+  "source_commit": "6840b2fb0c7df3630233f0dbbcb1a7759d5171ad",
+  "source_blob": "1564dde360f834f71d4d36f8230064a1f4163234",
+  "originating_native_failure": {
+    "pr": 4060,
+    "run": 40438251787,
+    "job": 121972421454,
+    "test": "thread_resume_rejects_unmaterialized_thread",
+    "observed": "twice FAIL: expected JSON-RPC error, got response"
+  },
+  "failure_mechanism": "In resume_running_thread the running-but-unmaterialized branch persisted the store on thread/resume, then returned success; original fail-closed negative requires a non-resumable thread before first durable rollout.",
+  "change": "Return exact invalid_request(no rollout found for thread id ...) when read_stored_thread_for_read yields None; do not synthesize durability as a side effect. All materialized running-thread and cold-resume paths unchanged.",
+  "original_test": {
+    "path": "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+    "blob": "dd7a2a0ac42627200bfbce5a4ddf80e8781439ab",
+    "unchanged_from_parent": true,
+    "negative_assertion_preserved": true
+  },
+  "checks": {
+    "unique_source_anchor": true,
+    "guard_present": true,
+    "removed_only_unmaterialized_persist": true,
+    "original_test_blob_identical": true,
+    "local_rust_test_executed": false,
+    "owning_appserver_ci_passed": false,
+    "final_ci_success_claimed": false
+  },
+  "safety": {
+    "authority": "DENY_ALL",
+    "mode": "SHADOW_ONLY",
+    "production_activation_allowed": false,
+    "required_gates_changed": false,
+    "security_tests_relaxed": false,
+    "rust_dependencies_changed": false
+  },
+  "required_validation": [
+    "Original app-server v2 thread_resume_rejects_unmaterialized_thread native test",
+    "AppServer cold_resume_reresolves_persisted_active_permission_profile both history modes",
+    "all applicable AppServer/RPC regression suites",
+    "final composed blocking-ci, Architecture, Windows/macOS/Linux and V8 required checks"
+  ]
+}
