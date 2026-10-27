@@ -2,6 +2,7 @@
 //! This controlled test owns no production qualification or install credential.
 
 use super::agentd_tests::ordinary_session;
+use super::agentd_tests::restart_stopped_config;
 use super::agentd_tests::seed_actions;
 use super::*;
 use pretty_assertions::assert_eq;
@@ -215,25 +216,8 @@ async fn real_public_initial_three_rounds_hold_and_read_original_current() -> Te
                 "training changed the original CURRENT without a product credential".into(),
             );
         }
-        let registry = FleetRegistry::open_existing(HeptaFleetRoot::parse(&identity.fleet_root)?)?;
-        let stopped = registry.load_agent(&identity.agent_id)?.lifecycle;
-        if stopped.lifecycle != AgentLifecycle::Stopped {
-            return Err("previous ordinary incarnation did not stop before restart".into());
-        }
-        let starting = registry.compare_and_transition(
-            &identity.agent_id,
-            stopped.generation,
-            AgentLifecycle::Starting,
-        )?;
-        let config = AgentdConfig::load(
-            identity.fleet_root.clone(),
-            identity.agent_id.clone(),
-            starting.generation,
-            identity.home_root.clone(),
-            identity.run_root.clone(),
-            identity.home_root.clone(),
-            identity.workspace.clone(),
-        )?;
+        let config = restart_stopped_config(&identity)?;
+        let next_spawn_generation = config.identity().spawn_generation;
         let (next_input, mut worker, next_bytes) =
             input_and_worker(&format!("public-loop-session-{round}"))?;
         if next_input.parent_sha256 != input.parent_sha256 || next_bytes != bytes {
@@ -243,7 +227,7 @@ async fn real_public_initial_three_rounds_hold_and_read_original_current() -> Te
         effects = root.join(format!("ordinary-{round}"));
         let observed = ordinary_session(config, worker, &fixture, &effects, /*reads*/ 1).await?;
         if observed["parent"] != original_parent
-            || observed["spawn_generation"] != starting.generation
+            || observed["spawn_generation"] != next_spawn_generation
             || observed["current"]["head_digest"] != baseline.head_digest.to_string()
         {
             return Err(
