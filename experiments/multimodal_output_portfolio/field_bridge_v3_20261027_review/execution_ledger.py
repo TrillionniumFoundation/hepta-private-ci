@@ -240,7 +240,10 @@ def verification(item, bindings):
     aliases = {"verification_gradient_microsteps": "scheduled_gradient_microsteps",
         "verification_least_squares_solves": "least_squares_solves", "ridge_heads_rebuilt": "ridge_heads_rebuilt",
         "verification_native_ticks": "native_tick_calls", "generator_forward_calls": "generator_forward_calls",
-        "observer_forward_calls": "observer_forward_calls", "source_corpus_loads": "source_corpus_loads"}
+        "native_tick_calls": "native_tick_calls", "generator_forwards": "generator_forward_calls",
+        "observer_forward_calls": "observer_forward_calls", "observer_forwards": "observer_forward_calls",
+        "additional_generator_or_observer_calls": "metadata_join_generator_or_observer_calls",
+        "source_corpus_loads": "source_corpus_loads"}
     for name, target in aliases.items():
         if name in receipt:
             value = numeric({target: receipt[name]})[target]
@@ -254,8 +257,11 @@ def verification(item, bindings):
     durations = {"wall_ns": receipt.get("verification_wall_ns"), "cpu_ns": receipt.get("verification_cpu_ns")}
     if durations["wall_ns"] is None and "elapsed_seconds" in receipt:
         durations["wall_ns"] = round(receipt["elapsed_seconds"] * 1_000_000_000)
-    if "verification_native_ns" in receipt:
-        counts["native_ns"] = receipt["verification_native_ns"]
+    for name, target in (("verification_native_ns", "native_ns"), ("verification_bridge_roundtrip_ns", "bridge_roundtrip_ns")):
+        if name in receipt:
+            counts[target] = numeric({target: receipt[name]})[target]
+        elif isinstance(receipt.get("seeds"), dict) and receipt["seeds"] and all(name in seed for seed in receipt["seeds"].values()):
+            counts[target] = sum(numeric({target: seed[name]})[target] for seed in receipt["seeds"].values())
     return {"id": item["id"], "kind": item["kind"], "status": state, "receipt": item["receipt"],
         "components": [component("independent_verification_once", durations, counts)],
         "logical_work_and_cache": numeric(logical), "new_training_evidence": False,

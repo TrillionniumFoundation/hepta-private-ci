@@ -211,6 +211,32 @@ class ExecutionLedgerContracts(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Duplicated verification counters conflict"):
             aggregate(self.index, self.base)
 
+    def test_compatible_zero_aliases_per_seed_timers_and_unmeasured_join(self):
+        artifact = self.write(self.base / "verified-input.json", {"synthetic": True})
+        producer = self.source / "registered.py"
+        shared = {"passed": True, "input_sha256": sha(artifact), "script_sha256": sha(producer)}
+        records = {
+            "metadata": {"generator_forwards": 0, "observer_forwards": 0},
+            "selected_media": {"native_tick_calls": 0, "generator_forward_calls": 0},
+            "join": {"additional_generator_or_observer_calls": 0},
+            "native_session": {"verification_native_ticks": 12, "seeds": {
+                "17": {"verification_native_ns": 3, "verification_bridge_roundtrip_ns": 5},
+                "29": {"verification_native_ns": 7, "verification_bridge_roundtrip_ns": 11}}},
+        }
+        for name, fields in records.items():
+            receipt = self.write(self.base / (name + ".json"), {**shared, **fields})
+            self.index["verification"].append({"id": name, "kind": name, "status": "complete",
+                "receipt": self.binding(receipt), "sources": [self.binding(producer)], "artifacts": [self.binding(artifact)]})
+        result = aggregate(self.index, self.base)
+        costs = result["verification_costs"]
+        self.assertEqual(costs["metadata"]["counters"]["generator_forward_calls"], 0)
+        self.assertEqual(costs["metadata"]["counters"]["observer_forward_calls"], 0)
+        self.assertEqual(costs["selected_media"]["counters"]["native_tick_calls"], 0)
+        self.assertEqual(costs["join"]["counters"]["metadata_join_generator_or_observer_calls"], 0)
+        join = next(row for row in result["verification"] if row["id"] == "join")
+        self.assertIsNone(join["components"][0]["recorded_component_wall_ns"])
+        self.assertEqual(costs["native_session"]["nested_timers_ns"], {"native_ns": 10, "bridge_roundtrip_ns": 16})
+
 
 if __name__ == "__main__":
     unittest.main()
