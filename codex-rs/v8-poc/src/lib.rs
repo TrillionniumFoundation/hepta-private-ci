@@ -40,6 +40,12 @@ mod tests {
     }
 
     fn evaluate_expression(expression: &str) -> String {
+        // The Windows sandbox-enabled V8 artifact configures a process-wide
+        // address-space pool on the first isolate. Serialize only these
+        // independent test smoke evaluations to prevent concurrent init.
+        // Do not weaken production isolation, security, or Final-use checks.
+        static V8_SMOKE_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+        let _guard = V8_SMOKE_LOCK.lock().expect("V8 smoke lock");
         initialize_v8();
 
         let isolate = &mut v8::Isolate::new(Default::default());
