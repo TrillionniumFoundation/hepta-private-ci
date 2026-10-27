@@ -1,0 +1,37 @@
+{
+  "actual_bank_replay_started": false,
+  "change_scope": "Review-only completion binding and output-directory isolation before the one prespecified replay; no scientific source, replay sample, or tolerance changes.",
+  "contracts_added": [
+    "All eight sampled bank inputs must have hashes identical to seed17 COMPLETE.files before any replay marker or role loading.",
+    "The same eight inputs are rechecked after replay, and their pinned hashes are persisted in both START.json and REPLAY.json.",
+    "Missing completed-manifest entries and altered terminal-output bytes are rejected.",
+    "Replay output cannot be inside reference, bank, fit, development, audit, or final inventories; a new review location is accepted."
+  ],
+  "execution_still_requires": "Root handoff of all three successful bank completions and the published matching bank freeze.",
+  "new_scientific_model_outputs_generated_by_tests": false,
+  "new_source_roles_loaded_by_tests": false,
+  "passed": true,
+  "prespecified_replay_protocol_sha256": "f911a26a63b6a909b0a9d95bfd26fbf89296197765ab767dd807584911993013",
+  "prior_contract_file": "TRAINING_AUDITOR_CONTRACT.json",
+  "prior_contract_preserved": true,
+  "prior_contract_sha256": "c02593073b73971e5090ea228185dd5a942f2e0d7c721317f77cbdc1a7022d01",
+  "schema": "hepta.field-bridge.v3.training-auditor-preexecution-binding-contract.1",
+  "scientific_sources_modified": false,
+  "source_lines": {
+    "training_audit_common.py": 268,
+    "training_audit_contract_tests.py": 183,
+    "training_evidence_audit.py": 245,
+    "training_fit_audit.py": 144,
+    "training_replay.py": 206
+  },
+  "source_sha256": {
+    "training_audit_common.py": "42c4136ae29e94d0e4ddd55e12d9678fc6776e837f5c25bdb35ad37a3c5cbeba",
+    "training_audit_contract_tests.py": "2ff2dc35f02ba9d172db2e0dc4bf2b58ee9f5c34ac8247bfe202a3f2ad690fd9",
+    "training_evidence_audit.py": "dcf7ae4f3c9919c2a80c85c15077df06b70676873754fa9a1102f23a7824f4fd",
+    "training_fit_audit.py": "d76b84d7eb8023aa8b3bf676862e7ae3e4a0787a3ec70490741379d386c4b20b",
+    "training_replay.py": "5fc4857b8f05e54d06ef3c966791c6e92c2b0e8b7125fbb7ccd6f639330919b9"
+  },
+  "synthetic_tests_run": 8,
+  "test_inputs_synthetic": true,
+  "test_runtime_seconds": 2.323
+}

@@ -15,6 +15,25 @@ REPLAY_PROTOCOL = Path(__file__).with_name("TRAINING_REPLAY_PROTOCOL.json")
 REPLAY_PROTOCOL_SHA256 = "f911a26a63b6a909b0a9d95bfd26fbf89296197765ab767dd807584911993013"
 
 
+def sample_inputs(directory, complete):
+    names = ["BANK.json", "decisions-and-outcomes.jsonl.gz", "trajectory-0-step-0-state.pt",
+             "trajectory-0-step-0-current.npz"]
+    names += [f"trajectory-0-step-0-action-{action}-terminal.npz" for action in range(4)]
+    checked = {}
+    for name in names:
+        path = Path(directory) / name
+        require(name in complete["files"] and path.is_file(), f"Replay input is absent from the completed bank: {name}")
+        checked[name] = digest(path)
+        require(checked[name] == complete["files"][name], f"Replay input differs from the completed bank: {name}")
+    return checked
+
+
+def validate_output(root, out):
+    phases = ("reference", "bank", "fit", "development", "audit", "final")
+    require(not out.exists() and not any(out.is_relative_to(root / phase) for phase in phases),
+            "Replay output must be new and outside every frozen phase inventory")
+
+
 def compare_receipt(actual, expected):
     exact = ("start", "end", "action_index", "multiplier", "schedule_id", "schedule_sha256", "before", "candidate", "after",
              "accepted", "guard_delta", "guard_values", "guard_output_sha256", "clock_advances_on_rejection", "resources")
@@ -66,13 +85,17 @@ def execute(args):
                 and start["freeze_sha256"] == digest(args.freeze)
                 and start["source_files"] == required, "Bank completion/freeze provenance differs")
         completions[str(seed)] = digest(path)
-    require(not out.exists() and not out.is_relative_to(root / "bank"), "Replay output must be new and outside all bank inventories")
+    directory = root / "bank/17"
+    complete = read(directory / "COMPLETE.json")
+    sampled_inputs = sample_inputs(directory, complete)
+    validate_output(root, out)
     marker = root / "TRAINING_REPLAY_STARTED.json"
     require(not marker.exists(), "The single registered replay was already started; preserve it and request an explicit recovery receipt")
     out.mkdir(parents=True)
     start = {"schema": "hepta.field-bridge.v3.single-replay-start.1", "replay_protocol_sha256": REPLAY_PROTOCOL_SHA256,
              "script_sha256": digest(__file__), "bank_freeze_sha256": digest(args.freeze),
              "bank_complete_sha256": completions, "source_files": required, "output": str(out),
+             "sampled_bank_files_sha256": sampled_inputs,
              "started_monotonic_ns": time.monotonic_ns(), "verification_only": True}
     write_json(marker, start)
     write_json(out / "START.json", start)
@@ -91,8 +114,7 @@ def execute(args):
         corpus = load_corpus_roles(Path(args.assets) / "ndu-data", plan["allowed_source_roles"])
         require(corpus.manifest["manifest_sha256"] == protocol["source_manifest_sha256"], "Replay source-role allocation changed")
         context = make_context(originals[17], corpus, observers, 17, "fit", protocol)
-        directory = root / "bank/17"
-        bank, complete = read(directory / "BANK.json"), read(directory / "COMPLETE.json")
+        bank = read(directory / "BANK.json")
         row = next(row for row in bank["records"] if row["trajectory"] == 0 and row["step"] == 0)
         require(bank["reference_sha256"] == digest(root / "reference/17/REFERENCE.json"), "Frozen continuation reference changed")
         records, by_hash = journal(directory / "decisions-and-outcomes.jsonl.gz")
@@ -145,6 +167,7 @@ def execute(args):
         require(context.costs.values["scheduled_gradient_microsteps"] == 1200
                 and context.costs.values["directional_gradient_measurements"] == 1, "Verification work differs from the prescribed sample")
         require(source_files() == required, "Scientific source changed during replay")
+        require(sample_inputs(directory, complete) == sampled_inputs, "Completed sampled inputs changed during replay")
         verify_freeze(args.freeze, protocol_path, "bank", root)
         result = {"schema": "hepta.field-bridge.v3.prespecified-terminal-replay.1", "passed": True,
             "replay_protocol_sha256": REPLAY_PROTOCOL_SHA256, "script_sha256": digest(__file__),
@@ -154,6 +177,7 @@ def execute(args):
             "verification_resources": context.costs.snapshot(), "verification_wall_ns": time.perf_counter_ns() - started,
             "verification_work_counted_as_new_training_evidence": False, "source_roles_loaded": list(corpus.splits),
             "assets": assets, "bank_complete_sha256": completions, "bank_freeze_sha256": digest(args.freeze),
+            "sampled_bank_files_sha256": sampled_inputs,
             "initial_checkpoint_sha256": digest(checkpoint_path), "bank_sha256": digest(directory / "BANK.json"),
             "log_sha256": digest(out / "replayed-blocks.jsonl.gz"), "scientific_inputs_modified": False}
         write_json(out / "REPLAY.json", result)

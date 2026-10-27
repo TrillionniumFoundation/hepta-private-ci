@@ -157,6 +157,27 @@ class TrainingAuditContracts(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "exact state"):
             compare_receipt(changed, receipt)
 
+    def test_replay_inputs_bind_completion_and_output_avoids_every_frozen_phase(self):
+        from .training_replay import sample_inputs, validate_output
+        directory = self.root / "bank/17"; directory.mkdir(parents=True)
+        names = ["BANK.json", "decisions-and-outcomes.jsonl.gz", "trajectory-0-step-0-state.pt",
+                 "trajectory-0-step-0-current.npz"]
+        names += [f"trajectory-0-step-0-action-{action}-terminal.npz" for action in range(4)]
+        for name in names:
+            (directory / name).write_bytes(("synthetic:" + name).encode())
+        complete = {"files": {name: digest(directory / name) for name in names}}
+        self.assertEqual(sample_inputs(directory, complete), complete["files"])
+        missing = deepcopy(complete); del missing["files"][names[0]]
+        with self.assertRaisesRegex(ValueError, "absent from the completed bank: BANK.json"):
+            sample_inputs(directory, missing)
+        (directory / names[-1]).write_bytes(b"changed synthetic terminal output")
+        with self.assertRaisesRegex(ValueError, "differs from the completed bank: trajectory-0-step-0-action-3-terminal.npz"):
+            sample_inputs(directory, complete)
+        for phase in ("reference", "bank", "fit", "development", "audit", "final"):
+            with self.assertRaisesRegex(ValueError, "every frozen phase inventory"):
+                validate_output(self.root, self.root / phase / "new-replay")
+        validate_output(self.root, self.root / "review/new-replay")
+
 
 if __name__ == "__main__":
     unittest.main()
