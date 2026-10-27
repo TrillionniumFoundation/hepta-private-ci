@@ -10,11 +10,21 @@ async fn a_blocked_serial_barrier_reports_the_unstarted_request_and_keeps_the_fe
     session.diagnose_attach(AttachStage::OpeningFrontiers);
     // Block the actual feed's existing serial barrier. Blocking the application
     // executor alone must no longer starve the independent observation reactor.
-    let barrier = session.live.serial.lock().await;
+    let live = Arc::clone(&session.live);
+    let (held, holding) = tokio::sync::oneshot::channel();
+    let (release, releasing) = std::sync::mpsc::channel::<()>();
+    let barrier = std::thread::spawn(move || {
+        let _serial = live.serial.blocking_lock();
+        let _ = held.send(());
+        // Dropping the sender also releases this guard if the test panics.
+        let _ = releasing.recv();
+    });
+    holding.await.unwrap();
     let before = tokio::time::timeout(Duration::from_secs(1), async {
         loop {
-            let progress = session.live.cache.diagnostics.progress().unwrap();
-            if progress.refresh_phase == RefreshPhase::WaitingSerial {
+            if let Some(progress) = session.live.cache.diagnostics.progress()
+                && progress.refresh_phase == RefreshPhase::WaitingSerial
+            {
                 break progress;
             }
             tokio::task::yield_now().await;
@@ -33,14 +43,15 @@ async fn a_blocked_serial_barrier_reports_the_unstarted_request_and_keeps_the_fe
     assert_eq!(first.progress, Some(before));
     assert!(first.now_ns.unwrap() - first.previous_started_ns.unwrap() > MAX_AGE_NS);
     assert!(before.reply_ended_ns.unwrap() >= before.request_started_ns.unwrap());
-    drop(barrier);
+    drop(release);
+    barrier.join().unwrap();
     // Observe a real late reply, rather than assuming a fixed sleep let the feed
     // run. Receiving it must not revive the already fenced authority or replace
     // the diagnostic captured at the original refusal.
     tokio::time::timeout(Duration::from_secs(1), async {
         loop {
-            let progress = session.live.cache.diagnostics.progress().unwrap();
-            if progress.request_sequence > before.request_sequence
+            if let Some(progress) = session.live.cache.diagnostics.progress()
+                && progress.request_sequence > before.request_sequence
                 && progress.reply_ended_ns.is_some()
             {
                 break;
