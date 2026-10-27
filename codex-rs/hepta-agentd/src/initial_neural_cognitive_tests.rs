@@ -2,7 +2,6 @@
 //! native host. These doubles establish no loading, installation or efficacy.
 
 use super::*;
-use pretty_assertions::assert_eq;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
