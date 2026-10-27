@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.ndu.evidence.closure.v2",
+  "baseline_commit": "fb9281e4a7ccfc4034281ed6310adea7e50f4474",
+  "development": "Two recorded historical fit/dev diagnoses precede this protocol. No qualification waveform has been scored by a model.",
+  "historical_inputs": "AudioMNIST speakers01-08 fit,09-12 validation,20 recordings per digit. Prior speakers13-20 remain historical, never relabeled as fresh.",
+  "qualification_speakers": ["21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32"],
+  "recordings_per_digit": 20,
+  "observer_sha256": "6c5391e2ea0ee6102977992cb14ebcee857e393a7c9c66b8b534c78951356e86",
+  "source_revision": "630d7dab4c040882834de6fa21baf9a60372accd",
+  "acquisition_identity": "SHA256 of pinned source revision plus a randomly assigned acquisition UUID, sealed before model features. Source paths and their digit-bearing filenames stay in the private custody mapping. Public inference receives opaque acquisition identities and a separate content SHA integrity commitment. Same bytes from distinct acquisitions do not imply an alias.",
+  "distinct_event_study": {
+    "mechanism": "All100 balanced ordered target pairs use same speaker but two distinct captures: left index k, right(7k+11)%20. Even equal target digits never alias.",
+    "families": ["independent", "paired", "speaker_mixture"],
+    "marginals": "First select one pooled marginal pseudocount on validation NLL. All coupling candidates are information-projected to those same marginals.",
+    "candidate_strengths": [0.5, 2, 10, 50, 200, 1000, 4000],
+    "selection": "Per-family lowest source-balanced validation conditional NLL; include exact independence and prefer it on ties within1e-12. Freeze before new model features.",
+    "prior": "uniform100-target law; acquisition identity gives no equal-target cue"
+  },
+  "same_event_study": {
+    "views": "Top1 and runner-up label from the unchanged CNN on one actual WAV. They are derived views of one physical event, not two audio samples or two modalities.",
+    "baseline": "Maximum-entropy table with measured smoothed marginals and known off-diagonal rank support. It already enforces top1!=runner-up; no advantage can come merely from excluding the impossible diagonal.",
+    "joint": "Measured rank-pair counts shrunk toward that baseline, then projected to the same marginals and legal support.",
+    "selection": "Shared marginal chosen by baseline validation conditional NLL; coupling chosen from the same seven strengths plus baseline by conditional NLL.",
+    "prior": "uniform10-target law",
+    "sequential_semantics": "Each new view replaces the marginal of its existing joint block. Alias retries are no-ops; a physical capture cannot appear in two conditionally independent blocks. Final posterior is order-invariant."
+  },
+  "target_prior_study": {
+    "inputs": "Only historical cue and target records; observation values, waveform identity, probabilities and views are rejected at its fitting API.",
+    "families": ["joint", "factorized"],
+    "cues": ["uniform", "plus1", "plus3", "plus7"],
+    "target_generation": "For plusk,0.7 mass on right=(left+k)%10 plus0.3 uniform. Uniform has no relation. Constructed task distribution, not a natural occurrence claim.",
+    "test_pairs_per_cue_per_speaker": 300,
+    "selection": "Per-cue prior-only validation NLL among the seven fixed pseudocounts. Use the frozen best-validation distinct-event likelihood in both arms.",
+    "seed": 272031
+  },
+  "selective_prediction_diagnostic": {
+    "added_before_model_freeze_and_new_qualification_features": true,
+    "scope": "Same-event rank study only; a separately reported decision-utility diagnostic that does not replace either original MAP output-accuracy gate.",
+    "actions": "Deliver one actual UTF-8 digit label or the explicit text uncertain.",
+    "gross_payoff": {"correct": 1, "wrong": -0.5, "uncertain": 0},
+    "delivery_fee": {"label": 0.01, "uncertain": 0.003},
+    "cost_meaning": "Fixed task-utility accounting, not measured dollars/energy. Actual inference and delivery CPU/wall are also measured.",
+    "gamma": [0, 2],
+    "policy": "Gamma0 maximizes expected actual net payoff. Gamma2 minimizes E[exp(-2*actual net payoff)], taking the exponent before expectation. A tie selects uncertain. Thresholds follow algebraically from these fixed payoffs, with no threshold search.",
+    "information_and_inference_budget": "Same frozen rank observations, one joint evidence block and one actual text delivery per source sample for each law/preference; no private target or reference access until scoring.",
+    "report": "Actual CE at gamma2, mean net utility, wrong/correct/uncertain rates, paired12-speaker bootstrap97.5% intervals, and preference-dependent action disagreements. Any failure is retained."
+  },
+  "qualification": {
+    "single_frozen_pass": true,
+    "actual_outputs": "UTF-8 digit transcripts written without target access, then reopened and scored against private source metadata.",
+    "source_bootstrap": {"unit": "speaker", "samples": 20000, "seed": 272033, "interval_percent": 97.5},
+    "old_gate_preserved": "Observed distinct-event coupling improvement requires NLL difference upper CI<0 and actual pair-accuracy difference lower CI>0, separately reported. Selecting independence cannot count as an advantage.",
+    "same_event_gate": "Against the same-support max-entropy baseline, require conditional NLL upper CI<0 and actual digit-accuracy lower CI>0, separately reported.",
+    "multiplicity": "Intervals are per prespecified comparison, not a simultaneous family-wise certification across all tasks/cues. No universal pass claim from choosing a favorable comparison.",
+    "limits": "12 fixed public source clusters. Derived pairs do not increase independent sample count. No population, natural multimodal model or native-owner deployment claim."
+  },
+  "cost": "One shared frozen CNN forward per physical WAV for all likelihood arms. Fitting searches have different candidate counts, so inference information is matched but estimator fitting compute superiority is not claimed. Full stage CPU/wall and model sizes are recorded.",
+  "preserve_negative_results": true,
+  "post_test_tuning": false
+}

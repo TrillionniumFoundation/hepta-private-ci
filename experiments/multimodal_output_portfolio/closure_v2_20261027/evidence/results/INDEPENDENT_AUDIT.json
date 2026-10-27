@@ -1,0 +1,56 @@
+{
+  "actual_alias_checkpoints": 240,
+  "actual_transcripts_reopened": 115200,
+  "audit_source_sha256": "5f099f6a9e84d8ffcaccb623373d743d01f8e87e6b46eb2f3a04b8ae19098066",
+  "cpu_seconds": 6.516292029000001,
+  "fresh_waveforms": 2400,
+  "likelihood_reconstruction": {
+    "fit_speakers": [
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08"
+    ],
+    "law_max_errors": {
+      "pair_independent": 0.0,
+      "pair_paired": 8.654188476953095e-13,
+      "pair_speaker_mixture": 6.767364446602642e-13,
+      "rank_baseline": 3.366751322175787e-13,
+      "rank_joint": 4.993505609007798e-13
+    },
+    "prior_max_error": 1.734723475976807e-18,
+    "shared_marginal_max_errors": {
+      "pair_independent": 2.220446049250313e-16,
+      "pair_paired": 9.844347559351263e-13,
+      "pair_speaker_mixture": 8.282263763703668e-13,
+      "rank_baseline": 8.257283745649602e-13,
+      "rank_joint": 9.76829728216444e-13
+    },
+    "validation_speakers": [
+      "09",
+      "10",
+      "11",
+      "12"
+    ]
+  },
+  "maximum_posterior_error": 4.0891734442993766e-12,
+  "maximum_statistic_error": 7.223666109723581e-13,
+  "passed": true,
+  "result_sha256": "739b56fae72235ae40fd174814e8be01f429a745ca0a34bb6985ac47d64cfd02",
+  "schema": "hepta.ndu.evidence.independent-audit.v2",
+  "seal_sha256": "c5fa30f6ecbfec3f59138d4a2be2a563239240ff73f08b05668145a2c95f8341",
+  "source_files_hashed": 2402,
+  "time_ns": 1793091657346266300,
+  "wall_seconds": 6.95793354100897,
+  "waveform_reconstruction": {
+    "actual_waveforms_reencoded": 2400,
+    "implementation": "NumPy window/rFFT/bilinear interpolation, independently reconstructed CNN",
+    "maximum_probability_error": 1.2516975402832031e-06,
+    "probability_tolerance": 0.0001,
+    "rank_disagreements": 0
+  }
+}
