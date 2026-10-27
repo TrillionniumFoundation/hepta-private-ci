@@ -1,0 +1,91 @@
+{
+  "authoring_shuffle_seed": 2026102701,
+  "corpus_file": "queries.en.json",
+  "corpus_schema": "hepta.memory.v5.sealed-language.v1",
+  "counts": {
+    "known": 144,
+    "near_ood": 72,
+    "per_intent": {
+      "at": 24,
+      "change": 24,
+      "mean3": 24,
+      "peak3": 24,
+      "previous": 24,
+      "range3": 24
+    },
+    "per_ood_family": {
+      "adjacent_month_ratio": 6,
+      "alternative_adjacent_difference": 6,
+      "cross_series_operation": 6,
+      "fitted_linear_trend": 6,
+      "forecast_unobserved_value": 6,
+      "minmax_normalization": 6,
+      "other_three_month_aggregation": 6,
+      "peak_month_not_peak_value": 6,
+      "population_zscore": 6,
+      "relative_percent_change": 6,
+      "three_month_median": 6,
+      "unsupported_temporal_scope": 6
+    },
+    "total": 216
+  },
+  "date_format": "YYYY-MM",
+  "errata_policy": "Separate appended erratum only; preserve sealed bytes, primary identity, and original evaluation record. No result-dependent relabeling or model tuning.",
+  "evaluated_by_any_router": false,
+  "evaluation_reject_alias": "__reject__",
+  "files": {
+    "CONTRACT.md": {
+      "bytes": 5840,
+      "sha256": "09b72e7824f1b6a628be785e5bf2b204339f247c4e8b54681c5371f151e1d101"
+    },
+    "SEMANTIC_REVIEW.json": {
+      "bytes": 1377,
+      "sha256": "36ffaaefc903be229f5d8f2e509b69387bd94ae9f323f2ac90d13c328a878311"
+    },
+    "author_corpus.py": {
+      "bytes": 32818,
+      "sha256": "4445f6c563bc4a82ab316d73001ad7c9c2ce8cddde9dce469b8cf3367250bd38"
+    },
+    "queries.en.json": {
+      "bytes": 148772,
+      "sha256": "d48195b3bc3a4f639db31a7a400a3e6eb79b3d879e7ba19ae96217224aeaacbf"
+    },
+    "seal_held.py": {
+      "bytes": 7590,
+      "sha256": "0134e1b7a92d7ae70fa14aecd8e8bc20c30689cfc8827ee3683177d012accb31"
+    }
+  },
+  "inference_fields": [
+    "utterance",
+    "series_name",
+    "date"
+  ],
+  "legacy_contract_files": {
+    "PROTOCOL.json": {
+      "bytes": 9433,
+      "sha256": "269759bb94d0452946086cd46721d596d4afc6e1f7de63c0bd09d0ef87cfd08e"
+    },
+    "v3/numeric_graph.py": {
+      "bytes": 12131,
+      "sha256": "445ce03b1ac48983de71b60b75fb7ea21b1300fc09e210d0dd2684bc891da765"
+    },
+    "v3/route_language.py": {
+      "bytes": 19345,
+      "sha256": "d59adafc03619bfa0dc1c81b7b832d0bf4ef634cde4f8452d3ab27907b4b226b"
+    }
+  },
+  "legacy_contract_reference_commit": "ddd2ec4f9167c5ccf22adb63f4ce7402ebd7ae19",
+  "materialization_after_model_and_threshold_freeze_only": true,
+  "new_v5_training_or_development_data_read": false,
+  "ood_gold_label": null,
+  "post_seal_changes_allowed": false,
+  "schema": "hepta.memory.v5.held-seal.v1",
+  "seal_self_hash_stored_externally": true,
+  "sealed": true,
+  "sealed_utc": "2026-10-27T07:10:57.333692+00:00",
+  "slot_fields": [
+    "series_name",
+    "date"
+  ],
+  "synthetic_authorship": true
+}

@@ -1,0 +1,263 @@
+{
+  "schema": "memory-cell-v3.protocol.v1",
+  "frozen_before_formal_execution": true,
+  "parent_research_commit": "57d2b9658839f11aa4685049f90cb7142d59026d",
+  "original_repository_baseline": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "development_seeds": [
+    8011,
+    8017
+  ],
+  "seeds": [
+    307,
+    311,
+    313,
+    317,
+    331
+  ],
+  "stages": [
+    "capacity",
+    "routing_graph",
+    "lifecycle",
+    "structure",
+    "native"
+  ],
+  "capacity": {
+    "budget_fractions_int32": [
+      0.125,
+      0.25,
+      0.5,
+      1
+    ],
+    "numeric_domains": [
+      "co2",
+      "temperature",
+      "sunspots"
+    ],
+    "synthetic_rows": 256,
+    "synthetic_columns": 24,
+    "random_mix": [
+      0.0,
+      0.25,
+      0.5,
+      1.0
+    ],
+    "cells": 4,
+    "kmeans_iterations": 20,
+    "selection_fraction": 0.2,
+    "max_vq_cells": 256,
+    "hidden_query_limit": 512,
+    "include_digits": true,
+    "same_work_max_repeats": 1024
+  },
+  "routing_graph": {
+    "rank": 4,
+    "policy_training_domain": "co2",
+    "selection_domain": "co2",
+    "development_domains": [
+      "co2",
+      "temperature",
+      "sunspots"
+    ],
+    "formal_domains": [
+      "co2",
+      "temperature",
+      "sunspots",
+      "unemployment"
+    ],
+    "never_evaluated_during_development_domain": "unemployment",
+    "intents": [
+      "at",
+      "previous",
+      "change",
+      "mean3",
+      "range3",
+      "peak3"
+    ],
+    "maximum_hops": 3,
+    "layout_optimizer_steps": 300,
+    "layout_learning_rate": 0.08,
+    "layout_call_penalty": 0.002,
+    "layout_l2": 0.001,
+    "router_optimizer_steps": 600,
+    "router_l2_grid": [
+      0.0001,
+      0.0003,
+      0.001
+    ],
+    "raw_alias_count_grid": [
+      0,
+      3,
+      6
+    ],
+    "slot_alias_count_grid": [
+      0
+    ],
+    "selection_max_ood_false_accept": 0.05,
+    "qualification_minimum_known_correct_coverage": 0.8,
+    "primary_selection": "Risk-feasible NOAA selection candidates first; then maximum correct accepted known coverage, actual training work and fixed deterministic tie break. If none is risk-feasible, fail closed; coverage remains a separate gate.",
+    "auxiliary_absolute_tolerance_scaled": {
+      "co2": 25,
+      "temperature": 10,
+      "sunspots": 100,
+      "unemployment": 10
+    },
+    "primary_numeric_outcomes": [
+      "exact_accuracy",
+      "MAE",
+      "RMSE"
+    ],
+    "no_tolerance_counts_as_exact": true
+  },
+  "lifecycle": {
+    "domains": [
+      "co2",
+      "temperature",
+      "sunspots"
+    ],
+    "rank": 4,
+    "initial_fraction": 0.6,
+    "corrections": 8,
+    "revocations": 8,
+    "stages": [
+      "initial",
+      "append",
+      "correct",
+      "withdraw",
+      "clean_replay"
+    ],
+    "independent_witness_required": true,
+    "source_ledger_for_replay": "Matching model plus explicit residual reconstructs the canonical valid frontier; clean refit does not initialize from predecessor weights.",
+    "pure_parameter_maximum_old_exact_regression": 0.02,
+    "lossless_codec_expected_retention": 1,
+    "corrections_are_injected_test_events": true
+  },
+  "structure": {
+    "rows": 256,
+    "columns": 32,
+    "budget_bytes": 4096,
+    "max_cells": 4,
+    "split_rounds": 2,
+    "minimum_gain": 0.05,
+    "gain_denominator_floor": 1.0,
+    "retention_relative": 0.02,
+    "retention_absolute_mse": 0.25,
+    "near_lossless_mse": 0.25,
+    "power_iterations": 8,
+    "signal_floor": 0.15,
+    "signal_dimension_multiplier": 4,
+    "kmeans_iterations": 12,
+    "training_price": 0.02,
+    "retention_price": 0.02,
+    "flows": [
+      "heterogeneous",
+      "convergent",
+      "stable_lowrank",
+      "random"
+    ],
+    "fixed_cell_counts": [
+      1,
+      2,
+      4
+    ],
+    "horizons": [
+      1,
+      10,
+      100
+    ],
+    "efficient_fixed_required": true,
+    "matched_work_control_required": true,
+    "scope": "Convergent flow is a declared two-stage drift test. Static heterogeneous, stable and random controls retain their own strict results. A convergent-only pass cannot replace all-flow or historical v2 failure."
+  },
+  "native": {
+    "rows": 64,
+    "input_dim": 8,
+    "hidden": 32,
+    "bits": 8,
+    "steps": 1600,
+    "batch_size": 64,
+    "learning_rate": 0.02,
+    "input_contract": "Q12 int16, int64 accumulation, floor(x*4096+0.5), integer hardtanh",
+    "actual_neuron_model_port": true,
+    "durable_runtime_recovery": true,
+    "manifest_drift_rollback_and_artifact_tamper_refused": true,
+    "production_admission_enabled": false
+  },
+  "gates": {
+    "single_parameter_memory": {
+      "hidden_written_accuracy_min": 0.95,
+      "fresh_process": true,
+      "exact_reload": true,
+      "capacity_distortion_and_complete_bytes_required": true
+    },
+    "fixed_multicell": {
+      "actual_deployed_byte_budget_required": true,
+      "strong_single_svd_and_vq_controls_required": true,
+      "actual_route_and_oracle_definitions_required": true,
+      "relative_hidden_mse_gain_min": 0.05,
+      "same_work_control_reported": true,
+      "no_claim_of_uniform_advantage_over_all_domains": true
+    },
+    "semantic_routing": {
+      "correct_accepted_known_min": 0.8,
+      "ood_false_accept_max": 0.05,
+      "each_formal_domain_required": true,
+      "negative_queries_not_relabelled_as_correct_refusals_for_supported_predicates": true
+    },
+    "typed_composition": {
+      "actual_semantic_route_required": true,
+      "oracle_diagnostic_separate": true,
+      "connected_exact_minus_removed_edges_min": 0.1,
+      "connected_exact_minus_valid_permutation_min": 0.1,
+      "strong_typed_planner_required": true
+    },
+    "maintenance": {
+      "fresh_process_reload_parity": true,
+      "all_stale_generation_artifact_frontier_rollback_probes_rejected": true,
+      "all_revoked_interface_reads_refused": true,
+      "pure_parameter_retention_separate_from_lossless_codec": true,
+      "complete_weight_unlearning_not_established": true
+    },
+    "structural_evolution": {
+      "minimum_relative_hidden_mse_gain": 0.05,
+      "efficient_naturally_costed_fixed_baseline_required": true,
+      "equal_or_greater_work_fixed_control_required": true,
+      "all_rejected_candidates_and_migrations_charged": true,
+      "all_flows_strict_result_retained": true,
+      "convergent_only_capability_reported_separately": true,
+      "old_v2_gate_unchanged": true
+    },
+    "transfer": {
+      "new_domain": "unemployment",
+      "new_domain_policy_updates": 0,
+      "scope": "Transfer of fixed English intent/layout policy to newly written numeric records; not open-ended universal memory."
+    }
+  },
+  "accounting": {
+    "precision": "Serialized int16 factors and decoder, int32 centers, actual packed routes/masks, complete address/provenance metadata.",
+    "cold_base": "Frozen MiniLM transformer charged once to routed graph; no pretrained transformer used in factor-only coordinate reads.",
+    "serving_modes": "Pure parameters, model-plus-explicit-residual, and strong exact codec are different arms.",
+    "research_retention": "Original sources, all candidate fit/search receipts, actually retained model alternatives, failures, replay material and output traces are inventoried separately from minimum operational state. Temporary candidate arrays and fitting work are charged even when their weights are not kept after search.",
+    "training": "Closed-form SVD calls are actual fitting, not gradient optimizer steps. IntegerBitCell and semantic/layout routers use actual gradient training.",
+    "cost": "Work proxies and declared utility prices are not measured currency or hardware FLOPs. Natural fixed cost and matched-work controls are separate.",
+    "cache": "Any decoded exact matrix cache is explicitly reported; it is not parameter memory."
+  },
+  "statistics": {
+    "inference_unit": "Seed conditional on each fixed workload; SVD itself is deterministic. Domain counts are not seed counts.",
+    "confidence": 0.95,
+    "bootstrap_draws": 10000,
+    "bootstrap_seed": 1913,
+    "limited_trials": "Five trials do not establish population safety, universal transfer, or distribution-free superiority."
+  },
+  "boundaries": [
+    "All original v1/v2 evidence and failed gates remain unchanged.",
+    "The three science domains have disclosed development outcomes; unemployment is not evaluated during development.",
+    "All numeric facts are supplied at write time; hidden queries are disjoint read coordinates or language folds, not unseen-fact forecasting.",
+    "Source/entity/date handles and typed primitive implementations are supplied; learned edges do not invent new primitive types.",
+    "FactorBank is trained low-rank numeric memory; it is not pretrained language-model weight fine-tuning.",
+    "English fixtures are predeclared templates, not independently authored real-world dialogue.",
+    "Revocation prevents serving stale models and excludes removed coordinates from clean fitting; old audit artifacts and coincidental raw associations are not erased.",
+    "The native bitcell integration uses the actual three Hepta crates in an exact-lock isolated workspace; the complete production workspace and production admission are not claimed.",
+    "A local independently stored witness is a single-writer durability guard; simultaneous adversarial rollback of both stores is outside this prototype.",
+    "All blockers may only be marked closed if their actual evidence passes; an experiment failure is not waived."
+  ]
+}

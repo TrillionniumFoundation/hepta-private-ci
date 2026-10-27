@@ -1,0 +1,57 @@
+{
+  "child_cpu_seconds": 68.095237,
+  "child_maxrss_kib": 169388,
+  "child_system_cpu_seconds": 0.308058,
+  "child_user_cpu_seconds": 67.787179,
+  "command": [
+    "python3",
+    "train_routing.py",
+    "--output",
+    "results/formal/routing",
+    "--seeds",
+    "1019",
+    "1021",
+    "1031",
+    "1033",
+    "1039",
+    "--source-commit",
+    "21da14adf9910fa5218696f6451f517fa0ef46a7"
+  ],
+  "environment_overrides": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "finished_utc": "2026-10-27T07:45:51.441531+00:00",
+  "freeze_after": {
+    "bytes": 7422,
+    "sha256": "9e10b723c13a0243aa8d652a192809f73b8c4dc8e7ae41959625383e4ec80afa"
+  },
+  "freeze_before": {
+    "bytes": 7422,
+    "sha256": "9e10b723c13a0243aa8d652a192809f73b8c4dc8e7ae41959625383e4ec80afa"
+  },
+  "freeze_byte_identity_unchanged": true,
+  "held_read_by_wrapper": false,
+  "logs": {
+    "stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout.log": {
+      "bytes": 1515,
+      "sha256": "33e75565ecf14fc69854dc10faca6cfcca9fd931b71c08a7ff62b6c28bf76e8d"
+    }
+  },
+  "maxrss_scope": "RUSAGE_CHILDREN maximum child peak RSS on Linux; not additive and not isolated allocation accounting",
+  "outer_wall_seconds": 68.12451225200493,
+  "python_executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+  "returncode": 0,
+  "schema": "memory-cell-v5.formal-training-command.v1",
+  "source_commit": "21da14adf9910fa5218696f6451f517fa0ef46a7",
+  "started_utc": "2026-10-27T07:44:43.316870+00:00",
+  "status": "completed",
+  "training_output": "/workspace/scratch/3df12f9191cd/hepta-memory-v5-targeted/results/formal/routing",
+  "unit_tests_run": false,
+  "working_directory": "/workspace/scratch/3df12f9191cd/hepta-memory-v5-targeted"
+}

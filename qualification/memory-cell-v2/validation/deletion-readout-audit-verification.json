@@ -1,0 +1,30 @@
+{
+  "does_not_establish_unlearning": true,
+  "manifest_sha256": "a557e5266eaee5c76e8e9409b2b71b457c959ba2bec8a8bb4090fef2662624dd",
+  "mode": "independent byte inventory and stored-row recount; no inference or training",
+  "rows": 320,
+  "totals_by_arm": {
+    "fixed-domain": {
+      "raw_old_value_matches": 3,
+      "rows": 80,
+      "serving_tombstone_refusals": 80
+    },
+    "fixed-hash": {
+      "raw_old_value_matches": 3,
+      "rows": 80,
+      "serving_tombstone_refusals": 80
+    },
+    "fixed-single": {
+      "raw_old_value_matches": 1,
+      "rows": 80,
+      "serving_tombstone_refusals": 80
+    },
+    "policy": {
+      "raw_old_value_matches": 2,
+      "rows": 80,
+      "serving_tombstone_refusals": 80
+    }
+  },
+  "verified": true,
+  "verified_files": 24
+}

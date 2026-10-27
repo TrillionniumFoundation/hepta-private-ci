@@ -1,0 +1,512 @@
+{
+  "schema": "memory-cell-v2.real-artifact-audit.v1",
+  "record_kind": "audit_receipt",
+  "source_commit": "d1204d6108eef75de384c8c8e98304b68984ffd1",
+  "formal_manifest_sha256": "a5cb0b3075a2aff203f88a2e97c8278a4014d5b2d9d229558312270f776529be",
+  "formal_run_path": "qualification/memory-cell-v2/results/20261026-v2-frozen",
+  "inspected_component": "real",
+  "anchor_provenance": "The source commit was checked in adapter manifests. The formal MANIFEST anchor is the coordinator-provided value after its exact whole-packet verification; this receipt does not claim a repeated whole-packet scan.",
+  "created_from_previously_completed_audit": true,
+  "execution_scope": {
+    "read_only_inspection": true,
+    "model_inference_performed": false,
+    "model_training_performed": false,
+    "unit_tests_run": false,
+    "frozen_source_modified": false,
+    "formal_results_modified": false,
+    "separately_saved_per_command_log": false,
+    "note": "Read-only Python inspection commands were executed in the session. This file summarizes those completed checks and is not a full itemized execution transcript."
+  },
+  "checks_completed": [
+    {
+      "id": "raw_evaluation_accounting",
+      "raw_evaluation_arms": [
+        "multi_learned",
+        "multi_typed",
+        "multi_literal",
+        "single_schema",
+        "untrained_typed",
+        "multi_no_edges",
+        "multi_shuffled_edges",
+        "exact_no_edges",
+        "exact_shuffled_edges"
+      ],
+      "seeds": [
+        211,
+        223,
+        227,
+        229,
+        233
+      ],
+      "raw_evaluation_rows_recomputed": 13869,
+      "details": [
+        "Recomputed final correctness by canonical JSON comparison of serialized prediction and query target.",
+        "Compared task query/correct counts and event-value identity aggregates with serialized per-event identity flags.",
+        "Compared learned, typed and literal predictions row by row."
+      ],
+      "mismatches_found": 0,
+      "boundary": "Identity aggregates were checked against stored per-event flags. This audit did not independently rebuild every source-derived task target."
+    },
+    {
+      "id": "saved_parameter_artifacts",
+      "unique_adapter_artifacts_read": 35,
+      "router_weight_artifacts_read": 5,
+      "details": [
+        "Read saved NumPy arrays and recomputed element counts and byte counts.",
+        "Checked adapter source commits, total_steps and recorded parameter byte counts.",
+        "Compared each trained multi head with its saved untrained counterpart."
+      ],
+      "mismatches_found": 0
+    },
+    {
+      "id": "fresh_read_evidence",
+      "records_checked": 20,
+      "details": [
+        "Compared request, expected, actual-result, result, validation and process records.",
+        "Checked the exact request field set and prediction parity.",
+        "Checked artifact/encoder digests, allowed artifact/base file lists and every recorded model-open trace entry.",
+        "Checked successful exit status, validation flags, zero prediction mismatches and exact cached/request feature equality."
+      ],
+      "mismatches_found": 0
+    },
+    {
+      "id": "physical_storage_accounting",
+      "details": [
+        "Recounted saved component file sizes and reconstructed standalone-arm retained-byte ledgers.",
+        "Compared all six unique real-source files with their declared byte lengths and SHA-256 bindings.",
+        "Included retained writes, address index, source bindings, given edges, deployment bindings, catalogs, router artifacts, adapters, training receipts and the reader's pinned base manifest."
+      ],
+      "unique_real_source_files_checked": 6,
+      "mismatches_found": 0
+    },
+    {
+      "id": "typed_edge_ablations",
+      "seeds": [
+        211,
+        223,
+        227,
+        229,
+        233
+      ],
+      "schema_pointer_inventory_size_per_seed": 70,
+      "module_id_inventory_size_per_seed": 40,
+      "details": [
+        "Checked that every permutation preserved the type's complete ID inventory.",
+        "Checked that every permutation was a derangement with no fixed IDs.",
+        "Recomputed task-level final and identity counts in the ablation rows."
+      ],
+      "mismatches_found": 0
+    }
+  ],
+  "artifacts": {
+    "trained_multi_adapters": 15,
+    "trained_single_adapters": 5,
+    "untrained_adapters": 15,
+    "routers": 5,
+    "trained_adapter_total_steps_each": 600,
+    "untrained_adapter_total_steps_each": 0,
+    "trained_multi_vs_initial_pairs_with_actual_weight_changes": 15,
+    "all_adapter_source_commits_match": true
+  },
+  "parameter_budget_per_seed": {
+    "multi_heads": 10632,
+    "router": 24,
+    "multi_total": 10656,
+    "single_total": 10659,
+    "single_rank": 19,
+    "single_extra_parameters_from_rounding": 3,
+    "multi_parameter_bytes": 85248,
+    "single_parameter_bytes": 85272,
+    "single_learned_route_diagnostic_total_parameters": 10683,
+    "single_learned_route_is_not_strictly_equal_budget": true
+  },
+  "real_task_scope": {
+    "written_events_per_seed": 409,
+    "events_by_type": {
+      "semantic": 190,
+      "episodic": 149,
+      "procedural": 70
+    },
+    "value_classes_by_type": {
+      "semantic": 124,
+      "episodic": 24,
+      "procedural": 29
+    },
+    "global_value_classes": 177,
+    "routing_scope": "Known public task headers; keys are removed from learned-routing cues.",
+    "temporal_addressing": "As-of version selection is performed by the explicit metadata index.",
+    "graph_scope": "Two supplied typed-port chains; graph topology is not learned."
+  },
+  "results": {
+    "multi_learned_per_seed": [
+      {
+        "seed": 211,
+        "module_attribute": {
+          "correct": 60,
+          "queries": 60,
+          "event_value_identity_correct": 60,
+          "event_value_identity_comparisons": 60
+        },
+        "latest_sampled_change": {
+          "correct": 59,
+          "queries": 69,
+          "event_value_identity_correct": 59,
+          "event_value_identity_comparisons": 69
+        },
+        "schema_execution": {
+          "correct": 150,
+          "queries": 150,
+          "event_value_identity_correct": 150,
+          "event_value_identity_comparisons": 150
+        },
+        "schema_chain": {
+          "correct": 150,
+          "queries": 150,
+          "event_value_identity_correct": 300,
+          "event_value_identity_comparisons": 300
+        },
+        "commit_owner_chain": {
+          "correct": 0,
+          "queries": 3,
+          "event_value_identity_correct": 0,
+          "event_value_identity_comparisons": 6
+        }
+      },
+      {
+        "seed": 223,
+        "module_attribute": {
+          "correct": 60,
+          "queries": 60,
+          "event_value_identity_correct": 60,
+          "event_value_identity_comparisons": 60
+        },
+        "latest_sampled_change": {
+          "correct": 71,
+          "queries": 71,
+          "event_value_identity_correct": 71,
+          "event_value_identity_comparisons": 71
+        },
+        "schema_execution": {
+          "correct": 150,
+          "queries": 150,
+          "event_value_identity_correct": 150,
+          "event_value_identity_comparisons": 150
+        },
+        "schema_chain": {
+          "correct": 150,
+          "queries": 150,
+          "event_value_identity_correct": 300,
+          "event_value_identity_comparisons": 300
+        },
+        "commit_owner_chain": {
+          "correct": 3,
+          "queries": 3,
+          "event_value_identity_correct": 6,
+          "event_value_identity_comparisons": 6
+        }
+      },
+      {
+        "seed": 227,
+        "module_attribute": {
+          "correct": 60,
+          "queries": 60,
+          "event_value_identity_correct": 60,
+          "event_value_identity_comparisons": 60
+        },
+        "latest_sampled_change": {
+          "correct": 71,
+          "queries": 71,
+          "event_value_identity_correct": 71,
+          "event_value_identity_comparisons": 71
+        },
+        "schema_execution": {
+          "correct": 158,
+          "queries": 158,
+          "event_value_identity_correct": 158,
+          "event_value_identity_comparisons": 158
+        },
+        "schema_chain": {
+          "correct": 158,
+          "queries": 158,
+          "event_value_identity_correct": 316,
+          "event_value_identity_comparisons": 316
+        },
+        "commit_owner_chain": {
+          "correct": 3,
+          "queries": 3,
+          "event_value_identity_correct": 6,
+          "event_value_identity_comparisons": 6
+        }
+      },
+      {
+        "seed": 229,
+        "module_attribute": {
+          "correct": 60,
+          "queries": 60,
+          "event_value_identity_correct": 60,
+          "event_value_identity_comparisons": 60
+        },
+        "latest_sampled_change": {
+          "correct": 72,
+          "queries": 72,
+          "event_value_identity_correct": 72,
+          "event_value_identity_comparisons": 72
+        },
+        "schema_execution": {
+          "correct": 154,
+          "queries": 154,
+          "event_value_identity_correct": 154,
+          "event_value_identity_comparisons": 154
+        },
+        "schema_chain": {
+          "correct": 154,
+          "queries": 154,
+          "event_value_identity_correct": 308,
+          "event_value_identity_comparisons": 308
+        },
+        "commit_owner_chain": {
+          "correct": 3,
+          "queries": 3,
+          "event_value_identity_correct": 6,
+          "event_value_identity_comparisons": 6
+        }
+      },
+      {
+        "seed": 233,
+        "module_attribute": {
+          "correct": 60,
+          "queries": 60,
+          "event_value_identity_correct": 60,
+          "event_value_identity_comparisons": 60
+        },
+        "latest_sampled_change": {
+          "correct": 74,
+          "queries": 75,
+          "event_value_identity_correct": 74,
+          "event_value_identity_comparisons": 75
+        },
+        "schema_execution": {
+          "correct": 134,
+          "queries": 134,
+          "event_value_identity_correct": 134,
+          "event_value_identity_comparisons": 134
+        },
+        "schema_chain": {
+          "correct": 134,
+          "queries": 134,
+          "event_value_identity_correct": 268,
+          "event_value_identity_comparisons": 268
+        },
+        "commit_owner_chain": {
+          "correct": 3,
+          "queries": 3,
+          "event_value_identity_correct": 6,
+          "event_value_identity_comparisons": 6
+        }
+      }
+    ],
+    "learned_typed_literal_predictions_equal_row_by_row": true,
+    "learned_routing_accuracy_and_coverage_all_tasks_all_seeds": 1,
+    "oracle_routing_gap_all_tasks_all_seeds": 0,
+    "single_schema_all_tasks_final_and_identity_accuracy": 1,
+    "exact_all_tasks_accuracy_from_published_summary": 1,
+    "latest_sampled_change_seed_mean_accuracy": 0.9683478260869565,
+    "latest_sampled_change_pooled_correct": 347,
+    "latest_sampled_change_pooled_queries": 358,
+    "latest_sampled_change_pooled_accuracy": 0.9692737430167597,
+    "commit_owner_chain_correct": 12,
+    "commit_owner_chain_queries": 15,
+    "commit_owner_chain_queries_per_seed": 3,
+    "untrained_schema_execution_seed_mean_final_accuracy": 0.5208727397044042,
+    "untrained_schema_execution_seed_mean_rule_identity_accuracy": 0.005651741293532338,
+    "outcome": "The actual route gap is closed within this public task-cue profile. Fixed multi-cell superiority is not established; single-schema is perfect and the multi model has episodic errors."
+  },
+  "fresh_read_consistency": {
+    "fresh_processes": 20,
+    "distinct_recorded_pids": 20,
+    "recorded_pid_range": [
+      83,
+      102
+    ],
+    "prediction_pairs_compared": 2685,
+    "prediction_mismatches": 0,
+    "per_seed_query_counts": {
+      "semantic": 190,
+      "episodic": 149,
+      "procedural": 70,
+      "single": 128
+    },
+    "coverage": "All canonical writes for each multi head; first 128 canonical writes for the single model.",
+    "all_validation_checks_passed": true,
+    "all_cached_vs_request_features_exactly_equal": true,
+    "maximum_recorded_feature_difference": 0,
+    "request_fields": [
+      "schema",
+      "artifact",
+      "base_path",
+      "texts",
+      "expected_encoder_digest"
+    ],
+    "allowed_artifact_files": [
+      "manifest.json",
+      "tensors.npz"
+    ],
+    "allowed_base_files": [
+      "1_Pooling/config.json",
+      "config.json",
+      "onnx/model_quint8_avx2.onnx",
+      "source.json",
+      "special_tokens_map.json",
+      "tokenizer.json",
+      "tokenizer_config.json"
+    ],
+    "is_answer_accuracy_measure": false,
+    "observation_scope": "Controlled Python open calls after dependency imports and packaged model-identity loading; not an OS sandbox."
+  },
+  "graph_ablations": {
+    "per_seed": [
+      {
+        "seed": 211,
+        "schema_chain_queries": 150,
+        "schema_chain_correct_edges_correct": 150,
+        "schema_chain_no_edges_correct": 0,
+        "schema_chain_shuffled_edges_correct": 100,
+        "commit_owner_chain_queries": 3,
+        "commit_owner_chain_correct_edges_correct": 0,
+        "commit_owner_chain_no_edges_correct": 0,
+        "commit_owner_chain_shuffled_edges_correct": 0
+      },
+      {
+        "seed": 223,
+        "schema_chain_queries": 150,
+        "schema_chain_correct_edges_correct": 150,
+        "schema_chain_no_edges_correct": 0,
+        "schema_chain_shuffled_edges_correct": 112,
+        "commit_owner_chain_queries": 3,
+        "commit_owner_chain_correct_edges_correct": 3,
+        "commit_owner_chain_no_edges_correct": 0,
+        "commit_owner_chain_shuffled_edges_correct": 0
+      },
+      {
+        "seed": 227,
+        "schema_chain_queries": 158,
+        "schema_chain_correct_edges_correct": 158,
+        "schema_chain_no_edges_correct": 0,
+        "schema_chain_shuffled_edges_correct": 116,
+        "commit_owner_chain_queries": 3,
+        "commit_owner_chain_correct_edges_correct": 3,
+        "commit_owner_chain_no_edges_correct": 0,
+        "commit_owner_chain_shuffled_edges_correct": 0
+      },
+      {
+        "seed": 229,
+        "schema_chain_queries": 154,
+        "schema_chain_correct_edges_correct": 154,
+        "schema_chain_no_edges_correct": 0,
+        "schema_chain_shuffled_edges_correct": 108,
+        "commit_owner_chain_queries": 3,
+        "commit_owner_chain_correct_edges_correct": 3,
+        "commit_owner_chain_no_edges_correct": 0,
+        "commit_owner_chain_shuffled_edges_correct": 0
+      },
+      {
+        "seed": 233,
+        "schema_chain_queries": 134,
+        "schema_chain_correct_edges_correct": 134,
+        "schema_chain_no_edges_correct": 0,
+        "schema_chain_shuffled_edges_correct": 84,
+        "commit_owner_chain_queries": 3,
+        "commit_owner_chain_correct_edges_correct": 3,
+        "commit_owner_chain_no_edges_correct": 0,
+        "commit_owner_chain_shuffled_edges_correct": 0
+      }
+    ],
+    "schema_chain_shuffled_seed_mean_final_accuracy": 0.6951349842927399,
+    "schema_chain_shuffled_seed_mean_event_identity_accuracy": 0.5814071905800604,
+    "exact_baseline_shuffled_final_results_match_multi": true,
+    "topology_learning_established": false
+  },
+  "storage_bytes": {
+    "shared_base": 23516451,
+    "source_content_including_provenance": 301482,
+    "provenance_manifest_included_in_source_content": 5054,
+    "retained_writes": 136682,
+    "address_index": 57226,
+    "source_bindings": 1752,
+    "given_edges": 222,
+    "deployment_bindings": 945,
+    "shared_source_and_common_artifacts_total": 498309,
+    "multi_catalogs": 7503,
+    "single_catalog": 7239,
+    "router_artifact": 1442,
+    "reader_pinned_base_manifest": 2151,
+    "exact_store": 49198,
+    "five_seed_mean_full_retained": {
+      "multi": 24113859.8,
+      "single": 24108256.4,
+      "exact": 547507,
+      "untrained": 24110052.2
+    },
+    "five_seed_mean_incremental_if_base_already_resident": {
+      "multi": 597408.8,
+      "single": 591805.4,
+      "exact": 547507,
+      "untrained": 593601.2
+    },
+    "multi_incremental_over_exact_ratio": 1.091143674875391,
+    "single_incremental_over_exact_ratio": 1.0809092851780864,
+    "excluded": [
+      "evaluation logs",
+      "dependency runtime binaries",
+      "Python object overhead",
+      "energy",
+      "hardware prices"
+    ]
+  },
+  "reported_timing_seconds": {
+    "source": "Read from the frozen evidence; no rerun or independent timing measurement in this audit.",
+    "shared_base_initialization_once": 0.17935816699173301,
+    "mean_shared_training_encoding_per_seed": 1.3482033712003614,
+    "mean_source_index_setup_per_seed": 0.03719924020115286,
+    "mean_model_write": {
+      "multi": 0.3972850161953829,
+      "single": 0.7536113825975918,
+      "exact": 0.0006183732009958475
+    },
+    "mean_cold_fresh_validation_per_seed": {
+      "multi": 2.2686790909967387,
+      "single": 0.7258181634009816
+    },
+    "mean_in_process_validation_per_seed": {
+      "multi": 1.3869331283931388,
+      "single": 0.491809933600598
+    },
+    "mean_warm_batch_read": {
+      "multi_learned": 0.7037643296032912,
+      "single_schema": 0.6434787431993755,
+      "exact": 0.003957454802002758
+    },
+    "warm_batch_queries_by_seed": [
+      432,
+      434,
+      450,
+      443,
+      406
+    ],
+    "interpretation": "Single observed warm-session batches; not per-request latency distributions, cold-OS-cache measurements or timing confidence intervals. Fresh validation coverage differs between multi and single."
+  },
+  "unresolved_limitations": [
+    "Five seeds reuse one repository's observations; they are not five independent knowledge domains.",
+    "Commit-owner composition has only three queries per seed and fails 0/3 at seed 211.",
+    "The multi model's remaining errors are parameter-read errors, not routing errors in this known-cue profile.",
+    "Fresh-process prediction agreement is restoration consistency, not answer accuracy.",
+    "Rules, value catalogs, version addressing, task schemas and typed graph ports remain explicit infrastructure.",
+    "The graph ablations establish dependence on supplied connections, not learned or spontaneous topology.",
+    "Neither full nor base-resident storage accounting establishes a real-source storage advantage over exact.",
+    "This receipt does not claim open-domain semantic addressing, general memory transfer, production isolation or complete infrastructure cost accounting."
+  ],
+  "audit_outcome": {
+    "real_artifact_consistency_anomalies_found": [],
+    "statistical_or_scientific_pass_inferred_from_integrity": false
+  }
+}
