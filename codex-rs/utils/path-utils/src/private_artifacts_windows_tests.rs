@@ -290,8 +290,11 @@ fn native_reparse_directory_is_refused_before_child_effect() {
     let system = std::env::var_os("SystemRoot").expect("Windows system root");
     let output = std::process::Command::new(Path::new(&system).join("System32/cmd.exe"))
         .args(["/d", "/c", "mklink", "/J"])
-        .arg(&junction)
-        .arg(&path)
+        // cmd's mklink parser requires a Win32 spelling, not a \\?\ prefix.
+        // Both paths remain this test's owned scratch objects; admission below
+        // still uses the original retained full identity and rejects reparse.
+        .arg(dunce::simplified(&junction))
+        .arg(dunce::simplified(&path))
         .output()
         .expect("create own fixture junction");
     assert!(

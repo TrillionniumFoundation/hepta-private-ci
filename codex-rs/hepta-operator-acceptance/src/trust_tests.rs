@@ -214,17 +214,28 @@ impl TrustFixture {
     fn sign_hash(&self, statement: &[u8], namespace: &str, name: &str, hash: &str) -> PathBuf {
         let statement_path = self.root.join(name);
         write_private(&statement_path, statement);
-        let signed = Command::new(openssh_keygen())
-            .args(["-Y", "sign", "-f"])
-            .arg(&self.key)
-            .args(["-n", namespace, "-O", &format!("hashalg={hash}")])
-            .arg(&statement_path)
-            .status()
-            .expect("start SSHSIG signer for test fixture");
-        assert!(signed.success(), "create test-only SSHSIG");
-        let signature = PathBuf::from(format!("{}.sig", statement_path.display()));
-        set_private_permissions(&signature);
-        signature
+        let mut signer = Command::new(openssh_keygen());
+        signer.args(["-Y", "sign", "-f"]).arg(&self.key).args([
+            "-n",
+            namespace,
+            "-O",
+            &format!("hashalg={hash}"),
+        ]);
+        #[cfg(windows)]
+        {
+            crate::test_support::sign_private_fixture(signer, &statement_path)
+        }
+        #[cfg(not(windows))]
+        {
+            let signed = signer
+                .arg(&statement_path)
+                .status()
+                .expect("start SSHSIG signer for test fixture");
+            assert!(signed.success(), "create test-only SSHSIG");
+            let signature = PathBuf::from(format!("{}.sig", statement_path.display()));
+            set_private_permissions(&signature);
+            signature
+        }
     }
 }
 
@@ -249,6 +260,7 @@ fn write_private(path: &Path, bytes: &[u8]) {
     file.write_all(bytes).expect("write private test file");
 }
 
+#[cfg(not(windows))]
 fn set_private_permissions(_path: &Path) {
     #[cfg(unix)]
     {

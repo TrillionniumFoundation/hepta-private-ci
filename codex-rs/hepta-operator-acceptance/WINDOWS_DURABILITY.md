@@ -37,3 +37,14 @@ existing ACL. Original functional cases and their criteria remain unchanged.
 identities stayed fixed; an observed private-identity or SSHSIG refusal remains
 a functional failure. This trace does not qualify Windows inherited input or
 the original 26-case scope. Keep the original 91-case driver and scope bytes.
+
+The original diagnostic is frozen at `23c948c65`: real Windows OpenSSH filename
+output granted active Everyone read/write/delete access on both generated `.sig`
+files, while the private policy/allowed-signers controls passed unchanged. New
+Windows fixtures therefore let the same real signer consume the original
+statement file on stdin and emit the original SSHSIG bytes on stdout, then use
+the canonical exclusive private creator for the new signature. No existing
+artifact or ACL is adopted, normalized or repaired. Unix fixture generation and
+both original functional assertions remain unchanged. Fixture generation does
+not establish production inherited input, Windows verifier trust or a successful
+strict-plus-OpenSSH double check; those remain separately qualified requirements.

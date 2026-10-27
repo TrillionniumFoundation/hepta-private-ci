@@ -370,20 +370,27 @@ impl TrustFixture {
     }
 
     fn sign(&self, challenge: &Path) -> PathBuf {
-        let status = Command::new(openssh_keygen())
+        let mut signer = Command::new(openssh_keygen());
+        signer
             .args(["-Y", "sign", "-f"])
             .arg(&self.key)
-            .args(["-n", SSHSIG_NAMESPACE])
-            .arg(challenge)
-            .status()
-            .expect("start SSHSIG signer");
-        assert!(status.success());
-        let signature = PathBuf::from(format!("{}.sig", challenge.display()));
-        set_private_permissions(&signature);
-        signature
+            .args(["-n", SSHSIG_NAMESPACE]);
+        #[cfg(windows)]
+        {
+            crate::test_support::sign_private_fixture(signer, challenge)
+        }
+        #[cfg(not(windows))]
+        {
+            let status = signer.arg(challenge).status().expect("start SSHSIG signer");
+            assert!(status.success());
+            let signature = PathBuf::from(format!("{}.sig", challenge.display()));
+            set_private_permissions(&signature);
+            signature
+        }
     }
 }
 
+#[cfg(not(windows))]
 fn set_private_permissions(_path: &Path) {
     #[cfg(unix)]
     {

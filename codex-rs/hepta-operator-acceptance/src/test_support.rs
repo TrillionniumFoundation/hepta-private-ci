@@ -44,6 +44,41 @@ pub(crate) fn openssh_keygen() -> &'static Path {
     })
 }
 
+/// Generate a new test-only signature with real OpenSSH and private creation.
+/// Windows OpenSSH's filename output grants Everyone access independently of
+/// the parent's private DACL. Never repair/adopt that output or weaken admission.
+#[cfg(windows)]
+pub(crate) fn sign_private_fixture(mut signer: std::process::Command, statement: &Path) -> PathBuf {
+    let input = std::fs::File::open(statement).expect("open original fixture statement");
+    let signed = signer
+        .stdin(std::process::Stdio::from(input))
+        .output()
+        .expect("run actual OpenSSH fixture signer on original statement stdin");
+    assert!(
+        signed.status.success(),
+        "OpenSSH fixture signer failed: {}",
+        String::from_utf8_lossy(&signed.stderr)
+    );
+    assert!(
+        !signed.stdout.is_empty() && signed.stdout.len() <= 16 * 1024,
+        "OpenSSH fixture signature exceeds its original bound"
+    );
+    let mut signature = statement.as_os_str().to_os_string();
+    signature.push(".sig");
+    let signature = PathBuf::from(signature);
+    let directory = codex_utils_path::RetainedPrivateDirectory::open_existing(
+        statement.parent().expect("original private fixture root"),
+    )
+    .expect("retain original private fixture root without ACL repair");
+    directory
+        .write_new_child(
+            signature.file_name().expect("new fixture signature name"),
+            &signed.stdout,
+        )
+        .expect("create, read back and durably flush the new private signature");
+    signature
+}
+
 pub(crate) struct PrivateTempDir {
     temporary: TempDir,
     #[cfg(windows)]
