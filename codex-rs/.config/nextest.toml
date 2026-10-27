@@ -11,6 +11,19 @@ path = "junit.xml"
 [profile.local]
 inherits = "default"
 
+# First declared harness budget for these opt-in real-model experiments only.
+# The original worker/FinalUse/holdout deadlines remain unchanged. In particular,
+# a failed random holdout draw is never retried to obtain a better sample.
+# No explicit `inherits` field: the pinned nextest 0.9.103 uses default inheritance.
+[profile.smollm-pair]
+retries = 0
+test-threads = 1
+slow-timeout = { period = "60s", terminate-after = 15 }
+default-filter = '''
+(package(=codex-hepta-infer-worker-host) & test(=smollm_neural_read::tests::native::real_smollm_parent_query_original_control_final_use_and_terminal_unload))
+| (package(=codex-hepta-agentd) & binary(=neural_comparison_native) & test(=real_gen2_gen3_forwards_score_only_after_original_holdout_consumption))
+'''
+
 [test-groups.app_server_protocol_codegen]
 max-threads = 1
 
