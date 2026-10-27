@@ -51,6 +51,9 @@ mod recovery;
 mod remote_control;
 mod rollout_migration;
 #[cfg(test)]
+#[path = "runtime/startup_tests.rs"]
+mod startup_tests;
+#[cfg(test)]
 pub(crate) mod test_support;
 mod thread_section_order;
 mod thread_sections;
