@@ -1,0 +1,360 @@
+{
+  "schema": "hepta.cargo-deny.remediation-boundaries.v1",
+  "status": "read_only_analysis_updates_not_executed",
+  "reviewed_source_commit": "ccdb7ea7cb9c4adecf6f6607ea1570cb81ae0f78",
+  "upcoming_tls_base_commit": "90816a3d20bbba0d9d3acca451d30f328e5df7c5",
+  "advisory_db_commit": "3279c99911354c400e1d41e47c7d60e39258b147",
+  "crates_io_index_commit": "0f21f981c599971052bd855aa0fea6cc3f5e0c23",
+  "original_counts": {
+    "advisory_records": 22,
+    "vulnerability_records": 16,
+    "unmaintained_records": 6,
+    "distinct_locked_crate_versions": 16
+  },
+  "after_four_tls_updates_expected_only": {
+    "advisory_records": 15,
+    "vulnerability_records": 9,
+    "unmaintained_records": 6,
+    "measured": false,
+    "condition": "same advisory database and original all-features/policy graph; real resolver/check still required"
+  },
+  "scope_limits": [
+    "No runtime exploitability assessment.",
+    "No source, dependency, lock or advisory-ignore mutation during this analysis.",
+    "No claim that semver admission proves build or resolver success.",
+    "Original baseline provenance belongs to sibling DIAGNOSIS/SOURCE_IDENTITIES; identical dependency blobs predate this research PR."
+  ],
+  "groups": [
+    {
+      "group": "tls_patch_candidates",
+      "advisories": [
+        "RUSTSEC-2026-0346",
+        "RUSTSEC-2026-0347",
+        "RUSTSEC-2026-0348",
+        "RUSTSEC-2026-0349",
+        "RUSTSEC-2026-0381",
+        "RUSTSEC-2026-0382",
+        "RUSTSEC-2026-0383"
+      ],
+      "status": "static_constraints_admit_targets_resolver_not_executed",
+      "changes": [
+        [
+          "rustls-webpki",
+          "0.103.15",
+          "0.103.16"
+        ],
+        [
+          "webpki-roots",
+          "1.0.9",
+          "1.0.10"
+        ],
+        [
+          "webpki-root-certs",
+          "1.0.5",
+          "1.0.10"
+        ],
+        [
+          "rustls",
+          "0.23.45",
+          "0.23.46"
+        ]
+      ],
+      "scope": [
+        "codex-rs/Cargo.lock",
+        "MODULE.bazel.lock"
+      ],
+      "evidence": [
+        "All observed current parent constraints admit the targets, including both pinned tungstenite forks (^0.23.0 for rustls).",
+        "rustls and rustls-webpki target registry metadata differs from current only in version, archive checksum and publication time.",
+        "Both root packages require Rust 1.71, below the pinned 1.95.0 toolchain; root-certs normal dependency requirements remain unchanged.",
+        "The seven advisory records are not seven independent CVEs: 0381/0382/0383 share CVE-2026-111943."
+      ],
+      "validation": [
+        "Real resolver must succeed and only the four declared package identities may change.",
+        "Run the repository's exact just bazel-lock-update, then strict Bazel lock validation.",
+        "Check three real TLS consumer libraries and record actual leaf coverage.",
+        "Rerun cargo-deny 0.19.0 with the original --all-features graph and policy, pinned advisory DB."
+      ]
+    },
+    {
+      "group": "matrix_crypto",
+      "advisories": [
+        "RUSTSEC-2026-0318"
+      ],
+      "status": "coordinated_stack_vendor_and_toolchain_migration",
+      "changes": [
+        [
+          "matrix-sdk-crypto",
+          "0.18.0",
+          ">=0.19.0"
+        ]
+      ],
+      "scope": [
+        "codex-rs/Cargo.toml",
+        "codex-rs/third_party/matrix-sdk-sqlite-0.18.0",
+        "codex-rs/hepta-matrix-sdk",
+        "Rust and Bazel toolchain pins"
+      ],
+      "evidence": [
+        "Current matrix-sdk ^0.18.0 and sqlite/base/indexeddb ^0.18.0 crypto constraints reject 0.19.",
+        "Published matrix-sdk and sqlite 0.19.0/0.19.1 require Rust 1.96; current Cargo and Bazel toolchains are 1.95.0.",
+        "The local sqlite manifest uses rusqlite ^0.39.0, intentionally sharing native SQLite with SQLx; upstream sqlite0.19 uses rusqlite ^0.40.2. The native links graph must be resolved, not assumed compatible."
+      ],
+      "validation": [
+        "Rebase or retire the old SQLite vendor after checking the shared libsqlite3-sys constraint.",
+        "Verify encryption/session persistence and existing stored database compatibility.",
+        "A coordinated SDK update does not remove anymap2."
+      ]
+    },
+    {
+      "group": "anymap",
+      "advisories": [
+        "RUSTSEC-2026-0319"
+      ],
+      "status": "no_patched_release_parent_source_change",
+      "changes": [
+        [
+          "anymap2",
+          "0.13.0",
+          "maintained replacement such as anymap3"
+        ]
+      ],
+      "scope": [
+        "matrix-sdk dependency or reviewed maintained fork"
+      ],
+      "evidence": [
+        "Official advisory has no patched release.",
+        "Even latest indexed matrix-sdk0.19.1 still requires anymap2 ^0.13.0."
+      ],
+      "validation": [
+        "Port the actual SDK type-map use to a maintained alternative; a package rename in Cargo.lock cannot make the caller compile.",
+        "Verify the old crate is absent from the full resolved graph."
+      ]
+    },
+    {
+      "group": "basic_toml",
+      "advisories": [
+        "RUSTSEC-2026-0374"
+      ],
+      "status": "no_patched_release_parent_source_change",
+      "changes": [
+        [
+          "basic-toml",
+          "0.1.10",
+          "maintained TOML parser"
+        ]
+      ],
+      "scope": [
+        "i18n-config path reached by age/i18n-embed-fl",
+        "codex-secrets"
+      ],
+      "evidence": [
+        "Latest indexed i18n-config0.4.8 still requires basic-toml ^0.1.",
+        "Even i18n-embed-fl0.10.1 requires i18n-config ^0.4.7, so merely upgrading age to0.12.1 does not establish removal."
+      ],
+      "validation": [
+        "Use a maintained i18n-config release or review a parser port/fork; preserve localization configuration semantics.",
+        "Check codex-secrets roundtrip and localized diagnostic paths."
+      ]
+    },
+    {
+      "group": "crypto_bigint",
+      "advisories": [
+        "RUSTSEC-2026-0387"
+      ],
+      "status": "incompatible_leaf_parent_crypto_migration",
+      "changes": [
+        [
+          "crypto-bigint",
+          "0.5.5",
+          ">=0.7.6"
+        ]
+      ],
+      "scope": [
+        "AWS credentials-login/p256/elliptic-curve chain",
+        "codex-aws-auth"
+      ],
+      "evidence": [
+        "Current elliptic-curve0.13.8 requires crypto-bigint ^0.5, rejecting0.7.6.",
+        "Current aws-config credentials-login enables p256 ^0.13.2; latest indexed aws-config1.13.0 still has this bound.",
+        "Updating aws-sigv4 alone cannot remove the independent aws-config credentials-login path. Its optional sigv4a feature in1.6.3 also still specifies crypto-bigint ^0.5.4."
+      ],
+      "validation": [
+        "Migrate the relevant AWS credential/signing parent path to compatible maintained cryptography or obtain a verified upstream fixed backport.",
+        "Preserve credentials-login behavior; do not disable it to clear the report."
+      ]
+    },
+    {
+      "group": "yaml",
+      "advisories": [
+        "RUSTSEC-2024-0449"
+      ],
+      "status": "no_patched_release_parser_migration",
+      "changes": [
+        [
+          "unsafe-libyaml",
+          "0.2.11",
+          "maintained safe YAML implementation"
+        ]
+      ],
+      "scope": [
+        "codex-core-plugins",
+        "workspace serde_yaml"
+      ],
+      "evidence": [
+        "serde_yaml0.9.34+deprecated requires unsafe-libyaml ^0.2.11.",
+        "Official advisory gives no patched range and explicitly notes serde_yaml_ng still depends on unsafe-libyaml."
+      ],
+      "validation": [
+        "Port typed parsing/errors/tags/aliases/duplicate-key behavior to a maintained parser such as serde-saphyr only after compatibility review.",
+        "Check actual plugin manifest fixtures and malformed input handling."
+      ]
+    },
+    {
+      "group": "desktop_dbus_types",
+      "advisories": [
+        "RUSTSEC-2026-0370",
+        "RUSTSEC-2026-0371",
+        "RUSTSEC-2026-0372"
+      ],
+      "status": "no_patched_release_backend_migration",
+      "changes": [
+        [
+          "zvariant",
+          "4.2.0",
+          "zbus6 wire"
+        ],
+        [
+          "zbus_names",
+          "3.0.0",
+          "zbus6 names"
+        ],
+        [
+          "zvariant_derive",
+          "4.2.0",
+          "zbus6 macros"
+        ]
+      ],
+      "scope": [
+        "codex-keyring-store",
+        "keyring Linux async persistent and BSD backends"
+      ],
+      "evidence": [
+        "keyring3.6.3 enables secret-service ^4 and zbus ^4; zbus4.4 uses the three old standalone crates, with zvariant_derive exactly4.2.0.",
+        "A blind keyring4 upgrade is insufficient evidence: keyring4.2.0's zbus-secret-service-keyring-store1.0.1 still requires zbus ^5, while the advisory replacement is integrated zbus6."
+      ],
+      "validation": [
+        "Use a maintained backend release that has really migrated or port the backend to zbus6.",
+        "Preserve Linux native plus persistent credential behavior, macOS and Windows backends; do not remove the backend/feature to silence audit."
+      ]
+    },
+    {
+      "group": "zip",
+      "advisories": [
+        "RUSTSEC-2026-0367",
+        "RUSTSEC-2026-0368",
+        "RUSTSEC-2026-0369"
+      ],
+      "status": "major_archive_api_migration",
+      "changes": [
+        [
+          "zip",
+          "2.4.2",
+          ">=9.0.0;9.1.2 candidate for combined zstd migration"
+        ]
+      ],
+      "scope": [
+        "codex-rs/Cargo.toml",
+        "codex-core-plugins"
+      ],
+      "evidence": [
+        "Workspace ^2.4.2 rejects the patched9.x range.",
+        "zip9.0.0 still requires optional zstd ^0.13.3, so it can preserve the vulnerable old zstd after a workspace upgrade.",
+        "Published zip9.1.2 uses zstd ^0.14.2 and Rust1.88, permitting a coordinated zstd0.14.3 candidate."
+      ],
+      "validation": [
+        "Port/check archive reader/writer APIs and extraction policy against the new major version.",
+        "Check symlink traversal, file permission, platform path and compatibility behavior with concrete plugin archive fixtures."
+      ]
+    },
+    {
+      "group": "zstd_safe_stack",
+      "advisories": [
+        "RUSTSEC-2026-0391",
+        "RUSTSEC-2026-0398",
+        "RUSTSEC-2026-0403"
+      ],
+      "status": "semver_incompatible_compression_stack_update",
+      "changes": [
+        [
+          "zstd",
+          "0.13.3",
+          "0.14.3"
+        ],
+        [
+          "zstd-safe",
+          "7.2.4",
+          "8.2.0"
+        ]
+      ],
+      "scope": [
+        "workspace zstd and all direct users",
+        "zip dependency",
+        "Bazel native annotations"
+      ],
+      "evidence": [
+        "Workspace/zip2.4 zstd ^0.13 excludes0.14.3; zstd0.13.3 zstd-safe ^7.1.0 excludes8.2.0.",
+        "zstd0.14.3 requires zstd-safe ^8.2.0, which requires zstd-sys ^2.1.2."
+      ],
+      "validation": [
+        "Coordinate zip migration to eliminate the old parallel zstd0.13 branch.",
+        "Check compression/decompression and existing persisted frame compatibility in rollout/thread-store/protocol/client paths.",
+        "Review the zstd-sys Windows patch against the actual new source and refresh both locks."
+      ]
+    },
+    {
+      "group": "zstd_sys",
+      "advisories": [
+        "RUSTSEC-2026-0410"
+      ],
+      "status": "semver_admitted_leaf_with_native_patch_validation",
+      "changes": [
+        [
+          "zstd-sys",
+          "2.0.16+zstd.1.5.7",
+          "2.1.2+zstd.1.5.7"
+        ]
+      ],
+      "scope": [
+        "Cargo and MODULE locks",
+        "patches/zstd-sys_windows_msvc_include_dirs.patch"
+      ],
+      "evidence": [
+        "Current zstd-safe ^2.0.15 admits2.1.2; patched crate retains upstream zstd1.5.7 and MSRV1.64.",
+        "Bazel applies a local build.rs patch and injects native zstd1.5.7, so resolver admission alone does not prove the Bazel/native build works.",
+        "The advisory affects the wasm32 allocator shim; this is not proof of exploitability in the current Linux job."
+      ],
+      "validation": [
+        "Possible separate leaf transaction, but not part of the four-TLS-only experiment.",
+        "Validate real patch application/native builds; this leaf alone leaves the other three zstd advisory records."
+      ]
+    }
+  ],
+  "proposed_commands_not_executed": [
+    "cargo +1.95.0 update --manifest-path codex-rs/Cargo.toml -p rustls-webpki@0.103.15 --precise 0.103.16",
+    "cargo +1.95.0 update --manifest-path codex-rs/Cargo.toml -p webpki-roots@1.0.9 --precise 1.0.10",
+    "cargo +1.95.0 update --manifest-path codex-rs/Cargo.toml -p webpki-root-certs@1.0.5 --precise 1.0.10",
+    "cargo +1.95.0 update --manifest-path codex-rs/Cargo.toml -p rustls@0.23.45 --precise 0.23.46",
+    "just bazel-lock-update",
+    "bazel mod deps --lockfile_mode=error",
+    "cargo +1.95.0 check --manifest-path codex-rs/Cargo.toml --locked --lib -p codex-utils-rustls-provider -p codex-http-client -p codex-websocket-client",
+    "cargo-deny --format json --log-level warn --manifest-path codex-rs/Cargo.toml --all-features --locked check advisories --disable-fetch --config codex-rs/deny.toml"
+  ],
+  "command_caveats": [
+    "Run from repository root.",
+    "Select each package from its actual current Cargo.lock immediately before updating; stop if unexpected graph changes occur.",
+    "Pin cargo-deny0.19.0 and the stated advisory DB, with original deny.toml unchanged.",
+    "The three-crate native-roots compile does not guarantee either root-store package is compiled or any live TLS handshake tested.",
+    "An expected advisory failure must be reported as failure, not converted into a passed security gate."
+  ]
+}

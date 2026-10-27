@@ -1,0 +1,190 @@
+name: Memory cell V5 bounded TLS repair
+
+on:
+  push:
+    branches:
+      - research/memory-cell-v5-tls-20261027
+    paths:
+      - .github/workflows/memory-cell-v5-tls-repair.yml
+      - qualification/memory-cell-v5-ci/tls_repair.py
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-cell-v5-tls-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  tls-candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      TLS_REPAIR_OUTPUT: ${{ runner.temp }}/memory-cell-v5-tls-output
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 64
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - name: Resolve exact TLS targets, refresh locks, compile consumers and retain advisory failure
+        run: python3 -B qualification/memory-cell-v5-ci/tls_repair.py --output "$TLS_REPAIR_OUTPUT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-v5-tls-candidate-${{ github.sha }}
+          path: ${{ env.TLS_REPAIR_OUTPUT }}/
+          if-no-files-found: error
+          retention-days: 14
+  codespell:
+    uses: ./.github/workflows/codespell.yml
+  formatter-proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 64
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: 0.11.3
+          enable-cache: false
+      - name: Format only the new control sources and preserve their semantics
+        shell: bash
+        run: |
+          python3 -B - <<'PY'
+          import ast
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import time
+
+          root = Path.cwd()
+          output = Path(os.environ["RUNNER_TEMP"]) / "memory-cell-v5-tls-format"
+          output.mkdir(exist_ok=False)
+          helper = "qualification/memory-cell-v5-ci/tls_repair.py"
+          sources = (helper, ".github/workflows/memory-cell-v5-tls-repair.yml")
+          report = {"source_commit": os.environ["GITHUB_SHA"], "commands": [], "unit_tests_executed": False, "passed": False}
+          deadline = time.monotonic() + 660
+
+          def identity(raw):
+              return {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
+
+          def syntax():
+              return hashlib.sha256(ast.dump(ast.parse((root / helper).read_bytes()), include_attributes=False).encode()).hexdigest()
+
+          def frozen_inventory():
+              base = root / "qualification/memory-cell-v5"
+              if not base.is_dir():
+                  raise ValueError("Frozen V5 directory is missing")
+              return {str(path.relative_to(base)): identity(path.read_bytes()) for path in sorted(base.rglob("*")) if path.is_file()}
+
+          before = {name: identity((root / name).read_bytes()) for name in sources}
+          before_syntax = syntax()
+          frozen = frozen_inventory()
+          ruff = ["uv", "run", "--frozen", "--project", "scripts", "ruff"]
+          commands = [
+              (["just", "fmt", "--base", "90816a3d20bbba0d9d3acca451d30f328e5df7c5"], root / "codex-rs"),
+              ([*ruff, "format", helper], root),
+              ([*ruff, "format", "--check", helper], root),
+              ([*ruff, "check", helper], root),
+          ]
+          try:
+              for index, (command, cwd) in enumerate(commands, 1):
+                  started = time.monotonic()
+                  remaining = deadline - started
+                  if remaining <= 0:
+                      raise TimeoutError("Formatting deadline reached")
+                  try:
+                      process = subprocess.run(command, cwd=cwd, capture_output=True, timeout=min(360, remaining))
+                      stdout, stderr, code = process.stdout, process.stderr, process.returncode
+                  except subprocess.TimeoutExpired as error:
+                      stdout, stderr, code = error.stdout or b"", error.stderr or b"", 124
+                  record = {"command": command, "cwd": str(cwd), "exit_code": code, "wall_seconds": time.monotonic() - started}
+                  for stream, raw in (("stdout", stdout), ("stderr", stderr)):
+                      filename = f"command-{index:02d}.{stream}.txt"
+                      (output / filename).write_bytes(raw)
+                      record[stream] = {"path": filename, **identity(raw)}
+                  report["commands"].append(record)
+              changed = subprocess.check_output(["git", "diff", "--name-only", "HEAD"], text=True, timeout=30).splitlines()
+              report.update({
+                  "before": before, "after": {name: identity((root / name).read_bytes()) for name in sources},
+                  "python_ast_before": before_syntax, "python_ast_after": syntax(),
+                  "python_ast_unchanged": before_syntax == syntax(), "changed_paths": changed,
+                  "only_new_control_sources_changed": set(changed) <= set(sources),
+                  "frozen_v5_inventory": frozen, "frozen_v5_unchanged": frozen == frozen_inventory(),
+              })
+              report["passed"] = all(row["exit_code"] == 0 for row in report["commands"]) and all(report[key] for key in ("python_ast_unchanged", "only_new_control_sources_changed", "frozen_v5_unchanged"))
+          except Exception as error:
+              report["failure"] = {"type": type(error).__name__, "message": str(error)}
+          finally:
+              for name in sources:
+                  (output / Path(name).name).write_bytes((root / name).read_bytes())
+              (output / "FORMAT.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+          print(json.dumps({"passed": report["passed"], "unit_tests_executed": False}))
+          raise SystemExit(0 if report["passed"] else 1)
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-v5-tls-format-${{ github.sha }}
+          path: ${{ runner.temp }}/memory-cell-v5-tls-format/
+          if-no-files-found: error
+          retention-days: 14
+  documentation-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Verify the complete development documentation contract
+        shell: bash
+        run: |
+          python3 -B - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import time
+
+          output = Path(os.environ["RUNNER_TEMP"]) / "memory-cell-v5-tls-docs"
+          output.mkdir(exist_ok=False)
+          command = ["python3", "scripts/hepta-docs.py", "verify", "--profile", "development"]
+          started = time.monotonic()
+          try:
+              result = subprocess.run(command, capture_output=True, timeout=480)
+              stdout, stderr, code = result.stdout, result.stderr, result.returncode
+          except subprocess.TimeoutExpired as error:
+              stdout, stderr, code = error.stdout or b"", error.stderr or b"", 124
+          record = {
+              "source_commit": os.environ["GITHUB_SHA"], "command": command,
+              "exit_code": code, "wall_seconds": time.monotonic() - started,
+              "unit_tests_executed": False,
+          }
+          for name, raw in (("stdout", stdout), ("stderr", stderr)):
+              (output / (name + ".txt")).write_bytes(raw)
+              record[name] = {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
+          (output / "RESULT.json").write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+          print(json.dumps(record))
+          raise SystemExit(code)
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-v5-tls-docs-${{ github.sha }}
+          path: ${{ runner.temp }}/memory-cell-v5-tls-docs/
+          if-no-files-found: error
+          retention-days: 14

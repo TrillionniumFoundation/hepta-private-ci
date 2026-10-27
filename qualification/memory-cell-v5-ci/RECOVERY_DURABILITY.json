@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.memory.v4.recovered-subset-durability-review.v1",
+  "review_date_utc": "2026-10-27",
+  "branch": "research/memory-cell-v4-recovery-20261027",
+  "commit": "e18b2da6c877dc28cd7734af88f432b0ecc19791",
+  "root_tree": "838f106548d7bf2bf3a589a0b9d6736faf18b49d",
+  "recovery_tree": "e116e526ef2637c669fcef2a4915c07dc0b20245",
+  "tree_entries": [
+    {
+      "path": "qualification/memory-cell-v4-recovery/bundle-parts/hepta-memory-v4-history-20261026.bundle.part001",
+      "bytes": 8000001,
+      "git_blob": "655b681c8a05f06d666386b74acdf9fb44dcb554"
+    },
+    {
+      "path": "qualification/memory-cell-v4-recovery/bundle-parts/hepta-memory-v4-history-20261026.bundle.part002",
+      "bytes": 8000001,
+      "git_blob": "b52cd381c56366e46834b47d9a1987552a738835"
+    },
+    {
+      "path": "qualification/memory-cell-v4-recovery/salvage_prefix.py",
+      "bytes": 18865,
+      "git_blob": "21bacc1ee90401e6c66858d623c904ad0ee8ff14"
+    },
+    {
+      "path": "qualification/memory-cell-v4-recovery/run_hosted_recovery.py",
+      "bytes": 6116,
+      "git_blob": "bf2d68980b418c1d181b1045761d34b0c28d9d30"
+    }
+  ],
+  "combined_prefix": {
+    "bytes": 16000002,
+    "sha256": "20953c2ab1c6d790b9f40d2346bcc5f91a46d3602c07e1a9ba8575bfdd93513e",
+    "local_bytes_rehashed": true
+  },
+  "prerequisites_in_named_tree": {
+    "v1_v2": {
+      "parts": 5,
+      "bytes": 36526176,
+      "sha256": "283ed9c9c966417c9ac72388e8f22f1f03b46620130e3f193cb31024586fce7d"
+    },
+    "v3": {
+      "parts": 7,
+      "bytes": 54731928,
+      "sha256": "ed9dc2f129051210b729e01281f16c6b863f17c71d5a474a7e3885509cd4cf3e"
+    },
+    "whole_bundle_validation_performed_in_original_recovery": true,
+    "whole_bundles_replayed_in_this_review": false
+  },
+  "recovered_subset": {
+    "files": 190,
+    "bytes": 30434818,
+    "from_recovered_loose_objects": 163,
+    "from_base_alternates": 27,
+    "directly_mirrored_files": 71,
+    "other_reconstructible_files": 119,
+    "other_reconstructible_bytes": 28606639
+  },
+  "independent_prefix_alone_sufficient_for_all_190": false,
+  "named_prefix_plus_existing_base_chain_and_scripts_retains_reconstruction_inputs": true,
+  "new_irreplaceable_subset_only_in_expiring_artifact_found": false,
+  "original_v4_complete": false,
+  "missing_original_formal_outputs": 6026,
+  "scope": "Read-only reachability and identity review of the already recovered subset; not a new recovery run or qualification."
+}
