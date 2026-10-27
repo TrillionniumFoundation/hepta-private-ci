@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.scoped-rust-test-disk-budget-review.v1",
+  "source_parent_pr": 4055,
+  "parent_head": "60962d93bf777c695e90028ef3546e6dfbd980f1",
+  "observed_utc": "2026-10-27T01:46:31Z",
+  "evidence": {
+    "workflow_run": 40430343520,
+    "workflow_attempt": 2,
+    "scoped_native_job": 121952880911,
+    "scoped_native_conclusion": "failure",
+    "native_log_diagnostics": [
+      "collect2: fatal error: ld terminated with signal 7 [Bus error], core dumped",
+      "You are running out of disk space. Free space left: 81 MB",
+      "rustc-LLVM ERROR: IO failure on output stream: No space left on device"
+    ],
+    "unsuccessful_stage": "cargo test --no-run link/compile",
+    "absence_of_claim": "No original functional test PASS is implied by this failed compile"
+  },
+  "implementation": {
+    "changed_workflow": ".github/workflows/blocking-ci.yml",
+    "baseline_workflow_blob": "bca6efff49c25a440bdada758c21504d034cff4c",
+    "replacement_workflow_blob": "44973514597c9c14f39223dd966240534884d85c",
+    "config": {
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "CARGO_BUILD_JOBS": "2"
+    },
+    "scope": "hepta-scoped native job only; original dependency impact selection, just test command, required gates, asserted functional tests unchanged",
+    "static_replay": "Unique workflow anchor replaced once and exact preimage recovered by replacing the inserted block; no changes outside hepta-scoped job env"
+  },
+  "validation_status": {
+    "source_patch_published": true,
+    "exact_head_native_executed": false,
+    "original_windows_delete_passed": false,
+    "original_memory_appserver_passed": false,
+    "cargo_deny_passed": false,
+    "entire_ci_required_passed": false
+  },
+  "immutable_prior": {
+    "p39_research_screen": "CLOSED_FOR_DECLARED_SOURCE_PAIRING_RESEARCH_TASK",
+    "production_mode": "SHADOW_ONLY",
+    "production_authority": "DENY_ALL",
+    "overall": "HOLD_NO_GO"
+  }
+}
