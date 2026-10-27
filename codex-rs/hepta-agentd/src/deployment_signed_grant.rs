@@ -2,11 +2,33 @@
 //! This check issues no grant and is not an administrative permission token.
 use super::*;
 
+enum VerificationPurpose {
+    LiveRevocation,
+    RetainedObservation,
+}
+
 impl DeploymentFinalUseIssuer {
     pub(crate) fn verify_original_signed_grant(
         &self,
         signed: &SignedFinalUseGrant,
         before: Instant,
+    ) -> io::Result<FinalUseRevocations> {
+        self.verify_original_artifact(signed, before, VerificationPurpose::LiveRevocation)
+    }
+
+    pub(crate) fn observe_original_signed_grant(
+        &self,
+        signed: &SignedFinalUseGrant,
+        before: Instant,
+    ) -> io::Result<FinalUseRevocations> {
+        self.verify_original_artifact(signed, before, VerificationPurpose::RetainedObservation)
+    }
+
+    fn verify_original_artifact(
+        &self,
+        signed: &SignedFinalUseGrant,
+        before: Instant,
+        purpose: VerificationPurpose,
     ) -> io::Result<FinalUseRevocations> {
         require_before(before)?;
         let _guard = self
@@ -35,7 +57,8 @@ impl DeploymentFinalUseIssuer {
             || grant.grant_id != format!("{prefix}{sequence}")
             || sequence > state.sequence
             || now < grant.not_before_unix_ms
-            || now >= grant.expires_at_unix_ms
+            || (matches!(purpose, VerificationPurpose::LiveRevocation)
+                && now >= grant.expires_at_unix_ms)
         {
             return Err(io::Error::other(
                 "original signed grant issuer/epoch/sequence/time mismatch",

@@ -95,6 +95,9 @@ impl HostAuthorityService {
             .ok_or_else(|| io::Error::other("registered writer required"))?;
         let original = &writer.registration.authority_lease;
         match action {
+            RootAdminAction::ObserveOriginalNotesGrant { signed_grant } => {
+                self.observe_original_notes_grant(context, signed_grant)
+            }
             RootAdminAction::RevokeOriginalNotesGrant {
                 signed_grant,
                 expected_effect_lease_revision,

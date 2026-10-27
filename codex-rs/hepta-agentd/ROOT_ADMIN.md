@@ -105,3 +105,19 @@ and exact-head operations similarly try the same original request mutex. The
 existing unbounded owner revoke API retains its previous semantics. Durable IO
 begun while authorized may finish after the deadline; its outcome is Unknown
 rather than compensated.
+
+`observe_original_notes_grant` independently verifies the same original signed
+artifact and fixed Notes policy, then reads the existing exact effect lease,
+revocation and protected lease frontier. The frontier is checked before/after
+the lease reads; changed observations are unavailable, never retried. It returns
+the original independent issuer head and consumer synchronization observation,
+so a lost revoke reply can be reconciled without repeating either mutation.
+No receipt is reconstructed and no missing record is initialized.
+
+This read-only path can identify an expired, correctly signed original artifact
+within the current issuer epoch, and labels `grant_expired` explicitly. It does
+not extend the Root, original owner, writer, human or issuer lifetime. Mutation
+preparation always repeats strict CURRENT grant-time verification and the live
+writer check; the saved cumulative end is also conservatively clamped from a
+trusted-clock sample to the original signed grant's own expiry. A retained
+observation/DTO can never enter a CAS as an authorization.

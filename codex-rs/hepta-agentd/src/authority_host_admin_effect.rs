@@ -7,6 +7,31 @@ use std::time::Duration;
 use std::time::Instant;
 
 impl HostAuthorityService {
+    pub(crate) fn observe_original_notes_grant(
+        &self,
+        context: &LiveRootAdminRequest<'_>,
+        signed: &SignedFinalUseGrant,
+    ) -> io::Result<RootAdminResponse> {
+        context.check_for(self)?;
+        let notes = self
+            .notes
+            .as_ref()
+            .ok_or_else(|| io::Error::other("original fixed Notes policy required"))?;
+        let actual = notes.observe_original_grant_state(&self.issuer, signed, context.before())?;
+        let synchronization = self.observe_original_consumer_synchronization(&actual.head);
+        context.check_for(self)?;
+        Ok(RootAdminResponse::OriginalNotesGrantObserved {
+            instance: context.instance().clone(),
+            original_grant_id: signed.grant.grant_id.clone(),
+            effect_lease: actual.lease,
+            effect_revocation: actual.revocation,
+            lease_frontier: actual.frontier,
+            final_use_head: actual.head,
+            grant_expired: actual.grant_expired,
+            synchronization,
+        })
+    }
+
     pub(crate) fn revoke_original_notes_grant(
         &self,
         context: &LiveRootAdminRequest<'_>,

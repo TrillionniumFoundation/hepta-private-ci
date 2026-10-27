@@ -3,6 +3,9 @@ use super::*;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::authority_lease::RevocationReceipt;
 
+#[path = "deployment_notes_revoke_observation.rs"]
+mod observation;
+
 pub(crate) struct OriginalNotesRevokeInput<'a> {
     pub(crate) signed: &'a SignedFinalUseGrant,
     pub(crate) expected_effect_revision: u64,
@@ -38,14 +41,9 @@ impl RootNotesGrantAdmission {
         input: OriginalNotesRevokeInput<'a>,
     ) -> io::Result<PreparedNotesGrantRevocation<'a>> {
         actual_root_before(input.before)?;
-        let signed = input.signed;
-        let binding = &signed.grant.binding;
         if input.expected_effect_revision != 1
             || input.expected_issuer_revision == 0
             || input.reason_sha256 == [0; 32]
-            || binding.subject_id != self.policy.subject_id
-            || binding.destination_id != self.policy.destination_id
-            || binding.scope_sha256 != self.policy.scope_sha256
         {
             return Err(denied("original Notes revoke policy/CAS mismatch"));
         }
@@ -55,65 +53,46 @@ impl RootNotesGrantAdmission {
             }
             Ok(())
         })?;
-        let head = issuer.verify_original_signed_grant(signed, input.before)?;
-        if head.revision != input.expected_issuer_revision {
-            return Err(denied("original Notes revoke issuer revision mismatch"));
-        }
-        let lease_id = self.lease_id(binding)?;
-        let current = self
-            .registry
-            .read_lease(&lease_id)
-            .map_err(root::lease_error)?
-            .ok_or_else(|| denied("original Notes effect lease missing; never create one"))?
-            .lease;
-        let revoked = self
-            .registry
-            .read_revocation(&lease_id)
-            .map_err(root::lease_error)?;
-        let expected = AuthorityLeaseBinding {
-            principal_id: binding.subject_id.clone(),
-            operation_class: "runtime.agentd.production_operation".into(),
-            destination_id: binding.destination_id.clone(),
-            scope_sha256: binding.scope_sha256,
-            payload_sha256: binding.payload_sha256,
-        };
-        if current.schema_version != 1
-            || current.lease_id != lease_id
-            || current.authority_epoch != self.writer.authority_lease.authority_epoch
-            || current.binding != expected
-            || current.issued_at_unix_ms < self.writer.authority_lease.issued_at_unix_ms
-            || current.expires_at_unix_ms > self.writer.authority_lease.expires_at_unix_ms
-            || current
-                .expires_at_unix_ms
-                .checked_sub(current.issued_at_unix_ms)
-                .is_none_or(|duration| duration == 0 || duration > self.policy.lifetime_ms)
-            || signed.grant.not_before_unix_ms < current.issued_at_unix_ms
-            || signed.grant.expires_at_unix_ms > current.expires_at_unix_ms
-            || match &revoked {
-                None => current.revision != input.expected_effect_revision,
-                Some(record) => {
-                    current.revision != input.expected_effect_revision + 1
-                        || record.revocation.lease_id != lease_id
-                        || record.revocation.authority_epoch != current.authority_epoch
-                        || record.revocation.lease_revision != current.revision
-                        || record.revocation.reason_sha256 != input.reason_sha256
-                }
-            }
+        let observed = self.observe_original_grant_state(issuer, input.signed, input.before)?;
+        // Read-only retained artifacts never authorize mutation: repeat STRICT
+        // current-time verification on the same actual issuer before preparing.
+        let head = issuer.verify_original_signed_grant(input.signed, input.before)?;
+        if head != observed.head
+            || head.revision != input.expected_issuer_revision
+            || observed
+                .revocation
+                .as_ref()
+                .is_some_and(|record| record.revocation.reason_sha256 != input.reason_sha256)
         {
-            return Err(denied(
-                "original signed Notes grant and existing lease differ",
-            ));
+            return Err(denied("original Notes revoke issuer/CAS mismatch"));
         }
-        actual_root_before(input.before)?;
+        // Clamp the cumulative deadline conservatively from BEFORE the actual
+        // trusted-clock read. This never adds time to the original request or
+        // permits either CAS after the signed grant's own time window.
+        let sampled = Instant::now();
+        let now = issuer.clock.now_unix_ms().map_err(io::Error::other)?;
+        let remaining = input
+            .signed
+            .grant
+            .expires_at_unix_ms
+            .checked_sub(now)
+            .filter(|remaining| *remaining > 0)
+            .ok_or_else(|| denied("original signed grant expired"))?;
+        let before = input.before.min(
+            sampled
+                .checked_add(Duration::from_millis(remaining))
+                .ok_or_else(|| denied("original grant deadline range"))?,
+        );
+        actual_root_before(before)?;
         Ok(PreparedNotesGrantRevocation {
             notes: self,
             issuer,
-            signed,
+            signed: input.signed,
             head,
-            lease_id,
+            lease_id: observed.lease.lease.lease_id,
             expected_revision: input.expected_effect_revision,
             reason: input.reason_sha256,
-            before: input.before,
+            before,
         })
     }
 }

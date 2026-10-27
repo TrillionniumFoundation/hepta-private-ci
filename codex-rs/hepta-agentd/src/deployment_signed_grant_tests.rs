@@ -157,3 +157,28 @@ fn exact_original_head_cas_refuses_stale_revision_without_advancing_real_state()
     );
     Ok(())
 }
+
+#[test]
+fn expired_original_artifact_can_only_be_observed_without_advancing_any_state()
+-> Result<(), Box<dyn std::error::Error>> {
+    struct AfterExpiry(u64);
+    impl codex_hepta_contracts::AuthorityClock for AfterExpiry {
+        fn now_unix_ms(&self) -> Result<u64, codex_hepta_contracts::AuthorityTrustError> {
+            Ok(self.0)
+        }
+    }
+    let (_root, mut issuer, signed) = fixture()?;
+    let original = issuer.store.load(STATE_OWNER)?;
+    issuer.clock = Arc::new(AfterExpiry(signed.grant.expires_at_unix_ms));
+    assert_eq!(
+        issuer.observe_original_signed_grant(&signed, Instant::now() + Duration::from_secs(1))?,
+        original.head
+    );
+    assert!(
+        issuer
+            .verify_original_signed_grant(&signed, Instant::now() + Duration::from_secs(1))
+            .is_err()
+    );
+    assert!(issuer.store.load(STATE_OWNER)? == original);
+    Ok(())
+}

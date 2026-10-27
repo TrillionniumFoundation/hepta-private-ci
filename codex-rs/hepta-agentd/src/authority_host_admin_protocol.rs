@@ -30,6 +30,9 @@ pub enum RootAdminAction {
     ObserveIssuedNotesGrant {
         selection: crate::RootIssuedNotesGrantSelection,
     },
+    ObserveOriginalNotesGrant {
+        signed_grant: Box<codex_hepta_contracts::SignedFinalUseGrant>,
+    },
     RevokeOriginalNotesGrant {
         signed_grant: Box<codex_hepta_contracts::SignedFinalUseGrant>,
         expected_effect_lease_revision: u64,
@@ -75,6 +78,17 @@ pub enum RootAdminResponse {
     IssuedNotesGrantObserved {
         instance: RootAdminInstance,
         observation: crate::RootIssuedNotesGrantObservation,
+    },
+    OriginalNotesGrantObserved {
+        instance: RootAdminInstance,
+        original_grant_id: String,
+        effect_lease: codex_hepta_contracts::authority_lease::AuthorityLeaseReadV1,
+        effect_revocation:
+            Option<codex_hepta_contracts::authority_lease::CapabilityRevocationReadV1>,
+        lease_frontier: codex_hepta_contracts::authority_lease::AuthorityLeaseFrontier,
+        final_use_head: codex_hepta_contracts::FinalUseRevocations,
+        grant_expired: bool,
+        synchronization: RootAdminConsumerSynchronization,
     },
     OriginalNotesGrantRevocation {
         instance: RootAdminInstance,
