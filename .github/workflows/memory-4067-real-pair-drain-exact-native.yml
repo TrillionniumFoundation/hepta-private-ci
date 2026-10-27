@@ -1,0 +1,76 @@
+name: Supervisor real-pair drain exact-source native qualification
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/memory-4067-real-pair-drain-exact-native.yml
+      - codex-rs/hepta-supervisor/tests/paired_process_product.rs
+
+permissions:
+  contents: read
+
+jobs:
+  supervisor-real-pair-drain:
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'automation/memory-4067-real-pair-drain-fixture-20261027-v1'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_TERM_COLOR: never
+      SOURCE_SHA: 34190a708166d889669d517d96306ae02a567e85
+      ORIGINAL_BLOB: 520a02e30b25d5a2b20694e5d2e18039b1efb148
+      DONOR_BLOB: e5b669cfb8fffa50d13ad307c2b3e2c33be855a8
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Checkout exact candidate without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact source, donor blob and unchanged lockfiles
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git merge-base "$SOURCE_SHA" HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse "$SOURCE_SHA:codex-rs/hepta-supervisor/tests/paired_process_product.rs")" = "$ORIGINAL_BLOB"
+          test "$(git rev-parse "HEAD:codex-rs/hepta-supervisor/tests/paired_process_product.rs")" = "$DONOR_BLOB"
+          test "$(git rev-parse "HEAD:codex-rs/Cargo.lock")" = "$(git rev-parse "$SOURCE_SHA:codex-rs/Cargo.lock")"
+          test "$(git rev-parse "HEAD:MODULE.bazel.lock")" = "$(git rev-parse "$SOURCE_SHA:MODULE.bazel.lock")"
+          changed="$(git diff --name-only "$SOURCE_SHA" HEAD)"
+          expected="$(printf '%s\n' \
+            '.github/workflows/memory-4067-real-pair-drain-exact-native.yml' \
+            'codex-rs/hepta-supervisor/tests/paired_process_product.rs')"
+          test "$changed" = "$expected"
+          git diff --check "$SOURCE_SHA" HEAD
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Install pinned native test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Run exact real-process pair drain regression without retries
+        working-directory: codex-rs
+        timeout-minutes: 75
+        run: |
+          just test --locked -p codex-hepta-supervisor --no-tests=fail --retries 0 --test paired_process_product -E 'test(=two_real_pairs_restart_one_without_peer_pid_churn)' --test-threads 1
+
+      - name: Confirm unchanged source and lockfiles
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          test "$(git rev-parse "HEAD:codex-rs/Cargo.lock")" = "$(git rev-parse "$SOURCE_SHA:codex-rs/Cargo.lock")"
+          test "$(git rev-parse "HEAD:MODULE.bazel.lock")" = "$(git rev-parse "$SOURCE_SHA:MODULE.bazel.lock")"
