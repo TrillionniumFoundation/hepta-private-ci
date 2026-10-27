@@ -37,7 +37,7 @@ jobs:
       CARGO_PROFILE_DEV_DEBUG: '0'
       CARGO_PROFILE_TEST_DEBUG: '0'
       CARGO_BUILD_JOBS: '2'
-      CARGO_TARGET_DIR: ${{ runner.temp }}/memory-v7-target
+      CARGO_TARGET_DIR: ${{ github.workspace }}/memory-v7-target
       PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -53,7 +53,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            ${{ runner.temp }}/memory-v7-target
+            ${{ github.workspace }}/memory-v7-target
           key: memory-v7-rust-1.95-${{ matrix.group }}-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ github.sha }}
           restore-keys: |
             memory-v7-rust-1.95-${{ matrix.group }}-${{ hashFiles('codex-rs/Cargo.lock') }}-
@@ -73,7 +73,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            ${{ runner.temp }}/memory-v7-target
+            ${{ github.workspace }}/memory-v7-target
           key: memory-v7-rust-1.95-${{ matrix.group }}-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ github.sha }}
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always() && matrix.group == 'daemon'
