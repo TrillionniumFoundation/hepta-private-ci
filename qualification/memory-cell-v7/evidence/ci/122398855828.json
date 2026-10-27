@@ -1,0 +1,177 @@
+{
+  "schema": "hepta.memory.v7.provider-job-evidence.v1",
+  "run_id": 40563512503,
+  "job_id": 122398855828,
+  "group": "daemon",
+  "status": "completed",
+  "conclusion": "failure",
+  "source_commit": "be5a93f9bd91501f1edf98bea174867baaadf856",
+  "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40563512503/job/122398855828",
+  "receipt": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-agent-protocol",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-context-compiler",
+      "-p",
+      "codex-hepta-infer-worker-host"
+    ],
+    "commands": [
+      [
+        "cargo",
+        "build",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "codex-app-server",
+        "--bin",
+        "codex-app-server"
+      ],
+      [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-context-compiler",
+        "-p",
+        "codex-hepta-infer-worker-host"
+      ],
+      [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "-p",
+        "codex-hepta-agentd",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(memory_cell_) & test(actual_)"
+      ]
+    ],
+    "complete_workspace_test": false,
+    "executions": [
+      {
+        "command": [
+          "cargo",
+          "build",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-app-server",
+          "--bin",
+          "codex-app-server"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 175.83226217199996
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agent-protocol",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-context-compiler",
+          "-p",
+          "codex-hepta-infer-worker-host"
+        ],
+        "exit_code": 100,
+        "wall_seconds": 298.219508705
+      }
+    ],
+    "exit_code": 100,
+    "final_tracked_changes": "",
+    "group": "daemon",
+    "initial_tracked_changes": "",
+    "lock_after": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "lock_before": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "log": {
+      "bytes": 133136,
+      "sha256": "a490aaac287e51f3e19bb4faf7fe4e724c906871531d72f84af3376bcf466b21"
+    },
+    "mode": "test",
+    "passed": false,
+    "production_manifests_modified_for_test": false,
+    "request": {
+      "attempt": 7,
+      "groups": [
+        "source-owner",
+        "daemon"
+      ],
+      "schema": "hepta.memory.v7.product-verification-request.v1",
+      "stage": "real-runtime-lifecycle-and-protocol-boundaries",
+      "tests_before_final_fix_and_format": true
+    },
+    "runtime_executable": {
+      "bytes": 443980736,
+      "path": "/home/runner/.cache/codex-ci/cargo-target/debug/codex-app-server",
+      "sha256": "0677e84a41247785074bb427d8e8202c923058993ffdc4cbf9e4ab2506696f3e"
+    },
+    "schema": "hepta.memory.v7.product-ci-receipt.v1",
+    "source_commit": "be5a93f9bd91501f1edf98bea174867baaadf856",
+    "source_tree": "828a1b2aeff38e900945d2149e98c2364fb53249",
+    "wall_seconds": 474.530346485
+  },
+  "test_summaries": [
+    "Summary [  79.868s] 341 tests run: 338 passed, 3 failed, 9 skipped"
+  ],
+  "test_counts": {
+    "run": 341,
+    "passed": 338,
+    "failed": 3,
+    "skipped": 9,
+    "slow": 0,
+    "flaky": 0,
+    "binaries": 21
+  },
+  "provider_log": {
+    "name": "122398855828.log",
+    "bytes": 285568,
+    "sha256": "5df1fd9e991c1ed67d1044b119e337e9b8a7d992889b38140cd3f6e20121c9f0"
+  },
+  "log_representation": "Exact UTF-8 encoding of decoded provider job log, preserving ANSI, BOM, line endings and final newline; distinct from execution.log whose identity is in the CI receipt.",
+  "tests_executed": true,
+  "ignored_profile_executed": false,
+  "failure_phase": "ordinary_tests",
+  "failure_count": 3,
+  "failures": [
+    {
+      "test": "memory_cell_context_tests::memory_prediction_reaches_real_untrusted_context_and_final_use_races_stop_before_effect",
+      "error": "assertion failed: positive.output.contains(\"memory evidence received\")",
+      "location": "hepta-agentd/src/memory_cell_context_tests.rs:46"
+    },
+    {
+      "test": "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation",
+      "binary": "codex-hepta-agentd::cognitive_store_product_writer",
+      "error": "assertion left == right failed: CognitiveRecoveryAnchor state_digest differs; profile, owner_agent_id and schema_digest match",
+      "location": "hepta-agentd/tests/cognitive_store_product_writer.rs:186"
+    },
+    {
+      "test": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+      "error": "assertion failed: accepted.output.contains(\"fresh context accepted\")",
+      "location": "hepta-infer-worker-host/src/native_app_server_tests.rs:496"
+    }
+  ],
+  "flaky_tests": []
+}

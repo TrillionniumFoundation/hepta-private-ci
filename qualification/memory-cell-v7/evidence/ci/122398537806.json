@@ -1,0 +1,74 @@
+{
+  "schema": "hepta.memory.v7.provider-job-evidence.v1",
+  "run_id": 40563512503,
+  "job_id": 122398537806,
+  "group": null,
+  "status": "completed",
+  "conclusion": "success",
+  "source_commit": "be5a93f9bd91501f1edf98bea174867baaadf856",
+  "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40563512503/job/122398537806",
+  "receipt": {
+    "command": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "commands": [
+      [
+        "just",
+        "bazel-lock-update"
+      ]
+    ],
+    "complete_workspace_test": false,
+    "executions": [
+      {
+        "command": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 21.895312190000006
+      }
+    ],
+    "exit_code": 0,
+    "final_tracked_changes": "",
+    "group": null,
+    "initial_tracked_changes": "",
+    "lock_after": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "lock_before": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "log": {
+      "bytes": 2208,
+      "sha256": "c5b12f0e245b8d7e994738a471409a54d1aa7928aa47ffc55001e2c533a3f537"
+    },
+    "mode": "lock",
+    "passed": true,
+    "production_manifests_modified_for_test": false,
+    "request": {
+      "attempt": 7,
+      "groups": [
+        "source-owner",
+        "daemon"
+      ],
+      "schema": "hepta.memory.v7.product-verification-request.v1",
+      "stage": "real-runtime-lifecycle-and-protocol-boundaries",
+      "tests_before_final_fix_and_format": true
+    },
+    "schema": "hepta.memory.v7.product-ci-receipt.v1",
+    "source_commit": "be5a93f9bd91501f1edf98bea174867baaadf856",
+    "source_tree": "828a1b2aeff38e900945d2149e98c2364fb53249",
+    "wall_seconds": 21.895463496000005
+  },
+  "test_summaries": [],
+  "test_counts": null,
+  "provider_log": {
+    "name": "122398537806.log",
+    "bytes": 62056,
+    "sha256": "88244c248f9e93cb912dc0d516f1c2fb643114248c76691f35eae1fa06e04f56"
+  },
+  "log_representation": "Exact UTF-8 encoding of decoded provider job log, preserving ANSI, BOM, line endings and final newline; distinct from execution.log whose identity is in the CI receipt."
+}

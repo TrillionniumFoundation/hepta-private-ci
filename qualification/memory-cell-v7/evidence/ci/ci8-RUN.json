@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.memory.v7.provider-run-evidence.v1",
+  "run_id": 40563512503,
+  "source_commit": "be5a93f9bd91501f1edf98bea174867baaadf856",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "jobs": [
+    {
+      "job_id": 122398537722,
+      "group": "plan",
+      "status": "completed",
+      "conclusion": "success",
+      "evidence": "122398537722.json",
+      "test_counts": null
+    },
+    {
+      "job_id": 122398537806,
+      "group": null,
+      "status": "completed",
+      "conclusion": "success",
+      "evidence": "122398537806.json",
+      "test_counts": null
+    },
+    {
+      "job_id": 122398855774,
+      "group": "source-owner",
+      "status": "completed",
+      "conclusion": "success",
+      "evidence": "122398855774.json",
+      "test_counts": {
+        "run": 301,
+        "passed": 301,
+        "failed": 0,
+        "skipped": 7,
+        "slow": 0,
+        "flaky": 0,
+        "binaries": 2
+      }
+    },
+    {
+      "job_id": 122398855828,
+      "group": "daemon",
+      "status": "completed",
+      "conclusion": "failure",
+      "evidence": "122398855828.json",
+      "test_counts": {
+        "run": 341,
+        "passed": 338,
+        "failed": 3,
+        "skipped": 9,
+        "slow": 0,
+        "flaky": 0,
+        "binaries": 21
+      }
+    }
+  ],
+  "daemon_tests_executed": true,
+  "daemon_ignored_profile_executed": false,
+  "daemon_compile_error_count": 0,
+  "daemon_failure_count": 3,
+  "daemon_flaky_count": 0,
+  "ordinary_test_wall_seconds": 79.868,
+  "command_wall_seconds": 298.219508705,
+  "runtime_build_wall_seconds": 175.83226217199996,
+  "runtime_executable": {
+    "bytes": 443980736,
+    "path": "/home/runner/.cache/codex-ci/cargo-target/debug/codex-app-server",
+    "sha256": "0677e84a41247785074bb427d8e8202c923058993ffdc4cbf9e4ab2506696f3e"
+  },
+  "failures": [
+    {
+      "test": "memory_cell_context_tests::memory_prediction_reaches_real_untrusted_context_and_final_use_races_stop_before_effect",
+      "error": "assertion failed: positive.output.contains(\"memory evidence received\")",
+      "location": "hepta-agentd/src/memory_cell_context_tests.rs:46"
+    },
+    {
+      "test": "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation",
+      "binary": "codex-hepta-agentd::cognitive_store_product_writer",
+      "error": "assertion left == right failed: CognitiveRecoveryAnchor state_digest differs; profile, owner_agent_id and schema_digest match",
+      "location": "hepta-agentd/tests/cognitive_store_product_writer.rs:186"
+    },
+    {
+      "test": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+      "error": "assertion failed: accepted.output.contains(\"fresh context accepted\")",
+      "location": "hepta-infer-worker-host/src/native_app_server_tests.rs:496"
+    }
+  ],
+  "flaky_tests": [],
+  "bazel_lock_unchanged": true,
+  "verified_lock_file": "MODULE.bazel.lock",
+  "archive_index": "ci8-job-logs.INDEX.json"
+}

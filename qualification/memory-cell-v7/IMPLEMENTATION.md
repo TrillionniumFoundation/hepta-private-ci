@@ -172,7 +172,7 @@ canonical `MemoryRequestV1`、owner 记录与最终执行始终保留 Unix secon
 对于文本中的明示日期，profile 只接受与其 UTC 零点精确相等的 cutoff：`history` 核对原始 `at`，`change` 核对原始 `since`；同日非零点不算匹配。
 没有明示日期时保留原始秒值；明示日期不能使 `current/semantic/procedure/apply` 获得新的日期语义。
 host 保存完整原始请求 hash，worker 回应须匹配私有 view 的请求 hash、字段、registry、model 与 source cut；返回 runtime 的请求仍是原始 Unix 秒请求。
-这是新 host adapter，不在冻结 classifier 的 held 覆盖内；真实日期、日边界与 socket 集成仍待 CI6 验证，不能把代码存在写成测试通过。
+这是新 host adapter，不在冻结 classifier 的 held 覆盖内；真实日期、日边界与 socket 集成仍待 actual profile 验证，不能把代码存在写成测试通过。
 旧 `at=15/since=10` smoke 不能证明现代时间戳正确；适配没有改写冻结权重、阈值或旧 held 标签。
 
 ## 11. 启动与复现
@@ -215,11 +215,12 @@ just test -p codex-hepta-agentd --run-ignored only -E 'test(memory_cell_) & test
 | --- | --- | --- |
 | typed/native | 128 passed | [`122356498696.json`](evidence/ci/122356498696.json) |
 | release owner | 92 passed，1 skipped | [`122358149222.json`](evidence/ci/122358149222.json) |
-| source owner | 301 passed，7 skipped | 最新通过 [`122371741205.json`](evidence/ci/122371741205.json)；原 300/301 失败仍保留于 [`122356498801.json`](evidence/ci/122356498801.json) |
+| source owner | 301 passed，7 skipped | 最新通过 [`122398855774.json`](evidence/ci/122398855774.json)；原 300/301 失败仍保留于 [`122356498801.json`](evidence/ci/122356498801.json) |
 | population | 149 passed | [`122371741084.json`](evidence/ci/122371741084.json) |
-| daemon / consumer / actual ignored | CI7：334 passed、7 failed、9 skipped；通过中 1 flaky；actual ignored 未执行 | [`122390658657.json`](evidence/ci/122390658657.json)，修复后等待 CI8 |
+| daemon / consumer / actual ignored | CI8：338 passed、3 failed、9 skipped、0 flaky；actual ignored 未执行 | [`122398855828.json`](evidence/ci/122398855828.json)，修复后等待 CI9 |
 
-CI5 的 `json!` 表达式与 CI6 的断言宏导入编译错误均保留原始记录。CI7 已编译并运行 341 项普通测试，7 项失败包括真实 App Server executable 配置、ledger 必需 abstain、节点旧 owner 锁释放、SQLite 关闭与恢复生命周期，以及旧源码顺序断言。另有一次立即多帧 worker 测试重试后通过，保留 flaky 标记。相应修复已提交，CI8 同时验证 source-owner 与 daemon；三个 actual ignored 测试仍未执行，不能提前记为通过。
+CI5 的 `json!` 表达式与 CI6 的断言宏导入编译错误均保留原始记录。CI7 已编译并运行 341 项普通测试，7 项失败包括真实 App Server executable 配置、ledger 必需 abstain、节点旧 owner 锁释放、SQLite 关闭与恢复生命周期，以及旧源码顺序断言。另有一次立即多帧 worker 测试重试后通过，保留 flaky 标记。CI8 的 ledger、worker 边界和全部五项 network 测试通过；剩余三项是两个 completed-only 消息输出丢失和一个取得 writer lease 前后的状态摘要比较错误。消费者现已加入按 item ID 去重的有界输出累积器，恢复 fixture 改为保存取得真实 lease 后的切面；原成功输出、完整 anchor equality 和最终使用竞态断言保留。CI9 只重跑受影响的 daemon 组，三个 actual ignored 测试仍未执行，不能提前记为通过。
+从 CI9 起，普通 nextest 完成后的断言失败（exit 100）不阻止独立 actual profile 收集结果；构建或准备失败仍停止，任一实际执行失败仍使组合 receipt 失败。
 
 结构开发实验 [`population-costs-v2.json`](development/population-costs-v2.json) 比较固定 1–8 全计数空间；84 次真实 fit，部分计费下的固定比较器为 fixed-1，保留 keep-fixed。
 该轮已测部分加权净收益为负；独立未来任务、原生全链路成本、源账本与通信/RSS 缺项不能由 NumPy 诊断补成完整验收。
