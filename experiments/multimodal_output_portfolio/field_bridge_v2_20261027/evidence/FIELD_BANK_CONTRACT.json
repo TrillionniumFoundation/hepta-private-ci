@@ -1,0 +1,106 @@
+{
+  "actual_gradient_calls": 64,
+  "actual_gradient_examples": 4096,
+  "actual_minibatches_and_noise_marks_match_across_all_branches": true,
+  "actual_shared_schedule": [
+    {
+      "actual_batch_sha256": "0b6cf03f498e0d7d8d40425190e4d0453a60164d4b1c99e0ec6c5e19526cbe21",
+      "batch_seed": 2308123,
+      "condition": "heavy_noise",
+      "noise_seed": 107
+    },
+    {
+      "actual_batch_sha256": "1a10a892fd408fb1c6cce07f575694a9a7c3c4c4180561a65ed07dca8e5a8db7",
+      "batch_seed": 2308124,
+      "condition": "missing",
+      "noise_seed": 108
+    },
+    {
+      "actual_batch_sha256": "da25a8e751957b72ede9cf1ec6949a2fba307711df2633ade4cc86c33f5d4394",
+      "batch_seed": 2308125,
+      "condition": "occlusion",
+      "noise_seed": 109
+    },
+    {
+      "actual_batch_sha256": "e947b3ca08a1ec96fa5dd1711589374fefbe5525ef363211d2665fd082133709",
+      "batch_seed": 2308126,
+      "condition": "clean",
+      "noise_seed": 110
+    },
+    {
+      "actual_batch_sha256": "79fd71ac5d0a7c2d3c470afd7d4eb2bb8aaba8585a06110a6d308a11f0ff8fd4",
+      "batch_seed": 2308127,
+      "condition": "heavy_noise",
+      "noise_seed": 111
+    },
+    {
+      "actual_batch_sha256": "fad4c737bf5d25a4d31fdbafda852013276949d6c18d2f2bced105883370cf3d",
+      "batch_seed": 2308128,
+      "condition": "missing",
+      "noise_seed": 112
+    },
+    {
+      "actual_batch_sha256": "d42cf125ab8d051cfada3102fc014a7ae7b280765ea440059a558e16595bc0aa",
+      "batch_seed": 2308129,
+      "condition": "occlusion",
+      "noise_seed": 113
+    },
+    {
+      "actual_batch_sha256": "191e3740f3a936d810c639eb277894ae80eb9d4a60a96398abedcb99eb6d8cbf",
+      "batch_seed": 2308130,
+      "condition": "clean",
+      "noise_seed": 114
+    }
+  ],
+  "all_four_branches_start_from_identical_complete_optimizer_state": true,
+  "all_nonzero_actions_produce_distinct_parameter_states": true,
+  "audit_observer_loaded": false,
+  "bank_protocol_sha256": "02f79e6e6daf53391968ee2c4140b73306f86f400ed474691c1eefcce4f7e2be",
+  "branch_execution_order_reversal_is_exact": true,
+  "branch_results": {
+    "0": {
+      "hard_outputs_sha256": "4957df20c657a13a91840bbebff0f8702738775582aaf6a1489688adcd3d50c5",
+      "local_sha256": "e77af607820c0d5702cbad6f88ed13edf1fc08edbb989b9c27c802afe8299c87",
+      "optimizer_sha256": "7eb61954b5cc41aad94cea49e3eaa2a79d98c4e49e808e6f22de5d46fae515c6",
+      "value": 0.43938810113072396
+    },
+    "1": {
+      "hard_outputs_sha256": "b8f9ddb8b44efca2880fbff1f25192ef45d6716df7e1c497f4e4e7cbba71ca6f",
+      "local_sha256": "88a734fb38b201b5f6c0557ea750c420168c49117eda1934e19841d385f60b65",
+      "optimizer_sha256": "698844b49c461d640bf135d34d2dd49b4f7d9ab151e482c56d5db111a0ca6b79",
+      "value": 0.4519981249719859
+    },
+    "2": {
+      "hard_outputs_sha256": "7b8cf6f131bda7d07bab80e9f2f11cce3b250f590cf6db97ad4d13172e70cd5f",
+      "local_sha256": "e0409fa685d14f82b4132d0a81ac86f738d17c0ff53916efb3cbc4352f28f35a",
+      "optimizer_sha256": "4073dd8fbef7959fc726048965d5ae583e8bd4a98a6243367e12929767def18b",
+      "value": 0.9898679120019078
+    },
+    "3": {
+      "hard_outputs_sha256": "bf4b8e1e1d8755c907e074a7dab1e49e16cb22bb05fa24553f2c80f8997290f5",
+      "local_sha256": "dc07ad96e119273ba9ade78873920b4fa493f13673fabd6c51e946ef1925512a",
+      "optimizer_sha256": "b19306d3339337ee5087003c811c07c2777631505015e206f1b88d4324ca94b9",
+      "value": 0.9901322533860802
+    }
+  },
+  "chronology_scope": "Full field_bank.main chronology is reviewed statically and must be audited on its actual prediction/output records; this helper test does not substitute for that audit",
+  "frozen_base_unchanged_for_every_branch": true,
+  "no_update_eight_steps_preserve_parameters_momentum_and_hard_outputs": true,
+  "rich_field_width": 25,
+  "schema": "hepta.field-bridge.v2.complete-branch-contract.1",
+  "scope": "Production branch helpers on eight existing validation sources at offset700; one eight-step branch block, two branch orderings; no efficacy selection",
+  "source_ids": [
+    "mnist:train:23160:f100cbe3d8b7889ce05ed5e65c50637d1c4418b99ead9977911ed01d6bbff855",
+    "mnist:train:14728:b0615e6fb9d018c99e140040e10313682602cc0e5e62a7fbfa8e733327f3d379",
+    "mnist:train:29060:58882dc8e24d42cb18593e28844d069b48ee887e0661a7f09fb1990eb0a179b4",
+    "mnist:train:51736:c17b50f9d01f7a5ce3dc3db5a4c5b7fa76d33f3f793abae440bd8a8a123a0166",
+    "mnist:train:39525:65d4c30a6525b96bfe69589e0f1d3e68df8de475c2ea0d267d0f4ee804972e61",
+    "mnist:train:53165:62ca0f7b287dcf6447afb93a7c1ad1fa64ba2c4ae880f294e356142bd7f11711",
+    "mnist:train:55350:e354968b172234eb42a09120238a05c5ab828fbeb67678ae4efdc9f74e0845b4",
+    "mnist:train:36354:74c03644a9b8c6c4f12d2a2cd1a844f83e5b92c84e7b21a0bfe980e00c586fb8"
+  ],
+  "source_sha256": "cb23f6b28c2e1ad4f2acf705592266e9403f77eac5a323f1abfaa4bd06a56c9a",
+  "status": "pass",
+  "test_retention_scored": false,
+  "unselected_branches_cannot_mutate_origin": true
+}

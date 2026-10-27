@@ -1,0 +1,364 @@
+{
+  "actuator_identified": true,
+  "allowed_to_fit_field": true,
+  "allowed_to_open_new_test": false,
+  "audit_observer_loaded": false,
+  "ordinary_qualified": true,
+  "protocol_sha256": "1ed65b7b3e3fffd637666049922b9f07c0ce2fbb3248d3357a27707a82ced241",
+  "rankings": [
+    {
+      "eligible": true,
+      "index": 0,
+      "mean_gain": 0.0012050809583646165,
+      "name": "decoder_r4_36_lr005"
+    },
+    {
+      "eligible": true,
+      "index": 1,
+      "mean_gain": 0.015527743544165196,
+      "name": "decoder_r4_144_lr02"
+    },
+    {
+      "eligible": true,
+      "index": 2,
+      "mean_gain": 0.02519167185164406,
+      "name": "upstream_r8_144_lr005"
+    },
+    {
+      "eligible": true,
+      "index": 3,
+      "mean_gain": 0.029674872307017153,
+      "name": "upstream_r8_144_lr02"
+    },
+    {
+      "eligible": false,
+      "index": 4,
+      "mean_gain": 0.019503897147781928,
+      "name": "upstream_r8_144_lr05"
+    },
+    {
+      "eligible": true,
+      "index": 5,
+      "mean_gain": 0.03154130508749712,
+      "name": "upstream_r8_288_lr02"
+    }
+  ],
+  "schema": "hepta.field-bridge.v2.pilot-result.1",
+  "selected": {
+    "eligible": true,
+    "index": 5,
+    "mean_gain": 0.03154130508749712,
+    "name": "upstream_r8_288_lr02"
+  },
+  "test_retention_scored": false,
+  "wall_ns": 101563064610,
+  "by_seed": {
+    "17": {
+      "fixed_action": 0,
+      "response_candidate_range": 0.030965054049738594,
+      "candidates": [
+        {
+          "recipe": {
+            "learning_rate": 0.05,
+            "modules": "decoder",
+            "name": "decoder_r4_36_lr005",
+            "rank": 4,
+            "steps": 36
+          },
+          "development_gain": 0.0005865236045792255,
+          "development_clean_change": 0.0007812898111295707,
+          "clean_probe_change": -2.1161395191704457e-08,
+          "response_decision_change_fraction": 0.00390625,
+          "trainable_parameters": 3424,
+          "wall_ns": 2519242801,
+          "gradient_examples": 2304
+        },
+        {
+          "recipe": {
+            "learning_rate": 0.2,
+            "modules": "decoder",
+            "name": "decoder_r4_144_lr02",
+            "rank": 4,
+            "steps": 144
+          },
+          "development_gain": 0.010656369036769364,
+          "development_clean_change": 0.0005858148375408323,
+          "clean_probe_change": -0.013282941585930574,
+          "response_decision_change_fraction": 0.076171875,
+          "trainable_parameters": 3424,
+          "wall_ns": 5421487479,
+          "gradient_examples": 9216
+        },
+        {
+          "recipe": {
+            "learning_rate": 0.05,
+            "modules": "upstream",
+            "name": "upstream_r8_144_lr005",
+            "rank": 8,
+            "steps": 144
+          },
+          "development_gain": 0.018371376103459625,
+          "development_clean_change": 0.0025063670589587916,
+          "clean_probe_change": -0.0054603641867289054,
+          "response_decision_change_fraction": 0.119140625,
+          "trainable_parameters": 18144,
+          "wall_ns": 5161059938,
+          "gradient_examples": 9216
+        },
+        {
+          "recipe": {
+            "learning_rate": 0.2,
+            "modules": "upstream",
+            "name": "upstream_r8_144_lr02",
+            "rank": 8,
+            "steps": 144
+          },
+          "development_gain": 0.027931804658328563,
+          "development_clean_change": 0.0054382599053496294,
+          "clean_probe_change": 0.0078102030354784135,
+          "response_decision_change_fraction": 0.1328125,
+          "trainable_parameters": 18144,
+          "wall_ns": 5181274001,
+          "gradient_examples": 9216
+        },
+        {
+          "recipe": {
+            "learning_rate": 0.5,
+            "modules": "upstream",
+            "name": "upstream_r8_144_lr05",
+            "rank": 8,
+            "steps": 144
+          },
+          "development_gain": 0.022374564671918118,
+          "development_clean_change": 0.003030941982433477,
+          "clean_probe_change": -0.02510493094450794,
+          "response_decision_change_fraction": 0.154296875,
+          "trainable_parameters": 18144,
+          "wall_ns": 5317451623,
+          "gradient_examples": 9216
+        },
+        {
+          "recipe": {
+            "learning_rate": 0.2,
+            "modules": "upstream",
+            "name": "upstream_r8_288_lr02",
+            "rank": 8,
+            "steps": 288
+          },
+          "development_gain": 0.025928556380495182,
+          "development_clean_change": 5.7623132305728575e-06,
+          "clean_probe_change": -0.000750681952922605,
+          "response_decision_change_fraction": 0.162109375,
+          "trainable_parameters": 18144,
+          "wall_ns": 9726338761,
+          "gradient_examples": 18432
+        }
+      ]
+    },
+    "29": {
+      "fixed_action": 3,
+      "response_candidate_range": 0.044345424634229746,
+      "candidates": [
+        {
+          "recipe": {
+            "learning_rate": 0.05,
+            "modules": "decoder",
+            "name": "decoder_r4_36_lr005",
+            "rank": 4,
+            "steps": 36
+          },
+          "development_gain": 0.0005864425296749909,
+          "development_clean_change": 1.4182005536600428e-07,
+          "clean_probe_change": -9.546056389808655e-09,
+          "response_decision_change_fraction": 0.001953125,
+          "trainable_parameters": 3424,
+          "wall_ns": 1627450244,
+          "gradient_examples": 2304
+        },
+        {
+          "recipe": {
+            "learning_rate": 0.2,
+            "modules": "decoder",
+            "name": "decoder_r4_144_lr02",
+            "rank": 4,
+            "steps": 144
+          },
+          "development_gain": 0.012708804108115146,
+          "development_clean_change": -0.00488109486541366,
+          "clean_probe_change": 0.011719609057763591,
+          "response_decision_change_fraction": 0.0703125,
+          "trainable_parameters": 3424,
+          "wall_ns": 4513418196,
+          "gradient_examples": 9216
+        },
+        {
+          "recipe": {
+            "learning_rate": 0.05,
+            "modules": "upstream",
+            "name": "upstream_r8_144_lr005",
+            "rank": 8,
+            "steps": 144
+          },
+          "development_gain": 0.01933056492907781,
+          "development_clean_change": -0.0019468915459583958,
+          "clean_probe_change": -0.014070941043610175,
+          "response_decision_change_fraction": 0.150390625,
+          "trainable_parameters": 18144,
+          "wall_ns": 4953381799,
+          "gradient_examples": 9216
+        },
+        {
+          "recipe": {
+            "learning_rate": 0.2,
+            "modules": "upstream",
+            "name": "upstream_r8_144_lr02",
+            "rank": 8,
+            "steps": 144
+          },
+          "development_gain": 0.021753748788614802,
+          "development_clean_change": -0.002127273182122691,
+          "clean_probe_change": -0.00038170207990328997,
+          "response_decision_change_fraction": 0.1640625,
+          "trainable_parameters": 18144,
+          "wall_ns": 5008828307,
+          "gradient_examples": 9216
+        },
+        {
+          "recipe": {
+            "learning_rate": 0.5,
+            "modules": "upstream",
+            "name": "upstream_r8_144_lr05",
+            "rank": 8,
+            "steps": 144
+          },
+          "development_gain": 0.004755918841147011,
+          "development_clean_change": -0.011932070316106547,
+          "clean_probe_change": 0.008968500900664367,
+          "response_decision_change_fraction": 0.19140625,
+          "trainable_parameters": 18144,
+          "wall_ns": 5193274866,
+          "gradient_examples": 9216
+        },
+        {
+          "recipe": {
+            "learning_rate": 0.2,
+            "modules": "upstream",
+            "name": "upstream_r8_288_lr02",
+            "rank": 8,
+            "steps": 288
+          },
+          "development_gain": 0.024510616322004464,
+          "development_clean_change": -0.004887878421868774,
+          "clean_probe_change": -0.006277925605536416,
+          "response_decision_change_fraction": 0.1875,
+          "trainable_parameters": 18144,
+          "wall_ns": 9596768085,
+          "gradient_examples": 18432
+        }
+      ]
+    },
+    "43": {
+      "fixed_action": 0,
+      "response_candidate_range": 0.0339670422759808,
+      "candidates": [
+        {
+          "recipe": {
+            "learning_rate": 0.05,
+            "modules": "decoder",
+            "name": "decoder_r4_36_lr005",
+            "rank": 4,
+            "steps": 36
+          },
+          "development_gain": 0.002442276740839633,
+          "development_clean_change": 4.575122147798538e-08,
+          "clean_probe_change": -0.0019529190132743235,
+          "response_decision_change_fraction": 0.017578125,
+          "trainable_parameters": 3424,
+          "wall_ns": 1695288939,
+          "gradient_examples": 2304
+        },
+        {
+          "recipe": {
+            "learning_rate": 0.2,
+            "modules": "decoder",
+            "name": "decoder_r4_144_lr02",
+            "rank": 4,
+            "steps": 144
+          },
+          "development_gain": 0.023218057487611077,
+          "development_clean_change": -0.004488419304107039,
+          "clean_probe_change": 0.0011766843439544594,
+          "response_decision_change_fraction": 0.09375,
+          "trainable_parameters": 3424,
+          "wall_ns": 4656155406,
+          "gradient_examples": 9216
+        },
+        {
+          "recipe": {
+            "learning_rate": 0.05,
+            "modules": "upstream",
+            "name": "upstream_r8_144_lr005",
+            "rank": 8,
+            "steps": 144
+          },
+          "development_gain": 0.037873074522394745,
+          "development_clean_change": -0.00550134880395492,
+          "clean_probe_change": -0.014866612986952688,
+          "response_decision_change_fraction": 0.1640625,
+          "trainable_parameters": 18144,
+          "wall_ns": 5476579342,
+          "gradient_examples": 9216
+        },
+        {
+          "recipe": {
+            "learning_rate": 0.2,
+            "modules": "upstream",
+            "name": "upstream_r8_144_lr02",
+            "rank": 8,
+            "steps": 144
+          },
+          "development_gain": 0.039339063474108094,
+          "development_clean_change": -0.002159072514041238,
+          "clean_probe_change": -0.0171709053378436,
+          "response_decision_change_fraction": 0.16796875,
+          "trainable_parameters": 18144,
+          "wall_ns": 5313947695,
+          "gradient_examples": 9216
+        },
+        {
+          "recipe": {
+            "learning_rate": 0.5,
+            "modules": "upstream",
+            "name": "upstream_r8_144_lr05",
+            "rank": 8,
+            "steps": 144
+          },
+          "development_gain": 0.03138120793028065,
+          "development_clean_change": -0.0017596692821826299,
+          "clean_probe_change": -0.01520768196496658,
+          "response_decision_change_fraction": 0.169921875,
+          "trainable_parameters": 18144,
+          "wall_ns": 5443069510,
+          "gradient_examples": 9216
+        },
+        {
+          "recipe": {
+            "learning_rate": 0.2,
+            "modules": "upstream",
+            "name": "upstream_r8_288_lr02",
+            "rank": 8,
+            "steps": 288
+          },
+          "development_gain": 0.04418474255999172,
+          "development_clean_change": -0.0023193446751974545,
+          "clean_probe_change": 0.004362496438261587,
+          "response_decision_change_fraction": 0.189453125,
+          "trainable_parameters": 18144,
+          "wall_ns": 9246657284,
+          "gradient_examples": 18432
+        }
+      ]
+    }
+  },
+  "full_result_sha256": "11e3b0a53d6e99bbff7a0ddd6fab3b109a8fe19e1dbec8fcc8f43b759b69f164"
+}
