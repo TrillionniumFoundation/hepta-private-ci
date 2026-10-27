@@ -36,6 +36,7 @@ TEST_GROUPS = {
     ),
     "aws": ("codex-aws-auth", "codex-login", "codex-secrets"),
     "keyring": ("codex-keyring-store",),
+    "execpolicy": ("codex-execpolicy",),
     "matrix": (
         "codex-hepta-matrix-protocol",
         "codex-hepta-matrix-store",
@@ -47,6 +48,7 @@ BAZEL_TARGETS = (
     "//codex-rs/utils/yaml:yaml",
     "//codex-rs/aws-auth:aws-auth",
     "//codex-rs/keyring-store:keyring-store",
+    "//codex-rs/execpolicy:execpolicy",
     "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk",
     "//codex-rs/third_party/serde-saphyr-2.0.0:serde-saphyr",
     "//codex-rs/third_party/aws-config-1.8.12:aws-config",
@@ -54,6 +56,7 @@ BAZEL_TARGETS = (
     "//codex-rs/third_party/secret-service-4.0.0:secret-service",
     "//codex-rs/third_party/matrix-sdk-0.19.1:matrix-sdk",
     "//codex-rs/third_party/matrix-sdk-sqlite-0.19.1:matrix-sdk-sqlite",
+    "//codex-rs/third_party/starlark-0.14.2:starlark",
 )
 
 

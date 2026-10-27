@@ -329,6 +329,28 @@ class PortArtifactTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "forbidden"):
             common.validate_graph(self.root, self.recipe, self.metadata)
 
+    def test_graph_rejects_extra_features_when_an_exact_set_is_frozen(self):
+        (self.root / common.LOCKS[0]).write_text(self.lock)
+        self.recipe["expected_packages"][0]["exact_features"] = ["crypto"]
+        common.validate_graph(self.root, self.recipe, self.metadata)
+        self.metadata["resolve"]["nodes"][0]["features"].append("paging")
+        with self.assertRaisesRegex(ValueError, "Exact effective features"):
+            common.validate_graph(self.root, self.recipe, self.metadata)
+
+    def test_graph_requires_a_resolved_node_even_with_no_required_features(self):
+        (self.root / common.LOCKS[0]).write_text(self.lock)
+        self.recipe["expected_packages"][0]["required_features"] = []
+        self.recipe["expected_packages"][0]["exact_features"] = []
+        self.metadata["resolve"]["nodes"] = []
+        with self.assertRaisesRegex(ValueError, "resolved dependency graph"):
+            common.validate_graph(self.root, self.recipe, self.metadata)
+
+    def test_recipe_rejects_an_untyped_exact_feature_constraint(self):
+        self.recipe["expected_packages"][0]["exact_features"] = "crypto"
+        (self.root / common.RECIPE).write_text(json.dumps(self.recipe))
+        with self.assertRaisesRegex(ValueError, "exact_features"):
+            common.load_recipe(self.root)
+
     def test_renamed_or_traversing_paths_are_not_artifact_inputs(self):
         for name in ("../outside", "/absolute", "a//b", "a/./b", "a\\b", "a\nb"):
             with self.subTest(name=name), self.assertRaises(ValueError):

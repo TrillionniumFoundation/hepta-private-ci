@@ -13,7 +13,7 @@ import tomllib
 
 
 SCHEMA = "hepta.ci.port-candidate.v1"
-RECIPE = "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.json"
+RECIPE = "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v2.json"
 LOCKS = ("codex-rs/Cargo.lock", "MODULE.bazel.lock")
 POLICIES = (
     "codex-rs/deny.toml",
@@ -164,8 +164,14 @@ def load_recipe(root, name=RECIPE):
             raise ValueError("Invalid expected package")
         if not isinstance(package["version"], str) or not package["version"]:
             raise ValueError("Expected package version is required")
-        if not isinstance(package.get("required_features", []), list):
-            raise ValueError("required_features must be a list")
+        for key in ("required_features", "exact_features"):
+            if key in package and (
+                not isinstance(package[key], list)
+                or not all(
+                    isinstance(feature, str) and feature for feature in package[key]
+                )
+            ):
+                raise ValueError(f"{key} must be a list of nonempty feature names")
     if not all(
         isinstance(x, str) and PACKAGE.fullmatch(x) and "@" not in x
         for x in recipe["forbidden_packages"]
@@ -453,10 +459,16 @@ def validate_graph(root, recipe, metadata):
             isinstance(x, str) and x.startswith("registry+") for x in sources
         ):
             raise ValueError(f"Registry source was not selected: {expected['name']}")
-        if not set(expected.get("required_features", [])) <= set(
-            nodes.get(details[0]["id"], {}).get("features", [])
-        ):
+        node = nodes.get(details[0]["id"])
+        if node is None:
+            raise ValueError(
+                f"Expected package is absent from the resolved dependency graph: {expected['name']}"
+            )
+        features = set(node["features"])
+        if not set(expected.get("required_features", [])) <= features:
             raise ValueError(f"Required effective features missing: {expected['name']}")
+        if "exact_features" in expected and set(expected["exact_features"]) != features:
+            raise ValueError(f"Exact effective features differ: {expected['name']}")
 
 
 def verify_tree(runner, record, recipe):

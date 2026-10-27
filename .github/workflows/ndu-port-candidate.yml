@@ -146,7 +146,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        group: [yaml, aws, keyring]
+        group: [yaml, aws, keyring, execpolicy]
     steps:
       - name: Check out the exact producer source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -200,7 +200,8 @@ jobs:
           include-hidden-files: true
 
   matrix-workspace-and-old-fixture:
-    needs: [generate-reviewable-candidate, produce-independent-matrix-018-fixture]
+    needs:
+      [generate-reviewable-candidate, produce-independent-matrix-018-fixture]
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     steps:
