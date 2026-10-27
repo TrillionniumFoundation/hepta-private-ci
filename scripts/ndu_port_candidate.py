@@ -50,13 +50,13 @@ BAZEL_TARGETS = (
     "//codex-rs/keyring-store:keyring-store",
     "//codex-rs/execpolicy:execpolicy",
     "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk",
-    "//codex-rs/third_party/serde-saphyr-2.0.0:serde-saphyr",
-    "//codex-rs/third_party/aws-config-1.8.12:aws-config",
-    "//codex-rs/third_party/keyring-3.6.3:keyring",
-    "//codex-rs/third_party/secret-service-4.0.0:secret-service",
-    "//codex-rs/third_party/matrix-sdk-0.19.1:matrix-sdk",
-    "//codex-rs/third_party/matrix-sdk-sqlite-0.19.1:matrix-sdk-sqlite",
-    "//codex-rs/third_party/starlark-0.14.2:starlark",
+    "@crates//:serde-saphyr-2.0.0",
+    "@crates//:aws-config-1.8.12",
+    "@crates//:keyring-3.6.3",
+    "@crates//:secret-service-4.0.0",
+    "@crates//:matrix-sdk-0.19.1",
+    "@crates//:matrix-sdk-sqlite-0.19.1",
+    "@crates//:starlark-0.14.2",
 )
 
 

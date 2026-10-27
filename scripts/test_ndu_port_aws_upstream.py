@@ -1,5 +1,6 @@
 """Guard complete upstream execution, including failures and original skips."""
 
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -14,13 +15,13 @@ class FullUpstreamEvidenceTests(unittest.TestCase):
             "expected_total": 245,
             "expected_executed": 244,
             "expected_ignored": 1,
-            "ignored_tests": ["ecs::tests::real_dns_lookup"],
+            "ignored_tests": ["ecs::test::real_dns_lookup"],
         }
         cases = {
             f"case_{index}": {"ignored": False, "filter-match": {"status": "matches"}}
             for index in range(244)
         }
-        cases["ecs::tests::real_dns_lookup"] = {
+        cases["ecs::test::real_dns_lookup"] = {
             "ignored": True,
             "filter-match": {"status": "mismatch"},
         }
@@ -37,6 +38,23 @@ class FullUpstreamEvidenceTests(unittest.TestCase):
             },
         }
         self.expected = {("aws-config", f"case_{index}") for index in range(244)}
+
+    def test_actual_remote_inventory_retains_the_exact_original_ignore(self):
+        fixture = (
+            Path(__file__).resolve().parents[1]
+            / "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/evidence/AWS_UPSTREAM_V2_TEST_LIST.json"
+        )
+        listing = json.loads(fixture.read_text())
+        executed, binaries = suite_inventory(listing, self.qualification)
+        self.assertEqual(len(executed), 244)
+        self.assertEqual(set(binaries), {"aws-config"})
+        self.assertNotIn(("aws-config", "ecs::test::real_dns_lookup"), executed)
+        wrong_original_name = {
+            **self.qualification,
+            "ignored_tests": ["ecs::tests::real_dns_lookup"],
+        }
+        with self.assertRaises(ValueError):
+            suite_inventory(listing, wrong_original_name)
 
     def test_omitted_or_filtered_or_newly_ignored_tests_cannot_qualify(self):
         executed, binaries = suite_inventory(self.listing, self.qualification)

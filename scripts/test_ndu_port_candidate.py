@@ -91,7 +91,7 @@ class PortArtifactTests(unittest.TestCase):
                 "expected_total": 245,
                 "expected_executed": 244,
                 "expected_ignored": 1,
-                "ignored_tests": ["ecs::tests::real_dns_lookup"],
+                "ignored_tests": ["ecs::test::real_dns_lookup"],
             },
         }
         recipe_path = self.root / common.RECIPE
@@ -306,6 +306,26 @@ class PortArtifactTests(unittest.TestCase):
         path.write_text(json.dumps(recipe))
         with self.assertRaisesRegex(ValueError, "typed"):
             common.load_recipe(self.root)
+
+    def test_recipe_keeps_the_exact_original_aws_inventory_and_ignore(self):
+        path = self.root / common.RECIPE
+        self.assertEqual(
+            common.load_recipe(self.root)["aws_qualification"]["expected_executed"], 244
+        )
+        original = copy.deepcopy(self.recipe)
+        for field, value in (
+            ("ignored_tests", ["ecs::tests::real_dns_lookup"]),
+            ("ignored_tests", []),
+            ("expected_total", 244),
+            ("expected_executed", 243),
+            ("expected_ignored", 2),
+        ):
+            with self.subTest(field=field, value=value):
+                recipe = copy.deepcopy(original)
+                recipe["aws_qualification"][field] = value
+                path.write_text(json.dumps(recipe))
+                with self.assertRaisesRegex(ValueError, "frozen upstream inventory"):
+                    common.load_recipe(self.root)
 
     def test_deleted_policy_cannot_retain_an_earlier_true_attestation(self):
         runner = self.runner()

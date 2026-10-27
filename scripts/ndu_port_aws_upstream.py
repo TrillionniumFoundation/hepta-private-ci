@@ -19,7 +19,7 @@ def suite_inventory(listing, qualification):
         qualification["expected_ignored"],
     )
     if expected != (245, 244, 1) or qualification["ignored_tests"] != [
-        "ecs::tests::real_dns_lookup"
+        "ecs::test::real_dns_lookup"
     ]:
         raise ValueError(
             "This qualification must retain the complete frozen 245-test inventory"

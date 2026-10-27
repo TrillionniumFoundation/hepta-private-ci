@@ -13,7 +13,7 @@ import tomllib
 
 
 SCHEMA = "hepta.ci.port-candidate.v1"
-RECIPE = "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v2.json"
+RECIPE = "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v3.json"
 LOCKS = ("codex-rs/Cargo.lock", "MODULE.bazel.lock")
 POLICIES = (
     "codex-rs/deny.toml",
@@ -206,7 +206,7 @@ def load_recipe(root, name=RECIPE):
         245,
         244,
         1,
-    ) or aws["ignored_tests"] != ["ecs::tests::real_dns_lookup"]:
+    ) or aws["ignored_tests"] != ["ecs::test::real_dns_lookup"]:
         raise ValueError(
             "AWS qualification cannot reduce the frozen upstream inventory"
         )
