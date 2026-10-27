@@ -97,6 +97,13 @@ def main():
                 print(line, end="", flush=True)
             executions.append({"command": command, "exit_code": process.wait(), "wall_seconds": time.monotonic() - before})
             if executions[-1]["exit_code"] != 0:
+                # A completed ordinary nextest run can fail assertions while
+                # the independently selected real-training profile remains
+                # executable. Retain both outcomes; either failure still
+                # fails the combined receipt. Build/setup failures stop here.
+                if (mode == "test" and group == "daemon" and command == receipt["command"]
+                        and executions[-1]["exit_code"] == 100):
+                    continue
                 break
             if command[:2] == ["cargo", "build"]:
                 receipt["runtime_executable"] = {"path": str(executable), **identity(executable)}

@@ -46,7 +46,7 @@ fn observe_for_test(
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
     let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    observe_event(output, &mut agent_output::AgentOutput::default(), &observed(notification), &binding)
 }
 
 fn output() -> NativeRunOutput {
@@ -163,6 +163,8 @@ fn only_the_bound_turn_can_complete_the_native_request() {
 #[test]
 fn output_is_observed_bounded_and_never_predeclares_success() {
     let mut output = output();
+    let mut agent_output = agent_output::AgentOutput::default();
+    let binding = binding();
     let delta = |thread: &str, text: String| {
         ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
             thread_id: thread.to_string(),
@@ -171,12 +173,12 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
             delta: text,
         })
     };
-    observe_for_test(&mut output, delta("unrelated", "discard".to_string())).unwrap();
-    observe_for_test(&mut output, delta("thread-a", "model output".to_string())).unwrap();
+    observe_event(&mut output, &mut agent_output, &observed(delta("unrelated", "discard".to_string())), &binding).unwrap();
+    observe_event(&mut output, &mut agent_output, &observed(delta("thread-a", "model output".to_string())), &binding).unwrap();
     assert_eq!(output.output, "model output");
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(
-        observe_for_test(&mut output, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err()
+        observe_event(&mut output, &mut agent_output, &observed(delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))), &binding).is_err()
     );
     assert_eq!(output.output, "model output");
     assert!(!output.terminal_observed);
@@ -493,7 +495,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         accepted.succeeded(),
         "fresh context must reach a successful real TurnStart"
     );
-    assert!(accepted.output.contains("fresh context accepted"));
+    assert!(accepted.output.contains("fresh context accepted"), "observed output: {accepted:?}");
     let accepted_record = durable
         .native_record(ACCEPT_REQUEST_ID)
         .cloned()

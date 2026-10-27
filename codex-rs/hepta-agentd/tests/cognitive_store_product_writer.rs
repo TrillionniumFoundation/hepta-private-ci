@@ -25,6 +25,7 @@ use codex_hepta_cognitive_store::MemoryVerification;
 use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityToken;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
+use codex_hepta_cognitive_store::ProductionDurableWriter;
 use codex_hepta_cognitive_store::SourceDraft;
 use codex_hepta_cognitive_store::bind_canonical_event_to_durable_receipt;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
@@ -49,6 +50,7 @@ use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_memory::LocalOutcomeState;
 use codex_hepta_paths::HeptaFleetRoot;
+use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
 #[tokio::test]
@@ -142,9 +144,6 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )?;
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
-    let expected = store.recovery_anchor().await?;
-    store.close().await;
-
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner.clone(),
         Sha256Digest::for_bytes(b"agentd-product-recovery-test-grant"),
@@ -172,6 +171,22 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
             Ok(())
         },
     );
+
+    // The full owner cut includes the append-only writer lease. Model a
+    // restart after acquisition: retain that cut, drop the writer without
+    // releasing its live lease, and finish closing SQLite before recovery.
+    // Reopening this exact active lease must not append another lease row.
+    let initial_writer = ProductionDurableWriter::open_with_live_verifier(
+        store.clone(),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "agentd-product-recovery-test",
+        /*generation*/ 1,
+    )
+    .await?;
+    let expected = initial_writer.recovery_anchor().await?;
+    drop(initial_writer);
+    store.close().await;
 
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,

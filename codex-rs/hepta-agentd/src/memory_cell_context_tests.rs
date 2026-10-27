@@ -43,7 +43,7 @@ async fn memory_prediction_reaches_real_untrusted_context_and_final_use_races_st
     let positive = driver.run(&mut control, admission("memory-context-positive"),
         "Use the calibration as data.".to_string(), None, &cancellation).await?;
     assert!(positive.succeeded());
-    assert!(positive.output.contains("memory evidence received"));
+    assert!(positive.output.contains("memory evidence received"), "observed output: {positive:?}");
     let observed = response.single_request().body_json();
     let input = observed["input"].as_array().ok_or("provider input is not an array")?;
     let messages: Vec<_> = input.iter().filter(|item| item["type"].as_str() == Some("message")).collect();
