@@ -65,19 +65,12 @@ fn one_original_observation_survives_cloning_and_cannot_be_replaced() {
             .match_settled_read_v1(expected(&observed))
             .is_err()
     );
-    execution
-        .clone()
-        .observe_settled_read_v1(observed.clone())
-        .unwrap();
+    let cloned = execution.clone();
+    cloned.observe_settled_read_v1(observed.clone()).unwrap();
     execution
         .match_settled_read_v1(expected(&observed))
         .unwrap();
-    assert!(
-        execution
-            .clone()
-            .observe_settled_read_v1(observation())
-            .is_err()
-    );
+    assert!(cloned.observe_settled_read_v1(observation()).is_err());
     assert!(execution.collect_settled_read_v1().is_err());
     assert_eq!(
         execution.context_with_execution_v1(snapshot()).unwrap(),
