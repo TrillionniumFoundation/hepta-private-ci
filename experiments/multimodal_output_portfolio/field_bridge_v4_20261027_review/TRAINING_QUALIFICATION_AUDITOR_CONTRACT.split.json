@@ -1,0 +1,42 @@
+{
+  "auditor_io_read_bytes": 0,
+  "auditor_io_read_calls": 0,
+  "authority": "DENY_ALL",
+  "cost_scope": "This auditor invocation only, including verification and deserialization; prior source/schema reading was separate and untimed.",
+  "cpu_ns": 1984129690,
+  "errors": 0,
+  "failures": 0,
+  "generator_calls": 0,
+  "gradient_or_optimizer_updates": 0,
+  "input_files": {},
+  "log": "test_canonical_commit_binds_prediction_and_clock (training_audit_contracts.self_test.<locals>.Contracts.test_canonical_commit_binds_prediction_and_clock) ... ok\ntest_complete_synthetic_adaptive_rejections (training_audit_contracts.self_test.<locals>.Contracts.test_complete_synthetic_adaptive_rejections) ... ok\ntest_complete_synthetic_zero_path (training_audit_contracts.self_test.<locals>.Contracts.test_complete_synthetic_zero_path) ... ok\ntest_cost_includes_rejected_nonzero_optimizer_steps (training_audit_contracts.self_test.<locals>.Contracts.test_cost_includes_rejected_nonzero_optimizer_steps) ... ok\ntest_directional_feature_work_included (training_audit_contracts.self_test.<locals>.Contracts.test_directional_feature_work_included) ... ok\ntest_failed_restore_is_not_hidden_by_next_before_hash (training_audit_contracts.self_test.<locals>.Contracts.test_failed_restore_is_not_hidden_by_next_before_hash) ... ok\ntest_first_panel_maps_to_fit_without_averaging (training_audit_contracts.self_test.<locals>.Contracts.test_first_panel_maps_to_fit_without_averaging) ... ok\ntest_forbidden_training_counter_rejected (training_audit_contracts.self_test.<locals>.Contracts.test_forbidden_training_counter_rejected) ... ok\ntest_full_checkpoint_cannot_drop_gradient_snapshot (training_audit_contracts.self_test.<locals>.Contracts.test_full_checkpoint_cannot_drop_gradient_snapshot) ... ok\ntest_guard_cannot_be_changed_only_by_boolean (training_audit_contracts.self_test.<locals>.Contracts.test_guard_cannot_be_changed_only_by_boolean) ... ok\ntest_head_two_normalizations_projection_intercept (training_audit_contracts.self_test.<locals>.Contracts.test_head_two_normalizations_projection_intercept) ... ok\ntest_journal_binding_and_complete_288_step_span (training_audit_contracts.self_test.<locals>.Contracts.test_journal_binding_and_complete_288_step_span) ... ok\ntest_lowest_index_argmax_tie (training_audit_contracts.self_test.<locals>.Contracts.test_lowest_index_argmax_tie) ... ok\ntest_negative_or_float_counter_rejected (training_audit_contracts.self_test.<locals>.Contracts.test_negative_or_float_counter_rejected) ... ok\ntest_nonfinite_is_rejected (training_audit_contracts.self_test.<locals>.Contracts.test_nonfinite_is_rejected) ... ok\ntest_ordinary_action_cannot_change (training_audit_contracts.self_test.<locals>.Contracts.test_ordinary_action_cannot_change) ... ok\ntest_original_guard_values_not_just_declared_delta (training_audit_contracts.self_test.<locals>.Contracts.test_original_guard_values_not_just_declared_delta) ... ok\ntest_recaptured_origin_after_rejection_rejected (training_audit_contracts.self_test.<locals>.Contracts.test_recaptured_origin_after_rejection_rejected) ... ok\ntest_rehashed_checkpoint_file_cannot_hide_parameter_mutation (training_audit_contracts.self_test.<locals>.Contracts.test_rehashed_checkpoint_file_cannot_hide_parameter_mutation) ... ok\ntest_rehashed_checkpoint_file_cannot_hide_sgd_mutation (training_audit_contracts.self_test.<locals>.Contracts.test_rehashed_checkpoint_file_cannot_hide_sgd_mutation) ... ok\ntest_rejected_computation_must_remain_charged (training_audit_contracts.self_test.<locals>.Contracts.test_rejected_computation_must_remain_charged) ... ok\ntest_schedule_has_all_48_steps_and_binds_time (training_audit_contracts.self_test.<locals>.Contracts.test_schedule_has_all_48_steps_and_binds_time) ... ok\ntest_trace_nonmonotone_commit_clock_rejected (training_audit_contracts.self_test.<locals>.Contracts.test_trace_nonmonotone_commit_clock_rejected) ... ok\ntest_trace_physical_bytes_must_match_cost (training_audit_contracts.self_test.<locals>.Contracts.test_trace_physical_bytes_must_match_cost) ... ok\ntest_translation_changes_exactly_fourteen_fields (training_audit_contracts.self_test.<locals>.Contracts.test_translation_changes_exactly_fourteen_fields) ... ok\ntest_weights_only_checkpoint_actual_tensor_identity (training_audit_contracts.self_test.<locals>.Contracts.test_weights_only_checkpoint_actual_tensor_identity) ... ok\ntest_wrong_frozen_prediction_rejected_after_recommit (training_audit_contracts.self_test.<locals>.Contracts.test_wrong_frozen_prediction_rejected_after_recommit) ... ok\ntest_wrong_translation_even_with_recommitted_journal (training_audit_contracts.self_test.<locals>.Contracts.test_wrong_translation_even_with_recommitted_journal) ... ok\ntest_zero_candidate_cannot_change_sgd (training_audit_contracts.self_test.<locals>.Contracts.test_zero_candidate_cannot_change_sgd) ... ok\ntest_zero_still_computes_full_gradients (training_audit_contracts.self_test.<locals>.Contracts.test_zero_still_computes_full_gradients) ... ok\n\n----------------------------------------------------------------------\nRan 30 tests in 2.035s\n\nOK\n",
+  "native_owner_integration": false,
+  "native_tick_calls": 0,
+  "network_calls": 0,
+  "observer_calls": 0,
+  "passed": true,
+  "requires_calibration": true,
+  "schema": "hepta.field-bridge.v4.independent-training-audit.1",
+  "scientific_gate_changed": false,
+  "source_files": {
+    "training_audit_checkpoints.py": "5c13cf63c4eb46472a17425b7ac77f80b367e73368cfe6ed346ae9e7d269e249",
+    "training_audit_common.py": "8ed6b4e67e4b951cfeab982a9e0d4a856e2791cbbfa2a98f26742ab22e6ff00c",
+    "training_audit_contracts.py": "10067ab246cbb753995d8e27aa55d25b386edf104d1224975fd942d396698e1d",
+    "training_audit_run.py": "ad3e5885cf05074be7e69a20d355f625d2ad64a5bbc1217da34f1337d84b9513",
+    "training_audit_trace.py": "59b40389f9c51f523ce15fb8146e711ff4c3137b6200ffbcfc4d579b6cfeb44c",
+    "training_qualification_audit.py": "33521d9cc036a4a7d12a9c3a0c1dbc618020169d41a7f63913afbfe85aa55d1e"
+  },
+  "source_role_tensor_loads": 0,
+  "source_set_sha256": "1af254e2fa8d97be185ce453a44663adc1fdd3acc4ca6933bcb8005879914419",
+  "source_sha256": "33521d9cc036a4a7d12a9c3a0c1dbc618020169d41a7f63913afbfe85aa55d1e",
+  "synthetic_contract_operations": {
+    "synthetic_checkpoint_bytes_read": 54454,
+    "synthetic_checkpoint_bytes_written": 54454,
+    "synthetic_checkpoint_files_written": 4,
+    "synthetic_weights_only_reads": 4
+  },
+  "synthetic_only": true,
+  "tests_run": 30,
+  "wall_ns": 2035122470,
+  "weights_only_checkpoint_loads": 0
+}
