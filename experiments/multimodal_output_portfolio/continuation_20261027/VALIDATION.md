@@ -57,3 +57,15 @@ stdout/stderr 均为空。随后 staged Git whitespace check 找到 `control/tra
 历史运行的准确执行源码和 binary 继续留在原始包中。最终仓库排版不改写这些
 执行身份。格式化之后只做 Git 差异、文件身份和远端发布身份核对，不重新
 训练、推断、改变统计门槛或运行测试。
+
+## 发布后的拼写检查修订
+
+首次 CI 在 13 条原始 source/receipt 行上报告拼写错误，其中包括官方语料的
+原文、商户/地名、拉丁语引文和旧不可变回执。修订保留全部科学原文与 hash，
+仅启用 Codespell 官方的 exact-full-line `exclude-file` 机制；其他行继续检查，
+不增加全局词汇白名单，不跳过文件/目录，不修改 workflow。
+
+[CI_AMENDMENT.json](CI_AMENDMENT.json) 保存失败 job、13 条原行的来源与 hash、
+四份原文件的身份及该机制的范围。使用 CI 相同的 Codespell 2.4.3 和命令，
+本地已检出的仓库内容检查通过；随后再次执行 `just fmt`。科学实验和行为测试
+未重跑，原始归档未重写。完整远端 CI 状态以 PR 当前 head 的检查为准。
