@@ -34,6 +34,18 @@ from official_conformance import (  # noqa: E402 - direct scripts must first add
     run_official_mode,
     scenarios_for_mode,
 )
+from conformance_profiles import (  # noqa: E402
+    LEGACY_PROFILE,
+    PROFILES,
+    VENDOR_PROFILE,
+    descriptor,
+    execution_metadata,
+    legacy_baseline,
+    report_profile,
+    required_fixed_checks,
+    validate_metadata,
+    verify_execution,
+)
 
 _FIXTURE_MODULE_PATH = Path(__file__).resolve().with_name("server.py")
 _FIXTURE_SPEC = importlib.util.spec_from_file_location(
@@ -1318,7 +1330,15 @@ def run_compliance(
     enable_modern_feature: bool = True,
     include_auth: bool = True,
     require_automatic_auth: bool = False,
+    conformance_profile: str = LEGACY_PROFILE,
+    verified_execution: Mapping[str, object] | None = None,
 ) -> tuple[dict[str, object], Path | None]:
+    if conformance_profile not in PROFILES or (
+        conformance_profile == VENDOR_PROFILE and verified_execution is None
+    ):
+        raise ValueError(
+            "a valid execution profile must be verified before running conformance"
+        )
     started_at = datetime.now(timezone.utc)
     run_root = Path(
         tempfile.mkdtemp(
@@ -1415,6 +1435,15 @@ def run_compliance(
         "cases": [asdict(case) for case in cases],
         "artifacts": str(run_root) if keep_artifacts else None,
     }
+    report["conformanceProfile"] = conformance_profile
+    if conformance_profile == VENDOR_PROFILE:
+        if verified_execution is None:
+            raise ValueError(
+                "vendor execution requires verified source and CLI identity"
+            )
+        report["executionIdentity"] = execution_metadata(verified_execution)
+        report["executionRuntime"] = verified_execution["observedRuntime"]
+        report["officialConformance"]["gitRef"] = descriptor()["gitRef"]
 
     retained: Path | None = run_root if keep_artifacts else None
     if not keep_artifacts:
@@ -1462,6 +1491,8 @@ def _required_regression_checks(
     label: str,
     errors: list[str],
 ) -> dict[_RegressionCheckIdentity, set[str]]:
+    if "executionIdentityError" in report:
+        errors.append(f"{label} execution identity changed during its run")
     if report.get("schemaVersion") != REPORT_SCHEMA_VERSION:
         errors.append(f"{label} does not use report schema {REPORT_SCHEMA_VERSION}")
 
@@ -1478,10 +1509,10 @@ def _required_regression_checks(
     else:
         if official.get("repository") != OFFICIAL_CONFORMANCE_REPOSITORY:
             errors.append(f"{label} uses a different upstream conformance repository")
-        if official.get("gitRef") != OFFICIAL_CONFORMANCE_GIT_REF:
-            errors.append(
-                f"{label} uses a different pinned upstream conformance revision"
-            )
+        try:
+            validate_metadata(report)
+        except (OSError, ValueError) as exc:
+            errors.append(f"{label} {exc}")
         if official.get("authenticationIncluded") is not True:
             errors.append(f"{label} does not include the required OAuth scenarios")
         scenarios = official.get("scenarios")
@@ -1690,6 +1721,19 @@ def _compact_regression_baseline(report: Mapping[str, object]) -> dict[str, obje
         for identity, statuses in identities.items()
     ):
         errors.append("baseline contains a shipping MCP regression")
+    profile = report_profile(report)
+    if profile == VENDOR_PROFILE:
+        migration = _evaluate_regression_gate(
+            report, legacy_baseline(), allow_legacy_migration=True
+        )
+        if migration["success"] is not True:
+            errors.append(
+                f"legacy migration failed: {json.dumps(migration, sort_keys=True)}"
+            )
+        for record in required_fixed_checks():
+            statuses = identities.get(_RegressionCheckIdentity(**record), set())
+            if "PASS" not in statuses or "FAIL" in statuses:
+                errors.append(f"previously fixed check is not passing: {record}")
     if errors:
         raise ValueError("; ".join(errors))
 
@@ -1697,7 +1741,7 @@ def _compact_regression_baseline(report: Mapping[str, object]) -> dict[str, obje
     assert isinstance(official, dict)
     scenarios = official.get("scenarios")
     assert isinstance(scenarios, dict)
-    return {
+    compact = {
         "baselineKind": COMPACT_REGRESSION_BASELINE_KIND,
         "schemaVersion": REPORT_SCHEMA_VERSION,
         "requiredModes": list(REQUIRED_REGRESSION_MODES),
@@ -1707,7 +1751,7 @@ def _compact_regression_baseline(report: Mapping[str, object]) -> dict[str, obje
         "automaticAuthRequired": automatic_auth,
         "officialConformance": {
             "repository": OFFICIAL_CONFORMANCE_REPOSITORY,
-            "gitRef": OFFICIAL_CONFORMANCE_GIT_REF,
+            "gitRef": official["gitRef"],
             "authenticationIncluded": True,
             "scenarios": {mode: scenarios[mode] for mode in REQUIRED_REGRESSION_MODES},
         },
@@ -1724,6 +1768,10 @@ def _compact_regression_baseline(report: Mapping[str, object]) -> dict[str, obje
             ],
         },
     }
+    if profile == VENDOR_PROFILE:
+        compact["conformanceProfile"] = profile
+        compact["executionIdentity"] = report["executionIdentity"]
+    return compact
 
 
 def _write_json_file(path: Path, value: Mapping[str, object]) -> None:
@@ -1738,6 +1786,10 @@ def _write_compact_regression_baseline(
     report: Mapping[str, object],
     path: Path,
 ) -> None:
+    if path.resolve() == Path(__file__).resolve().with_name(
+        "regression-baseline-v1.json"
+    ):
+        raise ValueError("the original historical baseline must remain unchanged")
     _write_json_file(path, _compact_regression_baseline(report))
 
 
@@ -1746,8 +1798,22 @@ def _evaluate_regression_gate(
     baseline_report: Mapping[str, object],
     *,
     baseline_path: Path | None = None,
+    allow_legacy_migration: bool = False,
 ) -> dict[str, object]:
     errors: list[str] = []
+    try:
+        candidate_profile = report_profile(report)
+        baseline_profile = report_profile(baseline_report)
+        if candidate_profile != baseline_profile and not (
+            allow_legacy_migration
+            and candidate_profile == VENDOR_PROFILE
+            and baseline_profile == LEGACY_PROFILE
+        ):
+            errors.append(
+                "baseline and candidate use different conformance execution profiles"
+            )
+    except ValueError as exc:
+        errors.append(str(exc))
     baseline_checks = _required_regression_checks(
         baseline_report, label="baseline", errors=errors
     )
@@ -1842,6 +1908,7 @@ def _print_human_report(report: Mapping[str, object]) -> None:
     print(f"Codex MCP compliance: {'PASS' if success else 'FAIL'}")
     print(f"Binary: {report.get('codexBinary')}")
     print(f"Version: {report.get('codexVersion') or 'unknown'}")
+    print(f"Execution profile: {report.get('conformanceProfile', LEGACY_PROFILE)}")
     failure_details: list[tuple[str, str, str]] = []
     cases = report.get("cases")
     if isinstance(cases, list):
@@ -1985,6 +2052,11 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     )
     parser.add_argument("codex_binary", type=Path)
     parser.add_argument(
+        "--conformance-profile",
+        choices=PROFILES,
+        help="Explicit execution identity: verified vendor or historical pinned bootstrap.",
+    )
+    parser.add_argument(
         "--mode",
         choices=("all", SHIPPING_LEGACY_VERSION, LEGACY_VERSION, MODERN_VERSION),
         default="all",
@@ -2107,6 +2179,11 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parse_args(argv)
+    if args.conformance_profile is None:
+        print(
+            "error: --conformance-profile must be selected explicitly", file=sys.stderr
+        )
+        return 2
     codex_binary = args.codex_binary.expanduser().resolve()
     server_script = args.server_script.expanduser().resolve()
     adapter_script = args.adapter_script.expanduser().resolve()
@@ -2160,6 +2237,14 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             return 2
         baseline_report = loaded_baseline
+        try:
+            if validate_metadata(baseline_report) != args.conformance_profile:
+                raise ValueError(
+                    "baseline uses a different conformance execution profile"
+                )
+        except (OSError, ValueError) as exc:
+            print(f"error: invalid baseline report: {exc}", file=sys.stderr)
+            return 2
 
     if args.extract_baseline is not None:
         assert baseline_report is not None
@@ -2175,6 +2260,26 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"Regression baseline: {output_path}")
         return 0
 
+    try:
+        for mode in modes:
+            scenarios_for_mode(
+                mode,
+                args.official_scenario,
+                include_auth=args.auth,
+            )
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+
+    try:
+        if args.conformance_cli is not None:
+            args.conformance_cli = args.conformance_cli.expanduser().resolve()
+        verified_execution = verify_execution(
+            args.conformance_profile, args.conformance_cli
+        )
+    except (OSError, ValueError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
     conformance_command: list[str]
     if args.conformance_cli is None:
         conformance_command = default_conformance_command()
@@ -2198,17 +2303,6 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             return 2
 
-    try:
-        for mode in modes:
-            scenarios_for_mode(
-                mode,
-                args.official_scenario,
-                include_auth=args.auth,
-            )
-    except ValueError as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        return 2
-
     artifact_parent: Path | None = None
     if args.artifact_parent is not None:
         artifact_parent = args.artifact_parent.expanduser().resolve()
@@ -2228,7 +2322,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         enable_modern_feature=args.enable_modern_feature,
         include_auth=args.auth,
         require_automatic_auth=args.require_automatic_auth,
+        conformance_profile=args.conformance_profile,
+        verified_execution=verified_execution,
     )
+    if verified_execution is not None:
+        try:
+            after = verify_execution(args.conformance_profile, args.conformance_cli)
+            if after != verified_execution:
+                raise ValueError("vendor execution identity changed during the run")
+        except (OSError, ValueError) as exc:
+            report["success"] = False
+            report["executionIdentityError"] = str(exc)
     if baseline_report is not None:
         report["regressionGate"] = _evaluate_regression_gate(
             report,

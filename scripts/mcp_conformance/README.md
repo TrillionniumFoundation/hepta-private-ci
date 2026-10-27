@@ -5,9 +5,12 @@ Context Protocol client conformance suite. It exercises the shipping legacy,
 intermediate `2025-11-25`, and modern `2026-07-28` protocols, localhost HTTP,
 stdio, OAuth, and additional transport and security regression fixtures.
 
-The official upstream suite is pinned to
+The historical scenario policy and baseline refer to
 `modelcontextprotocol/conformance@49103de6ed70804e940637bf3e9e29e4a3f54e64`.
-Use Node.js 22 and Python 3.10 or later.
+The installed vendor is c37 with two reviewed SDK 1.32 compatibility patches.
+These are separate execution profiles; see [CONFORMANCE_PROFILES.md](CONFORMANCE_PROFILES.md)
+for the verified vendor identity and baseline migration. Use Node.js 22 and
+Python 3.10 or later.
 
 ## Run the conformance gate
 
@@ -18,19 +21,21 @@ pnpm install --frozen-lockfile
 cargo build --locked --manifest-path codex-rs/Cargo.toml -p codex-cli --bin codex
 ```
 
-From a published Codex checkout, run:
+To run the historical pinned bootstrap and its original regression baseline:
 
 ```bash
 python3 scripts/mcp_conformance/run_codex_compliance.py \
   codex-rs/target/debug/codex \
-  --conformance-cli node_modules/@modelcontextprotocol/conformance/dist/index.js \
+  --conformance-profile legacy491 \
   --baseline-report scripts/mcp_conformance/regression-baseline-v1.json \
   --report /tmp/codex-mcp-conformance.json
 ```
 
 The positional executable can also point to an already built Codex binary.
-`--conformance-cli` selects the exact, lockfile-installed upstream JavaScript
-runner instead of downloading a moving version during a test.
+For the installed vendor, explicitly select `vendor-c37-sdk132-v1` and supply
+`--conformance-cli third_party/mcp-conformance/dist/index.js`. Its source,
+dependencies, and rebuilt output are checked before and after execution; it
+cannot use a historical baseline as an implicit cross-profile comparison.
 
 ## What the baseline means
 
@@ -57,6 +62,7 @@ the upstream suite again:
 ```bash
 python3 scripts/mcp_conformance/run_codex_compliance.py \
   /absolute/path/to/codex \
+  --conformance-profile legacy491 \
   --baseline-report /absolute/path/to/full-conformance-report.json \
   --extract-baseline /tmp/mcp-conformance-regression-baseline-v1.json
 ```
