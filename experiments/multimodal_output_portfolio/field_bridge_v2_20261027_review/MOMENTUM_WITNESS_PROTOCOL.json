@@ -1,0 +1,74 @@
+{
+  "alignment_diagnostic": "At common first future minibatch288, compute existing clipped training objective gradient by update(multiplier0); record global float64 dot(g,m), norms and cosine for both states before branches. No additional labels outside current training source.",
+  "branch_comparison": "Every action clones the complete plus/minus parent state independently; same future minibatches and stochastic marks. Hold0 still computes gradients but keeps parameters and momentum unchanged.",
+  "checkpoint_files": {
+    "17": {
+      "path": "17/upstream_r8_288_lr02.pt",
+      "sha256": "9fbf5c39adc694c4d2c5c9e1739898ded9ea98b10cc71507ce44c4bdc27e8414"
+    },
+    "29": {
+      "path": "29/upstream_r8_288_lr02.pt",
+      "sha256": "d7dc924f025973a8691814ea623f752568fa782a1561406a8b7086653b87e3e9"
+    },
+    "43": {
+      "path": "43/upstream_r8_288_lr02.pt",
+      "sha256": "492dbf5b14a5f693bab13c83ae3c7de635ab6b19133b2ec7747bfe734789e1ca"
+    }
+  },
+  "clean_probe": "Existing PILOT_PROTOCOL clean_probe, training only, for unchanged field coordinate measurement",
+  "common_minibatch_seed_formula": "seed*100003+600000+901*1009+microstep",
+  "conditions": "Existing PILOT_PROTOCOL conditions[microstep%4]",
+  "created_utc": "2026-10-27T08:33:25.296624+00:00",
+  "exclusions": "No test/retention rows, audit observer, predictor audit labels, fitted-controller alteration, or gating threshold changes",
+  "field_observation": "Existing observe_field first7 plus complete19 coordinates, then existing margin_features six scalars, for full25vector",
+  "future_schedule_id": 901,
+  "initial_parameter_state": "Restore all local adapter tensors and complete SGD state from each selected pilot checkpoint; validate local, optimizer, recipe and base-file identities",
+  "interpretation": "m sign flip is a constructed valid SGD state; reachability by registered training trajectories is NOT claimed. Equality of reduced state with differing full next state disproves global full-state closure for this observation map on the constructed domain; hard-value/action differences are reported even if zero. No population predictive-failure or empirical lower-bound claim.",
+  "learning_actions": [
+    0.0,
+    0.25,
+    1.0,
+    2.0
+  ],
+  "learning_time": 288,
+  "macro_steps": 8,
+  "media": "For every state/action, generate full response batches with fixed_output and write/read actual PNG and UTF8 for first2cases in each of4conditions; compare bytes and reward score to tensor-equivalent record",
+  "microsteps": [
+    288,
+    289,
+    290,
+    291,
+    292,
+    293,
+    294,
+    295
+  ],
+  "momentum_intervention": "Clone complete state; multiply every existing momentum_buffer by -1 without changing parameters, other optimizer state, param_groups, or time",
+  "noise_seed_formula": "107+microstep",
+  "outcomes": [
+    "exact full25/H7 equality before intervention continuations",
+    "initial same parameter hash and different optimizer hash",
+    "each action final parameter/optimizer hashes and all response hardvalues/outputhashes",
+    "best learning action under declared response mean, first index tie break",
+    "gradient-momentum dot/cosine sign response",
+    "post-branch full25 state if inexpensive"
+  ],
+  "pilot_result_sha256": "11e3b0a53d6e99bbff7a0ddd6fab3b109a8fe19e1dbec8fcc8f43b759b69f164",
+  "purpose": "Constructed optimizer information-loss witness; same theta, momentum m versus -m, no scientific trajectory protocol change",
+  "response_panel": "Existing PILOT_PROTOCOL response_panel, training only; same panel/noise across both states and all branches",
+  "schema": "hepta.field-bridge-v2.momentum-state-witness.v1",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "selected_recipe": "upstream_r8_288_lr02",
+  "sources": {
+    "BANK_PROTOCOL.json": "1ad0bc5f7ef07564ac1383a72ed82e778f6123f780665f228b21092104080e02",
+    "PILOT_PROTOCOL.json": "1ed65b7b3e3fffd637666049922b9f07c0ce2fbb3248d3357a27707a82ced241",
+    "field_bank.py": "33700d9a2b43bc96af1aa8a788cadf56a35346466d2486ff04032bcacad043c5",
+    "learning.py": "894fea3f87ddabaf1c5a98ff6db78da069aa2e610e7eaf31b3065e27dd985e93"
+  },
+  "state_preservation": "Save both initial full states and all24 complete branch states plus raw per-example hard values/hashes",
+  "training_source_domain": "Only existing gradient_corpus first6000 training sources"
+}
