@@ -49,6 +49,11 @@ API. Activation retains its original 500 ms admission deadline. Cancelled work
 releases admission while the existing stream and activation fencing rules
 remain mandatory; blocking consumer jobs retain their own original File custody.
 
+The independent cognitive checkpoint transport uses the same synchronous slot
+custody for its original stream. Its complete frame, schema, request identity,
+Root lifetime and original deadline checks precede restoration. This changes no
+whole-owner checkpoint transaction guard, Current barrier or write permission.
+
 ## Development and qualification
 
 Use `just fmt`, scoped `just fix -p codex-hepta-agentd`, and `just test`; do not
