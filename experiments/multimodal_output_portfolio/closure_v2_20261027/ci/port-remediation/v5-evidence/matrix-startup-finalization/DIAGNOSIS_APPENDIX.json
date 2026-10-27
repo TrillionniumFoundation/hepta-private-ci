@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.matrix-startup-finalization.followup.v1",
+  "time": "2026-10-27T15:52:21.308123+00:00",
+  "status": "v5_source_prepared_not_runtime_qualified",
+  "all_blockers_closed": false,
+  "migration_qualified": false,
+  "parent_diagnosis": "../../v4-evidence/matrix-reopen-diagnosis/DIAGNOSIS.json",
+  "parent_diagnosis_sha256": "b4bec4e2f220075dd5200025020236c7be0fa08387dd329a8bef030c780a5e30",
+  "preservation": "All v1-v4 records, v4 source candidates and diagnosis001 remain historical records; this follow-up adds new files only.",
+  "concrete_gap": "An authentication await can finish within its deadline, after which synchronous session fsync, identity verification or event-cache setup can cross the shared startup deadline before success returns.",
+  "fix": "All three startup success paths use finish_startup. It checks the original deadline after any session write and before identity/cache finalization, then checks again after finalization before reporting success.",
+  "state_semantics": "Expiry returns Initialization and does not erase an already completed durable session/store write. The added test reads back the exact privately persisted session after rejection.",
+  "scope": [
+    "The single original20s startup deadline remains shared through fresh-client fallback.",
+    "Each request retains the original5s limit, clipped by startup budget.",
+    "Build, authentication and finalization all reject observed expiry.",
+    "Four new behavioral deadline tests total; the new finalization test opens encrypted stores through the original strong human-passphrase API.",
+    "No dependencies, original fixture/crypto/queue assertions, vendor bytes, fingerprint counts or allowed source path membership are weakened."
+  ],
+  "limitations": [
+    "No v5 compilation or runtime qualification pass is implied by source review or rustfmt.",
+    "Tokio timers are cooperative. These checks reject observed expiry; they cannot preempt synchronous operations or promise a hard physical wall-clock limit.",
+    "The actual exact-source CI build, SDK tests and independent original0.18fixture reopen remain required."
+  ],
+  "candidate_review": "FINALIZATION_DEADLINE_REVIEW.json",
+  "candidate_patch": "FINALIZATION_DEADLINE_FORMATTED.patch"
+}

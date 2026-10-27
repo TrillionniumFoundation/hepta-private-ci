@@ -1,6 +1,6 @@
 {
   "schema": "hepta.ndu-closure-ledger.v2",
-  "updated_utc": "2026-10-27T13:07:38.590252+00:00",
+  "updated_utc": "2026-10-27T15:58:12.743639+00:00",
   "all_blockers_closed": false,
   "production_native_authority": "DENY_ALL",
   "qualification_policy": "Observed failures remain failures. Passing mechanics, source checks or isolated dependencies do not substitute for the stated outcome gates. No postqualification retuning is relabeled as preregistered evidence.",
@@ -104,9 +104,9 @@
       "priority": "P0",
       "goal": "Close observed dependency and build failures without weakening policy or dropping features.",
       "mechanism": "active_remediation",
-      "qualification": "v2_real_consumers_partial_pass_v3_repairs_await_new_remote_run",
+      "qualification": "v2_actual_failures_diagnosed_v5_source_reviewed_new_remote_qualification_pending",
       "blocking_for_general_claim": true,
-      "observed": "The v2 producer at 3a779a6e52138d63056fdb00e1e477c8db6517f8 resolved all 52 expected packages, verified 1971 vendor files, generated and checked both Cargo/Bazel locks, and passed independent complete candidate-tree replay. The fixed original Matrix 0.18 source executed its actual state-preparation test (1 pass, no skip/retry), retaining database sidecars and actual ELF identity; new-version reopen remains pending. Real v2 workspace tests passed YAML 825/825, AWS first-party 209/209 and execpolicy 34/34. Observed failures remain preserved: keyring had zero tests; upstream AWS stopped before execution on a misspelled original ignored name; Bazel rejected direct deleted-package labels and an obsolete zstd patch; the separate pinned full-scope cargo-deny host diagnostic found one unapproved libbz2-rs-sys license while advisories/bans/sources passed. V3 adds a real first-party keyring integration test, corrects strict AWS inventory spelling without changing 245/244/1 coverage, addresses production Bazel aliases, and versions the zstd patch without changing the active old patch. Independent source replay confirms the same 29-path scope with only the candidate MODULE patch reference changed from v2. 54 unique Python/Git/socket regressions passed across preserved attempts after one fixture correction; actual final just fmt passed. Native ARM64 Synapse and post-qualification scoped Clippy are now wired for actual remote execution. No new-version full gate, native business qualification, dependency activation or normal-platform success is inferred.",
+      "observed": "The v2 producer at 3a779a6e52138d63056fdb00e1e477c8db6517f8 resolved all 52 expected packages, verified 1971 vendor files, generated and checked both Cargo/Bazel locks, and passed independent complete candidate-tree replay. The fixed original Matrix 0.18 source executed its actual state-preparation test (1 pass, no skip/retry), retaining database sidecars and actual ELF identity; new-version reopen remains pending. Real v2 workspace tests passed YAML 825/825, AWS first-party 209/209 and execpolicy 34/34. Observed failures remain preserved: keyring had zero tests; upstream AWS stopped before execution on a misspelled original ignored name; Bazel rejected direct deleted-package labels and an obsolete zstd patch; the separate pinned full-scope cargo-deny host diagnostic found one unapproved libbz2-rs-sys license while advisories/bans/sources passed. V3 adds a real first-party keyring integration test, corrects strict AWS inventory spelling without changing 245/244/1 coverage, addresses production Bazel aliases, and versions the zstd patch without changing the active old patch. Independent source replay confirms the same 29-path scope with only the candidate MODULE patch reference changed from v2. 54 unique Python/Git/socket regressions passed across preserved attempts after one fixture correction; actual final just fmt passed. Native ARM64 Synapse and post-qualification scoped Clippy are now wired for actual remote execution. No new-version full gate, native business qualification, dependency activation or normal-platform success is inferred. Completed v2 Matrix consumer evidence is now retained: protocol 12/12, store 36/36 and matrixd 31/31 passed; SDK package compilation failed on the removed writable bundled_latest_thread_event field, and actual old-state reopen failed Initialization. Reuse of the exact sealed consumer ELF localized the current failure to the 5-second SDK build timeout before session loading; independent custody inspection also found private fixture modes changed from 0600 to 0644 during artifact transfer. V4 preserves both failures and repairs gap-fill metadata tests, a producer-bound complete permission manifest, and one shared 20-second cooperative startup deadline with unchanged 5-second request budgets and full-strength encryption. V5 adds success-finalization deadline checks after persistence and around identity/cache setup, retaining already completed writes. The four new Rust regressions and real new-source migration have not executed. Twelve affected fixture/layout Python cases passed before final formatting. Root independently read and rehashed all 31 candidate blobs and 1971 vendor files; 52 package constraints and original AWS 245/244/1 coverage remain. Actual final just fmt passed with Python AST and six scientific source hashes unchanged. The completed ordinary v2 workflow still failed codespell, cargo-deny and Windows Bazel; architecture alone passed.",
       "evidence": [
         "ci/TLS_POST_UPDATE_SCAN.json",
         "ci/ZIP_I18N_QUALIFICATION_001.json",
@@ -134,9 +134,20 @@
         "ci/port-remediation/evidence/V2_REMOTE_CONSUMERS_VERIFICATION.json",
         "ci/zstd-remediation/HANDOFF.json",
         "ci/linux-synapse-qualification/HANDOFF.json",
-        "ci/post-qualification-fix/HANDOFF_V3.json"
+        "ci/post-qualification-fix/HANDOFF_V3.json",
+        "ci/port-remediation/RECIPE.v4.json",
+        "ci/port-remediation/combined-source-v4.patch",
+        "ci/port-remediation/RECIPE.v5.json",
+        "ci/port-remediation/combined-source-v5.patch",
+        "ci/port-remediation/v4-evidence/SDK_COMPLETION.json",
+        "ci/port-remediation/v4-evidence/remote-v2-matrix/RESULT.json",
+        "ci/port-remediation/v4-evidence/matrix-reopen-diagnosis/DIAGNOSIS.json",
+        "ci/port-remediation/v5-evidence/SDK_COMPLETION.json",
+        "ci/port-remediation/v5-evidence/ROOT_AUDIT_V5.json",
+        "ci/port-remediation/v5-evidence/ROOT_FINAL_REVIEW.json",
+        "ci/port-remediation/v5-evidence/REMOTE_3A779A6_COMPLETED.json"
       ],
-      "next_required": "Run the new exact-head v3 producer and unchanged original consumer gates, complete actual old Matrix state reopen and native ARM64 Synapse. Review scoped Clippy output separately from its before-source qualification. Activate coherent locks/source/toolchains only after the applicable gates and approved license-policy decision; then obtain normal platform CI on the activated source."
+      "next_required": "Run exact new v5 producer and all original consumer gates, actual old Matrix state reopen and native ARM64 Synapse. Review scoped Clippy output separately from before-source qualification. Diagnose ordinary codespell and Windows Bazel failures from actual logs. Activate coherent dependencies, locks and toolchains only after applicable gates and the exact license-policy decision; then obtain normal-platform CI on activated source."
     },
     {
       "id": "ENG-license-policy",

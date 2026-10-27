@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.port-v5.sdk-completion.v1",
+  "time": "2026-10-27T15:53:59.117237+00:00",
+  "status": "source_only_successor_sealed_pending_new_ci_qualification",
+  "default_recipe": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v5.json",
+  "recipe": {
+    "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v5.json",
+    "bytes": 336793,
+    "sha256": "4b13ea7f07ba51f651fb6803334d103653d832a901ad070ea97b181e94d1853f"
+  },
+  "patch": {
+    "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/combined-source-v5.patch",
+    "bytes": 85302,
+    "sha256": "b42159a7ae3b5e0a421090ded7ae72a52bd4bf9b2215498c862c8a8ac47eb6e5"
+  },
+  "candidate_tree": "aac87a12248966da88cec314014c2c8a94ec41af",
+  "delta_from_v4": [
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+    "codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs"
+  ],
+  "source_review": [
+    "Only final success routing and finish_startup added to sdk.rs; the v4 source beginning at build_until through the original EOF is byte-identical.",
+    "All three success routes call finish_startup after any session persistence and before successful return.",
+    "The helper checks the original startup deadline before and after identity/cache finalization.",
+    "New regression preserves an actually written private session after expired finalization; all prior deadline cases and gap-fill assertions remain."
+  ],
+  "constraints": {
+    "allowed_paths": 31,
+    "expected_packages": 52,
+    "vendor_files": 1971,
+    "aws_total": 245,
+    "aws_executed": 244,
+    "aws_ignored": 1
+  },
+  "unchanged": {
+    "v4_recipe_sha256": "5bd5cd193ba9824c2010157be58bc775c984fd8211d77c6e8df0d4c1b275e2d5",
+    "v4_patch_sha256": "015f55fb042a049923156ce028dfb81cb734fabeb9cbabf691280dcf9a0b3fa8",
+    "fixture_layout_helper_sha256": "b316327be4316a4d8d97cd76a3fcc7d5c68cdc316e71343ad14d46fa5f4fc8ac",
+    "remaining_v4_candidate_paths": 29,
+    "earlier_fixture_layout_python_pass_count": 12
+  },
+  "validation_limits": [
+    "New Rust source and four deadline cases have not been compiled or executed locally.",
+    "Actual newly built 0.19 old-fixture reopen remains a required CI gate.",
+    "Cooperative deadlines reject observed expired completion; they cannot preempt synchronous work or undo completed persistence.",
+    "Pinned GitHub artifact uploader filters empty directories; all seven observed fixture directories are ancestors of the nine producer-bound files. Old v1 did not record its complete original directory set."
+  ],
+  "new_test_execution": false,
+  "common_change_since_fixture_tests": "Only the default recipe literal changed from v3 to v5; fixture/helper/test sources were not changed or rerun."
+}

@@ -1,0 +1,129 @@
+--- a/codex-rs/hepta-matrix-sdk/src/sdk.rs
++++ b/codex-rs/hepta-matrix-sdk/src/sdk.rs
+@@ -73,8 +73,7 @@
+         )
+         .await?;
+         persist_session(sidecar.paths.session(), &session)?;
+-        sidecar.verify_authenticated_identity()?;
+-        sidecar.enable_event_cache()?;
++        sidecar.finish_startup(startup_deadline)?;
+         Ok(sidecar)
+     }
+ 
+@@ -122,8 +121,7 @@
+         let session = MatrixSession::from(&response);
+         verify_session_identity(&sidecar.config, &session)?;
+         persist_session(sidecar.paths.session(), &session)?;
+-        sidecar.verify_authenticated_identity()?;
+-        sidecar.enable_event_cache()?;
++        sidecar.finish_startup(startup_deadline)?;
+         Ok((sidecar, session))
+     }
+ 
+@@ -151,8 +149,7 @@
+             )
+             .await;
+             if restore.is_ok() {
+-                sidecar.verify_authenticated_identity()?;
+-                sidecar.enable_event_cache()?;
++                sidecar.finish_startup(startup_deadline)?;
+                 return Ok((sidecar, session));
+             }
+         }
+@@ -167,6 +164,21 @@
+             startup_deadline,
+         )
+         .await
++    }
++
++    fn finish_startup(&self, startup_deadline: tokio::time::Instant) -> Result<(), MatrixSdkError> {
++        // Local persistence can finish after its deadline. Reject an expired
++        // client before event-cache activation, without pretending that an
++        // already completed session/store write has been rolled back.
++        if tokio::time::Instant::now() >= startup_deadline {
++            return Err(MatrixSdkError::Initialization);
++        }
++        self.verify_authenticated_identity()?;
++        self.enable_event_cache()?;
++        if tokio::time::Instant::now() >= startup_deadline {
++            return Err(MatrixSdkError::Initialization);
++        }
++        Ok(())
+     }
+ 
+     async fn build_until(
+--- a/codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs
++++ b/codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs
+@@ -9,15 +9,21 @@
+ use codex_hepta_matrix_protocol::MatrixHomeserverUrl;
+ use codex_hepta_matrix_protocol::MatrixRoomId;
+ use codex_hepta_matrix_protocol::MatrixUserId;
++use codex_hepta_paths::HeptaAgentLayout;
+ use codex_hepta_paths::HeptaFleetRoot;
++use matrix_sdk::SessionMeta;
++use matrix_sdk::SessionTokens;
+ use pretty_assertions::assert_eq;
+ 
++use super::MATRIX_STARTUP_TIMEOUT;
+ use super::MatrixSdkClient;
+ use super::MatrixSdkError;
++use super::MatrixSession;
+ use super::MatrixSidecarConfig;
++use super::load_session;
++use super::persist_session;
+ 
+-#[tokio::test]
+-async fn fresh_login_cannot_renew_expired_startup_budget() -> Result<(), Box<dyn Error>> {
++fn fixture() -> Result<(tempfile::TempDir, HeptaAgentLayout, MatrixSidecarConfig), Box<dyn Error>> {
+     let root = tempfile::tempdir()?;
+     let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
+     let layout = HeptaFleetRoot::parse(root.path().canonicalize()?)?
+@@ -40,6 +46,12 @@
+         sync_timeout: Duration::from_secs(1),
+     };
+     config.validate(&layout)?;
++    Ok((root, layout, config))
++}
++
++#[tokio::test]
++async fn fresh_login_cannot_renew_expired_startup_budget() -> Result<(), Box<dyn Error>> {
++    let (_root, layout, config) = fixture()?;
+     let result = MatrixSdkClient::login_password_until(
+         &layout,
+         config,
+@@ -81,3 +93,35 @@
+     assert!(polled.get());
+     assert_eq!(result, Err(MatrixSdkError::Authentication));
+ }
++
++#[tokio::test]
++async fn expired_finalization_rejects_success_without_erasing_a_written_session()
++-> Result<(), Box<dyn Error>> {
++    let (_root, layout, config) = fixture()?;
++    let sidecar = MatrixSdkClient::build_until(
++        &layout,
++        config,
++        Some("full-strength human passphrase"),
++        tokio::time::Instant::now() + MATRIX_STARTUP_TIMEOUT,
++    )
++    .await?;
++    let session = MatrixSession {
++        meta: SessionMeta {
++            user_id: "@deadline:example.test".try_into()?,
++            device_id: "DEADLINE".into(),
++        },
++        tokens: SessionTokens {
++            access_token: "local-deadline-test-access-token".to_string(),
++            refresh_token: Some("local-deadline-test-refresh-token".to_string()),
++        },
++    };
++    let startup_deadline = tokio::time::Instant::now();
++    persist_session(sidecar.paths.session(), &session)?;
++    assert_eq!(
++        sidecar.finish_startup(startup_deadline),
++        Err(MatrixSdkError::Initialization)
++    );
++    assert_eq!(load_session(sidecar.paths.session())?, Some(session));
++    assert!(sidecar.client.user_id().is_none());
++    Ok(())
++}

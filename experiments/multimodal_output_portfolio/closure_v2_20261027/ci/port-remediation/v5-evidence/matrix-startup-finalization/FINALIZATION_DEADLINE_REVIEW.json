@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.matrix-startup-finalization.candidate.v1",
+  "status": "source_candidate_not_compiled_or_qualified",
+  "previous_proposal": "startup-budget-proposal-001",
+  "base": "sealed v4 source, preserved unchanged",
+  "rustfmt_command": [
+    "/workspace/scratch/95988d8d3ab1/ndu-rust196-format-tools/installed/bin/rustfmt",
+    "--edition",
+    "2024",
+    "--config-path",
+    "/workspace/scratch/95988d8d3ab1/hepta-private-ci/codex-rs/rustfmt.toml",
+    "/workspace/scratch/95988d8d3ab1/ndu-matrix-reopen-diagnosis-v4-001/startup-budget-proposal-002/proposed-formatted/codex-rs/hepta-matrix-sdk/src/sdk.rs"
+  ],
+  "rustfmt_exit_code": 0,
+  "before": {
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs": {
+      "bytes": 28070,
+      "sha256": "8f6ed35c3a360da6893758c5bb7f357f5dd3b880e8008bd84c9983f1c61078d5",
+      "git_blob": "4c143c27959a044d9777da0f4bb2e4355c651c5b"
+    },
+    "codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs": {
+      "bytes": 3181,
+      "sha256": "499c164c841a64c8f9ba6e7c917fb3e7ac5cc713b159cf2558b70512dc1f1849",
+      "git_blob": "32e57e8105560f72d1ac56511a1336e41306470a"
+    }
+  },
+  "after": {
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs": {
+      "bytes": 28633,
+      "sha256": "97ffaf520931ff71ace0b3db0e4f24eaee17577e83e69333a7d699bfac46be24",
+      "git_blob": "9e236eb200e43ee906622e00c0bbf5752e9d8249"
+    },
+    "codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs": {
+      "bytes": 4706,
+      "sha256": "0fb04da4d28ac84ec52bd338fe466a5593791df3539b9847ab09c9d8d731645a",
+      "git_blob": "a3db16eff4f8eba2c9aae4c0fa7bf6e0b0310fe2"
+    }
+  },
+  "patch": {
+    "bytes": 4639,
+    "sha256": "e459d033c25b9555ac3d76a4cbe0f8d9825e84c11c6a570070db8f2d4233cf73",
+    "git_blob": "eee965ca8da2a0d7741ec6bce7475ac9addff090"
+  },
+  "changed_behavior": [
+    "All three successful startup routes call finish_startup after any session persistence and before reporting success.",
+    "finish_startup checks the original shared deadline before identity/cache finalization and again after it.",
+    "An expired completion returns Initialization; already completed session/store writes remain durable and are not described as rolled back."
+  ],
+  "tests": [
+    "Existing three startup deadline cases retained.",
+    "New actual private session persistence then expired finalization case requires Initialization, exact retained session, and no SDK authentication activation.",
+    "Test setup opens encrypted stores with the full-strength human-passphrase API. No KDF or fixture weakening."
+  ],
+  "scope_limits": [
+    "This is a source-only v5 successor candidate. Existing v4/001 records are not modified.",
+    "No Rust compilation/test pass is claimed until the actual candidate CI executes.",
+    "Timers remain cooperative; final checks reject observed expiry but cannot preempt local work or eliminate scheduling delays."
+  ],
+  "unchanged": [
+    "startup budget20s and each request5s",
+    "single original Instant across fallback",
+    "all vendor bytes and fingerprints1971",
+    "all expected packages52",
+    "old migration fixture and all crypto/queue assertions"
+  ]
+}
