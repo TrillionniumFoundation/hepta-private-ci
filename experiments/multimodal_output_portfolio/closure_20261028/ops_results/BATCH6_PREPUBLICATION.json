@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.batch6.prepublication.v1",
+  "expected_parent": "1bdc0098164540c78e4a42fff70238e1632f958f",
+  "created_commit_objects": [
+    {
+      "name": "dependency",
+      "sha": "d0dab53f08c24aa880fc15b660d8344cdd91d8e2",
+      "tree": "44b8252c4cb6ed1593dd9176cfcafcb5be63bc0f"
+    },
+    {
+      "name": "platform",
+      "sha": "e5f7857e125d82378c1580e35602464ce63f0e45",
+      "tree": "ba8637dba37347f7d176562922d67f04a89b88f1"
+    },
+    {
+      "name": "natural",
+      "sha": "26c499c98e94c6a28797f0d1ced447df1ed5a6d2",
+      "tree": "849d9d48b2042adf9f72e4a42298b9cd7a07b8c9"
+    },
+    {
+      "name": "lifecycle",
+      "sha": "4082a354bd535c43570fd010c7dde18b1cf46d50",
+      "tree": "16fe9a4e68b35996f3854440c5b19aaba22491ae"
+    },
+    {
+      "name": "window",
+      "sha": "88b80e8d76e65aa7706ace4cee455f2b3fd336f7",
+      "tree": "0f6228db6cf44d05c4a95f3203e8f81641b2d159"
+    }
+  ],
+  "groups": [
+    {
+      "name": "dependency",
+      "files": 57,
+      "bytes": 2589590
+    },
+    {
+      "name": "platform",
+      "files": 50,
+      "bytes": 538125
+    },
+    {
+      "name": "natural",
+      "files": 27,
+      "bytes": 961883
+    },
+    {
+      "name": "lifecycle",
+      "files": 22,
+      "bytes": 432386
+    },
+    {
+      "name": "window",
+      "files": 6,
+      "bytes": 155518
+    },
+    {
+      "name": "acl_observation",
+      "files": 9,
+      "bytes": 53616
+    },
+    {
+      "name": "status",
+      "files": 5,
+      "bytes": 45002
+    }
+  ],
+  "source_plan_sha256": "81ca455b2d74f69409d2bafded9fdb283886845b635ac893b79eba37b86d6a8f",
+  "deleted_paths": [
+    "experiments/multimodal_output_portfolio/closure_20261028/fullpath_results/QUALIFICATION_STATUS.json",
+    ".github/workflows/ndu-object-transfer.yml",
+    "scripts/ndu_reviewed_object_transfer.py",
+    "scripts/test_ndu_reviewed_object_transfer.py",
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/object-transfer/payload-05-00.b64",
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/object-transfer/payload-04-00.b64",
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/object-transfer/MANIFEST.json",
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/object-transfer/payload-03-00.b64",
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/object-transfer/payload-02-03.b64",
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/object-transfer/payload-02-02.b64",
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/object-transfer/payload-02-01.b64",
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/object-transfer/payload-02-00.b64",
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/object-transfer/payload-01-00.b64",
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/object-transfer/payload-00-02.b64",
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/object-transfer/payload-00-01.b64",
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/object-transfer/payload-00-00.b64"
+  ],
+  "transport_branch_retained": "research/ndu-object-transfer-20261028",
+  "all_blockers_closed": false,
+  "promotion_authorized": false,
+  "qualification_scope": "Only exact evidence already reported. New integrated-head native CI remains pending. Original failed efficacy and observer gates are preserved."
+}

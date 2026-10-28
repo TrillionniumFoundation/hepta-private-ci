@@ -1,0 +1,69 @@
+{
+  "created_at_unix": 1793183629.0181277,
+  "limitations": [
+    "This review inspected the five tests but did not rerun them or the two artifact-lock dry runs; root separately reported those passing.",
+    "The four local encoded payloads were independently decoded with an output bound and matched the manifest hashes and current repository payloads.",
+    "The GitHub contents:write token has broader capability than blob creation; the narrower behavior is enforced by this reviewed code, not a fine-grained blob-only permission.",
+    "Per-encoded-input and total-object-count read bounds are not generic in regular_bytes; the reviewed manifest is fixed to six finite objects and nine small local encoded parts. This is not a general hostile-manifest sandbox.",
+    "No authenticated publish, producer artifact download, token access or branch update was performed by this review."
+  ],
+  "local_gzip_payloads_independently_verified": [
+    {
+      "bytes": 325069,
+      "encoded_parts": 3,
+      "git_blob_sha": "29a4614976ba93f6df0af6ae151cf91a1f65bd5a",
+      "matches_local_repository_payload": true,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/data_source_usage_register.json",
+      "sha256": "59b91f554034db64086bebc7872aa89ca961c7095429dca8a29c06392bb02fad"
+    },
+    {
+      "bytes": 89339,
+      "encoded_parts": 1,
+      "git_blob_sha": "4244c2f8064ba2c3afb6fba62212548d9ea249b4",
+      "matches_local_repository_payload": true,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/natural_results/OBSERVER_V3_DEVELOPMENT.json",
+      "sha256": "cedc4d07d09af4f382bc8f1513e3c566320b9af4d9ef2bfb5edd4e2ec5da9e97"
+    },
+    {
+      "bytes": 334931,
+      "encoded_parts": 4,
+      "git_blob_sha": "dfc2f20e00b6c6a8f8bd2633f1d6e0e477cfff45",
+      "matches_local_repository_payload": true,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/natural_results/V3_SOURCE_AUDIT_002.json",
+      "sha256": "acf35e107be9f1cba1e03630491e603499f1905688432a5323b3a6a0c4299326"
+    },
+    {
+      "bytes": 71455,
+      "encoded_parts": 1,
+      "git_blob_sha": "54c58c7abd6028b2b5645042ef4aac9ee9d38ac7",
+      "matches_local_repository_payload": true,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/CI_832_SYNAPSE_DIAGNOSTICS_INVENTORY.json",
+      "sha256": "14d4c07df22c04e27431002c38375577b310d1a9f23804a8aad4d5c9c9ea3502"
+    }
+  ],
+  "manifest_object_count": 6,
+  "manifest_total_raw_bytes": 2963742,
+  "network_requests_made_by_this_review": 0,
+  "schema": "hepta.independent.reviewed-object-transfer-review.v1",
+  "source_files_changed": false,
+  "source_sha256": {
+    ".github/workflows/ndu-object-transfer.yml": "d8dc170752d8ebbee94fb6077a7648fce34107ba43dfda08167a40b35641bd34",
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/object-transfer/MANIFEST.json": "162ec0b4c508fbf67d53715100ba6839a0295a44f528a7526f08bf30d21d8395",
+    "scripts/ndu_reviewed_object_transfer.py": "3429487869933971edbdb2fd6d7accc6dfe071f1abffcf3de505c814b2fa0173",
+    "scripts/test_ndu_reviewed_object_transfer.py": "e49c74a8603b9c8e827413377b19884141e6aadf2f5aedfff1a188ae3565671b"
+  },
+  "static_boundary_review": {
+    "all_local_payload_validation_precedes_token_read_and_publish": true,
+    "authenticated_redirects_refused": true,
+    "checkout_credentials_not_persisted": true,
+    "commit_tree_or_ref_writes_in_helper": false,
+    "fixed_same_repository_and_pr4155_and_same_repository_head": true,
+    "http_method": "POST",
+    "only_network_write_target": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs",
+    "payload_execution_in_helper": false,
+    "producer_run_artifact_result_identity_pinned": true,
+    "qualification_semantics_changed": false,
+    "token_headers_and_response_body_not_logged_by_helper": true
+  },
+  "status": "PASS_FOR_EXACT_REVIEWED_SNAPSHOT"
+}

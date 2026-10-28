@@ -74,7 +74,7 @@ physical CPU tail certificate.
 
 See [the method](fullpath_METHOD.md),
 [the complete result](fullpath_results/DEVELOPMENT_RESULT.json),
-[the qualification refusal](fullpath_results/QUALIFICATION_STATUS.json) and
+[the qualification refusal](fullpath_results/SOURCE_REFUSAL.md) and
 [the independent gradient oracle](fullpath_results/INDEPENDENT_GRADIENT_ORACLE.json).
 The numerical oracle covers the declared conditional Gaussian/categorical law;
 it does not prove convergence to a global neural optimum.
@@ -97,7 +97,19 @@ See [the implementation](control_IMPLEMENTATION.md),
 [the permanent source register](control_results/SOURCE_USAGE_REGISTER.json) and
 [the interpretation](control_results/SELECTED_MOMENT_INTERPRETATION.json).
 
-## Natural task currently being executed
+## Natural task and completed observer result
+
+All 18 registered observer candidates and 3,072 MLP updates completed. On the
+independent frozen 64-source calibration, action accuracy is **21/64 (32.8125%)**
+and sound accuracy is **30/64 (46.875%)**. Both fail the unchanged 60 percent gate;
+sound also trails its 37/64 majority baseline. Neither calibration label set
+contains an unseen training class. Independent arithmetic and source auditing
+confirms the negative result. Actual judge/study entrypoints refuse to proceed.
+Warmstart003, actual NDU/mean generation training, policy calibration and final
+qualification have zero new executions in this study record. See
+[the natural report](natural_v3_report.md) and
+[the retained result](natural_results/NATURAL_V3_RESULT.json).
+
 
 This is bounded missing-segment reconstruction plus official annotation-template
 caption generation. It does not establish open-domain speech/video generation,
@@ -121,8 +133,8 @@ observer thresholds remain fixed. Actual training coverage is 54/63 action and
 14/17 sound classes for the generator, 55/63 and 14/17 for the observer; the full
 63/17 ontology remains in the task.
 
-Warmstart 003 replays the complete 2,048-update plan from its registered initial
-seed. The interrupted 002 checkpoint lacks Adam/RNG recovery state and cannot be
+Warmstart 003 remains blocked; its registered plan requires replaying all 2,048
+updates from the initial seed. The interrupted 002 checkpoint lacks Adam/RNG recovery state and cannot be
 represented as an exact optimizer resume. Sequential microbatches preserve the
 specified batch size and update count; their measured finite-precision difference
 from a dense batch is recorded. Full recovery snapshots include model, optimizer
@@ -144,33 +156,52 @@ retained as a failed result.
 
 ## Runtime and CI evidence
 
-The published repair head `943768d41de711ef888d8c21c1466aa783885307` contains the
-v7 dependency recipe/vendor, supported-platform qualification contracts, real
-Windows directory handles and cancellation-safe terminal delivery. The v7
-candidate generated both locks using the actual repository commands and passed
-the unchanged dependency policy. Native integration is still required; candidate
-policy success does not mean the live branch lockfile or complete CI is green.
-The independent AWS suite executed 244 tests successfully, with one original
-upstream ignored test. The old Matrix 0.18 fixture was actually reopened by
-0.19.1. YAML, AWS workspace and Matrix job failures all reached the same core
-API compile error, fixed in this follow-up. The arm64 tool-probe startup remains
-unexplained until the new bounded complete diagnostic exports are collected.
+The exact generated v7 dependency payload is integrated in this publication:
+35 source/lock files, including both resolver-generated locks and Rust 1.96.
+The original dependency policy files are unchanged. The integrated source mode
+binds every payload and manifest to committed HEAD blob identities and Git modes,
+rejects index-only drift, and requires an empty candidate delta after the real
+Cargo and Bazel checks. Its 81 controlled behavior tests and seven independent
+Git probes pass; these do not replace actual native CI.
 
-This follow-up also preserves the original ownerless event-delivery API and
-repairs a moved-digest test compile failure. Bao lease persistence now fences all
-reads and mutations after a rename whose directory synchronization cannot be
-confirmed; an explicit reopen is required. Local Rust test/fix commands stop
-before compilation because this sparse checkout lacks a workspace manifest.
-Exact-head CI must validate the native changes; local formatting is not a native
-test result.
+The prior candidate on `832b2a382a155bc840df0d255b2c183a43b0d219` finished with
+ten successful jobs and one failed native Synapse preparation job. Complete small
+diagnostics identify the actual missing image `CARGO_HOME`; the one-line repair
+preserves the restricted environment. All 21 local preparation boundary tests
+pass. New-head resolver, policy, migrations, consumers and native Synapse still
+require actual qualification.
 
-Windows NTFS observation and the independent platform review are under
-`ops_results/`. Unsupported Unix durable-owner behavior is tested by real refusal
-before admission/socket publication on other platforms. The dedicated writer
-qualification target is explicitly limited to supported platforms, so a zero-test
-filter cannot stand in for qualification. Directory `sync_all` remains real and
-its errors propagate; no power-failure durability claim is inferred from an API
-probe.
+Matrix startup now uses a shared 20-second preset across construction and login,
+with at most five seconds for the authentication future. This is not a proved
+per-HTTP-request bound, is not derived from every custom supervisor health
+window, and cannot preempt a synchronous KDF poll. The four deadline tests cover
+helper boundaries and one local build, not the entire failed-restore/fresh-login
+fallback or native cold start. Those qualification limits remain explicit.
+
+Windows repairs preserve production ownership and sandbox checks. The actual
+setup and command-runner executables are staged with the test binary and resolved
+through the existing Bazel runfiles launcher. Directory synchronization retains
+real error propagation. Unsupported secure-owner/signature paths receive exact
+no-mutation refusal tests. Completed restart counts are recovered from the same
+canonical durable journal read. Matrix owner control refuses unsupported peer
+identity before touching paths; Unix positive behavior remains tested.
+
+The documentation gate originally rejected a historical evidence filename. Its
+complete original bytes now have lossless gzip storage and an explicit identity
+mapping; frozen study manifests and results are unchanged. The unmodified
+development gate was actually rerun and passed. New core/TUI/app-server and
+Windows sandbox failures remain recorded for further repair. Goal continuation
+now waits outside its cleanup callback and then rechecks current goal and atomic
+admission; active file matching retains a progress timer after a lost callback.
+Ledger tests release exclusive ownership before independent byte reads, preserve
+acknowledged recovery, and test actual Windows lock refusal. These changes still
+require native execution. Main-turn metadata now carries the UUID from the same
+current-window snapshot. A new exact-source Windows diagnostic observes the
+production restricted token and ACL code, including real DELETE and DELETE_CHILD
+access. Its four integrity tests pass; native observations and any subsequent
+permission repair remain pending. A completed observation is never qualification.
+Canceled checks are not passes. Local Rust test/fix commands still stop before compilation because
+this sparse checkout lacks a workspace manifest.
 
 ## Regression and evidence custody
 
