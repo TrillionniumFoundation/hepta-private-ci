@@ -43,6 +43,7 @@ REQUIRED_FORMAL_RECEIPTS = (
     "legacy-network-process.json", "baseline-v7-native-held.json", "baseline-v8-native-held.json",
     "candidate-v9-native-held.json", "continual-learning.json", "structure-learning.json",
     "migration-process.json", "continual-learning-score.json", "structure-learning-score.json",
+    "native-language-audit.json",
 )
 
 
