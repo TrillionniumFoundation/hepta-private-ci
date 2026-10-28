@@ -1,0 +1,87 @@
+{
+  "controlled_behavior_only": true,
+  "rust_or_bazel_compilers_executed": false,
+  "suites": [
+    {
+      "suite": "port",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_ndu_port*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "tail": [
+        "test_wrong_old_head_or_new_driver_head_rejected_before_phase (test_ndu_port_matrix_fixture.OldFixtureBindingTests.test_wrong_old_head_or_new_driver_head_rejected_before_phase) ... ok",
+        "test_only_exact_one_nonflaky_executed_phase_is_accepted (test_ndu_port_matrix_fixture.PhaseEvidenceTests.test_only_exact_one_nonflaky_executed_phase_is_accepted) ... ok",
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 47 tests in 10.112s",
+        "",
+        "OK"
+      ],
+      "tests": 47,
+      "log_bytes": 33600,
+      "log_sha256": "5491c414cb72b48127257f3dbaa26bb9d7909efc33e2699feea7999aa9f68591"
+    },
+    {
+      "suite": "post",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_ndu_post_qualification*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "tail": [
+        "Running after-head: git rev-parse HEAD",
+        "ok",
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 15 tests in 16.414s",
+        "",
+        "OK"
+      ],
+      "tests": 15,
+      "log_bytes": 31472,
+      "log_sha256": "fdb09ac3634b161d268a84c378bc2e1e439959cd13141be73b0e518bdef48bb7"
+    },
+    {
+      "suite": "linux",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "linux_synapse.test_boundaries",
+        "linux_synapse.test_cleanup",
+        "linux_synapse.test_execution",
+        "linux_synapse.test_restore",
+        "linux_synapse.test_source",
+        "-v"
+      ],
+      "exit_code": 0,
+      "tail": [
+        "test_staged_or_unstaged_helper_tamper_never_executes (linux_synapse.test_source.SourceImportBoundary.test_staged_or_unstaged_helper_tamper_never_executes) ... ok",
+        "test_staged_stdlib_shadow_is_not_imported (linux_synapse.test_source.SourceImportBoundary.test_staged_stdlib_shadow_is_not_imported) ... ok",
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 19 tests in 14.986s",
+        "",
+        "OK"
+      ],
+      "tests": 19,
+      "log_bytes": 3767,
+      "log_sha256": "9da5df7cd4f113a9a3a06a4b0c6cf373c7ade36f28abcb8e2907f650c8119b2d"
+    }
+  ]
+}

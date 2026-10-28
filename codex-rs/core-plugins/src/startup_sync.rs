@@ -36,6 +36,7 @@ const CURATED_PLUGINS_BACKUP_ARCHIVE_FALLBACK_VERSION: &str = "export-backup";
 const CURATED_PLUGINS_GIT_TIMEOUT: Duration = Duration::from_secs(30);
 const CURATED_PLUGINS_HTTP_TIMEOUT: Duration = Duration::from_secs(30);
 const CURATED_PLUGINS_BACKUP_ARCHIVE_TIMEOUT: Duration = Duration::from_secs(30);
+const ZIP_UTF8_FILENAME_FLAG: u16 = 1 << 11;
 // Keep this comfortably above a normal sync attempt so we do not race another Codex process.
 const CURATED_PLUGINS_STALE_TEMP_DIR_MAX_AGE: Duration = Duration::from_secs(10 * 60);
 #[derive(Debug, Deserialize)]
@@ -1051,10 +1052,22 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
         let mut entry = archive
             .by_index(index)
             .map_err(|err| format!("failed to read curated plugins zip entry: {err}"))?;
+        // The reader falls back to CP437 even when the ZIP flags declare UTF-8.
+        // Reject a false declaration before using the decoded name as a path.
+        if entry.flags().as_u16() & ZIP_UTF8_FILENAME_FLAG != 0
+            && std::str::from_utf8(entry.name_raw()).is_err()
+        {
+            return Err(
+                "curated plugins zip entry declares UTF-8 but has invalid filename bytes"
+                    .to_string(),
+            );
+        }
+        let name = entry
+            .name()
+            .map_err(|err| format!("failed to read curated plugins zip entry name: {err}"))?;
         let Some(relative_path) = entry.enclosed_name() else {
             return Err(format!(
-                "curated plugins zip entry `{}` escapes extraction root",
-                entry.name()
+                "curated plugins zip entry `{name}` escapes extraction root"
             ));
         };
 
@@ -1111,13 +1124,18 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
 }
 
 #[cfg(unix)]
-fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> Result<(), String> {
+fn apply_zip_permissions<R: std::io::Read + ?Sized>(
+    entry: &zip::read::ZipFile<'_, R>,
+    output_path: &Path,
+) -> Result<(), String> {
     use std::os::unix::fs::PermissionsExt;
 
     let Some(mode) = entry.unix_mode() else {
         return Ok(());
     };
-    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode)).map_err(|err| {
+    // ZIP metadata is untrusted. Preserve ordinary access and executable bits,
+    // but never restore setuid, setgid, or sticky bits from an archive.
+    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode & 0o777)).map_err(|err| {
         format!(
             "failed to set permissions on curated plugins file {}: {err}",
             output_path.display()
@@ -1126,8 +1144,8 @@ fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> 
 }
 
 #[cfg(not(unix))]
-fn apply_zip_permissions(
-    _entry: &zip::read::ZipFile<'_>,
+fn apply_zip_permissions<R: std::io::Read + ?Sized>(
+    _entry: &zip::read::ZipFile<'_, R>,
     _output_path: &Path,
 ) -> Result<(), String> {
     Ok(())
@@ -1136,3 +1154,7 @@ fn apply_zip_permissions(
 #[cfg(test)]
 #[path = "startup_sync_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "startup_sync_zip_tests.rs"]
+mod zip_tests;

@@ -12,6 +12,7 @@ sys.dont_write_bytecode = True
 from ndu_port_candidate_common import LOCKS
 from ndu_port_candidate_common import POLICIES
 from ndu_port_candidate_common import Recorder
+from ndu_port_candidate_common import candidate_source_mode
 from ndu_port_candidate_common import check_toolchain
 from ndu_port_candidate_common import checksum
 from ndu_port_candidate_common import copy_files
@@ -84,11 +85,14 @@ def freeze_before(runner, record, artifact, group):
         ["git", "read-tree", record["source_commit"]],
         environment=environment,
     )
-    runner.run(
-        "replay-candidate",
-        ["git", "apply", "--cached", str(artifact / "candidate.patch")],
-        environment=environment,
-    )
+    if candidate_source_mode(record) == "patched":
+        runner.run(
+            "replay-candidate",
+            ["git", "apply", "--cached", str(artifact / "candidate.patch")],
+            environment=environment,
+        )
+    elif (artifact / "candidate.patch").read_bytes() != b"":
+        raise ValueError("Integrated replay requires an exactly empty delta")
     require(
         private_tree(runner, "replayed-tree", replay) == before_tree,
         "Staged contents or modes differ from the complete sealed candidate patch",

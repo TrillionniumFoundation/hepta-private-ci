@@ -6,6 +6,9 @@ on:
       - .github/workflows/ndu-port-candidate.yml
       - scripts/ndu_port_candidate.py
       - scripts/ndu_port_candidate_common.py
+      - scripts/ndu_port_integrated.py
+      - scripts/ndu_port_integration_test_support.py
+      - experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/**
       - scripts/ndu_synapse_diagnostics.py
       - scripts/ndu_port_matrix_fixture.py
       - scripts/ndu_port_fixture_layout.py
@@ -65,7 +68,7 @@ jobs:
           -t codex-rs/hepta-matrixd/tests/fixtures -p 'test_*.py' -v
 
       - name: Test post-qualification fix evidence and source separation
-        run: python3 -m unittest discover -s scripts -p 'test_ndu_post_qualification_fix.py' -v
+        run: python3 -m unittest discover -s scripts -p 'test_ndu_post_qualification*.py' -v
 
       - name: Prepare pinned Bazel tooling
         uses: ./.github/actions/prepare-bazel-ci
@@ -78,12 +81,12 @@ jobs:
         with:
           toolchain: 1.96.0
 
-      - name: Verify recipe and generate source plus both locks
+      - name: Verify integrated source and zero-drift Cargo and Bazel locks
         id: generate
         env:
           EXPECTED_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
         run: >-
-          python3 scripts/ndu_port_candidate.py --mode generate
+          python3 scripts/ndu_port_candidate.py --mode generate --source-mode integrated
           --repository "$GITHUB_WORKSPACE" --expected-source "$EXPECTED_SOURCE"
           --output "$RUNNER_TEMP/ndu-port-candidate"
 

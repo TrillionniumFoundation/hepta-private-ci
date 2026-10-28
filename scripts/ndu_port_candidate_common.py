@@ -14,6 +14,7 @@ import tomllib
 
 SCHEMA = "hepta.ci.port-candidate.v1"
 RECIPE = "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v7.json"
+INTEGRATION = "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json"
 LOCKS = ("codex-rs/Cargo.lock", "MODULE.bazel.lock")
 POLICIES = (
     "codex-rs/deny.toml",
@@ -471,6 +472,112 @@ def validate_graph(root, recipe, metadata):
             raise ValueError(f"Exact effective features differ: {expected['name']}")
 
 
+def candidate_source_mode(record):
+    mode = record.get("source_mode", "patched")
+    if mode not in {"patched", "integrated"}:
+        raise ValueError("Unsupported candidate source mode")
+    return mode
+
+
+def verify_integrated_source(runner, recipe, record=None, artifact=None):
+    """Keep the isolated Synapse guard self-contained and bound to exact HEAD."""
+    path = regular_path(runner.root, INTEGRATION)
+    manifest = json.loads(path.read_text())
+    if manifest.get("schema") != "hepta.port-integration.v1":
+        raise ValueError("Unrecognized integrated source manifest")
+    expected = set((*recipe["allowed_paths"], *LOCKS))
+    files, modes = manifest["files"], manifest["file_modes"]
+    if set(files) != expected or set(modes) != expected:
+        raise ValueError("Integrated manifest file/mode inventory differs from recipe")
+    for name, description in files.items():
+        relative_path(name)
+        if (
+            not isinstance(description, dict)
+            or set(description) != {"bytes", "sha256"}
+            or type(description["bytes"]) is not int
+            or description["bytes"] < 0
+            or not HEX256.fullmatch(description["sha256"])
+            or modes[name] not in {"100644", "100755"}
+        ):
+            raise ValueError("Invalid integrated file identity or Git mode")
+    if (
+        manifest["recipe_path"] != RECIPE
+        or manifest["recipe_sha256"] != checksum(runner.root / RECIPE)
+        or manifest.get("promotion_allowed") is not False
+        or set(manifest["policy_inputs"]) != set(POLICIES)
+        or describe(runner.root, POLICIES) != manifest["policy_inputs"]
+    ):
+        raise ValueError("Integrated recipe or original policy binding changed")
+    origin = manifest["origin"]
+    if (
+        not re.fullmatch(r"[0-9a-f]{40}", origin["source_commit"])
+        or not HEX256.fullmatch(origin["result_sha256"])
+        or not HEX256.fullmatch(origin["artifact_sha256"])
+        or origin["source_patch"]
+        != describe(runner.root, (recipe["patch_path"],))[recipe["patch_path"]]
+    ):
+        raise ValueError("Integrated origin binding is invalid")
+    if describe(runner.root, expected) != files:
+        raise ValueError("Integrated source or lock bytes differ from reviewed origin")
+    if runner.text(
+        "integrated-index-drift",
+        ["git", "diff", "--cached", "--name-only", "-z", "HEAD"],
+    ):
+        raise ValueError("Integrated index differs from the committed HEAD")
+    entries = runner.text(
+        "integrated-committed-files",
+        ["git", "ls-tree", "-z", "HEAD", "--", *sorted(expected), INTEGRATION],
+    )
+    seen = {}
+    for row in entries.split("\0"):
+        if row:
+            header, name = row.split("\t", 1)
+            mode, kind, blob = header.split()
+            if kind != "blob" or mode not in {"100644", "100755"}:
+                raise ValueError("Integrated input is not a regular committed blob")
+            seen[name] = (mode, blob)
+    if set(seen) != expected | {INTEGRATION}:
+        raise ValueError("Integrated input is missing from the committed HEAD")
+    for name in sorted(expected | {INTEGRATION}):
+        current = regular_path(runner.root, name)
+        raw = current.read_bytes()
+        blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+        wanted = modes[name] if name != INTEGRATION else "100644"
+        actual_mode = "100755" if current.stat().st_mode & 0o111 else "100644"
+        if seen[name] != (wanted, blob) or actual_mode != wanted:
+            raise ValueError("Integrated bytes or modes differ from the committed HEAD")
+    source_tree = runner.text(
+        "integrated-source-tree", ["git", "rev-parse", "HEAD^{tree}"]
+    )
+    binding = {
+        "manifest_path": INTEGRATION,
+        "manifest_sha256": checksum(path),
+        "origin_result_sha256": origin["result_sha256"],
+    }
+    if record is not None:
+        if (
+            candidate_source_mode(record) != "integrated"
+            or record.get("integration") != binding
+            or record.get("source_tree") != source_tree
+            or record["files"] != files
+            or record["policy_inputs"] != manifest["policy_inputs"]
+            or record["changed_paths"] != []
+            or record["artifacts"].get("candidate.patch")
+            != {"bytes": 0, "sha256": hashlib.sha256(b"").hexdigest()}
+            or record["artifacts"].get("integration.json")
+            != {"bytes": path.stat().st_size, "sha256": binding["manifest_sha256"]}
+        ):
+            raise ValueError(
+                "Integrated candidate receipt differs from committed binding"
+            )
+        if artifact is not None and (
+            (artifact / "candidate.patch").read_bytes() != b""
+            or (artifact / "integration.json").read_bytes() != path.read_bytes()
+        ):
+            raise ValueError("Integrated candidate delta or manifest transport changed")
+    return manifest, binding, source_tree
+
+
 def verify_tree(runner, record, recipe):
     if (
         runner.text("verify-head", ["git", "rev-parse", "HEAD"])
@@ -493,6 +600,8 @@ def verify_tree(runner, record, recipe):
         (*recipe["allowed_paths"], *LOCKS)
     ):
         raise ValueError("Candidate changed an unapproved path")
+    if candidate_source_mode(record) == "integrated":
+        verify_integrated_source(runner, recipe, record)
 
 
 def load_candidate(runner, artifact, expected_result, expected_source):
@@ -530,6 +639,10 @@ def load_candidate(runner, artifact, expected_result, expected_source):
         raise ValueError("Downloaded candidate artifacts were modified")
     if record["artifacts"]["source.patch"]["sha256"] != recipe["patch_sha256"]:
         raise ValueError("Exported source patch differs from recipe")
+    if candidate_source_mode(record) == "integrated":
+        verify_integrated_source(runner, recipe, record, artifact)
+    elif not set(recipe["allowed_paths"]) <= set(record["changed_paths"]):
+        raise ValueError("Patched candidate must retain its complete source delta")
     return record, recipe
 
 
@@ -539,12 +652,15 @@ def restore_candidate(runner, artifact, expected_result, expected_source):
     if describe(runner.root, POLICIES) != record["policy_inputs"]:
         raise ValueError("Producer and consumer original policy differ")
     patch = artifact / "candidate.patch"
-    if patch_paths(runner, patch) != set(record["changed_paths"]):
-        raise ValueError("Binary patch path set differs from sealed candidate")
-    runner.run(
-        "check-candidate-patch", ["git", "apply", "--check", "--index", str(patch)]
-    )
-    runner.run("apply-candidate-patch", ["git", "apply", "--index", str(patch)])
+    if candidate_source_mode(record) == "patched":
+        if patch_paths(runner, patch) != set(record["changed_paths"]):
+            raise ValueError("Binary patch path set differs from sealed candidate")
+        runner.run(
+            "check-candidate-patch", ["git", "apply", "--check", "--index", str(patch)]
+        )
+        runner.run("apply-candidate-patch", ["git", "apply", "--index", str(patch)])
+    # Integrated mode was already matched to the committed manifest and an
+    # exactly empty delta by load_candidate; no failed patch is swallowed.
     verify_tree(runner, record, recipe)
     validate_graph(
         runner.root, recipe, json.loads((artifact / "metadata.json").read_text())
@@ -553,5 +669,10 @@ def restore_candidate(runner, artifact, expected_result, expected_source):
         candidate_result_sha256=expected_result,
         recipe_sha256=record["recipe_sha256"],
         candidate_patch_sha256=record["artifacts"]["candidate.patch"]["sha256"],
+        source_mode=candidate_source_mode(record),
     )
+    if candidate_source_mode(record) == "integrated":
+        runner.record.update(
+            integration=record["integration"], source_tree=record["source_tree"]
+        )
     return record, recipe

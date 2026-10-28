@@ -7,6 +7,7 @@ import shutil
 
 from ndu_port_candidate_common import OLD_SOURCE
 from ndu_port_candidate_common import SCHEMA
+from ndu_port_candidate_common import candidate_source_mode
 from ndu_port_candidate_common import checksum
 from ndu_port_candidate_common import describe
 from ndu_port_candidate_common import regular_path
@@ -79,6 +80,11 @@ def validate_tests(runner, path, group, candidate, expected_result):
         require(
             result.get(key) == value, f"Consumer {key} is not bound to this candidate"
         )
+    if candidate_source_mode(candidate) == "integrated":
+        for key in ("source_mode", "source_tree", "integration"):
+            require(
+                result.get(key) == candidate[key], f"Consumer {key} binding differs"
+            )
     for key in ("github_run_id", "github_run_attempt"):
         require(
             result.get(key) == candidate.get(key), "Consumer belongs to another run"
