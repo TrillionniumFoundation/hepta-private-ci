@@ -1,5 +1,5 @@
 {
-  "schema": "HeptaFirstPassageProtocolV1",
+  "schema": "HeptaFirstPassageProtocolV2",
   "registered_date": "2026-10-28",
   "base_commit": "ed6f8c6645c927249cec0d3395f6bae21f278739",
   "prior_analytic_round2_commit": "ecbfadf12a0347919553220fc0684b16e088347b",
@@ -72,6 +72,7 @@
   },
   "policies": {
     "primary": [
+      "learned_threshold7",
       "ordinary_first_event",
       "endogenous_renewal"
     ],
@@ -94,7 +95,14 @@
     "fixed_boundary_distance": 0.35,
     "parameter_budget_caveat": "fixed_cross7 matches count but allocates extra capacity to physical drift; fixed_shared6 is the pure structural comparison",
     "plan_policy": "WAIT_AFTER_CURRENT",
-    "deployment_policy": "MPC_REPLAN_EACH_HALF"
+    "deployment_policy": "MPC_REPLAN_EACH_HALF",
+    "learned_threshold_grid": {
+      "start": 0.05,
+      "stop": 0.85,
+      "count": 17
+    },
+    "ordinary_threshold_information": "Same full public observation; a learned constant distance repair threshold with common native negative-continuation STOP guard. Price and deadline do not explicitly parameterize this repair gate.",
+    "first_event_interpretation": "Cost/time-sensitive value boundary with only the first failure; retained as a stronger renewal ablation."
   },
   "value_profile": {
     "family": "registered_native_additive_signed_q32",
@@ -112,11 +120,13 @@
     "family_alpha": 0.05,
     "primary_comparisons": [
       "endogenous_renewal-minus-ordinary_first_event",
-      "endogenous_renewal-minus-fixed_cross7"
+      "endogenous_renewal-minus-fixed_cross7",
+      "endogenous_renewal-minus-learned_threshold7"
     ],
     "minimum_mean_gain": 0.005,
     "pass_rule": "family-adjusted empirical lower bound > .005 and all seed means positive",
-    "population_guarantee": false
+    "population_guarantee": false,
+    "interval_rule": "Two-sided Bonferroni: alpha/(2*3) in each tail; all previous comparisons retained."
   },
   "stress": {
     "drift_shift": -0.15,
@@ -134,5 +144,10 @@
     "max_event_count_per_segment": 128,
     "confirmation_not_started": true,
     "production_authorized": false
+  },
+  "amendment": {
+    "date": "2026-10-28",
+    "confirmation_started": false,
+    "reason": "Independent review identified first-event comparator as a value-boundary renewal ablation, not an ordinary trainable threshold. Add an ordinary threshold family; retain previous primary comparisons and strengthen multiplicity adjustment."
   }
 }
