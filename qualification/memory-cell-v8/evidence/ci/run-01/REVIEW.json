@@ -1,0 +1,70 @@
+{
+  "actual_rust": {
+    "failed": 2,
+    "passed": 3,
+    "skipped": 215
+  },
+  "artifact_id": 12783231877,
+  "attempt": 1,
+  "engineering_passed": false,
+  "failures": [
+    {
+      "affected_tests": [
+        "memory_cell_language_v8_tests::actual_v8_shadow_suite_records_every_frozen_request_and_bound_native_readout",
+        "memory_cell_prospective_tests::actual_memory_cell_prospective_learning_future_combinations_and_retention"
+      ],
+      "cause": "Both new full experiments exceeded inherited Nextest default 60-second watchdog. Default retry then correctly failed create-only paths with AlreadyExists.",
+      "resolution": "Dedicated opt-in qualification group, one thread, zero retries, bounded 20-minute experiment watchdog; worker/request/child deadlines and quality gates unchanged."
+    },
+    {
+      "binding_failures": 0,
+      "cause": "Four unsupported requests with multiple literal date cutoffs were incorrectly surfaced by host TimeView as resolver infrastructure errors.",
+      "control_transport_errors": 0,
+      "raw_baseline_errors": 4,
+      "resolution": "Use a typed host abstention for this unsupported temporal capability; preserve true infrastructure errors and all frozen Python/model/fixture bytes.",
+      "rows": [
+        "held-0138",
+        "held-0139",
+        "held-0198",
+        "held-0199"
+      ]
+    }
+  ],
+  "job_id": 122558083921,
+  "ordinary_rust": {
+    "failed": 0,
+    "passed": 509,
+    "skipped": 14
+  },
+  "partial_artifacts": {
+    "baseline_native_rows_completed": 240,
+    "candidate_native_complete": false,
+    "complete_eleven_arm_cost_or_training_claim": false,
+    "network_receipt_complete": true,
+    "prospective_fixed_1_complete": true,
+    "prospective_fixed_2_complete": false
+  },
+  "preservation": "Original provider artifact ZIP retained in indexed chunks; exact original baseline errors, original partial trials and logs preserved. SUMMARY.json and REVIEW.json are derived views, never replacement raw receipts.",
+  "provider_log": {
+    "bytes": 483763,
+    "path": "provider-job.log",
+    "representation": "Exact UTF-8 encoding of the provider tool decoded log string; not a raw HTTP wire capture.",
+    "sha256": "55e643fc91472699efa21aa0e784d47ed8c13ea7c53c68c1ee6f0345a9b24e9b"
+  },
+  "python_tests": {
+    "addressing": 6,
+    "learning": 12,
+    "passed": 18
+  },
+  "run_id": 40609738136,
+  "same_source_app_server_build_passed": true,
+  "schema": "hepta.memory.v8.failed-ci-review.v1",
+  "scientific_gates": {
+    "address_model_retuned_after_held": false,
+    "addressing_admitted": false,
+    "full_cost_net_benefit_demonstrated": false,
+    "universal_memory_demonstrated": false
+  },
+  "source_commit": "92097d22a47d85e9e118c9685b7c915fa3dc49ae",
+  "source_tree": "faf3a5117e9413dc54d20a879e7a97e3c6740a99"
+}
