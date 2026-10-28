@@ -1,0 +1,27 @@
+[workspace]
+
+[package]
+name = "hepta-native-qualification"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+anyhow = "1"
+codex-hepta-native-agent = { path = "../../../codex-rs/hepta-native-agent" }
+codex-hepta-types = { path = "../../../codex-rs/hepta-types" }
+codex-http-client = { path = "../../../codex-rs/http-client" }
+hepta-runtime = { git = "https://github.com/TrillionniumFoundation/hepta-runtime.git", rev = "d7d039458c8745bea1bafd24f03635e75a66a2f4" }
+libc = "0.2"
+rustix = { version = "1", features = ["process"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["io-std", "io-util", "macros", "rt-multi-thread", "signal", "sync", "time"] }
+tokio-util = { version = "0.7", features = ["rt"] }
+
+[dev-dependencies]
+tempfile = "3"
+
+[profile.release]
+debug = 0
+strip = "debuginfo"
