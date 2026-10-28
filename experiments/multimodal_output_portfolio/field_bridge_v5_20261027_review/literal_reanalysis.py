@@ -218,10 +218,11 @@ def verify_registration(commit, repository):
 def imported_sources(root, manifest, executed):
     repository = root / "repository"
     expected = {row["path"]: row for row in manifest["members"]}
-    sources, namespaces, external = {}, {}, {}
+    sources, namespaces, external, virtuals = {}, {}, {}, {}
     runtime_roots = [Path(sys.prefix).resolve(), Path(sys.base_prefix).resolve()]
 
     def bind(path):
+        require(Path(path).is_absolute(), "Relative repository import path: " + str(path))
         path = Path(path).resolve()
         require(path.is_relative_to(repository), "Repository code escaped restoration: " + str(path))
         name = path.relative_to(root).as_posix()
@@ -230,8 +231,29 @@ def imported_sources(root, manifest, executed):
         return name
 
     modules = {}
+    # These are the two relative __file__ identities actually observed in the
+    # pinned Torch runtime. They are virtual modules, backed by real class code.
+    known_virtuals = {"torch.ops": ("_ops.py", "torch._ops", "_Ops", "ops"),
+                      "torch.classes": ("_classes.py", "torch._classes", "_Classes", "classes")}
     for name, module in list(sys.modules.items()):
         location = getattr(module, "__file__", None)
+        if name in known_virtuals:
+            reported, class_module, class_name, attribute = known_virtuals[name]
+            implementation_module = sys.modules[class_module]
+            implementation_file = Path(implementation_module.__file__)
+            require(location == reported and module is getattr(sys.modules["torch"], attribute)
+                    and type(module).__module__ == class_module and type(module).__qualname__ == class_name
+                    and type(module) is getattr(implementation_module, class_name), "Unexpected Torch virtual identity")
+            require(implementation_file.is_absolute() and implementation_file.is_file(),
+                    "Missing Torch virtual-module implementation")
+            implementation_file = implementation_file.resolve()
+            require(any(implementation_file.is_relative_to(prefix) for prefix in runtime_roots),
+                    "Torch virtual implementation escaped runtime")
+            virtuals[name] = {"reported_file": reported, "class_module": class_module, "class_name": class_name,
+                              "implementation_file": str(implementation_file),
+                              "implementation_sha256": file_hash(implementation_file)}
+            external[name] = str(implementation_file)
+            continue
         scientific = name == "experiments" or name.startswith("experiments.")
         if scientific:
             if location is not None:
@@ -241,7 +263,9 @@ def imported_sources(root, manifest, executed):
             if locations:
                 namespaces[name] = locations
         elif location is not None and not str(location).startswith("<") and module is not sys.modules.get("__main__"):
+            require(Path(location).is_absolute(), "Unrecognized relative module identity: " + name)
             resolved = Path(location).resolve()
+            require(resolved.is_file(), "Missing imported module file: " + str(resolved))
             if resolved.is_relative_to(repository):
                 modules[name] = bind(resolved)
             else:
@@ -253,6 +277,7 @@ def imported_sources(root, manifest, executed):
     return {"repository_files": [sources[name] for name in sorted(sources)], "modules": modules,
             "namespace_paths": namespaces, "executed_repository_files": executed_names,
             "all_repository_sources_manifest_verified": True,
+            "explicit_torch_virtual_modules": virtuals,
             "runtime_roots": [str(item) for item in runtime_roots], "external_runtime_modules": len(external),
             "external_runtime_origins_sha256": hashlib.sha256(canonical(external)).hexdigest(),
             "dependency_boundary": "Repository sources are restored; CPython/NumPy/Torch use the supplied pinned runtime"}
@@ -310,7 +335,14 @@ def child(mode, root, output, imports_output):
         raise
     finally:
         sys.setprofile(None)
-        identities = imported_sources(root, manifest, executed)
+        validation_error = None
+        try:
+            identities = imported_sources(root, manifest, executed)
+        except Exception as caught_validation:
+            validation_error = caught_validation
+            identities = {"all_repository_sources_manifest_verified": False,
+                          "import_validation_error": {"type": type(caught_validation).__name__,
+                                                      "message": str(caught_validation)}}
         versions = {name: getattr(sys.modules.get(name), "__version__", None) for name in ("numpy", "torch")}
         write_json(imports_output, {"mode": mode, "exception": error, "isolated": True, "bytecode_writes": False,
                    "python": sys.version, "executable": sys.executable, "versions": versions,
@@ -319,6 +351,8 @@ def child(mode, root, output, imports_output):
                    "thread_environment": {name: os.environ.get(name) for name in
                        ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS", "NUMEXPR_NUM_THREADS")},
                    **identities})
+        if validation_error is not None:
+            raise validation_error
 
 
 def run_child(mode, args, root, directory):
@@ -329,8 +363,11 @@ def run_child(mode, args, root, directory):
                str(root), str(output), str(imports)]
     with (directory / (stem + ".stdout")).open("xb") as stdout, (directory / (stem + ".stderr")).open("xb") as stderr:
         result = subprocess.run(command, cwd=root / "repository", env=environment, stdout=stdout, stderr=stderr)
-    require(result.returncode == (1 if mode == "frozen" else 0), "Unexpected " + mode + " child exit code")
+    require(imports.is_file(), "Child did not produce an import receipt; see " + stem + ".stderr")
     receipt = strict_json(imports)
+    require(receipt["all_repository_sources_manifest_verified"] is True,
+            "Child import validation failed: " + json.dumps(receipt.get("import_validation_error"), sort_keys=True))
+    require(result.returncode == (1 if mode == "frozen" else 0), "Unexpected " + mode + " child exit code")
     require(receipt["neural_model_calls"] == 0 and receipt["forbidden_model_or_training_calls"] == []
             and receipt["all_repository_sources_manifest_verified"] is True, "Invalid child source/model receipt")
     expected_error = {"type": "ValueError", "message": "Ordinary48 historical endpoint regression failed"}
