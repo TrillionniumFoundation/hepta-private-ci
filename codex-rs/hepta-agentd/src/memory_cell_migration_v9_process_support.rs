@@ -91,7 +91,8 @@ impl Process {
         self.input.take();
         let (status, trailer) = tokio::time::timeout(DEADLINE, async {
             let mut trailer = Vec::new();
-            let (_, status) = tokio::join!(self.output.take(LIMIT as u64).read_to_end(&mut trailer), self.child.wait());
+            let mut output = self.output.take(LIMIT as u64);
+            let (_, status) = tokio::join!(output.read_to_end(&mut trailer), self.child.wait());
             (status.expect("reap child"), trailer)
         }).await.expect("child exit deadline");
         assert!(trailer.len() < LIMIT);
