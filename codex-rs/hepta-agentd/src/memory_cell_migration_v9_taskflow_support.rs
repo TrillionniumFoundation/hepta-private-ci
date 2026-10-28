@@ -24,6 +24,7 @@ pub(super) struct Effect {
     pub store: AutomationStore,
     pub fence: TaskFlowFence,
     pub intent: AuthorizedEffectIntent,
+    record_command_id: String,
     authority: FinalUseAuthority,
     pub signed: SignedFinalUseGrant,
     pub binding: FinalUseBinding,
@@ -56,6 +57,9 @@ impl Effect {
             expected_predecessor_digest: None, dependencies: Vec::new(), compensation_for: None,
         };
         let digest = intent.digest().expect("effect digest");
+        // TaskFlow command IDs are unique across this owner, not just one run.
+        // Bind the observation to the exact intent and retain it across retries.
+        let record_command_id = format!("memory-migration-v9:record:{}", digest.as_str());
         store.prepare_taskflow_step(run, &intent.step_id, 1, &fence, &digest, &intent.payload_digest, &format!("{run}:prepare"), now_ms()).await.expect("prepare durable step");
         store.claim_taskflow_step(run, &intent.step_id, 1, &fence, &digest, &intent.payload_digest, &format!("{run}:claim"), now_ms()).await.expect("claim durable step");
         let binding = intent.final_use_binding().expect("owner-derived binding");
@@ -70,26 +74,26 @@ impl Effect {
         std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).expect("private authority root");
         let authority = FinalUseAuthority::open_state_dir(directory.path(), "memory-migration-security-fixture".into(), issuer.verifying_key().to_bytes(),
             FinalUseRevocations { authority_epoch: 1, revision: 1, revoked_grant_ids: BTreeSet::new() }).expect("durable final-use authority");
-        Self { store, fence, intent, authority, signed: SignedFinalUseGrant { grant, signature }, binding, directory }
+        Self { store, fence, intent, record_command_id, authority, signed: SignedFinalUseGrant { grant, signature }, binding, directory }
     }
 
     pub async fn reject_invalid_grant(&self, driver: &mut ProviderEffectTaskFlowDriver<MemoryCellMigrationProviderV9>, payload: &[u8]) {
         let mut invalid = self.signed.clone(); invalid.signature[0] ^= 1;
         let before = driver.adapter().traffic().expect("traffic");
         assert!(self.store.execute_authorized_taskflow_effect_async(&self.authority, driver, &self.intent, payload,
-            &self.fence, &invalid, &self.binding, "invalid-grant", now_ms()).await.is_err());
+            &self.fence, &invalid, &self.binding, &self.record_command_id, now_ms()).await.is_err());
         assert_eq!(before, driver.adapter().traffic().expect("no provider contact without valid authority"));
     }
 
-    pub async fn execute(&self, driver: &mut ProviderEffectTaskFlowDriver<MemoryCellMigrationProviderV9>, payload: &[u8]) -> TaskFlowStepReceipt {
+    pub async fn execute<D: AsyncAuthorizedEffectDriver>(&self, driver: &mut D, payload: &[u8]) -> TaskFlowStepReceipt {
         self.store.execute_authorized_taskflow_effect_async(&self.authority, driver, &self.intent, payload,
-            &self.fence, &self.signed, &self.binding, "authorized-transfer", now_ms()).await.expect("authorized transfer observation")
+            &self.fence, &self.signed, &self.binding, &self.record_command_id, now_ms()).await.expect("authorized transfer observation")
     }
 
     pub async fn reject_ambiguous_retry(&self, driver: &mut ProviderEffectTaskFlowDriver<MemoryCellMigrationProviderV9>, payload: &[u8]) {
         let before = driver.adapter().traffic().expect("traffic");
         assert!(self.store.execute_authorized_taskflow_effect_async(&self.authority, driver, &self.intent, payload,
-            &self.fence, &self.signed, &self.binding, "authorized-transfer", now_ms()).await.is_err());
+            &self.fence, &self.signed, &self.binding, &self.record_command_id, now_ms()).await.is_err());
         assert_eq!(before, driver.adapter().traffic().expect("uncertainty never blindly redispatches"));
     }
 
@@ -101,3 +105,7 @@ impl Effect {
             AuthorizedEffectRecovery::Observed(receipt), now_ms()).await.expect("durable TaskFlow reconciliation")
     }
 }
+
+#[cfg(test)]
+#[path = "memory_cell_migration_v9_taskflow_tests.rs"]
+mod tests;
