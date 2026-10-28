@@ -5,6 +5,7 @@
 //! permission, sidecar, or publication requirements.
 
 use super::*;
+use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn unsupported_recovery_preserves_sources_sidecars_and_active_pointer() {

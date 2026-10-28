@@ -1,0 +1,260 @@
+{
+  "all_blockers_closed": false,
+  "blockers": [
+    {
+      "evidence": [
+        "profile_contract.py",
+        "control_results/HOST_TABLE_FINAL_PROFILE.json",
+        "control_results/HOST_TABLE_FINAL_RESULT.json",
+        "natural_code_snapshot_20261028.json",
+        "ops_results/NATURAL_CONTRACT_INDEPENDENT_REVIEW.json"
+      ],
+      "evidence_sha256": {
+        "control_results/HOST_TABLE_FINAL_PROFILE.json": "3bbfe6ec1d45fffc11deafcb8064b2c525963a2833ff20dfeec865bb08ced41e",
+        "control_results/HOST_TABLE_FINAL_RESULT.json": "3a8ff7625223cdfa897c1c5f2a18850444ce1b39cf3a313a078d36add2dcf5ca",
+        "natural_code_snapshot_20261028.json": "bcc4c8e89f8b7e730bb2f1db4591d6e1b76836ca38bdf4bb7f547cddcb3e1b1f",
+        "ops_results/NATURAL_CONTRACT_INDEPENDENT_REVIEW.json": "b3e06170562b68b3aef48480341d2f9f1a9b42f7f7fe0860a0616e963731e495",
+        "profile_contract.py": "d4cf318b0478bc7cbb09d7fbb654db9740112068da51ada643f2460c049ed71a"
+      },
+      "id": "WP1-PROFILE",
+      "package": 1,
+      "remaining": "The complete-cost natural contract now independently binds task vocabulary, exact generator/actor parameters and the frozen observer. Nine isolated real-method guard fixtures pass; actual end-to-end neural deployment/training qualification remains pending. Replay/backward cost is reported separately.",
+      "requirement": "Within each declared task, training rollouts, continuation choice, deployment and evaluation bind the same versioned terminal/cost/stop/continuation profile.",
+      "status": "implemented_pending_qualification"
+    },
+    {
+      "evidence": [
+        "fullpath_model.py",
+        "fullpath_lax.py",
+        "fullpath_METHOD.md",
+        "fullpath_results/DEVELOPMENT_RESULT.json",
+        "fullpath_results/INDEPENDENT_GRADIENT_ORACLE.json"
+      ],
+      "evidence_sha256": {
+        "fullpath_METHOD.md": "7389d86b6608c8f41dfb8407434b3628b1a1373014e92a8fcaf1b6a3f2e1f838",
+        "fullpath_lax.py": "2be7aad2a765b4e0e386fb329daad20e7d4182f789f6c03cb9c715fa952fa2bd",
+        "fullpath_model.py": "4146d5348b5090f7f80a69d7fb965ec1f6275b6254e4ca10d453a676aa2878cc",
+        "fullpath_results/DEVELOPMENT_RESULT.json": "2049e75323a8dedc3a0419899c31a171dadce7a47ca9baf829049bdd19b8e68d",
+        "fullpath_results/INDEPENDENT_GRADIENT_ORACLE.json": "2440f30bb333f82189e11d9fd20a121777aab9478a48a2069b26a6bfbd8c6514"
+      },
+      "id": "WP2-REAL-PATH",
+      "package": 2,
+      "remaining": "Mechanism and finite-oracle validation do not establish quality or utility improvement; qualification is tracked separately.",
+      "requirement": "Actual emitted-output gradients reach shared transition, modality adapters, dense decoder emissions and encoder.",
+      "status": "mechanism_verified"
+    },
+    {
+      "evidence": [
+        "fullpath_protocol.py",
+        "fullpath_results/DEVELOPMENT_RESULT.json",
+        "fullpath_results/QUALIFICATION_STATUS.json",
+        "fullpath_results/PHASE_RECEIPT.json",
+        "ops_results/FULLPATH_NEGATIVE_DIAGNOSIS.json"
+      ],
+      "evidence_sha256": {
+        "fullpath_protocol.py": "49f1639d64287ad92472126d34fbf788525a5e0043ea0d60aa0c22af841bfe5e",
+        "fullpath_results/DEVELOPMENT_RESULT.json": "2049e75323a8dedc3a0419899c31a171dadce7a47ca9baf829049bdd19b8e68d",
+        "fullpath_results/PHASE_RECEIPT.json": "67797908f7b2a1f63293b9582331e9b89493106d542c174b4dbe974f7646e03a",
+        "fullpath_results/QUALIFICATION_STATUS.json": "9f762b4dc72fa806827581b95c2bd2b1fb7af027ed77cf7d446f97b8d8acd7a5",
+        "ops_results/FULLPATH_NEGATIVE_DIAGNOSIS.json": "6435e3d871e5b94cafcbf4406887f3ed91c65a71b69519d6d429e7ce3693bdbe"
+      },
+      "id": "WP2-FULLPATH-GAIN",
+      "package": 2,
+      "remaining": "All six frozen arms completed 6144 updates. Selected risk mean development CE gain is +0.0022456657712922232 versus greedy, +0.004188176421009326 versus same-law prior, but -0.005546490863992393 versus matched mean. Retention passes for selected candidates. Actual qualification guard refuses; all 384 reserved pixels remain unused. A future predeclared study is required for this capability claim.",
+      "requirement": "Frozen three-seed risk learner exceeds the strong prior and same-law frozen control by the predeclared margin, matches/exceeds the compute-matched mean learner, and preserves base capability before opening fresh qualification.",
+      "status": "development_gate_failed_qualification_not_consumed"
+    },
+    {
+      "evidence": [
+        "control_results/BEHAVIOR_TESTS.json",
+        "control_results/HOST_TABLE_FINAL_RESULT.json",
+        "control_results/FRESH_SELECTED_POLICY_TAIL.json"
+      ],
+      "evidence_sha256": {
+        "control_results/BEHAVIOR_TESTS.json": "571a0e2f9706215be15797d0bf0f2058b9554d76a2d0681795ac550f56476394",
+        "control_results/FRESH_SELECTED_POLICY_TAIL.json": "24cafbcd54728ea8597ee7e21e5482f81db271e347b96ad248b3765379808206",
+        "control_results/HOST_TABLE_FINAL_RESULT.json": "3a8ff7625223cdfa897c1c5f2a18850444ce1b39cf3a313a078d36add2dcf5ca"
+      },
+      "id": "WP3-EXECUTED-ACTION",
+      "package": 3,
+      "remaining": "Closed for the two-action original-owner pilot only; multi-stage natural policy must qualify separately.",
+      "requirement": "The action minimizing the declared conditional complete-return moment is the action actually dispatched, subject to unchanged owner permission and expiry checks.",
+      "status": "closed_in_declared_pilot"
+    },
+    {
+      "evidence": [
+        "control_results/SOURCE_USAGE_REGISTER.json",
+        "control_results/FRESH_SOURCE_ALLOCATION.json",
+        "control_results/FRESH_CALIBRATION_PLAN.json"
+      ],
+      "evidence_sha256": {
+        "control_results/FRESH_CALIBRATION_PLAN.json": "43dfc0cd0fbfdd54a84e39a39b50c2f4f4024d6dc651e63787a6b1b1fc42676e",
+        "control_results/FRESH_SOURCE_ALLOCATION.json": "3ba4c3be9d7c991a37b7609c9aa280edea2ddf33f2d4e074b90131e82e31abaa",
+        "control_results/SOURCE_USAGE_REGISTER.json": "93e1a57d138b607e731275882e8f7d923571deb27d405d504f061ad5792b82ef"
+      },
+      "id": "WP3-SOURCE-SEPARATION",
+      "package": 3,
+      "remaining": "The 16 consumed source IDs may never be reused as fresh evidence.",
+      "requirement": "Selected-policy calibration uses new source identities excluded from all earlier fits/qualification and from the natural study allocation.",
+      "status": "closed_in_declared_pilot"
+    },
+    {
+      "evidence": [
+        "control_results/FRESH_SELECTED_POLICY_TAIL.json",
+        "control_results/PROCESS_BUDGET_TREE.json",
+        "control_results/PROCESS_BUDGET_ORPHAN.json",
+        "control_results/PROCESS_BUDGET_CODEC.json"
+      ],
+      "evidence_sha256": {
+        "control_results/FRESH_SELECTED_POLICY_TAIL.json": "24cafbcd54728ea8597ee7e21e5482f81db271e347b96ad248b3765379808206",
+        "control_results/PROCESS_BUDGET_CODEC.json": "33c6a07523025a1d8024123e74c0e24ba156b5e82a158b0791c59562ba5561c0",
+        "control_results/PROCESS_BUDGET_ORPHAN.json": "da551b4184633f5cddac5f58027a899320cb30ce26f8b631a62909cce261d6a7",
+        "control_results/PROCESS_BUDGET_TREE.json": "cab5dc2ebc6e07d3d26135830463337caa3f50032ce11fde261876b4e125b70d"
+      },
+      "id": "WP3-MOMENT-TAIL",
+      "package": 3,
+      "remaining": "Finite event-probability bounds do not bound the unobserved cost severity inside exp(gamma*cost). The current host cannot establish a finite whole-process physical CPU envelope; post-stage thresholds and observed overshoot are not such a proof. Do not clip charges or turn this into a certificate.",
+      "requirement": "A defensible upper bound on the selected policy exponential moment includes all actual physical CPU charges, failures and continuation branches.",
+      "status": "blocked_by_missing_support_bound"
+    },
+    {
+      "evidence": [
+        "control_results/HOST_TABLE_FINAL_RESULT.json",
+        "control_IMPLEMENTATION.md"
+      ],
+      "evidence_sha256": {
+        "control_IMPLEMENTATION.md": "3a2c4acdc7871e4afe9ac2ee2c4d0ff8f93945fa5538d35689d854379cfa821a",
+        "control_results/HOST_TABLE_FINAL_RESULT.json": "3a8ff7625223cdfa897c1c5f2a18850444ce1b39cf3a313a078d36add2dcf5ca"
+      },
+      "id": "WP4-CONTROL-VALUE",
+      "package": 4,
+      "remaining": "The old-development host result is descriptive only. Natural fixed keep/retry controls and primary dynamic policy must be evaluated under the frozen common profile.",
+      "requirement": "Dynamic action choice beats the strongest fixed policy using the same generator and fair actual execution costs, including controller overhead.",
+      "status": "not_demonstrated_on_fresh_qualification"
+    },
+    {
+      "evidence": [
+        "semantic_observer.py",
+        "data_prepare_v2.py",
+        "natural_archive_index.json",
+        "data_coverage_v3_registration.json",
+        "natural_code_snapshot_20261028.json"
+      ],
+      "evidence_sha256": {
+        "data_coverage_v3_registration.json": "ccde37409d4f220f18276419d8514d6825ea3240c281597499f9d7c8d7cd4c04",
+        "data_prepare_v2.py": "cb90cfb1807250af63081f8e6bb304c8785cca6912033a537fefecc9016237a9",
+        "natural_archive_index.json": "9241ce7b2d479fee35dfcc2472ee2b95853d2502e44b684f1f82d004ca27d0ef",
+        "natural_code_snapshot_20261028.json": "bcc4c8e89f8b7e730bb2f1db4591d6e1b76836ca38bdf4bb7f547cddcb3e1b1f",
+        "semantic_observer.py": "4d34eceb37a498f6b8699fd8d30e69b3f4fb5504fd68adff283764f149bc06c5"
+      },
+      "id": "WP5-OBSERVER",
+      "package": 5,
+      "remaining": "Train-only coverage amendment retains the original 768 identities and all held-out roles/thresholds while adding 128 disjoint generator and 128 observer training videos. No new observer fit or model holdout predictions informed this choice. Finish preparation, freeze/select independent observers, then open the original 64-source adequacy cohort once. If inadequate, generator qualification remains blocked.",
+      "requirement": "Frozen independent observers meet the unchanged adequacy gate on disjoint source calibration before semantic rewards are trusted.",
+      "status": "data_preparation_in_progress"
+    },
+    {
+      "evidence": [
+        "natural_model.py",
+        "natural_media.py",
+        "natural_port.py",
+        "natural_train.py",
+        "natural_protocol.py",
+        "ops_results/NATURAL_CONTRACT_INDEPENDENT_REVIEW.json"
+      ],
+      "evidence_sha256": {
+        "natural_media.py": "bbdc5f8f7f7049da0df5c1ef609a9a8480be153eeab7167490819479be21e2c2",
+        "natural_model.py": "5d179d588ff170494373d81d0bccb544a6c42e537f022415578a29fe235fe7c0",
+        "natural_port.py": "3d90f9a9f789ef8dd8d757474979797a5ef3751a63cc1eb9fc58f8881ebabafd",
+        "natural_protocol.py": "1cc9e7ee1e53766bc93a40dfabbade24a8ce59edb16a8cbdbd9eea9058511854",
+        "natural_train.py": "d68174e6785ed061e37d432c05f4ad70824c8ee81629a9557e39518bac1142bc",
+        "ops_results/NATURAL_CONTRACT_INDEPENDENT_REVIEW.json": "b3e06170562b68b3aef48480341d2f9f1a9b42f7f7fe0860a0616e963731e495"
+      },
+      "id": "WP5-NATURAL-GAIN",
+      "package": 5,
+      "remaining": "Complete the full 2048-step warmstart, frozen actual-output NDU/mean arms and all predeclared gates. Warmstart optimizer loss is not an NDU qualification result.",
+      "requirement": "Same-event text/audio/image/video outputs are generated, independently reopened/scored and compared with interpolation and strong fixed policies on new qualification sources.",
+      "status": "implementation_and_warmstart_pending"
+    },
+    {
+      "evidence": [
+        "ops_results/CI_V7_VERIFIED_RESULT.json"
+      ],
+      "evidence_sha256": {
+        "ops_results/CI_V7_VERIFIED_RESULT.json": "ad608b575a87be7761888f8db96e5c093daa23ccd67cac9962e0fff2517bde3e"
+      },
+      "external_evidence": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435"
+      ],
+      "id": "CI-DEPENDENCIES",
+      "package": 4,
+      "remaining": "Actual v7 generated/checked Cargo and Bazel locks and passed unchanged cargo-deny. Independent AWS passed 244 executed original tests with 1 original ignored; real Matrix 0.18-to-0.19.1 reopen passed. Three candidate consumer failures shared the core API compile error repaired in this commit. Arm64 Synapse tool-probe startup has an unknown root cause; complete bounded diagnostics are added without altering the original large artifact. Live dependencies still use the original locks. Other platform CI may be pending/canceled and is not treated as passed.",
+      "requirement": "Actual dependency resolution generates Cargo and Bazel locks and passes unchanged advisory, license, source, migration and native integration gates.",
+      "status": "v7_policy_and_old_state_reopen_passed_core_repair_and_native_diagnostics_pending"
+    },
+    {
+      "evidence": [
+        "ops_results/WINDOWS_STORAGE_OBSERVATION.json",
+        "ops_results/PLATFORM_REPAIR_PREFLIGHT.json",
+        "ops_results/PLATFORM_INDEPENDENT_REVIEW.json",
+        "ops_results/BAO_INDETERMINATE_REVIEW.json",
+        "ops_results/BAO_INDETERMINATE_FIX_MANIFEST.json",
+        "ops_results/BAO_INDETERMINATE_FIX_PREFLIGHT.json",
+        "ops_results/BATCH5_COMPILE_FIX_PREFLIGHT.json",
+        "ops_results/CI_V7_VERIFIED_RESULT.json"
+      ],
+      "evidence_sha256": {
+        "ops_results/BAO_INDETERMINATE_FIX_MANIFEST.json": "970cb66bce5e28b0d193be42c8b7e412f68fdf4c009250c13f339f6a4fba6b87",
+        "ops_results/BAO_INDETERMINATE_FIX_PREFLIGHT.json": "66528d777174893bd73d9028e2b1dcd6ad3c65af8dce7f55d28b47ba1fa03119",
+        "ops_results/BAO_INDETERMINATE_REVIEW.json": "8ceb87708f9918eb4bd66297437bf50e1acd228be0b6cae5f8d73d0ac3542124",
+        "ops_results/BATCH5_COMPILE_FIX_PREFLIGHT.json": "e14ce3b39ec4ecc1f8044e1a71810e488f03723bd1c8738de0ca438e1c652706",
+        "ops_results/CI_V7_VERIFIED_RESULT.json": "ad608b575a87be7761888f8db96e5c093daa23ccd67cac9962e0fff2517bde3e",
+        "ops_results/PLATFORM_INDEPENDENT_REVIEW.json": "ba9c369d77880dd845f3c64219c20164a5e06815874414e73ba09a06341b4a79",
+        "ops_results/PLATFORM_REPAIR_PREFLIGHT.json": "03e1dcc6ad634a16f948f1e2c4a84976fa02220eb5b5128f56ebc1c20444fb2f",
+        "ops_results/WINDOWS_STORAGE_OBSERVATION.json": "ca4fbc05ee8921b739295e5e6542ab89bd68d4aeb04d7f39f70c816798179bdd"
+      },
+      "external_evidence": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660657",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40653213586"
+      ],
+      "id": "CI-PLATFORM-CONTRACTS",
+      "package": 4,
+      "remaining": "The published Windows/platform/terminal-delivery repairs receive a compatible ownerless API wrapper and a signed-intent test borrow repair. Bao now requires explicit reopen after a post-rename durability uncertainty and fences all getters and mutations. Local just test/fix stopped before compilation on a missing sparse workspace manifest. Full exact-head remote validation remains mandatory; no crash-consistency or multi-writer guarantee is inferred. Windows shard 4 also produced four actual failing targets: exec-server missing sandbox setup helper, operator acceptance, prompt optimizer and shadow qualification. Their original failures are preserved; follow-up fixes are in progress and are not represented as passing.",
+      "requirement": "Platform tests exercise supported positive behavior and explicit no-mutation refusal where secure owner support is absent, without weakening production checks.",
+      "status": "implementation_repaired_exact_head_native_ci_required"
+    },
+    {
+      "evidence": [
+        "natural_archive_index.json",
+        "fullpath_results/RESOURCE_RESUME_PREFLIGHT.json",
+        "ops_results/RECLAIMED_PRIOR_FULLPATH.json",
+        "ops_results/RECLAIMED_PRIOR_NATURAL.json.gz",
+        "fullpath_results/PHASE_RECEIPT.json",
+        "fullpath_results/RAW_RELEASE_RECEIPT.json"
+      ],
+      "evidence_sha256": {
+        "fullpath_results/PHASE_RECEIPT.json": "67797908f7b2a1f63293b9582331e9b89493106d542c174b4dbe974f7646e03a",
+        "fullpath_results/RAW_RELEASE_RECEIPT.json": "44b1e7a85bfb44d7c2433c28bc924858cecdf87879e45b558d126cee2b3551b1",
+        "fullpath_results/RESOURCE_RESUME_PREFLIGHT.json": "d0d00c33cf877bd9987228e5526065d7ebdfb3d86be669545279d50910c13399",
+        "natural_archive_index.json": "9241ce7b2d479fee35dfcc2472ee2b95853d2502e44b684f1f82d004ca27d0ef",
+        "ops_results/RECLAIMED_PRIOR_FULLPATH.json": "00df165fce5591e88bd2add72103d1415e19e67310e60ceaa30c14e12d53f3ab",
+        "ops_results/RECLAIMED_PRIOR_NATURAL.json.gz": "68eab268b541b9b43138d82e24fed693c9e9856f0794d43d055972c14c8f5f73"
+      },
+      "id": "EXEC-RESOURCE-RECOVERY",
+      "package": 0,
+      "remaining": "Fullpath completed all six arms and all five raw archive parts are durable and member-hash verified. Only the two exact completed raw directories were released. Interrupted natural warmstart002 remains preserved;003 must replay from its original seed with complete recoverable optimizer/RNG state.",
+      "requirement": "Resource interruptions retain source/RNG/model/optimizer evidence, do not reduce frozen update budgets or consume qualification accidentally, and can resume at valid boundaries.",
+      "status": "completed_fullpath_evidence_preserved_natural_replay_in_progress"
+    }
+  ],
+  "draft_pr": 4155,
+  "evidence_published_parent": "943768d41de711ef888d8c21c1466aa783885307",
+  "frozen_historical_evidence_preserved": true,
+  "global_optimality_established": false,
+  "promotion_authorized": false,
+  "publication_head": "the commit containing this register; exact-head remote checks are tracked separately",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta.ndu.blocker-register.v1",
+  "status_semantics": "A pilot mechanism closure does not close an empirical gain, observer adequacy, strict tail or full-platform qualification gate.",
+  "updated_at_utc": "2026-10-28T09:03:20.185002+00:00"
+}

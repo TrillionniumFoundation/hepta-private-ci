@@ -1,0 +1,978 @@
+{
+  "schema": "hepta.ci.v7-verified-result.v1",
+  "reported_at_utc": "2026-10-28T09:02:31.210835+00:00",
+  "source_commit": "943768d41de711ef888d8c21c1466aa783885307",
+  "source_tree": "f96b680355d161b52eb3ba75a87e75a4a10600cd",
+  "pr_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4155",
+  "run_id": 40656660435,
+  "run_attempt": 1,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435",
+  "overall": {
+    "candidate_jobs_passed": 7,
+    "candidate_jobs_failed": 4,
+    "candidate_jobs_total": 11,
+    "candidate_all_jobs_completed": true,
+    "live_dependencies_applied": false,
+    "promotion_allowed": false,
+    "blocking_ci_green": false
+  },
+  "jobs": [
+    {
+      "id": 122709212424,
+      "name": "produce-independent-matrix-018-fixture",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/job/122709212424"
+    },
+    {
+      "id": 122709212669,
+      "name": "generate-reviewable-candidate",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/job/122709212669"
+    },
+    {
+      "id": 122709943255,
+      "name": "native-arm64-synapse",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/job/122709943255"
+    },
+    {
+      "id": 122709943356,
+      "name": "linux-bazel-libraries",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/job/122709943356"
+    },
+    {
+      "id": 122709943372,
+      "name": "independent-full-upstream-aws",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/job/122709943372"
+    },
+    {
+      "id": 122709943381,
+      "name": "targeted-workspace-tests (yaml)",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/job/122709943381"
+    },
+    {
+      "id": 122709943420,
+      "name": "full-scope-candidate-cargo-deny",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/job/122709943420"
+    },
+    {
+      "id": 122709943432,
+      "name": "targeted-workspace-tests (keyring)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/job/122709943432"
+    },
+    {
+      "id": 122709943537,
+      "name": "targeted-workspace-tests (aws)",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/job/122709943537"
+    },
+    {
+      "id": 122709943556,
+      "name": "targeted-workspace-tests (execpolicy)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/job/122709943556"
+    },
+    {
+      "id": 122711813403,
+      "name": "matrix-workspace-and-old-fixture",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/job/122711813403"
+    }
+  ],
+  "generator": {
+    "recipe_path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v7.json",
+    "recipe_sha256": "8c655b7b3c539527e6506869a52d0e98a88ed37e334e9d34d13be83713bce03f",
+    "result_sha256": "cd88dc0a753dedc84a7f9e6cad1a903a569d34eb661f471d1fb430ad434d4252",
+    "verified_candidate_files": 35,
+    "verified_command_logs": 31,
+    "all_command_exit_codes_zero": true,
+    "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2",
+    "rustc_binary_sha256": "ba4b837efb6612dfa8d941c5a72b8a50d1d03a0f36216743b173949aa8d9eb75",
+    "real_bazel_lock_commands": [
+      {
+        "command": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 19.002902076000026,
+        "log": "20-bazel-lock-update.log",
+        "log_sha256": "1819e501f1c2031f0b00f086d84e7881d12b6cfb15e390d57047dc6f69d2643a"
+      },
+      {
+        "command": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 13.347844889000015,
+        "log": "21-bazel-lock-check.log",
+        "log_sha256": "385219dc72448972c36e2366a97fef72307f1f9a4391c16624b426493484a9d3"
+      }
+    ],
+    "metadata_before_after_sha256": "c7d30aa6e6886a0d878d10cd898421b6e6f31efb1876c2d4c96df9f41395af34",
+    "metadata_before_after_identical": true,
+    "policy_inputs": {
+      ".github/workflows/cargo-deny.yml": {
+        "bytes": 1697,
+        "sha256": "9e0d8388810a90f12776687b64e050d8110a025ff504f41f6c9f992b7f5b2959"
+      },
+      "codex-rs/deny.toml": {
+        "bytes": 18803,
+        "sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352"
+      },
+      "scripts/cargo_deny_diagnostics.py": {
+        "bytes": 4247,
+        "sha256": "da5dbc01a44143fce4f70cbce68e97d0ca10a70ed59841d3d3224e99957d4bcc"
+      }
+    },
+    "forbidden_packages_absent": [
+      "anymap2",
+      "basic-toml",
+      "libbz2-rs-sys",
+      "serde_yaml",
+      "unsafe-libyaml",
+      "zbus_names",
+      "zvariant",
+      "zvariant_derive"
+    ],
+    "selected_package_graph": [
+      {
+        "name": "aws-config",
+        "version": "1.8.12",
+        "source": null,
+        "features": [
+          "credentials-login",
+          "credentials-process",
+          "default",
+          "default-https-client",
+          "rt-tokio",
+          "sso"
+        ]
+      },
+      {
+        "name": "blake3",
+        "version": "1.8.7",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "features": [
+          "default",
+          "rayon",
+          "std",
+          "traits-preview"
+        ]
+      },
+      {
+        "name": "bzip2",
+        "version": "0.6.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "features": [
+          "bzip2-sys"
+        ]
+      },
+      {
+        "name": "bzip2-sys",
+        "version": "0.1.13+1.0.8",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "features": []
+      },
+      {
+        "name": "imbl",
+        "version": "7.0.2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "features": [
+          "serde"
+        ]
+      },
+      {
+        "name": "keyring",
+        "version": "3.6.3",
+        "source": null,
+        "features": [
+          "apple-native",
+          "async-secret-service",
+          "crypto-rust",
+          "linux-native",
+          "linux-native-async-persistent",
+          "sync-secret-service",
+          "windows-native"
+        ]
+      },
+      {
+        "name": "matrix-sdk",
+        "version": "0.19.1",
+        "source": null,
+        "features": [
+          "e2e-encryption",
+          "rustls-aws-lc-rs",
+          "sqlite"
+        ]
+      },
+      {
+        "name": "pagable",
+        "version": "0.4.2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "features": [
+          "default"
+        ]
+      },
+      {
+        "name": "zip",
+        "version": "9.1.3",
+        "source": null,
+        "features": [
+          "_bzip2_any",
+          "_deflate-any",
+          "aes-crypto",
+          "bzip2-rs",
+          "deflate",
+          "deflate-flate2",
+          "deflate-flate2-zlib-rs",
+          "deflate-zopfli",
+          "deflate64",
+          "lzma",
+          "ppmd",
+          "time",
+          "xz",
+          "zstd"
+        ]
+      },
+      {
+        "name": "zstd",
+        "version": "0.14.3",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "features": [
+          "arrays",
+          "default",
+          "legacy",
+          "zdict_builder"
+        ]
+      }
+    ],
+    "python_behavior_suites": [
+      {
+        "suite": "port candidate and fixture binding",
+        "executed": 32,
+        "passed": 32
+      },
+      {
+        "suite": "Linux Synapse boundaries, cleanup, execution, restore and source",
+        "executed": 18,
+        "passed": 18
+      },
+      {
+        "suite": "post qualification fix helper",
+        "executed": 12,
+        "passed": 12
+      }
+    ]
+  },
+  "policy_check": {
+    "job_id": 122709943420,
+    "original_policy_unchanged": true,
+    "full_scope_pinned_cargo_deny_action_conclusion": "success",
+    "pre_restore_and_post_scan_receipts_verified": true,
+    "cargo_deny_raw_job_log_read": false,
+    "raw_log_limit": "connector returned Transport closed; no raw scan stdout claim",
+    "post_scan_result_sha256": "4782fd3ce9f84a9d82483bbc3f49e20b1d02731bab7b89bbaf17a979be9c232b"
+  },
+  "workspace_test_commands": [
+    {
+      "package": "codex-keyring-store",
+      "executed": 1,
+      "passed": 1,
+      "declared_ignored": 0,
+      "selector_skipped": 0,
+      "status": "passed",
+      "job_id": 122709943432,
+      "log_file": "13-test-codex-keyring-store.log",
+      "log_sha256": "d90f4bae05d8180eb0c9bc8ad42c8ecfb03c919a424fc702be10270566a9d1ae"
+    },
+    {
+      "package": "codex-execpolicy",
+      "executed": 34,
+      "passed": 34,
+      "declared_ignored": 0,
+      "selector_skipped": 0,
+      "status": "passed",
+      "job_id": 122709943556,
+      "log_file": "13-test-codex-execpolicy.log",
+      "log_sha256": "e7e2dead0d611ccfab5e3c8115db3f57ba33e2e0937f6499eefa2c3b26eff832"
+    },
+    {
+      "package": "codex-aws-auth",
+      "executed": 5,
+      "passed": 5,
+      "declared_ignored": 0,
+      "selector_skipped": 0,
+      "status": "passed",
+      "job_id": 122709943537,
+      "log_file": "13-test-codex-aws-auth.log",
+      "log_sha256": "03390d4f7c3fd28c1150813a8cca62ce94b50e27725badd5a7fa13482f341a04"
+    },
+    {
+      "package": "codex-login",
+      "executed": 0,
+      "passed": 0,
+      "status": "compile_failed",
+      "compiler_error": "E0061",
+      "job_id": 122709943537,
+      "log_file": "17-test-codex-login.log",
+      "log_sha256": "e95cdaf3a2177d13a68b2b2204aa1f63aca8d07bd84d5184d1ed9ccdeefd7a05"
+    },
+    {
+      "package": "codex-secrets",
+      "executed": 9,
+      "passed": 9,
+      "declared_ignored": 0,
+      "selector_skipped": 0,
+      "status": "passed",
+      "job_id": 122709943537,
+      "log_file": "21-test-codex-secrets.log",
+      "log_sha256": "8ddd3658ae4a428e13382eb38c1237676306b5b5f4dc5dbb3958233fbb3f5510"
+    },
+    {
+      "package": "codex-utils-yaml",
+      "executed": 9,
+      "passed": 9,
+      "declared_ignored": 0,
+      "selector_skipped": 0,
+      "status": "passed",
+      "job_id": 122709943381,
+      "log_file": "13-test-codex-utils-yaml.log",
+      "log_sha256": "c73cc10022478e4f9e11fd54ead63a39f15159eae5084aafb9256ce212d2454c"
+    },
+    {
+      "package": "codex-skills",
+      "executed": 49,
+      "passed": 49,
+      "declared_ignored": 0,
+      "selector_skipped": 0,
+      "status": "passed",
+      "job_id": 122709943381,
+      "log_file": "17-test-codex-skills.log",
+      "log_sha256": "5866f3700e7ea3df561653f84f3d9cfe5dae6eac7de6569433b5cb8f34559365"
+    },
+    {
+      "package": "codex-skills-extension",
+      "executed": 175,
+      "passed": 175,
+      "declared_ignored": 0,
+      "selector_skipped": 0,
+      "status": "passed",
+      "job_id": 122709943381,
+      "log_file": "21-test-codex-skills-extension.log",
+      "log_sha256": "c2b2f0cd795307069f8473aefbf5a5771c9bb30078f12d502f1f1a104ab7ca04"
+    },
+    {
+      "package": "codex-core-plugins",
+      "executed": 426,
+      "passed": 426,
+      "declared_ignored": 0,
+      "selector_skipped": 0,
+      "status": "passed",
+      "job_id": 122709943381,
+      "log_file": "25-test-codex-core-plugins.log",
+      "log_sha256": "7ca6b409f757be6fb2145e3b58dbdd2b332532ca0e1929dcbee901366fad65cd"
+    },
+    {
+      "package": "codex-external-agent-migration",
+      "executed": 0,
+      "passed": 0,
+      "status": "compile_failed",
+      "compiler_error": "E0061",
+      "job_id": 122709943381,
+      "log_file": "29-test-codex-external-agent-migration.log",
+      "log_sha256": "86526c878860af81fc3318c8559e4ca09bb9938dbc9418af92ccf032f814e686"
+    },
+    {
+      "package": "codex-hepta-matrix-protocol",
+      "executed": 12,
+      "passed": 12,
+      "declared_ignored": 0,
+      "selector_skipped": 0,
+      "status": "passed",
+      "job_id": 122711813403,
+      "log_file": "13-test-codex-hepta-matrix-protocol.log",
+      "log_sha256": "08719243f68526c81516003aaeb82cda520eeaed96044aa3dde55ef296baccfd"
+    },
+    {
+      "package": "codex-hepta-matrix-store",
+      "executed": 36,
+      "passed": 36,
+      "declared_ignored": 0,
+      "selector_skipped": 0,
+      "status": "passed",
+      "job_id": 122711813403,
+      "log_file": "17-test-codex-hepta-matrix-store.log",
+      "log_sha256": "c5959064015916bb384c56321659aae507d293fe0a426ba33e41992c0341092f"
+    },
+    {
+      "package": "codex-hepta-matrix-sdk",
+      "executed": 36,
+      "passed": 36,
+      "declared_ignored": 2,
+      "selector_skipped": 0,
+      "status": "passed",
+      "job_id": 122711813403,
+      "log_file": "21-test-codex-hepta-matrix-sdk.log",
+      "log_sha256": "806c9f225ad4801da6c73cc4dbf7e1125d3d003ce8a0119b63ffe7634e0a405c"
+    },
+    {
+      "package": "codex-hepta-matrixd",
+      "executed": 0,
+      "passed": 0,
+      "status": "compile_failed",
+      "compiler_error": "E0061",
+      "job_id": 122711813403,
+      "log_file": "25-test-codex-hepta-matrixd.log",
+      "log_sha256": "b909d71e77a76450fc266073e87173658ea205538a3625db69fed40b95ec29d9"
+    }
+  ],
+  "upstream_aws": {
+    "job_id": 122709943372,
+    "executed": 244,
+    "passed": 244,
+    "original_ignored": 1,
+    "passed_after_retry": 0,
+    "planned_tests": 245,
+    "source_inventory_unchanged": true,
+    "test_source_scope": "isolated complete upstream AWS source; production workspace membership unchanged",
+    "junit": {
+      "file": "aws-upstream-0-junit.xml",
+      "sha256": "e5a6628e3cf05d593208d3730377b6af2aab2db23a3b6258684f9a91e10279d7"
+    }
+  },
+  "matrix_old_store": {
+    "old_source_commit": "6215cb6a87f29623d4beaad24cdf7bcb6bb4fb2c",
+    "compiled_old_source_tree": "56af6d047db233fe945ef22f65e031f460ac649a",
+    "old_versions": {
+      "matrix-sdk": "0.18.0",
+      "matrix-sdk-crypto": "0.18.0",
+      "matrix-sdk-sqlite": "0.18.0"
+    },
+    "old_lock": {
+      "codex-rs/Cargo.lock": {
+        "bytes": 418040,
+        "sha256": "56ed52d9789f01abda5bad96f25dd9d48b837108653cb2f3474ee5e0dbc790de"
+      }
+    },
+    "fixture_files": 7,
+    "surviving_sidecar_files": 0,
+    "capture": "Complete file set after the nextest child process exited, including every surviving DB/WAL/SHM file.",
+    "producer_fixture_unchanged_after_reopen": true,
+    "phases": [
+      {
+        "name": "prepare_old_version_fixture",
+        "job_id": 122709212424,
+        "executed": 1,
+        "passed": 1,
+        "selected_test_skipped": 0,
+        "other_tests_selector_skipped": 2,
+        "retries": 0,
+        "binary_sha256_reported_by_ci": "968afe36fb81f38def30957cc30a9af99448e5ec6dee7e51a7447374f61b50c9",
+        "binary_unchanged_after_execution_reported_by_ci": true,
+        "junit_sha256_reported_by_ci": "ce265607ac2ffed40e214ea90dd115846a93e9cc124f6997bab12485b9780432",
+        "phase_log": "14-prepare_old_version_fixture.log",
+        "phase_log_sha256": "e0c8ac1e920c1a7b39558dfcc9708daef0a46562b224e802a8d01fda9d3c3a0f"
+      },
+      {
+        "name": "reopen_old_version_fixture",
+        "job_id": 122711813403,
+        "executed": 1,
+        "passed": 1,
+        "selected_test_skipped": 0,
+        "other_tests_selector_skipped": 2,
+        "retries": 0,
+        "binary_sha256_reported_by_ci": "315290b884a6c6ea717f3ea55e253884e59520978841246058157d8a48117ae4",
+        "binary_unchanged_after_execution_reported_by_ci": true,
+        "junit_sha256_reported_by_ci": "5ac158f117df95e506f4cfaf2697dbb6c3d9f6e351c040c09ecf7f15af6facf8",
+        "phase_log": "30-reopen_old_version_fixture.log",
+        "phase_log_sha256": "803736f0b083b654ed3e354d4f1fd0ab1239ff7f6c8598f85350c1d248c99441"
+      }
+    ],
+    "scope": "Actual independent old source fixture reopened by the new candidate. Matrix daemon compilation remains blocked by E0061. Local readback verified selected receipts and logs, not the full binary/database ZIP payloads."
+  },
+  "linux_bazel": {
+    "job_id": 122709943356,
+    "exit_code": 0,
+    "targets": [
+      "//codex-rs/utils/yaml:yaml",
+      "//codex-rs/aws-auth:aws-auth",
+      "//codex-rs/keyring-store:keyring-store",
+      "//codex-rs/execpolicy:execpolicy",
+      "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk",
+      "@crates//:serde-saphyr-2.0.0",
+      "@crates//:aws-config-1.8.12",
+      "@crates//:keyring-3.6.3",
+      "@crates//:secret-service-4.0.0",
+      "@crates//:matrix-sdk-0.19.1",
+      "@crates//:matrix-sdk-sqlite-0.19.1",
+      "@crates//:starlark-0.14.2"
+    ],
+    "target_count": 12,
+    "total_actions_reported": 4654,
+    "lockfile_mode": "error",
+    "scope": "Actual Linux library builds; no all-platform or full-workspace test claim"
+  },
+  "test_count_summary": {
+    "workspace_executed_and_passed": 792,
+    "workspace_compile_failed_commands": 3,
+    "workspace_declared_ignored": 2,
+    "aws_original_ignored": 1,
+    "matrix_fixture_phase_other_selector_skips": 4,
+    "rust_successful_test_executions_including_aws_and_fixture_phases": 1038,
+    "python_executed_and_passed": 62,
+    "counting_scope": "Command execution counts, not a unique-test census across all CI workflows. Declared ignored tests and selector skips are separate."
+  },
+  "open_failures": [
+    {
+      "kind": "shared_core_compile_incompatibility",
+      "candidate_job_ids": [
+        122709943381,
+        122709943537,
+        122711813403
+      ],
+      "error": "E0061: old deliver_event_raw single-argument call sites require a compatibility wrapper",
+      "source_sites": [
+        "codex-rs/core/src/session/handlers.rs:417",
+        "codex-rs/core/src/session/handlers.rs:581",
+        "codex-rs/core/src/session/turn_suspension.rs:449"
+      ],
+      "local_fix_status": "prepared, frozen for next batch; not remotely verified by this run"
+    },
+    {
+      "kind": "synapse_native_probe",
+      "job_id": 122709943255,
+      "observed": "start-native-tool-probe failed with exit 1",
+      "root_cause": "unknown",
+      "source_log_paths": [
+        "preparation/controller-commands/<observed-ordinal>-start-native-tool-probe.stdout",
+        "preparation/controller-commands/<observed-ordinal>-start-native-tool-probe.stderr",
+        "preparation/controller-commands/<observed-ordinal>-START.json",
+        "preparation/controller-commands/<observed-ordinal>-END.json"
+      ],
+      "diagnostics_status": "separate small complete log export prepared for next run; original large artifact preserved"
+    }
+  ],
+  "artifacts": {
+    "candidate": {
+      "artifact_id": 12801988362,
+      "name": "ndu-port-candidate-40656660435-1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/artifacts/12801988362",
+      "bytes": 1935773,
+      "server_sha256": "e9e951cebcaee04c18cbffc3cc446be75c5de19e6fb2ec1afa57b48017643a95",
+      "readback": "complete_zip",
+      "full_zip_sha256_verified": true,
+      "all_member_crc_verified": true,
+      "result_members": {
+        "RESULT.json": {
+          "bytes": 31728,
+          "sha256": "cd88dc0a753dedc84a7f9e6cad1a903a569d34eb661f471d1fb430ad434d4252"
+        }
+      }
+    },
+    "deny": {
+      "artifact_id": 12801384455,
+      "name": "ndu-port-deny-40656660435-1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/artifacts/12801384455",
+      "bytes": 8289,
+      "server_sha256": "9bd887475de5accca3ff3b20004019b12085eb055e022deb52e21168377eb75e",
+      "readback": "complete_zip",
+      "full_zip_sha256_verified": true,
+      "all_member_crc_verified": true,
+      "result_members": {
+        "post-scan/RESULT.json": {
+          "bytes": 5221,
+          "sha256": "4782fd3ce9f84a9d82483bbc3f49e20b1d02731bab7b89bbaf17a979be9c232b"
+        },
+        "restore/RESULT.json": {
+          "bytes": 8269,
+          "sha256": "6bc8b9064f14252306d8066a94bed982f2cd096f30cdba8d33a5cf9bd1c4b07a"
+        }
+      }
+    },
+    "keyring": {
+      "artifact_id": 12802023324,
+      "name": "ndu-port-tests-keyring-40656660435-1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/artifacts/12802023324",
+      "bytes": 8458,
+      "server_sha256": "062913436cf62ab7331ac795e4a3923817959a962f3a691240976bd1d2080a1f",
+      "readback": "complete_zip",
+      "full_zip_sha256_verified": true,
+      "all_member_crc_verified": true,
+      "result_members": {
+        "RESULT.json": {
+          "bytes": 11829,
+          "sha256": "bcc6a2a430c9f8ed5563c228c05477c7984e1ed3de6dbd5e6490bad64bb12ca4"
+        }
+      }
+    },
+    "execpolicy": {
+      "artifact_id": 12802023486,
+      "name": "ndu-port-tests-execpolicy-40656660435-1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/artifacts/12802023486",
+      "bytes": 10966,
+      "server_sha256": "9874a133021f3e2e9abd8f985e45255c49550d9096f94112ff32e978c56c4623",
+      "readback": "complete_zip",
+      "full_zip_sha256_verified": true,
+      "all_member_crc_verified": true,
+      "result_members": {
+        "RESULT.json": {
+          "bytes": 11810,
+          "sha256": "3bf1eeaf252ae3413cc1a9d7cbd17178cd07133d4414e3697dfd1feb50a2c701"
+        }
+      }
+    },
+    "aws-upstream": {
+      "artifact_id": 12802023503,
+      "name": "ndu-port-upstream-aws-40656660435-1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/artifacts/12802023503",
+      "bytes": 12119654,
+      "server_sha256": "c33d240acaf34a70dd1a42a8c0df8fee05003890f55a144ae3513017fba7c1e7",
+      "readback": "complete_zip",
+      "full_zip_sha256_verified": true,
+      "all_member_crc_verified": true,
+      "result_members": {
+        "RESULT.json": {
+          "bytes": 161756,
+          "sha256": "ff8d75c16417c8ac4dba7db404094213282b3889902a29a788cee96bd83685dc"
+        }
+      }
+    },
+    "aws-workspace": {
+      "artifact_id": 12803020278,
+      "name": "ndu-port-tests-aws-40656660435-1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/artifacts/12803020278",
+      "bytes": 30477,
+      "server_sha256": "47bbbab8ccce24ae5031f74b2f8aef080b1cb12e3cba6deed8cbbdd8dccdc04e",
+      "readback": "complete_zip",
+      "full_zip_sha256_verified": true,
+      "all_member_crc_verified": true,
+      "result_members": {
+        "RESULT.json": {
+          "bytes": 17460,
+          "sha256": "3ed1538c670fff3c0885ddf2c044b1bcae232e88b492936c8c5680c86b3540f7"
+        }
+      }
+    },
+    "yaml": {
+      "artifact_id": 12802262991,
+      "name": "ndu-port-tests-yaml-40656660435-1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/artifacts/12802262991",
+      "bytes": 52825,
+      "server_sha256": "46749617554f14f1f062a87b946428484cae36c9edc6389ab345767014dc30a0",
+      "readback": "complete_zip",
+      "full_zip_sha256_verified": true,
+      "all_member_crc_verified": true,
+      "result_members": {
+        "RESULT.json": {
+          "bytes": 23227,
+          "sha256": "b8b89522c08c29af539a5edec9388643d61398a81c29a6d9f97eb2c67685bce6"
+        }
+      }
+    },
+    "bazel": {
+      "artifact_id": 12802985869,
+      "name": "ndu-port-bazel-libraries-40656660435-1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/artifacts/12802985869",
+      "bytes": 17122,
+      "server_sha256": "fd07dd37aaee52be5dfe66e35d95d164aaf7ab3c0afd94bb341cfc1bf8fac07e",
+      "readback": "complete_zip",
+      "full_zip_sha256_verified": true,
+      "all_member_crc_verified": true,
+      "result_members": {
+        "ndu-port-bazel-libraries/RESULT.json": {
+          "bytes": 12730,
+          "sha256": "810508612e5c22b53ea1d5268c05d06e1e06a6c2ae2007efb1fc1d88a89e1658"
+        }
+      }
+    },
+    "matrix-old": {
+      "artifact_id": 12802019177,
+      "name": "ndu-matrix-018-fixture-40656660435-1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/artifacts/12802019177",
+      "bytes": 131699047,
+      "server_sha256": "db5a5e9ddf229287a03ec9863c87386966df0bd6d345500f99f27808790f9ae4",
+      "readback": "http_range_selected_members",
+      "full_zip_sha256_verified": false,
+      "bytes_received": 10431,
+      "member_count": 6,
+      "selected_member_crc_and_sha256_verified": true,
+      "result_members": {
+        "RESULT.json": {
+          "bytes": 19890,
+          "sha256": "a849ddbee5a11a47a8519f381b146cd0537d0753710545496967d02dc2d2a47c"
+        }
+      },
+      "binary_and_database_payloads_read_back": false
+    },
+    "matrix-consumer": {
+      "artifact_id": 12802892641,
+      "name": "ndu-port-tests-matrix-40656660435-1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/artifacts/12802892641",
+      "bytes": 99782933,
+      "server_sha256": "02fd24cec114b3afefcdf400f923f85f755abb4d3b1064293da33c2438b9d3fe",
+      "readback": "http_range_selected_members",
+      "full_zip_sha256_verified": false,
+      "bytes_received": 46013,
+      "member_count": 35,
+      "selected_member_crc_and_sha256_verified": true,
+      "result_members": {
+        "RESULT.json": {
+          "bytes": 35587,
+          "sha256": "eaeb4e7b33c262b7d68528682fb4eca4249b31f56472644e039021d44fe535c9"
+        }
+      },
+      "binary_and_database_payloads_read_back": false
+    },
+    "synapse": {
+      "artifact_id": 12801794126,
+      "name": "ndu-native-synapse-arm64-40656660435-1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435/artifacts/12801794126",
+      "bytes": 580225486,
+      "server_sha256": "ad2f2d2c58f75df270d40fa57f885ff51fb4e6b7daa59115e4b6750f4adf2754",
+      "readback": "not_downloaded_connector_size_limit",
+      "full_zip_sha256_verified": false,
+      "connector_limit_bytes": 536870912,
+      "raw_probe_root_cause": "unknown"
+    }
+  },
+  "candidate_files": {
+    "MODULE.bazel": {
+      "bytes": 21899,
+      "sha256": "2540ece92ab88a357306aa60aee19e17a24b41df1a644777e4f2bdc381c71de6"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1722721,
+      "sha256": "fe4bbfb92aac1eba58fb25357bf3182088d29a09b1838144041c94b03f8218cf"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 420227,
+      "sha256": "c335e0649d5d516cadd52d68c1a15ed5c136814d11553ef5c791ea7e5058a478"
+    },
+    "codex-rs/Cargo.toml": {
+      "bytes": 22366,
+      "sha256": "6b9741f85cd8bd3b5fab5ac163c69a18ea9dde05c967ae5cb85d8af400b7590e"
+    },
+    "codex-rs/core-plugins/Cargo.toml": {
+      "bytes": 2198,
+      "sha256": "63132e583a6a888c05536b9fabfb489d0a8da0f4681379b6b0a356e115c380f0"
+    },
+    "codex-rs/core-plugins/src/command_migration.rs": {
+      "bytes": 12071,
+      "sha256": "1dbb263aa6136621f9d7c895a02082ac727b878b8f724c0cda6e4fb0c6b7e783"
+    },
+    "codex-rs/core-plugins/src/plugin_metrics.rs": {
+      "bytes": 5603,
+      "sha256": "1e95bcc40a790f933bdd14d4e5ac1c8b17778966b375acaee91d132b2de53d7c"
+    },
+    "codex-rs/core-plugins/src/startup_sync.rs": {
+      "bytes": 39811,
+      "sha256": "d7402cc77b21a4412b9b47683a422353d60d977b735961b096b841d9218edea4"
+    },
+    "codex-rs/core-plugins/src/startup_sync_zip_tests.rs": {
+      "bytes": 7623,
+      "sha256": "a273b864f58b584390bcc8dbffa090bc1deb98594566bb103e53ad3beab8ee31"
+    },
+    "codex-rs/core-plugins/tests/fixtures/zipball_lzma.zip": {
+      "bytes": 194,
+      "sha256": "b6ce81e8450c7de591a4e4c7e2e9e975542cc709a07487e16d8f0dfaf7e3d30c"
+    },
+    "codex-rs/ext/skills/Cargo.toml": {
+      "bytes": 1460,
+      "sha256": "4159f5f83864714f0b593247ea5322f3bc13bfc69b2e8d555bafef71d8a19847"
+    },
+    "codex-rs/ext/skills/src/loader/environment.rs": {
+      "bytes": 13832,
+      "sha256": "cb049ed3640dafda1d457b7bfb28e85f7089813d70af750f2649bb0acb459732"
+    },
+    "codex-rs/ext/skills/src/loader/metadata.rs": {
+      "bytes": 7994,
+      "sha256": "49a2e2de83ac7bee1ee11023d9b065cc22ff449db48ee6fd571fa052c2ccefda"
+    },
+    "codex-rs/external-agent-migration/Cargo.toml": {
+      "bytes": 1331,
+      "sha256": "b890e0b170700951a96369e5e84fc906864ddf621cf548f0c7586deb57c6ccfb"
+    },
+    "codex-rs/external-agent-migration/src/subagents.rs": {
+      "bytes": 8752,
+      "sha256": "5aa90bd0f5eb5721a80c1bd8c82ab3de84f3736e5ffed38ccb9ff767a5aa8bc1"
+    },
+    "codex-rs/hepta-matrix-sdk/Cargo.toml": {
+      "bytes": 935,
+      "sha256": "281ad225f084f63fc35f2f6238d7931d4fdb05b31c99cc6ee8544f5815ce2fa3"
+    },
+    "codex-rs/hepta-matrix-sdk/src/config.rs": {
+      "bytes": 3668,
+      "sha256": "bdd4dd626b548e16964dc18f138d4c889f972d527efeccb79d0bcea9444bc395"
+    },
+    "codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs": {
+      "bytes": 21995,
+      "sha256": "b614baef4080a56f407bdf8046bafba28fdb4775d2f0944e09541b46bda25e91"
+    },
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs": {
+      "bytes": 28633,
+      "sha256": "97ffaf520931ff71ace0b3db0e4f24eaee17577e83e69333a7d699bfac46be24"
+    },
+    "codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs": {
+      "bytes": 4706,
+      "sha256": "0fb04da4d28ac84ec52bd338fe466a5593791df3539b9847ab09c9d8d731645a"
+    },
+    "codex-rs/hepta-matrix-sdk/tests/event_context_migration.rs": {
+      "bytes": 4633,
+      "sha256": "6f4bdff30fd7966fd8a2ba69fbf0e3276a513c2fb43a312ba320b7e787dbce06"
+    },
+    "codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs": {
+      "bytes": 11670,
+      "sha256": "369051af61cc5445465dd6ad36dd868fec26feac81ae392414f7d175e5f1b77c"
+    },
+    "codex-rs/rust-toolchain.toml": {
+      "bytes": 78,
+      "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+    },
+    "codex-rs/skills/Cargo.toml": {
+      "bytes": 688,
+      "sha256": "68403ab839b55f57c345a2cded3ba129e0661d399ab4f257be923cc798f684a2"
+    },
+    "codex-rs/skills/src/parser.rs": {
+      "bytes": 7253,
+      "sha256": "7c7e4970b4318eadfebab3420bdb82dd001558abfa9471441d420eeb1a205cf5"
+    },
+    "codex-rs/third_party/imbl-6.1.0/BUILD.bazel": {
+      "bytes": 337,
+      "sha256": "ff6f72f59bd318d37f2b0473b0fc84b5241b52096f0a81525a928bdbd336d111"
+    },
+    "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/BUILD.bazel": {
+      "bytes": 337,
+      "sha256": "ff6f72f59bd318d37f2b0473b0fc84b5241b52096f0a81525a928bdbd336d111"
+    },
+    "codex-rs/utils/yaml/BUILD.bazel": {
+      "bytes": 117,
+      "sha256": "35ab6843c2552bbe1cd3a6142f93124935daec0889db4fe35b90439196294f85"
+    },
+    "codex-rs/utils/yaml/Cargo.toml": {
+      "bytes": 418,
+      "sha256": "c8afe9db3266267d3a5e2448550a1c408026d8951b1d06733707c3c0cae182f2"
+    },
+    "codex-rs/utils/yaml/src/key.rs": {
+      "bytes": 1423,
+      "sha256": "374d0b7e32b09af6c69a9eb6d6851301999460cdb3eb66fd5b9168155a7437e8"
+    },
+    "codex-rs/utils/yaml/src/lib.rs": {
+      "bytes": 6264,
+      "sha256": "778cb731c9007e7a6a1b692e07ead52073df639c5a64d9b6a0a2150cd484de06"
+    },
+    "codex-rs/utils/yaml/src/yaml_tests.rs": {
+      "bytes": 3649,
+      "sha256": "81be6c0dc3c175d9b3171a010a6f9a710a132074f09a70152306ea163c98c036"
+    },
+    "codex-rs/utils/yaml/tests/legacy_projection.rs": {
+      "bytes": 6520,
+      "sha256": "39c0a2eabf2052add31543d71f081e0667603ad397aca8dbcc075f544a3271be"
+    },
+    "codex-rs/windows-sandbox-rs/Cargo.toml": {
+      "bytes": 2483,
+      "sha256": "dce261976c1eb7b943da155c6663241b3631e21ff8221df268ff1d104cba33fe"
+    },
+    "codex-rs/windows-sandbox-rs/tests/helper_manifest.rs": {
+      "bytes": 3269,
+      "sha256": "0aebb432c3c54408443e4bf0f06a799588e3d119cb1e0b6a6341eec91f788735"
+    }
+  },
+  "patches": {
+    "source.patch": {
+      "bytes": 89162,
+      "sha256": "9f76d0986e0ec2897c0cc95d550b132d1cf8c51b90f3d925a72859758217ada9"
+    },
+    "candidate.patch": {
+      "bytes": 1206432,
+      "sha256": "23661494d6dc1440bff896c80497509ef6e2415c1419dc0d3e452e70c67fcb4e"
+    }
+  },
+  "private_index_apply_check": {
+    "schema": "hepta.ci.v7-private-index-check.v1",
+    "head": "943768d41de711ef888d8c21c1466aa783885307",
+    "source_commit": "943768d41de711ef888d8c21c1466aa783885307",
+    "uses_private_git_index": true,
+    "live_index_worktree_refs_mutated": false,
+    "candidate_source_worktree_conflicts": [],
+    "candidate_source_untracked_conflicts": []
+  },
+  "patch_apply_results": [
+    {
+      "patch": "source.patch",
+      "bytes": 89162,
+      "sha256": "9f76d0986e0ec2897c0cc95d550b132d1cf8c51b90f3d925a72859758217ada9",
+      "command": [
+        "git",
+        "apply",
+        "--cached",
+        "--check",
+        "source.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "path_count": 33
+    },
+    {
+      "patch": "candidate.patch",
+      "bytes": 1206432,
+      "sha256": "23661494d6dc1440bff896c80497509ef6e2415c1419dc0d3e452e70c67fcb4e",
+      "command": [
+        "git",
+        "apply",
+        "--cached",
+        "--check",
+        "candidate.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "path_count": 35
+    }
+  ],
+  "integration_boundary": {
+    "source_paths": 33,
+    "candidate_paths_including_two_generated_locks": 35,
+    "current_candidate_paths_worktree_conflicts": [],
+    "live_index_worktree_refs_mutated": false,
+    "candidate_zip_payload_prefix": "files/",
+    "frozen_v7_driver_is_not_idempotent_after_integration": true,
+    "reason": "generate and restore unconditionally apply the source/candidate patch to a clean source HEAD and require exact changed paths. A checkout that already contains the generated candidate needs a separately bound integrated-tree verification path; silently skipping patch errors is invalid."
+  },
+  "separate_blocking_run": {
+    "id": 40656660657,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660657",
+    "snapshot_is_final": false,
+    "counts_during_report_preparation": {
+      "success": 15,
+      "failure": 3,
+      "in_progress": 14,
+      "skipped": 4
+    },
+    "known_failed_jobs": [
+      122710331861,
+      122710332374,
+      122710332255
+    ],
+    "known_new_windows_job": "Windows shard 4: 70 test targets passed, 34 failed to build, 4 failed locally, 34 skipped. Four actual failures are exec-server file-system tests and three Hepta crates; pending separate fixes.",
+    "not_covered": "The v7 7/4 summary is not the blocking workflow result."
+  }
+}

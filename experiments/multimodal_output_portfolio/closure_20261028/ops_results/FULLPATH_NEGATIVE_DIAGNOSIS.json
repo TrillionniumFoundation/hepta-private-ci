@@ -1,0 +1,284 @@
+{
+  "actionable_remaining_gap": {
+    "capability_gate": "A newly preregistered training or optimization change must satisfy the existing mean-control and retention gates before any new qualification predictions; changing thresholds or dropping the mean comparator cannot establish the missing capability.",
+    "current_status": "This capability blocker remains open; mechanism and arithmetic verification are complete.",
+    "diagnosis_without_new_predictions": "Archived per-event gross utility, net return, cost and loss components can support descriptive mean/risk-premium and source/condition decomposition, but are deliberately not restored here."
+  },
+  "all_66_frozen_publication_files_verified": true,
+  "all_selections_unchanged_if_retention_constraint_removed": true,
+  "archived_evaluation_rows_or_media_restored": false,
+  "formulas": {
+    "constant_cost_identity": "CE(U - c) = CE(U) - c, c = 0.00134",
+    "delta_seed": "CE_risk_selected - CE_mean_selected",
+    "moment_ratio": "M_risk / M_mean = exp(-2 * delta_seed)",
+    "reported_average": "sum(delta_seed) / 3; this is not a pooled-seed CE",
+    "signed_contribution_fraction": "delta_seed / sum(delta_seed)",
+    "unidentified_decomposition": "Delta CE = Delta E[R] - Delta (E[R] - CE)"
+  },
+  "frozen_results_or_gates_modified": false,
+  "input_sha256": {
+    "experiments/multimodal_output_portfolio/closure_20261028/control_results/PUBLISH_MANIFEST.json": "9d8d31f44f87981187dee37837ecbff21db14f18eaf985b34608a85e9ceff8f0",
+    "experiments/multimodal_output_portfolio/closure_20261028/fullpath_evaluate.py": "8bd164971a4b7c7b6bd547637dd7ac3458e44fa73c7e1d3539bd558b09d7dbbd",
+    "experiments/multimodal_output_portfolio/closure_20261028/fullpath_model.py": "4146d5348b5090f7f80a69d7fb965ec1f6275b6254e4ca10d453a676aa2878cc",
+    "experiments/multimodal_output_portfolio/closure_20261028/fullpath_results/DEVELOPMENT_RESULT.json": "2049e75323a8dedc3a0419899c31a171dadce7a47ca9baf829049bdd19b8e68d",
+    "experiments/multimodal_output_portfolio/closure_20261028/fullpath_results/PROFILE.json": "d76adab9e4964eae880823057fe63973854acfdf939f8a1c2caad460bc26f513",
+    "experiments/multimodal_output_portfolio/closure_20261028/fullpath_results/PROTOCOL.json": "007d1cc4b5577be90d7ebe5cccd090be1e776e637d308d99c205dacebee20aa3",
+    "experiments/multimodal_output_portfolio/closure_20261028/fullpath_results/QUALIFICATION_STATUS.json": "9f762b4dc72fa806827581b95c2bd2b1fb7af027ed77cf7d446f97b8d8acd7a5",
+    "experiments/multimodal_output_portfolio/closure_20261028/fullpath_results/SELECTIONS.json": "2942a6014cf0550d7d3c222321bbaddccb9a94b044c501754cc2aacb61d8cb45",
+    "experiments/multimodal_output_portfolio/closure_20261028/fullpath_results/SEMANTICS.json": "b6e8d7a2bf6ab897746c4dd1d8a1a829cf239e14dfb81c1e91e49062a2f4ba7c",
+    "experiments/multimodal_output_portfolio/unified_20261028/generator.py": "781cec9ce1726918e794a3820f115b5d98c50bf042d8e8b6fe7fdae4717aec95"
+  },
+  "insufficient_for": [
+    "Separating mean return, dispersion, rare low outcomes or particular corruption conditions from CE alone.",
+    "Attributing the optimization result to gradient variance, clipping, learning rate or insufficient training.",
+    "Treating three seeds sharing one initialization and development sources as three independent datasets.",
+    "Claiming qualification superiority, broad retention preservation by learned models, or global optimality.",
+    "Claiming complete physical cost control or a strict future NDU-tail certificate."
+  ],
+  "mean_selected_risk_minus_mean_ce": -0.005546490863992393,
+  "new_predictions": 0,
+  "new_training_updates": 0,
+  "primary_profile_sha256": "797184c42f56386af8de9f5b973d224953dce27798450eecf1ce5cd264682626",
+  "qualification_predictions": 0,
+  "registered_mean_control_admission_threshold": 0.0,
+  "reserved_qualification_sources": 384,
+  "review_source_sha256": "bde8a86bc623bc1454ecd14d2958a0d650015caae9e8f8723a052aa1a244ea4e",
+  "same_stage_comparisons": [
+    {
+      "mean_eligible": false,
+      "mean_quality_ce": 0.7990342772914105,
+      "risk_eligible": false,
+      "risk_minus_mean_ce": -4.65612598365972e-07,
+      "risk_minus_mean_retention_ce": 0.004409329810116214,
+      "risk_quality_ce": 0.7990338116788122,
+      "seed": 17,
+      "stage": "transition"
+    },
+    {
+      "mean_eligible": false,
+      "mean_quality_ce": 0.7970949195457555,
+      "risk_eligible": false,
+      "risk_minus_mean_ce": 0.0018213799568962408,
+      "risk_minus_mean_retention_ce": 8.617058820381551e-06,
+      "risk_quality_ce": 0.7989162995026517,
+      "seed": 17,
+      "stage": "adapter"
+    },
+    {
+      "mean_eligible": true,
+      "mean_quality_ce": 0.8107024711938844,
+      "risk_eligible": false,
+      "risk_minus_mean_ce": -0.011385615005360505,
+      "risk_minus_mean_retention_ce": -0.013448491413415531,
+      "risk_quality_ce": 0.7993168561885239,
+      "seed": 17,
+      "stage": "emission"
+    },
+    {
+      "mean_eligible": true,
+      "mean_quality_ce": 0.8175894309446742,
+      "risk_eligible": true,
+      "risk_minus_mean_ce": -0.01661193037603803,
+      "risk_minus_mean_retention_ce": 0.020385721849863758,
+      "risk_quality_ce": 0.8009775005686361,
+      "seed": 17,
+      "stage": "encoder"
+    },
+    {
+      "mean_eligible": true,
+      "mean_quality_ce": 0.8460981082437707,
+      "risk_eligible": true,
+      "risk_minus_mean_ce": -1.0139080665050315e-06,
+      "risk_minus_mean_retention_ce": 2.76423307432605e-06,
+      "risk_quality_ce": 0.8460970943357042,
+      "seed": 29,
+      "stage": "transition"
+    },
+    {
+      "mean_eligible": true,
+      "mean_quality_ce": 0.8396737939239225,
+      "risk_eligible": true,
+      "risk_minus_mean_ce": 0.0009153919907460839,
+      "risk_minus_mean_retention_ce": -7.355123845531608e-06,
+      "risk_quality_ce": 0.8405891859146686,
+      "seed": 29,
+      "stage": "adapter"
+    },
+    {
+      "mean_eligible": false,
+      "mean_quality_ce": 0.8329752109462661,
+      "risk_eligible": false,
+      "risk_minus_mean_ce": 0.00764183368819038,
+      "risk_minus_mean_retention_ce": -8.896424617099719e-06,
+      "risk_quality_ce": 0.8406170446344565,
+      "seed": 29,
+      "stage": "emission"
+    },
+    {
+      "mean_eligible": false,
+      "mean_quality_ce": 0.8091824724562177,
+      "risk_eligible": false,
+      "risk_minus_mean_ce": 0.030452370540493323,
+      "risk_minus_mean_retention_ce": -0.004683196123189015,
+      "risk_quality_ce": 0.839634842996711,
+      "seed": 29,
+      "stage": "encoder"
+    },
+    {
+      "mean_eligible": true,
+      "mean_quality_ce": 0.8098216664604454,
+      "risk_eligible": true,
+      "risk_minus_mean_ce": 1.2424961077783792e-06,
+      "risk_minus_mean_retention_ce": -0.004558678116914461,
+      "risk_quality_ce": 0.8098229089565532,
+      "seed": 43,
+      "stage": "transition"
+    },
+    {
+      "mean_eligible": true,
+      "mean_quality_ce": 0.8116929337139333,
+      "risk_eligible": true,
+      "risk_minus_mean_ce": -0.002987647611186417,
+      "risk_minus_mean_retention_ce": -3.6839147211642498e-06,
+      "risk_quality_ce": 0.8087052861027468,
+      "seed": 43,
+      "stage": "adapter"
+    },
+    {
+      "mean_eligible": true,
+      "mean_quality_ce": 0.8099504357533532,
+      "risk_eligible": true,
+      "risk_minus_mean_ce": 0.001172865490749242,
+      "risk_minus_mean_retention_ce": -2.775235016128086e-06,
+      "risk_quality_ce": 0.8111233012441025,
+      "seed": 43,
+      "stage": "emission"
+    },
+    {
+      "mean_eligible": true,
+      "mean_quality_ce": 0.7919394820092482,
+      "risk_eligible": true,
+      "risk_minus_mean_ce": 0.013648145936908662,
+      "risk_minus_mean_retention_ce": 0.015879526350325635,
+      "risk_quality_ce": 0.8055876279461569,
+      "seed": 43,
+      "stage": "encoder"
+    }
+  ],
+  "schema": "hepta.ndu.fullpath-negative-diagnosis.v1",
+  "selected_comparisons": [
+    {
+      "contribution_to_seed_average": -0.005537310125346011,
+      "fraction_of_total_signed_difference": 0.998344766290704,
+      "mean_quality_ce": 0.8175894309446742,
+      "mean_retention_ce": 0.8873494607195759,
+      "mean_stage": "encoder",
+      "risk_minus_mean_ce": -0.01661193037603803,
+      "risk_quality_ce": 0.8009775005686361,
+      "risk_retention_ce": 0.9077351825694396,
+      "risk_stage": "encoder",
+      "risk_to_mean_exponential_moment_ratio": 1.033781936541749,
+      "seed": 17
+    },
+    {
+      "contribution_to_seed_average": 0.0,
+      "fraction_of_total_signed_difference": -0.0,
+      "mean_quality_ce": 0.8500426720639798,
+      "mean_retention_ce": 0.8665961115546477,
+      "mean_stage": "prior_greedy",
+      "risk_minus_mean_ce": 0.0,
+      "risk_quality_ce": 0.8500426720639798,
+      "risk_retention_ce": 0.8665961115546477,
+      "risk_stage": "prior_greedy",
+      "risk_to_mean_exponential_moment_ratio": 1.0,
+      "seed": 29
+    },
+    {
+      "contribution_to_seed_average": -9.180738646382322e-06,
+      "fraction_of_total_signed_difference": 0.001655233709295967,
+      "mean_quality_ce": 0.8116929337139333,
+      "mean_retention_ce": 0.8848227461792049,
+      "mean_stage": "adapter",
+      "risk_minus_mean_ce": -2.7542215939146963e-05,
+      "risk_quality_ce": 0.8116653914979941,
+      "risk_retention_ce": 0.8848193545593894,
+      "risk_stage": "prior_greedy",
+      "risk_to_mean_exponential_moment_ratio": 1.0000550859490536,
+      "seed": 43
+    }
+  ],
+  "selector_checks": [
+    {
+      "arm": "lax_mean",
+      "retention_floor": 0.8769427856419054,
+      "same_selection_without_retention": true,
+      "seed": 17,
+      "selected_stage": "encoder",
+      "unconstrained_best_stage": "encoder"
+    },
+    {
+      "arm": "lax_risk",
+      "retention_floor": 0.8769427856419054,
+      "same_selection_without_retention": true,
+      "seed": 17,
+      "selected_stage": "encoder",
+      "unconstrained_best_stage": "encoder"
+    },
+    {
+      "arm": "lax_mean",
+      "retention_floor": 0.8615961115546477,
+      "same_selection_without_retention": true,
+      "seed": 29,
+      "selected_stage": "prior_greedy",
+      "unconstrained_best_stage": "prior_greedy"
+    },
+    {
+      "arm": "lax_risk",
+      "retention_floor": 0.8615961115546477,
+      "same_selection_without_retention": true,
+      "seed": 29,
+      "selected_stage": "prior_greedy",
+      "unconstrained_best_stage": "prior_greedy"
+    },
+    {
+      "arm": "lax_mean",
+      "retention_floor": 0.8798193545593894,
+      "same_selection_without_retention": true,
+      "seed": 43,
+      "selected_stage": "adapter",
+      "unconstrained_best_stage": "adapter"
+    },
+    {
+      "arm": "lax_risk",
+      "retention_floor": 0.8798193545593894,
+      "same_selection_without_retention": true,
+      "seed": 43,
+      "selected_stage": "prior_greedy",
+      "unconstrained_best_stage": "prior_greedy"
+    }
+  ],
+  "sufficient_conclusions": [
+    "The negative selected contrast is a real comparison under the same gamma-2 scoring profile.",
+    "Seed 17 supplies 99.8344766290704% of the signed selected contrast; both candidates are eligible encoder stages.",
+    "Removing retention eligibility changes none of the six selections; relaxing that gate cannot repair this result.",
+    "The fixed declared deployment tariff cancels from every relative CE comparison.",
+    "Seed 29 contributes zero after both policies fall back; seed 43 fallback contributes only 0.1655233709296%.",
+    "Same-stage signs differ across seeds and stages; the results do not support a universal risk-training disadvantage."
+  ],
+  "work_tariff": {
+    "costs": {
+      "encoder": "0.00030",
+      "gate": "0.00005",
+      "observer": "0.00015",
+      "pixel_emission": "0.0003",
+      "read": "0.00010",
+      "token_emission": "0.00014",
+      "transition": "0.0002",
+      "write": "0.00010"
+    },
+    "exact_total_per_bundle": "0.00134",
+    "physical_CPU_is_not_in_this_objective": true,
+    "same_for_all_recorded_candidate_modes": true,
+    "scope": "Declared fixed work tariff only, not a physical CPU bound or a failure-tail certificate."
+  }
+}

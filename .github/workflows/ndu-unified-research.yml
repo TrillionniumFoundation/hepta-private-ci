@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   invariants:
-    name: Standard-library objective and gradient oracles
+    name: Objective, continuation, and selected-policy invariants
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     defaults:
@@ -40,6 +40,10 @@ jobs:
         with:
           python-version: "3.12.14"
 
+      - name: Install the pinned lightweight numerical dependency
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: numpy==2.3.5
+
       - name: Record the tested source and runtime
         run: |
           set -euo pipefail
@@ -50,13 +54,18 @@ jobs:
           import os
           import platform
           from pathlib import Path
-          root = Path("experiments/multimodal_output_portfolio/unified_20261028")
+          import numpy
+          roots = (
+              Path("experiments/multimodal_output_portfolio/unified_20261028"),
+              Path("experiments/multimodal_output_portfolio/closure_20261028"),
+          )
           record = {
               "tested_sha": os.environ["TESTED_SHA"],
               "python": platform.python_version(),
-              "scope": "standard-library invariants; no training, native execution, or model qualification",
-              "sources": {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
-                          for p in sorted(root.glob("*.py"))},
+              "numpy": numpy.__version__,
+              "scope": "objective and selected-policy invariants; no Torch, training, native owner episode, or model qualification",
+              "sources": {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                          for root in roots for p in sorted(root.glob("*.py"))},
           }
           target = Path(os.environ["RUNNER_TEMP"]) / "ndu-unified-research" / "source.json"
           target.write_text(json.dumps(record, sort_keys=True, indent=2) + "\n")
@@ -65,10 +74,22 @@ jobs:
       - name: Check profile semantics and selected-policy tails
         run: |
           set -euo pipefail
-          python -m unittest -v \
-            experiments.multimodal_output_portfolio.unified_20261028.profile_tests \
-            experiments.multimodal_output_portfolio.unified_20261028.test_tail \
-            2>&1 | tee "$RUNNER_TEMP/ndu-unified-research/tests.log"
+          python - <<'PY' 2>&1 | tee "$RUNNER_TEMP/ndu-unified-research/tests.log"
+          import sys
+          import unittest
+          modules = (
+              "experiments.multimodal_output_portfolio.unified_20261028.profile_tests",
+              "experiments.multimodal_output_portfolio.unified_20261028.test_tail",
+              "experiments.multimodal_output_portfolio.closure_20261028.control_tests",
+          )
+          suite = unittest.defaultTestLoader.loadTestsFromNames(modules)
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if "torch" in sys.modules:
+              raise RuntimeError("The lightweight invariant suite must not load Torch")
+          if result.testsRun == 0:
+              raise RuntimeError("An empty invariant suite is not validation")
+          raise SystemExit(0 if result.wasSuccessful() else 1)
+          PY
 
       - name: Enumerate finite stopping policies and delivered-output gradients
         run: |
