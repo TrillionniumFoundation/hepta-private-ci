@@ -80,6 +80,49 @@ class EvidenceReaderTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             reader.command("ordinary-native", 2)
 
+    def test_colored_pidfd_receipt_requires_six_actual_pass_lines(self):
+        record = self.command_record()
+        record["minimum_tests"] = 14
+        record["observed_passed_tests"] = 14
+        selector = [
+            *(f"test({name})" for name in evidence.NAMESPACE_TESTS),
+            "test(pidfd_reaper::tests::)",
+        ]
+        record["command"] = [
+            "just", "test", "--locked", "-p", "codex-linux-sandbox",
+            "--lib", "-E", " | ".join(selector), "--no-capture",
+        ]
+        namespace = [
+            f"\x1b[32;1m PASS\x1b[0m [ 0.001s] codex-linux-sandbox "
+            f"\x1b[36m{name}\x1b[0m\n"
+            for name in evidence.NAMESPACE_TESTS
+        ]
+        pidfd = [
+            f"\x1b[32;1m PASS\x1b[0m [ 0.001s] codex-linux-sandbox "
+            f"\x1b[36mpidfd_reaper::tests\x1b[0m\x1b[36m::\x1b[0m"
+            f"\x1b[34;1mcase_{index}\x1b[0m\n"
+            for index in range(6)
+        ]
+
+        def write_receipt(lines):
+            raw = (
+                "".join(lines)
+                + "\x1b[32;1mSummary\x1b[0m [ 0.1s] 14 tests run: "
+                + "\x1b[1m14\x1b[0m \x1b[32;1mpassed\x1b[0m, 0 failed\n"
+            ).encode()
+            (self.root / "command.log").write_bytes(raw)
+            record["log_bytes"] = len(raw)
+            record["log_sha256"] = hashlib.sha256(raw).hexdigest()
+            (self.root / "namespace-and-pidfd.json").write_text(json.dumps(record))
+
+        write_receipt(namespace + pidfd)
+        reader = evidence.Evidence(self.root)
+        self.assertEqual(reader.command("namespace-and-pidfd", 14)["passed"], 14)
+        # Summary alone cannot substitute for the missing sixth real pidfd PASS.
+        write_receipt(namespace + pidfd[:-1])
+        with self.assertRaisesRegex(ValueError, "all six pidfd controls"):
+            reader.command("namespace-and-pidfd", 14)
+
     def test_another_run_cannot_supply_passing_receipt(self):
         record = self.command_record()
         record["run_id"] = "122"
