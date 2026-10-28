@@ -1,0 +1,50 @@
+{
+  "schema": "hepta-system-longitudinal-input-readiness-v1",
+  "source_base": "5d59794ff22caa389f2b5ad446f6f5e83845cf0a",
+  "source_base_tree": "ee2776d9c032ecb6e44e8f1a480af299dea7b3b9",
+  "source_file_sha256": {
+    "codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs": "d455220de2b728faa2e06b497da87000b41cf28b2f8cd9953d5af84ee70b0d44",
+    "codex-rs/hepta-intelligence-eval/src/product_runner.rs": "15e82c5fb2b58ec0fffbb74e2b05be75ede0f3d0e21603b95e047edd6ca9fcf4",
+    "codex-rs/hepta-intelligence-eval/src/self_evolution_product_selection.rs": "0b2da899a60ed70324d2245d1181eff9be36d0d1b8892991f91b3247867e24b0",
+    "codex-rs/hepta-agentd/src/cognitive_process_product.rs": "978c7a2fddadc47c3730d77d9429c8cc90cfc47e81295f3413b6ac3a308c3640",
+    "codex-rs/hepta-agentd/src/cognitive_process_bootstrap.rs": "6f3efcc91692fc5120b371839fb31e2248d3b40b83eec90fc6c142c0275f7f27",
+    "codex-rs/hepta-agentd/src/cognitive_neural_bootstrap.rs": "93c5bca1dd15be448a19e35b8b0c2f4737b383d6f6b87585db5020ae4dcb301b",
+    "codex-rs/hepta-agentd/src/main.rs": "090d9c5db08e598cf939cf4802384a1e5d76a3b62b1e5f4fce88b57fd381c5bb",
+    "codex-rs/hepta-learning-ledger/src/signed_evidence.rs": "9e79ac130de5f1aaec640448ed700eb9d5b5ae3d8a708c0163f7f414b55a25b2"
+  },
+  "task_input_inventory": [
+    {
+      "root": "/workspace/scratch/3d4ec372c488/hepta-v4-run-002",
+      "matching_metadata_paths": [
+        "freeze.json"
+      ]
+    },
+    {
+      "root": "/workspace/scratch/3d4ec372c488/hepta-v4-cell-002",
+      "matching_metadata_paths": []
+    },
+    {
+      "root": "/workspace/scratch/301262829a43/pon-hepta-impl/real-model-run-001",
+      "matching_metadata_paths": [
+        "original-four-controls-followup/freeze.json"
+      ]
+    }
+  ],
+  "relevant_config_environment_names": [],
+  "qualified_windows_started": 0,
+  "qualified_windows_completed": 0,
+  "synthetic_issuers_created": false,
+  "clock_wait_used_as_future_efficacy": false,
+  "product_qualification_issued": false,
+  "ordinary_trained_child_installed": false,
+  "status": "BLOCKED_MISSING_REAL_HOST_AND_COLLECTION_INPUTS",
+  "missing_inputs": [
+    "independent-host-trust-and-current-role-credentials",
+    "durable-future-data-preregistration-and-minimum-window-policy",
+    "live-final-holdout-provider-and-independent-CAS-fence-anchor",
+    "real-independent-collection-and-clock-provenance",
+    "sealed-estimator-and-durable-qualification-evidence",
+    "independent-selector-and-neural-ordinary-process-integration"
+  ],
+  "readiness_scope": "Read-only inventory of listed task roots and source; not a global claim about external hosts"
+}
