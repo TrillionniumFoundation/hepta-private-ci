@@ -1,0 +1,119 @@
+{
+  "binary_bytes": 47973120,
+  "binary_identical_to_formal_v2": false,
+  "binary_sha256": "aa2bca08f38d1e7e44b33784bf419f9e7046421a9447ac528dfde5e0c06f75b5",
+  "commands": [
+    {
+      "args": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "-p",
+        "codex-hepta-native-agent",
+        "-p",
+        "codex-thread-store"
+      ],
+      "exit_code": 0,
+      "finished_ns": 1793165936797824790,
+      "label": "native_thread_store_tests",
+      "started_ns": 1793165613542755476
+    },
+    {
+      "args": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--manifest-path",
+        "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/runner/Cargo.toml",
+        "--all-targets"
+      ],
+      "exit_code": 0,
+      "finished_ns": 1793165947092412039,
+      "label": "runner_tests",
+      "started_ns": 1793165936797963420
+    },
+    {
+      "args": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fix",
+        "-p",
+        "codex-hepta-native-agent",
+        "-p",
+        "codex-thread-store"
+      ],
+      "exit_code": 0,
+      "finished_ns": 1793166068100663537,
+      "label": "scoped_fix",
+      "started_ns": 1793165947092503898
+    },
+    {
+      "args": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "finished_ns": 1793166068466741382,
+      "label": "format",
+      "started_ns": 1793166068100771146
+    },
+    {
+      "args": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-native-agent",
+        "-p",
+        "codex-thread-store",
+        "--all-targets",
+        "--",
+        "-D",
+        "clippy::correctness",
+        "-D",
+        "clippy::expect_used"
+      ],
+      "exit_code": 0,
+      "finished_ns": 1793166186468345847,
+      "label": "strict_clippy",
+      "started_ns": 1793166068466817359
+    },
+    {
+      "args": [
+        "/home/qian-qi/.local/bin/bazel",
+        "--batch",
+        "--output_base=/home/qian-qi/worktrees/hepta-native-bazel-output-20261028",
+        "mod",
+        "deps",
+        "--lockfile_mode=update",
+        "--repo_contents_cache=/home/qian-qi/worktrees/hepta-native-bazel-contents-20261028"
+      ],
+      "exit_code": 0,
+      "finished_ns": 1793166199168874736,
+      "label": "bazel_lock",
+      "started_ns": 1793166186468452267
+    },
+    {
+      "args": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--manifest-path",
+        "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/runner/Cargo.toml"
+      ],
+      "exit_code": 0,
+      "finished_ns": 1793166241905216773,
+      "label": "release",
+      "started_ns": 1793166199168965764
+    }
+  ],
+  "formal_v2_binary_sha256": "0628b5ea8d919db59b581f66eba64ddc3a6674ee960b6f6b13790e61d27d9f08",
+  "formal_v2_source_commit": "ea162dd819932d6b962863aebf49908c557b5e3f",
+  "native_and_thread_store_rust_sources_unchanged": true,
+  "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "schema": "hepta.native.post-ci-hygiene-build.v1",
+  "source_inputs": {
+    "codex-rs/Cargo.lock": "f89689e7d06d623fc3ce105294b929eb86332280eaeef8b37640250ebf1a9b1d",
+    "codex-rs/hepta-native-agent/Cargo.toml": "1d1abffe2fea60c594b5fac5ed6e2f4a5b45667b944050e49fd4800c7982b37a",
+    "qualification/native-agent-v1/runner/Cargo.lock": "3118175b25a7ac9595fa92f72d507916f5f1c306e43cddce465c3178bc2b22ee",
+    "qualification/native-agent-v1/runner/Cargo.toml": "44787dd0c5d00488da12215ceb40dd004ac76103312c71c0fb1f2671229f36ba"
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "archive": {
+    "bytes": 6408,
+    "path": "measurement-gates-20261028.tar.gz",
+    "sha256": "0c3eab64ee2ac4d93d81b274ee5eb54623ebede5d84604260ff4f97a3c4665ba"
+  },
+  "files": [
+    {
+      "bytes": 484,
+      "path": "calibration_100ms/status.json",
+      "sha256": "69ca3ab8ebe2756c28ad7411499cde89af54d6c530e63e0852278be255965f97"
+    },
+    {
+      "bytes": 1687,
+      "path": "calibration_100ms/stdout.log",
+      "sha256": "e51eff725bb351791c45b0ff7e4d674d85be2cb89098ad1315ca97ae684306c5"
+    },
+    {
+      "bytes": 3847,
+      "path": "calibration_100ms/stderr.log",
+      "sha256": "a427c2021fd202e375f21693396095793ecaa32e6f84d259a50416244c83460c"
+    },
+    {
+      "bytes": 483,
+      "path": "profile/status.json",
+      "sha256": "80415b16d20a668ce351f724d8de17d3847c3274aceedb63cd4b37d517e50d47"
+    },
+    {
+      "bytes": 12821,
+      "path": "profile/stdout.log",
+      "sha256": "2f5dfaa48cbf085bcf104bda0cf250ebea438c695a8b7e7e3d1dd986642321b4"
+    },
+    {
+      "bytes": 0,
+      "path": "profile/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 480,
+      "path": "cadence_r1_failure/status.json",
+      "sha256": "07e017edbeb4e69cb8d3766c7c6b31e9b90024cb55cf7a8f8e2336b4e4316520"
+    },
+    {
+      "bytes": 739,
+      "path": "cadence_r1_failure/stdout.log",
+      "sha256": "40b5d0f3975b2c58a42afc7dfb4288c9bfde4d9d6ec6c5698dcfe24897884493"
+    },
+    {
+      "bytes": 913,
+      "path": "cadence_r1_failure/stderr.log",
+      "sha256": "57e7793329ac6f0bfd13ab5f8cd201ea1d3eaaf020375f533863534b68ddf633"
+    },
+    {
+      "bytes": 479,
+      "path": "cadence_r2_pass/status.json",
+      "sha256": "b20eb695d2fead9a9ce6883fe7acf322b64c73210d203e6c492a9e3bd59744ef"
+    },
+    {
+      "bytes": 773,
+      "path": "cadence_r2_pass/stdout.log",
+      "sha256": "e671e941f6d33ec9f9d72e9df8d34b18e913dd13e4d4b130053710ee19d5c993"
+    },
+    {
+      "bytes": 0,
+      "path": "cadence_r2_pass/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 477,
+      "path": "freeze_v2/status.json",
+      "sha256": "a837c0078f01338984139fa860d35f36fc29577aff0aa1e2083f587765fc0b38"
+    },
+    {
+      "bytes": 87,
+      "path": "freeze_v2/stdout.log",
+      "sha256": "b69adb2f20c1b8072695e736a6483a2be5cfcf2eecd3dcf531ae4262e956b66e"
+    },
+    {
+      "bytes": 0,
+      "path": "freeze_v2/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 5167,
+      "path": "cadence_r1_failure/calibrate_metrics_cadence_r1.py",
+      "sha256": "363ce0831ce2c505542e166654cd9429d0ea0e21f0307373489ed1da47e89e75"
+    }
+  ],
+  "jobs": [
+    {
+      "id": "1a180c7eb0f-96a-2c48",
+      "name": "calibration_100ms"
+    },
+    {
+      "id": "1a180cb1ca9-96a-2c59",
+      "name": "profile"
+    },
+    {
+      "id": "1a180d01e34-96a-2c88",
+      "name": "cadence_r1_failure"
+    },
+    {
+      "id": "1a180d20dbc-96a-2c95",
+      "name": "cadence_r2_pass"
+    },
+    {
+      "id": "1a180d3bd7a-96a-2ca2",
+      "name": "freeze_v2"
+    }
+  ],
+  "schema": "hepta.measurement.gates.v1"
+}

@@ -3219,6 +3219,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "codex-execution-core"
+version = "0.0.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
+]
+
+[[package]]
 name = "codex-experimental-api-macros"
 version = "0.0.0"
 dependencies = [
@@ -3995,6 +4004,22 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-cognitive-types",
  "codex-hepta-types",
+]
+
+[[package]]
+name = "codex-hepta-native-agent"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "codex-execution-core",
+ "codex-hepta-types",
+ "codex-http-client",
+ "http 1.4.0",
+ "pretty_assertions",
+ "serde_json",
+ "tokio",
+ "tokio-util",
+ "url",
 ]
 
 [[package]]
@@ -5252,6 +5277,7 @@ dependencies = [
  "pulldown-cmark",
  "serde",
  "serde_json",
+ "sha2 0.10.9",
  "sqlx",
  "tempfile",
  "thiserror 2.0.18",

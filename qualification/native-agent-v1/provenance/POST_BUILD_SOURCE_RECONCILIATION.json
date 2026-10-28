@@ -1,0 +1,17 @@
+{
+  "schema": "hepta.native.post-build-source-reconciliation.v1",
+  "build_manifest_sha256": "f480d1102a40bb18501ee2a4846cad0d8b1faac5a8bedf5c4785933070ba1e9f",
+  "changed_inputs": [
+    {
+      "path": "codex-rs/hepta-native-agent/tests/model_port.rs",
+      "build_sha256": "9fa82dc0563bd71cce03da1f869a483f4cc5f51e0a43bbb5718a086d118eefc2",
+      "current_sha256": "d6f2d4e98cfade86216b2b9a85fd45d6dc58b45e26c6ffbc2004340bd8682b3a"
+    }
+  ],
+  "source_change_allowlist": [
+    "codex-rs/hepta-native-agent/tests/model_port.rs"
+  ],
+  "production_build_inputs_unchanged": true,
+  "binary_sha256": "0628b5ea8d919db59b581f66eba64ddc3a6674ee960b6f6b13790e61d27d9f08",
+  "note": "The only allowed post-build input change is the integration test helper lint fix; ThreadStore is not linked into the qualification binary."
+}

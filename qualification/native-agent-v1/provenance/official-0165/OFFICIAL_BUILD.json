@@ -1,0 +1,863 @@
+{
+  "source_commit": "360319d8dee62d87e2d59fc0c21805d79519cfed",
+  "release": "0.165.0",
+  "upstream_declared_toolchain": "1.99.1",
+  "qualification_toolchain_override": "1.95.0",
+  "local_lock_versions_repaired": [
+    {
+      "name": "app_test_support",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-agent-extension",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-agent-graph-store",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-agent-identity",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-agent-message-board-client",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-agent-message-board-extension",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-agent-roles",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-analytics",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-ansi-escape",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-api",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-app-server",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-app-server-client",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-app-server-daemon",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-app-server-protocol",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-app-server-protocol-noop-macros",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-app-server-test-client",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-app-server-transport",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-apply-patch",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-arg0",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-async-utils",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-attachment-store",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-aws-auth",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-backend-client",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-backend-openapi-models",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-build-info",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-bwrap",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-chatgpt",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-cli",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-client",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-cloud-client",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-cloud-config",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-cloud-tasks",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-cloud-tasks-client",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-cloud-tasks-mock-client",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-code-mode",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-code-mode-host",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-code-mode-protocol",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-code-mode-runtime",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-collaboration-mode-templates",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-config",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-config-schema",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-connectors",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-connectors-extension",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-context-fragments",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-core",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-core-api",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-core-plugin-common",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-core-plugins",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-diagnostics",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-direct-tool-timing",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-exec",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-exec-server",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-exec-server-protocol",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-exec-server-test-support",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-execpolicy",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-experimental-api-macros",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-extension-api",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-extension-items",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-external-agent-migration",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-features",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-feedback",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-file-search",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-file-system",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-file-watcher",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-git-attribution",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-git-utils",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-goal-extension",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-guardian-context",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-guardian-reviewer",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-guardian-v2",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-guardian-v3",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-history",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-history-notes-extension",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-home",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-hooks",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-http-client",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-image-generation-extension",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-install-context",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-keyring-store",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-linux-sandbox",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-lmstudio",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-login",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-mcp",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-mcp-extension",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-memories-extension",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-memories-read",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-memories-write",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-mermaid",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-message-board",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-message-history",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-model-provider",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-model-provider-info",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-models-manager",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-multi-env-copy-file",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-mxc-sandbox",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-network-proxy",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-ollama",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-otel",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-otel-trace-websocket",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-plugin",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-process-hardening",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-prompts",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-protocol",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-protocol-test-support",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-queue-extension",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-realtime-webrtc",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-response-debug-context",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-responses-api-proxy",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-rmcp-client",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-rollout",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-rollout-trace",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-runtime-agent-instance",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-sandboxing",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-secrets",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-shell-command",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-skills",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-skills-extension",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-state",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-stdio-to-uds",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-tcp-tunnel",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-terminal-detection",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-test-binary-support",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-thread-manager-sample",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-thread-store",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-tools",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-tui",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-uds",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-user-verification",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-absolute-path",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-approval-presets",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-audio",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-cache",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-cargo-bin",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-cli",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-critical-path",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-elapsed",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-fuzzy-match",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-git-discovery",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-home-dir",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-image",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-json-to-toml",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-oss",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-output-truncation",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-path",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-path-uri",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-plugins",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-process",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-pty",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-readiness",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-redacted-string",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-rustls-provider",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-sandbox-summary",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-sleep-inhibitor",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-stream-parser",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-string",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-utils-template",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-v8-poc",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-voice-host",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-web-search-extension",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-websocket-auth",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-websocket-client",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-windows-sandbox",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-windows-sandbox-service",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-windows-sandbox-test-support",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-workload-identity",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "codex-worktree",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    },
+    {
+      "name": "core_test_support",
+      "from": "0.0.0",
+      "to": "0.165.0"
+    }
+  ],
+  "external_lock_packages_unchanged": true,
+  "wrapper_sha256": "74e789456f52da8fadacbe71ec2b39c05e38d38d9b03c8a68b7ca4ccc7589de0",
+  "bootstrap_patch_sha256": "156805d68f85679ea21e5b0ef3ec552132e5dd8c274ede2f7cae219d009f030e",
+  "lock_sha256": "a646d4b01a0e8c62f6af9b74fb965c1bd6d3cf27a547984de09730d50e0e64da",
+  "target_cache": "/home/qian-qi/worktrees/codex-official-0164-facade-20261027/codex-rs/target",
+  "rustc": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2\n",
+  "binaries": {
+    "codex": {
+      "sha256": "7b9a74955391ef21e56a021cd119c0e934d42d4b24339bccf0af8c74abc331cc",
+      "bytes": 1506256128,
+      "path": "/home/qian-qi/worktrees/codex-official-0165-facade-20261028/bin/codex"
+    },
+    "hepta_facade": {
+      "sha256": "4f96fb3aa150f7f182f4527da2e83ce836a7a77d08206ce69dee294a049563a8",
+      "bytes": 1090831136,
+      "path": "/home/qian-qi/worktrees/codex-official-0165-facade-20261028/bin/hepta_facade"
+    }
+  },
+  "version_stdout": "codex-cli 0.165.0\n",
+  "build_succeeded": true
+}

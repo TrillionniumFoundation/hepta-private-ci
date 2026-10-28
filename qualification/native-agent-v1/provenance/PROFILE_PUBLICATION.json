@@ -1,0 +1,17 @@
+{
+  "decompressed_bytes_unchanged": true,
+  "first_stage_gate": {
+    "exit_code": 1,
+    "finding": "qualification/native-agent-v1/evidence/metrics-v2-profile.txt:37: new blank line at EOF.",
+    "inner_diff_check_exit": 2,
+    "job_id": "1a180e9eae2-96a-2d34",
+    "state": "failed"
+  },
+  "published_path": "evidence/metrics-v2-profile.txt.gz",
+  "published_sha256": "db73c287b48f9cbc6f59f3ecad0b6122300b58b5d7167e68d3e33d0414b0f7f5",
+  "raw_bytes": 3474,
+  "raw_path": "evidence/metrics-v2-profile.txt",
+  "raw_sha256": "49dde94e62f0198774097b0fe8a107df4ee982683767a34c515497833bff7ad8",
+  "reason": "Raw profiler output ends with blank lines; retain exact bytes compressed rather than edit evidence for whitespace policy.",
+  "schema": "hepta.raw-profile.publication.v1"
+}

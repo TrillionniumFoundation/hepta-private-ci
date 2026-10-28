@@ -1,0 +1,96 @@
+{
+  "files": [
+    {
+      "bytes": 20769,
+      "expected_previous_sha256": "e641142a5cb3bda4cac25550696ca100f8d66c9ad8c7ba1d7ca5ddc01a584966",
+      "path": "README.md",
+      "sha256": "6e5901eb422159ef71b664045a6865c8d858884b48889491e49f35b4d4dd6022"
+    },
+    {
+      "bytes": 14328,
+      "expected_previous_sha256": "11f2093fb150104cc1befbc36f2956c51772c2e2658388fe1f66cf7e00ee223c",
+      "path": "BENCHMARK_PROTOCOL.md",
+      "sha256": "58c0ff74c92b3c4e3106f26b6f095866fda4fbb04bbb9f43eda2158daa859037"
+    },
+    {
+      "bytes": 8894,
+      "expected_previous_sha256": "b49e2ed4e8e264a6f0959585c6766d0e8bae04493ae391bddb5baac0515babcb",
+      "path": "IMPLEMENTATION_STATUS.md",
+      "sha256": "6457af149a7387e464aff415c1e187fdc36dd0c450a8d334835fd5343a2f2caf",
+      "published_sha256_before_ci_hygiene": "3ced9d3ee8f6fca191d646278d9c79dc678d431984c1eee177f1fcc1988b3324",
+      "published_bytes_before_ci_hygiene": 7643
+    },
+    {
+      "bytes": 15697,
+      "expected_previous_sha256": "5eabc3c23c98f45677de6be5fea76b87af41d4f19dcf01ef4141861cd1c050f1",
+      "path": "OWNERSHIP_BOUNDARIES.md",
+      "sha256": "69087a5e6d2c1fd6bf8615e57c63d7b8d4f67cdc366c2abc48a118c816dba693"
+    },
+    {
+      "bytes": 15717,
+      "expected_previous_sha256": "a4ddb7399667257f0e8318ef887ce9215d5bb41190d6af871b8e699874de1f61",
+      "path": "ARCHITECTURE_DECISION.md",
+      "sha256": "ab1819366f8cd962825e544299dbf349b60d99eb4b5233df3c3d4a26d60a8e42"
+    },
+    {
+      "bytes": 307,
+      "expected_previous_sha256": "256f2640806d798985aa8c547f5ef1320a9ab857e47c3eec8fa7631f4d16c13b",
+      "path": ".gitignore",
+      "sha256": "3db3bba68eda692a184bb6c8efd59498bdecbfe13e190ba562123f0418e06101",
+      "uploaded_sha256_before_raw_profile_exception": "0d27e25a3499238ef29e29602e3e9aaf7157dfc82ed54fe9409a6cddfd24edc1"
+    },
+    {
+      "bytes": 18489,
+      "expected_previous_sha256": "absent",
+      "path": "REPORT.md",
+      "sha256": "bfd938fbbf82d97039f84016ca37f13a035e14e2dc21d5c442dd528599ff452c",
+      "published_sha256_before_ci_hygiene": "5ff261fb7f1e725da9e966dbcce3c1e0fcaee14bb9dc12860e1e8134b9a50c12",
+      "published_bytes_before_ci_hygiene": 16702
+    },
+    {
+      "bytes": 7606,
+      "expected_previous_sha256": "absent",
+      "path": "PRODUCTION_BOUNDARY_REPORT_FRAGMENT.md",
+      "sha256": "21e2dc708487251ca03acda956b55f27e2de281dff5f7364a2deeb0d31364cff"
+    },
+    {
+      "bytes": 534659,
+      "expected_previous_sha256": "absent",
+      "path": "evidence/V2_AUDIT.json",
+      "sha256": "4c88a30d066f0f8a62a8cfaee7afbfdd3e95d2746552ad17e1e2a5aed181b6c6"
+    },
+    {
+      "bytes": 6244,
+      "expected_previous_sha256": "absent",
+      "path": "evidence/V2_AUDIT.md",
+      "sha256": "aefccc9079153d260fbb389a8fc759d9be8ff94589c8fef5bf7f4fe2d8596c3c"
+    },
+    {
+      "bytes": 6408,
+      "expected_previous_sha256": "absent",
+      "path": "evidence/measurement-gates-20261028.tar.gz",
+      "sha256": "0c3eab64ee2ac4d93d81b274ee5eb54623ebede5d84604260ff4f97a3c4665ba"
+    },
+    {
+      "bytes": 3203,
+      "expected_previous_sha256": "absent",
+      "path": "evidence/measurement-gates-20261028.MANIFEST.json",
+      "sha256": "31c15f075d40bb510fa7637b04b1bc0e560b00e1675c50268500d363556371db"
+    },
+    {
+      "bytes": 17139,
+      "expected_previous_sha256": "absent",
+      "path": "evidence/FORMAL_V2_JOBS.json",
+      "sha256": "5270b73533cb6c4d09739de63a8ee36da3a16f425c2b6490bb501de84a429c10"
+    },
+    {
+      "bytes": 5765,
+      "expected_previous_sha256": "absent",
+      "path": "test_process_metrics_v2_fixture.py",
+      "sha256": "290f275e89e5fceeeeb11f0003aa4821bd93031d1b5a715f19e6d5cb72120d20"
+    }
+  ],
+  "post_upload_adjustment": "Precise ignore for original raw profile; original bytes published as gzip, see PROFILE_PUBLICATION.json.",
+  "schema": "hepta.final-publication.v1",
+  "ci_hygiene_adjustment": "Report and implementation status now distinguish the ea162dd formal benchmark binary from the dependency-cleaned build and record scoped gate results; prior published hashes are retained."
+}

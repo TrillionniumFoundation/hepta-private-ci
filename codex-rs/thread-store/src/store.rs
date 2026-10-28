@@ -69,6 +69,48 @@ pub trait ThreadStore: Any + Send + Sync {
     /// Return this store as [`Any`] for implementation-owned escape hatches.
     fn as_any(&self) -> &dyn Any;
 
+    /// Bind non-model pending state to this store's already-open live writer.
+    fn open_native_checkpoint(
+        &self,
+        _binding: crate::NativeCheckpointBinding,
+        _mode: crate::NativeCheckpointOpenMode,
+        _currentness: std::sync::Arc<dyn crate::NativeCheckpointCurrentness>,
+    ) -> ThreadStoreFuture<'_, crate::NativeCheckpointSession> {
+        Box::pin(async {
+            Err(ThreadStoreError::Unsupported {
+                operation: "native_checkpoint",
+            })
+        })
+    }
+
+    /// Observe the original pending state without granting new execution authority.
+    fn load_native_checkpoint<'a>(
+        &'a self,
+        _session: &'a crate::NativeCheckpointSession,
+    ) -> ThreadStoreFuture<'a, crate::NativeCheckpointLoad> {
+        Box::pin(async {
+            Err(ThreadStoreError::Unsupported {
+                operation: "native_checkpoint",
+            })
+        })
+    }
+
+    /// Publish a complete checkpoint by exact CAS while retaining the host permit.
+    /// Local storage retains its commit task when the waiter is cancelled. A lost
+    /// acknowledgement is ambiguous: reload the same operation before proceeding.
+    fn commit_native_checkpoint<'a>(
+        &'a self,
+        _session: &'a crate::NativeCheckpointSession,
+        _expected: crate::NativeCheckpointExpected,
+        _state: crate::NativeCheckpointState,
+    ) -> ThreadStoreFuture<'a, crate::StoredNativeCheckpoint> {
+        Box::pin(async {
+            Err(ThreadStoreError::Unsupported {
+                operation: "native_checkpoint",
+            })
+        })
+    }
+
     /// Returns the history mode to use when history does not carry a persisted mode.
     ///
     /// The default is legacy so existing stores stay compatible. Stores whose durable contract is

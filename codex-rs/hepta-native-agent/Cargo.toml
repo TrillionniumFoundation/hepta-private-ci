@@ -1,0 +1,29 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-native-agent"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_native_agent"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+anyhow = { workspace = true }
+codex-execution-core = { workspace = true }
+codex-hepta-types = { workspace = true }
+codex-http-client = { workspace = true }
+http = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true, features = ["io-util", "macros", "net", "rt-multi-thread", "sync", "time"] }
+
+tokio-util = { workspace = true, features = ["rt"] }
+url = { workspace = true }
+
+[dev-dependencies]
+pretty_assertions = { workspace = true }

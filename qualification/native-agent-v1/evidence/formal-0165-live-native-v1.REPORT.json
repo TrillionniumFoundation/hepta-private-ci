@@ -1,0 +1,2179 @@
+{
+  "budgets": {
+    "context_bytes": 65536,
+    "model_calls": 4,
+    "model_timeout_seconds": 120,
+    "output_tokens": 256,
+    "tool_calls": 3,
+    "tool_output_bytes": 32768,
+    "tool_timeout_seconds": 60
+  },
+  "case_timeout_seconds": 240,
+  "cpu_count": 48,
+  "detached_runtime_jobs": [
+    {
+      "cgroup": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b50190-aca09-1.service",
+      "created_during_lane": true,
+      "created_unix_ms": 1793160708496,
+      "job_id": "1a180b50190-aca09-1",
+      "unit": "hepta-runtime-job-1a180b50190-aca09-1"
+    },
+    {
+      "cgroup": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b517b2-aca09-2.service",
+      "created_during_lane": true,
+      "created_unix_ms": 1793160714162,
+      "job_id": "1a180b517b2-aca09-2",
+      "unit": "hepta-runtime-job-1a180b517b2-aca09-2"
+    },
+    {
+      "cgroup": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b52c3f-aca09-3.service",
+      "created_during_lane": true,
+      "created_unix_ms": 1793160719423,
+      "job_id": "1a180b52c3f-aca09-3",
+      "unit": "hepta-runtime-job-1a180b52c3f-aca09-3"
+    },
+    {
+      "cgroup": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b5412e-aca09-4.service",
+      "created_during_lane": true,
+      "created_unix_ms": 1793160724782,
+      "job_id": "1a180b5412e-aca09-4",
+      "unit": "hepta-runtime-job-1a180b5412e-aca09-4"
+    },
+    {
+      "cgroup": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b55cab-aca09-5.service",
+      "created_during_lane": true,
+      "created_unix_ms": 1793160731819,
+      "job_id": "1a180b55cab-aca09-5",
+      "unit": "hepta-runtime-job-1a180b55cab-aca09-5"
+    },
+    {
+      "cgroup": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b570f9-aca09-6.service",
+      "created_during_lane": true,
+      "created_unix_ms": 1793160737017,
+      "job_id": "1a180b570f9-aca09-6",
+      "unit": "hepta-runtime-job-1a180b570f9-aca09-6"
+    },
+    {
+      "cgroup": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b58652-aca09-7.service",
+      "created_during_lane": true,
+      "created_unix_ms": 1793160742482,
+      "job_id": "1a180b58652-aca09-7",
+      "unit": "hepta-runtime-job-1a180b58652-aca09-7"
+    }
+  ],
+  "executor_sha256": "0628b5ea8d919db59b581f66eba64ddc3a6674ee960b6f6b13790e61d27d9f08",
+  "finished_ns": 1793160747638143135,
+  "fixture": {
+    "cwd": "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1",
+    "data": "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/fixture.txt",
+    "data_sha256": "185bac343ad5d029724bd8684f7882d42b0f81e7a6259ad082caa7d29c27b545",
+    "host": "qualification",
+    "script": "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/fixture_tool.py",
+    "script_sha256": "c23f660d4b716a37e50ce3981cc7e233e9b2bbb25702e2f07af9e13ec0099b70",
+    "tool_timeout_seconds": 60
+  },
+  "lane": "native",
+  "limits": [
+    "RSS sum double-counts shared pages; use PSS where available",
+    "Fast exited processes may be missed by sampling; inspect metrics coverage",
+    "Facade has a shared outer JSON-lines harness; its internal client uses upstream typed channels",
+    "Replay usage values are synthetic and are not model token consumption",
+    "Same model/task/ceilings do not imply byte-identical prompts or provider options",
+    "Native model deadline is 120s total; gateway upstream I/O timeout is 120s; Codex case deadline is separate",
+    "Loopback sshd/control-plane work outside selected scopes can be omitted",
+    "Each case creates a fresh thread/session on a resident executor",
+    "Timing includes thread creation; startup reported separately"
+  ],
+  "measurement_windows": {
+    "case_wall": "Send run or thread/start through successful/failed case result; excludes resident startup and shutdown",
+    "gateway_creation_config_provenance_and_final_audit_outside_resource_window": true,
+    "resource_totals_are_not_per_case_cpu_or_memory": true,
+    "resources": "Whole lane from before backend launch through client/gateway shutdown; includes warmup and observer"
+  },
+  "metrics": {
+    "cgroups": [
+      {
+        "baseline": "first_observation",
+        "baseline_usage_usec": 348208,
+        "cpu_available_last_sample": true,
+        "cpu_before_first_observation_missing": true,
+        "cpu_counter_reset": false,
+        "errors": {},
+        "exit_cpu_endpoint_missing": false,
+        "first_observed_usage_usec": 348208,
+        "first_seen_seconds": 0.08389956300379708,
+        "last_seen_seconds": 44.38707997399615,
+        "last_usage_usec": 44917036,
+        "memory_current_peak_bytes": 31600640,
+        "memory_peak_lifetime_bytes": 32088064,
+        "observed_cpu_seconds": 44.568828,
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b4e9af-96a-2be3.service"
+      },
+      {
+        "baseline": "caller_attested_new_cgroup_zero",
+        "baseline_usage_usec": 0,
+        "cpu_available_last_sample": false,
+        "cpu_before_first_observation_missing": false,
+        "cpu_counter_reset": false,
+        "errors": {
+          "cgroup_not_walkable": 465,
+          "cgroup_walk:FileNotFoundError": 465,
+          "cpu.stat:FileNotFoundError": 465,
+          "memory.current:FileNotFoundError": 465,
+          "memory.peak:FileNotFoundError": 465
+        },
+        "exit_cpu_endpoint_missing": true,
+        "first_observed_usage_usec": null,
+        "first_seen_seconds": 5.477809396979865,
+        "last_seen_seconds": 44.38707997399615,
+        "last_usage_usec": 96311,
+        "memory_current_peak_bytes": 11902976,
+        "memory_peak_lifetime_bytes": 14000128,
+        "observed_cpu_seconds": 0.096311,
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b50190-aca09-1.service"
+      },
+      {
+        "baseline": "caller_attested_new_cgroup_zero",
+        "baseline_usage_usec": 0,
+        "cpu_available_last_sample": false,
+        "cpu_before_first_observation_missing": false,
+        "cpu_counter_reset": false,
+        "errors": {
+          "cgroup_not_walkable": 398,
+          "cgroup_walk:FileNotFoundError": 398,
+          "cpu.stat:FileNotFoundError": 398,
+          "memory.current:FileNotFoundError": 398,
+          "memory.peak:FileNotFoundError": 398
+        },
+        "exit_cpu_endpoint_missing": true,
+        "first_observed_usage_usec": null,
+        "first_seen_seconds": 11.078544803982368,
+        "last_seen_seconds": 44.38707997399615,
+        "last_usage_usec": 93237,
+        "memory_current_peak_bytes": 14532608,
+        "memory_peak_lifetime_bytes": 14532608,
+        "observed_cpu_seconds": 0.093237,
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b517b2-aca09-2.service"
+      },
+      {
+        "baseline": "caller_attested_new_cgroup_zero",
+        "baseline_usage_usec": 0,
+        "cpu_available_last_sample": false,
+        "cpu_before_first_observation_missing": false,
+        "cpu_counter_reset": false,
+        "errors": {
+          "cgroup_not_walkable": 335,
+          "cgroup_walk:FileNotFoundError": 335,
+          "cpu.stat:FileNotFoundError": 335,
+          "memory.current:FileNotFoundError": 335,
+          "memory.peak:FileNotFoundError": 335
+        },
+        "exit_cpu_endpoint_missing": true,
+        "first_observed_usage_usec": null,
+        "first_seen_seconds": 16.325794238975504,
+        "last_seen_seconds": 44.38707997399615,
+        "last_usage_usec": 80741,
+        "memory_current_peak_bytes": 13152256,
+        "memory_peak_lifetime_bytes": 13152256,
+        "observed_cpu_seconds": 0.080741,
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b52c3f-aca09-3.service"
+      },
+      {
+        "baseline": "caller_attested_new_cgroup_zero",
+        "baseline_usage_usec": 0,
+        "cpu_available_last_sample": false,
+        "cpu_before_first_observation_missing": false,
+        "cpu_counter_reset": false,
+        "errors": {
+          "cgroup_not_walkable": 274,
+          "cgroup_walk:FileNotFoundError": 274,
+          "cpu.stat:FileNotFoundError": 274,
+          "memory.current:FileNotFoundError": 274,
+          "memory.peak:FileNotFoundError": 274
+        },
+        "exit_cpu_endpoint_missing": true,
+        "first_observed_usage_usec": null,
+        "first_seen_seconds": 21.656004682998173,
+        "last_seen_seconds": 44.38707997399615,
+        "last_usage_usec": 50883,
+        "memory_current_peak_bytes": 7819264,
+        "memory_peak_lifetime_bytes": 7819264,
+        "observed_cpu_seconds": 0.050883,
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b5412e-aca09-4.service"
+      },
+      {
+        "baseline": "caller_attested_new_cgroup_zero",
+        "baseline_usage_usec": 0,
+        "cpu_available_last_sample": false,
+        "cpu_before_first_observation_missing": false,
+        "cpu_counter_reset": false,
+        "errors": {
+          "cgroup_not_walkable": 186,
+          "cgroup_walk:FileNotFoundError": 186,
+          "cpu.stat:FileNotFoundError": 186,
+          "memory.current:FileNotFoundError": 186,
+          "memory.peak:FileNotFoundError": 186
+        },
+        "exit_cpu_endpoint_missing": true,
+        "first_observed_usage_usec": null,
+        "first_seen_seconds": 28.74542065197602,
+        "last_seen_seconds": 44.38707997399615,
+        "last_usage_usec": 97539,
+        "memory_current_peak_bytes": 8749056,
+        "memory_peak_lifetime_bytes": 14143488,
+        "observed_cpu_seconds": 0.097539,
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b55cab-aca09-5.service"
+      },
+      {
+        "baseline": "caller_attested_new_cgroup_zero",
+        "baseline_usage_usec": 0,
+        "cpu_available_last_sample": false,
+        "cpu_before_first_observation_missing": false,
+        "cpu_counter_reset": false,
+        "errors": {
+          "cgroup_not_walkable": 119,
+          "cgroup_walk:FileNotFoundError": 119,
+          "cpu.stat:FileNotFoundError": 119,
+          "memory.current:FileNotFoundError": 119,
+          "memory.peak:FileNotFoundError": 119
+        },
+        "exit_cpu_endpoint_missing": true,
+        "first_observed_usage_usec": null,
+        "first_seen_seconds": 33.86010468300083,
+        "last_seen_seconds": 44.38707997399615,
+        "last_usage_usec": 100320,
+        "memory_current_peak_bytes": 8577024,
+        "memory_peak_lifetime_bytes": 13930496,
+        "observed_cpu_seconds": 0.10032,
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b570f9-aca09-6.service"
+      },
+      {
+        "baseline": "caller_attested_new_cgroup_zero",
+        "baseline_usage_usec": 0,
+        "cpu_available_last_sample": false,
+        "cpu_before_first_observation_missing": false,
+        "cpu_counter_reset": false,
+        "errors": {
+          "cgroup_not_walkable": 57,
+          "cgroup_walk:FileNotFoundError": 57,
+          "cpu.stat:FileNotFoundError": 57,
+          "memory.current:FileNotFoundError": 57,
+          "memory.peak:FileNotFoundError": 57
+        },
+        "exit_cpu_endpoint_missing": true,
+        "first_observed_usage_usec": null,
+        "first_seen_seconds": 39.340303869976196,
+        "last_seen_seconds": 44.38707997399615,
+        "last_usage_usec": 75466,
+        "memory_current_peak_bytes": 12099584,
+        "memory_peak_lifetime_bytes": 12099584,
+        "observed_cpu_seconds": 0.075466,
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b58652-aca09-7.service"
+      }
+    ],
+    "coverage": {
+      "cgroup_paths_requested": [
+        "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b4e9af-96a-2be3.service",
+        "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b50190-aca09-1.service",
+        "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b517b2-aca09-2.service",
+        "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b52c3f-aca09-3.service",
+        "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b5412e-aca09-4.service",
+        "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b55cab-aca09-5.service",
+        "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b570f9-aca09-6.service",
+        "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b58652-aca09-7.service"
+      ],
+      "explicit_pid_scope_pinned_to_first_start_ticks": true,
+      "external_work_declared": [
+        "Loopback sshd/control-plane work outside explicit local PID/cgroup scopes can be omitted",
+        "Upstream model service process tree and compute are not measured"
+      ],
+      "extra_pids_requested": [],
+      "gaps": {
+        "pid_disappeared_during_sample": 4,
+        "pss_missing:ProcessLookupError": 3,
+        "selected_pid_stat_missing": 30
+      },
+      "global_total_memory_or_cpu_claim_supported": false,
+      "observer_process_included": true,
+      "polling_can_miss_short_lived_processes": true,
+      "process_exit_endpoints_missing": 35,
+      "process_identities_observed": 37,
+      "remote_model_or_ssh_work": "Not included unless measured separately or represented by explicit local PID/cgroup scope. A local client/gateway alone does not measure remote inference.",
+      "root_pids_requested": [
+        707067
+      ]
+    },
+    "cpu": {
+      "cgroup_nonoverlap_observed_seconds": 45.163325,
+      "cgroup_nonoverlap_paths": [
+        "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b4e9af-96a-2be3.service",
+        "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b50190-aca09-1.service",
+        "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b517b2-aca09-2.service",
+        "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b52c3f-aca09-3.service",
+        "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b5412e-aca09-4.service",
+        "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b55cab-aca09-5.service",
+        "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b570f9-aca09-6.service",
+        "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b58652-aca09-7.service"
+      ],
+      "process_and_cgroup_totals_overlap_do_not_add": true,
+      "process_lifecycle_observed_seconds": 44.489999999999995,
+      "short_lived_unobserved_process_cpu": "missing unless included by a baselined, retained cgroup CPU counter; never assumed zero"
+    },
+    "elapsed_seconds": 44.38780416699592,
+    "memory": {
+      "memory_peaks_are_sampled_lower_bounds": true,
+      "pss_complete_samples": 507,
+      "pss_incomplete_samples": 34,
+      "pss_peak_complete_sample_bytes": 42974208,
+      "pss_peak_observed_partial_bytes": 42974208,
+      "rss_peak_sum_bytes": 80596992,
+      "rss_sum_double_counts_shared_pages": true
+    },
+    "processes": [
+      {
+        "cpu_baseline": "first_observation",
+        "cpu_baseline_ticks": 5,
+        "cpu_before_first_observation_missing": true,
+        "exit_cpu_endpoint_missing": false,
+        "first_seen_seconds": 0.08389956300379708,
+        "first_waited_child_ticks": 0,
+        "identity": "707059:23836886",
+        "last_cpu_ticks": 11,
+        "last_seen_seconds": 44.38707997399615,
+        "last_waited_child_ticks": 0,
+        "name": "python3",
+        "observed_cpu_seconds": 0.06,
+        "pid": 707059,
+        "present_at_final_sample": true,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 7326720,
+        "rss_peak_bytes": 13512704,
+        "start_ticks": 23836886,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "first_observation",
+        "cpu_baseline_ticks": 35,
+        "cpu_before_first_observation_missing": true,
+        "exit_cpu_endpoint_missing": false,
+        "first_seen_seconds": 0.08389956300379708,
+        "first_waited_child_ticks": 0,
+        "identity": "707067:23836893",
+        "last_cpu_ticks": 3933,
+        "last_seen_seconds": 44.38707997399615,
+        "last_waited_child_ticks": 554,
+        "name": "python3",
+        "observed_cpu_seconds": 38.98,
+        "pid": 707067,
+        "present_at_final_sample": true,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 16275456,
+        "rss_peak_bytes": 26230784,
+        "start_ticks": 23836893,
+        "waited_child_cpu_delta_seconds": 5.54
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 0.17077148298267275,
+        "first_waited_child_ticks": 0,
+        "identity": "707081:23836931",
+        "last_cpu_ticks": 91,
+        "last_seen_seconds": 43.925233149988344,
+        "last_waited_child_ticks": 461,
+        "name": "hepta-native-qu",
+        "observed_cpu_seconds": 0.91,
+        "pid": 707081,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 9406464,
+        "rss_peak_bytes": 14462976,
+        "start_ticks": 23836931,
+        "waited_child_cpu_delta_seconds": 4.61
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 5.477809396979865,
+        "first_waited_child_ticks": 0,
+        "identity": "707254:23837461",
+        "last_cpu_ticks": 16,
+        "last_seen_seconds": 6.269523767987266,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.16,
+        "pid": 707254,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1997824,
+        "rss_peak_bytes": 7970816,
+        "start_ticks": 23837461,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 6.348186559975147,
+        "first_waited_child_ticks": 0,
+        "identity": "707339:23837542",
+        "last_cpu_ticks": 5,
+        "last_seen_seconds": 6.586198292003246,
+        "last_waited_child_ticks": 3,
+        "name": "python3",
+        "observed_cpu_seconds": 0.05,
+        "pid": 707339,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 8497152,
+        "rss_peak_bytes": 18391040,
+        "start_ticks": 23837542,
+        "waited_child_cpu_delta_seconds": 0.03
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 6.4277509239909705,
+        "first_waited_child_ticks": 0,
+        "identity": "707343:23837556",
+        "last_cpu_ticks": 3,
+        "last_seen_seconds": 6.4277509239909705,
+        "last_waited_child_ticks": 0,
+        "name": "python3",
+        "observed_cpu_seconds": 0.03,
+        "pid": 707343,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 1,
+        "pss_peak_bytes": null,
+        "rss_peak_bytes": 0,
+        "start_ticks": 23837556,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 6.5067895309766755,
+        "first_waited_child_ticks": 0,
+        "identity": "707347:23837563",
+        "last_cpu_ticks": 15,
+        "last_seen_seconds": 6.820213929982856,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.15,
+        "pid": 707347,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1967104,
+        "rss_peak_bytes": 7970816,
+        "start_ticks": 23837563,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 6.975527289992897,
+        "first_waited_child_ticks": 0,
+        "identity": "707407:23837611",
+        "last_cpu_ticks": 13,
+        "last_seen_seconds": 7.288355417986168,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.13,
+        "pid": 707407,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1923072,
+        "rss_peak_bytes": 8298496,
+        "start_ticks": 23837611,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 7.445345448999433,
+        "first_waited_child_ticks": 0,
+        "identity": "707481:23837659",
+        "last_cpu_ticks": 15,
+        "last_seen_seconds": 7.8376879089919385,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.15,
+        "pid": 707481,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 1,
+        "pss_peak_bytes": 1906688,
+        "rss_peak_bytes": 7970816,
+        "start_ticks": 23837659,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 11.078544803982368,
+        "first_waited_child_ticks": 0,
+        "identity": "707767:23838015",
+        "last_cpu_ticks": 14,
+        "last_seen_seconds": 11.414191194984596,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.14,
+        "pid": 707767,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 2064384,
+        "rss_peak_bytes": 8298496,
+        "start_ticks": 23838015,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 11.500037589983549,
+        "first_waited_child_ticks": 0,
+        "identity": "707819:23838062",
+        "last_cpu_ticks": 6,
+        "last_seen_seconds": 11.500037589983549,
+        "last_waited_child_ticks": 0,
+        "name": "python3",
+        "observed_cpu_seconds": 0.06,
+        "pid": 707819,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 8448000,
+        "rss_peak_bytes": 18038784,
+        "start_ticks": 23838062,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 11.580091585987248,
+        "first_waited_child_ticks": 0,
+        "identity": "707820:23838066",
+        "last_cpu_ticks": 15,
+        "last_seen_seconds": 11.847977286000969,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.15,
+        "pid": 707820,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1975296,
+        "rss_peak_bytes": 7905280,
+        "start_ticks": 23838066,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 12.034809365984984,
+        "first_waited_child_ticks": 0,
+        "identity": "707886:23838114",
+        "last_cpu_ticks": 16,
+        "last_seen_seconds": 12.289074232976418,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.16,
+        "pid": 707886,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1781760,
+        "rss_peak_bytes": 7970816,
+        "start_ticks": 23838114,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 12.45130006299587,
+        "first_waited_child_ticks": 0,
+        "identity": "707951:23838160",
+        "last_cpu_ticks": 15,
+        "last_seen_seconds": 12.776106136996532,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.15,
+        "pid": 707951,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1932288,
+        "rss_peak_bytes": 7950336,
+        "start_ticks": 23838160,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 16.325794238975504,
+        "first_waited_child_ticks": 0,
+        "identity": "708112:23838542",
+        "last_cpu_ticks": 15,
+        "last_seen_seconds": 16.680495645996416,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.15,
+        "pid": 708112,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 2060288,
+        "rss_peak_bytes": 8282112,
+        "start_ticks": 23838542,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 16.850170280988095,
+        "first_waited_child_ticks": 0,
+        "identity": "708163:23838594",
+        "last_cpu_ticks": 15,
+        "last_seen_seconds": 17.18409804897965,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.15,
+        "pid": 708163,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 1,
+        "pss_peak_bytes": 1906688,
+        "rss_peak_bytes": 7905280,
+        "start_ticks": 23838594,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 17.35689414598164,
+        "first_waited_child_ticks": 0,
+        "identity": "708241:23838642",
+        "last_cpu_ticks": 17,
+        "last_seen_seconds": 17.649559605983086,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.17,
+        "pid": 708241,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1926144,
+        "rss_peak_bytes": 7970816,
+        "start_ticks": 23838642,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 17.834662797977217,
+        "first_waited_child_ticks": 0,
+        "identity": "708294:23838692",
+        "last_cpu_ticks": 15,
+        "last_seen_seconds": 18.096920381998643,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.15,
+        "pid": 708294,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1937408,
+        "rss_peak_bytes": 8691712,
+        "start_ticks": 23838692,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 21.656004682998173,
+        "first_waited_child_ticks": 0,
+        "identity": "708472:23839077",
+        "last_cpu_ticks": 15,
+        "last_seen_seconds": 22.0007056449831,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.15,
+        "pid": 708472,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 2035712,
+        "rss_peak_bytes": 8232960,
+        "start_ticks": 23839077,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 22.171073538978817,
+        "first_waited_child_ticks": 0,
+        "identity": "708528:23839126",
+        "last_cpu_ticks": 5,
+        "last_seen_seconds": 22.171073538978817,
+        "last_waited_child_ticks": 0,
+        "name": "python3",
+        "observed_cpu_seconds": 0.05,
+        "pid": 708528,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 8507392,
+        "rss_peak_bytes": 18419712,
+        "start_ticks": 23839126,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 22.171073538978817,
+        "first_waited_child_ticks": 0,
+        "identity": "708530:23839129",
+        "last_cpu_ticks": 16,
+        "last_seen_seconds": 22.50328089899267,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.16,
+        "pid": 708530,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 2007040,
+        "rss_peak_bytes": 7970816,
+        "start_ticks": 23839129,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 22.671755066985497,
+        "first_waited_child_ticks": 0,
+        "identity": "708592:23839177",
+        "last_cpu_ticks": 15,
+        "last_seen_seconds": 22.92585203697672,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.15,
+        "pid": 708592,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1765376,
+        "rss_peak_bytes": 8364032,
+        "start_ticks": 23839177,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 23.095644350978546,
+        "first_waited_child_ticks": 0,
+        "identity": "708705:23839222",
+        "last_cpu_ticks": 15,
+        "last_seen_seconds": 23.453490965999663,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.15,
+        "pid": 708705,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 2007040,
+        "rss_peak_bytes": 7839744,
+        "start_ticks": 23839222,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 28.74542065197602,
+        "first_waited_child_ticks": 0,
+        "identity": "709102:23839781",
+        "last_cpu_ticks": 16,
+        "last_seen_seconds": 29.103590294980677,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.16,
+        "pid": 709102,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1986560,
+        "rss_peak_bytes": 8757248,
+        "start_ticks": 23839781,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 29.193912557995645,
+        "first_waited_child_ticks": 0,
+        "identity": "709163:23839830",
+        "last_cpu_ticks": 5,
+        "last_seen_seconds": 29.193912557995645,
+        "last_waited_child_ticks": 0,
+        "name": "python3",
+        "observed_cpu_seconds": 0.05,
+        "pid": 709163,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 8438784,
+        "rss_peak_bytes": 18038784,
+        "start_ticks": 23839830,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 29.193912557995645,
+        "first_waited_child_ticks": 0,
+        "identity": "709164:23839834",
+        "last_cpu_ticks": 14,
+        "last_seen_seconds": 29.52869028999703,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.14,
+        "pid": 709164,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1989632,
+        "rss_peak_bytes": 7905280,
+        "start_ticks": 23839834,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 29.68842702099937,
+        "first_waited_child_ticks": 0,
+        "identity": "709227:23839880",
+        "last_cpu_ticks": 16,
+        "last_seen_seconds": 30.00897570399684,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.16,
+        "pid": 709227,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1915904,
+        "rss_peak_bytes": 8343552,
+        "start_ticks": 23839880,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 30.172129922983004,
+        "first_waited_child_ticks": 0,
+        "identity": "709306:23839928",
+        "last_cpu_ticks": 16,
+        "last_seen_seconds": 30.524714472994674,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.16,
+        "pid": 709306,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1967104,
+        "rss_peak_bytes": 7905280,
+        "start_ticks": 23839928,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 33.86010468300083,
+        "first_waited_child_ticks": 0,
+        "identity": "709443:23840301",
+        "last_cpu_ticks": 15,
+        "last_seen_seconds": 34.441079440002795,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.15,
+        "pid": 709443,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 2008064,
+        "rss_peak_bytes": 7970816,
+        "start_ticks": 23840301,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 34.441079440002795,
+        "first_waited_child_ticks": 0,
+        "identity": "709504:23840356",
+        "last_cpu_ticks": 4,
+        "last_seen_seconds": 34.77236315398477,
+        "last_waited_child_ticks": 3,
+        "name": "python3",
+        "observed_cpu_seconds": 0.04,
+        "pid": 709504,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 8530944,
+        "rss_peak_bytes": 18010112,
+        "start_ticks": 23840356,
+        "waited_child_cpu_delta_seconds": 0.03
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 34.77236315398477,
+        "first_waited_child_ticks": 0,
+        "identity": "709521:23840389",
+        "last_cpu_ticks": 15,
+        "last_seen_seconds": 35.13168053000118,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.15,
+        "pid": 709521,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1973248,
+        "rss_peak_bytes": 8298496,
+        "start_ticks": 23840389,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 35.29938558099093,
+        "first_waited_child_ticks": 0,
+        "identity": "709586:23840442",
+        "last_cpu_ticks": 15,
+        "last_seen_seconds": 35.54725391700049,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.15,
+        "pid": 709586,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1933312,
+        "rss_peak_bytes": 8298496,
+        "start_ticks": 23840442,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 35.80060777399922,
+        "first_waited_child_ticks": 0,
+        "identity": "709666:23840494",
+        "last_cpu_ticks": 16,
+        "last_seen_seconds": 36.12918472097954,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.16,
+        "pid": 709666,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1926144,
+        "rss_peak_bytes": 7970816,
+        "start_ticks": 23840494,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 39.340303869976196,
+        "first_waited_child_ticks": 0,
+        "identity": "709792:23840847",
+        "last_cpu_ticks": 15,
+        "last_seen_seconds": 39.75637321799877,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.15,
+        "pid": 709792,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 2003968,
+        "rss_peak_bytes": 8364032,
+        "start_ticks": 23840847,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 39.918529328977456,
+        "first_waited_child_ticks": 0,
+        "identity": "709847:23840902",
+        "last_cpu_ticks": 16,
+        "last_seen_seconds": 40.240885841980344,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.16,
+        "pid": 709847,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1966080,
+        "rss_peak_bytes": 8757248,
+        "start_ticks": 23840902,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 40.400482090975856,
+        "first_waited_child_ticks": 0,
+        "identity": "709918:23840949",
+        "last_cpu_ticks": 15,
+        "last_seen_seconds": 40.65910832598456,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.15,
+        "pid": 709918,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1883136,
+        "rss_peak_bytes": 8364032,
+        "start_ticks": 23840949,
+        "waited_child_cpu_delta_seconds": 0.0
+      },
+      {
+        "cpu_baseline": "zero_for_process_born_during_window",
+        "cpu_baseline_ticks": 0,
+        "cpu_before_first_observation_missing": false,
+        "exit_cpu_endpoint_missing": true,
+        "first_seen_seconds": 40.84873168999911,
+        "first_waited_child_ticks": 0,
+        "identity": "709972:23840996",
+        "last_cpu_ticks": 15,
+        "last_seen_seconds": 41.094113252998795,
+        "last_waited_child_ticks": 0,
+        "name": "ssh",
+        "observed_cpu_seconds": 0.15,
+        "pid": 709972,
+        "present_at_final_sample": false,
+        "pss_missing_samples": 0,
+        "pss_peak_bytes": 1898496,
+        "rss_peak_bytes": 7970816,
+        "start_ticks": 23840996,
+        "waited_child_cpu_delta_seconds": 0.0
+      }
+    ],
+    "sampling": {
+      "interval_seconds": 0.01,
+      "largest_actual_gap_seconds": 0.12571889298851602,
+      "observer_cpu_seconds": 38.64520181200002,
+      "observer_pid": 707067,
+      "observer_wall_seconds": 38.712402510573156,
+      "samples": 541,
+      "stop_timeout": false
+    },
+    "schema": "hepta.process-metrics.linux.v1"
+  },
+  "mode": "live",
+  "model": "qwen38-flash-next-uc",
+  "model_capture_complete": true,
+  "model_inventory": [
+    {
+      "file": "00-digest-model-01.request.json",
+      "input_sha256": "9a24bf7f53a11056e228359b14ac8f959e699df7357f038d50a9ebc7c7379582",
+      "instructions_sha256": "feb1078f8cb9bda2e21306c96648ee4f4a7c339fa9a487ade1fb0a1d326760f1",
+      "model": "qwen38-flash-next-uc",
+      "only_shared_tool": true,
+      "parallel_tool_calls": false,
+      "reasoning": null,
+      "store": true,
+      "tool_strict": [
+        true
+      ],
+      "tools": [
+        {
+          "name": "hepta_probe",
+          "namespace": null,
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "file": "00-digest-model-02.request.json",
+      "input_sha256": "0358246bcd84d3b2c56f97a1b775691f6526a8e822359abcbf50a93a428df8f1",
+      "instructions_sha256": "feb1078f8cb9bda2e21306c96648ee4f4a7c339fa9a487ade1fb0a1d326760f1",
+      "model": "qwen38-flash-next-uc",
+      "only_shared_tool": true,
+      "parallel_tool_calls": false,
+      "reasoning": null,
+      "store": true,
+      "tool_strict": [
+        true
+      ],
+      "tools": [
+        {
+          "name": "hepta_probe",
+          "namespace": null,
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "file": "00-lines-model-01.request.json",
+      "input_sha256": "04d2eae4c6d96aa54751f3047709c8d2be5759f8aaeafdfa3db2bb25b1119990",
+      "instructions_sha256": "feb1078f8cb9bda2e21306c96648ee4f4a7c339fa9a487ade1fb0a1d326760f1",
+      "model": "qwen38-flash-next-uc",
+      "only_shared_tool": true,
+      "parallel_tool_calls": false,
+      "reasoning": null,
+      "store": true,
+      "tool_strict": [
+        true
+      ],
+      "tools": [
+        {
+          "name": "hepta_probe",
+          "namespace": null,
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "file": "00-lines-model-02.request.json",
+      "input_sha256": "531a8df2cc08840356ec4e79765f14c19e1383ecbaf0470bf70cbad69db95783",
+      "instructions_sha256": "feb1078f8cb9bda2e21306c96648ee4f4a7c339fa9a487ade1fb0a1d326760f1",
+      "model": "qwen38-flash-next-uc",
+      "only_shared_tool": true,
+      "parallel_tool_calls": false,
+      "reasoning": null,
+      "store": true,
+      "tool_strict": [
+        true
+      ],
+      "tools": [
+        {
+          "name": "hepta_probe",
+          "namespace": null,
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "file": "00-sum-model-01.request.json",
+      "input_sha256": "fde2dab5d72ab89f5dd162d22ae9bf58285c0bf3b31235e67b3838e43bcc8efb",
+      "instructions_sha256": "feb1078f8cb9bda2e21306c96648ee4f4a7c339fa9a487ade1fb0a1d326760f1",
+      "model": "qwen38-flash-next-uc",
+      "only_shared_tool": true,
+      "parallel_tool_calls": false,
+      "reasoning": null,
+      "store": true,
+      "tool_strict": [
+        true
+      ],
+      "tools": [
+        {
+          "name": "hepta_probe",
+          "namespace": null,
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "file": "00-sum-model-02.request.json",
+      "input_sha256": "1cd3b040f31b62627dfe0855974458dd3af400d378d746f2c7e7ccb21609c93a",
+      "instructions_sha256": "feb1078f8cb9bda2e21306c96648ee4f4a7c339fa9a487ade1fb0a1d326760f1",
+      "model": "qwen38-flash-next-uc",
+      "only_shared_tool": true,
+      "parallel_tool_calls": false,
+      "reasoning": null,
+      "store": true,
+      "tool_strict": [
+        true
+      ],
+      "tools": [
+        {
+          "name": "hepta_probe",
+          "namespace": null,
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "file": "01-digest-model-01.request.json",
+      "input_sha256": "9a24bf7f53a11056e228359b14ac8f959e699df7357f038d50a9ebc7c7379582",
+      "instructions_sha256": "feb1078f8cb9bda2e21306c96648ee4f4a7c339fa9a487ade1fb0a1d326760f1",
+      "model": "qwen38-flash-next-uc",
+      "only_shared_tool": true,
+      "parallel_tool_calls": false,
+      "reasoning": null,
+      "store": true,
+      "tool_strict": [
+        true
+      ],
+      "tools": [
+        {
+          "name": "hepta_probe",
+          "namespace": null,
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "file": "01-digest-model-02.request.json",
+      "input_sha256": "4f3f63708272d148a2c4f0b65b566ce2d8f8f5413586780bd5178dd0c3bc1723",
+      "instructions_sha256": "feb1078f8cb9bda2e21306c96648ee4f4a7c339fa9a487ade1fb0a1d326760f1",
+      "model": "qwen38-flash-next-uc",
+      "only_shared_tool": true,
+      "parallel_tool_calls": false,
+      "reasoning": null,
+      "store": true,
+      "tool_strict": [
+        true
+      ],
+      "tools": [
+        {
+          "name": "hepta_probe",
+          "namespace": null,
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "file": "01-lines-model-01.request.json",
+      "input_sha256": "04d2eae4c6d96aa54751f3047709c8d2be5759f8aaeafdfa3db2bb25b1119990",
+      "instructions_sha256": "feb1078f8cb9bda2e21306c96648ee4f4a7c339fa9a487ade1fb0a1d326760f1",
+      "model": "qwen38-flash-next-uc",
+      "only_shared_tool": true,
+      "parallel_tool_calls": false,
+      "reasoning": null,
+      "store": true,
+      "tool_strict": [
+        true
+      ],
+      "tools": [
+        {
+          "name": "hepta_probe",
+          "namespace": null,
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "file": "01-lines-model-02.request.json",
+      "input_sha256": "5fe458509d2abb0daa7ce7ad9fdc06acb4c0c02ec63e71176f4d3abbb3d840a7",
+      "instructions_sha256": "feb1078f8cb9bda2e21306c96648ee4f4a7c339fa9a487ade1fb0a1d326760f1",
+      "model": "qwen38-flash-next-uc",
+      "only_shared_tool": true,
+      "parallel_tool_calls": false,
+      "reasoning": null,
+      "store": true,
+      "tool_strict": [
+        true
+      ],
+      "tools": [
+        {
+          "name": "hepta_probe",
+          "namespace": null,
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "file": "01-sum-model-01.request.json",
+      "input_sha256": "fde2dab5d72ab89f5dd162d22ae9bf58285c0bf3b31235e67b3838e43bcc8efb",
+      "instructions_sha256": "feb1078f8cb9bda2e21306c96648ee4f4a7c339fa9a487ade1fb0a1d326760f1",
+      "model": "qwen38-flash-next-uc",
+      "only_shared_tool": true,
+      "parallel_tool_calls": false,
+      "reasoning": null,
+      "store": true,
+      "tool_strict": [
+        true
+      ],
+      "tools": [
+        {
+          "name": "hepta_probe",
+          "namespace": null,
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "file": "01-sum-model-02.request.json",
+      "input_sha256": "779d80011f62851c901dfb940e39866dd0abbe053cc6522ba344b15d757a780f",
+      "instructions_sha256": "feb1078f8cb9bda2e21306c96648ee4f4a7c339fa9a487ade1fb0a1d326760f1",
+      "model": "qwen38-flash-next-uc",
+      "only_shared_tool": true,
+      "parallel_tool_calls": false,
+      "reasoning": null,
+      "store": true,
+      "tool_strict": [
+        true
+      ],
+      "tools": [
+        {
+          "name": "hepta_probe",
+          "namespace": null,
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "file": "warmup-model-01.request.json",
+      "input_sha256": "fde2dab5d72ab89f5dd162d22ae9bf58285c0bf3b31235e67b3838e43bcc8efb",
+      "instructions_sha256": "feb1078f8cb9bda2e21306c96648ee4f4a7c339fa9a487ade1fb0a1d326760f1",
+      "model": "qwen38-flash-next-uc",
+      "only_shared_tool": true,
+      "parallel_tool_calls": false,
+      "reasoning": null,
+      "store": true,
+      "tool_strict": [
+        true
+      ],
+      "tools": [
+        {
+          "name": "hepta_probe",
+          "namespace": null,
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "file": "warmup-model-02.request.json",
+      "input_sha256": "3371bb50006c10539232b20cf13875d0d81790d66f51043fd653133c4b537daa",
+      "instructions_sha256": "feb1078f8cb9bda2e21306c96648ee4f4a7c339fa9a487ade1fb0a1d326760f1",
+      "model": "qwen38-flash-next-uc",
+      "only_shared_tool": true,
+      "parallel_tool_calls": false,
+      "reasoning": null,
+      "store": true,
+      "tool_strict": [
+        true
+      ],
+      "tools": [
+        {
+          "name": "hepta_probe",
+          "namespace": null,
+          "type": "function"
+        }
+      ]
+    }
+  ],
+  "only_shared_tool_inventory": true,
+  "planned_cases": [
+    {
+      "name": "warmup",
+      "task": "sum",
+      "warmup": true
+    },
+    {
+      "name": "00-sum",
+      "task": "sum",
+      "warmup": false
+    },
+    {
+      "name": "00-lines",
+      "task": "lines",
+      "warmup": false
+    },
+    {
+      "name": "00-digest",
+      "task": "digest",
+      "warmup": false
+    },
+    {
+      "name": "01-sum",
+      "task": "sum",
+      "warmup": false
+    },
+    {
+      "name": "01-lines",
+      "task": "lines",
+      "warmup": false
+    },
+    {
+      "name": "01-digest",
+      "task": "digest",
+      "warmup": false
+    }
+  ],
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "resource_limits": {
+    "affinity_cpus": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47
+    ],
+    "cpu.max": "400000 100000",
+    "cpu.weight": "100",
+    "cpuset.cpus.effective": {
+      "unavailable": "[Errno 2] No such file or directory: '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b4e9af-96a-2be3.service/cpuset.cpus.effective'"
+    },
+    "load_average": [
+      8.27490234375,
+      8.17431640625,
+      8.9228515625
+    ],
+    "memory.max": "8589934592",
+    "parent_cgroup": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180b4e9af-96a-2be3.service"
+  },
+  "rows": [
+    {
+      "answer_matches_exact_stdout_json": true,
+      "answer_matches_expected": true,
+      "correct": true,
+      "correctness_pending_tool_audit": false,
+      "model_requests": [
+        {
+          "call": 1,
+          "case": "warmup",
+          "effective_bytes": 981,
+          "effective_sha256": "6630854ae88713427c54de87d538eea4deb72e4ed5ca0c7a3e3606eb10c35154",
+          "finished_ns": 1793160708316059831,
+          "http_status": 200,
+          "mode": "live",
+          "output_token_cap": 256,
+          "request_bytes": 981,
+          "request_sha256": "6630854ae88713427c54de87d538eea4deb72e4ed5ca0c7a3e3606eb10c35154",
+          "response_bytes": 9506,
+          "started_ns": 1793160703527524044
+        },
+        {
+          "call": 2,
+          "case": "warmup",
+          "effective_bytes": 1609,
+          "effective_sha256": "963ef9f9bed162cd6c8a84fd02034480525a1eab357f0332fabdc567582bfa5d",
+          "finished_ns": 1793160712793164624,
+          "http_status": 200,
+          "mode": "live",
+          "output_token_cap": 256,
+          "request_bytes": 1609,
+          "request_sha256": "963ef9f9bed162cd6c8a84fd02034480525a1eab357f0332fabdc567582bfa5d",
+          "response_bytes": 14151,
+          "started_ns": 1793160711078101749
+        }
+      ],
+      "name": "warmup",
+      "result": {
+        "answer": "{\"sum\":576}",
+        "elapsed_ms": 9483.652323999999,
+        "generation": 1,
+        "last_error": null,
+        "model_calls": 2,
+        "operation_id": "qualification:operation:7ab88fe4497d15d5685125d017d0de2fd965080e9073198d0eebcf9627930961",
+        "session": "formal-0165-live-native-v1:warmup",
+        "status": "completed",
+        "tool_calls": 1,
+        "usage": [
+          {
+            "input_tokens": 1374,
+            "input_tokens_details": {
+              "cached_tokens": 0
+            },
+            "output_tokens": 54,
+            "total_tokens": 1428
+          },
+          {
+            "input_tokens": 1438,
+            "input_tokens_details": {
+              "cached_tokens": 1370
+            },
+            "output_tokens": 46,
+            "total_tokens": 1484
+          }
+        ]
+      },
+      "task": "sum",
+      "tool_feedback_audit": {
+        "calls": {
+          "call_NEMFUJ4LHBNcq3mfvosiNP2gMypcvS7W": {
+            "arguments": {
+              "task": "sum"
+            },
+            "name": "hepta_probe"
+          }
+        },
+        "errors": [],
+        "feedback": {
+          "call_NEMFUJ4LHBNcq3mfvosiNP2gMypcvS7W": {
+            "exit_code": 0,
+            "stderr": "",
+            "stdout": "{\"sum\":576}\n"
+          }
+        },
+        "request_files": [
+          "warmup-model-01.request.json",
+          "warmup-model-02.request.json"
+        ],
+        "valid": true
+      },
+      "wall_ms": 9488.267709006323,
+      "warmup": true
+    },
+    {
+      "answer_matches_exact_stdout_json": true,
+      "answer_matches_expected": true,
+      "correct": true,
+      "correctness_pending_tool_audit": false,
+      "model_requests": [
+        {
+          "call": 1,
+          "case": "00-sum",
+          "effective_bytes": 981,
+          "effective_sha256": "6630854ae88713427c54de87d538eea4deb72e4ed5ca0c7a3e3606eb10c35154",
+          "finished_ns": 1793160714152382861,
+          "http_status": 200,
+          "mode": "live",
+          "output_token_cap": 256,
+          "request_bytes": 981,
+          "request_sha256": "6630854ae88713427c54de87d538eea4deb72e4ed5ca0c7a3e3606eb10c35154",
+          "response_bytes": 7802,
+          "started_ns": 1793160712919537562
+        },
+        {
+          "call": 2,
+          "case": "00-sum",
+          "effective_bytes": 1570,
+          "effective_sha256": "d6aa1b387e2080cda05892e1ba080b547f1df9f22194ec16e9e0dd8a74f97b5f",
+          "finished_ns": 1793160717872381611,
+          "http_status": 200,
+          "mode": "live",
+          "output_token_cap": 256,
+          "request_bytes": 1570,
+          "request_sha256": "d6aa1b387e2080cda05892e1ba080b547f1df9f22194ec16e9e0dd8a74f97b5f",
+          "response_bytes": 16054,
+          "started_ns": 1793160716087784080
+        }
+      ],
+      "name": "00-sum",
+      "result": {
+        "answer": "{\"sum\":576}",
+        "elapsed_ms": 5063.6515500000005,
+        "generation": 1,
+        "last_error": null,
+        "model_calls": 2,
+        "operation_id": "qualification:operation:9b04272fc75b84b6460154545aa555f2190f52d8ec3c65a8dec9bf012d0f73d5",
+        "session": "formal-0165-live-native-v1:00-sum",
+        "status": "completed",
+        "tool_calls": 1,
+        "usage": [
+          {
+            "input_tokens": 1374,
+            "input_tokens_details": {
+              "cached_tokens": 1370
+            },
+            "output_tokens": 47,
+            "total_tokens": 1421
+          },
+          {
+            "input_tokens": 1438,
+            "input_tokens_details": {
+              "cached_tokens": 1370
+            },
+            "output_tokens": 54,
+            "total_tokens": 1492
+          }
+        ]
+      },
+      "task": "sum",
+      "tool_feedback_audit": {
+        "calls": {
+          "call_PfbNLaNaBQh7KCEXHKkICvisHzgs76OC": {
+            "arguments": {
+              "task": "sum"
+            },
+            "name": "hepta_probe"
+          }
+        },
+        "errors": [],
+        "feedback": {
+          "call_PfbNLaNaBQh7KCEXHKkICvisHzgs76OC": {
+            "exit_code": 0,
+            "stderr": "",
+            "stdout": "{\"sum\":576}\n"
+          }
+        },
+        "request_files": [
+          "00-sum-model-01.request.json",
+          "00-sum-model-02.request.json"
+        ],
+        "valid": true
+      },
+      "wall_ms": 5071.422060020268,
+      "warmup": false
+    },
+    {
+      "answer_matches_exact_stdout_json": true,
+      "answer_matches_expected": true,
+      "correct": true,
+      "correctness_pending_tool_audit": false,
+      "model_requests": [
+        {
+          "call": 1,
+          "case": "00-lines",
+          "effective_bytes": 983,
+          "effective_sha256": "03b5bd38b5a3c14d9881f67e6202416c841897688a13f75c34197ba8617fb3d5",
+          "finished_ns": 1793160719414042508,
+          "http_status": 200,
+          "mode": "live",
+          "output_token_cap": 256,
+          "request_bytes": 983,
+          "request_sha256": "03b5bd38b5a3c14d9881f67e6202416c841897688a13f75c34197ba8617fb3d5",
+          "response_bytes": 5661,
+          "started_ns": 1793160718010259495
+        },
+        {
+          "call": 2,
+          "case": "00-lines",
+          "effective_bytes": 1534,
+          "effective_sha256": "f32ed91cfcb1506aff3c360b30142b1aaccf8d53e65b3e9107c05e05403d6351",
+          "finished_ns": 1793160723238539492,
+          "http_status": 200,
+          "mode": "live",
+          "output_token_cap": 256,
+          "request_bytes": 1534,
+          "request_sha256": "f32ed91cfcb1506aff3c360b30142b1aaccf8d53e65b3e9107c05e05403d6351",
+          "response_bytes": 16724,
+          "started_ns": 1793160721440667305
+        }
+      ],
+      "name": "00-lines",
+      "result": {
+        "answer": "{\"lines\":10}",
+        "elapsed_ms": 5368.079567,
+        "generation": 1,
+        "last_error": null,
+        "model_calls": 2,
+        "operation_id": "qualification:operation:8a13fd4ff4b065ee4f25769bcdb7b1b7e1690e97f1c8cb75bae7de4abdd8bab9",
+        "session": "formal-0165-live-native-v1:00-lines",
+        "status": "completed",
+        "tool_calls": 1,
+        "usage": [
+          {
+            "input_tokens": 1374,
+            "input_tokens_details": {
+              "cached_tokens": 1323
+            },
+            "output_tokens": 38,
+            "total_tokens": 1412
+          },
+          {
+            "input_tokens": 1437,
+            "input_tokens_details": {
+              "cached_tokens": 1370
+            },
+            "output_tokens": 57,
+            "total_tokens": 1494
+          }
+        ]
+      },
+      "task": "lines",
+      "tool_feedback_audit": {
+        "calls": {
+          "call_Gu2NxXWRp0V6I3qrkp0kzTnbwKhWpXQG": {
+            "arguments": {
+              "task": "lines"
+            },
+            "name": "hepta_probe"
+          }
+        },
+        "errors": [],
+        "feedback": {
+          "call_Gu2NxXWRp0V6I3qrkp0kzTnbwKhWpXQG": {
+            "exit_code": 0,
+            "stderr": "",
+            "stdout": "{\"lines\":10}\n"
+          }
+        },
+        "request_files": [
+          "00-lines-model-01.request.json",
+          "00-lines-model-02.request.json"
+        ],
+        "valid": true
+      },
+      "wall_ms": 5373.696488997666,
+      "warmup": false
+    },
+    {
+      "answer_matches_exact_stdout_json": true,
+      "answer_matches_expected": true,
+      "correct": true,
+      "correctness_pending_tool_audit": false,
+      "model_requests": [
+        {
+          "call": 1,
+          "case": "00-digest",
+          "effective_bytes": 984,
+          "effective_sha256": "48aeb64a4fb4e5ecaef80d31782423b2c7b34c8e275fc8a3ed43698bfb3d9025",
+          "finished_ns": 1793160724766886144,
+          "http_status": 200,
+          "mode": "live",
+          "output_token_cap": 256,
+          "request_bytes": 984,
+          "request_sha256": "48aeb64a4fb4e5ecaef80d31782423b2c7b34c8e275fc8a3ed43698bfb3d9025",
+          "response_bytes": 7151,
+          "started_ns": 1793160723384064026
+        },
+        {
+          "call": 2,
+          "case": "00-digest",
+          "effective_bytes": 1645,
+          "effective_sha256": "7633707745d030f8d8fe1e82416df41b059256cff96fda02fdae874f6d34acf9",
+          "finished_ns": 1793160729697290849,
+          "http_status": 200,
+          "mode": "live",
+          "output_token_cap": 256,
+          "request_bytes": 1645,
+          "request_sha256": "7633707745d030f8d8fe1e82416df41b059256cff96fda02fdae874f6d34acf9",
+          "response_bytes": 27573,
+          "started_ns": 1793160726737648878
+        }
+      ],
+      "name": "00-digest",
+      "result": {
+        "answer": "{\"sha256\":\"185bac343ad5d029724bd8684f7882d42b0f81e7a6259ad082caa7d29c27b545\"}",
+        "elapsed_ms": 6439.933247,
+        "generation": 1,
+        "last_error": null,
+        "model_calls": 2,
+        "operation_id": "qualification:operation:6428a676abe6c226cb12457155f20cf9c230b6cc94ba62839e9a8be366f4f9be",
+        "session": "formal-0165-live-native-v1:00-digest",
+        "status": "completed",
+        "tool_calls": 1,
+        "usage": [
+          {
+            "input_tokens": 1374,
+            "input_tokens_details": {
+              "cached_tokens": 1323
+            },
+            "output_tokens": 44,
+            "total_tokens": 1418
+          },
+          {
+            "input_tokens": 1496,
+            "input_tokens_details": {
+              "cached_tokens": 1370
+            },
+            "output_tokens": 108,
+            "total_tokens": 1604
+          }
+        ]
+      },
+      "task": "digest",
+      "tool_feedback_audit": {
+        "calls": {
+          "call_BDhtEofIJI4CmG5bJSP7RZwqkgy34tHB": {
+            "arguments": {
+              "task": "digest"
+            },
+            "name": "hepta_probe"
+          }
+        },
+        "errors": [],
+        "feedback": {
+          "call_BDhtEofIJI4CmG5bJSP7RZwqkgy34tHB": {
+            "exit_code": 0,
+            "stderr": "",
+            "stdout": "{\"sha256\":\"185bac343ad5d029724bd8684f7882d42b0f81e7a6259ad082caa7d29c27b545\"}\n"
+          }
+        },
+        "request_files": [
+          "00-digest-model-01.request.json",
+          "00-digest-model-02.request.json"
+        ],
+        "valid": true
+      },
+      "wall_ms": 6451.693242997862,
+      "warmup": false
+    },
+    {
+      "answer_matches_exact_stdout_json": true,
+      "answer_matches_expected": true,
+      "correct": true,
+      "correctness_pending_tool_audit": false,
+      "model_requests": [
+        {
+          "call": 1,
+          "case": "01-sum",
+          "effective_bytes": 981,
+          "effective_sha256": "6630854ae88713427c54de87d538eea4deb72e4ed5ca0c7a3e3606eb10c35154",
+          "finished_ns": 1793160731798720772,
+          "http_status": 200,
+          "mode": "live",
+          "output_token_cap": 256,
+          "request_bytes": 981,
+          "request_sha256": "6630854ae88713427c54de87d538eea4deb72e4ed5ca0c7a3e3606eb10c35154",
+          "response_bytes": 8766,
+          "started_ns": 1793160729840194518
+        },
+        {
+          "call": 2,
+          "case": "01-sum",
+          "effective_bytes": 1590,
+          "effective_sha256": "d02c604cbc23959c0c70fdc9d6b15c446c14b88ab9bc8efa0382e59a4fc50635",
+          "finished_ns": 1793160735220054773,
+          "http_status": 200,
+          "mode": "live",
+          "output_token_cap": 256,
+          "request_bytes": 1590,
+          "request_sha256": "d02c604cbc23959c0c70fdc9d6b15c446c14b88ab9bc8efa0382e59a4fc50635",
+          "response_bytes": 12243,
+          "started_ns": 1793160733778676326
+        }
+      ],
+      "name": "01-sum",
+      "result": {
+        "answer": "{\"sum\":576}",
+        "elapsed_ms": 5522.043261000001,
+        "generation": 1,
+        "last_error": null,
+        "model_calls": 2,
+        "operation_id": "qualification:operation:2fb9dd62a2eab252485e3b9792dad11ee0b42aa88aaa5635d1aecd21e2779c7a",
+        "session": "formal-0165-live-native-v1:01-sum",
+        "status": "completed",
+        "tool_calls": 1,
+        "usage": [
+          {
+            "input_tokens": 1374,
+            "input_tokens_details": {
+              "cached_tokens": 1323
+            },
+            "output_tokens": 51,
+            "total_tokens": 1425
+          },
+          {
+            "input_tokens": 1438,
+            "input_tokens_details": {
+              "cached_tokens": 1370
+            },
+            "output_tokens": 38,
+            "total_tokens": 1476
+          }
+        ]
+      },
+      "task": "sum",
+      "tool_feedback_audit": {
+        "calls": {
+          "call_2My1Y2U0wKz4APmQcyCvXL1XawiRSM36": {
+            "arguments": {
+              "task": "sum"
+            },
+            "name": "hepta_probe"
+          }
+        },
+        "errors": [],
+        "feedback": {
+          "call_2My1Y2U0wKz4APmQcyCvXL1XawiRSM36": {
+            "exit_code": 0,
+            "stderr": "",
+            "stdout": "{\"sum\":576}\n"
+          }
+        },
+        "request_files": [
+          "01-sum-model-01.request.json",
+          "01-sum-model-02.request.json"
+        ],
+        "valid": true
+      },
+      "wall_ms": 5528.808500006562,
+      "warmup": false
+    },
+    {
+      "answer_matches_exact_stdout_json": true,
+      "answer_matches_expected": true,
+      "correct": true,
+      "correctness_pending_tool_audit": false,
+      "model_requests": [
+        {
+          "call": 1,
+          "case": "01-lines",
+          "effective_bytes": 983,
+          "effective_sha256": "03b5bd38b5a3c14d9881f67e6202416c841897688a13f75c34197ba8617fb3d5",
+          "finished_ns": 1793160736996447909,
+          "http_status": 200,
+          "mode": "live",
+          "output_token_cap": 256,
+          "request_bytes": 983,
+          "request_sha256": "03b5bd38b5a3c14d9881f67e6202416c841897688a13f75c34197ba8617fb3d5",
+          "response_bytes": 7333,
+          "started_ns": 1793160735367310656
+        },
+        {
+          "call": 2,
+          "case": "01-lines",
+          "effective_bytes": 1566,
+          "effective_sha256": "ec2a678e9deab5241628bbfc235fa2356a176b4f9e9df162d17782386d511b16",
+          "finished_ns": 1793160740765284776,
+          "http_status": 200,
+          "mode": "live",
+          "output_token_cap": 256,
+          "request_bytes": 1566,
+          "request_sha256": "ec2a678e9deab5241628bbfc235fa2356a176b4f9e9df162d17782386d511b16",
+          "response_bytes": 11552,
+          "started_ns": 1793160739523720599
+        }
+      ],
+      "name": "01-lines",
+      "result": {
+        "answer": "{\"lines\":10}",
+        "elapsed_ms": 5563.305655,
+        "generation": 1,
+        "last_error": null,
+        "model_calls": 2,
+        "operation_id": "qualification:operation:ce66ccdf30c2a9735785869ba59e2b3d52eebda97328da22596228726c65467b",
+        "session": "formal-0165-live-native-v1:01-lines",
+        "status": "completed",
+        "tool_calls": 1,
+        "usage": [
+          {
+            "input_tokens": 1374,
+            "input_tokens_details": {
+              "cached_tokens": 1323
+            },
+            "output_tokens": 45,
+            "total_tokens": 1419
+          },
+          {
+            "input_tokens": 1437,
+            "input_tokens_details": {
+              "cached_tokens": 1370
+            },
+            "output_tokens": 35,
+            "total_tokens": 1472
+          }
+        ]
+      },
+      "task": "lines",
+      "tool_feedback_audit": {
+        "calls": {
+          "call_IxPLI9zKGTOcQtJ5dJRK1e0jFvtdn4yA": {
+            "arguments": {
+              "task": "lines"
+            },
+            "name": "hepta_probe"
+          }
+        },
+        "errors": [],
+        "feedback": {
+          "call_IxPLI9zKGTOcQtJ5dJRK1e0jFvtdn4yA": {
+            "exit_code": 0,
+            "stderr": "",
+            "stdout": "{\"lines\":10}\n"
+          }
+        },
+        "request_files": [
+          "01-lines-model-01.request.json",
+          "01-lines-model-02.request.json"
+        ],
+        "valid": true
+      },
+      "wall_ms": 5569.723922002595,
+      "warmup": false
+    },
+    {
+      "answer_matches_exact_stdout_json": true,
+      "answer_matches_expected": true,
+      "correct": true,
+      "correctness_pending_tool_audit": false,
+      "model_requests": [
+        {
+          "call": 1,
+          "case": "01-digest",
+          "effective_bytes": 984,
+          "effective_sha256": "48aeb64a4fb4e5ecaef80d31782423b2c7b34c8e275fc8a3ed43698bfb3d9025",
+          "finished_ns": 1793160742452928166,
+          "http_status": 200,
+          "mode": "live",
+          "output_token_cap": 256,
+          "request_bytes": 984,
+          "request_sha256": "48aeb64a4fb4e5ecaef80d31782423b2c7b34c8e275fc8a3ed43698bfb3d9025",
+          "response_bytes": 7151,
+          "started_ns": 1793160741084930115
+        },
+        {
+          "call": 2,
+          "case": "01-digest",
+          "effective_bytes": 1645,
+          "effective_sha256": "ab8d5dfaca4b32710bcabc4eddf50d1dfd0dd9d3f2ef8790741644ebf12daa77",
+          "finished_ns": 1793160747219216968,
+          "http_status": 200,
+          "mode": "live",
+          "output_token_cap": 256,
+          "request_bytes": 1645,
+          "request_sha256": "ab8d5dfaca4b32710bcabc4eddf50d1dfd0dd9d3f2ef8790741644ebf12daa77",
+          "response_bytes": 34706,
+          "started_ns": 1793160744439644799
+        }
+      ],
+      "name": "01-digest",
+      "result": {
+        "answer": "{\"sha256\":\"185bac343ad5d029724bd8684f7882d42b0f81e7a6259ad082caa7d29c27b545\"}",
+        "elapsed_ms": 6407.419807,
+        "generation": 1,
+        "last_error": null,
+        "model_calls": 2,
+        "operation_id": "qualification:operation:6b4a5a5c6847c588e2dcf51a45e203d89be276ee27ab2c748bc46bf109484985",
+        "session": "formal-0165-live-native-v1:01-digest",
+        "status": "completed",
+        "tool_calls": 1,
+        "usage": [
+          {
+            "input_tokens": 1374,
+            "input_tokens_details": {
+              "cached_tokens": 1323
+            },
+            "output_tokens": 44,
+            "total_tokens": 1418
+          },
+          {
+            "input_tokens": 1496,
+            "input_tokens_details": {
+              "cached_tokens": 1370
+            },
+            "output_tokens": 142,
+            "total_tokens": 1638
+          }
+        ]
+      },
+      "task": "digest",
+      "tool_feedback_audit": {
+        "calls": {
+          "call_cXplxpyXAKrLrZ5EjJUoko9JZpdqkNV3": {
+            "arguments": {
+              "task": "digest"
+            },
+            "name": "hepta_probe"
+          }
+        },
+        "errors": [],
+        "feedback": {
+          "call_cXplxpyXAKrLrZ5EjJUoko9JZpdqkNV3": {
+            "exit_code": 0,
+            "stderr": "",
+            "stdout": "{\"sha256\":\"185bac343ad5d029724bd8684f7882d42b0f81e7a6259ad082caa7d29c27b545\"}\n"
+          }
+        },
+        "request_files": [
+          "01-digest-model-01.request.json",
+          "01-digest-model-02.request.json"
+        ],
+        "valid": true
+      },
+      "wall_ms": 6414.837980992161,
+      "warmup": false
+    }
+  ],
+  "runtime_discovery_errors": [],
+  "runtime_helper_sha256": "0628b5ea8d919db59b581f66eba64ddc3a6674ee960b6f6b13790e61d27d9f08",
+  "schema": "hepta.native.qualification.benchmark.v1",
+  "scope": "One persistent lane; local descendant tree plus discovered runtime cgroups, with explicit gaps",
+  "shutdown_ms": 221.86119097750634,
+  "started_ns": 1793160703317808428,
+  "startup_ms": 6.314544007182121,
+  "summary": {
+    "all_planned_cases_completed": true,
+    "attempted": 6,
+    "completed_lane": true,
+    "correct": 6,
+    "planned": 6,
+    "qualification_passed": true,
+    "valid_equal_tool_comparison": true,
+    "wall_ms": {
+      "max": 6451.693242997862,
+      "median": 5549.2662110045785,
+      "min": 5071.422060020268,
+      "n": 6,
+      "p95_nearest_rank": 6451.693242997862
+    }
+  }
+}

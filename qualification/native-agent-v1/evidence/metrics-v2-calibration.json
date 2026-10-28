@@ -1,0 +1,621 @@
+{
+  "host": {
+    "cpu_count": 48,
+    "observer_pid": 769574,
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "self_cgroup": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180c7eb0f-96a-2c48.service"
+  },
+  "limits": [
+    "No model, agent or runtime task executes in this calibration",
+    "A selected live cgroup may also contain its supervisor; selection is reported",
+    "Idle-tree calibration does not replace formal same-task measurement",
+    "Observer CPU is active sample call-thread CPU, including main-thread boundary samples",
+    "A 100ms wait after each sample is not a fixed 10Hz sampling clock"
+  ],
+  "maximum_observer_cpu_per_elapsed_second": 0.05,
+  "owned_fixture_pids": [
+    769579,
+    769580,
+    769588,
+    769590,
+    769591,
+    769592,
+    769593
+  ],
+  "rounds": 2,
+  "rows": [
+    {
+      "added_vs_first_v1": [],
+      "arm": "v1_10ms",
+      "calibration_process_cpu_seconds": 2.832560512,
+      "coverage": {
+        "cgroup_paths_requested": [
+          "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180c7eb0f-96a-2c48.service"
+        ],
+        "explicit_pid_scope_pinned_to_first_start_ticks": true,
+        "external_work_declared": [],
+        "extra_pids_requested": [
+          769592
+        ],
+        "gaps": {},
+        "global_total_memory_or_cpu_claim_supported": false,
+        "observer_process_included": true,
+        "polling_can_miss_short_lived_processes": true,
+        "process_exit_endpoints_missing": 0,
+        "process_identities_observed": 10,
+        "remote_model_or_ssh_work": "Not included unless measured separately or represented by explicit local PID/cgroup scope. A local client/gateway alone does not measure remote inference.",
+        "root_pids_requested": [
+          769574
+        ]
+      },
+      "cpu": {
+        "cgroup_nonoverlap_observed_seconds": 2.753366,
+        "cgroup_nonoverlap_paths": [
+          "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180c7eb0f-96a-2c48.service"
+        ],
+        "process_and_cgroup_totals_overlap_do_not_add": true,
+        "process_lifecycle_observed_seconds": 2.76,
+        "short_lived_unobserved_process_cpu": "missing unless included by a baselined, retained cgroup CPU counter; never assumed zero"
+      },
+      "elapsed_seconds": 3.2048310989921447,
+      "memory": {
+        "memory_peaks_are_sampled_lower_bounds": true,
+        "pss_complete_samples": 39,
+        "pss_incomplete_samples": 0,
+        "pss_peak_complete_sample_bytes": 63171584,
+        "pss_peak_observed_partial_bytes": 63171584,
+        "rss_peak_sum_bytes": 134225920,
+        "rss_sum_double_counts_shared_pages": true
+      },
+      "missing_owned_fixture_pids": [],
+      "missing_vs_first_v1": [],
+      "observer_cpu_per_elapsed_second": 0.8783258056517317,
+      "round": 0,
+      "same_selected_identities_as_first_v1": true,
+      "sampling": {
+        "interval_seconds": 0.01,
+        "largest_actual_gap_seconds": 0.09972720601945184,
+        "observer_cpu_seconds": 2.814885857,
+        "observer_pid": 769574,
+        "observer_wall_seconds": 2.815262587100733,
+        "samples": 39,
+        "stop_timeout": false
+      },
+      "selected_identities": [
+        "769474:23961437",
+        "769485:23961445",
+        "769574:23961670",
+        "769579:23961682",
+        "769580:23961686",
+        "769588:23961690",
+        "769590:23961692",
+        "769591:23961695",
+        "769592:23961697",
+        "769593:23961701"
+      ],
+      "selected_pids": [
+        769474,
+        769485,
+        769574,
+        769579,
+        769580,
+        769588,
+        769590,
+        769591,
+        769592,
+        769593
+      ]
+    },
+    {
+      "added_vs_first_v1": [],
+      "arm": "v2_10ms",
+      "calibration_process_cpu_seconds": 1.5930889609999999,
+      "coverage": {
+        "cgroup_paths_requested": [
+          "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180c7eb0f-96a-2c48.service"
+        ],
+        "explicit_pid_scope_pinned_to_first_start_ticks": true,
+        "external_work_declared": [],
+        "extra_pids_requested": [
+          769592
+        ],
+        "gaps": {},
+        "global_total_memory_or_cpu_claim_supported": false,
+        "observer_process_included": true,
+        "pid_enumeration": {
+          "cgroup_procs_read_attempts": 144,
+          "cgroup_scopes_read": 144,
+          "fallback": "full_proc_scan_on_permission_or_capability_failure",
+          "normal_exits_are_recorded_without_global_fallback": true,
+          "proc_stat_read_attempts": 2880,
+          "scoped_samples": 144,
+          "strategy": "explicit_cgroups_and_all_selected_task_children",
+          "task_children_read_attempts": 2014
+        },
+        "polling_can_miss_short_lived_processes": true,
+        "process_exit_endpoints_missing": 0,
+        "process_identities_observed": 10,
+        "remote_model_or_ssh_work": "Not included unless measured separately or represented by explicit local PID/cgroup scope. A local client/gateway alone does not measure remote inference.",
+        "root_pids_requested": [
+          769574
+        ]
+      },
+      "cpu": {
+        "cgroup_nonoverlap_observed_seconds": 1.587587,
+        "cgroup_nonoverlap_paths": [
+          "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180c7eb0f-96a-2c48.service"
+        ],
+        "process_and_cgroup_totals_overlap_do_not_add": true,
+        "process_lifecycle_observed_seconds": 1.58,
+        "short_lived_unobserved_process_cpu": "missing unless included by a baselined, retained cgroup CPU counter; never assumed zero"
+      },
+      "elapsed_seconds": 3.0229799070220906,
+      "memory": {
+        "memory_peaks_are_sampled_lower_bounds": true,
+        "pss_complete_samples": 144,
+        "pss_incomplete_samples": 0,
+        "pss_peak_complete_sample_bytes": 63179776,
+        "pss_peak_observed_partial_bytes": 63179776,
+        "rss_peak_sum_bytes": 134619136,
+        "rss_sum_double_counts_shared_pages": true
+      },
+      "missing_owned_fixture_pids": [],
+      "missing_vs_first_v1": [],
+      "observer_cpu_per_elapsed_second": 0.5229901258448714,
+      "round": 0,
+      "same_selected_identities_as_first_v1": true,
+      "sampling": {
+        "cadence": "wait_after_sample",
+        "implementation": "hepta.process-metrics.linux.v2",
+        "interval_seconds": 0.01,
+        "largest_actual_gap_seconds": 0.025925330992322415,
+        "observer_cpu_seconds": 1.5809886420000008,
+        "observer_pid": 769574,
+        "observer_stage_cpu_seconds": {
+          "cgroup_discovery": 0.14027050299999966,
+          "pid_enumeration": 0.5105745010000018,
+          "pss_and_aggregation": 0.9294751709999985
+        },
+        "observer_stage_wall_seconds": {
+          "cgroup_discovery": 0.14029343004222028,
+          "pid_enumeration": 0.5106287560483906,
+          "pss_and_aggregation": 0.9293825559434481
+        },
+        "observer_wall_seconds": 1.581265900109429,
+        "samples": 144,
+        "stop_timeout": false
+      },
+      "selected_identities": [
+        "769474:23961437",
+        "769485:23961445",
+        "769574:23961670",
+        "769579:23961682",
+        "769580:23961686",
+        "769588:23961690",
+        "769590:23961692",
+        "769591:23961695",
+        "769592:23961697",
+        "769593:23961701"
+      ],
+      "selected_pids": [
+        769474,
+        769485,
+        769574,
+        769579,
+        769580,
+        769588,
+        769590,
+        769591,
+        769592,
+        769593
+      ]
+    },
+    {
+      "added_vs_first_v1": [],
+      "arm": "v2_100ms",
+      "calibration_process_cpu_seconds": 0.3729809890000002,
+      "coverage": {
+        "cgroup_paths_requested": [
+          "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180c7eb0f-96a-2c48.service"
+        ],
+        "explicit_pid_scope_pinned_to_first_start_ticks": true,
+        "external_work_declared": [],
+        "extra_pids_requested": [
+          769592
+        ],
+        "gaps": {},
+        "global_total_memory_or_cpu_claim_supported": false,
+        "observer_process_included": true,
+        "pid_enumeration": {
+          "cgroup_procs_read_attempts": 28,
+          "cgroup_scopes_read": 28,
+          "fallback": "full_proc_scan_on_permission_or_capability_failure",
+          "normal_exits_are_recorded_without_global_fallback": true,
+          "proc_stat_read_attempts": 560,
+          "scoped_samples": 28,
+          "strategy": "explicit_cgroups_and_all_selected_task_children",
+          "task_children_read_attempts": 390
+        },
+        "polling_can_miss_short_lived_processes": true,
+        "process_exit_endpoints_missing": 0,
+        "process_identities_observed": 10,
+        "remote_model_or_ssh_work": "Not included unless measured separately or represented by explicit local PID/cgroup scope. A local client/gateway alone does not measure remote inference.",
+        "root_pids_requested": [
+          769574
+        ]
+      },
+      "cpu": {
+        "cgroup_nonoverlap_observed_seconds": 0.362729,
+        "cgroup_nonoverlap_paths": [
+          "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180c7eb0f-96a-2c48.service"
+        ],
+        "process_and_cgroup_totals_overlap_do_not_add": true,
+        "process_lifecycle_observed_seconds": 0.36,
+        "short_lived_unobserved_process_cpu": "missing unless included by a baselined, retained cgroup CPU counter; never assumed zero"
+      },
+      "elapsed_seconds": 3.021495508000953,
+      "memory": {
+        "memory_peaks_are_sampled_lower_bounds": true,
+        "pss_complete_samples": 28,
+        "pss_incomplete_samples": 0,
+        "pss_peak_complete_sample_bytes": 63187968,
+        "pss_peak_observed_partial_bytes": 63187968,
+        "rss_peak_sum_bytes": 134619136,
+        "rss_sum_double_counts_shared_pages": true
+      },
+      "missing_owned_fixture_pids": [],
+      "missing_vs_first_v1": [],
+      "observer_cpu_per_elapsed_second": 0.12218261917729893,
+      "round": 0,
+      "same_selected_identities_as_first_v1": true,
+      "sampling": {
+        "cadence": "wait_after_sample",
+        "implementation": "hepta.process-metrics.linux.v2",
+        "interval_seconds": 0.1,
+        "largest_actual_gap_seconds": 0.1173285570112057,
+        "observer_cpu_seconds": 0.36917423499999985,
+        "observer_pid": 769574,
+        "observer_stage_cpu_seconds": {
+          "cgroup_discovery": 0.032559849999999904,
+          "pid_enumeration": 0.11144055200000003,
+          "pss_and_aggregation": 0.22504123399999995
+        },
+        "observer_stage_wall_seconds": {
+          "cgroup_discovery": 0.03268024398130365,
+          "pid_enumeration": 0.11151255801087245,
+          "pss_and_aggregation": 0.22517616202821955
+        },
+        "observer_wall_seconds": 0.3695541810884606,
+        "samples": 28,
+        "stop_timeout": false
+      },
+      "selected_identities": [
+        "769474:23961437",
+        "769485:23961445",
+        "769574:23961670",
+        "769579:23961682",
+        "769580:23961686",
+        "769588:23961690",
+        "769590:23961692",
+        "769591:23961695",
+        "769592:23961697",
+        "769593:23961701"
+      ],
+      "selected_pids": [
+        769474,
+        769485,
+        769574,
+        769579,
+        769580,
+        769588,
+        769590,
+        769591,
+        769592,
+        769593
+      ]
+    },
+    {
+      "added_vs_first_v1": [],
+      "arm": "v2_100ms",
+      "calibration_process_cpu_seconds": 0.37600433699999947,
+      "coverage": {
+        "cgroup_paths_requested": [
+          "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180c7eb0f-96a-2c48.service"
+        ],
+        "explicit_pid_scope_pinned_to_first_start_ticks": true,
+        "external_work_declared": [],
+        "extra_pids_requested": [
+          769592
+        ],
+        "gaps": {},
+        "global_total_memory_or_cpu_claim_supported": false,
+        "observer_process_included": true,
+        "pid_enumeration": {
+          "cgroup_procs_read_attempts": 28,
+          "cgroup_scopes_read": 28,
+          "fallback": "full_proc_scan_on_permission_or_capability_failure",
+          "normal_exits_are_recorded_without_global_fallback": true,
+          "proc_stat_read_attempts": 560,
+          "scoped_samples": 28,
+          "strategy": "explicit_cgroups_and_all_selected_task_children",
+          "task_children_read_attempts": 390
+        },
+        "polling_can_miss_short_lived_processes": true,
+        "process_exit_endpoints_missing": 0,
+        "process_identities_observed": 10,
+        "remote_model_or_ssh_work": "Not included unless measured separately or represented by explicit local PID/cgroup scope. A local client/gateway alone does not measure remote inference.",
+        "root_pids_requested": [
+          769574
+        ]
+      },
+      "cpu": {
+        "cgroup_nonoverlap_observed_seconds": 0.365581,
+        "cgroup_nonoverlap_paths": [
+          "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180c7eb0f-96a-2c48.service"
+        ],
+        "process_and_cgroup_totals_overlap_do_not_add": true,
+        "process_lifecycle_observed_seconds": 0.36,
+        "short_lived_unobserved_process_cpu": "missing unless included by a baselined, retained cgroup CPU counter; never assumed zero"
+      },
+      "elapsed_seconds": 3.025281317997724,
+      "memory": {
+        "memory_peaks_are_sampled_lower_bounds": true,
+        "pss_complete_samples": 28,
+        "pss_incomplete_samples": 0,
+        "pss_peak_complete_sample_bytes": 63187968,
+        "pss_peak_observed_partial_bytes": 63187968,
+        "rss_peak_sum_bytes": 134619136,
+        "rss_sum_double_counts_shared_pages": true
+      },
+      "missing_owned_fixture_pids": [],
+      "missing_vs_first_v1": [],
+      "observer_cpu_per_elapsed_second": 0.1229922125874444,
+      "round": 1,
+      "same_selected_identities_as_first_v1": true,
+      "sampling": {
+        "cadence": "wait_after_sample",
+        "implementation": "hepta.process-metrics.linux.v2",
+        "interval_seconds": 0.1,
+        "largest_actual_gap_seconds": 0.11610710300737992,
+        "observer_cpu_seconds": 0.37208604300000003,
+        "observer_pid": 769574,
+        "observer_stage_cpu_seconds": {
+          "cgroup_discovery": 0.03394062199999999,
+          "pid_enumeration": 0.10847746700000002,
+          "pss_and_aggregation": 0.22953438400000004
+        },
+        "observer_stage_wall_seconds": {
+          "cgroup_discovery": 0.03400228690588847,
+          "pid_enumeration": 0.1085239130188711,
+          "pss_and_aggregation": 0.22955293505219743
+        },
+        "observer_wall_seconds": 0.37226889000157826,
+        "samples": 28,
+        "stop_timeout": false
+      },
+      "selected_identities": [
+        "769474:23961437",
+        "769485:23961445",
+        "769574:23961670",
+        "769579:23961682",
+        "769580:23961686",
+        "769588:23961690",
+        "769590:23961692",
+        "769591:23961695",
+        "769592:23961697",
+        "769593:23961701"
+      ],
+      "selected_pids": [
+        769474,
+        769485,
+        769574,
+        769579,
+        769580,
+        769588,
+        769590,
+        769591,
+        769592,
+        769593
+      ]
+    },
+    {
+      "added_vs_first_v1": [],
+      "arm": "v2_10ms",
+      "calibration_process_cpu_seconds": 1.6284769810000004,
+      "coverage": {
+        "cgroup_paths_requested": [
+          "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180c7eb0f-96a-2c48.service"
+        ],
+        "explicit_pid_scope_pinned_to_first_start_ticks": true,
+        "external_work_declared": [],
+        "extra_pids_requested": [
+          769592
+        ],
+        "gaps": {},
+        "global_total_memory_or_cpu_claim_supported": false,
+        "observer_process_included": true,
+        "pid_enumeration": {
+          "cgroup_procs_read_attempts": 141,
+          "cgroup_scopes_read": 141,
+          "fallback": "full_proc_scan_on_permission_or_capability_failure",
+          "normal_exits_are_recorded_without_global_fallback": true,
+          "proc_stat_read_attempts": 2820,
+          "scoped_samples": 141,
+          "strategy": "explicit_cgroups_and_all_selected_task_children",
+          "task_children_read_attempts": 1972
+        },
+        "polling_can_miss_short_lived_processes": true,
+        "process_exit_endpoints_missing": 0,
+        "process_identities_observed": 10,
+        "remote_model_or_ssh_work": "Not included unless measured separately or represented by explicit local PID/cgroup scope. A local client/gateway alone does not measure remote inference.",
+        "root_pids_requested": [
+          769574
+        ]
+      },
+      "cpu": {
+        "cgroup_nonoverlap_observed_seconds": 1.61676,
+        "cgroup_nonoverlap_paths": [
+          "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180c7eb0f-96a-2c48.service"
+        ],
+        "process_and_cgroup_totals_overlap_do_not_add": true,
+        "process_lifecycle_observed_seconds": 1.62,
+        "short_lived_unobserved_process_cpu": "missing unless included by a baselined, retained cgroup CPU counter; never assumed zero"
+      },
+      "elapsed_seconds": 3.0277924980036914,
+      "memory": {
+        "memory_peaks_are_sampled_lower_bounds": true,
+        "pss_complete_samples": 141,
+        "pss_incomplete_samples": 0,
+        "pss_peak_complete_sample_bytes": 63194112,
+        "pss_peak_observed_partial_bytes": 63194112,
+        "rss_peak_sum_bytes": 134619136,
+        "rss_sum_double_counts_shared_pages": true
+      },
+      "missing_owned_fixture_pids": [],
+      "missing_vs_first_v1": [],
+      "observer_cpu_per_elapsed_second": 0.5337685300645825,
+      "round": 1,
+      "same_selected_identities_as_first_v1": true,
+      "sampling": {
+        "cadence": "wait_after_sample",
+        "implementation": "hepta.process-metrics.linux.v2",
+        "interval_seconds": 0.01,
+        "largest_actual_gap_seconds": 0.027666147972922772,
+        "observer_cpu_seconds": 1.6161403510000005,
+        "observer_pid": 769574,
+        "observer_stage_cpu_seconds": {
+          "cgroup_discovery": 0.1408462539999995,
+          "pid_enumeration": 0.4824898930000004,
+          "pss_and_aggregation": 0.9921888870000004
+        },
+        "observer_stage_wall_seconds": {
+          "cgroup_discovery": 0.1409297859063372,
+          "pid_enumeration": 0.4825027340557426,
+          "pss_and_aggregation": 0.9925803971709684
+        },
+        "observer_wall_seconds": 1.6169017568754498,
+        "samples": 141,
+        "stop_timeout": false
+      },
+      "selected_identities": [
+        "769474:23961437",
+        "769485:23961445",
+        "769574:23961670",
+        "769579:23961682",
+        "769580:23961686",
+        "769588:23961690",
+        "769590:23961692",
+        "769591:23961695",
+        "769592:23961697",
+        "769593:23961701"
+      ],
+      "selected_pids": [
+        769474,
+        769485,
+        769574,
+        769579,
+        769580,
+        769588,
+        769590,
+        769591,
+        769592,
+        769593
+      ]
+    },
+    {
+      "added_vs_first_v1": [],
+      "arm": "v1_10ms",
+      "calibration_process_cpu_seconds": 2.835077827,
+      "coverage": {
+        "cgroup_paths_requested": [
+          "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180c7eb0f-96a-2c48.service"
+        ],
+        "explicit_pid_scope_pinned_to_first_start_ticks": true,
+        "external_work_declared": [],
+        "extra_pids_requested": [
+          769592
+        ],
+        "gaps": {},
+        "global_total_memory_or_cpu_claim_supported": false,
+        "observer_process_included": true,
+        "polling_can_miss_short_lived_processes": true,
+        "process_exit_endpoints_missing": 0,
+        "process_identities_observed": 10,
+        "remote_model_or_ssh_work": "Not included unless measured separately or represented by explicit local PID/cgroup scope. A local client/gateway alone does not measure remote inference.",
+        "root_pids_requested": [
+          769574
+        ]
+      },
+      "cpu": {
+        "cgroup_nonoverlap_observed_seconds": 2.752652,
+        "cgroup_nonoverlap_paths": [
+          "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a180c7eb0f-96a-2c48.service"
+        ],
+        "process_and_cgroup_totals_overlap_do_not_add": true,
+        "process_lifecycle_observed_seconds": 2.73,
+        "short_lived_unobserved_process_cpu": "missing unless included by a baselined, retained cgroup CPU counter; never assumed zero"
+      },
+      "elapsed_seconds": 3.189482265006518,
+      "memory": {
+        "memory_peaks_are_sampled_lower_bounds": true,
+        "pss_complete_samples": 37,
+        "pss_incomplete_samples": 0,
+        "pss_peak_complete_sample_bytes": 63255552,
+        "pss_peak_observed_partial_bytes": 63255552,
+        "rss_peak_sum_bytes": 134619136,
+        "rss_sum_double_counts_shared_pages": true
+      },
+      "missing_owned_fixture_pids": [],
+      "missing_vs_first_v1": [],
+      "observer_cpu_per_elapsed_second": 0.8829907420708747,
+      "round": 1,
+      "same_selected_identities_as_first_v1": true,
+      "sampling": {
+        "interval_seconds": 0.01,
+        "largest_actual_gap_seconds": 0.09990256902528927,
+        "observer_cpu_seconds": 2.8162833119999995,
+        "observer_pid": 769574,
+        "observer_wall_seconds": 2.8165173039596993,
+        "samples": 37,
+        "stop_timeout": false
+      },
+      "selected_identities": [
+        "769474:23961437",
+        "769485:23961445",
+        "769574:23961670",
+        "769579:23961682",
+        "769580:23961686",
+        "769588:23961690",
+        "769590:23961692",
+        "769591:23961695",
+        "769592:23961697",
+        "769593:23961701"
+      ],
+      "selected_pids": [
+        769474,
+        769485,
+        769574,
+        769579,
+        769580,
+        769588,
+        769590,
+        769591,
+        769592,
+        769593
+      ]
+    }
+  ],
+  "schema": "hepta.process-metrics.calibration.v2",
+  "scope": "owned calibration process descendants plus its explicit containing cgroup",
+  "scope_equivalent": true,
+  "seconds_per_arm": 3.0,
+  "source_sha256": {
+    "calibrate_process_metrics_v2.py": "b6baba4a9c98238bee4ffed27c8894f2ab82f538a98a62310094860ca7e5fd78",
+    "process_metrics.py": "f397be2091fc39343d63e1bdfc072a43b9251493b57a409acbb006ccbdebe27d",
+    "process_metrics_v2.py": "e823227becebde2d15a003107bdb17b35693632eb8373aab854d47624aa7f4f4",
+    "test_process_metrics_v2.py": "f4cf6bb7224f48f08867d3787326c235877d0d6ad69df901f988112ef2eae338"
+  },
+  "v2_calibration_gate": false,
+  "workload": "idle owned tree; includes non-main-thread child and grandchildren"
+}

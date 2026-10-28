@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.formal-comparison.plan.v2",
+  "frozen_before_runs_ns": 1793162723283287389,
+  "reason": "V1 sampler consumed ~87% of one core; V2 scoped enumeration and 500ms post-sample wait passed unchanged 5% idle-tree gate",
+  "source_sha256": {
+    "benchmark_v2.py": "cc8c7c35005fcf1ab9abd2e09c19cc7ebf7f2c82da08cfc1437cb0776089a69c",
+    "process_metrics_v2.py": "e823227becebde2d15a003107bdb17b35693632eb8373aab854d47624aa7f4f4",
+    "process_metrics.py": "f397be2091fc39343d63e1bdfc072a43b9251493b57a409acbb006ccbdebe27d",
+    "model_gateway.py": "fb63a8fdf0a314e5302c72c7bf5f12412bb4a00338dbdad17fbbcc87e325857d",
+    "protocol_driver.py": "1427b63df4532f66da8b55042a617fe9257a96221bfb93d649ef19337992339a",
+    "analysis/formal_summary_v2.py": "669bfbee520e370d6ac7c42d67df90f76f48b294a441187d8974207e61ac7288"
+  },
+  "calibration_file": "evidence/metrics-v2-cadence-calibration-r2.json",
+  "calibration_sha256": "1f57459ac4c3fa6c85937b3250034f406a4648fcd051eeb1c4da2a44237a2cec",
+  "official_source": "360319d8dee62d87e2d59fc0c21805d79519cfed",
+  "native_binary_sha256": "0628b5ea8d919db59b581f66eba64ddc3a6674ee960b6f6b13790e61d27d9f08",
+  "sequence": [
+    [
+      "replay",
+      "native"
+    ],
+    [
+      "replay",
+      "app-server"
+    ],
+    [
+      "replay",
+      "facade"
+    ],
+    [
+      "live",
+      "facade"
+    ],
+    [
+      "live",
+      "app-server"
+    ],
+    [
+      "live",
+      "native"
+    ]
+  ],
+  "replay_measured_cases_per_lane": 9,
+  "live_measured_cases_per_lane": 6,
+  "warmup_cases_per_lane": 1,
+  "sample_interval_seconds": 0.5,
+  "cpu_quota_percent": 400,
+  "memory_max_bytes": 8589934592,
+  "nice": 10,
+  "model_executor_task_budget_scoring_unchanged": true,
+  "limitations": [
+    "Fresh simultaneous selected-PID PSS only; no cached PSS substitution",
+    "Slower sampling can miss short peaks and short processes",
+    "Stable-tree parity is not an atomic dynamic full-tree proof",
+    "Model alias is not a pinned provider weights/deployment",
+    "Remote model and parts of SSH control plane are unmeasured",
+    "CPU scopes overlap; no global total-resource claim"
+  ]
+}

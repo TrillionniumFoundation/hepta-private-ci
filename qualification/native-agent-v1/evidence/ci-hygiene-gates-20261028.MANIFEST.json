@@ -1,0 +1,188 @@
+{
+  "archive": "ci-hygiene-gates-20261028.tar.gz",
+  "bytes": 18391,
+  "commands": [
+    {
+      "args": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "-p",
+        "codex-hepta-native-agent",
+        "-p",
+        "codex-thread-store"
+      ],
+      "exit_code": 0,
+      "finished_ns": 1793165936797824790,
+      "label": "native_thread_store_tests",
+      "started_ns": 1793165613542755476
+    },
+    {
+      "args": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--manifest-path",
+        "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/runner/Cargo.toml",
+        "--all-targets"
+      ],
+      "exit_code": 0,
+      "finished_ns": 1793165947092412039,
+      "label": "runner_tests",
+      "started_ns": 1793165936797963420
+    },
+    {
+      "args": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fix",
+        "-p",
+        "codex-hepta-native-agent",
+        "-p",
+        "codex-thread-store"
+      ],
+      "exit_code": 0,
+      "finished_ns": 1793166068100663537,
+      "label": "scoped_fix",
+      "started_ns": 1793165947092503898
+    },
+    {
+      "args": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "finished_ns": 1793166068466741382,
+      "label": "format",
+      "started_ns": 1793166068100771146
+    },
+    {
+      "args": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-native-agent",
+        "-p",
+        "codex-thread-store",
+        "--all-targets",
+        "--",
+        "-D",
+        "clippy::correctness",
+        "-D",
+        "clippy::expect_used"
+      ],
+      "exit_code": 0,
+      "finished_ns": 1793166186468345847,
+      "label": "strict_clippy",
+      "started_ns": 1793166068466817359
+    },
+    {
+      "args": [
+        "/home/qian-qi/.local/bin/bazel",
+        "--batch",
+        "--output_base=/home/qian-qi/worktrees/hepta-native-bazel-output-20261028",
+        "mod",
+        "deps",
+        "--lockfile_mode=update",
+        "--repo_contents_cache=/home/qian-qi/worktrees/hepta-native-bazel-contents-20261028"
+      ],
+      "exit_code": 0,
+      "finished_ns": 1793166199168874736,
+      "label": "bazel_lock",
+      "started_ns": 1793166186468452267
+    },
+    {
+      "args": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--manifest-path",
+        "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/runner/Cargo.toml"
+      ],
+      "exit_code": 0,
+      "finished_ns": 1793166241905216773,
+      "label": "release",
+      "started_ns": 1793166199168965764
+    }
+  ],
+  "files": [
+    {
+      "bytes": 2766,
+      "path": "COMMANDS.json",
+      "sha256": "f159a91b85ef59e9638770fc3a42ce37d10c29e77b7aae3b50a99861b26cd20f"
+    },
+    {
+      "bytes": 1976,
+      "path": "bazel_lock.stderr",
+      "sha256": "04a3769cf86e2ca2a2b097e903a918fdb0f41cbfc7da48ddcef89e3d03f8b532"
+    },
+    {
+      "bytes": 18,
+      "path": "bazel_lock.stdout",
+      "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+    },
+    {
+      "bytes": 0,
+      "path": "format.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 73,
+      "path": "format.stdout",
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    {
+      "bytes": 68900,
+      "path": "native_thread_store_tests.stderr",
+      "sha256": "9c9b302908b255f9e1effaae28efe73d0f80964e4ed70cf09ae1162e1e40ec09"
+    },
+    {
+      "bytes": 0,
+      "path": "native_thread_store_tests.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 340,
+      "path": "release.stderr",
+      "sha256": "54dc1146d37d34e41bc043bda4a1d2e271e4674ebb632a56c5c3767ae0ebbff6"
+    },
+    {
+      "bytes": 0,
+      "path": "release.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2834,
+      "path": "runner_tests.stderr",
+      "sha256": "9fe924894f504fd30c4c2e0e6ae16e388e2a5a5a3b0c11231b6118c100fdc9cf"
+    },
+    {
+      "bytes": 0,
+      "path": "runner_tests.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 10632,
+      "path": "scoped_fix.stderr",
+      "sha256": "fc5bfc287c9f9be7f35eafb8c148509ef6214fc1bd2fd08540560a6506051c8b"
+    },
+    {
+      "bytes": 0,
+      "path": "scoped_fix.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 5572,
+      "path": "strict_clippy.stderr",
+      "sha256": "036b77e0954eea010b04024242781235795bb5b4f917d07f396f20aef3c8d58a"
+    },
+    {
+      "bytes": 0,
+      "path": "strict_clippy.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "finished_ns": 1793166242168944921,
+  "first_failed_command": null,
+  "schema": "hepta.native.ci-hygiene-gates.v1",
+  "sha256": "6cc6907e342ef048e9c9962f8e19b4c73a74fc8ea3ccdfb8a12871b2bdf0d4f0"
+}

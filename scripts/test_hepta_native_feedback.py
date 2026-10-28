@@ -73,9 +73,9 @@ def engineering_shell(name: str) -> str:
 class NativeFeedbackPolicyTests(unittest.TestCase):
     def test_blocking_scoped_native_checks_require_fmt_test_and_clippy(self):
         workflow = (ROOT / ".github/workflows/blocking-ci.yml").read_text()
-        scoped = workflow.split("  hepta-scoped:\n", 1)[1].split(
-            "  lightweight:\n", 1
-        )[0]
+        scoped = workflow.split("  hepta-scoped:\n", 1)[1].split("  lightweight:\n", 1)[
+            0
+        ]
         required = (
             "Check formatting of exact affected Cargo owners",
             "Test affected owners and reverse consumers, not a hand-written package list",

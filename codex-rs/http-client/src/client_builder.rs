@@ -32,6 +32,7 @@ use crate::with_chatgpt_cloudflare_cookie_store;
 pub struct HttpClientBuilder {
     default_headers: Option<HeaderMap>,
     follow_redirects: bool,
+    retry_policy: RetryPolicy,
     connect_timeout: Option<Duration>,
     chatgpt_cloudflare_cookie_store: bool,
     chatgpt_cookie_store: Option<Arc<ChatGptCookieStore>>,
@@ -44,6 +45,13 @@ enum TlsBackend {
     #[default]
     TransportDefault,
     Rustls,
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+enum RetryPolicy {
+    #[default]
+    TransportDefault,
+    Never,
 }
 
 impl HttpClientFactory {
@@ -89,6 +97,13 @@ impl HttpClientBuilder {
 
     pub fn without_redirects(mut self) -> Self {
         self.follow_redirects = false;
+        self
+    }
+
+    /// Disables transport retries when only the operation owner may decide recovery.
+    /// Other clients retain the transport's default retry policy.
+    pub fn without_retries(mut self) -> Self {
+        self.retry_policy = RetryPolicy::Never;
         self
     }
 
@@ -316,6 +331,9 @@ impl HttpClientBuilder {
         if !self.follow_redirects {
             builder = builder.redirect(reqwest::redirect::Policy::none());
         }
+        if self.retry_policy == RetryPolicy::Never {
+            builder = builder.retry(reqwest::retry::never());
+        }
         if let Some(connect_timeout) = self.connect_timeout {
             builder = builder.connect_timeout(connect_timeout);
         }
@@ -334,6 +352,7 @@ impl Default for HttpClientBuilder {
         Self {
             default_headers: None,
             follow_redirects: true,
+            retry_policy: RetryPolicy::TransportDefault,
             connect_timeout: None,
             chatgpt_cloudflare_cookie_store: false,
             chatgpt_cookie_store: None,

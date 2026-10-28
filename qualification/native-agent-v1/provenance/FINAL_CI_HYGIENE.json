@@ -1,0 +1,68 @@
+{
+  "formal_results_and_model_calls_unchanged": true,
+  "formal_v2_binary_preserved_at": "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/runner/target/frozen-formal-v2/hepta-native-qualification",
+  "formal_v2_binary_sha256": "0628b5ea8d919db59b581f66eba64ddc3a6674ee960b6f6b13790e61d27d9f08",
+  "formal_v2_source_commit": "ea162dd819932d6b962863aebf49908c557b5e3f",
+  "prior_head": "ea162dd819932d6b962863aebf49908c557b5e3f",
+  "provenance_rename": {
+    "from": "official-0165/BUILD.json",
+    "reason": "Existing scripts/format.py selects BUILD.* as Starlark",
+    "sha256": "30df8de393e58f958d1ccd0890c1b3aa2bc5db0c485c73b4a5d048161e616e85",
+    "to": "official-0165/OFFICIAL_BUILD.json"
+  },
+  "schema": "hepta.final-ci-hygiene.v1",
+  "unused_dependency_cleanup": [
+    {
+      "after_sha256": "1d1abffe2fea60c594b5fac5ed6e2f4a5b45667b944050e49fd4800c7982b37a",
+      "before_sha256": "a7de76ad7936eaccebf99d13ca7177500a23dda04e4f399b3f7ed6279c57d93e",
+      "path": "codex-rs/hepta-native-agent/Cargo.toml"
+    },
+    {
+      "after_sha256": "f89689e7d06d623fc3ce105294b929eb86332280eaeef8b37640250ebf1a9b1d",
+      "before_sha256": "e115af14e313c6245a37ead785cd91498c516e6de3716d2609df1f746362fee9",
+      "path": "codex-rs/Cargo.lock"
+    },
+    {
+      "after_sha256": "3118175b25a7ac9595fa92f72d507916f5f1c306e43cddce465c3178bc2b22ee",
+      "before_sha256": "d2999ed777368e12bbc89eaa44c18b05e4bc0af2ad4152051198cac635d4a11b",
+      "path": "qualification/native-agent-v1/runner/Cargo.lock"
+    }
+  ],
+  "inherited_ruff_format_fix": {
+    "version": "ruff 0.15.13",
+    "wheel_sha256": "cc411dfebe5eebe55ce041c6ae080eb7668955e866daa2fbb16692a784f1c4ca",
+    "wheel_url": "https://files.pythonhosted.org/packages/e8/31/bf1a0803d077e679cfeee5f2f67290a0fa79c7385b5d9a8c17b9db2c48f0/ruff-0.15.13-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+    "wheel_bytes": 11434486,
+    "download_resumed_from_bytes": 8253440,
+    "base_source_identical": true,
+    "before_sha256": "3110624252b0eaae24a54ede10ab42a6a7a948449bd5a021b1693af7223e139f",
+    "after_sha256": "1dfc17979abdaa3f648a5bbee633d4e2ac5bbb88d634396450f758781e55e310",
+    "ast_identical": true,
+    "format_stdout": "1 file reformatted\n",
+    "format_stderr": "",
+    "check_stdout": "1 file already formatted\n",
+    "check_stderr": "",
+    "actual_format_command": [
+      "/home/qian-qi/worktrees/hepta-native-ci-format-venv-20261028/bin/ruff-frozen",
+      "format",
+      "/home/qian-qi/worktrees/hepta-native-agent-20261027/scripts/test_hepta_native_feedback.py"
+    ],
+    "frozen_tool_provenance": "exact scripts/uv.lock wheel version and hash; direct formatter invocation, not uv run",
+    "full_format_check": {
+      "args": [
+        "/home/qian-qi/worktrees/hepta-native-ci-format-venv-20261028/bin/ruff-frozen",
+        "format",
+        "--check",
+        "scripts",
+        ".github"
+      ],
+      "exit_code": 0,
+      "stdout": "173 files already formatted\n",
+      "stderr": ""
+    }
+  },
+  "tool_preparation_evidence": [
+    "evidence/ci-hygiene-preparation-20261028.tar.gz",
+    "evidence/ci-tool-recovery-20261028.json.gz"
+  ]
+}

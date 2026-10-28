@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.formal-comparison.plan.v1",
+  "frozen_before_formal_runs_ns": 1793160102386054936,
+  "official_source": "360319d8dee62d87e2d59fc0c21805d79519cfed",
+  "native_binary_sha256": "0628b5ea8d919db59b581f66eba64ddc3a6674ee960b6f6b13790e61d27d9f08",
+  "sequence": [
+    [
+      "replay",
+      "native"
+    ],
+    [
+      "replay",
+      "app-server"
+    ],
+    [
+      "replay",
+      "facade"
+    ],
+    [
+      "live",
+      "facade"
+    ],
+    [
+      "live",
+      "app-server"
+    ],
+    [
+      "live",
+      "native"
+    ]
+  ],
+  "replay_measured_cases_per_lane": 9,
+  "live_measured_cases_per_lane": 6,
+  "warmup_cases_per_lane": 1,
+  "one_persistent_executor_per_lane": true,
+  "one_fresh_runtime_cgroup_per_lane": true,
+  "cpu_quota_percent": 400,
+  "memory_max_bytes": 8589934592,
+  "nice": 10,
+  "small_sample_order_and_cache_effects_not_eliminated": true,
+  "global_total_memory_or_cpu_claim_supported": false
+}
