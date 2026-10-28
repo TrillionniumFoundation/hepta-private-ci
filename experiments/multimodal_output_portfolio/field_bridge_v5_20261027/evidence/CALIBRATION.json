@@ -1,0 +1,417 @@
+{
+  "row_records_omitted_from_artifact": true,
+  "schema": "hepta.field-bridge.v5.empirical-calibration-suite.1",
+  "seeds": {
+    "17": {
+      "baseline_action": 2,
+      "baseline_origin": "previously selected strong ordinary action; unchanged",
+      "certificate": false,
+      "coverage_claim": false,
+      "evaluation_scope": "descriptive old calibration rows; tau uses these labels; not independent evaluation",
+      "fit_performed": false,
+      "label_continuation_matches_baseline": false,
+      "label_reference_action": 1,
+      "modes": {
+        "field": {
+          "advantage_residual_rmse": 0.0059586794107298665,
+          "dimension": 12,
+          "gated": {
+            "action_counts": [
+              0,
+              0,
+              24,
+              0
+            ],
+            "max_regret": 0.0036115282779064506,
+            "mean_advantage_over_baseline": 0.0,
+            "mean_regret": 0.0015221501650103154,
+            "mean_terminal_value": 0.8280150011202884,
+            "override_count": 0,
+            "override_rate": 0.0,
+            "rows": 24
+          },
+          "greedy": {
+            "action_counts": [
+              1,
+              2,
+              10,
+              11
+            ],
+            "max_regret": 0.014720535237574994,
+            "mean_advantage_over_baseline": -0.0017604585027280878,
+            "mean_regret": 0.0032826086677384034,
+            "mean_terminal_value": 0.8262545426175603,
+            "override_count": 14,
+            "override_rate": 0.5833333333333334,
+            "rows": 24
+          },
+          "mode_max_abs_advantage_residual": 0.01640071326748338,
+          "oof_terminal_mse": 2.8252225118557242e-05,
+          "prediction_replay_max_abs_error": 0.0,
+          "reference": {
+            "action_counts": [
+              0,
+              0,
+              24,
+              0
+            ],
+            "max_regret": 0.0036115282779064506,
+            "mean_advantage_over_baseline": 0.0,
+            "mean_regret": 0.0015221501650103154,
+            "mean_terminal_value": 0.8280150011202884,
+            "override_count": 0,
+            "override_rate": 0.0,
+            "rows": 24
+          },
+          "ridge": 1.0
+        },
+        "richer": {
+          "advantage_residual_rmse": 0.007529477072996635,
+          "dimension": 30,
+          "gated": {
+            "action_counts": [
+              0,
+              0,
+              24,
+              0
+            ],
+            "max_regret": 0.0036115282779064506,
+            "mean_advantage_over_baseline": 0.0,
+            "mean_regret": 0.0015221501650103154,
+            "mean_terminal_value": 0.8280150011202884,
+            "override_count": 0,
+            "override_rate": 0.0,
+            "rows": 24
+          },
+          "greedy": {
+            "action_counts": [
+              3,
+              2,
+              10,
+              9
+            ],
+            "max_regret": 0.014720535237574994,
+            "mean_advantage_over_baseline": -0.0022078113048034135,
+            "mean_regret": 0.0037299614698137287,
+            "mean_terminal_value": 0.825807189815485,
+            "override_count": 14,
+            "override_rate": 0.5833333333333334,
+            "rows": 24
+          },
+          "mode_max_abs_advantage_residual": 0.01948005388318319,
+          "oof_terminal_mse": 3.514537887021444e-05,
+          "prediction_replay_max_abs_error": 0.0,
+          "reference": {
+            "action_counts": [
+              0,
+              0,
+              24,
+              0
+            ],
+            "max_regret": 0.0036115282779064506,
+            "mean_advantage_over_baseline": 0.0,
+            "mean_regret": 0.0015221501650103154,
+            "mean_terminal_value": 0.8280150011202884,
+            "override_count": 0,
+            "override_rate": 0.0,
+            "rows": 24
+          },
+          "ridge": 1.0
+        }
+      },
+      "new_holdout_rows_read": 0,
+      "representation_comparison": {
+        "gated_disagreement_count": 0,
+        "greedy_disagreement_count": 6,
+        "prediction_max_abs_difference": 0.009315891092893658
+      },
+      "ridge_reselected": false,
+      "rule": "unique greedy action overrides baseline iff predicted advantage > tau; ties/equality keep baseline",
+      "schema": "hepta.field-bridge.v5.old-fit-empirical-gate.1",
+      "seed": 17,
+      "selection_caveat": "ridge was already selected on these OOF folds; folds are not nested validation",
+      "source_identities": {
+        "bank_sha256": "c85d2253b3ccbf05b1a4f3e5da57cf012549a57bf1aaf6b5706784fa35d96a8f",
+        "controllers_sha256": "aafd7eb9d484b28603246e81ad3a103cec4bdbe969eb4cbea9a6dae0c30e1600",
+        "controllers_uncompressed_sha256": "f750695fef1f7f7d9f20e7abdbd6547845c8ce59e5fd77788b85a5be1548a1e5"
+      },
+      "target_scope": "first action followed by frozen V3 Qref continuation, not the deployed gate policy",
+      "tau": 0.01948005388318319,
+      "threshold_pool": "field+richer; selected-ridge trajectory OOF; all action-baseline residuals"
+    },
+    "29": {
+      "baseline_action": 3,
+      "baseline_origin": "previously selected strong ordinary action; unchanged",
+      "certificate": false,
+      "coverage_claim": false,
+      "evaluation_scope": "descriptive old calibration rows; tau uses these labels; not independent evaluation",
+      "fit_performed": false,
+      "label_continuation_matches_baseline": true,
+      "label_reference_action": 3,
+      "modes": {
+        "field": {
+          "advantage_residual_rmse": 0.006098907369646963,
+          "dimension": 12,
+          "gated": {
+            "action_counts": [
+              0,
+              0,
+              0,
+              24
+            ],
+            "max_regret": 0.014664186059235473,
+            "mean_advantage_over_baseline": 0.0,
+            "mean_regret": 0.0038859164458245055,
+            "mean_terminal_value": 0.8500352147169717,
+            "override_count": 0,
+            "override_rate": 0.0,
+            "rows": 24
+          },
+          "greedy": {
+            "action_counts": [
+              4,
+              2,
+              10,
+              8
+            ],
+            "max_regret": 0.017531604625037223,
+            "mean_advantage_over_baseline": 0.0007783047476550564,
+            "mean_regret": 0.003107611698169449,
+            "mean_terminal_value": 0.8508135194646268,
+            "override_count": 16,
+            "override_rate": 0.6666666666666666,
+            "rows": 24
+          },
+          "mode_max_abs_advantage_residual": 0.019509609205963008,
+          "oof_terminal_mse": 4.170767819332021e-05,
+          "prediction_replay_max_abs_error": 0.0,
+          "reference": {
+            "action_counts": [
+              0,
+              0,
+              0,
+              24
+            ],
+            "max_regret": 0.014664186059235473,
+            "mean_advantage_over_baseline": 0.0,
+            "mean_regret": 0.0038859164458245055,
+            "mean_terminal_value": 0.8500352147169717,
+            "override_count": 0,
+            "override_rate": 0.0,
+            "rows": 24
+          },
+          "ridge": 1.0
+        },
+        "richer": {
+          "advantage_residual_rmse": 0.007757784707505642,
+          "dimension": 30,
+          "gated": {
+            "action_counts": [
+              0,
+              0,
+              1,
+              23
+            ],
+            "max_regret": 0.014664186059235473,
+            "mean_advantage_over_baseline": 0.0002719348840097742,
+            "mean_regret": 0.003613981561814731,
+            "mean_terminal_value": 0.8503071496009816,
+            "override_count": 1,
+            "override_rate": 0.041666666666666664,
+            "rows": 24
+          },
+          "greedy": {
+            "action_counts": [
+              5,
+              6,
+              3,
+              10
+            ],
+            "max_regret": 0.017531604625037223,
+            "mean_advantage_over_baseline": -0.0009929209919391825,
+            "mean_regret": 0.004878837437763688,
+            "mean_terminal_value": 0.8490422937250326,
+            "override_count": 14,
+            "override_rate": 0.5833333333333334,
+            "rows": 24
+          },
+          "mode_max_abs_advantage_residual": 0.02710728320677247,
+          "oof_terminal_mse": 7.356553105669423e-05,
+          "prediction_replay_max_abs_error": 0.0,
+          "reference": {
+            "action_counts": [
+              0,
+              0,
+              0,
+              24
+            ],
+            "max_regret": 0.014664186059235473,
+            "mean_advantage_over_baseline": 0.0,
+            "mean_regret": 0.0038859164458245055,
+            "mean_terminal_value": 0.8500352147169717,
+            "override_count": 0,
+            "override_rate": 0.0,
+            "rows": 24
+          },
+          "ridge": 1.0
+        }
+      },
+      "new_holdout_rows_read": 0,
+      "representation_comparison": {
+        "gated_disagreement_count": 1,
+        "greedy_disagreement_count": 11,
+        "prediction_max_abs_difference": 0.0126610599377327
+      },
+      "ridge_reselected": false,
+      "rule": "unique greedy action overrides baseline iff predicted advantage > tau; ties/equality keep baseline",
+      "schema": "hepta.field-bridge.v5.old-fit-empirical-gate.1",
+      "seed": 29,
+      "selection_caveat": "ridge was already selected on these OOF folds; folds are not nested validation",
+      "source_identities": {
+        "bank_sha256": "8ee6976dacb3ffdd0271b43c3c125b06d1221d39c729fd1fa3268cd9bec2ef57",
+        "controllers_sha256": "3f6c0768ee0530e2b92dde197780bacaffac050bceb707d7f7800d1c88ea40c7",
+        "controllers_uncompressed_sha256": "98c93a2a1b6a765eb3c422a1255c95d3efb489ba691ebb2b583c1bfb60c488a3"
+      },
+      "target_scope": "first action followed by frozen V3 Qref continuation, not the deployed gate policy",
+      "tau": 0.02710728320677247,
+      "threshold_pool": "field+richer; selected-ridge trajectory OOF; all action-baseline residuals"
+    },
+    "43": {
+      "baseline_action": 3,
+      "baseline_origin": "previously selected strong ordinary action; unchanged",
+      "certificate": false,
+      "coverage_claim": false,
+      "evaluation_scope": "descriptive old calibration rows; tau uses these labels; not independent evaluation",
+      "fit_performed": false,
+      "label_continuation_matches_baseline": true,
+      "label_reference_action": 3,
+      "modes": {
+        "field": {
+          "advantage_residual_rmse": 0.008073848738503395,
+          "dimension": 12,
+          "gated": {
+            "action_counts": [
+              0,
+              0,
+              0,
+              24
+            ],
+            "max_regret": 0.018419077888756963,
+            "mean_advantage_over_baseline": 0.0,
+            "mean_regret": 0.003865792369439685,
+            "mean_terminal_value": 0.8080402147028036,
+            "override_count": 0,
+            "override_rate": 0.0,
+            "rows": 24
+          },
+          "greedy": {
+            "action_counts": [
+              7,
+              5,
+              3,
+              9
+            ],
+            "max_regret": 0.01441606003609186,
+            "mean_advantage_over_baseline": -0.00014362947542090332,
+            "mean_regret": 0.004009421844860588,
+            "mean_terminal_value": 0.8078965852273825,
+            "override_count": 15,
+            "override_rate": 0.625,
+            "rows": 24
+          },
+          "mode_max_abs_advantage_residual": 0.02463359137908072,
+          "oof_terminal_mse": 0.00014004889068412003,
+          "prediction_replay_max_abs_error": 0.0,
+          "reference": {
+            "action_counts": [
+              0,
+              0,
+              0,
+              24
+            ],
+            "max_regret": 0.018419077888756963,
+            "mean_advantage_over_baseline": 0.0,
+            "mean_regret": 0.003865792369439685,
+            "mean_terminal_value": 0.8080402147028036,
+            "override_count": 0,
+            "override_rate": 0.0,
+            "rows": 24
+          },
+          "ridge": 1.0
+        },
+        "richer": {
+          "advantage_residual_rmse": 0.008764111933678372,
+          "dimension": 30,
+          "gated": {
+            "action_counts": [
+              0,
+              0,
+              0,
+              24
+            ],
+            "max_regret": 0.018419077888756963,
+            "mean_advantage_over_baseline": 0.0,
+            "mean_regret": 0.003865792369439685,
+            "mean_terminal_value": 0.8080402147028036,
+            "override_count": 0,
+            "override_rate": 0.0,
+            "rows": 24
+          },
+          "greedy": {
+            "action_counts": [
+              7,
+              7,
+              1,
+              9
+            ],
+            "max_regret": 0.01441606003609186,
+            "mean_advantage_over_baseline": 2.4426739416105736e-05,
+            "mean_regret": 0.003841365630023579,
+            "mean_terminal_value": 0.8080646414422196,
+            "override_count": 15,
+            "override_rate": 0.625,
+            "rows": 24
+          },
+          "mode_max_abs_advantage_residual": 0.022542450453482576,
+          "oof_terminal_mse": 0.00012705108752914557,
+          "prediction_replay_max_abs_error": 0.0,
+          "reference": {
+            "action_counts": [
+              0,
+              0,
+              0,
+              24
+            ],
+            "max_regret": 0.018419077888756963,
+            "mean_advantage_over_baseline": 0.0,
+            "mean_regret": 0.003865792369439685,
+            "mean_terminal_value": 0.8080402147028036,
+            "override_count": 0,
+            "override_rate": 0.0,
+            "rows": 24
+          },
+          "ridge": 1.0
+        }
+      },
+      "new_holdout_rows_read": 0,
+      "representation_comparison": {
+        "gated_disagreement_count": 0,
+        "greedy_disagreement_count": 8,
+        "prediction_max_abs_difference": 0.02388145722451629
+      },
+      "ridge_reselected": false,
+      "rule": "unique greedy action overrides baseline iff predicted advantage > tau; ties/equality keep baseline",
+      "schema": "hepta.field-bridge.v5.old-fit-empirical-gate.1",
+      "seed": 43,
+      "selection_caveat": "ridge was already selected on these OOF folds; folds are not nested validation",
+      "source_identities": {
+        "bank_sha256": "f87666fc1b15505b43d686257050c9b821366da26bd98b139fd642075e3e1445",
+        "controllers_sha256": "44a97167a85d4b964b099c1c0e9b63f89985842d3542bbcb1e6152e2a289b0aa",
+        "controllers_uncompressed_sha256": "9efa768f3de6d7913a9cf3447659d329bb9a8e6b7f63644d70832df46ca49215"
+      },
+      "target_scope": "first action followed by frozen V3 Qref continuation, not the deployed gate policy",
+      "tau": 0.02463359137908072,
+      "threshold_pool": "field+richer; selected-ridge trajectory OOF; all action-baseline residuals"
+    }
+  }
+}
