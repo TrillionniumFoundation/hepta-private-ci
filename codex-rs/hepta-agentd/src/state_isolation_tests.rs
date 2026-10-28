@@ -42,7 +42,7 @@ use crate::AgentdPayload;
 use crate::LifecycleSnapshot;
 use crate::RunPhase;
 
-fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
+fn identity_fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdIdentity)> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     #[cfg(unix)]
@@ -76,6 +76,11 @@ fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> 
         control_socket: record.layout.agentd_control_socket().to_path_buf(),
         app_server_socket: record.layout.app_server_socket().to_path_buf(),
     };
+    Ok((temp, registry, identity))
+}
+
+fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
+    let (temp, registry, identity) = identity_fixture()?;
     let state = AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16)?;
     registry.compare_and_transition(
         &state.identity.agent_id,
@@ -656,10 +661,13 @@ async fn final_use_revalidation_rejects_stale_spawn_generation_before_store_acce
 #[cfg(not(unix))]
 #[test]
 fn private_owner_trust_refuses_unsupported_platform_ownership() {
-    let (_temp, _registry, state) = fixture().expect("runtime fixture");
-    let path = state.identity.home_root.join("run-start-trust.json");
-    let error = crate::authbus_trust::read_private_owner_file(&path, state.identity(), 16_384)
-        .expect_err("Unix ownership proof must not be synthesized on another platform");
+    let (_temp, _registry, identity) = identity_fixture().expect("identity fixture");
+    let path = identity.home_root.join("run-start-trust.json");
+    assert!(!path.exists());
+    let error = crate::authbus_trust::read_private_owner_file(
+        &path, &identity, /*_maximum_bytes*/ 16_384,
+    )
+    .expect_err("Unix ownership proof must not be synthesized on another platform");
     let AgentdError::Invalid(message) = error else {
         panic!("unsupported ownership checks must reject configuration");
     };
@@ -667,4 +675,5 @@ fn private_owner_trust_refuses_unsupported_platform_ownership() {
         message,
         "AuthBus text: private owner configuration currently requires Unix ownership checks"
     );
+    assert!(!path.exists(), "refused trust reads must not create a file");
 }
