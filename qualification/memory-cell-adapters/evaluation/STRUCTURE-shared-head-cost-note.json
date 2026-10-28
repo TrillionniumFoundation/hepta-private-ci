@@ -1,0 +1,784 @@
+{
+  "checks": {
+    "all_six_checkpoint_bytes:731": true,
+    "all_six_checkpoint_bytes:732": true,
+    "all_six_checkpoint_bytes:733": true,
+    "head_blob:731:dynamic-0:head.bias.0000.npz": true,
+    "head_blob:731:dynamic-0:head.weight.0000.npz": true,
+    "head_blob:731:dynamic-1:head.bias.0000.npz": true,
+    "head_blob:731:dynamic-1:head.weight.0000.npz": true,
+    "head_blob:731:merged:head.bias.0000.npz": true,
+    "head_blob:731:merged:head.weight.0000.npz": true,
+    "head_blob:731:rank-8:head.bias.0000.npz": true,
+    "head_blob:731:rank-8:head.weight.0000.npz": true,
+    "head_blob:731:static-0:head.bias.0000.npz": true,
+    "head_blob:731:static-0:head.weight.0000.npz": true,
+    "head_blob:731:static-1:head.bias.0000.npz": true,
+    "head_blob:731:static-1:head.weight.0000.npz": true,
+    "head_blob:732:dynamic-0:head.bias.0000.npz": true,
+    "head_blob:732:dynamic-0:head.weight.0000.npz": true,
+    "head_blob:732:dynamic-1:head.bias.0000.npz": true,
+    "head_blob:732:dynamic-1:head.weight.0000.npz": true,
+    "head_blob:732:merged:head.bias.0000.npz": true,
+    "head_blob:732:merged:head.weight.0000.npz": true,
+    "head_blob:732:rank-8:head.bias.0000.npz": true,
+    "head_blob:732:rank-8:head.weight.0000.npz": true,
+    "head_blob:732:static-0:head.bias.0000.npz": true,
+    "head_blob:732:static-0:head.weight.0000.npz": true,
+    "head_blob:732:static-1:head.bias.0000.npz": true,
+    "head_blob:732:static-1:head.weight.0000.npz": true,
+    "head_blob:733:dynamic-0:head.bias.0000.npz": true,
+    "head_blob:733:dynamic-0:head.weight.0000.npz": true,
+    "head_blob:733:dynamic-1:head.bias.0000.npz": true,
+    "head_blob:733:dynamic-1:head.weight.0000.npz": true,
+    "head_blob:733:merged:head.bias.0000.npz": true,
+    "head_blob:733:merged:head.weight.0000.npz": true,
+    "head_blob:733:rank-8:head.bias.0000.npz": true,
+    "head_blob:733:rank-8:head.weight.0000.npz": true,
+    "head_blob:733:static-0:head.bias.0000.npz": true,
+    "head_blob:733:static-0:head.weight.0000.npz": true,
+    "head_blob:733:static-1:head.bias.0000.npz": true,
+    "head_blob:733:static-1:head.weight.0000.npz": true,
+    "head_copies_equal:731:dynamic": true,
+    "head_copies_equal:731:merged": true,
+    "head_copies_equal:731:rank8": true,
+    "head_copies_equal:731:static": true,
+    "head_copies_equal:732:dynamic": true,
+    "head_copies_equal:732:merged": true,
+    "head_copies_equal:732:rank8": true,
+    "head_copies_equal:732:static": true,
+    "head_copies_equal:733:dynamic": true,
+    "head_copies_equal:733:merged": true,
+    "head_copies_equal:733:rank8": true,
+    "head_copies_equal:733:static": true,
+    "raw_pair_duplicates_head:731": true,
+    "raw_pair_duplicates_head:732": true,
+    "raw_pair_duplicates_head:733": true,
+    "runtime_head_object_shared:731": true,
+    "runtime_head_object_shared:732": true,
+    "runtime_head_object_shared:733": true,
+    "runtime_pair_rank8_equal_unique_budget:731": true,
+    "runtime_pair_rank8_equal_unique_budget:732": true,
+    "runtime_pair_rank8_equal_unique_budget:733": true
+  },
+  "conclusion": "The split/static/rank8 comparison matches unique live parameter objects and training exposure; checkpoint byte budgets are unequal because each child serializes the shared head. Runtime sharing is real and verified in saved fresh-process receipts, not inferred only from equal numerical values.",
+  "limitations": [
+    "The live 43056-byte figure counts float32 parameter payload only; it is not model-process RSS or a deployment-memory measurement.",
+    "TensorCell.load constructs and deserializes a private head before validating and replacing it with the shared head. Temporary tensors, metadata, encoder/features, allocator retention and peak RSS are additional and unmeasured per candidate.",
+    "Serialized NPZ bytes and manifests are independently retained for each child. No disk-level head deduplication is implemented.",
+    "The structure reader loads all six candidate checkpoints together. Its process RSS is not an isolated RSS measurement for dynamic, static, rank8 or merged deployment."
+  ],
+  "parameter_budget": {
+    "extra_serialized_raw_head_bytes_for_pair": 18480,
+    "live_unique_parameter_float32_payload_bytes_per_candidate": 43056,
+    "private_rank4_adapter_parameters_per_child": 3072,
+    "rank8_stored_tensor_float32_payload_bytes": 43056,
+    "rank8_trainable_parameters": 6144,
+    "rank8_unique_total_parameters": 10764,
+    "shared_frozen_head_parameters": 4620,
+    "two_child_stored_tensor_float32_payload_bytes": 61536,
+    "two_child_stored_tensor_parameter_count": 15384,
+    "two_child_unique_total_parameters": 10764,
+    "two_child_unique_trainable_parameters": 6144
+  },
+  "passed": true,
+  "read_only_derived_audit": true,
+  "schema": "hepta.memory.structure-shared-head-cost-audit.v1",
+  "seeds": [
+    {
+      "candidates": {
+        "dynamic": {
+          "all_files_stored_bytes": 64530,
+          "all_serialized_heads_identical": true,
+          "checkpoint_count": 2,
+          "checkpoint_evidence": [
+            {
+              "checkpoint": "dynamic-0",
+              "manifest": {
+                "bytes": 2917,
+                "sha256": "34aa790c08714caeb79e0e62d39af3205112861b191e7a0dcf33db2323c206ad"
+              },
+              "serialized_head_parts": {
+                "head.bias": [
+                  {
+                    "bytes": 258,
+                    "sha256": "fd4be672d9a49d9a7c533fc9609daf1e7f99cd5cf34a6f3d6851667b087942e9"
+                  }
+                ],
+                "head.weight": [
+                  {
+                    "bytes": 17227,
+                    "sha256": "0e225234232692bf3567be3877c56a1c9e829c9abe73aa98c63ffe8ec8b7ee28"
+                  }
+                ]
+              }
+            },
+            {
+              "checkpoint": "dynamic-1",
+              "manifest": {
+                "bytes": 2916,
+                "sha256": "38816bbbd120eed7aafb362fd2c4208a4ef1b5d5953b527cfc13d6064bd93170"
+              },
+              "serialized_head_parts": {
+                "head.bias": [
+                  {
+                    "bytes": 258,
+                    "sha256": "fd4be672d9a49d9a7c533fc9609daf1e7f99cd5cf34a6f3d6851667b087942e9"
+                  }
+                ],
+                "head.weight": [
+                  {
+                    "bytes": 17227,
+                    "sha256": "0e225234232692bf3567be3877c56a1c9e829c9abe73aa98c63ffe8ec8b7ee28"
+                  }
+                ]
+              }
+            }
+          ],
+          "checkpoint_names": [
+            "dynamic-0",
+            "dynamic-1"
+          ],
+          "head_npz_stored_bytes": 34970,
+          "raw_serialized_tensor_float32_bytes": 61536
+        },
+        "merged": {
+          "all_files_stored_bytes": 33037,
+          "all_serialized_heads_identical": true,
+          "checkpoint_count": 1,
+          "checkpoint_evidence": [
+            {
+              "checkpoint": "merged",
+              "manifest": {
+                "bytes": 3663,
+                "sha256": "10ee155f66b7052da264f16a1bef76c16cc49e87d3776c2e231f69ab80322808"
+              },
+              "serialized_head_parts": {
+                "head.bias": [
+                  {
+                    "bytes": 258,
+                    "sha256": "fd4be672d9a49d9a7c533fc9609daf1e7f99cd5cf34a6f3d6851667b087942e9"
+                  }
+                ],
+                "head.weight": [
+                  {
+                    "bytes": 17227,
+                    "sha256": "0e225234232692bf3567be3877c56a1c9e829c9abe73aa98c63ffe8ec8b7ee28"
+                  }
+                ]
+              }
+            }
+          ],
+          "checkpoint_names": [
+            "merged"
+          ],
+          "head_npz_stored_bytes": 17485,
+          "raw_serialized_tensor_float32_bytes": 30768
+        },
+        "rank8": {
+          "all_files_stored_bytes": 43798,
+          "all_serialized_heads_identical": true,
+          "checkpoint_count": 1,
+          "checkpoint_evidence": [
+            {
+              "checkpoint": "rank-8",
+              "manifest": {
+                "bytes": 3045,
+                "sha256": "296567de150d8a817fc805e0ce214b0c82f83ee8ae112adf3234b99672c0695a"
+              },
+              "serialized_head_parts": {
+                "head.bias": [
+                  {
+                    "bytes": 258,
+                    "sha256": "fd4be672d9a49d9a7c533fc9609daf1e7f99cd5cf34a6f3d6851667b087942e9"
+                  }
+                ],
+                "head.weight": [
+                  {
+                    "bytes": 17227,
+                    "sha256": "0e225234232692bf3567be3877c56a1c9e829c9abe73aa98c63ffe8ec8b7ee28"
+                  }
+                ]
+              }
+            }
+          ],
+          "checkpoint_names": [
+            "rank-8"
+          ],
+          "head_npz_stored_bytes": 17485,
+          "raw_serialized_tensor_float32_bytes": 43056
+        },
+        "static": {
+          "all_files_stored_bytes": 64494,
+          "all_serialized_heads_identical": true,
+          "checkpoint_count": 2,
+          "checkpoint_evidence": [
+            {
+              "checkpoint": "static-0",
+              "manifest": {
+                "bytes": 2916,
+                "sha256": "c15bd9a8de669e2f462e9685898ffeb2867c1cd58e7236caba80f954cd60116f"
+              },
+              "serialized_head_parts": {
+                "head.bias": [
+                  {
+                    "bytes": 258,
+                    "sha256": "fd4be672d9a49d9a7c533fc9609daf1e7f99cd5cf34a6f3d6851667b087942e9"
+                  }
+                ],
+                "head.weight": [
+                  {
+                    "bytes": 17227,
+                    "sha256": "0e225234232692bf3567be3877c56a1c9e829c9abe73aa98c63ffe8ec8b7ee28"
+                  }
+                ]
+              }
+            },
+            {
+              "checkpoint": "static-1",
+              "manifest": {
+                "bytes": 2916,
+                "sha256": "87a5de01b0247c940eb2adbf4e87720d087a78620787da895427c32212a54bcf"
+              },
+              "serialized_head_parts": {
+                "head.bias": [
+                  {
+                    "bytes": 258,
+                    "sha256": "fd4be672d9a49d9a7c533fc9609daf1e7f99cd5cf34a6f3d6851667b087942e9"
+                  }
+                ],
+                "head.weight": [
+                  {
+                    "bytes": 17227,
+                    "sha256": "0e225234232692bf3567be3877c56a1c9e829c9abe73aa98c63ffe8ec8b7ee28"
+                  }
+                ]
+              }
+            }
+          ],
+          "checkpoint_names": [
+            "static-0",
+            "static-1"
+          ],
+          "head_npz_stored_bytes": 34970,
+          "raw_serialized_tensor_float32_bytes": 61536
+        }
+      },
+      "fresh_reader_evidence": {
+        "all_loaded_unique_parameters": {
+          "total": 26124,
+          "trainable": 21504
+        },
+        "candidate_unique_parameters": {
+          "dynamic": {
+            "total": 10764,
+            "trainable": 6144
+          },
+          "merged": {
+            "total": 7692,
+            "trainable": 3072
+          },
+          "rank8": {
+            "total": 10764,
+            "trainable": 6144
+          },
+          "static": {
+            "total": 10764,
+            "trainable": 6144
+          }
+        },
+        "cost_does_not_supply_per_candidate_rss": true,
+        "identity": {
+          "bytes": 4914,
+          "sha256": "ad14ea503378d3cf881b0cd96fd2ed30cd7d96c086cea0368286382ce81cd913"
+        },
+        "path": "/workspace/scratch/76e2020e4b36/memory-adapter-formal-01/structure-731.stdout",
+        "serialized_all_six_checkpoint_bytes": 205859,
+        "shared_head_restored": true
+      },
+      "seed": 731
+    },
+    {
+      "candidates": {
+        "dynamic": {
+          "all_files_stored_bytes": 64502,
+          "all_serialized_heads_identical": true,
+          "checkpoint_count": 2,
+          "checkpoint_evidence": [
+            {
+              "checkpoint": "dynamic-0",
+              "manifest": {
+                "bytes": 2916,
+                "sha256": "6db636df3296859a76670efd64fa19f8c7e0cd4767405809d936981c471b16a4"
+              },
+              "serialized_head_parts": {
+                "head.bias": [
+                  {
+                    "bytes": 257,
+                    "sha256": "db565be855aeb3924b3dfcb6f0e4d8a741a6b27069ca59bc0681c2f5da4d6fbc"
+                  }
+                ],
+                "head.weight": [
+                  {
+                    "bytes": 17210,
+                    "sha256": "744a6391936360c9164ec7158f7d60d7402e66cb5ad62650a8eafeb2f5639bf4"
+                  }
+                ]
+              }
+            },
+            {
+              "checkpoint": "dynamic-1",
+              "manifest": {
+                "bytes": 2917,
+                "sha256": "a5df8afafb7037ed9d43011ed21c8549a24edf4d7bd29afd8e77a884d5e8e2bb"
+              },
+              "serialized_head_parts": {
+                "head.bias": [
+                  {
+                    "bytes": 257,
+                    "sha256": "db565be855aeb3924b3dfcb6f0e4d8a741a6b27069ca59bc0681c2f5da4d6fbc"
+                  }
+                ],
+                "head.weight": [
+                  {
+                    "bytes": 17210,
+                    "sha256": "744a6391936360c9164ec7158f7d60d7402e66cb5ad62650a8eafeb2f5639bf4"
+                  }
+                ]
+              }
+            }
+          ],
+          "checkpoint_names": [
+            "dynamic-0",
+            "dynamic-1"
+          ],
+          "head_npz_stored_bytes": 34934,
+          "raw_serialized_tensor_float32_bytes": 61536
+        },
+        "merged": {
+          "all_files_stored_bytes": 33020,
+          "all_serialized_heads_identical": true,
+          "checkpoint_count": 1,
+          "checkpoint_evidence": [
+            {
+              "checkpoint": "merged",
+              "manifest": {
+                "bytes": 3662,
+                "sha256": "6e5f7bdab41beeab4b10bac0595024c2f066c0888c53a123480ba7c917cdf277"
+              },
+              "serialized_head_parts": {
+                "head.bias": [
+                  {
+                    "bytes": 257,
+                    "sha256": "db565be855aeb3924b3dfcb6f0e4d8a741a6b27069ca59bc0681c2f5da4d6fbc"
+                  }
+                ],
+                "head.weight": [
+                  {
+                    "bytes": 17210,
+                    "sha256": "744a6391936360c9164ec7158f7d60d7402e66cb5ad62650a8eafeb2f5639bf4"
+                  }
+                ]
+              }
+            }
+          ],
+          "checkpoint_names": [
+            "merged"
+          ],
+          "head_npz_stored_bytes": 17467,
+          "raw_serialized_tensor_float32_bytes": 30768
+        },
+        "rank8": {
+          "all_files_stored_bytes": 43771,
+          "all_serialized_heads_identical": true,
+          "checkpoint_count": 1,
+          "checkpoint_evidence": [
+            {
+              "checkpoint": "rank-8",
+              "manifest": {
+                "bytes": 3050,
+                "sha256": "6f8f3f013b56ffbc46125af6d2b848cc845e3548a2841eb73b570d7c2b17707f"
+              },
+              "serialized_head_parts": {
+                "head.bias": [
+                  {
+                    "bytes": 257,
+                    "sha256": "db565be855aeb3924b3dfcb6f0e4d8a741a6b27069ca59bc0681c2f5da4d6fbc"
+                  }
+                ],
+                "head.weight": [
+                  {
+                    "bytes": 17210,
+                    "sha256": "744a6391936360c9164ec7158f7d60d7402e66cb5ad62650a8eafeb2f5639bf4"
+                  }
+                ]
+              }
+            }
+          ],
+          "checkpoint_names": [
+            "rank-8"
+          ],
+          "head_npz_stored_bytes": 17467,
+          "raw_serialized_tensor_float32_bytes": 43056
+        },
+        "static": {
+          "all_files_stored_bytes": 64502,
+          "all_serialized_heads_identical": true,
+          "checkpoint_count": 2,
+          "checkpoint_evidence": [
+            {
+              "checkpoint": "static-0",
+              "manifest": {
+                "bytes": 2914,
+                "sha256": "a9a34b8b134607ba81720dd61a3ce779028f52684824688b6dda606a57f5fdf8"
+              },
+              "serialized_head_parts": {
+                "head.bias": [
+                  {
+                    "bytes": 257,
+                    "sha256": "db565be855aeb3924b3dfcb6f0e4d8a741a6b27069ca59bc0681c2f5da4d6fbc"
+                  }
+                ],
+                "head.weight": [
+                  {
+                    "bytes": 17210,
+                    "sha256": "744a6391936360c9164ec7158f7d60d7402e66cb5ad62650a8eafeb2f5639bf4"
+                  }
+                ]
+              }
+            },
+            {
+              "checkpoint": "static-1",
+              "manifest": {
+                "bytes": 2916,
+                "sha256": "89f0392284b8270250350bb98af54c7346723a0d1a7add4210056d0ec3977ebe"
+              },
+              "serialized_head_parts": {
+                "head.bias": [
+                  {
+                    "bytes": 257,
+                    "sha256": "db565be855aeb3924b3dfcb6f0e4d8a741a6b27069ca59bc0681c2f5da4d6fbc"
+                  }
+                ],
+                "head.weight": [
+                  {
+                    "bytes": 17210,
+                    "sha256": "744a6391936360c9164ec7158f7d60d7402e66cb5ad62650a8eafeb2f5639bf4"
+                  }
+                ]
+              }
+            }
+          ],
+          "checkpoint_names": [
+            "static-0",
+            "static-1"
+          ],
+          "head_npz_stored_bytes": 34934,
+          "raw_serialized_tensor_float32_bytes": 61536
+        }
+      },
+      "fresh_reader_evidence": {
+        "all_loaded_unique_parameters": {
+          "total": 26124,
+          "trainable": 21504
+        },
+        "candidate_unique_parameters": {
+          "dynamic": {
+            "total": 10764,
+            "trainable": 6144
+          },
+          "merged": {
+            "total": 7692,
+            "trainable": 3072
+          },
+          "rank8": {
+            "total": 10764,
+            "trainable": 6144
+          },
+          "static": {
+            "total": 10764,
+            "trainable": 6144
+          }
+        },
+        "cost_does_not_supply_per_candidate_rss": true,
+        "identity": {
+          "bytes": 4914,
+          "sha256": "5b90453e58f2af49d8f9541acdf25e60f18680e3df52142e06559b78369e72da"
+        },
+        "path": "/workspace/scratch/76e2020e4b36/memory-adapter-formal-01/structure-732.stdout",
+        "serialized_all_six_checkpoint_bytes": 205795,
+        "shared_head_restored": true
+      },
+      "seed": 732
+    },
+    {
+      "candidates": {
+        "dynamic": {
+          "all_files_stored_bytes": 64584,
+          "all_serialized_heads_identical": true,
+          "checkpoint_count": 2,
+          "checkpoint_evidence": [
+            {
+              "checkpoint": "dynamic-0",
+              "manifest": {
+                "bytes": 2849,
+                "sha256": "7a03debe8b3be6ec9b70716814aa89386fa4285ee2adf74f5462812481a27c42"
+              },
+              "serialized_head_parts": {
+                "head.bias": [
+                  {
+                    "bytes": 259,
+                    "sha256": "6f2e4ee9efec2143541e133d2931c866d7f574314624a6cdaf4f66adb26d06b6"
+                  }
+                ],
+                "head.weight": [
+                  {
+                    "bytes": 17234,
+                    "sha256": "deef6502c1d426a97395dc1b49962cf49736de6d1ff7146544a130f1da81009c"
+                  }
+                ]
+              }
+            },
+            {
+              "checkpoint": "dynamic-1",
+              "manifest": {
+                "bytes": 2983,
+                "sha256": "0a41175a016c346bf02d72a72dfb059c7b66cf1b8e668ddffc5990f630a42036"
+              },
+              "serialized_head_parts": {
+                "head.bias": [
+                  {
+                    "bytes": 259,
+                    "sha256": "6f2e4ee9efec2143541e133d2931c866d7f574314624a6cdaf4f66adb26d06b6"
+                  }
+                ],
+                "head.weight": [
+                  {
+                    "bytes": 17234,
+                    "sha256": "deef6502c1d426a97395dc1b49962cf49736de6d1ff7146544a130f1da81009c"
+                  }
+                ]
+              }
+            }
+          ],
+          "checkpoint_names": [
+            "dynamic-0",
+            "dynamic-1"
+          ],
+          "head_npz_stored_bytes": 34986,
+          "raw_serialized_tensor_float32_bytes": 61536
+        },
+        "merged": {
+          "all_files_stored_bytes": 33044,
+          "all_serialized_heads_identical": true,
+          "checkpoint_count": 1,
+          "checkpoint_evidence": [
+            {
+              "checkpoint": "merged",
+              "manifest": {
+                "bytes": 3663,
+                "sha256": "e649bdc830eab3c8bbe412fdd653828290e2fce7bec5a5012e7ea06223a13eba"
+              },
+              "serialized_head_parts": {
+                "head.bias": [
+                  {
+                    "bytes": 259,
+                    "sha256": "6f2e4ee9efec2143541e133d2931c866d7f574314624a6cdaf4f66adb26d06b6"
+                  }
+                ],
+                "head.weight": [
+                  {
+                    "bytes": 17234,
+                    "sha256": "deef6502c1d426a97395dc1b49962cf49736de6d1ff7146544a130f1da81009c"
+                  }
+                ]
+              }
+            }
+          ],
+          "checkpoint_names": [
+            "merged"
+          ],
+          "head_npz_stored_bytes": 17493,
+          "raw_serialized_tensor_float32_bytes": 30768
+        },
+        "rank8": {
+          "all_files_stored_bytes": 43780,
+          "all_serialized_heads_identical": true,
+          "checkpoint_count": 1,
+          "checkpoint_evidence": [
+            {
+              "checkpoint": "rank-8",
+              "manifest": {
+                "bytes": 3052,
+                "sha256": "d2721bed115393b31d505400b3d03bb3efae8fd6effb726092aad464d1baf94c"
+              },
+              "serialized_head_parts": {
+                "head.bias": [
+                  {
+                    "bytes": 259,
+                    "sha256": "6f2e4ee9efec2143541e133d2931c866d7f574314624a6cdaf4f66adb26d06b6"
+                  }
+                ],
+                "head.weight": [
+                  {
+                    "bytes": 17234,
+                    "sha256": "deef6502c1d426a97395dc1b49962cf49736de6d1ff7146544a130f1da81009c"
+                  }
+                ]
+              }
+            }
+          ],
+          "checkpoint_names": [
+            "rank-8"
+          ],
+          "head_npz_stored_bytes": 17493,
+          "raw_serialized_tensor_float32_bytes": 43056
+        },
+        "static": {
+          "all_files_stored_bytes": 64548,
+          "all_serialized_heads_identical": true,
+          "checkpoint_count": 2,
+          "checkpoint_evidence": [
+            {
+              "checkpoint": "static-0",
+              "manifest": {
+                "bytes": 2913,
+                "sha256": "87d59a6f7389fe88d451a764d130845f433837135c59e3d930a6d0851c67d7d7"
+              },
+              "serialized_head_parts": {
+                "head.bias": [
+                  {
+                    "bytes": 259,
+                    "sha256": "6f2e4ee9efec2143541e133d2931c866d7f574314624a6cdaf4f66adb26d06b6"
+                  }
+                ],
+                "head.weight": [
+                  {
+                    "bytes": 17234,
+                    "sha256": "deef6502c1d426a97395dc1b49962cf49736de6d1ff7146544a130f1da81009c"
+                  }
+                ]
+              }
+            },
+            {
+              "checkpoint": "static-1",
+              "manifest": {
+                "bytes": 2916,
+                "sha256": "08ce49e27359a61e9788f0203389441d0ac4c69bdf6ae0377bbff9d900992f64"
+              },
+              "serialized_head_parts": {
+                "head.bias": [
+                  {
+                    "bytes": 259,
+                    "sha256": "6f2e4ee9efec2143541e133d2931c866d7f574314624a6cdaf4f66adb26d06b6"
+                  }
+                ],
+                "head.weight": [
+                  {
+                    "bytes": 17234,
+                    "sha256": "deef6502c1d426a97395dc1b49962cf49736de6d1ff7146544a130f1da81009c"
+                  }
+                ]
+              }
+            }
+          ],
+          "checkpoint_names": [
+            "static-0",
+            "static-1"
+          ],
+          "head_npz_stored_bytes": 34986,
+          "raw_serialized_tensor_float32_bytes": 61536
+        }
+      },
+      "fresh_reader_evidence": {
+        "all_loaded_unique_parameters": {
+          "total": 26124,
+          "trainable": 21504
+        },
+        "candidate_unique_parameters": {
+          "dynamic": {
+            "total": 10764,
+            "trainable": 6144
+          },
+          "merged": {
+            "total": 7692,
+            "trainable": 3072
+          },
+          "rank8": {
+            "total": 10764,
+            "trainable": 6144
+          },
+          "static": {
+            "total": 10764,
+            "trainable": 6144
+          }
+        },
+        "cost_does_not_supply_per_candidate_rss": true,
+        "identity": {
+          "bytes": 4914,
+          "sha256": "8e84318df24bb41edafded1e22658f1781add32ec59c0482c6fb8225bf9fba47"
+        },
+        "path": "/workspace/scratch/76e2020e4b36/memory-adapter-formal-01/structure-733.stdout",
+        "serialized_all_six_checkpoint_bytes": 205956,
+        "shared_head_restored": true
+      },
+      "seed": 733
+    }
+  ],
+  "source_code": [
+    {
+      "identity": {
+        "bytes": 19726,
+        "sha256": "2421dc985a74b7b4edb80029a2b486d599ab8cf4409263e894aeb15878c289b4"
+      },
+      "locations": [
+        "TensorCell.__init__",
+        "TensorCell.fork",
+        "TensorCell.expand_rank",
+        "TensorCell.load",
+        "TensorCell.save",
+        "unique_parameter_count"
+      ],
+      "observation": "fork and expand_rank pass head=self.head; load checks persisted equality then assigns cell.head=shared_head. Unique counts use id(parameter). Save serializes every cell state_dict, including both head tensors.",
+      "path": "/workspace/scratch/76e2020e4b36/hepta-memory-completion/qualification/memory-cell-adapters/tensor_cell.py"
+    },
+    {
+      "identity": {
+        "bytes": 3834,
+        "sha256": "81076bf6cc60dd8485e2a29b57f93c8784d56485a6688d94f79e876c5fd04a32"
+      },
+      "locations": [
+        "split_pair",
+        "fixed_experts",
+        "matched_high_rank",
+        "distill_merge"
+      ],
+      "observation": "Dynamic and fixed children fork the same parent; high rank expansion and distilled merge retain the same frozen shared head.",
+      "path": "/workspace/scratch/76e2020e4b36/hepta-memory-completion/qualification/memory-cell-adapters/split.py"
+    },
+    {
+      "identity": {
+        "bytes": 15166,
+        "sha256": "87cb2211f7e4fc986c41425b0cf4c6f9cd2be2e7736e6664f24335746b00c92b"
+      },
+      "locations": [
+        "run: structure candidates and parameter_counts"
+      ],
+      "observation": "Budget assertions compare unique_parameter_count(children/experts) with rank8.parameter_counts; each child is independently saved.",
+      "path": "/workspace/scratch/76e2020e4b36/hepta-memory-completion/qualification/memory-cell-adapters/train.py"
+    },
+    {
+      "identity": {
+        "bytes": 5739,
+        "sha256": "26e27721496a074d8ba545777c4714468d02d0d3da6b58d21897128029573544"
+      },
+      "locations": [
+        "run: TensorCell.load loop",
+        "run: shared_head_restored output"
+      ],
+      "observation": "Fresh reader passes each restored cell head to the next load, then records len({id(cell.head)}) == 1 and counts parameter objects by identity.",
+      "path": "/workspace/scratch/76e2020e4b36/hepta-memory-completion/qualification/memory-cell-adapters/structure_reader.py"
+    }
+  ],
+  "training_or_model_inference_executed": false
+}
