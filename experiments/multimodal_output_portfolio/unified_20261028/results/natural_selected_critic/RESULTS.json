@@ -1,0 +1,402 @@
+{
+  "schema": "hepta.natural.selected-policy-moment-diagnostic.v1",
+  "status": "post-study accounting/estimand repair diagnostic; no fresh qualification or efficacy claim",
+  "protocol_sha256": "68ac3b150dcddece7a043176ae2321e2a988e522b28fa5298a9613340327e747",
+  "profile_sha256": "12ca5adbc8829ef063984e6c0c0f3006c6616cf2965eb515a56b63ddba87d9e7",
+  "critic_file_sha256": "0a7e95b20ce269e170d749c4ffd37528477efa7467bf449981e76682436785af",
+  "actor_sha256": "87b0e6c3fcbe93a462fd610bfa00e91420eb27eb62b819335f451846f2ce8ff8",
+  "model_bindings": {
+    "fixed_neural": {
+      "checkpoint_sha256": "3428833b70a233b313b92e9f3d25972d1a6f2918895847bcd38463899a45e09f",
+      "model_sha256": "ad03251a8a0e60faa0aff1f10c8c5a0b755ee932a2c9d10d9915978f69ef6ae6"
+    },
+    "uniform_8": {
+      "checkpoint_sha256": "60c541a1eb73c70be06ac5511791113f7779492fdaf0aed07739af8b3d5124bf",
+      "model_sha256": "89301108fc27b4e9155493e132cebab5bcaebb7c376b9708112ed98f0f264d9b"
+    },
+    "ndu_8": {
+      "checkpoint_sha256": "2c7068783532059479df475bb8c7b8d2c4721560a193a40513e8d0a50ef28617",
+      "model_sha256": "48f217de812ebcc4a85f0363994eb708b342c6e9d72a6021ca79126f7f0c894f"
+    },
+    "uniform_64": {
+      "checkpoint_sha256": "1407fcbac45a10bc41efe8555019cb1f9449d8b89c7d9b7a181aed952030ba2d",
+      "model_sha256": "e79a7d46e402d0a69524c9116c664ac726b3464ed35f7ec262e9b8ae78a6218c"
+    },
+    "ndu_64": {
+      "checkpoint_sha256": "d44294d366af5bf2946e84600af6c437826b59b04f978d9c9e01ac5c112df163",
+      "model_sha256": "7d032462c4c91b5f880c02b7930cd494bd40001072be3363aa9c998a92c7d668"
+    }
+  },
+  "continuation_sha256": "4abf66314111744789a6fb75cff2e063816e36f872432b9933c48f4b87f044dd",
+  "development": {
+    "sources": 8,
+    "events": 27,
+    "actual_complete_policy_draws": 54,
+    "source_weights_sum": 1.0,
+    "all_targets_positive": true,
+    "all_four_artifacts_real_readback": true,
+    "mean_full_policy_cpu_seconds": 0.22990529629629622,
+    "mean_actor_cpu_seconds": 0.0007042407407407712,
+    "new_draw_ids": [
+      2000,
+      2001
+    ],
+    "policy_unchanged": true
+  },
+  "corrected_selected_policy_critic_source_uniform": {
+    "source_count": 16,
+    "event_count": 52,
+    "draw_count": 104,
+    "actual_moment": 0.41358914207411235,
+    "predicted_moment": 0.40278712433055147,
+    "bias": -0.010802017743560852,
+    "source_weighted_rmse": 0.19440649210337152,
+    "bias_source_bootstrap_percentile_95": [
+      -0.08919077490729044,
+      0.06938741932017642
+    ],
+    "actual_moment_source_bootstrap_percentile_95": [
+      0.3411191210189203,
+      0.49079724040089834
+    ],
+    "per_source": [
+      {
+        "source_id": "video_1241",
+        "events": 2,
+        "draws": 4,
+        "actual_moment": 0.36305008805343764,
+        "predicted_moment": 0.3576097859897346,
+        "bias": -0.005440302063703051,
+        "mse": 2.9669789759279306e-05
+      },
+      {
+        "source_id": "video_1298",
+        "events": 3,
+        "draws": 6,
+        "actual_moment": 0.48803526081310056,
+        "predicted_moment": 0.6810923555106787,
+        "bias": 0.19305709469757815,
+        "mse": 0.03883995735555171
+      },
+      {
+        "source_id": "video_3409",
+        "events": 4,
+        "draws": 8,
+        "actual_moment": 0.6917590771826251,
+        "predicted_moment": 0.5073564440655608,
+        "bias": -0.18440263311706429,
+        "mse": 0.06657863720618157
+      },
+      {
+        "source_id": "video_497",
+        "events": 2,
+        "draws": 4,
+        "actual_moment": 0.3528132588154556,
+        "predicted_moment": 0.2227941971673894,
+        "bias": -0.1300190616480662,
+        "mse": 0.01700018937712688
+      },
+      {
+        "source_id": "video_5032",
+        "events": 3,
+        "draws": 6,
+        "actual_moment": 0.46460408459776437,
+        "predicted_moment": 0.3561736403485415,
+        "bias": -0.10843044424922288,
+        "mse": 0.01583937629692674
+      },
+      {
+        "source_id": "video_5802",
+        "events": 4,
+        "draws": 8,
+        "actual_moment": 0.5413835526362836,
+        "predicted_moment": 0.44871006708379485,
+        "bias": -0.09267348555248872,
+        "mse": 0.034307991330199565
+      },
+      {
+        "source_id": "video_5855",
+        "events": 4,
+        "draws": 8,
+        "actual_moment": 0.5504071607960945,
+        "predicted_moment": 0.39776358177085136,
+        "bias": -0.15264357902524317,
+        "mse": 0.033619986621136515
+      },
+      {
+        "source_id": "video_634",
+        "events": 4,
+        "draws": 8,
+        "actual_moment": 0.2557532368326291,
+        "predicted_moment": 0.44217710929069154,
+        "bias": 0.1864238724580624,
+        "mse": 0.0354119190460718
+      },
+      {
+        "source_id": "video_6671",
+        "events": 3,
+        "draws": 6,
+        "actual_moment": 0.4312151362609924,
+        "predicted_moment": 0.3516841532739804,
+        "bias": -0.079530982987012,
+        "mse": 0.009670146862095767
+      },
+      {
+        "source_id": "video_7140",
+        "events": 2,
+        "draws": 4,
+        "actual_moment": 0.32480973554927495,
+        "predicted_moment": 0.3404095414934169,
+        "bias": 0.015599805944141953,
+        "mse": 0.00034059191835735935
+      },
+      {
+        "source_id": "video_7324",
+        "events": 3,
+        "draws": 6,
+        "actual_moment": 0.3333439560540974,
+        "predicted_moment": 0.6543004967321439,
+        "bias": 0.32095654067804646,
+        "mse": 0.16609141685408305
+      },
+      {
+        "source_id": "video_7686",
+        "events": 4,
+        "draws": 8,
+        "actual_moment": 0.7196316685441885,
+        "predicted_moment": 0.40035337052715897,
+        "bias": -0.3192782980170295,
+        "mse": 0.12959903027971495
+      },
+      {
+        "source_id": "video_8073",
+        "events": 3,
+        "draws": 6,
+        "actual_moment": 0.1668537457955025,
+        "predicted_moment": 0.36595332389508944,
+        "bias": 0.19909957809958695,
+        "mse": 0.03979151151002049
+      },
+      {
+        "source_id": "video_9176",
+        "events": 3,
+        "draws": 6,
+        "actual_moment": 0.23037157002758296,
+        "predicted_moment": 0.3041702276195352,
+        "bias": 0.07379865759195225,
+        "mse": 0.005446787384667776
+      },
+      {
+        "source_id": "video_9378",
+        "events": 4,
+        "draws": 8,
+        "actual_moment": 0.39087146008562157,
+        "predicted_moment": 0.32524184245096177,
+        "bias": -0.0656296176346598,
+        "mse": 0.011468382879636996
+      },
+      {
+        "source_id": "video_9552",
+        "events": 4,
+        "draws": 8,
+        "actual_moment": 0.31252328114114647,
+        "predicted_moment": 0.28880385206929426,
+        "bias": -0.023719429071852205,
+        "mse": 0.0006665520394816685
+      }
+    ],
+    "interval_status": "descriptive source bootstrap; not a rigorous finite-support or future-tail certificate"
+  },
+  "legacy_candidate_head_source_uniform": {
+    "source_count": 16,
+    "event_count": 52,
+    "draw_count": 104,
+    "actual_moment": 0.41358914207411235,
+    "predicted_moment": 0.3908480936420821,
+    "bias": -0.02274104843203018,
+    "source_weighted_rmse": 0.24404728754604033,
+    "bias_source_bootstrap_percentile_95": [
+      -0.12000842106117163,
+      0.0825149111917631
+    ],
+    "actual_moment_source_bootstrap_percentile_95": [
+      0.3411191210189203,
+      0.49079724040089834
+    ],
+    "per_source": [
+      {
+        "source_id": "video_1241",
+        "events": 2,
+        "draws": 4,
+        "actual_moment": 0.36305008805343764,
+        "predicted_moment": 0.40999101216833467,
+        "bias": 0.04694092411489703,
+        "mse": 0.002283573649653807
+      },
+      {
+        "source_id": "video_1298",
+        "events": 3,
+        "draws": 6,
+        "actual_moment": 0.48803526081310056,
+        "predicted_moment": 0.5148091952954031,
+        "bias": 0.026773934482302586,
+        "mse": 0.0008390767899351271
+      },
+      {
+        "source_id": "video_3409",
+        "events": 4,
+        "draws": 8,
+        "actual_moment": 0.6917590771826251,
+        "predicted_moment": 0.5185835205088949,
+        "bias": -0.1731755566737302,
+        "mse": 0.05049401577052449
+      },
+      {
+        "source_id": "video_497",
+        "events": 2,
+        "draws": 4,
+        "actual_moment": 0.3528132588154556,
+        "predicted_moment": 0.19685534168652483,
+        "bias": -0.15595791712893078,
+        "mse": 0.02454662031386197
+      },
+      {
+        "source_id": "video_5032",
+        "events": 3,
+        "draws": 6,
+        "actual_moment": 0.46460408459776437,
+        "predicted_moment": 0.2273766765444879,
+        "bias": -0.23722740805327647,
+        "mse": 0.06102894168730262
+      },
+      {
+        "source_id": "video_5802",
+        "events": 4,
+        "draws": 8,
+        "actual_moment": 0.5413835526362836,
+        "predicted_moment": 0.250084646185868,
+        "bias": -0.29129890645041556,
+        "mse": 0.12498449818704273
+      },
+      {
+        "source_id": "video_5855",
+        "events": 4,
+        "draws": 8,
+        "actual_moment": 0.5504071607960945,
+        "predicted_moment": 0.26406954106576425,
+        "bias": -0.2863376197303303,
+        "mse": 0.10649903304917967
+      },
+      {
+        "source_id": "video_634",
+        "events": 4,
+        "draws": 8,
+        "actual_moment": 0.2557532368326291,
+        "predicted_moment": 0.6272482244926874,
+        "bias": 0.37149498766005823,
+        "mse": 0.13821623531965072
+      },
+      {
+        "source_id": "video_6671",
+        "events": 3,
+        "draws": 6,
+        "actual_moment": 0.4312151362609924,
+        "predicted_moment": 0.377534428220235,
+        "bias": -0.05368070804075742,
+        "mse": 0.0054869975245090755
+      },
+      {
+        "source_id": "video_7140",
+        "events": 2,
+        "draws": 4,
+        "actual_moment": 0.32480973554927495,
+        "predicted_moment": 0.29440300830974564,
+        "bias": -0.030406727239529308,
+        "mse": 0.0011286559742653243
+      },
+      {
+        "source_id": "video_7324",
+        "events": 3,
+        "draws": 6,
+        "actual_moment": 0.3333439560540974,
+        "predicted_moment": 0.6908254384644026,
+        "bias": 0.3574814824103052,
+        "mse": 0.24681136754696098
+      },
+      {
+        "source_id": "video_7686",
+        "events": 4,
+        "draws": 8,
+        "actual_moment": 0.7196316685441885,
+        "predicted_moment": 0.5393327243003139,
+        "bias": -0.1802989442438746,
+        "mse": 0.05921611078721099
+      },
+      {
+        "source_id": "video_8073",
+        "events": 3,
+        "draws": 6,
+        "actual_moment": 0.1668537457955025,
+        "predicted_moment": 0.47514284036675786,
+        "bias": 0.30828909457125536,
+        "mse": 0.09512600116632447
+      },
+      {
+        "source_id": "video_9176",
+        "events": 3,
+        "draws": 6,
+        "actual_moment": 0.23037157002758296,
+        "predicted_moment": 0.31195571401741634,
+        "bias": 0.08158414398983338,
+        "mse": 0.006670525145615125
+      },
+      {
+        "source_id": "video_9378",
+        "events": 4,
+        "draws": 8,
+        "actual_moment": 0.39087146008562157,
+        "predicted_moment": 0.30869073031716304,
+        "bias": -0.08218072976845853,
+        "mse": 0.024774835640531997
+      },
+      {
+        "source_id": "video_9552",
+        "events": 4,
+        "draws": 8,
+        "actual_moment": 0.31252328114114647,
+        "predicted_moment": 0.24666645632931497,
+        "bias": -0.0658568248118315,
+        "mse": 0.004838768384705776
+      }
+    ],
+    "interval_status": "descriptive source bootstrap; not a rigorous finite-support or future-tail certificate"
+  },
+  "legacy_reported_event_draw_pooled": {
+    "predicted_moment": 0.39642567261260275,
+    "actual_moment": 0.4283449071991887,
+    "bias": -0.031919234586585916
+  },
+  "source_estimand_correction": {
+    "old_pooled_actual_moment": 0.4283449071991887,
+    "source_uniform_actual_moment": 0.41358914207411235,
+    "source_uniform_actual_population_ce": 0.4414411041855601,
+    "exp_of_mean_return_NOT_used": 0.37965344503811665
+  },
+  "calibration_ledger_sha256": "5de776537e41b8b0cc89038d95195b1cbebe4c33e7c42f2b91afcd2d78261c19",
+  "tail_certificate": {
+    "issued": false,
+    "rigorous": false,
+    "enforced_future_cost_upper_bound": null,
+    "reason": "No enforced future upper bound on complete CPU cost; empirical sample bounds are not a future support proof.",
+    "finite_support_api_status": "fail closed; no sample extremum is supplied as future support"
+  },
+  "wall_seconds": 15.233680117999029,
+  "cpu_seconds": 14.761409999999998,
+  "limitations": [
+    "Calibration sources were independent of fitting but already consumed in the original study; bootstrap intervals are descriptive.",
+    "Critic is diagnostic only; deploying it inside a new policy would add costs and require a newly bound continuation and independent evaluation.",
+    "Fixed-shape runtime timing is observed directly; no arbitrary parameter derivative of CPU timing is asserted.",
+    "Model loading is a one-time setup cost measured in total diagnostic CPU, not part of hot-policy per-episode CPU charges.",
+    "Positive moment regression and average calibration do not establish accurate rare tails or natural semantic capability."
+  ]
+}
