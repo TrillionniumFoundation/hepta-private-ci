@@ -25,20 +25,41 @@ jobs:
       HEPTA_CI_LANE: source-head
       PYTHONNOUSERSITE: "1"
       PYTHONDONTWRITEBYTECODE: "1"
+      OUT: ${{ runner.temp }}/hepta-original-sandbox-host
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        if: matrix.runner == 'ubuntu-24.04'
         with:
           python-version: "3.12.3"
+      # setup-python has no 3.12.3 runtime artifact for Ubuntu 26.04.
+      # Keep the exact interpreter version instead of silently upgrading it.
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        if: matrix.runner == 'ubuntu-26.04'
+        with:
+          version: "0.11.3"
+      - name: Provision exact Python 3.12.3 on Ubuntu 26.04
+        if: matrix.runner == 'ubuntu-26.04'
+        run: |
+          set -euo pipefail
+          uv python install 3.12.3
+          py="$(uv python find 3.12.3)"
+          test "$("$py" -I -B -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')" = 3.12.3
+          mkdir -p "$RUNNER_TEMP/hepta-python-3123/bin"
+          ln -s "$py" "$RUNNER_TEMP/hepta-python-3123/bin/python3"
+          printf '%s\n' "$RUNNER_TEMP/hepta-python-3123/bin" >> "$GITHUB_PATH"
       - name: Preserve actual host and exact source metadata
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/hepta-original-sandbox-host"
           mkdir -m 700 "$out"
-          echo "OUT=$out" >> "$GITHUB_ENV"
+          test "$out" = "$OUT"
+          python3 -I -B -c 'import sys; print(sys.version); print(sys.executable)' > "$out/python.txt"
+          sha256sum "$(command -v python3)" > "$out/python3.sha256"
+          test "$(python3 -I -B -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')" = 3.12.3
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git rev-parse HEAD HEAD^{tree} > "$out/source.txt"
           git status --porcelain=v1 > "$out/source-status.txt"
@@ -75,11 +96,18 @@ jobs:
         if: always()
         run: |
           set -euo pipefail
+          # Earlier setup failures still need a source-bound receipt.
+          # An incomplete preflight is recorded; the original failed step stays failed.
+          mkdir -p "$OUT"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git rev-parse HEAD HEAD^{tree} > "$OUT/source-after.txt"
           git status --porcelain=v1 > "$OUT/source-status-after.txt"
           test ! -s "$OUT/source-status-after.txt"
-          cmp "$OUT/source.txt" "$OUT/source-after.txt"
+          if test -f "$OUT/source.txt"; then
+            cmp "$OUT/source.txt" "$OUT/source-after.txt"
+          else
+            printf 'Preflight source metadata was not produced; earlier step failed.\n' > "$OUT/INCOMPLETE.txt"
+          fi
           printf 'Original host capability only. No native Rust, model training, product qualification, ordinary installation or production activation is established. Each matrix outcome remains independent.\n' > "$OUT/SCOPE.txt"
           find "$OUT" -maxdepth 1 -type f -print0 | sort -z | xargs -0 sha256sum > "$RUNNER_TEMP/hepta-original-sandbox-host.sha256"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
