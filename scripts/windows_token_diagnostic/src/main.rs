@@ -91,7 +91,17 @@ unsafe fn token_report(handle: HANDLE) -> Result<Value> {
     let label_bytes = token_bytes(handle, TokenIntegrityLevel)?;
     let label = std::ptr::read_unaligned(label_bytes.as_ptr().cast::<TOKEN_MANDATORY_LABEL>());
     let policy = token_bytes(handle, TokenMandatoryPolicy)?;
-    let restricted = token_bytes(handle, TokenHasRestrictions)?;
+    // TokenHasRestrictions returns one defined BOOLEAN byte on this Windows
+    // build although the published API page describes a DWORD. Keep DWORD
+    // alignment/capacity, zero initialize it, and record the actual return size.
+    let mut restricted = 0u32;
+    let mut restricted_len = 0u32;
+    ensure!(GetTokenInformation(handle, TokenHasRestrictions,
+        (&mut restricted as *mut u32).cast(), std::mem::size_of::<u32>() as u32,
+        &mut restricted_len) != 0, "TokenHasRestrictions query: {}", GetLastError());
+    let restricted_raw = restricted.to_ne_bytes();
+    ensure!(matches!(restricted_len, 1 | 4),
+        "TokenHasRestrictions unexpected returned length {restricted_len}; buffer={}", hex(&restricted_raw));
     let access = token_bytes(handle, TokenAccessInformation)?;
     let access = std::ptr::read_unaligned(access.as_ptr().cast::<TOKEN_ACCESS_INFORMATION>());
     Ok(json!({
@@ -100,7 +110,10 @@ unsafe fn token_report(handle: HANDLE) -> Result<Value> {
         "restricted_sids": sids,
         "integrity_sid": sid_string(label.Label.Sid)?,
         "mandatory_policy": u32::from_ne_bytes(policy[..4].try_into()?),
-        "has_restrictions": u32::from_ne_bytes(restricted[..4].try_into()?),
+        "has_restrictions": restricted,
+        "has_restrictions_returned_bytes": restricted_len,
+        "has_restrictions_buffer_bytes": std::mem::size_of::<u32>(),
+        "has_restrictions_raw_hex": hex(&restricted_raw[..restricted_len as usize]),
     }))
 }
 
