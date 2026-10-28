@@ -1,0 +1,294 @@
+{
+  "schema_version": 1,
+  "kind": "cargo_deny_host_diagnostic_after_canonical_failure",
+  "started_at_utc": "2026-10-28T05:47:47.605175+00:00",
+  "original_action": "EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246",
+  "original_failure_preserved": true,
+  "qualification": false,
+  "platform": {
+    "sys_platform": "linux",
+    "machine": "x86_64"
+  },
+  "worktree_clean_before": true,
+  "worktree_clean_after": true,
+  "capture_error": null,
+  "differences_from_canonical": [
+    "Ubuntu host instead of the pinned Docker image; this is separate diagnostic evidence.",
+    "Explicit --locked prevents changing Cargo.lock; the canonical action omits that flag.",
+    "JSON output and explicit config path; registry and advisory data may be fetched later."
+  ],
+  "tool_release": {
+    "url": "https://github.com/EmbarkStudios/cargo-deny/releases/download/0.19.0/cargo-deny-0.19.0-x86_64-unknown-linux-musl.tar.gz",
+    "archive_sha256": "0e8c2aa59128612c90d9e09c02204e912f29a5b8d9a64671b94608cbe09e064f",
+    "archive_bytes": 8265108,
+    "binary_sha256": "06f9d1a0ba92b201bff1215b6dc24e669b212c151ecd52cae5d38aab73931d3c",
+    "binary_bytes": 16086896
+  },
+  "runs": {
+    "source": {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "streams": {
+        "stdout": {
+          "path": "source.stdout.log",
+          "observed_bytes": 82,
+          "observed_sha256": "6b0e6eb5402195730b1d497ce3a67a479f44b8d78840e188d39e85c81bf518d1",
+          "retained_bytes": 82,
+          "truncated": false,
+          "complete": true,
+          "retained_sha256": "6b0e6eb5402195730b1d497ce3a67a479f44b8d78840e188d39e85c81bf518d1"
+        },
+        "stderr": {
+          "path": "source.stderr.log",
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "truncated": false,
+          "complete": true,
+          "retained_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "worktree_before": {
+      "command": [
+        "git",
+        "status",
+        "--porcelain",
+        "--untracked-files=normal"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "streams": {
+        "stdout": {
+          "path": "worktree_before.stdout.log",
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "truncated": false,
+          "complete": true,
+          "retained_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "worktree_before.stderr.log",
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "truncated": false,
+          "complete": true,
+          "retained_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "cargo_version": {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "streams": {
+        "stdout": {
+          "path": "cargo_version.stdout.log",
+          "observed_bytes": 36,
+          "observed_sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5",
+          "retained_bytes": 36,
+          "truncated": false,
+          "complete": true,
+          "retained_sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5"
+        },
+        "stderr": {
+          "path": "cargo_version.stderr.log",
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "truncated": false,
+          "complete": true,
+          "retained_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "rustc_version": {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "streams": {
+        "stdout": {
+          "path": "rustc_version.stdout.log",
+          "observed_bytes": 36,
+          "observed_sha256": "f4d034f5660bb49f22bfcba3f3445be67e25b704c193ff421b53863b4faee148",
+          "retained_bytes": 36,
+          "truncated": false,
+          "complete": true,
+          "retained_sha256": "f4d034f5660bb49f22bfcba3f3445be67e25b704c193ff421b53863b4faee148"
+        },
+        "stderr": {
+          "path": "rustc_version.stderr.log",
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "truncated": false,
+          "complete": true,
+          "retained_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "diagnostic": {
+      "command": [
+        "/home/runner/work/_temp/cargo-deny-tool-hh3azn8c/cargo-deny",
+        "--log-level",
+        "warn",
+        "--format",
+        "json",
+        "--color",
+        "never",
+        "--manifest-path",
+        "./codex-rs/Cargo.toml",
+        "--all-features",
+        "--locked",
+        "check",
+        "--config",
+        "./codex-rs/deny.toml"
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "streams": {
+        "stdout": {
+          "path": "cargo_deny.stdout.log",
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "truncated": false,
+          "complete": true,
+          "retained_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "cargo_deny.stderr.log",
+          "observed_bytes": 12093563,
+          "observed_sha256": "8d3a6479d832b1c961e6ee411e5f386839655c39b4fd6d23878afc88c35bbb0c",
+          "retained_bytes": 8388608,
+          "truncated": true,
+          "complete": false,
+          "retained_sha256": "616758c32a15fbee1d1919442ba8ea80ece79cca80a02402fb31876c3558a15d"
+        }
+      }
+    },
+    "worktree_after": {
+      "command": [
+        "git",
+        "status",
+        "--porcelain",
+        "--untracked-files=normal"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "streams": {
+        "stdout": {
+          "path": "worktree_after.stdout.log",
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "truncated": false,
+          "complete": true,
+          "retained_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "worktree_after.stderr.log",
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "truncated": false,
+          "complete": true,
+          "retained_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  },
+  "phase": "finished",
+  "status": "completed",
+  "updated_at_utc": "2026-10-28T05:48:16.005572+00:00",
+  "inputs_before": {
+    "codex-rs/Cargo.toml": {
+      "bytes": 21574,
+      "sha256": "0e3fc0b7dc3ec907e02059a1bc79579077c8e5d1a0ac936b4f1bd984e94afdb4"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 418038,
+      "sha256": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389"
+    },
+    "codex-rs/deny.toml": {
+      "bytes": 18803,
+      "sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352"
+    },
+    "codex-rs/rust-toolchain.toml": {
+      "bytes": 78,
+      "sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64"
+    },
+    ".github/workflows/cargo-deny.yml": {
+      "bytes": 2036,
+      "sha256": "61c86b33375212bb428ed3673bbfed492a41c1a2d132d124f7b2840a452cc3dc"
+    },
+    "scripts/capture_cargo_deny_diagnostic.py": {
+      "bytes": 12693,
+      "sha256": "632978b8306a7fd7d5f3dcee65b9abfc55c34ad045992bc3b1f14a84984679cb"
+    }
+  },
+  "source_commit": "563463fe85b6ea51a22e7d7b496ef49b4bc47365",
+  "source_tree": "b6fe3798e2817c79c87fbb38dca3033f78716e20",
+  "verified_binary": {
+    "bytes": 16086896,
+    "sha256": "06f9d1a0ba92b201bff1215b6dc24e669b212c151ecd52cae5d38aab73931d3c"
+  },
+  "diagnostic_command": [
+    "/home/runner/work/_temp/cargo-deny-tool-hh3azn8c/cargo-deny",
+    "--log-level",
+    "warn",
+    "--format",
+    "json",
+    "--color",
+    "never",
+    "--manifest-path",
+    "./codex-rs/Cargo.toml",
+    "--all-features",
+    "--locked",
+    "check",
+    "--config",
+    "./codex-rs/deny.toml"
+  ],
+  "inputs_after": {
+    "codex-rs/Cargo.toml": {
+      "bytes": 21574,
+      "sha256": "0e3fc0b7dc3ec907e02059a1bc79579077c8e5d1a0ac936b4f1bd984e94afdb4"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 418038,
+      "sha256": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389"
+    },
+    "codex-rs/deny.toml": {
+      "bytes": 18803,
+      "sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352"
+    },
+    "codex-rs/rust-toolchain.toml": {
+      "bytes": 78,
+      "sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64"
+    },
+    ".github/workflows/cargo-deny.yml": {
+      "bytes": 2036,
+      "sha256": "61c86b33375212bb428ed3673bbfed492a41c1a2d132d124f7b2840a452cc3dc"
+    },
+    "scripts/capture_cargo_deny_diagnostic.py": {
+      "bytes": 12693,
+      "sha256": "632978b8306a7fd7d5f3dcee65b9abfc55c34ad045992bc3b1f14a84984679cb"
+    }
+  },
+  "inputs_unchanged": true,
+  "finished_at_utc": "2026-10-28T05:48:16.005566+00:00"
+}

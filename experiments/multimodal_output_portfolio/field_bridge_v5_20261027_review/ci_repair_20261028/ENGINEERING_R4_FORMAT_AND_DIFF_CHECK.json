@@ -1,0 +1,40 @@
+{
+  "recorded_at_utc": "2026-10-28T06:02:08.997301+00:00",
+  "scope": "cargo diagnostic v2 and synthetic V6 foundation; excludes concurrent separate Torch adapter preparation",
+  "command": [
+    "just",
+    "fmt"
+  ],
+  "exit_code": 0,
+  "diff_check_exit_code": 0,
+  "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "source_identities": {
+    "scripts/capture_cargo_deny_diagnostic.py": {
+      "expected": "47567d7b8e8248eb98fc7f0fd988b33f4c0d29dadf8278ae6746e6ef4f7386a5",
+      "actual": "c040903cab7a58bcab1c690958555ace26a33c7ce41290d92216b5b68684e34f"
+    },
+    "scripts/test_capture_cargo_deny_diagnostic.py": {
+      "expected": "045bfaadf5f2e785ff625c76ec8bd3f6cfdbdff56c0c077b2f672255318f1bf0",
+      "actual": "7f811178e2e6dbeba2c0c59b0ba54bfece13a4bab2682a2485ce8411e817792b"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/codec.py": {
+      "expected": "75b2be74e5a9bf7ff474e74f5e25f3f6dc3758c09d07ff78a1417537ddc772fb",
+      "actual": "75b2be74e5a9bf7ff474e74f5e25f3f6dc3758c09d07ff78a1417537ddc772fb"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/branch_state.py": {
+      "expected": "332080139de3a15a74d6ee5fad907fef661a1866551a0e23689884587d73cf82",
+      "actual": "332080139de3a15a74d6ee5fad907fef661a1866551a0e23689884587d73cf82"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/budget.py": {
+      "expected": "ea325da155d015e974ea65eddc9db60b0a6befc25835c481810d6e3235825c0b",
+      "actual": "ea325da155d015e974ea65eddc9db60b0a6befc25835c481810d6e3235825c0b"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/tests.py": {
+      "expected": "506d27b2f04cf97c7f75aa6dfe8e6fe1d6cc9506fd21b3914a901dfb44226bf9",
+      "actual": "506d27b2f04cf97c7f75aa6dfe8e6fe1d6cc9506fd21b3914a901dfb44226bf9"
+    }
+  },
+  "all_reviewed_source_bytes_unchanged": false,
+  "rust_tests_executed": false,
+  "scientific_execution": false
+}
