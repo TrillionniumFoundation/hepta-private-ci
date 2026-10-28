@@ -1,0 +1,11 @@
+{
+  "confirmation_started": false,
+  "exact_added_code": "        if restored.rng.seed != value[\"scenario\"][\"noise_seed\"]:\n            raise ValueError(\"Task scenario/random stream seed mismatch\")\n",
+  "execution_repair": "GzipLedger preallocates a bounded 32MiB output before generating any episode, refuses overflow, and truncates reserved zero tail on close. Failed output bytes and errno28 remain retained.",
+  "file": "task.py",
+  "historical_training_source_sha256": "c61693a14893936f0879563f0f0f792269da0c420a571e5ad7270c92005567a1",
+  "removing_only_this_guard_recovers_historical_bytes": true,
+  "repaired_source_sha256": "341a741a7381ade8d1189b7953766a40cd9f8b2966d1010c2a6d930d03fb4016",
+  "schema": "HeptaFirstPassageSourceRepairV1",
+  "scope": "MaintenanceTask.from_checkpoint only. Physical training generator and likelihood do not invoke this method. Stored physical fits are retained without resampling or refitting. All policy-development episodes are rerun after the repair."
+}

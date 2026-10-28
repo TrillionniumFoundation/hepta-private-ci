@@ -350,9 +350,15 @@ class FormatterScopeTests(unittest.TestCase):
         for name in ("rustfmt.toml", ".rustfmt.toml"):
             with self.subTest(name=name):
                 config = self.write(f"experiments/native/{name}", 'edition = "2024"\n')
-                command = FMT.rust_file_command(str(source.relative_to(self.root)), check=True)
-                self.assertEqual(command.args[command.args.index("--edition") + 1], "2024")
-                self.assertEqual(command.args[command.args.index("--config-path") + 1], str(config))
+                command = FMT.rust_file_command(
+                    str(source.relative_to(self.root)), check=True
+                )
+                self.assertEqual(
+                    command.args[command.args.index("--edition") + 1], "2024"
+                )
+                self.assertEqual(
+                    command.args[command.args.index("--config-path") + 1], str(config)
+                )
                 self.assertEqual(command.cwd, source.parent)
                 self.assertIn("--check", command.args)
                 config.unlink()
@@ -392,7 +398,13 @@ class FormatterScopeTests(unittest.TestCase):
                 FMT.rust_file_command("../outside.rs", check=True)
 
     def test_standalone_invalid_edition_or_malformed_toml_is_rejected(self):
-        for document in ('edition="2027"\n', "edition=2024\n", "edition=true\n", "edition=[]\n", 'edition="2024'):
+        for document in (
+            'edition="2027"\n',
+            "edition=2024\n",
+            "edition=true\n",
+            "edition=[]\n",
+            'edition="2024',
+        ):
             with self.subTest(document=document):
                 self.write("rustfmt.toml", document)
                 with self.assertRaises(ValueError):
@@ -409,12 +421,17 @@ class FormatterScopeTests(unittest.TestCase):
     def test_python_310_manifest_keeps_cargo_metadata_priority(self):
         import json
 
-        manifest = self.write("crate/Cargo.toml", '[package]\nname="fixture"\nedition="2021"\n')
+        manifest = self.write(
+            "crate/Cargo.toml", '[package]\nname="fixture"\nedition="2021"\n'
+        )
         self.write("crate/src/rustfmt.toml", 'edition = "2024"\n')
         metadata = {"packages": [{"manifest_path": str(manifest), "edition": "2021"}]}
-        with patch.object(FMT, "tomllib", None), patch.object(
-            subprocess, "check_output", return_value=json.dumps(metadata)
-        ) as cargo:
+        with (
+            patch.object(FMT, "tomllib", None),
+            patch.object(
+                subprocess, "check_output", return_value=json.dumps(metadata)
+            ) as cargo,
+        ):
             command = FMT.rust_file_command("crate/src/example.rs", check=True)
         self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
         self.assertEqual(cargo.call_args.args[0][:2], ["cargo", "metadata"])
@@ -431,4 +448,3 @@ class FormatterScopeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

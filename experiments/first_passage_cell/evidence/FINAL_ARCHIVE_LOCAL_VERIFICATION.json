@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "experiments.first_passage_cell.evidence.audit_helpers.restore_archives",
+    "--verify-only"
+  ],
+  "freeze_sha256": "57858ef88f9a1ef03a9ade666a35fdbe7faafef651bdca8eee3514feb99b7fdd",
+  "manifest_sha256": "62351a40b8883c0c40e90ae600c588a40abad44f5797cb3d14a77b1da1095596",
+  "returncode": 0,
+  "schema": "HeptaFirstPassageFinalArchiveLocalVerificationV1",
+  "stderr": "",
+  "stdout": "{\"already_exact\": 52, \"files\": 52, \"pass\": true, \"restored_exact\": 0, \"schema\": \"HeptaFirstPassageArchiveRestoreV1\"}\n"
+}

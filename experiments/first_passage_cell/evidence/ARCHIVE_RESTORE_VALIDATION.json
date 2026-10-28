@@ -1,0 +1,468 @@
+{
+  "checks": [
+    {
+      "command": "python -m experiments.first_passage_cell.evidence.audit_helpers.restore_archives --manifest <temporary-schema-valid-manifest> --verify-only",
+      "name": "all_original_and_part_identities_via_cli",
+      "pass": true,
+      "receipt": {
+        "already_exact": 52,
+        "files": 52,
+        "pass": true,
+        "restored_exact": 0,
+        "schema": "HeptaFirstPassageArchiveRestoreV1"
+      }
+    },
+    {
+      "bytes": 9463829,
+      "comparison": "direct bytes equality plus independent hashlib SHA-256 and helper tuple",
+      "git_blob_sha": "9f815b300684cd5fa3e517be466b50791ac63d0e",
+      "name": "real_multiple_part_reassembly_is_byte_identical",
+      "original": "experiments/first_passage_cell/prepared/1103/policy_development.jsonl.gz",
+      "part_count": 19,
+      "pass": true,
+      "sha256": "4d85b90bd72eab2fcaac6c843b08e18f979b4e01eb3d6d42f1d9a5e7eb08b9b7"
+    },
+    {
+      "name": "existing_exact_restored_file_is_reused",
+      "pass": true
+    },
+    {
+      "expected_error": "Corrupt or missing stored part",
+      "mutation": "one flipped bit in a new copied part; no original bytes changed",
+      "name": "damaged_copy_of_real_part_rejected_before_output",
+      "pass": true
+    },
+    {
+      "expected_error": "Refusing to overwrite a differing evidence file",
+      "name": "different_existing_file_rejected_without_overwrite",
+      "pass": true,
+      "retained_fixture_sha256": "8076005e91dfbfaf698a8346b4bd7ef0a1ddbe1715a9c3772b3b2625d352d9b8"
+    }
+  ],
+  "frozen_files_after_format": {
+    "all_unchanged": true,
+    "count": 79,
+    "files": [
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/CONTRACT.md",
+        "sha256": "d90ec563ee836d2bea4785d0ccb2e944b85b379fdcbdcf30ab8751a419398517"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/NATIVE_BUILD.json",
+        "sha256": "8ab32954c8a9def93e41cb7703adec1b198b30b5f771b20e962b868957d02664"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/NATIVE_SOURCE_MANIFEST.json",
+        "sha256": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/PROTOCOL.json",
+        "sha256": "c8108b14830f8cddc200d708e5098044b292d4cfe76da97b0413836121d70ade"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/PROTOCOL_AMENDMENT.md",
+        "sha256": "44a48139ed576dd59fbf689986c037a811704525189ebeb6be3035b3bb2e184b"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/__init__.py",
+        "sha256": "90376aca2cc0b7bbaf19dbb5ce848d13f9cc9aa9bbe842afd47b8fd4f8bd53c0"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/audit.py",
+        "sha256": "f6efff044de9e2486903f55acac87118f1166cb75e60032d141066badb7e1299"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/build_native.py",
+        "sha256": "6650678416745272e8af47869369ac15118fd2c711ca22a275fff46a20a46ba0"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/cell.py",
+        "sha256": "2c21d6ffaf4fea4e9a0be1858364054e37302c34619e2b331911fd3b0130346e"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/evidence/REMOTE_SOURCE_VERIFICATION.json",
+        "sha256": "ea9c8dd4ee9ad1dec3999b621d6645243a4d2749e7f6ef055b7e33a4f2ae185c"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/filtering.py",
+        "sha256": "775218483169a5b4d945c72e53d944d475683c9d3924e78e6748f2d6c4f17244"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/kernels.py",
+        "sha256": "f2b739eaa7f86f755e283ec8e7a63ed2e9d3029d56d928f7b651ea323c1f3308"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/native-Cargo.lock",
+        "sha256": "ed3041cb76f2901ed09cfaa712a609b720f72351455dfd5294ec351d23e460d5"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/native_bridge.rs",
+        "sha256": "29e1d4e295a6603bcdaaf0b01206b58b26bca7ca6d7e82eac52af6d993b0c915"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/native_bridge_tests.rs",
+        "sha256": "5eeae4fa33d7cc02426b84e34bbed2d884b8dd3cef4a35ac24a735de260d3898"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/ndu.py",
+        "sha256": "72da43b774f6a79d7fe723a98d9fd38fde26b47f6acc591860abfb64d3718fd5"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1103/likelihood_development.npz",
+        "sha256": "e5ce2b773f19a818af450310e32725d6f1f24fce8e5a6c443382984a1c4e4777"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1103/model6.json",
+        "sha256": "1c24655f2cf375306050db73e2f5d80e531b3aa066d626d5596ae7bcf339f272"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1103/model7.json",
+        "sha256": "55812b89fbdf7bdd04c52cb4b9a141271661d383b532d8e0b45028e9ae9b386e"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1103/policy_development.jsonl.gz",
+        "sha256": "4d85b90bd72eab2fcaac6c843b08e18f979b4e01eb3d6d42f1d9a5e7eb08b9b7"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1103/policy_selection.json",
+        "sha256": "e17e5e65ea1d6e7faf20fac1d9d9f95e61c90560d52f4999669aacda6753fc79"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1103/training.npz",
+        "sha256": "192076a2ab6da4287d4808d8adb3f4a393daca4495030f161d4f75aa802315ab"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1151/likelihood_development.npz",
+        "sha256": "6117c08ded8148a4d042732a35ff299b2d48c6c7901663108e8b7de4cfa24f0b"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1151/model6.json",
+        "sha256": "e792a7fecd122922df14ac581367b6e8e09de377509c9582e00d56c29e3150b4"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1151/model7.json",
+        "sha256": "dcd713ebc53f606bd95a204edb371d117cf9bb963bebd22fac8f337dcdc5cd78"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1151/policy_development.jsonl.gz",
+        "sha256": "170377157115e3c80b208d427c1c0f6de0ed751314a6e18f78797ec460aac4e9"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1151/policy_selection.json",
+        "sha256": "1da98c9ba521022a360e645c2730011e0070067d731f9e6e64f3513d7aa4c9b4"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1151/training.npz",
+        "sha256": "bda07b286412c351c32e545fbc994619f1c05b480c4a52ebf0f6d732b478c10b"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1201/likelihood_development.npz",
+        "sha256": "9e04bacbdd2d927420907948055c4a12d63384b51051d7d86aa23ef53811b381"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1201/model6.json",
+        "sha256": "ac14f2e320e6e7e9a1d81f10221435fdb8e1b21eb9afd0ed52abf02e82578f71"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1201/model7.json",
+        "sha256": "ab66674da51d89c9626d110d57dfa1c68d2736b8039f22a362d45f5bec42bd2c"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1201/policy_development.jsonl.gz",
+        "sha256": "4f348bd58153c7716ec1f67ca32256f8679c8d6d401c6b3601ae8118ab8557ee"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1201/policy_selection.json",
+        "sha256": "8b7c405c93242a9e9244b8761dedf557ec982d0f5e9573ec5f4f1dcc42a9f249"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1201/training.npz",
+        "sha256": "3c8957a72233ed8850355d2a4bc2853c4a0343de095648ac53d3dc98675165c3"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1213/likelihood_development.npz",
+        "sha256": "e54fcd73ecc8010721c6a9134bbd20e44bbc6707308237a7af6d301a09019ba6"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1213/model6.json",
+        "sha256": "69aaf5730eee7632d29696100ac521f1e8b26ac406cc3f9d98043df88f274da2"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1213/model7.json",
+        "sha256": "20207532e9f60a705163876a0ad37da7fa94c4236e92bc5214974364a769544d"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1213/policy_development.jsonl.gz",
+        "sha256": "e154e588bef313093d310b0d4548c5424c01012a8dee02fe74d9926c5b2d5095"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1213/policy_selection.json",
+        "sha256": "f1722ed4f799cd8c41ef18d1ff5628960c96427ffde185a144363e4da2c6a68a"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1213/training.npz",
+        "sha256": "c9a25699fc0947c77038a3781032039ce06af648ad474284fbc6e6e2b13b1844"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1223/likelihood_development.npz",
+        "sha256": "5dacd1470eee21478589b9de138f3ae88677c04252cf34a17cb2a60c0ef2b564"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1223/model6.json",
+        "sha256": "09f744cf5154c24724a74a94f7110e63166a4eb46a8a1e0ff2faafef4cf54d71"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1223/model7.json",
+        "sha256": "c9c4324f5d66632b19d82a067512aec57b179e9d7568454cc18ebf68a09db097"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1223/policy_development.jsonl.gz",
+        "sha256": "fcee741f27d4398b893d43e98fb23b339751978b119596e9a34a62dfba0a4c3d"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1223/policy_selection.json",
+        "sha256": "7e78c9b9942e68bca43f0dd051b12d4a16de2b491af916aa0c4881a0bfeb7f93"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1223/training.npz",
+        "sha256": "eef5f5c1800cabafb07b54cb9b6dd99806f1ccabf5129579d3fee5eb74f53c4f"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1231/likelihood_development.npz",
+        "sha256": "a084cb431e89b4d82cb82ec54c9688207d4967ebe3c2e9c030a6aa661534e722"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1231/model6.json",
+        "sha256": "4c63d5bbfe3c0ddf4126f1140f39dd8cadfcdb2d1aa153b08e4edcfc4761e783"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1231/model7.json",
+        "sha256": "a4ed1a955c5cd13d472980af2b40dc189ee9abe81ac4a896481669f045ec1d7a"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1231/policy_development.jsonl.gz",
+        "sha256": "1ea4f8e149d86dd6ec11ab19b766ce43823478321753e0983ab45d1f13fa0f03"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1231/policy_selection.json",
+        "sha256": "97a4bdcaed69188d1edb9a5cba443cb5b79758da0dd3c23271f2c5161b4a0432"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1231/training.npz",
+        "sha256": "5ff41361c93c248c7fd3eb966aa7b99e0637555fb48eae3bd01865871388934a"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1237/likelihood_development.npz",
+        "sha256": "cb12fdae86c58cf04a4bf04bf0a535dfc32845dbe3c95fa7e279ab77caf68f2c"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1237/model6.json",
+        "sha256": "34ebe31d4b8cdeda98bbe0bdd85695e74dbcf90f66c7a9a10b4ccb9814e6318b"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1237/model7.json",
+        "sha256": "33a06bc489e5e91bd75d5b0f71b57dbf55b3283acfc5b9438f79780a29a200b3"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1237/policy_development.jsonl.gz",
+        "sha256": "deab0519183f5d766e0805bdf2b59fce188b2c1c35728321ec7c5c3f9c9c9ffe"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1237/policy_selection.json",
+        "sha256": "c574bd05a6d8cde06f1f32b88f807f9d631383150efc2fee6f62cf8ed37328da"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1237/training.npz",
+        "sha256": "b438ae43c638ddcfe98f93e1404f00352c57cd1f136e51b3ce53765cf40e5463"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1249/likelihood_development.npz",
+        "sha256": "29e2d967309166b90f858b43f8122e7c01a60c1872c0600ac46f21f99aca0da4"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1249/model6.json",
+        "sha256": "b59375476d545f1efc9f18d17c62cad2f3695bc831caa14c8eaef612b9ca01fd"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1249/model7.json",
+        "sha256": "ec01de0fd81665ec5d05cb8eb1995405b706eeedf131f8e2574b620a3df5faeb"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1249/policy_development.jsonl.gz",
+        "sha256": "0cc852889c2bb141d47cd9bc81b1aefbc9b81d45f77392b880e3ddb593038324"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1249/policy_selection.json",
+        "sha256": "b7e8d866aab70628d347505addea5bcd2e16c08c4fef6fc6272e8088f5bdcaae"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/1249/training.npz",
+        "sha256": "79f78a0d7ab1ee82e8ddedfaccfb2b734763f7c3253f2abdb178aaef97a3b52f"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/physics_manifest.json",
+        "sha256": "9137743df6561f4438dea9ce68f4af65a210e7832079c27e8ba7973ade0a2a45"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/prepared/prepared_manifest.json",
+        "sha256": "889df3579567171ef1219de269a4e24cfa365fa885dad162563a696af5a3f44c"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/restore_native.py",
+        "sha256": "b2e1c9e7f5faca1c4e9539afa3eb0de6df6b1f61cfcc76e7b550053eb662f47c"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/study.py",
+        "sha256": "6101fd00f171680e5e4ed382e1a08611fc8a3e06583b42aae3b3d591c6bdc685"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/study_io.py",
+        "sha256": "31d42b4ee7ca842f1cbc3d0ce9f6e8a1576639cc94077d0812c186da145659c0"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/task.py",
+        "sha256": "341a741a7381ade8d1189b7953766a40cd9f8b2966d1010c2a6d930d03fb4016"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/tests/test_audit.py",
+        "sha256": "5f07da7621f8d66cf4f68a4e7db4b70b9545417aa8cbf10e3f221e0b87b5810d"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/tests/test_cell.py",
+        "sha256": "fe12dcb785c4b32cd787087050c058777d9cd9d4bb805b48c8a5863767ef602d"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/tests/test_kernels.py",
+        "sha256": "ea2d328d16edd976b55bea92f04bf3caa806a74e53cd84550dc6a90ed00509da"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/tests/test_ndu.py",
+        "sha256": "74e59784275478f237b624eb573329c37faa5b75ab257d127a632991721a4a2e"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/tests/test_study.py",
+        "sha256": "788efafadb71aea0f726431dab680615fa49da148e621cee9fccffe08528180b"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/training.py",
+        "sha256": "36e7de024520217f2a0f55fbf35274e31482223e516ca97f49b969aa504d5539"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/validate_kernels.py",
+        "sha256": "3c2af07a26988329369e10e2d22ea7bb37695739ade71a1a1760cfc9d3b953a6"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/validate_training.py",
+        "sha256": "dbfc97feb760f79770036c77c662b6ec2f3327506792cad83ab9f9a3a08db7ad"
+      },
+      {
+        "pass": true,
+        "path": "experiments/first_passage_cell/value.py",
+        "sha256": "58402df8531e2213b336dfd1f1b967345058beff5a9b7606f4ce6359d7899255"
+      }
+    ],
+    "freeze_sha256": "57858ef88f9a1ef03a9ade666a35fdbe7faafef651bdca8eee3514feb99b7fdd"
+  },
+  "helper_path": "experiments/first_passage_cell/evidence/audit_helpers/restore_archives.py",
+  "helper_sha256": "d48bc2166c158db86331d942f58c5278eca1ad4561dba58ac38f75767cf7b15f",
+  "layout_path": "experiments/first_passage_cell/evidence/ROOT_ARCHIVE_LAYOUT.json",
+  "layout_sha256": "501d05073438c3d5dc71c6a448dbcfc1857bc2f07bc937f9c8d0ee4642bb0ed0",
+  "original_files": 52,
+  "original_format_gate": {
+    "command": [
+      "/tmp/hepta-just-1.51.0/just",
+      "fmt"
+    ],
+    "cwd": "codex-rs",
+    "exit_code": 0,
+    "rustfmt_path": "/tmp/hepta-ci-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin",
+    "stderr": "",
+    "stdout": ""
+  },
+  "original_total_bytes": 145319237,
+  "part_files": 303,
+  "part_total_bytes": 144979777,
+  "pass": true,
+  "schema": "HeptaFirstPassageArchiveRestoreValidationV1",
+  "scope": "Offline restoration only; no remote operation or data regeneration. Expected layout is not a claim of remote publication.",
+  "temporary_fixtures_removed": true,
+  "wall_seconds": 1.0465485439999611
+}

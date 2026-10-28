@@ -1,0 +1,70 @@
+{
+  "created_at_utc": "2026-10-28T11:40:55.992458+00:00",
+  "dependency_check_status": {
+    ".github_tree": "13fe232803edd0dc91585c171101972a4cfd8b7d",
+    "changed_dependencies": false,
+    "codex_rs_tree": "346caa752c4443bb1e2837e195aba2736c354d4b",
+    "initial_result": "failure",
+    "precise_cause": "unverified: the dedicated job-log retrieval repeatedly returned Transport closed",
+    "source_inputs_identical_to_initial_PR_base": true
+  },
+  "final_required_format": {
+    "command": "PATH=/tmp/hepta-ci-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin:$PATH /tmp/hepta-just-1.51.0/just fmt",
+    "cwd": "codex-rs",
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": ""
+  },
+  "frozen_science": {
+    "freeze_commit": "8ada7c46a23063722ee9b7089be608d4ab1c2fed",
+    "freeze_sha256": "57858ef88f9a1ef03a9ade666a35fdbe7faafef651bdca8eee3514feb99b7fdd",
+    "source_commit": "507bfcc131f30c88c5931f6101c45afdd5c71887",
+    "unchanged_files": 79
+  },
+  "initial_base": "ad83ccf383baaca8a346a871d51dbbac51c9873d",
+  "initial_failed_job_ids": {
+    "blob_size": 122780276369,
+    "inherited_dependency_check": 122780905701,
+    "inherited_format": 122780905934,
+    "spelling": 122780276518
+  },
+  "initial_head": "338ec409ea119a4e01679b3dd1711306660b9983",
+  "initial_pr": 4174,
+  "packing": {
+    "acknowledged_exact_git_blob_identities": 326,
+    "all_original_bytes": 146051701,
+    "all_originals": 53,
+    "binary_parts": 310,
+    "direct_npz": 16,
+    "encoding": "Lossless concatenation; no original byte regeneration or recompression.",
+    "native_archive_bytes": 732464,
+    "native_archive_originals": 1,
+    "new_max_part_bytes": 500000,
+    "old_native_gzip_bytes": 732464,
+    "old_part_bytes": 524288,
+    "policy_threshold_changed": false,
+    "repository_limit_bytes": 512000,
+    "scientific_original_bytes": 145319237,
+    "scientific_originals": 52,
+    "size_allowlist_changed": false,
+    "stored_paths": 326
+  },
+  "publication_status": "Final remote tree verification and final-head CI results are recorded separately; blob acknowledgements alone do not claim complete repository CI success.",
+  "receipts": {
+    "EVIDENCE_ARCHIVE.json": "1b14eb6977d2fae694614763b39bc635fbeb78756b416574af240894e158853d",
+    "evidence/ARCHIVE_PUBLICATION_INITIAL.json": "394cae9ec8c94afae64604e64e081707130d13a9a8110136f5252d4fd0fe6431",
+    "evidence/CI_ARCHIVE_LAYOUT.json": "2609fcce38998fc2e293e76e3f79fb479e15f28445dacb86e16b23c170727e0f",
+    "evidence/CI_ARCHIVE_RESTORE_VALIDATION.json": "343862552eafd01ed4d8072328e9664bf404975e64ef7ac31e9549963d4e57f1",
+    "evidence/CODESPELL_ARCHIVE_REPAIR.json": "5f9c0c44cd14d89e672d4538da549dce1bedea37828d2f5e58db58c2ce091e21",
+    "evidence/INHERITED_FORMAT_REPAIR.json": "a674287385eb67273d24811fbfd3f38dd4ad0c9aef3974277f0e14296de28db1",
+    "evidence/INITIAL_EVIDENCE_ARCHIVE.json": "62351a40b8883c0c40e90ae600c588a40abad44f5797cb3d14a77b1da1095596"
+  },
+  "schema": "HeptaFirstPassageCIPackagingRepairV1",
+  "scope_outside_research_package": [
+    ".codespellrc",
+    ".codespellignore",
+    ".codespell-frozen-lines",
+    "scripts/format.py",
+    "scripts/test_hepta_format_scope.py"
+  ]
+}

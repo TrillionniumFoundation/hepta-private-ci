@@ -1,0 +1,44 @@
+{
+  "confirmation_started": false,
+  "failure": "OSError errno 28: shared filesystem became full while writing gzip ledgers",
+  "files": [
+    {
+      "bytes": 4145152,
+      "complete_json_records_recoverable": 2725,
+      "gzip_finalization": "truncated_by_ENOSPC",
+      "path": "evidence/aborted_policy_preparation_01/1103.jsonl.gz.incomplete",
+      "seed": 1103,
+      "sha256": "bb3d965c26de63d85e40e241aefcccfc6285a0a048b961bfee5f0958b0626574"
+    },
+    {
+      "bytes": 4149248,
+      "complete_json_records_recoverable": 2742,
+      "gzip_finalization": "truncated_by_ENOSPC",
+      "path": "evidence/aborted_policy_preparation_01/1201.jsonl.gz.incomplete",
+      "seed": 1201,
+      "sha256": "2259c196fea2255bbf25a3b80c74f94eb6e97e4744fe445ca219f6d7c6ba3e20"
+    },
+    {
+      "bytes": 4198400,
+      "complete_json_records_recoverable": 2756,
+      "gzip_finalization": "truncated_by_ENOSPC",
+      "path": "evidence/aborted_policy_preparation_01/1223.jsonl.gz.incomplete",
+      "seed": 1223,
+      "sha256": "11798702c80eff825173ca687a862dbcf34571ed076c7f218ced88848200b16b"
+    },
+    {
+      "bytes": 4050944,
+      "complete_json_records_recoverable": 2679,
+      "gzip_finalization": "truncated_by_ENOSPC",
+      "path": "evidence/aborted_policy_preparation_01/1237.jsonl.gz.incomplete",
+      "seed": 1237,
+      "sha256": "4fb8e2112163cda1eb66e2708d4a2777b66319016cb008fd78f6e45ba0ca4109"
+    }
+  ],
+  "independent_review_finding": "Task checkpoint restoration also lacked cross-check of RNG seed against scenario noise_seed; only the restore validator is affected, not generated legitimate task trajectories. Fix before any confirmation.",
+  "phase": "policy_development",
+  "physical_training_provenance": "prepared/physics_manifest.json retains the exact earlier source identities; physical data/likelihood paths do not invoke task checkpoint restoration.",
+  "process_exit_code": 1,
+  "restart_rule": "Retain physical model fits and all failed outputs. Repeat the same complete 8-seed, 3-family, 17-grid, 128-scenario development protocol after source repair. No outcome-based seed/grid/sample changes.",
+  "schema": "HeptaFirstPassageAbortedPreparationV1"
+}
