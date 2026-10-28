@@ -1,0 +1,29 @@
+{
+  "architecture": "mamba1",
+  "axis": "capacity",
+  "batch_size": 32,
+  "candidate_cpu_seconds": 12.0,
+  "configuration": 3,
+  "cpu_milestone_fractions": [
+    0.25,
+    0.5,
+    1.0
+  ],
+  "data_seed": 8123,
+  "depth": 2,
+  "id": "scaling/config03/mamba1/seed7301",
+  "learning_rates": [
+    0.001,
+    0.003
+  ],
+  "length": 32,
+  "match_cell_budget": false,
+  "max_updates": 4096,
+  "seed": 7301,
+  "stage": "scaling",
+  "task": "long_memory",
+  "test_size": 512,
+  "train_size": 1024,
+  "val_size": 256,
+  "width": 128
+}
