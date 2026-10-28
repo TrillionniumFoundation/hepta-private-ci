@@ -22,16 +22,31 @@ def collect(run, assets, freeze_path, logs):
     run, assets, freeze_path = Path(run).resolve(), Path(assets).resolve(), Path(freeze_path).resolve()
     repository = Path(__file__).resolve().parents[3]
     portfolio = repository / "experiments/multimodal_output_portfolio"
+    freeze_identity = file_hash(freeze_path)
     protocol, freeze = check_freeze(freeze_path)
     audit = json.loads((run / "AUDIT.json").read_text())
     media = json.loads((run / "MEDIA_AUDIT.json").read_text())
-    require(audit["integrity_status"] == "PASS" and media["passed"] is True
-            and audit["source_freeze_sha256"] == media["source_freeze_sha256"] == file_hash(freeze_path),
-            "Complete independent integrity and media verification are required")
+    require(media["passed"] is True and media["source_freeze_sha256"] == file_hash(freeze_path)
+            and media["artifact_audit_sha256"] == file_hash(run / "AUDIT.json"), "Media verification binding differs")
+    if audit["integrity_status"] == "FAIL":
+        diagnostic = json.loads((run / "WITHIN_RUN_AUDIT.json").read_text())
+        require(diagnostic["within_run_integrity"] == "PASS" and diagnostic["overall_status"] == "FAIL"
+                and diagnostic["admission"] is False
+                and diagnostic["failed_frozen_audit_sha256"] == file_hash(run / "AUDIT.json")
+                and media["diagnostic_audit_sha256"] == file_hash(run / "WITHIN_RUN_AUDIT.json"),
+                "Failed frozen evidence requires the complete bound diagnostic")
+    else:
+        require(audit["integrity_status"] == "PASS"
+                and audit["source_freeze_sha256"] == file_hash(freeze_path), "Unknown frozen audit status")
+    seals = {}
     for phase in ("train", "evaluate"):
         for seed in protocol["seeds"]:
             verify_complete(run / phase / str(seed), {"phase": phase, "seed": seed,
-                "study_id": protocol["study_id"], "freeze_sha256": file_hash(freeze_path)})
+                "study_id": protocol["study_id"], "freeze_sha256": freeze_identity})
+            seals[f"{phase}/{seed}"] = file_hash(run / phase / str(seed) / "COMPLETE.json")
+    require(media["phase_seals"] == seals, "Media verification phase seals differ")
+    require(audit["integrity_status"] != "FAIL" or diagnostic["phase_seals"] == seals,
+            "Failure diagnostic phase seals differ")
     entries, identities = {}, {}
 
     def add(path, name, expected=None):
@@ -51,10 +66,36 @@ def collect(run, assets, freeze_path, logs):
     for path in logs:
         path = Path(path).absolute()
         add(path, "run/logs/" + path.name)
-    sources = {portfolio / name for name in freeze["files"]}
+    expected_sources = dict(freeze["files"])
+
+    def bind_source(name, identity):
+        safe_name(name)
+        require((portfolio / name).resolve().is_relative_to(portfolio), "Source path escapes portfolio")
+        require(name not in expected_sources or expected_sources[name] == identity, "Conflicting source identities")
+        expected_sources[name] = identity
+
+    for name, identity in media["independent_arithmetic_sources"].items():
+        bind_source(name, identity)
+    bind_source("field_bridge_v5_20261027_review/media_reaudit.py", media["script_sha256"])
+    if audit["integrity_status"] == "FAIL":
+        for name, identity in diagnostic["diagnostic_sources"].items():
+            bind_source("field_bridge_v5_20261027_review/" + name, identity)
+    sources = {portfolio / name for name in expected_sources}
     sources.update([Path(__file__).resolve(), Path(__file__).with_name("media_reaudit.py").resolve(),
                     portfolio / "field_bridge_v3_20261027_review/archive_build.py",
                     portfolio / "field_bridge_v3_20261027_review/archive_integrity.py"])
+    sources.update((portfolio / "field_bridge_v5_20261027").glob("*.md"))
+    review_names = ("BLOCKERS.json", "EXECUTION_REVIEW.md", "SOURCE_AND_TEST_VERIFICATION.json",
+                   "HISTORICAL_REGRESSION_DIAGNOSIS.json", "HISTORICAL_REGRESSION_DIAGNOSIS.md",
+                   "V5_NUMERIC_DIAGNOSIS.json", "V5_NUMERIC_DIAGNOSIS.md",
+                   "ENGINEERING_REPOSITORY_VERIFICATION.json", "ENGINEERING_PROFILE_INVARIANTS.json",
+                   "CI_RECEIPT.json")
+    sources.update(Path(__file__).with_name(name).resolve() for name in review_names)
+    registered = [freeze["registered_commit"]]
+    if audit["integrity_status"] == "FAIL":
+        sources.update(Path(__file__).with_name(name).resolve()
+                       for name in ("diagnostic_audit.py", "DIAGNOSTIC_PROTOCOL.json"))
+        registered.append(diagnostic["diagnostic_registered_commit"])
     pending, scanned = [p for p in sources if p.suffix == ".py"], set()
     while pending:
         path = pending.pop()
@@ -80,8 +121,8 @@ def collect(run, assets, freeze_path, logs):
                         pending.append(candidate)
     for path in sorted(sources):
         relative = path.relative_to(portfolio).as_posix()
-        add(path, "repository/" + path.relative_to(repository).as_posix(), freeze["files"].get(relative))
-    add(freeze_path, "freezes/SOURCE_FREEZE.json")
+        add(path, "repository/" + path.relative_to(repository).as_posix(), expected_sources.get(relative))
+    add(freeze_path, "freezes/SOURCE_FREEZE.json", freeze_identity)
     restoration = json.loads((assets / "RESTORATION.json").read_text())
     frozen_restoration = portfolio / "field_bridge_v5_20261027/evidence/RESTORATION.json"
     add(assets / "RESTORATION.json", "assets/RESTORATION.json", file_hash(frozen_restoration))
@@ -91,11 +132,11 @@ def collect(run, assets, freeze_path, logs):
         add(path, "assets/" + record["path"], record["sha256"])
     protocol_name = "repository/experiments/multimodal_output_portfolio/field_bridge_v5_20261027/PROTOCOL.json"
     receipts = {name: identity for name, identity in identities.items()
-                if name.startswith("freezes/") or name in ("run/AUDIT.json", "run/MEDIA_AUDIT.json")
+                if name.startswith("freezes/") or name in ("run/AUDIT.json", "run/MEDIA_AUDIT.json", "run/WITHIN_RUN_AUDIT.json")
                 or name.endswith("/COMPLETE.json") and name.startswith("run/")}
     return {"schema": "hepta.field-bridge.v3.archive-input-index.1",
             "provenance": {"study_id": protocol["study_id"], "format_reuse": "unchanged V3 archive format; V5 payload",
-                "registered_commits": [freeze["registered_commit"]],
+                "registered_commits": registered,
                 "protocol": {"path": protocol_name, "sha256": identities[protocol_name]},
                 "source_files": {name: identity for name, identity in identities.items() if name.startswith("repository/")},
                 "receipts": receipts, "new_holdout_access": False, "network_or_upload_calls": 0},

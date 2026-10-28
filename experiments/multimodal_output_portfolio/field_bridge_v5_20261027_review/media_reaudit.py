@@ -21,7 +21,7 @@ from ..field_bridge_v5_20261027.records import verify_complete
 from ..field_bridge_v5_20261027.run import check_freeze
 
 
-def audit(run, freeze_path, assets):
+def audit(run, freeze_path, assets, diagnostic_report=None):
     started, cpu = time.perf_counter_ns(), time.process_time_ns()
     portfolio = Path(__file__).resolve().parents[1]
     dependencies = ["field_bridge_v3_20261027_review/training_hard_score_audit.py",
@@ -29,11 +29,25 @@ def audit(run, freeze_path, assets):
                     "field_bridge_v5_20261027_review/media_reaudit.py"]
     source_identities = {name: file_hash(portfolio / name) for name in dependencies}
     run, freeze_path, assets = Path(run), Path(freeze_path), Path(assets)
+    freeze_identity = file_hash(freeze_path)
     protocol, freeze = check_freeze(freeze_path)
     audit_identity = file_hash(run / "AUDIT.json")
     prior = json.loads((run / "AUDIT.json").read_text())
-    require(prior["integrity_status"] == "PASS"
-            and prior["source_freeze_sha256"] == file_hash(freeze_path), "Artifact audit must pass first")
+    diagnostic, diagnostic_identity = None, None
+    if diagnostic_report is None:
+        require(prior["integrity_status"] == "PASS"
+                and prior["source_freeze_sha256"] == file_hash(freeze_path), "Artifact audit must pass first")
+    else:
+        diagnostic_report = Path(diagnostic_report)
+        diagnostic_identity = file_hash(diagnostic_report)
+        diagnostic = json.loads(diagnostic_report.read_text())
+        require(prior["integrity_status"] == "FAIL" and prior["error_type"] == "ValueError"
+                and prior["error"] == "Ordinary48 historical endpoint regression failed",
+                "Diagnostic media verification is restricted to the preserved historical replay failure")
+        require(diagnostic["within_run_integrity"] == "PASS" and diagnostic["overall_status"] == "FAIL"
+                and diagnostic["historical_regression_status"] == "FAIL" and diagnostic["admission"] is False
+                and diagnostic["failed_frozen_audit_sha256"] == audit_identity
+                and diagnostic["source_freeze_sha256"] == file_hash(freeze_path), "Incomplete diagnostic binding")
     require(torch.__version__ == protocol["runtime"]["torch"]
             and np.__version__ == protocol["runtime"]["numpy"], "Pinned runtime mismatch")
     torch.set_num_threads(2)
@@ -58,6 +72,7 @@ def audit(run, freeze_path, assets):
     expected_seals = {str(seed): seals[f"train/{seed}"] for seed in protocol["seeds"]}
     require(all(stages[f"evaluate/{seed}"]["training_seals"] == expected_seals
                 for seed in protocol["seeds"]), "Evaluation bound a different training census")
+    require(diagnostic is None or diagnostic["phase_seals"] == seals, "Diagnostic belongs to different phase seals")
     v3 = json.loads((portfolio / "field_bridge_v3_20261027/PROTOCOL.json").read_text())
     p = v3["training"]
     require(p["panel_batch_size"] == 128 and p["refinement_charge"] == .002, "Independent arithmetic scope changed")
@@ -89,15 +104,21 @@ def audit(run, freeze_path, assets):
     expected_files = len(protocol["seeds"]) * (1 + len(protocol["methods"]) * len(protocol["schedules"])) * 2
     require(len(files) == expected_files, "Incomplete retained media census")
     check_freeze(freeze_path)
+    require(file_hash(freeze_path) == freeze_identity, "Source freeze changed during media verification")
     for relative, identity in seals.items():
         verify_complete(run / relative)
         require(file_hash(run / relative / "COMPLETE.json") == identity, "Phase seal changed during media verification")
     require(file_hash(run / "AUDIT.json") == audit_identity, "Artifact audit changed during media verification")
+    require(diagnostic_report is None or file_hash(diagnostic_report) == diagnostic_identity,
+            "Diagnostic changed during media verification")
     require(source_identities == {name: file_hash(portfolio / name) for name in dependencies},
             "Independent verification source changed during execution")
     return {"schema": "hepta.field-bridge.v5.independent-media-audit.1", "passed": True,
+            "scope": "media arithmetic only; cannot change the frozen audit or grant admission",
+            "frozen_audit_status": prior["integrity_status"], "diagnostic_audit_sha256": diagnostic_identity,
+            "admission": False, "new_holdout_authorized": False,
             "study_id": protocol["study_id"], "registered_commit": freeze["registered_commit"],
-            "source_freeze_sha256": file_hash(freeze_path), "artifact_audit_sha256": file_hash(run / "AUDIT.json"),
+            "source_freeze_sha256": freeze_identity, "artifact_audit_sha256": audit_identity,
             "phase_seals": seals, "script_sha256": file_hash(__file__),
             "independent_arithmetic_sources": source_identities,
             "files": files, "media_files": len(files), "media_outputs": sum(v["rows"] for v in files.values()),
@@ -112,9 +133,10 @@ if __name__ == "__main__":
     parser.add_argument("--run-root", type=Path, required=True)
     parser.add_argument("--freeze", type=Path, required=True)
     parser.add_argument("--assets", type=Path, required=True)
+    parser.add_argument("--diagnostic-report", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     require(not args.output.exists(), "Refusing to overwrite media audit")
-    result = audit(args.run_root, args.freeze, args.assets)
+    result = audit(args.run_root, args.freeze, args.assets, args.diagnostic_report)
     write_json(args.output, result)
     print(json.dumps({key: result[key] for key in ("passed", "media_files", "media_outputs", "observer_values_verified")}))
