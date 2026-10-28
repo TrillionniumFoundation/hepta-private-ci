@@ -1,0 +1,11 @@
+{
+  "schema": "hepta.free-boundary.infrastructure-recovery.v1",
+  "cache_cleanup": "Removed only owner/runs/build01/target/debug/{deps,build,incremental,.fingerprint}; exact binary retained",
+  "checkout": "Sparse checkout retains all 105 frozen inputs and all study files",
+  "frozen_inputs_verified": 105,
+  "source_seal_sha256": "5876ab602e03e4c1f324342f8e046246c2162d4e9a07d1016d7d2edfcffa162c",
+  "execution": "Normal host execution via approved tool escalation; no sandbox configuration, source, permissions, protocol or statistical gate changed",
+  "reason": "Host filesystem had free reserved blocks but zero ordinary available blocks, preventing sandbox mount marker initialization",
+  "screening_started_after_recovery": true,
+  "invalid_attempt_outcomes": false
+}
