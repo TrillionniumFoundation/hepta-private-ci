@@ -15,6 +15,7 @@ use serde::Serialize;
 use serde_json::Value;
 
 use super::time_view::TimeView;
+use super::time_view::TimeViewError;
 use crate::MemoryCellResolvedAddressV1;
 
 pub(super) const MAX_REQUEST_FRAME: usize = 2_097_152;
@@ -62,7 +63,7 @@ impl BoundRequest {
         request: &MemoryRequestV1,
         owner: &MemoryCellOwnerSnapshotV1,
         aliases: &BTreeMap<ContractIdV1, Vec<String>>,
-    ) -> Result<Self, String> {
+    ) -> Result<Option<Self>, String> {
         request
             .validate()
             .map_err(|_| "invalid typed address request".to_string())?;
@@ -83,7 +84,11 @@ impl BoundRequest {
             "entities": entities.iter().map(|entity| serde_json::json!({"entity": entity,
                 "aliases": aliases.get(entity).cloned().unwrap_or_default()})).collect::<Vec<_>>()
         });
-        let time_view = TimeView::build(request, &entities, aliases)?;
+        let time_view = match TimeView::build(request, &entities, aliases) {
+            Ok(view) => view,
+            Err(TimeViewError::UnsupportedMultipleCutoffs) => return Ok(None),
+            Err(TimeViewError::Invalid(reason)) => return Err(reason),
+        };
         let mut request = AddressRequest::from(request);
         request.at = time_view.at;
         request.since = time_view.since;
@@ -99,14 +104,14 @@ impl BoundRequest {
         if bytes.len() > MAX_REQUEST_FRAME {
             return Err("address worker request exceeds frame bound".to_string());
         }
-        Ok(Self {
+        Ok(Some(Self {
             bytes,
             digest,
             registry_digest,
             source_cut,
             request,
             time_view,
-        })
+        }))
     }
 
     pub fn validate_response(

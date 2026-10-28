@@ -44,6 +44,8 @@ use wire::WorkerReady;
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct MemoryCellAddressWorkerMetricsV1 {
     pub attempted_requests: u64,
+    /// Typed multiple-cutoff abstentions handled before any worker pipe I/O.
+    pub host_time_abstentions: u64,
     pub validated_responses: u64,
     pub process_starts: u64,
     pub stdin_bytes: u64,
@@ -56,6 +58,7 @@ pub struct MemoryCellAddressWorkerMetricsV1 {
 #[derive(Default)]
 struct Counters {
     attempts: AtomicU64,
+    host_time_abstentions: AtomicU64,
     responses: AtomicU64,
     starts: AtomicU64,
     stdin: AtomicU64,
@@ -96,6 +99,7 @@ impl MemoryCellAddressWorkerV1 {
         let count = &self.counters;
         MemoryCellAddressWorkerMetricsV1 {
             attempted_requests: count.attempts.load(Ordering::Relaxed),
+            host_time_abstentions: count.host_time_abstentions.load(Ordering::Relaxed),
             validated_responses: count.responses.load(Ordering::Relaxed),
             process_starts: count.starts.load(Ordering::Relaxed),
             stdin_bytes: count.stdin.load(Ordering::Relaxed),
@@ -272,7 +276,10 @@ impl MemoryCellAddressResolverV1 for MemoryCellAddressWorkerV1 {
                 started: Instant::now(),
             };
             self.counters.attempts.fetch_add(1, Ordering::Relaxed);
-            let bound = BoundRequest::build(request, snapshot, &self.config.aliases)?;
+            let Some(bound) = BoundRequest::build(request, snapshot, &self.config.aliases)? else {
+                self.counters.host_time_abstentions.fetch_add(1, Ordering::Relaxed);
+                return Ok(None);
+            };
 
             tokio::time::timeout(self.config.request_timeout, self.exchange(request, bound))
                 .await
@@ -342,3 +349,8 @@ mod test_support;
 #[cfg(test)]
 #[path = "memory_cell_address_worker_tests.rs"]
 mod tests;
+
+
+#[cfg(test)]
+#[path = "memory_cell_address_worker_abstention_tests.rs"]
+mod abstention_tests;

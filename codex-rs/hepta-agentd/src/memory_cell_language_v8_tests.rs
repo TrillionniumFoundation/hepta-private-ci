@@ -276,7 +276,7 @@ async fn measure_native_suite(arm: EvaluationArm) -> Value {
         "known_correct_coverage":correct_coverage,"unsupported_route_acceptance_rate":unsupported_route_rate,
         "counts":counts,"quality_gate_passed":quality_gate_passed,"binding_failures":binding_failures,"errors":errors,
         "direct_probe_wall_ns":direct_wall_ns,"control_roundtrip_wall_ns":control_wall_ns,"startup_wall_ns":startup_wall_ns,
-        "worker":{"attempts":counters.attempted_requests,"responses":counters.validated_responses,"starts":counters.process_starts,
+        "worker":{"attempts":counters.attempted_requests,"host_time_abstentions":counters.host_time_abstentions,"responses":counters.validated_responses,"starts":counters.process_starts,
             "stdin_bytes":counters.stdin_bytes,"stdout_bytes":counters.stdout_bytes,"cpu_ns":counters.reported_cpu_nanoseconds,
             "wall_ns":counters.reported_wall_nanoseconds,"host_ns":counters.host_request_nanoseconds},
         "control_transport":fixture.client.traffic_snapshot(),"routing_calls_per_case":2,

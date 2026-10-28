@@ -10,7 +10,7 @@ fn query(text: &str) -> MemoryRequestV1 {
     query
 }
 
-fn view(query: &MemoryRequestV1) -> Result<TimeView, String> {
+fn view(query: &MemoryRequestV1) -> Result<TimeView, TimeViewError> {
     TimeView::build(
         query,
         &BTreeSet::from([query.entity.clone()]),
@@ -134,4 +134,17 @@ fn unicode_normalization_and_ambiguous_or_invalid_dates_fail_closed() {
     )
     .unwrap();
     assert!(!conservatively_dated.permits(&original, MemoryOperationV1::Semantic));
+}
+
+
+#[test]
+fn multiple_cutoffs_are_typed_unsupported_while_invalid_dates_remain_errors() {
+    assert!(matches!(
+        view(&query("Read samples at 2000-01-01 and 2000-02-01.")),
+        Err(TimeViewError::UnsupportedMultipleCutoffs)
+    ));
+    assert!(matches!(
+        view(&query("Read the sample at 2000-02-30.")),
+        Err(TimeViewError::Invalid(_))
+    ));
 }

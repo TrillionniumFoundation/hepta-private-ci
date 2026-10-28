@@ -19,6 +19,20 @@ use super::wire::hash;
 
 pub const MEMORY_CELL_TIME_VIEW_PROFILE_V1: &str = "hepta.memory.host-utc-midnight-time-view.v1";
 
+/// A recognized capability boundary stays distinct from invalid profile data
+/// and host failures. The caller may abstain only on this explicit variant.
+#[derive(Debug, Eq, PartialEq)]
+pub(super) enum TimeViewError {
+    UnsupportedMultipleCutoffs,
+    Invalid(String),
+}
+
+impl From<String> for TimeViewError {
+    fn from(reason: String) -> Self {
+        Self::Invalid(reason)
+    }
+}
+
 pub(super) struct TimeView {
     pub at: u64,
     pub since: u64,
@@ -31,7 +45,7 @@ impl TimeView {
         request: &MemoryRequestV1,
         entities: &BTreeSet<ContractIdV1>,
         aliases: &BTreeMap<ContractIdV1, Vec<String>>,
-    ) -> Result<Self, String> {
+    ) -> Result<Self, TimeViewError> {
         let original_digest = native_digest(request)?;
         let literal = literal_date(&masked_text(&request.text, entities, aliases))?;
         let (at, since) = match literal {
@@ -155,7 +169,7 @@ fn masked_text(
     masked
 }
 
-fn literal_date(text: &str) -> Result<Option<Date>, String> {
+fn literal_date(text: &str) -> Result<Option<Date>, TimeViewError> {
     let chars: Vec<_> = text.chars().collect();
     let mut found = None;
     let mut offset = 0;
@@ -182,7 +196,7 @@ fn literal_date(text: &str) -> Result<Option<Date>, String> {
                 continue;
             }
             if !candidate.iter().all(char::is_ascii) {
-                return Err("non-ASCII decimal date is outside the host time profile".to_string());
+                return Err(TimeViewError::Invalid("non-ASCII decimal date is outside the host time profile".to_string()));
             }
             let digits: String = candidate.iter().copied().filter(|c| *c != '-').collect();
             let year: i32 = digits[..4]
@@ -196,7 +210,7 @@ fn literal_date(text: &str) -> Result<Option<Date>, String> {
                 .map_err(|_| "invalid date day".to_string())?;
             let month = Month::try_from(month).map_err(|_| "invalid date month".to_string())?;
             if year == 0 {
-                return Err("invalid date year".to_string());
+                return Err(TimeViewError::Invalid("invalid date year".to_string()));
             }
             parsed = Some((
                 Date::from_calendar_date(year, month, day)
@@ -207,7 +221,7 @@ fn literal_date(text: &str) -> Result<Option<Date>, String> {
         }
         if let Some((date, width)) = parsed {
             if found.is_some_and(|old| old != date) {
-                return Err("multiple literal date cutoffs are unsupported".to_string());
+                return Err(TimeViewError::UnsupportedMultipleCutoffs);
             }
             found = Some(date);
             offset += width;
