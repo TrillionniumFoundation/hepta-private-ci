@@ -169,7 +169,7 @@ async fn assert_terminal_publication_follows_cleanup(point: GatePoint) {
         GatePoint::ThreadIdle => 2,
         GatePoint::TurnAbort => 3,
     };
-    assert_eq!(
+    pretty_assertions::assert_eq!(
         (
             session.has_pending_admission_fence(),
             store.calls().await.flush_thread,
@@ -178,7 +178,7 @@ async fn assert_terminal_publication_follows_cleanup(point: GatePoint) {
         (true, expected_flushes, initial_status),
     );
     let persisted_before_release = persisted_terminals(&session).await;
-    assert_eq!(persisted_before_release.len(), 1);
+    pretty_assertions::assert_eq!(persisted_before_release.len(), 1);
     assert!(
         session
             .drain_task_terminalizations_for_shutdown_except(/*excluded_identity*/ None)
@@ -200,8 +200,8 @@ async fn assert_terminal_publication_follows_cleanup(point: GatePoint) {
         GatePoint::TurnAbort => TerminalEventKind::TurnAborted,
     };
     let terminal = recv_terminal_event(&rx, expected).await;
-    assert_eq!(terminal.id, turn_context.sub_id);
-    assert_eq!(
+    pretty_assertions::assert_eq!(terminal.id, turn_context.sub_id);
+    pretty_assertions::assert_eq!(
         persisted_before_release,
         vec![serde_json::to_value(&terminal.msg).expect("serialize delivered terminal")],
     );
@@ -235,8 +235,8 @@ async fn assert_terminal_publication_follows_cleanup(point: GatePoint) {
     }
     session.abort_all_tasks(TurnAbortReason::Interrupted).await;
     let next_terminal = recv_terminal_event(&rx, TerminalEventKind::TurnAborted).await;
-    assert_eq!(next_terminal.id, next_id);
-    assert_eq!(
+    pretty_assertions::assert_eq!(next_terminal.id, next_id);
+    pretty_assertions::assert_eq!(
         persisted_terminals(&session).await,
         vec![
             serde_json::to_value(terminal.msg).expect("serialize first terminal"),
