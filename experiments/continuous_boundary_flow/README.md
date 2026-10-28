@@ -1,5 +1,7 @@
 # Continuous task boundaries and dual feedback on the actual Hepta neuron
 
+**Completed result: 0/3 registered benefit gates passed.** See [the Chinese research report](REPORT.zh.md), [all outcome and cost tables](results/RESULTS.md), and [complete evidence reproduction](REPRODUCE.md). The original strict audit rejection and the explicitly cost-normalized passing view are both retained.
+
 This experiment adds a task-value boundary and continuous features to the
 existing first-passage cell, then lets **the original Rust sparse neuron and
 NDU choose actions in a closed-loop maintenance task**. It separates three
