@@ -72,6 +72,11 @@ runs:
           echo "TMP=$tmp"
         } >> "$GITHUB_ENV"
 
+    - name: Configure NTFS test temporary files (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: ./.github/scripts/configure-windows-test-temp.ps1
+
     - name: Prefer the Git CLI for Cargo git dependencies
       shell: bash
       run: echo "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"

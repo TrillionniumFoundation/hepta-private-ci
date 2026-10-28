@@ -407,6 +407,18 @@ if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
     )
   fi
   post_config_bazel_args+=("--test_env=PATH=${CODEX_BAZEL_WINDOWS_PATH}")
+
+  # Only test actions execute on this Windows runner. Remote Linux build
+  # actions keep their own paths; native tests need the verified NTFS root
+  # from configure-windows-test-temp.ps1, including Bazel's TEST_TMPDIR.
+  for env_var in TEMP TMP CODEX_TEST_REFS_VOLUME; do
+    if [[ -z "${!env_var:-}" ]]; then
+      echo "Missing verified Windows test volume environment: ${env_var}" >&2
+      exit 1
+    fi
+    post_config_bazel_args+=("--test_env=${env_var}")
+  done
+  post_config_bazel_args+=("--test_tmpdir=${TEMP}")
 fi
 
 bazel_console_log="$(mktemp)"

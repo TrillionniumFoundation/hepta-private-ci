@@ -115,8 +115,10 @@ jobs:
         with:
           tool: nextest@0.9.103
 
-      - name: Test host-native state and fleet roots
-        run: just test --locked -p codex-hepta-paths
+      - name: Test host-native paths, private state and authority recovery
+        run: >-
+          just test --locked -p codex-hepta-paths -p codex-utils-path
+          -p codex-hepta-contracts -p codex-hepta-prompt-registry
 
       - name: Check for a clean worktree
         if: always() && !cancelled()

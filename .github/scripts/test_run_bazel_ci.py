@@ -103,6 +103,9 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             UniversalCRTSdkDir=r"C:\SDK\ucrt",
             VCToolsInstallDir=r"C:\VS\VC\Tools\MSVC\14.51.36231",
             WindowsSdkDir=r"C:\SDK",
+            TEMP=str(self.root / "verified ntfs temp"),
+            TMP=str(self.root / "verified ntfs temp"),
+            CODEX_TEST_REFS_VOLUME="D:\\",
         )
 
     def run_wrapper(
@@ -263,6 +266,44 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertFalse(
             any(arg == "--incompatible_strict_action_env=0" for arg in args)
         )
+
+    def test_windows_test_actions_receive_verified_volume_paths(self) -> None:
+        result, calls = self.run_wrapper(
+            "--windows-cross-compile", "--", "test", "--", "//fake:target"
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        args = calls[0]
+        for name in ("TEMP", "TMP", "CODEX_TEST_REFS_VOLUME"):
+            self.assertIn(f"--test_env={name}", args)
+            self.assertNotIn(f"--action_env={name}", args)
+            self.assertNotIn(f"--host_action_env={name}", args)
+        self.assertIn(f"--test_tmpdir={self.env['TEMP']}", args)
+
+    def test_linux_runner_does_not_receive_windows_volume_paths(self) -> None:
+        self.env["RUNNER_OS"] = "Linux"
+        result, calls = self.run_wrapper("--", "test", "--", "//fake:target")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        args = calls[0]
+        for name in ("TEMP", "TMP", "CODEX_TEST_REFS_VOLUME"):
+            self.assertNotIn(f"--test_env={name}", args)
+        self.assertFalse(any(arg.startswith("--test_tmpdir=") for arg in args))
+
+    def test_windows_tests_reject_missing_verified_volume_environment(self) -> None:
+        del self.env["CODEX_TEST_REFS_VOLUME"]
+        result = subprocess.run(
+            [self.bash, str(SCRIPTS / "run-bazel-ci.sh"), "--", "test", "--", "//fake:target"],
+            env=self.env,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn(
+            "Missing verified Windows test volume environment: CODEX_TEST_REFS_VOLUME",
+            result.stderr,
+        )
+        self.assertFalse(self.log.exists(), "Bazel must not run with unverified test volumes")
 
     def test_native_windows_rejects_missing_required_msvc_environment(self) -> None:
         del self.env["LIB"]
