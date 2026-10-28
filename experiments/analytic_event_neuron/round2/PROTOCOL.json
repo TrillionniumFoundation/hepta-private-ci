@@ -1,0 +1,339 @@
+{
+  "schema": "hepta.analytic-event.round2.protocol.v1",
+  "base_commit": "1eaead05edcee079dac9301b1e16934dff0e080f",
+  "hypotheses": [
+    "Amplitude/uncertainty-preserving event coding repairs the prior pulse accuracy deficit.",
+    "The original +0.01 superiority gate remains a separate required claim.",
+    "Protected prediction can preserve old Gaussian logscore while retaining separately measured adaptation benefit."
+  ],
+  "training_seeds": [
+    101,
+    211,
+    307,
+    401,
+    503
+  ],
+  "engineering_development_seeds": [
+    701,
+    709
+  ],
+  "rows": {
+    "train": 384,
+    "development": 128,
+    "confirmation": 256,
+    "each_mismatch": 256
+  },
+  "data_offsets": {
+    "train": 1000000,
+    "development": 1100000,
+    "gaussian": 1200000,
+    "drift_shift": 1300000,
+    "student_t": 1400000
+  },
+  "laws": {
+    "primary": "gaussian",
+    "mismatch": [
+      "drift_shift",
+      "student_t"
+    ]
+  },
+  "primary_contrasts": [
+    {
+      "id": "analytic_vs_history",
+      "candidate": "analytic",
+      "baseline": "history"
+    },
+    {
+      "id": "analytic_vs_native",
+      "candidate": "analytic",
+      "baseline": "native"
+    },
+    {
+      "id": "event_vs_continuous",
+      "candidate": "event_feedback",
+      "baseline": "analytic"
+    }
+  ],
+  "statistics": {
+    "family_alpha": 0.05,
+    "primary_family_size": 3,
+    "bootstrap_replicates": 4000,
+    "bootstrap_seed": 2701027,
+    "minimum_useful_net_utility_gain": 0.01,
+    "mismatch_noninferiority_margin": 0.05,
+    "event_accuracy_noninferiority_margin": 0.01,
+    "resampling": "training seed then paired complete trajectory; horizons and model executions not independent"
+  },
+  "secondary_contrasts": [
+    [
+      "event_feedback",
+      "event_direct"
+    ],
+    [
+      "event_feedback",
+      "event_no_residual"
+    ],
+    [
+      "event_feedback",
+      "pulse"
+    ],
+    [
+      "pulse",
+      "analytic"
+    ],
+    [
+      "pulse",
+      "mean_drive"
+    ],
+    [
+      "pulse",
+      "pulse_no_reset"
+    ],
+    [
+      "analytic",
+      "equivalent_gaussian"
+    ],
+    [
+      "analytic",
+      "fixed"
+    ],
+    [
+      "analytic",
+      "oracle"
+    ],
+    [
+      "analytic",
+      "always_stop"
+    ],
+    [
+      "analytic",
+      "always_repair"
+    ],
+    [
+      "analytic",
+      "always_wait"
+    ],
+    [
+      "analytic",
+      "always_wait_repair"
+    ]
+  ],
+  "event_contract": {
+    "terminal_event": "Original Gaussian put/neutral/call joint law retained",
+    "communication_event": "Signed integer mean/logvariance innovation count; not a random terminal outcome",
+    "decode": "Count packets only; no posterior mean/variance bypass",
+    "driver": "All original Gaussian-trained filter parameters; event thresholds selected on development only",
+    "equal_information_control": "Direct quantization on same grid",
+    "accuracy_repair_is_not_superiority": true,
+    "ancestry": "Sigma-Delta Quantized Networks, OConnor and Welling, arXiv:1611.02024"
+  },
+  "retention": {
+    "phase": "confirmation",
+    "seeds": [
+      101,
+      211,
+      307,
+      401,
+      503
+    ],
+    "windows": [
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift"
+    ],
+    "training_rows": 256,
+    "new_replay_rows": 128,
+    "original_replay_rows": 128,
+    "old_holdout_rows": 256,
+    "new_holdout_rows": 256,
+    "epsilon": 0.02,
+    "old_nll_margin": 0.02,
+    "new_nll_improvement_min": 0.005,
+    "seed_offset": 3100000,
+    "additional_efficacy_scope": "mean shifted windows; original final-new<=frozen joint criterion separate",
+    "no_regime_or_window_identifier_in_prediction": true,
+    "arms": [
+      "frozen",
+      "online",
+      "replay",
+      "fixed_mixture",
+      "likelihood_mixture",
+      "protected",
+      "protected_classical",
+      "protected_quantized",
+      "protected_quantized_classical"
+    ]
+  },
+  "feedback": {
+    "train_rows": 384,
+    "development_rows": 128,
+    "confirmation_rows": 256,
+    "seeds": [
+      101,
+      211,
+      307,
+      401,
+      503
+    ],
+    "sensor_variances": [
+      0.04,
+      0.36,
+      1.44
+    ],
+    "repair_costs": [
+      0.03,
+      0.12,
+      0.48
+    ],
+    "scope": "heteroscedastic feedback, public variance and independent cost readbacks; strong Gaussian/probit controls",
+    "data_seed_rule": "10000000+100*seed+1(train),+2(development),+3(confirmation)",
+    "hidden_error_variance": 0.64,
+    "arms": [
+      "gaussian",
+      "probit",
+      "numeric",
+      "analytic",
+      "event",
+      "quantized",
+      "history",
+      "zero",
+      "reset"
+    ],
+    "head_dimensions": 63,
+    "head_steps": 600,
+    "head_learning_rate": 0.15,
+    "l2_candidates": [
+      0.001,
+      0.01,
+      0.1
+    ],
+    "development_thresholds": [
+      0.0,
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      1.0
+    ],
+    "event_grid": {
+      "mean_step": 0.015625,
+      "logvar_step": 0.015625
+    },
+    "statistics": {
+      "bootstrap_replicates": 4000,
+      "bootstrap_seed": 2801027,
+      "interval_alpha": 0.05,
+      "scope": "paired seed/trajectory descriptive secondary contrasts; no promotion guarantee"
+    },
+    "contrasts": [
+      [
+        "analytic",
+        "numeric"
+      ],
+      [
+        "event",
+        "numeric"
+      ],
+      [
+        "event",
+        "quantized"
+      ],
+      [
+        "analytic",
+        "history"
+      ],
+      [
+        "analytic",
+        "gaussian"
+      ],
+      [
+        "event",
+        "gaussian"
+      ],
+      [
+        "gaussian",
+        "probit"
+      ],
+      [
+        "event",
+        "zero"
+      ],
+      [
+        "event",
+        "reset"
+      ]
+    ]
+  },
+  "execution": {
+    "train_then_publish_source_models_then_freeze_then_confirm": true,
+    "retain_all_seed_outcomes": true,
+    "actual_delivery_readback": true,
+    "independent_full_replay": true,
+    "original_frozen_source_unchanged": true,
+    "prior_confirmation_not_reused_for_fitting": true,
+    "native_artifact": "Previously compiled original83source binary, verified archive and build receipt; no fresh-build claim in round2",
+    "production_promotion": false
+  },
+  "limitations": {
+    "five_training_seeds": true,
+    "student_t4_squared_loss_bootstrap_descriptive_only": true,
+    "no_dqn_or_holder_space_convergence_transfer": true,
+    "runtime_state_recovery_not_long_term_knowledge_retention": true,
+    "numerical_accuracy_not_empirical_calibration": true
+  },
+  "quantized_retention": {
+    "epsilon": 0.02,
+    "mean_shift_budget": 0.01,
+    "fixed_point_fraction_bits": 24,
+    "anchor_domain": {
+      "absolute_mean_max": 10000,
+      "variance_min": 0.0001,
+      "variance_max": 100
+    },
+    "native_domain_intersection": {
+      "absolute_mean_max": 8,
+      "variance_max": 8
+    },
+    "parameter_guard": "Reserve half standardized mean budget, round mean, ceil variance, check exact worst-case Gaussian NLL bound",
+    "probability_guard": "Allocate integer simplex mass subject to anchor probability floors; preserve finite log-score tails",
+    "original_native_output_and_adapter_projection_distinct": true
+  },
+  "preconfirmation_amendments": [
+    {
+      "change": "Add guarded Q24 parameters and categorical mass projection",
+      "reason": "Floating-point density protection does not automatically survive two subsequent quantizers; mathematical gap found in engineering review",
+      "confirmation_generated": false,
+      "original_gates_changed": false
+    }
+  ],
+  "runtime": {
+    "data_seed_rule": "1500000+training_seed",
+    "rows_per_seed": 16,
+    "split": "runtime_confirmation",
+    "profiles": [
+      "analytic_count_only",
+      "protected_count_only",
+      "protected_anchor_guarded"
+    ],
+    "native_binary": "Previously verified original83source artifact",
+    "protected_model": "retention_prepared/seed_s/window_11_CHECKPOINT.json models.protected",
+    "same_runtime_and_retention_utility_claim": false,
+    "guard_certificate_verified_after_actual_native_quantization": true,
+    "post_native_categorical_projection_has_separate_witness": true,
+    "production_authority": "confidence0,abstain,DENY_ALL"
+  }
+}
