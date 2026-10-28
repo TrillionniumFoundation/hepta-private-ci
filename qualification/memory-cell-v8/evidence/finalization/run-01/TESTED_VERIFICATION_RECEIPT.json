@@ -1,0 +1,866 @@
+{
+  "complete_workspace_test": false,
+  "executions": [
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v8-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qualification/memory-cell-v8/addressing",
+        "-p",
+        "*_tests.py"
+      ],
+      "exit_code": 0,
+      "observed_unittest_counts": [
+        6
+      ],
+      "test_discovery_nonempty": true,
+      "wall_seconds": 1.07072503400002
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v8-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qualification/memory-cell-v8/learning",
+        "-p",
+        "*_tests.py"
+      ],
+      "exit_code": 0,
+      "observed_unittest_counts": [
+        12
+      ],
+      "test_discovery_nonempty": true,
+      "wall_seconds": 0.12187004899999465
+    },
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "codex-app-server",
+        "--bin",
+        "codex-app-server"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 208.21870737899997
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-context-compiler",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-plasticity"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 350.158938354
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "-p",
+        "codex-hepta-agentd",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(memory_cell_) & test(actual_)"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 500.777300758
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v8-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v8/learning/score.py",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.json",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-score.json"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.44799437300002865
+    }
+  ],
+  "files": {
+    "baseline-native-held.json": {
+      "bytes": 434426,
+      "sha256": "1674ae0d3f6da844aaa35dad94a1e16fddf52c9136913952a3eced807a6b2f37"
+    },
+    "candidate-native-held.json": {
+      "bytes": 469199,
+      "sha256": "1c40a47d85274d1d2d744ea0043d19917777fdb3b7f14876ff82f71ebdd23885"
+    },
+    "execution.log": {
+      "bytes": 180793,
+      "sha256": "7977844c6d397b406abc75fc96bb15cf4ccc33677ee419f6ccb98978da42727d"
+    },
+    "generated.patch": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "legacy-language.json": {
+      "bytes": 22362,
+      "sha256": "3c03fccdd43337d997d78fbd5c537157bdb4974e0d990369398475b705604e36"
+    },
+    "legacy-population.json": {
+      "bytes": 31300,
+      "sha256": "a0dd934b2d9e3cb5883774f281f11c6d34cd0581bd3b0bbac5f27bc340ec42ef"
+    },
+    "legacy-training.json": {
+      "bytes": 22371,
+      "sha256": "79e089575c8217f19cd7c762f55f2068d3a831a626121534645a4de257e7054c"
+    },
+    "network-process.json": {
+      "bytes": 4439,
+      "sha256": "57c653c212dfaf46c78d1a3be0f89c8084e75eeec6dbeed6b27080062da15ea6"
+    },
+    "prospective-learning.artifacts/MANIFEST.json": {
+      "bytes": 3219,
+      "sha256": "5a7e75b333970842dc6411fa9345094e780ff8c2a2f3c520d2deb0283b88dcb8"
+    },
+    "prospective-learning.artifacts/SELECTION_LOCK.json": {
+      "bytes": 542206,
+      "sha256": "07c0e856c412a8fd2a7e70bc04d64751355b35df3cdc5c2b0e8df4025a5e61df"
+    },
+    "prospective-learning.artifacts/direct-owner-execution.json": {
+      "bytes": 560,
+      "sha256": "3ae5af4cbdcb199be2010e736dc6ef5ab9357e25c5b21afc93ac544b2e87b08f"
+    },
+    "prospective-learning.artifacts/direct-owner/CONFIG.json": {
+      "bytes": 370,
+      "sha256": "064d1cda20ef9a00970508d1bbdc6799d0d426a667e134d01813a11cee6003d6"
+    },
+    "prospective-learning.artifacts/direct-owner/FIT_LOCK.json": {
+      "bytes": 242,
+      "sha256": "afa5004eb6b52b0c367648ce41317a02118ce67be8eb4dfa903e80d20f69361d"
+    },
+    "prospective-learning.artifacts/direct-owner/OWNER_EXPORT.json": {
+      "bytes": 42374,
+      "sha256": "4dc485c404b00c2d01082958697e876e53abd2e4bbca12b5829b7ee61a9dc519"
+    },
+    "prospective-learning.artifacts/direct-owner/PROGRESS.jsonl": {
+      "bytes": 1800,
+      "sha256": "1540c1c77eb11111d19ca1f86f673061e8fbb31a1283efccf1e22f06a1954098"
+    },
+    "prospective-learning.artifacts/direct-owner/START.json": {
+      "bytes": 601,
+      "sha256": "7a2c7b89f147646b442324071c70e2ae48bf418f9af27b671f11e938906fe8a4"
+    },
+    "prospective-learning.artifacts/direct-owner/TRIAL.json": {
+      "bytes": 654017,
+      "sha256": "c6a60e608ecfd729fc784a59fa82e709a2aa28f49a6699ba2cfbe66abefd9ae6"
+    },
+    "prospective-learning.artifacts/direct-owner/before-retention.json": {
+      "bytes": 61003,
+      "sha256": "bf6c773a883949f8d37a2a2989ecae8db1c03767d29c5b287014b6e2c33fc0b5"
+    },
+    "prospective-learning.artifacts/direct-owner/completed-prefix.json": {
+      "bytes": 217745,
+      "sha256": "d8d99c94f600828b901c49d043b82493e0124e32b283d69c9e2c3b500bc273ad"
+    },
+    "prospective-learning.artifacts/direct-owner/future.json": {
+      "bytes": 181390,
+      "sha256": "54d637727f2149837923eb8cfaf8a5d24659c709c92e503c52d28715e10f9134"
+    },
+    "prospective-learning.artifacts/direct-owner/owner-acquisition.json": {
+      "bytes": 42110,
+      "sha256": "4c35b29c1442fd5519425e154f6173e870fb282cb4dd02a32a6dd263b760b5de"
+    },
+    "prospective-learning.artifacts/direct-owner/retention.json": {
+      "bytes": 61003,
+      "sha256": "11dac3176d17c82dc28601c2f4c1bc7fb5c6a074ad6824cb4a0609b13612a935"
+    },
+    "prospective-learning.artifacts/direct-owner/selection.json": {
+      "bytes": 61003,
+      "sha256": "556ab36eaa70652cac6806ad7a3611e25d16d024033a0397533643c69af456ac"
+    },
+    "prospective-learning.artifacts/fixed-1-execution.json": {
+      "bytes": 550,
+      "sha256": "ef53bd71b1187c1ec536d138bf51323dbbec3e9125dccf2f397069d3bb50fb55"
+    },
+    "prospective-learning.artifacts/fixed-1/CONFIG.json": {
+      "bytes": 291,
+      "sha256": "9c00c5b9ef63b231dbb40d5d5e186b49d5dff31627e85bdd007c3fc015f670d5"
+    },
+    "prospective-learning.artifacts/fixed-1/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "503dbd1a481eeb7b9b75eee7a11a723da3dd774a223961f9d25d41b865dcc97b"
+    },
+    "prospective-learning.artifacts/fixed-1/OWNER_EXPORT.json": {
+      "bytes": 42374,
+      "sha256": "483901fc92708d58ce19fb262f60593895748848671e0b683ae6fa308c884997"
+    },
+    "prospective-learning.artifacts/fixed-1/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "38aa3fda6084c5db2b0ace1bba4db73e4e52278e1a47d458ab9ce483962d0fd7"
+    },
+    "prospective-learning.artifacts/fixed-1/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "b02beb862a558924938cf5c2a47928e5d7285ac2abcb2db996a59c7e77291580"
+    },
+    "prospective-learning.artifacts/fixed-1/START.json": {
+      "bytes": 522,
+      "sha256": "8db9079f81dd82803cedb5a712e41ac54e761a90fc2dcefa94a0dfc3ae436a0b"
+    },
+    "prospective-learning.artifacts/fixed-1/TRIAL.json": {
+      "bytes": 650525,
+      "sha256": "fce114a24d98bd134e9555b492cbae5fa244895fedc53bae3e2887943db6bf45"
+    },
+    "prospective-learning.artifacts/fixed-1/before-retention.json": {
+      "bytes": 61631,
+      "sha256": "bfc11a361de9f8474411d1879cb868315da1d2ee6b5d4e27e5bcf613c3c9e438"
+    },
+    "prospective-learning.artifacts/fixed-1/bootstrap-fit.json": {
+      "bytes": 287298,
+      "sha256": "8fe6ce12691c9762b363e213fb00526b28e0bb9c3fb5ff4c089ef6720d629a68"
+    },
+    "prospective-learning.artifacts/fixed-1/candidate-fit.json": {
+      "bytes": 317120,
+      "sha256": "f147769781ab7ea2e7a966008fb2183b314bd4f0a6a58704fad6f2a29fe851d1"
+    },
+    "prospective-learning.artifacts/fixed-1/completed-prefix.json": {
+      "bytes": 200816,
+      "sha256": "80214bbea190d3d0a9a409680faaabb954688c81768d6baf31a0ab2d3654af97"
+    },
+    "prospective-learning.artifacts/fixed-1/future.json": {
+      "bytes": 147894,
+      "sha256": "5e21a15c46b1bea68409616aa3aeb28bf86bc1a75c37c69a973eeb5c818c8a83"
+    },
+    "prospective-learning.artifacts/fixed-1/retention.json": {
+      "bytes": 50769,
+      "sha256": "6db24a2635b1fd863659f981baa14709c33e99008477c629f5946c977611fb8c"
+    },
+    "prospective-learning.artifacts/fixed-1/selection.json": {
+      "bytes": 50767,
+      "sha256": "50337cd6bad0b8369b8e196a219f9478a12e0628b02fa840020a0f0a64001981"
+    },
+    "prospective-learning.artifacts/fixed-2-execution.json": {
+      "bytes": 550,
+      "sha256": "3d8ef7d221412e165561208ad3893dcbfac6e4883285facaddb1e9e6c52ac66e"
+    },
+    "prospective-learning.artifacts/fixed-2/CONFIG.json": {
+      "bytes": 353,
+      "sha256": "3c06c2a0e5dd1061eb1adcf0e5b9d4f01625798e548463db41b6a7eaa9fda21e"
+    },
+    "prospective-learning.artifacts/fixed-2/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "db886b023a6389e7566574db3e48eed875baa63b20e49ec1f28d1a31ee351701"
+    },
+    "prospective-learning.artifacts/fixed-2/OWNER_EXPORT.json": {
+      "bytes": 42374,
+      "sha256": "1c1e3474243f002e385adbc64316e2732aaeb53580980c160ccf591682c3ad2d"
+    },
+    "prospective-learning.artifacts/fixed-2/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "0eef4a9728e2b860e190eebf9b2ddc13c804244950159501696443bb3cd2f86d"
+    },
+    "prospective-learning.artifacts/fixed-2/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "db76a7f2bf79bffe4d820de883f5afd285478a02ba1a19259b9e784c18f0fd72"
+    },
+    "prospective-learning.artifacts/fixed-2/START.json": {
+      "bytes": 584,
+      "sha256": "636aacf68c069b3bad3fcad18d675f4bdf8b90940abca2b9bc0decf14394d58b"
+    },
+    "prospective-learning.artifacts/fixed-2/TRIAL.json": {
+      "bytes": 718552,
+      "sha256": "f38b7ac18892e38bef48ab6b6575279dea81f9650c65a06aa3725e898bdd322d"
+    },
+    "prospective-learning.artifacts/fixed-2/before-retention.json": {
+      "bytes": 61633,
+      "sha256": "0fa287d0f84ad7e4f3dc809dd4877068959d5d0c0127496cd891382dac3d1dd8"
+    },
+    "prospective-learning.artifacts/fixed-2/bootstrap-fit.json": {
+      "bytes": 287266,
+      "sha256": "36c12424ab616d1f03dcea0327f1036b69709d905993e0624ddd90bad3e14dba"
+    },
+    "prospective-learning.artifacts/fixed-2/candidate-fit.json": {
+      "bytes": 289736,
+      "sha256": "f9b7b47b5865e61d4817003267f73f7caa3a9853f0bd0280a167950512cc8fdc"
+    },
+    "prospective-learning.artifacts/fixed-2/completed-prefix.json": {
+      "bytes": 200842,
+      "sha256": "db136adf74788393be006b8d07b370a537e3909ba22a8a49243699ef1ee7736a"
+    },
+    "prospective-learning.artifacts/fixed-2/future.json": {
+      "bytes": 184701,
+      "sha256": "1f5f98cd300393800a01f50209b2a6f583f9faa8ae87274e12f9a2a77be95821"
+    },
+    "prospective-learning.artifacts/fixed-2/retention.json": {
+      "bytes": 63076,
+      "sha256": "002127167ed7b00389ddf7e3b63217f059b80127f2f0e919e7e0f0277be78fc6"
+    },
+    "prospective-learning.artifacts/fixed-2/selection.json": {
+      "bytes": 63057,
+      "sha256": "6b9d0d45bdec4e2eb2264257f4b04c22f19df2d371f2441c286d575f89676be9"
+    },
+    "prospective-learning.artifacts/fixed-3-execution.json": {
+      "bytes": 550,
+      "sha256": "2ef57081b38ae93acd8f30b8d56749aaf8e54d9cef1232e83b5f33b19cff2480"
+    },
+    "prospective-learning.artifacts/fixed-3/CONFIG.json": {
+      "bytes": 353,
+      "sha256": "792be0ac319193244552a4daf7262e8876aff59b60da8a4b63127b9828971198"
+    },
+    "prospective-learning.artifacts/fixed-3/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "b7612010144ea1f996898429aafec652a49a03eac7b02e20239c6ace82195995"
+    },
+    "prospective-learning.artifacts/fixed-3/OWNER_EXPORT.json": {
+      "bytes": 42374,
+      "sha256": "62e2cbfbb9ae39ffd937f711c5c72fad79321c85f70c3044a0f18e563a1530d4"
+    },
+    "prospective-learning.artifacts/fixed-3/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "7c6341c3bc720c6c4a0e53d415ba5504407a1dbb6e44685ef3c59c15fdbac5e0"
+    },
+    "prospective-learning.artifacts/fixed-3/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "1d6287dafb296da0f1fc646a8af8867e3f5fb5a7b34d884e46af093685dd7930"
+    },
+    "prospective-learning.artifacts/fixed-3/START.json": {
+      "bytes": 584,
+      "sha256": "571dfde6cf9ec24a3e554f09cc0faf1c3813eabbda573ac4686ede71425cedb4"
+    },
+    "prospective-learning.artifacts/fixed-3/TRIAL.json": {
+      "bytes": 721607,
+      "sha256": "5f315c42db9fd63c82c3d599164c437de60dfb5fad77cf3af0f13ec868e49893"
+    },
+    "prospective-learning.artifacts/fixed-3/before-retention.json": {
+      "bytes": 61635,
+      "sha256": "fb4c20e9c5349b7f2bddebfa8bf030bb2ac8b74c706f4d09b08b45c26a1a7ebb"
+    },
+    "prospective-learning.artifacts/fixed-3/bootstrap-fit.json": {
+      "bytes": 287264,
+      "sha256": "436de6da42811f3bc35acddee22e08be269be66aee97510f51d861e876d81f31"
+    },
+    "prospective-learning.artifacts/fixed-3/candidate-fit.json": {
+      "bytes": 285821,
+      "sha256": "837342fa8a3316f935396e343df8415125a7828a80f535e05a564dc652eb9e9d"
+    },
+    "prospective-learning.artifacts/fixed-3/completed-prefix.json": {
+      "bytes": 200828,
+      "sha256": "4352ded128a36c0fbb85d4ce02bb54fbf6f9094c02752fc51d5d42a1c5138188"
+    },
+    "prospective-learning.artifacts/fixed-3/future.json": {
+      "bytes": 184714,
+      "sha256": "7a091beccdfe4712c030769626a2ce91b86fed4b2e63c85afa7ef90ce2d13df9"
+    },
+    "prospective-learning.artifacts/fixed-3/retention.json": {
+      "bytes": 63076,
+      "sha256": "ef39462361e6b4ac9b28d9d6a5a9bfd26458c64b0f8362f16699bedd545aa435"
+    },
+    "prospective-learning.artifacts/fixed-3/selection.json": {
+      "bytes": 63069,
+      "sha256": "c53cccb19a3b3105057020c52bf8ad5554710a1a1672149cb1f858b60f925a92"
+    },
+    "prospective-learning.artifacts/fixed-4-execution.json": {
+      "bytes": 550,
+      "sha256": "78e51a10ce276e5f684c09efa3f2bc0f187324f0b9745265997aa6c881e2675d"
+    },
+    "prospective-learning.artifacts/fixed-4/CONFIG.json": {
+      "bytes": 353,
+      "sha256": "988667dfac036a6ca29ca4dd23cabd181a6ff73ad9d4112cba379ed91db746b2"
+    },
+    "prospective-learning.artifacts/fixed-4/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "8b9ae37c8b89d2868793e4f7be206819655586d6301874023169aaac002e62f1"
+    },
+    "prospective-learning.artifacts/fixed-4/OWNER_EXPORT.json": {
+      "bytes": 42374,
+      "sha256": "d7b805daf8c577896fabe92871d436f556b340965f396b4a7eea91012e2666f3"
+    },
+    "prospective-learning.artifacts/fixed-4/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "283cfcc8452996d4f6028229a8ac5e7ee7068797a83649ee3f309dfa5c5b1653"
+    },
+    "prospective-learning.artifacts/fixed-4/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "eb5d29176a440091334468eda19e13d3ab2f06a6437ef0f2af60b11ec8a2b41d"
+    },
+    "prospective-learning.artifacts/fixed-4/START.json": {
+      "bytes": 584,
+      "sha256": "c67e6ab0d9a9b4cbb551a80e45878362b2481cc84883121c79cf509658be923e"
+    },
+    "prospective-learning.artifacts/fixed-4/TRIAL.json": {
+      "bytes": 724633,
+      "sha256": "24e38d86b97207b3627b428c5235467c3f15b1768ea3b241e85feb0da5827bd4"
+    },
+    "prospective-learning.artifacts/fixed-4/before-retention.json": {
+      "bytes": 61633,
+      "sha256": "5e9bb06c47fd1bf5be0cdb5aaeb5fdeb67482ac37c964497a536f0466a2b41a6"
+    },
+    "prospective-learning.artifacts/fixed-4/bootstrap-fit.json": {
+      "bytes": 287282,
+      "sha256": "6f645d59e6ae8e50b9387e31fa8178f7e7cb882cebc5591bfa9eba08e7bd0d23"
+    },
+    "prospective-learning.artifacts/fixed-4/candidate-fit.json": {
+      "bytes": 287260,
+      "sha256": "6da176313492ed4991b5648a0991507019ea1fb05bbcefb9d9bb41fe5d6a4c9a"
+    },
+    "prospective-learning.artifacts/fixed-4/completed-prefix.json": {
+      "bytes": 200836,
+      "sha256": "136c24b7fb20d3fd09755d2b684f0c3e23a4a3965cb5623ec15fad5fdf129f62"
+    },
+    "prospective-learning.artifacts/fixed-4/future.json": {
+      "bytes": 184706,
+      "sha256": "1ca16a272a6dfedd4ade33d062e2698b9ffb89ce46866aca1c3ae870b9dc1fc4"
+    },
+    "prospective-learning.artifacts/fixed-4/retention.json": {
+      "bytes": 63064,
+      "sha256": "446a0fe2cec303e5e94a199fe2b1ee3a12a4ce743b855b6230514f2cd904cee3"
+    },
+    "prospective-learning.artifacts/fixed-4/selection.json": {
+      "bytes": 63067,
+      "sha256": "f7de1db858c46fdcfad699edf6d3dcf16b8b479a387b59b9d8f9964c3f5a7e90"
+    },
+    "prospective-learning.artifacts/fixed-5-execution.json": {
+      "bytes": 550,
+      "sha256": "8048bd5c5fce3ceeb7421a39c4df3ffc9eada5422da1efb52c51971ef1ca24bd"
+    },
+    "prospective-learning.artifacts/fixed-5/CONFIG.json": {
+      "bytes": 353,
+      "sha256": "16b39c6be17f88acb422113dc2f723001c7aa5b6ac5d780598bbf6cfd46fffa9"
+    },
+    "prospective-learning.artifacts/fixed-5/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "60cd4836d5e9ddb042ef6c8b25084dddd391a73ed1c0ee4ecb3fa3bff6011069"
+    },
+    "prospective-learning.artifacts/fixed-5/OWNER_EXPORT.json": {
+      "bytes": 42374,
+      "sha256": "2aeca86adab2751629cea9669c1ca62ffb652bfc9e62b16f12addd8af1d2cd66"
+    },
+    "prospective-learning.artifacts/fixed-5/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "40e99389f7a21c7774f90ab979640dd3dba0193904f26794f1672c29ef8ab1cb"
+    },
+    "prospective-learning.artifacts/fixed-5/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "fb7f85a91b5d7ddeb4c011f376d11f2c9fbdb5d7959c4141e4e2cd1a329d1f0c"
+    },
+    "prospective-learning.artifacts/fixed-5/START.json": {
+      "bytes": 584,
+      "sha256": "73ddbb80e6350dcc2c34c7088bcee8f5114414c604d7ba7c3e3b0d4bf748c2ff"
+    },
+    "prospective-learning.artifacts/fixed-5/TRIAL.json": {
+      "bytes": 727726,
+      "sha256": "eebdd4d462bfd7b94bd2b4fed3c36285352c15f893f7d890df548f4da3f64882"
+    },
+    "prospective-learning.artifacts/fixed-5/before-retention.json": {
+      "bytes": 61635,
+      "sha256": "e85eecc2c7e7e9eb44010bfcb7cd41ccf520328e9cd1a8326f3170aa5f2ea3e4"
+    },
+    "prospective-learning.artifacts/fixed-5/bootstrap-fit.json": {
+      "bytes": 287286,
+      "sha256": "0c6c44e3e875bb28c96f4cbd3614c4680582b038c7d58e426bb7c742bec87711"
+    },
+    "prospective-learning.artifacts/fixed-5/candidate-fit.json": {
+      "bytes": 290689,
+      "sha256": "cc2dbcc947a3d360dd593425fc0247db1394038bd2d30ae34e117d36ba8603b5"
+    },
+    "prospective-learning.artifacts/fixed-5/completed-prefix.json": {
+      "bytes": 200832,
+      "sha256": "da99e0e43b2b38420c9d2ade14927ab3a3c1f61a9b8b1e239774beadd61cdf91"
+    },
+    "prospective-learning.artifacts/fixed-5/future.json": {
+      "bytes": 184717,
+      "sha256": "21773d0a7e3a2d057988a7748d4023a0059d1436be8e2ad432c9dc24ccd0ce18"
+    },
+    "prospective-learning.artifacts/fixed-5/retention.json": {
+      "bytes": 63075,
+      "sha256": "6804f0a0a11b316903dfdbbda009b2d19810598cf93e8256e11019e9f12c91eb"
+    },
+    "prospective-learning.artifacts/fixed-5/selection.json": {
+      "bytes": 63069,
+      "sha256": "e33760d3a52bcb7b770fc6227511b1fae1e617c68a727492e602c2d9f5615888"
+    },
+    "prospective-learning.artifacts/fixed-6-execution.json": {
+      "bytes": 550,
+      "sha256": "f643a8d0c0d4e789b462e7bd530d4b36c5193c4ab16b02177667da121da3682b"
+    },
+    "prospective-learning.artifacts/fixed-6/CONFIG.json": {
+      "bytes": 353,
+      "sha256": "2b006818e59f31a1a54c8186c80aef1d88ded510982054ce4eb659ce6a05b70f"
+    },
+    "prospective-learning.artifacts/fixed-6/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "8f6fb12ebf6d45e9d28c90e9b79ecc369814e6c2e600023a72b8311fe10569a7"
+    },
+    "prospective-learning.artifacts/fixed-6/OWNER_EXPORT.json": {
+      "bytes": 42374,
+      "sha256": "abab4dadbb7234fc54e1eb007dedce650260edf3ce7ebd893a15a9b894b854c8"
+    },
+    "prospective-learning.artifacts/fixed-6/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "4609bc1f31502734dcc4f0abfad4752e59be13634662c321ed54f9fc69088195"
+    },
+    "prospective-learning.artifacts/fixed-6/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "6ac27a0e31f90b858ae7d2f10719430954d3f9bd94df23327853a221abb0ab63"
+    },
+    "prospective-learning.artifacts/fixed-6/START.json": {
+      "bytes": 584,
+      "sha256": "951f3e7d61261798e9a15295a1683e0d63768ef80ffdf656582838cfe3d3cf45"
+    },
+    "prospective-learning.artifacts/fixed-6/TRIAL.json": {
+      "bytes": 730723,
+      "sha256": "331831dd9df249743d333b8b02c1a07afdf4d1c494874635a55d479311be75a6"
+    },
+    "prospective-learning.artifacts/fixed-6/before-retention.json": {
+      "bytes": 61635,
+      "sha256": "d95420a2426771808275cf88a4446d136bfd3b922fdd0317b669a40e81cb3101"
+    },
+    "prospective-learning.artifacts/fixed-6/bootstrap-fit.json": {
+      "bytes": 287270,
+      "sha256": "4cfc1532cb8e190a020cd99c61d46741395d34d1ab1d7056605938fc4a12bbca"
+    },
+    "prospective-learning.artifacts/fixed-6/candidate-fit.json": {
+      "bytes": 295333,
+      "sha256": "b35d5f094c3809c29740d0c31614bacd9560201156fa3b00f832c16962435e80"
+    },
+    "prospective-learning.artifacts/fixed-6/completed-prefix.json": {
+      "bytes": 200814,
+      "sha256": "5dbcf2487d1de6eed60be05c08f8fd9e40681182fb87b88001ead669fd589d7f"
+    },
+    "prospective-learning.artifacts/fixed-6/future.json": {
+      "bytes": 184716,
+      "sha256": "3fe475c154c8c8a7e13929218487499f43bd4b089169236bd9a835eeeba3d871"
+    },
+    "prospective-learning.artifacts/fixed-6/retention.json": {
+      "bytes": 63078,
+      "sha256": "6424a5521599cf9abe77aa2f1bc4a58f2e70ba161149c9c06727256a22e214a1"
+    },
+    "prospective-learning.artifacts/fixed-6/selection.json": {
+      "bytes": 63064,
+      "sha256": "898ff03de3ba0604d1ed3aff76a919119ff79a2c8a912ea203560ff0b550bcd5"
+    },
+    "prospective-learning.artifacts/fixed-7-execution.json": {
+      "bytes": 550,
+      "sha256": "a9acac41980194c6e0ed44f66a7f086f714a5291cae5a8c63594e65b97020b11"
+    },
+    "prospective-learning.artifacts/fixed-7/CONFIG.json": {
+      "bytes": 353,
+      "sha256": "712f34fb7de50351924aa5691caa55e32ffdab3b60b24c4c61e5d9a5787f4781"
+    },
+    "prospective-learning.artifacts/fixed-7/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "afc5f8cd807e5df21527ce28c233908603d723cb75d5e77dffe9ccc6c7cc54e5"
+    },
+    "prospective-learning.artifacts/fixed-7/OWNER_EXPORT.json": {
+      "bytes": 42374,
+      "sha256": "8e9593d58a97a265f97505ca29167dfb5573d1310bc4efb3e7264f9d9198050f"
+    },
+    "prospective-learning.artifacts/fixed-7/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "2812eb5373cb3df081b148e037d93c1cae5b91ac89ad381fb88dc68c2f8aad91"
+    },
+    "prospective-learning.artifacts/fixed-7/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "6a838f07f5b7b39b35b4acd4110fb54a734a418f73972846a27c0dfaf9f3cf32"
+    },
+    "prospective-learning.artifacts/fixed-7/START.json": {
+      "bytes": 584,
+      "sha256": "c40d40b6299653b5513a44c8f2735ef2eac28ad714b210d8017da3c5a36ca2e2"
+    },
+    "prospective-learning.artifacts/fixed-7/TRIAL.json": {
+      "bytes": 733758,
+      "sha256": "d6cab7149fd770d474851eaa748da73329f6422261c52de9af7c9f740d1af25a"
+    },
+    "prospective-learning.artifacts/fixed-7/before-retention.json": {
+      "bytes": 61633,
+      "sha256": "dfb99d03e685729b7082c0328ba4de42111ae6c138deece5ea4cfefc97088282"
+    },
+    "prospective-learning.artifacts/fixed-7/bootstrap-fit.json": {
+      "bytes": 287262,
+      "sha256": "cbec638ac924ad9df00bac54d1a9297137ee3297480c594594aacb5d45faef5a"
+    },
+    "prospective-learning.artifacts/fixed-7/candidate-fit.json": {
+      "bytes": 301026,
+      "sha256": "03f12ae971b302c73c1b54e979e5ae8936dc24dac9ec509c609525c77331ec66"
+    },
+    "prospective-learning.artifacts/fixed-7/completed-prefix.json": {
+      "bytes": 200814,
+      "sha256": "3416ccbf9b56ac7761b7f1a8fca9fb6fea1bc2b2fc28ed8a8c82560174406d88"
+    },
+    "prospective-learning.artifacts/fixed-7/future.json": {
+      "bytes": 184714,
+      "sha256": "33f2323b0072ee23708f608e32b44360cfd3e53ccc83da20c737a6607be8d983"
+    },
+    "prospective-learning.artifacts/fixed-7/retention.json": {
+      "bytes": 63072,
+      "sha256": "1080ba4e2c324b858594307b35728dc8ac1817aca41dfbbd90e4b8c3c64209b0"
+    },
+    "prospective-learning.artifacts/fixed-7/selection.json": {
+      "bytes": 63060,
+      "sha256": "7111683dd1fda659ed8b4c54acc88d937f1783f1eb7d35fa9d0c0bd007a5c338"
+    },
+    "prospective-learning.artifacts/fixed-8-execution.json": {
+      "bytes": 550,
+      "sha256": "daf3b2e7f4aff19534b988fb320a3dc410c809a609f0dcc993acbeb7525c4496"
+    },
+    "prospective-learning.artifacts/fixed-8/CONFIG.json": {
+      "bytes": 353,
+      "sha256": "d9b515f8c9befa687db9e791d2c77dafb603906c30221573bf6947770ed9e4c9"
+    },
+    "prospective-learning.artifacts/fixed-8/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "1d72db6dc1a32a613270e3a9010f3cba9411e18896500727eba92a0701ed0905"
+    },
+    "prospective-learning.artifacts/fixed-8/OWNER_EXPORT.json": {
+      "bytes": 42374,
+      "sha256": "33bbd79594ecef0e3bd43cef06181295e6517fabb158db212b82d0627857c05b"
+    },
+    "prospective-learning.artifacts/fixed-8/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "e362af568fa48fb610cd45a5c017cf99ba32a22a013deebbc7719a8c777e49b5"
+    },
+    "prospective-learning.artifacts/fixed-8/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "5dd30e1509c1b9ddeae885f9808de09b1be42be592f53ebf5d693e70cce61852"
+    },
+    "prospective-learning.artifacts/fixed-8/START.json": {
+      "bytes": 584,
+      "sha256": "74a3f2d4342e5eb154fa60afa471731fd89f3ab4d9abe4660a5c805ce42f04ab"
+    },
+    "prospective-learning.artifacts/fixed-8/TRIAL.json": {
+      "bytes": 736812,
+      "sha256": "3f0fcc3600d2e98e6a0d9b0adccd4f71294bb10bdac08523211c927037dc6ae3"
+    },
+    "prospective-learning.artifacts/fixed-8/before-retention.json": {
+      "bytes": 61631,
+      "sha256": "e8952c00e5d01cd16e1f02965e42c934fbc7c58670dedaffb0139351f3c88f0e"
+    },
+    "prospective-learning.artifacts/fixed-8/bootstrap-fit.json": {
+      "bytes": 287268,
+      "sha256": "f209e8e3a2e74bd8b986e038e2bd95b00aae1578fa21a29548ba22d60bb772f5"
+    },
+    "prospective-learning.artifacts/fixed-8/candidate-fit.json": {
+      "bytes": 306946,
+      "sha256": "c81231a3f4273650b701906e6248f2ae234c4ad10c64eca256dc932f9c64b551"
+    },
+    "prospective-learning.artifacts/fixed-8/completed-prefix.json": {
+      "bytes": 200816,
+      "sha256": "83a228508d8596b7faeddd0752f5c2a73fe36674476215c01efe52f3f6805c36"
+    },
+    "prospective-learning.artifacts/fixed-8/future.json": {
+      "bytes": 184714,
+      "sha256": "e54637e6f40332dbb15f271ec866a698502eacc400277e905647968f1c776135"
+    },
+    "prospective-learning.artifacts/fixed-8/retention.json": {
+      "bytes": 63078,
+      "sha256": "8b7a9286adbe9fc4f11504d06b34fa462b4cde056188772c9d1ce7b252ba0fd4"
+    },
+    "prospective-learning.artifacts/fixed-8/selection.json": {
+      "bytes": 63068,
+      "sha256": "b50e3eb5804bf9b21ead17a311ab8225e2e33d153e318ac2d64ff1d0c4c3063f"
+    },
+    "prospective-learning.artifacts/learned-coaccess-execution.json": {
+      "bytes": 568,
+      "sha256": "3fcae024324b7f5cb59ceec87d35c85b693b8fef8283064d5d5663abbb6bf343"
+    },
+    "prospective-learning.artifacts/learned-coaccess/CONFIG.json": {
+      "bytes": 373,
+      "sha256": "40b8c3ee5df7025e216fd9a916623f7362a703ec0d452d6450eef8cae743f44f"
+    },
+    "prospective-learning.artifacts/learned-coaccess/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "0b78de5d0f07f867632ed91324c3ea055c2e24031903609725fc608fb2f34827"
+    },
+    "prospective-learning.artifacts/learned-coaccess/OWNER_EXPORT.json": {
+      "bytes": 42374,
+      "sha256": "8a84f1e2365a7a468aa7107a888550a99605716752b50fe6050f6fa11fb36131"
+    },
+    "prospective-learning.artifacts/learned-coaccess/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "f69085643eb7ba8d3e64dbe3bfa1f704126fbafb1ada29e2d3007dc8eec8d5f5"
+    },
+    "prospective-learning.artifacts/learned-coaccess/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "7c55e3e263fcf1483e2ac33f2d4fde31c26d6f0f0fa67815057e53e400603da4"
+    },
+    "prospective-learning.artifacts/learned-coaccess/START.json": {
+      "bytes": 604,
+      "sha256": "14e961d4b3901528438c6dcf072086c1e4992fe563f2f038e0cf6c1e103845c8"
+    },
+    "prospective-learning.artifacts/learned-coaccess/TRIAL.json": {
+      "bytes": 745910,
+      "sha256": "1d18792237d820064d1c97cc9e60a9e6c03dbbc82c1484f8eb7903e49cfc6532"
+    },
+    "prospective-learning.artifacts/learned-coaccess/before-retention.json": {
+      "bytes": 61625,
+      "sha256": "9b6a1ed27672de0da90fcd01d405f3399940923ea401ce77953193bbf3a36304"
+    },
+    "prospective-learning.artifacts/learned-coaccess/bootstrap-fit.json": {
+      "bytes": 287266,
+      "sha256": "d97fe9c0e33673d4737537434311ca06f366a01a35cd2327f6f608bdda0180d2"
+    },
+    "prospective-learning.artifacts/learned-coaccess/candidate-fit.json": {
+      "bytes": 335029,
+      "sha256": "5e95799d8e998514af8f59df6c014afac9fb1ce322a497390554459f7692c1e7"
+    },
+    "prospective-learning.artifacts/learned-coaccess/completed-prefix.json": {
+      "bytes": 200834,
+      "sha256": "883e396e11ea867fb8d8f4a287ce5f589e6d51dc2a6bf8a28dc5ef22bf59f78c"
+    },
+    "prospective-learning.artifacts/learned-coaccess/future.json": {
+      "bytes": 184708,
+      "sha256": "3b80ce73236a7c870b5f962ad59b3634ff8cb49af4ef2a4a7a848c852c6e2377"
+    },
+    "prospective-learning.artifacts/learned-coaccess/retention.json": {
+      "bytes": 63070,
+      "sha256": "033ff371a5af1ccdc4cc23193299e6db0255ad71102dc23258fac39a75836817"
+    },
+    "prospective-learning.artifacts/learned-coaccess/selection.json": {
+      "bytes": 63058,
+      "sha256": "e4fbf74c9dcd76aaa4ea16a67bcd5247a8883c0ae9bedf88f37a90f39eaef226"
+    },
+    "prospective-learning.artifacts/lightweight-prefix-selector-execution.json": {
+      "bytes": 590,
+      "sha256": "764d30122996d30c7cffeebff8fd276941a052358fd376a60c2fc5d6e828d514"
+    },
+    "prospective-learning.artifacts/lightweight-prefix-selector/CONFIG.json": {
+      "bytes": 393,
+      "sha256": "8de3a93474bd1d9e3571af5e9ff6b7596992d01a15e81619f81758468701c4c2"
+    },
+    "prospective-learning.artifacts/lightweight-prefix-selector/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "962508d9f82afe646bc8ebe291eee54e621987db479b65593d9d8fb96a1884b6"
+    },
+    "prospective-learning.artifacts/lightweight-prefix-selector/OWNER_EXPORT.json": {
+      "bytes": 42374,
+      "sha256": "bfd67fe593bb6346e3abf6689738f986175b8297bd46ffe7cd1481d575902e4e"
+    },
+    "prospective-learning.artifacts/lightweight-prefix-selector/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "d1d27248ccd4a805a3f1936cc1a671240e4582a1bb5a3147c9a6cafca36aee61"
+    },
+    "prospective-learning.artifacts/lightweight-prefix-selector/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "f87e42f8ff629b145b6c703ead2c0515fe5a3f1df544c33bd76a8906a72dd9a3"
+    },
+    "prospective-learning.artifacts/lightweight-prefix-selector/START.json": {
+      "bytes": 624,
+      "sha256": "a67e9ea1b5212f442247ed30797d3a727ddc47a1afa617f5adbbbabfd21faa7b"
+    },
+    "prospective-learning.artifacts/lightweight-prefix-selector/TRIAL.json": {
+      "bytes": 733798,
+      "sha256": "f66ef52b298d0cd1a161adb0b7f58333a716ca4b5a64244413ca9490d65f7291"
+    },
+    "prospective-learning.artifacts/lightweight-prefix-selector/before-retention.json": {
+      "bytes": 61631,
+      "sha256": "397991b53a77f331805ba2a46c267fb0c3507211864732ddb8318b2903baac44"
+    },
+    "prospective-learning.artifacts/lightweight-prefix-selector/bootstrap-fit.json": {
+      "bytes": 287282,
+      "sha256": "c7b1337b88c6b0a96c7a9dfde7f7d461e9fd807aac922844ac2453e4622243f7"
+    },
+    "prospective-learning.artifacts/lightweight-prefix-selector/candidate-fit.json": {
+      "bytes": 301026,
+      "sha256": "0b09824397b80741435896681cb5badea49c3e799da534fb9886a60120d8de87"
+    },
+    "prospective-learning.artifacts/lightweight-prefix-selector/completed-prefix.json": {
+      "bytes": 200812,
+      "sha256": "008a7c090b9929679a932372321dfbfc8d85ada6ef3cef432d396fcbb5436d1c"
+    },
+    "prospective-learning.artifacts/lightweight-prefix-selector/future.json": {
+      "bytes": 184708,
+      "sha256": "a460bba2b92c1bbee3bdf702da3227b396211ad36466e31695cdee5de270f717"
+    },
+    "prospective-learning.artifacts/lightweight-prefix-selector/retention.json": {
+      "bytes": 63072,
+      "sha256": "4e2d1aa8e06f447d29b109f208a97ff7ce7febe6210c4f6458e30d59b7828285"
+    },
+    "prospective-learning.artifacts/lightweight-prefix-selector/selection.json": {
+      "bytes": 63060,
+      "sha256": "742fe3859ea52446e8f2a530285fd2a76e38765d45c01d60a034ccd1825e150b"
+    },
+    "prospective-learning.json": {
+      "bytes": 8345832,
+      "sha256": "a8422181f03b08f919b1f7c14c54ec55744605e47078a80ca8b5aa29508cc1e3"
+    },
+    "prospective-score.json": {
+      "bytes": 167341,
+      "sha256": "1005d486f097b20b9ceeabad26f7ca83aa0e9eae7b9b0ab5a7a88f83ecc71845"
+    }
+  },
+  "final_tracked_changes": "",
+  "initial_tracked_changes": "",
+  "missing_required_receipts": [],
+  "passed": true,
+  "request": {
+    "addressing_admission": false,
+    "attempt": 3,
+    "attempt_2_outcomes_used_for_model_or_protocol_selection": false,
+    "candidate_manifest": {
+      "bytes": 164264,
+      "path": "qualification/memory-cell-v8/fixtures/address-model/manifest.json",
+      "sha256": "0182aebb86e3f2ed7dd089864762970791b70cff2240861602ef15be2461ac86"
+    },
+    "engineering_repairs": [
+      "Serialize opt-in actual memory qualification with zero automatic retries and a bounded 20-minute Nextest experiment watchdog; preserve product/worker/request/child deadlines.",
+      "Distinguish typed unsupported multiple-cutoff requests from actual resolver failures, retain dedicated host abstention counters and real control regression coverage.",
+      "Freeze the complete original evaluation directory, including non-Python inputs and manifests, in the finalization tested-source gate."
+    ],
+    "frozen_addressing_source_commit": "7e194d9f0858e805a0cab502215a1f64ddc0ea00",
+    "held_quality_gate": false,
+    "native_baseline_and_candidate_required_even_when_admission_failed": true,
+    "native_fixture": {
+      "bytes": 87539,
+      "path": "qualification/memory-cell-v8/fixtures/address-model/native-fixture.json",
+      "sha256": "4a991281be123a958f1d0f6f3d5a53c48f3b6bb393abe7ebe6a031cb498098c1"
+    },
+    "native_repeat_scope": "Same frozen models, fixture and quality thresholds measured through the corrected shared Rust host; this is not a new blind model-selection evaluation.",
+    "native_rows_per_arm": 240,
+    "post_held_model_or_input_changes": false,
+    "preserve_all_failed_and_negative_results": true,
+    "previous_attempts": [
+      {
+        "raw_receipt": "qualification/memory-cell-v8/evidence/ci/run-01/receipt.json",
+        "review": "qualification/memory-cell-v8/evidence/ci/run-01/REVIEW.json",
+        "run_id": 40609738136,
+        "source_commit": "92097d22a47d85e9e118c9685b7c915fa3dc49ae"
+      },
+      {
+        "retain_all_results": true,
+        "run_id": 40612088249,
+        "source_commit": "1f52f23f2dc9cf1ecc863c61e52cce8e53f35330",
+        "status_when_this_request_was_frozen": "in_progress"
+      }
+    ],
+    "prospective_actual_arms": 11,
+    "purpose": "Compile actual V8 product integrations; exercise owner restart and durable migration, paired native language readbacks, real prospective training and independent evidence scoring.",
+    "repeat_reason": "The finalizer source changed to close an independently audited evaluation-input freeze gap. This exact final source requires its own full verification; attempt 2 remains in progress and all its eventual results will be retained.",
+    "schema": "hepta.memory.v8.verification-request.v1",
+    "tests_before_final_fix_and_format": true
+  },
+  "research_gates_implied_by_test_success": false,
+  "schema": "hepta.memory.v8.product-ci-receipt.v1",
+  "source_commit": "75256635aae979f34b4ec830764b7dbfa24c389d",
+  "source_tree": "45682053f8e9655b897877b94871afca78855de7",
+  "wall_seconds": 1060.79580739
+}
