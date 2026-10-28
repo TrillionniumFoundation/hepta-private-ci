@@ -162,9 +162,9 @@ use codex_model_provider::SharedModelProvider;
 use codex_model_provider::create_model_provider;
 #[cfg(test)]
 use codex_model_provider_info::DEFAULT_WEBSOCKET_CONNECT_TIMEOUT_MS;
+use codex_model_provider_info::InternalChatMessageMetadataPolicy;
 use codex_model_provider_info::ModelProviderInfo;
 use codex_model_provider_info::WireApi;
-use codex_model_provider_info::provider_accepts_internal_chat_message_metadata;
 use codex_protocol::error::CodexErr;
 use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::error::Result;
@@ -1223,10 +1223,13 @@ impl ModelClient {
                 }
             }
         }
-        if !provider_accepts_internal_chat_message_metadata(&api_provider.base_url) {
-            for item in &mut input {
-                item.clear_internal_chat_message_metadata_passthrough();
-            }
+        let internal_metadata_policy = self
+            .state
+            .provider
+            .info()
+            .internal_chat_message_metadata_policy(&api_provider.base_url);
+        for item in &mut input {
+            internal_metadata_policy.apply(item);
         }
         let reasoning = Self::build_reasoning(model_info, effort, summary);
         let stream_options = (self.state.concurrent_reasoning_summaries_enabled
@@ -1279,19 +1282,18 @@ impl ModelClient {
         input: &mut [ResponseItem],
         api_provider: &ApiProvider,
     ) {
-        let strip_internal_metadata =
-            !provider_accepts_internal_chat_message_metadata(&api_provider.base_url);
+        let internal_metadata_policy = self
+            .state
+            .provider
+            .info()
+            .internal_chat_message_metadata_policy(&api_provider.base_url);
         for item in input {
             if item.id().is_some_and(|id| !id.is_prefixed()) {
                 item.set_id(/*new_id*/ None);
             }
-            if strip_internal_metadata {
-                // The ChatGPT Codex backend does not accept Hepta's local
-                // content classification metadata on the wire. Keep it in
-                // durable history, but strip it from this provider-specific
-                // request copy immediately before serialization.
-                item.clear_internal_chat_message_metadata_passthrough();
-            }
+            // Filter only the request copy. An explicit field capability must
+            // never authorize turn IDs, timestamps, or executed-tool metadata.
+            internal_metadata_policy.apply(item);
             if !self.state.content_item_kinds_enabled {
                 item.clear_content_item_kinds();
             }
@@ -1366,11 +1368,26 @@ impl ModelClient {
         endpoint: &str,
     ) -> Result<ReqwestTransport> {
         let request_url = api_provider.url_for_path(endpoint);
-        let client = create_client_for_route(
-            &self.http_client_factory,
-            &request_url,
-            ClientRouteClass::Api,
-        )
+        let client = if matches!(
+            self.state
+                .provider
+                .info()
+                .internal_chat_message_metadata_policy(&api_provider.base_url),
+            InternalChatMessageMetadataPolicy::ContentItemKindsOnly
+        ) {
+            // A redirect would leave the endpoint bound by the field capability.
+            create_client_for_sensitive_route(
+                &self.http_client_factory,
+                &request_url,
+                ClientRouteClass::Api,
+            )
+        } else {
+            create_client_for_route(
+                &self.http_client_factory,
+                &request_url,
+                ClientRouteClass::Api,
+            )
+        }
         .map_err(std::io::Error::from)?;
         Ok(ReqwestTransport::from_http_client(client))
     }

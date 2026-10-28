@@ -1316,6 +1316,24 @@ impl ResponseItem {
         }
     }
 
+    /// Retains only content classifications on a request copy for a field-limited provider.
+    /// Rebuilding from `Default` prevents this capability from exposing other internal fields.
+    pub fn retain_only_content_item_kinds(&mut self) {
+        let Some(metadata) = self.internal_chat_message_metadata_passthrough_mut() else {
+            return;
+        };
+        let content_item_kinds = metadata
+            .as_mut()
+            .and_then(|metadata| metadata.content_item_kinds.take());
+        *metadata =
+            content_item_kinds.map(
+                |content_item_kinds| InternalChatMessageMetadataPassthrough {
+                    content_item_kinds: Some(content_item_kinds),
+                    ..Default::default()
+                },
+            );
+    }
+
     /// Removes content item classifications while preserving other passthrough metadata.
     pub fn clear_content_item_kinds(&mut self) {
         let Some(metadata) = self.internal_chat_message_metadata_passthrough_mut() else {

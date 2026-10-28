@@ -1208,7 +1208,12 @@ mod tests {
 
     #[tokio::test]
     async fn revoke_removes_prepared_federated_context_from_next_physical_send() {
-        let temp = tempfile::tempdir().expect("tempdir");
+        let temp = tempfile::tempdir_in(
+            tempfile::env::temp_dir()
+                .canonicalize()
+                .expect("canonical temporary parent"),
+        )
+        .expect("tempdir");
         let fleet_root = temp.path().join("fleet");
         std::fs::create_dir_all(&fleet_root).expect("fleet root");
         let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet").layout();

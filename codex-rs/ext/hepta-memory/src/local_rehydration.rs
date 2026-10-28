@@ -349,7 +349,12 @@ mod tests {
 
     #[tokio::test]
     async fn explicit_host_read_is_pure_and_unregistered() {
-        let temp = TempDir::new().expect("temp");
+        let temp = TempDir::new_in(
+            tempfile::env::temp_dir()
+                .canonicalize()
+                .expect("canonical temporary parent"),
+        )
+        .expect("temp");
         let store = opened_store(&temp).await;
         let current_fence = fence();
         let checkpoint = checkpoint(current_fence.clone());
@@ -389,7 +394,12 @@ mod tests {
 
     #[tokio::test]
     async fn explicit_host_read_observes_existing_witness_without_writing() {
-        let temp = TempDir::new().expect("temp");
+        let temp = TempDir::new_in(
+            tempfile::env::temp_dir()
+                .canonicalize()
+                .expect("canonical temporary parent"),
+        )
+        .expect("temp");
         let store = opened_store(&temp).await;
         let current_fence = fence();
         let checkpoint = checkpoint(current_fence.clone());
@@ -427,7 +437,12 @@ mod tests {
 
     #[tokio::test]
     async fn host_turn_mismatch_fails_before_executor_read() {
-        let temp = TempDir::new().expect("temp");
+        let temp = TempDir::new_in(
+            tempfile::env::temp_dir()
+                .canonicalize()
+                .expect("canonical temporary parent"),
+        )
+        .expect("temp");
         let store = opened_store(&temp).await;
         let current_fence = fence();
         let checkpoint = checkpoint(current_fence.clone());
