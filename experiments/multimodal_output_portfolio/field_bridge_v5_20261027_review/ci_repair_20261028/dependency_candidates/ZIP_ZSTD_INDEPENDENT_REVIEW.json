@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "kind": "independent_static_zip_zstd_candidate_review",
+  "decision": "NO_STATIC_BLOCKING_FINDING_RUNTIME_AND_LOCK_VALIDATION_PENDING",
+  "review_date_utc": "2026-10-28",
+  "source_head": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+  "reviewed_candidates": [
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/replacements/codex-rs/Cargo.toml",
+      "bytes": 21576,
+      "sha256": "57c6fa3d7e087c774e297a4411c45bfceeb0d51c740a5db5d4d84919357d6bc6",
+      "git_blob_sha1": "285ddb603482f5d386fd6610dc0e29dcd397eb63"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/replacements/codex-rs/core-plugins/src/startup_sync.rs",
+      "bytes": 39287,
+      "sha256": "b40a11140c0b2f70843e24a35ac07322207a0cf1a3fcc8c85bb14bcaa273992e",
+      "git_blob_sha1": "022afdf068d79224467b7a9eef80b0aa1204094a"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/replacements/codex-rs/core-plugins/src/startup_sync_zip_tests.rs",
+      "bytes": 4474,
+      "sha256": "b8c808c59bbd7aa39babddf3f7c1ebfd4a989bf61513a3f6d87fda3a0c189c35",
+      "git_blob_sha1": "abdec82f5030e26ea9400c345cc6d4014acac27e"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/candidate.patch",
+      "bytes": 7217,
+      "sha256": "5babaf08f6f18a2194ca82b8e60bf9b8525e38ef98d1231f6d90540425ac1853",
+      "git_blob_sha1": "728ee0f8ca81fb98d1cfa54922c1add0e32906e1"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/regression_on_original.patch",
+      "bytes": 5176,
+      "sha256": "8ca6a57941f705b7b690ddc522bcf1ee37b551d3b9a6043a8327a74200120c59",
+      "git_blob_sha1": "666859aced423669675d342247f7d3089944193f"
+    }
+  ],
+  "original_inputs": [
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/originals/codex-rs/Cargo.toml",
+      "bytes": 21574,
+      "sha256": "0e3fc0b7dc3ec907e02059a1bc79579077c8e5d1a0ac936b4f1bd984e94afdb4",
+      "git_blob_sha1": "d2703b590935ab17316e6c258657c0ce5ab7412a"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/originals/codex-rs/core-plugins/src/startup_sync.rs",
+      "bytes": 38885,
+      "sha256": "0bcaebc7cbe66af33d604b29e268198b1e414c2051abaaa2f5338dd63549103a",
+      "git_blob_sha1": "19234e6a5fdbe3c34ee9ad1f0d56a128f96455a1"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/originals/codex-rs/core-plugins/src/startup_sync_tests.rs",
+      "bytes": 46227,
+      "sha256": "6c83eb166c569b56a0eae61f7016d19e74c12d5e1aa57820ce0a8d1741111cad",
+      "git_blob_sha1": "8d272c95a0986e53094a6b2cf8ce8c0ba06b9960"
+    }
+  ],
+  "official_file_identities_verified": [
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/official/zip-v9.1.2/Cargo.toml",
+      "bytes": 6116,
+      "sha256": "6a660b7ed6685850ca80a0089bd21fd77ab1cd609e07ab9a83e2cfe0fa9dbd48",
+      "git_blob_sha1": "aeae7857847dc77d70c964c65a0847b145f57c4f"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/official/zip-v9.1.2/src/read/zipfile.rs",
+      "bytes": 15048,
+      "sha256": "fc08a05f7fa61f75e2d647883b35b9234513c8392129433cf88c2618cf9531e1",
+      "git_blob_sha1": "7e431d0635f6d965c64874a24c24b7c2d1e66138"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/official/zip-v9.1.2/src/write/options.rs",
+      "bytes": 24043,
+      "sha256": "f847bc72c3ea62c2af8b39505edb291ceebe4873e7125a355631cc763aa6e39e",
+      "git_blob_sha1": "4d888d91c3e1afb88efdbbc97a11b8fd709e8c5f"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/official/zip-v9.1.2/src/types.rs",
+      "bytes": 26089,
+      "sha256": "329dbd9d4427a8cc6c5655aec39cc34f385672da077e206979f8be324c70beae",
+      "git_blob_sha1": "df9af7bf6ae312393a3fc200b76f1a1faa7fc5f0"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/official/zip-v9.1.2/src/write.rs",
+      "bytes": 224463,
+      "sha256": "6c0016a68675156d99ac687a0ed69870d0a627dbe63e9e305055abdc14b596b8",
+      "git_blob_sha1": "5f8b4232d54a07b16f4266d056953fe43d8b3fd7"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/official/zstd-v0.14.3/Cargo.toml",
+      "bytes": 1696,
+      "sha256": "e014bc69527ad610eb010fe2cc6866400750a2e4a5d7f916b4a1ed0af3c7305d",
+      "git_blob_sha1": "c37a24807b01a3a2b49ce13e7055eae421c6138b"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/official/zstd-v0.14.3/src/stream/mod.rs",
+      "bytes": 7892,
+      "sha256": "a3b3d106cffa9ff3c609702eba5f6e45bc08680ece9a9a0a268f700368d88bca",
+      "git_blob_sha1": "ed85f5db6f6da40d0a730659b6dc88e090892802"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/official/zstd-v0.14.3/src/stream/read/mod.rs",
+      "bytes": 13187,
+      "sha256": "1010985c7566cea712e118e13b81ac8eb4884b26bcacb71bc39184fb9e509b45",
+      "git_blob_sha1": "75908cc243308259d8b0fd3efbba8a1b08eddd69"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/official/zstd-v0.14.3/src/stream/write/mod.rs",
+      "bytes": 16526,
+      "sha256": "762750ef93f908e717efe0005b2172a1886edd457feb05dba74051a6e0d6319e",
+      "git_blob_sha1": "1d4d5c079377859f3fd6700dd84a70b6ca9ca00f"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/official/zstd-v0.14.3/src/stream/functions.rs",
+      "bytes": 8436,
+      "sha256": "03a36ec1f7dfdaaa2d8a36cb2b4f93e3475f52fe872e352cffa4d77c12bd4314",
+      "git_blob_sha1": "d17e725b8c12a7b0e1a7b2d70a97419971eed9c1"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/official/zip-v9.1.2/src/format/functions.rs",
+      "bytes": 6215,
+      "sha256": "2935f16f08ec52bd8e7d34da9a09232d9f9308e3bccfb4fa67a889ae51e637da",
+      "git_blob_sha1": "614b5472fdb0b1572c78ecbc30722673ff8ad1e2"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/official/zip-v2.4.2/src/types.rs",
+      "bytes": 47194,
+      "sha256": "6f5589b98f29b2c34f9efee30048beb3442c4e4486d1fb9c40094c8849d41bdf",
+      "git_blob_sha1": "d473e289f501bac9d82b76c25406de03c3a721f1"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/official/zstd-v0.14.3/zstd-safe/Cargo.toml",
+      "bytes": 1650,
+      "sha256": "1bbf3d4b37533cb85d2bbbaf93e69e49676f6071faddf2c7f3cadf394ac6b2bd",
+      "git_blob_sha1": "1a9a1845c0cbf6f90d723184e09999665180a436"
+    }
+  ],
+  "additional_independently_fetched_primary_sources": [
+    {
+      "url": "https://github.com/zip-rs/zip2/blob/v2.4.2/src/read.rs",
+      "git_blob_sha1": "2adcfca111c4b9aabea1cfbac15f918f669af3a9",
+      "observed_symbols": [
+        "ZipFile at line251",
+        "name_raw at1550",
+        "unix_mode at1758",
+        "central_header_start at1785"
+      ]
+    },
+    {
+      "url": "https://github.com/zip-rs/zip2/blob/v9.1.2/src/format/functions.rs",
+      "git_blob_sha1": "614b5472fdb0b1572c78ecbc30722673ff8ad1e2",
+      "observed_fact": "clear_specials_bits removes 07000 before get_unix_mode returns Unix attributes."
+    },
+    {
+      "url": "https://github.com/gyscos/zstd-rs/blob/v0.14.3/zstd-safe/Cargo.toml",
+      "git_blob_sha1": "1a9a1845c0cbf6f90d723184e09999665180a436",
+      "observed_fact": "zstd-safe8.2.0 requires zstd-sys^2.1.2, default-features=false."
+    }
+  ],
+  "read_only_patch_checks": {
+    "method": "Independent pure-Python unified-hunk application in memory; exact old-context and old/new line-count checks. No git apply mutation.",
+    "candidate_reconstructs_all_three_replacement_bytes": true,
+    "old_regression_contains_only_test_and_module_registration": true,
+    "old_regression_test_bytes_equal_candidate_test_bytes": true,
+    "original_production_and_dependency_versions_unchanged_by_regression_patch": true
+  },
+  "test_semantic_review": [
+    {
+      "check": "Raw hostile metadata is real",
+      "result": "STATIC_PASS",
+      "basis": "The helper first writes ordinary ZIP entries, then patches external attributes at central-header offset38. It verifies the PK0102 signature, Unix host byte at offset5, and exact stored attributes including archived mode0107755. It does not rely on unix_permissions to preserve special bits."
+    },
+    {
+      "check": "Header selection and bounds",
+      "result": "STATIC_PASS",
+      "basis": "Offsets come from central_header_start after checking entry names and count. The archive is generated from three short fixed test inputs; checked slicing/try_from will fail setup on an unexpected layout. The two public lookup APIs exist in both2.4.2 and9.1.2."
+    },
+    {
+      "check": "Low-bit readback is deliberately version neutral",
+      "result": "STATIC_PASS",
+      "basis": "Readback compares unix_mode &0777 with expected ordinary permissions. Separate raw-byte checks establish high-bit input. This accommodates2.4.2 raw mode and9.1.2 upstream-sanitized mode without pretending both return07755."
+    },
+    {
+      "check": "Filesystem negative control",
+      "result": "STATIC_PASS_PENDING_EXECUTION",
+      "basis": "The test writes a control file, applies the exact old raw mode via real set_permissions and requires at least one07000 bit to survive. It does not skip or weaken the check when unsupported. A failure here is fixture/environment failure, not proof of old extractor vulnerability."
+    },
+    {
+      "check": "Real production extraction",
+      "result": "STATIC_PASS",
+      "basis": "The test invokes extract_zipball_to_dir itself. The old production path copies payload then applies raw permissions; the candidate retains that path with mode&0777. The test compares all three exact payloads and final permissions&07777, including ordinary0644 and executable0755."
+    },
+    {
+      "check": "Mutation/attribution boundary",
+      "result": "EXPLICIT_LIMIT",
+      "basis": "On9.1.2, removing only the local mask can still pass because upstream unix_mode already clears07000. The test proves the combined extraction invariant, not exclusive causality of the local mask. The retained original-dependency regression patch is the planned counterfactual."
+    },
+    {
+      "check": "Unix scope",
+      "result": "STATIC_PASS",
+      "basis": "The dedicated module is cfg(all(test,unix)), matching the permission behavior under test. Production nonUnix no-op remains unchanged apart from the ZipFile generic signature; no existing Windows tests are suppressed."
+    }
+  ],
+  "api_compatibility_review": {
+    "zip_read": "ZipFile now has R:Read+?Sized; both cfg branches use the same bound. name returns ZipResult<Cow<str>>, and candidate propagates its error. by_index/enclosed_name/is_dir plus the test writer APIs remain available. No definite type/borrow issue found by reading; not compiled.",
+    "test_rust_semantics": "The files array is Copy (string references andu32), so repeated by-value loops are valid. Closures return only offsets and release each ZipFile borrow. The new tests use a narrow parent import and explicit pretty_assertions::assert_eq, avoiding the earlier glob/prelude macro ambiguity.",
+    "zstd_calls": "Observed workspace calls use stream encode_all/decode_all, read::Decoder::new, write::Encoder::new and finish. Official0.14.3 retains these entry points, ownership shapes and io::Result interfaces. This is a source inspection, not a successful build."
+  },
+  "dependency_review": {
+    "workspace_changes_only": [
+      "zip 2.4.2 ->9.1.2",
+      "zstd0.13 ->0.14.3"
+    ],
+    "actual_advisory_minima": {
+      "RUSTSEC-2026-0367": ">=9.0.0",
+      "RUSTSEC-2026-0368": ">=9.0.0",
+      "RUSTSEC-2026-0369": ">=9.0.0",
+      "RUSTSEC-2026-0391": ">=0.14.3",
+      "RUSTSEC-2026-0398": ">=8.2.0",
+      "RUSTSEC-2026-0403": ">=8.2.0",
+      "RUSTSEC-2026-0410": ">=2.1.2"
+    },
+    "upstream_chain": "zip9.1.2 permits zstd^0.14.2; direct workspace floor0.14.3; zstd0.14.3 ->safe^8.2.0 ->sys^2.1.2. No lock resolution has verified complete old-version elimination.",
+    "feature_boundary": "Existing default-feature choice is retained; zip9 defaults include native and compression dependencies. Version upgrades do not imply an unchanged transitive graph.",
+    "msrv": "zip9.1.2 declares1.88; zstd0.14.3 declares1.64. Actual configured-toolchain build still required."
+  },
+  "required_next_evidence": [
+    "Resolve and review complete Cargo.lock plus native/build changes in an authorized environment; retain existing cargo-deny policy and require a canonical result.",
+    "Run the named original-dependency regression and retain a log showing it compiled, passed raw metadata and control checks, then failed at the final extracted-mode comparison. An arbitrary failing exit is insufficient.",
+    "Run the candidate named Unix test and existing curated-plugin extraction tests. No result is claimed here.",
+    "Run existing rollout/thread-store/request compression and precomputed-export tests, including reading existing compressed artifacts; source API continuity does not prove compressed-byte identity or behavioral compatibility.",
+    "Keep Windows compilation coverage for the updated generic nonUnix signature."
+  ],
+  "actual_operations": {
+    "rust_builds": 0,
+    "rust_tests": 0,
+    "cargo_commands": 0,
+    "filesystem_permission_mutations": 0,
+    "model_calls": 0,
+    "repository_edits": 0,
+    "candidate_edits": 0,
+    "in_memory_patch_verifications": 2,
+    "official_source_reads": true
+  },
+  "claims_not_made": [
+    "CI PASS",
+    "old regression executed",
+    "local mask alone necessary under zip9",
+    "dependency advisories eliminated from resolved lock",
+    "scientific admission or historical byte recovery"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "rust_executed": false,
+  "checks": [
+    {
+      "patch": "candidate.patch",
+      "sha256": "5babaf08f6f18a2194ca82b8e60bf9b8525e38ef98d1231f6d90540425ac1853",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "../candidate.patch"
+      ],
+      "cwd": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/originals",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "patch": "regression_on_original.patch",
+      "sha256": "8ca6a57941f705b7b690ddc522bcf1ee37b551d3b9a6043a8327a74200120c59",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "../regression_on_original.patch"
+      ],
+      "cwd": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/originals",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

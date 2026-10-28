@@ -1,0 +1,330 @@
+{
+  "schema": 1,
+  "status": "STATIC_FEASIBILITY_SUPPORTED_CANDIDATE_PREPARED_RUNTIME_VALIDATION_PENDING",
+  "scope": "Read-only upstream/source review plus an unapplied one-line scratch patch. No Cargo, Rust, scientific model, policy, repository source, or lockfile mutation by this agent.",
+  "date_utc": "2026-10-28",
+  "repository_head_observed": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+  "worktree_note": "Parent was independently generating TLS Cargo/Bazel locks during this review. Individual file hashes bind observations; not every observed worktree file is claimed identical to HEAD.",
+  "conclusion": {
+    "candidate": "serde_yaml = { package = \"serde_norway\", version = \"0.9.42\" }",
+    "target": "codex-rs/Cargo.toml workspace.dependencies.serde_yaml",
+    "extent": "One workspace dependency key; all four existing workspace=true consumers and Rust namespace uses can remain unchanged at the inspected source/API level.",
+    "reason": "Published-source comparison confirms the used Value, TaggedValue, Mapping, Number, deserialization, and Error/location interfaces. No missing caller API was found.",
+    "caveat": "This is a migration to a separately maintained fork, not a safe-Rust rewrite or proof of absence of vulnerabilities. unsafe-libyaml-norway still uses c2rust/unsafe code. Full resolution, actual consumer tests, Bazel aliases and canonical deny remain unexecuted.",
+    "patch": "serde_norway_candidate.patch",
+    "preconditions": "CANDIDATE_PRECONDITIONS.json",
+    "applied": false,
+    "compiled": false
+  },
+  "published_identities": [
+    {
+      "package": "serde_yaml",
+      "version": "0.9.34+deprecated",
+      "repository": "dtolnay/serde-yaml",
+      "commit": "2009506d33767dfc88e979d6bc0d53d09f941c94",
+      "vcs_info": "https://docs.rs/crate/serde_yaml/latest/source/.cargo_vcs_info.json"
+    },
+    {
+      "package": "serde_norway",
+      "version": "0.9.42",
+      "release_date": "2024-12-21",
+      "repository": "cafkafk/serde-norway",
+      "commit": "1d37c159fc01c269a17ab72d021b271faf29472a",
+      "vcs_info": "https://docs.rs/crate/serde_norway/0.9.42/source/.cargo_vcs_info.json",
+      "manifest_blob": "550a738e58971389699caae13956ccedf1049c03",
+      "rust_version": "1.71.1",
+      "normal_dependencies": {
+        "indexmap": "2.2.1",
+        "itoa": "1.0",
+        "ryu": "1.0",
+        "serde": "1.0.203",
+        "unsafe-libyaml-norway": "0.2.13"
+      }
+    },
+    {
+      "package": "unsafe-libyaml-norway",
+      "version": "0.2.15",
+      "repository": "cafkafk/unsafe-libyaml-norway",
+      "commit": "74c6e2094c70342620843efcffa354431b83ee05",
+      "vcs_info": "https://docs.rs/crate/unsafe-libyaml-norway/latest/source/.cargo_vcs_info.json",
+      "manifest_blob": "339b150097a29f3c6aef8b7c805271ef494c4f18",
+      "normal_dependencies": [],
+      "note": "Observed published version satisfies serde_norway ^0.2.13; actual resolved version/checksum must be recorded by later lock generation."
+    }
+  ],
+  "api_compatibility": [
+    {
+      "api": "Value including Tagged",
+      "old": "src/value/mod.rs blob 27a170b6c1ae35a19064e1e8dbfaa01c68163431",
+      "candidate": "src/value/mod.rs blob ff6a98f2d10322c9f9c389ba3365162fa43a63d2",
+      "comparison": "Entire file identical after exact serde_norway -> serde_yaml namespace substitution.",
+      "details": "Same seven enum variants, Tagged(Box<TaggedValue>), as_str()->Option<&str>, as_mapping()->Option<&Mapping>. Explicit caller Tagged match arms remain meaningful."
+    },
+    {
+      "api": "TaggedValue / Tag",
+      "old": "src/value/tagged.rs blob baf6a0aeb8f9af7c5f9f892284293a2a56bfc81d",
+      "candidate": "src/value/tagged.rs blob 89024040affeff2a9b31e545a3a3b92a0f4f1071",
+      "comparison": "Entire file identical after namespace substitution."
+    },
+    {
+      "api": "Mapping",
+      "old": "src/mapping.rs blob 667cd4b427651b8ca3c246fb6fb004274dde19ba",
+      "candidate": "src/mapping.rs blob 6d93b635385fbd532a8c33ef83094491e6964589",
+      "comparison": "Entire file identical after namespace substitution.",
+      "details": "IndexMap<Value,Value>; borrowed iteration yields (&Value,&Value), so key.as_str()? and key.as_str().map(...) keep their types. Value mapping visitor rejects duplicate keys."
+    },
+    {
+      "api": "Number and Display",
+      "old": "src/number.rs blob 5ebe3957775a4bf878724165da289e018a791468",
+      "candidate": "src/number.rs blob 8ee0568c540571d3fcf570e54489de1c37d7ccb1",
+      "comparison": "After namespace substitution, only two i64::max_value() -> i64::MAX expressions differ.",
+      "details": "PosInt(u64), NegInt(i64), Float(f64), integer formatting and .nan/-.inf/.inf plus ryu finite-float formatting remain the same source."
+    },
+    {
+      "api": "Error and Location",
+      "old": "src/error.rs blob 01f8ed126dc6d0529f3c45ebef009a444bc0df78",
+      "candidate": "src/error.rs blob cfd09264c60e99cdf040079e4fce0c0cba6c9943",
+      "comparison": "Entire file identical after namespace substitution.",
+      "details": "Error implements std::error::Error, Display, Debug; location()->Option<Location>; Location index byte offset, line/column +1. No direct location() call found in the four consumers; codex-skills publicly exposes this Error in SkillParseError::InvalidYaml."
+    },
+    {
+      "api": "from_str/from_slice",
+      "old": "src/de.rs blob 566f5f00dca35344087cf454c58c78ea3a4c1698",
+      "candidate": "src/de.rs blob b702f9bcab4a4cd0488cc279bd87ddb93fc96e6f",
+      "comparison": "After namespace substitution: two match -> let-else rewrites, plus an unreachable_patterns lint/comment; no other diff.",
+      "details": "Retains generic Deserialize<'de> signatures, scalar parsing and recursion/repetition limits at this layer."
+    },
+    {
+      "api": "Loader / libyaml parser wrapper",
+      "old": "src/loader.rs 7c7c7b655ca81fc6afe8bc970b81b1082acdeed5; src/libyaml/parser.rs 3492edd0bb3cc3128e50f09ca9521d89cc1ee50c",
+      "candidate": "src/loader.rs 5b395bdc98235a8e731970d44d5e1407f9646088; src/libyaml/parser.rs 6339f1d4301c2cb26cc6d5b83fe23b951d730f1c",
+      "comparison": "Loader only one match -> let-else. Parser wrapper identical after unsafe_libyaml_norway -> unsafe_libyaml substitution.",
+      "details": "This comparison is not an audit or equivalence proof of the complete underlying unsafe fork."
+    }
+  ],
+  "four_consumers": [
+    {
+      "package": "codex-core-plugins",
+      "manifest": "codex-rs/core-plugins/Cargo.toml:48",
+      "calls": [
+        "src/command_migration.rs:317-340",
+        "src/plugin_metrics.rs:36-78"
+      ],
+      "contract": "DOM description extraction skips non-string keys and Null/Sequence/Mapping/Tagged values; booleans/numbers stringify. Typed analytics denies unknown fields and duplicate maps via serde_with; parsing failure disables metrics.",
+      "existing_filters": [
+        {
+          "filter": "command_migration::tests::",
+          "mode": "substring"
+        },
+        {
+          "filter": "script_attribution::tests::resolves_manifest_operation_for_exact_attributed_script",
+          "mode": "exact"
+        },
+        {
+          "filter": "script_attribution::tests::allows_measurement_names_reused_across_operations",
+          "mode": "exact"
+        },
+        {
+          "filter": "script_attribution::tests::invalid_manifest_disables_metrics_without_disabling_attribution",
+          "mode": "exact"
+        }
+      ],
+      "bazel_target": "//codex-rs/core-plugins:core-plugins-unit-tests"
+    },
+    {
+      "package": "codex-external-agent-migration",
+      "manifest": "codex-rs/external-agent-migration/Cargo.toml:33",
+      "calls": [
+        "src/subagents.rs:164-199"
+      ],
+      "contract": "DOM mapping accepts representable YAML keys, skips non-string keys, keeps scalar strings/bools/numbers, treats tags and containers as Other. Whole parse error is retained; malformed document cannot produce agent metadata.",
+      "existing_filters": [
+        {
+          "filter": "tests::subagent_",
+          "mode": "substring"
+        },
+        {
+          "filter": "tests::frontmatter_accepts_crlf_delimiters",
+          "mode": "exact"
+        }
+      ],
+      "bazel_target": "//codex-rs/external-agent-migration:external-agent-migration-unit-tests"
+    },
+    {
+      "package": "codex-skills",
+      "manifest": "codex-rs/skills/Cargo.toml:23",
+      "calls": [
+        "src/parser.rs:31-62",
+        "src/parser.rs:167-168"
+      ],
+      "contract": "Owned SkillFrontmatter; line-oriented repair uses a Value parse predicate. If repair also fails, original Error is preserved in public SkillParseError::InvalidYaml.",
+      "existing_filters": [
+        {
+          "filter": "parser::tests::",
+          "mode": "substring"
+        }
+      ],
+      "bazel_target": "//codex-rs/skills:skills-unit-tests"
+    },
+    {
+      "package": "codex-skills-extension",
+      "manifest": "codex-rs/ext/skills/Cargo.toml:34",
+      "calls": [
+        "src/loader/metadata.rs:130",
+        "src/loader/environment.rs:271",
+        "src/loader/environment.rs:381"
+      ],
+      "contract": "Typed optional interface/dependencies/policy, camelCase callbackPort plus callback_port alias; optional metadata parse failure preserves existing fail-open/default behavior, not new permission.",
+      "existing_filters": [
+        {
+          "filter": "loader::host::tests::loads_host_frontmatter_dependencies_and_policy",
+          "mode": "exact"
+        },
+        {
+          "filter": "loader::host::tests::invalid_optional_metadata_fails_open",
+          "mode": "exact"
+        },
+        {
+          "filter": "loader::host::tests::loads_host_interface_metadata_and_local_asset_paths",
+          "mode": "exact"
+        },
+        {
+          "filter": "loader::environment::tests::direct_environment_loader_preserves_plugin_dependencies_and_product_policy",
+          "mode": "exact"
+        },
+        {
+          "filter": "loader::environment::tests::executor_bundle_parser_matches_direct_environment_loader",
+          "mode": "exact"
+        }
+      ],
+      "bazel_target": "//codex-rs/ext/skills:skills-unit-tests"
+    }
+  ],
+  "filter_execution_contract": {
+    "syntax_substring": "cargo test -p <package> --lib '<filter>'",
+    "syntax_exact": "cargo test -p <package> --lib '<filter>' -- --exact",
+    "cwd": "codex-rs",
+    "none_executed_here": true,
+    "require": "Capture actual named tests and nonzero executed test count; zero matched tests is not PASS. Target names are derived from current BUILD.bazel/defs.bzl, not observed execution.",
+    "bazel": "Existing BUILD files use codex_rust_crate/all_crate_deps. MODULE.bazel:320 binds Cargo.toml/Cargo.lock; actual generated rename/alias resolution and Bazel lock refresh must be validated."
+  },
+  "necessary_additional_behavior_checks": [
+    "DOM mixed mapping with valid name/description plus integer and sequence keys: preserve valid fields while ignoring non-string keys. Do not silently change to whole-document rejection.",
+    "Explicit !tag scalar and mapping/sequence values: preserve current deliberate Other/None treatment; do not coerce tags to accepted scalar metadata.",
+    "Numbers/bools including negative/large u64/finite float/.nan/.inf and quoted leading-zero text: compare normalized strings and accepted/rejected shape.",
+    "Duplicate DOM keys and typed analytics operation/measurement/dimension keys: preserve rejection. Existing analytics negative test already exercises duplicate operations and measurements.",
+    "Malformed YAML and malformed UTF-8 from_slice: preserve error result; verify Error::location line/column/index API, original-error retention after failed repair, and current user-visible diagnostic expectations.",
+    "Existing frontmatter repair cases: colon/apostrophe text, invalid flow-like prose, block scalar body preservation, unknown fields, defaults and CRLF delimiters.",
+    "Typed optional metadata: callbackPort and callback_port, policy products, missing/invalid optional fields, deny_unknown_fields analytics, alias/merge-key behavior at actual caller boundaries."
+  ],
+  "alternatives": {
+    "noyalib_serde_yaml_0_0_56": {
+      "status": "NOT_A_SOURCE_COMPATIBLE_ALIAS_FOR_THE_CURRENT_DOM_CONSUMERS",
+      "sources": [
+        "https://github.com/sebastienrousseau/noyalib/blob/v0.0.56/crates/noyalib/src/compat/serde_yaml.rs",
+        "https://github.com/sebastienrousseau/noyalib/blob/v0.0.56/crates/noyalib/src/value/mapping.rs"
+      ],
+      "blobs": [
+        "d78310a6e4694880a97305ffb1e722393277db37",
+        "70b36b05feb3389000959b26089e56ffe10796a3"
+      ],
+      "finding": "Mapping is IndexMap<String,Value>, borrowed key is &String, not &Value; key.as_str()? and key.as_str().map(str::trim) no longer type-check unchanged. Value has Tagged and Error has location, but that does not fix the mapping mismatch.",
+      "semantic_gap": "The compat layer refuses non-scalar keys, while the existing DOM callers can ignore such keys and retain valid metadata. MappingAny exists outside the alias but requires an explicit DOM/visitor redesign, not a rename.",
+      "other_difference": "Compat from_str/from_slice require DeserializeOwned+'static. Current inspected typed structs are owned, so this constraint alone is not the identified blocker."
+    },
+    "serde_saphyr": {
+      "status": "LARGER_EXPLICIT_MIGRATION",
+      "source": "https://github.com/bourumir-wyngs/serde-saphyr",
+      "finding": "Typed Serde parser does not provide the intermediate Value DOM required by two consumers. An explicit visitor/DOM and duplicate/merge policy decisions are needed; not the smallest uniform migration."
+    },
+    "other_forks": {
+      "status": "DO_NOT_ASSUME_RENAMING_REMOVES_THE_ADVISORY",
+      "finding": "Published manifests of yaml_serde 0.10.2 and serde_yaml_neo 0.11.0 still depend on original unsafe-libyaml ^0.2.11. serde_yaml_ng is explicitly described by RustSec as using unmaintained unsafe-libyaml."
+    }
+  },
+  "rustsec_and_license": {
+    "checked_on": "2026-10-28",
+    "old_issue": {
+      "id": "RUSTSEC-2024-0449",
+      "package": "unsafe-libyaml",
+      "patched_versions": "none",
+      "source": "https://rustsec.org/advisories/RUSTSEC-2024-0449",
+      "scope": "Unmaintained original package; latest advisory recommends safe Rust alternatives. A fork changes maintenance provenance but does not remove all inherited unsafe-code risk."
+    },
+    "prior_primary_recommendations": [
+      {
+        "id": "RUSTSEC-2025-0068",
+        "source": "https://rustsec.org/advisories/RUSTSEC-2025-0068",
+        "statement": "Lists serde_norway, using unsafe-libyaml-norway, as a maintained alternative to unsound/unmaintained serde_yml."
+      },
+      {
+        "id": "RUSTSEC-2025-0067",
+        "source": "https://rustsec.org/advisories/RUSTSEC-2025-0067.html",
+        "statement": "Lists unsafe-libyaml-norway as maintained alternative to libyml."
+      }
+    ],
+    "current_lookup": {
+      "package_index": "https://rustsec.org/packages/",
+      "observation": "No exact serde_norway or unsafe-libyaml-norway entry observed in current official package index; official-site searches returned recommendations, not an advisory against either candidate.",
+      "github_metadata": "Both official repositories returned archived=false.",
+      "limitation": "Not a complete version-aware advisory database scan, supply-chain audit, or proof that the full new dependency graph passes. Canonical cargo-deny must run on the actual regenerated lock without new ignores or severity changes."
+    },
+    "licenses": [
+      {
+        "package": "serde_norway",
+        "spdx": "MIT OR Apache-2.0",
+        "manifest_blob": "550a738e58971389699caae13956ccedf1049c03",
+        "files": [
+          {
+            "path": "LICENSE-MIT",
+            "blob": "31aa79387f27e730e33d871925e152e35e428031"
+          },
+          {
+            "path": "LICENSE-APACHE",
+            "blob": "1b5ec8b78e237b5c3b3d812a7c0a6589d0f7161d"
+          }
+        ]
+      },
+      {
+        "package": "unsafe-libyaml-norway",
+        "spdx": "MIT",
+        "manifest_blob": "339b150097a29f3c6aef8b7c805271ef494c4f18",
+        "files": [
+          {
+            "path": "LICENSE-MIT",
+            "blob": "31aa79387f27e730e33d871925e152e35e428031"
+          }
+        ]
+      }
+    ],
+    "policy": "Inspected codex-rs/deny.toml allow contains Apache-2.0 and MIT. No policy change is proposed. This source check is not a full resolved-graph license PASS."
+  },
+  "remaining_gates": [
+    "Apply only the one-key patch after exact old-value check; preserve parent TLS and other unrelated changes.",
+    "Generate real Cargo.lock and Bazel lock; record exact serde_norway and unsafe-libyaml-norway versions, registries/checksums and complete graph diff. Verify original serde_yaml/unsafe-libyaml are gone from relevant normal/dev/build/target graph rather than assuming the four observed edges exhaust all resolutions.",
+    "Run actual four-consumer compatibility filters and additional data-contract checks; record named-test counts and platform evidence.",
+    "Run unchanged canonical cargo-deny and relevant CI; retain other advisory failures and distinguish this candidate's status from overall gate status.",
+    "Public Error remains a nominal type from a different crate; external consumers explicitly expecting original serde_yaml::Error may need migration even though inspected workspace code shares one alias."
+  ],
+  "evidence_artifacts": [
+    "UPSTREAM_SOURCES.json",
+    "ADDITIONAL_UPSTREAM_SOURCES.json",
+    "CANDIDATE_PRECONDITIONS.json",
+    "serde_norway_candidate.patch",
+    "LOCAL_SOURCE_IDENTITY.json"
+  ],
+  "checks_performed": [
+    "Read exact published VCS revisions and API implementations.",
+    "Verify Git blob SHA for every archived upstream source.",
+    "Compare relevant complete files with explicit namespace normalization and review all residual diffs.",
+    "Parse existing Cargo manifests/lock as data and enumerate exactly four observed serde_yaml parent packages.",
+    "Check candidate changes exactly one TOML dependency key and git apply --check succeeds without source mutation."
+  ],
+  "not_performed": [
+    "No Cargo metadata/update/build/test/deny.",
+    "No Rust execution.",
+    "No repo patch application or lock edit.",
+    "No scientific computation or holdout access.",
+    "No external upload."
+  ]
+}

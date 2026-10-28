@@ -1,0 +1,26 @@
+{
+  "status": "PREPARED_NOT_APPLIED_NOT_COMPILED",
+  "repository_head": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+  "target": "codex-rs/Cargo.toml",
+  "observed_base_sha256": "0e3fc0b7dc3ec907e02059a1bc79579077c8e5d1a0ac936b4f1bd984e94afdb4",
+  "required_old_toml_value": "0.9",
+  "required_old_line": "serde_yaml = \"0.9\"",
+  "required_old_line_count": 1,
+  "new_toml_value": {
+    "package": "serde_norway",
+    "version": "0.9.42"
+  },
+  "new_line": "serde_yaml = { package = \"serde_norway\", version = \"0.9.42\" }",
+  "single_key_toml_change_verified": true,
+  "patch": {
+    "path": "/workspace/scratch/e8a4dc33549f/yaml_migration_review_20261028/serde_norway_candidate.patch",
+    "bytes": 288,
+    "sha256": "c76f5a54dbe1153b8ef7705ea97c3acca38b6f3339fb83e3c5b1f22ffe348dba"
+  },
+  "git_apply_check_exit_code": 0,
+  "git_apply_check_mutates": false,
+  "source_bytes_unchanged": true,
+  "application_rule": "Recheck the exact old value and the one changed dependency key at application; preserve unrelated concurrent manifest/lock edits. No whole-manifest replacement is provided.",
+  "runtime_validation": "PENDING",
+  "cargo_or_rust_commands_executed": 0
+}

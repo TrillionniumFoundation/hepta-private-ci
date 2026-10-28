@@ -1,0 +1,18 @@
+{
+  "status": "FAIL",
+  "stage": "git apply --check only, no Rust invoked",
+  "error": "error: dev/null: No such file or directory",
+  "cause": "Generated Git diff lacked new file mode header for the new test module.",
+  "patches": [
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/evidence/before_new_file_header_candidate.patch",
+      "sha256": "5f9e71b10ff69ebd9082f2687100bde08e570716a0d94c5fea4128fbde57a94f",
+      "bytes": 7196
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/evidence/before_new_file_header_regression_on_original.patch",
+      "sha256": "d2de09c1f2076bd9e54b6c728626400d0754924212dc413fe001556032a4d8c5",
+      "bytes": 5155
+    }
+  ]
+}

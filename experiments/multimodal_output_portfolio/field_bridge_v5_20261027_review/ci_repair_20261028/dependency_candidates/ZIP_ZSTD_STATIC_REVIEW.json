@@ -1,0 +1,233 @@
+{
+  "baseline": {
+    "all_current_bytes_match": true,
+    "current_files": [
+      {
+        "bytes": 21574,
+        "matches_snapshot": true,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/codex-rs/Cargo.toml",
+        "sha256": "0e3fc0b7dc3ec907e02059a1bc79579077c8e5d1a0ac936b4f1bd984e94afdb4"
+      },
+      {
+        "bytes": 38885,
+        "matches_snapshot": true,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/codex-rs/core-plugins/src/startup_sync.rs",
+        "sha256": "0bcaebc7cbe66af33d604b29e268198b1e414c2051abaaa2f5338dd63549103a"
+      },
+      {
+        "bytes": 46227,
+        "matches_snapshot": true,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/codex-rs/core-plugins/src/startup_sync_tests.rs",
+        "sha256": "6c83eb166c569b56a0eae61f7016d19e74c12d5e1aa57820ce0a8d1741111cad"
+      }
+    ],
+    "head": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+    "receipt": {
+      "bytes": 801,
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/BASE_IDENTITIES.json",
+      "sha256": "e7e43330345ba2921d63c1087c0fad83ee1fc11a88d1038a3a4c2de5f66d0ecc"
+    }
+  },
+  "bazel_lock_generation": "NOT_RUN",
+  "cargo_lock_generation": "NOT_RUN",
+  "filesystem_chmod_calls": 0,
+  "limitations": [
+    "Patch applicability and official source inspection do not prove Rust compilation or runtime behavior.",
+    "The raw-mode filesystem control intentionally fails if no privileged bit is retained; it never silently skips.",
+    "No full lock graph was generated, so other transitive versions or advisories remain unverified."
+  ],
+  "next_steps": [
+    "Merge narrow hunks with current TLS repair without replacing newer baseline bytes.",
+    "Generate actual Cargo and Bazel lockfiles and audit the resolved graph; no advisory closure is claimed yet.",
+    "In separate CI checkout, apply regression-only patch to original zip 2.4.2/extractor and observe expected failure.",
+    "Compile and run scoped candidate regression and dependent zstd tests through just test; verify Windows helper and formatting."
+  ],
+  "no_added_dependency_features_or_ignores": true,
+  "official_refs": {
+    "zip_9_1_2_commit": "662ae138dbcec989ee99e6bc4668501add70e209",
+    "zstd_0_14_3_commit": "75bc74045a2f6ea0439aeed7e159a266da20aac0",
+    "zstd_0_14_3_tag_object": "5a4801a2197ecb8f599dd4758a2b05a54b0315c5"
+  },
+  "official_sources": [
+    {
+      "blob_sha": "aeae7857847dc77d70c964c65a0847b145f57c4f",
+      "body_length_characters": 6116,
+      "bytes": 6116,
+      "path": "official/zip-v9.1.2/Cargo.toml",
+      "sha256": "6a660b7ed6685850ca80a0089bd21fd77ab1cd609e07ab9a83e2cfe0fa9dbd48"
+    },
+    {
+      "blob_sha": "7e431d0635f6d965c64874a24c24b7c2d1e66138",
+      "body_length_characters": 15048,
+      "bytes": 15048,
+      "path": "official/zip-v9.1.2/src/read/zipfile.rs",
+      "sha256": "fc08a05f7fa61f75e2d647883b35b9234513c8392129433cf88c2618cf9531e1"
+    },
+    {
+      "blob_sha": "4d888d91c3e1afb88efdbbc97a11b8fd709e8c5f",
+      "body_length_characters": 24023,
+      "bytes": 24043,
+      "path": "official/zip-v9.1.2/src/write/options.rs",
+      "sha256": "f847bc72c3ea62c2af8b39505edb291ceebe4873e7125a355631cc763aa6e39e"
+    },
+    {
+      "blob_sha": "df9af7bf6ae312393a3fc200b76f1a1faa7fc5f0",
+      "body_length_characters": 26089,
+      "bytes": 26089,
+      "path": "official/zip-v9.1.2/src/types.rs",
+      "sha256": "329dbd9d4427a8cc6c5655aec39cc34f385672da077e206979f8be324c70beae"
+    },
+    {
+      "blob_sha": "5f8b4232d54a07b16f4266d056953fe43d8b3fd7",
+      "body_length_characters": 224410,
+      "bytes": 224463,
+      "path": "official/zip-v9.1.2/src/write.rs",
+      "sha256": "6c0016a68675156d99ac687a0ed69870d0a627dbe63e9e305055abdc14b596b8"
+    },
+    {
+      "blob_sha": "c37a24807b01a3a2b49ce13e7055eae421c6138b",
+      "body_length_characters": 1696,
+      "bytes": 1696,
+      "path": "official/zstd-v0.14.3/Cargo.toml",
+      "sha256": "e014bc69527ad610eb010fe2cc6866400750a2e4a5d7f916b4a1ed0af3c7305d"
+    },
+    {
+      "blob_sha": "ed85f5db6f6da40d0a730659b6dc88e090892802",
+      "body_length_characters": 7892,
+      "bytes": 7892,
+      "path": "official/zstd-v0.14.3/src/stream/mod.rs",
+      "sha256": "a3b3d106cffa9ff3c609702eba5f6e45bc08680ece9a9a0a268f700368d88bca"
+    },
+    {
+      "blob_sha": "75908cc243308259d8b0fd3efbba8a1b08eddd69",
+      "body_length_characters": 13187,
+      "bytes": 13187,
+      "path": "official/zstd-v0.14.3/src/stream/read/mod.rs",
+      "sha256": "1010985c7566cea712e118e13b81ac8eb4884b26bcacb71bc39184fb9e509b45"
+    },
+    {
+      "blob_sha": "1d4d5c079377859f3fd6700dd84a70b6ca9ca00f",
+      "body_length_characters": 16526,
+      "bytes": 16526,
+      "path": "official/zstd-v0.14.3/src/stream/write/mod.rs",
+      "sha256": "762750ef93f908e717efe0005b2172a1886edd457feb05dba74051a6e0d6319e"
+    },
+    {
+      "blob_sha": "d17e725b8c12a7b0e1a7b2d70a97419971eed9c1",
+      "body_length_characters": 8436,
+      "bytes": 8436,
+      "path": "official/zstd-v0.14.3/src/stream/functions.rs",
+      "sha256": "03a36ec1f7dfdaaa2d8a36cb2b4f93e3475f52fe872e352cffa4d77c12bd4314"
+    },
+    {
+      "blob_sha": "614b5472fdb0b1572c78ecbc30722673ff8ad1e2",
+      "bytes": 6215,
+      "path": "official/zip-v9.1.2/src/format/functions.rs",
+      "sha256": "2935f16f08ec52bd8e7d34da9a09232d9f9308e3bccfb4fa67a889ae51e637da"
+    },
+    {
+      "blob_sha": "d473e289f501bac9d82b76c25406de03c3a721f1",
+      "bytes": 47194,
+      "path": "official/zip-v2.4.2/src/types.rs",
+      "sha256": "6f5589b98f29b2c34f9efee30048beb3442c4e4486d1fb9c40094c8849d41bdf"
+    },
+    {
+      "blob_sha": "1a9a1845c0cbf6f90d723184e09999665180a436",
+      "bytes": 1650,
+      "path": "official/zstd-v0.14.3/zstd-safe/Cargo.toml",
+      "sha256": "1bbf3d4b37533cb85d2bbbaf93e69e49676f6071faddf2c7f3cadf394ac6b2bd"
+    }
+  ],
+  "original_failure_expected_from_source": true,
+  "original_rust_regression_failure_observed": false,
+  "patches": [
+    {
+      "bytes": 7217,
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/candidate.patch",
+      "sha256": "5babaf08f6f18a2194ca82b8e60bf9b8525e38ef98d1231f6d90540425ac1853"
+    },
+    {
+      "bytes": 5176,
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/regression_on_original.patch",
+      "sha256": "8ca6a57941f705b7b690ddc522bcf1ee37b551d3b9a6043a8327a74200120c59"
+    }
+  ],
+  "premise_correction": {
+    "corrected_claim": "zip 9.1.2 unix_mode already removes 07000; the local 0777 mask is an explicit application boundary.",
+    "counterexample_requires_original_zip_2_4_2_and_original_extractor": true,
+    "evidence_blob": "614b5472fdb0b1572c78ecbc30722673ff8ad1e2",
+    "initial_claim": "Upgrading to zip 9.1.2 still passes raw privileged Unix bits to this extractor.",
+    "initial_claim_correct": false,
+    "local_mask_alone_not_isolated_by_upgrade_regression": true
+  },
+  "raw_uploads": 0,
+  "readme": {
+    "bytes": 7476,
+    "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/README.md",
+    "sha256": "1ab9ff078cb27d339bb672fa58725363c4668a30085ecbdfda9962876b3800bd"
+  },
+  "replacement_files": [
+    {
+      "bytes": 21576,
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/replacements/codex-rs/Cargo.toml",
+      "sha256": "57c6fa3d7e087c774e297a4411c45bfceeb0d51c740a5db5d4d84919357d6bc6"
+    },
+    {
+      "bytes": 39287,
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/replacements/codex-rs/core-plugins/src/startup_sync.rs",
+      "sha256": "b40a11140c0b2f70843e24a35ac07322207a0cf1a3fcc8c85bb14bcaa273992e"
+    },
+    {
+      "bytes": 4474,
+      "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/replacements/codex-rs/core-plugins/src/startup_sync_zip_tests.rs",
+      "sha256": "b8c808c59bbd7aa39babddf3f7c1ebfd4a989bf61513a3f6d87fda3a0c189c35"
+    }
+  ],
+  "repository_writes": 0,
+  "resolved_graph_advisory_audit": "NOT_RUN",
+  "retained_failed_patch_check": {
+    "bytes": 736,
+    "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/evidence/PATCH_CHECK_ATTEMPT_1.json",
+    "sha256": "f2f6dcc85a11f2e1ad7c21637359be5ed899692d8255afd35ce0b10a3f5be1ee"
+  },
+  "review_script": {
+    "bytes": 6934,
+    "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/review_static.py",
+    "sha256": "ae2bd319528f0e22aa442a74c798088f04ef752ba7b4b801f14e50eff1fa7f35"
+  },
+  "reviewed_unix_ns": 1793183919778638406,
+  "rust_compilation": "NOT_RUN",
+  "rust_tests": "NOT_RUN",
+  "rustfmt": "NOT_RUN",
+  "schema": "hepta-zip-zstd-candidate-static-review-v1",
+  "scientific_assets_read": 0,
+  "scientific_model_calls": 0,
+  "static_patch_check": {
+    "bytes": 865,
+    "path": "/workspace/scratch/e8a4dc33549f/zip_zstd_candidate_20261028/evidence/PATCH_CHECK_ATTEMPT_2.json",
+    "sha256": "7ad4fb599712d9c084ab55b8cfac2690ec922f31057e2199f6e669273ff5a613"
+  },
+  "status": "STATIC_CANDIDATE_READY_FOR_REVIEW",
+  "test_design": {
+    "actual_extraction_path": true,
+    "complete_mode_and_content_comparison": true,
+    "expected_output_permissions": [
+      "0755",
+      "0755",
+      "0644"
+    ],
+    "external_attributes_offset": 38,
+    "fixed_central_header_bytes": 46,
+    "host_byte_offset": 5,
+    "no_payload_execution": true,
+    "raw_archived_modes": [
+      "0107755",
+      "0100755",
+      "0100644"
+    ],
+    "raw_bytes_readback": true,
+    "raw_chmod_filesystem_control": true,
+    "shared_old_new_api": true,
+    "unix_only_test": true
+  }
+}
