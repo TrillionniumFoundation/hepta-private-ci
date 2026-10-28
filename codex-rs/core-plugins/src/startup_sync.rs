@@ -1052,9 +1052,11 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
             .by_index(index)
             .map_err(|err| format!("failed to read curated plugins zip entry: {err}"))?;
         let Some(relative_path) = entry.enclosed_name() else {
+            let entry_name = entry
+                .name()
+                .map_err(|err| format!("failed to read curated plugins zip entry name: {err}"))?;
             return Err(format!(
-                "curated plugins zip entry `{}` escapes extraction root",
-                entry.name()
+                "curated plugins zip entry `{entry_name}` escapes extraction root"
             ));
         };
 
@@ -1111,13 +1113,18 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
 }
 
 #[cfg(unix)]
-fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> Result<(), String> {
+fn apply_zip_permissions<R: std::io::Read + ?Sized>(
+    entry: &zip::read::ZipFile<'_, R>,
+    output_path: &Path,
+) -> Result<(), String> {
     use std::os::unix::fs::PermissionsExt;
 
     let Some(mode) = entry.unix_mode() else {
         return Ok(());
     };
-    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode)).map_err(|err| {
+    // Archive metadata must not restore setuid, setgid, or sticky bits.
+    let permissions = std::fs::Permissions::from_mode(mode & 0o777);
+    std::fs::set_permissions(output_path, permissions).map_err(|err| {
         format!(
             "failed to set permissions on curated plugins file {}: {err}",
             output_path.display()
@@ -1126,8 +1133,8 @@ fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> 
 }
 
 #[cfg(not(unix))]
-fn apply_zip_permissions(
-    _entry: &zip::read::ZipFile<'_>,
+fn apply_zip_permissions<R: std::io::Read + ?Sized>(
+    _entry: &zip::read::ZipFile<'_, R>,
     _output_path: &Path,
 ) -> Result<(), String> {
     Ok(())
