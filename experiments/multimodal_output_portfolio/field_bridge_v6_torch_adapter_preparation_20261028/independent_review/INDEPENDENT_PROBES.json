@@ -1,0 +1,119 @@
+{
+  "boundary": {
+    "admission": false,
+    "downloads": 0,
+    "maximum_in_memory_envelope_bytes": 56988,
+    "new_research_registration": false,
+    "persisted_checkpoint_files": 0,
+    "raw_uploads": 0,
+    "rust_builds": 0,
+    "scientific_execution": false,
+    "scientific_imports": [],
+    "scientific_kernel_replay": false
+  },
+  "checks": {
+    "mutable_to_immutable_reference_storage_alias": {
+      "apply_calls": 0,
+      "before_after_public_state_objects_versions_and_rng_equal": true,
+      "envelope_bytes": 56988,
+      "reason": "Shared tensor storage is outside this schema",
+      "rejected": true
+    },
+    "parameter_backward_hook_preflight": {
+      "apply_calls": 0,
+      "before_after_public_state_objects_versions_and_rng_equal": true,
+      "envelope_bytes": 56988,
+      "reason": "Tensor hooks are unsupported",
+      "rejected": true
+    },
+    "parameter_post_accumulate_hook_preflight": {
+      "apply_calls": 0,
+      "before_after_public_state_objects_versions_and_rng_equal": true,
+      "envelope_bytes": 56988,
+      "reason": "Tensor hooks are unsupported",
+      "rejected": true
+    },
+    "pending_external_autograd_graph_is_out_of_scope": {
+      "envelope_bytes": 56988,
+      "error": "one of the variables needed for gradient computation has been modified by an inplace operation: [torch.FloatTensor [2]] is at version 1; expected version 0 instead. Hint: enable anomaly detection to find the operation that failed to compute its gradient, with torch.autograd.set_detect_anomaly(True).",
+      "expected_failure_observed": true,
+      "interpretation": "A caller must ensure a between-step boundary with no retained graph. Literal public-state restore is not autograd graph/version restore.",
+      "post_restore_version": 1,
+      "pre_restore_version": 0,
+      "public_record_restored_exact": true,
+      "successful_restore_detects_pending_graph": false
+    },
+    "shared_numpy_bitgenerator_wrappers": {
+      "apply_calls": 0,
+      "before_after_public_state_objects_versions_and_rng_equal": true,
+      "envelope_bytes": 56988,
+      "reason": "Named RNG objects or underlying BitGenerators alias",
+      "rejected": true
+    },
+    "unrecorded_optimizer_tensor_attribute": {
+      "apply_calls": 0,
+      "before_after_public_state_objects_versions_and_rng_equal": true,
+      "envelope_bytes": 56988,
+      "reason": "Array optimizer attributes are unsupported",
+      "rejected": true
+    },
+    "unrecorded_tensor_attribute": {
+      "apply_calls": 0,
+      "before_after_public_state_objects_versions_and_rng_equal": true,
+      "envelope_bytes": 56988,
+      "reason": "Custom tensor attributes are unsupported",
+      "rejected": true
+    }
+  },
+  "completed_unix_ns": 1793168265470343845,
+  "runtime": {
+    "autocast_cpu": false,
+    "cpu_capability": "AVX512",
+    "default_dtype": "torch.float32",
+    "deterministic": false,
+    "environment": {
+      "ATEN_CPU_CAPABILITY": null,
+      "MKL_NUM_THREADS": null,
+      "OMP_NUM_THREADS": null
+    },
+    "grad_enabled": true,
+    "inference_mode": false,
+    "interop_threads": 9,
+    "matmul_precision": "highest",
+    "mkldnn": true,
+    "numpy": "2.3.5",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "threads": 9,
+    "torch": "2.8.0+cpu",
+    "torch_build": "PyTorch built with:\n  - GCC 13.3\n  - C++ Version: 201703\n  - Intel(R) oneAPI Math Kernel Library Version 2024.2-Product Build 20240605 for Intel(R) 64 architecture applications\n  - Intel(R) MKL-DNN v3.7.1 (Git Hash 8d263e693366ef8db40acc569cc7d8edf644556d)\n  - OpenMP 201511 (a.k.a. OpenMP 4.5)\n  - LAPACK is enabled (usually provided by MKL)\n  - NNPACK is enabled\n  - CPU capability usage: AVX512\n  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, COMMIT_SHA=a1cb3cc05d46d198467bebbb6e8fba50a325d4e7, CXX_COMPILER=/opt/rh/gcc-toolset-13/root/usr/bin/c++, CXX_FLAGS= -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOCUPTI -DLIBKINETO_NOROCTRACER -DLIBKINETO_NOXPUPTI=ON -DUSE_FBGEMM -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -DC10_NODEPRECATED -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=range-loop-construct -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-parameter -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=old-style-cast -faligned-new -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-dangling-reference -Wno-error=dangling-reference -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, TORCH_VERSION=2.8.0, USE_CUDA=0, USE_CUDNN=OFF, USE_CUSPARSELT=OFF, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=OFF, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, USE_XCCL=OFF, USE_XPU=OFF, \n"
+  },
+  "schema": "hepta.field-bridge.v6-torch-adapter.independent-probe.1",
+  "sources": [
+    {
+      "bytes": 22211,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/adapter.py",
+      "sha256": "59b32cbd4ac52dee2e3b0dec7f1c0b197d2c84dbd6fdf404156ad788d3d38e21"
+    },
+    {
+      "bytes": 18511,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/tests.py",
+      "sha256": "c6bf74e88f3b5cd0632c4930d9d248603c806a3d2232e6e0dcb72a4843320b04"
+    }
+  ],
+  "sources_unchanged": true,
+  "started_unix_ns": 1793168264442516276,
+  "status": "PASS_SCOPED_ENGINEERING_PROBES",
+  "work": {
+    "additional_backward_calls_expected_to_fail": 1,
+    "additional_tiny_parameter_square_losses": 1,
+    "fresh_holdout_reads": 0,
+    "scientific_model_calls": 0,
+    "scientific_training_steps": 0,
+    "toy_backward_calls": 0,
+    "toy_dropout_forwards": 0,
+    "toy_module_constructions": 28,
+    "toy_optimizer_steps": 0,
+    "toy_pipeline_forwards": 0,
+    "toy_random_draw_calls": 0
+  }
+}

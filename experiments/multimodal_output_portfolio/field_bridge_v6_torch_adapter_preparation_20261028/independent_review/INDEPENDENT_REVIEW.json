@@ -1,0 +1,326 @@
+{
+  "admission": false,
+  "blocking_findings_within_declared_supported_contract": [],
+  "combined_writer_and_independent_work": {
+    "counts": {
+      "additional_backward_calls_expected_to_fail": 1,
+      "additional_tiny_parameter_square_losses": 1,
+      "fresh_holdout_reads": 0,
+      "scientific_model_calls": 0,
+      "scientific_training_steps": 0,
+      "toy_backward_calls": 15,
+      "toy_dropout_forwards": 15,
+      "toy_module_constructions": 736,
+      "toy_optimizer_steps": 15,
+      "toy_pipeline_forwards": 15,
+      "toy_random_draw_calls": 105
+    },
+    "scope": "Sum of the five retained writer attempts, one independent 13-test suite and the seven independent probes. Explicit RNG draw counters exclude constructor initialization and isolated setter validation; module constructions are counted separately. The one extra pending-graph backward is an expected negative probe, not a successful optimizer step."
+  },
+  "decision": "PASS_BOUNDED_CPU_SGD_ENGINEERING_PREPARATION",
+  "disk_observation": {
+    "basis": "Observation only; f_bfree never substitutes for the unchanged f_bavail research gate",
+    "f_bavail_bytes": 0,
+    "f_bfree_bytes": 580190208,
+    "uid": 0
+  },
+  "head_note": "Reviewed preparation sources are identified by content hashes; the observed checkout HEAD is not a scientific registration or a commit containing this new directory.",
+  "independent_probes": {
+    "actual_toy_work": {
+      "additional_backward_calls_expected_to_fail": 1,
+      "additional_tiny_parameter_square_losses": 1,
+      "fresh_holdout_reads": 0,
+      "scientific_model_calls": 0,
+      "scientific_training_steps": 0,
+      "toy_backward_calls": 0,
+      "toy_dropout_forwards": 0,
+      "toy_module_constructions": 28,
+      "toy_optimizer_steps": 0,
+      "toy_pipeline_forwards": 0,
+      "toy_random_draw_calls": 0
+    },
+    "command": "/workspace/scratch/e8a4dc33549f/runtime_v5/bin/python -I -B /workspace/scratch/e8a4dc33549f/v6_torch_adapter_independent_probe_20261028.py",
+    "exit_code": 0,
+    "groups_passed": 7,
+    "pending_autograd_counterexample": {
+      "envelope_bytes": 56988,
+      "error": "one of the variables needed for gradient computation has been modified by an inplace operation: [torch.FloatTensor [2]] is at version 1; expected version 0 instead. Hint: enable anomaly detection to find the operation that failed to compute its gradient, with torch.autograd.set_detect_anomaly(True).",
+      "expected_failure_observed": true,
+      "interpretation": "A caller must ensure a between-step boundary with no retained graph. Literal public-state restore is not autograd graph/version restore.",
+      "post_restore_version": 1,
+      "pre_restore_version": 0,
+      "public_record_restored_exact": true,
+      "successful_restore_detects_pending_graph": false
+    },
+    "receipt": {
+      "bytes": 6114,
+      "path": "/workspace/scratch/e8a4dc33549f/v6_torch_adapter_independent_probe_20261028.json",
+      "sha256": "db3fbccb20f530125be9e5fe79c08981fd5e8a288b295e82a06bdcdeb440e902"
+    },
+    "source": {
+      "bytes": 7596,
+      "path": "/workspace/scratch/e8a4dc33549f/v6_torch_adapter_independent_probe_20261028.py",
+      "sha256": "7dbe2bd596ea33db01cb71b5ebbc74bdc4515e60c61ea5d0bfd5209876a3f881"
+    }
+  },
+  "independent_suite": {
+    "actual_toy_work": {
+      "fresh_holdout_reads": 0,
+      "scientific_model_calls": 0,
+      "scientific_training_steps": 0,
+      "toy_backward_calls": 3,
+      "toy_dropout_forwards": 3,
+      "toy_module_constructions": 140,
+      "toy_optimizer_steps": 3,
+      "toy_pipeline_forwards": 3,
+      "toy_random_draw_calls": 21
+    },
+    "command": "/workspace/scratch/e8a4dc33549f/runtime_v5/bin/python -I -B experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/tests.py --report /workspace/scratch/e8a4dc33549f/v6_torch_adapter_independent_tests_20261028.json",
+    "errors": 0,
+    "exit_code": 0,
+    "failed": 0,
+    "literal_evidence": {
+      "literal_roundtrip": {
+        "checkpoint_bytes": 56988,
+        "checkpoint_sha256": "1e770f7093c28232e987207d0863e9888e04b33859781cfe3f0213e8237f6e56",
+        "next_step_full_state_sha256": "8d80c6d38c5459a2ec7e829a613913d1d52018fb2fefbbba9536517fc1cd6366",
+        "next_step_output_and_full_state_equal": true,
+        "next_step_output_sha256": "edead25cb99d7eabd36591be40dbebbebc5a96eaf38f34bd5097ad89e088244c",
+        "scientific_kernel_replay": false,
+        "serializer_measurement": {
+          "array_count": 10,
+          "array_payload_bytes": 15152,
+          "compression_assumed": false,
+          "file_bytes": 56988,
+          "header_bytes": 41801
+        },
+        "temporary_file_only": true
+      }
+    },
+    "receipt": {
+      "bytes": 6449,
+      "path": "/workspace/scratch/e8a4dc33549f/v6_torch_adapter_independent_tests_20261028.json",
+      "sha256": "2aead62e31c82a2be96e8d15a19ae93c3c5cf8f37b8990132ff9d479ff7d1f25"
+    },
+    "seconds_reported": 1.724,
+    "tests_passed": 13
+  },
+  "new_research_registration": false,
+  "new_scientific_execution": false,
+  "original_foundation_9_plus_3": {
+    "checked_exact": true,
+    "files": [
+      {
+        "bytes": 1449,
+        "matches_original_foundation_review_identity": true,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/BUDGET_PLAN.json",
+        "sha256": "02055543f2b9f6f17a7f657568b00060e078589c4a1dfe43e6b06cabd791948c"
+      },
+      {
+        "bytes": 1862,
+        "matches_original_foundation_review_identity": true,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/BUDGET_REPORT.json",
+        "sha256": "1e3526bca390e0a5d9d1b695cfb202bb5a0af9fdc2a34b1cf71be9e68db66c35"
+      },
+      {
+        "bytes": 7059,
+        "matches_original_foundation_review_identity": true,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/PREPARATION_REPORT.json",
+        "sha256": "3da172bf5cf5ef7b0a40a07378955021fe5fb24bd13319f9953bb4a212792ac9"
+      },
+      {
+        "bytes": 5674,
+        "matches_original_foundation_review_identity": true,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/README.md",
+        "sha256": "a4ef9aa1ecda5cb67a02d065e0d52b0a6b1514651d757f70300421c8f6f7f0ab"
+      },
+      {
+        "bytes": 2434,
+        "matches_original_foundation_review_identity": true,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/SOURCE_REFERENCES.json",
+        "sha256": "c5669659c48a1734c633dcee625b4e931464b176f023a6ac72676b169e968dda"
+      },
+      {
+        "bytes": 12779,
+        "matches_original_foundation_review_identity": true,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/branch_state.py",
+        "sha256": "332080139de3a15a74d6ee5fad907fef661a1866551a0e23689884587d73cf82"
+      },
+      {
+        "bytes": 7369,
+        "matches_original_foundation_review_identity": true,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/budget.py",
+        "sha256": "ea325da155d015e974ea65eddc9db60b0a6befc25835c481810d6e3235825c0b"
+      },
+      {
+        "bytes": 6335,
+        "matches_original_foundation_review_identity": true,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/codec.py",
+        "sha256": "75b2be74e5a9bf7ff474e74f5e25f3f6dc3758c09d07ff78a1417537ddc772fb"
+      },
+      {
+        "bytes": 18077,
+        "matches_original_foundation_review_identity": true,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/tests.py",
+        "sha256": "506d27b2f04cf97c7f75aa6dfe8e6fe1d6cc9506fd21b3914a901dfb44226bf9"
+      },
+      {
+        "bytes": 8287,
+        "matches_original_independent_artifact_bytes": true,
+        "original_artifact": {
+          "bytes": 8287,
+          "path": "/workspace/scratch/e8a4dc33549f/v6_preparation_independent_review_20261028.json",
+          "sha256": "a75343483be69d03250b587a84f29edee3b6be65074ca63be2d861fba4e12bd0"
+        },
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/independent_review/INDEPENDENT_REVIEW.json",
+        "sha256": "a75343483be69d03250b587a84f29edee3b6be65074ca63be2d861fba4e12bd0"
+      },
+      {
+        "bytes": 5001,
+        "matches_original_independent_artifact_bytes": true,
+        "original_artifact": {
+          "bytes": 5001,
+          "path": "/workspace/scratch/e8a4dc33549f/v6_preparation_independent_probe_20261028.json",
+          "sha256": "959c4c5ff27d6c2f3c5e5102db2b7206e245fefcac2ef3be77f1f8ec320e00f6"
+        },
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/independent_review/INDEPENDENT_PROBES.json",
+        "sha256": "959c4c5ff27d6c2f3c5e5102db2b7206e245fefcac2ef3be77f1f8ec320e00f6"
+      },
+      {
+        "bytes": 6302,
+        "matches_original_independent_artifact_bytes": true,
+        "original_artifact": {
+          "bytes": 6302,
+          "path": "/workspace/scratch/e8a4dc33549f/v6_preparation_independent_probe_20261028.py",
+          "sha256": "ba11e0549c5abfcd2225752cdc47418d6e5a63086e0cb08b8c1d4ff082077a20"
+        },
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/independent_review/independent_probes.py",
+        "sha256": "ba11e0549c5abfcd2225752cdc47418d6e5a63086e0cb08b8c1d4ff082077a20"
+      }
+    ],
+    "modified_by_reviewer": false
+  },
+  "remaining_boundaries": [
+    "The adapter cannot detect all external pending autograd graphs. The caller must establish a between-step boundary with no concurrent writer. An independent 2-element square-loss counterexample proves restored public bytes can coexist with a stale graph that raises on backward.",
+    "Successful copy_ increments PyTorch version counters. Unexpected-apply rollback does not rewind them. This is not a full autograd/object-graph transaction.",
+    "The demonstrated replay is one tiny synthetic Torch transition on the recorded runtime. No scientific learning kernel, scientific model/assets, field-control evaluation, bank, endpoint, fit, holdout or preregistration was imported, read or executed.",
+    "Caller-supplied context/architecture and separately held environment identity must be complete and trusted. Omitted external files, arbitrary Python program state and undeclared entropy sources cannot be discovered by this adapter.",
+    "Supported state is deliberately narrow: ordinary independent contiguous CPU tensors, fixed modes/configuration and stock non-differentiable non-fused SGD. No general device, tied-storage, arbitrary optimizer or scheduler support is qualified.",
+    "The adapter does not durably preserve failures or enforce a scientific work/resource ledger; a future runner must do so. No process-death, rollback allocation-failure or concurrent-mutation guarantee is established.",
+    "A 56,988-byte toy checkpoint under 64 KiB is not a real candidate state/output/trace bound. The foundation nine-class budget remains incomplete and its 2 GiB f_bavail gate remains unmet.",
+    "Original V5 scientific FAIL/no-admission and exact historical regression requirements remain unchanged. This receipt grants no admission, scientific execution or raw-upload authorization."
+  ],
+  "repository_head_observed": "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c",
+  "resource_boundary": {
+    "downloads": 0,
+    "fresh_holdout_reads": 0,
+    "raw_uploads": 0,
+    "reviewer_repository_edits": 0,
+    "rust_builds": 0,
+    "scientific_imports": [],
+    "scientific_model_calls": 0,
+    "scientific_training_steps": 0
+  },
+  "reviewed_directory": {
+    "bytes": 112666,
+    "files": [
+      {
+        "bytes": 14286,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/PREPARATION_REPORT.json",
+        "sha256": "561958bda036d48d01fa03145197634d9219f71aad6052554683358ca705b8b4"
+      },
+      {
+        "bytes": 5346,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/README.md",
+        "sha256": "a9fd6862de4e4be1e2512a944e199f0b8b10eca3c02b2716f37bee3007d4e24d"
+      },
+      {
+        "bytes": 22211,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/adapter.py",
+        "sha256": "59b32cbd4ac52dee2e3b0dec7f1c0b197d2c84dbd6fdf404156ad788d3d38e21"
+      },
+      {
+        "bytes": 26435,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/evidence/ATTEMPT_1.json",
+        "sha256": "b8957d663b7c82889152d47f27223f85ebb74971328ea89cadb20a2982f51f6a"
+      },
+      {
+        "bytes": 7595,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/evidence/ATTEMPT_2.json",
+        "sha256": "c4f3857df8a8a3fba0d75d205f032a9b4eaf12e204a3b4908b1ad55701115d94"
+      },
+      {
+        "bytes": 5556,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/evidence/ATTEMPT_3.json",
+        "sha256": "7ce237c2c599bce0eb832d96b9628a033c6f9e180d9eb586ded6104e0c65def9"
+      },
+      {
+        "bytes": 6277,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/evidence/ATTEMPT_4.json",
+        "sha256": "bedae3c3b91652eaf7d2746e8d656dbe936104d5ddad6d4ff3e07f69cf5f88e1"
+      },
+      {
+        "bytes": 6449,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/evidence/ATTEMPT_5.json",
+        "sha256": "c8172f6ddc8cc1cbabaeb26676dffad7bc02ab7f256babfa8eb703bc6d1e5511"
+      },
+      {
+        "bytes": 18511,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/tests.py",
+        "sha256": "c6bf74e88f3b5cd0632c4930d9d248603c806a3d2232e6e0dcb72a4843320b04"
+      }
+    ],
+    "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028",
+    "regular_files": 9
+  },
+  "reviewed_unix_ns": 1793168407138942128,
+  "reviewer": "hepta_architecture independent of adapter writer",
+  "runtime": {
+    "autocast_cpu": false,
+    "cpu_capability": "AVX512",
+    "default_dtype": "torch.float32",
+    "deterministic": false,
+    "environment": {
+      "ATEN_CPU_CAPABILITY": null,
+      "MKL_NUM_THREADS": null,
+      "OMP_NUM_THREADS": null
+    },
+    "grad_enabled": true,
+    "inference_mode": false,
+    "interop_threads": 9,
+    "matmul_precision": "highest",
+    "mkldnn": true,
+    "numpy": "2.3.5",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "threads": 9,
+    "torch": "2.8.0+cpu",
+    "torch_build": "PyTorch built with:\n  - GCC 13.3\n  - C++ Version: 201703\n  - Intel(R) oneAPI Math Kernel Library Version 2024.2-Product Build 20240605 for Intel(R) 64 architecture applications\n  - Intel(R) MKL-DNN v3.7.1 (Git Hash 8d263e693366ef8db40acc569cc7d8edf644556d)\n  - OpenMP 201511 (a.k.a. OpenMP 4.5)\n  - LAPACK is enabled (usually provided by MKL)\n  - NNPACK is enabled\n  - CPU capability usage: AVX512\n  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, COMMIT_SHA=a1cb3cc05d46d198467bebbb6e8fba50a325d4e7, CXX_COMPILER=/opt/rh/gcc-toolset-13/root/usr/bin/c++, CXX_FLAGS= -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOCUPTI -DLIBKINETO_NOROCTRACER -DLIBKINETO_NOXPUPTI=ON -DUSE_FBGEMM -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -DC10_NODEPRECATED -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=range-loop-construct -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-parameter -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=old-style-cast -faligned-new -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-dangling-reference -Wno-error=dangling-reference -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, TORCH_VERSION=2.8.0, USE_CUDA=0, USE_CUDNN=OFF, USE_CUSPARSELT=OFF, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=OFF, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, USE_XCCL=OFF, USE_XPU=OFF, \n"
+  },
+  "schema": "hepta.field-bridge.v6-torch-adapter.independent-review.1",
+  "scientific_kernel_replay": false,
+  "scientific_status": "FAIL",
+  "source_and_review_quiescent": true,
+  "sources": [
+    {
+      "bytes": 22211,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/adapter.py",
+      "sha256": "59b32cbd4ac52dee2e3b0dec7f1c0b197d2c84dbd6fdf404156ad788d3d38e21"
+    },
+    {
+      "bytes": 18511,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/tests.py",
+      "sha256": "c6bf74e88f3b5cd0632c4930d9d248603c806a3d2232e6e0dcb72a4843320b04"
+    }
+  ],
+  "verified_findings": [
+    "Actual tiny CPU Torch forward/backward/stock-SGD next-step replay exactly matched output and the complete declared parameter/buffer/gradient/optimizer/RNG record after literal save/read/restore.",
+    "Incoming gradient None versus zero, two ordered SGD groups, existing versus initially absent momentum, mutable integer buffer and four separately owned named RNG types are exercised.",
+    "Immutable model references, frozen parameters, context/guard bytes, module modes, requires_grad, runtime identity, optimizer order, dtype and malformed RNG/group records are preflight checked.",
+    "Independent hooks, cross-reference storage alias, underlying NumPy BitGenerator alias, custom Tensor attributes and extra optimizer Tensor attributes all rejected with zero _apply calls and unchanged observed values/object identities/version counters/global and named RNG.",
+    "Preflight validates stock SGD groups and RNG setters on isolated objects before any live restore writes. Arrays are prepared before apply.",
+    "Unexpected injected apply error attempts public-state rollback, restores original optimizer container/gradient references and reports non-restored version counters explicitly.",
+    "Cross-domain storage span checks cover the mutable model, references, context and guard; unsupported module/optimizer/Tensor hooks and autograd-bearing gradient/buffer/momentum state are rejected.",
+    "Both initial failed attempts remain present in the final directory with their original receipt hashes; no failed engineering attempt is relabeled as scientific success.",
+    "All 12 original foundation artifacts match their original review identities or exact original independent artifact bytes."
+  ]
+}
