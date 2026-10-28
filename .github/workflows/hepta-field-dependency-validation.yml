@@ -1,0 +1,95 @@
+name: Hepta dependency validation evidence
+
+on:
+  push:
+    branches:
+      - research/parameter-field-dependency-validation-20261028
+
+permissions:
+  contents: read
+
+env:
+  # Root fills both reviewed identities after formatting and creating baseline B.
+  # B contains the same runner/test bytes; this workflow is added only in C.
+  BASELINE_SHA: 8a5f64ae125bb779ff3cee1f235c3b6637681c79
+  REGRESSION_SHA256: e2cc28f6af47b34aa6e9b17c0b5b546f9b11e58e8bcf0dc199685939571ed0d7
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_TERM_COLOR: never
+
+jobs:
+  validation:
+    name: Dependency evidence (${{ matrix.mode }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [baseline, candidate]
+    steps:
+      - name: Checkout the exact source for this arm
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ matrix.mode == 'baseline' && env.BASELINE_SHA || github.sha }}
+          persist-credentials: false
+
+      - name: Initialize source and runner identities
+        id: initialize
+        run: >-
+          python3 -B scripts/run_hepta_dependency_validation.py
+          --mode "${{ matrix.mode }}" --phase initialize
+          --output-dir "$RUNNER_TEMP/hepta-dependency-${{ matrix.mode }}"
+
+      - name: Prepare baseline test tools
+        if: matrix.mode == 'baseline'
+        uses: ./.github/actions/setup-ci
+
+      - name: Prepare candidate Bazel and test tools
+        if: matrix.mode == 'candidate'
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: hepta-dependency-validation
+
+      - name: Install the repository Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+
+      - name: Install the pinned nextest runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+
+      - name: Install existing Linux test prerequisites
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            build-essential pkg-config libcap-dev bubblewrap
+
+      - name: Run bounded generation and classified tests
+        id: execute
+        timeout-minutes: 48
+        run: >-
+          python3 -B scripts/run_hepta_dependency_validation.py
+          --mode "${{ matrix.mode }}" --phase run
+          --output-dir "$RUNNER_TEMP/hepta-dependency-${{ matrix.mode }}"
+
+      - name: Preserve effective inputs and all retained failure evidence
+        if: always() && steps.initialize.outcome != 'skipped'
+        timeout-minutes: 3
+        run: >-
+          python3 -B scripts/run_hepta_dependency_validation.py
+          --mode "${{ matrix.mode }}" --phase finalize
+          --step-outcome "${{ steps.execute.outcome }}"
+          --output-dir "$RUNNER_TEMP/hepta-dependency-${{ matrix.mode }}"
+
+      - name: Upload bounded engineering evidence
+        if: always() && steps.initialize.outcome != 'skipped'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-dependency-${{ matrix.mode }}-${{ github.sha }}-${{ github.run_attempt }}
+          # Raw bounded payload is retained even if archive creation fails.
+          path: ${{ runner.temp }}/hepta-dependency-${{ matrix.mode }}/
+          if-no-files-found: error
+          retention-days: 14
