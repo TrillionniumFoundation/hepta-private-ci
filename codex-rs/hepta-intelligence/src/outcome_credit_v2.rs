@@ -375,6 +375,20 @@ mod tests {
         }
 
         fn directory(&self) -> File {
+            #[cfg(windows)]
+            {
+                use std::os::windows::fs::OpenOptionsExt;
+
+                const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+                // The product writer still verifies and synchronizes this actual directory.
+                OpenOptions::new()
+                    .read(true)
+                    .write(true)
+                    .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
+                    .open(self._temp.path())
+                    .expect("directory")
+            }
+            #[cfg(not(windows))]
             File::open(self._temp.path()).expect("directory")
         }
 

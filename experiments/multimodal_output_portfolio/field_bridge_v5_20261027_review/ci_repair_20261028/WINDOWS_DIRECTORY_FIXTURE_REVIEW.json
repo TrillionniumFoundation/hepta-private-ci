@@ -1,0 +1,293 @@
+{
+  "schema_version": 1,
+  "kind": "windows_directory_handle_fixture_patch_review",
+  "recorded_at_utc": "2026-10-28T05:36:07.471886+00:00",
+  "worktree_base_commit": "5b7bef4e5788f2cea2546f0cb620af471b4fbcf7",
+  "observed_ci_source_head": "5b7bef4e5788f2cea2546f0cb620af471b4fbcf7",
+  "observed_ci_merge": "786bdcf50b76fa7fc782941543c937dadf8a76af",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "before_bytes": 9805,
+      "before_sha256": "738ffe486318ceb9ff9a06e3d2d7845d28483ce07b92552ff14b2989e3d8facd",
+      "after_bytes": 10314,
+      "after_sha256": "879034e83ac58e6d9661a8c1fa2b073026c72a97fd2c4201af2e8825c068cdf2",
+      "before_identical_to_delivery_5b": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "before_bytes": 16844,
+      "before_sha256": "5390c3cb6251a9eec0595ed9eea794d748b7c86913f0aa90952c84260323b3f5",
+      "after_bytes": 17343,
+      "after_sha256": "027485fd576d2236c57b75ee1fb3d84ffd54aaf8a8796c434ba4e64a9e9fc844",
+      "before_identical_to_delivery_5b": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
+      "before_bytes": 5238,
+      "before_sha256": "ba08dac22edf6b67f8f545d04cf1ac8065768672ea859bb9f251b8a145234d24",
+      "after_bytes": 5668,
+      "after_sha256": "3e2c842c4d551eeab2a4697cb6d75f6d4a3bba5a2e861d259fea329c7af8b4c9",
+      "before_identical_to_delivery_5b": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+      "before_bytes": 23616,
+      "before_sha256": "a40f157ed50e980215be84bb74f5912a724156364e652d7b62699bf22506c741",
+      "after_bytes": 24174,
+      "after_sha256": "599eaea39fdb1881e1eb2eae72f1ac5430001f0843946fba1406f1c0bcee1ba0",
+      "before_identical_to_delivery_5b": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/terminal_cell_owner.rs",
+      "before_bytes": 9187,
+      "before_sha256": "90bb0fe025fdac0c89c46d7f59969c812bbdd8cefd3741b263abe68a30af016f",
+      "after_bytes": 9675,
+      "after_sha256": "f0fd2787e0e1138320669bc51b98dccc797c0eb432500a0001dc9ab30996f4b8",
+      "before_identical_to_delivery_5b": true
+    }
+  ],
+  "patch": {
+    "path": "/workspace/scratch/e8a4dc33549f/ci_r3_windows_directory_fixture.patch",
+    "bytes": 7140,
+    "sha256": "a7e3d6d2187c4d4cb42a63355cf2fe37e2c137d2d1f409a3930b54275dabb428"
+  },
+  "existing_windows_execution_evidence": {
+    "job_id": 122593677696,
+    "run_id": 40620519468,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40620519468/job/122593677696",
+    "log_file": "/workspace/scratch/e8a4dc33549f/ci_r2_job_122593677696.log.gz",
+    "raw_bytes": 4349962,
+    "raw_sha256": "78da730df439b782ecd66571f814d895e195035b712067cae10d1252b1a94dd9",
+    "gzip_sha256": "82cebc945afb1efc558fc10766f8247597dd58c211e16be965a93a5d4c410b87",
+    "success_lines": [
+      {
+        "line": 15947,
+        "text": "2026-10-28T03:22:25.3933623Z //codex-rs/hepta-learning-ledger:hepta-learning-ledger-unit-tests        PASSED in 17.6s"
+      }
+    ],
+    "evidence_granularity": "Target-level PASS; successful individual test names are not printed in the saved log.",
+    "test_source": "production_tests.rs:815 directory_durability_requires_an_actual_directory_handle is an ordinary #[test], with no ignore or platform skip; module is #[cfg(test)], and crate BUILD has no unit_test_args filtering.",
+    "tested_behavior": "Existing Windows fixture uses read/write plus FILE_FLAG_BACKUP_SEMANTICS; real sync_directory_handle checks is_dir, invokes sync_all, propagates errors, and the test rejects an ordinary file handle.",
+    "scope_limit": "Supports this handle-construction repair on the observed CI Windows host; not a general power-loss or all-filesystem durability qualification."
+  },
+  "unchanged_reference_files": [
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+      "bytes": 31823,
+      "sha256": "a0c2c69d3def22b416a09543af9141cc24b81deb02eedc9800800b7f0ff70a46",
+      "unchanged_from_delivery": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "bytes": 48261,
+      "sha256": "182ebc861129278f517278cefe66df3fb369c3b892ae3d73046ebd8be6341f7c",
+      "unchanged_from_delivery": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/BUILD.bazel",
+      "bytes": 745,
+      "sha256": "f6dad586343b324ae9010a86d197ec429aec0caf0907f807d788168446707f75",
+      "unchanged_from_delivery": true
+    }
+  ],
+  "primary_documentation": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/fileio/obtaining-a-handle-to-a-directory",
+      "supports": "Obtaining a directory handle uses CreateFile with FILE_FLAG_BACKUP_SEMANTICS."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-flushfilebuffers",
+      "supports": "FlushFileBuffers requires GENERIC_WRITE; failures must be checked."
+    }
+  ],
+  "affected_observed_baseline_findings": [
+    {
+      "test": "cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records",
+      "location": "hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52",
+      "error": "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677372,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    },
+    {
+      "test": "cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends",
+      "location": "hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52",
+      "error": "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677372,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    },
+    {
+      "test": "cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment",
+      "location": "hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52",
+      "error": "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677372,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    },
+    {
+      "test": "cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict",
+      "location": "hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52",
+      "error": "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677372,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    },
+    {
+      "test": "cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently",
+      "location": "hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52",
+      "error": "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677372,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    },
+    {
+      "test": "evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome",
+      "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+      "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677696,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    },
+    {
+      "test": "evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+      "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+      "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677696,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    },
+    {
+      "test": "evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port",
+      "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+      "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677696,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    },
+    {
+      "test": "evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage",
+      "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+      "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677696,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    },
+    {
+      "test": "evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch",
+      "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+      "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677696,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    },
+    {
+      "test": "evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+      "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+      "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677696,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    },
+    {
+      "test": "evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal",
+      "location": "hepta-intelligence/src\\evaluated_shadow_segment_tests.rs:21:31",
+      "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677696,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    },
+    {
+      "test": "outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation",
+      "location": "hepta-intelligence/src\\outcome_credit_v2.rs:378:43",
+      "error": "directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677696,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    },
+    {
+      "test": "outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit",
+      "location": "hepta-intelligence/src\\outcome_credit_v2.rs:378:43",
+      "error": "directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677696,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    },
+    {
+      "test": "outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append",
+      "location": "hepta-intelligence/src\\outcome_credit_v2.rs:378:43",
+      "error": "directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677696,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    },
+    {
+      "test": "evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports",
+      "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+      "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677696,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    },
+    {
+      "test": "evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery",
+      "location": "hepta-intelligence/src\\evaluated_shadow_segment_tests.rs:21:31",
+      "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677696,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    },
+    {
+      "test": "subset_rejects_missing_support_bad_grammar_and_omitted_observed_actions",
+      "location": "hepta-agentd/tests\\support\\terminal_cell_owner.rs:198:32",
+      "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677696,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    },
+    {
+      "test": "observed_subset_keeps_complete_grammar_without_inventing_abstain_target",
+      "location": "hepta-agentd/tests\\support\\terminal_cell_owner.rs:198:32",
+      "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+      "head_job_id": 122593677696,
+      "same_exact_finding_in_base_ci": true,
+      "current_round_fix_status": "test-only directory handle construction patched; consumer Windows CI pending"
+    }
+  ],
+  "affected_observed_findings_count": 19,
+  "change_scope": {
+    "test_only": true,
+    "production_owner_modified": false,
+    "production_prefix_of_outcome_credit_v2_unchanged": true,
+    "all_original_assertions_preserved": true,
+    "original_removed_lines": [
+      "    let ledger_directory = File::open(temp.path()).expect(\"ledger directory\");",
+      "    let witness_directory = File::open(temp.path()).expect(\"witness directory\");",
+      "    let ledger_directory = std::fs::File::open(path.parent().unwrap()).unwrap();",
+      "    let witness_directory = std::fs::File::open(path.parent().unwrap()).unwrap();",
+      "    let ledger_directory = std::fs::File::open(path.parent().unwrap()).unwrap();",
+      "    let witness_directory = std::fs::File::open(path.parent().unwrap()).unwrap();"
+    ],
+    "skip_added": false,
+    "no_op_flush_added": false,
+    "ordinary_file_substitution": false,
+    "io_error_suppression": false,
+    "cargo_dependency_change": false,
+    "new_environment_permissions": false
+  },
+  "validation": {
+    "scoped_rustfmt": "PASS; stable 1.95 emits existing imports_granularity unstable-config warnings",
+    "git_diff_check": "PASS",
+    "static_call_path": "All five fixtures flow into from_durable/from_segmented, which call unchanged sync_directory_handle.",
+    "rust_compilation_executed": false,
+    "rust_tests_executed": false,
+    "windows_consumer_result": "PENDING_CI",
+    "root_coordinated_just_fmt": "pending root integration; no tests should be rerun after formatter per AGENTS"
+  },
+  "resource_limit": "No builds, dependency downloads, or model/scientific calls. One parallel read-only diff process failed to start due synthetic mount ENOSPC; sequential bounded read and receipt succeeded.",
+  "qualification": false,
+  "all_platform_blockers_closed": false,
+  "frozen_scientific_files_modified": false,
+  "archive_files_modified": false
+}
