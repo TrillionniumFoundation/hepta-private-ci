@@ -21,14 +21,13 @@ pnpm install --frozen-lockfile
 cargo build --locked --manifest-path codex-rs/Cargo.toml -p codex-cli --bin codex
 ```
 
-To run the installed, verified vendor and its separately measured regression baseline:
+To run the current explicitly verified local-network derivative without relabeling the historical baseline:
 
 ```bash
 python3 scripts/mcp_conformance/run_codex_compliance.py \
   codex-rs/target/debug/codex \
-  --conformance-profile vendor-c37-sdk132-v1 \
+  --conformance-profile vendor-c37-sdk132-localnet-v2 \
   --conformance-cli third_party/mcp-conformance/dist/index.js \
-  --baseline-report scripts/mcp_conformance/regression-baseline-c37-sdk132-v1.json \
   --report /tmp/codex-mcp-conformance.json
 ```
 
@@ -126,3 +125,16 @@ CODEX_EXEC_PATH=/absolute/path/to/codex \
   pnpm --filter @openai/codex-sdk test -- \
   --runInBand tests/mcpConformance.test.ts
 ```
+
+
+## Local-network v2 product baseline gate
+
+Current source CI explicitly verifies `vendor-c37-sdk132-localnet-v2`. The SDK
+caller names that profile and requires the separately reviewed
+`regression-baseline-c37-sdk132-localnet-v2.json`. That baseline is deliberately
+not fabricated from the historical v1 descriptor or fixture tests. Until a
+complete v2 product capture and explicit preservation review close migration,
+the SDK conformance case fails the missing-baseline precondition rather than
+skipping the case or accepting a cross-profile comparison. The raw v2 command
+above remains runnable and records real protocol failures. Historical v1
+reports, descriptor, measured golden and matching tool snapshot stay intact.

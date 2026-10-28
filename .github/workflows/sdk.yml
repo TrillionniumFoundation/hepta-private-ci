@@ -179,11 +179,13 @@ jobs:
         # canonical conformance rebuild, as well as the frozen dependency graph.
         run: corepack pnpm install --frozen-lockfile
 
-      - name: Verify conformance execution source identity
+      - name: Verify explicit localnet-v2 conformance execution source identity
         env:
           CI: "true"
           COREPACK_ENABLE_NETWORK: "0"
-        run: node --test scripts/tests/verify-mcp-conformance-profile.test.mjs
+        run: |
+          node scripts/verify-mcp-conformance-local-network-profile.mjs
+          node --test scripts/tests/verify-mcp-conformance-profile.test.mjs
 
       - name: Build SDK packages
         run: pnpm -r --filter ./sdk/typescript run build

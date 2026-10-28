@@ -1,3 +1,4 @@
+import { limitFixtureRequests } from '../../../../fixture-network';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import {
@@ -96,7 +97,7 @@ export function createServer(
   }
 
   const app = express();
-  app.use(express.json());
+  limitFixtureRequests(app);
 
   app.use(
     createRequestLogger(checks, {

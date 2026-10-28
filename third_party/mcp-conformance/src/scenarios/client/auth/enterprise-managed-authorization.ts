@@ -1,3 +1,4 @@
+import { limitFixtureRequests } from '../../../fixture-network';
 import type { ScenarioContext } from '../../../mock-server';
 import * as jose from 'jose';
 import type { CryptoKey } from 'jose';
@@ -153,8 +154,7 @@ export class EnterpriseManagedAuthorizationScenario implements Scenario {
 
   private async startIdpServer(): Promise<void> {
     const app = express();
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
+    limitFixtureRequests(app);
 
     // IDP metadata endpoint
     app.get(

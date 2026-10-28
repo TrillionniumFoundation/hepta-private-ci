@@ -1,3 +1,4 @@
+import { limitFixtureRequests } from '../../../../fixture-network';
 import express, { Request, Response } from 'express';
 import { createHash } from 'crypto';
 import type { ConformanceCheck } from '../../../../types';
@@ -319,8 +320,7 @@ export function createAuthServer(
       : (metadataIssuer ?? `${getAuthBaseUrl()}${routePrefix}`);
 
   const app = express();
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
+  limitFixtureRequests(app);
 
   if (loggingEnabled) {
     app.use(

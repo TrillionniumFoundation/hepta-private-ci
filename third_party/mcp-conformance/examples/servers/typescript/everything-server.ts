@@ -36,6 +36,11 @@ import { toJsonSchemaCompat } from '@modelcontextprotocol/sdk/server/zod-json-sc
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import cors from 'cors';
+import {
+  fixtureBrowserOrigins,
+  listenOnLoopback,
+  requireFixtureBrowserOrigin
+} from '../../../src/fixture-network';
 import { randomUUID, createHmac } from 'crypto';
 
 // Server state
@@ -1216,10 +1221,17 @@ function notifyListenStreams(
   }
 }
 
-// Configure CORS to expose Mcp-Session-Id header for browser-based clients
+// Reject unreviewed browser callers before any MCP operation is dispatched.
+const browserOrigins = fixtureBrowserOrigins(
+  process.env.MCP_CONFORMANCE_ALLOWED_ORIGINS
+);
+app.use(requireFixtureBrowserOrigin(browserOrigins));
+// Configure CORS to expose Mcp-Session-Id header for the explicit clients.
 app.use(
   cors({
-    origin: '*', // Allow all origins
+    origin: (origin, callback) => {
+      callback(null, origin === undefined || browserOrigins.has(origin));
+    },
     exposedHeaders: ['Mcp-Session-Id'],
     allowedHeaders: ['Content-Type', 'mcp-session-id', 'last-event-id']
   })
@@ -2472,10 +2484,21 @@ app.delete('/mcp', async (req, res) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(
-    `MCP Conformance Test Server running on http://localhost:${PORT}`
-  );
-  console.log(`  - MCP endpoint: http://localhost:${PORT}/mcp`);
-});
+const PORT = Number(process.env.PORT ?? 3000);
+if (!Number.isInteger(PORT) || PORT < 0 || PORT > 65535) {
+  throw new Error('PORT must be an integer TCP port');
+}
+listenOnLoopback(app, PORT)
+  .then(({ url }) => {
+    // Derive same-server browser origins from the bound socket, never Host input.
+    const boundPort = new URL(url).port;
+    for (const host of ['localhost', '127.0.0.1', '[::1]']) {
+      browserOrigins.add(`http://${host}:${boundPort}`);
+    }
+    console.log(`MCP Conformance Test Server running on ${url}`);
+    console.log(`  - MCP endpoint: ${url}/mcp`);
+  })
+  .catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });

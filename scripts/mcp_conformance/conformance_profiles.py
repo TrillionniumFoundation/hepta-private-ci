@@ -9,9 +9,12 @@ from typing import Mapping
 
 LEGACY_PROFILE = "legacy491"
 VENDOR_PROFILE = "vendor-c37-sdk132-v1"
-PROFILES = (LEGACY_PROFILE, VENDOR_PROFILE)
+LOCAL_NETWORK_PROFILE = "vendor-c37-sdk132-localnet-v2"
+VERIFIED_VENDOR_PROFILES = (VENDOR_PROFILE, LOCAL_NETWORK_PROFILE)
+PROFILES = (LEGACY_PROFILE, *VERIFIED_VENDOR_PROFILES)
 LEGACY_REF = "49103de6ed70804e940637bf3e9e29e4a3f54e64"
 DESCRIPTOR_SHA256 = "eca54127cc3edf7593162942bf82e69275ae740f83a73a7187e4d2db43d40156"
+LOCAL_NETWORK_DESCRIPTOR_SHA256 = "81c9d77c66f68c5c12cc8392e1793c1e358a80334d3bff6dfd398b066d98aaa6"
 LEGACY_BASELINE_SHA256 = (
     "896630ee5f2c890152634e84a39d433f68eede8fff0b4ff99317800453b048ca"
 )
@@ -21,9 +24,15 @@ MEASURED_BASELINE_SHA256 = (
 _DIRECTORY = Path(__file__).resolve().parent
 
 
-def descriptor() -> dict[str, object]:
-    data = (_DIRECTORY / f"{VENDOR_PROFILE}.json").read_bytes()
-    if hashlib.sha256(data).hexdigest() != DESCRIPTOR_SHA256:
+def descriptor(profile: str = VENDOR_PROFILE) -> dict[str, object]:
+    digests = {
+        VENDOR_PROFILE: DESCRIPTOR_SHA256,
+        LOCAL_NETWORK_PROFILE: LOCAL_NETWORK_DESCRIPTOR_SHA256,
+    }
+    if profile not in digests:
+        raise ValueError("unknown vendor source descriptor")
+    data = (_DIRECTORY / f"{profile}.json").read_bytes()
+    if hashlib.sha256(data).hexdigest() != digests[profile]:
         raise ValueError("code-owned execution descriptor changed")
     return json.loads(data)
 
@@ -45,12 +54,13 @@ def validate_metadata(report: Mapping[str, object]) -> str:
     expected_ref = LEGACY_REF
     if profile == LEGACY_PROFILE and "executionIdentity" in report:
         raise ValueError("historical reports cannot claim a verified vendor identity")
-    if profile == VENDOR_PROFILE:
-        identity = descriptor()
+    if profile in VERIFIED_VENDOR_PROFILES:
+        identity = descriptor(profile)
         expected_ref = identity["gitRef"]
         if report.get("executionIdentity") != {
             "identity": identity,
-            "descriptorSha256": DESCRIPTOR_SHA256,
+            "descriptorSha256": (DESCRIPTOR_SHA256 if profile == VENDOR_PROFILE
+                                 else LOCAL_NETWORK_DESCRIPTOR_SHA256),
         }:
             raise ValueError(
                 "vendor execution identity differs from the code-owned profile"
@@ -69,14 +79,16 @@ def verify_execution(
                 "legacy491 execution requires its original pinned bootstrap; arbitrary CLI overrides are not verified"
             )
         return None
-    if profile != VENDOR_PROFILE:
+    if profile not in VERIFIED_VENDOR_PROFILES:
         raise ValueError("unknown conformance execution profile")
     if selected_cli is None:
         raise ValueError("vendor execution requires --conformance-cli")
+    if profile == VENDOR_PROFILE:
+        raise ValueError("v1 execution requires its matching historical tool/source snapshot; current execution must explicitly select localnet-v2")
     node = shutil.which("node")
     if node is None:
         raise ValueError("vendor execution requires the original Node 22 toolchain")
-    verifier = _DIRECTORY.parent / "verify-mcp-conformance-profile.mjs"
+    verifier = _DIRECTORY.parent / "verify-mcp-conformance-local-network-profile.mjs"
     result = subprocess.run(
         [node, str(verifier), str(selected_cli)],
         capture_output=True,
@@ -89,8 +101,8 @@ def verify_execution(
         )
     verified = json.loads(result.stdout)
     if (
-        verified.get("identity") != descriptor()
-        or verified.get("descriptorSha256") != DESCRIPTOR_SHA256
+        verified.get("identity") != descriptor(profile)
+        or verified.get("descriptorSha256") != LOCAL_NETWORK_DESCRIPTOR_SHA256
         or verified.get("sourceVerified") is not True
         or verified.get("canonicalRebuildMatched") is not True
         or verified.get("selectedCli") != str(selected_cli.resolve())

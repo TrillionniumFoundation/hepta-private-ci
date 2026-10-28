@@ -303,8 +303,8 @@ def test_execution_rejects_an_incomplete_verifier_result(
 ) -> None:
     cli = tmp_path / "index.js"
     verified = {
-        "identity": profiles.descriptor(),
-        "descriptorSha256": profiles.DESCRIPTOR_SHA256,
+        "identity": profiles.descriptor(profiles.LOCAL_NETWORK_PROFILE),
+        "descriptorSha256": profiles.LOCAL_NETWORK_DESCRIPTOR_SHA256,
         "sourceVerified": True,
         "canonicalRebuildMatched": True,
         "selectedCli": str(cli),
@@ -317,4 +317,29 @@ def test_execution_rejects_an_incomplete_verifier_result(
         lambda *a, **kw: SimpleNamespace(returncode=0, stdout=json.dumps(verified)),
     )
     with pytest.raises(ValueError, match="unexpected execution identity"):
-        profiles.verify_execution(profiles.VENDOR_PROFILE, cli)
+        profiles.verify_execution(profiles.LOCAL_NETWORK_PROFILE, cli)
+
+
+def test_local_network_profile_cannot_relabel_or_extract_a_v1_golden() -> None:
+    historical = vendor_candidate()
+    assert profiles.validate_metadata(historical) == profiles.VENDOR_PROFILE
+    candidate = deepcopy(historical)  # Metadata fixture, never an execution claim.
+    candidate["conformanceProfile"] = profiles.LOCAL_NETWORK_PROFILE
+    candidate["executionIdentity"] = {
+        "identity": profiles.descriptor(profiles.LOCAL_NETWORK_PROFILE),
+        "descriptorSha256": profiles.LOCAL_NETWORK_DESCRIPTOR_SHA256,
+    }
+    assert profiles.validate_metadata(candidate) == profiles.LOCAL_NETWORK_PROFILE
+    gate = _evaluate_regression_gate(candidate, historical)
+    assert gate["success"] is False
+    assert "different conformance execution profiles" in gate["configurationErrors"][0]
+    with pytest.raises(ValueError, match="separately reviewed complete v2 capture"):
+        _compact_regression_baseline(candidate)
+
+
+def test_current_execution_refuses_v1_before_starting_a_verifier(tmp_path, monkeypatch) -> None:
+    def unexpected_run(*args, **kwargs):
+        pytest.fail("historical v1 must not launch a current tool")
+    monkeypatch.setattr(profiles.subprocess, "run", unexpected_run)
+    with pytest.raises(ValueError, match="matching historical tool/source snapshot"):
+        profiles.verify_execution(profiles.VENDOR_PROFILE, tmp_path / "index.js")

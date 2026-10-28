@@ -45,3 +45,11 @@ Returned metadata is an in-process validation result, not a signed proof of arbi
 external reports. Report-profile validation and the separately measured c37 baseline
 must preserve every required legacy passing check and expose all remaining failures.
 Historical 491 reports and their original baseline retain their recorded identity.
+
+
+The current local network derivative has the separate explicit profile
+`vendor-c37-sdk132-localnet-v2`, descriptor and
+`verify-mcp-conformance-local-network-profile.mjs` entry. The v1 descriptor above
+remains historical and cannot authenticate a v2 CLI. See
+[CONFORMANCE_PROFILES.md](CONFORMANCE_PROFILES.md) and
+[the network contract](../../third_party/MCP_CONFORMANCE_NETWORK.md).

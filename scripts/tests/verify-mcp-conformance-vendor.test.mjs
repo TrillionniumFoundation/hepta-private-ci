@@ -19,6 +19,7 @@ beforeEach(() => {
     "package.json",
     "scripts/mcp_conformance/sdk132_negative_oauth_reuse.ts",
     "third_party/mcp-conformance-patches/sdk-1.32-reference-clients.patch",
+    "third_party/mcp-conformance-patches/local-network-boundary.patch",
   ]) {
     fs.mkdirSync(path.dirname(path.join(root, name)), { recursive: true });
     fs.copyFileSync(path.join(source, name), path.join(root, name));
@@ -44,10 +45,10 @@ beforeEach(() => {
 });
 after(() => fs.rmSync(temporary, { recursive: true, force: true }));
 
-test("accepts the original rule set with the exact reviewed SDK reference-client patch", () => {
+test("accepts the original rule set with the exact reviewed SDK reference-client and local network patches", () => {
   assert.deepEqual(verifyVendor(root), {
     commit: "c37eec888e1c6ff140af79987a40008548b7cc5f",
-    files: 291,
+    files: 293,
   });
 });
 

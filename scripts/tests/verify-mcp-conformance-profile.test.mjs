@@ -5,13 +5,13 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { test } from "node:test";
 
-import { verifyProfile } from "../verify-mcp-conformance-profile.mjs";
+import { verifyProfile } from "../verify-mcp-conformance-local-network-profile.mjs";
 
 const ROOT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../..",
 );
-const PROFILE_FILE = "scripts/mcp_conformance/vendor-c37-sdk132-v1.json";
+const PROFILE_FILE = "scripts/mcp_conformance/vendor-c37-sdk132-localnet-v2.json";
 const IDENTITY = JSON.parse(fs.readFileSync(path.join(ROOT, PROFILE_FILE)));
 const VENDOR = path.join(ROOT, "third_party/mcp-conformance");
 
@@ -51,7 +51,7 @@ async function rejectedSourceEdit(name, edit, pattern) {
   }
 }
 
-test("the real installed c37 CLI equals an independent offline original-script rebuild", async () => {
+test("the real local-network c37 derivative CLI equals an independent offline original-script rebuild", async () => {
   const result = await verifyProfile(ROOT, path.join(VENDOR, "dist/index.js"));
   assert.deepEqual(result.identity, IDENTITY);
   assert.equal(result.sourceVerified, true);
@@ -72,7 +72,7 @@ test("rejects a changed code-owned profile or claimed upstream revision", async 
   );
 });
 
-test("rejects vendor source outside the two reviewed local patches", async () => {
+test("rejects vendor source outside the reviewed local patches", async () => {
   await rejectedSourceEdit(
     "third_party/mcp-conformance/src/index.ts",
     (s) => `${s}\n// unreviewed\n`,

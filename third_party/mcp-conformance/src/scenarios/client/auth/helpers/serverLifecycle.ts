@@ -1,3 +1,4 @@
+import { listenOnLoopback } from '../../../../fixture-network';
 import express from 'express';
 
 export class ServerLifecycle {
@@ -12,9 +13,9 @@ export class ServerLifecycle {
 
   async start(app: express.Application): Promise<string> {
     this.app = app;
-    this.httpServer = this.app.listen(0);
-    const port = this.httpServer.address().port;
-    this.baseUrl = `http://localhost:${port}`;
+    const { server, url } = await listenOnLoopback(this.app);
+    this.httpServer = server;
+    this.baseUrl = url;
     return this.baseUrl;
   }
 

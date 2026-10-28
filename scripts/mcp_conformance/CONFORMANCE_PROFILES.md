@@ -80,3 +80,23 @@ The SDK now selects this execution profile and baseline explicitly. Its original
 assertions, full-suite scheduling, and 300/180-second outer test budgets remain
 unchanged. A new SDK run must bind its own actual result; the earlier 85f SDK
 qualification does not automatically qualify this profile integration.
+
+
+## Current local network derivative
+
+`vendor-c37-sdk132-localnet-v2` is a separate, explicit opt-in profile. It uses
+`vendor-c37-sdk132-localnet-v2.json` and the fixed
+`verify-mcp-conformance-local-network-profile.mjs` source/peer/output/rebuild
+verifier. `run_codex_compliance.py --conformance-profile
+vendor-c37-sdk132-localnet-v2 --conformance-cli <new canonical dist/index.js>`
+selects this route before any product child. It changes no scenario selection,
+wire oracle, protocol mode or negative-client behavior.
+
+The original v1 descriptor and measured baseline remain byte-for-byte intact and
+are still accepted only as their historical metadata. The current runner refuses
+to execute v1 against a v2 source tree. Cross-profile comparisons fail; no flag
+silently maps a v1 report into v2. Baseline extraction for v2 is closed until a
+separately reviewed complete v2 product capture and preservation mapping exists.
+The v2 Node reference-client validation is an independent fixture fact, not that
+product baseline or a new SDK50 qualification. Use matching historical tools and
+source when reproducing historical v1 execution.

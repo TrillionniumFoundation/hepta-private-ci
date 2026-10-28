@@ -36,6 +36,8 @@ from official_conformance import (  # noqa: E402 - direct scripts must first add
 )
 from conformance_profiles import (  # noqa: E402
     LEGACY_PROFILE,
+    LOCAL_NETWORK_PROFILE,
+    VERIFIED_VENDOR_PROFILES,
     PROFILES,
     VENDOR_PROFILE,
     descriptor,
@@ -1335,7 +1337,7 @@ def run_compliance(
     verified_execution: Mapping[str, object] | None = None,
 ) -> tuple[dict[str, object], Path | None]:
     if conformance_profile not in PROFILES or (
-        conformance_profile == VENDOR_PROFILE and verified_execution is None
+        conformance_profile in VERIFIED_VENDOR_PROFILES and verified_execution is None
     ):
         raise ValueError(
             "a valid execution profile must be verified before running conformance"
@@ -1437,14 +1439,14 @@ def run_compliance(
         "artifacts": str(run_root) if keep_artifacts else None,
     }
     report["conformanceProfile"] = conformance_profile
-    if conformance_profile == VENDOR_PROFILE:
+    if conformance_profile in VERIFIED_VENDOR_PROFILES:
         if verified_execution is None:
             raise ValueError(
                 "vendor execution requires verified source and CLI identity"
             )
         report["executionIdentity"] = execution_metadata(verified_execution)
         report["executionRuntime"] = verified_execution["observedRuntime"]
-        report["officialConformance"]["gitRef"] = descriptor()["gitRef"]
+        report["officialConformance"]["gitRef"] = descriptor(conformance_profile)["gitRef"]
 
     retained: Path | None = run_root if keep_artifacts else None
     if not keep_artifacts:
@@ -1723,6 +1725,8 @@ def _compact_regression_baseline(report: Mapping[str, object]) -> dict[str, obje
     ):
         errors.append("baseline contains a shipping MCP regression")
     profile = report_profile(report)
+    if profile == LOCAL_NETWORK_PROFILE:
+        raise ValueError("localnet-v2 baseline extraction requires a separately reviewed complete v2 capture; historical v1 is not a v2 golden")
     if profile == VENDOR_PROFILE:
         migration = _evaluate_regression_gate(
             report, legacy_baseline(), allow_legacy_migration=True
@@ -1774,7 +1778,7 @@ def _compact_regression_baseline(report: Mapping[str, object]) -> dict[str, obje
             ],
         },
     }
-    if profile == VENDOR_PROFILE:
+    if profile in VERIFIED_VENDOR_PROFILES:
         compact["conformanceProfile"] = profile
         compact["executionIdentity"] = report["executionIdentity"]
     return compact
@@ -2252,7 +2256,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 raise ValueError(
                     "baseline uses a different conformance execution profile"
                 )
-            if args.conformance_profile == VENDOR_PROFILE:
+            if args.conformance_profile in VERIFIED_VENDOR_PROFILES:
                 # A hand-edited input must satisfy the same preservation rules
                 # as a newly extracted baseline before any product starts.
                 _compact_regression_baseline(baseline_report)

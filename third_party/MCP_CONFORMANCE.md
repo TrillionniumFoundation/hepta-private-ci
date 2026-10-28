@@ -2,7 +2,12 @@
 
 `mcp-conformance/` contains the complete official source at
 [`c37eec888e1c6ff140af79987a40008548b7cc5f`](https://github.com/modelcontextprotocol/conformance/commit/c37eec888e1c6ff140af79987a40008548b7cc5f),
-including its MIT license. Its upstream tree is
+including its complete, unchanged [license notice](mcp-conformance/LICENSE).
+That notice describes Apache-2.0 for new code/specification contributions and
+relicensed contributions, MIT for contributions without relicensing consent, and
+CC-BY-4.0 for documentation excluding specifications. It does not grant a
+blanket MIT license to this tree. Package metadata now says
+`SEE LICENSE IN LICENSE`; the full notice remains authoritative. Its upstream tree is
 `22eb98b99b522401dd1911dc2c2a55bee3547b50`.
 The source archive SHA-256 is
 `6ab798454dc41840631b77024f34de7d05d6ad0eda67ac04050d664e447171a2`.
@@ -10,13 +15,14 @@ The adjacent upstream manifest records the original Git blob, byte hash, size,
 and executable mode of all 291 files. The original upstream lock is retained
 separately for an exact comparison.
 
-The sole local upstream-file change is the `node_modules/proxy-addr` record in
+The initial local dependency change was the `node_modules/proxy-addr` record in
 `package-lock.json`: npm resolved 2.0.7 to 2.0.8 and recorded its published
 integrity and funding metadata. This fixes
 [GHSA-jqcg-44mw-7w3h](https://github.com/advisories/GHSA-jqcg-44mw-7w3h)
-in the tool's own preparation dependencies. The original package manifest,
-prepare/build/test scripts, source, test cases, requirements, and oracle are
-unchanged. This is a local dependency patch; upstream c37 still has the affected
+in the tool's own preparation dependencies. The prepare/build/test commands, dependency versions, original test cases,
+requirements and protocol oracles remain unchanged. The explicit SDK 1.32
+reference-client patch and the local network patch below are recorded separately
+from the original upstream source. This is a local dependency patch; upstream c37 still has the affected
 lock. Other audit findings remain separately actionable.
 
 ## Installation trust
@@ -42,7 +48,7 @@ resolution or workspace preparation. It changes no package metadata. SDK CI
 also runs the verifier and its negative tests explicitly before installation.
 The verifier pins the original manifest and patched lock by byte hash, rejects
 added, removed, changed or symlinked source, and checks that the only semantic
-lock change is the reviewed proxy record. Only normal build/install/test output
+lock changes are the reviewed proxy record and the root package license notice. Only normal build/install/test output
 directories at original package roots are excluded. Generated outputs are not
 claimed to be upstream source.
 
@@ -90,8 +96,10 @@ production qualification.
 
 `mcp-conformance-patches/sdk-1.32-reference-clients.patch` records the exact
 changes relative to c37. The immutable upstream manifest remains unchanged.
-The verifier permits only the two pinned source hashes in this patch, the
-previous npm proxy lock fix, and the pinned local raw producer. It also refuses
+The verifier permits only the pinned source hashes in this compatibility patch,
+the previous npm proxy lock fix, the pinned local raw producer, and the explicit
+network source/metadata changes described in
+[MCP_CONFORMANCE_NETWORK.md](MCP_CONFORMANCE_NETWORK.md). It also refuses
 this compatibility patch unless the root SDK resolution is exactly 1.32.0.
 Changing a rule, adding a skip or changing a timeout still fails provenance.
 
@@ -112,3 +120,20 @@ remain evidence. The initial standalone npm graph still uses the original SDK
 1.29 lock and retains its separately reported advisories; the shared pnpm graph
 uses 1.32 and has no reported MCP SDK advisory. Never install an unreviewed
 second npm graph as a substitute for the frozen pnpm consumer qualification.
+
+
+## Local fixture network boundary
+
+`mcp-conformance-patches/local-network-boundary.patch` is a separate derivation
+on top of the reviewed SDK 1.32 compatibility patch and proxy lock fix. It binds
+the affected OAuth/IdP/MCP fixtures and everything-server to IPv4 loopback,
+adds real bounded admission before auth parsing/cryptography, and replaces the
+example's wildcard CORS policy with exact browser origins. It adds no dependency,
+changes no original scenario/check/assertion, and disables no scanner.
+
+The current derivative has its own fixed
+`vendor-c37-sdk132-localnet-v2.json` source/output descriptor and independent
+original-command rebuild check. The v1 descriptor and measured v1 baseline stay
+byte-for-byte historical records. A new v2 result must never be relabeled as v1
+or inherit v1 SDK/product qualification. See the network document for limits,
+actual validation, reproduction commands and the explicit profile boundary.
