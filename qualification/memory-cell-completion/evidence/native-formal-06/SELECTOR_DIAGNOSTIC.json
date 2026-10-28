@@ -1,0 +1,65 @@
+{
+  "future_prompts_read": false,
+  "numeric_or_gate_changes": false,
+  "original_ci_passed": false,
+  "run_id": 40683606875,
+  "schema": "hepta.memory.completion.selection-wire-diagnostic.v1",
+  "source": "afa351f8d2958c99032ed127693ce81362dbd630",
+  "stages": [
+    {
+      "after_json_wire_roundtrip_mismatches": [],
+      "mismatched_top_fields": [
+        "candidates"
+      ],
+      "recomputed_proxy_key_types": [
+        "int"
+      ],
+      "retained_proxy_key_types": [
+        "str"
+      ],
+      "route_and_proxy_values_preserved_by_wire_comparison": true,
+      "selected_counts": {
+        "fixed": 8,
+        "learned": 5
+      },
+      "stage": 0
+    },
+    {
+      "after_json_wire_roundtrip_mismatches": [],
+      "mismatched_top_fields": [
+        "candidates"
+      ],
+      "recomputed_proxy_key_types": [
+        "int"
+      ],
+      "retained_proxy_key_types": [
+        "str"
+      ],
+      "route_and_proxy_values_preserved_by_wire_comparison": true,
+      "selected_counts": {
+        "fixed": 8,
+        "learned": 8
+      },
+      "stage": 1
+    },
+    {
+      "after_json_wire_roundtrip_mismatches": [],
+      "mismatched_top_fields": [
+        "candidates"
+      ],
+      "recomputed_proxy_key_types": [
+        "int"
+      ],
+      "retained_proxy_key_types": [
+        "str"
+      ],
+      "route_and_proxy_values_preserved_by_wire_comparison": true,
+      "selected_counts": {
+        "fixed": 3,
+        "learned": 7
+      },
+      "stage": 2
+    }
+  ],
+  "training_executed": false
+}

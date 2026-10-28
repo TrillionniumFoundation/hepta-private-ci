@@ -1,0 +1,1962 @@
+{
+  "archive": {
+    "bytes": 7805148,
+    "path": "memory-v9-evidence.tar.xz",
+    "sha256": "4afac9351c3af2b85dcb57c37e42895a211a9c91d353d0f048518f741d48b8b8"
+  },
+  "files": {
+    "memory-v9-ci-output/baseline-v7-native-held.json": {
+      "bytes": 1214024,
+      "sha256": "a883de8a6a5423d960572e392a3ceb0b49f48f72275784e315fe1518422686ea"
+    },
+    "memory-v9-ci-output/baseline-v8-native-held.json": {
+      "bytes": 1303010,
+      "sha256": "6ae7f9822643fd6a40dbf737a3a7c0ea011ed30de6c038d9095705287569bd5a"
+    },
+    "memory-v9-ci-output/candidate-v9-native-held.json": {
+      "bytes": 1318934,
+      "sha256": "d84d6c1e13652b6a5d3cf1c19d09633db2ad282d0017eba396f808869dffce32"
+    },
+    "memory-v9-ci-output/commands/01.log": {
+      "bytes": 115,
+      "sha256": "4070890317c49e7db51556b00a904e4aaeae770c3db6312d5aaae0ce9b4e9dc9"
+    },
+    "memory-v9-ci-output/commands/02.log": {
+      "bytes": 131,
+      "sha256": "2e6558bd5d0188fc4dd0dae9cf385dbf5585d103d9d82d2d47017cb8e545b273"
+    },
+    "memory-v9-ci-output/commands/03.log": {
+      "bytes": 187,
+      "sha256": "2dadadabca34e0d95b6c2612690a76f6983a45a89d8074a8b12c4148af4ecf0f"
+    },
+    "memory-v9-ci-output/commands/04.log": {
+      "bytes": 97196,
+      "sha256": "d08ac044b4f3f9ce92d9984de2679685c596f872ec3fd553e9b4e48592af7158"
+    },
+    "memory-v9-ci-output/commands/05.log": {
+      "bytes": 222720,
+      "sha256": "ccb2c82cf892d00427481584d06238f0367aedd27fd54055acd6e04c50dd51e1"
+    },
+    "memory-v9-ci-output/commands/06.log": {
+      "bytes": 38189,
+      "sha256": "a6a2b25772438036c9a82a9c94d64e23d53a0734b04050eafc6d53c899846751"
+    },
+    "memory-v9-ci-output/commands/07.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/commands/08.log": {
+      "bytes": 141,
+      "sha256": "89ccd5ae042b30ffe5b739a86e037d8d3c1f428497e3bb70af41a4b3b5097907"
+    },
+    "memory-v9-ci-output/commands/09.log": {
+      "bytes": 139,
+      "sha256": "b6361ef8df88661fa1747380e45e3c5fd2ee458aa9f5955cab772b5b51b02de6"
+    },
+    "memory-v9-ci-output/continual-learning-score.json": {
+      "bytes": 181685,
+      "sha256": "8d2caa9d8161fcd03a12a4180ac91330e411b23227a8b5846b92ecff16f7b535"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/MANIFEST.json": {
+      "bytes": 3014,
+      "sha256": "8645c72014a3ea5ce098b9dc38e44c5f65ce944363517ff0f801f01f6fe7d90a"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/PROTOCOL.json": {
+      "bytes": 3519,
+      "sha256": "b6154507a2773fcd0896c7c77ac90bc1b08d3c4460042e3b796637c49efa3feb"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte-config.json": {
+      "bytes": 192,
+      "sha256": "50df9d678210100339c2444e283fcb537ad5cdbbf66f0761a4f8115b5147a0ce"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte-resources.json": {
+      "bytes": 4672,
+      "sha256": "17b0aa10ac26bb617a2626c57e91753ee02640994f142e3d2009f2a66b7f08cc"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte-samples.jsonl": {
+      "bytes": 2319392,
+      "sha256": "7484f443a99496a164b65899e52507059be5a1140ced9ccd6c6a4530e5d73029"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte-stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte-stdout.log": {
+      "bytes": 191,
+      "sha256": "fd66475a0d16ec16de82d5ea256a2520fdd3f44c8acf179f3acf6ac3d2fc7743"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/CHILD.json": {
+      "bytes": 47995,
+      "sha256": "a6b28f838d351be03bafbc70d630c702e89d43f681edb8e8a049d845c0bba4c7"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-0/FIT_LOCK.json": {
+      "bytes": 2983,
+      "sha256": "7a845c1b2b854896e27ef080deb40674f788b3fb0435835c70ed17df945d46af"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-0/FIT_REQUEST.json": {
+      "bytes": 15598,
+      "sha256": "7da0ba89f851da07a857e86da259cb34005779bba20b156971465888bc905417"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-0/FIT_RESPONSE.json": {
+      "bytes": 7217668,
+      "sha256": "7083795a1bccc94693fe1d8017b3ccb76f88b8430a0ab46b1c4f4d66db127638"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-0/OWNER_EXPORT.json": {
+      "bytes": 15381,
+      "sha256": "710e6499a7282a8502c1a417acabb6ce56505f16aca139268c4f68f1e4160a0d"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-0/STAGE.json": {
+      "bytes": 13401,
+      "sha256": "96ff3d6347b8855eb71168eeac2ccadc7ca2415fc5bf99482b78c3e2f0271dac"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-0/clean-future.json": {
+      "bytes": 365663,
+      "sha256": "91d2ddd5c1a93508fc3d4987482968605444f52687febd79354da148b0204bcf"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-0/clean-retention.json": {
+      "bytes": 123705,
+      "sha256": "6103d6e3744af822454d310a78b75afb9ee5327bb0a44be674bb04c7e4be0f91"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-0/completed-prefix.json": {
+      "bytes": 137558,
+      "sha256": "da731f1b41725a294bfa626d327f47af4fed86f446f06b0f584c3ac3bb7dfb74"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-0/frozen-future.json": {
+      "bytes": 299794,
+      "sha256": "b421a1b4317c5f6b103f682bf55c95ebc033863187d7ce67a494948e4ce5e55b"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-0/frozen-retention.json": {
+      "bytes": 101730,
+      "sha256": "e9b7502d25c0e1a3917e87217b0e96cb85c13fdddd5f50e7586dad94c9c917f7"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-0/trained-future.json": {
+      "bytes": 365649,
+      "sha256": "7b4a4849a9ee646d08477e43855b0814af1bc7bf8cf7df7571c0f265d5f24b73"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-0/trained-retention.json": {
+      "bytes": 123707,
+      "sha256": "6fd0d140083e235ded5319c5ff507bafaa018ef7a955fcb0b7973bba8fcf0dbc"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-0/zero-future.json": {
+      "bytes": 299796,
+      "sha256": "1e80fd60a81b841e22387630f88789d37ff119de0578aee04be28f0cbbe3d083"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-0/zero-retention.json": {
+      "bytes": 101720,
+      "sha256": "4b475ce46535edd38583c5b26300f141dcb1d4d6d70688b2851bb38d19588612"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-1/BEFORE_OWNER.json": {
+      "bytes": 15381,
+      "sha256": "1c0c0f12eaf375f4b63a53d5b89b00caff9044b8e58ba36a0a334a53a5301a12"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-1/FIT_LOCK.json": {
+      "bytes": 2983,
+      "sha256": "c9cb1fc2dbfea4a8f3d01372e08c3e0a808b2e200e3c6617671c55aa19a2fa34"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-1/FIT_REQUEST.json": {
+      "bytes": 1439138,
+      "sha256": "e1a0762171b6a097a5cd13b990b710e4cafe4f431e620be0d92074540118bb8a"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-1/FIT_RESPONSE.json": {
+      "bytes": 7136628,
+      "sha256": "289d1ccf5095da1342586cd8a2af62fc16bc705575eb4a986c08c9ff57b7b79f"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-1/OWNER_EXPORT.json": {
+      "bytes": 28302,
+      "sha256": "aa4c6723dee5813fb1829c2a3dcef05fde73c27c7c4a892b70327bd39ba55d65"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-1/STAGE.json": {
+      "bytes": 13816,
+      "sha256": "2aed1b931c7954b2ac56aae4fe194bdc5ebe5687930a2705efe8a9e29fd0461c"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-1/before-retention.json": {
+      "bytes": 122276,
+      "sha256": "3067580ee807ef9bb6ff664e1fad898d4349bb2adc3daa263d10e1f1df12b7e9"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-1/clean-future.json": {
+      "bytes": 365660,
+      "sha256": "eeffd05c46ce17a6ab60c21b55980a3a805430ac3039dc6e6157aeac0036584d"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-1/clean-retention.json": {
+      "bytes": 123706,
+      "sha256": "90ba42008462095ab99df08b7d78d1d521399c05e1f9d9b6bd3bcb3da22e240f"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-1/completed-prefix.json": {
+      "bytes": 137557,
+      "sha256": "f64a3565727229c2bfc919df0b5cb587d5c2d02a7250cc6270207c0e8c6306e0"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-1/frozen-future.json": {
+      "bytes": 323030,
+      "sha256": "a00f0cc979decef3a496cbff5e7603fde2c0c4a39818a8b2b0ef1a1ba61a46be"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-1/frozen-retention.json": {
+      "bytes": 123720,
+      "sha256": "2193442f618979be111d55eb79ded35f38fa485404fddf917b61a62baa3f7b2a"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-1/trained-future.json": {
+      "bytes": 365664,
+      "sha256": "a1a3f125e9145f2c099082946b7237d53d967c038ccfee22631e237aa8f0e6c3"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-1/trained-retention.json": {
+      "bytes": 123712,
+      "sha256": "013f535427fb94d2deaf51466667841298c4f8857984a26cad8e0dfc3b781c7c"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-1/zero-future.json": {
+      "bytes": 299812,
+      "sha256": "0d961f5183b6095f504400db61a90f3f00d9a12ad4ead727245ef197f6672df6"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-1/zero-retention.json": {
+      "bytes": 101734,
+      "sha256": "53a312ded74ee571127048c214435131c5b85e489a00ac11472a4fbb6c6b5069"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-2/BEFORE_OWNER.json": {
+      "bytes": 28302,
+      "sha256": "882cc959c78f9a00a1bf20912bec847193625075bd38dd9307dd98e9fc3f22af"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-2/FIT_LOCK.json": {
+      "bytes": 2983,
+      "sha256": "d5555c10fd451ed22ef400449a99b8c5865f806a599d28b18a49f63b3ac793e2"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-2/FIT_REQUEST.json": {
+      "bytes": 1452128,
+      "sha256": "0e92f9be06f9027404a41a71b5821f4deee6fd0d31ad6423cae858c18a5e8812"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-2/FIT_RESPONSE.json": {
+      "bytes": 7145681,
+      "sha256": "daa005cc2ba41f4181a4277cfd3803405e8f274ebeac941fb72df0827bd59adf"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-2/OWNER_EXPORT.json": {
+      "bytes": 41225,
+      "sha256": "7dda885f15815fd636a2821cfaae13f94b09e15efa59bc2b0ef3d98e1a782818"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-2/STAGE.json": {
+      "bytes": 13821,
+      "sha256": "1782897a46be5e95a54bf8c879e01498c72e94e3e913fdfcdc2004aee88daee7"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-2/before-retention.json": {
+      "bytes": 122366,
+      "sha256": "2cdda902d4f045df20ceec06b7f2e495732df6d915f210817cf0b4accc66406e"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-2/clean-future.json": {
+      "bytes": 366091,
+      "sha256": "b429fa07e004030124f37f60ed9e667d9809a7a1b177ff2910a991b1786cbb08"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-2/clean-retention.json": {
+      "bytes": 123813,
+      "sha256": "0e96cd4439a71378631e81e352acd0458a374e22f87ba4146dfe687f3ad80226"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-2/completed-prefix.json": {
+      "bytes": 137633,
+      "sha256": "5661da6d427788c987504dec44355767f4fd18a4993bddad91e07efc3ab0cb4e"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-2/frozen-future.json": {
+      "bytes": 325606,
+      "sha256": "dbdcf296e9385362345db2e31b94251573d596aabaed965a2cd36d5ebe53ec18"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-2/frozen-retention.json": {
+      "bytes": 123816,
+      "sha256": "188c47c8bbfff67e99760a48974a67ecf8e36ee5157d68ccebea2c9064590fe3"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-2/trained-future.json": {
+      "bytes": 366097,
+      "sha256": "2391b285401b42b6c6142d66e1074ad8da5d19e0131b0866fd2b23ea5923879c"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-2/trained-retention.json": {
+      "bytes": 123813,
+      "sha256": "2d8f96c888de49cfb2c78cc4eb6cf18ba3855b275d3ad7619d782e4c9061b170"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-2/zero-future.json": {
+      "bytes": 300142,
+      "sha256": "bce12517ce2c696c8f6851e69a1a36a05e9d4880a4822883252c3ad85a6db878"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/byte/stage-2/zero-retention.json": {
+      "bytes": 101833,
+      "sha256": "72c046ece1604de0efa22aaea2b9a7a9fca4c72a1e13e9fa09922981de0694e1"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog-config.json": {
+      "bytes": 198,
+      "sha256": "afe3909c0ba607944bf87b6c80590e13d53924ed0b9e07384b7fbece7ebe3dee"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog-resources.json": {
+      "bytes": 4682,
+      "sha256": "5078f85d5a0beba601296360ec6f3e97476eb54db50909495c4fbe388e980992"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog-samples.jsonl": {
+      "bytes": 2208125,
+      "sha256": "849e3f4ee4eec05cfd3e8f713487a8962a80f317e0bb2b3230cc8e1b04ba9634"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog-stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog-stdout.log": {
+      "bytes": 191,
+      "sha256": "0385ee4fca62ae1198925e7aaedafbde3bc3edb7413c7c5057657b0ac1f3c2f1"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/CHILD.json": {
+      "bytes": 60596,
+      "sha256": "3fc0d1e28317ce987cbc0dc66f8cd1b66d98edd15716e0a023c3ed8d55ba32ad"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-0/FIT_LOCK.json": {
+      "bytes": 2983,
+      "sha256": "d01dbd4a2ef633a62d638c2c45f53c474a463bf8784abf8e17e49a7d7a187c08"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-0/FIT_REQUEST.json": {
+      "bytes": 15601,
+      "sha256": "2fc03488a157c6197502c7096af25b9bdbf89e0a092031d1e6c2538bab02b59c"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-0/FIT_RESPONSE.json": {
+      "bytes": 549627,
+      "sha256": "11b8fb330a6ba6f0fe25486ca3a8bee45d505628959a42831f652e6245b81ae0"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-0/OWNER_EXPORT.json": {
+      "bytes": 15381,
+      "sha256": "5c72e852ae29c043034dcb235f6344b849f5b34c3935e851cd2d80139710caa5"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-0/STAGE.json": {
+      "bytes": 15888,
+      "sha256": "7e55bb665057e50c82d3ee32c8abd12fbbeee3194318220cbf9787858e8788fe"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-0/clean-future.json": {
+      "bytes": 365639,
+      "sha256": "9bfa8d1e0f910018284d22a9f704bc5c850b59fd4679c37a943fbd84e25d5d38"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-0/clean-retention.json": {
+      "bytes": 123685,
+      "sha256": "0af4061d5dc9a3120bb1d73343f3a3dfd8c16970cba22f8125938c9a09e5be69"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-0/completed-prefix.json": {
+      "bytes": 137558,
+      "sha256": "c4e549c4fde396af7ed56de8600de8a4c2b85e5d3b4a85da73d57b4f87fa8190"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-0/frozen-future.json": {
+      "bytes": 299779,
+      "sha256": "2d821b4e8f81e3136bdb58d5857479d60bd26e6daf4d0d5ea8e9a25cbe58c002"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-0/frozen-retention.json": {
+      "bytes": 101710,
+      "sha256": "e17c7c70c01ae233b2a5a3ecfca971f475f86ce63532f07f9ad268231124c701"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-0/trained-future.json": {
+      "bytes": 365639,
+      "sha256": "48b52f1bea00e35cd7a411b818044aa81d4cca707d2df39cd8839ed73433c229"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-0/trained-retention.json": {
+      "bytes": 123695,
+      "sha256": "222227ea4d053af7a426fb86c4046e8bc73c2aa199fb3fab19ea2bb39122380c"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-0/zero-future.json": {
+      "bytes": 299788,
+      "sha256": "a94d90faea45d3fbe60c3f791157e802fd28f7044a2759f76d562e68fd387884"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-0/zero-retention.json": {
+      "bytes": 101704,
+      "sha256": "a2deaed4e01432f5af3f095a5213da0d9be6fd76c32511735966ee3eae4661d0"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-1/BEFORE_OWNER.json": {
+      "bytes": 15381,
+      "sha256": "b035d0f52651c5879aa64704c84b3a0ed91e29ffe342d837fb312cb516824a07"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-1/FIT_LOCK.json": {
+      "bytes": 2983,
+      "sha256": "5f2192b3b97ce25d2913be66f74c5565f47ba1feebc12509cab4ce6248f4e49f"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-1/FIT_REQUEST.json": {
+      "bytes": 134132,
+      "sha256": "6deaf39d8b9fde64ca965b2e00b50e16fb9b890273bbc76289694a8c4e6604c5"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-1/FIT_RESPONSE.json": {
+      "bytes": 662548,
+      "sha256": "f04837da460e585078186c01ac97c9b5b3d3f0a9b0e6319917a00fe8dd3dfe0c"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-1/OWNER_EXPORT.json": {
+      "bytes": 28302,
+      "sha256": "2dce09d4282d647fd2c6cb46e112217cafa4176a726bc319db848b2e803c4ad5"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-1/STAGE.json": {
+      "bytes": 17591,
+      "sha256": "c1ade08bd5efb62a1c3955581b496f63c4864c33f690afa8f812ed9e0d8255d3"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-1/before-retention.json": {
+      "bytes": 122268,
+      "sha256": "ba8a8b37e2c775c0758e0d23d48afb577be494f168249e45c1c632630db406ec"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-1/clean-future.json": {
+      "bytes": 365656,
+      "sha256": "c36a338223193e46ee34f103ebe6ebf49288ef5b3f6e2bfdbdc7924606ef2228"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-1/clean-retention.json": {
+      "bytes": 123704,
+      "sha256": "5ac361629d86e5437463e45f371727e3e62a1b9fe82ef205c95c505a0658e7c3"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-1/completed-prefix.json": {
+      "bytes": 137567,
+      "sha256": "657415737a6295632b85c5b671e7d8685fe197a63e61ff675a0487a45f274746"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-1/frozen-future.json": {
+      "bytes": 329191,
+      "sha256": "005c23f2a8423beb5e703afad38c2beb981d2ac6ee13c70c68712975439ac27a"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-1/frozen-retention.json": {
+      "bytes": 123705,
+      "sha256": "9449f482c3555da71686d85727215d48638a4d179388fefbb2abae0d9fd594a1"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-1/trained-future.json": {
+      "bytes": 365652,
+      "sha256": "516d248e33f6afb4bcad4d9f28d393752994f40031af3fcaf5ddb74fb16bab8e"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-1/trained-retention.json": {
+      "bytes": 123704,
+      "sha256": "d50ea710452e0e30b8e5ea5836033f5ad2dc000cae1e78a6ed960797d7c75865"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-1/zero-future.json": {
+      "bytes": 299779,
+      "sha256": "01e13491f2ec7b420b6333806a1b9ca10f675ca01371fd946acc3ef584bde97f"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-1/zero-retention.json": {
+      "bytes": 101729,
+      "sha256": "548fdd301757dd6d70ace7b126c09dee053387e4a492f42efb3e6a69f3658b55"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-2/BEFORE_OWNER.json": {
+      "bytes": 28302,
+      "sha256": "f47d76688193692e2fcd9db8e0d42deae35d234f6408ba11ff278cee40177198"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-2/FIT_LOCK.json": {
+      "bytes": 2983,
+      "sha256": "0bcf3f47331a00b28771a4bf5a05dd49adedb1368697e13a7ce559e4ad8a1e58"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-2/FIT_REQUEST.json": {
+      "bytes": 167072,
+      "sha256": "3f205e618996ea8cd2cdd23a6e7cc8aebd0576ee8f9d0d5a9848f5587e38280c"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-2/FIT_RESPONSE.json": {
+      "bytes": 773545,
+      "sha256": "c0c9584a45337e6978ea717bfe2b351af5f959cd06b11998b0b2e7b510f9b162"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-2/OWNER_EXPORT.json": {
+      "bytes": 41225,
+      "sha256": "623ad0f37473063480e6f8880009d1dc96314350136ff2ebdaa5e06175fa9ad0"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-2/STAGE.json": {
+      "bytes": 18757,
+      "sha256": "d781699838328e0ea17fae226086811d1969f04604d322543a792f9bc0dd8516"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-2/before-retention.json": {
+      "bytes": 122364,
+      "sha256": "de711938a3aa4068b05026c5e64f97ac20087d3a099e58fe5f207b15c0d4e7f5"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-2/clean-future.json": {
+      "bytes": 366063,
+      "sha256": "0fdf0b542b77b95ee07080c4a7b05196f10986cd0d6d30229236dda633b5545b"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-2/clean-retention.json": {
+      "bytes": 123793,
+      "sha256": "d0671a942cbf8fc32d5e886fcf14602b9046d8f40cf78198d3b97313ec111b26"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-2/completed-prefix.json": {
+      "bytes": 137625,
+      "sha256": "963899c3cf8f50a0a4efe2fac83aea5f66a2a04a725497037f14927f4801964e"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-2/frozen-future.json": {
+      "bytes": 347383,
+      "sha256": "86c798dd51eeb773fb94982053a66eb30867288858eb8bafeada674f6dd2daf3"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-2/frozen-retention.json": {
+      "bytes": 123801,
+      "sha256": "7c9e20c76c9c289827a12ef834cdb7a41fa4219a4543ecd3cc3aed9cab6fccf8"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-2/trained-future.json": {
+      "bytes": 366059,
+      "sha256": "5fdd2c9661c2824e57d05622d9c25554b0f0ccb4836303ba9eec5479ff0e9789"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-2/trained-retention.json": {
+      "bytes": 123799,
+      "sha256": "de3de59205412cf04ab36a023905fed534625a2de8a1e3f9732de38770706179"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-2/zero-future.json": {
+      "bytes": 300139,
+      "sha256": "a367ed9353b582b799ea0b50d17c65019fd573dcaf408c75b19a080d0088921a"
+    },
+    "memory-v9-ci-output/continual-learning.artifacts/catalog/stage-2/zero-retention.json": {
+      "bytes": 101825,
+      "sha256": "c767b840b3f9072d7798296f1e0543a677231be4dd118e65ec69838ecffd86b4"
+    },
+    "memory-v9-ci-output/continual-learning.json": {
+      "bytes": 127388,
+      "sha256": "724468247b5825c9ba033c3c45a9f72e5e347fe49ddf860da916625bf2eb54a4"
+    },
+    "memory-v9-ci-output/execution.log": {
+      "bytes": 361510,
+      "sha256": "effd35de6393b5c4c9430c82f139f7c9824361613bfc7d4ad32f58b1e290ed35"
+    },
+    "memory-v9-ci-output/fresh-reader/PROTOCOL.json": {
+      "bytes": 599,
+      "sha256": "fc7063526705e0673e42d1c88a1087c7188cb57362ef80f4492cc90aea73f9f5"
+    },
+    "memory-v9-ci-output/fresh-reader/TRAINING_EXPORT.json": {
+      "bytes": 3191,
+      "sha256": "bd349fce274010e89eb91d591e85b06501a1c0cb639d1170b5b38619080b8e63"
+    },
+    "memory-v9-ci-output/fresh-reader/artifacts/byte-procedure-trained.json": {
+      "bytes": 709903,
+      "sha256": "a0b245063fb799f0edef7758736149a0cd109bd63ab359751938effb2065fa6b"
+    },
+    "memory-v9-ci-output/fresh-reader/artifacts/byte-procedure-zero.json": {
+      "bytes": 740882,
+      "sha256": "d43ff1fbb8e8925ea5a19ce7635c2d8b697861d96b0fb940b22878cc6450a4e4"
+    },
+    "memory-v9-ci-output/fresh-reader/artifacts/byte-semantic-trained.json": {
+      "bytes": 714378,
+      "sha256": "305d5146cb9c2955e7ab9d577885068d906007796c171814d86f21c3675e0c24"
+    },
+    "memory-v9-ci-output/fresh-reader/artifacts/byte-semantic-zero.json": {
+      "bytes": 740881,
+      "sha256": "ed7924eef306ca8cf10f1077461be5bde060e3b1a9c4a2e2051714fef82ae6f6"
+    },
+    "memory-v9-ci-output/fresh-reader/artifacts/catalog-procedure-catalog-removed.json": {
+      "bytes": 34824,
+      "sha256": "668d70e648235b52eee6d3ba49601cbcd39a32176b60b67a2b808ab7f632aecd"
+    },
+    "memory-v9-ci-output/fresh-reader/artifacts/catalog-procedure-trained.json": {
+      "bytes": 35001,
+      "sha256": "649752ee0bb440a4f806f641eed29aa48f5846ec52d1a5ca21d2c301721d8931"
+    },
+    "memory-v9-ci-output/fresh-reader/artifacts/catalog-procedure-zero.json": {
+      "bytes": 34703,
+      "sha256": "854ceca138613a9404283bb13f1153d230f91606a526ff2d602cf100739d344b"
+    },
+    "memory-v9-ci-output/fresh-reader/artifacts/catalog-semantic-catalog-removed.json": {
+      "bytes": 34774,
+      "sha256": "2c053e27434b2197a8da0458abce10cb9e49c3c6334145ddbc06af9f9a848681"
+    },
+    "memory-v9-ci-output/fresh-reader/artifacts/catalog-semantic-trained.json": {
+      "bytes": 34934,
+      "sha256": "de65ac70e6ddab354c223929fac74e49f251dd65c3ad837ff1dc8320c56fc758"
+    },
+    "memory-v9-ci-output/fresh-reader/artifacts/catalog-semantic-zero.json": {
+      "bytes": 34685,
+      "sha256": "bb55dbd54a0286489ace8b2ebfb138a6a6306b087d653a6854e738b2a2d4aa3c"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/byte-procedure-trained/process.json": {
+      "bytes": 687,
+      "sha256": "f2092e66fd21fc231930a52cc3398e2c420d26377f883f2b9790d68b8e8dcff4"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/byte-procedure-trained/request.json": {
+      "bytes": 569,
+      "sha256": "bd7a7dbff5d99bcbf5ee36c9b3b6a25ce2adece4cb0a50d29928dbf2f75bfdc5"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/byte-procedure-trained/response.json": {
+      "bytes": 2134,
+      "sha256": "c7e5d667b18a6e8f805dc06fad64037e850f85a6839c64e205d4f1ac204baeea"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/byte-procedure-trained/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/byte-procedure-zero/process.json": {
+      "bytes": 687,
+      "sha256": "9a01d0d92f85ace4c139004a9995dca2e695799f73d2e8c022ce79f3916eaa08"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/byte-procedure-zero/request.json": {
+      "bytes": 566,
+      "sha256": "1ade42faab9577919e0664b791af42de728f815078bd6f7c0c5dd7bc4b958fd2"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/byte-procedure-zero/response.json": {
+      "bytes": 1814,
+      "sha256": "ebb62a2e160cb6ccf67cff1d79a0529b182a968246564532e147f0bd4d4a2826"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/byte-procedure-zero/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/byte-semantic-trained/process.json": {
+      "bytes": 687,
+      "sha256": "a4ac15474cce19de4cc42b9747e906e1bbe41bac18f3a5000451c452c1fa7b09"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/byte-semantic-trained/request.json": {
+      "bytes": 568,
+      "sha256": "90774f0b7a979b488e7567a485f10a882a0bbb71037d88dd136d52bdf538b546"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/byte-semantic-trained/response.json": {
+      "bytes": 2113,
+      "sha256": "e8d5a841ac2c938bbfc0bcd398fa2d13ae9b06f83ebdd3be175dc308372199f8"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/byte-semantic-trained/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/byte-semantic-zero/process.json": {
+      "bytes": 687,
+      "sha256": "ba35c0a9af3bea0e2b171e5e3d169eb79b864efa6f232bd296ba020b0f0621d5"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/byte-semantic-zero/request.json": {
+      "bytes": 565,
+      "sha256": "834d0310e71da67d15befb98df1b2dca0c395eb45b324282d69d1f5c68905de3"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/byte-semantic-zero/response.json": {
+      "bytes": 1812,
+      "sha256": "459ae41c5ae05c843db995189a2d1a0da8cc3bdb56a67e76190d186f8275039a"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/byte-semantic-zero/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-procedure-catalog-removed/process.json": {
+      "bytes": 686,
+      "sha256": "01a3be8087f8b1d7c4ca4d93e674b3c822e52f906c2ee60a91af7bf7762612c5"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-procedure-catalog-removed/request.json": {
+      "bytes": 580,
+      "sha256": "e270623c703e28e55ede9322a0c53a57eb6f6e1180d6491b2c8f900a24ce6c0e"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-procedure-catalog-removed/response.json": {
+      "bytes": 741,
+      "sha256": "deec10fc00361bd7c16be5c538923800ed7d87faee26935e17bac0e745f5a92c"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-procedure-catalog-removed/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-procedure-trained/process.json": {
+      "bytes": 687,
+      "sha256": "16668b0e81732bf90336ef07e525d542e178f936b11ba7eece126046ef905236"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-procedure-trained/request.json": {
+      "bytes": 572,
+      "sha256": "7e0fb92d7aa6a3e1bb1d29ee8b688956ffd55d1b9d08cb16af09f373b9202ae9"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-procedure-trained/response.json": {
+      "bytes": 2129,
+      "sha256": "ad1c0988f7133a6b79cda60176d6e4fbeb0b0b672b5b78d181a03b06974bf26b"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-procedure-trained/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-procedure-zero/process.json": {
+      "bytes": 687,
+      "sha256": "8eadf82d4089108f83132a32ecea83c94bdd5593d6601bb93c2b3c0512bafb49"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-procedure-zero/request.json": {
+      "bytes": 569,
+      "sha256": "336dc71fdc019d5dc05bebb6e811e95c24f1ba8ef583c60f18208a555d975f3d"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-procedure-zero/response.json": {
+      "bytes": 1811,
+      "sha256": "9b71b227d5caac8f712b453af24f6f76d57c2318da1a12713cf3cd94f0162a7c"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-procedure-zero/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-semantic-catalog-removed/process.json": {
+      "bytes": 686,
+      "sha256": "09c96d6d6704611d0e791d7d3d682eaae237d06f7cf82c5aa403d4152ff460cd"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-semantic-catalog-removed/request.json": {
+      "bytes": 579,
+      "sha256": "e83ef578c0058a14020f66cae4d9bcc71a3ece3462ebb42f2e4a1c8ecf959d10"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-semantic-catalog-removed/response.json": {
+      "bytes": 740,
+      "sha256": "63591312358c4f855978c18b4426b8d3fb31e7c99700a1c1287bd92a0e455ed1"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-semantic-catalog-removed/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-semantic-trained/process.json": {
+      "bytes": 687,
+      "sha256": "4eed8a942fec0ad180bd9441c3b6523439df1358c0f21af2c222ee46d990fd1e"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-semantic-trained/request.json": {
+      "bytes": 571,
+      "sha256": "a35a6febe50d8f52ecafc996f471b13bc9bd34ea3e198f9aa9012986b7bd87d6"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-semantic-trained/response.json": {
+      "bytes": 2110,
+      "sha256": "83a66365f94b714700f11cd259a8b80ca557c85531c939146a274f94862eaff9"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-semantic-trained/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-semantic-zero/process.json": {
+      "bytes": 687,
+      "sha256": "d258e16791d395ed4b29f968dc06245a144b8138d469704ab657d6524f08ab3a"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-semantic-zero/request.json": {
+      "bytes": 568,
+      "sha256": "484e7727c45b83e096586e945b79945b108a8dc5bad2a841d3aad011e0933cc4"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-semantic-zero/response.json": {
+      "bytes": 1809,
+      "sha256": "a06775fcabcf5f10a1d25ccddeb6fdc3438276af7fd39b4110876ae1131f7fe7"
+    },
+    "memory-v9-ci-output/fresh-reader/readers/catalog-semantic-zero/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/fresh-reader/receipt.json": {
+      "bytes": 39695,
+      "sha256": "88e2684a4c6911af203a3528cc6ec5a8285ef1568df5c169510a03b0ee59303e"
+    },
+    "memory-v9-ci-output/fresh-reader/training-process/process.json": {
+      "bytes": 884,
+      "sha256": "b9fa1dbf73b903b488c4bc73b71fe8a8f8e6e6d9e9c9146b5a262d8297e89c6b"
+    },
+    "memory-v9-ci-output/fresh-reader/training-process/request.json": {
+      "bytes": 3243,
+      "sha256": "c9b546f7b180edbb4793aa3f8bd71d25bb3f5be8a15bc6c0c24adadb2c04a3fd"
+    },
+    "memory-v9-ci-output/fresh-reader/training-process/response.json": {
+      "bytes": 9976,
+      "sha256": "ebfc6379774b24c30b7ec23d91f64f5edc05a65d5cc7a2cc4bba49d61dd54726"
+    },
+    "memory-v9-ci-output/fresh-reader/training-process/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/fresh-reader/training/catalog-procedure-trained.original.json": {
+      "bytes": 11196,
+      "sha256": "85919337186cb53fc7e444327c6bc1bc368e1e45fab2cd3556ec8c6495c7fd36"
+    },
+    "memory-v9-ci-output/fresh-reader/training/catalog-procedure-zero.original.json": {
+      "bytes": 10903,
+      "sha256": "5b3f900be1b3086fb0eb3a706cdec59a1b314c1a6c6b3fc08d0901a286cb87ee"
+    },
+    "memory-v9-ci-output/fresh-reader/training/catalog-semantic-trained.original.json": {
+      "bytes": 11178,
+      "sha256": "ad513528ce501f63e6792239a181bc8234831c824345d22fe727a213fcfdf572"
+    },
+    "memory-v9-ci-output/fresh-reader/training/catalog-semantic-zero.original.json": {
+      "bytes": 10885,
+      "sha256": "a7e635d4a861279859a61eca876953351c4d81e1c8c780c17a46b0aad3ddb56b"
+    },
+    "memory-v9-ci-output/generated.patch": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/legacy-network-process.json": {
+      "bytes": 4445,
+      "sha256": "6ee6d026823f033b3d1c37654f2bc4660943e0f213cce53ad0cc845b12bf2a13"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/activated-artifacts/heads/1-d40632d70abe26f7147e1a76b03c3428e94fe814b78fe0fe7519bd0d24a49a85.head": {
+      "bytes": 559,
+      "sha256": "4c6be2d2297f9ecaf1b48010837447ac9b0269f44aa3afda01e4be373cecc84e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/activated-artifacts/payloads/memory-bundle:1-7b3d58fa30b3132fe42e64c04385aeb4ff2f6b55fae5f5ca43b59c2575784dff.bin": {
+      "bytes": 2633,
+      "sha256": "7b3d58fa30b3132fe42e64c04385aeb4ff2f6b55fae5f5ca43b59c2575784dff"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/activated-artifacts/registries/2ec8612cf8d702f68bfb8e87c00c2aa067c59b593141e2130dde4fdcaf79df3d-8574238e0c1950e4b98abfc4863d5487c33df3c3d155870a3fc47ccb3214db6b.snapshot": {
+      "bytes": 465,
+      "sha256": "8574238e0c1950e4b98abfc4863d5487c33df3c3d155870a3fc47ccb3214db6b"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/activated-artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-0.checkpoint": {
+      "bytes": 513,
+      "sha256": "8f6f33c7975fa424dcf5c2384f5e5f1193951949f73f03bdc51b3db2fa5c203e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/activated-artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-1.checkpoint": {
+      "bytes": 513,
+      "sha256": "a6b82b4fd23f356ce0bfd97052b85ada490d6a2d1e9d4a9499d57854374bd91f"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/activated-artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-2.checkpoint": {
+      "bytes": 712,
+      "sha256": "87ed54ef20d59728910d8dfdc8db132a27cd3b9d67c39fd51d556bb74280f362"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/activated-artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-3.checkpoint": {
+      "bytes": 909,
+      "sha256": "fe283a21e7c45bd7a4fc7e26f4f09027ea00c954774101065e1916bc604b1562"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/activated-artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-4.checkpoint": {
+      "bytes": 918,
+      "sha256": "d0741f35aae8346c8d8a1e7efdfa0614770026b7b5b5a4b44e5f0deaec5c9c6e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/activated-artifacts/witnesses/1-943d381d49ab0af26b6feaa02fb975ae33efff7d5641316837b2a7c58785cad9.witness": {
+      "bytes": 343,
+      "sha256": "7cea2561851133f281d6e323c1728f7451fcab7bf280ea1fab2d19e9156b148e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/activated-artifacts/writer/owner.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/activated-cognitive/.cognitive-store.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/activated-cognitive/cognitive_1.sqlite3": {
+      "bytes": 589824,
+      "sha256": "9bce93ccd0b55e704058cb5c018e959beba17664672e881a250eeb79bd8041de"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/committed-taskflow.json": {
+      "bytes": 10243,
+      "sha256": "f0eea9f784ae25853d68e33fb1d596176082ecb2b254ef7e68dc5fd93fc05106"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/current-taskflow.json": {
+      "bytes": 10234,
+      "sha256": "32f6a23e0c20d5e4e30d89bc2dc3b8a5435fc7b5aebe7149a3f93e635d6150ca"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-committed-fixture-authority/authority.claims": {
+      "bytes": 40,
+      "sha256": "9f51136de4aefb200ef37354d87d063a3a11c7be5cf29b3aaacf98558f8e74c7"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-committed-fixture-authority/authority.json": {
+      "bytes": 262,
+      "sha256": "872665d0991470ac8ae2e37c6c75f4ce192404a442a7f4e141a5e654a042131c"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-committed-fixture-authority/authority.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-committed-receiver.json": {
+      "bytes": 3185,
+      "sha256": "f2dafbe40016dcdbc20f73548bedba5ef839f5c178c61861b3bc2697fd4f66af"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-committed-restarted.json": {
+      "bytes": 3178,
+      "sha256": "8012f541feebd4a68ffd0ab8df80d7af5e05c420957b7b9e8fcfad0c7afa372a"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-current-fixture-authority/authority.claims": {
+      "bytes": 40,
+      "sha256": "e7d26ab8a91487edcd238a63ffacf266453ba9432340d6efeaa2313877cca992"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-current-fixture-authority/authority.json": {
+      "bytes": 262,
+      "sha256": "872665d0991470ac8ae2e37c6c75f4ce192404a442a7f4e141a5e654a042131c"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-current-fixture-authority/authority.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-current-receiver.json": {
+      "bytes": 3181,
+      "sha256": "324f594efd7d99dc7d8df84c42196023d989e2a4c5ebf17239b2837ec84a3dee"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-current-restarted.json": {
+      "bytes": 3176,
+      "sha256": "b4066d8921d4c98629543225c849bb1ec2e32186d6c263dac27d1b25bd92945d"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-normal-fixture-authority/authority.claims": {
+      "bytes": 40,
+      "sha256": "5ac6af08d387423afe45d8902d5aa2b5f66b5295a652e3bfe9145f1bd3a874db"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-normal-fixture-authority/authority.json": {
+      "bytes": 262,
+      "sha256": "872665d0991470ac8ae2e37c6c75f4ce192404a442a7f4e141a5e654a042131c"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-normal-fixture-authority/authority.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-normal-receiver.json": {
+      "bytes": 3174,
+      "sha256": "11b1ffdc47b9d63c23287420c0f0d0dee3c8d4dc6581c4582919ab1ade069dfa"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-prepared-fixture-authority/authority.claims": {
+      "bytes": 40,
+      "sha256": "30d54015be9235ae287e7f8ea59291eb9a2f7403694138a52bcbfd2fc04ae4f9"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-prepared-fixture-authority/authority.json": {
+      "bytes": 262,
+      "sha256": "872665d0991470ac8ae2e37c6c75f4ce192404a442a7f4e141a5e654a042131c"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-prepared-fixture-authority/authority.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-prepared-receiver.json": {
+      "bytes": 3183,
+      "sha256": "916c01ec8d078e7a6789d3156f40e95e4b1ffa1a3a0eff3fc9b766ab2c2ec94e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-prepared-restarted.json": {
+      "bytes": 3177,
+      "sha256": "4e6777ed6b187b012f26a3940ed37c238090c76dbd2b10888c4f854467244aff"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-received-fixture-authority/authority.claims": {
+      "bytes": 40,
+      "sha256": "d0bae92de33905a5cef14f32ce94b0e655da8f2c35f760eec36899c0559d16f0"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-received-fixture-authority/authority.json": {
+      "bytes": 262,
+      "sha256": "872665d0991470ac8ae2e37c6c75f4ce192404a442a7f4e141a5e654a042131c"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-received-fixture-authority/authority.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-received-receiver.json": {
+      "bytes": 3183,
+      "sha256": "ea26a3ac2c40d864b592c7b2c595f70af12d85c6f6f99bebfc40e6eea168383c"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-received-restarted.json": {
+      "bytes": 3177,
+      "sha256": "c6dadba259fc07d8a68774f067e46983c055e70f8fb0a464689defc9b1af68ec"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-successor-fixture-authority/authority.claims": {
+      "bytes": 40,
+      "sha256": "da1f784d03035ff2b02b545c1e1056061634d88173d6590e0514084489abc8cc"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-successor-fixture-authority/authority.json": {
+      "bytes": 262,
+      "sha256": "872665d0991470ac8ae2e37c6c75f4ce192404a442a7f4e141a5e654a042131c"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-successor-fixture-authority/authority.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/migration-successor-receiver.json": {
+      "bytes": 3236,
+      "sha256": "ade8cafdd928625fba1043a3a4d74e1e466aa590a183a236301cfd0dd6f4e168"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/prepared-taskflow.json": {
+      "bytes": 10229,
+      "sha256": "d998df2c351d455df57addd0de7f04526b17eb2b4a60c7ed0d27cda7b9700b04"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/received-taskflow.json": {
+      "bytes": 10226,
+      "sha256": "f55ea9c22f9c3853b10c3ba13fb4cc2ef0179b6195a914a64bc11093a1a86515"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-committed/CURRENT.json": {
+      "bytes": 3225,
+      "sha256": "c4357ffa029f1b3485793f2e736d357fb59c69c7eb328d0a2a1466635772d0c0"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-committed/LOCK": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-committed/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/PAYLOAD": {
+      "bytes": 600421,
+      "sha256": "590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-committed/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/heads/1-d40632d70abe26f7147e1a76b03c3428e94fe814b78fe0fe7519bd0d24a49a85.head": {
+      "bytes": 559,
+      "sha256": "4c6be2d2297f9ecaf1b48010837447ac9b0269f44aa3afda01e4be373cecc84e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-committed/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/payloads/memory-bundle:1-7b3d58fa30b3132fe42e64c04385aeb4ff2f6b55fae5f5ca43b59c2575784dff.bin": {
+      "bytes": 2633,
+      "sha256": "7b3d58fa30b3132fe42e64c04385aeb4ff2f6b55fae5f5ca43b59c2575784dff"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-committed/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/registries/2ec8612cf8d702f68bfb8e87c00c2aa067c59b593141e2130dde4fdcaf79df3d-8574238e0c1950e4b98abfc4863d5487c33df3c3d155870a3fc47ccb3214db6b.snapshot": {
+      "bytes": 465,
+      "sha256": "8574238e0c1950e4b98abfc4863d5487c33df3c3d155870a3fc47ccb3214db6b"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-committed/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-0.checkpoint": {
+      "bytes": 513,
+      "sha256": "8f6f33c7975fa424dcf5c2384f5e5f1193951949f73f03bdc51b3db2fa5c203e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-committed/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-1.checkpoint": {
+      "bytes": 513,
+      "sha256": "a6b82b4fd23f356ce0bfd97052b85ada490d6a2d1e9d4a9499d57854374bd91f"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-committed/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-2.checkpoint": {
+      "bytes": 712,
+      "sha256": "87ed54ef20d59728910d8dfdc8db132a27cd3b9d67c39fd51d556bb74280f362"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-committed/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-3.checkpoint": {
+      "bytes": 909,
+      "sha256": "fe283a21e7c45bd7a4fc7e26f4f09027ea00c954774101065e1916bc604b1562"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-committed/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-4.checkpoint": {
+      "bytes": 918,
+      "sha256": "d0741f35aae8346c8d8a1e7efdfa0614770026b7b5b5a4b44e5f0deaec5c9c6e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-committed/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/witnesses/1-943d381d49ab0af26b6feaa02fb975ae33efff7d5641316837b2a7c58785cad9.witness": {
+      "bytes": 343,
+      "sha256": "7cea2561851133f281d6e323c1728f7451fcab7bf280ea1fab2d19e9156b148e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-committed/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/writer/owner.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-committed/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/cognitive/cognitive_1.sqlite3": {
+      "bytes": 589824,
+      "sha256": "9bce93ccd0b55e704058cb5c018e959beba17664672e881a250eeb79bd8041de"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-committed/transactions/f54f1e9a77a928d3f50d00ceaeb6ade7b817494815cf9b92a1ff98a81ecdf44a.json": {
+      "bytes": 305,
+      "sha256": "c51395ad006482ec0dc57045bcef8d1ca8e4df2699049c2e44d5b02492a9a11e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-current/CURRENT.json": {
+      "bytes": 3225,
+      "sha256": "de0708ddd09166f0b1e9093dab0ace19be9ae085c9f6593c54502a550a291a9e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-current/LOCK": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-current/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/PAYLOAD": {
+      "bytes": 600421,
+      "sha256": "590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-current/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/heads/1-d40632d70abe26f7147e1a76b03c3428e94fe814b78fe0fe7519bd0d24a49a85.head": {
+      "bytes": 559,
+      "sha256": "4c6be2d2297f9ecaf1b48010837447ac9b0269f44aa3afda01e4be373cecc84e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-current/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/payloads/memory-bundle:1-7b3d58fa30b3132fe42e64c04385aeb4ff2f6b55fae5f5ca43b59c2575784dff.bin": {
+      "bytes": 2633,
+      "sha256": "7b3d58fa30b3132fe42e64c04385aeb4ff2f6b55fae5f5ca43b59c2575784dff"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-current/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/registries/2ec8612cf8d702f68bfb8e87c00c2aa067c59b593141e2130dde4fdcaf79df3d-8574238e0c1950e4b98abfc4863d5487c33df3c3d155870a3fc47ccb3214db6b.snapshot": {
+      "bytes": 465,
+      "sha256": "8574238e0c1950e4b98abfc4863d5487c33df3c3d155870a3fc47ccb3214db6b"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-current/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-0.checkpoint": {
+      "bytes": 513,
+      "sha256": "8f6f33c7975fa424dcf5c2384f5e5f1193951949f73f03bdc51b3db2fa5c203e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-current/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-1.checkpoint": {
+      "bytes": 513,
+      "sha256": "a6b82b4fd23f356ce0bfd97052b85ada490d6a2d1e9d4a9499d57854374bd91f"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-current/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-2.checkpoint": {
+      "bytes": 712,
+      "sha256": "87ed54ef20d59728910d8dfdc8db132a27cd3b9d67c39fd51d556bb74280f362"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-current/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-3.checkpoint": {
+      "bytes": 909,
+      "sha256": "fe283a21e7c45bd7a4fc7e26f4f09027ea00c954774101065e1916bc604b1562"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-current/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-4.checkpoint": {
+      "bytes": 918,
+      "sha256": "d0741f35aae8346c8d8a1e7efdfa0614770026b7b5b5a4b44e5f0deaec5c9c6e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-current/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/witnesses/1-943d381d49ab0af26b6feaa02fb975ae33efff7d5641316837b2a7c58785cad9.witness": {
+      "bytes": 343,
+      "sha256": "7cea2561851133f281d6e323c1728f7451fcab7bf280ea1fab2d19e9156b148e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-current/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/writer/owner.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-current/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/cognitive/cognitive_1.sqlite3": {
+      "bytes": 589824,
+      "sha256": "9bce93ccd0b55e704058cb5c018e959beba17664672e881a250eeb79bd8041de"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-current/transactions/b1ed7d28f55428e621dea83f3e1f386435a8b7a94ddfad52053ce800b291cf37.json": {
+      "bytes": 305,
+      "sha256": "f1441a767ca150753d1d241bd30a248c6eee6fa39002b0165c37ce15225e6374"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/CURRENT.json": {
+      "bytes": 3287,
+      "sha256": "5a1b52110d0213c90a35af3e6aa11a24b286145d144c2ad4be32889a965b71a6"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/LOCK": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/01e0c8a56ce05a07e41d18807d0729ea2b6e48469a6aed9508320e1b8408afdf/PAYLOAD": {
+      "bytes": 600483,
+      "sha256": "01e0c8a56ce05a07e41d18807d0729ea2b6e48469a6aed9508320e1b8408afdf"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/01e0c8a56ce05a07e41d18807d0729ea2b6e48469a6aed9508320e1b8408afdf/data/artifacts/heads/1-d40632d70abe26f7147e1a76b03c3428e94fe814b78fe0fe7519bd0d24a49a85.head": {
+      "bytes": 559,
+      "sha256": "4c6be2d2297f9ecaf1b48010837447ac9b0269f44aa3afda01e4be373cecc84e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/01e0c8a56ce05a07e41d18807d0729ea2b6e48469a6aed9508320e1b8408afdf/data/artifacts/payloads/memory-bundle:1-7b3d58fa30b3132fe42e64c04385aeb4ff2f6b55fae5f5ca43b59c2575784dff.bin": {
+      "bytes": 2633,
+      "sha256": "7b3d58fa30b3132fe42e64c04385aeb4ff2f6b55fae5f5ca43b59c2575784dff"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/01e0c8a56ce05a07e41d18807d0729ea2b6e48469a6aed9508320e1b8408afdf/data/artifacts/registries/2ec8612cf8d702f68bfb8e87c00c2aa067c59b593141e2130dde4fdcaf79df3d-8574238e0c1950e4b98abfc4863d5487c33df3c3d155870a3fc47ccb3214db6b.snapshot": {
+      "bytes": 465,
+      "sha256": "8574238e0c1950e4b98abfc4863d5487c33df3c3d155870a3fc47ccb3214db6b"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/01e0c8a56ce05a07e41d18807d0729ea2b6e48469a6aed9508320e1b8408afdf/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-0.checkpoint": {
+      "bytes": 513,
+      "sha256": "8f6f33c7975fa424dcf5c2384f5e5f1193951949f73f03bdc51b3db2fa5c203e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/01e0c8a56ce05a07e41d18807d0729ea2b6e48469a6aed9508320e1b8408afdf/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-1.checkpoint": {
+      "bytes": 513,
+      "sha256": "a6b82b4fd23f356ce0bfd97052b85ada490d6a2d1e9d4a9499d57854374bd91f"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/01e0c8a56ce05a07e41d18807d0729ea2b6e48469a6aed9508320e1b8408afdf/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-2.checkpoint": {
+      "bytes": 712,
+      "sha256": "87ed54ef20d59728910d8dfdc8db132a27cd3b9d67c39fd51d556bb74280f362"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/01e0c8a56ce05a07e41d18807d0729ea2b6e48469a6aed9508320e1b8408afdf/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-3.checkpoint": {
+      "bytes": 909,
+      "sha256": "fe283a21e7c45bd7a4fc7e26f4f09027ea00c954774101065e1916bc604b1562"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/01e0c8a56ce05a07e41d18807d0729ea2b6e48469a6aed9508320e1b8408afdf/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-4.checkpoint": {
+      "bytes": 918,
+      "sha256": "d0741f35aae8346c8d8a1e7efdfa0614770026b7b5b5a4b44e5f0deaec5c9c6e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/01e0c8a56ce05a07e41d18807d0729ea2b6e48469a6aed9508320e1b8408afdf/data/artifacts/witnesses/1-943d381d49ab0af26b6feaa02fb975ae33efff7d5641316837b2a7c58785cad9.witness": {
+      "bytes": 343,
+      "sha256": "7cea2561851133f281d6e323c1728f7451fcab7bf280ea1fab2d19e9156b148e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/01e0c8a56ce05a07e41d18807d0729ea2b6e48469a6aed9508320e1b8408afdf/data/artifacts/writer/owner.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/01e0c8a56ce05a07e41d18807d0729ea2b6e48469a6aed9508320e1b8408afdf/data/cognitive/cognitive_1.sqlite3": {
+      "bytes": 589824,
+      "sha256": "9bce93ccd0b55e704058cb5c018e959beba17664672e881a250eeb79bd8041de"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/PAYLOAD": {
+      "bytes": 600421,
+      "sha256": "590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/heads/1-d40632d70abe26f7147e1a76b03c3428e94fe814b78fe0fe7519bd0d24a49a85.head": {
+      "bytes": 559,
+      "sha256": "4c6be2d2297f9ecaf1b48010837447ac9b0269f44aa3afda01e4be373cecc84e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/payloads/memory-bundle:1-7b3d58fa30b3132fe42e64c04385aeb4ff2f6b55fae5f5ca43b59c2575784dff.bin": {
+      "bytes": 2633,
+      "sha256": "7b3d58fa30b3132fe42e64c04385aeb4ff2f6b55fae5f5ca43b59c2575784dff"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/registries/2ec8612cf8d702f68bfb8e87c00c2aa067c59b593141e2130dde4fdcaf79df3d-8574238e0c1950e4b98abfc4863d5487c33df3c3d155870a3fc47ccb3214db6b.snapshot": {
+      "bytes": 465,
+      "sha256": "8574238e0c1950e4b98abfc4863d5487c33df3c3d155870a3fc47ccb3214db6b"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-0.checkpoint": {
+      "bytes": 513,
+      "sha256": "8f6f33c7975fa424dcf5c2384f5e5f1193951949f73f03bdc51b3db2fa5c203e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-1.checkpoint": {
+      "bytes": 513,
+      "sha256": "a6b82b4fd23f356ce0bfd97052b85ada490d6a2d1e9d4a9499d57854374bd91f"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-2.checkpoint": {
+      "bytes": 712,
+      "sha256": "87ed54ef20d59728910d8dfdc8db132a27cd3b9d67c39fd51d556bb74280f362"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-3.checkpoint": {
+      "bytes": 909,
+      "sha256": "fe283a21e7c45bd7a4fc7e26f4f09027ea00c954774101065e1916bc604b1562"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-4.checkpoint": {
+      "bytes": 918,
+      "sha256": "d0741f35aae8346c8d8a1e7efdfa0614770026b7b5b5a4b44e5f0deaec5c9c6e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/witnesses/1-943d381d49ab0af26b6feaa02fb975ae33efff7d5641316837b2a7c58785cad9.witness": {
+      "bytes": 343,
+      "sha256": "7cea2561851133f281d6e323c1728f7451fcab7bf280ea1fab2d19e9156b148e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/writer/owner.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/cognitive/cognitive_1.sqlite3": {
+      "bytes": 589824,
+      "sha256": "9bce93ccd0b55e704058cb5c018e959beba17664672e881a250eeb79bd8041de"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/transactions/82438e7489cc49b6f9ed4481f9e5b74746d6bcc10334f18c058bb238a1825160.json": {
+      "bytes": 305,
+      "sha256": "b082ddd54dac0c0574ca7b24481167ff0233629cbd2393e1d9d7cb96960f45da"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-final/transactions/9d07bc27884b39797a58ca0161e0486170eae6ece19dece2322fa03d4e72898f.json": {
+      "bytes": 305,
+      "sha256": "0d1b9055d709a5fa0276a52894cf74c7dfac05ca3f53f3aef4c4e91c37c6b551"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-prepared/CURRENT.json": {
+      "bytes": 3225,
+      "sha256": "06a50146d3b45b85b99c0ba74c6881b80eb286cf8f7bebd028be400e2f1d913f"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-prepared/LOCK": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-prepared/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/PAYLOAD": {
+      "bytes": 600421,
+      "sha256": "590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-prepared/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/heads/1-d40632d70abe26f7147e1a76b03c3428e94fe814b78fe0fe7519bd0d24a49a85.head": {
+      "bytes": 559,
+      "sha256": "4c6be2d2297f9ecaf1b48010837447ac9b0269f44aa3afda01e4be373cecc84e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-prepared/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/payloads/memory-bundle:1-7b3d58fa30b3132fe42e64c04385aeb4ff2f6b55fae5f5ca43b59c2575784dff.bin": {
+      "bytes": 2633,
+      "sha256": "7b3d58fa30b3132fe42e64c04385aeb4ff2f6b55fae5f5ca43b59c2575784dff"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-prepared/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/registries/2ec8612cf8d702f68bfb8e87c00c2aa067c59b593141e2130dde4fdcaf79df3d-8574238e0c1950e4b98abfc4863d5487c33df3c3d155870a3fc47ccb3214db6b.snapshot": {
+      "bytes": 465,
+      "sha256": "8574238e0c1950e4b98abfc4863d5487c33df3c3d155870a3fc47ccb3214db6b"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-prepared/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-0.checkpoint": {
+      "bytes": 513,
+      "sha256": "8f6f33c7975fa424dcf5c2384f5e5f1193951949f73f03bdc51b3db2fa5c203e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-prepared/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-1.checkpoint": {
+      "bytes": 513,
+      "sha256": "a6b82b4fd23f356ce0bfd97052b85ada490d6a2d1e9d4a9499d57854374bd91f"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-prepared/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-2.checkpoint": {
+      "bytes": 712,
+      "sha256": "87ed54ef20d59728910d8dfdc8db132a27cd3b9d67c39fd51d556bb74280f362"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-prepared/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-3.checkpoint": {
+      "bytes": 909,
+      "sha256": "fe283a21e7c45bd7a4fc7e26f4f09027ea00c954774101065e1916bc604b1562"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-prepared/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-4.checkpoint": {
+      "bytes": 918,
+      "sha256": "d0741f35aae8346c8d8a1e7efdfa0614770026b7b5b5a4b44e5f0deaec5c9c6e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-prepared/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/witnesses/1-943d381d49ab0af26b6feaa02fb975ae33efff7d5641316837b2a7c58785cad9.witness": {
+      "bytes": 343,
+      "sha256": "7cea2561851133f281d6e323c1728f7451fcab7bf280ea1fab2d19e9156b148e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-prepared/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/writer/owner.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-prepared/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/cognitive/cognitive_1.sqlite3": {
+      "bytes": 589824,
+      "sha256": "9bce93ccd0b55e704058cb5c018e959beba17664672e881a250eeb79bd8041de"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-prepared/transactions/fb2d651e609625acdc2b526637b53c864f74086e88eba623a20814e110036eb0.json": {
+      "bytes": 305,
+      "sha256": "8aee1c76cb0299defc8ab9da2cf5ef0504b82ea716f89627f7e95aa457507ca6"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-received/CURRENT.json": {
+      "bytes": 3225,
+      "sha256": "591fc5f6c2c72c23d99747bc1963311a1c4f430066e6aa72d219670c691aeed6"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-received/LOCK": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-received/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/PAYLOAD": {
+      "bytes": 600421,
+      "sha256": "590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-received/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/heads/1-d40632d70abe26f7147e1a76b03c3428e94fe814b78fe0fe7519bd0d24a49a85.head": {
+      "bytes": 559,
+      "sha256": "4c6be2d2297f9ecaf1b48010837447ac9b0269f44aa3afda01e4be373cecc84e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-received/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/payloads/memory-bundle:1-7b3d58fa30b3132fe42e64c04385aeb4ff2f6b55fae5f5ca43b59c2575784dff.bin": {
+      "bytes": 2633,
+      "sha256": "7b3d58fa30b3132fe42e64c04385aeb4ff2f6b55fae5f5ca43b59c2575784dff"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-received/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/registries/2ec8612cf8d702f68bfb8e87c00c2aa067c59b593141e2130dde4fdcaf79df3d-8574238e0c1950e4b98abfc4863d5487c33df3c3d155870a3fc47ccb3214db6b.snapshot": {
+      "bytes": 465,
+      "sha256": "8574238e0c1950e4b98abfc4863d5487c33df3c3d155870a3fc47ccb3214db6b"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-received/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-0.checkpoint": {
+      "bytes": 513,
+      "sha256": "8f6f33c7975fa424dcf5c2384f5e5f1193951949f73f03bdc51b3db2fa5c203e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-received/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-1.checkpoint": {
+      "bytes": 513,
+      "sha256": "a6b82b4fd23f356ce0bfd97052b85ada490d6a2d1e9d4a9499d57854374bd91f"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-received/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-2.checkpoint": {
+      "bytes": 712,
+      "sha256": "87ed54ef20d59728910d8dfdc8db132a27cd3b9d67c39fd51d556bb74280f362"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-received/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-3.checkpoint": {
+      "bytes": 909,
+      "sha256": "fe283a21e7c45bd7a4fc7e26f4f09027ea00c954774101065e1916bc604b1562"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-received/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-4.checkpoint": {
+      "bytes": 918,
+      "sha256": "d0741f35aae8346c8d8a1e7efdfa0614770026b7b5b5a4b44e5f0deaec5c9c6e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-received/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/witnesses/1-943d381d49ab0af26b6feaa02fb975ae33efff7d5641316837b2a7c58785cad9.witness": {
+      "bytes": 343,
+      "sha256": "7cea2561851133f281d6e323c1728f7451fcab7bf280ea1fab2d19e9156b148e"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-received/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/artifacts/writer/owner.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-received/images/590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70/data/cognitive/cognitive_1.sqlite3": {
+      "bytes": 589824,
+      "sha256": "9bce93ccd0b55e704058cb5c018e959beba17664672e881a250eeb79bd8041de"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/receiver-received/transactions/91339afc287b04589e4b901bae448dbbaa2249f3dbed50f081a429cb42ef89a4.json": {
+      "bytes": 305,
+      "sha256": "5fc39d01ec55af76a967760d0d7dc46afed7774d795527096e005396103598e7"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/source-v1.bin": {
+      "bytes": 600421,
+      "sha256": "590de13e77b79f2f0c66a7a3470b334a0fd8734b1fc969928d7ccadb500cfd70"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/source-v1.manifest.json": {
+      "bytes": 3572,
+      "sha256": "0511668b9d41942d8e7bd3e10cde4d1966bce96ef608e5d7558c62828b9bf9df"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/source-v2.bin": {
+      "bytes": 600483,
+      "sha256": "01e0c8a56ce05a07e41d18807d0729ea2b6e48469a6aed9508320e1b8408afdf"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/source-v2.manifest.json": {
+      "bytes": 3634,
+      "sha256": "dabd420c7ac2dc117f9746240b759e5b0f17c492eff7ab025259e15290d19dc0"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/stale-receiver.json": {
+      "bytes": 3236,
+      "sha256": "ade8cafdd928625fba1043a3a4d74e1e466aa590a183a236301cfd0dd6f4e168"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/target-1.json": {
+      "bytes": 3791,
+      "sha256": "95c6f3c29aeed0acbca2b36309a1a9cfe4918ff8f12756f261e0ec57f339d726"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/target-2.json": {
+      "bytes": 3791,
+      "sha256": "95c6f3c29aeed0acbca2b36309a1a9cfe4918ff8f12756f261e0ec57f339d726"
+    },
+    "memory-v9-ci-output/migration-process.artifacts/taskflow-owner/automation_1.sqlite3": {
+      "bytes": 323584,
+      "sha256": "1a015dbcb4141047bb44d297c8c0503f300714f0c8084f6ef51c752db70bc2d5"
+    },
+    "memory-v9-ci-output/migration-process.json": {
+      "bytes": 133233,
+      "sha256": "257fe7eda479c4ef611ea0177f67b7a6000e13f4a0e8f44f35da0559dc8b923e"
+    },
+    "memory-v9-ci-output/native-language-audit.json": {
+      "bytes": 5330,
+      "sha256": "19da0ff9de00f827024c56a0debf7a28c95f85bd41e44450337279de4c014020"
+    },
+    "memory-v9-ci-output/receipt.json": {
+      "bytes": 106435,
+      "sha256": "93d144a502e1013f5a4c8d181f0b8fb70e26af20e94744b08e6aa1240276e965"
+    },
+    "memory-v9-ci-output/structure-learning-score.json": {
+      "bytes": 147,
+      "sha256": "9f94ffb8ad4c002e918a24c6eb1073c794fd304eee65b9cbf22f24830b12d831"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/MANIFEST.json": {
+      "bytes": 3997,
+      "sha256": "65672bce47b4fa860062afc9a1ab8c184f1817b61cd23994f04784f0849b8b85"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/PROTOCOL.json": {
+      "bytes": 3633,
+      "sha256": "e85d456a004f481537b83dc26a92978da845d7d1ef0a42dcc6276f687b91f3e7"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/child-config.json": {
+      "bytes": 165,
+      "sha256": "7900e65d6e8117021415eda8a05a6084930e9740c449e57ceb36c52856218a50"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/resources.json": {
+      "bytes": 5561,
+      "sha256": "3f36015092d9d2f6f9ed4fed2317be59b69458370ceefd92a2d78cfafe5b76b3"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/samples.jsonl": {
+      "bytes": 13450789,
+      "sha256": "cbfa521e226b26a13df6a353789faaeb9f1d75a0779b160b8b376e342bdbc9fd"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/stdout.log": {
+      "bytes": 203,
+      "sha256": "0a92fc3e5585e9a73dd9744bbe02c4962cc7e38fdd9b6ae7aad03bf56da90d62"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/CHILD.json": {
+      "bytes": 526832,
+      "sha256": "a0e803423a9daf062cefbf6fe9f13f22f238aed48160e0f5bbbdcda7ef0f7527"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/OWNER_EXPORT.json": {
+      "bytes": 15381,
+      "sha256": "a113732a8b6996842ab69a64778d673d2700c697661f0a7402bab82ff6bb9769"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/SELECT_LOCK.json": {
+      "bytes": 4105,
+      "sha256": "9415f295dfe0bc752da1c902224bb359ab421b951589509191728b788cd9b168"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/STAGE.json": {
+      "bytes": 134363,
+      "sha256": "b8ce794af03d94ad006c58f616d8ce1992c3a04153a91df4aa1c85591798429c"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/completed-prefix.json": {
+      "bytes": 137552,
+      "sha256": "0845be214cd525a905d5b09548f9eba928c9b375ca7e26226b3924db5b9d88c8"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/direct-owner-acquisition.json": {
+      "bytes": 14789,
+      "sha256": "4a899a6e16294a2729a12993979a31c68b3a30c3c045780f6fca78224faf24d0"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/direct-owner-future.json": {
+      "bytes": 360472,
+      "sha256": "db762c86fc1cc588ccd8061617d35623d254c206b2e555d6224fb7f0d87febcc"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/direct-owner-retention.json": {
+      "bytes": 121018,
+      "sha256": "d2d3c76264356627dc4587a855ef80d63ced458586f47d4fe1240a6b11e90a3d"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-1-future.json": {
+      "bytes": 294272,
+      "sha256": "1a1ce8561377936ace1c970ea1220593e044e9663f986a0841aff3d9a34de708"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-1-retention.json": {
+      "bytes": 99857,
+      "sha256": "5d2d7a77108bdf9bba5ce8a436b99242493c007b948092b9c6f40cb3b6d59dac"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-1/FIT_REQUEST.json": {
+      "bytes": 16824,
+      "sha256": "d56e8b625d0e5beb376fce8f3ca1ef1a7476fe7c796eb4f02b956b2ab4df32b3"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-1/FIT_RESPONSE.json": {
+      "bytes": 214222,
+      "sha256": "3e15e07e61c7e994acb04c0bdaabab1f2ade8a757c838711610c0e7f38f5a559"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-2-future.json": {
+      "bytes": 365643,
+      "sha256": "149c2a648d37717daf6a4f4ff8f11cc0b310d4239a8d5e1a7216ec9255940f59"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-2-retention.json": {
+      "bytes": 123693,
+      "sha256": "b9f548c998a2f21a2737f8d50fc21dd8a8e2154aab6132bf54f03ff2861e5961"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-2/FIT_REQUEST.json": {
+      "bytes": 16824,
+      "sha256": "46e33279ffcb6020bd5d427d7291d022676b2018f2375e524acc3ea863787d38"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-2/FIT_RESPONSE.json": {
+      "bytes": 207105,
+      "sha256": "63a9f74a27d7982fe1091ce00373f826908652dbc31f613a9ce92c162ad7276e"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-3-future.json": {
+      "bytes": 365639,
+      "sha256": "475663782ee6c58f1ac66d15c5419e354c4871903f6fff521553af9c4edb89d4"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-3-retention.json": {
+      "bytes": 123695,
+      "sha256": "30042567adea580897c37844918edc4b5f67ce34309aef9648ccad4225467def"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-3/FIT_REQUEST.json": {
+      "bytes": 16824,
+      "sha256": "e707e7346c819341068c62b22d398a07dc3f1012587367b787101894dfa29d8a"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-3/FIT_RESPONSE.json": {
+      "bytes": 209732,
+      "sha256": "d00ec04d7c3e51cef93d4a28cd1f79444a13e6d631f9cdd60c4739c2da03831f"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-4-future.json": {
+      "bytes": 365659,
+      "sha256": "85e3aecfe9b8c3f568399eaa13cc60d9e738d732d5bbce9199296993298a4630"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-4-retention.json": {
+      "bytes": 123683,
+      "sha256": "88b035300c71fff670c94ad755dfcb25dc7d159ad78c53a62ba509fc1ad486e5"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-4/FIT_REQUEST.json": {
+      "bytes": 16824,
+      "sha256": "e1f0531aa04022a0e771f0ae0e71ea4e721285564267901b13ab4bda2391b7aa"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-4/FIT_RESPONSE.json": {
+      "bytes": 214720,
+      "sha256": "d188f049c2210d2650624eaa3bb2f1af5e2291b2d1a8471ee3f936b5d4489825"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-5-future.json": {
+      "bytes": 365653,
+      "sha256": "e4ba8dc421f24148d0686c63354790642bc8fccb18667a3340b0041e2a188e3b"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-5-retention.json": {
+      "bytes": 123685,
+      "sha256": "0f3b62ab06f49bd3efae0e3bff9e63de9d64a5db1af3b45c87651a5d23bcbcb9"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-5/FIT_REQUEST.json": {
+      "bytes": 16824,
+      "sha256": "c1d402b2596b3b8c3cf71208936a413ddfb17f274662adf824547f3cdce3d601"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-5/FIT_RESPONSE.json": {
+      "bytes": 220198,
+      "sha256": "9957b183d71364d4200327592044cf7eaec667ea860d2d921ed556b2fbd7a3d7"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-6-future.json": {
+      "bytes": 365637,
+      "sha256": "51cfd8ca386a592ba5cb4ba62191376fa766c5355328901ec1e97d070b715f41"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-6-retention.json": {
+      "bytes": 123689,
+      "sha256": "57b76d09a33d30740739c144fc2bcdfe025aae34d40277dc54c5920247d625e2"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-6/FIT_REQUEST.json": {
+      "bytes": 16824,
+      "sha256": "b780d6eef6973356ee7fe187539f10bc53f2c6d88c03301fc31c750486d5c103"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-6/FIT_RESPONSE.json": {
+      "bytes": 225802,
+      "sha256": "3ca891c74761c690dd2018bf059bbf13393c65d37b93b65c204b4b844972543c"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-7-future.json": {
+      "bytes": 365661,
+      "sha256": "7140f3e43cada1c5f7749086f25d8f39aa4a6151c5e3ee3a3837def72dfe532b"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-7-retention.json": {
+      "bytes": 123693,
+      "sha256": "ace79e70577a7f544494bf6207b3a295610a6f7ae2a34b133b0cff19cb913fd1"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-7/FIT_REQUEST.json": {
+      "bytes": 16824,
+      "sha256": "6511b1e66ebabaea0d87efa6a382bf0a82d202879af2b98ababbe6caf4b02dda"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-7/FIT_RESPONSE.json": {
+      "bytes": 231911,
+      "sha256": "b430bd1bf5a44911611f20b1cab405a976beb4674e8d46df316cd75a5d51eae0"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-8-future.json": {
+      "bytes": 365651,
+      "sha256": "16319f4508696dddf3deedb8aa5edba5bc5944f136f925eecb9ec5812768fc3d"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-8-retention.json": {
+      "bytes": 123694,
+      "sha256": "6a994eb0e791c76114f999b565e2d6f740599d0c421a52b187b1c29ae61d29dc"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-8/FIT_REQUEST.json": {
+      "bytes": 16824,
+      "sha256": "c468db7dabc054d277bb02cbb59932fb568db33bc70a819fbeec4414ed70483d"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/fixed-8/FIT_RESPONSE.json": {
+      "bytes": 238303,
+      "sha256": "778b88c6da3e9e0a358e85e57dec85a39c8190d79fababbcc73d13bff212a442"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/keep-fixed-2-future.json": {
+      "bytes": 365939,
+      "sha256": "dea1ff8e838f6f7d829dec1b7e0e5f02772d7eb976c8402120ceca1d4cc26f33"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/keep-fixed-2-retention.json": {
+      "bytes": 123792,
+      "sha256": "262b81f436728a2bff55e924dc32a1b69730af7c798ce69b14f20cab5c19a97a"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/learned/FIT_REQUEST.json": {
+      "bytes": 24866,
+      "sha256": "66d006c052fcb8fca2717718d1e82e5da71876630107714007ca15b5a113ac2c"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/learned/FIT_RESPONSE.json": {
+      "bytes": 239401,
+      "sha256": "437bdb04d20a0c601fcfa2510cc7b962ad6e6f781ac829914f42dc8cb30e05b0"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/prefix-selected-fixed-future.json": {
+      "bytes": 365935,
+      "sha256": "b6e6305dd0b8299fcb979819747b904a2546c781dda3cec9d6ff87f3835952f9"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/prefix-selected-fixed-retention.json": {
+      "bytes": 123790,
+      "sha256": "0c5349f952992c34e7679249a31275cacb15724ece0e6b270453490244e7f544"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/prefix-selected-learned-future.json": {
+      "bytes": 365925,
+      "sha256": "e4c0d560644a5fd3fda1385e8b0ee3c7d21319996a79894f8129b12556cae021"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/prefix-selected-learned-retention.json": {
+      "bytes": 123780,
+      "sha256": "1f72098018dbabd234b62062ede0358767c2471bb232ef602716b671f8a25cd0"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/selection/FIT_REQUEST.json": {
+      "bytes": 12461,
+      "sha256": "7f1a0c8d72a0fb876ceea7f5d48aa5db7974b0fd072c45286ec082bd4b7ee625"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-0/selection/FIT_RESPONSE.json": {
+      "bytes": 26475,
+      "sha256": "ff0d66e53f65278b25169592ca374e19e5cc260f5c3425011df0257d5faadb8e"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/OWNER_EXPORT.json": {
+      "bytes": 28302,
+      "sha256": "4897dfe7ec01d8062f3e85e82e243c8ebf67fd772167aca7a2b6e62a0e2a1d17"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/SELECT_LOCK.json": {
+      "bytes": 4105,
+      "sha256": "53048a5ee59a97499b90bb32c4c7ee06d1d5771448ebda067df1518655c05ba4"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/STAGE.json": {
+      "bytes": 160237,
+      "sha256": "2796a7919e63eb7812cd7f38bd4271574a59f7048b3ea4574dfb12265a989640"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/completed-prefix.json": {
+      "bytes": 137687,
+      "sha256": "0cdf31aaa86107d381c8824f81a79d21b5604539e8366a8d0f415a9d4e16b353"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/direct-owner-acquisition.json": {
+      "bytes": 27874,
+      "sha256": "dfaf3ec56fbf415a4c83871c7873aab135e8c0e6835a42b9f3895319c852bcfa"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/direct-owner-future.json": {
+      "bytes": 360463,
+      "sha256": "4720a9593d7c486d46a1b8cab688bb1f73c66a4beb3b8c4406b83f4f8ca6fc0c"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/direct-owner-retention.json": {
+      "bytes": 121022,
+      "sha256": "0ebe0f305fd4fa314c7f448562ce9960b544c9d8b37183a696b875bbc6d8d26f"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-1-future.json": {
+      "bytes": 294565,
+      "sha256": "f384a7b084bcab6e18473ff99e56b9aa5fd9038fe19c298b106db52cdd137edf"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-1-retention.json": {
+      "bytes": 99953,
+      "sha256": "62734f16a80d95e4c8acac5147f85f0c29b94f1c6392c218edc045512352d96a"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-1/FIT_REQUEST.json": {
+      "bytes": 27457,
+      "sha256": "9f49dba8c884f184d8b48b6f9939f68bbf54bf8f8d26d88fdafc6912eeefda5e"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-1/FIT_RESPONSE.json": {
+      "bytes": 253844,
+      "sha256": "5c4022f3a81d616d578d556c6a2a0c1f48d55eab751953aee25d8ea69f421797"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-2-future.json": {
+      "bytes": 365944,
+      "sha256": "6100e98e4603cc08d84f345f1c51b624da838326dd62f2c06c6c3caee0d7c667"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-2-retention.json": {
+      "bytes": 123806,
+      "sha256": "ee7cbfa91afdb93c540a243ab3811168916419d8bc9d1829ea9223b7608b8961"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-2/FIT_REQUEST.json": {
+      "bytes": 27457,
+      "sha256": "6d388e0cff51c06ece94fbd5cf58f0098221bc1ffb24062718fe3f0df7b95a83"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-2/FIT_RESPONSE.json": {
+      "bytes": 233597,
+      "sha256": "31eda3c8a7a531adae084bfca153b635302b273fff737730be6fed11ba120d9c"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-3-future.json": {
+      "bytes": 365936,
+      "sha256": "4ae5697dbf4f62f31a989036ffcae6b273d528b3a5a22c3fb921d47131a6a9ff"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-3-retention.json": {
+      "bytes": 123808,
+      "sha256": "c0ab46f43c2f9616d14b8c7725b08c93c7c4d85ccc3d69f42fff13072d1678f2"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-3/FIT_REQUEST.json": {
+      "bytes": 27457,
+      "sha256": "e5a73c79339e0e563910226f8164da8dffe14030c6f77d7114adb0342a2b15fb"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-3/FIT_RESPONSE.json": {
+      "bytes": 231727,
+      "sha256": "0b7bf714d440a625a68354402e016d9b92a5facf86ada356c4e9cbcade66ee99"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-4-future.json": {
+      "bytes": 365940,
+      "sha256": "7b0d3e90974989180432ecd6afdf5782ba70c7caa76ca5b675d93fa467abd8cb"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-4-retention.json": {
+      "bytes": 123806,
+      "sha256": "d2fa88be7132b69be726f8147a9a3602689542a740f824bb7b75a6e563d23729"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-4/FIT_REQUEST.json": {
+      "bytes": 27457,
+      "sha256": "8a6908213d75667b720292a24786b7e5a27eb41d0e32efe9f8e01f20891bc31f"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-4/FIT_RESPONSE.json": {
+      "bytes": 234548,
+      "sha256": "7942575a9afdff59baaae94f5681fa3f5c350a19f88a297cf6f1f229c9f66cf9"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-5-future.json": {
+      "bytes": 365948,
+      "sha256": "e0bc98f6c227fdb8b6afca1162f728f80c71d484a3516d68e85f05f35e25616c"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-5-retention.json": {
+      "bytes": 123806,
+      "sha256": "29bf3bb6ba36c8f809516a36fcbe5a3e64b4ae42bdfbc9773997d9f7698e6f94"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-5/FIT_REQUEST.json": {
+      "bytes": 27457,
+      "sha256": "509698595f68bb6027f85bae80a0e7c9ab1a8e948060f626c999aa2620d766c1"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-5/FIT_RESPONSE.json": {
+      "bytes": 239339,
+      "sha256": "191a86bdf2b5909bdfe61918a1f724a1f60cc3d7e1d2fe14b26bfffaec9d2373"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-6-future.json": {
+      "bytes": 365938,
+      "sha256": "399ed7237d0a3b50cc6f4eb40f8272c16371ff3acc2f60cf1dbb79a6d8cc762f"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-6-retention.json": {
+      "bytes": 123800,
+      "sha256": "4bfaa5c333d5896d17614b1091528ce0509df8e1485a7966cd9e6a94e830ebb9"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-6/FIT_REQUEST.json": {
+      "bytes": 27457,
+      "sha256": "d1ad059797d72ab3474c9c65f4ba2dd4355894dccad22d3b08cdc87c19556f93"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-6/FIT_RESPONSE.json": {
+      "bytes": 244726,
+      "sha256": "cedef660fafaa8882a1b37a79bf09c1858450619326be805cf28bd2ca4c36870"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-7-future.json": {
+      "bytes": 365948,
+      "sha256": "c01fd7be133cc1b9aa336c4e9c7cfb8112f1fd90ddb657aa5285b5f3be71a4cd"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-7-retention.json": {
+      "bytes": 123802,
+      "sha256": "d0616839e05662c5671049d213e738eb2d960e8f6f197eb9d94cd09895dcfc2a"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-7/FIT_REQUEST.json": {
+      "bytes": 27457,
+      "sha256": "dd02f37df853ec6e18eacfbd97b299f8df9c3384c9be0273e0f602bfeaea8a55"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-7/FIT_RESPONSE.json": {
+      "bytes": 250956,
+      "sha256": "70c11a84b1044acf6ce6bbbb64aaa694992a1f4a5c443bcd0d41287cc0b44358"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-8-future.json": {
+      "bytes": 365923,
+      "sha256": "82b2f2d80a077b1cac2fec0bb1b6991d367a97b155672e7a0d90eea8de10bdfd"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-8-retention.json": {
+      "bytes": 123802,
+      "sha256": "d1ab2ef5e13d6842cfe2ec70c01f5c132b2e23c2891e2ae068186111f1566c4b"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-8/FIT_REQUEST.json": {
+      "bytes": 27457,
+      "sha256": "39e28cd6a4e66d42abe01d4c52efbd7463ef3bd7947fa71a9d17f91807bd952c"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/fixed-8/FIT_RESPONSE.json": {
+      "bytes": 257605,
+      "sha256": "78dd6e3443bbc26a7ccf4ba21e395cb6364cebd43acc15940484ae37fdb757bc"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/keep-fixed-2-future.json": {
+      "bytes": 365950,
+      "sha256": "30bbf90580018f9faa2f0e538552831658ebf073eb9bcb55e8c053dbe1164302"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/keep-fixed-2-retention.json": {
+      "bytes": 123806,
+      "sha256": "d42a66088e5cd39ee05a67050eeca8cc56cafad2b0c0021725dbc738338ef363"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/learned/FIT_REQUEST.json": {
+      "bytes": 35499,
+      "sha256": "37f64bd9a3ad78564ff874534359d942d6d83cfb09e7a4203c1e633f33aacc80"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/learned/FIT_RESPONSE.json": {
+      "bytes": 276569,
+      "sha256": "1fc68196081208c22a51cfee7a897e46f6ffe40ef28a17cbfbe3aaf9e251e4f5"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/prefix-selected-fixed-future.json": {
+      "bytes": 365939,
+      "sha256": "d9b63ab523fb49819ff50adecc8f9b856b95186f412f0f88077ebd4511da39c6"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/prefix-selected-fixed-retention.json": {
+      "bytes": 123798,
+      "sha256": "724395cce9ec72038fb75217cdcdac2fe62432a4193876c5c7f616dcf68094bd"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/prefix-selected-learned-future.json": {
+      "bytes": 365932,
+      "sha256": "579cc7fd6a93d294fb2ebc3ffb9f529ebe29a665a968772d5059aa6553400c7d"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/prefix-selected-learned-retention.json": {
+      "bytes": 123804,
+      "sha256": "2f568e3efa0a2886c0b52c5c5b20f70dc74c7d3ce2611d1ead9981818a91c7e6"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/selection/FIT_REQUEST.json": {
+      "bytes": 13013,
+      "sha256": "9807372b92ddb270bc73063117482865b067577c87426f9bc4a180c9b3ab4476"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-1/selection/FIT_RESPONSE.json": {
+      "bytes": 35570,
+      "sha256": "7f80da4cfbc25e75b09eccfca6382641ef0aa58b243f20528d8e6bb249d7dd4d"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/OWNER_EXPORT.json": {
+      "bytes": 41225,
+      "sha256": "84f0777a0f83dc66b5c2d5ba32d49720c268628a653a72270189c93210a0a717"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/SELECT_LOCK.json": {
+      "bytes": 4105,
+      "sha256": "96fea32c0bdad10895c7a65de337134bae6de817aed7de438937a1b56a3e2c42"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/STAGE.json": {
+      "bytes": 185895,
+      "sha256": "c5355d7828705d81d86d60a08b240fbf025409faae997f4c6c39bf240acaf717"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/completed-prefix.json": {
+      "bytes": 137619,
+      "sha256": "fe44474c9db51d920b70849d58fd88cb1ee131111381b04d6dbb279d577a549a"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/direct-owner-acquisition.json": {
+      "bytes": 40961,
+      "sha256": "6d05482d1e3a1c4cdb6dca35bd2ca02ee01d61e54eb6a0fe987e030295e084b2"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/direct-owner-future.json": {
+      "bytes": 360612,
+      "sha256": "7cbcc4a37a5cc070071d90a7082429041a2c8247bf9b9a513f19b52e14ffe727"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/direct-owner-retention.json": {
+      "bytes": 121020,
+      "sha256": "4074234cc02088ffb5571392929efb383133f703bc97b1d6fdc732c4d4c6a22c"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-1-future.json": {
+      "bytes": 294597,
+      "sha256": "19f378feef1a927c29eaa2cc11ecb9fb2c99f6299375a549ebfbbcfebc7c461a"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-1-retention.json": {
+      "bytes": 99964,
+      "sha256": "f3a3b7d56ebb75c2c72c24babf8f067ee15374c5a42a7877e664b45caf2836a9"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-1/FIT_REQUEST.json": {
+      "bytes": 38092,
+      "sha256": "f54611b515179c5d66d6bf503b8723eba25e8f4233f0d9db017e0c98e0f6e723"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-1/FIT_RESPONSE.json": {
+      "bytes": 293290,
+      "sha256": "dc8ac8152c6a9a26baf4bfefae042aceddf7a325ec84b21952723d9aee308fc9"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-2-future.json": {
+      "bytes": 366080,
+      "sha256": "3aa74898b12d18da41a52d6f0a60b6f567d22df14ecfe82722c362bd692eee2b"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-2-retention.json": {
+      "bytes": 123800,
+      "sha256": "00d0c31016005da8d390de95d95127aa8a588e11ae0a57bb519580d284322dde"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-2/FIT_REQUEST.json": {
+      "bytes": 38092,
+      "sha256": "aad0f5af7c6977d4a028664aa140d10af708af1d5771c1a137891d178f767ad6"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-2/FIT_RESPONSE.json": {
+      "bytes": 259851,
+      "sha256": "0d37cac316d87089bdc8f82d27d90c5674dc7341ce378e4d93ed5167e01fd2fa"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-3-future.json": {
+      "bytes": 366096,
+      "sha256": "fc0c633aa7686c00efc889b7be415fe0e4646d637753fb7f4219b0d22b9a4a52"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-3-retention.json": {
+      "bytes": 123804,
+      "sha256": "3df4164480b32088a0a92c36435a449df55a8d8e9fb661cfc86168fc6c4188fc"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-3/FIT_REQUEST.json": {
+      "bytes": 38092,
+      "sha256": "d750079fb2819a51f6f888507def8887e8b420b44dd0277d3cc26911fa5a2d47"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-3/FIT_RESPONSE.json": {
+      "bytes": 253767,
+      "sha256": "5b64e68f2e66e3e956ecad858788f8a2c940b8538a65becdc83fd6d2324d27cc"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-4-future.json": {
+      "bytes": 366082,
+      "sha256": "05dd72a8fba64df36832b4c35e32689a2b975e180b8f64312b4d02c64fb8ec31"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-4-retention.json": {
+      "bytes": 123802,
+      "sha256": "0f449c0251a53d7a9f0cf947dca0971b29a9119521c453b92d83a95826a20a35"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-4/FIT_REQUEST.json": {
+      "bytes": 38092,
+      "sha256": "78ab068d8500c935d2e87a91eae40f9d7edb915a97db27477ebd1f27b962d3e5"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-4/FIT_RESPONSE.json": {
+      "bytes": 254409,
+      "sha256": "d9708b473f8fd18a67115e9113e0e23f491179c7a5096b3fff7b0ba8b0f29deb"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-5-future.json": {
+      "bytes": 366093,
+      "sha256": "7c961c8bd164a13624c96edf7a8ccd0cef4a8d7887e9842bbc49ea7c7698e013"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-5-retention.json": {
+      "bytes": 123810,
+      "sha256": "e0e345b9854b4977892f7b9bf91cbc84397e5f3b2f085089fdf52d2dc97c30e6"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-5/FIT_REQUEST.json": {
+      "bytes": 38092,
+      "sha256": "271ba1e1d93d8e740760785f7e5c05498ddfbc15cd4f1781387027bec34fc73f"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-5/FIT_RESPONSE.json": {
+      "bytes": 257932,
+      "sha256": "7fe5f651bbd314f824158a92c2bf7956db19385ec2849e72b25e8e327e11da94"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-6-future.json": {
+      "bytes": 366093,
+      "sha256": "28a272b9cfa5c4a38bc45f4cfcd9bf6e2ff43b2e7d59da949369171a7ea76358"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-6-retention.json": {
+      "bytes": 123804,
+      "sha256": "bbf5584a4d669616c27103eb20b661adc0b8e253ddfcd21ab607b15be73a6e4c"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-6/FIT_REQUEST.json": {
+      "bytes": 38092,
+      "sha256": "d7fa98510c7589164de3709c1f53a64cd21afe825fafb6b64776edb85f3f4ec6"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-6/FIT_RESPONSE.json": {
+      "bytes": 262631,
+      "sha256": "f625dc192ae8abfccb69d5ebe0c95d4df532de4c5e992c24c85fae2f3a2938a0"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-7-future.json": {
+      "bytes": 366073,
+      "sha256": "7d8884453d5467bf826f8c8f3133144f62564f994c94fba3471e333b1e1cd26b"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-7-retention.json": {
+      "bytes": 123802,
+      "sha256": "7c1de32ed97696dc4d0e54a7b38a071ea114de40d8ffaa13a33f64047805418d"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-7/FIT_REQUEST.json": {
+      "bytes": 38092,
+      "sha256": "bd3f7f338e4894932f930ae8fd0f72beddb6e9d4d770112bdcf82b479d807979"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-7/FIT_RESPONSE.json": {
+      "bytes": 268111,
+      "sha256": "702181e376a0e032781db06d2b6a461a064eb990a2b312662b15ce3db515bf28"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-8-future.json": {
+      "bytes": 366095,
+      "sha256": "5ddea872b1a18471b2a22abe3300668ee752509e7eefced4d654151e00ee76fc"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-8-retention.json": {
+      "bytes": 123794,
+      "sha256": "ea654601d4b8576db9bc78ea4822a96f5337a4127c9efcd0593ab8b8cac75813"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-8/FIT_REQUEST.json": {
+      "bytes": 38092,
+      "sha256": "237a5330756c931194c7ef99ce1ffe0dbb9b3bbf90e853317adbc2711a7e15b8"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/fixed-8/FIT_RESPONSE.json": {
+      "bytes": 274213,
+      "sha256": "ae68fd8f9ec0c08c38a65905faa5a41e765358b3c9902612c07c9c6223eede49"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/keep-fixed-2-future.json": {
+      "bytes": 366087,
+      "sha256": "85663cc17e48f608a8c4d56aecc4b3456d3e8abb6b313be5f655cc13e3561e15"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/keep-fixed-2-retention.json": {
+      "bytes": 123804,
+      "sha256": "c0f025c786fb9ff77c3ffd691658f65a822dd30f206b27afdc35d5eba9d5da41"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/learned/FIT_REQUEST.json": {
+      "bytes": 46134,
+      "sha256": "521c14291ae706f440797042ba992183c71c2fce3003a37e305c217225531c80"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/learned/FIT_RESPONSE.json": {
+      "bytes": 287237,
+      "sha256": "7aaa186ef70dda2828dd3f524be7c5081b180b3a9e430b4786b066a62300840d"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/prefix-selected-fixed-future.json": {
+      "bytes": 366095,
+      "sha256": "86e0a1797a43a17ab97b045b1794a2999ddc1859f50a670736dc00dff2461977"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/prefix-selected-fixed-retention.json": {
+      "bytes": 123812,
+      "sha256": "704cd8d6ded1ba49181114eab33086fb488da7a2a6503f1c956203ee72b80c8f"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/prefix-selected-learned-future.json": {
+      "bytes": 366105,
+      "sha256": "a9bc835a3d5d75e5ae0eb87e36cb23ec98e302a72a41473ba8bd8f74ad6ae900"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/prefix-selected-learned-retention.json": {
+      "bytes": 123806,
+      "sha256": "2f4a711b104c62a99f8a39e2bc429576e7dba129f2cf7bfbae80ccec1e8987c2"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/selection/FIT_REQUEST.json": {
+      "bytes": 13565,
+      "sha256": "01f800f519b49b4f0deca959a3f917e92ab9feceace3838ebfc44e88507c4fb2"
+    },
+    "memory-v9-ci-output/structure-learning.artifacts/trial/stage-2/selection/FIT_RESPONSE.json": {
+      "bytes": 44663,
+      "sha256": "82ce5e1d98ff73a1c4a54a6230543d54cedfe1a49b1d18c85cb74015e1b5a7e1"
+    },
+    "memory-v9-ci-output/structure-learning.json": {
+      "bytes": 552419,
+      "sha256": "7f9f59fa390a09be7cc1d5b2c07ad1d677f9d267b32d00c41c5647897694bff4"
+    },
+    "preparation/PREPARATION.json": {
+      "bytes": 4295,
+      "sha256": "82e1f542c6ce09fef9e4be4271f895470ceb334205c150471f9a35520e8f33b9"
+    },
+    "preparation/V8_PREPARATION.json": {
+      "bytes": 1358,
+      "sha256": "f31ea1a7044f00783da8cffdaf355804032b20751d447b53ccf4409ed469e206"
+    },
+    "preparation/V9_PREPARATION.json": {
+      "bytes": 1331,
+      "sha256": "61641e890ccc832f56d8a90cd9558fe685877159e621aac0c9435aa54a3bc6dc"
+    }
+  },
+  "model_or_measurement_bytes_changed": false,
+  "nonregular_entries": {},
+  "original_file_names_preserved": true,
+  "schema": "hepta.memory.v9.portable-evidence.v1",
+  "symlinks_followed": false
+}
