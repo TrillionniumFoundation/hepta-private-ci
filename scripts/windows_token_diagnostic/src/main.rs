@@ -64,7 +64,7 @@ unsafe fn sid_string(sid: *mut c_void) -> Result<String> {
     let mut len = 0;
     while *text.add(len) != 0 { len += 1; }
     let result = String::from_utf16_lossy(std::slice::from_raw_parts(text, len));
-    LocalFree(text as isize);
+    LocalFree(text.cast());
     Ok(result)
 }
 
@@ -158,7 +158,7 @@ unsafe fn security_report(path: &Path, token: Option<HANDLE>) -> Result<Value> {
             "security_descriptor_hex":hex(std::slice::from_raw_parts(descriptor.cast::<u8>(), GetSecurityDescriptorLength(descriptor) as usize)),
             "access_checks":checks}))
     })();
-    LocalFree(descriptor as isize);
+    LocalFree(descriptor);
     result
 }
 
@@ -173,8 +173,8 @@ unsafe fn set_entry(path: &Path, sid: *mut c_void, mask: u32, mode: i32) -> Resu
         code = SetNamedSecurityInfoW(winutil::to_wide(path).as_ptr() as *mut u16, SE_FILE_OBJECT,
             DACL_SECURITY_INFORMATION, std::ptr::null_mut(), std::ptr::null_mut(), updated, std::ptr::null_mut());
     }
-    if !updated.is_null() { LocalFree(updated as isize); }
-    LocalFree(descriptor as isize);
+    if !updated.is_null() { LocalFree(updated.cast()); }
+    LocalFree(descriptor);
     ensure!(code == 0, "diagnostic SetEntries/SetNamed {}: {code}",path.display());
     Ok(())
 }
@@ -204,7 +204,7 @@ unsafe fn label_low(path: &Path) -> Result<()> {
         ensure!(code==0,"label Low {}: {code}",path.display());
         Ok(())
     })();
-    LocalFree(descriptor as isize);
+    LocalFree(descriptor);
     result
 }
 
