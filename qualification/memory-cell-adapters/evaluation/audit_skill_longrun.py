@@ -18,7 +18,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from audit_longrun_resume import write_bounded_report
+from skill_audit_report import write_bounded_report
 from audit_skill_longrun_ci import audit_ci, audit_monitor, cost_summary
 from audit_skill_longrun_fit import fit_check
 from audit_skill_longrun_support import (
