@@ -7,6 +7,7 @@ use codex_protocol::protocol::CodexErrorInfo;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::Op;
 use codex_protocol::user_input::UserInput;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::responses::ResponsesRequest;
 use core_test_support::responses::ev_assistant_message;
 use core_test_support::responses::ev_completed;
@@ -63,7 +64,7 @@ async fn adds_weighted_initial_and_threshold_reminders(
 ) -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_mock_server().await;
+    let server = FirstPartyMockServer::start().await?;
     let responses = mount_sse_sequence(
         &server,
         vec![
@@ -88,7 +89,8 @@ async fn adds_weighted_initial_and_threshold_reminders(
         ],
     )
     .await;
-    let test = test_codex()
+    let test = server
+        .test_codex()
         .with_config(|config| {
             config.rollout_budget = Some(RolloutBudgetConfig {
                 sampling_token_weight: 2.0,

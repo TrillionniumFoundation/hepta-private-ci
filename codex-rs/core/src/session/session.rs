@@ -1463,6 +1463,8 @@ impl Session {
                 .features
                 .enabled(Feature::ExecutedToolCallMetadata)
                 .then(|| Arc::new(crate::state::ExecutedToolCallRecorder::default()));
+            let first_party_test_transport = thread_extension_data
+                .get::<crate::client::test_transport::FirstPartyTestTransport>();
             let services = SessionServices {
                 // Start with an empty connection set. The initialized set is
                 // published after SessionConfigured so MCP events follow it.
@@ -1534,6 +1536,7 @@ impl Session {
                     attestation_provider,
                     config.http_client_factory(),
                 )
+                .with_first_party_test_transport(first_party_test_transport)?
                 .with_prompt_cache_key_override(
                     crate::guardian::prompt_cache_key_override_for_review_session(
                         &session_configuration.session_source,

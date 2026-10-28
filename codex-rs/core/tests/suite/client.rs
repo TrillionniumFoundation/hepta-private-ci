@@ -59,6 +59,7 @@ use codex_protocol::protocol::ThreadSettingsOverrides;
 use codex_protocol::user_input::UserInput;
 use core_test_support::TestCodexResponsesRequestKind;
 use core_test_support::apps_test_server::AppsTestServer;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::load_default_config_for_test;
 use core_test_support::responses::ResponsesRequest;
 use core_test_support::responses::ev_assistant_message;
@@ -360,13 +361,16 @@ async fn non_openai_responses_requests_include_item_ids_without_passthrough_meta
 async fn sends_audio_urls_to_responses() {
     skip_if_no_network!();
 
-    let server = MockServer::start().await;
+    let server = FirstPartyMockServer::start()
+        .await
+        .expect("owned first-party fixture");
     let response_mock = mount_sse_once(
         &server,
         sse(vec![ev_response_created("resp1"), ev_completed("resp1")]),
     )
     .await;
-    let codex = test_codex()
+    let codex = server
+        .test_codex()
         .with_model_info_override("gpt-5.5", |model_info| {
             model_info.input_modalities.push(InputModality::Audio);
         })
@@ -405,13 +409,14 @@ async fn sends_audio_urls_to_responses() {
 async fn sends_local_audio_to_responses() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = MockServer::start().await;
+    let server = FirstPartyMockServer::start().await?;
     let response_mock = mount_sse_once(
         &server,
         sse(vec![ev_response_created("resp1"), ev_completed("resp1")]),
     )
     .await;
-    let codex = test_codex()
+    let codex = server
+        .test_codex()
         .with_model_info_override("gpt-5.5", |model_info| {
             model_info.input_modalities.push(InputModality::Audio);
         })

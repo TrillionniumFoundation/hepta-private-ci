@@ -1,0 +1,154 @@
+{
+  "schema": "hepta.first-party-fixture-independent-review.v1",
+  "review_base_head": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "manifest_sha256": "0f06ce9abe501975e2963435a11f2de9af4b7650fecfd98511cf78e04d35c2d0",
+  "files_verified": [
+    {
+      "path": "codex-rs/core/src/client.rs",
+      "bytes": 162865,
+      "sha256": "47690559d8cfa7370968cbc0a14a7c93a93a5ad49eae8cb28653d19b563194b1"
+    },
+    {
+      "path": "codex-rs/core/src/client/test_transport.rs",
+      "bytes": 3519,
+      "sha256": "a041e5d680b0e5297ae156eb6a5a1ba884de3498ebdfc5a43d5556854fbcb0ff"
+    },
+    {
+      "path": "codex-rs/core/src/client/transport.rs",
+      "bytes": 2201,
+      "sha256": "4f1e1c17b10fa0c8e5880ef85573ee5039e642c3964ffeeaad49575885c9114d"
+    },
+    {
+      "path": "codex-rs/core/src/client/transport_tests.rs",
+      "bytes": 7253,
+      "sha256": "bfaecafc90d1581d5f0224ebd453abe240ad45a787721f672e80e69216c8fecd"
+    },
+    {
+      "path": "codex-rs/core/src/session/session.rs",
+      "bytes": 80732,
+      "sha256": "4c04203096336cdec22c1375a3b99870b39c8083de47156a8df24e1ebea8ceca"
+    },
+    {
+      "path": "codex-rs/core/src/test_support.rs",
+      "bytes": 7550,
+      "sha256": "8a02e2aa0185019e3fc03eadfbd00c1120405edb2689a1d6637a75d49aadffee"
+    },
+    {
+      "path": "codex-rs/core/tests/common/first_party.rs",
+      "bytes": 1975,
+      "sha256": "b13ca96c7f50aa82d115f5cd22c8ad1b550df7add1cd092637d0120da1eff4c6"
+    },
+    {
+      "path": "codex-rs/core/tests/common/lib.rs",
+      "bytes": 22527,
+      "sha256": "4f3948f672794b3a65f43cb51532f32c66c0beca616fde707a1d11520d633bd4"
+    },
+    {
+      "path": "codex-rs/core/tests/common/test_codex.rs",
+      "bytes": 50120,
+      "sha256": "a0934450c964b963a473c16beaac1216bcedf0574bc2a8291741fbd0722ec7f4"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/additional_context.rs",
+      "bytes": 18923,
+      "sha256": "12dc0588ceb5e8dcc30f0bdfb005c3253d2631f28f37611d6b68615ac0e9fe40"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/client.rs",
+      "bytes": 133677,
+      "sha256": "5da469e2c40d86fae8b2b09956aa2ceee200bc2225ca00c9e41f00aa8a6aec29"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/context_annotations.rs",
+      "bytes": 9924,
+      "sha256": "500d63e898c83dc2061f920315fde027c43bc024714e9ffc67923deb207afada"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/current_time_reminder.rs",
+      "bytes": 19449,
+      "sha256": "dbea581c44578870182583d523761cc725c85953a8c67efccde414de59b07126"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/first_party_transport.rs",
+      "bytes": 6583,
+      "sha256": "b64c301efd0cc9fe64b2d09fd36c93fe1e2d56be437864adab06cf8995425632"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/image_rollout.rs",
+      "bytes": 18497,
+      "sha256": "acb521eb0b1c42f4cb50d6991623781563d0cebd1863f82a31a20165c0f1f3df"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/mod.rs",
+      "bytes": 4918,
+      "sha256": "269fa8a894085582ac27792a7ea8160be3a748536ff0293454343dd510e46ea8"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/model_switching.rs",
+      "bytes": 53575,
+      "sha256": "29fca2225f6eb4f771a7fa7488c5c7149cb7d714f64e4d2a16e73fedaa1ab108"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/responses_lite.rs",
+      "bytes": 23132,
+      "sha256": "36a813b39e48f31a3658c81b14221fd32e9ca2bff6813390cd75d5c69d167ac8"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/rollout_budget.rs",
+      "bytes": 17377,
+      "sha256": "f3ec8f61c8ad304ae2ea659b31a4463933a1dd788620d170adc30ee992366855"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/skills.rs",
+      "bytes": 12114,
+      "sha256": "a8064a96e25edc86414ceb7539560d29aaf5bc9523698feaa5f5acb517d12c3c"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/subagent_notifications.rs",
+      "bytes": 106614,
+      "sha256": "3b80ff6d98464e00076dd99a9023383f91af57e961350c3c704a4d6f098be2cd"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/token_budget.rs",
+      "bytes": 61928,
+      "sha256": "0718bcf02438ce2c156bb33bcdf911cd3ddbce3a418357d5dd04c2e563abc668"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/view_image.rs",
+      "bytes": 56761,
+      "sha256": "f2dabe823afaa99c93540617ac432219f6a21f09ee5771b177bd0fb87e5c87b1"
+    },
+    {
+      "path": "codex-rs/ext/extension-api/src/registry.rs",
+      "bytes": 12288,
+      "sha256": "666e7575a152846c4214e4aee4f17b8bfd30cf572a4c0e75892b65f0ebd5ca16"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/CI_792_FIRST_PARTY_TRANSPORT.json",
+      "bytes": 18307,
+      "sha256": "e4daf6da82bbe1360b9fef80b1204694b93df6b7f220cb26c4517d303507d09f"
+    }
+  ],
+  "source_review": {
+    "read_all_24_source_diffs": true,
+    "read_all_new_transport_fixture_tests": true,
+    "checked_existing_http_transport_trait_and_endpoint_auth_send_order": true,
+    "production_allowlist_unchanged": true,
+    "ordinary_loopback_and_bedrock_negative_assertions_preserved": true,
+    "final_destination_revalidated": true,
+    "owned_listener_retained": true,
+    "ambient_proxy_and_redirect_disabled": true,
+    "thread_lifecycle_contributors_preserved_on_clone": true,
+    "compiled_library_test_support_explicitly_disclosed": true,
+    "no_obvious_source_blocker": true
+  },
+  "execution": {
+    "new_rust_tests_run": false,
+    "reason": "Sparse local checkout lacks workspace member aws-auth before compilation; native CI required."
+  },
+  "not_claimed": [
+    "live first-party TLS or authorization",
+    "native compilation or test success",
+    "production deployment qualification"
+  ]
+}

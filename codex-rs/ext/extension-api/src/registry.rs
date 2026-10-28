@@ -174,7 +174,18 @@ impl<C: Sync> ExtensionRegistryBuilder<C> {
     }
 }
 
+impl<C: Clone + Sync> ExtensionRegistryBuilder<C> {
+    /// Extends an immutable registry without dropping or reordering its contributions.
+    /// The original registry and all shared contributor identities remain intact.
+    pub fn from_registry(registry: &ExtensionRegistry<C>) -> Self {
+        Self {
+            registry: registry.clone(),
+        }
+    }
+}
+
 /// Immutable typed registry produced after extensions are installed.
+#[derive(Clone)]
 pub struct ExtensionRegistry<C: Sync> {
     event_sink: Arc<dyn ExtensionEventSink>,
     thread_lifecycle_contributors: Vec<Arc<dyn ThreadLifecycleContributor<C>>>,

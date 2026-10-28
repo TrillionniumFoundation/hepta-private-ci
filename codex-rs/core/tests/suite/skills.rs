@@ -20,6 +20,7 @@ use codex_skills_extension::install;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_path_uri::PathUri;
 use core_test_support::create_directory_symlink;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::responses::ev_assistant_message;
 use core_test_support::responses::ev_completed;
 use core_test_support::responses::ev_response_created;
@@ -73,11 +74,13 @@ async fn user_turn_includes_skill_instructions() -> Result<()> {
     );
     skip_if_no_network!(Ok(()));
 
-    let server = start_mock_server().await;
+    let server = FirstPartyMockServer::start().await?;
     let skill_body = "skill body";
-    let mut builder = test_codex().with_workspace_setup(move |cwd, fs| async move {
-        write_repo_skill(cwd, fs, "demo", "demo skill", skill_body).await
-    });
+    let mut builder = server
+        .test_codex()
+        .with_workspace_setup(move |cwd, fs| async move {
+            write_repo_skill(cwd, fs, "demo", "demo skill", skill_body).await
+        });
     let test = builder.build_with_auto_env(&server).await?;
 
     let skill_path = test

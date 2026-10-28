@@ -67,6 +67,7 @@ mod exec_policy;
 #[cfg(not(target_os = "windows"))]
 mod extension_sandbox;
 mod external_auth;
+mod first_party_transport;
 mod fork_thread;
 mod git_enrichment;
 mod guardian_mcp_elicitation;
