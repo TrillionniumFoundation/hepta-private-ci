@@ -6,14 +6,14 @@ use std::time::Instant;
 use codex_hepta_types::Digest32;
 
 use crate::AssociativeMemoryAbstentionV1;
-use crate::AssociativeMemoryCellV1;
+use crate::memory_parameter_cell_v9::MemoryParameterCellV9;
 use crate::AssociativeMemoryError;
 use crate::AssociativeMemoryPredictionV1;
 use crate::memory_population::MemoryCellPopulationV2;
 use crate::memory_population_cost::MemoryPopulationCostV2;
 
 pub(super) struct PopulationCache {
-    entries: BTreeMap<usize, (u64, AssociativeMemoryCellV1)>,
+    entries: BTreeMap<usize, (u64, MemoryParameterCellV9)>,
     budget: u64,
     reads: u64,
     wakes: u64,
@@ -132,7 +132,11 @@ impl MemoryCellPopulationV2 {
                 kind: self.kind,
                 value: None,
                 confidence: 0.0,
-                confidence_kind: "uncalibrated-softmax",
+                confidence_kind: if self.numeric_profile() == crate::memory_byte_cell_v9::MEMORY_BYTE_NUMERIC_PROFILE_V9 {
+                    "uncalibrated-minimum-byte-bit-margin"
+                } else {
+                    "uncalibrated-softmax"
+                },
                 source_ids: Vec::new(),
                 artifact_digest: self.digest.to_string(),
                 parameter_digest: self.parameter_digest.to_string(),
@@ -149,7 +153,7 @@ impl MemoryCellPopulationV2 {
             }
             let started = Instant::now();
             let shard = &self.shards[index];
-            let loaded = AssociativeMemoryCellV1::from_bytes(
+            let loaded = MemoryParameterCellV9::from_bytes(
                 shard.payload.as_bytes(),
                 Digest32::of_bytes(shard.payload.as_bytes()),
             );

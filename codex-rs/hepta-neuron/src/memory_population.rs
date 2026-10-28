@@ -13,7 +13,7 @@ use codex_hepta_cognitive_types::MemoryCellKindV1;
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
 
-use crate::AssociativeMemoryCellV1;
+use crate::memory_parameter_cell_v9::MemoryParameterCellV9;
 use crate::AssociativeMemoryError;
 use crate::memory_population_cache::PopulationCache;
 use crate::memory_population_cost::MemoryPopulationCostV2;
@@ -50,6 +50,7 @@ pub struct MemoryCellPopulationV2 {
     pub(super) digest: Digest32,
     pub(super) parameter_digest: Digest32,
     head_digest: Digest32,
+    numeric_profile: String,
     population: bool,
     routing_source_cut: Option<Digest32>,
     supports: BTreeMap<String, Vec<String>>,
@@ -80,8 +81,9 @@ impl MemoryCellPopulationV2 {
         let header: Schema =
             serde_json::from_slice(bytes).map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
         let (kind, population, shards, routes, lineage, routing_source_cut) =
-            if header.schema == "hepta.memory.associative-native.v1" {
-                let model = AssociativeMemoryCellV1::from_bytes(bytes, expected)?;
+            if header.schema == "hepta.memory.associative-native.v1"
+                || header.schema == crate::memory_byte_cell_v9::SCHEMA {
+                let model = MemoryParameterCellV9::from_bytes(bytes, expected)?;
                 (
                     model.kind(),
                     false,
@@ -138,13 +140,15 @@ impl MemoryCellPopulationV2 {
         let mut parameter_parts = b"hepta.memory.population.parameters.v2".to_vec();
         let mut head_parts = b"hepta.memory.population.heads.v2".to_vec();
         let mut single_digests = None;
+        let mut numeric_profile = None;
         for (index, shard) in shards.iter().enumerate() {
             let digest = shard
                 .digest
                 .parse()
                 .map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
-            let model = AssociativeMemoryCellV1::from_bytes(shard.payload.as_bytes(), digest)?;
-            if model.kind() != kind {
+            let model = MemoryParameterCellV9::from_bytes(shard.payload.as_bytes(), digest)?;
+            if model.kind() != kind
+                || numeric_profile.is_some_and(|profile| profile != model.numeric_profile()) {
                 return Err(AssociativeMemoryError::InvalidArtifact);
             }
             let declared: BTreeSet<_> = model.lineage_sources().iter().cloned().collect();
@@ -161,7 +165,8 @@ impl MemoryCellPopulationV2 {
                 }
             }
             sources.extend(declared);
-            shard_costs.push(ShardCost::of(&model)?);
+            numeric_profile = Some(model.numeric_profile());
+            shard_costs.push(model.cost()?);
             parameter_parts.extend_from_slice(model.parameters_digest().as_array());
             head_parts.extend_from_slice(model.head_digest().as_array());
             single_digests = Some((model.parameters_digest(), model.head_digest()));
@@ -203,6 +208,7 @@ impl MemoryCellPopulationV2 {
             digest: expected,
             parameter_digest,
             head_digest,
+            numeric_profile: numeric_profile.ok_or(AssociativeMemoryError::InvalidArtifact)?.to_string(),
             population,
             routing_source_cut,
             supports,
@@ -223,6 +229,9 @@ impl MemoryCellPopulationV2 {
     }
     pub fn head_digest(&self) -> Digest32 {
         self.head_digest
+    }
+    pub fn numeric_profile(&self) -> &str {
+        &self.numeric_profile
     }
     pub fn kind(&self) -> MemoryCellKindV1 {
         self.kind

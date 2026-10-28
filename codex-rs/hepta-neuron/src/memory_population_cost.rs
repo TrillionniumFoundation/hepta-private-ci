@@ -17,7 +17,7 @@ pub(super) struct ShardCost {
 }
 
 impl ShardCost {
-    pub fn of(model: &AssociativeMemoryCellV1) -> Result<Self, AssociativeMemoryError> {
+    pub fn of_catalog(model: &AssociativeMemoryCellV1) -> Result<Self, AssociativeMemoryError> {
         let arrays = &model.model.arrays;
         Ok(Self {
             parameters: (arrays.input_weights.len()

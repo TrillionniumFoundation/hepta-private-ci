@@ -12,7 +12,6 @@ use codex_hepta_learning_artifacts::LearningArtifactManifestV2;
 use codex_hepta_learning_artifacts::ProvenanceModeV1;
 use codex_hepta_memory::MemoryCellOwnerSnapshotV1;
 use codex_hepta_neuron::ASSOCIATIVE_MEMORY_ADDRESS_PROFILE_V1;
-use codex_hepta_neuron::ASSOCIATIVE_MEMORY_NUMERIC_PROFILE_V1;
 use codex_hepta_neuron::MemoryCellPopulationV2;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -305,8 +304,11 @@ impl LoadedMemoryCellBundleV1 {
         }
         manifest.runtime_tuple_digest = Digest32::of_bytes(&runtime);
         manifest.objective_class_digest = Digest32::of_bytes(b"hepta.memory.typed-read.v1");
+        if self.semantic.numeric_profile() != self.procedure.numeric_profile() {
+            return Err("memory parameter numeric profiles differ".to_string());
+        }
         manifest.compatibility_digest =
-            Digest32::of_bytes(ASSOCIATIVE_MEMORY_NUMERIC_PROFILE_V1.as_bytes());
+            Digest32::of_bytes(self.semantic.numeric_profile().as_bytes());
         manifest.schema_profile_digest = Digest32::of_bytes(self.schema.as_bytes());
         manifest.normalization_digest =
             Digest32::of_bytes(ASSOCIATIVE_MEMORY_ADDRESS_PROFILE_V1.as_bytes());
