@@ -74,6 +74,7 @@ pub struct MemoryCellAddressWorkerV1 {
     config: MemoryCellAddressWorkerConfigV1,
     policy_digest: ContractDigestV1,
     session: Mutex<Option<WorkerSession>>,
+    last_validated_response: Mutex<Option<Vec<u8>>>,
     counters: Counters,
 }
 
@@ -86,6 +87,7 @@ impl MemoryCellAddressWorkerV1 {
             config,
             policy_digest,
             session: Mutex::new(None),
+            last_validated_response: Mutex::new(None),
             counters: Counters::default(),
         };
         let session = tokio::time::timeout(worker.config.startup_timeout, worker.spawn())
@@ -108,6 +110,14 @@ impl MemoryCellAddressWorkerV1 {
             reported_wall_nanoseconds: count.wall.load(Ordering::Relaxed),
             host_request_nanoseconds: count.host.load(Ordering::Relaxed),
         }
+    }
+
+    /// Drain the most recent validated wire response, at most 32 KiB plus newline.
+    /// This diagnostic slot grants no authority and is overwritten on success.
+    /// Concurrent consumers must bind its query/request digests themselves; it
+    /// is not an invocation log. Callers tracing a sequence drain after each read.
+    pub async fn take_last_validated_response(&self) -> Option<Vec<u8>> {
+        self.last_validated_response.lock().await.take()
     }
 
     async fn spawn(&self) -> Result<WorkerSession, String> {
@@ -244,6 +254,7 @@ impl MemoryCellAddressWorkerV1 {
         session.require_idle(&self.counters.stdout).await?;
         let (decision, cost) =
             bound.validate_response(&response, self.config.model_digest, request)?;
+        *self.last_validated_response.lock().await = Some(response);
         self.counters.responses.fetch_add(1, Ordering::Relaxed);
         self.counters.cpu.fetch_add(
             (cost.processing_cpu_seconds * 1_000_000_000.0) as u64,

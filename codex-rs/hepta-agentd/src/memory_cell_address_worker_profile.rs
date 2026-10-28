@@ -5,6 +5,9 @@ use std::collections::BTreeSet;
 use std::path::Path;
 use std::path::PathBuf;
 
+#[path = "memory_cell_address_worker_profile_v9.rs"]
+mod v9;
+
 pub(super) struct SourceProfile {
     pub required: BTreeSet<PathBuf>,
     pub inventory_directories: Vec<PathBuf>,
@@ -91,6 +94,7 @@ pub(super) fn source_profile(script: &Path, schema: Option<&str>) -> Result<Sour
                 policy,
             )
         }
+        Some("hepta.memory.v9.compatibility-intent-model.v1") => return v9::source_profile(script),
         Some(_) | None => return Err("unregistered address model schema".to_string()),
     };
     required.insert(script.to_path_buf());
@@ -102,3 +106,7 @@ pub(super) fn source_profile(script: &Path, schema: Option<&str>) -> Result<Sour
         policy_files,
     })
 }
+
+#[cfg(test)]
+#[path = "memory_cell_address_worker_profile_v9_tests.rs"]
+mod v9_tests;
