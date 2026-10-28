@@ -349,22 +349,45 @@ The four-level hierarchy, fixed-point event discretization, covariance estimatio
 ### Parameter-field source binding and limited transfer
 
 Engineering reference: **A Parameter Field Theory of LLMs**, repository
-`TrillionniumFoundation/ICLR-2027`, branch `paper-llm-theory`, source pin
-`6bece4950d678986ac30db2f2c1fee0387ba9902`.
-The [optimizer bridge](https://github.com/TrillionniumFoundation/ICLR-2027/blob/6bece4950d678986ac30db2f2c1fee0387ba9902/revision_2026-09-23-r26/appendix/p_optimizer_bridge.tex)
+`TrillionniumFoundation/ICLR-2027`, branch `paper-llm-theory`, complete R45 source
+pin `f8df0a6075f58f3ab9431a889b773cdf8d6e771d`, tree
+`240c0d6728b83017be3c20fb8cebb95f745c2688`, under
+[`revision_2026-09-26-r45`](https://github.com/TrillionniumFoundation/ICLR-2027/tree/f8df0a6075f58f3ab9431a889b773cdf8d6e771d/revision_2026-09-26-r45).
+The [optimizer bridge](https://github.com/TrillionniumFoundation/ICLR-2027/blob/f8df0a6075f58f3ab9431a889b773cdf8d6e771d/revision_2026-09-26-r45/technical/p_optimizer_bridge.tex)
 separates projected multidriver dynamics from the additional scalar restrictions.
-The [gauge/closure analysis](https://github.com/TrillionniumFoundation/ICLR-2027/blob/6bece4950d678986ac30db2f2c1fee0387ba9902/revision_2026-09-23-r26/appendix/at_gauge_aware_field.tex)
+The [gauge/closure analysis](https://github.com/TrillionniumFoundation/ICLR-2027/blob/f8df0a6075f58f3ab9431a889b773cdf8d6e771d/revision_2026-09-26-r45/technical/at_gauge_aware_field.tex)
 separates permutation invariance, declared gauge invariance and finite-mode
 sufficiency. These are assumptions to match, not permission to import an LLM
 role partition unchanged into Hepta or to claim a universal scaling law.
 
-At this pin the latest-pointer document names R25, an R26 manuscript is present,
-and the [R29 workspace](https://github.com/TrillionniumFoundation/ICLR-2027/blob/6bece4950d678986ac30db2f2c1fee0387ba9902/revision_2026-09-23-r29/README.md)
-describes further measurement/identification repairs. The R26 reported adverse
-scalar-driver/closure results are retained, not superseded by merely opening a
-new experiment. This amendment does not rerun those experiments, certify all
-proofs, update the paper repository, or add the paper as a verified Hepta theorem
-source. Existing PAPER_TRACEABILITY/evidence locks and NDU claim levels are unchanged.
+R45's [information, actuation and coefficient-error proofs](https://github.com/TrillionniumFoundation/ICLR-2027/blob/f8df0a6075f58f3ab9431a889b773cdf8d6e771d/revision_2026-09-26-r45/appendix/r44_proofs.tex)
+separate the information available to a policy, its admissible parameter actions,
+and error in the optimizer model. Evaluate information gaps under the assessed
+policy's occupancy and compare the same action space before attributing a gain
+to field representation. A common-class regret transfer needs a uniform error
+budget over that class; a bound for one frozen policy is not that guarantee.
+None of these finite-array results identifies an arbitrary Hepta learning process
+or supplies gradients through discrete owner effects.
+
+The [exact full-vocabulary result](https://github.com/TrillionniumFoundation/ICLR-2027/blob/f8df0a6075f58f3ab9431a889b773cdf8d6e771d/revision_2026-09-26-r45/appendix/r45_exact_group.tex)
+applies to group-constant logit offsets with fixed backbone logits, features and
+grouping. It preserves token likelihood and optimizer updates for that declared
+module; it cannot change within-group token ratios or the frozen backbone.
+The 48 registered cells reuse two pretrained checkpoints and twelve trained
+adapters, rather than providing 48 independent pretrained models. Tracking plus
+quadratic action effort is distinct from language loss and measured compute cost.
+The reported future-path intervals are marginal prediction statements, not
+expected-utility, fixed-calibration conditional or distribution-shift guarantees.
+These restrictions also apply when designing a Hepta adaptation of the module.
+
+The earlier engineering pin `6bece4950d678986ac30db2f2c1fee0387ba9902` had an R25
+latest pointer, an R26 manuscript and an [R29 workspace](https://github.com/TrillionniumFoundation/ICLR-2027/blob/6bece4950d678986ac30db2f2c1fee0387ba9902/revision_2026-09-23-r29/README.md).
+Its adverse scalar-driver and closure results remain historical evidence. R45
+retains adverse outcomes and does not establish neural scalar-driver alignment.
+Updating this engineering binding does not rerun either repository's experiments,
+certify all proofs, qualify a Hepta model or add the paper as a verified Hepta
+theorem source. Existing PAPER_TRACEABILITY/evidence locks, NDU claim levels and
+runtime selection rules are unchanged.
 
 ## 13. Implementation sequence and completion rule
 
