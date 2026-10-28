@@ -4,7 +4,18 @@ This package implements and runs the four requested comparisons: learned
 recovery/regeneration/adaptation/content, task stopping boundaries, temporal
 representation architectures, and bounded CPU scaling. The experiment inventory
 is fixed in `PROTOCOL.json`; `RUNS.json` and `SOURCE_SEAL.json` bind every actual
-run to that source. Results are in `results/study001/` once execution completes.
+run to that source. Study001 is complete: 229 planned runs, 58 serial CPU
+measurements, and 71 passing pre-seal tests. Three resource-related SIGKILL
+attempts were retained and recovered serially with unchanged specifications.
+
+Read [the final report](REPORT.md),
+[comparison tables](results/study001/analysis/COMPARISON_TABLES.md), and
+[independent replay audit](results/study001/SUPPLEMENTARY_AUDIT.json).
+Under the frozen training recipe, the study does not establish a distinct
+dual-channel benefit or a scaling advantage. Value-based stopping improves on
+the fixed rule, but its mean utility does not exceed the directly learned
+contextual threshold. Checkpoints, predictions, source identities, failed
+attempts and measured costs are retained with the results.
 
 ## Exact integration baseline
 
@@ -100,6 +111,8 @@ The checked-in seal must match before running. A source modification creates a
 new study and a new seal; never overwrite historical completed outputs. The
 runner preserves failed logs and execution attempts. Completed runs are skipped
 on recovery and the planned inventory must remain exactly equal.
+Use `--workers 1` on memory-constrained hosts. The original four-worker pass
+and the subsequent serial recovery are both preserved in this study's evidence.
 
 The primary data are public MNIST images and FSDD recordings with split-disjoint
 sources and speakers. Their pairing is constructed, and queries are four literal
