@@ -1,0 +1,568 @@
+{
+  "schema": "hepta.cell-structure.prior-evidence.v1",
+  "candidate_commit": "afa351f8d2958c99032ed127693ce81362dbd630",
+  "candidate_pr": 4173,
+  "candidate_merged": false,
+  "formal_training_source_commit": "c39552216b46f1187526aef4bda073c0a9380c72",
+  "interpretation": "Integrity audit success does not imply structure admission; original negative and unknown outcomes remain unchanged.",
+  "sources": [
+    {
+      "path": "qualification/memory-cell-adapters/README.md",
+      "bytes": 13984,
+      "sha256": "5ee327f88e8822c9ca307295b0ffe4f46dcea180eff58a56aa55792fc62e4b8a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/afa351f8d2958c99032ed127693ce81362dbd630/qualification/memory-cell-adapters/README.md"
+    },
+    {
+      "path": "qualification/memory-cell-adapters/PROTOCOL.json",
+      "bytes": 4773,
+      "sha256": "dba6454fbde7747a3d2d00ad31f46cf0b7d8fe821b079a699b1e54862911b3e2",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/afa351f8d2958c99032ed127693ce81362dbd630/qualification/memory-cell-adapters/PROTOCOL.json"
+    },
+    {
+      "path": "qualification/memory-cell-adapters/evaluation/AUDIT-formal-01.json",
+      "bytes": 314205,
+      "sha256": "f3db43eb2c61c67d7aba57ab9d5131d5f4eb0df41b94066e841c16ef1ccfd64b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/afa351f8d2958c99032ed127693ce81362dbd630/qualification/memory-cell-adapters/evaluation/AUDIT-formal-01.json"
+    },
+    {
+      "path": "qualification/memory-cell-adapters/evaluation/AUDIT-longrun-complete.json",
+      "bytes": 11269,
+      "sha256": "b4ea11a126b2dfa08a51463dc71b182c8fdb7a98d81dbe4de78f8ac1e9f2929f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/afa351f8d2958c99032ed127693ce81362dbd630/qualification/memory-cell-adapters/evaluation/AUDIT-longrun-complete.json"
+    }
+  ],
+  "formal": {
+    "audit_integrity_passed": true,
+    "audit_checks": 1413,
+    "structure": [
+      {
+        "calibration": {
+          "dynamic": {
+            "correct": 15,
+            "count": 16
+          },
+          "rank8": {
+            "correct": 15,
+            "count": 16
+          },
+          "static": {
+            "correct": 14,
+            "count": 16
+          }
+        },
+        "canonical": {
+          "dynamic": {
+            "correct": 8,
+            "count": 8
+          },
+          "rank8": {
+            "correct": 8,
+            "count": 8
+          },
+          "static": {
+            "correct": 8,
+            "count": 8
+          }
+        },
+        "expected_presentations_per_row": 685.7142857142857,
+        "fresh_canonical": {
+          "dynamic": {
+            "correct": 8,
+            "count": 8
+          },
+          "merged": {
+            "correct": 8,
+            "count": 8
+          },
+          "rank8": {
+            "correct": 8,
+            "count": 8
+          },
+          "static": {
+            "correct": 8,
+            "count": 8
+          }
+        },
+        "merge_admitted": false,
+        "merge_calibration": {
+          "correct": 14,
+          "count": 16
+        },
+        "sample_presentations": {
+          "dynamic": 38400,
+          "rank8": 38400,
+          "static": 38400
+        },
+        "seed": 731,
+        "split_admitted": false,
+        "total_parameters": {
+          "dynamic": 10764,
+          "rank8": 10764,
+          "static": 10764
+        }
+      },
+      {
+        "calibration": {
+          "dynamic": {
+            "correct": 15,
+            "count": 16
+          },
+          "rank8": {
+            "correct": 15,
+            "count": 16
+          },
+          "static": {
+            "correct": 15,
+            "count": 16
+          }
+        },
+        "canonical": {
+          "dynamic": {
+            "correct": 8,
+            "count": 8
+          },
+          "rank8": {
+            "correct": 8,
+            "count": 8
+          },
+          "static": {
+            "correct": 8,
+            "count": 8
+          }
+        },
+        "expected_presentations_per_row": 685.7142857142857,
+        "fresh_canonical": {
+          "dynamic": {
+            "correct": 8,
+            "count": 8
+          },
+          "merged": {
+            "correct": 8,
+            "count": 8
+          },
+          "rank8": {
+            "correct": 8,
+            "count": 8
+          },
+          "static": {
+            "correct": 8,
+            "count": 8
+          }
+        },
+        "merge_admitted": false,
+        "merge_calibration": {
+          "correct": 14,
+          "count": 16
+        },
+        "sample_presentations": {
+          "dynamic": 38400,
+          "rank8": 38400,
+          "static": 38400
+        },
+        "seed": 732,
+        "split_admitted": false,
+        "total_parameters": {
+          "dynamic": 10764,
+          "rank8": 10764,
+          "static": 10764
+        }
+      },
+      {
+        "calibration": {
+          "dynamic": {
+            "correct": 15,
+            "count": 16
+          },
+          "rank8": {
+            "correct": 15,
+            "count": 16
+          },
+          "static": {
+            "correct": 15,
+            "count": 16
+          }
+        },
+        "canonical": {
+          "dynamic": {
+            "correct": 8,
+            "count": 8
+          },
+          "rank8": {
+            "correct": 8,
+            "count": 8
+          },
+          "static": {
+            "correct": 8,
+            "count": 8
+          }
+        },
+        "expected_presentations_per_row": 685.7142857142857,
+        "fresh_canonical": {
+          "dynamic": {
+            "correct": 8,
+            "count": 8
+          },
+          "merged": {
+            "correct": 8,
+            "count": 8
+          },
+          "rank8": {
+            "correct": 8,
+            "count": 8
+          },
+          "static": {
+            "correct": 8,
+            "count": 8
+          }
+        },
+        "merge_admitted": false,
+        "merge_calibration": {
+          "correct": 13,
+          "count": 16
+        },
+        "sample_presentations": {
+          "dynamic": 38400,
+          "rank8": 38400,
+          "static": 38400
+        },
+        "seed": 733,
+        "split_admitted": false,
+        "total_parameters": {
+          "dynamic": 10764,
+          "rank8": 10764,
+          "static": 10764
+        }
+      }
+    ],
+    "same_router_parameter_retrieval_pairs": {
+      "deterministic": {
+        "pairs": 2880,
+        "result_equal": 2880,
+        "route_equal": 2880,
+        "source_event_status_reads_equal": 2880
+      },
+      "learned": {
+        "pairs": 2880,
+        "result_equal": 2880,
+        "route_equal": 2880,
+        "source_event_status_reads_equal": 2880
+      },
+      "oracle": {
+        "pairs": 2880,
+        "result_equal": 2880,
+        "route_equal": 2880,
+        "source_event_status_reads_equal": 2880
+      }
+    },
+    "sample_dependence": {
+      "calibration_role_counts": {
+        "compose": 32,
+        "semantic": 16,
+        "skill": 16,
+        "unknown": 16
+      },
+      "distinct_held_composition_pairs": 16,
+      "distinct_training_composition_pairs": 16,
+      "distinct_wording_groups": 32,
+      "duplicated_text_group_multiplicities": {
+        "8": 4
+      },
+      "event_shifts": [
+        0,
+        7,
+        11
+      ],
+      "iid_trials": false,
+      "predeclared_joint_skips": 1728,
+      "raw_arm_records": 25920,
+      "role_counts_per_context": {
+        "compose": 128,
+        "semantic": 64,
+        "skill": 64,
+        "unknown": 64
+      },
+      "scored_arm_records": 24192,
+      "seeds": [
+        731,
+        732,
+        733
+      ],
+      "unique_query_ids": 320,
+      "unique_query_texts": 292,
+      "unique_query_texts_by_role": {
+        "compose": 128,
+        "semantic": 64,
+        "skill": 64,
+        "unknown": 36
+      }
+    },
+    "router_calibration_diagnosis": [
+      {
+        "explanation": "Every candidate has calibration false accepts; fixed fallback rejects all.",
+        "seed": 731,
+        "selection_used_held": false,
+        "threshold": 1.1,
+        "trials": [
+          {
+            "known_correct": 52,
+            "threshold": 0.4,
+            "unknown_false_accept": 7
+          },
+          {
+            "known_correct": 52,
+            "threshold": 0.5,
+            "unknown_false_accept": 7
+          },
+          {
+            "known_correct": 50,
+            "threshold": 0.6,
+            "unknown_false_accept": 7
+          },
+          {
+            "known_correct": 48,
+            "threshold": 0.7,
+            "unknown_false_accept": 7
+          },
+          {
+            "known_correct": 47,
+            "threshold": 0.8,
+            "unknown_false_accept": 7
+          },
+          {
+            "known_correct": 44,
+            "threshold": 0.9,
+            "unknown_false_accept": 6
+          }
+        ]
+      },
+      {
+        "explanation": "Every candidate has calibration false accepts; fixed fallback rejects all.",
+        "seed": 732,
+        "selection_used_held": false,
+        "threshold": 1.1,
+        "trials": [
+          {
+            "known_correct": 54,
+            "threshold": 0.4,
+            "unknown_false_accept": 7
+          },
+          {
+            "known_correct": 54,
+            "threshold": 0.5,
+            "unknown_false_accept": 7
+          },
+          {
+            "known_correct": 52,
+            "threshold": 0.6,
+            "unknown_false_accept": 7
+          },
+          {
+            "known_correct": 51,
+            "threshold": 0.7,
+            "unknown_false_accept": 6
+          },
+          {
+            "known_correct": 46,
+            "threshold": 0.8,
+            "unknown_false_accept": 6
+          },
+          {
+            "known_correct": 41,
+            "threshold": 0.9,
+            "unknown_false_accept": 6
+          }
+        ]
+      },
+      {
+        "explanation": "Every candidate has calibration false accepts; fixed fallback rejects all.",
+        "seed": 733,
+        "selection_used_held": false,
+        "threshold": 1.1,
+        "trials": [
+          {
+            "known_correct": 46,
+            "threshold": 0.4,
+            "unknown_false_accept": 7
+          },
+          {
+            "known_correct": 46,
+            "threshold": 0.5,
+            "unknown_false_accept": 7
+          },
+          {
+            "known_correct": 44,
+            "threshold": 0.6,
+            "unknown_false_accept": 7
+          },
+          {
+            "known_correct": 43,
+            "threshold": 0.7,
+            "unknown_false_accept": 7
+          },
+          {
+            "known_correct": 41,
+            "threshold": 0.8,
+            "unknown_false_accept": 7
+          },
+          {
+            "known_correct": 38,
+            "threshold": 0.9,
+            "unknown_false_accept": 6
+          }
+        ]
+      }
+    ],
+    "joint_budget_comparison": [
+      {
+        "joint_checkpoint_bytes": 90510,
+        "joint_output_loss_weights": {
+          "bits": 4,
+          "op0": 1.0,
+          "op1": 1.0,
+          "op2": 1.0,
+          "op3": 1.0
+        },
+        "joint_parameters": 21544,
+        "joint_total_feature_presentations": 38400,
+        "seed": 731,
+        "semantic_plus_skill_checkpoint_bytes": 86832,
+        "semantic_plus_skill_plus_router_checkpoint_bytes": 149004,
+        "separate_parameters": 21544,
+        "separate_total_feature_presentations": 76800,
+        "task_supervision_presentations": {
+          "joint": 38400,
+          "semantic": 38400,
+          "skill": 38400
+        }
+      },
+      {
+        "joint_checkpoint_bytes": 90520,
+        "joint_output_loss_weights": {
+          "bits": 4,
+          "op0": 1.0,
+          "op1": 1.0,
+          "op2": 1.0,
+          "op3": 1.0
+        },
+        "joint_parameters": 21544,
+        "joint_total_feature_presentations": 38400,
+        "seed": 732,
+        "semantic_plus_skill_checkpoint_bytes": 86753,
+        "semantic_plus_skill_plus_router_checkpoint_bytes": 148950,
+        "separate_parameters": 21544,
+        "separate_total_feature_presentations": 76800,
+        "task_supervision_presentations": {
+          "joint": 38400,
+          "semantic": 38400,
+          "skill": 38400
+        }
+      },
+      {
+        "joint_checkpoint_bytes": 90565,
+        "joint_output_loss_weights": {
+          "bits": 4,
+          "op0": 1.0,
+          "op1": 1.0,
+          "op2": 1.0,
+          "op3": 1.0
+        },
+        "joint_parameters": 21544,
+        "joint_total_feature_presentations": 38400,
+        "seed": 733,
+        "semantic_plus_skill_checkpoint_bytes": 86870,
+        "semantic_plus_skill_plus_router_checkpoint_bytes": 149027,
+        "separate_parameters": 21544,
+        "separate_total_feature_presentations": 76800,
+        "task_supervision_presentations": {
+          "joint": 38400,
+          "semantic": 38400,
+          "skill": 38400
+        }
+      }
+    ],
+    "limitations": [
+      "Authored finite inventory: 8 entities, 8 workflows, four-bit numeric fields; no naturalistic or universal-memory evidence.",
+      "The 320 held queries and 32 wording groups recur across 3 optimizer seeds and 3 deterministic event shifts; rows are correlated, not independent trials.",
+      "Wording groups are distinct templates, not statistically established independent samples; no IID confidence interval is justified.",
+      "Same-router retrieval is exact typed SQLite lookup, not a general free-form RAG system. Parameter and retrieval results are identical here.",
+      "Oracle routing supplies the address; canonical cached address vectors are content inputs. This isolates finite memory readout from language understanding.",
+      "Learned routing rejects all because calibration fails the predefined zero-false-accept rule, not because addressed parameter memory cannot return its facts.",
+      "Head-only is post-training removal of B with the trained head retained, not a separately optimized head-only baseline; zero is the untrained initial checkpoint.",
+      "The parent readout has no intervening nonlinearity: W_head(I+BA)x+b is affine in the frozen embedding. A separately trained dense linear head has sufficient expressivity to represent that solution; the ablation does not prove adapter superiority. Frozen shared heads constrain later child updates.",
+      "The joint model matches parameters and per-task supervision presentations; the separate pair sees twice as many feature presentations and has an easier factored input contract.",
+      "The composition score checks route, status, final value and opcode sequence; equal outputs may mask wrong policies. The extra full-intermediate-trace diagnostic is not a replacement endpoint.",
+      "Split/merge quality gates use direct paraphrase calibration; fresh runtime uses canonical address features. Neither rejected candidate was promoted into the active memory graph.",
+      "Topology and interpreter are fixed by the experiment; autonomous graph formation and generic neuron derivation are not demonstrated.",
+      "Deletion is retained-data clean rebuilding; lifecycle sleep evicts the owner reference and does not guarantee physical RSS reclamation.",
+      "The reader is a Python adapter owner; the new tensor model profile is not integrated into the native Hepta owner.",
+      "Sequential arms share process/model loads and receive precomputed embeddings; arm timing slices are not independent deployment or end-to-end latencies.",
+      "Full encoder extraction, training, data/feature/source storage and candidate search costs must be counted; neither storage compression nor full-cost superiority is established.",
+      "The 127 MB encoder is a lifecycle asset, not a measured per-cell resident allocation. A canonical-only reader can reuse stored address embeddings; learned or joint routing/readout requires query embeddings, precomputed in this study.",
+      "Hash and instrumentation checks verify preserved evidence and the declared execution path, not a hostile-process confidentiality boundary or an independent physical replication."
+    ]
+  },
+  "longrun": {
+    "audit_integrity_passed": true,
+    "audit_checks": 7198,
+    "completed_cycles": 192,
+    "quality": {
+      "exact_sql": {
+        "active": {
+          "correct": 1512,
+          "count": 1512
+        },
+        "changed": {
+          "correct": 207,
+          "count": 207
+        },
+        "retention": {
+          "correct": 1305,
+          "count": 1305
+        },
+        "revoked": {
+          "correct": 24,
+          "count": 24
+        }
+      },
+      "parameter": {
+        "active": {
+          "correct": 1512,
+          "count": 1512
+        },
+        "changed": {
+          "correct": 207,
+          "count": 207
+        },
+        "retention": {
+          "correct": 1305,
+          "count": 1305
+        },
+        "revoked": {
+          "correct": 24,
+          "count": 24
+        }
+      }
+    },
+    "cost_boundary": {
+      "between_monitored_sample_windows_ns": 398262852720,
+      "completed_children_including_initial_reads_cpu_seconds": 1700.5072890000006,
+      "completed_children_including_initial_reads_wall_ns": 1740307805997,
+      "full_cost_exact": false,
+      "gap_cpu_or_memory_cost": null,
+      "interrupted_attempt_cpu_seconds": null,
+      "interrupted_attempt_exit_status": null,
+      "interrupted_attempt_steps": null,
+      "unobserved_resource_tail_ns": null
+    },
+    "limitations": [
+      "All 192 completed cycles and final summary/resources were checked.",
+      "The failed infrastructure attempt is an additional incomplete attempt with unknown work, not zero work.",
+      "The interrupted cycle duration in the resume file covers its resumed segment only, not the full wall-clock span.",
+      "Recorded source authorization is not mathematical removal of old-source influence after an update; clean rebuild is a separate operation.",
+      "The eight-address synthetic canonical maintenance workload does not test held language, autonomous topology, or generic long-term memory."
+    ]
+  },
+  "current_structure_admitted": false,
+  "current_cross_physical_node_net_benefit_established": false,
+  "new_measurements_executed_for_this_gate": false
+}
