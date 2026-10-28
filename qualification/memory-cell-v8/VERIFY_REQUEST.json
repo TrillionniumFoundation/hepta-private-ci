@@ -1,0 +1,23 @@
+{
+  "schema": "hepta.memory.v8.verification-request.v1",
+  "attempt": 1,
+  "tests_before_final_fix_and_format": true,
+  "frozen_addressing_source_commit": "7e194d9f0858e805a0cab502215a1f64ddc0ea00",
+  "candidate_manifest": {
+    "path": "qualification/memory-cell-v8/fixtures/address-model/manifest.json",
+    "bytes": 164264,
+    "sha256": "0182aebb86e3f2ed7dd089864762970791b70cff2240861602ef15be2461ac86"
+  },
+  "native_fixture": {
+    "path": "qualification/memory-cell-v8/fixtures/address-model/native-fixture.json",
+    "bytes": 87539,
+    "sha256": "4a991281be123a958f1d0f6f3d5a53c48f3b6bb393abe7ebe6a031cb498098c1"
+  },
+  "addressing_admission": false,
+  "held_quality_gate": false,
+  "native_rows_per_arm": 240,
+  "native_baseline_and_candidate_required_even_when_admission_failed": true,
+  "prospective_actual_arms": 11,
+  "preserve_all_failed_and_negative_results": true,
+  "purpose": "Compile actual V8 product integrations; exercise owner restart and durable migration, paired native language readbacks, real prospective training and independent evidence scoring."
+}
