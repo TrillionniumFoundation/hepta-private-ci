@@ -1,0 +1,117 @@
+use super::extract_zipball_to_dir;
+use pretty_assertions::assert_eq;
+use std::io::Cursor;
+use std::io::Write;
+use std::os::unix::fs::PermissionsExt;
+use tempfile::tempdir;
+use zip::ZipArchive;
+use zip::ZipWriter;
+use zip::write::SimpleFileOptions;
+
+#[test]
+fn extract_zipball_strips_privileged_modes_and_preserves_regular_permissions() {
+    let files = [
+        (
+            "plugins/privileged.txt",
+            "privileged payload\n",
+            0o107755_u32,
+            0o755_u32,
+        ),
+        (
+            "plugins/executable.txt",
+            "executable payload\n",
+            0o100755_u32,
+            0o755_u32,
+        ),
+        ("plain.txt", "ordinary payload\n", 0o100644_u32, 0o644_u32),
+    ];
+    let mut writer = ZipWriter::new(Cursor::new(Vec::new()));
+    for (path, contents, _, permissions) in files {
+        let options = SimpleFileOptions::default()
+            .compression_method(zip::CompressionMethod::Stored)
+            .unix_permissions(permissions);
+        writer
+            .start_file(format!("archive-root/{path}"), options)
+            .expect("start ZIP entry");
+        writer
+            .write_all(contents.as_bytes())
+            .expect("write ZIP entry");
+    }
+    let mut bytes = writer.finish().expect("finish ZIP writer").into_inner();
+    let headers = {
+        let mut archive = ZipArchive::new(Cursor::new(bytes.as_slice())).expect("read ZIP");
+        assert_eq!(archive.len(), files.len());
+        (0..archive.len())
+            .map(|index| {
+                let entry = archive.by_index(index).expect("read ZIP entry");
+                assert_eq!(
+                    entry.name_raw(),
+                    format!("archive-root/{}", files[index].0).as_bytes()
+                );
+                usize::try_from(entry.central_header_start()).expect("central header offset")
+            })
+            .collect::<Vec<_>>()
+    };
+
+    // unix_permissions masks high bits. Patch actual central-directory metadata instead.
+    // Offsets 5 and 38 in the fixed ZIP central header hold the host system and attributes.
+    for (&header, (_, _, archived_mode, _)) in headers.iter().zip(files) {
+        assert_eq!(&bytes[header..header + 4], b"PK\x01\x02");
+        assert_eq!(bytes[header + 5], 3, "entry must use Unix attributes");
+        bytes[header + 38..header + 42].copy_from_slice(&(archived_mode << 16).to_le_bytes());
+    }
+    let mut archive = ZipArchive::new(Cursor::new(bytes.as_slice())).expect("read hostile ZIP");
+    for (index, (&header, (_, _, archived_mode, permissions))) in
+        headers.iter().zip(files).enumerate()
+    {
+        let entry = archive.by_index(index).expect("read hostile ZIP entry");
+        let stored_attributes = u32::from_le_bytes(
+            bytes[header + 38..header + 42]
+                .try_into()
+                .expect("external attributes have four bytes"),
+        );
+        assert_eq!(stored_attributes >> 16, archived_mode);
+        assert_eq!(
+            entry.unix_mode().map(|mode| mode & 0o777),
+            Some(permissions)
+        );
+    }
+    let tmp = tempdir().expect("tempdir");
+    // Establish that this filesystem retains privileged mode bits under the old chmod call.
+    let control = tmp.path().join("raw-mode-control");
+    std::fs::write(&control, files[0].1).expect("write control payload");
+    std::fs::set_permissions(&control, std::fs::Permissions::from_mode(files[0].2))
+        .expect("apply unsanitized control permissions");
+    let control_mode = std::fs::metadata(&control)
+        .expect("control metadata")
+        .permissions()
+        .mode();
+    assert_ne!(
+        control_mode & 0o7000,
+        0,
+        "control must retain a privileged bit"
+    );
+
+    let destination = tmp.path().join("extracted");
+    extract_zipball_to_dir(&bytes, &destination).expect("extract hostile ZIP safely");
+    let actual = files
+        .iter()
+        .map(|(path, _, _, _)| {
+            let extracted = destination.join(path);
+            let mode = std::fs::metadata(&extracted)
+                .expect("extracted metadata")
+                .permissions()
+                .mode()
+                & 0o7777;
+            (
+                mode,
+                std::fs::read(extracted).expect("read extracted payload"),
+            )
+        })
+        .collect::<Vec<_>>();
+    let expected = files
+        .iter()
+        .map(|(_, contents, _, permissions)| (*permissions, contents.as_bytes().to_vec()))
+        .collect::<Vec<_>>();
+    assert_eq!(actual, expected);
+}

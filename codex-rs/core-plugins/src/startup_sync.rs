@@ -1136,3 +1136,7 @@ fn apply_zip_permissions(
 #[cfg(test)]
 #[path = "startup_sync_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "startup_sync_zip_tests.rs"]
+mod zip_tests;
