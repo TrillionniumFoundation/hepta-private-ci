@@ -63,6 +63,10 @@ MiniLM 是冻结的预训练表示，实际更新的是 `A`、`B` 和训练阶�
 训练摘要，没有每个实体对应的目标值表。原始来源仍用于更正、重建与授权，
 其存储成本没有被排除。
 
+内容 cell 读取的是地址对应的 canonical embedding，自然语言变体先由 router
+转成地址。因此 oracle 条件验证已知地址上的参数内容，未见表达的端到端表现
+主要受寻址影响；这不等于内容模型自行理解所有改写，也没有检验新实体或新概念的泛化。
+
 ## Formal-01：冻结后的结果
 
 协议见 [PROTOCOL.json](PROTOCOL.json)。三个 optimizer seed 为 731、732、733；
@@ -72,8 +76,8 @@ held 文件，随后启动新的结构 reader、owner lifecycle 和任务 reader
 任务包含 8 个实体、8 个有限技能程序；训练与 held 各有 16 种实体/技能配对，
 两组不重叠。Held 有 320 个 query ID、292 段不同文本、32 个模板组，并在三个
 seed 与三种事件状态下重复。它们属于相关观测，不是 24,192 个独立统计样本。
-原 RESULT 的 `independent_wording_groups` 字段应理解为 32 个独立作者编写的
-模板组计数，不代表统计独立性。
+原 RESULT 的 `independent_wording_groups` 字段应理解为由独立评审编写的
+32 个不同模板组，不代表统计独立性，也不代表 32 位作者。
 
 下表从 [原始结果](evidence/formal-01/RESULT.json) 和
 [独立审计](evaluation/AUDIT-formal-01.json) 汇总。组合列排除了由外部
@@ -94,6 +98,11 @@ exception 直接停止的案例，因此不会把权限/例外路径算作学习
 每种 router 下，参数与检索的 2,880 对输出逐项相同，包括来源、状态和轨迹。
 因此本轮没有质量上的参数记忆增益。这里的强基线是 exact typed SQLite
 读取加固定 planner / 共同解释器，不能声称全面比较了自由文本 RAG 或通用 LLM planner。
+
+三个事件状态是独立 SQLite counterfactual 副本。它们保留相同的 logical event
+ID / sequence，但 value 不同；metadata snapshot 没有跨副本绑定 payload。
+因此这里的同信息比较成立，却不能据此声称事件内容寻址、连续版本推进或 native
+来源权威。逐条核对见 [provenance note](evaluation/FORMAL-counterfactual-provenance-note.json)。
 
 学习路由的 calibration 在最高候选阈值 0.9 下仍有 6/16 unknown 错误接受。
 三个 seed 都触发预声明的 threshold 1.1 全拒 fallback；没有根据 held 放宽门槛。
@@ -121,6 +130,13 @@ head 承载。审计还检查了完整中间数值轨迹：headonly 为 800/1008
 分区不均时按数据量分配步数，seed 732 使用 750/450 步，保持逐行期望曝光相同。
 六个 checkpoint 在新进程恢复了同一个冻结 head，四种候选 canonical 读取均为 8/8。
 
+这里等额的是运行时唯一参数和训练曝光：共享 head 有 4,620 参数，两个私有
+adapter 各有 3,072 参数，加载后确实引用同一个 head 对象。持久化时每个
+checkpoint 仍重复保存 head，所以两个动态子 cell 占 64,502–64,584 B，
+单 rank-8 占 43,771–43,798 B，文件字节并不等额。加载临时对象与各候选独立
+RSS 尚未测量，不能从唯一参数数目推断部署内存相等。见
+[shared-head cost audit](evaluation/STRUCTURE-shared-head-cost-note.json)。
+
 梯度分区没有严格超过单 rank-8，合并的自然表述 calibration 退化，因而没有激活
 这些结构候选。当前网络仍是固定 typed graph，自发图形成尚未被证明。
 
@@ -133,9 +149,20 @@ head 承载。审计还检查了完整中间数值轨迹：headonly 为 800/1008
 实际 owner 验证了旧版本拒绝、依赖撤销后停止参数/事件读取、sleep 移除缓存引用、
 wake 核对参数/encoder/typed config、步数上限，以及 owner stop 后的请求不再读取。
 
-额外的 64 周期 × 3 seeds 持续维护实验见 [longrun](longrun/)。它按固定协议
+额外的 64 周期 × 3 seeds 持续维护实验见 [longrun](longrun/)。首链已完成
+192 次更新、24 次 clean rebuild 和 219 次新进程读取，独立审计 7,198 项通过。
+按每周期最终状态计，参数与 exact-SQL 两臂均为 active 1,512/1,512、changed
+207/207、retention 1,305/1,305、revoked 24/24。完整核对见
+[longrun audit](evaluation/AUDIT-longrun-complete.json)。它按固定协议
 串行执行实际更新与每八周期删除重建，使用新进程参数读取和同信息 exact-SQL
-对照，并由外层资源监控记录全过程。其最终结果单独发布，不与本轮 held 重调参合并。
+对照，并由外层资源监控记录可观测区间。一次基础设施中断留下了未知的尾部成本和
+监控间隙；恢复后的完整质量结果与成本覆盖分别报告，不能把未知成本补零。
+另一次相同冻结协议的 clean run 用于补齐连续成本测量，不覆盖首次尝试或其成本。
+最终结果单独发布，不与本轮 held 重调参合并。
+
+长跑仍只有八个固定地址，每次完整重放当前有效 canonical 记录。它检验反复维护，
+没有检验容量随数据增长、单次曝光学习或来源可丢弃。删除检查覆盖服务撤销和当前
+模型的 clean rebuild；为复核而保存的历史权重与来源没有被物理擦除。
 
 ## 真实成本及目前可下的结论
 
