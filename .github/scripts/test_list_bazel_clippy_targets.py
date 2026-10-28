@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """Exercise the real discovery wrappers with a recording process, not Bazel analysis."""
 
+import io
 import json
 from pathlib import Path
 import subprocess
 import unittest
+from unittest.mock import patch
 
+import bazel_clippy_target_records as records
+import run_bazel_with_buildbuddy as wrapper
 import test_run_bazel_ci as original
 
 
@@ -131,6 +135,61 @@ class ClippyTargetDiscoveryTests(unittest.TestCase):
                 else:
                     self.assertIn("--platforms=//:windows_x86_64_gnullvm", call)
                     self.assertIn("--host_platform=//:local_windows_msvc", call)
+
+    def test_windows_text_roster_survives_original_bash_and_pattern_guard(self) -> None:
+        compatible = sorted(NATIVE_MANUAL | {UNIT})
+        buffer = io.BytesIO()
+        windows_stdout = io.TextIOWrapper(buffer, encoding="utf-8", newline="\r\n")
+        try:
+            with (
+                patch.object(
+                    records.sys,
+                    "stdin",
+                    io.StringIO(
+                        "".join(f"compatible\t{label}\r\n" for label in compatible)
+                    ),
+                ),
+                patch.object(records.sys, "stdout", windows_stdout),
+            ):
+                records.main()
+                windows_stdout.flush()
+            roster = self.root / "native Windows roster.txt"
+            roster.write_bytes(buffer.getvalue())
+        finally:
+            windows_stdout.detach()
+
+        # Keep the workflow's literal Bash read loop, including its CR handling.
+        transport = subprocess.run(
+            [
+                self.bash,
+                "-c",
+                'bazel_target_lines="$(cat "$1")"\n'
+                "bazel_targets=()\n"
+                "while IFS= read -r target; do\n"
+                '  bazel_targets+=("${target}")\n'
+                'done <<< "${bazel_target_lines}"\n'
+                'printf "%s\\0" "${bazel_targets[@]}"\n',
+                "original-clippy-workflow-transport",
+                str(roster),
+            ],
+            cwd=ROOT,
+            env=self.env,
+            capture_output=True,
+            check=False,
+            timeout=60,
+        )
+        self.assertEqual(transport.returncode, 0, transport.stderr)
+        self.assertTrue(transport.stdout.endswith(b"\0"))
+        targets = [arg.decode("utf-8") for arg in transport.stdout[:-1].split(b"\0")]
+        with wrapper.windows_target_patterns(
+            ["bazel", "build", "--config=clippy", "--", *targets],
+            {"RUNNER_OS": "Windows"},
+        ) as (_, pattern_file):
+            self.assertIsNotNone(pattern_file)
+            self.assertEqual(
+                pattern_file.read_bytes(),
+                "".join(f"{label}\n" for label in compatible).encode("utf-8"),
+            )
 
     def test_ci_roles_reuse_the_existing_build_configuration(self) -> None:
         for runner in ("Windows", "Linux", "macOS"):
