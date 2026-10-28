@@ -1,0 +1,37 @@
+{
+  "all_eleven_arms_required": true,
+  "all_raw_phase_hashes_bound": true,
+  "correct_decision": "observed action equals the independently verified expected action",
+  "correct_read": "status == ok and observed typed value equals the independently verified expected typed value",
+  "decision_pair_key": [
+    "record.request_digest"
+  ],
+  "declared_before_receiving_complete_artifacts_for_runs": [
+    40612088249,
+    40612818087
+  ],
+  "earlier_partial_attempt_retained": 40609738136,
+  "expected_decisions_per_arm": 4,
+  "expected_reads_per_arm": 24,
+  "forgetting_rate": {
+    "denominator": "before_correct",
+    "numerator": "previously_correct_became_wrong",
+    "zero_denominator_result": null
+  },
+  "frozen_scorer_retention_flag_and_NoChange_gate_modified": false,
+  "net_zero_is_not_evidence_of_no_individual_regression": true,
+  "primary_scorer_integrity_verified_required": true,
+  "read_pair_key": [
+    "record.request_digest",
+    "readout_offset"
+  ],
+  "schema": "hepta.memory.v8.derived-retention-audit-protocol.v1",
+  "scope": "Additional item-level diagnosis of the already executed paired retention cohort; no refit, model/threshold/protocol changes or replacement of the frozen scorer gate.",
+  "scope_of_zero_transition_claim": "Only previously correct items in this observed, unchanged-source-cut retention cohort; not longitudinal continual-learning or population guarantees.",
+  "transition_classes": [
+    "remained_correct",
+    "previously_correct_became_wrong",
+    "previously_wrong_became_correct",
+    "remained_wrong"
+  ]
+}
