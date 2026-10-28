@@ -1,4 +1,16 @@
 //! Byte-stream fixtures exercise real codecs and ack futures; no audio device.
+#[tokio::test]
+async fn interrupted_presentation_retains_exact_scope_without_claiming_playback() {
+    let (owner,mut native)=duplex(4096);
+    let (read,write)=split(owner);
+    let (_link,mut events)=HmiJsonlMediaV1::bind(9,1,read,write,Duration::from_secs(2)).unwrap();
+    let input=source();
+    frame(&mut native,json!({"type":"presentation","identity":{"stream":input.stream,"turn_id":"turn:test","utterance_id":"utterance:test","sequence":1,"output_epoch":2},"state":"interrupted","error":null})).await;
+    let HmiOwnedMediaEventV1::Presentation {observation}=events.next().await.unwrap() else {panic!("expected presentation")};
+    assert_eq!(observation.scope,scope());
+    assert_eq!(observation.state,HmiMediaPresentationV1::Interrupted);
+    assert_eq!(observation.error,None);
+}
 use super::*;
 use crate::hmi::tests::binding;
 use tokio::io::duplex;

@@ -46,6 +46,7 @@ pub(super) struct NativeInterrupt {
 #[serde(rename_all = "snake_case")]
 pub(super) enum NativePresentationState {
     Submitted,
+    Interrupted,
     Unknown,
 }
 #[derive(Deserialize)]
