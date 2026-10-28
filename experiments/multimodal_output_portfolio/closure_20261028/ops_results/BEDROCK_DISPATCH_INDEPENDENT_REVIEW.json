@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.bedrock-dispatch.independent-review.v1",
+  "reviewer": "/root/unified_profile",
+  "baseline_head": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "method": "Read-only diff and existing protocol/handler/initialization API trace; no build or runtime execution.",
+  "sources": [
+    {
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "sha256": "60e0a0dc84aa9cf192e7b09dc5590148d9ceeaaa429f6bfe1a48974939347504",
+      "bytes": 74411
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+      "sha256": "af9ceab5047c7ee06bba84d47684748b38bfbb32e287db4a6fca84b2b45fa6fa",
+      "bytes": 5606
+    },
+    {
+      "path": "codex-rs/app-server/README.md",
+      "sha256": "35524cb85544195551ecf282d10adccdc20b155d797c50222efabe28246a998c",
+      "bytes": 187009
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs",
+      "sha256": "18236a1c5d2f9f8690c98125199e54770d5402dac04e8ecd813871e7d6669706",
+      "bytes": 13550
+    }
+  ],
+  "conclusion": "No blocking source defect found in this minimal dispatch repair. Actual app-server public JSON-RPC tests remain required.",
+  "findings": [
+    "Existing protocol declares both methods experimental. The initialized-client dispatch rejects absent opt-in before queueing or invoking the account handler.",
+    "Existing serialization scopes remain global_shared_read(account-auth) for discover and global(account-auth) for setup.",
+    "The new branches only route the already defined parameters to their existing handlers; handler result types match the shared response chain.",
+    "Existing workload identity, external ChatGPT auth, forced login, higher-precedence provider, supported-region and credential conflict checks remain in the reached handlers.",
+    "Discovery response contains profile names, credential kinds and regions, not secret values. Setup validates available credential selection but does not perform Bedrock service authorization verification.",
+    "The old dead_code expectations no longer describe reachable methods and are removed without deleting the methods.",
+    "The original three public positive/conflict tests are retained. The appended stable-client regression exercises actual JSON-RPC rejection for both methods and asserts no config/auth/.env write.",
+    "The regression uses existing TestAppServer builder and initialize_with_capabilities API; README scope matches the actual handler rather than claiming a remote Bedrock permission check."
+  ],
+  "limits": [
+    "Static review does not establish Rust compilation or test success.",
+    "Existing profile credential loading may use its provider chain; this review does not claim all credential resolution is network-free."
+  ]
+}
