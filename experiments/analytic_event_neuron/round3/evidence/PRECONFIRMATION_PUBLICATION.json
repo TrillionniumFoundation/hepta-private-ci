@@ -1,0 +1,179 @@
+{
+  "schema": "hepta.analytic-event.round3.preconfirmation-publication.v1",
+  "verified_utc": "2026-10-28T04:54:38.584494+00:00",
+  "source_commit": "29174619dfc56cef1c16b34fbf98f85a1cd2e4c3",
+  "tree": "d4228133e90434efae60cc1861230b039d281901",
+  "new_blobs_verified": 87,
+  "baseline_blobs_unchanged": 11192,
+  "frozen_source_files_verified": 83,
+  "all_expected_bytes_match": true,
+  "source_stages": [
+    {
+      "sha": "aad5bb47ba848a1a06267c9ba4ba792ee6075a06",
+      "tree": "9368bc681107909480a58fc68f6250de9602c070",
+      "message": "research(aen): Freeze the terminal-event and training contract",
+      "files": [
+        "experiments/analytic_event_neuron/round3/__init__.py",
+        "experiments/analytic_event_neuron/round3/CONTRACT.md",
+        "experiments/analytic_event_neuron/round3/PROTOCOL.json",
+        "experiments/analytic_event_neuron/round3/prepare.py",
+        "experiments/analytic_event_neuron/round3/freeze.py"
+      ],
+      "source_lines": 581
+    },
+    {
+      "sha": "333b810cfdd236e74bce2a6ba3fae89600616eab",
+      "tree": "ebc3707ec41fbcbae9a67e213ba7b1435b2e2bba",
+      "message": "research(aen): Add integer event coding with action interval certificates",
+      "files": [
+        "experiments/analytic_event_neuron/round3/event_codec.py",
+        "experiments/analytic_event_neuron/round3/event_validation.py",
+        "experiments/analytic_event_neuron/round3/EVENT_CONTRACT.md"
+      ],
+      "source_lines": 628
+    },
+    {
+      "sha": "3be35b7c14db4a48e4caaea94b2f8ad185d18dc3",
+      "tree": "859b18511b1a3c0daece964d30aaf27ea5857f47",
+      "message": "research(aen): Execute and independently replay action-aware event control",
+      "files": [
+        "experiments/analytic_event_neuron/round3/event_study.py",
+        "experiments/analytic_event_neuron/round3/audit.py"
+      ],
+      "source_lines": 562
+    },
+    {
+      "sha": "6b17eed4fbb0187e050021d2ca6484ba162f4357",
+      "tree": "084647489fe16f04d99be1f0b80571078058c2b1",
+      "message": "research(aen): Fit public-history calibration with explicit retention scope",
+      "files": [
+        "experiments/analytic_event_neuron/round3/calibration.py",
+        "experiments/analytic_event_neuron/round3/calibration_validation.py",
+        "experiments/analytic_event_neuron/round3/CALIBRATION_CONTRACT.md"
+      ],
+      "source_lines": 557
+    },
+    {
+      "sha": "574bbf1a11bcb74d78ee08c078e47a2f828aa99a",
+      "tree": "9f7d756771249b6de3e29d796467f8790fc2d969",
+      "message": "research(aen): Register full confirmation orchestration and paired statistics",
+      "files": [
+        "experiments/analytic_event_neuron/round3/calibration_study.py",
+        "experiments/analytic_event_neuron/round3/run.py",
+        "experiments/analytic_event_neuron/round3/statistics.py",
+        "experiments/analytic_event_neuron/round3/phases.py"
+      ],
+      "source_lines": 710
+    },
+    {
+      "sha": "b9ac48d19256de087bc3005be4852ca83b909bdd",
+      "tree": "04b10b1f9a6d308ccc52220828c94e9eb3ff1b10",
+      "message": "research(aen): Add paid-feedback values and durable native count owners",
+      "files": [
+        "experiments/analytic_event_neuron/round3/feedback.py",
+        "experiments/analytic_event_neuron/round3/runtime_feedback.py",
+        "experiments/analytic_event_neuron/round3/feedback_validation.py",
+        "experiments/analytic_event_neuron/round3/FEEDBACK_RUNTIME.md"
+      ],
+      "source_lines": 460
+    },
+    {
+      "sha": "36c188f805ea1148e50f0e0f22d1bbdec6e2d195",
+      "tree": "5cd291d96b76f018c23d33583b28ab99cc1408a8",
+      "message": "research(aen): Fit and replay actual paid-feedback delivery outcomes",
+      "files": [
+        "experiments/analytic_event_neuron/round3/feedback_study.py",
+        "experiments/analytic_event_neuron/round3/feedback_audit.py",
+        "experiments/analytic_event_neuron/round3/feedback_summary.py"
+      ],
+      "source_lines": 633
+    },
+    {
+      "sha": "1b06ca513a344fbc62c9099d7ff7058fea6fff74",
+      "tree": "8b2dff78ab99030727936287d1dbb1f43217fc02",
+      "message": "research(aen): Qualify exact feedback runtime across recovery boundaries",
+      "files": [
+        "experiments/analytic_event_neuron/round3/runtime_feedback_study.py"
+      ],
+      "source_lines": 168
+    },
+    {
+      "sha": "29174619dfc56cef1c16b34fbf98f85a1cd2e4c3",
+      "tree": "d4228133e90434efae60cc1861230b039d281901",
+      "message": "research(aen): retain all preconfirmation models and independent reviews",
+      "files": [
+        "experiments/analytic_event_neuron/round3/evidence/ARCHIVE_EVICTION.json",
+        "experiments/analytic_event_neuron/round3/evidence/ARCHIVE_EVICTION_SANDBOX.json",
+        "experiments/analytic_event_neuron/round3/evidence/CALIBRATION_PREFREEZE_REVIEW.json",
+        "experiments/analytic_event_neuron/round3/evidence/EVENT_PREFREEZE_REVIEW.json",
+        "experiments/analytic_event_neuron/round3/evidence/FEEDBACK_RUNTIME_PREFREEZE_REVIEW.json",
+        "experiments/analytic_event_neuron/round3/evidence/MATH_REFERENCE.json",
+        "experiments/analytic_event_neuron/round3/evidence/ORCHESTRATION_PREFREEZE_REVIEW.json",
+        "experiments/analytic_event_neuron/round3/evidence/WORKSPACE_RECOVERY.json",
+        "experiments/analytic_event_neuron/round3/evidence/package_evidence.py",
+        "experiments/analytic_event_neuron/round3/evidence/preconfirmation/CALIBRATION_PREPARED.tar.gz",
+        "experiments/analytic_event_neuron/round3/evidence/preconfirmation/CORE_PREPARED.tar.gz",
+        "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_1009.tar.gz.part000",
+        "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_1009.tar.gz.part001",
+        "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_607.tar.gz.part000",
+        "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_607.tar.gz.part001",
+        "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_701.tar.gz.part000",
+        "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_701.tar.gz.part001",
+        "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_809.tar.gz.part000",
+        "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_809.tar.gz.part001",
+        "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_907.tar.gz.part000",
+        "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_907.tar.gz.part001",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/BASE_PREPARATION.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/EVENT_PREPARATION.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/EVENT_VALIDATION.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/FEEDBACK_KERNEL_VALIDATION.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/calibration_prepared/PREPARED.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/feedback_prepared/seed_1009/MODELS.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/feedback_prepared/seed_1009/TRAINING_RECEIPT.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/feedback_prepared/seed_607/MODELS.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/feedback_prepared/seed_607/TRAINING_RECEIPT.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/feedback_prepared/seed_701/MODELS.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/feedback_prepared/seed_701/TRAINING_RECEIPT.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/feedback_prepared/seed_809/MODELS.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/feedback_prepared/seed_809/TRAINING_RECEIPT.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/feedback_prepared/seed_907/MODELS.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/feedback_prepared/seed_907/TRAINING_RECEIPT.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_1009/BASE_MODELS.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_1009/BASE_TRAINING.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_1009/EVENT_SELECTION.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_1009/MODELS.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_607/BASE_MODELS.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_607/BASE_TRAINING.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_607/EVENT_SELECTION.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_607/MODELS.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_701/BASE_MODELS.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_701/BASE_TRAINING.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_701/EVENT_SELECTION.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_701/MODELS.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_809/BASE_MODELS.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_809/BASE_TRAINING.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_809/EVENT_SELECTION.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_809/MODELS.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_907/BASE_MODELS.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_907/BASE_TRAINING.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_907/EVENT_SELECTION.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/training/seed_907/MODELS.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/validation/CALIBRATION_VALIDATION.json",
+        "experiments/analytic_event_neuron/round3/evidence/prepared/validation/main_development/AUDIT.json",
+        "experiments/analytic_event_neuron/round3/evidence/review_calibration_prepared.py",
+        "experiments/analytic_event_neuron/round3/evidence/review_event_prefreeze.py",
+        "experiments/analytic_event_neuron/round3/evidence/review_feedback_prefreeze.py",
+        "experiments/analytic_event_neuron/round3/evidence/review_orchestration_prefreeze.py"
+      ],
+      "source_lines": null
+    }
+  ],
+  "bounded_read_operational_retry": [
+    {
+      "kind": "bounded_read_retry",
+      "reason": "Grouped text exceeded command output cap; no ref or scientific data mutation",
+      "completed_blobs": 32,
+      "chunk_bytes": 300000
+    }
+  ]
+}
