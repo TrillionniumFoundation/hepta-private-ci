@@ -79,6 +79,11 @@ def descendant_blockers(parent, incumbent, gain, incumbent_gain):
 def run(args):
     research = None
     research_context = None
+    observation = None
+    if getattr(args, "observation_profile", None) is not None:
+        import hepta_smollm_observed_execution_v1 as observation
+
+        observation.validate_request(args)
     if getattr(args, "research_profile", None) is not None:
         import hepta_smollm_answer_eos_research_v3 as research
 
@@ -87,9 +92,15 @@ def run(args):
         ["git", "-C", str(args.chain), "rev-parse", "HEAD"], text=True
     ).strip()
     require(
-        observed_head == (research.CHAIN_COMMIT if research else CHAIN_COMMIT),
-        "training source must be the exact research profile commit" if research
-        else "training source must be the exact public V2 commit",
+        observed_head
+        == (
+            observation.CHAIN_COMMIT
+            if observation
+            else research.CHAIN_COMMIT
+            if research
+            else CHAIN_COMMIT
+        ),
+        "training source must be the exact selected execution profile commit",
     )
     subprocess.run(
         [
@@ -222,17 +233,37 @@ def run(args):
     plan_path.write_bytes(plan_raw)
     research_plan = None
     research_pin = None
+    observation_value = None
+    observation_context = None
+    if observation:
+        import llm_runtime_observed_execution_v1 as observer
+
+        observation_value = observation.freeze_plan(
+            args, runtime, parent_step, parent, plan_path
+        )
+        observation_context = observer.context(observation_value)
     if research:
         import llm_answer_eos_research_v3 as objective
 
         require(objective.PROFILE == research.PROFILE, "named research objective")
         research_plan = output / "research-plan-v3.json"
-        runtime.save(research_plan, objective.plan_record(dict(
-            files=dict(plan=str(plan_path)),
-            parent={key: parent[key] for key in ("contract", "adapter", "file_sha256")},
-            initial_setup=dict(parent_material=dict(
-                path=str(args.parent), sha256=args.parent_sha256)),
-        )))
+        runtime.save(
+            research_plan,
+            objective.plan_record(
+                dict(
+                    files=dict(plan=str(plan_path)),
+                    parent={
+                        key: parent[key]
+                        for key in ("contract", "adapter", "file_sha256")
+                    },
+                    initial_setup=dict(
+                        parent_material=dict(
+                            path=str(args.parent), sha256=args.parent_sha256
+                        )
+                    ),
+                )
+            ),
+        )
         research_pin = runtime.file_sha(research_plan)
     freeze = dict(
         schema="hepta-controlled-real-round-freeze-v2",
@@ -268,10 +299,21 @@ def run(args):
         installation_authorized=False,
     )
     if research:
-        freeze.update(schema="hepta-controlled-answer-eos-round-freeze-v3",
-                      research_context=research_context, research_plan_sha256=research_pin,
-                      candidate_recipe=objective.RECIPE,
-                      experiment_scope="unchanged-material-and-control-plan-not-v3-candidate-recipe")
+        freeze.update(
+            schema="hepta-controlled-answer-eos-round-freeze-v3",
+            research_context=research_context,
+            research_plan_sha256=research_pin,
+            candidate_recipe=objective.RECIPE,
+            experiment_scope="unchanged-material-and-control-plan-not-v3-candidate-recipe",
+        )
+    if observation:
+        freeze.update(
+            schema="hepta-controlled-real-round-freeze-observed-v1",
+            execution_profile=observation.PROFILE,
+            observation_execution=observation_context,
+            model_plan_profile="strict-v1",
+            observation_scope="new-execution-policy-original-model-plan-and-target",
+        )
     runtime.save(output / "round-freeze.json", freeze)
     phases = []
 
@@ -299,11 +341,25 @@ def run(args):
             command,
             path,
             plan["training_budget" if stage == "train" else "inference_budget"],
-            exit_observation=plan.get("exit_observation"),
+            exit_observation=(
+                observer.checked_plan(observation_value)["observer"]
+                if observation
+                else plan.get("exit_observation")
+            ),
         )
         phases.append(dict(name=path.name, **result))
         runtime.save(output / "phase-outcomes.json", phases)
         require(result["outcome"] == "success", "required phase failed: " + path.name)
+        if observation:
+            require(
+                result.get("exit_observation_profile")
+                == observer.checked_plan(observation_value)["observer"]
+                and result.get("terminal_reconciliation_profile")
+                == "explicit-" + observer.OBSERVER
+                and result["budget"]
+                == plan["training_budget" if stage == "train" else "inference_budget"],
+                "exact observation policy and original phase budget required",
+            )
         verify_runtime()
         return runtime.read_json(path / "actual-receipt.json")
 
@@ -318,8 +374,15 @@ def run(args):
         trainer.run(
             SimpleNamespace(
                 operation="train",
-                initial_setup_profile=(research.PROFILE if research else
-                                       parent_step.PROFILE if initial_setup else None),
+                initial_setup_profile=(
+                    observer.PROFILE
+                    if observation
+                    else research.PROFILE
+                    if research
+                    else parent_step.PROFILE
+                    if initial_setup
+                    else None
+                ),
                 parent_material=str(args.parent) if initial_setup else None,
                 parent_material_sha256=args.parent_sha256 if initial_setup else None,
                 materials=str(args.materials),
@@ -340,12 +403,26 @@ def run(args):
                 expected_candidate_result_sha256=None,
                 research_plan=str(research_plan) if research else None,
                 research_plan_sha256=research_pin,
+                observation_plan=(
+                    observation_value["initial_setup"]["observation_plan"]["path"]
+                    if observation
+                    else None
+                ),
+                observation_plan_sha256=(
+                    observation_value["initial_setup"]["observation_plan"]["sha256"]
+                    if observation
+                    else None
+                ),
             )
         )
         completion = runtime.read_json(
             candidate_output
             / (
-                "parent-step-result-v3.json" if research else "parent-step-result-v2.json"
+                "parent-step-result-observed-v1.json"
+                if observation
+                else "parent-step-result-v3.json"
+                if research
+                else "parent-step-result-v2.json"
                 if initial_setup
                 else "parent-step-result.json"
             )
@@ -359,12 +436,25 @@ def run(args):
         phases.append(dict(name="train-candidate", **completion["supervisor"]))
         runtime.save(output / "phase-outcomes.json", phases)
         trained = runtime.read_json(candidate_output / "execution/actual-receipt.json")
+        if observation:
+            require(
+                trained["schema"] == "llm-runtime-parent-step-actual-observed-v1"
+                and trained["observation_execution"] == observation_context
+                and completion["observation_execution"] == observation_context,
+                "exact observed candidate namespace and execution context required",
+            )
         if research:
             objective.verify_training(trained["training"])
-            require(trained["schema"] == "llm-runtime-parent-step-actual-v3"
-                    and trained["research"] == dict(plan_sha256=research_pin,
-                        recipe=runtime.identity(objective.RECIPE), profile=research.PROFILE),
-                    "source-bound V3 candidate objective and receipt required")
+            require(
+                trained["schema"] == "llm-runtime-parent-step-actual-v3"
+                and trained["research"]
+                == dict(
+                    plan_sha256=research_pin,
+                    recipe=runtime.identity(objective.RECIPE),
+                    profile=research.PROFILE,
+                ),
+                "source-bound V3 candidate objective and receipt required",
+            )
         require(
             trained["parent_readback"] == parent["adapter"]
             and (
@@ -613,13 +703,29 @@ def run(args):
             if not cumulative_schedule_matched:
                 assessment["blockers"].append("CumulativeBudgetMismatch")
         if research:
-            require(research.validate_request(args) == research_context,
-                    "original research gate/readback inputs changed during execution")
-            assessment.update(schema="hepta-controlled-answer-eos-six-arm-assessment-v3",
-                              research_context=research_context,
-                              research_plan_sha256=research_pin,
-                              candidate_recipe=objective.RECIPE,
-                              experiment_scope="unchanged-material-and-control-plan-not-v3-candidate-recipe")
+            require(
+                research.validate_request(args) == research_context,
+                "original research gate/readback inputs changed during execution",
+            )
+            assessment.update(
+                schema="hepta-controlled-answer-eos-six-arm-assessment-v3",
+                research_context=research_context,
+                research_plan_sha256=research_pin,
+                candidate_recipe=objective.RECIPE,
+                experiment_scope="unchanged-material-and-control-plan-not-v3-candidate-recipe",
+            )
+        if observation:
+            require(
+                observer.context(observation_value) == observation_context,
+                "observation policy changed during execution",
+            )
+            assessment.update(
+                schema=observation.ASSESSMENT,
+                execution_profile=observation.PROFILE,
+                observation_execution=observation_context,
+                model_plan_profile="strict-v1",
+                observation_scope="new-execution-policy-original-model-plan-and-target",
+            )
         runtime.save(output / "assessment.json", assessment)
         if not diagnostic:
             require(

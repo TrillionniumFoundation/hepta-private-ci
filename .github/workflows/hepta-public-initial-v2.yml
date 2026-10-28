@@ -1,4 +1,4 @@
-name: Hepta public initial V2 ordinary model loop
+name: Hepta public initial V2 ordinary model loop with observed execution V1
 
 on:
   pull_request:
@@ -36,6 +36,7 @@ jobs:
       HEPTA_CI_LANE: source-head
       CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
       RESEARCH_CHAIN_SHA: 9035171271e9f437b7224b53532f41a2b2894be7
+      OBSERVATION_CHAIN_SHA: 923de0b137bab71170a43910eddb25047a5b3266
       CARGO_BUILD_JOBS: "2"
       CARGO_PROFILE_DEV_DEBUG: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
@@ -47,7 +48,9 @@ jobs:
       PIP_NO_CACHE_DIR: "1"
       HF_HUB_OFFLINE: "1"
       TRANSFORMERS_OFFLINE: "1"
-      HEPTA_PUBLIC_INITIAL_ROUND_RUNNER: ${{ github.workspace }}/hepta/scripts/hepta_smollm_three_rounds_v2.py
+      HEPTA_PUBLIC_INITIAL_ROUND_RUNNER: ${{ github.workspace }}/hepta/scripts/hepta_smollm_observed_execution_v1.py
+      HEPTA_PUBLIC_INITIAL_EXECUTION_PROFILE: hepta-original-model-observed-execution-v1
+      HEPTA_PUBLIC_INITIAL_OBSERVATION_CHAIN: ${{ github.workspace }}/chain-observed
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -69,6 +72,12 @@ jobs:
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: "3.12.3"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: TrillionniumFoundation/Trillionnium-Chain
+          ref: ${{ env.OBSERVATION_CHAIN_SHA }}
+          path: chain-observed
+          persist-credentials: false
       - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
         with:
           toolchain: 1.96.0
@@ -83,9 +92,11 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test "$(git -C ../chain rev-parse HEAD)" = "$CHAIN_SHA"
           test "$(git -C ../chain-answer-eos rev-parse HEAD)" = "$RESEARCH_CHAIN_SHA"
+          test "$(git -C ../chain-observed rev-parse HEAD)" = "$OBSERVATION_CHAIN_SHA"
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/hepta-source.txt"
           git -C ../chain rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/chain-source.txt"
           git -C ../chain-answer-eos rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/research-chain-source.txt"
+          git -C ../chain-observed rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/observation-chain-source.txt"
           rustc -vV > "$RUNNER_TEMP/hepta-public-initial-v2/rustc.txt"
           python3 -I -B scripts/hepta_smollm_host_resources.py --output "$RUNNER_TEMP/hepta-public-initial-v2/host.json"
           python3 -I -B - <<'PY'
@@ -102,6 +113,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential bubblewrap pkg-config libcap-dev
           bwrap --version > "$RUNNER_TEMP/hepta-public-initial-v2/bubblewrap-version.txt"
+      - name: Execute explicit observation source and original owner controls
+        id: observation_controls
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/observation-boundary-controls.json" --timeout-seconds 60 --minimum-tests 8 -- python3 scripts/test_hepta_smollm_observed_execution_v1.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/observation-owner-controls.json" --timeout-seconds 60 --minimum-tests 8 -- python3 ../chain-observed/scripts/test_llm_runtime_observed_execution_v1.py -v
+      - name: Require actual original user and network namespace capability
+        id: sandbox_host
+        run: |
+          set -euo pipefail
+          # Same argv and 500ms bound as sandboxing/src/bwrap.rs prerequisite probe.
+          # This is a host prerequisite, never a substitute for the full Rust gate.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/sandbox-host-capability.json" --timeout-seconds 0.5 --minimum-tests 0 -- bwrap --unshare-user --unshare-net --ro-bind / / /bin/true
       - name: Resolve the existing checksum-verified V8 pair
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}/hepta

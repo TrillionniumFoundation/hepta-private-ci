@@ -1,0 +1,23 @@
+{
+  "schema": "hepta-actual-ci-partial-observation-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "run_id": 40615280663,
+  "job_id": 122576208776,
+  "head": "746d7590990eec46d20400293feb80f499813bd9",
+  "tree": "ee2776d9c032ecb6e44e8f1a480af299dea7b3b9",
+  "terminal": false,
+  "api_status": "in_progress",
+  "active_step": "Execute the complete five changed Rust packages",
+  "visible_final_retry_failures": 23,
+  "full_job_log_characters": 4212852,
+  "full_job_log_lines": 18943,
+  "last_log_timestamp": "2026-10-28T01:51:21.7195942Z",
+  "actual_error": "bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted",
+  "occurrences_in_partial_log": 58,
+  "timeout_marker_observed": false,
+  "model_steps_started": false,
+  "installed_trained_child_count": 0,
+  "scope": "Partial original logs; counts are a lower bound, not a terminal full-gate result. No budget, sandbox switch, test selector or CI retry changed.",
+  "raw_excerpt_file": "safe-ci-partial-failures.log",
+  "full_log_locally_retained": false
+}
