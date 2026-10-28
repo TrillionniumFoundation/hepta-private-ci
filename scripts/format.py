@@ -265,7 +265,9 @@ def rust_file_command(path: str, *, check: bool) -> Command:
                 raise ValueError(
                     "Python 3.11+ is required to read standalone Rust formatter configuration"
                 )
-            edition = tomllib.loads(standalone_config.read_text()).get("edition", "2021")
+            edition = tomllib.loads(standalone_config.read_text()).get(
+                "edition", "2021"
+            )
     if manifest is not None and tomllib is None:
         metadata = json.loads(
             subprocess.check_output(
