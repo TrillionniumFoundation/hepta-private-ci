@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.free-boundary.study-protocol.v1",
+  "study": "Endogenous stopping boundaries, surrogate learning, and actual owner work",
+  "baseline_commit": "fb9281e4a7ccfc4034281ed6310adea7e50f4474",
+  "baseline_branch": "research/ndu-closure-20261027",
+  "main_observed_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "existing_experiment_family_references": [
+    "neuron_ablation",
+    "decision_cell_cooperation",
+    "neural_circuit_policy",
+    "meta_adaptation_transfer"
+  ],
+  "family_scope": "The transfer comparison evaluates frozen policies on new contexts. It does not execute inner/outer meta-learning or joint fitting of drift, noise, and cancellation parameters.",
+  "work_packages": {
+    "math": {
+      "contract": "Analytic single and renewal stopping, implicit derivatives, moving barriers, and global verification inequalities",
+      "evidence_level": "mathematical and numerical correctness, not neural efficacy"
+    },
+    "learning": {
+      "contract": "Causal sequential evidence, equal-information comparators, three boundary methods by two surrogate gradients",
+      "protocol": "learning/PROTOCOL.json",
+      "evidence_level": "bounded synthetic learning experiment, not natural task or hardware qualification"
+    },
+    "owner": {
+      "contract": "Versioned readout, original owner and runtime, actual stopping, durable replay, and complete work accounting",
+      "protocol": "owner/PROTOCOL.json",
+      "evidence_level": "original owner in a scoped local research host, not full daemon or learned end-to-end SNN deployment"
+    }
+  },
+  "semantics": {
+    "spike_amplitude": "Binary physical event; task payoff is separately specified",
+    "lambda": "Independent cancellation hazard with stated recovery; never silently reinterpreted as energy price or reset rate",
+    "resource_price": "Separate price on waiting and execution costs",
+    "smooth_fit": "A condition on eligible continuous optimal-value boundaries; not forced on hitting probabilities or discrete owner epochs",
+    "finite_owner_oracle": "Bermudan finite-state MDP with explicitly exported transition law",
+    "hit_probability": "Finite-window probability without pure utility discount",
+    "terminal_probability": "Different event from first passage; existing terminal call/put studies are unchanged"
+  },
+  "execution_policy": {
+    "freeze_source_and_all_subprotocols_before_scientific_runs": true,
+    "preserve_failed_or_invalid_runs": true,
+    "no_confirmation_data_model_selection": true,
+    "no_post_result_threshold_relaxation": true,
+    "independent_screening_and_confirmation_seeds": true,
+    "pair_environment_streams_by_seed_episode_physical_event": true,
+    "charge_solver_model_replay_validation_and_failed_attempt_work": true,
+    "actual_stop_must_avoid_future_work": true,
+    "spike_counts_are_not_measured_hardware_energy": true,
+    "old_studies_and_qualification_flags_unchanged": true
+  },
+  "secondary_factorial_analysis": {
+    "source": "analysis.py",
+    "splits": ["id_test", "ood_test"],
+    "contrasts": [
+      "free minus fixed within each surrogate",
+      "free minus direct within each surrogate",
+      "first passage minus standard within each boundary family",
+      "boundary-by-gradient interaction: free versus direct",
+      "neural free-boundary minus same-information raw-belief DP"
+    ],
+    "inference": "Descriptive paired seed intervals only; no additional confirmatory claims or test-based selection"
+  },
+  "acceptance": {
+    "math": "Independent references, whole-domain inequalities, and full-resolve parameter derivatives agree within registered numerical tolerances",
+    "learning_execution": "All six arms and registered seeds execute, source/phase identities match, outcomes and work are independently auditable",
+    "learning_superiority": "Separate predeclared statistical comparison; execution success alone cannot satisfy this criterion",
+    "owner_execution": "Actual owner receipts establish applied decisions, stopping removes later work, and all original-kernel executions and added work are counted",
+    "production": "No production admission or permission expansion is requested by this study"
+  }
+}
