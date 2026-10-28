@@ -158,7 +158,9 @@ async fn actual_memory_cell_v9_authorized_image_migration_recovery() {
         assert!(client.health().await.expect("destination health").ready);
         let readout = client.memory_cell_read(query.clone()).await.expect("destination-only native parameter readback");
         assert_eq!(readout.value, before.value);
-        assert_eq!(readout.cell_digests.len(), 3);
+        assert_eq!((readout.source_ids.len(), readout.cell_digests.len(), readout.hops), (3, 2, 3));
+        assert_eq!((&readout.source_ids, &readout.cell_digests, readout.generation, readout.snapshot_digest),
+            (&before.source_ids, &before.cell_digests, before.generation, before.snapshot_digest));
         let stale_traffic = if let Some(stale) = old_client.take() {
             assert!(stale.memory_cell_read(query.clone()).await.is_err(), "old spawn identity remains fenced");
             Some(stale.traffic_snapshot())
