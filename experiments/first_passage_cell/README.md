@@ -5,11 +5,18 @@ explicit renewal resets, and value-informed maintenance decisions. It is a
 research package beside the existing Hepta neuron work. It does not replace the
 production neuron, Agentd state backend, or native NDU owner algorithms.
 
-The implementation, all registered physical fits, and all 52,224 policy-development
-episodes have completed their retained validation. Confirmation utility claims
-require a separately published source/artifact freeze, the complete registered
-evaluation cohort, and its independent audit. Development results and numerical
-conformance do not establish confirmation utility gains.
+All five research work packages have implemented and checked deliverables. The
+registered endogenous renewal controller passed **all three prespecified
+confirmation comparisons** using executed actions and actual subsequent net
+utility. Independent audits covered **32,768 complete episodes** across
+confirmation and both prespecified model-mismatch tasks, in addition to the
+52,224 development episodes and all 16 physical-model fits.
+
+The comparison concerns voluntary repair/reset boundaries in the registered
+synthetic maintenance task. The learned physical first-passage barrier is a
+separate object. See [RESULTS.md](RESULTS.md) for the complete findings, costs,
+computational measurements and limits, and the
+[audited confirmation figure](evidence/confirmation_results.svg).
 
 Start with [CONTRACT.md](CONTRACT.md), [PROTOCOL.json](PROTOCOL.json), and the
 [pre-confirmation protocol amendment](PROTOCOL_AMENDMENT.md). The repository base
@@ -27,6 +34,34 @@ is `ed6f8c6645c927249cec0d3395f6bae21f278739`.
 
 The physical absorbing boundary and the voluntary repair boundary are different
 objects. This distinction is essential to interpreting the last two packages.
+
+## Completed frozen confirmation
+
+The published [source commit](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/507bfcc131f30c88c5931f6101c45afdd5c71887)
+precedes evaluation. The [published freeze commit](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/8ada7c46a23063722ee9b7089be608d4ab1c2fed)
+contains [FREEZE.json](FREEZE.json), whose SHA-256 is
+`57858ef88f9a1ef03a9ade666a35fdbe7faafef651bdca8eee3514feb99b7fdd`.
+The frozen source identity remains
+`507bfcc131f30c88c5931f6101c45afdd5c71887` when later results and raw artifact
+parts are published. The freeze's `confirmation_started: false` records its
+pre-run creation state; completed run receipts and audits record subsequent
+execution without rewriting the freeze.
+
+| Prespecified endogenous-minus-baseline comparison | Mean net utility gain | Family-adjusted empirical interval | Registered gate |
+| --- | ---: | ---: | --- |
+| First-event value | +0.03748856 | [0.02596592, 0.05046213] | PASS |
+| Fixed cross7 | +0.02209145 | [0.00977929, 0.03466599] | PASS |
+| Learned threshold7 | +0.02214138 | [0.00937348, 0.03518791] | PASS |
+
+Every comparison has eight positive model-seed means and an adjusted lower
+bound above the frozen 0.005 gate. These use the registered two-stage bootstrap
+and Bonferroni family correction, not a population guarantee. Endogenous mean
+confirmation utility is 0.82583441 task units per episode. The two stress tasks
+retain a higher endogenous mean than these three baselines without introducing
+new significance gates. Full evidence is in the
+[confirmation audit](evidence/CONFIRMATION_AUDIT.json),
+[drift stress audit](evidence/STRESS_DRIFT_AUDIT.json), and
+[diffusion stress audit](evidence/STRESS_DIFFUSION_AUDIT.json).
 
 ## State, first passage, and analytic operators
 
@@ -312,7 +347,9 @@ locked dependency restoration, build/test gates and rounding details.
 | [TRAINING_VALIDATION.json](evidence/TRAINING_VALIDATION.json) | Six- and seven-parameter fits for all eight seeds: 16 retained fits, active parameter changes and independent distribution-based likelihood checks |
 | [PYTHON_VALIDATION.json](evidence/PYTHON_VALIDATION.json) | Final integrated research-package suite: 65 tests passed, zero failures, zero errors and zero skips; actual retained native executable used |
 | [POLICY_DEVELOPMENT_AUDIT.json](evidence/POLICY_DEVELOPMENT_AUDIT.json) | All 52,224 development episodes passed independent ledger, native-path and selection checks; all eight seeds retained |
-| [NDU_VALIDATION.json](evidence/NDU_VALIDATION.json) | Six Rust tests and eleven distinct Python native/value tests; exact finite-tree arithmetic, 64 fixed diagnostic observations and 10,000 independently sampled renewal paths |
+| [CONFIRMATION_AUDIT.json](evidence/CONFIRMATION_AUDIT.json) | All 16,384 confirmation episodes audited; all three registered paired-gain gates passed |
+| [STRESS_DRIFT_AUDIT.json](evidence/STRESS_DRIFT_AUDIT.json) and [STRESS_DIFFUSION_AUDIT.json](evidence/STRESS_DIFFUSION_AUDIT.json) | Two additional 8,192-episode cohorts audited without refitting or changing policy parameters; descriptive model-mismatch evidence |
+| [NDU_VALIDATION.json](evidence/NDU_VALIDATION.json) | Six Rust tests and eleven Python native/value tests already included in the 65-test suite above; exact finite-tree arithmetic, 64 fixed diagnostic observations and 10,000 independently sampled renewal paths |
 | [test_audit.py](tests/test_audit.py) | Hand-computed event/refractory/cost ledgers, deliberate score and event-time forgeries, paired-cohort completeness and statistical decision gates |
 | [test_study.py](tests/test_study.py) | Preparation/selection identity, atomic evidence and study lifecycle checks |
 
@@ -377,10 +414,20 @@ The retained native executable is Linux x86_64. Other platforms or a different
 native build require a new recorded build identity and matching study freeze;
 see `NATIVE_REPRODUCE.md`.
 
-### 1. Restore the exact retained native executable and run tests
+### 1. Materialize archived evidence, restore the native executable, and run tests
+
+A cold checkout first reconstructs the retained original evidence files. The
+archive manifest `EVIDENCE_ARCHIVE.json` identifies bounded binary parts under
+`evidence/data_parts/<original-sha256>/<index>.bin`. Their representation changes
+only transport and storage: the restore helper verifies each part and the
+reassembled original byte count, SHA-256 and Git blob SHA. It generates no new
+trajectories, loads no pickle, and refuses to overwrite a differing existing
+file. Run restoration before native verification, freeze checks or replay:
 
 ```bash
+python -m experiments.first_passage_cell.evidence.audit_helpers.restore_archives
 python -m experiments.first_passage_cell.restore_native
+python -m experiments.first_passage_cell.evidence.audit_helpers.restore_archives --verify-only
 
 HEPTA_FIRST_PASSAGE_NATIVE="$PWD/experiments/first_passage_cell/NATIVE_BUILD.json" \
   python -m unittest \
@@ -395,7 +442,17 @@ Restoration verifies the compressed executable against the retained binary
 SHA-256 and refuses to replace a different existing binary. The explicit
 manifest environment variable makes the native test dependency unambiguous.
 The original repository formatting gate remains `just fmt`; it is not a
-comprehensive Python lint result.
+comprehensive Python lint result. The
+[archive restoration helper](evidence/audit_helpers/restore_archives.py) fails
+on missing or corrupt parts. A layout manifest or a recorded hash alone is not
+a claim that all required bytes have already been remotely published; archive
+availability is established by the final publication receipt and this actual
+restoration check.
+
+For the retained study, use the package's `prepared/` and [FREEZE.json](FREEZE.json)
+after restoration. Audits can be repeated into new receipt paths without
+rerunning the physics fit or policy selection. The next section instead
+prepares a new run, which requires a new matching published freeze.
 
 ### 2. Prepare all physics and policy artifacts
 
