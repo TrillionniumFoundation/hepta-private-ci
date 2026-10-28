@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-28T06:04:01.755664+00:00",
+  "scope": "diagnostic observability repair only; no dependency/policy changes",
+  "observed_source_head": "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c",
+  "observed_tested_merge": "563463fe85b6ea51a22e7d7b496ef49b4bc47365",
+  "observed_tree": "b6fe3798e2817c79c87fbb38dca3033f78716e20",
+  "run_id": 40639726155,
+  "canonical_job_id": 122655390247,
+  "canonical_result": "FAIL",
+  "artifact": {
+    "id": 12795370507,
+    "name": "cargo-deny-host-diagnostic-40639726155-1",
+    "bytes": 393687,
+    "sha256": "246dcbe6834da8dcabbc8b206d066b5df0e4cdcec8f0757a7c4b793de342819f",
+    "actual_download_sha_verified": true,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40639726155/artifacts/12795370507"
+  },
+  "old_receipt_sha256": "0281d5d8ed17cdcbeebfafd5d1e7b3589c35ecec46877cac25f6cc2d383b9b7e",
+  "old_diagnostic": {
+    "exit_code": 1,
+    "worktree_clean_before": true,
+    "worktree_clean_after": true,
+    "inputs_unchanged": true,
+    "stdout_bytes": 0,
+    "stderr_observed_bytes": 12093563,
+    "stderr_full_sha_reported_by_capture": "8d3a6479d832b1c961e6ee411e5f386839655c39b4fd6d23878afc88c35bbb0c",
+    "stderr_retained_bytes": 8388608,
+    "stderr_retained_sha256": "616758c32a15fbee1d1919442ba8ea80ece79cca80a02402fb31876c3558a15d",
+    "retained_complete_warning_records": 70,
+    "warning_codes": {
+      "duplicate": 69,
+      "license-not-encountered": 1
+    },
+    "partial_json_records": 1,
+    "fatal_records_observed": 0,
+    "full_stderr_bytes_independently_available": false
+  },
+  "full_job_log_read": {
+    "attempts_for_new_job": 1,
+    "result": "Transport closed",
+    "unchanged_retry_performed": false
+  },
+  "root_cause": "UNRESOLVED; do not infer a specific dependency or vulnerability from exit 1",
+  "repair": {
+    "receipt_schema_version": 2,
+    "host_log_level": "error",
+    "canonical_action_changed": false,
+    "retention": "nonoverlapping prefix and tail; segment offsets and SHA; full observed SHA; explicit omitted interval",
+    "diagnostic_limit_per_stream": 8388608,
+    "context_limit_per_stream": 65536,
+    "combined_retained_log_cap": 17432576,
+    "excludes_from_log_cap": [
+      "receipt",
+      "temporary pinned cargo-deny tool"
+    ],
+    "guarantees_fatal_record_completeness": false
+  },
+  "official_source": {
+    "repository": "EmbarkStudios/cargo-deny",
+    "tag": "0.19.0",
+    "commit": "09faadcea2d0d1742492e6872b743d1e4d151a27",
+    "files": {
+      "src/cargo-deny/check.rs": "c2b2594975783085cba9e892d8aac4c9c8e8c1f8",
+      "src/cargo-deny/common.rs": "bb15d5f8830bf64333bdaf63a4c26f46e337cbf1",
+      "src/cargo-deny/stats.rs": "97c242c728250ed235e55121adf8008176eb9ebc",
+      "src/cargo-deny/main.rs": "73e924145e99ac4ce243d5063fea95f98730bafd",
+      "src/licenses.rs": "c23f1c2904b27992aaea6e95b34f70a284060392"
+    },
+    "finding": "Check statistics are collected before rendering; log severity filters printing; exit depends on check errors. Warn and error share the same license-label branch. The diagnostic verbosity change does not waive checks."
+  },
+  "validation": {
+    "python_boundary_tests": 12,
+    "python_boundary_tests_result": "PASS before final formatter",
+    "tested_helper_sha256": "47567d7b8e8248eb98fc7f0fd988b33f4c0d29dadf8278ae6746e6ef4f7386a5",
+    "tested_tests_sha256": "045bfaadf5f2e785ff625c76ec8bd3f6cfdbdff56c0c077b2f672255318f1bf0",
+    "independent_static_review": "No blocking finding at pre-format identities; final format identity separately recorded",
+    "actual_just_fmt": "PASS",
+    "git_diff_check": "PASS",
+    "post_format_identities": {
+      "scripts/capture_cargo_deny_diagnostic.py": {
+        "bytes": 15062,
+        "sha256": "c040903cab7a58bcab1c690958555ace26a33c7ce41290d92216b5b68684e34f",
+        "git_blob": "fcf26e336c65a438cd43da340533f528fe814e30"
+      },
+      "scripts/test_capture_cargo_deny_diagnostic.py": {
+        "bytes": 18599,
+        "sha256": "7f811178e2e6dbeba2c0c59b0ba54bfece13a4bab2682a2485ce8411e817792b",
+        "git_blob": "7db7a92f256a864143ca7d2aa913b470dd9c4588"
+      }
+    },
+    "real_cargo_reexecution": "NOT_EXECUTED locally",
+    "new_ci_diagnostic": "PENDING"
+  },
+  "canonical_inputs_unchanged": {
+    "codex-rs/Cargo.toml": {
+      "bytes": 21574,
+      "sha256": "0e3fc0b7dc3ec907e02059a1bc79579077c8e5d1a0ac936b4f1bd984e94afdb4"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 418038,
+      "sha256": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389"
+    },
+    "codex-rs/deny.toml": {
+      "bytes": 18803,
+      "sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352"
+    },
+    "codex-rs/rust-toolchain.toml": {
+      "bytes": 78,
+      "sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64"
+    },
+    ".github/workflows/cargo-deny.yml": {
+      "bytes": 2036,
+      "sha256": "61c86b33375212bb428ed3673bbfed492a41c1a2d132d124f7b2840a452cc3dc"
+    }
+  },
+  "scientific_status": "FAIL",
+  "admission": false,
+  "raw_scientific_uploads": 0
+}

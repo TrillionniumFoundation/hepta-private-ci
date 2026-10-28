@@ -256,6 +256,8 @@ impl StepContext {
 #[path = "configuration_tests.rs"]
 mod configuration_tests;
 mod guardian_tests;
+#[path = "tests/terminal_event_tests.rs"]
+mod terminal_event_tests;
 
 struct InstructionsTestCase {
     slug: &'static str,
@@ -1192,6 +1194,15 @@ async fn cancelled_after_start_transition_promotes_detached_terminalizer() {
     timeout(StdDuration::from_secs(2), idle_entered.notified())
         .await
         .expect("detached terminalizer should reach post-clear idle lifecycle");
+    while let Ok(event) = rx.try_recv() {
+        assert!(
+            !matches!(
+                event.msg,
+                EventMsg::TurnComplete(_) | EventMsg::TurnAborted(_)
+            ),
+            "a pre-start abort must not publish its terminal before cleanup finishes"
+        );
+    }
     assert!(
         timeout(StdDuration::from_millis(100), &mut transition_drain)
             .await

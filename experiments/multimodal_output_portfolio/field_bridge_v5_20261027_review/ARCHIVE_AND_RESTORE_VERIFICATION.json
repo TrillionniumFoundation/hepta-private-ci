@@ -1,0 +1,209 @@
+{
+  "admission": false,
+  "all_original_substantive_blockers_closed": false,
+  "archive": {
+    "archive_bytes": 239369112,
+    "archive_sha256": "58b00c94da32eec4565e49e66a72d98c38f619c6dd2baeeb8a4318a7984fcdc2",
+    "compression": "gzip level6, mtime0; USTAR regular files only",
+    "manifest_bytes": 109992,
+    "manifest_sha256": "38472bc9509495d08404c72212a0d2aaa3c9c3a9abab98a4f1d5b0aa3635d285",
+    "payload_bytes": 246121150,
+    "payload_files": 501,
+    "regular_members_including_manifest": 502
+  },
+  "archive_integrity": {
+    "all_501_payload_member_sha256_verified": true,
+    "all_inner_gzip_crc_verified": true,
+    "exception_allowlist": [],
+    "full_restoration": true,
+    "inner_gzip_members": 80,
+    "outer_gzip_crc_verified_to_physical_eof": true,
+    "payload_bytes": 246121150,
+    "restored_tree_unchanged": true,
+    "unsafe_members": 0,
+    "zip_crc_files": 233,
+    "zip_npz_files": 156,
+    "zip_pt_files": 77
+  },
+  "authority": "DENY_ALL",
+  "candidate_disposition": "REJECTED",
+  "certificate": false,
+  "custody": {
+    "destination": "ChatGPT Library",
+    "new_upload_attempts": 0,
+    "prior_approval_record": {
+      "bytes": 2223,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/PERSISTENCE_APPROVAL_STATUS.json",
+      "sha256": "9158e9d235c58ded7dc34b4ecfc7d3c92a717661a4b94c37b3f325323cb00898"
+    },
+    "prior_automatic_review_rejections": 3,
+    "raw_archive_durably_saved": false,
+    "reason": "Prior automatic review required user-authored approval naming private archives/reports and destination; generic continuation was explicitly insufficient. No alternate raw egress was attempted.",
+    "required_user_authorization": "允许将 hepta_field_bridge_v5_20261027_evidence.tar.gz 和 hepta_field_bridge_v5_20261027_archive_verification.json 保存到我的 ChatGPT Library。",
+    "status": "LOCAL_VERIFIED_PENDING_EXPLICIT_PERSISTENCE_AUTHORIZATION",
+    "v5_automatic_review_decision": "NOT_ATTEMPTED"
+  },
+  "deliverables": {
+    "archive_filename": "hepta_field_bridge_v5_20261027_evidence.tar.gz",
+    "verification_filename": "hepta_field_bridge_v5_20261027_archive_verification.json"
+  },
+  "historical_regression_cause": "UNDETERMINED",
+  "historical_regression_status": "FAIL",
+  "independent_media_verification": {
+    "all_exact": true,
+    "generator_calls": 0,
+    "maximum_value_error": 0.0,
+    "media_files": 150,
+    "media_outputs": 192000,
+    "observer_values_verified": 384000,
+    "passed": true,
+    "verification_costs": {
+      "actual_observer_batch_calls": {
+        "audit": 880,
+        "reward": 880
+      },
+      "actual_observer_digit_examples": {
+        "audit": 112640,
+        "reward": 112640
+      },
+      "logical_observer_batch_calls": {
+        "audit": 3000,
+        "reward": 3000
+      },
+      "logical_observer_digit_examples": {
+        "audit": 384000,
+        "reward": 384000
+      },
+      "observer_batch_cache_hits": {
+        "audit": 1060,
+        "reward": 1060
+      }
+    }
+  },
+  "literal_reanalysis": {
+    "all_actual_repository_imports_from_manifest_verified_restoration": true,
+    "diagnostic_exact_comparison": {
+      "archived_normalized_sha256": "bc65d6f91c9c33d3fab9df55139b1402b0cd459b57fca4574b099b10badbd2df",
+      "descriptive_comparisons": 7,
+      "exact": true,
+      "numeric_tolerance": null,
+      "paths": 72,
+      "removed_top_level_keys_only": [
+        "diagnostic_cpu_ns",
+        "diagnostic_wall_ns",
+        "source_registration"
+      ],
+      "restored_normalized_sha256": "bc65d6f91c9c33d3fab9df55139b1402b0cd459b57fca4574b099b10badbd2df"
+    },
+    "diagnostic_import_source_files": 9,
+    "exact_original_fail_bytes": true,
+    "frozen_import_source_files": 6,
+    "isolated_children": 2,
+    "neural_model_calls": 0,
+    "original_fail_sha256": "35af3341f3fc283c41beda469e5c9ff2531f7bf01d537cb4dcc9c4a7fd6b42df",
+    "passed": true,
+    "restored_fail_sha256": "35af3341f3fc283c41beda469e5c9ff2531f7bf01d537cb4dcc9c4a7fd6b42df",
+    "restored_frozen_audit_exit_code": 1,
+    "scientific_retries": 0
+  },
+  "local_preservation_status": "PASS",
+  "minimal_missing_historical_artifact": {
+    "path": "development/17/original-task.npz",
+    "sha256": "47ad388b03bf2109b01737107196019156c9f7cf0cebbbe71a92c060caa08c9e"
+  },
+  "native_owner_integration": false,
+  "new_holdout_authorized": false,
+  "numeric_development_entry_passed": false,
+  "original_frozen_audit_status": "FAIL",
+  "preservation_attempts": [
+    {
+      "cause": "The import recorder resolved the virtual torch.ops relative filename as a restored repository file; original frozen audit had already reproduced its expected FAIL.",
+      "kind": "literal_harness",
+      "original_inputs_unchanged": true,
+      "receipt": {
+        "bytes": 257659,
+        "path": "postpackage/literal_attempt_1/LITERAL_REANALYSIS.json",
+        "sha256": "32d1a6b62b83d9588d8c91bc4e01378dbee2bc640dc90405b4ea1f509823ebc3"
+      },
+      "registered_commit": "4b8cbc69e2a2489db6a12c63ce63de3123245db6",
+      "status": "FAIL"
+    },
+    {
+      "change_scope": "Explicit identity and implementation-file binding for the two observed Torch virtual modules; readable failure receipts. Scientific source, archive, data and gates unchanged.",
+      "kind": "literal_harness",
+      "receipt": "postpackage/LITERAL_REANALYSIS.json",
+      "registered_commit": "b1352d6eb6de1a9b558fe4397fdeae26233ab5e7",
+      "status": "PASS"
+    }
+  ],
+  "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4145",
+  "receipts": {
+    "BUILD_RECEIPT.json": {
+      "bytes": 18039,
+      "path": "postpackage/BUILD_RECEIPT.json",
+      "sha256": "2c8dc6f94b0997c1b86d2402300ee7266d40012bd6d2a8f75c3391cc406a5526"
+    },
+    "LITERAL_REANALYSIS.json": {
+      "bytes": 273754,
+      "path": "postpackage/LITERAL_REANALYSIS.json",
+      "sha256": "fd707ecd3ee5aeb48321b40307e970ebb2c327f879b6d3aa6d0bb1f6984130a9"
+    },
+    "PRE_PACKAGE_DISK_CHECK.json": {
+      "bytes": 795,
+      "path": "postpackage/PRE_PACKAGE_DISK_CHECK.json",
+      "sha256": "1f4c6e3bf9bf5bda91b2976f752d31d6acc8a0aa40f5cb1ac5f6efea46d02318"
+    },
+    "RESTORED_FROZEN_AUDIT.json": {
+      "bytes": 213,
+      "path": "postpackage/RESTORED_FROZEN_AUDIT.json",
+      "sha256": "35af3341f3fc283c41beda469e5c9ff2531f7bf01d537cb4dcc9c4a7fd6b42df"
+    },
+    "RESTORED_FROZEN_AUDIT_IMPORTS.json": {
+      "bytes": 6264,
+      "path": "postpackage/RESTORED_FROZEN_AUDIT_IMPORTS.json",
+      "sha256": "859d2c007668ff6a8a9121d66af8bd13c832645832407f35fb94f77788b24827"
+    },
+    "RESTORED_WITHIN_RUN_AUDIT.json": {
+      "bytes": 286248,
+      "path": "postpackage/RESTORED_WITHIN_RUN_AUDIT.json",
+      "sha256": "1db1edabe3cf6dedce8a3b35a156788e308579d4dc2fcd693cf90a14b6c35bda"
+    },
+    "RESTORED_WITHIN_RUN_AUDIT_IMPORTS.json": {
+      "bytes": 8069,
+      "path": "postpackage/RESTORED_WITHIN_RUN_AUDIT_IMPORTS.json",
+      "sha256": "33472f4853fa52ba9d33688add8ed59239e1188cef0a370015e37d5f77c1fb76"
+    },
+    "RESTORE_VERIFICATION.json": {
+      "bytes": 216967,
+      "path": "postpackage/RESTORE_VERIFICATION.json",
+      "sha256": "fcf18eee2c5e3ed580d046f74e94e57e06b8992e79dbbb486587442978687ff4"
+    }
+  },
+  "recorded_utc": "2026-10-28T02:16:50.266320+00:00",
+  "requires_calibration": true,
+  "schema": "hepta.field-bridge.v5.archive-and-restore-verification.1",
+  "scope_limits": [
+    "The archive includes all current run files, 72 terminal checkpoints/traces, 150 raw endpoint files, required scientific sources and old inputs, nine original assets and their restoration receipt.",
+    "The original 62,166,608-byte source asset tar is omitted because its selected exact members and provenance are retained.",
+    "Historical V2/V3/V4 complete raw archives, unrecorded intermediate tensors and the Python/Torch/NumPy runtime are not bundled.",
+    "Literal verification does not retrain or regenerate endpoints, explain the historical regression discrepancy, grant model qualification, or establish production efficacy."
+  ],
+  "snapshot_semantics": {
+    "B04_incremental_field_gain_remains_not_established": true,
+    "closed_work_item": "V5-A02 local archive/full restoration/exact artifact reanalysis only",
+    "original_B10_remains_open": true,
+    "postpackage_updates_are_separate": true,
+    "prearchive_ledger_is_immutable": true
+  },
+  "source_identity": {
+    "archive_collector_source_commit": "97787459a5c184bd2ddb83b4a5e126fc3f95b231",
+    "diagnostic_registered_commit": "f0897403189e866ffaa16c186fdb4ded2d3b5341",
+    "literal_harness_registered_commit": "b1352d6eb6de1a9b558fe4397fdeae26233ab5e7",
+    "literal_harness_sha256": "c955fe28f6bc41fe7bd80fde2b57611da6670fbb10ff04ed06e8467b1b32cfea",
+    "media_source_commit": "9c62e0f78852d17459e6ef7425f2a40089488a2e",
+    "scientific_registered_commit": "f49810e422892a76c1d37c19c5b4d5112cba6d9e",
+    "source_freeze_sha256": "f86ef86edc02d81d2c68476c5742b332582cfb8a2096f6514dcdc616cdb64ab8"
+  },
+  "study_id": "hepta.field-bridge.v5.baseline-gate-transaction.20261027.1",
+  "within_run_integrity": "PASS"
+}

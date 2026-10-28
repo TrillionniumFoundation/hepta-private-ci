@@ -25,10 +25,35 @@ jobs:
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
 
       - name: Run cargo-deny
+        id: cargo_deny
         uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246 # v2
         with:
           rust-version: 1.95.0
           manifest-path: ./codex-rs/Cargo.toml
+
+      # Preserve the original failure. This host rerun only supplies a readable
+      # artifact when the Docker action's job log cannot be retrieved.
+      - name: Capture cargo-deny host diagnostic
+        id: cargo_deny_diagnostic
+        if: failure() && steps.cargo_deny.outcome == 'failure'
+        timeout-minutes: 12
+        working-directory: .
+        run: >-
+          python3 -B scripts/capture_cargo_deny_diagnostic.py
+          --output-dir "$RUNNER_TEMP/cargo-deny-diagnostic"
+
+      - name: Upload cargo-deny host diagnostic
+        if: >-
+          always() && steps.cargo_deny.outcome == 'failure' &&
+          (steps.cargo_deny_diagnostic.outcome == 'success' ||
+           steps.cargo_deny_diagnostic.outcome == 'failure' ||
+           steps.cargo_deny_diagnostic.outcome == 'cancelled')
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: cargo-deny-host-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cargo-deny-diagnostic/
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Check for a clean worktree
         if: always() && !cancelled()

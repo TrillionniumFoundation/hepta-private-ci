@@ -1,0 +1,311 @@
+{
+  "admission": false,
+  "all_attempts_work": {
+    "fresh_holdout_reads": 0,
+    "scientific_model_calls": 0,
+    "scientific_training_steps": 0,
+    "toy_backward_calls": 12,
+    "toy_dropout_forwards": 12,
+    "toy_module_constructions": 568,
+    "toy_optimizer_steps": 12,
+    "toy_pipeline_forwards": 12,
+    "toy_random_draw_calls": 84
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "engineering_passed": false,
+      "explanation": "Initialization failed because torch.optim does not expose the optimizer module as an attribute; no toy forward/backward/SGD step ran.",
+      "receipt": {
+        "bytes": 26435,
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/evidence/ATTEMPT_1.json",
+        "sha256": "b8957d663b7c82889152d47f27223f85ebb74971328ea89cadb20a2982f51f6a"
+      },
+      "tests": {
+        "errors": 10,
+        "failures": 0,
+        "run": 10
+      },
+      "work": {
+        "fresh_holdout_reads": 0,
+        "scientific_model_calls": 0,
+        "scientific_training_steps": 0,
+        "toy_backward_calls": 0,
+        "toy_dropout_forwards": 0,
+        "toy_module_constructions": 40,
+        "toy_optimizer_steps": 0,
+        "toy_pipeline_forwards": 0,
+        "toy_random_draw_calls": 0
+      }
+    },
+    {
+      "attempt": 2,
+      "engineering_passed": false,
+      "explanation": "The malformed Python RNG tuple was rejected before live writes by an isolated Random.setstate IndexError, which the test did not yet normalize to the public ValueError contract.",
+      "receipt": {
+        "bytes": 7595,
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/evidence/ATTEMPT_2.json",
+        "sha256": "c4f3857df8a8a3fba0d75d205f032a9b4eaf12e204a3b4908b1ad55701115d94"
+      },
+      "tests": {
+        "errors": 1,
+        "failures": 0,
+        "run": 12
+      },
+      "work": {
+        "fresh_holdout_reads": 0,
+        "scientific_model_calls": 0,
+        "scientific_training_steps": 0,
+        "toy_backward_calls": 3,
+        "toy_dropout_forwards": 3,
+        "toy_module_constructions": 124,
+        "toy_optimizer_steps": 3,
+        "toy_pipeline_forwards": 3,
+        "toy_random_draw_calls": 21
+      }
+    },
+    {
+      "attempt": 3,
+      "engineering_passed": true,
+      "explanation": "All 12 tests passed after normalizing invalid RNG exceptions.",
+      "receipt": {
+        "bytes": 5556,
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/evidence/ATTEMPT_3.json",
+        "sha256": "7ce237c2c599bce0eb832d96b9628a033c6f9e180d9eb586ded6104e0c65def9"
+      },
+      "tests": {
+        "errors": 0,
+        "failures": 0,
+        "run": 12
+      },
+      "work": {
+        "fresh_holdout_reads": 0,
+        "scientific_model_calls": 0,
+        "scientific_training_steps": 0,
+        "toy_backward_calls": 3,
+        "toy_dropout_forwards": 3,
+        "toy_module_constructions": 132,
+        "toy_optimizer_steps": 3,
+        "toy_pipeline_forwards": 3,
+        "toy_random_draw_calls": 21
+      }
+    },
+    {
+      "attempt": 4,
+      "engineering_passed": true,
+      "explanation": "All 12 tests passed with actual checkpoint/replay hashes included in the receipt.",
+      "receipt": {
+        "bytes": 6277,
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/evidence/ATTEMPT_4.json",
+        "sha256": "bedae3c3b91652eaf7d2746e8d656dbe936104d5ddad6d4ff3e07f69cf5f88e1"
+      },
+      "tests": {
+        "errors": 0,
+        "failures": 0,
+        "run": 12
+      },
+      "work": {
+        "fresh_holdout_reads": 0,
+        "scientific_model_calls": 0,
+        "scientific_training_steps": 0,
+        "toy_backward_calls": 3,
+        "toy_dropout_forwards": 3,
+        "toy_module_constructions": 132,
+        "toy_optimizer_steps": 3,
+        "toy_pipeline_forwards": 3,
+        "toy_random_draw_calls": 21
+      }
+    },
+    {
+      "attempt": 5,
+      "engineering_passed": true,
+      "explanation": "All 13 tests passed after rejecting extra optimizer array attributes and custom tensor attributes.",
+      "receipt": {
+        "bytes": 6449,
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/evidence/ATTEMPT_5.json",
+        "sha256": "c8172f6ddc8cc1cbabaeb26676dffad7bc02ab7f256babfa8eb703bc6d1e5511"
+      },
+      "tests": {
+        "errors": 0,
+        "failures": 0,
+        "run": 13
+      },
+      "work": {
+        "fresh_holdout_reads": 0,
+        "scientific_model_calls": 0,
+        "scientific_training_steps": 0,
+        "toy_backward_calls": 3,
+        "toy_dropout_forwards": 3,
+        "toy_module_constructions": 140,
+        "toy_optimizer_steps": 3,
+        "toy_pipeline_forwards": 3,
+        "toy_random_draw_calls": 21
+      }
+    }
+  ],
+  "boundaries": [
+    "Only tiny engineering modules and SGD were constructed or executed; no scientific model assets, frozen learning.forward, bank, endpoint, head fit or fresh holdout.",
+    "Module modes/requires_grad/layout and immutable model/context/runtime identities must match before first write. Dynamic mode switching is outside the frozen schema.",
+    "Use only at a step boundary with no pending autograd graph or concurrent writer. Success advances version counters; these are not restorable through the public API.",
+    "Incompatible type/identity/configuration/RNG errors are rejected before live writes; tests check public state, object references, RNG and versions remain unchanged.",
+    "Unexpected apply failure attempts public-state rollback and preserves original optimizer containers/gradient objects, then reports failure; version counters may change and rollback is not guaranteed under process death or resource exhaustion.",
+    "Actual scientific kernel integration/replay, complete candidate storage/cost profiles, original historical regression and scientific admission remain unresolved. No candidate was registered or executed."
+  ],
+  "counter_scope": "Exact instrumented tiny-test pipeline, dropout, explicit random-draw, backward and SGD-step API calls across all five attempts. RNG state inspection/validation and dummy SGD construction perform no forward/backward/step and are not counted as model calls. Dropout RNG is charged through its separate forward counter.",
+  "created_unix_ns": 1793168312894571318,
+  "disk": {
+    "candidate_execution_permitted": false,
+    "candidate_minimum_f_bavail_bytes": 2147483648,
+    "f_bavail_bytes": 0,
+    "f_bfree_bytes": 580497408
+  },
+  "engineering_checks_passed": true,
+  "final_attempt": 5,
+  "final_literal_evidence": {
+    "literal_roundtrip": {
+      "checkpoint_bytes": 56988,
+      "checkpoint_sha256": "1e770f7093c28232e987207d0863e9888e04b33859781cfe3f0213e8237f6e56",
+      "next_step_full_state_sha256": "8d80c6d38c5459a2ec7e829a613913d1d52018fb2fefbbba9536517fc1cd6366",
+      "next_step_output_and_full_state_equal": true,
+      "next_step_output_sha256": "edead25cb99d7eabd36591be40dbebbebc5a96eaf38f34bd5097ad89e088244c",
+      "scientific_kernel_replay": false,
+      "serializer_measurement": {
+        "array_count": 10,
+        "array_payload_bytes": 15152,
+        "compression_assumed": false,
+        "file_bytes": 56988,
+        "header_bytes": 41801
+      },
+      "temporary_file_only": true
+    }
+  },
+  "final_runtime": {
+    "autocast_cpu": false,
+    "cpu_capability": "AVX512",
+    "default_dtype": "torch.float32",
+    "deterministic": false,
+    "environment": {
+      "ATEN_CPU_CAPABILITY": null,
+      "MKL_NUM_THREADS": null,
+      "OMP_NUM_THREADS": null
+    },
+    "grad_enabled": true,
+    "inference_mode": false,
+    "interop_threads": 9,
+    "matmul_precision": "highest",
+    "mkldnn": true,
+    "numpy": "2.3.5",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "threads": 9,
+    "torch": "2.8.0+cpu",
+    "torch_build": "PyTorch built with:\n  - GCC 13.3\n  - C++ Version: 201703\n  - Intel(R) oneAPI Math Kernel Library Version 2024.2-Product Build 20240605 for Intel(R) 64 architecture applications\n  - Intel(R) MKL-DNN v3.7.1 (Git Hash 8d263e693366ef8db40acc569cc7d8edf644556d)\n  - OpenMP 201511 (a.k.a. OpenMP 4.5)\n  - LAPACK is enabled (usually provided by MKL)\n  - NNPACK is enabled\n  - CPU capability usage: AVX512\n  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, COMMIT_SHA=a1cb3cc05d46d198467bebbb6e8fba50a325d4e7, CXX_COMPILER=/opt/rh/gcc-toolset-13/root/usr/bin/c++, CXX_FLAGS= -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOCUPTI -DLIBKINETO_NOROCTRACER -DLIBKINETO_NOXPUPTI=ON -DUSE_FBGEMM -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -DC10_NODEPRECATED -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=range-loop-construct -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-parameter -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=old-style-cast -faligned-new -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-dangling-reference -Wno-error=dangling-reference -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, TORCH_VERSION=2.8.0, USE_CUDA=0, USE_CUDNN=OFF, USE_CUSPARSELT=OFF, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=OFF, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, USE_XCCL=OFF, USE_XPU=OFF, \n"
+  },
+  "forbidden_scientific_imports": [],
+  "foundation_original_nine_checked_exact": [
+    {
+      "bytes": 1449,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/BUDGET_PLAN.json",
+      "sha256": "02055543f2b9f6f17a7f657568b00060e078589c4a1dfe43e6b06cabd791948c"
+    },
+    {
+      "bytes": 1862,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/BUDGET_REPORT.json",
+      "sha256": "1e3526bca390e0a5d9d1b695cfb202bb5a0af9fdc2a34b1cf71be9e68db66c35"
+    },
+    {
+      "bytes": 7059,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/PREPARATION_REPORT.json",
+      "sha256": "3da172bf5cf5ef7b0a40a07378955021fe5fb24bd13319f9953bb4a212792ac9"
+    },
+    {
+      "bytes": 5674,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/README.md",
+      "sha256": "a4ef9aa1ecda5cb67a02d065e0d52b0a6b1514651d757f70300421c8f6f7f0ab"
+    },
+    {
+      "bytes": 2434,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/SOURCE_REFERENCES.json",
+      "sha256": "c5669659c48a1734c633dcee625b4e931464b176f023a6ac72676b169e968dda"
+    },
+    {
+      "bytes": 12779,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/branch_state.py",
+      "sha256": "332080139de3a15a74d6ee5fad907fef661a1866551a0e23689884587d73cf82"
+    },
+    {
+      "bytes": 7369,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/budget.py",
+      "sha256": "ea325da155d015e974ea65eddc9db60b0a6befc25835c481810d6e3235825c0b"
+    },
+    {
+      "bytes": 6335,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/codec.py",
+      "sha256": "75b2be74e5a9bf7ff474e74f5e25f3f6dc3758c09d07ff78a1417537ddc772fb"
+    },
+    {
+      "bytes": 18077,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/tests.py",
+      "sha256": "506d27b2f04cf97c7f75aa6dfe8e6fe1d6cc9506fd21b3914a901dfb44226bf9"
+    }
+  ],
+  "installed_package_source_identities": [
+    {
+      "bytes": 20064,
+      "path": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/optim/sgd.py",
+      "sha256": "d687c42d1b805a041e6a5ced6e287ca59d18ec432791a1624b0d7e4ece2ea314"
+    },
+    {
+      "bytes": 49829,
+      "path": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/optim/optimizer.py",
+      "sha256": "22e21ad10aa7cd994189a9fa7d19c169df4dc9d0c4f4a8dc3fca6aa4568fcabe"
+    },
+    {
+      "bytes": 126775,
+      "path": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/module.py",
+      "sha256": "0cb24956454199a46e8fc37a7cce4fc1cff52130f25fb6eb052745e9eca89067"
+    },
+    {
+      "bytes": 72764,
+      "path": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/_tensor.py",
+      "sha256": "991589d60a0c177977a17ecd5a6f4b800fa942900cd11e2021fde44985c69637"
+    }
+  ],
+  "new_dependency_downloads": 0,
+  "original_scientific_audit_unchanged": {
+    "bytes": 213,
+    "path": "/workspace/scratch/e8a4dc33549f/v5_run/AUDIT.json",
+    "sha256": "35af3341f3fc283c41beda469e5c9ff2531f7bf01d537cb4dcc9c4a7fd6b42df"
+  },
+  "pre_suite_environment_inspection": {
+    "backward_calls": 0,
+    "model_forwards": 0,
+    "optimizer_steps": 0,
+    "purpose": "Read installed Torch version, group fields and Optimizer.load_state_dict implementation.",
+    "scientific_calls": 0,
+    "sgd_optimizers_constructed": 1,
+    "standalone_parameters_constructed": 1,
+    "stock_linear_modules_constructed": 1
+  },
+  "raw_upload_attempts": 0,
+  "readme": {
+    "bytes": 5346,
+    "path": "experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/README.md",
+    "sha256": "a9fd6862de4e4be1e2512a944e199f0b8b10eca3c02b2716f37bee3007d4e24d"
+  },
+  "schema": "hepta.field-bridge.v6-torch-adapter-preparation.1",
+  "scientific_kernel_replay": false,
+  "scientific_status": "FAIL",
+  "source_files": [
+    {
+      "bytes": 22211,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/adapter.py",
+      "sha256": "59b32cbd4ac52dee2e3b0dec7f1c0b197d2c84dbd6fdf404156ad788d3d38e21"
+    },
+    {
+      "bytes": 18511,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/tests.py",
+      "sha256": "c6bf74e88f3b5cd0632c4930d9d248603c806a3d2232e6e0dcb72a4843320b04"
+    }
+  ],
+  "status": "NOT_REGISTERED / NOT_EXECUTED"
+}

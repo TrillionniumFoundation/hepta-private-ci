@@ -1,0 +1,302 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-28T02:09:17.986714+00:00",
+  "kind": "explicit_frozen_evidence_lint_policy_change",
+  "state": "validated_locally_not_published",
+  "summary": "Raw spelling diagnostics remain present. The policy accepts only the fixed historical inventory after exact source and diagnostic verification.",
+  "raw_lint_findings": 9,
+  "frozen_historical_findings": 9,
+  "new_findings": 0,
+  "raw_lint_clean": false,
+  "policy_passed": true,
+  "source_preservation": {
+    "original_four_files_byte_identical": true,
+    "global_ignore_configuration_changed": false,
+    "new_word_exceptions": false,
+    "new_source_exclusions": false,
+    "scientific_gates_changed": false,
+    "rust_changed": false,
+    "archived_ci_snapshot_bytes": 8610,
+    "archived_ci_snapshot_sha256": "239246d1b2568cb1bd748d400288c31b31d1c4a6f21dd1d99d900dd0fe88278b"
+  },
+  "enforcement": [
+    "The complete authorized policy has a fixed canonical SHA256 in code, preventing removal or substitution of the historical inventory.",
+    "Each accepted observation requires its exact path, complete file SHA256 and byte length, line, case-sensitive token SHA256, and full diagnostic SHA256.",
+    "The baseline commit must remain an ancestor of HEAD. Historical Git bytes must equal the current source bytes. Missing local objects fail closed without lazy fetch.",
+    "Original spelling configuration bytes are fixed, additional automatic configuration is rejected, and sparse or incomplete tracked checkouts fail.",
+    "The exact installed checker version is 2.4.3. Unexpected output, stderr, exit status, counts, duplicate, changed, new, or missing diagnostics fail.",
+    "Frozen source and policy identity are checked before and after the raw scan."
+  ],
+  "validation": {
+    "focused_tests": 18,
+    "focused_tests_passed": 18,
+    "ruff_check": "passed",
+    "actual_just_fmt": "passed",
+    "python_ast_identity_preserved_after_formatting": true,
+    "tests_repeated_after_final_formatting": false,
+    "independent_review": "completed; the identified inventory-removal bypass was fixed and covered by a regression test",
+    "working_tree_diff_check": "passed"
+  },
+  "coverage": {
+    "base_commit": "f0897403189e866ffaa16c186fdb4ded2d3b5341",
+    "base_tree": "a1a84afb009b15617fd2ac866f5d95d6aba3c43a",
+    "overlay_files": [
+      {
+        "path": ".github/workflows/codespell.yml",
+        "bytes": 1396,
+        "sha256": "35f8acedaaef1e97ca5418a254510e1379130b57018c2b255361bb1c76e633e6"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/BLOCKERS.json",
+        "bytes": 112406,
+        "sha256": "7a610d839eeb632d34474457a87ef55feb296362852edc66385242d816385d8b"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/CI_FINAL_RECEIPT.json",
+        "bytes": 6638,
+        "sha256": "ccace5b0fc417252fab02c9649006954faf630babb77c4d64dd334615bb45009"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/CI_RECEIPT.json",
+        "bytes": 8610,
+        "sha256": "239246d1b2568cb1bd748d400288c31b31d1c4a6f21dd1d99d900dd0fe88278b"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/EXECUTION_REVIEW.md",
+        "bytes": 14103,
+        "sha256": "b320d23cc400c153589394256ebd98b155bee85664550172874aeeadcbb2b763"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/HISTORICAL_REGRESSION_DIAGNOSIS.json",
+        "bytes": 29494,
+        "sha256": "be7cc928f79b9fc24eab0807c00b6dce23b2c02aa6026a1351c9c6ede192702e"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/HISTORICAL_REGRESSION_DIAGNOSIS.md",
+        "bytes": 6654,
+        "sha256": "477cc963a450a396f7df88af9327cc1cb07eb69b7c1860dad39a6225decae6df"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/SOURCE_AND_TEST_VERIFICATION.json",
+        "bytes": 37802,
+        "sha256": "e090d5e6b9532721c156bbdbb22c59462566286cdf5d4271c548a13702f5ba35"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/V5_NUMERIC_DIAGNOSIS.json",
+        "bytes": 279785,
+        "sha256": "7c7d74b07dfdaabd0457d491bcf4b69523cc2a4d5461748968008073b597da7e"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/V5_NUMERIC_DIAGNOSIS.md",
+        "bytes": 8697,
+        "sha256": "efb3588f1ae49bd3b108801a437f322c1777fc868e80a4464d91bb6c048c958e"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/archive_plan.py",
+        "bytes": 9863,
+        "sha256": "e0bff5b24d2477076a9edf97bcd0858a2ee61a6b9a5ebb4538758dd54945ce43"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/evidence/AUDIT.json",
+        "bytes": 213,
+        "sha256": "35af3341f3fc283c41beda469e5c9ff2531f7bf01d537cb4dcc9c4a7fd6b42df"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/evidence/MEDIA_AUDIT.json",
+        "bytes": 143656,
+        "sha256": "45240283c980e1558e4e8374a1e74088b126764f5d301d06d4b2c42a8048d7fe"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/evidence/WITHIN_RUN_AUDIT.json",
+        "bytes": 286822,
+        "sha256": "0105da40023843b7551308c51e86fa945f9d213f21af29d53fb43a5fdfa6814f"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/literal_reanalysis.py",
+        "bytes": 25690,
+        "sha256": "bcdd46465b4cc7eaaec04b19aa2e63334b24e9f436c0746c4baacf5949040f37"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/media_reaudit.py",
+        "bytes": 9480,
+        "sha256": "e73f159b004a63230255b3a0ef939a56408a96cf369e1468182f13b872f4f224"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/postpackage/BUILD_RECEIPT.json",
+        "bytes": 18039,
+        "sha256": "2c8dc6f94b0997c1b86d2402300ee7266d40012bd6d2a8f75c3391cc406a5526"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/postpackage/INPUT_INDEX.json",
+        "bytes": 108033,
+        "sha256": "7ff4437c91bf6439c20fda65de2e247461d27c2e1935721f86e6de78bc7d3439"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/postpackage/PRE_PACKAGE_DISK_CHECK.json",
+        "bytes": 795,
+        "sha256": "1f4c6e3bf9bf5bda91b2976f752d31d6acc8a0aa40f5cb1ac5f6efea46d02318"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/postpackage/RESTORE_PLAN.json",
+        "bytes": 28490,
+        "sha256": "0def1fb9d35a51f6710c58334b18e40acff80bbaa0134fd01d2dbaae4d42e5f8"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/postpackage/RESTORE_VERIFICATION.json",
+        "bytes": 216967,
+        "sha256": "fcf18eee2c5e3ed580d046f74e94e57e06b8992e79dbbb486587442978687ff4"
+      },
+      {
+        "path": "scripts/check_codespell_frozen_findings.py",
+        "bytes": 12081,
+        "sha256": "d30dcf2bc6ee539da4b83631c286d90541fdbd728b30f5d0bc7d05296ba987e4"
+      },
+      {
+        "path": "scripts/codespell_frozen_findings.json",
+        "bytes": 3706,
+        "sha256": "3e41804babf4fb4938fcb175b074b4da39ecdc6fc676d012049eea83ad62e921"
+      },
+      {
+        "path": "scripts/test_codespell_frozen_findings.py",
+        "bytes": 13111,
+        "sha256": "aa2f441d6b6e24618c29cfe084aa31fbc97ef47ce8d48ff9bb9aa09fe0087441"
+      }
+    ],
+    "candidate_tree": "11ad82dd3eeffbb847cbc3eed56af4c3b3848f87",
+    "tracked_paths_verified_present": 10732,
+    "scope": "Complete repository checkout with all current changed and new repository files overlaid; the unchanged original codespell exclusions remain in effect. The tracked count measures file presence, not individually scanned spelling inputs.",
+    "receipt_created_after_this_scan": true
+  },
+  "raw_check_result": {
+    "authorized_policy_sha256": "129801b8619a7e349e7091542248e30f6e6df976255631aea1b5f9a45e774071",
+    "codespell_version": "2.4.3",
+    "diagnostics": [
+      {
+        "count": 1,
+        "diagnostic_sha256": "b2c1ac4a57f88feae5a7c2eea8aa62e1a3bbccf5dec9852970d452ad4ffa2af2",
+        "line": 78,
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/DIRECTIONAL_PROTOCOL.json",
+        "token_sha256": "3f7ea14d2aada2b16fcc83005afd73133f04f6e3c9ad18b5e6d621afb5d54d7b"
+      },
+      {
+        "count": 1,
+        "diagnostic_sha256": "a919840b6643c90e58d84585396370d4b39045c43a184889c1c18df4b77aefec",
+        "line": 102,
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/DIRECTIONAL_PROTOCOL.json",
+        "token_sha256": "308fa24df8125ca2903f06e87785966f5f1588b88b50d641eba38c432f48df7b"
+      },
+      {
+        "count": 1,
+        "diagnostic_sha256": "79072aa9822d4e87b2ca9ded32a2fa731d6a9a3391c06a8359093e4a6837de76",
+        "line": 60,
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/primary_runtime_tests.py",
+        "token_sha256": "051603900bc7a27051b385299b0ef6c3dd2da3c6216845df7f501d9e4337cbcd"
+      },
+      {
+        "count": 1,
+        "diagnostic_sha256": "cf6388880f3f7c69ad423749d8c755be33147c2e0510e86dffeeb8848a3166c7",
+        "line": 63,
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/primary_runtime_tests.py",
+        "token_sha256": "051603900bc7a27051b385299b0ef6c3dd2da3c6216845df7f501d9e4337cbcd"
+      },
+      {
+        "count": 1,
+        "diagnostic_sha256": "18cd5c30438a79f749802131fb7b7d274b2fc86f6d9f54e7eba943ac840f4a44",
+        "line": 22,
+        "path": "experiments/multimodal_output_portfolio/next_20261025/media/evidence/public-source-retention-after-cache-eviction.json",
+        "token_sha256": "2d604f8f1b0218cfd977b6205875f1aec5dd510f99947df685ef6267202999c2"
+      },
+      {
+        "count": 1,
+        "diagnostic_sha256": "8363a878e29fb90c8c9bf0c80f6b1fa2ce1d7762fa4db9d15538b05b4f605af4",
+        "line": 3903,
+        "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json",
+        "token_sha256": "81ca6651b490830a554906440a2cf4775413da6483f9b74d5b964f0799812988"
+      },
+      {
+        "count": 1,
+        "diagnostic_sha256": "5990c5549ce9e93166571ae331f38130c5dcde27c4be077a025bf5b024cb75d0",
+        "line": 4279,
+        "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json",
+        "token_sha256": "84c68148b387b7fbe9a168897e8ae00a86fa32a88aa9d4abcaacd5bea1bd5276"
+      },
+      {
+        "count": 1,
+        "diagnostic_sha256": "6cc5cfd47eaee60629e7756fc9a63ce71005159320a116bdc13eb93768cd011f",
+        "line": 4900,
+        "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json",
+        "token_sha256": "23e031da57fb40c73670d72fb464cf7a23f9e54f917135b1862a59c635cd1f3c"
+      },
+      {
+        "count": 1,
+        "diagnostic_sha256": "00e0aa024b79f5fbeb6d9aca61d3763b0a07c257e694b3f804ced75063b302e6",
+        "line": 6515,
+        "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json",
+        "token_sha256": "974bc5af2eebed82a60ac532cc2b54cb0b57d6c059105400b29c3a8f1a3d7da5"
+      }
+    ],
+    "frozen_files": [
+      {
+        "bytes": 7864,
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/DIRECTIONAL_PROTOCOL.json",
+        "sha256": "3f9cc1e3461b14c2061932e6247f194ddb9779a52a9356c5b18b6d1d8c02a1e3"
+      },
+      {
+        "bytes": 10178,
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/primary_runtime_tests.py",
+        "sha256": "b8c9539e1996af01795390db367ac2d94bebbf5900af8d89bfca5dcdcb398ac6"
+      },
+      {
+        "bytes": 841,
+        "path": "experiments/multimodal_output_portfolio/next_20261025/media/evidence/public-source-retention-after-cache-eviction.json",
+        "sha256": "bd418ba0799681a577fe73b67722a6c5c9264f71bf3d0c51d694934e923f9f66"
+      },
+      {
+        "bytes": 120333,
+        "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json",
+        "sha256": "948b5f8915ebb3b961992eb49c4e089980166d7cd2138b024a7e2714f30a0966"
+      }
+    ],
+    "frozen_historical_findings": 9,
+    "missing_frozen_findings": 0,
+    "new_findings": 0,
+    "policy_passed": true,
+    "policy_sha256": "3e41804babf4fb4938fcb175b074b4da39ecdc6fc676d012049eea83ad62e921",
+    "raw_exit_code": 65,
+    "raw_lint_clean": false,
+    "raw_lint_findings": 9,
+    "raw_stderr_sha256": "2e6d31a5983a91251bfae5aefa1c0a19d8ba3cf601d0e8a706b4cfa9661a6b8a",
+    "raw_stdout_sha256": "d1e9a4624575ad547bcc38db5c2a74f9055a0583f88d64db3b7b6564c00d9f08",
+    "scan_arguments": [
+      "--disable-colors",
+      "--count",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git",
+      "."
+    ],
+    "schema_version": 1,
+    "source_commit": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+    "tracked_files_checked": 10732
+  },
+  "workflow_change": {
+    "codespell_version": "2.4.3",
+    "history_fetch_depth": 0,
+    "checkout_filter": "blob:none",
+    "sparse_checkout_enabled": false,
+    "permissions": "contents: read",
+    "clean_worktree_check_retained": true,
+    "report_destination": "RUNNER_TEMP"
+  },
+  "remaining_boundaries": {
+    "remote_policy_result": "not yet published or executed by CI",
+    "entire_repository_ci_passed": false,
+    "cargo_deny_root_cause": null,
+    "cargo_deny_log_availability": "unavailable",
+    "scientific_qualification_advanced": false,
+    "baseline_history_retention_required": true,
+    "squash_or_rebase_merge_validated": false,
+    "merge_review_condition": "Retain the baseline commit history. Squashing, rebasing, or deleting its only reachable history is not validated by this policy and may cause closed failure."
+  }
+}

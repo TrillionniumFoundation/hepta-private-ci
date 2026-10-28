@@ -233,6 +233,7 @@ mod rollout_reconstruction;
 #[allow(clippy::module_inception)]
 pub(crate) mod session;
 pub(crate) mod step_context;
+mod terminal_event;
 mod thread_settings;
 pub(crate) mod time_reminder;
 mod token_budget;
@@ -256,6 +257,7 @@ use self::session::RolloutPersistenceFault;
 use self::session::Session;
 use self::session::SessionConfiguration;
 pub(crate) use self::session::SessionSettingsUpdate;
+pub(crate) use self::terminal_event::PreparedTerminalEvent;
 #[cfg(test)]
 use self::turn::AssistantMessageStreamParsers;
 use self::turn::agent_message_text;

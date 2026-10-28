@@ -1,0 +1,323 @@
+{
+  "admission": false,
+  "authority": "DENY_ALL",
+  "cases": [
+    "unset_before",
+    "default",
+    "avx2",
+    "avx512",
+    "unset_after"
+  ],
+  "certificate": false,
+  "comparison_rule": "Exact full float64 array equality with no tolerance. Descriptive max absolute and mean deltas are reported without turning them into acceptance thresholds. Both panels and both observers participate.",
+  "complete_budget": {
+    "adaptive_retries": 0,
+    "child_processes": 5,
+    "further_seeds": 0,
+    "generator_examples": 12800,
+    "generator_panel_calls": 100,
+    "observer_calls": 400,
+    "observer_digit_examples": 51200
+  },
+  "controls_rule": "Both unset processes must reproduce identical raw NPZ and component files. unset_before must also reproduce all existing V5 utility values and hard output hashes, pixels and captions. Otherwise the diagnosis is not interpretable even if a nonbaseline condition matches historical values.",
+  "expected_capabilities": {
+    "avx2": [
+      "AVX2"
+    ],
+    "avx512": [
+      "AVX512"
+    ],
+    "default": [
+      "NO AVX"
+    ],
+    "unset_after": [
+      "AVX512"
+    ],
+    "unset_before": [
+      "AVX512"
+    ]
+  },
+  "fixed_deployment_action": 0,
+  "fixed_environment": {
+    "DNNL_MAX_CPU_ISA": null,
+    "MKL_CBWR": null,
+    "MKL_ENABLE_INSTRUCTIONS": null,
+    "MKL_NUM_THREADS": null,
+    "OMP_NUM_THREADS": null,
+    "ONEDNN_MAX_CPU_ISA": null,
+    "OPENBLAS_NUM_THREADS": null
+  },
+  "historical_audit_overwritten": false,
+  "historical_raw_file_recovered": false,
+  "historical_raw_identities": {
+    "clean": {
+      "bytes": 470409,
+      "path": "run/development/17/original-clean.npz",
+      "sha256": "65d2c9c3d5f60e1c124c71bf84357c64014b59a365a509d81ad359044c7968f7"
+    },
+    "task": {
+      "bytes": 1972072,
+      "path": "run/development/17/original-task.npz",
+      "sha256": "47ad388b03bf2109b01737107196019156c9f7cf0cebbbe71a92c060caa08c9e"
+    }
+  },
+  "historical_raw_identity_comparison": "Every new save_hard NPZ is compared by full byte length and SHA256 against its original V3 ARCHIVE_INTEGRITY member. Record every case result. Utility equality alone never establishes raw identity.",
+  "historical_regression_gate_changed": false,
+  "input_identity_rule": "Before inference, reconstructed panels must equal the complete saved V5 panel identity, including ordering, batch boundaries, source IDs, public and target tensor hashes; tuple/list JSON normalization only. Any difference fails that case and is preserved.",
+  "inputs": {
+    "asset_RESTORATION.json": {
+      "bytes": 1912,
+      "path": "RESTORATION.json",
+      "root": "assets",
+      "sha256": "9210fef9364d5711b824c9561c0bc2318f1983eee69ea9916841bc4f0de97323"
+    },
+    "asset_audit-observer.pt": {
+      "bytes": 427247,
+      "path": "ndu-runs/full-002/audit-observer.pt",
+      "root": "assets",
+      "sha256": "cd560d4ec2f45cef6a0f4db9809b902ea68833c8693798f7597135a83a6e3589"
+    },
+    "asset_reward-observer.pt": {
+      "bytes": 427261,
+      "path": "ndu-runs/full-002/reward-observer.pt",
+      "root": "assets",
+      "sha256": "a9cfe78a08b9192ba9d8fe9c144de29ef5d3b1e9cd6ed236d01d170d32034210"
+    },
+    "asset_seed-17-terminal_entropic_ndu.pt": {
+      "bytes": 4063045,
+      "path": "ndu-runs/full-002/seed-17-terminal_entropic_ndu.pt",
+      "root": "assets",
+      "sha256": "8fa76a13cdeee48e41b84e29211659a065d9573e2fdfecc4281f882248b508b6"
+    },
+    "asset_t10k-images-idx3-ubyte.gz": {
+      "bytes": 1648877,
+      "path": "ndu-data/t10k-images-idx3-ubyte.gz",
+      "root": "assets",
+      "sha256": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6"
+    },
+    "asset_t10k-labels-idx1-ubyte.gz": {
+      "bytes": 4542,
+      "path": "ndu-data/t10k-labels-idx1-ubyte.gz",
+      "root": "assets",
+      "sha256": "f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6"
+    },
+    "asset_train-images-idx3-ubyte.gz": {
+      "bytes": 9912422,
+      "path": "ndu-data/train-images-idx3-ubyte.gz",
+      "root": "assets",
+      "sha256": "440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609"
+    },
+    "asset_train-labels-idx1-ubyte.gz": {
+      "bytes": 28881,
+      "path": "ndu-data/train-labels-idx1-ubyte.gz",
+      "root": "assets",
+      "sha256": "3552534a0a558bbed6aed32b30c495cca23d567ec52cac8be1a0730e8010255c"
+    },
+    "current_assets": {
+      "bytes": 1640,
+      "path": "evaluate/17/ASSETS.json",
+      "root": "run",
+      "sha256": "d987e9985d11f392ab62604e0c5251acc527f3e857d7c4c015370b6078fea96a"
+    },
+    "current_clean_raw": {
+      "bytes": 470408,
+      "path": "evaluate/17/original-clean.npz",
+      "root": "run",
+      "sha256": "72e83e280e1989d7c01dbb9b0a3187f0b80926d936d1ef95fc467c314d2d112d"
+    },
+    "current_endpoint_arrays": {
+      "bytes": 362504,
+      "path": "evaluate/17/ENDPOINTS.npz",
+      "root": "run",
+      "sha256": "d6d7459d450096eab96a38efce79e6c3031cdf16c2c4353fd7a2ca778f1255f5"
+    },
+    "current_media_audit": {
+      "bytes": 143656,
+      "path": "MEDIA_AUDIT.json",
+      "root": "run",
+      "sha256": "45240283c980e1558e4e8374a1e74088b126764f5d301d06d4b2c42a8048d7fe"
+    },
+    "current_panel_identities": {
+      "bytes": 569077,
+      "path": "evaluate/17/PANELS.json",
+      "root": "run",
+      "sha256": "b58d442073a59fa83fce96fca6b73f17860fcbe691cd5a6fdf41f19708b666ca"
+    },
+    "current_task_raw": {
+      "bytes": 1972069,
+      "path": "evaluate/17/original-task.npz",
+      "root": "run",
+      "sha256": "1cbbc7eb6610cd9560cae90303407643e4467a4e387e59d1c4f943278555a810"
+    },
+    "historical_archive_integrity": {
+      "bytes": 574882,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/ARCHIVE_INTEGRITY.json",
+      "root": "repository",
+      "sha256": "59dda0604c4cc4813477c8da4e7118dfcc21ed375ba868a88fb61cab1682d8c6"
+    },
+    "old_endpoint_arrays": {
+      "bytes": 774322,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/development/17/ENDPOINTS.npz",
+      "root": "repository",
+      "sha256": "bc708f54093598e302a19f371dc311d12332ac21be2e39d5c1d168bd2b27e4bb"
+    },
+    "original_failed_audit": {
+      "bytes": 213,
+      "path": "AUDIT.json",
+      "root": "run",
+      "sha256": "35af3341f3fc283c41beda469e5c9ff2531f7bf01d537cb4dcc9c4a7fd6b42df"
+    },
+    "runtime__C.cpython-312-x86_64-linux-gnu.so": {
+      "bytes": 25137,
+      "path": "lib/python3.12/site-packages/torch/_C.cpython-312-x86_64-linux-gnu.so",
+      "root": "runtime",
+      "sha256": "5dc8a93ddc69041dbd3f796794e0c2b3f72b47e0dc24ae2b46d9e7d0dc78953b"
+    },
+    "runtime_libc10.so": {
+      "bytes": 1308712,
+      "path": "lib/python3.12/site-packages/torch/lib/libc10.so",
+      "root": "runtime",
+      "sha256": "bececfaaf6042b3b48a75e74eed9728e9139bcdfca5f2b30437886de4f25c1d9"
+    },
+    "runtime_libgomp.so.1": {
+      "bytes": 253849,
+      "path": "lib/python3.12/site-packages/torch/lib/libgomp.so.1",
+      "root": "runtime",
+      "sha256": "e4b79735f816cbb906c8bf35b31847c5ce667cfbdbe76bd18aaf6e7baad2686e"
+    },
+    "runtime_libtorch_cpu.so": {
+      "bytes": 427038688,
+      "path": "lib/python3.12/site-packages/torch/lib/libtorch_cpu.so",
+      "root": "runtime",
+      "sha256": "629d28a5fb24e2c33df077e2d98d5da0c73d0b53e628bb826fd4ba36616b482b"
+    },
+    "runtime_libtorch_python.so": {
+      "bytes": 25984376,
+      "path": "lib/python3.12/site-packages/torch/lib/libtorch_python.so",
+      "root": "runtime",
+      "sha256": "cd4e33c6822cbc72930a35f857029782e903b9d4a7977296153e9ce80c35c278"
+    },
+    "scientific_source_freeze": {
+      "bytes": 8268,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027/SOURCE_FREEZE.json",
+      "root": "repository",
+      "sha256": "f86ef86edc02d81d2c68476c5742b332582cfb8a2096f6514dcdc616cdb64ab8"
+    },
+    "v3_protocol": {
+      "bytes": 12633,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/PROTOCOL.json",
+      "root": "repository",
+      "sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7"
+    },
+    "within_run_diagnostic": {
+      "bytes": 286822,
+      "path": "WITHIN_RUN_AUDIT.json",
+      "root": "run",
+      "sha256": "0105da40023843b7551308c51e86fa945f9d213f21af29d53fb43a5fdfa6814f"
+    }
+  },
+  "interpretation_rules": [
+    "A condition reproducing both full historical panels shows that this declared dispatch intervention can reproduce these frozen seed17 numbers under the current environment. It does not identify the historical CPU or establish that historical ATEN_CPU_CAPABILITY had that value.",
+    "A raw/output or primitive difference identifies the earliest recorded changed stage among input identity, logits, probabilities, quantized pixels/captions, observer classifications and MSE. Hash differences do not reveal unrecorded historical bytes.",
+    "If MSE-only substitution reproduces all old utilities while discrete primitives and pixels are fixed, that arithmetic intervention is sufficient for these recorded utilities. This remains separate from recovery of historical raw files.",
+    "If no mode matches, retain the complete negative result. Do not select the closest mode, change tolerances, change the old scientific gate, extend to extra CPUs/backends or run another seed without separate registration.",
+    "ATEN_CPU_CAPABILITY controls ATen native dispatch. It does not cap the ISA choices of every linked library such as MKL or oneDNN. Negative results do not exclude other backend, floating-point or host effects.",
+    "If a newly generated NPZ matches the complete recorded historical byte length and SHA256, report newly reconstructed bytes match historical recorded identity. The exact byte comparator is then available for that member, but this is not recovery of the original storage copy or evidence of the historical CPU. Preserve all cases and the original scientific FAIL."
+  ],
+  "intervention": "Set only ATEN_CPU_CAPABILITY before launching each fresh isolated Python process; unset it in both repeated controls. The ATen dispatcher caches its first capability choice.",
+  "mse_only_subanalysis": "Only if controls pass, keep every discrete primitive from unset_before and substitute each condition's MSE recomputed on the same saved V5 pixels. Use the frozen Python3.12 ordered scalar sum and weights, then compare all reconstructed utilities exactly against both old and current arrays. This adds no observer inference and distinguishes an MSE-arithmetic-sufficient explanation from other changes.",
+  "new_holdout_access": false,
+  "new_holdout_authorized": false,
+  "observers": [
+    "reward",
+    "audit"
+  ],
+  "official_sources": [
+    {
+      "git_blob_sha": "12ad0114932108d40b72f23d0a5c333add8c0d86",
+      "url": "https://github.com/pytorch/pytorch/blob/v2.8.0/aten/src/ATen/native/DispatchStub.cpp",
+      "verified": "x86 env values default,avx2,avx512; invalid values ignored with warning; get_cpu_capability uses a static cached value. Explicit AVX values require compiled support and do not repeat the automatic hardware feature test."
+    },
+    {
+      "git_blob_sha": "5da21c63e88ae572d8a9ca3e36123f6b7b536926",
+      "url": "https://github.com/pytorch/pytorch/blob/v2.8.0/aten/src/ATen/Version.cpp",
+      "verified": "x86 CPUCapability::DEFAULT is reported as NO AVX; other two values report AVX2/AVX512."
+    },
+    {
+      "url": "https://docs.pytorch.org/docs/2.8/notes/numerical_accuracy.html",
+      "verified": "Bitwise equality across platforms and mathematically equivalent batch/slice operations is not guaranteed."
+    }
+  ],
+  "panel_batch_size": 128,
+  "panel_rows": {
+    "clean": 512,
+    "task": 2048
+  },
+  "parameter_identities": {
+    "audit": "b02514987ea2986321e00652e0823111d30ebb79104ff85eb88ef0eae9e35474",
+    "model": "3bdb3955667243563b8d3ffeb767b58c6d74b858933a349fa1befe18db7cfaff",
+    "reward": "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0"
+  },
+  "per_case_budget": {
+    "backward_calls": 0,
+    "fits": 0,
+    "generator_examples": 2560,
+    "generator_panel_calls": 20,
+    "observer_calls": 80,
+    "observer_digit_examples": 10240,
+    "optimizer_steps": 0
+  },
+  "raw_custody_status": "approval_blocked",
+  "raw_upload_attempts": 0,
+  "registration_rule": "Commit this PROTOCOL.json and run.py together before any model execution. The runner verifies both Git tree blob identities. Any correction after execution requires a new separately registered attempt and preservation of prior output.",
+  "required_host_flags": [
+    "avx2",
+    "fma",
+    "avx512f",
+    "avx512vl",
+    "avx512bw",
+    "avx512dq"
+  ],
+  "retained_outputs": [
+    "Every generated uint8 pixel and UTF-8 caption in original save_hard NPZ format",
+    "Every utility for both observers in original order",
+    "Every observer score primitive, classification, joint loss and refinement charge",
+    "Per-row combined hard-output, pixel, caption, image-logit and image-probability hashes",
+    "Float32 MSE of the unchanged saved V5 pixels under each dispatch condition, requiring no extra model calls",
+    "All differing utility indices, values and deltas against old V3 and existing V5 arrays",
+    "Every stdout/stderr, failed or partial result and actual resource count"
+  ],
+  "runtime": {
+    "bytecode_writes": false,
+    "deterministic_algorithms": true,
+    "isolated": true,
+    "numpy": "2.3.5",
+    "python": "3.12.14",
+    "torch": "2.8.0+cpu",
+    "torch_interop_threads": 1,
+    "torch_threads": 2
+  },
+  "schema": "hepta.field-bridge.v5.historical-dispatch-diagnostic.1",
+  "scientific_status": "FAIL",
+  "scope": "A new bounded development-only diagnosis of the historical frozen-endpoint mismatch. This is not an archive restoration, candidate retry, gate repair or demonstration of a field-policy benefit.",
+  "seed": 17,
+  "source_roles": [
+    "development_task",
+    "development_clean"
+  ],
+  "study_id": "hepta.field-bridge.v5.historical-dispatch.20261028.seed17.1",
+  "utility_order": [
+    "text_fact",
+    "relation",
+    "image_fact",
+    "crossmodal_disagreement",
+    "pixel_mse"
+  ],
+  "utility_weights": {
+    "crossmodal_disagreement": 0.1,
+    "image_fact": 0.35,
+    "pixel_mse": 0.1,
+    "relation": 0.15,
+    "text_fact": 0.3
+  }
+}

@@ -24,6 +24,89 @@ use std::collections::BTreeMap;
 
 use super::TurnInput;
 
+#[tokio::test]
+async fn terminal_publication_requires_exact_registry_owner_and_occurs_once() {
+    use crate::session::tests::make_session_and_context_with_rx;
+    use crate::state::StartTransitionCompletion;
+    use crate::state::TaskTerminalizationKind;
+    use std::cell::Cell;
+    use std::sync::Arc;
+
+    #[derive(Clone, Copy)]
+    enum Registry {
+        Start,
+        Task,
+    }
+
+    for registry in [Registry::Start, Registry::Task] {
+        let (session, _context, _rx) = make_session_and_context_with_rx().await;
+        let identity = Arc::new(());
+        let completion = StartTransitionCompletion::new();
+        let published = Cell::new(0);
+        let _active = session.active_turn.lock().await;
+        match registry {
+            Registry::Start => session.register_start_transition(
+                Arc::clone(&identity),
+                Arc::clone(&completion),
+                Arc::new(std::sync::Mutex::new(None)),
+            ),
+            Registry::Task => session.register_task_terminalization(
+                Arc::clone(&identity),
+                Arc::clone(&completion),
+                TaskTerminalizationKind::Finish,
+                /*suspension_handoff*/ None,
+                /*abort_handoff*/ None,
+                /*finish_handoff*/ None,
+            ),
+        }
+        let retire = |candidate_identity: &Arc<()>,
+                      candidate_completion: &Arc<StartTransitionCompletion>| {
+            let publish = || {
+                assert!(
+                    !completion.is_complete(),
+                    "publication must precede shutdown's completion signal"
+                );
+                published.set(published.get() + 1);
+            };
+            match registry {
+                Registry::Start => session.finish_start_transition_with_publication(
+                    candidate_identity,
+                    candidate_completion,
+                    publish,
+                ),
+                Registry::Task => session.finish_task_terminalization_with_publication(
+                    candidate_identity,
+                    candidate_completion,
+                    publish,
+                ),
+            }
+        };
+        assert!(!retire(&Arc::new(()), &completion));
+        assert!(!retire(&identity, &StartTransitionCompletion::new()));
+        assert_eq!(
+            (
+                published.get(),
+                completion.is_complete(),
+                session.has_pending_admission_fence()
+            ),
+            (0, false, true)
+        );
+        assert!(retire(&identity, &completion));
+        assert!(
+            !retire(&identity, &completion),
+            "a retired owner must not publish twice"
+        );
+        assert_eq!(
+            (
+                published.get(),
+                completion.is_complete(),
+                session.has_pending_admission_fence()
+            ),
+            (1, true, false)
+        );
+    }
+}
+
 #[test]
 fn qualification_admission_identity_requires_one_client_bound_user_input() {
     let content = vec![UserInput::Text {

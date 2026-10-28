@@ -1,0 +1,726 @@
+{
+  "actual_resource_totals": {
+    "clean_audit_observer_calls": 32,
+    "clean_audit_observer_digit_examples": 4096,
+    "clean_generator_calls": 16,
+    "clean_generator_examples": 2048,
+    "clean_generator_refinement_examples": 2048,
+    "clean_reward_observer_calls": 32,
+    "clean_reward_observer_digit_examples": 4096,
+    "task_audit_observer_calls": 128,
+    "task_audit_observer_digit_examples": 16384,
+    "task_generator_calls": 64,
+    "task_generator_examples": 8192,
+    "task_generator_refinement_examples": 8192,
+    "task_reward_observer_calls": 128,
+    "task_reward_observer_digit_examples": 16384
+  },
+  "actual_totals_compact": {
+    "generator_examples": 10240,
+    "generator_panel_calls": 80,
+    "observer_calls": 320,
+    "observer_digit_examples": 40960,
+    "training_calls": 0
+  },
+  "admission": false,
+  "cases": {
+    "avx2": {
+      "error": null,
+      "exit_code": 0,
+      "forbidden_training_calls": [],
+      "observed_capability": "AVX2",
+      "raw_files": {
+        "clean": {
+          "components": {
+            "bytes": 102433,
+            "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/avx2/clean_components.json.gz",
+            "sha256": "ba3042ee85d48352e8700a8bd19ac94c2af1c654bb588fa350d39546ff456102"
+          },
+          "raw": {
+            "bytes": 470417,
+            "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/avx2/clean.npz",
+            "sha256": "c1a1c47df1bce710883ed8c15bd39a788796df05859fd11ae6ecaea4749a2e83"
+          }
+        },
+        "task": {
+          "components": {
+            "bytes": 403018,
+            "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/avx2/task_components.json.gz",
+            "sha256": "cfe2b7526a66fcfcb794733812521f3c00ab8823461fd808ef05016ef762efaa"
+          },
+          "raw": {
+            "bytes": 1972080,
+            "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/avx2/task.npz",
+            "sha256": "585cd385890f85fda25437a642b8e305b6fe1163d4b30a2ce0a498fa1f324bc9"
+          }
+        }
+      },
+      "resources": {
+        "clean_audit_observer_calls": 8,
+        "clean_audit_observer_digit_examples": 1024,
+        "clean_generator_calls": 4,
+        "clean_generator_examples": 512,
+        "clean_generator_refinement_examples": 512,
+        "clean_reward_observer_calls": 8,
+        "clean_reward_observer_digit_examples": 1024,
+        "task_audit_observer_calls": 32,
+        "task_audit_observer_digit_examples": 4096,
+        "task_generator_calls": 16,
+        "task_generator_examples": 2048,
+        "task_generator_refinement_examples": 2048,
+        "task_reward_observer_calls": 32,
+        "task_reward_observer_digit_examples": 4096
+      },
+      "result_file": {
+        "bytes": 615956,
+        "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/avx2/RESULT.json",
+        "sha256": "fad9e74b92903e61fdb87795476fb23775485512d8ffe61f0fb4e7c50d7ce157"
+      },
+      "status": "COMPLETE"
+    },
+    "avx512": {
+      "error": null,
+      "exit_code": 0,
+      "forbidden_training_calls": [],
+      "observed_capability": "AVX512",
+      "raw_files": {
+        "clean": {
+          "components": {
+            "bytes": 102473,
+            "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/avx512/clean_components.json.gz",
+            "sha256": "ab4fd76592f8c63351ed112ed52d17a6483827b15f8f9c37a84ea416b7228a5c"
+          },
+          "raw": {
+            "bytes": 470408,
+            "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/avx512/clean.npz",
+            "sha256": "72e83e280e1989d7c01dbb9b0a3187f0b80926d936d1ef95fc467c314d2d112d"
+          }
+        },
+        "task": {
+          "components": {
+            "bytes": 402922,
+            "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/avx512/task_components.json.gz",
+            "sha256": "472b68b7a263d70473a9c23663d7c88e9bb98f4ae6d1f94857f88dd8b43a0ec5"
+          },
+          "raw": {
+            "bytes": 1972069,
+            "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/avx512/task.npz",
+            "sha256": "1cbbc7eb6610cd9560cae90303407643e4467a4e387e59d1c4f943278555a810"
+          }
+        }
+      },
+      "resources": {
+        "clean_audit_observer_calls": 8,
+        "clean_audit_observer_digit_examples": 1024,
+        "clean_generator_calls": 4,
+        "clean_generator_examples": 512,
+        "clean_generator_refinement_examples": 512,
+        "clean_reward_observer_calls": 8,
+        "clean_reward_observer_digit_examples": 1024,
+        "task_audit_observer_calls": 32,
+        "task_audit_observer_digit_examples": 4096,
+        "task_generator_calls": 16,
+        "task_generator_examples": 2048,
+        "task_generator_refinement_examples": 2048,
+        "task_reward_observer_calls": 32,
+        "task_reward_observer_digit_examples": 4096
+      },
+      "result_file": {
+        "bytes": 608707,
+        "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/avx512/RESULT.json",
+        "sha256": "5c322c70a8c09509b7d8d8e4c101324115589fc3f93cef086a8a1777e9119fd9"
+      },
+      "status": "COMPLETE"
+    },
+    "default": {
+      "error": "Reconstructed inputs changed",
+      "exit_code": 1,
+      "forbidden_training_calls": [],
+      "observed_capability": "NO AVX",
+      "raw_files": {},
+      "resources": {},
+      "result_file": {
+        "bytes": 2775,
+        "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/default/RESULT.json",
+        "sha256": "a11703a8aa259dadb2a2e10573a8174cac92f6ce76985dde4029ffae027a3cb1"
+      },
+      "retained_case_files": [
+        "START.json",
+        "RESULT.json"
+      ],
+      "status": "FAIL"
+    },
+    "unset_after": {
+      "error": null,
+      "exit_code": 0,
+      "forbidden_training_calls": [],
+      "observed_capability": "AVX512",
+      "raw_files": {
+        "clean": {
+          "components": {
+            "bytes": 102473,
+            "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/unset_after/clean_components.json.gz",
+            "sha256": "ab4fd76592f8c63351ed112ed52d17a6483827b15f8f9c37a84ea416b7228a5c"
+          },
+          "raw": {
+            "bytes": 470408,
+            "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/unset_after/clean.npz",
+            "sha256": "72e83e280e1989d7c01dbb9b0a3187f0b80926d936d1ef95fc467c314d2d112d"
+          }
+        },
+        "task": {
+          "components": {
+            "bytes": 402922,
+            "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/unset_after/task_components.json.gz",
+            "sha256": "472b68b7a263d70473a9c23663d7c88e9bb98f4ae6d1f94857f88dd8b43a0ec5"
+          },
+          "raw": {
+            "bytes": 1972069,
+            "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/unset_after/task.npz",
+            "sha256": "1cbbc7eb6610cd9560cae90303407643e4467a4e387e59d1c4f943278555a810"
+          }
+        }
+      },
+      "resources": {
+        "clean_audit_observer_calls": 8,
+        "clean_audit_observer_digit_examples": 1024,
+        "clean_generator_calls": 4,
+        "clean_generator_examples": 512,
+        "clean_generator_refinement_examples": 512,
+        "clean_reward_observer_calls": 8,
+        "clean_reward_observer_digit_examples": 1024,
+        "task_audit_observer_calls": 32,
+        "task_audit_observer_digit_examples": 4096,
+        "task_generator_calls": 16,
+        "task_generator_examples": 2048,
+        "task_generator_refinement_examples": 2048,
+        "task_reward_observer_calls": 32,
+        "task_reward_observer_digit_examples": 4096
+      },
+      "result_file": {
+        "bytes": 608708,
+        "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/unset_after/RESULT.json",
+        "sha256": "f79eeb65d1460ae05beec7f5500ed97c43d1fbdb79c0dedbe5bd4131bf0cc4d0"
+      },
+      "status": "COMPLETE"
+    },
+    "unset_before": {
+      "error": null,
+      "exit_code": 0,
+      "forbidden_training_calls": [],
+      "observed_capability": "AVX512",
+      "raw_files": {
+        "clean": {
+          "components": {
+            "bytes": 102473,
+            "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/unset_before/clean_components.json.gz",
+            "sha256": "ab4fd76592f8c63351ed112ed52d17a6483827b15f8f9c37a84ea416b7228a5c"
+          },
+          "raw": {
+            "bytes": 470408,
+            "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/unset_before/clean.npz",
+            "sha256": "72e83e280e1989d7c01dbb9b0a3187f0b80926d936d1ef95fc467c314d2d112d"
+          }
+        },
+        "task": {
+          "components": {
+            "bytes": 402922,
+            "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/unset_before/task_components.json.gz",
+            "sha256": "472b68b7a263d70473a9c23663d7c88e9bb98f4ae6d1f94857f88dd8b43a0ec5"
+          },
+          "raw": {
+            "bytes": 1972069,
+            "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/unset_before/task.npz",
+            "sha256": "1cbbc7eb6610cd9560cae90303407643e4467a4e387e59d1c4f943278555a810"
+          }
+        }
+      },
+      "resources": {
+        "clean_audit_observer_calls": 8,
+        "clean_audit_observer_digit_examples": 1024,
+        "clean_generator_calls": 4,
+        "clean_generator_examples": 512,
+        "clean_generator_refinement_examples": 512,
+        "clean_reward_observer_calls": 8,
+        "clean_reward_observer_digit_examples": 1024,
+        "task_audit_observer_calls": 32,
+        "task_audit_observer_digit_examples": 4096,
+        "task_generator_calls": 16,
+        "task_generator_examples": 2048,
+        "task_generator_refinement_examples": 2048,
+        "task_reward_observer_calls": 32,
+        "task_reward_observer_digit_examples": 4096
+      },
+      "result_file": {
+        "bytes": 608709,
+        "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/unset_before/RESULT.json",
+        "sha256": "760e6cb6ea536afbe0f7a28c612ce31ca9369ce6c04026f8a9ea03098b3694a7"
+      },
+      "status": "COMPLETE"
+    }
+  },
+  "default_input_failure": {
+    "actual_rebuilt_identities_saved": false,
+    "actual_rebuilt_tensors_saved": false,
+    "causal_attribution": "Unresolved. RNG-dependent construction and ISA-sensitive floating-point input arithmetic are candidates; no retained failed tensor distinguishes them.",
+    "identifiable_changed_field": null,
+    "stage": "Reconstructed public/target panel identities before score_panel; model instances had already been loaded and parameter-checked",
+    "zero_recorded_forward_calls": true
+  },
+  "first_attempt_registered_commit": "57a42933da685425fc714eb9b45cb3cb08f2f77a",
+  "first_attempt_summary": {
+    "bytes": 2712231,
+    "path": "/workspace/scratch/e8a4dc33549f/v5_dispatch_diagnostic_20261028/SUMMARY.json",
+    "sha256": "555ab819d5d3215fc34b901db7a70aa89c4e4363719c5bc8eadfbffadd786642"
+  },
+  "historical_gate_changed": false,
+  "historical_scientific_status": "FAIL",
+  "independent_byte_controls": {
+    "clean": {
+      ".npz": true,
+      "_components.json.gz": true
+    },
+    "task": {
+      ".npz": true,
+      "_components.json.gz": true
+    }
+  },
+  "interpretation": [
+    "The registered five-case experiment remains incomplete and not interpretable under its registered success rule. Supplemental controls do not change SUMMARY or original scientific FAIL.",
+    "Both unset raw/components files and AVX512 are byte-exact for both panels and reproduce current V5. None of the four complete cases matches the historical raw identity.",
+    "AVX2 changes all recorded logits/probability row hashes, but only 14 task pixels and one clean pixel by one uint8 unit; captions and all discrete observer fields remain identical. Latent noise was regenerated rather than recorded, so the earliest observed divergence does not isolate model-kernel arithmetic from latent input differences.",
+    "With the current saved pixels held fixed, the recorded MSE and the pure-Python3.12 ordered utility reconstruction are identical in all four complete cases. This excludes a changed MSE arithmetic explanation for these completed-condition differences on those fixed current pixels, but does not cover DEFAULT, unknown historical pixels, other libraries or hosts.",
+    "AVX2 removes four prior historical task-row mismatches but introduces ten new ones; no capability is selected or characterized as an improvement.",
+    "The next independently registered diagnostic should freeze every panel tensor and latent-noise tensor before changing dispatch; parity with the original frozen forward must be checked on both unset controls."
+  ],
+  "new_model_calls_in_this_review": 0,
+  "original_audit": {
+    "bytes": 213,
+    "path": "/workspace/scratch/e8a4dc33549f/v5_run/AUDIT.json",
+    "sha256": "35af3341f3fc283c41beda469e5c9ff2531f7bf01d537cb4dcc9c4a7fd6b42df"
+  },
+  "raw_upload_attempts": 0,
+  "registered_status_preserved": {
+    "admission": false,
+    "diagnostic_interpretable": false,
+    "execution_complete": false,
+    "fixed_raw_mse_only_arithmetic": null,
+    "historical_raw_file_recovered": false,
+    "new_holdout_authorized": false,
+    "scientific_status": "FAIL",
+    "selected_capability": null,
+    "unset_replicates_byte_exact": null,
+    "unset_reproduces_current_v5": null
+  },
+  "schema": "hepta.v5.first-dispatch-independent-readonly-review.1",
+  "scope": "Supplemental read-only analysis of already existing arrays; no model or input generation; not a replacement for registered first-attempt SUMMARY.",
+  "supplemental_panels": {
+    "clean": {
+      "avx2": {
+        "changed_pixel_values": 1,
+        "changed_primitive_rows": {
+          "audit": {
+            "charged_utility": 1,
+            "joint_loss": 1,
+            "pixel_mse": 1,
+            "utility": 1
+          },
+          "reward": {
+            "charged_utility": 1,
+            "joint_loss": 1,
+            "pixel_mse": 1,
+            "utility": 1
+          }
+        },
+        "changed_recorded_stage_hash_rows": {
+          "caption_utf8_sha256": 0,
+          "image_logits_sha256": 512,
+          "image_probability_sha256": 512,
+          "pixel_sha256": 1
+        },
+        "fixed_current_raw_mse_exact_to_unset": true,
+        "mse_only_vs_current": {
+          "different_rows": 0,
+          "different_values": 0,
+          "exact": true,
+          "max_abs_difference": 0.0,
+          "mean_left_minus_right": 0.0
+        },
+        "mse_only_vs_old": {
+          "different_rows": 2,
+          "different_values": 4,
+          "exact": false,
+          "max_abs_difference": 5.863606930001097e-07,
+          "mean_left_minus_right": -5.893525669656979e-10
+        },
+        "nonzero_pixel_differences": [
+          1
+        ],
+        "previous_equal_rows_now_historical_mismatch": [
+          444
+        ],
+        "previous_historical_mismatch_rows_now_equal": [],
+        "vs_current_v5": {
+          "different_rows": 1,
+          "different_values": 2,
+          "exact": false,
+          "max_abs_difference": 1.765787601692992e-07,
+          "mean_left_minus_right": 3.448803909556625e-10
+        },
+        "vs_old_v3": {
+          "different_rows": 3,
+          "different_values": 6,
+          "exact": false,
+          "max_abs_difference": 5.863606930001097e-07,
+          "mean_left_minus_right": -2.4447217601003546e-10
+        }
+      },
+      "avx512": {
+        "changed_pixel_values": 0,
+        "changed_primitive_rows": {
+          "audit": {},
+          "reward": {}
+        },
+        "changed_recorded_stage_hash_rows": {
+          "caption_utf8_sha256": 0,
+          "image_logits_sha256": 0,
+          "image_probability_sha256": 0,
+          "pixel_sha256": 0
+        },
+        "fixed_current_raw_mse_exact_to_unset": true,
+        "mse_only_vs_current": {
+          "different_rows": 0,
+          "different_values": 0,
+          "exact": true,
+          "max_abs_difference": 0.0,
+          "mean_left_minus_right": 0.0
+        },
+        "mse_only_vs_old": {
+          "different_rows": 2,
+          "different_values": 4,
+          "exact": false,
+          "max_abs_difference": 5.863606930001097e-07,
+          "mean_left_minus_right": -5.893525669656979e-10
+        },
+        "nonzero_pixel_differences": [],
+        "previous_equal_rows_now_historical_mismatch": [],
+        "previous_historical_mismatch_rows_now_equal": [],
+        "vs_current_v5": {
+          "different_rows": 0,
+          "different_values": 0,
+          "exact": true,
+          "max_abs_difference": 0.0,
+          "mean_left_minus_right": 0.0
+        },
+        "vs_old_v3": {
+          "different_rows": 2,
+          "different_values": 4,
+          "exact": false,
+          "max_abs_difference": 5.863606930001097e-07,
+          "mean_left_minus_right": -5.893525669656979e-10
+        }
+      },
+      "unset_after": {
+        "changed_pixel_values": 0,
+        "changed_primitive_rows": {
+          "audit": {},
+          "reward": {}
+        },
+        "changed_recorded_stage_hash_rows": {
+          "caption_utf8_sha256": 0,
+          "image_logits_sha256": 0,
+          "image_probability_sha256": 0,
+          "pixel_sha256": 0
+        },
+        "fixed_current_raw_mse_exact_to_unset": true,
+        "mse_only_vs_current": {
+          "different_rows": 0,
+          "different_values": 0,
+          "exact": true,
+          "max_abs_difference": 0.0,
+          "mean_left_minus_right": 0.0
+        },
+        "mse_only_vs_old": {
+          "different_rows": 2,
+          "different_values": 4,
+          "exact": false,
+          "max_abs_difference": 5.863606930001097e-07,
+          "mean_left_minus_right": -5.893525669656979e-10
+        },
+        "nonzero_pixel_differences": [],
+        "previous_equal_rows_now_historical_mismatch": [],
+        "previous_historical_mismatch_rows_now_equal": [],
+        "vs_current_v5": {
+          "different_rows": 0,
+          "different_values": 0,
+          "exact": true,
+          "max_abs_difference": 0.0,
+          "mean_left_minus_right": 0.0
+        },
+        "vs_old_v3": {
+          "different_rows": 2,
+          "different_values": 4,
+          "exact": false,
+          "max_abs_difference": 5.863606930001097e-07,
+          "mean_left_minus_right": -5.893525669656979e-10
+        }
+      },
+      "unset_before": {
+        "changed_pixel_values": 0,
+        "changed_primitive_rows": {
+          "audit": {},
+          "reward": {}
+        },
+        "changed_recorded_stage_hash_rows": {
+          "caption_utf8_sha256": 0,
+          "image_logits_sha256": 0,
+          "image_probability_sha256": 0,
+          "pixel_sha256": 0
+        },
+        "fixed_current_raw_mse_exact_to_unset": true,
+        "mse_only_vs_current": {
+          "different_rows": 0,
+          "different_values": 0,
+          "exact": true,
+          "max_abs_difference": 0.0,
+          "mean_left_minus_right": 0.0
+        },
+        "mse_only_vs_old": {
+          "different_rows": 2,
+          "different_values": 4,
+          "exact": false,
+          "max_abs_difference": 5.863606930001097e-07,
+          "mean_left_minus_right": -5.893525669656979e-10
+        },
+        "nonzero_pixel_differences": [],
+        "previous_equal_rows_now_historical_mismatch": [],
+        "previous_historical_mismatch_rows_now_equal": [],
+        "vs_current_v5": {
+          "different_rows": 0,
+          "different_values": 0,
+          "exact": true,
+          "max_abs_difference": 0.0,
+          "mean_left_minus_right": 0.0
+        },
+        "vs_old_v3": {
+          "different_rows": 2,
+          "different_values": 4,
+          "exact": false,
+          "max_abs_difference": 5.863606930001097e-07,
+          "mean_left_minus_right": -5.893525669656979e-10
+        }
+      }
+    },
+    "task": {
+      "avx2": {
+        "changed_pixel_values": 14,
+        "changed_primitive_rows": {
+          "audit": {
+            "charged_utility": 14,
+            "joint_loss": 14,
+            "pixel_mse": 14,
+            "utility": 14
+          },
+          "reward": {
+            "charged_utility": 14,
+            "joint_loss": 14,
+            "pixel_mse": 14,
+            "utility": 14
+          }
+        },
+        "changed_recorded_stage_hash_rows": {
+          "caption_utf8_sha256": 0,
+          "image_logits_sha256": 2048,
+          "image_probability_sha256": 2048,
+          "pixel_sha256": 14
+        },
+        "fixed_current_raw_mse_exact_to_unset": true,
+        "mse_only_vs_current": {
+          "different_rows": 0,
+          "different_values": 0,
+          "exact": true,
+          "max_abs_difference": 0.0,
+          "mean_left_minus_right": 0.0
+        },
+        "mse_only_vs_old": {
+          "different_rows": 12,
+          "different_values": 24,
+          "exact": false,
+          "max_abs_difference": 8.1434845922157e-07,
+          "mean_left_minus_right": -1.133412297230161e-09
+        },
+        "nonzero_pixel_differences": [
+          -1,
+          1
+        ],
+        "previous_equal_rows_now_historical_mismatch": [
+          337,
+          419,
+          456,
+          693,
+          1011,
+          1183,
+          1215,
+          1219,
+          1333,
+          1351
+        ],
+        "previous_historical_mismatch_rows_now_equal": [
+          654,
+          1247,
+          1791,
+          2037
+        ],
+        "vs_current_v5": {
+          "different_rows": 14,
+          "different_values": 28,
+          "exact": false,
+          "max_abs_difference": 8.501112461756222e-07,
+          "mean_left_minus_right": -2.5647750579154555e-11
+        },
+        "vs_old_v3": {
+          "different_rows": 18,
+          "different_values": 36,
+          "exact": false,
+          "max_abs_difference": 8.501112461756222e-07,
+          "mean_left_minus_right": -1.1590600478093155e-09
+        }
+      },
+      "avx512": {
+        "changed_pixel_values": 0,
+        "changed_primitive_rows": {
+          "audit": {},
+          "reward": {}
+        },
+        "changed_recorded_stage_hash_rows": {
+          "caption_utf8_sha256": 0,
+          "image_logits_sha256": 0,
+          "image_probability_sha256": 0,
+          "pixel_sha256": 0
+        },
+        "fixed_current_raw_mse_exact_to_unset": true,
+        "mse_only_vs_current": {
+          "different_rows": 0,
+          "different_values": 0,
+          "exact": true,
+          "max_abs_difference": 0.0,
+          "mean_left_minus_right": 0.0
+        },
+        "mse_only_vs_old": {
+          "different_rows": 12,
+          "different_values": 24,
+          "exact": false,
+          "max_abs_difference": 8.1434845922157e-07,
+          "mean_left_minus_right": -1.133412297230161e-09
+        },
+        "nonzero_pixel_differences": [],
+        "previous_equal_rows_now_historical_mismatch": [],
+        "previous_historical_mismatch_rows_now_equal": [],
+        "vs_current_v5": {
+          "different_rows": 0,
+          "different_values": 0,
+          "exact": true,
+          "max_abs_difference": 0.0,
+          "mean_left_minus_right": 0.0
+        },
+        "vs_old_v3": {
+          "different_rows": 12,
+          "different_values": 24,
+          "exact": false,
+          "max_abs_difference": 8.1434845922157e-07,
+          "mean_left_minus_right": -1.133412297230161e-09
+        }
+      },
+      "unset_after": {
+        "changed_pixel_values": 0,
+        "changed_primitive_rows": {
+          "audit": {},
+          "reward": {}
+        },
+        "changed_recorded_stage_hash_rows": {
+          "caption_utf8_sha256": 0,
+          "image_logits_sha256": 0,
+          "image_probability_sha256": 0,
+          "pixel_sha256": 0
+        },
+        "fixed_current_raw_mse_exact_to_unset": true,
+        "mse_only_vs_current": {
+          "different_rows": 0,
+          "different_values": 0,
+          "exact": true,
+          "max_abs_difference": 0.0,
+          "mean_left_minus_right": 0.0
+        },
+        "mse_only_vs_old": {
+          "different_rows": 12,
+          "different_values": 24,
+          "exact": false,
+          "max_abs_difference": 8.1434845922157e-07,
+          "mean_left_minus_right": -1.133412297230161e-09
+        },
+        "nonzero_pixel_differences": [],
+        "previous_equal_rows_now_historical_mismatch": [],
+        "previous_historical_mismatch_rows_now_equal": [],
+        "vs_current_v5": {
+          "different_rows": 0,
+          "different_values": 0,
+          "exact": true,
+          "max_abs_difference": 0.0,
+          "mean_left_minus_right": 0.0
+        },
+        "vs_old_v3": {
+          "different_rows": 12,
+          "different_values": 24,
+          "exact": false,
+          "max_abs_difference": 8.1434845922157e-07,
+          "mean_left_minus_right": -1.133412297230161e-09
+        }
+      },
+      "unset_before": {
+        "changed_pixel_values": 0,
+        "changed_primitive_rows": {
+          "audit": {},
+          "reward": {}
+        },
+        "changed_recorded_stage_hash_rows": {
+          "caption_utf8_sha256": 0,
+          "image_logits_sha256": 0,
+          "image_probability_sha256": 0,
+          "pixel_sha256": 0
+        },
+        "fixed_current_raw_mse_exact_to_unset": true,
+        "mse_only_vs_current": {
+          "different_rows": 0,
+          "different_values": 0,
+          "exact": true,
+          "max_abs_difference": 0.0,
+          "mean_left_minus_right": 0.0
+        },
+        "mse_only_vs_old": {
+          "different_rows": 12,
+          "different_values": 24,
+          "exact": false,
+          "max_abs_difference": 8.1434845922157e-07,
+          "mean_left_minus_right": -1.133412297230161e-09
+        },
+        "nonzero_pixel_differences": [],
+        "previous_equal_rows_now_historical_mismatch": [],
+        "previous_historical_mismatch_rows_now_equal": [],
+        "vs_current_v5": {
+          "different_rows": 0,
+          "different_values": 0,
+          "exact": true,
+          "max_abs_difference": 0.0,
+          "mean_left_minus_right": 0.0
+        },
+        "vs_old_v3": {
+          "different_rows": 12,
+          "different_values": 24,
+          "exact": false,
+          "max_abs_difference": 8.1434845922157e-07,
+          "mean_left_minus_right": -1.133412297230161e-09
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "hash_verified_preformat_reconstruction_and_static_ast_comparison",
+  "created_at_utc": "2026-10-28T06:03:58.548049+00:00",
+  "method": "Reverse observed Ruff reflow using the recorded exact patch text, then require byte count and SHA256 to match the source identity recorded when the 12 tests ran. These files were reconstructed now, not retained as original pre-format files.",
+  "tests_rerun": false,
+  "repo_modified": false,
+  "test_execution_binding": "12 tests passed only at the preformat SHA values; this step performs no execution of either source version.",
+  "semantic_scope": "Python AST equality excludes source location attributes; source byte identity, diagnostic line locations and self-recorded source SHA can still differ.",
+  "files": [
+    {
+      "path": "scripts/capture_cargo_deny_diagnostic.py",
+      "preformat_sha256": "47567d7b8e8248eb98fc7f0fd988b33f4c0d29dadf8278ae6746e6ef4f7386a5",
+      "preformat_bytes": 15050,
+      "postformat_sha256": "c040903cab7a58bcab1c690958555ace26a33c7ce41290d92216b5b68684e34f",
+      "postformat_bytes": 15062,
+      "ast_equal_without_location_attributes": true,
+      "ast_sha256": "236feb0e6f6139fa0f831619ab787421b0c484416316e398fb6e6fcbb9102ac5"
+    },
+    {
+      "path": "scripts/test_capture_cargo_deny_diagnostic.py",
+      "preformat_sha256": "045bfaadf5f2e785ff625c76ec8bd3f6cfdbdff56c0c077b2f672255318f1bf0",
+      "preformat_bytes": 18413,
+      "postformat_sha256": "7f811178e2e6dbeba2c0c59b0ba54bfece13a4bab2682a2485ce8411e817792b",
+      "postformat_bytes": 18599,
+      "ast_equal_without_location_attributes": true,
+      "ast_sha256": "8c3e195c9b15e026e5f4f1734c3c3354db4ccda0cfbfbe986db8427c1c63e9ed"
+    }
+  ]
+}

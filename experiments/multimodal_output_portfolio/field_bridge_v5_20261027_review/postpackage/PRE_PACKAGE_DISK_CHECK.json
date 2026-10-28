@@ -1,0 +1,19 @@
+{
+  "bound_method": "zlib 1.3.2 compressBound formula for default window/memory settings, plus an extra 18-byte gzip framing allowance",
+  "bound_source": "https://github.com/madler/zlib/blob/v1.3.2/compress.c",
+  "gzip_conservative_upper_bound_bytes": 246705703,
+  "inputs_deleted": false,
+  "manifest_bytes": 109992,
+  "manifest_sha256": "38472bc9509495d08404c72212a0d2aaa3c9c3a9abab98a4f1d5b0aa3635d285",
+  "model_or_network_calls": 0,
+  "observed_free_bytes": 1655459840,
+  "passed": true,
+  "payload_bytes": 246121150,
+  "payload_files": 501,
+  "required_free_bytes": 526491277,
+  "reserve_bytes": 33554432,
+  "restore_payload_and_manifest_bytes": 246231142,
+  "schema": "hepta.field-bridge.v5.archive-disk-preflight.1",
+  "tar_stream_bytes": 246630400,
+  "zlib_runtime_version": "1.3.2"
+}

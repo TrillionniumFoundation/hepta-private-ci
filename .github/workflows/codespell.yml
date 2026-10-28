@@ -19,12 +19,20 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+          fetch-depth: 0
+          filter: blob:none
       - name: Annotate locations with typos
         uses: codespell-project/codespell-problem-matcher@b80729f885d32f78a716c2f107b4db1025001c42 # v1.1.0
-      - name: Codespell
-        uses: codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579 # v2.2
-        with:
-          ignore_words_file: .codespellignore
+      - name: Install the registered spelling checker
+        run: |
+          python3 -m venv "$RUNNER_TEMP/hepta-codespell"
+          "$RUNNER_TEMP/hepta-codespell/bin/python" -m pip install --disable-pip-version-check "codespell==2.4.3"
+      - name: Verify historical diagnostic policy
+        run: |
+          "$RUNNER_TEMP/hepta-codespell/bin/python" -B -m unittest discover -s scripts -p test_codespell_frozen_findings.py
+      - name: Check the full tree and classify historical findings
+        run: |
+          "$RUNNER_TEMP/hepta-codespell/bin/python" -B scripts/check_codespell_frozen_findings.py --report "$RUNNER_TEMP/codespell-policy-receipt.json"
 
       - name: Check for a clean worktree
         if: always() && !cancelled()

@@ -1,0 +1,122 @@
+{
+  "actual_capacity_observation": {
+    "basis": "f_bavail for every UID, including root",
+    "capacity_passed": false,
+    "f_bavail_bytes": 0,
+    "f_bfree_bytes": 562843648,
+    "free_inodes": 1649112,
+    "path": "/workspace/scratch/e8a4dc33549f",
+    "registration_still_required": true,
+    "research_start_permitted": false
+  },
+  "admission": false,
+  "blocking_findings": [],
+  "decision": "PASS_SCOPED_ENGINEERING_PREPARATION",
+  "independent_probe": {
+    "check_groups_passed": 8,
+    "command": "python3 -I -B /workspace/scratch/e8a4dc33549f/v6_preparation_independent_probe_20261028.py",
+    "exit_code": 0,
+    "receipt": {
+      "bytes": 5001,
+      "path": "/workspace/scratch/e8a4dc33549f/v6_preparation_independent_probe_20261028.json",
+      "sha256": "959c4c5ff27d6c2f3c5e5102db2b7206e245fefcac2ef3be77f1f8ec320e00f6"
+    },
+    "script": {
+      "bytes": 6302,
+      "path": "/workspace/scratch/e8a4dc33549f/v6_preparation_independent_probe_20261028.py",
+      "sha256": "ba11e0549c5abfcd2225752cdc47418d6e5a63086e0cb08b8c1d4ff082077a20"
+    }
+  },
+  "limits": [
+    "This is a typed record schema and a synthetic harness, not a live Torch capture/restore adapter, learning kernel replay, registration or scientific execution.",
+    "Opaque Torch/Python/NumPy/named RNG record serialization does not certify that a live runtime will accept or install those states. The synthetic Torch RNG bytes are deliberately not a real live RNG snapshot.",
+    "Array restore uses separate contiguous copies; live shared-storage/alias semantics and runtime settings require a separately reviewed actual adapter.",
+    "The caller must hold a trusted environment identity independently; computing the expected identity from the same untrusted record establishes no provenance.",
+    "Monotone counters check supplied values and detect regression; they do not independently meter real model work or enforce full global resource budgets.",
+    "All nine real candidate artifact shape and metadata bounds remain unknown. shape_bound_verified is an external declaration that needs real independent evidence; a sample alone is not that proof.",
+    "510 MiB archive cap is a reserved prospective writer constraint, not an implemented archive writer or a packing-fit guarantee. Single scientific writer, bounded partial writes/receipts and counted retries are assumptions that the future runner must enforce.",
+    "save serializes in memory before exclusive disk write. The cap bounds the output file, not total peak resident memory. No streaming-memory or power-loss-complete directory durability claim is established.",
+    "Failure state is retained in memory by the synthetic harness; a future durable runner must bound and preserve adverse records without deleting prior evidence.",
+    "No model calls, head fits, holdout access, training microsteps, Rust builds, dependency downloads or raw uploads were performed by this independent review.",
+    "Original V5 scientific FAIL and no-admission remain unchanged. No new research registration/execution or product qualification is granted."
+  ],
+  "native_torch_restore_qualified": false,
+  "new_research_registration": false,
+  "new_scientific_execution": false,
+  "repository_files_modified_by_reviewer": [],
+  "reviewed_unix_ns": 1793167201733707562,
+  "reviewer": "hepta_architecture independent of preparation writer",
+  "schema": "hepta.field-bridge.v6-preparation.independent-review.1",
+  "scientific_evidence": false,
+  "sources": [
+    {
+      "bytes": 6335,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/codec.py",
+      "sha256": "75b2be74e5a9bf7ff474e74f5e25f3f6dc3758c09d07ff78a1417537ddc772fb"
+    },
+    {
+      "bytes": 7369,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/budget.py",
+      "sha256": "ea325da155d015e974ea65eddc9db60b0a6befc25835c481810d6e3235825c0b"
+    },
+    {
+      "bytes": 12779,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/branch_state.py",
+      "sha256": "332080139de3a15a74d6ee5fad907fef661a1866551a0e23689884587d73cf82"
+    },
+    {
+      "bytes": 18077,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/tests.py",
+      "sha256": "506d27b2f04cf97c7f75aa6dfe8e6fe1d6cc9506fd21b3914a901dfb44226bf9"
+    }
+  ],
+  "sources_quiescent_at_review": true,
+  "supporting_file_identities": [
+    {
+      "bytes": 5674,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/README.md",
+      "sha256": "a4ef9aa1ecda5cb67a02d065e0d52b0a6b1514651d757f70300421c8f6f7f0ab"
+    },
+    {
+      "bytes": 2434,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/SOURCE_REFERENCES.json",
+      "sha256": "c5669659c48a1734c633dcee625b4e931464b176f023a6ac72676b169e968dda"
+    },
+    {
+      "bytes": 1449,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/BUDGET_PLAN.json",
+      "sha256": "02055543f2b9f6f17a7f657568b00060e078589c4a1dfe43e6b06cabd791948c"
+    },
+    {
+      "bytes": 1862,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/BUDGET_REPORT.json",
+      "sha256": "1e3526bca390e0a5d9d1b695cfb202bb5a0af9fdc2a34b1cf71be9e68db66c35"
+    },
+    {
+      "bytes": 7059,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/PREPARATION_REPORT.json",
+      "sha256": "3da172bf5cf5ef7b0a40a07378955021fe5fb24bd13319f9953bb4a212792ac9"
+    }
+  ],
+  "tests": {
+    "command": "python3 -I -B experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/tests.py",
+    "elapsed_reported_seconds": 1.261,
+    "exit_code": 0,
+    "failed": 0,
+    "output": ".................\n----------------------------------------------------------------------\nRan 17 tests in 1.261s\n\nOK\n",
+    "skipped": 0,
+    "source_identities_observed_before_suite_and_after_probe_equal": true,
+    "tests_passed": 17
+  },
+  "verified_scope": [
+    "Typed scalar bits, tuple/list and integer/string key distinctions, array dtype/shape/literal bytes round-trip; big-endian arrays verified independently.",
+    "Caller-held whole-envelope identity, per-array hashes, complete unique references and canonical reserialization reject altered payload, duplicate references, unused arrays and noncanonical metadata even with a recomputed outer identity.",
+    "Shared encoder/measure/decoder limits enforce 4096 arrays and 1 MiB metadata. loads/save caps require exact nonnegative integers. Actual sample reads check regular file and size before a bounded cap+1 read.",
+    "Declared CPU parameter/buffer inventory/layout, requires_grad, module modes and named RNG inventory are bound to a separately held immutable environment identity. SGD name mapping is bijective; gradients preserve None separately from zero.",
+    "All 24 synthetic action permutations produce identical per-action records. Generator and mutable list action inputs are frozen before execution and exact integer IDs are required.",
+    "External work counters are not restored with branch state; callback exceptions retain completed branches, failed state and before/after costs, including an explicit additional integrity error when counters regress.",
+    "Actual sizing basis reads a real serialized sample, records its full SHA and exact byte count and verifies literal round-trip; boolean or float asserted sizes/counts are rejected.",
+    "Real BUDGET_PLAN leaves all nine required artifact bounds unknown; no synthetic sample is substituted. Unknown totals remain null and capacity fails closed.",
+    "Disk gate uses f_bavail for all UIDs, sufficient inodes and 2 GiB minimum plus calculated reserve. f_bfree is only observational. Research start stays false even in hypothetical capacity-pass cases."
+  ]
+}

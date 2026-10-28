@@ -1,0 +1,60 @@
+{
+  "admission": false,
+  "all_original_substantive_blockers_closed": false,
+  "builder": {
+    "bytes": 23022,
+    "path": "/workspace/scratch/e8a4dc33549f/dispatch_archive_builder_20261028.py",
+    "sha256": "61b0cb32c5885b7e949a31f417c7c0a341b9c971123987c7ab9273741e8ac6f1"
+  },
+  "custody_status": "LOCAL_ONLY_PENDING_NAMED_LIBRARY_AUTHORIZATION",
+  "disk_at_failure": {
+    "allocatable_basis": "f_bfree",
+    "allocatable_bytes": 235257856,
+    "effective_uid": 0,
+    "f_bavail_bytes": 0,
+    "f_bfree_bytes": 235257856,
+    "reserve_bytes": 268435456
+  },
+  "error": {
+    "message": "Unexpected inventory at /workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/historical_fixed_inputs_20261028: missing=[], extra=['EXECUTION_REVIEW.json', 'EXECUTION_REVIEW.md']",
+    "type": "ValueError"
+  },
+  "external_durable_save": false,
+  "full_tree_replay": false,
+  "git_mutations": 0,
+  "historical_gate_changed": false,
+  "historical_raw_file_recovered": false,
+  "literal_restore_scope": "per-member literal byte restoration; not full tree replay",
+  "model_calls": 0,
+  "new_holdout_access": false,
+  "original_canonical_before": [
+    {
+      "bytes": 239369112,
+      "device": 27,
+      "inode": 1453036,
+      "mtime_ns": 1793152747193872868,
+      "path": "/workspace/scratch/e8a4dc33549f/v5_archive/hepta_field_bridge_v5_20261027_evidence.tar.gz",
+      "sha256": "58b00c94da32eec4565e49e66a72d98c38f619c6dd2baeeb8a4318a7984fcdc2"
+    },
+    {
+      "bytes": 9112,
+      "device": 27,
+      "inode": 1453122,
+      "mtime_ns": 1793153810267344333,
+      "path": "/workspace/scratch/e8a4dc33549f/v5_archive/hepta_field_bridge_v5_20261027_archive_verification.json",
+      "sha256": "95b6d5ce785763284b57ea35141fec73915818b22961af1c104e927eec8074e5"
+    }
+  ],
+  "phase": "blocked_or_failed",
+  "purpose": "Local byte preservation and integrity verification only",
+  "qualification": false,
+  "raw_upload_attempts": 0,
+  "recorded_at_utc": "2026-10-28T05:27:04.346445+00:00",
+  "runtime": {
+    "python": "3.12.14",
+    "zlib": "1.3.2"
+  },
+  "schema": "hepta.field-bridge.v5.dispatch-archive-verification.1",
+  "scientific_status": "FAIL",
+  "status": "FAILED"
+}

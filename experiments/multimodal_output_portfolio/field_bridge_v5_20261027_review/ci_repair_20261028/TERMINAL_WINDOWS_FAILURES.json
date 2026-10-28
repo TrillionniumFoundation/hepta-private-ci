@@ -1,0 +1,552 @@
+{
+  "head": "5b7bef4e5788f2cea2546f0cb620af471b4fbcf7",
+  "observed_at_utc": "2026-10-28 04:29:35 UTC",
+  "jobs": {
+    "122593677366": [
+      {
+        "location_error": "hepta-automation/src\\migration_convergence_tests.rs:154:10 | real open: Invalid",
+        "tests": [
+          "store::migration_convergence_tests::canonical_cut_after_rebind_reopens",
+          "store::migration_convergence_tests::displaced_cut_after_rebind_reopens",
+          "store::migration_convergence_tests::canonical_cut_before_rebind_reopens",
+          "store::migration_convergence_tests::displaced_cut_before_rebind_reopens"
+        ]
+      },
+      {
+        "location_error": "hepta-supervisor/tests/restart_budget_recovery.rs:251:5 | assertion failed: supervisor.snapshot(&agent_id).expect(\"snapshot\").events.iter().any(|event|",
+        "tests": [
+          "restart_budget_survives_repeated_supervisord_recovery"
+        ]
+      },
+      {
+        "location_error": "ext/hepta-memory/src\\cognitive\\federation.rs:1309:9 | assertion failed: EphemeralModelInputContributor::is_active(&extension, &thread_store,",
+        "tests": [
+          "cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send"
+        ]
+      },
+      {
+        "location_error": "core/src\\guardian\\tests.rs:2534:9 | expected fourth guardian assessment",
+        "tests": [
+          "guardian::tests::guardian_reuses_prompt_cache_key_and_appends_prior_reviews"
+        ]
+      },
+      {
+        "location_error": "core/src\\environment_selection.rs:1282:9 | blocking snapshot should contain its environment wait span: 2026-10-28T02:53:08.732327Z TRACE codex_exec_server::remote_process: remote process new",
+        "tests": [
+          "environment_selection::tests::blocking_snapshot_waits_for_starting_environment"
+        ]
+      },
+      {
+        "location_error": "core/src\\environment_selection.rs:1282:9 | blocking snapshot should contain its environment wait span: 2026-10-28T02:54:16.367030Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new",
+        "tests": [
+          "environment_selection::tests::blocking_snapshot_waits_for_starting_environment"
+        ]
+      },
+      {
+        "location_error": "core/src\\environment_selection.rs:1282:9 | blocking snapshot should contain its environment wait span: 2026-10-28T02:54:52.800827Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new",
+        "tests": [
+          "environment_selection::tests::blocking_snapshot_waits_for_starting_environment"
+        ]
+      }
+    ],
+    "122593677372": [
+      {
+        "location_error": "hepta-intelligence-eval/src\\paired_owner_tests.rs:300:34 | backup: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+        "tests": [
+          "paired_owner_tests::actual_locked_file_replays_mixed_profiles_and_retains_rollback_anchor"
+        ]
+      },
+      {
+        "location_error": "hepta-supervisor/tests/signed_intent_recovery.rs:162:5 | assertion failed: matches!(first, Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))",
+        "tests": [
+          "exact_digest_abort_terminalizes_unresolved_intent"
+        ]
+      },
+      {
+        "location_error": "exec-server/tests/authorized_read_rpc.rs:84:13 | assertion `left == right` failed",
+        "tests": [
+          "authorized_read_rpc_is_capability_gated_and_denies_outside_root"
+        ]
+      },
+      {
+        "location_error": "hepta-evidence/src\\authbus_outbox_tests.rs:57:10 | called `Result::unwrap()` on an `Err` value: Capacity",
+        "tests": [
+          "authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed"
+        ]
+      },
+      {
+        "location_error": "ext/queue/tests/queue_service.rs:2424:6 | hook rejection must not consume an unpersisted queue item: Started { turn_id: \"01a18072-e7f6-7900-afda-f45766abf17c\" }",
+        "tests": [
+          "explicitly_started_rejected_queue_messages_remain_durable"
+        ]
+      },
+      {
+        "location_error": "external/rules_rs++crate+crates__wiremock-0.6.5/src\\mock_server\\exposed_server.rs:367:17 | Verifications failed:",
+        "tests": [
+          "registered_queue_lifecycle_starts_messages_in_fifo_order"
+        ]
+      },
+      {
+        "location_error": "hepta-agentd/src\\automation_service_tests.rs:81:76 | Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "tests": [
+          "automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen",
+          "automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit",
+          "automation::service_tests::production_constructor_never_resumes_a_draining_owner",
+          "automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement",
+          "automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn",
+          "automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen",
+          "automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation"
+        ]
+      },
+      {
+        "location_error": "hepta-agentd/src\\browser_servo.rs:906:10 | authority: UnsafeStateDirectory",
+        "tests": [
+          "browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding",
+          "browser_servo::tests::non_effect_calls_never_enter_final_use_authority",
+          "browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary"
+        ]
+      },
+      {
+        "location_error": "hepta-agentd/src\\cognitive_ranker_tests.rs:506:74 | called `Result::unwrap()` on an `Err` value: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "tests": [
+          "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation"
+        ]
+      },
+      {
+        "location_error": "hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52 | ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "tests": [
+          "cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records",
+          "cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends",
+          "cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment",
+          "cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict",
+          "cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently"
+        ]
+      },
+      {
+        "location_error": "hepta-agentd/src\\prompt_runtime_tests.rs:511:33 | pipeline owner: RegistryOpen(\"UnsafeStateDirectory\")",
+        "tests": [
+          "prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host"
+        ]
+      },
+      {
+        "location_error": "hepta-agentd/src\\runtime_tests.rs:113:78 | agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "tests": [
+          "runtime::tests::automation_generation_change_during_open_remains_fail_closed",
+          "runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor",
+          "runtime::tests::automation_owner_mismatch_remains_fail_closed",
+          "runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation",
+          "runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation",
+          "runtime::tests::generation_change_during_open_is_fenced_before_serving",
+          "runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store",
+          "runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe",
+          "runtime::tests::stale_generation_is_fenced_before_cognitive_store_open",
+          "runtime::tests::unavailable_automation_store_degrades_without_startup_failure",
+          "runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error",
+          "runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane"
+        ]
+      },
+      {
+        "location_error": "hepta-agentd/src\\plasticity_runtime_lifetime_tests.rs:249:80 | state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "tests": [
+          "plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
+        ]
+      },
+      {
+        "location_error": "hepta-agentd/src\\state_isolation_tests.rs:123:46 | runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        "tests": [
+          "state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress"
+        ]
+      },
+      {
+        "location_error": "hepta-agentd/src\\state_isolation_tests.rs:220:47 | runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        "tests": [
+          "state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it"
+        ]
+      },
+      {
+        "location_error": "hepta-agentd/src\\state_isolation_tests.rs:639:47 | runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        "tests": [
+          "state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access"
+        ]
+      },
+      {
+        "location_error": "hepta-agentd/src\\state_isolation_tests.rs:163:47 | runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        "tests": [
+          "state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent"
+        ]
+      },
+      {
+        "location_error": "hepta-agentd/src\\state_isolation_tests.rs:659:47 | runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        "tests": [
+          "state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership"
+        ]
+      },
+      {
+        "location_error": "hepta-agentd/src\\state_isolation_tests.rs:92:46 | runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        "tests": [
+          "state::isolation_tests::serving_agent_survives_unrelated_registry_corruption"
+        ]
+      },
+      {
+        "location_error": "hepta-agentd/src\\state_isolation_tests.rs:174:46 | runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        "tests": [
+          "state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences"
+        ]
+      },
+      {
+        "location_error": "tui/src\\app\\tests\\safety_buffering.rs:295:17 | expected 4 Responses API requests",
+        "tests": [
+          "app::tests::safety_buffering::safety_retry_forks_after_the_previous_turn_and_uses_faster_settings",
+          "app::tests::safety_buffering::safety_retry_can_retry_a_first_turn_a_second_time",
+          "app::tests::safety_buffering::safety_retry_replays_older_interruption_notices"
+        ]
+      },
+      {
+        "location_error": "tui/src\\resume_picker_transcript_preview_tests.rs:366:14 | start turn: Server { method: \"turn/start\", source: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" } }",
+        "tests": [
+          "resume_picker::transcript_preview::tests::paginated_transcript_preview_pages_past_old_item_budget",
+          "resume_picker::transcript_preview::tests::transcript_preview_preserves_legacy_and_paginated_output"
+        ]
+      },
+      {
+        "location_error": "tui/src\\app\\tests\\safety_buffering.rs:295:17 | expected 5 Responses API requests",
+        "tests": [
+          "app::tests::safety_buffering::safety_retry_preserves_a_committed_steer_from_the_interrupted_turn"
+        ]
+      },
+      {
+        "location_error": "tui/src\\app\\tests\\safety_buffering.rs:295:17 | expected 3 Responses API requests",
+        "tests": [
+          "app::tests::safety_buffering::safety_retry_forks_first_turn_and_continues_without_duplicating_prompt"
+        ]
+      },
+      {
+        "location_error": "tui/src\\app\\tests\\background_exit_tests.rs:229:5 | assertion failed: `Ok(InsertHistoryCell(PlainHistoryCell { lines: [Line::from(Span::from(\"■ Failed to interrupt task: turn/interrupt failed: no active turn to interrupt (code -32600)\").red())] }))` does not match `Ok(App",
+        "tests": [
+          "app::tests::background_exit_tests::exit_interrupts_before_requesting_shutdown"
+        ]
+      }
+    ],
+    "122593677696": [
+      {
+        "location_error": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72 | called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "tests": [
+          "evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome",
+          "evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+          "evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port",
+          "evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage",
+          "evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch",
+          "evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+          "evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports"
+        ]
+      },
+      {
+        "location_error": "hepta-intelligence/src\\evaluated_shadow_segment_tests.rs:21:31 | called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "tests": [
+          "evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal",
+          "evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery"
+        ]
+      },
+      {
+        "location_error": "hepta-intelligence/src\\outcome_credit_v2.rs:378:43 | directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "tests": [
+          "outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation",
+          "outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit",
+          "outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append"
+        ]
+      },
+      {
+        "location_error": "hepta-intelligence/src\\prompt_delivery_tests.rs:43:57 | open durable registry: UnsafeStateDirectory",
+        "tests": [
+          "prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input",
+          "prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift",
+          "prompt_delivery::tests::revocation_after_exercise_prevents_delivery_of_the_selected_realization",
+          "prompt_pipeline::tests::revocation_after_compilation_blocks_attachment_preparation",
+          "prompt_pipeline::tests::materialization_drift_after_compilation_blocks_attachment_preparation",
+          "prompt_pipeline::tests::exercised_portfolio_compiles_attaches_and_observes_exact_delivery",
+          "prompt_pipeline::tests::serialization_without_selected_prompt_bytes_fails_closed"
+        ]
+      },
+      {
+        "location_error": "hepta-authbus/src\\authority_schema_tests.rs:29:60 | called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "tests": [
+          "authority_schema::tests::missing_and_replaced_authority_triggers_fail_closed_on_reopen"
+        ]
+      },
+      {
+        "location_error": "windows-sandbox-rs/src\\token_tests.rs:213:5 | assertion failed: `(left == right)`",
+        "tests": [
+          "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes"
+        ]
+      },
+      {
+        "location_error": "windows-sandbox-rs/src\\token_tests.rs:280:5 | assertion failed: `(left == right)`",
+        "tests": [
+          "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces"
+        ]
+      },
+      {
+        "location_error": "windows-sandbox-rs/src\\unified_exec\\tests.rs:775:9 | assertion failed: `(left == right)`: stdout=\"\"",
+        "tests": [
+          "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+        ]
+      },
+      {
+        "location_error": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:31:10 | called `Result::unwrap()` on an `Err` value: Unavailable",
+        "tests": [
+          "lease_lifecycle::tests::issue_unknown_reconciles_without_duplicate_issue"
+        ]
+      },
+      {
+        "location_error": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:190:10 | called `Result::unwrap()` on an `Err` value: Unavailable",
+        "tests": [
+          "lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown"
+        ]
+      },
+      {
+        "location_error": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:84:14 | called `Result::unwrap()` on an `Err` value: Unavailable",
+        "tests": [
+          "lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation"
+        ]
+      },
+      {
+        "location_error": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:217:10 | called `Result::unwrap()` on an `Err` value: Unavailable",
+        "tests": [
+          "lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal"
+        ]
+      },
+      {
+        "location_error": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:66:10 | called `Result::unwrap()` on an `Err` value: Unavailable",
+        "tests": [
+          "lease_lifecycle::tests::reused_operation_id_with_changed_semantics_conflicts"
+        ]
+      },
+      {
+        "location_error": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:108:10 | called `Result::unwrap()` on an `Err` value: Unavailable",
+        "tests": [
+          "lease_lifecycle::tests::renew_unknown_blocks_fabricated_success_until_reconciled"
+        ]
+      },
+      {
+        "location_error": "hepta-bao-adapter/src\\lease_lifecycle_tests.rs:150:10 | called `Result::unwrap()` on an `Err` value: Unavailable",
+        "tests": [
+          "lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation"
+        ]
+      },
+      {
+        "location_error": "hepta-automation/tests/automation.rs:1039:10 | remove v14 run revision from v1 fixture: Database(SqliteError { code: 1, message: \"error in trigger automation_timer_lifecycle_drain: no such table: main.automation_dispatch_outcomes\" })",
+        "tests": [
+          "v1_store_migrates_atomically_to_dispatch_outcome_schema"
+        ]
+      },
+      {
+        "location_error": "hepta-memory/src\\cognitive_store_recovery_tests.rs:163:6 | descriptor-bound writable recovery: Indeterminate(\"cognitive recovery root is redirected\")",
+        "tests": [
+          "cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation"
+        ]
+      },
+      {
+        "location_error": "hepta-memory/src\\cognitive_store_recovery_tests.rs:214:48 | pointer rename: Unavailable(\"Access is denied. (os error 5)\")",
+        "tests": [
+          "cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate"
+        ]
+      },
+      {
+        "location_error": "hepta-memory/src\\cognitive_store_recovery_tests.rs:291:5 | assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),",
+        "tests": [
+          "cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers"
+        ]
+      },
+      {
+        "location_error": "hepta-memory/src\\cognitive_store_recovery_tests.rs:365:5 | assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),",
+        "tests": [
+          "cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission"
+        ]
+      },
+      {
+        "location_error": "hepta-memory/src\\cognitive_store_recovery_tests.rs:248:5 | assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),",
+        "tests": [
+          "cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence"
+        ]
+      },
+      {
+        "location_error": "hepta-memory/src\\cognitive_store_tests.rs:1094:5 | assertion failed: `(left == right)`",
+        "tests": [
+          "cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection"
+        ]
+      },
+      {
+        "location_error": "hepta-codex-adapter/src\\lib_tests.rs:133:6 | called `Result::unwrap()` on an `Err` value: Error(\"AbsolutePathBuf deserialized without a base path\", line: 0, column: 0)",
+        "tests": [
+          "tests::thread_read_recovery_keeps_in_progress_indeterminate",
+          "tests::thread_read_recovery_rejects_session_drift_and_duplicate_turns",
+          "tests::thread_read_recovery_requires_exact_stable_message_and_input"
+        ]
+      },
+      {
+        "location_error": "app-server/src/lib.rs:1841:9 | assertion failed: `(left == right)`",
+        "tests": [
+          "tests::embedding_runtime_sqlite_home_constraint_is_exact"
+        ]
+      },
+      {
+        "location_error": "hepta-agentd/tests\\support\\terminal_cell_owner.rs:198:32 | called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "tests": [
+          "subset_rejects_missing_support_bad_grammar_and_omitted_observed_actions",
+          "observed_subset_keeps_complete_grammar_without_inventing_abstain_target"
+        ]
+      },
+      {
+        "location_error": "hepta-agentd/src\\runtime_tests.rs:113:78 | agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "tests": [
+          "runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once",
+          "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+          "runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence"
+        ]
+      },
+      {
+        "location_error": "codex-rs/core/tests/common/lib.rs:353:14 | timeout waiting for event: Elapsed(())",
+        "tests": [
+          "responses_stream_includes_turn_metadata_header_for_git_workspace_e2e"
+        ]
+      },
+      {
+        "location_error": "app-server/tests\\suite\\v2\\client_metadata.rs:116:5 | assertion failed: metadata[\"context_window_id\"].as_str().is_some_and(|window_id|",
+        "tests": [
+          "suite::v2::client_metadata::turn_start_forwards_client_metadata_to_responses_request_v2"
+        ]
+      },
+      {
+        "location_error": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13 | internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: turn start is fenced while",
+        "tests": [
+          "suite::v2::git_attribution::git_attribution_follows_authenticated_workspace_policy",
+          "suite::v2::turn_start::turn_profile_tracks_blocking_tool_and_follow_up_sampling",
+          "suite::v2::mcp_server_elicitation::mcp_server_legacy_sep1034_elicitation_defaults_round_trip",
+          "suite::v2::thread_resume::thread_resume_keeps_in_flight_turn_streaming"
+        ]
+      },
+      {
+        "location_error": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13 | internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3)",
+        "tests": [
+          "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::approved",
+          "suite::v2::git_attribution::git_attribution_follows_authenticated_workspace_policy",
+          "suite::v2::mcp_server_elicitation::mcp_server_openai_form_elicitation_round_trip",
+          "suite::v2::thread_revert::thread_revert_replaces_paginated_history_before_turn",
+          "suite::v2::turn_start::turn_profile_tracks_blocking_tool_and_follow_up_sampling",
+          "suite::v2::turn_start::turn_start_change_personality_mid_thread_v2",
+          "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::guardian_disabled",
+          "suite::v2::git_attribution::cold_resume_replaces_legacy_attribution_without_duplication::unlinked_pull_request",
+          "suite::v2::mcp_server_elicitation::mcp_server_form_elicitation_round_trip",
+          "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::persistent",
+          "suite::v2::thread_resume::thread_resume_rejects_mismatched_path_for_running_thread_id",
+          "suite::v2::compaction::auto_compaction_local_emits_started_and_completed_items",
+          "suite::v2::thread_resume::thread_resume_replays_pending_command_execution_request_approval",
+          "suite::v2::thread_revert::thread_revert_interrupts_active_turn_and_keeps_thread_loaded",
+          "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::full_access",
+          "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::approve_for_me",
+          "suite::v2::thread_resume::thread_resume_replays_pending_file_change_request_approval",
+          "suite::v2::thread_fork::thread_fork_defers_inherited_active_goal_until_next_turn",
+          "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::app_reviewer_spoofed_action",
+          "suite::v2::git_attribution::cold_resume_replaces_legacy_attribution_without_duplication::commit_only",
+          "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::never",
+          "suite::v2::thread_fork::paginated_thread_fork_at_named_boundaries_keeps_only_terminal_prefix",
+          "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::managed_guardian_disabled",
+          "suite::v2::thread_rollback::thread_rollback_drops_last_turns_and_persists_to_rollout",
+          "suite::v2::multi_agent_v2_developer_instructions::compacted_full_history_fork_replaces_parent_developer_instructions",
+          "suite::v2::turn_start::turn_start_explicit_local_environment_updates_legacy_cwd_between_turns",
+          "suite::v2::compaction::auto_compaction_remote_emits_started_and_completed_items",
+          "suite::v2::thread_fork::thread_fork_at_last_turn_id_keeps_only_terminal_prefix",
+          "suite::v2::mcp_server_elicitation::mcp_server_form_elicitation_round_trip_in_full_access",
+          "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2",
+          "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::app_reviewer_missing_call_id",
+          "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::three_denials_interrupt",
+          "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::managed_reviewer_forbidden",
+          "suite::v2::thread_resume::thread_resume_rejoins_running_paginated_thread_with_initial_page",
+          "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::app_reviewer_spoofed_id",
+          "suite::v2::mcp_server_elicitation::mcp_server_legacy_sep1034_elicitation_defaults_round_trip",
+          "suite::v2::output_schema::turn_start_output_schema_is_per_turn_v2",
+          "suite::v2::thread_resume::thread_resume_keeps_in_flight_turn_streaming",
+          "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::app_default_reviewer_user",
+          "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::app_reviewer_noncanonical_id",
+          "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::app_reviewer_user",
+          "suite::v2::thread_resume::thread_resume_rejects_history_when_thread_is_running",
+          "suite::v2::turn_start::turn_start_emits_notifications_and_accepts_model_override"
+        ]
+      },
+      {
+        "location_error": "external/rules_rs++crate+crates__wiremock-0.6.5/src\\mock_server\\exposed_server.rs:367:17 | Verifications failed:",
+        "tests": [
+          "suite::v2::thread_queue::interrupt_preserves_queue_and_queue_start_can_resume_a_non_head_item",
+          "suite::v2::mcp_resource_origin::widget_reads_survive_history_modes_compaction_restarts_and_app_only_visibility"
+        ]
+      },
+      {
+        "location_error": "/rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library\\core\\src\\ops\\function.rs:250:5 | Unexpected failure.",
+        "tests": [
+          "suite::resume::exec_resume_last_repairs_rollout_missing_from_state_db"
+        ]
+      },
+      {
+        "location_error": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13 | internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32601, data: None, message: \"Amazon Bedrock setup is not implemented\" }, id: Integer",
+        "tests": [
+          "suite::v2::bedrock_setup::setup_bedrock_profile_and_environment",
+          "suite::v2::bedrock_setup::discover_bedrock_profiles_and_environment_credentials"
+        ]
+      },
+      {
+        "location_error": "app-server/tests\\suite\\v2\\thread_resume.rs:1203:9 | assertion failed: !runtime_workspace_roots.contains(&AbsolutePathBuf::from_absolute_path(previous_workspace_root.path())?)",
+        "tests": [
+          "suite::v2::thread_resume::cold_resume_reresolves_persisted_active_permission_profile"
+        ]
+      },
+      {
+        "location_error": "app-server/tests\\suite\\v2\\residency.rs:166:5 | assertion failed: `(left == right)`",
+        "tests": [
+          "suite::v2::residency::managed_residency_overrides_provider_headers::websocket"
+        ]
+      },
+      {
+        "location_error": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13 | internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32600, data: None, message: \"Cannot rollback while a turn is in progress.\" }, id: In",
+        "tests": [
+          "suite::v2::thread_rollback::thread_rollback_drops_last_turns_and_persists_to_rollout"
+        ]
+      },
+      {
+        "location_error": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13 | internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(4)",
+        "tests": [
+          "suite::v2::thread_fork::paginated_thread_fork_at_named_boundaries_keeps_only_terminal_prefix"
+        ]
+      },
+      {
+        "location_error": "app-server/tests\\suite\\v2\\projects.rs:881:9 | thread/fork must respond before lifecycle notifications",
+        "tests": [
+          "suite::v2::projects::assigned_forks_inherit_projects_for_persistent_and_ephemeral_children"
+        ]
+      },
+      {
+        "location_error": "app-server/tests\\suite\\v2\\bedrock_setup.rs:293:9 | expected \"Amazon Bedrock does not support region `us-west-1`\", got \"Amazon Bedrock setup is not implemented\"",
+        "tests": [
+          "suite::v2::bedrock_setup::setup_bedrock_rejects_invalid_or_conflicting_credentials"
+        ]
+      },
+      {
+        "location_error": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13 | internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(18",
+        "tests": [
+          "suite::v2::mcp_resource_origin::widget_reads_survive_history_modes_compaction_restarts_and_app_only_visibility"
+        ]
+      },
+      {
+        "location_error": "codex-rs/app-server/tests/common\\test_app_server.rs:1660:13 | internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(5)",
+        "tests": [
+          "suite::v2::realtime_conversation::realtime_mode_uses_client_instructions_on_entry_and_exit"
+        ]
+      }
+    ],
+    "122593677369": [
+      "\nerror: use of a disallowed method `sqlx::pool::PoolOptions::connect`\n --> hepta-automation/src\\migration_convergence_tests.rs:9:10\n  |\n9 |         .connect(\"sqlite::memory:\")\n  |          ^^^^^^^\n  |\n  = note: Create SQLite pools through codex-state's sqlite shim.",
+      "\nerror: aborting due to 1 previous error; 4 warnings emitted\n\n[5,695 / 6,770] Compiling Rust bin //codex-rs/app-server-protocol:app-server-protocol-unit-tests-bin (58 files); 25s local ... (30 actions, 4 running)\n[5,695 / 6,770] Compiling Rust bin //codex-rs/app-server-protocol:app-server-protocol-unit-tests-bin (58 files); 26s local ... (30 actions, 4 running)\nERROR: D:/a/hepta-private-ci/hepta-private-ci/codex-rs/hepta-memory/BUILD.bazel:3:17: Clippy //codex-rs/hepta-memory:hepta-memory-unit-tests-bin failed: (Exit 1): process_wrapper.exe failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_test rule target //codex-rs/hepta-memory:hepta-memory-unit-tests-bin) \n  cd /d D:/o/execroot/_main\n  SET BAZEL_PACKAGE=codex-rs/hepta-memory",
+      "\nerror: use of a disallowed method `sqlx::pool::PoolOptions::connect`\n  --> hepta-memory/src\\cognitive_schema_tests.rs:10:10\n   |\n10 |         .connect(\"sqlite::memory:\")\n   |          ^^^^^^^\n   |\n   = note: Create SQLite pools through codex-state's sqlite shim.",
+      "\nerror: aborting due to 1 previous error; 8 warnings emitted\n\n[5,696 / 6,770] Compiling Rust bin //codex-rs/app-server-protocol:app-server-protocol-unit-tests-bin (58 files); 27s local ... (30 actions, 4 running)\n[5,697 / 6,770] Compiling Rust bin //codex-rs/app-server-protocol:app-server-protocol-unit-tests-bin (58 files); 28s local ... (30 actions, 4 running)\n[5,699 / 6,770] Compiling Rust bin //codex-rs/app-server-protocol:app-server-protocol-unit-tests-bin (58 files); 29s local ... (30 actions, 4 running)\n[5,700 / 6,770] Compiling Rust bin //codex-rs/app-server-protocol:app-server-protocol-unit-tests-bin (58 files); 30s local ... (30 actions, 4 running)\n[5,700 / 6,770] Compiling Rust bin //codex-rs/app-server-protocol:app-server-protocol-unit-tests-bin (58 files); 34s local ... (30 actions, 5 running)"
+    ]
+  }
+}

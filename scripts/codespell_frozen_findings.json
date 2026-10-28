@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "source_commit": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+  "codespell_version": "2.4.3",
+  "configuration": [
+    {
+      "path": ".codespellrc",
+      "bytes": 346,
+      "sha256": "26a2389b135dc72267c53fd8d94df04d5fe0f66a0dc5ab06b6e4d435eee542bc"
+    },
+    {
+      "path": ".codespellignore",
+      "bytes": 69,
+      "sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275"
+    }
+  ],
+  "absent_configuration": [
+    "setup.cfg",
+    "pyproject.toml"
+  ],
+  "files": [
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/DIRECTIONAL_PROTOCOL.json",
+      "bytes": 7864,
+      "sha256": "3f9cc1e3461b14c2061932e6247f194ddb9779a52a9356c5b18b6d1d8c02a1e3",
+      "findings": [
+        {
+          "line": 78,
+          "token_sha256": "3f7ea14d2aada2b16fcc83005afd73133f04f6e3c9ad18b5e6d621afb5d54d7b",
+          "diagnostic_sha256": "b2c1ac4a57f88feae5a7c2eea8aa62e1a3bbccf5dec9852970d452ad4ffa2af2"
+        },
+        {
+          "line": 102,
+          "token_sha256": "308fa24df8125ca2903f06e87785966f5f1588b88b50d641eba38c432f48df7b",
+          "diagnostic_sha256": "a919840b6643c90e58d84585396370d4b39045c43a184889c1c18df4b77aefec"
+        }
+      ]
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/primary_runtime_tests.py",
+      "bytes": 10178,
+      "sha256": "b8c9539e1996af01795390db367ac2d94bebbf5900af8d89bfca5dcdcb398ac6",
+      "findings": [
+        {
+          "line": 60,
+          "token_sha256": "051603900bc7a27051b385299b0ef6c3dd2da3c6216845df7f501d9e4337cbcd",
+          "diagnostic_sha256": "79072aa9822d4e87b2ca9ded32a2fa731d6a9a3391c06a8359093e4a6837de76"
+        },
+        {
+          "line": 63,
+          "token_sha256": "051603900bc7a27051b385299b0ef6c3dd2da3c6216845df7f501d9e4337cbcd",
+          "diagnostic_sha256": "cf6388880f3f7c69ad423749d8c755be33147c2e0510e86dffeeb8848a3166c7"
+        }
+      ]
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/next_20261025/media/evidence/public-source-retention-after-cache-eviction.json",
+      "bytes": 841,
+      "sha256": "bd418ba0799681a577fe73b67722a6c5c9264f71bf3d0c51d694934e923f9f66",
+      "findings": [
+        {
+          "line": 22,
+          "token_sha256": "2d604f8f1b0218cfd977b6205875f1aec5dd510f99947df685ef6267202999c2",
+          "diagnostic_sha256": "18cd5c30438a79f749802131fb7b7d274b2fc86f6d9f54e7eba943ac840f4a44"
+        }
+      ]
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json",
+      "bytes": 120333,
+      "sha256": "948b5f8915ebb3b961992eb49c4e089980166d7cd2138b024a7e2714f30a0966",
+      "findings": [
+        {
+          "line": 3903,
+          "token_sha256": "81ca6651b490830a554906440a2cf4775413da6483f9b74d5b964f0799812988",
+          "diagnostic_sha256": "8363a878e29fb90c8c9bf0c80f6b1fa2ce1d7762fa4db9d15538b05b4f605af4"
+        },
+        {
+          "line": 4279,
+          "token_sha256": "84c68148b387b7fbe9a168897e8ae00a86fa32a88aa9d4abcaacd5bea1bd5276",
+          "diagnostic_sha256": "5990c5549ce9e93166571ae331f38130c5dcde27c4be077a025bf5b024cb75d0"
+        },
+        {
+          "line": 4900,
+          "token_sha256": "23e031da57fb40c73670d72fb464cf7a23f9e54f917135b1862a59c635cd1f3c",
+          "diagnostic_sha256": "6cc5cfd47eaee60629e7756fc9a63ce71005159320a116bdc13eb93768cd011f"
+        },
+        {
+          "line": 6515,
+          "token_sha256": "974bc5af2eebed82a60ac532cc2b54cb0b57d6c059105400b29c3a8f1a3d7da5",
+          "diagnostic_sha256": "00e0aa024b79f5fbeb6d9aca61d3763b0a07c257e694b3f804ced75063b302e6"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "actual_assets_root": "/workspace/scratch/e8a4dc33549f/assets_v5/original",
+  "admission": false,
+  "base_head": "5b7bef4e5788f2cea2546f0cb620af471b4fbcf7",
+  "candidate_disposition": "REJECTED",
+  "checks": {
+    "exact_historical_raw_identity_checked_for_every_case": true,
+    "exact_old_and_current_full_arrays": true,
+    "fixed_cases": [
+      "unset_before",
+      "default",
+      "avx2",
+      "avx512",
+      "unset_after"
+    ],
+    "frozen_source_files_verified": 64,
+    "input_identities_verified": 25,
+    "model_calls": 0,
+    "old_scientific_gates_unchanged": true,
+    "pure_numpy_tests_passed": 6,
+    "source_registration_enforced": true,
+    "torch_imported": false
+  },
+  "historical_raw_storage_recovered": false,
+  "preflight_note": "An initial input-only check rejected the parent assets_v5 directory; correcting the argument to the existing assets_v5/original passed all identities, before any Torch import or generation.",
+  "raw_upload_attempts": 0,
+  "recorded_utc": "2026-10-28T04:47:31.990438+00:00",
+  "reviewer": "root independent source review after hepta_evidence implementation",
+  "schema": "hepta.field-bridge.v5.historical-dispatch.pre-execution-review.1",
+  "scientific_status": "FAIL",
+  "sources": {
+    "PRE_EXECUTION_INVESTIGATION.json": {
+      "bytes": 19420,
+      "sha256": "a31270cd09468b6604117d03aedf48575b27721b2ad13290c747046e2551af14"
+    },
+    "PROTOCOL.json": {
+      "bytes": 14302,
+      "sha256": "667be947b7929a9fdaf97296f07362266014967fef1832abb424f9a10cb3c23d"
+    },
+    "run.py": {
+      "bytes": 24038,
+      "sha256": "51fc2fbe5552a0921f7f3fc23297581dacd8dcc115a2d85671bdefe9280d72d0"
+    },
+    "tests.py": {
+      "bytes": 4793,
+      "sha256": "83e39701b818bb806ff7174b25bcf7773d8fdaac10767ad76555827c92beda80"
+    }
+  }
+}

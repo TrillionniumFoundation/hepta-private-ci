@@ -1,0 +1,35 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/literal_reanalysis.py", line 301, in child
+    runpy.run_module(PACKAGE + "field_bridge_v5_20261027.audit", run_name="__main__")
+  File "<frozen runpy>", line 229, in run_module
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/e8a4dc33549f/v5_restored/repository/experiments/multimodal_output_portfolio/field_bridge_v5_20261027/audit.py", line 423, in <module>
+    main()
+  File "/workspace/scratch/e8a4dc33549f/v5_restored/repository/experiments/multimodal_output_portfolio/field_bridge_v5_20261027/audit.py", line 413, in main
+    report = audit_run(args.run_root, args.freeze)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/e8a4dc33549f/v5_restored/repository/experiments/multimodal_output_portfolio/field_bridge_v5_20261027/audit.py", line 402, in audit_run
+    "old_ordinary_regression": old_ordinary_regression(root, protocol, endpoints, paths),
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/e8a4dc33549f/v5_restored/repository/experiments/multimodal_output_portfolio/field_bridge_v5_20261027/audit.py", line 324, in old_ordinary_regression
+    require(result["endpoints"][endpoint]["exact"] and result["endpoints"][endpoint]["frozen_exact"],
+  File "/workspace/scratch/e8a4dc33549f/v5_restored/repository/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_common.py", line 25, in require
+    raise ValueError(message)
+ValueError: Ordinary48 historical endpoint regression failed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/literal_reanalysis.py", line 433, in <module>
+    child(*sys.argv[2:])
+  File "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/literal_reanalysis.py", line 313, in child
+    identities = imported_sources(root, manifest, executed)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/literal_reanalysis.py", line 246, in imported_sources
+    modules[name] = bind(resolved)
+                    ^^^^^^^^^^^^^^
+  File "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/literal_reanalysis.py", line 228, in bind
+    require(name in expected and file_hash(path) == expected[name]["sha256"], "Imported source differs: " + name)
+  File "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/literal_reanalysis.py", line 40, in require
+    raise ValueError(message)
+ValueError: Imported source differs: repository/_ops.py

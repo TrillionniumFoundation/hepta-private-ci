@@ -1,0 +1,610 @@
+{
+  "new_scientific_model_calls": 0,
+  "new_v5_endpoint_artifacts_read": 0,
+  "preparation_note": "An initial identity-collection attempt stopped before tests because git show could not materialize a new blob in the partial clone. This receipt uses explicit local-byte versus committed-tree hashes, without changing source or requiring new remote retrieval.",
+  "r45_document_binding": {
+    "algorithm_registry_blob": "156b908d796ed48ae63366cba0966a48ecbfa139",
+    "committed_repository_verification_claimed": false,
+    "document_git_blob": "156b908d796ed48ae63366cba0966a48ecbfa139",
+    "field_is_canonical_truth": false,
+    "field_source_revision": "ICLR-2027/paper-llm-theory@f8df0a6075f58f3ab9431a889b773cdf8d6e771d",
+    "implementation_state": "not_implied",
+    "paper_pin_matches": true,
+    "registry_blob_matches": true,
+    "scientific_theorem_qualification_claimed": false,
+    "worktree_documents": {
+      "docs/learning/ALGORITHM_SPECS.json": {
+        "bytes": 9251,
+        "sha256": "cc62ff5d695ff5f6e12fec7599f63ebbe1e1eda8603a582f452013b1765b4a56"
+      },
+      "docs/learning/LEARNING_SYSTEM.json": {
+        "bytes": 28069,
+        "sha256": "1f53dbbec5071708f982c1837de48bc058a52bdc93116fccf99d3c602a0392cc"
+      },
+      "docs/learning/NDU_FBSDE_SPEC.md": {
+        "bytes": 34055,
+        "sha256": "12e19c60971b645d2827f051cd268305a13b8a786bf6e49a133c407dfe2e4e01"
+      },
+      "qualification/module-execution-dossiers/R45_BINDING_REVIEW.md": {
+        "bytes": 6201,
+        "sha256": "0c74707c0e2ea7c04200c708c52d2a9dc5ef1773f8e28515323162b1d110acca"
+      }
+    }
+  },
+  "recorded_utc": "2026-10-28T01:26:20.937817+00:00",
+  "remote_mutations": 0,
+  "runtime": {
+    "numpy": "2.3.5",
+    "python": "3.12.14",
+    "torch": "2.8.0+cpu"
+  },
+  "schema": "hepta.field-bridge.v5.independent-source-and-contract-verification.1",
+  "scope": "Read-only source identity, synthetic/mathematical contracts, old-fit replay and existing training START records. No new scientific model or V5 endpoint access.",
+  "source_freeze": {
+    "all_matches": true,
+    "checks": [
+      {
+        "git_blob_sha": "308c12395e5c8bfbfb02a69cb936c0cca3477d3c",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_20261027/PROTOCOL.json",
+        "registered_git_blob_sha": "308c12395e5c8bfbfb02a69cb936c0cca3477d3c",
+        "sha256": "614a70f4fced58be5599fc323f61ac6fa22f1fb390887b23b195fafd1ce94c26"
+      },
+      {
+        "git_blob_sha": "69109b3301aaeeac1e03adbac2767cc59df82693",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_20261027/__init__.py",
+        "registered_git_blob_sha": "69109b3301aaeeac1e03adbac2767cc59df82693",
+        "sha256": "bd7dd4dfde2e00c99b998bfd6a1cd822820fbd970fe5bd4d2245a8661aa9053b"
+      },
+      {
+        "git_blob_sha": "9c5e53495629371a66f48f0566256b770b6a2be9",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_20261027/adaptation.py",
+        "registered_git_blob_sha": "9c5e53495629371a66f48f0566256b770b6a2be9",
+        "sha256": "95c2acfe820febb905c11b5057f7817af4d244db1e52adab7744d2c1d931b2d8"
+      },
+      {
+        "git_blob_sha": "f10dff15c62a42f1424d7bb085e4952f347ab298",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_20261027/adapters.py",
+        "registered_git_blob_sha": "f10dff15c62a42f1424d7bb085e4952f347ab298",
+        "sha256": "2818464ba927b8e0ed5c92315a5bf26832672391c1fbbba709d6ed72cdc76b7b"
+      },
+      {
+        "git_blob_sha": "6e8f1ea1cc5f6617da9cbbc1dce0d87c98b0e1bb",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_20261027/analyze.py",
+        "registered_git_blob_sha": "6e8f1ea1cc5f6617da9cbbc1dce0d87c98b0e1bb",
+        "sha256": "7137dfa130f06e4b137b9d72a5ef85d8519c41d3bf43c74b336e5b6eb38b29e6"
+      },
+      {
+        "git_blob_sha": "91684a03fb2bec5511689d71268166f0f5e24344",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_20261027/audit.py",
+        "registered_git_blob_sha": "91684a03fb2bec5511689d71268166f0f5e24344",
+        "sha256": "3bc683cfc22fbbf062d4970ef9b3534fbd766e06f93b37b43a4a965c9ae8c318"
+      },
+      {
+        "git_blob_sha": "dc888bb0ec892fc960395cb0ff9f6061d170d154",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_20261027/controls.py",
+        "registered_git_blob_sha": "dc888bb0ec892fc960395cb0ff9f6061d170d154",
+        "sha256": "6536f597319009a71bc735ba88da7aa46aa8d0933d0bcdd688f264e3a6673fb6"
+      },
+      {
+        "git_blob_sha": "9f84e0695f550937c8b7f550911d2327c52b3cb1",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_20261027/controls_tests.py",
+        "registered_git_blob_sha": "9f84e0695f550937c8b7f550911d2327c52b3cb1",
+        "sha256": "43cb44f43035fcc143de5bb2ff1697ab45f33837ef1c35d0cfb09d5c18b87872"
+      },
+      {
+        "git_blob_sha": "89a3e629832a9e62deb014823f99af6a2960ea7f",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_20261027/native_bridge.py",
+        "registered_git_blob_sha": "89a3e629832a9e62deb014823f99af6a2960ea7f",
+        "sha256": "06644f441810d2b5d9db50b450b8fe9c7f12309cb04255f13d1916298c6391d2"
+      },
+      {
+        "git_blob_sha": "4a3a0a4921a41ceac43776682739acb85720aee1",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_20261027/protocol.py",
+        "registered_git_blob_sha": "4a3a0a4921a41ceac43776682739acb85720aee1",
+        "sha256": "36e131e2f4c6dd4221631813dfe360d185cf532218597218e2791700e8e93911"
+      },
+      {
+        "git_blob_sha": "5dcb3e7098ee8ffd4eac54e290b7a8db6ac72e42",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_20261027/restore_native.py",
+        "registered_git_blob_sha": "5dcb3e7098ee8ffd4eac54e290b7a8db6ac72e42",
+        "sha256": "399d6ef187e1dbfb029b2187607d326fd232281c5379c564b5228081494ddf95"
+      },
+      {
+        "git_blob_sha": "f826dfd6e535cb3f91343d37e5e43cdb81f48239",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_20261027/run.py",
+        "registered_git_blob_sha": "f826dfd6e535cb3f91343d37e5e43cdb81f48239",
+        "sha256": "198aed455cbb01191928c0b5c5642e86fb23194e49d69df1e50bb970eebea2ff"
+      },
+      {
+        "git_blob_sha": "4c7ebcb992777b2774a5697b41be218fb55b5196",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_20261027/scientific_contract_tests.py",
+        "registered_git_blob_sha": "4c7ebcb992777b2774a5697b41be218fb55b5196",
+        "sha256": "a3de34f66d005dc93cd375fe384663d9e7f61942061042bfd4202c2f8ba4c05e"
+      },
+      {
+        "git_blob_sha": "a16c06166ec4ad0a16b0b49e6f27878ccc317df4",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_20261027/task.py",
+        "registered_git_blob_sha": "a16c06166ec4ad0a16b0b49e6f27878ccc317df4",
+        "sha256": "4999eb8220847239db194c8a87bc5353802abc74e685eb9079f872ea8ef7d953"
+      },
+      {
+        "git_blob_sha": "5b3e6fd6989d59f75a0a0a038a79d489181b72da",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/PROTOCOL.json",
+        "registered_git_blob_sha": "5b3e6fd6989d59f75a0a0a038a79d489181b72da",
+        "sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7"
+      },
+      {
+        "git_blob_sha": "3f94b951ac61d29e1606e4ab8a7eab9f2d8a3208",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/SOURCE_ALLOCATION.json",
+        "registered_git_blob_sha": "3f94b951ac61d29e1606e4ab8a7eab9f2d8a3208",
+        "sha256": "068381327c437aa2edfc4c3db204bf836aa87e0d681bd15a4dbde7a119810f48"
+      },
+      {
+        "git_blob_sha": "590d6a27d006382b03dff2b34ae1bc1059aa194a",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/SOURCE_IDENTITIES.json.gz",
+        "registered_git_blob_sha": "590d6a27d006382b03dff2b34ae1bc1059aa194a",
+        "sha256": "8ceec51e530a52b601dfd5ba84fe73da49ae3ed8a37beea06ea5bb78c033fe29"
+      },
+      {
+        "git_blob_sha": "69262d9113498f768c62e2dfae57ac2a50e2171e",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/__init__.py",
+        "registered_git_blob_sha": "69262d9113498f768c62e2dfae57ac2a50e2171e",
+        "sha256": "476928d856b1abac9c21b0f5b491fcfa024e0a352d1e7e16bd947eb7568ae232"
+      },
+      {
+        "git_blob_sha": "39619c546ea3e6faff0583518fad8fa772cf3fff",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/assets.py",
+        "registered_git_blob_sha": "39619c546ea3e6faff0583518fad8fa772cf3fff",
+        "sha256": "ee8851e2b7f18200a58ee2ffe4e555d242886732a50bb6e169f49a46dc0b8e21"
+      },
+      {
+        "git_blob_sha": "97be05ca9b6c3b74597574d7b1d6334beba8c88f",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/evidence/ARCHIVE_RUNTIME_ENVIRONMENT.json",
+        "registered_git_blob_sha": "97be05ca9b6c3b74597574d7b1d6334beba8c88f",
+        "sha256": "9f033bc6d08c3edb97fb39ef68f88a2ff1a5bafe8bdf46a3931fb56f7efa6fd4"
+      },
+      {
+        "git_blob_sha": "665a27ecc86a96b6ca4d38f6972e81b5825c8e31",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/evidence/DEVELOPMENT_SELECTION.json",
+        "registered_git_blob_sha": "665a27ecc86a96b6ca4d38f6972e81b5825c8e31",
+        "sha256": "a7d9604ad2de6f71fa02ad543d02e121fe3071d7eb62a650e0fae7473c8474ef"
+      },
+      {
+        "git_blob_sha": "3fb4ebd1a28fc6239b85b80b9fea4f8623a122b4",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/evidence/development/17/COMPLETE.json",
+        "registered_git_blob_sha": "3fb4ebd1a28fc6239b85b80b9fea4f8623a122b4",
+        "sha256": "bbb60fc1a43c2aca55b9b3210ca017b8b0a80b9390a8edb7240010581e041dbc"
+      },
+      {
+        "git_blob_sha": "72f2735a7828b2c8a8a61cf546de1e84f0e38232",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/evidence/development/17/ENDPOINTS.npz",
+        "registered_git_blob_sha": "72f2735a7828b2c8a8a61cf546de1e84f0e38232",
+        "sha256": "bc708f54093598e302a19f371dc311d12332ac21be2e39d5c1d168bd2b27e4bb"
+      },
+      {
+        "git_blob_sha": "ba122fb4c94bff15ed862adbce88600adb89a79f",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/evidence/development/17/START.json",
+        "registered_git_blob_sha": "ba122fb4c94bff15ed862adbce88600adb89a79f",
+        "sha256": "709fb5107cf1add3208482a3b78f78030bea9f47dcedd4e6c55773afed92855b"
+      },
+      {
+        "git_blob_sha": "c5853343aacf34924ada9bfa90fabca40a68ade2",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/evidence/development/29/COMPLETE.json",
+        "registered_git_blob_sha": "c5853343aacf34924ada9bfa90fabca40a68ade2",
+        "sha256": "f6791ee1031359abb318500ce800fa6b5b25a4219467ee7d0e1ce600490e794a"
+      },
+      {
+        "git_blob_sha": "dd2b148c8d14d5a36b82104c1e3233005e192b50",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/evidence/development/29/ENDPOINTS.npz",
+        "registered_git_blob_sha": "dd2b148c8d14d5a36b82104c1e3233005e192b50",
+        "sha256": "751851494f31fd03094e72491286531a3f878351e9a84394fe11ad35d9c9661c"
+      },
+      {
+        "git_blob_sha": "16e572de48e0599d6018cf8ab6c846c6785a9603",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/evidence/development/29/START.json",
+        "registered_git_blob_sha": "16e572de48e0599d6018cf8ab6c846c6785a9603",
+        "sha256": "7f434a482265a6e8b13cd0fac4d26a66c75687fa50c74fcded014c63e9448ef8"
+      },
+      {
+        "git_blob_sha": "2258fb01d04362dbd3537e24e23e1923aecf0409",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/evidence/development/43/COMPLETE.json",
+        "registered_git_blob_sha": "2258fb01d04362dbd3537e24e23e1923aecf0409",
+        "sha256": "7caa8205436105b042ae3748f5f668c8adf3a747e7aca174a380d96e2c0c4788"
+      },
+      {
+        "git_blob_sha": "3b1400aa0508f89fe31e034aadba39d9b8e5c1af",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/evidence/development/43/ENDPOINTS.npz",
+        "registered_git_blob_sha": "3b1400aa0508f89fe31e034aadba39d9b8e5c1af",
+        "sha256": "861b740183f8e320544e926a42ff6a18b5283be2c629e3e75c8af7bb5d9ebb67"
+      },
+      {
+        "git_blob_sha": "cdb7bb926b4df5acc572d086cbea15158bbc5517",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/evidence/development/43/START.json",
+        "registered_git_blob_sha": "cdb7bb926b4df5acc572d086cbea15158bbc5517",
+        "sha256": "e229f842375cf4f1831656c52e733a5b4ca69a291a8eb0e61ddae689a4524eac"
+      },
+      {
+        "git_blob_sha": "4ec2053af66b4a3338deb6b0be6680e8fac14c09",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/evidence/training_bank/17/BANK.json",
+        "registered_git_blob_sha": "4ec2053af66b4a3338deb6b0be6680e8fac14c09",
+        "sha256": "c85d2253b3ccbf05b1a4f3e5da57cf012549a57bf1aaf6b5706784fa35d96a8f"
+      },
+      {
+        "git_blob_sha": "e0e40550194474077e302698aede6076e019c08d",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/evidence/training_bank/29/BANK.json",
+        "registered_git_blob_sha": "e0e40550194474077e302698aede6076e019c08d",
+        "sha256": "8ee6976dacb3ffdd0271b43c3c125b06d1221d39c729fd1fa3268cd9bec2ef57"
+      },
+      {
+        "git_blob_sha": "0675c9ac9d90be7eb096452b4ca00933ebcf44ea",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/evidence/training_bank/43/BANK.json",
+        "registered_git_blob_sha": "0675c9ac9d90be7eb096452b4ca00933ebcf44ea",
+        "sha256": "f87666fc1b15505b43d686257050c9b821366da26bd98b139fd642075e3e1445"
+      },
+      {
+        "git_blob_sha": "20cae1ec3d1ca13e3d2065b2960304dae3f68a6b",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/evidence/training_fit/17/CONTROLLERS.json.gz",
+        "registered_git_blob_sha": "20cae1ec3d1ca13e3d2065b2960304dae3f68a6b",
+        "sha256": "aafd7eb9d484b28603246e81ad3a103cec4bdbe969eb4cbea9a6dae0c30e1600"
+      },
+      {
+        "git_blob_sha": "d06bb131650340b5f8bd5be39ecf4f3e9865c919",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/evidence/training_fit/29/CONTROLLERS.json.gz",
+        "registered_git_blob_sha": "d06bb131650340b5f8bd5be39ecf4f3e9865c919",
+        "sha256": "3f6c0768ee0530e2b92dde197780bacaffac050bceb707d7f7800d1c88ea40c7"
+      },
+      {
+        "git_blob_sha": "0cf1a547e699b3d6e30f35b335a1b36d9c5475af",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/evidence/training_fit/43/CONTROLLERS.json.gz",
+        "registered_git_blob_sha": "0cf1a547e699b3d6e30f35b335a1b36d9c5475af",
+        "sha256": "44a97167a85d4b964b099c1c0e9b63f89985842d3542bbcb1e6152e2a289b0aa"
+      },
+      {
+        "git_blob_sha": "8c1aa05d0e09729c0ab4b1c34e1369602f895580",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/learning.py",
+        "registered_git_blob_sha": "8c1aa05d0e09729c0ab4b1c34e1369602f895580",
+        "sha256": "97c3baabe208fd8d5e8ac9beb5ae4a244b3c8d6aac565e727fd64eed8c1371b7"
+      },
+      {
+        "git_blob_sha": "866c1f527f514e407313dd2ce65dd314dc0f628e",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/source_roles.py",
+        "registered_git_blob_sha": "866c1f527f514e407313dd2ce65dd314dc0f628e",
+        "sha256": "0bf34863b1c6f43423484d115acb590bc6ea515c12c30a105e6e45c41f9a97cb"
+      },
+      {
+        "git_blob_sha": "6a24d17d8e22b9aa3673586ff37bc1db2800bd73",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/training_bank.py",
+        "registered_git_blob_sha": "6a24d17d8e22b9aa3673586ff37bc1db2800bd73",
+        "sha256": "9e6bb320ccaf087120a5cded8e2110478b87a4073febbb8bb999f2853073d7f1"
+      },
+      {
+        "git_blob_sha": "b1da53a9762a6795e4d6dd4f922f029e929fcb21",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/training_common.py",
+        "registered_git_blob_sha": "b1da53a9762a6795e4d6dd4f922f029e929fcb21",
+        "sha256": "e686e59dd34a0d8f2a31b192c1f47c59fd86cbc22fe42d60d821c4474db56591"
+      },
+      {
+        "git_blob_sha": "07556e6318e921ba5844aa6117b38e94efc98571",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/training_features.py",
+        "registered_git_blob_sha": "07556e6318e921ba5844aa6117b38e94efc98571",
+        "sha256": "8e3dfee7a0a77e74c16b459f8e15a0cad1cfa999a4187e975178bb2d2f0cd2a9"
+      },
+      {
+        "git_blob_sha": "620fafebcdcd6eda023eb05bc97f123b770cae24",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/training_policy.py",
+        "registered_git_blob_sha": "620fafebcdcd6eda023eb05bc97f123b770cae24",
+        "sha256": "824095a842ec6d4ab11ea560a5e763ce3d6cc524a92d4801b547d0f67b2451e4"
+      },
+      {
+        "git_blob_sha": "b4d7178842a16d524bd912cd12a1bf5e2b9efaa9",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/training_run.py",
+        "registered_git_blob_sha": "b4d7178842a16d524bd912cd12a1bf5e2b9efaa9",
+        "sha256": "a44e2069b2333bf5ac0e082c12f75360e96847b1d2b58bf311fc8dacc3c2c18d"
+      },
+      {
+        "git_blob_sha": "fbfbb25693a14de15e2e3f9438767b1f37d85ad8",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v3_20261027/training_stages.py",
+        "registered_git_blob_sha": "fbfbb25693a14de15e2e3f9438767b1f37d85ad8",
+        "sha256": "ed3fcc45531fe2fdb7ea6033ee7067a8e5221e52a69ec3abf1a23e1f65d2f2ef"
+      },
+      {
+        "git_blob_sha": "6fb1f03b82cf74796b12f88812c6e3c46771029f",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v4_20261027_review/training_panel_origin.py",
+        "registered_git_blob_sha": "6fb1f03b82cf74796b12f88812c6e3c46771029f",
+        "sha256": "70ea67fa66ae24c36920749a61e9da646990da7c5c8fb40803392d79d164ff98"
+      },
+      {
+        "git_blob_sha": "66d8c22fe0b8a06a0641dbbeba37e84515fb407f",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v5_20261027/PROTOCOL.json",
+        "registered_git_blob_sha": "66d8c22fe0b8a06a0641dbbeba37e84515fb407f",
+        "sha256": "0cd30fe8ea8bb872f118ea88f7ed7b3c237e26a4074524ec64aaa10787425fb1"
+      },
+      {
+        "git_blob_sha": "23a0f8cdaff383153482292f9c7452c8b0808442",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v5_20261027/__init__.py",
+        "registered_git_blob_sha": "23a0f8cdaff383153482292f9c7452c8b0808442",
+        "sha256": "c1c2fd4d0d1159279e9f9f205f00b44ac90f1b00fb800b54b4ed582bec34085a"
+      },
+      {
+        "git_blob_sha": "e4f73f70697b6fce292236b6c14c9294fc11ece3",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v5_20261027/audit.py",
+        "registered_git_blob_sha": "e4f73f70697b6fce292236b6c14c9294fc11ece3",
+        "sha256": "0320c40e7890e893d090d19b0601861868950be28a89d240a7f4ae8fa8ad3c46"
+      },
+      {
+        "git_blob_sha": "50a9c10fb59f69d76330248fd1fb01381e6e9c72",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v5_20261027/audit_tests.py",
+        "registered_git_blob_sha": "50a9c10fb59f69d76330248fd1fb01381e6e9c72",
+        "sha256": "3bb62a0ff359cf257479ae9fdfeff1789d3e21f60debe1db166cf7063d74efb8"
+      },
+      {
+        "git_blob_sha": "d823f69ede4e2d9b8612ab232bbb82926966af0e",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v5_20261027/calibration.py",
+        "registered_git_blob_sha": "d823f69ede4e2d9b8612ab232bbb82926966af0e",
+        "sha256": "873c4d3eb8dcc33bae085b74e18ad97cc23ec912765ab8bd42083e1ccbb5913e"
+      },
+      {
+        "git_blob_sha": "6bfc0473de61df018971b17c1aed6e3f93a52d8d",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v5_20261027/calibration_tests.py",
+        "registered_git_blob_sha": "6bfc0473de61df018971b17c1aed6e3f93a52d8d",
+        "sha256": "c3a69f5fe39717e5fa41ae40deb050fb3286a323944be2feb9ad72e361058179"
+      },
+      {
+        "git_blob_sha": "1074029e22b2c70071d92b6e3c00fb49a9742705",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v5_20261027/evidence/CALIBRATION.json",
+        "registered_git_blob_sha": "1074029e22b2c70071d92b6e3c00fb49a9742705",
+        "sha256": "69200af8b0654e2db608196c19498faeec7a8f9b0e92aa2eee87de11a6a9f334"
+      },
+      {
+        "git_blob_sha": "7339b54fb274e7492d93261dea6026fcc9c5ffcf",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v5_20261027/evidence/RESTORATION.json",
+        "registered_git_blob_sha": "7339b54fb274e7492d93261dea6026fcc9c5ffcf",
+        "sha256": "9210fef9364d5711b824c9561c0bc2318f1983eee69ea9916841bc4f0de97323"
+      },
+      {
+        "git_blob_sha": "18192f116c5900175067aac372788eb6b4e78d6f",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v5_20261027/policy_improvement_tests.py",
+        "registered_git_blob_sha": "18192f116c5900175067aac372788eb6b4e78d6f",
+        "sha256": "b52c97c2f40b05a3daeeb055495d9f3192cb4079bbc3b163c9f4621214a601f3"
+      },
+      {
+        "git_blob_sha": "b2e27c491eb6e1538fcbe9cacf509d811e974e51",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v5_20261027/records.py",
+        "registered_git_blob_sha": "b2e27c491eb6e1538fcbe9cacf509d811e974e51",
+        "sha256": "5ddbee95298156c6162f223a0d703d784622246a1867cf37e48aa42ff4c63e98"
+      },
+      {
+        "git_blob_sha": "5b63b5cccc0c4fed1bf98534884a5b4caddf1910",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v5_20261027/records_tests.py",
+        "registered_git_blob_sha": "5b63b5cccc0c4fed1bf98534884a5b4caddf1910",
+        "sha256": "046aecdf064c62e539de867093e02b4cebcfc65fc77c3e57149c2bd0d6ad74b2"
+      },
+      {
+        "git_blob_sha": "e9c78ef97fe8ff20ef33f4afab7f9f25e100491d",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v5_20261027/run.py",
+        "registered_git_blob_sha": "e9c78ef97fe8ff20ef33f4afab7f9f25e100491d",
+        "sha256": "27fccaba69af2ab4132d0231d7e27e27f84da083f72bb2b43170ebfe9ea331c8"
+      },
+      {
+        "git_blob_sha": "a1f9d57e358b09dc93a3fb4d88492e4f5d94a495",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v5_20261027/transactions.py",
+        "registered_git_blob_sha": "a1f9d57e358b09dc93a3fb4d88492e4f5d94a495",
+        "sha256": "6546016cc42cb21eb3679ec11dea562e9816da427a3332ce9ab5067f3afe96e3"
+      },
+      {
+        "git_blob_sha": "ada1af2fd90b72b2282375eeb1d24593e8d3ba6a",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "field_bridge_v5_20261027/transactions_tests.py",
+        "registered_git_blob_sha": "ada1af2fd90b72b2282375eeb1d24593e8d3ba6a",
+        "sha256": "25479c6b54cc6390b34044b4317614ed9a48db122b2f746d9ff62b4307ec02b1"
+      },
+      {
+        "git_blob_sha": "98e0448cec61ae2792fd7babd265a05c241daf98",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "v6/conditioned.py",
+        "registered_git_blob_sha": "98e0448cec61ae2792fd7babd265a05c241daf98",
+        "sha256": "ccb5f9a78e58d6f1d1511a95f50de3602e1f39e7254fce5566e97a994d5b4cba"
+      },
+      {
+        "git_blob_sha": "6ea525722249b1a998dad18a367bfdd2c25f090d",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "v6/data.py",
+        "registered_git_blob_sha": "6ea525722249b1a998dad18a367bfdd2c25f090d",
+        "sha256": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29"
+      },
+      {
+        "git_blob_sha": "840918e1b211608507f928a2dd794afa986e9963",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "v6/neural.py",
+        "registered_git_blob_sha": "840918e1b211608507f928a2dd794afa986e9963",
+        "sha256": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742"
+      },
+      {
+        "git_blob_sha": "9ab280a340de0062261a088811cb1a0203d05164",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "v6/observer.py",
+        "registered_git_blob_sha": "9ab280a340de0062261a088811cb1a0203d05164",
+        "sha256": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e"
+      },
+      {
+        "git_blob_sha": "06fb8f13ef2169428e27657987f09892beee729b",
+        "matches_freeze": true,
+        "matches_registered_git_tree": true,
+        "path": "v6/plan_training.py",
+        "registered_git_blob_sha": "06fb8f13ef2169428e27657987f09892beee729b",
+        "sha256": "b43ff714960139d4b58d02dec86b69d27ac51d5abfd75509936ee2c5c355997b"
+      }
+    ],
+    "files_checked": 64,
+    "git_comparison_method": "Recompute Git blob SHA1 from each local file and compare with the registered committed tree; recompute SHA256 against freeze. New blobs need not be materialized in the partial clone object database.",
+    "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027/SOURCE_FREEZE.json",
+    "registered_commit": "f49810e422892a76c1d37c19c5b4d5112cba6d9e",
+    "registered_tree": "4abf70bbfe359f78cf4d42b550d6493e172a0764",
+    "sha256": "f86ef86edc02d81d2c68476c5742b332582cfb8a2096f6514dcdc616cdb64ab8"
+  },
+  "tests": {
+    "captured_stdout": "",
+    "errors": 0,
+    "failures": 0,
+    "modules": [
+      "experiments.multimodal_output_portfolio.field_bridge_v5_20261027.calibration_tests",
+      "experiments.multimodal_output_portfolio.field_bridge_v5_20261027.policy_improvement_tests",
+      "experiments.multimodal_output_portfolio.field_bridge_v5_20261027.transactions_tests",
+      "experiments.multimodal_output_portfolio.field_bridge_v5_20261027.records_tests",
+      "experiments.multimodal_output_portfolio.field_bridge_v5_20261027.audit_tests"
+    ],
+    "passed": true,
+    "runner_output": "test_common_prediction_offset_preserves_decision (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.calibration_tests.GateTests.test_common_prediction_offset_preserves_decision) ... ok\ntest_invalid_inputs_rejected (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.calibration_tests.GateTests.test_invalid_inputs_rejected) ... ok\ntest_strict_threshold_equality_and_ties_keep_baseline (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.calibration_tests.GateTests.test_strict_threshold_equality_and_ties_keep_baseline) ... ok\ntest_baseline_differs_from_seed17_label_continuation (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.calibration_tests.SavedEvidenceTests.test_baseline_differs_from_seed17_label_continuation) ... ok\ntest_batch_single_and_receipt_prediction_agree (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.calibration_tests.SavedEvidenceTests.test_batch_single_and_receipt_prediction_agree) ... ok\ntest_import_and_calibration_need_no_torch (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.calibration_tests.SavedEvidenceTests.test_import_and_calibration_need_no_torch) ... ok\ntest_real_saved_folds_replay_and_shared_tau_is_pooled_residual_max (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.calibration_tests.SavedEvidenceTests.test_real_saved_folds_replay_and_shared_tau_is_pooled_residual_max) ... ok\ntest_saved_prediction_tamper_and_trajectory_leakage_rejected (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.calibration_tests.SavedEvidenceTests.test_saved_prediction_tamper_and_trajectory_leakage_rejected) ... ok\ntest_approximate_greedy_has_accumulated_error_bound (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.policy_improvement_tests.PolicyImprovementContracts.test_approximate_greedy_has_accumulated_error_bound) ... ok\ntest_exact_reference_greedy_improves_without_equal_deployed_q (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.policy_improvement_tests.PolicyImprovementContracts.test_exact_reference_greedy_improves_without_equal_deployed_q) ... ok\ntest_gate_respects_feasibility_and_rejects_invalid_error_budgets (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.policy_improvement_tests.PolicyImprovementContracts.test_gate_respects_feasibility_and_rejects_invalid_error_budgets) ... ok\ntest_hidden_state_alias_changes_occupancy_and_breaks_improvement (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.policy_improvement_tests.PolicyImprovementContracts.test_hidden_state_alias_changes_occupancy_and_breaks_improvement) ... ok\ntest_ignoring_guard_can_reverse_an_exact_model_recommendation (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.policy_improvement_tests.PolicyImprovementContracts.test_ignoring_guard_can_reverse_an_exact_model_recommendation) ... ok\ntest_interval_gate_and_performance_difference_on_new_occupancy (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.policy_improvement_tests.PolicyImprovementContracts.test_interval_gate_and_performance_difference_on_new_occupancy) ... ok\ntest_mismatched_tail_can_lose_to_fallback_even_with_exact_q (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.policy_improvement_tests.PolicyImprovementContracts.test_mismatched_tail_can_lose_to_fallback_even_with_exact_q) ... ok\ntest_one_exact_tail_and_zero_old_residual_are_not_expected_q_bounds (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.policy_improvement_tests.PolicyImprovementContracts.test_one_exact_tail_and_zero_old_residual_are_not_expected_q_bounds) ... ok\ntest_accept_prefix_reject_current_slice_and_consume_the_same_marks (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.transactions_tests.GuardTransactionContracts.test_accept_prefix_reject_current_slice_and_consume_the_same_marks) ... ok\ntest_all_rejections_preserve_entry_state_without_refunding_work (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.transactions_tests.GuardTransactionContracts.test_all_rejections_preserve_entry_state_without_refunding_work) ... ok\ntest_exception_restores_active_slice_and_aborts_after_charged_partial_work (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.transactions_tests.GuardTransactionContracts.test_exception_restores_active_slice_and_aborts_after_charged_partial_work) ... ok\ntest_guard48_delegates_to_the_original_transaction_with_identical_arguments (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.transactions_tests.GuardTransactionContracts.test_guard48_delegates_to_the_original_transaction_with_identical_arguments) ... ok\ntest_guard48_exception_preserves_delegate_rollback_and_attempted_costs (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.transactions_tests.GuardTransactionContracts.test_guard48_exception_preserves_delegate_rollback_and_attempted_costs) ... ok\ntest_zero_action_consumes_gradients_and_guards_but_not_optimizer_steps (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.transactions_tests.GuardTransactionContracts.test_zero_action_consumes_gradients_and_guards_but_not_optimizer_steps) ... ok\ntest_chain_binds_order_and_record_contents (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.records_tests.RecordContracts.test_chain_binds_order_and_record_contents) ... ok\ntest_exact_inventory_and_bytes_reject_unsealed_outputs (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.records_tests.RecordContracts.test_exact_inventory_and_bytes_reject_unsealed_outputs) ... ok\ntest_seal_rejects_failure_and_another_study (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.records_tests.RecordContracts.test_seal_rejects_failure_and_another_study) ... ok\ntest_complete_trace_grain_48 (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.audit_tests.CompletePathTests.test_complete_trace_grain_48) ... ok\ntest_complete_trace_grain_8 (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.audit_tests.CompletePathTests.test_complete_trace_grain_8) ... ok\ntest_reject_backward_counter_loss_despite_balanced_summary (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.audit_tests.CompletePathTests.test_reject_backward_counter_loss_despite_balanced_summary) ... ok\ntest_reject_incomplete_rollback_despite_valid_hash_chain (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.audit_tests.CompletePathTests.test_reject_incomplete_rollback_despite_valid_hash_chain) ... ok\ntest_gate_does_not_authorize_holdout (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.audit_tests.DevelopmentGateTests.test_gate_does_not_authorize_holdout) ... ok\ntest_one_seed_observer_failure_rejected (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.audit_tests.DevelopmentGateTests.test_one_seed_observer_failure_rejected) ... ok\ntest_protocol_gate_positive_fixture (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.audit_tests.DevelopmentGateTests.test_protocol_gate_positive_fixture) ... ok\ntest_hard_bytes_and_pairing_verified (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.audit_tests.HardOutputTests.test_hard_bytes_and_pairing_verified) ... ok\ntest_unpaired_endpoint_rejected (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.audit_tests.HardOutputTests.test_unpaired_endpoint_rejected) ... ok\ntest_real_journal_chain_compatible (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.audit_tests.TraceAndSealTests.test_real_journal_chain_compatible) ... ok\ntest_real_stage_seal_compatible (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.audit_tests.TraceAndSealTests.test_real_stage_seal_compatible) ... ok\ntest_tampered_record_rejected (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.audit_tests.TraceAndSealTests.test_tampered_record_rejected) ... ok\ntest_unsealed_extra_rejected (experiments.multimodal_output_portfolio.field_bridge_v5_20261027.audit_tests.TraceAndSealTests.test_unsealed_extra_rejected) ... ok\n\n----------------------------------------------------------------------\nRan 38 tests in 0.467s\n\nOK\n",
+    "skipped": 0,
+    "started_unix_ns": 1793150780468871587,
+    "tests_run": 38,
+    "wall_ns": 467488884
+  },
+  "training_start_bindings": {
+    "17": {
+      "path": "/workspace/scratch/e8a4dc33549f/v5_run/train/17/START.json",
+      "registration_precedes_start": true,
+      "sha256": "def2651580dd9f2255fbe96e41396b2fa1fd919737ac9a3423bc1b6f5e64fccc",
+      "source_freeze_matches": true,
+      "started_unix_ns": 1793150602293547867,
+      "study_id": "hepta.field-bridge.v5.baseline-gate-transaction.20261027.1"
+    },
+    "29": {
+      "path": "/workspace/scratch/e8a4dc33549f/v5_run/train/29/START.json",
+      "registration_precedes_start": true,
+      "sha256": "faccb0326f3928cb70e96127811535a12eedd4051076a5725f329ff25c4ee5d7",
+      "source_freeze_matches": true,
+      "started_unix_ns": 1793150602467312359,
+      "study_id": "hepta.field-bridge.v5.baseline-gate-transaction.20261027.1"
+    },
+    "43": {
+      "path": "/workspace/scratch/e8a4dc33549f/v5_run/train/43/START.json",
+      "registration_precedes_start": true,
+      "sha256": "e4e856ccf55fef89fbcdd16fd8f892f5e50306c735fc0728f4aac5a213722ee9",
+      "source_freeze_matches": true,
+      "started_unix_ns": 1793150602289526839,
+      "study_id": "hepta.field-bridge.v5.baseline-gate-transaction.20261027.1"
+    }
+  }
+}

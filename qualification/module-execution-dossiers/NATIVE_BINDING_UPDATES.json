@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.native-source-observation-updates.v1",
+  "schemaVersion": 1,
+  "sourceSnapshot": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+  "sourceTree": "9042b5b687000b49023e275e4beee8ad66b1fe82",
+  "sourceSnapshotRole": "historical_observation_only",
+  "evidenceClass": "source_observation_only",
+  "consumerCallsitesProved": false,
+  "productExecutionProved": false,
+  "interpretation": "Explicit later source observations supersede only the matched historical row for current source checks. Original NATIVE_BINDINGS.json and NATIVE_BINDINGS_LANE_A.json remain unchanged. The verifier checks this pinned source, then independently binds the registered symbols and module ownership to actual committed HEAD bytes. This does not prove consumer execution, activation, independent acceptance, promotion or release.",
+  "reason": "runtime.codex replaced the unbound AppServerObservation/adapt surface with exact connection-bound observations. Current implementation profiles already register adapt_request and adapt_observed_event. The original source snapshot is retained as a historical observation, not edited to assert these later APIs existed there.",
+  "observations": [
+    {
+      "module": "runtime.codex",
+      "path": "codex-rs/hepta-codex-adapter/src/lib.rs",
+      "blobSha": "521526bebf785104d714432cbf9613e71b233afc",
+      "exports": [
+        "AppServerRequestBinding",
+        "CodexOperationIntent",
+        "CodexAdapterReceipt",
+        "RemoteAppServerObservedEvent",
+        "adapt_request",
+        "adapt_observed_event",
+        "adapt_observed_server_rejection",
+        "adapt_observed_thread_read_reconciliation"
+      ],
+      "supersedes": {
+        "module": "runtime.codex",
+        "path": "codex-rs/hepta-codex-adapter/src/lib.rs",
+        "blobSha": "c81c3ec10dd11a85ed28cf71207ff0f973329c17",
+        "exports": [
+          "CodexOperationIntent",
+          "AppServerObservation",
+          "CodexAdapterReceipt",
+          "adapt"
+        ]
+      }
+    }
+  ]
+}

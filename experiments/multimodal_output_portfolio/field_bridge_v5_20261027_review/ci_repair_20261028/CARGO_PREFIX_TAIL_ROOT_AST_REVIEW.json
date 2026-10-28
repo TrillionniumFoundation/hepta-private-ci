@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "independent_root_static_ast_review",
+  "at_utc": "2026-10-28T06:09:52.328949+00:00",
+  "input_review_sha256": "6aa995c539f8a74cfdbe4c61413cb8575de721806324ce5e8f2714c8725575db",
+  "method": "Independently read both reconstructed preformat files and current repository files; require both SHA256 identities, parse Python AST without execution, and compare ast.dump with include_attributes=False.",
+  "tests_executed": false,
+  "twelve_test_pass_binding": "preformat_source_only",
+  "scope_limit": "AST equivalence excludes location attributes and does not assert byte identity or actual postformat test execution. Runtime source self-hashes and diagnostic locations can change.",
+  "files": [
+    {
+      "path": "scripts/capture_cargo_deny_diagnostic.py",
+      "preformat_sha256": "47567d7b8e8248eb98fc7f0fd988b33f4c0d29dadf8278ae6746e6ef4f7386a5",
+      "postformat_sha256": "c040903cab7a58bcab1c690958555ace26a33c7ce41290d92216b5b68684e34f",
+      "ast_sha256": "236feb0e6f6139fa0f831619ab787421b0c484416316e398fb6e6fcbb9102ac5",
+      "exact_ast_match_excluding_locations": true
+    },
+    {
+      "path": "scripts/test_capture_cargo_deny_diagnostic.py",
+      "preformat_sha256": "045bfaadf5f2e785ff625c76ec8bd3f6cfdbdff56c0c077b2f672255318f1bf0",
+      "postformat_sha256": "7f811178e2e6dbeba2c0c59b0ba54bfece13a4bab2682a2485ce8411e817792b",
+      "ast_sha256": "8c3e195c9b15e026e5f4f1734c3c3354db4ccda0cfbfbe986db8427c1c63e9ed",
+      "exact_ast_match_excluding_locations": true
+    }
+  ]
+}

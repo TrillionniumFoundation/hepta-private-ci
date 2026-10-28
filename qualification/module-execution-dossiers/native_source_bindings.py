@@ -51,6 +51,66 @@ def identifiers(path: Path, data: bytes) -> set[str]:
     return set(re.findall(r"\b[A-Za-z_]\w*\b", source))
 
 
+def apply_observation_updates(
+    root: Path, rows: list[dict[str, Any]], updates: dict[str, Any]
+) -> list[dict[str, Any]]:
+    """Apply explicit pinned observations while retaining the earlier manifest."""
+    source, tree = updates.get("sourceSnapshot"), updates.get("sourceTree")
+    additions = updates.get("observations")
+    if (
+        updates.get("schema") != "hepta.native-source-observation-updates.v1"
+        or type(updates.get("schemaVersion")) is not int
+        or updates["schemaVersion"] != 1
+        or updates.get("evidenceClass") != "source_observation_only"
+        or updates.get("consumerCallsitesProved") is not False
+        or updates.get("productExecutionProved") is not False
+        or not isinstance(source, str)
+        or re.fullmatch(r"[0-9a-f]{40}", source) is None
+        or not isinstance(tree, str)
+        or re.fullmatch(r"[0-9a-f]{40}", tree) is None
+        or not isinstance(additions, list)
+        or not 1 <= len(additions) <= len(rows)
+    ):
+        raise BindingError("invalid native observation update document")
+    if git(root, "rev-parse", source + "^{tree}").decode().strip() != tree:
+        raise BindingError("native observation update source tree mismatch")
+    original = {row["module"]: row for row in rows}
+    replacements = {}
+    for update in additions:
+        if not isinstance(update, dict) or set(update) != {
+            "module",
+            "path",
+            "blobSha",
+            "exports",
+            "supersedes",
+        }:
+            raise BindingError("invalid native observation update row")
+        module = update["module"]
+        if (
+            not isinstance(module, str)
+            or module not in original
+            or module in replacements
+            or update["supersedes"] != original[module]
+            or update["path"] != original[module]["path"]
+        ):
+            raise BindingError("native observation update history mismatch")
+        symbols = update["exports"]
+        if (
+            not isinstance(symbols, list)
+            or not symbols
+            or any(not isinstance(s, str) or not s.isidentifier() for s in symbols)
+            or len(set(symbols)) != len(symbols)
+        ):
+            raise BindingError("invalid native observation update symbols")
+        pinned = git(root, "show", source + ":" + update["path"])
+        if git_blob(pinned) != update["blobSha"] or set(symbols) - identifiers(
+            Path(update["path"]), pinned
+        ):
+            raise BindingError("native observation update source mismatch")
+        replacements[module] = {key: update[key] for key in original[module]}
+    return [replacements.get(row["module"], row) for row in rows]
+
+
 def observe_native_bindings(
     root: Path, rows: list[dict[str, Any]], expected_modules: list[str]
 ) -> dict[str, Any]:

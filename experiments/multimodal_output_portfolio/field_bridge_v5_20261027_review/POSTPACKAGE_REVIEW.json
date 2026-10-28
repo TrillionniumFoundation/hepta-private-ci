@@ -1,0 +1,222 @@
+{
+  "admission": false,
+  "archive": {
+    "bytes": 239369112,
+    "path": "/workspace/scratch/e8a4dc33549f/v5_archive/hepta_field_bridge_v5_20261027_evidence.tar.gz",
+    "sha256": "58b00c94da32eec4565e49e66a72d98c38f619c6dd2baeeb8a4318a7984fcdc2"
+  },
+  "build_receipt": {
+    "bytes": 18039,
+    "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/postpackage/BUILD_RECEIPT.json",
+    "sha256": "2c8dc6f94b0997c1b86d2402300ee7266d40012bd6d2a8f75c3391cc406a5526"
+  },
+  "candidate_status": "REJECTED",
+  "child_source_and_receipt_checks": [
+    {
+      "exception": {
+        "message": "Ordinary48 historical endpoint regression failed",
+        "type": "ValueError"
+      },
+      "executed_repository_sources": 6,
+      "exit_code": 1,
+      "external_runtime_modules": 957,
+      "import_receipt": {
+        "bytes": 6264,
+        "path": "/workspace/scratch/e8a4dc33549f/v5_literal_reanalysis_retry1/RESTORED_FROZEN_AUDIT_IMPORTS.json",
+        "sha256": "859d2c007668ff6a8a9121d66af8bd13c832645832407f35fb94f77788b24827"
+      },
+      "manifest_bound_repository_sources": 6,
+      "mode": "frozen",
+      "output": {
+        "bytes": 213,
+        "path": "/workspace/scratch/e8a4dc33549f/v5_literal_reanalysis_retry1/RESTORED_FROZEN_AUDIT.json",
+        "sha256": "35af3341f3fc283c41beda469e5c9ff2531f7bf01d537cb4dcc9c4a7fd6b42df"
+      },
+      "sources_and_paths_independently_verified": true
+    },
+    {
+      "exception": null,
+      "executed_repository_sources": 9,
+      "exit_code": 0,
+      "external_runtime_modules": 957,
+      "import_receipt": {
+        "bytes": 8069,
+        "path": "/workspace/scratch/e8a4dc33549f/v5_literal_reanalysis_retry1/RESTORED_WITHIN_RUN_AUDIT_IMPORTS.json",
+        "sha256": "33472f4853fa52ba9d33688add8ed59239e1188cef0a370015e37d5f77c1fb76"
+      },
+      "manifest_bound_repository_sources": 9,
+      "mode": "diagnostic",
+      "output": {
+        "bytes": 286248,
+        "path": "/workspace/scratch/e8a4dc33549f/v5_literal_reanalysis_retry1/RESTORED_WITHIN_RUN_AUDIT.json",
+        "sha256": "1db1edabe3cf6dedce8a3b35a156788e308579d4dc2fcd693cf90a14b6c35bda"
+      },
+      "sources_and_paths_independently_verified": true
+    }
+  ],
+  "diagnostic_exact_comparison": {
+    "archived_normalized_sha256": "bc65d6f91c9c33d3fab9df55139b1402b0cd459b57fca4574b099b10badbd2df",
+    "descriptive_comparisons": 7,
+    "exact": true,
+    "included": "Every nonexcluded field, including all 72 path records, seven comparisons, resources, phase/source/protocol identities and development/admission decisions.",
+    "independently_recomputed": true,
+    "numeric_tolerance": null,
+    "paths": 72,
+    "removed_top_level_keys_only": [
+      "diagnostic_cpu_ns",
+      "diagnostic_wall_ns",
+      "source_registration"
+    ],
+    "restored_normalized_sha256": "bc65d6f91c9c33d3fab9df55139b1402b0cd459b57fca4574b099b10badbd2df"
+  },
+  "durable_raw_custody_status": "approval_blocked",
+  "existing_full_validation": {
+    "all_inner_gzip_crc_verified": true,
+    "exception_allowlist": [],
+    "inner_gzip_members_verified": 80,
+    "outer_gzip_crc_to_physical_eof": true,
+    "review_scope": "These full-stream and ZIP CRC checks are bound existing executions, not repeated by this reviewer.",
+    "strict_restore_passed": true,
+    "unsafe_duplicate_nonregular_members": 0,
+    "zip_crc_files": 233,
+    "zip_crc_passed": true
+  },
+  "first_wrapper_attempt": {
+    "input_archive_and_restored_tree_unchanged": true,
+    "original_receipt": {
+      "bytes": 257659,
+      "path": "/workspace/scratch/e8a4dc33549f/v5_literal_reanalysis/LITERAL_REANALYSIS.json",
+      "sha256": "32d1a6b62b83d9588d8c91bc4e01378dbee2bc640dc90405b4ea1f509823ebc3"
+    },
+    "preserved_copy": {
+      "bytes": 257659,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/postpackage/literal_attempt_1/LITERAL_REANALYSIS.json",
+      "sha256": "32d1a6b62b83d9588d8c91bc4e01378dbee2bc640dc90405b4ea1f509823ebc3"
+    },
+    "preserved_files_independently_matched": 5,
+    "registered_commit": "4b8cbc69e2a2489db6a12c63ce63de3123245db6",
+    "scientific_retry": false,
+    "source_sha256": "bcdd46465b4cc7eaaec04b19aa2e63334b24e9f436c0746c4baacf5949040f37",
+    "status": "FAIL_PRESERVED",
+    "verified_failure_chain": "The frozen audit reproduced the historical regression failure. Import validation then resolved torch.ops virtual __file__ to repository/_ops.py; absence of an import receipt caused the outer wrapper failure."
+  },
+  "harness_registration": {
+    "git_blob_sha": "1bbf6dbefdae4375562620ce4fc37cd519491768",
+    "git_tree_blob_independently_matches_source": true,
+    "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/literal_reanalysis.py",
+    "registered_commit": "b1352d6eb6de1a9b558fe4397fdeae26233ab5e7",
+    "sha256": "c955fe28f6bc41fe7bd80fde2b57611da6670fbb10ff04ed06e8467b1b32cfea"
+  },
+  "harness_static_review": {
+    "additional_wrapper_changes": "Import-validation failures now preserve an explicit failed import receipt and remain fail closed.",
+    "changed_top_level_functions_only": [
+      "imported_sources",
+      "child",
+      "run_child"
+    ],
+    "checks": "The virtual module must be the exact torch singleton and implementation class, with its exact reported filename. Its absolute implementation file must exist within the runtime; its SHA256 is recorded and was independently verified. All other relative module paths fail. Scientific module and executed source paths bind to restored manifest bytes.",
+    "neural_calls_recorded": 0,
+    "old_source": {
+      "bytes": 25690,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta_codespell_full/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/literal_reanalysis.py",
+      "sha256": "bcdd46465b4cc7eaaec04b19aa2e63334b24e9f436c0746c4baacf5949040f37"
+    },
+    "old_source_matches_first_registered_attempt": true,
+    "saved_linear_head_arithmetic_allowed": true,
+    "scientific_comparison_and_normalization_code_unchanged": true,
+    "source_import_boundary": "Restored repository plus supplied Python runtime only. No live research checkout imports are observed.",
+    "torch_virtual_exceptions": [
+      "torch.ops",
+      "torch.classes"
+    ]
+  },
+  "immutable_prepackage_documents": [
+    {
+      "bytes": 112406,
+      "path": "repository/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/BLOCKERS.json",
+      "sha256": "7a610d839eeb632d34474457a87ef55feb296362852edc66385242d816385d8b"
+    },
+    {
+      "bytes": 14103,
+      "path": "repository/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/EXECUTION_REVIEW.md",
+      "sha256": "b320d23cc400c153589394256ebd98b155bee85664550172874aeeadcbb2b763"
+    },
+    {
+      "bytes": 8610,
+      "path": "repository/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/CI_RECEIPT.json",
+      "sha256": "239246d1b2568cb1bd748d400288c31b31d1c4a6f21dd1d99d900dd0fe88278b"
+    }
+  ],
+  "independent_identity_checks": {
+    "archive_sha256_recomputed": true,
+    "build_restore_reanalysis_links_match": true,
+    "frozen_source_files_matched": 64,
+    "input_index_provenance_and_inventory_match": true,
+    "manifest_sha256_recomputed": true,
+    "original_input_files_rehashed": 501,
+    "payload_bytes": 246121150,
+    "provenance_receipt_hashes_matched": 10,
+    "provenance_source_files_matched": 88,
+    "restored_files_including_manifest": 502,
+    "restored_inventory_exact": true,
+    "restored_payload_files_rehashed": 501,
+    "restored_symlinks": 0
+  },
+  "input_index": {
+    "bytes": 108033,
+    "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/postpackage/INPUT_INDEX.json",
+    "sha256": "7ff4437c91bf6439c20fda65de2e247461d27c2e1935721f86e6de78bc7d3439"
+  },
+  "literal_reanalysis_receipt": {
+    "bytes": 273754,
+    "path": "/workspace/scratch/e8a4dc33549f/v5_literal_reanalysis_retry1/LITERAL_REANALYSIS.json",
+    "sha256": "fd707ecd3ee5aeb48321b40307e970ebb2c327f879b6d3aa6d0bb1f6984130a9"
+  },
+  "local_preservation_status": "PASS",
+  "manifest": {
+    "bytes": 109992,
+    "path": "/workspace/scratch/e8a4dc33549f/v5_restored/MANIFEST.json",
+    "sha256": "38472bc9509495d08404c72212a0d2aaa3c9c3a9abab98a4f1d5b0aa3635d285"
+  },
+  "new_holdout_access": false,
+  "new_holdout_authorized": false,
+  "new_raw_upload_attempts": 0,
+  "new_raw_upload_attempts_evidence": "Both wrapper receipts record zero; the build receipt records zero network requests; the archived ledger records no V5 upload attempt. This reviewer performed no transfer. No new V5 upload rejection is claimed.",
+  "remaining_limits": [
+    "Local preservation PASS does not establish scientific success, durable external custody or new holdout authorization.",
+    "The numeric development candidate remains rejected and the Ordinary48 historical exact regression gate remains failed. Its causal attribution is unresolved.",
+    "The documented private raw archive egress approval boundary remains. Concrete destination authorization and verified remote bytes are still absent.",
+    "Original V2/V3 media needed to localize historical drift were not found in inspected available sources; this is not proof of permanent loss from every store.",
+    "Repository sources are restored from the manifest. CPython, NumPy and Torch come from the supplied pinned runtime rather than a fully archived operating-system environment; external origin records do not hash every runtime module.",
+    "No model rerun, new fit, new holdout access or threshold relaxation was performed. The no-model-call receipt is an execution profile plus reviewed source, not a general operating-system activity attestation.",
+    "The archived prepackage CI_RECEIPT.json is an unchanged historical observation, not proof that every current remote CI check passes."
+  ],
+  "review_status": "PASS",
+  "reviewed_utc": "2026-10-28T02:20:03.860383+00:00",
+  "reviewer": "independent evidence agent",
+  "schema": "hepta.field-bridge.v5.independent-postpackage-review.1",
+  "scientific_semantics": {
+    "authority": "DENY_ALL",
+    "certificate": false,
+    "frozen_expected_error": "Ordinary48 historical endpoint regression failed",
+    "historical_regression_status": "FAIL",
+    "neural_model_calls_by_reviewer": 0,
+    "numeric_development_entry_passed": false,
+    "original_audit": {
+      "bytes": 213,
+      "path": "/workspace/scratch/e8a4dc33549f/v5_restored/run/AUDIT.json",
+      "sha256": "35af3341f3fc283c41beda469e5c9ff2531f7bf01d537cb4dcc9c4a7fd6b42df"
+    },
+    "original_audit_byte_exact_reproduced": true,
+    "overall_status": "FAIL",
+    "scientific_retries": 0,
+    "within_run_integrity": "PASS"
+  },
+  "scientific_status": "FAIL",
+  "scope": "Read-only artifact identity checks and static review. No model execution and no repeat of the full artifact audit.",
+  "strict_restore_receipt": {
+    "bytes": 216967,
+    "path": "/workspace/scratch/e8a4dc33549f/v5_archive/RESTORE_VERIFICATION.json",
+    "sha256": "fcf18eee2c5e3ed580d046f74e94e57e06b8992e79dbbb486587442978687ff4"
+  }
+}

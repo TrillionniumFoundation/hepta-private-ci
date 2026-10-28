@@ -48,6 +48,71 @@ async fn submit_user_message(
     codex.start_or_steer_turn(user_message_request(text)).await
 }
 
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn terminal_event_allows_immediate_next_turn_without_admission_retry() {
+    let server = responses::start_mock_server().await;
+    let requests = responses::mount_sse_sequence(
+        &server,
+        vec![
+            responses::sse(vec![ev_response_created("first"), ev_completed("first")]),
+            responses::sse(vec![ev_response_created("second"), ev_completed("second")]),
+        ],
+    )
+    .await;
+    let test = test_codex()
+        .build_with_auto_env(&server)
+        .await
+        .expect("build consecutive-turn session");
+    let first = test
+        .codex
+        .start_turn_if_idle(user_message_request("first turn"))
+        .await
+        .expect("start first turn");
+    let StartIfIdleSubmission::Started { turn_id: first_id } = first else {
+        panic!("first admission must start: {first:?}");
+    };
+    let mut boundaries = Vec::new();
+    wait_for_event(&test.codex, |event| {
+        match event {
+            EventMsg::TurnStarted(start) => boundaries.push(("start", start.turn_id.clone())),
+            EventMsg::TurnComplete(done) => boundaries.push(("complete", done.turn_id.clone())),
+            EventMsg::TurnAborted(_) => panic!("consecutive turns should not abort"),
+            _ => {}
+        }
+        matches!(event, EventMsg::TurnComplete(done) if done.turn_id == first_id)
+    })
+    .await;
+    let next = test
+        .codex
+        .start_turn_if_idle(user_message_request("immediately after completion"))
+        .await
+        .expect("next admission must succeed without retry");
+    let StartIfIdleSubmission::Started { turn_id: next_id } = next else {
+        panic!("completed turn must have released admission: {next:?}");
+    };
+    assert_ne!(first_id, next_id);
+    wait_for_event(&test.codex, |event| {
+        match event {
+            EventMsg::TurnStarted(start) => boundaries.push(("start", start.turn_id.clone())),
+            EventMsg::TurnComplete(done) => boundaries.push(("complete", done.turn_id.clone())),
+            EventMsg::TurnAborted(_) => panic!("consecutive turns should not abort"),
+            _ => {}
+        }
+        matches!(event, EventMsg::TurnComplete(done) if done.turn_id == next_id)
+    })
+    .await;
+    assert_eq!(
+        boundaries,
+        vec![
+            ("start", first_id.clone()),
+            ("complete", first_id),
+            ("start", next_id.clone()),
+            ("complete", next_id),
+        ]
+    );
+    assert_eq!(requests.requests().len(), 2);
+}
+
 #[tokio::test]
 async fn start_turn_if_idle_rejects_non_user_input_that_requests_plan_mode() {
     let server = responses::start_mock_server().await;

@@ -1,0 +1,175 @@
+{
+  "schema": "hepta.field-bridge.v5.additive-followup-disposition.1",
+  "recorded_at_utc": "2026-10-28T05:38:38.792460+00:00",
+  "phase": "publication_pre_ci_snapshot",
+  "original_ledger_modified": false,
+  "original_criteria_modified": false,
+  "original_ledger_identity": {
+    "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/BLOCKERS.json",
+    "bytes": 112406,
+    "sha256": "7a610d839eeb632d34474457a87ef55feb296362852edc66385242d816385d8b"
+  },
+  "original_audit_identity": {
+    "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/evidence/AUDIT.json",
+    "bytes": 213,
+    "sha256": "35af3341f3fc283c41beda469e5c9ff2531f7bf01d537cb4dcc9c4a7fd6b42df"
+  },
+  "scientific_status": "FAIL",
+  "v5_candidate": "REJECTED",
+  "admission": false,
+  "all_original_substantive_blockers_closed": false,
+  "diagnostic_source_commits": [
+    "57a42933da685425fc714eb9b45cb3cb08f2f77a",
+    "8e09fee8a59f2de40acbb2595f01f648fe8b1ed8"
+  ],
+  "current_dispositions": [
+    {
+      "id": "V5-E01/E02/E03",
+      "status": "prior_bounded_engineering_closure_preserved",
+      "limit": "Not whole-repository CI or theorem applicability."
+    },
+    {
+      "id": "V5-X01/X03/M01/D02",
+      "status": "prior_closed_pass_preserved",
+      "limit": "Current-run execution, internal integrity, media arithmetic and action mechanism only."
+    },
+    {
+      "id": "V5-D01",
+      "status": "closed_reject_candidate",
+      "limit": "Four matched field contrasts are zero; does not satisfy positive B04 benefit."
+    },
+    {
+      "id": "V5-X02",
+      "status": "open_insufficient_evidence",
+      "original_gate": "FAIL",
+      "cause": "UNDETERMINED",
+      "limit": "No historical exact regression waiver or tolerance change."
+    },
+    {
+      "id": "DISPATCH-FIRST",
+      "status": "closed_failed_diagnostic_attempt",
+      "execution_complete": false,
+      "diagnostic_interpretable": false,
+      "generator_calls": 80,
+      "observer_calls": 320,
+      "limit": "The failing DEFAULT input identity was not preserved; cause is not assigned."
+    },
+    {
+      "id": "DISPATCH-FIXED-INPUTS",
+      "status": "closed_pass_for_registered_diagnostic",
+      "execution_complete": true,
+      "diagnostic_interpretable": true,
+      "generator_calls": 140,
+      "observer_calls": 400,
+      "historical_raw_matches": [],
+      "limit": "Current host, seed17, original action0; no learned-path or other-seed closure."
+    },
+    {
+      "id": "V5-A02",
+      "status": "closed_pass_local_preservation",
+      "evidence": "POSTPACKAGE_REVIEW.json",
+      "limit": "Original 501-payload literal restore/reanalysis receipt; no external durability."
+    },
+    {
+      "id": "DISPATCH-ARCHIVE",
+      "status": "closed_pass_local_preservation",
+      "evidence": "DISPATCH_ARCHIVE_VERIFICATION_20261028.json",
+      "payload_files": 143,
+      "full_tree_replay": false,
+      "limit": "Per-member literal restoration, no model replay."
+    },
+    {
+      "id": "H-A01",
+      "status": "open_original_bytes_unavailable_in_checked_locations",
+      "limit": "Hashes and aliases do not reconstruct missing pixels; no claim of permanent loss everywhere."
+    },
+    {
+      "id": "V5-A03/H-P01",
+      "status": "approval_blocked",
+      "raw_upload_attempts": 0,
+      "external_durable_save": false,
+      "limit": "Historical automatic-review refusals require user-authored named files plus ChatGPT Library destination."
+    },
+    {
+      "id": "ENGINEERING-CI",
+      "status": "pending_new_head_ci",
+      "rust_compilation_completed_locally": false,
+      "rust_tests_executed_locally": false,
+      "limit": "Fixture and production fixes require actual new-head execution; earlier CI is not reused as a pass."
+    },
+    {
+      "id": "WINDOWS-PRIVATE-OWNER",
+      "status": "implementation_gap_remains",
+      "existing_positive_tests_blocked": 41,
+      "limit": "No no-op ACL/durability substitute, skip, or expected-refusal rewrite of positive behavioral tests."
+    },
+    {
+      "id": "NEXT-CANDIDATE",
+      "status": "not_registered_not_executed",
+      "preparation": "Separate synthetic state/serialization preparation is allowed; no scientific execution or fresh holdout.",
+      "required_f_bavail_bytes": 2147483648,
+      "available_f_bavail_bytes": 0,
+      "resource_gate_passed": false
+    }
+  ],
+  "historical_scientific_statuses": {
+    "B01": "closed_for_registered_development",
+    "B02": "closed_for_registered_local_trajectory_skill",
+    "B03": "not_established",
+    "B04": "not_established",
+    "B05": "not_established",
+    "B06": "not_established",
+    "B07": "partially_closed",
+    "B08": "closed_for_transport_overhead",
+    "B09": "partially_closed",
+    "B10": "partially_closed_pending_persistence_authorization",
+    "L01": "not_established_claim_boundary",
+    "L02": "not_established_claim_boundary"
+  },
+  "historical_raw_identifiers": [
+    {
+      "path": "development/17/original-task.npz",
+      "bytes": 1972072,
+      "sha256": "47ad388b03bf2109b01737107196019156c9f7cf0cebbbe71a92c060caa08c9e"
+    },
+    {
+      "path": "development/17/original-clean.npz",
+      "bytes": 470409,
+      "sha256": "65d2c9c3d5f60e1c124c71bf84357c64014b59a365a509d81ad359044c7968f7"
+    }
+  ],
+  "raw_persistence_files_requiring_named_authorization": [
+    "hepta_field_bridge_v5_20261027_evidence.tar.gz",
+    "hepta_field_bridge_v5_20261027_archive_verification.json",
+    "hepta_field_bridge_v5_20261028_dispatch_evidence.tar.gz",
+    "hepta_field_bridge_v5_20261028_dispatch_archive_verification.json"
+  ],
+  "authorization_destination": "ChatGPT Library",
+  "preserved_system_boundaries": {
+    "DENY_ALL": true,
+    "requires_calibration": true,
+    "native_owner_integration": false
+  },
+  "evidence": [
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/historical_fixed_inputs_20261028/EXECUTION_REVIEW.json",
+      "bytes": 34922,
+      "sha256": "d40cbad1bf7b51094459caa14c5ed9edf205fb82586251619cac13b161c999d5"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/DISPATCH_ARCHIVE_VERIFICATION_20261028.json",
+      "bytes": 61302,
+      "sha256": "32faec17fb10ed3ae84a0d27f7851f155a6df2831f24c8f02cdd3fdfc17ea266"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/NEXT_FIELD_CANDIDATE_PROPOSAL_20261028.md",
+      "bytes": 11326,
+      "sha256": "5ab58266401ebd12d9ffa4a2d1c1dab11a5d052a6a5ca6d143a0813eab202ed0"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/PERSISTENCE_APPROVAL_STATUS.json",
+      "bytes": 2223,
+      "sha256": "9158e9d235c58ded7dc34b4ecfc7d3c92a717661a4b94c37b3f325323cb00898"
+    }
+  ]
+}

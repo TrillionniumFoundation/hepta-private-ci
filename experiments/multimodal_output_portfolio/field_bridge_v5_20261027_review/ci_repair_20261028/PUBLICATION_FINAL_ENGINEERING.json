@@ -1,0 +1,250 @@
+{
+  "source_head": "a4e900d0594329a033c577da639cfcb6fbc2a701",
+  "source_tree": "29df7d0a4ce76f3ceb9d650a894f5fba6e7d05e8",
+  "stages": [
+    {
+      "key": "fixtures",
+      "commit": "1acb7db945a4fe1a98a47eae696851ca309023fa",
+      "tree": "12578459c2b76a7bbab9359a4d27f2b59ddf95f3",
+      "paths": [
+        "codex-rs/app-server/src/lib.rs",
+        "codex-rs/hepta-automation/BUILD.bazel",
+        "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+        "codex-rs/hepta-automation/tests/automation.rs",
+        "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+        "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+        "codex-rs/hepta-intelligence-eval/src/paired_owner_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_schema_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_store_tests.rs"
+      ]
+    },
+    {
+      "key": "cargo_diagnostic",
+      "commit": "3022fba4ffed1093138c6cc7cc8c9a167820ffa2",
+      "tree": "5057bf1116811c799b30d19a396cf2bd70f3261b",
+      "paths": [
+        ".github/workflows/cargo-deny.yml",
+        "scripts/capture_cargo_deny_diagnostic.py",
+        "scripts/test_capture_cargo_deny_diagnostic.py"
+      ]
+    },
+    {
+      "key": "terminal_fix",
+      "commit": "31a8c37a9442f56b7bb9c0699d3f4f0e61de3722",
+      "tree": "7e6f40b9ce411980629eaafb77a6eea05501bcbf",
+      "paths": [
+        "codex-rs/core/src/session/mod.rs",
+        "codex-rs/core/src/session/terminal_event.rs",
+        "codex-rs/core/src/tasks/mod.rs",
+        "codex-rs/core/tests/suite/turn_input_submission.rs"
+      ]
+    },
+    {
+      "key": "terminal_tests",
+      "commit": "b2ce4d9e9e8ca6c0adc7e6ec6592f5bfb4ac9fec",
+      "tree": "3761a92ff71e73282550fe2b27b88623372e4f9d",
+      "paths": [
+        "codex-rs/core/src/session/tests.rs",
+        "codex-rs/core/src/session/tests/terminal_event_tests.rs",
+        "codex-rs/core/src/tasks/mod_tests.rs"
+      ]
+    },
+    {
+      "key": "authbus_flush_fixture",
+      "commit": "d5ee6a28e66d54775af86f8681accb447dcff229",
+      "tree": "b10a49d85385c585f5702227c6111712b40fa12a",
+      "paths": [
+        "codex-rs/hepta-authbus/src/authority_schema_tests.rs"
+      ]
+    },
+    {
+      "key": "nonunix_negative_fixture",
+      "commit": "14a2494ad613a3dd798af3bd166cb27e5faa4f6f"
+    },
+    {
+      "key": "windows_directory_fixtures",
+      "commit": "a84b81d8318c0b0d6686cb94a106e4d0cf6464b9"
+    },
+    {
+      "key": "recovery_safety",
+      "commit": "a4e900d0594329a033c577da639cfcb6fbc2a701"
+    }
+  ],
+  "files": [
+    {
+      "path": "codex-rs/app-server/src/lib.rs",
+      "bytes": 78728,
+      "sha256": "d4919df3681bc06930864e64ba12e6f4002a9c5e92e24f25d4abffcf9ce41989",
+      "git_blob": "e26cae7122ef49023677fae310d8f817f96b2350"
+    },
+    {
+      "path": "codex-rs/hepta-automation/BUILD.bazel",
+      "bytes": 2737,
+      "sha256": "9aef6ef59546619f224bfba4ae053fba2d50e63674d41c547eabf4c21875b5fc",
+      "git_blob": "8545046b41b681f2990a9486fa69cd21d112a875"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "bytes": 8033,
+      "sha256": "0a0f483e1d188e651d595fc03e26c9c1d4e40679af4bd74d1f9703470b113bf4",
+      "git_blob": "fe6e7e8457e48af8dc248f8af36664df8296239c"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/automation.rs",
+      "bytes": 51795,
+      "sha256": "8ac05ff635d5a351f091221eec2b2536137185095e1368e4325a55850112559b",
+      "git_blob": "f141551e3ec6b153f20c746c20568b4cc2edcbc7"
+    },
+    {
+      "path": "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+      "bytes": 19992,
+      "sha256": "f652eb77679b20dbb403020452b4eaf75d2709f345fbe8c63a828ea8e113b770",
+      "git_blob": "bbc93b4b665d4c3cf6d75a9bee1b57fe596b2a45"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+      "bytes": 20757,
+      "sha256": "0e17db1b931ad42d13941502cf57ab1951ec9a442b00150b390701f778b09ea3",
+      "git_blob": "317ae1550e17083641b1a2fefe94275d0bd43c03"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/paired_owner_tests.rs",
+      "bytes": 12659,
+      "sha256": "b63eb970d03084af691c9fa9ba56daf37b2c1518cc2f42c5203deec0a6a0967e",
+      "git_blob": "dc518cc072e3334d443b714dd49599221d6cf8b7"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_schema_tests.rs",
+      "bytes": 2207,
+      "sha256": "c99646a38854d84d2d781eb040b70487e3805e8e7cf6302b1859a240e1a0f2d4",
+      "git_blob": "c7d3364dc894273164eac452726fdc505b53c429"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+      "bytes": 40711,
+      "sha256": "abb813f058c24c4b36beefc60f60c507d8896368e22553787de3eed6be48315e",
+      "git_blob": "4373abad74b9ee121d01b4cc606c1d390997fcc1"
+    },
+    {
+      "path": ".github/workflows/cargo-deny.yml",
+      "bytes": 2036,
+      "sha256": "61c86b33375212bb428ed3673bbfed492a41c1a2d132d124f7b2840a452cc3dc",
+      "git_blob": "9c9d1359d66c3e9e10618eccc0e914b981e3a88f"
+    },
+    {
+      "path": "scripts/capture_cargo_deny_diagnostic.py",
+      "bytes": 12693,
+      "sha256": "632978b8306a7fd7d5f3dcee65b9abfc55c34ad045992bc3b1f14a84984679cb",
+      "git_blob": "f7ec2bbd63b81a11b083b874ae7d439da89e8574"
+    },
+    {
+      "path": "scripts/test_capture_cargo_deny_diagnostic.py",
+      "bytes": 10525,
+      "sha256": "bfb252a1abcf597a47923d8aa66b669cd6f4601de07fc2bc7d3cb893b02a8465",
+      "git_blob": "5697d0da9ed41c5ab3ddedb16fd6af02e1503d79"
+    },
+    {
+      "path": "codex-rs/core/src/session/mod.rs",
+      "bytes": 215795,
+      "sha256": "d16ad51556a4f4f481cccea9fc21cbb04649d7595dcd62fbb2a6c58d4dee6967",
+      "git_blob": "24c3375a79eb058748d69f3ef39fed751b674919"
+    },
+    {
+      "path": "codex-rs/core/src/session/terminal_event.rs",
+      "bytes": 4419,
+      "sha256": "9b4db5911927bd477f842bbdc901517d3f55199df4c9fe7b7f6f98dc220f49f1",
+      "git_blob": "68a0a4afe29e8f20b8f125ff8238979bf93bd63d"
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod.rs",
+      "bytes": 179917,
+      "sha256": "9c8be7d120e58bef5ffe8958dbb06ca8efd94f2d4e7330dc645e49f7696c009a",
+      "git_blob": "19d71ea291ea2a052c3ba91efb965f3e21daee99"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "bytes": 23473,
+      "sha256": "06e168f88662514c6f338f00c2e845fd51b9f826b57df6043d4cb97cf7117400",
+      "git_blob": "2ca3aacbba0bbf2eaee22e474c0dc7a99dd43c33"
+    },
+    {
+      "path": "codex-rs/core/src/session/tests.rs",
+      "bytes": 497138,
+      "sha256": "d14491483442d936deb921218e637d7bd7ae4cad83da27f4372e0936648f192e",
+      "git_blob": "065325ce3dd21801d0c241f1be20c59e478113a8"
+    },
+    {
+      "path": "codex-rs/core/src/session/tests/terminal_event_tests.rs",
+      "bytes": 8923,
+      "sha256": "ec51185e184a479c898f788f4ca1cd6c154a2524ffd4320f1a27fbf74b318032",
+      "git_blob": "2ed38e90bbb6e57670897c2c92f15e88704a6515"
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod_tests.rs",
+      "bytes": 12206,
+      "sha256": "2b02ca07cf67a981b591bd49100b41a55829795de453cd00b49af33af7e143cc",
+      "git_blob": "2d5346fbeae84d1ee2c0d45ed3d71996cb5fc1ef"
+    },
+    {
+      "path": "codex-rs/hepta-authbus/src/authority_schema_tests.rs",
+      "bytes": 3907,
+      "sha256": "ba517459cffde0cabbb87fc593cee22fb1b1e4d384744d1008ec93b94db1985b",
+      "git_blob": "5066fb6ba4f2dbd025d593b6a0555de7ad82dec5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+      "bytes": 24510,
+      "sha256": "cb975821a644319c458694913cfe5372d6925bb1c51586db67997a90e4f4579c",
+      "git_blob": "433c8992a2f8cc28de007b4100e87efbdfb68417"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "bytes": 10314,
+      "sha256": "879034e83ac58e6d9661a8c1fa2b073026c72a97fd2c4201af2e8825c068cdf2",
+      "git_blob": "3ad94d15501d4d0930225badee4fcefd61f87ed0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/terminal_cell_owner.rs",
+      "bytes": 9675,
+      "sha256": "f0fd2787e0e1138320669bc51b98dccc797c0eb432500a0001dc9ab30996f4b8",
+      "git_blob": "97f14738e9b46279b343c4de70a1348560a166e9"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
+      "bytes": 5668,
+      "sha256": "3e2c842c4d551eeab2a4697cb6d75f6d4a3bba5a2e861d259fea329c7af8b4c9",
+      "git_blob": "424d4f061fb56d32d6a992430c7e7925a7ee016e"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "bytes": 17343,
+      "sha256": "027485fd576d2236c57b75ee1fb3d84ffd54aaf8a8796c434ba4e64a9e9fc844",
+      "git_blob": "78b8ef7bba2fdbcda174b46d3f61f39c45a707bc"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+      "bytes": 24174,
+      "sha256": "599eaea39fdb1881e1eb2eae72f1ac5430001f0843946fba1406f1c0bcee1ba0",
+      "git_blob": "687d33d80aa5df348af40c0b33c844a4f816d231"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "bytes": 27100,
+      "sha256": "9f35667ca2285e66c212b2bad4a0a67202162d64a41e06f161dee4525666282f",
+      "git_blob": "920508b391c30a0b70a236e5f29988ee40206732"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "bytes": 23396,
+      "sha256": "aad8d09ce18bfadd56dbd78d0ebb824f76cb1483af7e159e81dba968fe27eba5",
+      "git_blob": "6283f776f50030196e18ceb51754aad04c00983f"
+    }
+  ],
+  "recorded_at_utc": "2026-10-28T05:43:25.427511+00:00",
+  "all_28_worktree_source_files_exact_after_final_just_fmt": true,
+  "rust_compilation_completed": false,
+  "rust_tests_executed": false,
+  "remote_ci": "PENDING_NEW_HEAD",
+  "scientific_status": "FAIL",
+  "admission": false
+}

@@ -211,15 +211,23 @@ async fn post_rename_publication_failure_is_indeterminate_and_retains_candidate(
     let candidate = root.join(recovered_database_filename(&anchor, &fence));
     std::fs::copy(store.path(), &candidate).expect("candidate file");
     protect_database_file(&candidate).expect("private candidate");
-    publish_active_database(&root, &candidate).expect("pointer rename");
-
-    let error = reconcile_failed_recovery_candidate(
-        &root,
-        &candidate,
-        CognitiveRecoveryError::Unavailable(
+    assert_eq!(
+        resolve_active_database_path(&root).expect("original active pointer"),
+        store.path().to_path_buf()
+    );
+    let publication = publish_active_database(&root, &candidate);
+    assert_eq!(
+        resolve_active_database_path(&root).expect("pointer must resolve after publication"),
+        candidate,
+        "the real pointer rename must succeed before exercising reconciliation"
+    );
+    let publication_error = match publication {
+        Ok(()) => CognitiveRecoveryError::Unavailable(
             "injected directory fsync failure after pointer rename".to_string(),
         ),
-    );
+        Err(error) => CognitiveRecoveryError::Unavailable(error.to_string()),
+    };
+    let error = reconcile_failed_recovery_candidate(&root, &candidate, publication_error);
     assert!(
         matches!(
             error,
@@ -235,6 +243,87 @@ async fn post_rename_publication_failure_is_indeterminate_and_retains_candidate(
     assert!(
         candidate.exists(),
         "a possibly active recovered generation must not be cleaned up"
+    );
+}
+
+#[test]
+fn corrupt_active_pointer_preserves_candidate_and_pointer_bytes() {
+    let temp = TempDir::new().expect("temp dir");
+    let root = temp.path();
+    let candidate_name = format!("cognitive_recovered_v1_{}.sqlite3", "a".repeat(64));
+    let candidate = root.join(&candidate_name);
+    for suffix in ["", "-wal", "-shm", "-journal"] {
+        std::fs::write(
+            root.join(format!("{candidate_name}{suffix}")),
+            format!("retained candidate bytes {suffix}"),
+        )
+        .expect("candidate bytes");
+    }
+    let pointer = root.join(super::super::COGNITIVE_ACTIVE_DB_POINTER);
+    std::fs::write(&pointer, b"not-a-valid-database-generation\n").expect("corrupt pointer");
+    protect_database_file(&pointer).expect("private pointer");
+    let resolution_error = resolve_active_database_path(root).expect_err("invalid pointer content");
+    assert!(matches!(
+        &resolution_error,
+        CognitiveStoreError::Corrupt(message)
+            if message == "cognitive active database pointer is invalid"
+    ));
+    let publication_error = CognitiveRecoveryError::Unavailable("publication failed".to_string());
+    let publication_message = publication_error.to_string();
+    let before = capture_recovery_tree(root);
+
+    let error = reconcile_failed_recovery_candidate(root, &candidate, publication_error);
+
+    let CognitiveRecoveryError::Indeterminate(message) = error else {
+        panic!("unresolved publication must remain indeterminate: {error:?}");
+    };
+    assert!(message.contains(&publication_message));
+    assert!(message.contains(&resolution_error.to_string()));
+    assert_eq!(capture_recovery_tree(root), before);
+}
+
+#[test]
+fn known_unpublished_candidate_is_removed_without_changing_active_database() {
+    let temp = TempDir::new().expect("temp dir");
+    let root = temp.path();
+    let original = root.join(super::super::COGNITIVE_DB_FILENAME);
+    let original_bytes = b"original active database bytes";
+    std::fs::write(&original, original_bytes).expect("original database");
+    let candidate_name = format!("cognitive_recovered_v1_{}.sqlite3", "a".repeat(64));
+    let candidate = root.join(&candidate_name);
+    for suffix in ["", "-wal", "-shm", "-journal"] {
+        std::fs::write(
+            root.join(format!("{candidate_name}{suffix}")),
+            b"unpublished",
+        )
+        .expect("unpublished candidate");
+    }
+    assert_eq!(
+        resolve_active_database_path(root).expect("known active database"),
+        original
+    );
+
+    let error = reconcile_failed_recovery_candidate(
+        root,
+        &candidate,
+        CognitiveRecoveryError::Unavailable("failed before pointer rename".to_string()),
+    );
+
+    assert!(matches!(
+        error,
+        CognitiveRecoveryError::Unavailable(ref message) if message == "failed before pointer rename"
+    ));
+    for suffix in ["", "-wal", "-shm", "-journal"] {
+        assert!(!root.join(format!("{candidate_name}{suffix}")).exists());
+    }
+    assert_eq!(
+        std::fs::read(&original).expect("original bytes"),
+        original_bytes.to_vec()
+    );
+    assert!(
+        !root
+            .join(super::super::COGNITIVE_ACTIVE_DB_POINTER)
+            .exists()
     );
 }
 

@@ -1,0 +1,19 @@
+{
+  "scope": "SQLite SQL fixture migration only; Rust integration still requires CI",
+  "sqlite_version": "3.53.1",
+  "later_migrations_applied": 18,
+  "schema_version": 19,
+  "legacy_task_preserved": true,
+  "timer_lifecycle_columns": [
+    "singleton",
+    "writer_epoch",
+    "phase"
+  ],
+  "timer_lifecycle_rows": [
+    [
+      1,
+      1,
+      "active"
+    ]
+  ]
+}

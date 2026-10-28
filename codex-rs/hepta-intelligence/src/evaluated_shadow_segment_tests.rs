@@ -18,6 +18,20 @@ fn open(root: &std::path::Path, name: &str, create: bool) -> std::fs::File {
 }
 
 fn directory(root: &std::path::Path) -> std::fs::File {
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+
+        const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+        // The product writer still verifies and synchronizes this actual directory.
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
+            .open(root)
+            .unwrap()
+    }
+    #[cfg(not(windows))]
     std::fs::File::open(root).unwrap()
 }
 

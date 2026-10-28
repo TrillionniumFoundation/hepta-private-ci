@@ -1,0 +1,53 @@
+{
+  "admission": false,
+  "historical_scientific_status": "FAIL",
+  "inspected_state_sources": [
+    {
+      "bytes": 4335,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_20261027/adapters.py",
+      "sha256": "2818464ba927b8e0ed5c92315a5bf26832672391c1fbbba709d6ed72cdc76b7b"
+    },
+    {
+      "bytes": 15506,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/learning.py",
+      "sha256": "97c3baabe208fd8d5e8ac9beb5ae4a244b3c8d6aac565e727fd64eed8c1371b7"
+    },
+    {
+      "bytes": 13431,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_bank.py",
+      "sha256": "9e6bb320ccaf087120a5cded8e2110478b87a4073febbb8bb999f2853073d7f1"
+    },
+    {
+      "bytes": 6073,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_common.py",
+      "sha256": "e686e59dd34a0d8f2a31b192c1f47c59fd86cbc22fe42d60d821c4474db56591"
+    },
+    {
+      "bytes": 9527,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_features.py",
+      "sha256": "8e3dfee7a0a77e74c16b459f8e15a0cad1cfa999a4187e975178bb2d2f0cd2a9"
+    },
+    {
+      "bytes": 4641,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027/transactions.py",
+      "sha256": "6546016cc42cb21eb3679ec11dea562e9816da427a3332ce9ab5067f3afe96e3"
+    }
+  ],
+  "new_research_registration": false,
+  "old_frozen_inventory_files_checked": 64,
+  "old_frozen_inventory_sha_match": true,
+  "old_scientific_registration_commit": "f49810e422892a76c1d37c19c5b4d5112cba6d9e",
+  "old_scientific_source_freeze": {
+    "bytes": 8268,
+    "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027/SOURCE_FREEZE.json",
+    "sha256": "f86ef86edc02d81d2c68476c5742b332582cfb8a2096f6514dcdc616cdb64ab8"
+  },
+  "old_sources_imported_or_executed": false,
+  "proposal": {
+    "bytes": 11326,
+    "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/NEXT_FIELD_CANDIDATE_PROPOSAL_20261028.md",
+    "sha256": "5ab58266401ebd12d9ffa4a2d1c1dab11a5d052a6a5ca6d143a0813eab202ed0"
+  },
+  "reason_for_new_schema": "The old in-memory snapshot includes gradients and Torch RNG; save_checkpoint persists neither. Old checkpoint restoration substitutes None gradients and current RNG, so it cannot reconstruct a historical full branch point.",
+  "status": "NOT_REGISTERED / NOT_EXECUTED"
+}
