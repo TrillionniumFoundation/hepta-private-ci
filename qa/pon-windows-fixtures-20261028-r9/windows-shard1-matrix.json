@@ -1,0 +1,730 @@
+{
+  "schema": "hepta-windows-shard1-original-matrix-v1",
+  "ci": {
+    "original_run": 40633626405,
+    "original_head": "682a88a7f847e31ffb6cd5e0a630dd71dde4bfee",
+    "actual_merge": "f9923f7809bf78de8e54885699b67f3816bf2be2",
+    "base": "3e9efb15faa261a4dc3ffc3205cd259aaee41a3f",
+    "job": 122636270341,
+    "conclusion": "failure"
+  },
+  "raw_log": {
+    "path": "/workspace/scratch/56818e4fba76/recovery/round8/hepta-682-windows-shard1-original.raw.log",
+    "retained_archive": "evidence/windows-shard1.raw.log.xz",
+    "bytes": 884559,
+    "sha256": "17e40a7e0108ae6479e5e8c62c56a4db893ab7575f1fa1303fea54aebf3a89e4",
+    "cr_count": 6848
+  },
+  "target_denominator": {
+    "declared": 147,
+    "executed": 98,
+    "passed": 96,
+    "failed": 2,
+    "skipped": 49,
+    "line": 6446
+  },
+  "failed_targets": [
+    "//codex-rs/exec-server:exec-server-exec_process-test",
+    "//codex-rs/core:core-unit-tests"
+  ],
+  "core_original_summary": "FAILED in 6 out of 13",
+  "exec_process_original_test_counts": {
+    "passed": 2,
+    "failed": 1,
+    "ignored": 21
+  },
+  "original_output_blocks": [
+    {
+      "start_line": 3604,
+      "header": "==================== Test output for //codex-rs/exec-server:exec-server-exec_process-test:",
+      "batch_results": [
+        {
+          "line": 3641,
+          "text": "test result: FAILED. 2 passed; 1 failed; 21 ignored; 0 measured; 0 filtered out; finished in 0.19s"
+        }
+      ]
+    },
+    {
+      "start_line": 3866,
+      "header": "==================== Test output for //codex-rs/core:core-unit-tests (shard 8 of 8):",
+      "batch_results": [
+        {
+          "line": 3959,
+          "text": "test result: ok. 89 passed; 0 failed; 0 ignored; 0 measured; 2251 filtered out; finished in 8.22s"
+        },
+        {
+          "line": 4056,
+          "text": "test result: FAILED. 80 passed; 1 failed; 0 ignored; 0 measured; 2259 filtered out; finished in 2.86s"
+        },
+        {
+          "line": 4140,
+          "text": "test result: ok. 79 passed; 0 failed; 0 ignored; 0 measured; 2261 filtered out; finished in 5.12s"
+        },
+        {
+          "line": 4177,
+          "text": "test result: ok. 32 passed; 0 failed; 0 ignored; 0 measured; 2308 filtered out; finished in 3.12s"
+        }
+      ]
+    },
+    {
+      "start_line": 4185,
+      "header": "==================== Test output for //codex-rs/core:core-unit-tests (shard 5 of 8):",
+      "batch_results": [
+        {
+          "line": 4275,
+          "text": "test result: ok. 86 passed; 0 failed; 0 ignored; 0 measured; 2254 filtered out; finished in 11.88s"
+        },
+        {
+          "line": 4362,
+          "text": "test result: ok. 82 passed; 0 failed; 0 ignored; 0 measured; 2258 filtered out; finished in 11.41s"
+        },
+        {
+          "line": 4444,
+          "text": "test result: ok. 76 passed; 0 failed; 1 ignored; 0 measured; 2263 filtered out; finished in 8.45s"
+        },
+        {
+          "line": 4512,
+          "text": "test result: FAILED. 50 passed; 1 failed; 0 ignored; 0 measured; 2289 filtered out; finished in 15.23s"
+        }
+      ]
+    },
+    {
+      "start_line": 4515,
+      "header": "==================== Test output for //codex-rs/core:core-unit-tests (shard 5 of 8):",
+      "batch_results": [
+        {
+          "line": 4911,
+          "text": "test result: FAILED. 85 passed; 1 failed; 0 ignored; 0 measured; 2254 filtered out; finished in 5.67s"
+        },
+        {
+          "line": 4998,
+          "text": "test result: ok. 82 passed; 0 failed; 0 ignored; 0 measured; 2258 filtered out; finished in 3.64s"
+        },
+        {
+          "line": 5080,
+          "text": "test result: ok. 76 passed; 0 failed; 1 ignored; 0 measured; 2263 filtered out; finished in 8.51s"
+        },
+        {
+          "line": 5136,
+          "text": "test result: ok. 51 passed; 0 failed; 0 ignored; 0 measured; 2289 filtered out; finished in 7.74s"
+        }
+      ]
+    },
+    {
+      "start_line": 5156,
+      "header": "==================== Test output for //codex-rs/core:core-unit-tests (shard 1 of 8):",
+      "batch_results": [
+        {
+          "line": 5249,
+          "text": "test result: ok. 89 passed; 0 failed; 0 ignored; 0 measured; 2251 filtered out; finished in 13.85s"
+        },
+        {
+          "line": 5361,
+          "text": "test result: FAILED. 77 passed; 2 failed; 0 ignored; 0 measured; 2261 filtered out; finished in 76.80s"
+        },
+        {
+          "line": 5447,
+          "text": "test result: ok. 81 passed; 0 failed; 0 ignored; 0 measured; 2259 filtered out; finished in 3.30s"
+        },
+        {
+          "line": 5509,
+          "text": "test result: ok. 57 passed; 0 failed; 0 ignored; 0 measured; 2283 filtered out; finished in 8.65s"
+        }
+      ]
+    },
+    {
+      "start_line": 5512,
+      "header": "==================== Test output for //codex-rs/core:core-unit-tests (shard 1 of 8):",
+      "batch_results": [
+        {
+          "line": 5605,
+          "text": "test result: ok. 89 passed; 0 failed; 0 ignored; 0 measured; 2251 filtered out; finished in 4.66s"
+        },
+        {
+          "line": 5712,
+          "text": "test result: FAILED. 78 passed; 1 failed; 0 ignored; 0 measured; 2261 filtered out; finished in 37.66s"
+        },
+        {
+          "line": 5798,
+          "text": "test result: ok. 81 passed; 0 failed; 0 ignored; 0 measured; 2259 filtered out; finished in 2.52s"
+        },
+        {
+          "line": 5860,
+          "text": "test result: ok. 57 passed; 0 failed; 0 ignored; 0 measured; 2283 filtered out; finished in 5.06s"
+        }
+      ]
+    },
+    {
+      "start_line": 5863,
+      "header": "==================== Test output for //codex-rs/core:core-unit-tests (shard 1 of 8):",
+      "batch_results": [
+        {
+          "line": 5956,
+          "text": "test result: ok. 89 passed; 0 failed; 0 ignored; 0 measured; 2251 filtered out; finished in 4.61s"
+        },
+        {
+          "line": 6063,
+          "text": "test result: FAILED. 78 passed; 1 failed; 0 ignored; 0 measured; 2261 filtered out; finished in 37.65s"
+        },
+        {
+          "line": 6149,
+          "text": "test result: ok. 81 passed; 0 failed; 0 ignored; 0 measured; 2259 filtered out; finished in 2.51s"
+        },
+        {
+          "line": 6211,
+          "text": "test result: ok. 57 passed; 0 failed; 0 ignored; 0 measured; 2283 filtered out; finished in 5.03s"
+        }
+      ]
+    }
+  ],
+  "log_tail_replay_starts_at_line": 6453,
+  "unique_failed_cases": 6,
+  "failed_case_observation_lines": 8,
+  "counting_rule": "All original failure/rerun observations retained; repeated cases are not independent cases. Console only exposes printed output blocks, so absent pass output is not fabricated. Replayed log tails excluded from execution counts.",
+  "cases": [
+    {
+      "name": "agent::control::tests::spawn_agent_can_fork_parent_thread_history_with_sanitized_items",
+      "observed_result_lines": [
+        {
+          "line": 4215,
+          "outcome": "ok",
+          "output_block_start": 4185
+        },
+        {
+          "line": 4522,
+          "outcome": "FAILED",
+          "output_block_start": 4515
+        }
+      ],
+      "diagnostic_observations": [
+        {
+          "line": 4607,
+          "text_lines": [
+            "---- agent::control::tests::spawn_agent_can_fork_parent_thread_history_with_sanitized_items stdout ----",
+            "",
+            "thread 'agent::control::tests::spawn_agent_can_fork_parent_thread_history_with_sanitized_items' (9880) panicked at core/src\\agent\\control_tests.rs:1696:5:",
+            "assertion failed: `(left == right)`: full-history forked child history should replace parent usage hints with the child subagent hint while filtering non-final assistant/tool chatter",
+            "",
+            "Diff < left / right > :",
+            " [",
+            "     Message {",
+            "         id: None,",
+            "         role: \"user\",",
+            "         content: [",
+            "             InputText {",
+            "                 text: \"parent seed context\",",
+            "             },",
+            "         ],",
+            "         phase: None,",
+            "         internal_chat_message_metadata_passthrough: Some(",
+            "             InternalChatMessageMetadataPassthrough {",
+            "                 turn_id: Some(",
+            "                     \"auto-compact-0\",",
+            "                 ),",
+            "                 create_time: Some(",
+            "                     Number(1793165134.977547),",
+            "                 ),",
+            "                 content_item_kinds: Some(",
+            "                     [",
+            "                         ContentItemKind(",
+            "                             \"unknown\",",
+            "                         ),",
+            "                     ],",
+            "                 ),",
+            "                 executed_tool_calls: None,",
+            "             },",
+            "         ),",
+            "     },",
+            "     Message {",
+            "         id: None,",
+            "         role: \"developer\",",
+            "         content: [",
+            "             InputText {",
+            "                 text: \"Developer context before.\\nChild developer instructions.\\nDeveloper context after.\",",
+            "             },",
+            "             InputText {",
+            "                 text: \"Preserved developer context.\",",
+            "             },",
+            "             InputText {",
+            "                 text: \"<managed_developer_instructions>\\nParent developer instructions.\\n</managed_developer_instructions>\",",
+            "             },",
+            "         ],",
+            "         phase: None,",
+            "         internal_chat_message_metadata_passthrough: Some(",
+            "             InternalChatMessageMetadataPassthrough {",
+            "                 turn_id: Some(",
+            "                     \"auto-compact-1\",",
+            "                 ),",
+            "                 create_time: Some(",
+            "                     Number(1793165135.5483813),",
+            "                 ),",
+            "                 content_item_kinds: Some(",
+            "                     [",
+            "                         ContentItemKind(",
+            "                             \"generic.developer_instructions\",",
+            "                         ),",
+            "                         ContentItemKind(",
+            "                             \"generic.developer_policy\",",
+            "                         ),",
+            "                         ContentItemKind(",
+            "                             \"managed_config.developer_instructions\",",
+            "                         ),",
+            "                     ],",
+            "                 ),",
+            "                 executed_tool_calls: None,",
+            "             },",
+            "         ),",
+            "     },",
+            "     Message {",
+            "         id: None,",
+            "         role: \"assistant\",",
+            "         content: [",
+            "             OutputText {",
+            "                 text: \"parent final answer\",",
+            "             },",
+            "         ],",
+            "         phase: Some(",
+            "             FinalAnswer,",
+            "         ),",
+            "         internal_chat_message_metadata_passthrough: Some(",
+            "             InternalChatMessageMetadataPassthrough {",
+            "                 turn_id: Some(",
+            "                     \"auto-compact-1\",",
+            "                 ),",
+            "                 create_time: None,",
+            "                 content_item_kinds: Some(",
+            "                     [",
+            "                         ContentItemKind(",
+            "                             \"unknown\",",
+            "                         ),",
+            "                     ],",
+            "                 ),",
+            "                 executed_tool_calls: None,",
+            "             },",
+            "         ),",
+            "     },",
+            "     FunctionCallOutput {",
+            "         id: None,",
+            "         call_id: None,",
+            "         name: Some(",
+            "             \"notifications\",",
+            "         ),",
+            "         namespace: Some(",
+            "             \"slack\",",
+            "         ),",
+            "         output: FunctionCallOutputPayload {",
+            "             body: Text(",
+            "                 \"parent notification\",",
+            "             ),",
+            "             success: None,",
+            "         },",
+            "         internal_chat_message_metadata_passthrough: Some(",
+            "             InternalChatMessageMetadataPassthrough {",
+            "                 turn_id: Some(",
+            "                     \"auto-compact-1\",",
+            "                 ),",
+            "                 create_time: Some(",
+            "                     Number(1793165135.5483851),",
+            "                 ),",
+            "                 content_item_kinds: None,",
+            "                 executed_tool_calls: None,",
+            "             },",
+            "         ),",
+            "     },",
+            "     Message {",
+            "         id: None,",
+            "         role: \"developer\",",
+            "         content: [",
+            "             InputText {",
+            "                 text: \"Child subagent guidance.\",",
+            "             },",
+            "         ],",
+            "         phase: None,",
+            "         internal_chat_message_metadata_passthrough: Some(",
+            "             InternalChatMessageMetadataPassthrough {",
+            "                 turn_id: None,",
+            "                 create_time: None,",
+            "                 content_item_kinds: Some(",
+            "                     [",
+            "                         ContentItemKind(",
+            "                             \"multi_agent.role_instructions\",",
+            "                         ),",
+            "                     ],",
+            "                 ),",
+            "                 executed_tool_calls: None,",
+            "             },",
+            "         ),",
+            "     },",
+            "<    Message {",
+            "<        id: None,",
+            "<        role: \"user\",",
+            "<        content: [",
+            "<            InputText {",
+            "<                text: \"# AGENTS.md instructions for D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\n\\n<INSTRUCTIONS>\\n# Rust/codex-rs\\r\\n\\r\\nIn the codex-rs folder where the rust code lives:\\r\\n\\r\\n- Crate names are prefixed with `codex-`. For example, the `core` folder's crate is named `codex-core`\\r\\n- When using format! and you can inline variables into {}, always do that.\\r\\n- Install any commands the repo relies on (for example `just`, `rg`, or `cargo-insta`) if they aren't already available before running instructions here.\\r\\n- Never add or modify any code related to `CODEX_SANDBOX_NETWORK_DISABLED_ENV_VAR` or `CODEX_SANDBOX_ENV_VAR`.\\r\\n  - You operate in a sandbox where `CODEX_SANDBOX_NETWORK_DISABLED=1` will be set whenever you use the `shell` tool. Any existing code that uses `CODEX_SANDBOX_NETWORK_DISABLED_ENV_VAR` was authored with this fact in mind. It is often used to early exit out of tests that the author knew you would not be able to run given your sandbox limitations.\\r\\n  - Similarly, when you spawn a process using Seatbelt (`/usr/bin/sandbox-exec`), `CODEX_SANDBOX=seatbelt` will be set on the child process. Integration tests that want to run Seatbelt themselves cannot be run under Seatbelt, so checks for `CODEX_SANDBOX=seatbelt` are also often used to early exit out of tests, as appropriate.\\r\\n- Always collapse if statements per https://rust-lang.github.io/rust-clippy/master/index.html#collapsible_if\\r\\n- Always inline format! args when possible per https://rust-lang.github.io/rust-clippy/master/index.html#uninlined_format_args\\r\\n- Use method references over closures when possible per https://rust-lang.github.io/rust-clippy/master/index.html#redundant_closure_for_method_calls\\r\\n- Avoid bool or ambiguous `Option` parameters that force callers to write hard-to-read code such as `foo(false)` or `bar(None)`. Prefer enums, named methods, newtypes, or other idiomatic Rust API shapes when they keep the callsite self-documenting.\\r\\n- When you cannot make that API change and still need a small positional-literal callsite in Rust, follow the `argument_comment_lint` convention:\\r\\n  - Use an exact `/*param_name*/` comment before opaque literal arguments such as `None`, booleans, and numeric literals when passing them by position.\\r\\n  - A method's sole non-self argument is exempt when the method and parameter names match, such as `.enabled(false)` for `fn enabled(&self, enabled: bool)`.\\r\\n  - Do not add these comments for string or char literals unless the comment adds real clarity; those literals are intentionally exempt from the lint.\\r\\n  - The parameter name in the comment must exactly match the callee signature.\\r\\n  - You can run `just argument-comment-lint` to run the lint check locally. This is powered by Bazel, so running it the first time can be slow if Bazel is not warmed up, though incremental invocations should take <15s. Most of the time, it is best to update the PR and let CI take responsibility for checking this (or run it asynchronously in the background after submitting the PR). Note CI checks all three platforms, which the local run does not.\\r\\n- When possible, make `match` statements exhaustive and avoid wildcard arms.\\r\\n- Newly added traits should include doc comments that explain their role and how implementations are expected to use them.\\r\\n- Discourage both `#[async_trait]` and `#[allow(async_fn_in_trait)]` in Rust traits.\\r\\n  - Prefer native RPITIT trait methods with explicit `Send` bounds on the returned future, as in `3c7f013f9735` / `#16630`.\\r\\n  - Preferred trait shape:\\r\\n    `fn foo(&self, ...) -> impl std::future::Future<Output = T> + Send;`\\r\\n  - Implementations may still use `async fn foo(&self, ...) -> T` when they satisfy that contract.\\r\\n  - Do not use `#[allow(async_fn_in_trait)]` as a shortcut around spelling the future contract explicitly.\\r\\n- When writing tests, prefer comparing the equality of entire objects over fields one by one.\\r\\n- Do not add tests for values that are statically defined.\\r\\n- Do not add negative tests for logic that was removed.\\r\\n- Do not add general product or user-facing documentation to the `docs/` folder. The official Codex documentation lives elsewhere. The exception is app-server API documentation, which is covered by the app-server guidance below.\\r\\n- Prefer private modules and explicitly exported public crate API.\\r\\n- If you change `ConfigToml` or nested config types, run `just write-config-schema` to update `codex-rs/core/config.schema.json`.\\r\\n- When working with MCP tool calls, prefer using `codex-rs/codex-mcp/src/mcp_connection_manager.rs` to handle mutation of tools and tool calls. Aim to minimize the footprint of changes and leverage existing abstractions rather than plumbing code through multiple levels of function calls.\\r\\n- Do not call `reset_client_session` unnecessarily; let the incremental check logic decide whether to reuse the previous request.\\r\\n- If you change Rust dependencies (`Cargo.toml` or `Cargo.lock`), run `just bazel-lock-update` from the\\r\\n  repo root to refresh `MODULE.bazel.lock`, and include that lockfile update in the same change. CI\\r\\n  verifies lockfile drift.\\r\\n- Bazel does not automatically make source-tree files available to compile-time Rust file access. If\\r\\n  you add `include_str!`, `include_bytes!`, `sqlx::migrate!`, or similar build-time file or\\r\\n  directory reads, update the crate's `BUILD.bazel` (`compile_data`, `build_script_data`, or test\\r\\n  data) or Bazel may fail even when Cargo passes.\\r\\n- Do not create small helper methods that are referenced only once.\\r\\n- For tracing async work, instrument the function or method definition with\\r\\n  `#[tracing::instrument(...)]` instead of attaching spans to futures with\\r\\n  `.instrument(...)` at call sites. Before adding instrumentation, check whether the callee\u2014or\\r\\n  the implementation method it immediately delegates to\u2014is already instrumented.\\r\\n- Avoid large modules:\\r\\n  - Prefer adding new modules instead of growing existing ones.\\r\\n  - Target Rust modules under 500 LoC, excluding tests.\\r\\n  - If a file exceeds roughly 800 LoC, add new functionality in a new module instead of extending\\r\\n    the existing file unless there is a strong documented reason not to.\\r\\n  - This rule applies especially to high-touch files that already attract unrelated changes, such\\r\\n    as `codex-rs/tui/src/app.rs`, `codex-rs/tui/src/bottom_pane/chat_composer.rs`,\\r\\n    `codex-rs/tui/src/bottom_pane/footer.rs`, `codex-rs/tui/src/chatwidget.rs`,\\r\\n    `codex-rs/tui/src/bottom_pane/mod.rs`, and similarly central orchestration modules.\\r\\n  - When extracting code from a large module, move the related tests and module/type docs toward\\r\\n    the new implementation so the invariants stay close to the code that owns them.\\r\\n  - Avoid adding new standalone methods to `codex-rs/tui/src/chatwidget.rs` unless the change is\\r\\n    trivial; prefer new modules/files and keep `chatwidget.rs` focused on orchestration.\\r\\n- When running Rust commands (e.g. `just fix` or `just test`) be patient with the command and never try to kill them using the PID. Rust lock can make the execution slow, this is expected.\\r\\n\\r\\nRun `just fmt` (in the `codex-rs` directory) automatically after you have finished making code changes anywhere in this repository; do not ask for approval to run it. Additionally, run the tests:\\r\\n\\r\\n1. Do not run `cargo test` directly. Use `just test` so test execution follows the repo defaults.\\r\\n2. Run the test for the specific project that was changed. For example, if changes were made in `codex-rs/tui`, run `just test -p codex-tui`.\\r\\n3. Once those pass, if any changes were made in common, core, or protocol, run the complete test suite with `just test`. Avoid `--all-features` for routine local runs because it expands the build matrix and can significantly increase `target/` disk usage; use it only when you specifically need full feature coverage. project-specific or individual tests can be run without asking the user, but do ask the user before running the complete test suite.\\r\\n\\r\\nBefore finalizing a large change to `codex-rs`, run `just fix -p <project>` (in `codex-rs` directory) to fix any linter issues in the code. Prefer scoping with `-p` to avoid slow workspace\u2011wide Clippy builds; only run `just fix` without `-p` if you changed shared crates. Do not re-run tests after running `fix` or `fmt`.\\r\\n\\r\\n## The `codex-core` crate\\r\\n\\r\\nOver time, the `codex-core` crate (defined in `codex-rs/core/`) has become bloated because it is the largest crate, so it is often easier to add something new to `codex-core` rather than refactor out the library code you need so your new code neither takes a dependency on, nor contributes to the size of, `codex-core`.\\r\\n\\r\\nTo that end: **resist adding code to codex-core**!\\r\\n\\r\\nParticularly when introducing a new concept/feature/API, before adding to `codex-core`, consider whether:\\r\\n\\r\\n- There is an existing crate other than `codex-core` that is an appropriate place for your new code to live.\\r\\n- It is time to introduce a new crate to the Cargo workspace for your new functionality. Refactor existing code as necessary to make this happen.\\r\\n\\r\\nLikewise, when reviewing code, do not hesitate to push back on PRs that would unnecessarily add code to `codex-core`.\\r\\n\\r\\n## Code Review Rules\\r\\n\\r\\n### Crate API surface\\r\\n\\r\\nKeep crate API surfaces as small as possible. Avoid proliferating test-only helpers.\\r\\n\\r\\n### Model visible context\\r\\n\\r\\nCodex maintains a context (history of messages) that is sent to the model in inference requests.\\r\\n\\r\\n1. No history rewrite - the context must be built up incrementally.\\r\\n2. Avoid frequent changes to context that cause cache misses.\\r\\n3. No unbounded items - everything injected in the model context must have a bounded size and a hard cap.\\r\\n4. No items larger than 10K tokens.\\r\\n5. Highlight new individual items that can cross >1k tokens as P0. These need an additional manual review.\\r\\n6. All injected fragments must be defined as structs in `core/context` and implement ContextualUserFragment trait\\r\\n\\r\\n### Breaking changes\\r\\n\\r\\nSearch for breaking changes in external integration surfaces:\\r\\n\\r\\n- app-server APIs\\r\\n- raw response item events (`rawResponseItem/*`), even while experimental\\r\\n- CLI parameters\\r\\n- configuration loading\\r\\n- resuming sessions from existing rollouts\\r\\n\\r\\n### Test authoring guidance\\r\\n\\r\\nFor agent changes prefer integration tests over unit tests. Integration tests are under `core/suite` and use `test_codex` to set up a test instance of codex.\\r\\n\\r\\nFeatures that change the agent logic MUST add an integration test:\\r\\n\\r\\n- Provide a list of major logic changes and user-facing behaviors that need to be tested.\\r\\n\\r\\nIf unit tests are needed, put them in a dedicated test file (\\\\*\\\\_tests.rs).\\r\\nAvoid test-only functions in the main implementation.\\r\\n\\r\\nCheck whether there are existing helpers to make tests more streamlined and readable.\\r\\n\\r\\n### Change size guidance (800 lines)\\r\\n\\r\\nUnless the change is mechanical the total number of changed lines should not exceed 800 lines.\\r\\nFor complex logic changes the size should be under 500 lines.\\r\\n\\r\\nIf the change is larger, explore whether it can be split into reviewable stages and identify the smallest coherent stage to land first.\\r\\nBase the staging suggestion on the actual diff, dependencies, and affected call sites.\\r\\n\\r\\n## TUI style conventions\\r\\n\\r\\nSee `codex-rs/tui/styles.md`.\\r\\n\\r\\n## TUI code conventions\\r\\n\\r\\n- Use concise styling helpers from ratatui\u2019s Stylize trait.\\r\\n  - Basic spans: use \\\"text\\\".into()\\r\\n  - Styled spans: use \\\"text\\\".red(), \\\"text\\\".green(), \\\"text\\\".magenta(), \\\"text\\\".dim(), etc.\\r\\n  - Prefer these over constructing styles with `Span::styled` and `Style` directly.\\r\\n  - Example: patch summary file lines\\r\\n    - Desired: vec![\\\"  \u2514 \\\".into(), \\\"M\\\".red(), \\\" \\\".dim(), \\\"tui/src/app.rs\\\".dim()]\\r\\n\\r\\n### TUI Styling (ratatui)\\r\\n\\r\\n- Prefer Stylize helpers: use \\\"text\\\".dim(), .bold(), .cyan(), .italic(), .underlined() instead of manual Style where possible.\\r\\n- Prefer simple conversions: use \\\"text\\\".into() for spans and vec![\u2026].into() for lines; when inference is ambiguous (e.g., Paragraph::new/Cell::from), use Line::from(spans) or Span::from(text).\\r\\n- Computed styles: if the Style is computed at runtime, using `Span::styled` is OK (`Span::from(text).set_style(style)` is also acceptable).\\r\\n- Avoid hardcoded white: do not use `.white()`; prefer the default foreground (no color).\\r\\n- Chaining: combine helpers by chaining for readability (e.g., url.cyan().underlined()).\\r\\n- Single items: prefer \\\"text\\\".into(); use Line::from(text) or Span::from(text) only when the target type isn\u2019t obvious from context, or when using .into() would require extra type annotations.\\r\\n- Building lines: use vec![\u2026].into() to construct a Line when the target type is obvious and no extra type annotations are needed; otherwise use Line::from(vec![\u2026]).\\r\\n- Avoid churn: don\u2019t refactor between equivalent forms (Span::styled \u2194 set_style, Line::from \u2194 .into()) without a clear readability or functional gain; follow file\u2011local conventions and do not introduce type annotations solely to satisfy .into().\\r\\n- Compactness: prefer the form that stays on one line after rustfmt; if only one of Line::from(vec![\u2026]) or vec![\u2026].into() avoids wrapping, choose that. If both wrap, pick the one with fewer wrapped lines.\\r\\n\\r\\n### Text wrapping\\r\\n\\r\\n- Always use textwrap::wrap to wrap plain strings.\\r\\n- If you have a ratatui Line and you want to wrap it, use the helpers in tui/src/wrapping.rs, e.g. word_wrap_lines / word_wrap_line.\\r\\n- If you need to indent wrapped lines, use the initial_indent / subsequent_indent options from RtOptions if you can, rather than writing custom logic.\\r\\n- If you have a list of lines and you need to prefix them all with some prefix (optionally different on the first vs subsequent lines), use the `prefix_lines` helper from line_utils.\\r\\n\\r\\n## Tests\\r\\n\\r\\n### Test module organization\\r\\n\\r\\n- When adding a new test module, define its contents in a separate sibling file rather than inline in the implementation file.\\r\\n- Use an explicit `#[path = \\\"..._tests.rs\\\"]` attribute so the test filename is descriptive and easy to locate:\\r\\n\\r\\n  ```rust\\r\\n  #[cfg(test)]\\r\\n  #[path = \\\"parser_tests.rs\\\"]\\r\\n  mod tests;\\r\\n  ```\\r\\n\\r\\n- This applies only when introducing a new test module. Do not move or rewrite existing inline `#[cfg(test)] mod tests { ... }` modules solely to follow this convention.\\r\\n\\r\\n### Snapshot tests\\r\\n\\r\\nThis repo uses snapshot tests (via `insta`), especially in `codex-rs/tui`, to validate rendered output.\\r\\n\\r\\n**Requirement:** any change that affects user-visible UI (including adding new UI) must include\\r\\ncorresponding `insta` snapshot coverage (add a new snapshot test if one doesn't exist yet, or\\r\\nupdate the existing snapshot). Review and accept snapshot updates as part of the PR so UI impact\\r\\nis easy to review and future diffs stay visual.\\r\\n\\r\\nWhen UI or text output changes intentionally, update the snapshots as follows:\\r\\n\\r\\n- Run tests to generate any updated snapshots:\\r\\n  - `just test -p codex-tui`\\r\\n- Check what\u2019s pending:\\r\\n  - `cargo insta pending-snapshots -p codex-tui`\\r\\n- Review changes by reading the generated `*.snap.new` files directly in the repo, or preview a specific file:\\r\\n  - `cargo insta show -p codex-tui path/to/file.snap.new`\\r\\n- Only if you intend to accept all new snapshots in this crate, run:\\r\\n  - `cargo insta accept -p codex-tui`\\r\\n\\r\\nIf you don\u2019t have the tool:\\r\\n\\r\\n- `cargo install --locked cargo-insta`\\r\\n\\r\\n### Benchmarks\\r\\n\\r\\ncargo benchmarks can be run with `just bench`, use the divan crate to write new ones.\\r\\n\\r\\nUse `just bench-smoke` to dry-run the benchmark for a single iteration to ensure it works.\\r\\n\\r\\n### Test assertions\\r\\n\\r\\n- Tests should use pretty_assertions::assert_eq for clearer diffs. Import this at the top of the test module if it isn't already.\\r\\n- Prefer deep equals comparisons whenever possible. Perform `assert_eq!()` on entire objects, rather than individual fields.\\r\\n- Avoid mutating process environment in tests; prefer passing environment-derived flags or dependencies from above.\\r\\n\\r\\n### Spawning workspace binaries in tests (Cargo vs Bazel)\\r\\n\\r\\n- Prefer `codex_utils_cargo_bin::cargo_bin(\\\"...\\\")` over `assert_cmd::Command::cargo_bin(...)` or `escargot` when tests need to spawn first-party binaries.\\r\\n  - Under Bazel, binaries and resources may live under runfiles; use `codex_utils_cargo_bin::cargo_bin` to resolve absolute paths that remain stable after `chdir`.\\r\\n- When locating fixture files or test resources under Bazel, avoid `env!(\\\"CARGO_MANIFEST_DIR\\\")`. Prefer `codex_utils_cargo_bin::find_resource!` so paths resolve correctly under both Cargo and Bazel runfiles.\\r\\n\\r\\n### Integration tests\\r\\n\\r\\n#### codex_core integration testing\\r\\n\\r\\n- Prefer the utilities in `core_test_support::responses` when writing end-to-end Codex tests.\\r\\n- Use `TestCodexBuilder::build_with_auto_env()` by default to ensure that new tests work with\\r\\n  foreign app/exec OSes. See $remote-tests for details.\\r\\n- All `mount_sse*` helpers return a `ResponseMock`; hold onto it so you can assert against outbound `/responses` POST bodies.\\r\\n- Use `ResponseMock::single_request()` when a test should only issue one POST, or `ResponseMock::requests()` to inspect every captured `ResponsesRequest`.\\r\\n- `ResponsesRequest` exposes helpers (`body_json`, `input`, `function_call_output`, `custom_tool_call_output`, `call_output`, `header`, `path`, `query_param`) so assertions can target structured payloads instead of manual JSON digging.\\r\\n- Build SSE payloads with the provided `ev_*` constructors and the `sse(...)`.\\r\\n- Prefer `wait_for_event` over `wait_for_event_with_timeout`.\\r\\n- Prefer `mount_sse_once` over `mount_sse_once_match` or `mount_sse_sequence`\\r\\n\\r\\n- Typical pattern:\\r\\n\\r\\n  ```rust\\r\\n  let mock = responses::mount_sse_once(&server, responses::sse(vec![\\r\\n      responses::ev_response_created(\\\"resp-1\\\"),\\r\\n      responses::ev_function_call(call_id, \\\"shell\\\", &serde_json::to_string(&args)?),\\r\\n      responses::ev_completed(\\\"resp-1\\\"),\\r\\n  ])).await;\\r\\n\\r\\n  codex.submit(Op::UserTurn { ... }).await?;\\r\\n\\r\\n  // Assert request body if needed.\\r\\n  let request = mock.single_request();\\r\\n  // assert using request.function_call_output(call_id) or request.json_body() or other helpers.\\r\\n  ```\\r\\n\\r\\n#### app-server integration testing\\r\\n\\r\\n- Tests should exercise app-server's public JSON-RPC API.\\r\\n- Use similar server mocking as for core integration tests.\\r\\n- Use `TestAppServer::builder().build()` and `TestAppServer::send_thread_start_request_with_auto_env()`\\r\\n  by default to ensure that new tests work with foreign app/exec OSes. See `$remote-tests` for\\r\\n  details.\\r\\n\\r\\n## App-server API Development Best Practices\\r\\n\\r\\nThese guidelines apply to app-server protocol work in `codex-rs`, especially:\\r\\n\\r\\n- `app-server-protocol/src/protocol/common.rs`\\r\\n- `app-server-protocol/src/protocol/v2.rs`\\r\\n- `app-server/README.md`\\r\\n\\r\\n### Core Rules\\r\\n\\r\\n- All active API development should happen in app-server v2. Do not add new API surface area to v1.\\r\\n- Follow payload naming consistently:\\r\\n  `*Params` for request payloads, `*Response` for responses, and `*Notification` for notifications.\\r\\n- Expose RPC methods as `<resource>/<method>` and keep `<resource>` singular (for example, `thread/read`, `app/list`).\\r\\n- Always expose fields as camelCase on the wire with `#[serde(rename_all = \\\"camelCase\\\")]` unless a tagged union or explicit compatibility requirement needs a targeted rename.\\r\\n- Always expose string enum values as camelCase on the wire with matching serde and TS `rename_all = \\\"camelCase\\\"` annotations unless an explicit compatibility requirement needs targeted renames.\\r\\n- Exception: config RPC payloads are expected to use snake_case to mirror config.toml keys (see the config read/write/list APIs in `app-server-protocol/src/protocol/v2.rs`).\\r\\n- Always set `#[ts(export_to = \\\"v2/\\\")]` on v2 request/response/notification types so generated TypeScript lands in the correct namespace.\\r\\n- Never use `#[serde(skip_serializing_if = \\\"Option::is_none\\\")]` for v2 API payload fields.\\r\\n  Exception: client->server requests that intentionally have no params may use:\\r\\n  `params: #[ts(type = \\\"undefined\\\")] #[serde(skip_serializing_if = \\\"Option::is_none\\\")] Option<()>`.\\r\\n- Keep Rust and TS wire renames aligned. If a field or variant uses `#[serde(rename = \\\"...\\\")]`, add matching `#[ts(rename = \\\"...\\\")]`.\\r\\n- For discriminated unions, use explicit tagging in both serializers:\\r\\n  `#[serde(tag = \\\"type\\\", ...)]` and `#[ts(tag = \\\"type\\\", ...)]`.\\r\\n- Prefer plain `String` IDs at the API boundary (do UUID parsing/conversion internally if needed).\\r\\n- Timestamps should be integer Unix seconds (`i64`) and named `*_at` (for example, `created_at`, `updated_at`, `resets_at`).\\r\\n- For experimental API surface area:\\r\\n  use `#[experimental(\\\"method/or/field\\\")]`, derive `ExperimentalApi` when field-level gating is needed, and use `inspect_params: true` in `common.rs` when only some fields of a method are experimental.\\r\\n\\r\\n### Client->server request payloads (`*Params`)\\r\\n\\r\\n- Every optional field must be annotated with `#[ts(optional = nullable)]`. Do not use `#[ts(optional = nullable)]` outside client->server request payloads (`*Params`).\\r\\n- Optional collection fields (for example `Vec`, `HashMap`) must use `Option<...>` + `#[ts(optional = nullable)]`. Do not use `#[serde(default)]` to model optional collections, and do not use `skip_serializing_if` on v2 payload fields.\\r\\n- When you want omission to mean `false` for boolean fields, use `#[serde(default, skip_serializing_if = \\\"std::ops::Not::not\\\")] pub field: bool` over `Option<bool>`.\\r\\n- For new list methods, implement cursor pagination by default:\\r\\n  request fields `pub cursor: Option<String>` and `pub limit: Option<u32>`,\\r\\n  response fields `pub data: Vec<...>` and `pub next_cursor: Option<String>`.\\r\\n\\r\\n### Development Workflow\\r\\n\\r\\n- Update app-server docs/examples when API behavior changes (at minimum `app-server/README.md`).\\r\\n- Regenerate schema fixtures when API shapes change:\\r\\n  `just write-app-server-schema`\\r\\n  (and `just write-app-server-schema --experimental` when experimental API fixtures are affected).\\r\\n- Validate with `just test -p codex-app-server-protocol`.\\r\\n- Avoid boilerplate tests that only assert experimental field markers for individual\\r\\n  request fields in `common.rs`; rely on schema generation/tests and behavioral coverage instead.\\r\\n\\r\\n## Python Development Best Practices\\r\\n\\r\\n### Ignore Python 2 compatibility\\r\\n\\r\\nThis project uses Python 3+. You should not use the `__future__` module.\\r\\n\\r\\nIf you need to worry about feature compatibility between different 3.xx point releases, check the\\r\\nclosest `pyproject.toml`'s `requires-python` field to see what minimum runtime version is supported.\\r\\n\\r\\n## Platform Support\\r\\n\\r\\nTests and features must support Linux, macOS and Windows unless feature is explicitly OS-specific.\\r\\n\\r\\nCodex supports running connected app-server and exec-server on different operating systems. See the\\r\\n`$remote-tests` skill for details about integration testing these configurations.\\r\\n\\n</INSTRUCTIONS>\",",
+            "<            },",
+            "<        ],",
+            "<        phase: None,",
+            "<        internal_chat_message_metadata_passthrough: Some(",
+            "<            InternalChatMessageMetadataPassthrough {",
+            "<                turn_id: Some(",
+            "<                    \"01a180f8-9350-725f-8738-1890be4827f3\",",
+            "<                ),",
+            "<                create_time: Some(",
+            "<                    Number(1793165136.756859),",
+            "<                ),",
+            "<                content_item_kinds: Some(",
+            "<                    [",
+            "<                        ContentItemKind(",
+            "<                            \"agents_md.instructions\",",
+            "<                        ),",
+            "<                    ],",
+            "<                ),",
+            "<                executed_tool_calls: None,",
+            "<            },",
+            "<        ),",
+            "<    },",
+            "<    Message {",
+            "<        id: None,",
+            "<        role: \"developer\",",
+            "<        content: [",
+            "<            InputText {",
+            "<                text: \"<permissions instructions>\\nFilesystem sandboxing defines which files can be read or written. `sandbox_mode` is `read-only`: The sandbox only permits reading files. Network access is restricted.\\n# Escalation Requests\\r\\n\\r\\nCommands are run outside the sandbox if they are approved by the user, or match an existing rule that allows it to run unrestricted. The command string is split into independent command segments at shell control operators, including but not limited to:\\r\\n\\r\\n- Pipes: |\\r\\n- Logical operators: &&, ||\\r\\n- Command separators: ;\\r\\n- Subshell boundaries: (...), $(...)\\r\\n\\r\\nEach resulting segment is evaluated independently for sandbox restrictions and approval requirements.\\r\\n\\r\\nExample:\\r\\n\\r\\ngit pull | tee output.txt\\r\\n\\r\\nThis is treated as two command segments:\\r\\n\\r\\n[\\\"git\\\", \\\"pull\\\"]\\r\\n\\r\\n[\\\"tee\\\", \\\"output.txt\\\"]\\r\\n\\r\\nCommands that use more advanced shell features like redirection (>, >>, <), substitutions ($(...), ...), environment variables (FOO=bar), or wildcard patterns (*, ?) will not be evaluated against rules, to limit the scope of what an approved rule allows.\\r\\n\\r\\n## How to request escalation\\r\\n\\r\\nIMPORTANT: To request approval to execute a command that will require escalated privileges:\\r\\n\\r\\n- Provide the `sandbox_permissions` parameter with the value `\\\"require_escalated\\\"`\\r\\n- Include a short question asking the user if they want to allow the action in `justification` parameter. e.g. \\\"Do you want to download and install dependencies for this project?\\\"\\r\\n- Optionally suggest a `prefix_rule` - this will be shown to the user with an option to persist the rule approval for future sessions.\\r\\n\\r\\nIf you run a command that is important to solving the user's query, but it fails because of sandboxing or with a likely sandbox-related network error (for example DNS/host resolution, registry/index access, or dependency download failure), rerun the command with \\\"require_escalated\\\". ALWAYS proceed to use the `justification` parameter - do not message the user before requesting approval for the command.\\r\\n\\r\\n## When to request escalation\\r\\n\\r\\nWhile commands are running inside the sandbox, here are some scenarios that will require escalation outside the sandbox:\\r\\n\\r\\n- You need to run a command that writes to a directory that requires it (e.g. running tests that write to /var)\\r\\n- You need to run a GUI app (e.g., open/xdg-open/osascript) to open browsers or files.\\r\\n- If you run a command that is important to solving the user's query, but it fails because of sandboxing or with a likely sandbox-related network error (for example DNS/host resolution, registry/index access, or dependency download failure), rerun the command with `require_escalated`. ALWAYS proceed to use the `sandbox_permissions` and `justification` parameters. do not message the user before requesting approval for the command.\\r\\n- You are about to take a potentially destructive action such as an `rm` or `git reset` that the user did not explicitly ask for.\\r\\n- Be judicious with escalating, but if completing the user's request requires it, you should do so - don't try and circumvent approvals by using other tools.\\r\\n\\r\\n## prefix_rule guidance\\r\\n\\r\\nWhen choosing a `prefix_rule`, request one that will allow you to fulfill similar requests from the user in the future without re-requesting escalation. It should be categorical and reasonably scoped to similar capabilities. You should rarely pass the entire command into `prefix_rule`.\\r\\n\\r\\n### Banned prefix_rules \\r\\nAvoid requesting overly broad prefixes that the user would be ill-advised to approve. For example, do not request [\\\"python3\\\"], [\\\"python\\\", \\\"-\\\"], or other similar prefixes that would allow arbitrary scripting.\\r\\nNEVER provide a prefix_rule argument for destructive commands like rm.\\r\\nNEVER provide a prefix_rule if your command uses a heredoc or herestring. \\r\\n\\r\\n### Examples\\r\\nGood examples of prefixes:\\r\\n- [\\\"npm\\\", \\\"run\\\", \\\"dev\\\"]\\r\\n- [\\\"gh\\\", \\\"pr\\\", \\\"check\\\"]\\r\\n- [\\\"cargo\\\", \\\"test\\\"]\\r\\n</permissions instructions>\",",
+            "<            },",
+            "<        ],",
+            "<        phase: None,",
+            "<        internal_chat_message_metadata_passthrough: Some(",
+            "<            InternalChatMessageMetadataPassthrough {",
+            "<                turn_id: Some(",
+            "<                    \"01a180f8-9350-725f-8738-1890be4827f3\",",
+            "<                ),",
+            "<                create_time: Some(",
+            "<                    Number(1793165136.7568676),",
+            "<                ),",
+            "<                content_item_kinds: Some(",
+            "<                    [",
+            "<                        ContentItemKind(",
+            "<                            \"permissions.instructions\",",
+            "<                        ),",
+            "<                    ],",
+            "<                ),",
+            "<                executed_tool_calls: None,",
+            "<            },",
+            "<        ),",
+            "<    },",
+            "<    Message {",
+            "<        id: None,",
+            "<        role: \"user\",",
+            "<        content: [",
+            "<            InputText {",
+            "<                text: \"<environment_context>\\n  <cwd>D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs</cwd>\\n  <shell>powershell</shell>\\n  <current_date>2026-10-28</current_date>\\n  <timezone>Etc/UTC</timezone>\\n  <filesystem><workspace_roots><root>D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs</root></workspace_roots><permission_profile type=\\\"managed\\\"><file_system type=\\\"restricted\\\"><entry access=\\\"read\\\"><special>:root</special></entry></file_system></permission_profile></filesystem>\\n</environment_context>\",",
+            "<            },",
+            "<        ],",
+            "<        phase: None,",
+            "<        internal_chat_message_metadata_passthrough: Some(",
+            "<            InternalChatMessageMetadataPassthrough {",
+            "<                turn_id: Some(",
+            "<                    \"01a180f8-9350-725f-8738-1890be4827f3\",",
+            "<                ),",
+            "<                create_time: Some(",
+            "<                    Number(1793165136.7568686),",
+            "<                ),",
+            "<                content_item_kinds: Some(",
+            "<                    [",
+            "<                        ContentItemKind(",
+            "<                            \"environments.environment_context\",",
+            "<                        ),",
+            "<                    ],",
+            "<                ),",
+            "<                executed_tool_calls: None,",
+            "<            },",
+            "<        ),",
+            "<    },",
+            "<    Message {",
+            "<        id: None,",
+            "<        role: \"developer\",",
+            "<        content: [",
+            "<            InputText {",
+            "<                text: \"<multi_agent_mode>Any earlier instruction enabling proactive multi-agent delegation no longer applies. Do not spawn sub-agents unless the user or applicable AGENTS.md/skill instructions explicitly ask for sub-agents, delegation, or parallel agent work.</multi_agent_mode>\",",
+            "<            },",
+            "<        ],",
+            "<        phase: None,",
+            "<        internal_chat_message_metadata_passthrough: Some(",
+            "<            InternalChatMessageMetadataPassthrough {",
+            "<                turn_id: Some(",
+            "<                    \"01a180f8-9350-725f-8738-1890be4827f3\",",
+            "<                ),",
+            "<                create_time: Some(",
+            "<                    Number(1793165136.7568698),",
+            "<                ),",
+            "<                content_item_kinds: Some(",
+            "<                    [",
+            "<                        ContentItemKind(",
+            "<                            \"multi_agent.mode_instructions\",",
+            "<                        ),",
+            "<                    ],",
+            "<                ),",
+            "<                executed_tool_calls: None,",
+            "<            },",
+            "<        ),",
+            "<    },",
+            "<    Message {",
+            "<        id: None,",
+            "<        role: \"developer\",",
+            "<        content: [",
+            "<            InputText {",
+            "<                text: \"<managed_developer_instructions>\\nThe previously provided managed developer instructions no longer apply.\\n</managed_developer_instructions>\",",
+            "<            },",
+            "<        ],",
+            "<        phase: None,",
+            "<        internal_chat_message_metadata_passthrough: Some(",
+            "<            InternalChatMessageMetadataPassthrough {",
+            "<                turn_id: Some(",
+            "<                    \"01a180f8-9350-725f-8738-1890be4827f3\",",
+            "<                ),",
+            "<                create_time: Some(",
+            "<                    Number(1793165136.7568705),",
+            "<                ),",
+            "<                content_item_kinds: Some(",
+            "<                    [",
+            "<                        ContentItemKind(",
+            "<                            \"managed_config.developer_instructions\",",
+            "<                        ),",
+            "<                    ],",
+            "<                ),",
+            "<                executed_tool_calls: None,",
+            "<            },",
+            "<        ),",
+            "<    },",
+            " ]",
+            "",
+            "",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "",
+            ""
+          ]
+        }
+      ],
+      "classification": "fork_history_semantic_mismatch",
+      "source": "codex-rs/core/src/agent/control_tests.rs:1696",
+      "finding": "Full expected/actual diff is retained. No assertion or history sanitization rule changed.",
+      "closed": false
+    },
+    {
+      "name": "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+      "observed_result_lines": [
+        {
+          "line": 5275,
+          "outcome": "FAILED",
+          "output_block_start": 5156
+        },
+        {
+          "line": 5630,
+          "outcome": "FAILED",
+          "output_block_start": 5512
+        },
+        {
+          "line": 5981,
+          "outcome": "FAILED",
+          "output_block_start": 5863
+        }
+      ],
+      "diagnostic_observations": [
+        {
+          "line": 5336,
+          "text_lines": [
+            "---- environment_selection::tests::blocking_snapshot_waits_for_starting_environment stdout ----",
+            "2026-10-28T05:24:49.308782Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new",
+            "2026-10-28T05:24:49.309642Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}: codex_core::environment_selection: new",
+            "2026-10-28T05:24:49.309708Z  INFO environments.wait_until_ready{environment_id=remote}: codex_core::environment_selection: new",
+            "2026-10-28T05:24:49.310685Z  INFO codex.exec_server.remote.connect:codex.exec_server.request{otel.kind=\"client\" otel.name=\"initialize\"}: codex_exec_server::rpc: new",
+            "2026-10-28T05:24:49.311414Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.info{remote=true}: codex_exec_server::environment: new",
+            "",
+            "thread 'environment_selection::tests::blocking_snapshot_waits_for_starting_environment' (5296) panicked at core/src\\environment_selection.rs:1284:9:",
+            "blocking snapshot should contain its environment wait span: 2026-10-28T05:24:49.308782Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new",
+            "2026-10-28T05:24:49.309642Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}: codex_core::environment_selection: new",
+            "2026-10-28T05:24:49.309708Z  INFO environments.wait_until_ready{environment_id=remote}: codex_core::environment_selection: new",
+            "2026-10-28T05:24:49.310685Z  INFO codex.exec_server.remote.connect:codex.exec_server.request{otel.kind=\"client\" otel.name=\"initialize\"}: codex_exec_server::rpc: new",
+            "2026-10-28T05:24:49.311414Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.info{remote=true}: codex_exec_server::environment: new",
+            "",
+            ""
+          ]
+        },
+        {
+          "line": 5691,
+          "text_lines": [
+            "---- environment_selection::tests::blocking_snapshot_waits_for_starting_environment stdout ----",
+            "2026-10-28T05:26:24.334832Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new",
+            "2026-10-28T05:26:24.336142Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}: codex_core::environment_selection: new",
+            "2026-10-28T05:26:24.336187Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.wait_until_ready{remote=true}: codex_exec_server::environment: new",
+            "2026-10-28T05:26:24.336261Z  INFO environments.wait_until_ready{environment_id=remote}: codex_core::environment_selection: new",
+            "2026-10-28T05:26:24.337594Z  INFO codex.exec_server.remote.connect:codex.exec_server.request{otel.kind=\"client\" otel.name=\"initialize\"}: codex_exec_server::rpc: new",
+            "2026-10-28T05:26:24.338558Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.info{remote=true}: codex_exec_server::environment: new",
+            "",
+            "thread 'environment_selection::tests::blocking_snapshot_waits_for_starting_environment' (9992) panicked at core/src\\environment_selection.rs:1284:9:",
+            "blocking snapshot should contain its environment wait span: 2026-10-28T05:26:24.334832Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new",
+            "2026-10-28T05:26:24.336142Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}: codex_core::environment_selection: new",
+            "2026-10-28T05:26:24.336187Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.wait_until_ready{remote=true}: codex_exec_server::environment: new",
+            "2026-10-28T05:26:24.336261Z  INFO environments.wait_until_ready{environment_id=remote}: codex_core::environment_selection: new",
+            "2026-10-28T05:26:24.337594Z  INFO codex.exec_server.remote.connect:codex.exec_server.request{otel.kind=\"client\" otel.name=\"initialize\"}: codex_exec_server::rpc: new",
+            "2026-10-28T05:26:24.338558Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.info{remote=true}: codex_exec_server::environment: new",
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "line": 6042,
+          "text_lines": [
+            "---- environment_selection::tests::blocking_snapshot_waits_for_starting_environment stdout ----",
+            "2026-10-28T05:27:15.466635Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new",
+            "2026-10-28T05:27:15.467848Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}: codex_core::environment_selection: new",
+            "2026-10-28T05:27:15.467901Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.wait_until_ready{remote=true}: codex_exec_server::environment: new",
+            "2026-10-28T05:27:15.468018Z  INFO environments.wait_until_ready{environment_id=remote}: codex_core::environment_selection: new",
+            "2026-10-28T05:27:15.469341Z  INFO codex.exec_server.remote.connect:codex.exec_server.request{otel.kind=\"client\" otel.name=\"initialize\"}: codex_exec_server::rpc: new",
+            "2026-10-28T05:27:15.470438Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.info{remote=true}: codex_exec_server::environment: new",
+            "",
+            "thread 'environment_selection::tests::blocking_snapshot_waits_for_starting_environment' (7464) panicked at core/src\\environment_selection.rs:1284:9:",
+            "blocking snapshot should contain its environment wait span: 2026-10-28T05:27:15.466635Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new",
+            "2026-10-28T05:27:15.467848Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}: codex_core::environment_selection: new",
+            "2026-10-28T05:27:15.467901Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.wait_until_ready{remote=true}: codex_exec_server::environment: new",
+            "2026-10-28T05:27:15.468018Z  INFO environments.wait_until_ready{environment_id=remote}: codex_core::environment_selection: new",
+            "2026-10-28T05:27:15.469341Z  INFO codex.exec_server.remote.connect:codex.exec_server.request{otel.kind=\"client\" otel.name=\"initialize\"}: codex_exec_server::rpc: new",
+            "2026-10-28T05:27:15.470438Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.info{remote=true}: codex_exec_server::environment: new",
+            "",
+            "",
+            ""
+          ]
+        }
+      ],
+      "classification": "missing_expected_nested_trace_span",
+      "source": "codex-rs/core/src/environment_selection.rs:1284",
+      "finding": "The asserted parent/child span string is absent; observed log includes environment waits. This alone does not prove a product wait failure or a scheduler race.",
+      "closed": false
+    },
+    {
+      "name": "guardian::tests::guardian_reused_trunk_ignores_stale_prior_turn_completion",
+      "observed_result_lines": [
+        {
+          "line": 5323,
+          "outcome": "FAILED",
+          "output_block_start": 5156
+        },
+        {
+          "line": 5674,
+          "outcome": "ok",
+          "output_block_start": 5512
+        },
+        {
+          "line": 6025,
+          "outcome": "ok",
+          "output_block_start": 5863
+        }
+      ],
+      "diagnostic_observations": [
+        {
+          "line": 5351,
+          "text_lines": [
+            "---- guardian::tests::guardian_reused_trunk_ignores_stale_prior_turn_completion stdout ----",
+            "",
+            "thread 'guardian::tests::guardian_reused_trunk_ignores_stale_prior_turn_completion' (1176) panicked at core/src\\guardian\\tests.rs:2786:9:",
+            "expected second guardian assessment",
+            "",
+            ""
+          ]
+        }
+      ],
+      "classification": "missing_second_guardian_assessment",
+      "source": "codex-rs/core/src/guardian/tests.rs:2786",
+      "finding": "Observed non-completed second outcome; no race/root-cause claim and no retry promotion.",
+      "closed": false
+    },
+    {
+      "name": "guardian::tests::guardian_reuses_prompt_cache_key_and_appends_prior_reviews",
+      "observed_result_lines": [
+        {
+          "line": 4009,
+          "outcome": "FAILED",
+          "output_block_start": 3866
+        }
+      ],
+      "diagnostic_observations": [
+        {
+          "line": 4047,
+          "text_lines": [
+            "---- guardian::tests::guardian_reuses_prompt_cache_key_and_appends_prior_reviews stdout ----",
+            "",
+            "thread 'guardian::tests::guardian_reuses_prompt_cache_key_and_appends_prior_reviews' (9420) panicked at core/src\\guardian\\tests.rs:2431:10:",
+            "committed guardian fork snapshot",
+            "",
+            ""
+          ]
+        }
+      ],
+      "classification": "missing_committed_guardian_fork",
+      "source": "codex-rs/core/src/guardian/tests.rs:2431",
+      "finding": "Observed missing committed snapshot; its initiating cause is not proved by the assertion alone.",
+      "closed": false
+    },
+    {
+      "name": "remote_windows_sandbox_process_accepts_process_write",
+      "observed_result_lines": [
+        {
+          "line": 3630,
+          "outcome": "FAILED",
+          "output_block_start": 3604
+        }
+      ],
+      "diagnostic_observations": [
+        {
+          "line": 3634,
+          "text_lines": [
+            "---- remote_windows_sandbox_process_accepts_process_write stdout ----",
+            "Error: exec-server rejected request (-32603): Windows filesystem isolation is unavailable: neither the direct token nor the account broker is qualified",
+            "",
+            ""
+          ]
+        }
+      ],
+      "classification": "windows_isolation_qualification_refusal",
+      "source": "codex-rs/exec-server/tests/exec_process.rs:1630; codex-rs/windows-sandbox-rs/src/legacy_boundary.rs:16",
+      "finding": "Original request is rejected because neither filesystem-isolation backend is qualified. Do not disable the guard or relabel the request as a pass.",
+      "closed": false
+    },
+    {
+      "name": "tools::handlers::multi_agents::tests::multi_agent_v2_wait_agent_uses_configured_default_timeout",
+      "observed_result_lines": [
+        {
+          "line": 4460,
+          "outcome": "FAILED",
+          "output_block_start": 4185
+        },
+        {
+          "line": 5096,
+          "outcome": "ok",
+          "output_block_start": 4515
+        }
+      ],
+      "diagnostic_observations": [
+        {
+          "line": 4502,
+          "text_lines": [
+            "---- tools::handlers::multi_agents::tests::multi_agent_v2_wait_agent_uses_configured_default_timeout stdout ----",
+            "",
+            "thread 'tools::handlers::multi_agents::tests::multi_agent_v2_wait_agent_uses_configured_default_timeout' (6592) panicked at core/src\\tools\\handlers\\multi_agents_tests.rs:3155:5:",
+            "wait_agent should not return before the configured default timeout",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "",
+            ""
+          ]
+        }
+      ],
+      "classification": "returned_before_expected_wait_budget",
+      "source": "codex-rs/core/src/tools/handlers/multi_agents_tests.rs:3155",
+      "finding": "The outer 20ms wait completed while configured default is 50ms; reason is not proved. No timeout increase or timing assertion removal.",
+      "closed": false
+    }
+  ],
+  "source_archive": "evidence/actual-merge-source.json.xz",
+  "native_retest_executed": false,
+  "closed": false
+}

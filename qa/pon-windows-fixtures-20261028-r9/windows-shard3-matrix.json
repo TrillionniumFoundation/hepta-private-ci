@@ -1,0 +1,784 @@
+{
+  "schema": "hepta-windows-readonly-triage-v1",
+  "created_at_utc": "2026-10-28T05:23:59.661677+00:00",
+  "ci": {
+    "head": "682a88a7f847e31ffb6cd5e0a630dd71dde4bfee",
+    "base": "3e9efb15faa261a4dc3ffc3205cd259aaee41a3f",
+    "actual_merge": "f9923f7809bf78de8e54885699b67f3816bf2be2",
+    "run": 40633626405,
+    "job": 122636270464,
+    "conclusion": "failure"
+  },
+  "raw_log": {
+    "path": "/workspace/scratch/56818e4fba76/recovery/round8/hepta-682-windows-shard3-original.raw.log",
+    "bytes": 608747,
+    "sha256": "fb8799477f23566114297d926fd0337904cf1e20435d88665e2a71995fcf5d68",
+    "cr_count": 4957,
+    "retained_archive": "evidence/windows-shard3.raw.log.xz"
+  },
+  "earlier_normalized_readback": {
+    "path": "/workspace/scratch/56818e4fba76/recovery/round8/hepta-682-windows-shard3-original.log",
+    "bytes": 603790,
+    "sha256": "edaff9a480a8e783efbb28dc623251197f57629a7ca569164a70fd25044f48b5",
+    "correction": "Initial apply_patch retention normalized CRLF. This is a normalized readback, not the original connector text bytes.",
+    "equals_raw_after_crlf_to_lf": true
+  },
+  "original_bazel_target_denominator": {
+    "declared": 157,
+    "executed": 103,
+    "passed": 100,
+    "failed": 3,
+    "skipped": 54,
+    "log_line": 4467,
+    "verbatim": "Executed 103 out of 157 tests: 100 tests pass, 3 fail locally, and 54 were skipped."
+  },
+  "failed_target_test_case_denominators": {
+    "queue_service": {
+      "passed": 31,
+      "failed": 4,
+      "ignored": 0
+    },
+    "matrixd": {
+      "passed": 38,
+      "failed": 2,
+      "ignored": 0
+    },
+    "agentd": {
+      "passed": 150,
+      "failed": 37,
+      "ignored": 1,
+      "batches": [
+        {
+          "passed": 51,
+          "failed": 16,
+          "ignored": 1,
+          "filtered": 120
+        },
+        {
+          "passed": 63,
+          "failed": 14,
+          "ignored": 0,
+          "filtered": 111
+        },
+        {
+          "passed": 36,
+          "failed": 7,
+          "ignored": 0,
+          "filtered": 145
+        }
+      ]
+    }
+  },
+  "counting_rule": "Only first full test-output section, before log-tail replay at line 4469; tail prints are not additional test executions. Filtered counts repeat the shared binary universe and are not summed into selected cases.",
+  "classes": {
+    "required_prompt_registry_unsupported_windows": {
+      "count": 29,
+      "source": "codex-rs/hepta-agentd/src/state.rs:115; codex-rs/hepta-agentd/src/prompt_runtime.rs:536; codex-rs/hepta-prompt-registry/src/durable.rs:1408",
+      "certainty": "proved from compiled cfg branch and the first failure details"
+    },
+    "final_use_store_unsupported_windows": {
+      "count": 3,
+      "source": "codex-rs/hepta-agentd/src/browser_servo.rs:892; codex-rs/hepta-contracts/src/final_use_store.rs:442",
+      "certainty": "proved from compiled cfg branch and the first failure details"
+    },
+    "directory_fixture_missing_windows_directory_open_flags": {
+      "count": 5,
+      "source": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs:173; existing compatible fixture codex-rs/hepta-learning-ledger/src/production_tests.rs:204",
+      "certainty": "exact failing call and Windows requirement identified; patch and native proof still pending"
+    },
+    "matrix_missing_rendezvous_misclassified": {
+      "count": 2,
+      "source": "codex-rs/hepta-matrixd/src/control.rs:437; codex-rs/uds/src/lib.rs:333",
+      "certainty": "specific control flow identified; no new native rerun; missing path vs race not instrumented in original run"
+    },
+    "queue_python_hook_did_not_enforce_expected_behavior": {
+      "count": 4,
+      "source": "codex-rs/ext/queue/tests/queue_service.rs:168,200; codex-rs/hooks/src/engine/command_runner.rs:391",
+      "certainty": "observed outcome only; original child exit/stdout/stderr unavailable, root cause still open"
+    }
+  },
+  "all_failed_cases": [
+    {
+      "name": "automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit",
+      "first_failed_line": 3777,
+      "first_detail_line": 3854,
+      "raw_detail_text_lines": [
+        "---- automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit stdout ----",
+        "",
+        "thread 'automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit' (4424) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+        "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement",
+      "first_failed_line": 3775,
+      "first_detail_line": 3843,
+      "raw_detail_text_lines": [
+        "---- automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement stdout ----",
+        "",
+        "thread 'automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement' (1072) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+        "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen",
+      "first_failed_line": 3776,
+      "first_detail_line": 3849,
+      "raw_detail_text_lines": [
+        "---- automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen stdout ----",
+        "",
+        "thread 'automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen' (3416) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+        "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "automation::service_tests::production_constructor_never_resumes_a_draining_owner",
+      "first_failed_line": 3778,
+      "first_detail_line": 3859,
+      "raw_detail_text_lines": [
+        "---- automation::service_tests::production_constructor_never_resumes_a_draining_owner stdout ----",
+        "",
+        "thread 'automation::service_tests::production_constructor_never_resumes_a_draining_owner' (1264) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+        "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn",
+      "first_failed_line": 3796,
+      "first_detail_line": 3884,
+      "raw_detail_text_lines": [
+        "---- automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn stdout ----",
+        "",
+        "thread 'automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn' (6628) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+        "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation",
+      "first_failed_line": 3795,
+      "first_detail_line": 3879,
+      "raw_detail_text_lines": [
+        "---- automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation stdout ----",
+        "",
+        "thread 'automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation' (8352) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+        "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen",
+      "first_failed_line": 3797,
+      "first_detail_line": 3889,
+      "raw_detail_text_lines": [
+        "---- automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen stdout ----",
+        "",
+        "thread 'automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen' (6684) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+        "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding",
+      "first_failed_line": 3792,
+      "first_detail_line": 3864,
+      "raw_detail_text_lines": [
+        "---- browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding stdout ----",
+        "",
+        "thread 'browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding' (6296) panicked at hepta-agentd/src\\browser_servo.rs:904:10:",
+        "authority: UnsafeStateDirectory",
+        ""
+      ],
+      "classification": "final_use_store_unsupported_windows"
+    },
+    {
+      "name": "browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary",
+      "first_failed_line": 3793,
+      "first_detail_line": 3869,
+      "raw_detail_text_lines": [
+        "---- browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary stdout ----",
+        "",
+        "thread 'browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary' (5056) panicked at hepta-agentd/src\\browser_servo.rs:904:10:",
+        "authority: UnsafeStateDirectory",
+        ""
+      ],
+      "classification": "final_use_store_unsupported_windows"
+    },
+    {
+      "name": "browser_servo::tests::non_effect_calls_never_enter_final_use_authority",
+      "first_failed_line": 3794,
+      "first_detail_line": 3874,
+      "raw_detail_text_lines": [
+        "---- browser_servo::tests::non_effect_calls_never_enter_final_use_authority stdout ----",
+        "",
+        "thread 'browser_servo::tests::non_effect_calls_never_enter_final_use_authority' (8188) panicked at hepta-agentd/src\\browser_servo.rs:904:10:",
+        "authority: UnsafeStateDirectory",
+        ""
+      ],
+      "classification": "final_use_store_unsupported_windows"
+    },
+    {
+      "name": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+      "first_failed_line": 3585,
+      "first_detail_line": 3613,
+      "raw_detail_text_lines": [
+        "---- caller_abort_after_core_started_keeps_exact_authority_until_persistence stdout ----",
+        "Error: timed out waiting for `D:\\tmp\\.tmp8S6MT1\\queue_blocking_prompt_hook.entered`",
+        "",
+        "Caused by:",
+        "    deadline has elapsed",
+        ""
+      ],
+      "classification": "queue_python_hook_did_not_enforce_expected_behavior"
+    },
+    {
+      "name": "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+      "first_failed_line": 3828,
+      "first_detail_line": 3899,
+      "raw_detail_text_lines": [
+        "---- cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation stdout ----",
+        "",
+        "thread 'cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation' (6808) panicked at hepta-agentd/src\\cognitive_ranker_tests.rs:698:74:",
+        "called `Result::unwrap()` on an `Err` value: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records",
+      "first_failed_line": 3827,
+      "first_detail_line": 3894,
+      "raw_detail_text_lines": [
+        "---- cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records stdout ----",
+        "",
+        "thread 'cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records' (6284) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+        "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        ""
+      ],
+      "classification": "directory_fixture_missing_windows_directory_open_flags"
+    },
+    {
+      "name": "cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends",
+      "first_failed_line": 3829,
+      "first_detail_line": 3904,
+      "raw_detail_text_lines": [
+        "---- cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends stdout ----",
+        "",
+        "thread 'cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends' (6664) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+        "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        ""
+      ],
+      "classification": "directory_fixture_missing_windows_directory_open_flags"
+    },
+    {
+      "name": "cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment",
+      "first_failed_line": 3831,
+      "first_detail_line": 3914,
+      "raw_detail_text_lines": [
+        "---- cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment stdout ----",
+        "",
+        "thread 'cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment' (6168) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+        "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        ""
+      ],
+      "classification": "directory_fixture_missing_windows_directory_open_flags"
+    },
+    {
+      "name": "cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently",
+      "first_failed_line": 3830,
+      "first_detail_line": 3909,
+      "raw_detail_text_lines": [
+        "---- cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently stdout ----",
+        "",
+        "thread 'cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently' (6960) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+        "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        ""
+      ],
+      "classification": "directory_fixture_missing_windows_directory_open_flags"
+    },
+    {
+      "name": "cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict",
+      "first_failed_line": 3832,
+      "first_detail_line": 3919,
+      "raw_detail_text_lines": [
+        "---- cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict stdout ----",
+        "",
+        "thread 'cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict' (8240) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+        "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "",
+        ""
+      ],
+      "classification": "directory_fixture_missing_windows_directory_open_flags"
+    },
+    {
+      "name": "control::lifecycle_tests::control_shutdown_joins_in_flight_connections",
+      "first_failed_line": 3667,
+      "first_detail_line": 3708,
+      "raw_detail_text_lines": [
+        "---- control::lifecycle_tests::control_shutdown_joins_in_flight_connections stdout ----",
+        "Error: matrixd control socket path is not stale: \\\\?\\D:\\tmp\\hmx-lifecycle-eMs5UN\\run\\aaghu64s7r56mdd2v36p3hkrmci.mx",
+        ""
+      ],
+      "classification": "matrix_missing_rendezvous_misclassified"
+    },
+    {
+      "name": "control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity",
+      "first_failed_line": 3670,
+      "first_detail_line": 3711,
+      "raw_detail_text_lines": [
+        "---- control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity stdout ----",
+        "Error: Io(Custom { kind: AlreadyExists, error: \"matrixd control socket path is not stale: \\\\\\\\?\\\\D:\\\\tmp\\\\hmx-control-dCjBIa\\\\fleet\\\\run\\\\aaghu64s7r56mdd2v36p3hkrmci.mx\" })",
+        "",
+        ""
+      ],
+      "classification": "matrix_missing_rendezvous_misclassified"
+    },
+    {
+      "name": "core_error_after_started_never_releases_ambiguous_dispatch",
+      "first_failed_line": 3588,
+      "first_detail_line": 3624,
+      "raw_detail_text_lines": [
+        "---- core_error_after_started_never_releases_ambiguous_dispatch stdout ----",
+        "Error: timed out waiting for `D:\\tmp\\.tmp1ITumY\\queue_blocking_prompt_hook.entered`",
+        "",
+        "Caused by:",
+        "    deadline has elapsed",
+        ""
+      ],
+      "classification": "queue_python_hook_did_not_enforce_expected_behavior"
+    },
+    {
+      "name": "explicitly_started_rejected_queue_messages_remain_durable",
+      "first_failed_line": 3586,
+      "first_detail_line": 3619,
+      "raw_detail_text_lines": [
+        "---- explicitly_started_rejected_queue_messages_remain_durable stdout ----",
+        "",
+        "thread 'explicitly_started_rejected_queue_messages_remain_durable' (5692) panicked at ext/queue/tests/queue_service.rs:2436:6:",
+        "hook rejection must not consume an unpersisted queue item: Started { turn_id: \"01a180ec-7021-7637-bafb-01567a4f1c97\" }",
+        ""
+      ],
+      "classification": "queue_python_hook_did_not_enforce_expected_behavior"
+    },
+    {
+      "name": "plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently",
+      "first_failed_line": 3993,
+      "first_detail_line": 4036,
+      "raw_detail_text_lines": [
+        "---- plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently stdout ----",
+        "",
+        "thread 'plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently' (8240) panicked at hepta-agentd/src\\plasticity_runtime_lifetime_tests.rs:249:80:",
+        "state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host",
+      "first_failed_line": 3989,
+      "first_detail_line": 4031,
+      "raw_detail_text_lines": [
+        "---- prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host stdout ----",
+        "",
+        "thread 'prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host' (4244) panicked at hepta-agentd/src\\prompt_runtime_tests.rs:511:33:",
+        "pipeline owner: RegistryOpen(\"UnsafeStateDirectory\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "rejected_queue_messages_remain_durable_and_block_followups",
+      "first_failed_line": 3608,
+      "first_detail_line": 3630,
+      "raw_detail_text_lines": [
+        "---- rejected_queue_messages_remain_durable_and_block_followups stdout ----",
+        "Error: deadline has elapsed",
+        "",
+        ""
+      ],
+      "classification": "queue_python_hook_did_not_enforce_expected_behavior"
+    },
+    {
+      "name": "runtime::tests::automation_generation_change_during_open_remains_fail_closed",
+      "first_failed_line": 3996,
+      "first_detail_line": 4041,
+      "raw_detail_text_lines": [
+        "---- runtime::tests::automation_generation_change_during_open_remains_fail_closed stdout ----",
+        "",
+        "thread 'runtime::tests::automation_generation_change_during_open_remains_fail_closed' (1152) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+        "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor",
+      "first_failed_line": 3997,
+      "first_detail_line": 4046,
+      "raw_detail_text_lines": [
+        "---- runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor stdout ----",
+        "",
+        "thread 'runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor' (2916) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+        "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "runtime::tests::automation_owner_mismatch_remains_fail_closed",
+      "first_failed_line": 4000,
+      "first_detail_line": 4051,
+      "raw_detail_text_lines": [
+        "---- runtime::tests::automation_owner_mismatch_remains_fail_closed stdout ----",
+        "",
+        "thread 'runtime::tests::automation_owner_mismatch_remains_fail_closed' (3696) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+        "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation",
+      "first_failed_line": 4001,
+      "first_detail_line": 4056,
+      "raw_detail_text_lines": [
+        "---- runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation stdout ----",
+        "",
+        "thread 'runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation' (7760) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+        "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation",
+      "first_failed_line": 4002,
+      "first_detail_line": 4061,
+      "raw_detail_text_lines": [
+        "---- runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation stdout ----",
+        "",
+        "thread 'runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation' (5104) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+        "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store",
+      "first_failed_line": 4003,
+      "first_detail_line": 4066,
+      "raw_detail_text_lines": [
+        "---- runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store stdout ----",
+        "",
+        "thread 'runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store' (7768) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+        "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "runtime::tests::generation_change_during_open_is_fenced_before_serving",
+      "first_failed_line": 4004,
+      "first_detail_line": 4071,
+      "raw_detail_text_lines": [
+        "---- runtime::tests::generation_change_during_open_is_fenced_before_serving stdout ----",
+        "",
+        "thread 'runtime::tests::generation_change_during_open_is_fenced_before_serving' (7680) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+        "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe",
+      "first_failed_line": 4007,
+      "first_detail_line": 4076,
+      "raw_detail_text_lines": [
+        "---- runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe stdout ----",
+        "",
+        "thread 'runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe' (8692) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+        "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane",
+      "first_failed_line": 4009,
+      "first_detail_line": 4081,
+      "raw_detail_text_lines": [
+        "---- runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane stdout ----",
+        "",
+        "thread 'runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane' (6920) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+        "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "runtime::tests::stale_generation_is_fenced_before_cognitive_store_open",
+      "first_failed_line": 4010,
+      "first_detail_line": 4086,
+      "raw_detail_text_lines": [
+        "---- runtime::tests::stale_generation_is_fenced_before_cognitive_store_open stdout ----",
+        "",
+        "thread 'runtime::tests::stale_generation_is_fenced_before_cognitive_store_open' (7632) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+        "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "runtime::tests::unavailable_automation_store_degrades_without_startup_failure",
+      "first_failed_line": 4013,
+      "first_detail_line": 4091,
+      "raw_detail_text_lines": [
+        "---- runtime::tests::unavailable_automation_store_degrades_without_startup_failure stdout ----",
+        "",
+        "thread 'runtime::tests::unavailable_automation_store_degrades_without_startup_failure' (5524) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+        "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error",
+      "first_failed_line": 4016,
+      "first_detail_line": 4096,
+      "raw_detail_text_lines": [
+        "---- runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error stdout ----",
+        "",
+        "thread 'runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error' (3252) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+        "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress",
+      "first_failed_line": 4160,
+      "first_detail_line": 4175,
+      "raw_detail_text_lines": [
+        "---- state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress stdout ----",
+        "",
+        "thread 'state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress' (5984) panicked at hepta-agentd/src\\state_isolation_tests.rs:123:46:",
+        "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it",
+      "first_failed_line": 4162,
+      "first_detail_line": 4180,
+      "raw_detail_text_lines": [
+        "---- state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it stdout ----",
+        "",
+        "thread 'state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it' (7312) panicked at hepta-agentd/src\\state_isolation_tests.rs:220:47:",
+        "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access",
+      "first_failed_line": 4163,
+      "first_detail_line": 4185,
+      "raw_detail_text_lines": [
+        "---- state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access stdout ----",
+        "",
+        "thread 'state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access' (7692) panicked at hepta-agentd/src\\state_isolation_tests.rs:639:47:",
+        "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent",
+      "first_failed_line": 4164,
+      "first_detail_line": 4190,
+      "raw_detail_text_lines": [
+        "---- state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent stdout ----",
+        "",
+        "thread 'state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent' (8324) panicked at hepta-agentd/src\\state_isolation_tests.rs:163:47:",
+        "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership",
+      "first_failed_line": 4165,
+      "first_detail_line": 4195,
+      "raw_detail_text_lines": [
+        "---- state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership stdout ----",
+        "",
+        "thread 'state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership' (8936) panicked at hepta-agentd/src\\state_isolation_tests.rs:659:47:",
+        "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "state::isolation_tests::serving_agent_survives_unrelated_registry_corruption",
+      "first_failed_line": 4166,
+      "first_detail_line": 4200,
+      "raw_detail_text_lines": [
+        "---- state::isolation_tests::serving_agent_survives_unrelated_registry_corruption stdout ----",
+        "",
+        "thread 'state::isolation_tests::serving_agent_survives_unrelated_registry_corruption' (1640) panicked at hepta-agentd/src\\state_isolation_tests.rs:92:46:",
+        "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    },
+    {
+      "name": "state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences",
+      "first_failed_line": 4168,
+      "first_detail_line": 4205,
+      "raw_detail_text_lines": [
+        "---- state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences stdout ----",
+        "",
+        "thread 'state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences' (1560) panicked at hepta-agentd/src\\state_isolation_tests.rs:174:46:",
+        "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        "",
+        ""
+      ],
+      "classification": "required_prompt_registry_unsupported_windows"
+    }
+  ],
+  "source_readback": {
+    "path": "/tmp/hepta-682-windows-triage-primary-source-readback.json",
+    "actual_merge_bound_files": [
+      {
+        "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/codex-rs/hepta-prompt-registry/src/durable.rs?ref=f9923f7809bf78de8e54885699b67f3816bf2be2",
+        "bytes": 109057,
+        "sha256": "c37f657ebcadb7ce0f4f5ff979aba07f6751db89797b81a4c6a217233340e74f",
+        "matches_local_334": true,
+        "git_blob": "9e8f12f90992e593cc6236b08b20485b25f94bfc"
+      },
+      {
+        "path": "codex-rs/uds/src/lib.rs",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/codex-rs/uds/src/lib.rs?ref=f9923f7809bf78de8e54885699b67f3816bf2be2",
+        "bytes": 14398,
+        "sha256": "b81907ec7757b85cce001328f272c9d1c3467e42b8772d667b09b17a7d455c75",
+        "matches_local_334": true,
+        "git_blob": "9fe8556c9681be665fa7606a5978fd7b35ed7e42"
+      },
+      {
+        "path": "codex-rs/hepta-matrixd/src/control.rs",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/codex-rs/hepta-matrixd/src/control.rs?ref=f9923f7809bf78de8e54885699b67f3816bf2be2",
+        "bytes": 35899,
+        "sha256": "4717f7bbf8c9839825c3116fb8547399427868cae7a5add58d3e6e48d0575be2",
+        "matches_local_334": true,
+        "git_blob": "7e9a5e23c4bc0ddb25d184d12a5e4042ab665e64"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/state.rs",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/codex-rs/hepta-agentd/src/state.rs?ref=f9923f7809bf78de8e54885699b67f3816bf2be2",
+        "bytes": 33646,
+        "sha256": "e0d3dfcc84fbeaacf5dd0fb23a584363f4a602fc3e913241fe07bfc8a4d35ee2",
+        "matches_local_334": true,
+        "git_blob": "7f787dccb9318399b1a940aaac5e940dd5dbf029"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/codex-rs/hepta-agentd/src/state_isolation_tests.rs?ref=f9923f7809bf78de8e54885699b67f3816bf2be2",
+        "bytes": 24186,
+        "sha256": "6d7bb341ffb8379c8b78010fc008231725fc6c1be2bb8ef3fe8e3f69773e8abc",
+        "matches_local_334": true,
+        "git_blob": "ef90d7f993365627c4fcbc69d3b75b380958738d"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/codex-rs/hepta-contracts/src/final_use_store.rs?ref=f9923f7809bf78de8e54885699b67f3816bf2be2",
+        "bytes": 17485,
+        "sha256": "bc4bbb164989eb4c68fc9d3f4fcdb7a0f0e0c32ce1b31aacfcedbdb4bf8b197d",
+        "matches_local_334": true,
+        "git_blob": "7e7aadbaf3139eccfeb49e9695ef5384c90d5a5e"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs?ref=f9923f7809bf78de8e54885699b67f3816bf2be2",
+        "bytes": 9805,
+        "sha256": "738ffe486318ceb9ff9a06e3d2d7845d28483ce07b92552ff14b2989e3d8facd",
+        "matches_local_334": true,
+        "git_blob": "32f0ac3fe848581ea60c2694dee4a2f52dda8f55"
+      },
+      {
+        "path": "codex-rs/ext/queue/tests/queue_service.rs",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/codex-rs/ext/queue/tests/queue_service.rs?ref=f9923f7809bf78de8e54885699b67f3816bf2be2",
+        "bytes": 97314,
+        "sha256": "f98ede9a6b4d8a2f37fdbfa258727eb69685af22b1a0c5e4351f313856606a46",
+        "matches_local_334": true,
+        "git_blob": "36699180fe3cebf69174a4caa0da9f6310f945a8"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/codex-rs/hepta-agentd/src/prompt_runtime.rs?ref=f9923f7809bf78de8e54885699b67f3816bf2be2",
+        "bytes": 46059,
+        "sha256": "ee55c15436b1646f6feca8de0aa531e2e0c5f05c440c8cf22ec3891a2695e4db",
+        "matches_local_334": true,
+        "git_blob": "a4a755a5adc6005cd917b3e8ccc3995d6d34fd67"
+      }
+    ],
+    "retained_archive": "evidence/actual-merge-source.json.xz"
+  },
+  "additional_security_findings": [
+    {
+      "path": "codex-rs/uds/src/lib.rs:326",
+      "finding": "Windows ensure_current_user_peer unconditionally returns Unsupported. Correcting the path classification alone does not enable owner-authorized control requests."
+    },
+    {
+      "path": "codex-rs/uds/src/lib.rs:290; codex-rs/hepta-matrixd/src/control.rs:480",
+      "finding": "Windows socket directory setup only creates directories; matrix set_owner_only returns Ok without setting access restrictions. It is not equivalent to Unix owner-only permissions."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs:1189,1201,1213",
+      "finding": "Non-Unix permission and directory-sync functions return Ok without performing the operation. They are reached after registry open succeeds; a partial registry port must not activate an implicit weaker path."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs:658",
+      "finding": "The unsupported-owner negative control constructs a complete AgentdState first and fails before reaching the authbus ownership denial it intends to test."
+    }
+  ],
+  "primary_windows_references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/fileio/obtaining-a-handle-to-a-directory",
+      "fact": "Directory opens need FILE_FLAG_BACKUP_SEMANTICS."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew",
+      "fact": "Backup semantics, reparse-point handling, default ACL inheritance, and file sharing are distinct flags/contracts."
+    },
+    {
+      "url": "https://github.com/microsoft/win32metadata/blob/main/generation/WinSDK/RecompiledIdlHeaders/shared/afunix.h",
+      "bytes": 791,
+      "sha256": "cecca66c4f80dad3c77ec1405b8ba963bff1bb7d8ce8b83d57b3365d68fb906c",
+      "fact": "Official SDK header defines SIO_AF_UNIX_GETPEERPID. Definition alone is not a qualified same-owner authentication implementation."
+    }
+  ],
+  "unchanged_proposal": {
+    "commit": "334de7a4d9a1b7a813c34eeaadf1ed7c65ad37c5",
+    "tree": "b65ef390e23f038ef2f58affb020f8c393bd8662",
+    "source_edits_in_this_triage": false
+  },
+  "local_native_executed": false,
+  "tests_skipped_or_weakened": false,
+  "windows_blockers_closed": false,
+  "dependency_causality": "No claim that ctutils/zstd caused these platform branches; no retrospective baseline-native pass was manufactured."
+}

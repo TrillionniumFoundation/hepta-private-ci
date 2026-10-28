@@ -1,0 +1,35 @@
+{
+  "schema": "hepta-windows-fixtures-original-blob-policy-v1",
+  "base": "3e9efb15faa261a4dc3ffc3205cd259aaee41a3f",
+  "staged_tree_before_own_receipt": "8e4474f7091c9adeaea5d394da7389e51cea2857",
+  "command": [
+    "python3",
+    "scripts/check_blob_size.py",
+    "--base",
+    "3e9efb15faa261a4dc3ffc3205cd259aaee41a3f",
+    "--head",
+    "8e4474f7091c9adeaea5d394da7389e51cea2857",
+    "--max-bytes",
+    "512000",
+    "--allowlist",
+    ".github/blob-size-allowlist.txt"
+  ],
+  "started_at": "2026-10-28T05:42:25.860922+00:00",
+  "wall_seconds": 0.8931219480000436,
+  "exit_code": 0,
+  "scope": "Staged source before this receipt, its logs and candidate-files manifest; final exact commit receives a separate external receipt.",
+  "streams": {
+    "stdout": {
+      "path": "local-logs/original-blob-policy.stdout.txt",
+      "bytes": 24938,
+      "sha256": "1bd4092a7d39be8ed6e761e73093ace753ae639cb72731b2f00b776ec2b4e6c6"
+    },
+    "stderr": {
+      "path": "local-logs/original-blob-policy.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "policy_and_allowlist_unchanged": true,
+  "native_qualification": false
+}

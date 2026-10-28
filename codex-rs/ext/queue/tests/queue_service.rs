@@ -69,8 +69,12 @@ use core_test_support::test_codex::test_codex;
 use core_test_support::wait_for_event_match;
 use core_test_support::wait_for_event_with_timeout;
 use pretty_assertions::assert_eq;
+use queue_hook_diagnostics::HookDiagnostics;
 use tempfile::TempDir;
 use tokio::sync::oneshot;
+
+#[path = "common/queue_hook_diagnostics.rs"]
+mod queue_hook_diagnostics;
 
 const TINY_PNG_BYTES: &[u8] = &[
     137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 1, 0, 0, 0, 1, 8, 6, 0,
@@ -181,14 +185,13 @@ if payload["prompt"] == "blocked":
 "#,
         log_path = log_path.display(),
     );
-    std::fs::write(&script_path, script)
-        .unwrap_or_else(|error| panic!("write queue hook script: {error}"));
+    let command = queue_hook_diagnostics::write_hook(home, &script_path, &script);
     let hooks = serde_json::json!({
         "hooks": {
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": command,
                 }]
             }]
         }
@@ -221,14 +224,13 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
         entered_path = entered_path.display(),
         release_path = release_path.display(),
     );
-    std::fs::write(&script_path, script)
-        .unwrap_or_else(|error| panic!("write blocking queue hook script: {error}"));
+    let command = queue_hook_diagnostics::write_hook(home, &script_path, &script);
     let hooks = serde_json::json!({
         "hooks": {
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": command,
                 }]
             }]
         }
@@ -854,6 +856,7 @@ async fn caller_abort_after_core_started_keeps_exact_authority_until_persistence
         .with_config(|config| config.include_environment_context = false)
         .build_with_auto_env(&server)
         .await?;
+    let _hook_diagnostics = HookDiagnostics::attach(test.codex_home_path());
     let thread_id = test.session_configured.thread_id;
     let primary_runtime = test.codex.state_db().context("state runtime unavailable")?;
     let competing_runtime = StateRuntime::init(
@@ -965,6 +968,7 @@ async fn core_error_after_started_never_releases_ambiguous_dispatch() -> anyhow:
         .with_config(|config| config.include_environment_context = false)
         .build_with_auto_env(&server)
         .await?;
+    let _hook_diagnostics = HookDiagnostics::attach(test.codex_home_path());
     let thread_id = test.session_configured.thread_id;
     let primary_runtime = test.codex.state_db().context("state runtime unavailable")?;
     let competing_runtime = StateRuntime::init(
@@ -2362,6 +2366,7 @@ async fn rejected_queue_messages_remain_durable_and_block_followups() -> anyhow:
         .with_config(|config| config.include_environment_context = false)
         .build_with_auto_env(&server)
         .await?;
+    let _hook_diagnostics = HookDiagnostics::attach(test.codex_home_path());
     let thread_id = test.session_configured.thread_id;
     let staging = QueuedItemService::new(
         loaded_thread_queue(&test)?,
@@ -2416,6 +2421,7 @@ async fn explicitly_started_rejected_queue_messages_remain_durable() -> anyhow::
         .with_config(|config| config.include_environment_context = false)
         .build_with_auto_env(&server)
         .await?;
+    let _hook_diagnostics = HookDiagnostics::attach(test.codex_home_path());
     let thread_id = test.session_configured.thread_id;
     let queue = QueuedItemService::new(
         loaded_thread_queue(&test)?,

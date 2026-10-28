@@ -1,0 +1,215 @@
+{
+  "schema": "hepta-windows-fixtures-candidate-files-v1",
+  "base_commit": "334de7a4d9a1b7a813c34eeaadf1ed7c65ad37c5",
+  "branch": "fix/hepta-windows-fixture-r9",
+  "excluded_self": "qa/pon-windows-fixtures-20261028-r9/candidate-files.json",
+  "exclusion_reason": "The final Git commit binds this manifest without a recursive content hash.",
+  "files": [
+    {
+      "status": "A",
+      "path": "codex-rs/ext/queue/tests/common/queue_hook_diagnostics.rs",
+      "git_blob": "5b5f8f54e9b34608065e35a3a6d14ed549cac067",
+      "bytes": 9181,
+      "sha256": "f484255a461ede1550e5372e50dcec14277021d7790084e4eae909a585e2dc94"
+    },
+    {
+      "status": "M",
+      "path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "git_blob": "e5bce3dbb2a90f608b9e6341b04981c3b168e6b8",
+      "bytes": 97588,
+      "sha256": "fb6a8f979168960d461ed9deefab5ead16015b808b3608747ac9b9a30d6cda73"
+    },
+    {
+      "status": "M",
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "git_blob": "802e4f0d75cfbfc929280b37b60a07ec31e038b0",
+      "bytes": 10361,
+      "sha256": "b31fdfede659ef36582264bdbfe4bc8864edef32d9c5d6f85f056ab7fe7d467f"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/README.md",
+      "git_blob": "d78bef5f61071606044a33f8079c463d30d30ffd",
+      "bytes": 9511,
+      "sha256": "fd3e2a1b73329f590924b5d8152f083a6ba7f5ba1a24fb1f7f9741506f76c052"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/blob-policy-review.json",
+      "git_blob": "41fdbb8f7e987ebc58ce744072d45baefd648229",
+      "bytes": 1201,
+      "sha256": "9bdbd51b9a764fa7a751d6d2095c2990d74c6269e69c960d5e1350ebee654a5a"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/evidence/actual-merge-source.json.xz",
+      "git_blob": "ff9e08f28b4eb62610ac1a507379fb3e5b91b15b",
+      "bytes": 116344,
+      "sha256": "6f5cb9081dcb6ae240b42e0c03b5b2589b80496e2e03dd6704ea6867384cc7fb"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/evidence/windows-shard1.raw.log.xz",
+      "git_blob": "817ef2b1d2c400abc28a5f9b5d12616e19f3c0a8",
+      "bytes": 89224,
+      "sha256": "e0d65a803403ad4c1508a6291707ea13fc6575078867c41c932a6eedd4c7539f"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/evidence/windows-shard3.raw.log.xz",
+      "git_blob": "85142c92d052febc609b76afc16d1252a538d3ed",
+      "bytes": 58160,
+      "sha256": "1b708f08360e5bfacc38230449290ae0a80ac6f6426a24e022c5bd676f62de94"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/local-logs/evidence-negative-controls.stderr.txt",
+      "git_blob": "7a7ade6ca13a470e72539270c06d0fcd6ebebbc4",
+      "bytes": 895,
+      "sha256": "fdf404435ebf32acde21c5cb9fb55e07b010eb1914c94c305ceb56e7d6bb83ca"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/local-logs/evidence-negative-controls.stdout.txt",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/local-logs/original-blob-policy.stderr.txt",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/local-logs/original-blob-policy.stdout.txt",
+      "git_blob": "4d9d8a850315f50678294ed448773889bffe135c",
+      "bytes": 24938,
+      "sha256": "1bd4092a7d39be8ed6e761e73093ace753ae639cb72731b2f00b776ec2b4e6c6"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/local-logs/prettier-check.stderr.txt",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/local-logs/prettier-check.stdout.txt",
+      "git_blob": "4aa0d16e7a0ff5c16269bf45771cebe89cc2e81d",
+      "bytes": 66,
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/local-logs/ruff-check.stderr.txt",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/local-logs/ruff-check.stdout.txt",
+      "git_blob": "1f5f344d054fae10f39140fb7199c99321d9190a",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/local-logs/ruff-format-check.stderr.txt",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/local-logs/ruff-format-check.stdout.txt",
+      "git_blob": "983e5b7d3b8260cd7b6465688368178dddd7e316",
+      "bytes": 26,
+      "sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/local-logs/static-evidence.stderr.txt",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/local-logs/static-evidence.stdout.txt",
+      "git_blob": "c9f2db79a4cc8122c4067d0a0386bc0758264625",
+      "bytes": 925,
+      "sha256": "e4c927b472222b5c55844a2639c8045c23b370df2cdb1fb4e750e3a97570f420"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/local-logs/structural-preflight.stderr.txt",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/local-logs/structural-preflight.stdout.txt",
+      "git_blob": "23fb3f82f1caa351e32a04040f9582166329e5c4",
+      "bytes": 76,
+      "sha256": "6a437814142f1071f98664abc8a131c5c26d3dc40521307842b1acda091272f0"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/local-verification.json",
+      "git_blob": "c463025f9f7f8d347a794360bb7f85c77d41a60d",
+      "bytes": 5812,
+      "sha256": "adfdab063a88f830f579ad3d248ead302b1977837ee1cf5172b4cabf9a2cee5f"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/matrix-socket-review.md",
+      "git_blob": "c147106330016c77ec8847909ecf662870d57ace",
+      "bytes": 2787,
+      "sha256": "dc63b913446d932c455e0189a0beb45ca29ba504c092f533ce3f606108d9ce17"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/provenance.json",
+      "git_blob": "f2647bfb76e2222a34137fc6c2610c3c2bf873e6",
+      "bytes": 22483,
+      "sha256": "14dcf2c94edfd4eab0d6ae23172f4cdbe2291721b2d0d6f12e9f3909ef888b22"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/test_verify_evidence.py",
+      "git_blob": "717d17f3bd9ad941ac5d62e57816c05e43bf49bc",
+      "bytes": 2775,
+      "sha256": "8e082802d86d54104a9e79b3d7e1a964619a0f6ea8a7809cda3031044b7bb344"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/verify_evidence.py",
+      "git_blob": "81df29b184d7a563d6a897fd369ae43f4d09ec56",
+      "bytes": 8911,
+      "sha256": "2a55d9f48bbee9c9c22d54f0d63a3c10282abf90d4054d7efa159af152bd37ca"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/windows-shard1-matrix.json",
+      "git_blob": "8f220c892de83d4efadffe9dfcc48a9eb71b42e4",
+      "bytes": 64039,
+      "sha256": "0b6c5b178e299037ecfd6b1698bde01ee153f7b68f0182658d4f4778ebaab52f"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-windows-fixtures-20261028-r9/windows-shard3-matrix.json",
+      "git_blob": "449ae397d4c046ee5e265d15f506559d3d11cc0b",
+      "bytes": 41115,
+      "sha256": "65ac64b1a3475f92fb5a40e533a4f9bce5c167c4b6b4f26765c038ed51391205"
+    }
+  ],
+  "production_edits": false,
+  "native_execution": false,
+  "original_49_unique_failures_closed": false
+}

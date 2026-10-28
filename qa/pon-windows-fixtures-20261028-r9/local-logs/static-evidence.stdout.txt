@@ -1,0 +1,28 @@
+{
+  "schema": "hepta-windows-fixtures-static-review-v1",
+  "archive_count": 3,
+  "actual_merge_source_files": 15,
+  "original_failed_cases": {
+    "1": {
+      "unique_failed_cases": 6,
+      "original_failed_observations": 8
+    },
+    "3": {
+      "unique_failed_cases": 43,
+      "original_failed_observations": 43
+    }
+  },
+  "protected_source_files": 114,
+  "all_original_fixture_tests_retained": true,
+  "all_original_queue_tests_and_timeouts_retained": true,
+  "observed_queue_cases": [
+    "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+    "core_error_after_started_never_releases_ambiguous_dispatch",
+    "rejected_queue_messages_remain_durable_and_block_followups",
+    "explicitly_started_rejected_queue_messages_remain_durable"
+  ],
+  "python_identity_syntax": "valid",
+  "launcher_control_flow": "static_only",
+  "native_tests_executed": false,
+  "windows_blockers_closed": false
+}
