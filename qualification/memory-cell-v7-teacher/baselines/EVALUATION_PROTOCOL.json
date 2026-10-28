@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.cell-v7.evaluation-protocol.v1",
+  "held_requests_sha256": "622fb6942a308a3e3930c960474f88b19e92cc31f5709309a56ad5c93c83d700",
+  "held_labels_sha256": "1979ff69c07f7a2c4883699225b33d32ea368bb89f9892fe0890e8cbdf4c2677",
+  "serving_fields": [
+    "utterance",
+    "series_name",
+    "date"
+  ],
+  "supported": 120,
+  "ood": 60,
+  "supported_correct_minimum": 96,
+  "ood_false_accept_maximum": 3,
+  "unknown_maximum": 0,
+  "teacher_required_bound_terminal_results": 180,
+  "teacher_result_binding": "Unique integer input index, original request fingerprint, unique nonempty operation_id, completed status, consistent finite label and acceptance fields",
+  "held_request_canonical": "json.dumps(request, ensure_ascii=True, sort_keys=True, separators=(',', ':')).encode(); no newline",
+  "teacher_request_canonical": "json.dumps(request, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode(); UTF-8; no newline",
+  "unknown_scoring": "Separate from correct or rejected; blocks gate. Unknown OOD is never credited as rejection.",
+  "evaluator_access": "No teacher prompt/source/output read while writing evaluator; field schema and canonical function only supplied by parent. No previous held query text read.",
+  "baseline_control": "Original frozen V6, V5 and deterministic parser; no training/calibration/code changes. Frozen files verified before and after.",
+  "costs": "Count provider usage when present, including failed or invalid attempts; missing usage remains unknown. Router child wall and CPU only, no system-wide memory claim.",
+  "baseline_exit_code": "0 means all three evaluation streams are valid; each semantic gate outcome remains explicit in SUMMARY.json. 1 means a protocol/unknown failure.",
+  "teacher_exit_code": "0 only if its entire preregistered qualification gate passes; otherwise 1.",
+  "limitations": [
+    "Independently authored by a separate assistant, not human/user/business samples.",
+    "Exact public-language deduplication does not establish semantic independence.",
+    "Oracle rows are only used in scorer checks, never as measured candidate evidence."
+  ]
+}

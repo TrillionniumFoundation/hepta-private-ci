@@ -1,0 +1,40 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "332d8156d081e22405450dd607023689f68f03e1",
+  "source_kind": "Existing finite task contract and public training definitions",
+  "sources": [
+    {
+      "path": "contracts.py",
+      "sha": "d74d40f52d795aca60e4ea08872b7ddbf61034e6",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/332d8156d081e22405450dd607023689f68f03e1/qualification/memory-cell-v5/v5/contracts.py"
+    },
+    {
+      "path": "training_language.py",
+      "sha": "4d43c803e45958eeb40e6e18d25df62cfe94dd2b",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/332d8156d081e22405450dd607023689f68f03e1/qualification/memory-cell-v5/v5/training_language.py"
+    },
+    {
+      "path": "router.py",
+      "sha": "6af6891844ae598b4953594edaf52c62f3928af5",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/332d8156d081e22405450dd607023689f68f03e1/qualification/memory-cell-v5/v5/router.py"
+    }
+  ],
+  "examples": {
+    "positive": "POSITIVE_SEEDS: at[0], previous[1], change[1], mean3[0], range3[0], peak3[0]",
+    "negative": "training_templates generated minimum/three-month, reverse-operand, and arithmetic-mean/four-month contrasts",
+    "identity_instantiation": {
+      "series_name": "temperature",
+      "date": "2024-07"
+    }
+  },
+  "additional_reads": [
+    "V6 semantic_cues.py",
+    "V6 PROTOCOL.json",
+    "V6 serve.py",
+    "V6 SOURCE.json file-identity metadata",
+    "V6 public-corpus CORPUS.json"
+  ],
+  "held_text_labels_or_result_file_read": false,
+  "teacher_api_calls_before_freeze": 0,
+  "prompt_candidates": 1
+}

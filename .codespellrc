@@ -3,7 +3,7 @@
 # Frozen model payloads and source snapshots are evidence, not prose.
 # The source regex lines below preserve deliberately stemmed patterns byte-for-byte.
 exclude-file = .codespell-lines-memory-cell-v6
-skip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new,*qualification/memory-cell-v6/evidence/*.part*,*qualification/memory-cell-v6/evidence/*/model.json,*qualification/memory-cell-v6/evidence/*/SOURCE_SNAPSHOT.json
+skip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new,*qualification/memory-cell-v6/evidence/*.part*,*qualification/memory-cell-v6/evidence/*/model.json,*qualification/memory-cell-v6/evidence/*/SOURCE_SNAPSHOT.json,*qualification/memory-cell-v7-teacher/holdout/source/v5/selection_language.py
 check-hidden = true
 ignore-regex = ^\s*"image/\S+": ".*|\b(afterAll)\b
 ignore-words-list = ratatui,ser,iTerm,iterm2,iterm,te,TE,PASE,SEH,disjointness

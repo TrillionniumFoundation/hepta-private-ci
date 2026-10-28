@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.cell-v7.holdout-author-access.v1",
+  "author_task": "/root/semantic_holdout_v7",
+  "public_source_ref": "984baab7ad5ceebaf97f11d6c60c928d3b69f1b1",
+  "public_sources_read": [
+    {
+      "path": "qualification/memory-cell-v5/v5/contracts.py",
+      "git_blob": "d74d40f52d795aca60e4ea08872b7ddbf61034e6"
+    },
+    {
+      "path": "qualification/memory-cell-v5/v5/corpus.py",
+      "git_blob": "50d7ffef2440e1a4459b377feb40c609aab3b2de"
+    },
+    {
+      "path": "qualification/memory-cell-v5/v5/training_language.py",
+      "git_blob": "4d43c803e45958eeb40e6e18d25df62cfe94dd2b"
+    },
+    {
+      "path": "qualification/memory-cell-v5/v5/selection_language.py",
+      "git_blob": "b0caf5832a5ad5ca0bb1a5e9b9c02b48a9736e1f"
+    },
+    {
+      "path": "qualification/memory-cell-v5/v5/development_language.py",
+      "git_blob": "9dd9c95a0bb9f00dc2097790f8099356ca823bfa"
+    },
+    {
+      "path": "qualification/memory-cell-v6/semantic_cues.py",
+      "git_blob": "7920a851eaf83d5afb89c6caed26e4dd55cb0d11"
+    },
+    {
+      "path": "qualification/memory-cell-v6/serve.py",
+      "git_blob": "b2e448dc81fe52665ee38146504ee8a8a416da1b"
+    }
+  ],
+  "metadata_only": [
+    "PR #4131 changed filenames"
+  ],
+  "candidate_files_read": [],
+  "prior_independent_held_contents_read": [],
+  "candidate_outputs_read": [],
+  "note": "The full five v5 source files are retained for the public duplicate audit. The two V6 public interface/parser files were inspected through GitHub and are listed here, without copying their implementation into the generator. One pre-freeze wording edit removed an awkward self-correcting subtraction phrase; no candidate was called or observed."
+}

@@ -1,0 +1,3369 @@
+{
+  "automatic_retries": 0,
+  "available_binding_checks_pass": true,
+  "combined": {
+    "additional_terminal_usage_absent_from_results": {
+      "groups": 0,
+      "recorded_token_sum": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0
+      }
+    },
+    "all_recorded_usage_deduplicated": {
+      "conflicting_cost_groups": 0,
+      "conflicts_excluded_from_sum_and_preserved_in_observations": true,
+      "consistent_cost_groups": 73,
+      "recorded_component_counters": {
+        "cached_input_tokens": {
+          "conflicting_groups": 0,
+          "known_groups": 73,
+          "known_sum": 132937
+        },
+        "reasoning_output_tokens": {
+          "conflicting_groups": 0,
+          "known_groups": 0,
+          "known_sum": 0
+        }
+      },
+      "recorded_token_sum": {
+        "input_tokens": 139257,
+        "output_tokens": 12425,
+        "total_tokens": 151682
+      },
+      "response_identity_unavailable_groups": 0,
+      "sum_scope": "one consistent reported token vector per provider response identity; operation-scoped when absent"
+    },
+    "all_result_usage_including_invalid": {
+      "partial_recorded_counters": {
+        "input_tokens": {
+          "known_rows": 73,
+          "known_sum": 139257
+        },
+        "output_tokens": {
+          "known_rows": 73,
+          "known_sum": 12425
+        },
+        "total_tokens": {
+          "known_rows": 73,
+          "known_sum": 151682
+        }
+      },
+      "recorded_component_counters": {
+        "cached_input_tokens": {
+          "known_rows": 73,
+          "known_sum": 132937
+        },
+        "reasoning_output_tokens": {
+          "known_rows": 0,
+          "known_sum": 0
+        }
+      },
+      "recorded_token_sum": {
+        "input_tokens": 139257,
+        "output_tokens": 12425,
+        "total_tokens": 151682
+      },
+      "rows": 181,
+      "rows_with_usable_usage": 73,
+      "rows_without_usable_usage": 108,
+      "sum_scope": "result rows; kept separately from SSE and never added to it"
+    },
+    "cases": 181,
+    "cases_with_verification_errors": 0,
+    "cases_without_resolved_usage": 108,
+    "classification_counts": {
+      "recorded_usage": 73,
+      "unknown_usage": 108
+    },
+    "completed_result_usage": {
+      "partial_recorded_counters": {
+        "input_tokens": {
+          "known_rows": 70,
+          "known_sum": 133541
+        },
+        "output_tokens": {
+          "known_rows": 70,
+          "known_sum": 11657
+        },
+        "total_tokens": {
+          "known_rows": 70,
+          "known_sum": 145198
+        }
+      },
+      "recorded_component_counters": {
+        "cached_input_tokens": {
+          "known_rows": 70,
+          "known_sum": 127408
+        },
+        "reasoning_output_tokens": {
+          "known_rows": 0,
+          "known_sum": 0
+        }
+      },
+      "recorded_token_sum": {
+        "input_tokens": 133541,
+        "output_tokens": 11657,
+        "total_tokens": 145198
+      },
+      "rows": 70,
+      "rows_with_usable_usage": 70,
+      "rows_without_usable_usage": 0,
+      "sum_scope": "result rows; kept separately from SSE and never added to it"
+    },
+    "dollar_cost": null,
+    "invalid_usage_observations": 0,
+    "missing_usage_assumed_zero": false,
+    "noncompleted_result_usage": {
+      "partial_recorded_counters": {
+        "input_tokens": {
+          "known_rows": 3,
+          "known_sum": 5716
+        },
+        "output_tokens": {
+          "known_rows": 3,
+          "known_sum": 768
+        },
+        "total_tokens": {
+          "known_rows": 3,
+          "known_sum": 6484
+        }
+      },
+      "recorded_component_counters": {
+        "cached_input_tokens": {
+          "known_rows": 3,
+          "known_sum": 5529
+        },
+        "reasoning_output_tokens": {
+          "known_rows": 0,
+          "known_sum": 0
+        }
+      },
+      "recorded_token_sum": {
+        "input_tokens": 5716,
+        "output_tokens": 768,
+        "total_tokens": 6484
+      },
+      "rows": 111,
+      "rows_with_usable_usage": 3,
+      "rows_without_usable_usage": 108,
+      "sum_scope": "result rows; kept separately from SSE and never added to it"
+    },
+    "pricing_source_used": null,
+    "reported_error_type_counts": {
+      "IncompleteRead": 10,
+      "JSONDecodeError": 3,
+      "RemoteDisconnected": 92,
+      "TimeoutError": 3,
+      "ValueError": 3
+    },
+    "reported_status_counts": {
+      "completed": 70,
+      "unknown_or_invalid": 111
+    },
+    "sse_dispatched_terminal_events": 76,
+    "sse_duplicate_terminal_events": 0,
+    "sse_parse_or_framing_problems": 0,
+    "sse_provider_error_codes": {
+      "empty_terminal_response": 3
+    },
+    "sse_terminal_events": 76,
+    "sse_terminal_usage_observations": 73,
+    "total_provider_cost": null
+  },
+  "cost_groups": [
+    {
+      "case_refs": [
+        {
+          "index": 0,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_0lRt0cO0VvQBDIgy1UKqveQGHlgiZgNg",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1916,
+          "output_tokens": 205,
+          "total_tokens": 2121
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1916,
+        "output_tokens": 205,
+        "total_tokens": 2121
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 1,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_2P3dp9b97ym8KChdelzBQXhmZhSuVEQs",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1908,
+          "output_tokens": 143,
+          "total_tokens": 2051
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1908,
+        "output_tokens": 143,
+        "total_tokens": 2051
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 2,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_EvV1YSMy4VhxIUUTiLFP8YIv50405PLn",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1905,
+          "output_tokens": 152,
+          "total_tokens": 2057
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1905,
+        "output_tokens": 152,
+        "total_tokens": 2057
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 3,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_0RjEqsnuAxJfoxhMsyiyn7tr2GP3ooJL",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1901,
+          "output_tokens": 125,
+          "total_tokens": 2026
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1901,
+        "output_tokens": 125,
+        "total_tokens": 2026
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 4,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_8mhKrPpTQl7ATnePKSszB8VsbvjHU9Nf",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1904,
+          "output_tokens": 234,
+          "total_tokens": 2138
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1904,
+        "output_tokens": 234,
+        "total_tokens": 2138
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 5,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_DEFbzyqcYQYHTVnjGLQVyNjW8RJBK06o",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1920,
+          "output_tokens": 246,
+          "total_tokens": 2166
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1920,
+        "output_tokens": 246,
+        "total_tokens": 2166
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 6,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_47J9iSFVJhaH1bdF0elfutpjz8NbcFML",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1910,
+          "output_tokens": 174,
+          "total_tokens": 2084
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1910,
+        "output_tokens": 174,
+        "total_tokens": 2084
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 7,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_XNUW9JOLl109tDI6TFdt4jkbxvUShyVE",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1908,
+          "output_tokens": 118,
+          "total_tokens": 2026
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1908,
+        "output_tokens": 118,
+        "total_tokens": 2026
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 8,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_NLKg5W3JqdQAx1wFpY6neh7BfZlrZv1P",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1907,
+          "output_tokens": 113,
+          "total_tokens": 2020
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1907,
+        "output_tokens": 113,
+        "total_tokens": 2020
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 9,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_QgmjPzZ6EebDAy3bse5PoSnv9qeWfF8f",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1911,
+          "output_tokens": 136,
+          "total_tokens": 2047
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1911,
+        "output_tokens": 136,
+        "total_tokens": 2047
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 11,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_SWKvmBRE0ObN5uVllNNTjRZNmUoDvUu3",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1911,
+          "output_tokens": 154,
+          "total_tokens": 2065
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1911,
+        "output_tokens": 154,
+        "total_tokens": 2065
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 14,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_D1SBPRb4uHG9rYBY95CGxjgyJoAbjuE4",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1909,
+          "output_tokens": 219,
+          "total_tokens": 2128
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1909,
+        "output_tokens": 219,
+        "total_tokens": 2128
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 15,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_Bp9zotv9ypvhYMhcidum8sOVPDGuovNP",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1921,
+          "output_tokens": 117,
+          "total_tokens": 2038
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1921,
+        "output_tokens": 117,
+        "total_tokens": 2038
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 16,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_uxFSeRyE88S4DxpcvynfksSXMuBwEiEP",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1905,
+          "output_tokens": 126,
+          "total_tokens": 2031
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1905,
+        "output_tokens": 126,
+        "total_tokens": 2031
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 17,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_abKFrF1xhTYFx7Xg3ud5vqoKejB7BvXJ",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1906,
+          "output_tokens": 160,
+          "total_tokens": 2066
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1906,
+        "output_tokens": 160,
+        "total_tokens": 2066
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 18,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_1GM7CcrhoTEhsLGA6rQKqraUxUUfToI1",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1902,
+          "output_tokens": 202,
+          "total_tokens": 2104
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1902,
+        "output_tokens": 202,
+        "total_tokens": 2104
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 19,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_HI00LFoYSItvG4jT3j1UANc88w9TqW76",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1911,
+          "output_tokens": 205,
+          "total_tokens": 2116
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1911,
+        "output_tokens": 205,
+        "total_tokens": 2116
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 20,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_ikpiI6JQpAS8GS1CW4EQUEeNhqeKq0gb",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1907,
+          "output_tokens": 206,
+          "total_tokens": 2113
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1907,
+        "output_tokens": 206,
+        "total_tokens": 2113
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 21,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_I31clorYaRdf6MxRxPWYmSMRR4Hr1F5p",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1915,
+          "output_tokens": 193,
+          "total_tokens": 2108
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1915,
+        "output_tokens": 193,
+        "total_tokens": 2108
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 22,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_u9k2RGjjXVrKDqLXpe3MhvmyEOl1q2uf",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1908,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1908
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1912,
+          "output_tokens": 184,
+          "total_tokens": 2096
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1912,
+        "output_tokens": 184,
+        "total_tokens": 2096
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 23,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_n23YQ41bmLY1thpH9NHiX948ijOyXGyz",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1915,
+          "output_tokens": 191,
+          "total_tokens": 2106
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1915,
+        "output_tokens": 191,
+        "total_tokens": 2106
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 24,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_puPClhYYnMvH92ptnBPqKC9x7JUnsoAj",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1904,
+          "output_tokens": 175,
+          "total_tokens": 2079
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1904,
+        "output_tokens": 175,
+        "total_tokens": 2079
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 25,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_Ur5xi7F73iEQ9HADmMh7pCcrmmhll0nY",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1912,
+          "output_tokens": 137,
+          "total_tokens": 2049
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1912,
+        "output_tokens": 137,
+        "total_tokens": 2049
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 26,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_abt1UPW3WyZxhCUH7udpuXwvPGTD37cF",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1906,
+          "output_tokens": 91,
+          "total_tokens": 1997
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1906,
+        "output_tokens": 91,
+        "total_tokens": 1997
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 27,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_zs8DY45cNY4CEEeBJkitqaGE0TX0XK3j",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1905,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1905
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1909,
+          "output_tokens": 233,
+          "total_tokens": 2142
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1909,
+        "output_tokens": 233,
+        "total_tokens": 2142
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 28,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_tjdixTdCwcnG5kMwgLjJSYd9Rn2hJdIh",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1907,
+          "output_tokens": 177,
+          "total_tokens": 2084
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1907,
+        "output_tokens": 177,
+        "total_tokens": 2084
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 29,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_q5vvBCmOBIbRRQgNuurPbpkxgduOIIpG",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1909,
+          "output_tokens": 154,
+          "total_tokens": 2063
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1909,
+        "output_tokens": 154,
+        "total_tokens": 2063
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 31,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_XcNe9b032fvBWXLp1xt4UPqU2Z3kSwAI",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1908,
+          "output_tokens": 130,
+          "total_tokens": 2038
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1908,
+        "output_tokens": 130,
+        "total_tokens": 2038
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 32,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_pdNo6cgWyPxHI0gowcObm07XwSMIYDte",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1904,
+          "output_tokens": 217,
+          "total_tokens": 2121
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1904,
+        "output_tokens": 217,
+        "total_tokens": 2121
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 33,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_xHksxo1G1Zt7qsblSyGQbZE2NIEo3bzQ",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1912,
+          "output_tokens": 178,
+          "total_tokens": 2090
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1912,
+        "output_tokens": 178,
+        "total_tokens": 2090
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 34,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_iZYk6aZa2SrKZ828vfoMTQHrZf2uZzbx",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1910,
+          "output_tokens": 220,
+          "total_tokens": 2130
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1910,
+        "output_tokens": 220,
+        "total_tokens": 2130
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 35,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_YmAEXjUOepaTOxANzER2uL1goTGIhjiv",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1912,
+          "output_tokens": 137,
+          "total_tokens": 2049
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1912,
+        "output_tokens": 137,
+        "total_tokens": 2049
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 36,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_ekyzRAtDtl3cdCjElqXO03kHbndghkHa",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1910,
+          "output_tokens": 234,
+          "total_tokens": 2144
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1910,
+        "output_tokens": 234,
+        "total_tokens": 2144
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 37,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_hMh2mDkF1nTBRNf1aN68Wo4STTK0kmNJ",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1901,
+          "output_tokens": 190,
+          "total_tokens": 2091
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1901,
+        "output_tokens": 190,
+        "total_tokens": 2091
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 41,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_9KKN4eQKIzseTkw4DKsG9N09IpnzxBBr",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1904,
+          "output_tokens": 170,
+          "total_tokens": 2074
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1904,
+        "output_tokens": 170,
+        "total_tokens": 2074
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 42,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_Azordmq6JrKYVXvagyZEMCNhWj891Pq2",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1906,
+          "output_tokens": 177,
+          "total_tokens": 2083
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1906,
+        "output_tokens": 177,
+        "total_tokens": 2083
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 44,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_9OIgGVvyDE3pnUVlK1Fnz4U4enS7B2Uv",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1902,
+          "output_tokens": 128,
+          "total_tokens": 2030
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1902,
+        "output_tokens": 128,
+        "total_tokens": 2030
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 45,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_svH1Cu7Qk8Ila9J0WErpkFeQNKvv17Hn",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1907,
+          "output_tokens": 143,
+          "total_tokens": 2050
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1907,
+        "output_tokens": 143,
+        "total_tokens": 2050
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 46,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_hrZshykKZruzW4sov1HK3ceEZfSaooMY",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1905,
+          "output_tokens": 179,
+          "total_tokens": 2084
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1905,
+        "output_tokens": 179,
+        "total_tokens": 2084
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 48,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_6sMWz7UO1aJEbqsnwdiEhr4dBUluvGD0",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1908,
+          "output_tokens": 155,
+          "total_tokens": 2063
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1908,
+        "output_tokens": 155,
+        "total_tokens": 2063
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 49,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_8oiYky3YVpbHcrBVfwf01PdDgArtD28Y",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1901,
+          "output_tokens": 125,
+          "total_tokens": 2026
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1901,
+        "output_tokens": 125,
+        "total_tokens": 2026
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 50,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_gOmShWkneMox2wSrs2m7o7oeEQ75aFfx",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1905,
+          "output_tokens": 95,
+          "total_tokens": 2000
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1905,
+        "output_tokens": 95,
+        "total_tokens": 2000
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 51,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_ahA8b6uynGOXuZDDwtEu0W4ENfg9RDXf",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1912,
+          "output_tokens": 137,
+          "total_tokens": 2049
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1912,
+        "output_tokens": 137,
+        "total_tokens": 2049
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 52,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_pmYBptqbqrbqj1uiJf5JnDJrdYBrwoDd",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1903,
+          "output_tokens": 256,
+          "total_tokens": 2159
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1903,
+        "output_tokens": 256,
+        "total_tokens": 2159
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 53,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_mPYbwLfkuDQxjatr6P9IvR4dqyvmfhvk",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1908,
+          "output_tokens": 125,
+          "total_tokens": 2033
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1908,
+        "output_tokens": 125,
+        "total_tokens": 2033
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 54,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_PFkUS6pa4XQAwziBf3UraeOz2Rya5oJm",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1912,
+          "output_tokens": 215,
+          "total_tokens": 2127
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1912,
+        "output_tokens": 215,
+        "total_tokens": 2127
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 55,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_4MgAVvCyzp3WCf04sp2oFBlXau24ZfQv",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1903,
+          "output_tokens": 104,
+          "total_tokens": 2007
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1903,
+        "output_tokens": 104,
+        "total_tokens": 2007
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 56,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_3YjGQnifYS14wcej8sP8QTUfOF8wGJAl",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1909,
+          "output_tokens": 143,
+          "total_tokens": 2052
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1909,
+        "output_tokens": 143,
+        "total_tokens": 2052
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 58,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_lnCSuZBE5j5wTLInyyYxmk8FNnYYcFUt",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1911,
+          "output_tokens": 212,
+          "total_tokens": 2123
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1911,
+        "output_tokens": 212,
+        "total_tokens": 2123
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 59,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_h0ZvvuCfRh8FaBa78Vc8CxceOFOsOBDn",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1912,
+          "output_tokens": 89,
+          "total_tokens": 2001
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1912,
+        "output_tokens": 89,
+        "total_tokens": 2001
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 61,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_TvufZra1Rds5vgZ54668Gp0ftOdJCeyx",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1903,
+          "output_tokens": 159,
+          "total_tokens": 2062
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1903,
+        "output_tokens": 159,
+        "total_tokens": 2062
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 62,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_BeWnuCGJG332WlZgBeDPe65ydLlY4tXR",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1909,
+          "output_tokens": 181,
+          "total_tokens": 2090
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1909,
+        "output_tokens": 181,
+        "total_tokens": 2090
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 63,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_fs1lnhHKW06snivXCeXm8h7HRuUoAfFU",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1907,
+          "output_tokens": 137,
+          "total_tokens": 2044
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1907,
+        "output_tokens": 137,
+        "total_tokens": 2044
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 64,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_NF3iZhmCVgKjg6TLuWKdsx1GZeWbS9ud",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1905,
+          "output_tokens": 204,
+          "total_tokens": 2109
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1905,
+        "output_tokens": 204,
+        "total_tokens": 2109
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 65,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_BbSyorRFfSt5wNwAcNFvBEc1WvFnUaxE",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1910,
+          "output_tokens": 176,
+          "total_tokens": 2086
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1910,
+        "output_tokens": 176,
+        "total_tokens": 2086
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 66,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_FQz3v6Fe8ZYBkgywsrEUFzags3GUiaMM",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1903,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1903
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1907,
+          "output_tokens": 210,
+          "total_tokens": 2117
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1907,
+        "output_tokens": 210,
+        "total_tokens": 2117
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 67,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_PcjRW2JzFyo1E32JdSvJjBITlfJGmhFU",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1908,
+          "output_tokens": 227,
+          "total_tokens": 2135
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1908,
+        "output_tokens": 227,
+        "total_tokens": 2135
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 68,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_dmiiGukG3neoBY8nZpfvfoYoKE2T7Gye",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1902,
+          "output_tokens": 194,
+          "total_tokens": 2096
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1902,
+        "output_tokens": 194,
+        "total_tokens": 2096
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 69,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_2VOW3ZjffMoiA7n1IQrUaVwkY7KQSkCQ",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1911,
+          "output_tokens": 204,
+          "total_tokens": 2115
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1911,
+        "output_tokens": 204,
+        "total_tokens": 2115
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 70,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_pJHEzeShy2p6MOsVCCqQ3uEMOxqGcd84",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1907,
+          "output_tokens": 118,
+          "total_tokens": 2025
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1907,
+        "output_tokens": 118,
+        "total_tokens": 2025
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 71,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_pajFyys1aBaxwRF9ceIsJUMMynBr5W3L",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1911,
+          "output_tokens": 256,
+          "total_tokens": 2167
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1911,
+        "output_tokens": 256,
+        "total_tokens": 2167
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 72,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_2ezRLLSWRwbBXl6zOXbmMlcly27Sc2Cn",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1903,
+          "output_tokens": 195,
+          "total_tokens": 2098
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1903,
+        "output_tokens": 195,
+        "total_tokens": 2098
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 73,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_g3EVKZmqTgQx8EkqTN1dajMDW9PpxfqV",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1911,
+          "output_tokens": 199,
+          "total_tokens": 2110
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1911,
+        "output_tokens": 199,
+        "total_tokens": 2110
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 74,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_sQKiQBXIr2yXW6WqMlSzpGAskoT07Q3H",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1908,
+          "output_tokens": 196,
+          "total_tokens": 2104
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1908,
+        "output_tokens": 196,
+        "total_tokens": 2104
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 76,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_8NX7uhDOLn85Grs2z3RXHJS6sOK3YtWL",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1908,
+          "output_tokens": 126,
+          "total_tokens": 2034
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1908,
+        "output_tokens": 126,
+        "total_tokens": 2034
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 77,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_wnP5h96EIFRebawWTyfLCjOrJOOTEAwJ",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1906,
+          "output_tokens": 246,
+          "total_tokens": 2152
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1906,
+        "output_tokens": 246,
+        "total_tokens": 2152
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 78,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_90RUYnjhwyFkRZ3orJzzZ0LsKLv8iB07",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1908,
+          "output_tokens": 137,
+          "total_tokens": 2045
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1908,
+        "output_tokens": 137,
+        "total_tokens": 2045
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 79,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_oDPZJnLwpcv8hkWp2d2VrvFUPyz9U7Wr",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1897,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1897
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1901,
+          "output_tokens": 105,
+          "total_tokens": 2006
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1901,
+        "output_tokens": 105,
+        "total_tokens": 2006
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 83,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_UZwjOBaDeWtg8hTW02i5lQ4Ga9pn0tlv",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1911,
+          "output_tokens": 170,
+          "total_tokens": 2081
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1911,
+        "output_tokens": 170,
+        "total_tokens": 2081
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 84,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_huroawGxgrcWq0xCniFUp9SHqnsCvZoM",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1912,
+          "output_tokens": 199,
+          "total_tokens": 2111
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1912,
+        "output_tokens": 199,
+        "total_tokens": 2111
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 85,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_Oksv37IFFoB9uPr0gghj76aM4PeQywRy",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1902,
+          "output_tokens": 256,
+          "total_tokens": 2158
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1902,
+        "output_tokens": 256,
+        "total_tokens": 2158
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 86,
+          "run": "teacher-held-v1"
+        }
+      ],
+      "cost_group": "response:resp_7h3Q9r4xtgo4JyDhl7hvaqvCON2ls97G",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 1843,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          1843
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1903,
+          "output_tokens": 125,
+          "total_tokens": 2028
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1903,
+        "output_tokens": 125,
+        "total_tokens": 2028
+      }
+    },
+    {
+      "case_refs": [
+        {
+          "index": 0,
+          "run": "public-training-smoke-v1"
+        }
+      ],
+      "cost_group": "response:resp_zuAMmQkVGzhedwN9OiVrGmmcnyGFhM7L",
+      "cross_operation_identity_collision": false,
+      "detail_conflicts": [],
+      "detail_counters": {
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": null
+      },
+      "detail_observed_alternatives": {
+        "cached_input_tokens": [
+          0
+        ],
+        "reasoning_output_tokens": []
+      },
+      "has_result_usage": true,
+      "has_terminal_usage": true,
+      "observations": 2,
+      "observed_alternatives": [
+        {
+          "input_tokens": 1888,
+          "output_tokens": 76,
+          "total_tokens": 1964
+        }
+      ],
+      "provider_response_identity_present": true,
+      "resolution": "consistent_recorded_usage",
+      "tokens": {
+        "input_tokens": 1888,
+        "output_tokens": 76,
+        "total_tokens": 1964
+      }
+    }
+  ],
+  "interpretation": [
+    "Original semantic completion counts are copied, never recomputed from SSE.",
+    "All result usage is counted, including failed or invalid semantic outputs.",
+    "Completed, failed, incomplete and error SSE terminal usage is inspected independently.",
+    "Consistent repeated usage for one response identity is counted once, never added to result usage again.",
+    "Conflicting usage vectors are retained as alternatives and excluded from the exact recorded subtotal.",
+    "An unterminated SSE frame is retained as an observation but not an exact terminal count.",
+    "Unknown usage is not zero. Token subtotals cannot establish the full run cost or dollar billing.",
+    "Cached input and reasoning output are optional components, not extra tokens to add to input/output totals.",
+    "Provider compute, memory, latency beyond recorded evidence, and unreturned usage remain unmeasured.",
+    "No request, instructions, answer text, credentials, or live endpoint is copied into this audit."
+  ],
+  "network_requests": 0,
+  "original_sources_unchanged": true,
+  "posthoc_analysis": true,
+  "qualification_gate_recomputed": false,
+  "read_only_source_access": true,
+  "runs": {
+    "public-training-smoke-v1": {
+      "additional_terminal_usage_absent_from_results": {
+        "groups": 0,
+        "recorded_token_sum": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "all_recorded_usage_deduplicated": {
+        "conflicting_cost_groups": 0,
+        "conflicts_excluded_from_sum_and_preserved_in_observations": true,
+        "consistent_cost_groups": 1,
+        "recorded_component_counters": {
+          "cached_input_tokens": {
+            "conflicting_groups": 0,
+            "known_groups": 1,
+            "known_sum": 0
+          },
+          "reasoning_output_tokens": {
+            "conflicting_groups": 0,
+            "known_groups": 0,
+            "known_sum": 0
+          }
+        },
+        "recorded_token_sum": {
+          "input_tokens": 1888,
+          "output_tokens": 76,
+          "total_tokens": 1964
+        },
+        "response_identity_unavailable_groups": 0,
+        "sum_scope": "one consistent reported token vector per provider response identity; operation-scoped when absent"
+      },
+      "all_result_usage_including_invalid": {
+        "partial_recorded_counters": {
+          "input_tokens": {
+            "known_rows": 1,
+            "known_sum": 1888
+          },
+          "output_tokens": {
+            "known_rows": 1,
+            "known_sum": 76
+          },
+          "total_tokens": {
+            "known_rows": 1,
+            "known_sum": 1964
+          }
+        },
+        "recorded_component_counters": {
+          "cached_input_tokens": {
+            "known_rows": 1,
+            "known_sum": 0
+          },
+          "reasoning_output_tokens": {
+            "known_rows": 0,
+            "known_sum": 0
+          }
+        },
+        "recorded_token_sum": {
+          "input_tokens": 1888,
+          "output_tokens": 76,
+          "total_tokens": 1964
+        },
+        "rows": 1,
+        "rows_with_usable_usage": 1,
+        "rows_without_usable_usage": 0,
+        "sum_scope": "result rows; kept separately from SSE and never added to it"
+      },
+      "canonical_reconstruction_matches_original_input_hash": true,
+      "canonical_reconstruction_sha256": "eca351de5f9e143d1a15286448662023e0d6006f6b3988338c42a4703f6f14d4",
+      "cases": 1,
+      "cases_with_verification_errors": 0,
+      "cases_without_resolved_usage": 0,
+      "classification_counts": {
+        "recorded_usage": 1
+      },
+      "completed_result_usage": {
+        "partial_recorded_counters": {
+          "input_tokens": {
+            "known_rows": 1,
+            "known_sum": 1888
+          },
+          "output_tokens": {
+            "known_rows": 1,
+            "known_sum": 76
+          },
+          "total_tokens": {
+            "known_rows": 1,
+            "known_sum": 1964
+          }
+        },
+        "recorded_component_counters": {
+          "cached_input_tokens": {
+            "known_rows": 1,
+            "known_sum": 0
+          },
+          "reasoning_output_tokens": {
+            "known_rows": 0,
+            "known_sum": 0
+          }
+        },
+        "recorded_token_sum": {
+          "input_tokens": 1888,
+          "output_tokens": 76,
+          "total_tokens": 1964
+        },
+        "rows": 1,
+        "rows_with_usable_usage": 1,
+        "rows_without_usable_usage": 0,
+        "sum_scope": "result rows; kept separately from SSE and never added to it"
+      },
+      "dollar_cost": null,
+      "invalid_usage_observations": 0,
+      "missing_usage_assumed_zero": false,
+      "noncompleted_result_usage": {
+        "partial_recorded_counters": {
+          "input_tokens": {
+            "known_rows": 0,
+            "known_sum": 0
+          },
+          "output_tokens": {
+            "known_rows": 0,
+            "known_sum": 0
+          },
+          "total_tokens": {
+            "known_rows": 0,
+            "known_sum": 0
+          }
+        },
+        "recorded_component_counters": {
+          "cached_input_tokens": {
+            "known_rows": 0,
+            "known_sum": 0
+          },
+          "reasoning_output_tokens": {
+            "known_rows": 0,
+            "known_sum": 0
+          }
+        },
+        "recorded_token_sum": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "total_tokens": 0
+        },
+        "rows": 0,
+        "rows_with_usable_usage": 0,
+        "rows_without_usable_usage": 0,
+        "sum_scope": "result rows; kept separately from SSE and never added to it"
+      },
+      "original_input_hash_check": "pass",
+      "original_input_sha256": "eca351de5f9e143d1a15286448662023e0d6006f6b3988338c42a4703f6f14d4",
+      "original_summary_completed": 1,
+      "original_summary_matches_completed_only_usage": {
+        "input_tokens": true,
+        "output_tokens": true,
+        "total_tokens": true
+      },
+      "original_summary_usage": {
+        "input_tokens": {
+          "all_requested_calls_accounted": true,
+          "known_requests": 1,
+          "known_sum": 1888
+        },
+        "output_tokens": {
+          "all_requested_calls_accounted": true,
+          "known_requests": 1,
+          "known_sum": 76
+        },
+        "total_tokens": {
+          "all_requested_calls_accounted": true,
+          "known_requests": 1,
+          "known_sum": 1964
+        }
+      },
+      "pricing_source_used": null,
+      "reconstruction_note": "Canonical reconstruction is supplementary; differing original whitespace is possible.",
+      "reported_error_type_counts": {},
+      "reported_status_counts": {
+        "completed": 1
+      },
+      "requested": 1,
+      "run_id": "fc07bb42-4191-484e-8f38-4cfdef4c7ad6",
+      "sse_dispatched_terminal_events": 1,
+      "sse_duplicate_terminal_events": 0,
+      "sse_parse_or_framing_problems": 0,
+      "sse_provider_error_codes": {},
+      "sse_terminal_events": 1,
+      "sse_terminal_usage_observations": 1,
+      "teacher_freeze_hash_check": "pass",
+      "total_provider_cost": null,
+      "verification_errors": []
+    },
+    "teacher-held-v1": {
+      "additional_terminal_usage_absent_from_results": {
+        "groups": 0,
+        "recorded_token_sum": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "all_recorded_usage_deduplicated": {
+        "conflicting_cost_groups": 0,
+        "conflicts_excluded_from_sum_and_preserved_in_observations": true,
+        "consistent_cost_groups": 72,
+        "recorded_component_counters": {
+          "cached_input_tokens": {
+            "conflicting_groups": 0,
+            "known_groups": 72,
+            "known_sum": 132937
+          },
+          "reasoning_output_tokens": {
+            "conflicting_groups": 0,
+            "known_groups": 0,
+            "known_sum": 0
+          }
+        },
+        "recorded_token_sum": {
+          "input_tokens": 137369,
+          "output_tokens": 12349,
+          "total_tokens": 149718
+        },
+        "response_identity_unavailable_groups": 0,
+        "sum_scope": "one consistent reported token vector per provider response identity; operation-scoped when absent"
+      },
+      "all_result_usage_including_invalid": {
+        "partial_recorded_counters": {
+          "input_tokens": {
+            "known_rows": 72,
+            "known_sum": 137369
+          },
+          "output_tokens": {
+            "known_rows": 72,
+            "known_sum": 12349
+          },
+          "total_tokens": {
+            "known_rows": 72,
+            "known_sum": 149718
+          }
+        },
+        "recorded_component_counters": {
+          "cached_input_tokens": {
+            "known_rows": 72,
+            "known_sum": 132937
+          },
+          "reasoning_output_tokens": {
+            "known_rows": 0,
+            "known_sum": 0
+          }
+        },
+        "recorded_token_sum": {
+          "input_tokens": 137369,
+          "output_tokens": 12349,
+          "total_tokens": 149718
+        },
+        "rows": 180,
+        "rows_with_usable_usage": 72,
+        "rows_without_usable_usage": 108,
+        "sum_scope": "result rows; kept separately from SSE and never added to it"
+      },
+      "canonical_reconstruction_matches_original_input_hash": true,
+      "canonical_reconstruction_sha256": "622fb6942a308a3e3930c960474f88b19e92cc31f5709309a56ad5c93c83d700",
+      "cases": 180,
+      "cases_with_verification_errors": 0,
+      "cases_without_resolved_usage": 108,
+      "classification_counts": {
+        "recorded_usage": 72,
+        "unknown_usage": 108
+      },
+      "completed_result_usage": {
+        "partial_recorded_counters": {
+          "input_tokens": {
+            "known_rows": 69,
+            "known_sum": 131653
+          },
+          "output_tokens": {
+            "known_rows": 69,
+            "known_sum": 11581
+          },
+          "total_tokens": {
+            "known_rows": 69,
+            "known_sum": 143234
+          }
+        },
+        "recorded_component_counters": {
+          "cached_input_tokens": {
+            "known_rows": 69,
+            "known_sum": 127408
+          },
+          "reasoning_output_tokens": {
+            "known_rows": 0,
+            "known_sum": 0
+          }
+        },
+        "recorded_token_sum": {
+          "input_tokens": 131653,
+          "output_tokens": 11581,
+          "total_tokens": 143234
+        },
+        "rows": 69,
+        "rows_with_usable_usage": 69,
+        "rows_without_usable_usage": 0,
+        "sum_scope": "result rows; kept separately from SSE and never added to it"
+      },
+      "dollar_cost": null,
+      "invalid_usage_observations": 0,
+      "missing_usage_assumed_zero": false,
+      "noncompleted_result_usage": {
+        "partial_recorded_counters": {
+          "input_tokens": {
+            "known_rows": 3,
+            "known_sum": 5716
+          },
+          "output_tokens": {
+            "known_rows": 3,
+            "known_sum": 768
+          },
+          "total_tokens": {
+            "known_rows": 3,
+            "known_sum": 6484
+          }
+        },
+        "recorded_component_counters": {
+          "cached_input_tokens": {
+            "known_rows": 3,
+            "known_sum": 5529
+          },
+          "reasoning_output_tokens": {
+            "known_rows": 0,
+            "known_sum": 0
+          }
+        },
+        "recorded_token_sum": {
+          "input_tokens": 5716,
+          "output_tokens": 768,
+          "total_tokens": 6484
+        },
+        "rows": 111,
+        "rows_with_usable_usage": 3,
+        "rows_without_usable_usage": 108,
+        "sum_scope": "result rows; kept separately from SSE and never added to it"
+      },
+      "original_input_hash_check": "pass",
+      "original_input_sha256": "622fb6942a308a3e3930c960474f88b19e92cc31f5709309a56ad5c93c83d700",
+      "original_summary_completed": 69,
+      "original_summary_matches_completed_only_usage": {
+        "input_tokens": true,
+        "output_tokens": true,
+        "total_tokens": true
+      },
+      "original_summary_usage": {
+        "input_tokens": {
+          "all_requested_calls_accounted": false,
+          "known_requests": 69,
+          "known_sum": 131653
+        },
+        "output_tokens": {
+          "all_requested_calls_accounted": false,
+          "known_requests": 69,
+          "known_sum": 11581
+        },
+        "total_tokens": {
+          "all_requested_calls_accounted": false,
+          "known_requests": 69,
+          "known_sum": 143234
+        }
+      },
+      "pricing_source_used": null,
+      "reconstruction_note": "Canonical reconstruction is supplementary; differing original whitespace is possible.",
+      "reported_error_type_counts": {
+        "IncompleteRead": 10,
+        "JSONDecodeError": 3,
+        "RemoteDisconnected": 92,
+        "TimeoutError": 3,
+        "ValueError": 3
+      },
+      "reported_status_counts": {
+        "completed": 69,
+        "unknown_or_invalid": 111
+      },
+      "requested": 180,
+      "run_id": "9da1c1b6-b82a-439d-834e-dddac6b158fd",
+      "sse_dispatched_terminal_events": 75,
+      "sse_duplicate_terminal_events": 0,
+      "sse_parse_or_framing_problems": 0,
+      "sse_provider_error_codes": {
+        "empty_terminal_response": 3
+      },
+      "sse_terminal_events": 75,
+      "sse_terminal_usage_observations": 72,
+      "teacher_freeze_hash_check": "pass",
+      "total_provider_cost": null,
+      "verification_errors": []
+    }
+  },
+  "schema": "hepta.cell-v7.posthoc-cost-audit.v1",
+  "script_sha256": "5f390cfeaf898fa7f65265b90d538525084badcb8d32ecf32cadd49c4b1a46b0",
+  "semantic_scoring_modified": false,
+  "source_root": "/home/qian-qi/worktrees/hepta-cell-v6-20261028/qualification/memory-cell-v7-teacher",
+  "verification_error_count": 0,
+  "verification_errors": []
+}
