@@ -1,0 +1,308 @@
+{
+  "arms": [
+    {
+      "arm": "frozen-v7",
+      "language_head_fits": 0,
+      "parameter_training_fit_calls": 2,
+      "receipt": {
+        "archive_member": "hepta-private-ci/hepta-private-ci/memory-v9-ci-output/baseline-v7-native-held.json",
+        "bytes": 1214038,
+        "sha256": "daebaee6a86025f6c2ee1263372ffde75246868f05b9756dbce40b8ee29cdf8e"
+      },
+      "reported_worker": {
+        "attempts": 544,
+        "cpu_ns": 2500834239,
+        "host_ns": 2987650591,
+        "host_time_abstentions": 0,
+        "responses": 544,
+        "starts": 1,
+        "stdin_bytes": 870634,
+        "stdout_bytes": 549875,
+        "wall_ns": 2501547521
+      },
+      "request_recount": {
+        "control": {
+          "newline_bytes": 272,
+          "request_body_bytes": 435045,
+          "requests": 272,
+          "stdin_frame_bytes": 435317,
+          "stdout_frame_bytes": 274919
+        },
+        "direct": {
+          "newline_bytes": 272,
+          "request_body_bytes": 435045,
+          "requests": 272,
+          "stdin_frame_bytes": 435317,
+          "stdout_frame_bytes": 274956
+        }
+      },
+      "separate_control_transport": {
+        "received_bytes": 168506,
+        "rpc_attempts": 272,
+        "transmitted_bytes": 124873
+      }
+    },
+    {
+      "arm": "frozen-v8-shadow",
+      "language_head_fits": 0,
+      "parameter_training_fit_calls": 2,
+      "receipt": {
+        "archive_member": "hepta-private-ci/hepta-private-ci/memory-v9-ci-output/baseline-v8-native-held.json",
+        "bytes": 1303013,
+        "sha256": "3bc76c8bddfe2b954a208116e604966ea880cf5cbcc8a7b2d6f7a3bec5b8bd8a"
+      },
+      "reported_worker": {
+        "attempts": 544,
+        "cpu_ns": 2278547243,
+        "host_ns": 2772096988,
+        "host_time_abstentions": 0,
+        "responses": 544,
+        "starts": 1,
+        "stdin_bytes": 870634,
+        "stdout_bytes": 601969,
+        "wall_ns": 2279067104
+      },
+      "request_recount": {
+        "control": {
+          "newline_bytes": 272,
+          "request_body_bytes": 435045,
+          "requests": 272,
+          "stdin_frame_bytes": 435317,
+          "stdout_frame_bytes": 300968
+        },
+        "direct": {
+          "newline_bytes": 272,
+          "request_body_bytes": 435045,
+          "requests": 272,
+          "stdin_frame_bytes": 435317,
+          "stdout_frame_bytes": 301001
+        }
+      },
+      "separate_control_transport": {
+        "received_bytes": 174472,
+        "rpc_attempts": 272,
+        "transmitted_bytes": 124873
+      }
+    },
+    {
+      "arm": "candidate-v9-shadow",
+      "language_head_fits": 0,
+      "parameter_training_fit_calls": 2,
+      "receipt": {
+        "archive_member": "hepta-private-ci/hepta-private-ci/memory-v9-ci-output/candidate-v9-native-held.json",
+        "bytes": 1318934,
+        "sha256": "d53fb4a926e6595154f397d4cda0cbf2187cca4b3b1f74b8da3a8022c5b40e99"
+      },
+      "reported_worker": {
+        "attempts": 544,
+        "cpu_ns": 2201298444,
+        "host_ns": 2677266342,
+        "host_time_abstentions": 0,
+        "responses": 544,
+        "starts": 1,
+        "stdin_bytes": 870634,
+        "stdout_bytes": 619724,
+        "wall_ns": 2201447697
+      },
+      "request_recount": {
+        "control": {
+          "newline_bytes": 272,
+          "request_body_bytes": 435045,
+          "requests": 272,
+          "stdin_frame_bytes": 435317,
+          "stdout_frame_bytes": 309863
+        },
+        "direct": {
+          "newline_bytes": 272,
+          "request_body_bytes": 435045,
+          "requests": 272,
+          "stdin_frame_bytes": 435317,
+          "stdout_frame_bytes": 309861
+        }
+      },
+      "separate_control_transport": {
+        "received_bytes": 173864,
+        "rpc_attempts": 272,
+        "transmitted_bytes": 124873
+      }
+    }
+  ],
+  "final_use_authority": false,
+  "fit_accounting": {
+    "call_trace": [
+      {
+        "behavior": "Writes four seed records; native harness then writes 60 held records. No fit.",
+        "file": "codex-rs/hepta-agentd/src/memory_cell_test_support.rs",
+        "symbol": "ControlFixture::new"
+      },
+      {
+        "behavior": "Calls fit(&trainer(), &fixture, generation=1, Clean) exactly once per arm.",
+        "file": "codex-rs/hepta-agentd/src/memory_cell_language_v9_tests.rs",
+        "symbol": "measure_native_suite"
+      },
+      {
+        "behavior": "Calls MemoryCellTrainerConfigV1::train once and inspects its two-type receipt; no retry or rebuild.",
+        "file": "codex-rs/hepta-agentd/src/memory_cell_training_test_support.rs",
+        "symbol": "fit"
+      },
+      {
+        "behavior": "Clean supplies empty parents; starts memory-cell-v7/training_worker.py once. Subsequent native decoding and source-cut revalidation do not fit.",
+        "file": "codex-rs/hepta-agentd/src/memory_cell_training.rs",
+        "symbol": "MemoryCellTrainerConfigV1::train"
+      },
+      {
+        "behavior": "Calls train(decode_unique(raw)) once.",
+        "file": "qualification/memory-cell-v7/training_worker.py",
+        "symbol": "main"
+      },
+      {
+        "behavior": "Iterates KINDS=(semantic, procedure), invokes AssociativeCell.fit once per kind, exports and performs written-address diagnostics.",
+        "file": "qualification/memory-cell-v7/training.py",
+        "symbol": "train"
+      },
+      {
+        "behavior": "Decodes existing arrays and exports their bytes; no fit or threshold selection.",
+        "file": "qualification/memory-cell-v7/native_export.py",
+        "symbol": "export_cell"
+      },
+      {
+        "behavior": "Publishes and selects supplied native model bytes; no training.",
+        "file": "codex-rs/hepta-agentd/src/memory_cell_release_test_support.rs",
+        "symbol": "from_models_with_training_code"
+      }
+    ],
+    "clean_rebuild_clarification": "Clean means from-scratch fitting without a parent. Dedicated rebuild tests make additional explicit fit calls; this three-arm harness does not invoke those tests or the V9 paired worker.",
+    "excluded_experiments": "The 84 offline addressing-head development fits and V9 continual/structure paired fits are separate experiments.",
+    "fit_unit": "One actual AssociativeCell.fit invocation, not one gradient iteration.",
+    "parameter_digests_equal_across_fresh_arms": {
+      "procedure": "497b68956ac392f8c816d5670a8c215eb8e72ae2726c06cd581a411c00c71610",
+      "semantic": "3dfb399e44c6961a47aaf75cc53d1f1823f91cd6ce1f5cd1dba75948511b6040"
+    },
+    "per_arm": {
+      "current_rows_per_type": 13,
+      "dimension": 48,
+      "hidden": 64,
+      "implicit_rebuild_fits": 0,
+      "language_head_fits": 0,
+      "new_memory_parameter_fits": 2,
+      "seed": 91317,
+      "steps_per_fit": 600,
+      "training_worker_processes": 1,
+      "types": [
+        "semantic",
+        "procedure"
+      ]
+    },
+    "repeated_training_scope": "Each arm deliberately creates its own owner and fits both types anew; the six fits include this across-arm repetition.",
+    "three_arm_total": {
+      "language_head_fits": 0,
+      "new_memory_parameter_fits": 6,
+      "optimizer_iterations": 3600,
+      "training_worker_processes": 3
+    }
+  },
+  "original_archive_index": {
+    "bytes": 8620,
+    "sha256": "91559f9eacba88d71b419169dfa89182f7816e5fae87c69e0e82ae49de2185b0"
+  },
+  "original_ci_receipt": {
+    "archive_member": "hepta-private-ci/hepta-private-ci/memory-v9-ci-output/receipt.json",
+    "bytes": 10178,
+    "sha256": "34801c0e324497723fa560d6c3a37484b4aa02094b274df78482045320d6faa9"
+  },
+  "request_accounting": {
+    "boundary": "The direct probe and full control read are separate actual calls. 870634 bytes is not the complete communication cost of 272 ordinary reads and is not an exclusive communication-cost measurement.",
+    "control_meter": "AgentdClient::send separately meters actual Unix control-socket writes and reads, including newline; 272 RPCs and 124873 transmitted bytes per arm.",
+    "excluded_from_stdin_total": [
+      "worker response bytes",
+      "outer Agentd control RPC",
+      "training subprocess input/output",
+      "worker readiness on stderr",
+      "model and encoder file reads",
+      "database writes and release artifact operations",
+      "kernel or physical-network overhead"
+    ],
+    "frame_contents": [
+      "outer schema",
+      "typed address request after TimeView conversion",
+      "owner registry including scope, source_cut, entities and aliases",
+      "one newline"
+    ],
+    "host_time_abstentions": 0,
+    "measurement": "MemoryCellAddressWorkerV1::exchange accumulates each actual successful stdin write. BoundRequest::validate_response checks reported request_body_bytes against host frame length minus newline.",
+    "per_arm_body_bytes": 870090,
+    "per_arm_control_internal_worker_bytes": 435317,
+    "per_arm_direct_diagnostic_bytes": 435317,
+    "per_arm_newline_bytes": 544,
+    "per_arm_requests": 544,
+    "per_arm_stdin_bytes": 870634,
+    "three_arm_stdin_bytes": 2611902,
+    "transport": "Host to address worker stdin; canonical JSONL application frames.",
+    "worker_transaction_count_is_not_model_forward_count": true
+  },
+  "reviewed_source_closure": {
+    "all_current_files_exactly_match_tested_tree": true,
+    "canonical_encoding": "UTF-8 JSON, sorted keys, compact separators; inventory maps each path to bytes and SHA-256.",
+    "canonical_inventory_sha256": "5f67c2b8e8550c8fc5dded7fe5e8d5b96a2161d7e69bc2c678e2b3dc109d4e16",
+    "file_count": 12,
+    "files": {
+      "codex-rs/hepta-agentd/src/client.rs": {
+        "bytes": 27203,
+        "sha256": "c5a5928dde9918dae3b3d7a5169971e9db194938ec310cbbf5f3d30472e59a58"
+      },
+      "codex-rs/hepta-agentd/src/memory_cell_address_worker.rs": {
+        "bytes": 13413,
+        "sha256": "19c531ee12fb59c343b1a3b4fdb6178d1dee84ef2ec2baa0be4c1a0b576be518"
+      },
+      "codex-rs/hepta-agentd/src/memory_cell_address_worker_wire.rs": {
+        "bytes": 13883,
+        "sha256": "726a2a0501acd66319673d20fcf9f6e03c072eff0dff7a26afd24e947e5064f8"
+      },
+      "codex-rs/hepta-agentd/src/memory_cell_language_v9_tests.rs": {
+        "bytes": 15720,
+        "sha256": "b854cb468b6a9e3267028a59bc7e1c18781e87893aeaeb29395d25b84ac3a5b0"
+      },
+      "codex-rs/hepta-agentd/src/memory_cell_release_test_support.rs": {
+        "bytes": 19902,
+        "sha256": "fe27b894f6447068401931383a76a71cf00c47e8b741016146ec54252b2ae2a6"
+      },
+      "codex-rs/hepta-agentd/src/memory_cell_test_support.rs": {
+        "bytes": 6896,
+        "sha256": "3763cb9c22e7d8c8d36e1c77b05bede446cbc6c22f0d51eb2480bbc047e4499f"
+      },
+      "codex-rs/hepta-agentd/src/memory_cell_training.rs": {
+        "bytes": 12675,
+        "sha256": "332a96019b8da05d91ed08704277147389e5b7125da4ce5790cde269d6542c8f"
+      },
+      "codex-rs/hepta-agentd/src/memory_cell_training_test_support.rs": {
+        "bytes": 8127,
+        "sha256": "c3b7a244ab3196ba6047295fce19e1e9bdd4daa1de1e71c563590e3df0858217"
+      },
+      "qualification/memory-cell-v6/v6/cells.py": {
+        "bytes": 16224,
+        "sha256": "e0b2f7dbf3f280ebf6618c68c60b7799bb945eaf76cc603b6bfcfc3d33de2024"
+      },
+      "qualification/memory-cell-v7/native_export.py": {
+        "bytes": 2976,
+        "sha256": "cbdc28764bd14c9524ce046ea6fd0a1c8043a75225a66def4b8ce23d874a9616"
+      },
+      "qualification/memory-cell-v7/training.py": {
+        "bytes": 9763,
+        "sha256": "d6205c6020fb2218a9afb56371482f77fe8a2b49ba42ec9b4f0f516eeb55a0c0"
+      },
+      "qualification/memory-cell-v7/training_worker.py": {
+        "bytes": 965,
+        "sha256": "43392c23d00fa1a2c706742c9834fd27b9319f22b05927d796015c9d542cc040"
+      }
+    },
+    "scope_is_twelve_reviewed_files_not_the_entire_runtime_import_inventory": true
+  },
+  "schema": "hepta.memory.v9.native-cost-source-review.v1",
+  "scientific_acceptance_changed": false,
+  "scope": "Read-only formal-02 source tracing and original-receipt arithmetic; no training, model inference, source change or new evaluation.",
+  "tested_source": {
+    "local_commit": "db13028278680a9a263d3d8657186b0c6d6ee14f",
+    "remote_commit": "371890909481dec3229449d4ae0330f7ba01646d",
+    "tree": "136e4fc3a74d2b1845fcfb4bd1245faa0e09de21"
+  }
+}
