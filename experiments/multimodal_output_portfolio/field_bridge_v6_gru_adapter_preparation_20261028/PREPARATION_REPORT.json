@@ -1,0 +1,771 @@
+{
+  "admission": false,
+  "count_scope": "Explicit test module constructions/draws/forward/backward/SGD steps. Inherited isolated preflight SGD/RNG constructors perform no forward or step and are not pipeline counts.",
+  "created_unix_ns": 1793183047812757570,
+  "earlier_same_target_replay": {
+    "contract_sha256": "bcb46da4f278470db0bd33eb1d9022d9fbf60502cd48ed216fc9b1e89e8cb79f",
+    "evidence": {
+      "cache_aliases_valid": true,
+      "checkpoint_bytes": 41556,
+      "checkpoint_sha256": "8e52d2a0d0fb33a73a5ce96d202e3e2f09ba6c837e61e03d10f77b133f85c214",
+      "hidden_is_explicit_local_input_not_cross_step_state": true,
+      "next_full_state_sha256": "3fd04fa9a0be6d1a96d9a9fd8e59a268f97ee203f04f28a0970e8afac9e9752d",
+      "next_output_hidden_input_loss_sha256": "98e4214f28e06b5dd4b376f131861858edb6ae158bd5a19d370ef73b41e95b44",
+      "output_hidden_loss_state_bitwise_equal": true,
+      "same_live_target": true,
+      "serializer": {
+        "array_count": 10,
+        "array_payload_bytes": 12856,
+        "compression_assumed": false,
+        "file_bytes": 41556,
+        "header_bytes": 28665
+      },
+      "temporary_file_only": true
+    },
+    "receipt": {
+      "bytes": 16957,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/evidence/ATTEMPT_3.json",
+      "sha256": "b1172a26944e380fca042c8e3acbc075dd3e4494c00a10bc29b1a4548c9aa858"
+    },
+    "scope": "Precedes the five-helper method-inventory extension; unchanged copied state execution. Final-contract fresh-target replay is independently reviewed."
+  },
+  "engineering_tests_passed": true,
+  "final_test_evidence": {
+    "copy_equivalence": {
+      "copied_methods": [
+        {
+          "ast_equal": true,
+          "ast_sha256": "4e7d8e8a8fd4313f92dba5109278dc0998955986b7f6e47ce09b3fdbf28b861b",
+          "bytes_equal": true,
+          "copied_source_sha256": "b7a4630a2946c0eba8a4ddce32d9ee8f411774abce8646565384dca2195bb048",
+          "full_source_bytes": 3843,
+          "globals": [
+            {
+              "module": "builtins",
+              "name": "all",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "any",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "dict",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "generator_kind",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "generator_owner",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "id",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "independent",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "int",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "len",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "list",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_gru_adapter_preparation_20261028.contract",
+              "name": "model_parts",
+              "permitted_local_replacement": true,
+              "same_object": false
+            },
+            {
+              "module": "numpy",
+              "name": "np",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_preparation_20261028.codec",
+              "name": "require",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "set",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "storage_leaves",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "str",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "sys",
+              "name": "sys",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "torch",
+              "name": "torch",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "type",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "vars",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "zip",
+              "permitted_local_replacement": false,
+              "same_object": true
+            }
+          ],
+          "method": "_parts",
+          "original_source_sha256": "b7a4630a2946c0eba8a4ddce32d9ee8f411774abce8646565384dca2195bb048"
+        },
+        {
+          "ast_equal": true,
+          "ast_sha256": "f06ad881e54f6ce62b90e5ecf1a474ad2e6173034723bca74127c8c67a775897",
+          "bytes_equal": true,
+          "copied_source_sha256": "e9868e119789a41771f73084632b437179fb9d3930eff172d83da03af61b65b3",
+          "full_source_bytes": 1779,
+          "globals": [
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "array",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_preparation_20261028.branch_state",
+              "name": "branch_state",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_preparation_20261028.codec",
+              "name": "codec",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "list",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_gru_adapter_preparation_20261028.contract",
+              "name": "module_identity",
+              "permitted_local_replacement": true,
+              "same_object": false
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "native",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_preparation_20261028.codec",
+              "name": "require",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "runtime_descriptor",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "sorted",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "storage_leaves",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "vars",
+              "permitted_local_replacement": false,
+              "same_object": true
+            }
+          ],
+          "method": "_description",
+          "original_source_sha256": "e9868e119789a41771f73084632b437179fb9d3930eff172d83da03af61b65b3"
+        }
+      ],
+      "global_monkey_patch": false,
+      "only_local_global_replacements": [
+        "model_parts",
+        "module_identity"
+      ],
+      "runtime_exec_or_code_rewrite": false,
+      "strict_source_sha256": "59b32cbd4ac52dee2e3b0dec7f1c0b197d2c84dbd6fdf404156ad788d3d38e21",
+      "unchanged_inherited_methods": [
+        "__init__",
+        "capture",
+        "_mutable",
+        "_prepare",
+        "_apply",
+        "restore"
+      ]
+    },
+    "stock_methods": [
+      {
+        "class": "GRU",
+        "code_sha256": "5baefd737d1dc7ed02e7edc6ebb7ea5c3870c1aa05b412422cb5c04a8fd3eede",
+        "name": "__init__",
+        "source": "rnn"
+      },
+      {
+        "class": "GRU",
+        "code_sha256": "848c86fd2b68cbcf0ade89bb480337c5db5f0d3467422d032cffead698268d7d",
+        "name": "forward",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "e0f0fe86b79ec6c8336a45701fd58d2c30129ffb895749059a21f7da14268239",
+        "name": "__init__",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "2c536c2785204b810cf084d2671c364c7a8376571645506d5635ea878fc7beb1",
+        "name": "__setattr__",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "fd803933aac5a73e079cb0e3c0126386ded6d3d54dccab1bd8ecddb6804fabc5",
+        "name": "_init_flat_weights",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "af6ef7dc09ba65465fc5822928996a0882374eda673bcc5540b5462aedd62fcc",
+        "name": "flatten_parameters",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "354cd03891f9f952575cfef67e049a2cbae0d90e3334126e98b094ccce1698a2",
+        "name": "_apply",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "a185cd5e9616e83e0520be8396127005501821ea28228d7d472a57637f05c23a",
+        "name": "_weights_have_changed",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "3daed1a5394c08f96b538460f019942bc81ef90045a779feb00098d1bdb2e2c3",
+        "name": "_update_flat_weights",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "4129ca3e82220683afdee1392cf0a056620cb7f1cd3688e9d8b88311d191e550",
+        "name": "permute_hidden",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "5daebdb1e4ae0435de15a892ea118c8d4aeb5495a2d4218de4b8b0fe0617a353",
+        "name": "check_forward_args",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "3ce64c372735b6a4fa26fdf6a0a53a0e1526c05de2622315673252a8ed712a1c",
+        "name": "check_input",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "dc2b287394966dedd4c40a3c9d8a8084356dc9ef3d1cf67210933b705197208c",
+        "name": "get_expected_hidden_size",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "6deaf548bccbdea98f97e3706f3dbf930ae5faf63ab4e30203860c9ed031ca13",
+        "name": "check_hidden_size",
+        "source": "rnn"
+      },
+      {
+        "class": "Module",
+        "code_sha256": "aa25683749cad6a0fb560257ead92ca7a5974caff0a260f5553a7cb09c272f39",
+        "name": "__getattr__",
+        "source": "module"
+      },
+      {
+        "class": "Module",
+        "code_sha256": "b40a16654dda14244c3bbd9a56f3cf57a0cb8a05d3fdefd1c544cb71bf05d35a",
+        "name": "__setattr__",
+        "source": "module"
+      },
+      {
+        "class": "Module",
+        "code_sha256": "a553d72c77aae4bdc929869b8ee04d428c8e3f0a33c05bf0201d0ab28e93363f",
+        "name": "_wrapped_call_impl",
+        "source": "module"
+      },
+      {
+        "class": "Module",
+        "code_sha256": "c7a351c6f355a5d287e73ea040a7484de4c8608106454a97db7dbd7c04e38d1c",
+        "name": "_call_impl",
+        "source": "module"
+      }
+    ]
+  },
+  "forbidden_scientific_imports_across_attempts": [],
+  "historical_raw_recovered": false,
+  "independent_review": "Pending; new review artifacts must be separate and must not rewrite retained attempts.",
+  "limitations": [
+    "No pending external autograd graph; version counters are not restored and arbitrary pending graphs are not detected.",
+    "Only exact stock single-layer bias-on batch-first zero-dropout unidirectional CPU float32 GRU caches; actual tests use 2-by-2 synthetic objects.",
+    "No arbitrary GRU subclass or modified installed method dispatch, no hooks, no storage sharing outside validated derived cache identity.",
+    "Hidden carry across scientific steps is not captured by this extension; local explicit hidden input only.",
+    "Remaining Python/Torch process implementation is trusted; this is not a native operator or builtin integrity sandbox.",
+    "No scientific caller projection, kernel invocation, full candidate capacity proof, registration, holdout access, or raw upload.",
+    "Static dimensions and tiny serializer size are not a complete prospective candidate storage bound."
+  ],
+  "method_inventory_review_fix": {
+    "counterexample_work": {
+      "forward_backward_optimizer_steps": 0,
+      "scientific_calls": 0,
+      "toy_gru_constructions": 1
+    },
+    "defaults_use_typed_canonical_comparison": true,
+    "final_method_count": 18,
+    "independent_counterexample": {
+      "bytes": 996,
+      "path": "/workspace/scratch/e8a4dc33549f/v6_gru_independent_method_gap_20261028.json",
+      "sha256": "e7f815d4461eb327f07688cc15779425f68a7651fa0e15be7aaa400c896bc354"
+    },
+    "initial_method_count": 13,
+    "missing_helpers": [
+      "permute_hidden",
+      "check_forward_args",
+      "check_input",
+      "get_expected_hidden_size",
+      "check_hidden_size"
+    ],
+    "new_contract_sha256": "ca7b33dca165aa22b953bb1528fefb80f8d8c4f26079c1cecba0ffd61e176827",
+    "old_contract_sha256": "bcb46da4f278470db0bd33eb1d9022d9fbf60502cd48ed216fc9b1e89e8cb79f",
+    "old_readme_snapshot": {
+      "bytes": 8096,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/evidence/README_BEFORE_METHOD_FIX.md",
+      "sha256": "3dc4fb77f852092e9bc1f192912d288bdab1ecb14daec01536c9138ea2e5fefd"
+    },
+    "old_report_snapshot": {
+      "bytes": 28566,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/evidence/PREPARATION_BEFORE_METHOD_FIX.json",
+      "sha256": "cc6149789f4b600e2718c5186cdd71b6d62bb00ed8e5be49b6e9314f89e0ec1b"
+    },
+    "preflight_only_writer_recheck": {
+      "bytes": 17064,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/evidence/ATTEMPT_4.json",
+      "sha256": "e3566eec73f55e2e2984341ccc2569485cffb8abce79a778893eec31241555a4"
+    }
+  },
+  "new_research_registration": false,
+  "new_scientific_execution": false,
+  "raw_upload_attempts": 0,
+  "readme": {
+    "bytes": 8905,
+    "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/README.md",
+    "sha256": "0705b1a4dc26fd2c0843fc4895c0711aef4d20b74eb0c11669727c65918c6e18"
+  },
+  "resource_boundary": {
+    "capacity_passed": false,
+    "f_bavail_bytes": 0,
+    "f_bfree_bytes": 1637531648,
+    "research_start_permitted": false,
+    "root_reserved_blocks_bypass": false,
+    "scientific_candidate_minimum_bavail_bytes": 2147483648
+  },
+  "retained_attempts": [
+    {
+      "bytes": 40787,
+      "engineering_passed": false,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/evidence/ATTEMPT_1.json",
+      "selection": "full_tiny_suite",
+      "sha256": "2a93316a1f03693b063d9ae231bd1b2481618d6586aad9ffbd6bd819f850ffc0",
+      "tests": {
+        "errors": 9,
+        "failures": 0,
+        "run": 9
+      },
+      "work": {
+        "fresh_holdout_reads": 0,
+        "scientific_model_calls": 0,
+        "scientific_training_steps": 0,
+        "toy_backward_calls": 0,
+        "toy_explicit_random_draw_calls": 0,
+        "toy_fixture_module_objects": 55,
+        "toy_fixture_optimizer_constructions": 18,
+        "toy_gru_forwards": 0,
+        "toy_optimizer_steps": 0
+      }
+    },
+    {
+      "bytes": 17699,
+      "engineering_passed": false,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/evidence/ATTEMPT_2.json",
+      "selection": "full_tiny_suite",
+      "sha256": "b220645437fc0f8adce0417e82091d814450fbbb8170d5613a9b7993ddd10afa",
+      "tests": {
+        "errors": 1,
+        "failures": 0,
+        "run": 9
+      },
+      "work": {
+        "fresh_holdout_reads": 0,
+        "scientific_model_calls": 0,
+        "scientific_training_steps": 0,
+        "toy_backward_calls": 1,
+        "toy_explicit_random_draw_calls": 4,
+        "toy_fixture_module_objects": 74,
+        "toy_fixture_optimizer_constructions": 24,
+        "toy_gru_forwards": 1,
+        "toy_optimizer_steps": 1
+      }
+    },
+    {
+      "bytes": 16957,
+      "engineering_passed": true,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/evidence/ATTEMPT_3.json",
+      "selection": "full_tiny_suite",
+      "sha256": "b1172a26944e380fca042c8e3acbc075dd3e4494c00a10bc29b1a4548c9aa858",
+      "tests": {
+        "errors": 0,
+        "failures": 0,
+        "run": 9
+      },
+      "work": {
+        "fresh_holdout_reads": 0,
+        "scientific_model_calls": 0,
+        "scientific_training_steps": 0,
+        "toy_backward_calls": 2,
+        "toy_explicit_random_draw_calls": 8,
+        "toy_fixture_module_objects": 74,
+        "toy_fixture_optimizer_constructions": 24,
+        "toy_gru_forwards": 2,
+        "toy_optimizer_steps": 2
+      }
+    },
+    {
+      "bytes": 17064,
+      "engineering_passed": true,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/evidence/ATTEMPT_4.json",
+      "selection": "preflight_only",
+      "sha256": "e3566eec73f55e2e2984341ccc2569485cffb8abce79a778893eec31241555a4",
+      "tests": {
+        "errors": 0,
+        "failures": 0,
+        "run": 8
+      },
+      "work": {
+        "fresh_holdout_reads": 0,
+        "scientific_model_calls": 0,
+        "scientific_training_steps": 0,
+        "toy_backward_calls": 0,
+        "toy_explicit_random_draw_calls": 0,
+        "toy_fixture_module_objects": 86,
+        "toy_fixture_optimizer_constructions": 28,
+        "toy_gru_forwards": 0,
+        "toy_optimizer_steps": 0
+      }
+    }
+  ],
+  "runtime": {
+    "autocast_cpu": false,
+    "cpu_capability": "AVX512",
+    "default_dtype": "torch.float32",
+    "deterministic": false,
+    "environment": {
+      "ATEN_CPU_CAPABILITY": null,
+      "MKL_NUM_THREADS": null,
+      "OMP_NUM_THREADS": null
+    },
+    "grad_enabled": true,
+    "inference_mode": false,
+    "interop_threads": 9,
+    "matmul_precision": "highest",
+    "mkldnn": true,
+    "numpy": "2.3.5",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "threads": 9,
+    "torch": "2.8.0+cpu",
+    "torch_build": "PyTorch built with:\n  - GCC 13.3\n  - C++ Version: 201703\n  - Intel(R) oneAPI Math Kernel Library Version 2024.2-Product Build 20240605 for Intel(R) 64 architecture applications\n  - Intel(R) MKL-DNN v3.7.1 (Git Hash 8d263e693366ef8db40acc569cc7d8edf644556d)\n  - OpenMP 201511 (a.k.a. OpenMP 4.5)\n  - LAPACK is enabled (usually provided by MKL)\n  - NNPACK is enabled\n  - CPU capability usage: AVX512\n  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, COMMIT_SHA=a1cb3cc05d46d198467bebbb6e8fba50a325d4e7, CXX_COMPILER=/opt/rh/gcc-toolset-13/root/usr/bin/c++, CXX_FLAGS= -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOCUPTI -DLIBKINETO_NOROCTRACER -DLIBKINETO_NOXPUPTI=ON -DUSE_FBGEMM -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -DC10_NODEPRECATED -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=range-loop-construct -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-parameter -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=old-style-cast -faligned-new -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-dangling-reference -Wno-error=dangling-reference -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, TORCH_VERSION=2.8.0, USE_CUDA=0, USE_CUDNN=OFF, USE_CUSPARSELT=OFF, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=OFF, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, USE_XCCL=OFF, USE_XPU=OFF, \n"
+  },
+  "schema": "hepta-v6-gru-adapter-engineering-preparation-v1",
+  "scientific_kernel_replay": false,
+  "scientific_status": "FAIL",
+  "sources": {
+    "adapter.py": {
+      "bytes": 6325,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/adapter.py",
+      "sha256": "ffdc3aef38040531e8f4933f05be7e672e83d6a8e753d493217f65a281276919"
+    },
+    "contract.py": {
+      "bytes": 11849,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/contract.py",
+      "sha256": "ca7b33dca165aa22b953bb1528fefb80f8d8c4f26079c1cecba0ffd61e176827"
+    },
+    "equivalence.py": {
+      "bytes": 3260,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/equivalence.py",
+      "sha256": "3952ae7f4347bb44694f0d779221de725b43a449629ae163e2eb72ec2e518d89"
+    },
+    "tests.py": {
+      "bytes": 16846,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/tests.py",
+      "sha256": "11c16a15032e5cb94d116da6b3c1b0fc7852499fd67d884f09a86ef1f2f6cec6"
+    }
+  },
+  "static_compatibility_reports": [
+    {
+      "bytes": 16090,
+      "path": "/workspace/scratch/e8a4dc33549f/V6_KERNEL_STATIC_COMPATIBILITY_20261028.json",
+      "sha256": "844089b211c0f53ce06df77bf0a437ff2a6de58f26d6a7329eac5c640c67c6ee"
+    },
+    {
+      "bytes": 4089,
+      "path": "/workspace/scratch/e8a4dc33549f/V6_KERNEL_STATIC_COMPATIBILITY_20261028.md",
+      "sha256": "bfb5217730b3f6df58e8d231d3824d932245f91dcb6881e767b745fdfa3ad7cc"
+    }
+  ],
+  "static_preflight_failure": {
+    "bytes": 5898,
+    "cause": "Marshal encoding bytes differ despite equal CodeType and every recorded code field; replaced by typed recursive canonical code fields, not a tolerance.",
+    "model_constructions": 0,
+    "original_scratch_identity": {
+      "bytes": 5898,
+      "path": "/workspace/scratch/e8a4dc33549f/v6_gru_static_preflight_attempt_1.json",
+      "sha256": "8b024f2d2631c6f3750373e7376d44819aa9e03fcda1f555ddd9bf028095981e"
+    },
+    "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/evidence/STATIC_PREFLIGHT_ATTEMPT_1.json",
+    "scientific_calls": 0,
+    "sha256": "8b024f2d2631c6f3750373e7376d44819aa9e03fcda1f555ddd9bf028095981e"
+  },
+  "status": "NOT_REGISTERED / NOT_EXECUTED",
+  "unchanged_frozen_predecessors": {
+    "checked_files": 21,
+    "files": [
+      {
+        "bytes": 1449,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/BUDGET_PLAN.json",
+        "sha256": "02055543f2b9f6f17a7f657568b00060e078589c4a1dfe43e6b06cabd791948c",
+        "unchanged": true
+      },
+      {
+        "bytes": 1862,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/BUDGET_REPORT.json",
+        "sha256": "1e3526bca390e0a5d9d1b695cfb202bb5a0af9fdc2a34b1cf71be9e68db66c35",
+        "unchanged": true
+      },
+      {
+        "bytes": 7059,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/PREPARATION_REPORT.json",
+        "sha256": "3da172bf5cf5ef7b0a40a07378955021fe5fb24bd13319f9953bb4a212792ac9",
+        "unchanged": true
+      },
+      {
+        "bytes": 5674,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/README.md",
+        "sha256": "a4ef9aa1ecda5cb67a02d065e0d52b0a6b1514651d757f70300421c8f6f7f0ab",
+        "unchanged": true
+      },
+      {
+        "bytes": 2434,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/SOURCE_REFERENCES.json",
+        "sha256": "c5669659c48a1734c633dcee625b4e931464b176f023a6ac72676b169e968dda",
+        "unchanged": true
+      },
+      {
+        "bytes": 12779,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/branch_state.py",
+        "sha256": "332080139de3a15a74d6ee5fad907fef661a1866551a0e23689884587d73cf82",
+        "unchanged": true
+      },
+      {
+        "bytes": 7369,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/budget.py",
+        "sha256": "ea325da155d015e974ea65eddc9db60b0a6befc25835c481810d6e3235825c0b",
+        "unchanged": true
+      },
+      {
+        "bytes": 6335,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/codec.py",
+        "sha256": "75b2be74e5a9bf7ff474e74f5e25f3f6dc3758c09d07ff78a1417537ddc772fb",
+        "unchanged": true
+      },
+      {
+        "bytes": 18077,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/tests.py",
+        "sha256": "506d27b2f04cf97c7f75aa6dfe8e6fe1d6cc9506fd21b3914a901dfb44226bf9",
+        "unchanged": true
+      },
+      {
+        "bytes": 8287,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/independent_review/INDEPENDENT_REVIEW.json",
+        "sha256": "a75343483be69d03250b587a84f29edee3b6be65074ca63be2d861fba4e12bd0",
+        "unchanged": true
+      },
+      {
+        "bytes": 5001,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/independent_review/INDEPENDENT_PROBES.json",
+        "sha256": "959c4c5ff27d6c2f3c5e5102db2b7206e245fefcac2ef3be77f1f8ec320e00f6",
+        "unchanged": true
+      },
+      {
+        "bytes": 6302,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/independent_review/independent_probes.py",
+        "sha256": "ba11e0549c5abfcd2225752cdc47418d6e5a63086e0cb08b8c1d4ff082077a20",
+        "unchanged": true
+      },
+      {
+        "bytes": 14286,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/PREPARATION_REPORT.json",
+        "sha256": "561958bda036d48d01fa03145197634d9219f71aad6052554683358ca705b8b4",
+        "unchanged": true
+      },
+      {
+        "bytes": 5346,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/README.md",
+        "sha256": "a9fd6862de4e4be1e2512a944e199f0b8b10eca3c02b2716f37bee3007d4e24d",
+        "unchanged": true
+      },
+      {
+        "bytes": 22211,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/adapter.py",
+        "sha256": "59b32cbd4ac52dee2e3b0dec7f1c0b197d2c84dbd6fdf404156ad788d3d38e21",
+        "unchanged": true
+      },
+      {
+        "bytes": 26435,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/evidence/ATTEMPT_1.json",
+        "sha256": "b8957d663b7c82889152d47f27223f85ebb74971328ea89cadb20a2982f51f6a",
+        "unchanged": true
+      },
+      {
+        "bytes": 7595,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/evidence/ATTEMPT_2.json",
+        "sha256": "c4f3857df8a8a3fba0d75d205f032a9b4eaf12e204a3b4908b1ad55701115d94",
+        "unchanged": true
+      },
+      {
+        "bytes": 5556,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/evidence/ATTEMPT_3.json",
+        "sha256": "7ce237c2c599bce0eb832d96b9628a033c6f9e180d9eb586ded6104e0c65def9",
+        "unchanged": true
+      },
+      {
+        "bytes": 6277,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/evidence/ATTEMPT_4.json",
+        "sha256": "bedae3c3b91652eaf7d2746e8d656dbe936104d5ddad6d4ff3e07f69cf5f88e1",
+        "unchanged": true
+      },
+      {
+        "bytes": 6449,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/evidence/ATTEMPT_5.json",
+        "sha256": "c8172f6ddc8cc1cbabaeb26676dffad7bc02ab7f256babfa8eb703bc6d1e5511",
+        "unchanged": true
+      },
+      {
+        "bytes": 18511,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/tests.py",
+        "sha256": "c6bf74e88f3b5cd0632c4930d9d248603c806a3d2232e6e0dcb72a4843320b04",
+        "unchanged": true
+      }
+    ],
+    "reference_receipt": {
+      "bytes": 19916,
+      "path": "/workspace/scratch/e8a4dc33549f/v6_torch_adapter_independent_review_20261028.json",
+      "sha256": "5baa00f668a03b172dcd0c9008183391bdae35ffa6e469b9319c0ed35418fabc"
+    }
+  },
+  "unchanged_scientific_failure": {
+    "bytes": 213,
+    "path": "/workspace/scratch/e8a4dc33549f/v5_run/AUDIT.json",
+    "sha256": "35af3341f3fc283c41beda469e5c9ff2531f7bf01d537cb4dcc9c4a7fd6b42df"
+  },
+  "updated_unix_ns": 1793183164564034641,
+  "writer_cumulative_work": {
+    "fresh_holdout_reads": 0,
+    "scientific_model_calls": 0,
+    "scientific_training_steps": 0,
+    "toy_backward_calls": 3,
+    "toy_explicit_random_draw_calls": 12,
+    "toy_fixture_module_objects": 289,
+    "toy_fixture_optimizer_constructions": 94,
+    "toy_gru_forwards": 3,
+    "toy_optimizer_steps": 3
+  },
+  "writer_verification_scope": {
+    "current_contract_full_suite_by_writer": false,
+    "earlier_full_suite_tests": 9,
+    "final_inspection_failed": 0,
+    "final_inspection_only_tests": 8,
+    "reason": "Avoid repeating numerical toy work after an inspection-only narrow fix; independent replay verifies the final contract separately."
+  }
+}

@@ -1,0 +1,385 @@
+{
+  "adapter_sources": [
+    {
+      "bytes": 22211,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/adapter.py",
+      "sha256": "59b32cbd4ac52dee2e3b0dec7f1c0b197d2c84dbd6fdf404156ad788d3d38e21"
+    },
+    {
+      "bytes": 18511,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/tests.py",
+      "sha256": "c6bf74e88f3b5cd0632c4930d9d248603c806a3d2232e6e0dcb72a4843320b04"
+    }
+  ],
+  "admission": false,
+  "asset_config_metadata_only": [
+    {
+      "bytes": 1627,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/reference/17/ASSET_IDENTITIES.json",
+      "sha256": "df102a2ed0914f5715ca455cfc482b451d8231ba1cefaa363237efbd4db6168d"
+    },
+    {
+      "bytes": 1627,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/reference/29/ASSET_IDENTITIES.json",
+      "sha256": "3daa3577277003df6e9671591c8cd426ec34d448676c2e5f9109e33d9e02cd6d"
+    },
+    {
+      "bytes": 1627,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/reference/43/ASSET_IDENTITIES.json",
+      "sha256": "ae3916e0d5e4eecd366bbfc8040f36a394ba72bb1ceddf923cf3d3c59276ba5f"
+    }
+  ],
+  "capacity": {
+    "adapter_array_count": 16,
+    "adapter_scalar_count": 18144,
+    "complete_candidate_bound_proved": false,
+    "dtype_claim": "Byte figures below are conditional on the proposed pinned float32 runtime; this audit did not load weights or inspect tensor dtype payloads.",
+    "endpoint_clean_rows": 512,
+    "endpoint_task_rows": 2048,
+    "endpoint_uint8_pixel_payload_all_files": 156549120,
+    "float32_max_parameter_gradient_momentum_payload_all_checkpoints": 169827840,
+    "float32_parameter_bytes_per_checkpoint": 72576,
+    "float32_parameter_gradient_momentum_bytes_max_per_checkpoint": 217728,
+    "float32_parameter_only_payload_all_checkpoints": 56609280,
+    "guard_value_float64_bytes_per_checkpoint": 2048,
+    "pixel_only_payload_is_not_compressed_npz_size": true,
+    "planned_checkpoint_count": 780,
+    "planned_endpoint_pairs": 39,
+    "planned_parent_plus_branch_probe_files": 720,
+    "probe_output_rows": 512,
+    "probe_uint8_pixel_payload_all_files": 578027520,
+    "probe_uint8_pixel_payload_per_file": 802816,
+    "shape_rows": [
+      {
+        "down_shape": [
+          8,
+          192
+        ],
+        "input": 192,
+        "module": "pixel_decoder.0",
+        "output": 256,
+        "scalar_count": 3584,
+        "up_shape": [
+          256,
+          8
+        ]
+      },
+      {
+        "down_shape": [
+          8,
+          192
+        ],
+        "input": 192,
+        "module": "text_initial",
+        "output": 96,
+        "scalar_count": 2304,
+        "up_shape": [
+          96,
+          8
+        ]
+      },
+      {
+        "down_shape": [
+          8,
+          96
+        ],
+        "input": 96,
+        "module": "text_projection",
+        "output": 24,
+        "scalar_count": 960,
+        "up_shape": [
+          24,
+          8
+        ]
+      },
+      {
+        "down_shape": [
+          8,
+          144
+        ],
+        "input": 144,
+        "module": "fuse.0",
+        "output": 96,
+        "scalar_count": 1920,
+        "up_shape": [
+          96,
+          8
+        ]
+      },
+      {
+        "down_shape": [
+          8,
+          96
+        ],
+        "input": 96,
+        "module": "initial_image",
+        "output": 96,
+        "scalar_count": 1536,
+        "up_shape": [
+          96,
+          8
+        ]
+      },
+      {
+        "down_shape": [
+          8,
+          96
+        ],
+        "input": 96,
+        "module": "initial_text",
+        "output": 96,
+        "scalar_count": 1536,
+        "up_shape": [
+          96,
+          8
+        ]
+      },
+      {
+        "down_shape": [
+          8,
+          384
+        ],
+        "input": 384,
+        "module": "coupling_cell.0",
+        "output": 288,
+        "scalar_count": 5376,
+        "up_shape": [
+          288,
+          8
+        ]
+      },
+      {
+        "down_shape": [
+          8,
+          96
+        ],
+        "input": 96,
+        "module": "digit_head",
+        "output": 20,
+        "scalar_count": 928,
+        "up_shape": [
+          20,
+          8
+        ]
+      }
+    ],
+    "total_probe_and_endpoint_pixel_payload_uncompressed": 734576640,
+    "unknown": "Actual typed headers/RNG, full immutable guard metadata, variable Unicode/ZIP overhead and compression, traces/features/heads/failures/restore/archive have no complete checked bound in this audit. Existing save_hard uses np.savez_compressed, so logical pixel payload above 500 MiB does not prove physical raw-cap failure."
+  },
+  "common_declared_model_config": {
+    "architecture": "public-command-film-layernorm-v1",
+    "command_gain": 0.5,
+    "hidden": 96,
+    "layer_norm_eps": 1e-05,
+    "noise_scale": 0.15
+  },
+  "created_unix_ns": 1793182232120287352,
+  "findings": [
+    {
+      "claim": "The strict adapter rejects the two stock nn.GRU modules in both the live generator and original generator. RNNBase owns _flat_weights (legal aliases of registered parameters) and _flat_weight_refs (weakrefs); model_parts rejects array attributes and native rejects weakrefs.",
+      "id": "K01",
+      "required_change": "A new separately reviewed exact-stock-GRU compatibility layer must validate the derived caches, not silently ignore tensor attrs or mutate frozen source.",
+      "sources": [
+        "v6/neural.py:NeuralPortfolio.__init__",
+        "installed rnn.py:RNNBase._init_flat_weights",
+        "adapter.py:model_parts"
+      ],
+      "status": "BLOCKING_STATIC_INCOMPATIBILITY"
+    },
+    {
+      "claim": "learning.Context cannot be passed directly to native/asdict: it includes nn.Module, Costs and observer objects, and its role projection must stay development-only.",
+      "id": "K02",
+      "required_change": "Pass actual original_generator and reward_observer through their explicit Adapter arguments; bind context_inputs as scalar configuration plus allowed SourceCorpus and explicit PanelBatch data only, with costs excluded and guard baseline values represented once.",
+      "status": "CALLER_PROJECTION_REQUIRED"
+    },
+    {
+      "claim": "guarded_block action_index chooses [0,.25,1,2] learning-rate multipliers. context.action controls stop/refine_semantic etc inside fixed_output and remains independently fixed.",
+      "fixed_output_action": {
+        "17": 0,
+        "29": 3,
+        "43": 0
+      },
+      "id": "K03",
+      "status": "ACTION_DOMAINS_MUST_STAY_DISTINCT",
+      "training_baseline_action_index": {
+        "17": 2,
+        "29": 3,
+        "43": 3
+      }
+    },
+    {
+      "claim": "training_common.configuration requires the old three ridges [1e-4,.01,1.]. Keep that untouched kernel configuration; the new candidate head fitter separately fixes ridge 1.0. Passing a modified old training.ridges=[1.] would fail.",
+      "id": "K04",
+      "status": "PROTOCOL_COMPOSITION_REQUIRED"
+    },
+    {
+      "claim": "make_model first evals the original deep copy, then creates eight LocalAdapters whose default training flag is True; their base Linear submodules remain False. Preserve this exact mixed mode map. Capture/restore outside inference_mode and after measure_state/guarded_block return; no retained autograd graph crosses the boundary.",
+      "id": "K05",
+      "status": "BOUNDARY_SUPPORTED_BY_SOURCE_NOT_EXECUTION"
+    },
+    {
+      "claim": "Old learning.state_identity/frozen_base_hash and new typed codec hashes differ in encoding/order/content. Store both under distinct names; do not compare them as the same digest algorithm.",
+      "id": "K06",
+      "status": "HASH_ALGORITHMS_MUST_BE_NAMED"
+    },
+    {
+      "claim": "make_batch and fixed_output create local seeded CPU Generators for every invocation. make_model has a local initialization Generator. At the shown branch boundary there is no persistent named generator; use an explicit empty registry, retain all three global RNG states, and bind every data/noise schedule mark. This is static source reasoning, not a successful scientific replay.",
+      "id": "K07",
+      "status": "RNG_SCOPE_STATIC"
+    },
+    {
+      "claim": "Static model shapes and manifest row counts support exact scalar counts and conditional payload arithmetic, but do not establish the entire 500 MiB candidate budget.",
+      "id": "K08",
+      "status": "NO_COMPLETE_CAPACITY_BOUND"
+    }
+  ],
+  "fresh_holdout_access": false,
+  "frozen_source_checks": [
+    {
+      "bytes": 15506,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/learning.py",
+      "sha256": "97c3baabe208fd8d5e8ac9beb5ae4a244b3c8d6aac565e727fd64eed8c1371b7"
+    },
+    {
+      "bytes": 6073,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_common.py",
+      "sha256": "e686e59dd34a0d8f2a31b192c1f47c59fd86cbc22fe42d60d821c4474db56591"
+    },
+    {
+      "bytes": 9527,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_features.py",
+      "sha256": "8e3dfee7a0a77e74c16b459f8e15a0cad1cfa999a4187e975178bb2d2f0cd2a9"
+    },
+    {
+      "bytes": 13431,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_bank.py",
+      "sha256": "9e6bb320ccaf087120a5cded8e2110478b87a4073febbb8bb999f2853073d7f1"
+    },
+    {
+      "bytes": 10583,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_stages.py",
+      "sha256": "ed3fcc45531fe2fdb7ea6033ee7067a8e5221e52a69ec3abf1a23e1f65d2f2ef"
+    },
+    {
+      "bytes": 3106,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/assets.py",
+      "sha256": "ee8851e2b7f18200a58ee2ffe4e555d242886732a50bb6e169f49a46dc0b8e21"
+    },
+    {
+      "bytes": 10974,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/source_roles.py",
+      "sha256": "0bf34863b1c6f43423484d115acb590bc6ea515c12c30a105e6e45c41f9a97cb"
+    },
+    {
+      "bytes": 12633,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/PROTOCOL.json",
+      "sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7"
+    },
+    {
+      "bytes": 8713,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/SOURCE_ALLOCATION.json",
+      "sha256": "068381327c437aa2edfc4c3db204bf836aa87e0d681bd15a4dbde7a119810f48"
+    },
+    {
+      "bytes": 4335,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_20261027/adapters.py",
+      "sha256": "2818464ba927b8e0ed5c92315a5bf26832672391c1fbbba709d6ed72cdc76b7b"
+    },
+    {
+      "bytes": 13972,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_20261027/adaptation.py",
+      "sha256": "95c2acfe820febb905c11b5057f7817af4d244db1e52adab7744d2c1d931b2d8"
+    },
+    {
+      "bytes": 17742,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_20261027/task.py",
+      "sha256": "4999eb8220847239db194c8a87bc5353802abc74e685eb9079f872ea8ef7d953"
+    },
+    {
+      "bytes": 19994,
+      "path": "experiments/multimodal_output_portfolio/v6/neural.py",
+      "sha256": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742"
+    },
+    {
+      "bytes": 6426,
+      "path": "experiments/multimodal_output_portfolio/v6/conditioned.py",
+      "sha256": "ccb5f9a78e58d6f1d1511a95f50de3602e1f39e7254fce5566e97a994d5b4cba"
+    },
+    {
+      "bytes": 11933,
+      "path": "experiments/multimodal_output_portfolio/v6/data.py",
+      "sha256": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29"
+    },
+    {
+      "bytes": 7652,
+      "path": "experiments/multimodal_output_portfolio/v6/observer.py",
+      "sha256": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e"
+    },
+    {
+      "bytes": 14470,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027/run.py",
+      "sha256": "27fccaba69af2ab4132d0231d7e27e27f84da083f72bb2b43170ebfe9ea331c8"
+    }
+  ],
+  "installed_rnn_source": {
+    "bytes": 74511,
+    "path": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+    "sha256": "10f560ff680379df780263dd0b09051390359e879e9a2ad6bcffb68dd2ff8d70"
+  },
+  "new_model_or_toy_calls": 0,
+  "next_bounded_stage": "New exact-stock CPU GRU adapter extension, same strict default, no global monkey patch. Copy only _parts/_description into subclass and AST-bind exact bodies; allow validated registered cache aliases through a new structural inspector. Test tiny GRU only, including malformed caches, overridden update/forward, aliases/hooks and next-step replay. No scientific kernel or assets.",
+  "registered_scientific_commit": "f49810e422892a76c1d37c19c5b4d5112cba6d9e",
+  "schema": "hepta.v6-kernel-static-compatibility.1",
+  "scientific_assets_loaded": false,
+  "scientific_kernel_replay": false,
+  "scientific_status": "FAIL",
+  "scientific_weight_files_opened": false,
+  "source_freeze": {
+    "bytes": 8268,
+    "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027/SOURCE_FREEZE.json",
+    "sha256": "f86ef86edc02d81d2c68476c5742b332582cfb8a2096f6514dcdc616cdb64ab8"
+  },
+  "status": "STATIC_AUDIT_ONLY / NOT_REGISTERED / NOT_EXECUTED",
+  "wiring": [
+    {
+      "detail": "16 local up/down parameters in actual module traversal/optimizer order; no scheduler, fused SGD or hooks are introduced by the shown source.",
+      "source": "learning.make_model(context.original, seed, unchanged_v3_protocol); learning.new_optimizer",
+      "target": "model/optimizer"
+    },
+    {
+      "detail": "raw eval/frozen modules, never ControlledSnapshot wrappers; adapted model is an independent deepcopy. Audit observer is endpoint-only in the proposed bank scope.",
+      "source": "context.original and context.observers[reward]",
+      "target": "immutable references"
+    },
+    {
+      "detail": "The narrow GRU layer must validate stock cache implementation and preserve strict unknown-attribute rejection.",
+      "source": "model.config, old kernel protocol identity, adapter module/rank choices, fixed output action, asset/source identities",
+      "target": "architecture declaration"
+    },
+    {
+      "detail": "Observation pixels/mask/text_tokens and Target pixels/text_tokens/labels must all be bound with shape/dtype/bytes. Keep actual Costs, model refs and duplicate baseline arrays out of this projection.",
+      "source": "context.seed/group/protocol; corpus only four development roles; probe/guard PanelBatch condition/noise_seed + Batch observation/target/source_ids",
+      "target": "context_inputs"
+    },
+    {
+      "detail": "values=context.baseline_guard[values][reward], source_ids, output_sha256; panel_sha256 from complete guard panel identity. Preserve old panel_identity SHA separately if typed hashing differs.",
+      "source": "context.baseline_guard",
+      "target": "guard_baseline"
+    },
+    {
+      "detail": "clock advances 48 on every action including zero/rejected, baseline action index=2/3/3, guard_grain=48; external actual-work counter never restored.",
+      "source": "seed, schedule 6000-6003, prefix/path, start step; learning.schedule(seed,schedule_id,start,288-start,v3_protocol)",
+      "target": "cursor/tape"
+    },
+    {
+      "detail": "Outer full capture around the unchanged guard48 kernel. The kernel restores local params/SGD/incoming grads/Torch RNG on rejection and charges all physical work. Do not route this through guard8 or change the original guard.",
+      "source": "learning.guarded_block",
+      "target": "transaction execution boundary"
+    },
+    {
+      "detail": "Capture before/after full feature call or immediately after return; vector/current hard output/receipt are detached or scalar/NumPy. Confirm full-state equality later rather than replacing its existing invariance checks.",
+      "source": "training_features.measure_state",
+      "target": "feature boundary"
+    }
+  ]
+}

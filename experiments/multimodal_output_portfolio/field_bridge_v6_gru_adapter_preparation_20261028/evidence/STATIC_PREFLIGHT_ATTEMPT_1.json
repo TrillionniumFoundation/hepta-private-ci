@@ -1,0 +1,139 @@
+{
+  "attempt": 1,
+  "status": "STATIC_CODE_IDENTITY_FAIL",
+  "scientific_calls": 0,
+  "toy_calls": 0,
+  "explanation": "Strict initial marshal digest check failed before any model construction; complete field differences recorded below.",
+  "methods": [
+    {
+      "class": "GRU",
+      "method": "__init__",
+      "code_equal": true,
+      "marshal_equal": false,
+      "different_attributes": [],
+      "actual_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+      "expected_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+      "defaults_equal": true
+    },
+    {
+      "class": "GRU",
+      "method": "forward",
+      "code_equal": true,
+      "marshal_equal": false,
+      "different_attributes": [],
+      "actual_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+      "expected_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+      "defaults_equal": true
+    },
+    {
+      "class": "RNNBase",
+      "method": "__init__",
+      "code_equal": true,
+      "marshal_equal": false,
+      "different_attributes": [],
+      "actual_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+      "expected_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+      "defaults_equal": true
+    },
+    {
+      "class": "RNNBase",
+      "method": "__setattr__",
+      "code_equal": true,
+      "marshal_equal": false,
+      "different_attributes": [],
+      "actual_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+      "expected_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+      "defaults_equal": true
+    },
+    {
+      "class": "RNNBase",
+      "method": "_init_flat_weights",
+      "code_equal": true,
+      "marshal_equal": false,
+      "different_attributes": [],
+      "actual_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+      "expected_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+      "defaults_equal": true
+    },
+    {
+      "class": "RNNBase",
+      "method": "flatten_parameters",
+      "code_equal": true,
+      "marshal_equal": false,
+      "different_attributes": [],
+      "actual_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+      "expected_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+      "defaults_equal": true
+    },
+    {
+      "class": "RNNBase",
+      "method": "_apply",
+      "code_equal": true,
+      "marshal_equal": false,
+      "different_attributes": [],
+      "actual_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+      "expected_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+      "defaults_equal": true
+    },
+    {
+      "class": "RNNBase",
+      "method": "_weights_have_changed",
+      "code_equal": true,
+      "marshal_equal": false,
+      "different_attributes": [],
+      "actual_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+      "expected_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+      "defaults_equal": true
+    },
+    {
+      "class": "RNNBase",
+      "method": "_update_flat_weights",
+      "code_equal": true,
+      "marshal_equal": false,
+      "different_attributes": [],
+      "actual_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+      "expected_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/rnn.py",
+      "defaults_equal": true
+    },
+    {
+      "class": "Module",
+      "method": "__getattr__",
+      "code_equal": true,
+      "marshal_equal": false,
+      "different_attributes": [],
+      "actual_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/module.py",
+      "expected_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/module.py",
+      "defaults_equal": true
+    },
+    {
+      "class": "Module",
+      "method": "__setattr__",
+      "code_equal": true,
+      "marshal_equal": false,
+      "different_attributes": [],
+      "actual_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/module.py",
+      "expected_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/module.py",
+      "defaults_equal": true
+    },
+    {
+      "class": "Module",
+      "method": "_wrapped_call_impl",
+      "code_equal": true,
+      "marshal_equal": false,
+      "different_attributes": [],
+      "actual_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/module.py",
+      "expected_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/module.py",
+      "defaults_equal": true
+    },
+    {
+      "class": "Module",
+      "method": "_call_impl",
+      "code_equal": true,
+      "marshal_equal": false,
+      "different_attributes": [],
+      "actual_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/module.py",
+      "expected_file": "/workspace/scratch/e8a4dc33549f/runtime_v5/lib/python3.12/site-packages/torch/nn/modules/module.py",
+      "defaults_equal": true
+    }
+  ]
+}

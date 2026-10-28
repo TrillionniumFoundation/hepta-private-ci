@@ -1,0 +1,399 @@
+{
+  "admission": false,
+  "boundary": "No pending autograd graph or concurrent writer; no carried hidden state; stock CPU float32 single-layer 2-by-2 synthetic GRU only.",
+  "count_scope": "Explicit test module constructions/draws/forward/backward/SGD steps. Inherited isolated preflight SGD/RNG constructors perform no forward or step and are not pipeline counts.",
+  "engineering_passed": true,
+  "evidence": {
+    "copy_equivalence": {
+      "copied_methods": [
+        {
+          "ast_equal": true,
+          "ast_sha256": "4e7d8e8a8fd4313f92dba5109278dc0998955986b7f6e47ce09b3fdbf28b861b",
+          "bytes_equal": true,
+          "copied_source_sha256": "b7a4630a2946c0eba8a4ddce32d9ee8f411774abce8646565384dca2195bb048",
+          "full_source_bytes": 3843,
+          "globals": [
+            {
+              "module": "builtins",
+              "name": "all",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "any",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "dict",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "generator_kind",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "generator_owner",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "id",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "independent",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "int",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "len",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "list",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_gru_adapter_preparation_20261028.contract",
+              "name": "model_parts",
+              "permitted_local_replacement": true,
+              "same_object": false
+            },
+            {
+              "module": "numpy",
+              "name": "np",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_preparation_20261028.codec",
+              "name": "require",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "set",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "storage_leaves",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "str",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "sys",
+              "name": "sys",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "torch",
+              "name": "torch",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "type",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "vars",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "zip",
+              "permitted_local_replacement": false,
+              "same_object": true
+            }
+          ],
+          "method": "_parts",
+          "original_source_sha256": "b7a4630a2946c0eba8a4ddce32d9ee8f411774abce8646565384dca2195bb048"
+        },
+        {
+          "ast_equal": true,
+          "ast_sha256": "f06ad881e54f6ce62b90e5ecf1a474ad2e6173034723bca74127c8c67a775897",
+          "bytes_equal": true,
+          "copied_source_sha256": "e9868e119789a41771f73084632b437179fb9d3930eff172d83da03af61b65b3",
+          "full_source_bytes": 1779,
+          "globals": [
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "array",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_preparation_20261028.branch_state",
+              "name": "branch_state",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_preparation_20261028.codec",
+              "name": "codec",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "list",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_gru_adapter_preparation_20261028.contract",
+              "name": "module_identity",
+              "permitted_local_replacement": true,
+              "same_object": false
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "native",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_preparation_20261028.codec",
+              "name": "require",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "runtime_descriptor",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "sorted",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "storage_leaves",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "vars",
+              "permitted_local_replacement": false,
+              "same_object": true
+            }
+          ],
+          "method": "_description",
+          "original_source_sha256": "e9868e119789a41771f73084632b437179fb9d3930eff172d83da03af61b65b3"
+        }
+      ],
+      "global_monkey_patch": false,
+      "only_local_global_replacements": [
+        "model_parts",
+        "module_identity"
+      ],
+      "runtime_exec_or_code_rewrite": false,
+      "strict_source_sha256": "59b32cbd4ac52dee2e3b0dec7f1c0b197d2c84dbd6fdf404156ad788d3d38e21",
+      "unchanged_inherited_methods": [
+        "__init__",
+        "capture",
+        "_mutable",
+        "_prepare",
+        "_apply",
+        "restore"
+      ]
+    },
+    "literal_replay": {
+      "cache_aliases_valid": true,
+      "checkpoint_bytes": 41556,
+      "checkpoint_sha256": "8e52d2a0d0fb33a73a5ce96d202e3e2f09ba6c837e61e03d10f77b133f85c214",
+      "hidden_is_explicit_local_input_not_cross_step_state": true,
+      "next_full_state_sha256": "3fd04fa9a0be6d1a96d9a9fd8e59a268f97ee203f04f28a0970e8afac9e9752d",
+      "next_output_hidden_input_loss_sha256": "98e4214f28e06b5dd4b376f131861858edb6ae158bd5a19d370ef73b41e95b44",
+      "output_hidden_loss_state_bitwise_equal": true,
+      "same_live_target": true,
+      "serializer": {
+        "array_count": 10,
+        "array_payload_bytes": 12856,
+        "compression_assumed": false,
+        "file_bytes": 41556,
+        "header_bytes": 28665
+      },
+      "temporary_file_only": true
+    },
+    "stock_methods": [
+      {
+        "class": "GRU",
+        "code_sha256": "5baefd737d1dc7ed02e7edc6ebb7ea5c3870c1aa05b412422cb5c04a8fd3eede",
+        "name": "__init__",
+        "source": "rnn"
+      },
+      {
+        "class": "GRU",
+        "code_sha256": "848c86fd2b68cbcf0ade89bb480337c5db5f0d3467422d032cffead698268d7d",
+        "name": "forward",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "e0f0fe86b79ec6c8336a45701fd58d2c30129ffb895749059a21f7da14268239",
+        "name": "__init__",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "2c536c2785204b810cf084d2671c364c7a8376571645506d5635ea878fc7beb1",
+        "name": "__setattr__",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "fd803933aac5a73e079cb0e3c0126386ded6d3d54dccab1bd8ecddb6804fabc5",
+        "name": "_init_flat_weights",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "af6ef7dc09ba65465fc5822928996a0882374eda673bcc5540b5462aedd62fcc",
+        "name": "flatten_parameters",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "354cd03891f9f952575cfef67e049a2cbae0d90e3334126e98b094ccce1698a2",
+        "name": "_apply",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "a185cd5e9616e83e0520be8396127005501821ea28228d7d472a57637f05c23a",
+        "name": "_weights_have_changed",
+        "source": "rnn"
+      },
+      {
+        "class": "RNNBase",
+        "code_sha256": "3daed1a5394c08f96b538460f019942bc81ef90045a779feb00098d1bdb2e2c3",
+        "name": "_update_flat_weights",
+        "source": "rnn"
+      },
+      {
+        "class": "Module",
+        "code_sha256": "aa25683749cad6a0fb560257ead92ca7a5974caff0a260f5553a7cb09c272f39",
+        "name": "__getattr__",
+        "source": "module"
+      },
+      {
+        "class": "Module",
+        "code_sha256": "b40a16654dda14244c3bbd9a56f3cf57a0cb8a05d3fdefd1c544cb71bf05d35a",
+        "name": "__setattr__",
+        "source": "module"
+      },
+      {
+        "class": "Module",
+        "code_sha256": "a553d72c77aae4bdc929869b8ee04d428c8e3f0a33c05bf0201d0ab28e93363f",
+        "name": "_wrapped_call_impl",
+        "source": "module"
+      },
+      {
+        "class": "Module",
+        "code_sha256": "c7a351c6f355a5d287e73ea040a7484de4c8608106454a97db7dbd7c04e38d1c",
+        "name": "_call_impl",
+        "source": "module"
+      }
+    ]
+  },
+  "forbidden_scientific_imports": [],
+  "runtime": {
+    "autocast_cpu": false,
+    "cpu_capability": "AVX512",
+    "default_dtype": "torch.float32",
+    "deterministic": false,
+    "environment": {
+      "ATEN_CPU_CAPABILITY": null,
+      "MKL_NUM_THREADS": null,
+      "OMP_NUM_THREADS": null
+    },
+    "grad_enabled": true,
+    "inference_mode": false,
+    "interop_threads": 9,
+    "matmul_precision": "highest",
+    "mkldnn": true,
+    "numpy": "2.3.5",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "threads": 9,
+    "torch": "2.8.0+cpu",
+    "torch_build": "PyTorch built with:\n  - GCC 13.3\n  - C++ Version: 201703\n  - Intel(R) oneAPI Math Kernel Library Version 2024.2-Product Build 20240605 for Intel(R) 64 architecture applications\n  - Intel(R) MKL-DNN v3.7.1 (Git Hash 8d263e693366ef8db40acc569cc7d8edf644556d)\n  - OpenMP 201511 (a.k.a. OpenMP 4.5)\n  - LAPACK is enabled (usually provided by MKL)\n  - NNPACK is enabled\n  - CPU capability usage: AVX512\n  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, COMMIT_SHA=a1cb3cc05d46d198467bebbb6e8fba50a325d4e7, CXX_COMPILER=/opt/rh/gcc-toolset-13/root/usr/bin/c++, CXX_FLAGS= -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOCUPTI -DLIBKINETO_NOROCTRACER -DLIBKINETO_NOXPUPTI=ON -DUSE_FBGEMM -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -DC10_NODEPRECATED -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=range-loop-construct -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-parameter -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=old-style-cast -faligned-new -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-dangling-reference -Wno-error=dangling-reference -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, TORCH_VERSION=2.8.0, USE_CUDA=0, USE_CUDNN=OFF, USE_CUSPARSELT=OFF, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=OFF, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, USE_XCCL=OFF, USE_XPU=OFF, \n"
+  },
+  "scientific_kernel_replay": false,
+  "scientific_status": "FAIL",
+  "sources": {
+    "adapter.py": {
+      "bytes": 6325,
+      "sha256": "ffdc3aef38040531e8f4933f05be7e672e83d6a8e753d493217f65a281276919"
+    },
+    "contract.py": {
+      "bytes": 11541,
+      "sha256": "bcb46da4f278470db0bd33eb1d9022d9fbf60502cd48ed216fc9b1e89e8cb79f"
+    },
+    "equivalence.py": {
+      "bytes": 3260,
+      "sha256": "3952ae7f4347bb44694f0d779221de725b43a449629ae163e2eb72ec2e518d89"
+    },
+    "tests.py": {
+      "bytes": 16021,
+      "sha256": "5cc7c2a2065c59ef344619ad8bb22b7912ddd4bf0291620572ffc973ab6ec5c6"
+    }
+  },
+  "status": "NOT_REGISTERED / NOT_EXECUTED",
+  "tests": {
+    "errors": 0,
+    "failures": 0,
+    "output": "test_copied_source_ast_globals_and_stock_methods (__main__.GRUTests.test_copied_source_ast_globals_and_stock_methods) ... ok\ntest_corrupt_cache_layout_rejected_before_first_write (__main__.GRUTests.test_corrupt_cache_layout_rejected_before_first_write) ... ok\ntest_hooks_storage_and_reference_aliases_rejected_before_apply (__main__.GRUTests.test_hooks_storage_and_reference_aliases_rejected_before_apply) ... ok\ntest_instance_and_class_dispatch_overrides_reject_before_apply (__main__.GRUTests.test_instance_and_class_dispatch_overrides_reject_before_apply) ... ok\ntest_literal_restore_and_actual_next_step_equal (__main__.GRUTests.test_literal_restore_and_actual_next_step_equal) ... ok\ntest_non_gru_strict_inspector_is_unchanged (__main__.GRUTests.test_non_gru_strict_inspector_is_unchanged) ... ok\ntest_none_zero_grad_and_sgd_restore_without_cache_replacement (__main__.GRUTests.test_none_zero_grad_and_sgd_restore_without_cache_replacement) ... ok\ntest_stale_custom_callback_and_wrong_container_weakrefs_rejected (__main__.GRUTests.test_stale_custom_callback_and_wrong_container_weakrefs_rejected) ... ok\ntest_unsupported_gru_profiles_and_subclasses_fail_closed (__main__.GRUTests.test_unsupported_gru_profiles_and_subclasses_fail_closed) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 1.769s\n\nOK\n",
+    "run": 9
+  },
+  "work": {
+    "fresh_holdout_reads": 0,
+    "scientific_model_calls": 0,
+    "scientific_training_steps": 0,
+    "toy_backward_calls": 2,
+    "toy_explicit_random_draw_calls": 8,
+    "toy_fixture_module_objects": 74,
+    "toy_fixture_optimizer_constructions": 24,
+    "toy_gru_forwards": 2,
+    "toy_optimizer_steps": 2
+  }
+}
