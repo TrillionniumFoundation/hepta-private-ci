@@ -19,7 +19,7 @@ import tomllib
 RELATIVE = Path("experiments/multimodal_output_portfolio/closure_20261028")
 PRODUCTION = tuple(
     f"codex-rs/windows-sandbox-rs/src/{name}.rs"
-    for name in ("token", "acl", "winutil")
+    for name in ("token", "acl", "acl_deny", "winutil")
 )
 CONFIG = (
     "codex-rs/Cargo.lock",
