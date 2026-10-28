@@ -117,6 +117,7 @@ def audit(path, arm, native):
             require(current["source_id"] in owner["current_source_ids"], "latest written fact is absent from current owner")
     require(len(report["readouts"]) == len(native["requests"]) == 272, "native request inventory")
     counts, retained, null_frames = {}, 0, 0
+    request_bytes, response_bytes = 0, 0
     for row, case in zip(report["readouts"], native["requests"]):
         require(row["case"] == case, "native request order or gold changed")
         request = {key: case[key] for key in ("entity", "text", "at", "since", "max_hops", "max_cells")}
@@ -134,6 +135,8 @@ def audit(path, arm, native):
                     and decision["source_cut"] == report["source_cut"] and decision["authority"] is False, "worker frame binding")
             if decision["status"] == "accepted":
                 require(decision["plan"]["operation"] == decision["decision"]["operation"], "worker operation differs from plan")
+            request_bytes += decision["cost"]["request_body_bytes"] + 1
+            response_bytes += len(data)
             retained += 1
         require(row["direct_error"] is None and row["transport_error"] is None
                 and row["direct_identity_valid"] is True and row["read_identity_valid"] is True, "native execution or binding error")
@@ -166,9 +169,11 @@ def audit(path, arm, native):
     require(retained == report["retained_worker_responses"] == report["worker"]["responses"]
             and null_frames == report["worker"]["host_time_abstentions"]
             and retained + null_frames == report["worker"]["attempts"] == 544, "worker inventory differs")
+    require(request_bytes == report["worker"]["stdin_bytes"] and response_bytes == report["worker"]["stdout_bytes"], "worker communication bytes differ from retained frames")
     return {"arm": arm, "input_sha256": sha(raw), "counts": counts, "known_correct_coverage": coverage,
             "unsupported_route_acceptance_rate": rate, "quality_gate_passed": gate,
             "retained_worker_frames": retained, "host_time_abstentions": null_frames,
+            "worker_request_bytes": request_bytes, "worker_response_bytes": response_bytes,
             "owner_source_value_consistency_verified": True, "model_digest": report["model_digest"]}
 
 
