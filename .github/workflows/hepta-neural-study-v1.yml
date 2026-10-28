@@ -161,6 +161,7 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/observation-boundary-controls.json" --timeout-seconds 60 --minimum-tests 8 -- python3 scripts/test_hepta_smollm_observed_execution_v1.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/observation-owner-controls.json" --timeout-seconds 60 --minimum-tests 8 -- python3 ../chain-observed/scripts/test_llm_runtime_observed_execution_v1.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/live-control-boundary-controls.json" --timeout-seconds 60 --minimum-tests 9 -- python3 scripts/test_hepta_smollm_live_control_v1.py -v
       - name: Preserve actual host and exact source metadata
         run: |
           set -euo pipefail
@@ -327,7 +328,7 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/cell-binding-controls.json" --timeout-seconds 60 --minimum-tests 11 -- python3 scripts/test_hepta_neural_candidate_transport_v1.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/training-binding-controls.json" --timeout-seconds 60 --minimum-tests 8 -- python3 scripts/test_hepta_neural_study_binding_v1.py -v
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/evidence-reader-controls.json" --timeout-seconds 60 --minimum-tests 13 -- python3 scripts/test_hepta_neural_evidence_v1.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/evidence-reader-controls.json" --timeout-seconds 60 --minimum-tests 14 -- python3 scripts/test_hepta_neural_evidence_v1.py -v
           python3 scripts/hepta_workspace.py
       - name: Build the actual pinned two-node Cell executable
         id: cell
@@ -388,7 +389,7 @@ jobs:
         with:
           name: hepta-real-neural-study-v1-${{ env.SOURCE_SHA }}
           retention-days: 14
-          include-hidden-files: false
+          include-hidden-files: true
           if-no-files-found: error
           path: ${{ runner.temp }}/hepta-neural-study-artifact/
       - name: Retain original host prerequisite receipts

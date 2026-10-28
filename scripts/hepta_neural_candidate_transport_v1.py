@@ -20,6 +20,7 @@ import sys
 import time
 
 SCHEMA = "hepta-neural-candidate-transport-input-v1"
+BINARY_SCHEMA = "hepta-neural-candidate-transport-binary-input-v2"
 NAMES = ("artifact.safetensors", "target-contract.json", "wrapped-adapter.json")
 CHUNK = 1048576
 MAX_MEMBER = 2 * CHUNK
@@ -151,11 +152,20 @@ def manifest_id(context, raw):
 
 
 def preflight(value):
+    binary_training = type(value) is dict and value.get("schema") == BINARY_SCHEMA
+    context_key = (
+        "binary_observed_execution" if binary_training else "observation_execution"
+    )
+    suffix = "binary-observed-v2" if binary_training else "observed-v1"
     closed(
         value,
-        "schema binary training completion parent child runtime observation_execution context members",
+        "schema binary training completion parent child runtime context members "
+        + context_key,
     )
-    require(value["schema"] == SCHEMA, "explicit neural candidate transport profile")
+    require(
+        value["schema"] == (BINARY_SCHEMA if binary_training else SCHEMA),
+        "explicit neural candidate transport profile",
+    )
     records = {
         key: decode(pinned(value[key]))
         for key in ("training", "completion", "parent", "child")
@@ -183,29 +193,48 @@ def preflight(value):
         )
         for key in ("contract", "adapter", "file_sha256"):
             digest(item[key])
-    observation = value["observation_execution"]
-    closed(observation, "plan_sha256 profile observer model_plan")
+    observation = value[context_key]
+    fields = "plan_sha256 profile observer model_plan"
+    if binary_training:
+        fields += " recipe training_rows independent_source_rows row_exposures optimizer_steps"
+    closed(observation, fields)
     require(
         observation["profile"]
-        == "canonical-parent-original-task-observed-execution-v1",
-        "original model plan and explicit owned-exit observation",
+        == (
+            "canonical-positive-zero-binary-batch-observed-v2"
+            if binary_training
+            else "canonical-parent-original-task-observed-execution-v1"
+        ),
+        "original model plan and explicitly selected training observation",
     )
     for key in ("plan_sha256", "observer", "model_plan"):
         digest(observation[key])
+    if binary_training:
+        for key in ("recipe", "training_rows"):
+            digest(observation[key])
+        require(
+            all(
+                type(observation[key]) is int and observation[key] == expected
+                for key, expected in (
+                    ("independent_source_rows", 10),
+                    ("row_exposures", 100),
+                    ("optimizer_steps", 10),
+                )
+            ),
+            "ten independent rows with exactly one hundred actual exposures",
+        )
     require(
-        trained["schema"] == "llm-runtime-parent-step-actual-observed-v1"
+        trained["schema"] == "llm-runtime-parent-step-actual-" + suffix
         and trained["outcome"] == completion["outcome"] == "success"
         and trained["operation"] == "train"
         and trained["actual_backend"] == trained["actual_device"] == "cpu"
         and trained["training_changed_from_setup"] is True
-        and completion["schema"] == "llm-runtime-parent-step-result-observed-v1"
+        and completion["schema"] == "llm-runtime-parent-step-result-" + suffix
         and completion["completion_verified"] is True
         and completion["actual_receipt_sha256"] == value["training"]["sha256"]
         and completion["input"] == trained["input"]
         and completion["attempt_binding"] == trained["attempt_binding"]
-        and trained["observation_execution"]
-        == completion["observation_execution"]
-        == observation,
+        and trained[context_key] == completion[context_key] == observation,
         "actual source-bound training and completed original supervisor receipt",
     )
     supervisor = completion["supervisor"]
@@ -256,6 +285,8 @@ def preflight(value):
         and all(digest(v) for v in trained["source"].values()),
         "bound original training source identities",
     )
+    if binary_training:
+        binary_work(value, trained, observation)
     require(
         type(value["members"]) is dict and set(value["members"]) == set(NAMES),
         "exact three downloaded members",
@@ -304,6 +335,73 @@ def preflight(value):
     return records, payloads
 
 
+def binary_work(value, trained, context):
+    """Bind the separate workload; the original completed trainer owns the trace."""
+    training = trained["training"]
+    objective = training["objective"]
+    closed(
+        objective,
+        "profile execution recipe source_sha256 optimizer_steps microsteps independent_source_rows row_exposures answer_tokens eos_tokens actual_input_tokens trace same_work_as_legacy_ten_single_rows loss_scope",
+    )
+    require(
+        objective["profile"] == context["profile"]
+        and objective["execution"] == context
+        and objective["recipe"] == context["recipe"]
+        and objective["source_sha256"] == trained["source"]["binary_answer_observed"]
+        and objective["same_work_as_legacy_ten_single_rows"] is False
+        and objective["loss_scope"]
+        == "ten-row-mean-two-original-answer-token-CE-gradient-per-optimizer-step",
+        "separate binary objective and actual source binding",
+    )
+    for key, expected in (
+        ("optimizer_steps", 10),
+        ("microsteps", 100),
+        ("independent_source_rows", 10),
+        ("row_exposures", 100),
+        ("answer_tokens", 100),
+        ("eos_tokens", 0),
+    ):
+        require(
+            type(objective[key]) is int and objective[key] == expected,
+            "exact binary work counts",
+        )
+    require(
+        type(objective["actual_input_tokens"]) is int
+        and objective["actual_input_tokens"] == training["tokens"]
+        and 100 <= training["tokens"] <= 12800
+        and training["supervised_tokens"] == 100,
+        "actual binary token accounting",
+    )
+    trace = objective["trace"]
+    closed(trace, "path bytes sha256")
+    require(
+        Path(trace["path"])
+        == Path(value["training"]["path"]).parent / "binary-training-trace-v2.jsonl"
+        and type(trace["bytes"]) is int
+        and 0 < trace["bytes"] <= CHUNK,
+        "actual bounded training trace role",
+    )
+    raw = pinned({key: trace[key] for key in ("path", "sha256")}, CHUNK)
+    require(len(raw) == trace["bytes"] and raw.endswith(b"\n"), "complete trace bytes")
+    events = [decode(line) for line in raw.splitlines()]
+    require(
+        len(events) == 112
+        and events[0]["event"] == "start"
+        and events[0]["input"] == trained["input"]
+        and events[0]["recipe"] == context["recipe"]
+        and events[0]["plan_sha256"] == context["plan_sha256"]
+        and events[0]["source"] == objective["source_sha256"]
+        and sum(row["event"] == "microstep" for row in events) == 100
+        and sum(row["event"] == "optimizer-step" for row in events) == 10
+        and events[-1]["event"] == "complete"
+        and events[-1]["optimizer_steps"] == 10
+        and events[-1]["microsteps"] == 100
+        and events[-1]["tokens"] == training["tokens"]
+        and events[-1]["supervised_tokens"] == 100,
+        "complete actual binary trace binding; not independent model qualification",
+    )
+
+
 def remaining(deadline):
     value = deadline - time.monotonic()
     if value <= 0:
@@ -324,7 +422,11 @@ def transport(value, output, input_sha256, deadline):
     )
     output.mkdir(mode=0o700, parents=False, exist_ok=False)
     report = {
-        "schema": "hepta-neural-candidate-transport-result-v1",
+        "schema": (
+            "hepta-neural-candidate-transport-binary-result-v2"
+            if value["schema"] == BINARY_SCHEMA
+            else "hepta-neural-candidate-transport-result-v1"
+        ),
         "outcome": "failed",
         "input_sha256": digest(input_sha256),
         "installation_authority": False,
@@ -498,7 +600,17 @@ def transport(value, output, input_sha256, deadline):
             child=records["child"],
             context=value["context"],
             training_receipt_sha256=value["training"]["sha256"],
-            observation_execution=value["observation_execution"],
+            **{
+                (
+                    "binary_observed_execution"
+                    if value["schema"] == BINARY_SCHEMA
+                    else "observation_execution"
+                ): value[
+                    "binary_observed_execution"
+                    if value["schema"] == BINARY_SCHEMA
+                    else "observation_execution"
+                ]
+            },
             same_host=True,
             independent_nodes=2,
         )

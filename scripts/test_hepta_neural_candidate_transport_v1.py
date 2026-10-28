@@ -154,6 +154,103 @@ class CandidateTransportBindings(unittest.TestCase):
         with self.assertRaises((ValueError, OSError, KeyError, TypeError)):
             target.preflight(self.value if value is None else value)
 
+    def binary_fixture(self):
+        self.observation = dict(
+            self.observation,
+            profile="canonical-positive-zero-binary-batch-observed-v2",
+            recipe="cc" * 32,
+            training_rows="dd" * 32,
+            independent_source_rows=10,
+            row_exposures=100,
+            optimizer_steps=10,
+        )
+        self.value["schema"] = target.BINARY_SCHEMA
+        del self.value["observation_execution"]
+        self.value["binary_observed_execution"] = self.observation
+        for record, kind in ((self.training, "actual"), (self.completion, "result")):
+            del record["observation_execution"]
+            record["binary_observed_execution"] = self.observation
+            record["schema"] = "llm-runtime-parent-step-" + kind + "-binary-observed-v2"
+        self.training["source"]["binary_answer_observed"] = "ee" * 32
+        events = [
+            dict(
+                event="start",
+                input=self.training["input"],
+                recipe=self.observation["recipe"],
+                plan_sha256=self.observation["plan_sha256"],
+                source="ee" * 32,
+            )
+        ]
+        for update in range(10):
+            events.extend(
+                dict(event="microstep", optimizer_step=update, row_ordinal=row)
+                for row in range(10)
+            )
+            events.append(dict(event="optimizer-step", optimizer_step=update))
+        events.append(
+            dict(
+                event="complete",
+                optimizer_steps=10,
+                microsteps=100,
+                tokens=4860,
+                supervised_tokens=100,
+            )
+        )
+        trace = b"".join(target.canonical(row) + b"\n" for row in events)
+        trace_pin = self.write("binary-training-trace-v2.jsonl", trace)
+        self.training["training"] = dict(
+            steps=10,
+            tokens=4860,
+            supervised_tokens=100,
+            objective=dict(
+                profile=self.observation["profile"],
+                execution=self.observation,
+                recipe=self.observation["recipe"],
+                source_sha256="ee" * 32,
+                optimizer_steps=10,
+                microsteps=100,
+                independent_source_rows=10,
+                row_exposures=100,
+                answer_tokens=100,
+                eos_tokens=0,
+                actual_input_tokens=4860,
+                trace=dict(trace_pin, bytes=len(trace)),
+                same_work_as_legacy_ten_single_rows=False,
+                loss_scope="ten-row-mean-two-original-answer-token-CE-gradient-per-optimizer-step",
+            ),
+        )
+        self.refresh()
+
+    def test_explicit_binary_workload_preserves_parent_and_original_supervision_bindings(
+        self,
+    ):
+        self.binary_fixture()
+        records, payloads = target.preflight(self.value)
+        self.assertEqual(records["training"], self.training)
+        self.assertEqual(set(payloads), set(target.NAMES))
+        old = copy.deepcopy(self.value)
+        old["schema"] = target.SCHEMA
+        self.rejected(old)
+
+    def test_binary_trace_missing_bytes_and_independence_cost_relabel_are_refused(self):
+        self.binary_fixture()
+        for key, value in (
+            ("row_exposures", 10),
+            ("independent_source_rows", 100),
+            ("same_work_as_legacy_ten_single_rows", True),
+            ("eos_tokens", 30),
+        ):
+            original = copy.deepcopy(self.training)
+            self.training["training"]["objective"][key] = value
+            self.refresh()
+            self.rejected()
+            self.training = original
+            self.refresh()
+        Path(self.training["training"]["objective"]["trace"]["path"]).write_bytes(
+            b"{}\n"
+        )
+        self.rejected()
+
     def test_well_formed_binding_fixture_only(self):
         records, payloads = target.preflight(self.value)
         self.assertEqual(

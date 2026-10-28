@@ -39,10 +39,11 @@ COMMANDS = {
     "cell-binding-controls": 11,
     "cell-build": 0,
     "training-binding-controls": 8,
-    "evidence-reader-controls": 13,
+    "evidence-reader-controls": 14,
     "positive-native": 1,
     "observation-boundary-controls": 8,
     "observation-owner-controls": 8,
+    "live-control-boundary-controls": 9,
     "material-download-controls": 2,
     "descendant-boundary-controls": 4,
     "research-boundary-controls": 8,
@@ -63,6 +64,14 @@ NAMESPACE_TESTS = (
     "managed_proxy_inner_command_includes_route_spec",
     "non_managed_inner_command_omits_route_spec",
     "managed_proxy_inner_command_requires_route_spec",
+)
+PIDFD_TESTS = (
+    "normal_child_exit_is_reaped_with_original_status",
+    "owner_already_dead_before_inner_entry_exits_before_command",
+    "actual_owner_exit_wakes_blocking_reaper_without_sigchld",
+    "ordinary_descriptor_cannot_replace_owner_pidfd",
+    "pidfd_type_check_does_not_consume_real_child_exit_status",
+    "restoring_sigchld_does_not_reblock_forwarded_signals",
 )
 MAX_JSON = 64 * 1024 * 1024
 MAX_ARCHIVE = 1024 * 1024 * 1024
@@ -248,6 +257,11 @@ def source(output):
 
 
 class Evidence:
+    loop_schema = "hepta-real-neural-ordinary-loop-v1"
+    study_schema = "hepta-neural-study-v1-preregistered"
+    consumed_step_records = 10
+    positive_selector = "test(real_trained_child_prospective_qualification_cell_install_next_ordinary_read)"
+
     def __init__(self, root):
         self.root = Path(root).resolve()
 
@@ -320,7 +334,7 @@ class Evidence:
             and hashlib.sha256(raw_log).hexdigest() == record["log_sha256"],
             "bounded unchanged raw command log",
         )
-        text = raw_log.decode("utf-8", errors="replace")
+        text = re.sub(r"\x1b\[[0-9;]*m", "", raw_log.decode("utf-8", errors="replace"))
         passed, failed = ci.observed_test_counts(text)
         require(
             passed == record["observed_passed_tests"]
@@ -343,7 +357,7 @@ class Evidence:
                 "test(real_selected_initial_serves_ordinary_context_then_refuses_revocation) | "
                 "test(real_public_initial_reopens_same_ordinary_owners)"
                 if name == "ordinary-native"
-                else "test(real_trained_child_prospective_qualification_cell_install_next_ordinary_read)"
+                else self.positive_selector
             )
             expected = [
                 "just",
@@ -373,7 +387,15 @@ class Evidence:
                 "original namespace controls must actually pass",
             )
             require(
-                len(re.findall(r"PASS[^\n]*pidfd_reaper::tests::", text)) >= 6,
+                all(
+                    re.search(
+                        r"PASS[^\n]*pidfd_reaper::tests::"
+                        + re.escape(test)
+                        + r"(?:\s|$)",
+                        text,
+                    )
+                    for test in PIDFD_TESTS
+                ),
                 "all six pidfd controls must actually pass",
             )
         return {"record": name + ".json", "passed": passed, "raw": regular(log)}
@@ -459,7 +481,7 @@ class Evidence:
             "positive loop must pin its own actually executed binary",
         )
         require(
-            loop["schema"] == "hepta-real-neural-ordinary-loop-v1"
+            loop["schema"] == self.loop_schema
             and loop["installed_children"] == loop["ordinary_child_reads"] == 1
             and loop["same_artifact_owner"] is True
             and loop["actual_model_training"] is True
@@ -468,7 +490,8 @@ class Evidence:
         )
         study = self.pin(loop["study"])
         require(
-            study["future_windows"] == 2
+            study["schema"] == self.study_schema
+            and study["future_windows"] == 2
             and study["tasks_per_window"] == 512
             and study["primary_holdout_rows"] == 512
             and study["primary_window"] == "future-window-1"
@@ -514,8 +537,8 @@ class Evidence:
             and data["consumed_step_indices"] == list(range(10))
             and consumed["training_data"] == trained["training_data"]
             and consumed["actual_receipt"] == trained["training"]
-            and len(consumed["steps"]) == 10,
-            "only the ten actually consumed training rows may be claimed",
+            and len(consumed["steps"]) == self.consumed_step_records,
+            "the ten source rows and selected profile step records must match",
         )
         require(
             data["source_dataset_digest"]

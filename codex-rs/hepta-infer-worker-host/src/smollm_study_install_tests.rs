@@ -60,6 +60,7 @@ fn current(fixture: &Fixture) -> Value {
 
 #[allow(clippy::too_many_arguments)]
 pub(super) fn install(
+    profile: StudyProfile,
     input: &NativeInput,
     root: &Path,
     fixture: &mut Fixture,
@@ -166,12 +167,19 @@ pub(super) fn install(
         std::env::var_os("HEPTA_NEURAL_STUDY_CELL").ok_or("real Cell executable required")?,
     )
     .canonicalize()?;
-    let transport = save(
-        &root.join("cell-input.json"),
-        &json!({"schema":"hepta-neural-candidate-transport-input-v1","binary":pin(&binary)?,
+    let mut transport_request = json!({"schema":"hepta-neural-candidate-transport-input-v1","binary":pin(&binary)?,
         "training":trained["training"],"completion":trained["completion"],"parent":trained["parent"],"child":trained["child"],
-        "runtime":runtime,"observation_execution":trained["observation_execution"],"context":context,"members":members}),
-    )?;
+        "runtime":runtime,"observation_execution":trained["observation_execution"],"context":context,"members":members});
+    if matches!(profile, StudyProfile::BinaryAnswerV2) {
+        transport_request["schema"] = json!("hepta-neural-candidate-transport-binary-input-v2");
+        transport_request
+            .as_object_mut()
+            .ok_or("transport object")?
+            .remove("observation_execution");
+        transport_request["binary_observed_execution"] =
+            trained["binary_observed_execution"].clone();
+    }
+    let transport = save(&root.join("cell-input.json"), &transport_request)?;
     let output = root.join("cell");
     let script =
         PathBuf::from(std::env::var_os("HEPTA_NEURAL_STUDY_RUNNER").ok_or("study runner")?);

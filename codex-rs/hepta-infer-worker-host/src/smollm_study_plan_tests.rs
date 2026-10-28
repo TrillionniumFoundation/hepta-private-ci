@@ -1,5 +1,131 @@
 //! Frozen task contract and actual label-free nuisance predictions.
 use super::*;
+use pretty_assertions::assert_eq;
+
+pub(super) fn binary_tasks(
+    seed: &[u8; 32],
+    yes: &StableId,
+    actions: &[StableId; 2],
+) -> TestResult<Value> {
+    let raw = include_bytes!("../fixtures/smollm-consumed-prompts-067-v2.json");
+    if Digest32::of_bytes(raw).to_string()
+        != "d2101f954f9b025d5fe0a87b73ae2d31f20eb6f989ed279a04ffe38d0932b06d"
+    {
+        return Err("frozen previous prompt exclusion changed".into());
+    }
+    let previous: Value = serde_json::from_slice(raw)?;
+    let excluded = previous["excluded_prompt_sha256"]
+        .as_array()
+        .ok_or("prior prompt identities")?
+        .iter()
+        .map(|value| value.as_str().ok_or("prior prompt digest"))
+        .collect::<Result<std::collections::BTreeSet<_>, _>>()?;
+    if excluded.len() != 1024 {
+        return Err("all previously consumed prompts required".into());
+    }
+    let no = actions
+        .iter()
+        .find(|value| *value != yes)
+        .ok_or("no action")?;
+    let mut used = std::collections::BTreeSet::new();
+    let mut windows = Vec::new();
+    for window in 0_u64..2 {
+        let mut rows = Vec::new();
+        for index in 0_u64..512 {
+            let hash = Digest32::of_parts(&[
+                b"hepta.neural.study.binary.two-families.v2\0",
+                seed,
+                &window.to_be_bytes(),
+                &index.to_be_bytes(),
+            ]);
+            let bytes = hash.as_array();
+            let mut number = 100 + u64::from_be_bytes(bytes[..8].try_into()?) % 9_899;
+            let expected = if index.is_multiple_of(2) { no } else { yes };
+            let mut selected = None;
+            for _ in 0..9_899 {
+                let (family, prompt) = if index < 256 {
+                    let (left, right) = if expected == yes {
+                        (number + 1, number)
+                    } else {
+                        (number, number + 1)
+                    };
+                    (
+                        "integer-comparison",
+                        format!("Answer with only yes or no. Is {left} greater than {right}?"),
+                    )
+                } else {
+                    let words = if expected == yes {
+                        ["Alpha", "Gamma"]
+                    } else {
+                        ["beta", "delta"]
+                    };
+                    let word = words[usize::from(bytes[8] & 1)];
+                    (
+                        "uppercase",
+                        format!(
+                            "Answer with only yes or no. Does the first character of {word} use uppercase? Item {number}."
+                        ),
+                    )
+                };
+                let digest = Digest32::of_bytes(prompt.as_bytes()).to_string();
+                if !used.contains(&number) && !excluded.contains(digest.as_str()) {
+                    used.insert(number);
+                    selected = Some((family, prompt));
+                    break;
+                }
+                number = 100 + (number - 99) % 9_899;
+            }
+            let (family, prompt) = selected.ok_or("unseen original task support exhausted")?;
+            rows.push(json!({"id":format!("future-{window}-{index}"),"family":family,"prompt":prompt,
+                "expected":expected.as_str(),"principal":format!("future-sample-{window}-{index}"),
+                "episode":format!("future-episode-{window}-{index}"),"cluster":format!("future-cluster-{window}-{index}")}));
+        }
+        windows.push(rows);
+    }
+    Ok(json!(windows))
+}
+
+#[test]
+fn binary_future_cohort_excludes_consumed_prompts_without_changing_original_family_counts()
+-> TestResult<()> {
+    let yes = id("yes");
+    let actions = [yes.clone(), id("no")];
+    let tasks = binary_tasks(&[7; 32], &yes, &actions)?;
+    let previous: Value = serde_json::from_slice(include_bytes!(
+        "../fixtures/smollm-consumed-prompts-067-v2.json"
+    ))?;
+    let mut all = std::collections::BTreeSet::new();
+    for window in tasks.as_array().ok_or("windows")? {
+        let rows = window.as_array().ok_or("window rows")?;
+        assert_eq!(rows.len(), 512);
+        for family in ["integer-comparison", "uppercase"] {
+            for expected in &actions {
+                assert_eq!(
+                    rows.iter()
+                        .filter(
+                            |row| row["family"] == family && row["expected"] == expected.as_str()
+                        )
+                        .count(),
+                    128
+                );
+            }
+        }
+        for row in rows {
+            let hash =
+                Digest32::of_bytes(row["prompt"].as_str().ok_or("prompt")?.as_bytes()).to_string();
+            assert!(all.insert(hash.clone()));
+            assert!(
+                !previous["excluded_prompt_sha256"]
+                    .as_array()
+                    .ok_or("prior prompts")?
+                    .iter()
+                    .any(|item| item == &json!(hash))
+            );
+        }
+    }
+    assert_eq!(all.len(), 1024);
+    Ok(())
+}
 
 pub(super) fn tasks(seed: &[u8; 32], yes: &StableId, actions: &[StableId; 2]) -> Value {
     let no = actions.iter().find(|value| *value != yes).unwrap();

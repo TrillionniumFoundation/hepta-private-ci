@@ -41,6 +41,12 @@ mod ordinary;
 #[path = "smollm_study_roles_tests.rs"]
 mod roles;
 
+#[derive(Clone, Copy)]
+enum StudyProfile {
+    OriginalV1,
+    BinaryAnswerV2,
+}
+
 fn now() -> u64 {
     roles::micros()
 }
@@ -233,6 +239,17 @@ fn helper(
 #[ignore = "requires exact real model, original observer and real two-node Cell binary"]
 async fn real_trained_child_prospective_qualification_cell_install_next_ordinary_read()
 -> TestResult<()> {
+    run_study(StudyProfile::OriginalV1).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "requires exact real model, original observer and real two-node Cell binary"]
+async fn real_binary_trained_child_prospective_qualification_cell_install_next_ordinary_read()
+-> TestResult<()> {
+    run_study(StudyProfile::BinaryAnswerV2).await
+}
+
+async fn run_study(profile: StudyProfile) -> TestResult<()> {
     let (input, mut worker, parent_bytes) = input_and_worker("positive-parent")?;
     let root = input.output.join("n");
     fs::create_dir(&root)?;
@@ -241,12 +258,15 @@ async fn real_trained_child_prospective_qualification_cell_install_next_ordinary
         &root.join("actual-test-executable-before.json"),
         &executable,
     )?;
-    let objective = digest(
-        "hepta-real-neural-study-v1:original-ten-step-parent:future-two-windows:256-numeric-256-uppercase-each:final-holdout-512:ips-correctness:alpha-50000:superiority-0:observed-family-retention",
-    );
-    let study = save(
-        &root.join("study.json"),
-        &json!({"schema":"hepta-neural-study-v1-preregistered",
+    let objective = digest(match profile {
+        StudyProfile::OriginalV1 => {
+            "hepta-real-neural-study-v1:original-ten-step-parent:future-two-windows:256-numeric-256-uppercase-each:final-holdout-512:ips-correctness:alpha-50000:superiority-0:observed-family-retention"
+        }
+        StudyProfile::BinaryAnswerV2 => {
+            "hepta-real-neural-study-binary-v2:original-parent:ten-updates-ten-row-binary-CE:100-exposures-10-independent:exclude-067-consumed-prompt-identities:future-two-windows:256-numeric-256-uppercase-each:final-holdout-512:ips-correctness:alpha-50000:superiority-0:observed-family-retention"
+        }
+    });
+    let mut declaration = json!({"schema":"hepta-neural-study-v1-preregistered",
         "frozen_unix_micros":now(),"objective_digest":objective.to_string(),"parent_file_sha256":Digest32::of_bytes(&parent_bytes).to_string(),
         "model_training_steps":10,"future_windows":2,"tasks_per_window":512,"minimum_window_micros":1_000_000,
         "metric":"IPS binary correctness; original simultaneous cluster confidence", "alpha_ppm":50_000,
@@ -256,8 +276,26 @@ async fn real_trained_child_prospective_qualification_cell_install_next_ordinary
         "withdrawal_rule":"roundtrip the live scoped registry snapshot and reject any source dataset withdrawal; empty registry establishes only no active withdrawal obligation",
         "training_budget":{"wall_seconds":1800,"rss_bytes":16_u64*1024*1024*1024},
         "per_model_window_budget":{"wall_seconds":600,"rss_bytes":8_u64*1024*1024*1024},"maximum_drain_ns":100_000_000,
-        "controlled_role_keys":true,"external_administrative_independence":false,"public_reward":false}),
-    )?;
+        "controlled_role_keys":true,"external_administrative_independence":false,"public_reward":false});
+    if matches!(profile, StudyProfile::BinaryAnswerV2) {
+        declaration["schema"] = json!("hepta-neural-study-binary-v2-preregistered");
+        declaration["optimizer_steps"] = json!(10);
+        declaration["actual_row_exposures"] = json!(100);
+        declaration["independent_source_rows"] = json!(10);
+        declaration["recipe"] = json!(
+            "fixed-AdamW-0.002-zero-decay-ten-updates-mean-ten-row-last-prompt-original-yes-no-CE-no-EOS"
+        );
+        declaration["disclosed_adaptive_followup_to_known_NoGain"] = json!(true);
+        declaration["previous_consumed_prompt_exclusion_sha256"] =
+            json!("d2101f954f9b025d5fe0a87b73ae2d31f20eb6f989ed279a04ffe38d0932b06d");
+        declaration["training_provenance"] = json!(
+            "original first ten source rows and twenty authenticated ledger records; ten optimizer updates each use these same ten rows: 100 actual gradient exposures, ten independent examples"
+        );
+        declaration["task_rule"] = json!(
+            "same original 100..9998 numeric range and uppercase word families; fresh random seed and new generation domain; exclude all 1024 previously consumed exact prompt hashes without using prior outputs or labels; each family balanced yes/no; no outcome-based resampling"
+        );
+    }
+    let study = save(&root.join("study.json"), &declaration)?;
     let mut fixture = Fixture::with_study_objective(
         root.join("o"),
         &parent_bytes,
@@ -351,7 +389,7 @@ async fn real_trained_child_prospective_qualification_cell_install_next_ordinary
     helper(
         &input,
         &script,
-        &json!({"schema":"hepta-neural-study-v1","operation":"train",
+        &json!({"schema":match profile { StudyProfile::OriginalV1 => "hepta-neural-study-v1", StudyProfile::BinaryAnswerV2 => "hepta-neural-study-binary-v2" },"operation":"train",
         "training_chain":training_chain,"runtime_chain":input.chain,"materials":input.materials,
         "parent":pin(&input.parent)?,"ordinary":pin(&effects.join("ordinary-session-result.json"))?,
         "study":study,"training_data":training_data,"output":training_output}),
@@ -371,6 +409,7 @@ async fn real_trained_child_prospective_qualification_cell_install_next_ordinary
         return Err("training changed original CURRENT".into());
     }
     let qualified = evaluation::evaluate(
+        profile,
         &input,
         &script,
         &training_chain,
@@ -387,6 +426,7 @@ async fn real_trained_child_prospective_qualification_cell_install_next_ordinary
     )?;
     let config = super::agentd_tests::restart_stopped_config(&identity)?;
     let installed = install::install(
+        profile,
         &input,
         &root,
         &mut fixture,
@@ -411,7 +451,7 @@ async fn real_trained_child_prospective_qualification_cell_install_next_ordinary
     )?;
     save(
         &root.join("positive-loop-result.json"),
-        &json!({"schema":"hepta-real-neural-ordinary-loop-v1",
+        &json!({"schema":match profile { StudyProfile::OriginalV1 => "hepta-real-neural-ordinary-loop-v1", StudyProfile::BinaryAnswerV2 => "hepta-real-neural-ordinary-loop-binary-v2" },
         "parent":initial,"study":study,"training":trained,"child":child,"next":next,
         "actual_test_executable":{"before":executable_before,"after":executable_after},
         "installed_children":1,"ordinary_child_reads":1,"same_artifact_owner":true,

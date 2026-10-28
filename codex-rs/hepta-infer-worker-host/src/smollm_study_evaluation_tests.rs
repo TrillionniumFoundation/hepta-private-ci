@@ -281,6 +281,7 @@ impl eval::FinalHoldoutProviderV1 for Provider<'_> {
 
 #[allow(clippy::too_many_arguments)]
 pub(super) fn evaluate(
+    profile: StudyProfile,
     input: &NativeInput,
     script: &Path,
     training_chain: &Path,
@@ -297,11 +298,22 @@ pub(super) fn evaluate(
 ) -> TestResult<Qualified> {
     let mut seed = [0_u8; 32];
     File::open("/dev/urandom")?.read_exact(&mut seed)?;
-    let tasks = plan::tasks(&seed, yes, actions);
+    let tasks = match profile {
+        StudyProfile::OriginalV1 => plan::tasks(&seed, yes, actions),
+        StudyProfile::BinaryAnswerV2 => plan::binary_tasks(&seed, yes, actions)?,
+    };
+    let observation_chain = match profile {
+        StudyProfile::OriginalV1 => training_chain.to_path_buf(),
+        StudyProfile::BinaryAnswerV2 => PathBuf::from(
+            std::env::var_os("HEPTA_PUBLIC_INITIAL_OBSERVATION_CHAIN")
+                .ok_or("original inference observer source required")?,
+        )
+        .canonicalize()?,
+    };
     let worker = read_pin(&pin(worker_plan)?)?;
     let material = save(
         &root.join("holdout-material.json"),
-        &json!({"schema":"hepta-neural-study-future-material-v1",
+        &json!({"schema":match profile { StudyProfile::OriginalV1 => "hepta-neural-study-future-material-v1", StudyProfile::BinaryAnswerV2 => "hepta-neural-study-future-material-binary-v2" },
         "tasks":tasks,"seed":seed,"child":trained["child"],"parent":trained["parent"],"study":study,
         "worker_plan":pin(worker_plan)?,"source":pin(script)?,"training":trained["training"],
         "fixed_execution_order":[["parent","child"],["child","parent"]],"minimum_window_micros":1_000_000}),
@@ -365,7 +377,7 @@ pub(super) fn evaluate(
     let mut provider = Provider {
         input,
         script,
-        training_chain,
+        training_chain: &observation_chain,
         root,
         trained,
         worker_plan: worker,

@@ -72,6 +72,40 @@ class EvidenceReaderTests(unittest.TestCase):
         (self.root / "ordinary-native.json").write_text(json.dumps(record))
         return record
 
+    def test_ansi_names_require_each_original_pidfd_control(self):
+        record = self.command_record()
+        names = list(evidence.NAMESPACE_TESTS) + [
+            "pidfd_reaper::tests::" + name for name in evidence.PIDFD_TESTS
+        ]
+
+        def install(selected):
+            raw = (
+                "\n".join(
+                    "\x1b[32mPASS\x1b[0m [0.001s] fixture " + name for name in selected
+                )
+                + "\nSummary [0.01s] 14 tests run: 14 passed, 0 skipped\n"
+            ).encode()
+            (self.root / "command.log").write_bytes(raw)
+            record.update(
+                minimum_tests=14,
+                observed_passed_tests=14,
+                log_bytes=len(raw),
+                log_sha256=hashlib.sha256(raw).hexdigest(),
+            )
+            (self.root / "namespace-and-pidfd.json").write_text(json.dumps(record))
+
+        install(names)
+        self.assertEqual(
+            evidence.Evidence(self.root).command("namespace-and-pidfd", 14)["passed"],
+            14,
+        )
+        install(names[:-1] + [names[-2]])
+        with self.assertRaises(ValueError):
+            evidence.Evidence(self.root).command("namespace-and-pidfd", 14)
+        install(names[:-1] + [names[-1] + "_impostor"])
+        with self.assertRaises(ValueError):
+            evidence.Evidence(self.root).command("namespace-and-pidfd", 14)
+
     def test_actual_terminal_log_is_required_despite_success_status(self):
         self.command_record()
         reader = evidence.Evidence(self.root)
