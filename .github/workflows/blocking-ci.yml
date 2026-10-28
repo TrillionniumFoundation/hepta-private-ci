@@ -219,7 +219,7 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEPTA_CI_LANE: source-head
         run: >-
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/impact-test.json" --
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 6600 --output "$RUNNER_TEMP/impact-test.json" --
           python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
           --output "$RUNNER_TEMP/cargo-impact.json" --run
 
