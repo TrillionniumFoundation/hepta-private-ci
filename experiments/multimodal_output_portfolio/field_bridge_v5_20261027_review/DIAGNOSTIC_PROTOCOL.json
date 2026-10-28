@@ -1,0 +1,116 @@
+{
+  "created_utc": "2026-10-28T01:41:22.587912+00:00",
+  "descriptive_comparisons": [
+    "field_48-ordinary_48",
+    "field_48-richer_48",
+    "field_8-ordinary_8",
+    "field_8-richer_8",
+    "ordinary_8-ordinary_48",
+    "field_8-field_48",
+    "richer_8-richer_48"
+  ],
+  "expected_paths": 72,
+  "expected_phase_seals": 6,
+  "failed_frozen_audit": {
+    "error": "Ordinary48 historical endpoint regression failed",
+    "error_type": "ValueError",
+    "filename": "AUDIT.json",
+    "integrity_status": "FAIL",
+    "sha256": "35af3341f3fc283c41beda469e5c9ff2531f7bf01d537cb4dcc9c4a7fd6b42df"
+  },
+  "historical_difference_scope": {
+    "causal_attribution": "UNDETERMINED; no hardware or library cause inferred from small numerical differences",
+    "differences": [
+      "exact equality indicator",
+      "entrywise maximum and mean absolute error",
+      "mean signed difference",
+      "RMSE",
+      "per-observer differences",
+      "ordinary-minus-frozen gain difference"
+    ],
+    "endpoints": [
+      "task",
+      "clean"
+    ],
+    "methods": [
+      "frozen",
+      "ordinary_48"
+    ],
+    "observers": [
+      "reward",
+      "audit"
+    ],
+    "seeds": [
+      17,
+      29,
+      43
+    ],
+    "tolerance_pass_threshold": null
+  },
+  "mandatory_disposition": {
+    "admission": false,
+    "development_entry_passed": false,
+    "historical_regression_status": "FAIL",
+    "new_holdout_access": false,
+    "new_holdout_authorized": false,
+    "numeric_passed_is_diagnostic_only": true,
+    "overall_status": "FAIL"
+  },
+  "new_model_evaluations": 0,
+  "numeric_development_entry_rule": {
+    "all_observers_required": true,
+    "all_paths_complete": true,
+    "candidate": "field_8",
+    "clean_delta_each_model_min": -0.01,
+    "field_over_matched_ordinary_each_model_min": 0.0,
+    "field_over_matched_ordinary_pooled_strict_min": 0.001,
+    "field_over_matched_richer_each_model_min": 0.0,
+    "field_over_matched_richer_pooled_strict_min": 0.0,
+    "passing_authorizes_new_holdout_automatically": false,
+    "task_gain_over_frozen_each_model_min": 0.0,
+    "task_gain_over_frozen_pooled_min": 0.005
+  },
+  "output_creation": "exclusive; original AUDIT.json and all phase artifacts remain unchanged",
+  "output_filename": "WITHIN_RUN_AUDIT.json",
+  "phase_seals": {
+    "evaluate/17": "61fd470905250d1736139ce82cded9b824e4db640b0f14162478c07f87968ba5",
+    "evaluate/29": "c62ea481335d8ab0863a2212e7e991874dd8febfe52696009c224dbd20084e51",
+    "evaluate/43": "b0cb952964a8c4be22068bc3ba112e00dcb1b6fc0346eea86cddc1fd28e7b54f",
+    "train/17": "255a9e1e3dc57c6af5dc28dc38f0a15f7345ed590a2b893f582af1929c7da1ae",
+    "train/29": "078e71ded999e2976827e503d5b72d08802d08d0d01fc454e24e691e5e0c4feb",
+    "train/43": "7b9b2195e1977f62fe472885068714fd68c2b95ff727553ab9a8374c75f53ddf"
+  },
+  "prohibited_actions": [
+    "Changing or overwriting the original frozen AUDIT.json",
+    "Changing any frozen scientific source, gate, comparator or tolerance",
+    "Monkeypatching frozen functions",
+    "New generator or observer evaluation",
+    "New training, fitting, head selection or endpoint regeneration",
+    "New holdout access or scientific retry",
+    "Calling a diagnostic within-run PASS an original frozen audit PASS"
+  ],
+  "purpose": "Strict within-current-run artifact verification and descriptive localization of the existing frozen historical-regression failure. This cannot restore original audit PASS or candidate admission.",
+  "registered_before_first_diagnostic_execution": true,
+  "reused_frozen_functions": [
+    "verify_stage",
+    "audit_path",
+    "audit_endpoints",
+    "comparisons"
+  ],
+  "schema": "hepta.field-bridge.v5.failure-diagnostic-protocol.1",
+  "scientific_protocol_sha256": "0cd30fe8ea8bb872f118ea88f7ed7b3c237e26a4074524ec64aaa10787425fb1",
+  "scientific_registered_commit": "f49810e422892a76c1d37c19c5b4d5112cba6d9e",
+  "scientific_retries": 0,
+  "scientific_source_freeze_sha256": "f86ef86edc02d81d2c68476c5742b332582cfb8a2096f6514dcdc616cdb64ab8",
+  "source_registration": {
+    "files": [
+      "diagnostic_audit.py",
+      "DIAGNOSTIC_PROTOCOL.json"
+    ],
+    "git_metadata_separate_from_pure_artifact_computation": true,
+    "initial_cli_requires_committed_tree_blob_match": true,
+    "literal_restore": "Verify full archive manifest first, then call the restored pure audit function with the original diagnostic_registered_commit; no live scientific code or arrays may be loaded.",
+    "registered_commit_argument_required": true
+  },
+  "study_id": "hepta.field-bridge.v5.baseline-gate-transaction.20261027.1"
+}
