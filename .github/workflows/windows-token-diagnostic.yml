@@ -1,0 +1,40 @@
+name: Windows token diagnostics (not qualification)
+
+on:
+  push:
+    branches: [ci/windows-token-diagnostic-20261028]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-token-diagnostic-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  windows-native-probe:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - name: Preserve exact source bytes
+        shell: pwsh
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0, exact source's CI compiler
+      - name: Probe exact repository token and ACL code in fresh fixtures
+        shell: pwsh
+        run: >-
+          ./scripts/windows_token_diagnostic/run.ps1
+          -RepositoryRoot '${{ github.workspace }}'
+          -EvidenceDirectory '${{ runner.temp }}/hepta-token-diagnostic-evidence'
+      - name: Retain raw token, ACL, AccessCheck and physical-effect evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-token-diagnostic-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-token-diagnostic-evidence/
+          if-no-files-found: error
+          retention-days: 7

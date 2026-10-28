@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.windows-token-source-binding.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_head": "2277a2f0f2e23d96f688a78d455ab2c6c926d7ee",
+  "files": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "sha256": "3fe5daee06868755f298a415864e4087984f95b1d20325a86687638bba4cd8ac",
+      "git_blob": "8945d75fe172679479b738e6266cac99a6f7ed16"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+      "sha256": "58976c6d1594c116dfd108316bb748b5cf2e9f108785605eaa93c96b77145b83",
+      "git_blob": "755083dd97ef25065692028405412326e4e2ac49"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/winutil.rs",
+      "sha256": "12e2413a588b62ff3cc91c70c626a20801f4f84c0f4ea858ca7eb41e83a92185",
+      "git_blob": "45378b4bb527ce2b202913ab3b21aad9ef4b1828"
+    }
+  ],
+  "actual_configuration": {
+    "CreateRestrictedToken_flags": 13,
+    "normal_SIDs_disabled_count": 0,
+    "privileges_deleted_count": 0,
+    "restricting_identity": "Exclude",
+    "restricting_SIDs": "active workspace and temp capability SIDs only",
+    "default_DACL": "logon SID, Everyone, active capabilities; GENERIC_ALL",
+    "restored_privilege": "SeChangeNotifyPrivilege"
+  },
+  "limits": [
+    "This probe compiles the exact repository token and ACL implementations, with the exact to_wide function extracted from its source.",
+    "Candidate Low-integrity setters and observational helpers are diagnostic additions, not repository production changes.",
+    "This is not the original full-crate spawn regression or a substitute for Windows CI qualification."
+  ]
+}
