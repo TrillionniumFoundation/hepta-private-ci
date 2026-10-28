@@ -6,12 +6,6 @@ mod authbus;
 mod capabilities;
 mod evidence;
 mod memory_cells;
-pub use memory_cells::MAX_MEMORY_CELL_PAGE_ROWS;
-pub use memory_cells::MAX_MEMORY_CELL_PAYLOAD_BYTES;
-pub use memory_cells::MEMORY_CELL_CONTROL_CAPABILITY_V1;
-pub use memory_cells::MemoryCellSnapshotPageV1;
-pub use memory_cells::MemoryCellSnapshotSourceV1;
-pub use memory_cells::MemoryCellSnapshotValueV1;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
 pub use authbus::AuthBusTextBody;
@@ -35,6 +29,12 @@ pub use evidence::KernelEvidenceResult;
 pub use evidence::KernelEvidenceVerifyV1;
 pub use evidence::MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES;
 pub use evidence::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES;
+pub use memory_cells::MAX_MEMORY_CELL_PAGE_ROWS;
+pub use memory_cells::MAX_MEMORY_CELL_PAYLOAD_BYTES;
+pub use memory_cells::MEMORY_CELL_CONTROL_CAPABILITY_V1;
+pub use memory_cells::MemoryCellSnapshotPageV1;
+pub use memory_cells::MemoryCellSnapshotSourceV1;
+pub use memory_cells::MemoryCellSnapshotValueV1;
 
 use std::path::PathBuf;
 
@@ -1091,7 +1091,7 @@ mod tests {
                 read_digest: snapshot.read_digest.clone(),
                 omitted_records: snapshot.omitted_records,
                 items: snapshot.items.clone(),
-                plan: snapshot.plan.clone(),
+                plan: snapshot.plan,
             },
         };
         let bytes = serde_json::to_vec(&request).expect("serialize revalidation request");
@@ -1337,13 +1337,8 @@ mod tests {
             attach
         );
 
-        let cancel = AgentdRequest::run_cancel(
-            14,
-            3,
-            snapshot.run_id.clone(),
-            2,
-            "operator_request".to_string(),
-        );
+        let cancel =
+            AgentdRequest::run_cancel(14, 3, snapshot.run_id, 2, "operator_request".to_string());
         let cancel_bytes = serde_json::to_vec(&cancel).expect("serialize cancellation");
         assert!(cancel_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(

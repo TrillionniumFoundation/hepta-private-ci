@@ -88,7 +88,11 @@ impl AgentOutput {
             self.items[index].bytes = new_bytes;
             self.items[index].completed = completed;
         } else {
-            self.items.push(OutputItem { id: id.clone(), bytes: new_bytes, completed });
+            self.items.push(OutputItem {
+                id: id.clone(),
+                bytes: new_bytes,
+                completed,
+            });
             self.id_bytes += id.len();
         }
         Ok(())

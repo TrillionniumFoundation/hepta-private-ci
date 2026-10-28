@@ -309,8 +309,10 @@ impl Drop for CognitiveTestHost {
 /// Supply a real, same-source Codex App Server executable and its arg0 aliases;
 /// keep the product sandbox and runtime-path validation intact.
 fn qualification_arg0_paths(root: &Path) -> TestResult<Arg0DispatchPaths> {
-    let executable = PathBuf::from(std::env::var_os("HEPTA_TEST_CODEX_EXECUTABLE")
-        .ok_or("HEPTA_TEST_CODEX_EXECUTABLE must name a built Codex App Server executable")?);
+    let executable = PathBuf::from(
+        std::env::var_os("HEPTA_TEST_CODEX_EXECUTABLE")
+            .ok_or("HEPTA_TEST_CODEX_EXECUTABLE must name a built Codex App Server executable")?,
+    );
     if !executable.is_absolute() || !executable.is_file() {
         return Err("qualification runtime executable must be an existing absolute file".into());
     }

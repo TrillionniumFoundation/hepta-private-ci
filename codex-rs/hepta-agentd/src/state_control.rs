@@ -110,10 +110,14 @@ impl AgentdState {
                     );
                 }
                 if self.memory_cells.get().is_some() {
-                    capabilities.push(crate::AgentdCapability::new(
-                        codex_hepta_agent_protocol::MEMORY_CELL_CONTROL_CAPABILITY_V1,
-                        /*major*/ 1, /*minor*/ 0,
-                    ).map_err(AgentdError::Protocol)?);
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            codex_hepta_agent_protocol::MEMORY_CELL_CONTROL_CAPABILITY_V1,
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
                 }
                 capabilities.push(
                     crate::AgentdCapability::new(
@@ -256,33 +260,58 @@ impl AgentdState {
                     crate::evidence_host::verify(self, request).await?,
                 )
             }
-            crate::AgentdMethod::MemoryCellSnapshot { after, expected_owner_cut, limit } => {
+            crate::AgentdMethod::MemoryCellSnapshot {
+                after,
+                expected_owner_cut,
+                limit,
+            } => {
                 self.require_cognitive_control_ready_now()?;
                 let Some(store) = cognitive else {
-                    return self.response_with_payload(request_id, current_generation, cognitive_control_unavailable());
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        cognitive_control_unavailable(),
+                    );
                 };
                 let default_access = CognitiveAccess::agent_private(self.identity.agent_id.clone());
-                let (access, scope) = self.memory_cells.get()
+                let (access, scope) = self
+                    .memory_cells
+                    .get()
                     .map(|host| (host.access(), host.scope()))
                     .unwrap_or((&default_access, &CognitiveScope::AgentPrivate));
                 let result = crate::memory_cell_runtime::snapshot::export_page(
-                    &store, access, scope, after, expected_owner_cut, limit,
-                ).await;
+                    &store,
+                    access,
+                    scope,
+                    after,
+                    expected_owner_cut,
+                    limit,
+                )
+                .await;
                 self.require_cognitive_control_ready_now()?;
                 result.unwrap_or_else(memory_cell_error_payload)
             }
             crate::AgentdMethod::MemoryCellRead { request } => {
                 self.require_cognitive_control_ready_now()?;
                 let Some(store) = cognitive else {
-                    return self.response_with_payload(request_id, current_generation, cognitive_control_unavailable());
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        cognitive_control_unavailable(),
+                    );
                 };
                 let Some(host) = self.memory_cells.get() else {
-                    return self.response_with_payload(request_id, current_generation, memory_cell_error_payload(
-                        AgentdError::Protocol("this Agent has no selected memory cell host".to_string()),
-                    ));
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        memory_cell_error_payload(AgentdError::Protocol(
+                            "this Agent has no selected memory cell host".to_string(),
+                        )),
+                    );
                 };
-                let result = host.read(&store, &request).await
-                    .and_then(|readout| crate::memory_cell_runtime::snapshot::readout_payload(&readout));
+                let result = host.read(&store, &request).await.and_then(|readout| {
+                    crate::memory_cell_runtime::snapshot::readout_payload(&readout)
+                });
                 self.require_cognitive_control_ready_now()?;
                 result.unwrap_or_else(memory_cell_error_payload)
             }
@@ -1034,9 +1063,15 @@ impl AgentdState {
     fn require_cognitive_control_ready_now(&self) -> Result<(), AgentdError> {
         self.refresh_generation()?;
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
-        require_cognitive_control_ready(runtime.lifecycle, runtime.app_server_ready,
-            runtime.critical_stores_ready, runtime.revocation_ready, runtime.required_ports_ready,
-            runtime.admission_open, runtime.fenced)
+        require_cognitive_control_ready(
+            runtime.lifecycle,
+            runtime.app_server_ready,
+            runtime.critical_stores_ready,
+            runtime.revocation_ready,
+            runtime.required_ports_ready,
+            runtime.admission_open,
+            runtime.fenced,
+        )
     }
 
     fn automation_result<T>(
@@ -1189,7 +1224,10 @@ fn cognitive_control_unavailable() -> AgentdPayload {
 fn memory_cell_error_payload(error: AgentdError) -> AgentdPayload {
     // The optional cell plane never removes the canonical cognitive owner or
     // exposes an intermediate prediction when its own bounded read fails.
-    AgentdPayload::Error { code: "memory_cells_unavailable".to_string(), message: error.to_string() }
+    AgentdPayload::Error {
+        code: "memory_cells_unavailable".to_string(),
+        message: error.to_string(),
+    }
 }
 
 fn require_cognitive_control_ready(

@@ -319,25 +319,30 @@ fn running_journal(label: &str) -> (DurableInferenceControl, PathBuf) {
     let request = request(&driver);
     let payload_digest = request.payload_digest.clone();
     control.reserve_native(request, 1).unwrap();
-    control.dispatch_native("r1", NativeDispatch {
-        thread_id: "thread-1".to_string(),
-        model_provider: "provider".to_string(),
-        context_digest: "a".repeat(64),
-        owner_context_digest: None,
-        codex_payload_digest: Some("d".repeat(64)),
-        codex_request_digest: Some("b".repeat(64)),
-        app_server_version: Some("1.2.3".to_string()),
-        protocol_id: Some("codex.app-server.v2".to_string()),
-        codex_source_admission_digest: Some(payload_digest),
-        codex_home_digest: Some("f".repeat(64)),
-        codex_connection_id: Some(9),
-        codex_session_id: Some("session-1".to_string()),
-        codex_deadline_ms: Some(10_000),
-        codex_authority_epoch: Some(1),
-        codex_revocation_revision: Some(1),
-        codex_revocation_head_sha256: Some("2".repeat(64)),
-        codex_authority_witness_sha256: Some("1".repeat(64)),
-    }).unwrap();
+    control
+        .dispatch_native(
+            "r1",
+            NativeDispatch {
+                thread_id: "thread-1".to_string(),
+                model_provider: "provider".to_string(),
+                context_digest: "a".repeat(64),
+                owner_context_digest: None,
+                codex_payload_digest: Some("d".repeat(64)),
+                codex_request_digest: Some("b".repeat(64)),
+                app_server_version: Some("1.2.3".to_string()),
+                protocol_id: Some("codex.app-server.v2".to_string()),
+                codex_source_admission_digest: Some(payload_digest),
+                codex_home_digest: Some("f".repeat(64)),
+                codex_connection_id: Some(9),
+                codex_session_id: Some("session-1".to_string()),
+                codex_deadline_ms: Some(10_000),
+                codex_authority_epoch: Some(1),
+                codex_revocation_revision: Some(1),
+                codex_revocation_head_sha256: Some("2".repeat(64)),
+                codex_authority_witness_sha256: Some("1".repeat(64)),
+            },
+        )
+        .unwrap();
     control.native_started("r1", "turn-1".to_string()).unwrap();
     (control, path)
 }
@@ -362,8 +367,14 @@ fn reconciled_completion() -> NativeRunOutput {
 #[test]
 fn terminal_reconciliation_preserves_durable_denials_after_reopening() {
     for (boundary_status, reason) in [
-        (NativeBoundaryStatus::Quarantined, "completed agent message changed"),
-        (NativeBoundaryStatus::Quarantined, "output byte limit exceeded"),
+        (
+            NativeBoundaryStatus::Quarantined,
+            "completed agent message changed",
+        ),
+        (
+            NativeBoundaryStatus::Quarantined,
+            "output byte limit exceeded",
+        ),
         (NativeBoundaryStatus::Cancelled, "cancelled"),
         (NativeBoundaryStatus::TimedOut, "deadline elapsed"),
     ] {
@@ -461,7 +472,9 @@ fn ordinary_indeterminate_reconciliation_can_settle_with_retained_usage() {
 #[test]
 fn terminal_reconciliation_cannot_restore_a_durably_lost_owner() {
     let (mut control, path) = running_journal("lost-owner-reconciliation");
-    let lost = NativeOwnerAuthority::Lost { reason: "owner fenced".to_string() };
+    let lost = NativeOwnerAuthority::Lost {
+        reason: "owner fenced".to_string(),
+    };
     let pending = NativeRunOutput {
         status: NativeRunStatus::Indeterminate,
         boundary_status: NativeBoundaryStatus::Quarantined,

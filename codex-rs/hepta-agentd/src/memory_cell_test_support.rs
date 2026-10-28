@@ -47,35 +47,101 @@ impl ControlFixture {
         let workspace = root.path().join("workspace");
         std::fs::create_dir(&workspace).unwrap();
         let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81").unwrap();
-        let registered = registry.register(AgentManifest::new(owner.clone(),
-            WorkspaceBinding::new(&workspace, &fleet).unwrap(), ResourceBudget::local_default()).unwrap()).unwrap();
-        registry.compare_and_transition(&owner, /*expected_generation*/ 0, AgentLifecycle::Starting).unwrap();
+        let registered = registry
+            .register(
+                AgentManifest::new(
+                    owner.clone(),
+                    WorkspaceBinding::new(&workspace, &fleet).unwrap(),
+                    ResourceBudget::local_default(),
+                )
+                .unwrap(),
+            )
+            .unwrap();
+        registry
+            .compare_and_transition(
+                &owner,
+                /*expected_generation*/ 0,
+                AgentLifecycle::Starting,
+            )
+            .unwrap();
         let identity = AgentdIdentity {
-            agent_id: owner.clone(), layout: registered.layout.clone(), spawn_generation: 1,
-            fleet_root: fleet_path, workspace, resources: registered.manifest.resources,
-            home_root: registered.layout.home_root().to_path_buf(), run_root: registered.layout.run_root().to_path_buf(),
+            agent_id: owner.clone(),
+            layout: registered.layout.clone(),
+            spawn_generation: 1,
+            fleet_root: fleet_path,
+            workspace,
+            resources: registered.manifest.resources,
+            home_root: registered.layout.home_root().to_path_buf(),
+            run_root: registered.layout.run_root().to_path_buf(),
             control_socket: registered.layout.agentd_control_socket().to_path_buf(),
             app_server_socket: registered.layout.app_server_socket().to_path_buf(),
         };
-        let state = Arc::new(AgentdState::new(identity.clone(), registry.clone(), /*event_capacity*/ 16).unwrap());
-        let store = Arc::new(DurableCognitiveStore::open(&registered.layout).await.unwrap());
+        let state = Arc::new(
+            AgentdState::new(
+                identity.clone(),
+                registry.clone(),
+                /*event_capacity*/ 16,
+            )
+            .unwrap(),
+        );
+        let store = Arc::new(
+            DurableCognitiveStore::open(&registered.layout)
+                .await
+                .unwrap(),
+        );
         for record in [
             record(MemoryCellKindV1::Event, /*effective_at*/ 10, json!(4)),
             record(MemoryCellKindV1::Event, /*effective_at*/ 20, json!(9)),
-            record(MemoryCellKindV1::Semantic, /*effective_at*/ 20, json!({"factor": 3, "label": "owner semantic"})),
-            record(MemoryCellKindV1::Procedure, /*effective_at*/ 20, json!({"opcode": "affine", "bias": 2, "limit": 1000})),
+            record(
+                MemoryCellKindV1::Semantic,
+                /*effective_at*/ 20,
+                json!({"factor": 3, "label": "owner semantic"}),
+            ),
+            record(
+                MemoryCellKindV1::Procedure,
+                /*effective_at*/ 20,
+                json!({"opcode": "affine", "bias": 2, "limit": 1000}),
+            ),
         ] {
-            store.write_memory_cell(&CognitiveAccess::agent_private(owner.clone()), &CognitiveScope::AgentPrivate,
-                &record, MemoryCellWriteModeV1::Create).await.unwrap();
+            store
+                .write_memory_cell(
+                    &CognitiveAccess::agent_private(owner.clone()),
+                    &CognitiveScope::AgentPrivate,
+                    &record,
+                    MemoryCellWriteModeV1::Create,
+                )
+                .await
+                .unwrap();
         }
         state.attach_cognitive_store(Arc::clone(&store)).unwrap();
-        registry.compare_and_transition(&owner, /*expected_generation*/ 1, AgentLifecycle::Running).unwrap();
+        registry
+            .compare_and_transition(
+                &owner,
+                /*expected_generation*/ 1,
+                AgentLifecycle::Running,
+            )
+            .unwrap();
         state.refresh_generation().unwrap();
         let cancellation = CancellationToken::new();
-        let server = AgentdControlServer::bind(identity.control_socket.clone(), Arc::clone(&state), cancellation.clone()).await.unwrap();
+        let server = AgentdControlServer::bind(
+            identity.control_socket.clone(),
+            Arc::clone(&state),
+            cancellation.clone(),
+        )
+        .await
+        .unwrap();
         let control = Some(tokio::spawn(server.run()));
-        let client = AgentdClient::new(identity.control_socket, owner, /*spawn_generation*/ 1).unwrap();
-        Self { _root: root, store, state, registry, client, cancellation, control }
+        let client =
+            AgentdClient::new(identity.control_socket, owner, /*spawn_generation*/ 1).unwrap();
+        Self {
+            _root: root,
+            store,
+            state,
+            registry,
+            client,
+            cancellation,
+            control,
+        }
     }
 
     pub(crate) fn ready(&self) {
@@ -88,8 +154,14 @@ impl ControlFixture {
     }
 
     pub(crate) async fn snapshot(&self) -> codex_hepta_cognitive_store::MemoryCellOwnerSnapshotV1 {
-        self.store.memory_cell_snapshot(&self.access(), &CognitiveScope::AgentPrivate,
-            crate::memory_cell_runtime::now_unix_seconds().unwrap()).await.unwrap()
+        self.store
+            .memory_cell_snapshot(
+                &self.access(),
+                &CognitiveScope::AgentPrivate,
+                crate::memory_cell_runtime::now_unix_seconds().unwrap(),
+            )
+            .await
+            .unwrap()
     }
 
     pub(crate) async fn finish(mut self) {
@@ -99,18 +171,35 @@ impl ControlFixture {
 }
 
 impl Drop for ControlFixture {
-    fn drop(&mut self) { self.cancellation.cancel(); }
+    fn drop(&mut self) {
+        self.cancellation.cancel();
+    }
 }
 
-pub(crate) fn record(kind: MemoryCellKindV1, effective_at: u64, value: Value) -> MemoryCellRecordV1 {
-    MemoryCellRecordV1 { schema: "hepta.memory.cell-record.v1".to_string(),
-        entity: ContractIdV1::new("meter:agentd-cell").unwrap(), kind, effective_at, value }
+pub(crate) fn record(
+    kind: MemoryCellKindV1,
+    effective_at: u64,
+    value: Value,
+) -> MemoryCellRecordV1 {
+    MemoryCellRecordV1 {
+        schema: "hepta.memory.cell-record.v1".to_string(),
+        entity: ContractIdV1::new("meter:agentd-cell").unwrap(),
+        kind,
+        effective_at,
+        value,
+    }
 }
 
 pub(crate) fn request(scope: ContractIdV1) -> MemoryRequestV1 {
-    MemoryRequestV1 { schema: "hepta.memory.request.v1".to_string(),
-        query_id: ContractIdV1::new("query:agentd-cell").unwrap(), scope,
+    MemoryRequestV1 {
+        schema: "hepta.memory.request.v1".to_string(),
+        query_id: ContractIdV1::new("query:agentd-cell").unwrap(),
+        scope,
         entity: ContractIdV1::new("meter:agentd-cell").unwrap(),
         text: "Explicit trusted resolver integration test".to_string(),
-        at: 15, since: 10, max_hops: 3, max_cells: 3 }
+        at: 15,
+        since: 10,
+        max_hops: 3,
+        max_cells: 3,
+    }
 }

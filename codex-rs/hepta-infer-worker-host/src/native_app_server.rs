@@ -782,9 +782,12 @@ impl AppServerModelDriver {
             }
         }
         if let Some(evidence) = memory_evidence.as_ref()
-            && let Err(error) = self.revalidate_memory_evidence(&owner, evidence).await {
+            && let Err(error) = self.revalidate_memory_evidence(&owner, evidence).await
+        {
             let reason: String = format!("memory cell final-use revalidation failed: {error}")
-                .chars().take(1024).collect();
+                .chars()
+                .take(1024)
+                .collect();
             let stopped = control.abort_native_before_effect(pre_effect_abort, reason);
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             stopped?;
@@ -952,17 +955,16 @@ impl AppServerModelDriver {
             let failure_recorded = control
                 .settle_native(request_id, output.clone())
                 .map(|_| ());
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
-                if let Ok(cancelled) = owner
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Ok(cancelled) = owner
                     .run_cancel(
                         binding.run_id.clone(),
                         revision,
                         reason.chars().take(512).collect(),
                     )
                     .await
-                {
-                    intelligence_revision = Some(cancelled.receipt.revision);
-                }
+            {
+                intelligence_revision = Some(cancelled.receipt.revision);
             }
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.

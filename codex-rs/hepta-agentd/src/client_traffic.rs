@@ -40,11 +40,16 @@ pub(super) struct MeteredRead<'a, R> {
 }
 
 impl<R: AsyncRead + Unpin> AsyncRead for MeteredRead<'_, R> {
-    fn poll_read(self: Pin<&mut Self>, context: &mut Context<'_>, buffer: &mut ReadBuf<'_>) -> Poll<std::io::Result<()>> {
+    fn poll_read(
+        self: Pin<&mut Self>,
+        context: &mut Context<'_>,
+        buffer: &mut ReadBuf<'_>,
+    ) -> Poll<std::io::Result<()>> {
         let this = self.get_mut();
         let before = buffer.filled().len();
         let result = Pin::new(&mut this.reader).poll_read(context, buffer);
-        this.received.fetch_add((buffer.filled().len() - before) as u64, Ordering::Relaxed);
+        this.received
+            .fetch_add((buffer.filled().len() - before) as u64, Ordering::Relaxed);
         result
     }
 }

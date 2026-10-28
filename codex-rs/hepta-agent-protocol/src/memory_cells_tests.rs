@@ -9,18 +9,28 @@ use crate::AgentdRequest;
 #[test]
 fn cell_request_roundtrips_without_an_operation_or_authority_input() {
     let request = AgentdRequest {
-        schema_version: AGENTD_CONTROL_SCHEMA_VERSION, request_id: 7, spawn_generation: 3,
-        method: AgentdMethod::MemoryCellRead { request: MemoryRequestV1 {
-            schema: "hepta.memory.request.v1".to_string(),
-            query_id: ContractIdV1::new("query:cell-wire").unwrap(),
-            scope: ContractIdV1::new("scope:cell-wire").unwrap(),
-            entity: ContractIdV1::new("entity:cell-wire").unwrap(),
-            text: "Apply the saved procedure to the newest event".to_string(),
-            at: 20, since: 10, max_cells: 3, max_hops: 3,
-        } },
+        schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+        request_id: 7,
+        spawn_generation: 3,
+        method: AgentdMethod::MemoryCellRead {
+            request: MemoryRequestV1 {
+                schema: "hepta.memory.request.v1".to_string(),
+                query_id: ContractIdV1::new("query:cell-wire").unwrap(),
+                scope: ContractIdV1::new("scope:cell-wire").unwrap(),
+                entity: ContractIdV1::new("entity:cell-wire").unwrap(),
+                text: "Apply the saved procedure to the newest event".to_string(),
+                at: 20,
+                since: 10,
+                max_cells: 3,
+                max_hops: 3,
+            },
+        },
     };
     let wire = serde_json::to_vec(&request).unwrap();
-    assert_eq!(serde_json::from_slice::<AgentdRequest>(&wire).unwrap(), request);
+    assert_eq!(
+        serde_json::from_slice::<AgentdRequest>(&wire).unwrap(),
+        request
+    );
     for field in ["operation", "gold", "registry", "source_cut"] {
         let mut forged = serde_json::to_value(&request).unwrap();
         forged["method"]["request"][field] = json!("caller-selected");

@@ -71,22 +71,50 @@ impl MemoryCellPopulationV2 {
             return Err(AssociativeMemoryError::BindingMismatch);
         }
         #[derive(Deserialize)]
-        struct Schema { schema: String }
-        let header: Schema = serde_json::from_slice(bytes).map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
-        let (kind, population, shards, routes, lineage) = if header.schema == "hepta.memory.associative-native.v1" {
-            let model = AssociativeMemoryCellV1::from_bytes(bytes, expected)?;
-            (model.kind(), false, vec![ShardPayload { digest: expected.to_string(),
-                payload: std::str::from_utf8(bytes).map_err(|_| AssociativeMemoryError::InvalidArtifact)?.to_owned() }],
-                model.supports().keys().map(|key| (key.clone(), 0)).collect(), model.lineage_sources().to_vec())
-        } else {
-            let wire: PopulationWire = serde_json::from_slice(bytes).map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
-            if wire.schema != MEMORY_POPULATION_SCHEMA_V2 || wire.partition_profile != MEMORY_POPULATION_PARTITION_V2
-                || !(1..=8).contains(&wire.shards.len()) || !(1..=4096).contains(&wire.routes.len())
-                || wire.shards.len() > wire.routes.len() || wire.kind == MemoryCellKindV1::Event {
-                return Err(AssociativeMemoryError::InvalidArtifact);
-            }
-            (wire.kind, true, wire.shards, wire.routes, wire.lineage_sources)
-        };
+        struct Schema {
+            schema: String,
+        }
+        let header: Schema =
+            serde_json::from_slice(bytes).map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
+        let (kind, population, shards, routes, lineage) =
+            if header.schema == "hepta.memory.associative-native.v1" {
+                let model = AssociativeMemoryCellV1::from_bytes(bytes, expected)?;
+                (
+                    model.kind(),
+                    false,
+                    vec![ShardPayload {
+                        digest: expected.to_string(),
+                        payload: std::str::from_utf8(bytes)
+                            .map_err(|_| AssociativeMemoryError::InvalidArtifact)?
+                            .to_owned(),
+                    }],
+                    model
+                        .supports()
+                        .keys()
+                        .map(|key| (key.clone(), 0))
+                        .collect(),
+                    model.lineage_sources().to_vec(),
+                )
+            } else {
+                let wire: PopulationWire = serde_json::from_slice(bytes)
+                    .map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
+                if wire.schema != MEMORY_POPULATION_SCHEMA_V2
+                    || wire.partition_profile != MEMORY_POPULATION_PARTITION_V2
+                    || !(1..=8).contains(&wire.shards.len())
+                    || !(1..=4096).contains(&wire.routes.len())
+                    || wire.shards.len() > wire.routes.len()
+                    || wire.kind == MemoryCellKindV1::Event
+                {
+                    return Err(AssociativeMemoryError::InvalidArtifact);
+                }
+                (
+                    wire.kind,
+                    true,
+                    wire.shards,
+                    wire.routes,
+                    wire.lineage_sources,
+                )
+            };
         let mut supports = BTreeMap::new();
         let mut sources = BTreeSet::new();
         let mut shard_costs = Vec::new();
@@ -94,16 +122,24 @@ impl MemoryCellPopulationV2 {
         let mut head_parts = b"hepta.memory.population.heads.v2".to_vec();
         let mut single_digests = None;
         for (index, shard) in shards.iter().enumerate() {
-            let digest = shard.digest.parse().map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
+            let digest = shard
+                .digest
+                .parse()
+                .map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
             let model = AssociativeMemoryCellV1::from_bytes(shard.payload.as_bytes(), digest)?;
-            if model.kind() != kind { return Err(AssociativeMemoryError::InvalidArtifact); }
+            if model.kind() != kind {
+                return Err(AssociativeMemoryError::InvalidArtifact);
+            }
             let declared: BTreeSet<_> = model.lineage_sources().iter().cloned().collect();
-            let support_sources: BTreeSet<_> = model.supports().values().flatten().cloned().collect();
+            let support_sources: BTreeSet<_> =
+                model.supports().values().flatten().cloned().collect();
             if population && (declared != support_sources || !sources.is_disjoint(&declared)) {
                 return Err(AssociativeMemoryError::InvalidArtifact);
             }
             for (key, support) in model.supports() {
-                if routes.get(key) != Some(&index) || supports.insert(key.clone(), support.clone()).is_some() {
+                if routes.get(key) != Some(&index)
+                    || supports.insert(key.clone(), support.clone()).is_some()
+                {
                     return Err(AssociativeMemoryError::InvalidArtifact);
                 }
             }
@@ -118,30 +154,80 @@ impl MemoryCellPopulationV2 {
         }
         // Sorted SHA-256 address ranks are independent of values and training
         // labels. Reject a declared profile paired with a hand-written routing.
-        if population && routes.iter().enumerate().any(|(rank, (_, shard))| *shard != rank * shards.len() / routes.len()) {
+        if population
+            && routes
+                .iter()
+                .enumerate()
+                .any(|(rank, (_, shard))| *shard != rank * shards.len() / routes.len())
+        {
             return Err(AssociativeMemoryError::InvalidArtifact);
         }
         let (parameter_digest, head_digest) = if population {
-            (Digest32::of_bytes(&parameter_parts), Digest32::of_parts(&[&head_parts, expected.as_array()]))
-        } else { single_digests.ok_or(AssociativeMemoryError::InvalidArtifact)? };
-        let costs = MemoryPopulationCostV2::new(bytes.len(), &shards, &shard_costs, &routes, &supports, &lineage,
-            u64::try_from(started.elapsed().as_nanos()).unwrap_or(u64::MAX))?;
+            (
+                Digest32::of_bytes(&parameter_parts),
+                Digest32::of_parts(&[&head_parts, expected.as_array()]),
+            )
+        } else {
+            single_digests.ok_or(AssociativeMemoryError::InvalidArtifact)?
+        };
+        let costs = MemoryPopulationCostV2::new(
+            bytes.len(),
+            &shards,
+            &shard_costs,
+            &routes,
+            &supports,
+            &lineage,
+            u64::try_from(started.elapsed().as_nanos()).unwrap_or(u64::MAX),
+        )?;
         let budget = shard_costs.iter().map(ShardCost::resident_bytes).sum();
-        Ok(Self { kind, digest: expected, parameter_digest, head_digest, population,
-            supports, lineage, routes, shards, shard_costs, costs, cache: Mutex::new(PopulationCache::new(budget)) })
+        Ok(Self {
+            kind,
+            digest: expected,
+            parameter_digest,
+            head_digest,
+            population,
+            supports,
+            lineage,
+            routes,
+            shards,
+            shard_costs,
+            costs,
+            cache: Mutex::new(PopulationCache::new(budget)),
+        })
     }
 
-    pub fn digest(&self) -> Digest32 { self.digest }
-    pub fn parameters_digest(&self) -> Digest32 { self.parameter_digest }
-    pub fn head_digest(&self) -> Digest32 { self.head_digest }
-    pub fn kind(&self) -> MemoryCellKindV1 { self.kind }
-    pub fn supports(&self) -> &BTreeMap<String, Vec<String>> { &self.supports }
-    pub fn lineage_sources(&self) -> &[String] { &self.lineage }
-    pub fn is_population(&self) -> bool { self.population }
-    pub fn shard_count(&self) -> usize { self.shards.len() }
-    pub fn serialized_bytes(&self) -> usize { self.costs.serialized_bytes as usize }
+    pub fn digest(&self) -> Digest32 {
+        self.digest
+    }
+    pub fn parameters_digest(&self) -> Digest32 {
+        self.parameter_digest
+    }
+    pub fn head_digest(&self) -> Digest32 {
+        self.head_digest
+    }
+    pub fn kind(&self) -> MemoryCellKindV1 {
+        self.kind
+    }
+    pub fn supports(&self) -> &BTreeMap<String, Vec<String>> {
+        &self.supports
+    }
+    pub fn lineage_sources(&self) -> &[String] {
+        &self.lineage
+    }
+    pub fn is_population(&self) -> bool {
+        self.population
+    }
+    pub fn shard_count(&self) -> usize {
+        self.shards.len()
+    }
+    pub fn serialized_bytes(&self) -> usize {
+        self.costs.serialized_bytes as usize
+    }
     pub fn shard_digests(&self) -> Vec<Digest32> {
-        self.shards.iter().map(|shard| Digest32::of_bytes(shard.payload.as_bytes())).collect()
+        self.shards
+            .iter()
+            .map(|shard| Digest32::of_bytes(shard.payload.as_bytes()))
+            .collect()
     }
 }
 

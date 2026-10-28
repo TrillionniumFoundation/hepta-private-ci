@@ -747,15 +747,22 @@ impl AgentdClient {
             let mut remaining = bytes.as_slice();
             while !remaining.is_empty() {
                 let written = writer.write(remaining).await?;
-                if written == 0 { return Err(std::io::Error::from(std::io::ErrorKind::WriteZero)); }
-                self.traffic.transmitted.fetch_add(written as u64, Ordering::Relaxed);
+                if written == 0 {
+                    return Err(std::io::Error::from(std::io::ErrorKind::WriteZero));
+                }
+                self.traffic
+                    .transmitted
+                    .fetch_add(written as u64, Ordering::Relaxed);
                 remaining = &remaining[written..];
             }
             Ok::<(), std::io::Error>(())
         })
-            .await
-            .map_err(|_| AgentdError::Protocol("agentd control write timed out".to_string()))??;
-        let reader = traffic::MeteredRead { reader, received: &self.traffic.received };
+        .await
+        .map_err(|_| AgentdError::Protocol("agentd control write timed out".to_string()))??;
+        let reader = traffic::MeteredRead {
+            reader,
+            received: &self.traffic.received,
+        };
         let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
         let mut response_bytes = Vec::new();
         let count = timeout(self.timeout, reader.read_until(b'\n', &mut response_bytes))

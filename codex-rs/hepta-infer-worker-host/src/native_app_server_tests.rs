@@ -47,7 +47,12 @@ fn observe_for_test(
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
     let binding = binding();
-    observe_event(output, &mut agent_output::AgentOutput::default(), &observed(notification), &binding)
+    observe_event(
+        output,
+        &mut agent_output::AgentOutput::default(),
+        &observed(notification),
+        &binding,
+    )
 }
 
 fn output() -> NativeRunOutput {
@@ -174,12 +179,30 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
             delta: text,
         })
     };
-    observe_event(&mut output, &mut agent_output, &observed(delta("unrelated", "discard".to_string())), &binding).unwrap();
-    observe_event(&mut output, &mut agent_output, &observed(delta("thread-a", "model output".to_string())), &binding).unwrap();
+    observe_event(
+        &mut output,
+        &mut agent_output,
+        &observed(delta("unrelated", "discard".to_string())),
+        &binding,
+    )
+    .unwrap();
+    observe_event(
+        &mut output,
+        &mut agent_output,
+        &observed(delta("thread-a", "model output".to_string())),
+        &binding,
+    )
+    .unwrap();
     assert_eq!(output.output, "model output");
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(
-        observe_event(&mut output, &mut agent_output, &observed(delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))), &binding).is_err()
+        observe_event(
+            &mut output,
+            &mut agent_output,
+            &observed(delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))),
+            &binding
+        )
+        .is_err()
     );
     assert_eq!(output.output, "model output");
     assert!(!output.terminal_observed);
@@ -496,7 +519,10 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         accepted.succeeded(),
         "fresh context must reach a successful real TurnStart"
     );
-    assert!(accepted.output.contains("fresh context accepted"), "observed output: {accepted:?}");
+    assert!(
+        accepted.output.contains("fresh context accepted"),
+        "observed output: {accepted:?}"
+    );
     let accepted_record = durable
         .native_record(ACCEPT_REQUEST_ID)
         .cloned()
@@ -703,7 +729,10 @@ fn interrupt_grace_provider_failure_keeps_the_original_quarantine_reason() {
     assert!(observe_for_test(&mut value, failed).unwrap());
     assert_eq!(value.status, NativeRunStatus::Failed);
     assert_eq!(value.boundary_status, NativeBoundaryStatus::Quarantined);
-    assert_eq!(value.stop_reason.as_deref(), Some("completed agent message changed"));
+    assert_eq!(
+        value.stop_reason.as_deref(),
+        Some("completed agent message changed")
+    );
     assert!(value.terminal_observed);
     assert!(!value.succeeded());
 }

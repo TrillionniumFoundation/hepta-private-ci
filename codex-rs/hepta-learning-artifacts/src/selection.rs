@@ -364,7 +364,9 @@ impl ArtifactSelectionVerifierV1 {
             authority_epoch: signed.authority_epoch,
             issued_at: signed.issued_at,
             expires_at: signed.expires_at.min(selector.expires_at).min(
-                selector.revoked_at.map_or(u64::MAX, |at| at.saturating_sub(1)),
+                selector
+                    .revoked_at
+                    .map_or(u64::MAX, |at| at.saturating_sub(1)),
             ),
             trust_digest: self.trust_digest,
             current_owner_trust_digest: current.trust_digest(),
