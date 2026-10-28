@@ -277,7 +277,9 @@ impl MemoryCellAddressResolverV1 for MemoryCellAddressWorkerV1 {
             };
             self.counters.attempts.fetch_add(1, Ordering::Relaxed);
             let Some(bound) = BoundRequest::build(request, snapshot, &self.config.aliases)? else {
-                self.counters.host_time_abstentions.fetch_add(1, Ordering::Relaxed);
+                self.counters
+                    .host_time_abstentions
+                    .fetch_add(1, Ordering::Relaxed);
                 return Ok(None);
             };
 
@@ -349,7 +351,6 @@ mod test_support;
 #[cfg(test)]
 #[path = "memory_cell_address_worker_tests.rs"]
 mod tests;
-
 
 #[cfg(test)]
 #[path = "memory_cell_address_worker_abstention_tests.rs"]

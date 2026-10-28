@@ -196,7 +196,9 @@ fn literal_date(text: &str) -> Result<Option<Date>, TimeViewError> {
                 continue;
             }
             if !candidate.iter().all(char::is_ascii) {
-                return Err(TimeViewError::Invalid("non-ASCII decimal date is outside the host time profile".to_string()));
+                return Err(TimeViewError::Invalid(
+                    "non-ASCII decimal date is outside the host time profile".to_string(),
+                ));
             }
             let digits: String = candidate.iter().copied().filter(|c| *c != '-').collect();
             let year: i32 = digits[..4]

@@ -36,26 +36,44 @@ pub struct MemoryCellAddressWorkerConfigV1 {
 
 impl MemoryCellAddressWorkerConfigV1 {
     pub(super) async fn verify(&self) -> Result<ContractDigestV1, String> {
-        if self.request_timeout.is_zero() || self.request_timeout > Duration::from_millis(1_500)
-            || self.startup_timeout.is_zero() || self.startup_timeout > Duration::from_secs(30)
-            || !self.python.is_absolute() || !self.python.is_file()
-            || self.code_pins.is_empty() || self.code_pins.len() > 128 || self.aliases.len() > 4_096 {
+        if self.request_timeout.is_zero()
+            || self.request_timeout > Duration::from_millis(1_500)
+            || self.startup_timeout.is_zero()
+            || self.startup_timeout > Duration::from_secs(30)
+            || !self.python.is_absolute()
+            || !self.python.is_file()
+            || self.code_pins.is_empty()
+            || self.code_pins.len() > 128
+            || self.aliases.len() > 4_096
+        {
             return Err("invalid fixed address worker configuration".to_string());
         }
         for aliases in self.aliases.values() {
-            if aliases.len() > 32 || aliases.iter().any(|alias| alias.is_empty() || alias.len() > 128 || alias.chars().any(|ch| ch < ' ')) {
+            if aliases.len() > 32
+                || aliases.iter().any(|alias| {
+                    alias.is_empty() || alias.len() > 128 || alias.chars().any(|ch| ch < ' ')
+                })
+            {
                 return Err("invalid host-configured address alias".to_string());
             }
         }
         require_plain_path(&self.worker_script)?;
         require_plain_path(&self.model_directory)?;
         require_plain_path(&self.encoder_directory)?;
-        if !self.model_directory.is_dir() || !self.encoder_directory.is_dir()
-            || self.code_pins.get(&self.worker_script) != Some(&self.worker_script_digest) {
+        if !self.model_directory.is_dir()
+            || !self.encoder_directory.is_dir()
+            || self.code_pins.get(&self.worker_script) != Some(&self.worker_script_digest)
+        {
             return Err("address script, model or encoder path lacks its host binding".to_string());
         }
-        let manifest = read_pinned(&self.model_directory.join("manifest.json"), self.model_digest, /*limit*/ 8_000_000).await?;
-        let manifest: serde_json::Value = serde_json::from_slice(&manifest).map_err(|_| "address model manifest JSON is invalid")?;
+        let manifest = read_pinned(
+            &self.model_directory.join("manifest.json"),
+            self.model_digest,
+            /*limit*/ 8_000_000,
+        )
+        .await?;
+        let manifest: serde_json::Value = serde_json::from_slice(&manifest)
+            .map_err(|_| "address model manifest JSON is invalid")?;
         let profile = profile::source_profile(&self.worker_script, manifest["schema"].as_str())?;
         let mut required = profile.required;
         // New first-party modules cannot silently appear outside the configured
@@ -63,20 +81,44 @@ impl MemoryCellAddressWorkerConfigV1 {
         let mut count = 0;
         for directory in profile.inventory_directories {
             require_plain_path(&directory)?;
-            let mut entries = tokio::fs::read_dir(directory).await.map_err(|_| "cannot inventory address code pins")?;
-            while let Some(entry) = entries.next_entry().await.map_err(|_| "cannot inventory address code pins")? {
+            let mut entries = tokio::fs::read_dir(directory)
+                .await
+                .map_err(|_| "cannot inventory address code pins")?;
+            while let Some(entry) = entries
+                .next_entry()
+                .await
+                .map_err(|_| "cannot inventory address code pins")?
+            {
                 count += 1;
-                if count > 256 { return Err("address code directory exceeds its bound".to_string()); }
-                if entry.path().extension().is_some_and(|extension| extension == "py") { required.insert(entry.path()); }
+                if count > 256 {
+                    return Err("address code directory exceeds its bound".to_string());
+                }
+                if entry
+                    .path()
+                    .extension()
+                    .is_some_and(|extension| extension == "py")
+                {
+                    required.insert(entry.path());
+                }
             }
         }
-        if required.iter().any(|path| !self.code_pins.contains_key(path)) {
+        if required
+            .iter()
+            .any(|path| !self.code_pins.contains_key(path))
+        {
             return Err("address worker is missing a required first-party import pin".to_string());
         }
-        for (path, digest) in &self.code_pins { read_pinned(path, *digest, /*limit*/ 1_048_576).await?; }
-        let policy_files: BTreeMap<_, _> = profile.policy_files.into_iter()
-            .map(|(name, path)| (name, self.code_pins[&path].to_string())).collect();
-        let policy = hash(&canonical(&serde_json::to_value(policy_files).map_err(|_| "policy pin encoding failed")?)?);
+        for (path, digest) in &self.code_pins {
+            read_pinned(path, *digest, /*limit*/ 1_048_576).await?;
+        }
+        let policy_files: BTreeMap<_, _> = profile
+            .policy_files
+            .into_iter()
+            .map(|(name, path)| (name, self.code_pins[&path].to_string()))
+            .collect();
+        let policy = hash(&canonical(
+            &serde_json::to_value(policy_files).map_err(|_| "policy pin encoding failed")?,
+        )?);
         if manifest["policy_digest"] != policy.to_string() {
             return Err("address model policy differs from the pinned import closure".to_string());
         }
@@ -90,22 +132,42 @@ mod tests;
 
 async fn read_pinned(path: &Path, digest: ContractDigestV1, limit: u64) -> Result<Vec<u8>, String> {
     require_plain_path(path)?;
-    let file = tokio::fs::File::open(path).await.map_err(|_| "cannot open pinned address artifact")?;
-    if !file.metadata().await.map_err(|_| "cannot inspect pinned address artifact")?.is_file() {
+    let file = tokio::fs::File::open(path)
+        .await
+        .map_err(|_| "cannot open pinned address artifact")?;
+    if !file
+        .metadata()
+        .await
+        .map_err(|_| "cannot inspect pinned address artifact")?
+        .is_file()
+    {
         return Err("pinned address artifact is not a regular file".to_string());
     }
     let mut bytes = Vec::new();
-    file.take(limit + 1).read_to_end(&mut bytes).await.map_err(|_| "cannot read pinned address artifact")?;
-    if bytes.len() as u64 > limit || hash(&bytes) != digest { return Err("pinned address artifact bytes changed".to_string()); }
+    file.take(limit + 1)
+        .read_to_end(&mut bytes)
+        .await
+        .map_err(|_| "cannot read pinned address artifact")?;
+    if bytes.len() as u64 > limit || hash(&bytes) != digest {
+        return Err("pinned address artifact bytes changed".to_string());
+    }
     Ok(bytes)
 }
 
 fn require_plain_path(path: &Path) -> Result<(), String> {
-    if !path.is_absolute() || path.components().any(|part| matches!(part, std::path::Component::ParentDir)) {
+    if !path.is_absolute()
+        || path
+            .components()
+            .any(|part| matches!(part, std::path::Component::ParentDir))
+    {
         return Err("address artifact paths must be absolute without traversal".to_string());
     }
     for ancestor in path.ancestors() {
-        if std::fs::symlink_metadata(ancestor).map_err(|_| "address artifact path is unavailable")?.file_type().is_symlink() {
+        if std::fs::symlink_metadata(ancestor)
+            .map_err(|_| "address artifact path is unavailable")?
+            .file_type()
+            .is_symlink()
+        {
             return Err("symlinked address artifacts are not allowed".to_string());
         }
     }

@@ -72,7 +72,7 @@ fn actual_parameter_shards_read_sources_across_sleep_and_budget_eviction() {
 #[test]
 fn route_omissions_overlap_unknown_and_value_dependent_repartition_are_rejected() {
     let original: Value = serde_json::from_slice(SEMANTIC).expect("fixture");
-    let mutate = |mut value: Value| {
+    let mutate = |value: Value| {
         let raw = serde_json::to_vec(&value).expect("serialize corruption");
         assert!(MemoryCellPopulationV2::from_bytes(&raw, Digest32::of_bytes(&raw)).is_err());
     };

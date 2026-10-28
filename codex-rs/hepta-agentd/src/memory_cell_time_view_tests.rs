@@ -136,7 +136,6 @@ fn unicode_normalization_and_ambiguous_or_invalid_dates_fail_closed() {
     assert!(!conservatively_dated.permits(&original, MemoryOperationV1::Semantic));
 }
 
-
 #[test]
 fn multiple_cutoffs_are_typed_unsupported_while_invalid_dates_remain_errors() {
     assert!(matches!(

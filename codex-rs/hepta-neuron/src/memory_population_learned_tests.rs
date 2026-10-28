@@ -5,13 +5,23 @@ use serde_json::json;
 
 use crate::MemoryCellPopulationV2;
 
-const ORIGINAL: &[u8] = include_bytes!("../tests/fixtures/associative-memory/population.semantic.native.json");
+const ORIGINAL: &[u8] =
+    include_bytes!("../tests/fixtures/associative-memory/population.semantic.native.json");
 
 fn traced_population() -> Value {
     let mut wire: Value = serde_json::from_slice(ORIGINAL).unwrap();
     let cut = Digest32::of_bytes(b"real-owner-cut-required-at-host-admission");
-    let groups: Vec<Vec<String>> = (0..2).map(|shard| wire["routes"].as_object().unwrap().iter()
-        .filter(|(_, index)| index.as_u64() == Some(shard)).map(|(key, _)| key.clone()).collect()).collect();
+    let groups: Vec<Vec<String>> = (0..2)
+        .map(|shard| {
+            wire["routes"]
+                .as_object()
+                .unwrap()
+                .iter()
+                .filter(|(_, index)| index.as_u64() == Some(shard))
+                .map(|(key, _)| key.clone())
+                .collect()
+        })
+        .collect();
     let mut bytes = b"hepta.memory.causal-coaccess-trace.v1\0".to_vec();
     bytes.extend_from_slice(cut.as_array());
     bytes.extend_from_slice(&2_u64.to_be_bytes());
@@ -40,12 +50,18 @@ fn traced_population() -> Value {
 fn learned_profile_preserves_real_shard_support_and_sleep_identity() {
     let bytes = serde_json::to_vec(&traced_population()).unwrap();
     let learned = MemoryCellPopulationV2::from_bytes(&bytes, Digest32::of_bytes(&bytes)).unwrap();
-    let original = MemoryCellPopulationV2::from_bytes(ORIGINAL, Digest32::of_bytes(ORIGINAL)).unwrap();
+    let original =
+        MemoryCellPopulationV2::from_bytes(ORIGINAL, Digest32::of_bytes(ORIGINAL)).unwrap();
     assert_eq!(learned.supports(), original.supports());
     assert_eq!(learned.lineage_sources(), original.lineage_sources());
     assert_eq!(learned.parameters_digest(), original.parameters_digest());
     assert_ne!(learned.head_digest(), original.head_digest());
-    assert_eq!(learned.routing_source_cut(), Some(Digest32::of_bytes(b"real-owner-cut-required-at-host-admission")));
+    assert_eq!(
+        learned.routing_source_cut(),
+        Some(Digest32::of_bytes(
+            b"real-owner-cut-required-at-host-admission"
+        ))
+    );
     learned.sleep().unwrap();
     let missing = learned.predict("never-written-address").unwrap();
     assert!(missing.value.is_none() && missing.source_ids.is_empty());
@@ -60,16 +76,19 @@ fn trace_tampering_causal_order_unknown_support_and_v2_profile_laundering_are_re
         assert!(MemoryCellPopulationV2::from_bytes(&bytes, Digest32::of_bytes(&bytes)).is_err());
     };
     let mut changed = original.clone();
-    changed["routing_trace"]["observations"][0]["readout_digest"] = json!(Digest32::of_bytes(b"changed readout").to_string());
+    changed["routing_trace"]["observations"][0]["readout_digest"] =
+        json!(Digest32::of_bytes(b"changed readout").to_string());
     reject(changed);
     let mut future = original.clone();
     future["routing_trace"]["observations"][1]["sequence"] = json!(3);
     reject(future);
     let mut repeated = original.clone();
-    repeated["routing_trace"]["observations"][1]["request_digest"] = original["routing_trace"]["observations"][0]["request_digest"].clone();
+    repeated["routing_trace"]["observations"][1]["request_digest"] =
+        original["routing_trace"]["observations"][0]["request_digest"].clone();
     reject(repeated);
     let mut unknown = original.clone();
-    unknown["routing_trace"]["observations"][0]["addresses"][0] = json!(Digest32::of_bytes(b"outside-support").to_string());
+    unknown["routing_trace"]["observations"][0]["addresses"][0] =
+        json!(Digest32::of_bytes(b"outside-support").to_string());
     reject(unknown);
     let mut wrong_profile = original.clone();
     wrong_profile["schema"] = json!("hepta.memory.population.native.v2");

@@ -22,14 +22,21 @@ pub(super) struct NetworkAnchor {
 }
 
 impl NetworkAnchor {
-    pub fn open(file: File, scope: Digest32, expected: MemoryCellNetworkVersionV1) -> Result<Self, String> {
-        let mut journal = AdaptiveAnchorJournalV1::open(file, scope, MAGIC).map_err(|error| error.to_string())?;
+    pub fn open(
+        file: File,
+        scope: Digest32,
+        expected: MemoryCellNetworkVersionV1,
+    ) -> Result<Self, String> {
+        let mut journal =
+            AdaptiveAnchorJournalV1::open(file, scope, MAGIC).map_err(|error| error.to_string())?;
         let state = journal.state();
         if state.writer_fence == 0 {
             if expected.generation.get() != 1 {
                 return Err("new memory deployment journal requires generation one".to_string());
             }
-            journal.issue_new_registry_fence().map_err(|error| error.to_string())?;
+            journal
+                .issue_new_registry_fence()
+                .map_err(|error| error.to_string())?;
         }
         if journal.state().writer_fence != WRITER_FENCE {
             return Err("memory deployment journal writer fence differs".to_string());
@@ -38,11 +45,19 @@ impl NetworkAnchor {
             // This includes a crash after the initial fence but before the
             // first anchor. No deployment has been acknowledged at that point.
             if expected.generation.get() != 1 || journal.state().previous_anchor.is_some() {
-                return Err("uninitialized memory deployment journal cannot skip a generation".to_string());
+                return Err(
+                    "uninitialized memory deployment journal cannot skip a generation".to_string(),
+                );
             }
-            journal.persist_anchor(scope, WRITER_FENCE, anchor(expected)).map_err(|error| error.to_string())?;
+            journal
+                .persist_anchor(scope, WRITER_FENCE, anchor(expected))
+                .map_err(|error| error.to_string())?;
         }
-        let result = Self { journal, scope, available: true };
+        let result = Self {
+            journal,
+            scope,
+            available: true,
+        };
         result.require(expected)?;
         Ok(result)
     }
@@ -54,7 +69,11 @@ impl NetworkAnchor {
         Ok(())
     }
 
-    pub fn commit(&mut self, expected: MemoryCellNetworkVersionV1, successor: MemoryCellNetworkVersionV1) -> Result<(), String> {
+    pub fn commit(
+        &mut self,
+        expected: MemoryCellNetworkVersionV1,
+        successor: MemoryCellNetworkVersionV1,
+    ) -> Result<(), String> {
         self.require(expected)?;
         if expected.generation.get().checked_add(1) != Some(successor.generation.get()) {
             return Err("memory deployment journal requires the exact successor".to_string());
@@ -63,12 +82,17 @@ impl NetworkAnchor {
         // Until reopen validates that durable state, neither retry nor recovery
         // in this object may assume the old in-memory anchor still owns it.
         self.available = false;
-        self.journal.persist_anchor(self.scope, WRITER_FENCE, anchor(successor)).map_err(|error| error.to_string())?;
+        self.journal
+            .persist_anchor(self.scope, WRITER_FENCE, anchor(successor))
+            .map_err(|error| error.to_string())?;
         self.available = true;
         Ok(())
     }
 }
 
 fn anchor(version: MemoryCellNetworkVersionV1) -> AdaptiveAnchorV1 {
-    AdaptiveAnchorV1 { sequence: version.generation.get(), frame_digest: version.deployment_digest.digest() }
+    AdaptiveAnchorV1 {
+        sequence: version.generation.get(),
+        frame_digest: version.deployment_digest.digest(),
+    }
 }

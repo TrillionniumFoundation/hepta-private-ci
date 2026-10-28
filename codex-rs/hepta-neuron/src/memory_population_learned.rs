@@ -51,15 +51,21 @@ pub(super) struct LearnedPopulationWire {
 
 impl LearnedPopulationWire {
     pub fn validate(&self) -> Result<Digest32, AssociativeMemoryError> {
-        if self.schema != SCHEMA || self.partition_profile != PARTITION
-            || self.kind == MemoryCellKindV1::Event || !(1..=8).contains(&self.shards.len())
-            || !(1..=512).contains(&self.routes.len()) || self.shards.len() > self.routes.len() {
+        if self.schema != SCHEMA
+            || self.partition_profile != PARTITION
+            || self.kind == MemoryCellKindV1::Event
+            || !(1..=8).contains(&self.shards.len())
+            || !(1..=512).contains(&self.routes.len())
+            || self.shards.len() > self.routes.len()
+        {
             return Err(AssociativeMemoryError::InvalidArtifact);
         }
         let (source_cut, frequency, edges) = self.routing_trace.counts(&self.routes)?;
         let count = self.shards.len();
         let mut capacity = vec![0_usize; count];
-        for rank in 0..self.routes.len() { capacity[rank * count / self.routes.len()] += 1; }
+        for rank in 0..self.routes.len() {
+            capacity[rank * count / self.routes.len()] += 1;
+        }
         let mut order: Vec<_> = self.routes.keys().cloned().collect();
         order.sort_by(|left, right| frequency[right].cmp(&frequency[left]).then(left.cmp(right)));
         let mut learned: BTreeMap<String, usize> = BTreeMap::new();
@@ -68,21 +74,30 @@ impl LearnedPopulationWire {
         for address in order {
             let mut affinities = vec![0_u64; count];
             for (previous, shard) in &learned {
-                let pair = if address.as_str() < previous.as_str() { (address.clone(), previous.clone()) }
-                    else { (previous.clone(), address.clone()) };
+                let pair = if address.as_str() < previous.as_str() {
+                    (address.clone(), previous.clone())
+                } else {
+                    (previous.clone(), address.clone())
+                };
                 affinities[*shard] += edges.get(&pair).copied().unwrap_or_default();
             }
-            let selected = (0..count).filter(|index| sizes[*index] < capacity[*index])
-                .max_by(|left, right| affinities[*left].cmp(&affinities[*right])
-                    .then(loads[*right].cmp(&loads[*left]))
-                    .then(sizes[*right].cmp(&sizes[*left]))
-                    .then(right.cmp(left)))
+            let selected = (0..count)
+                .filter(|index| sizes[*index] < capacity[*index])
+                .max_by(|left, right| {
+                    affinities[*left]
+                        .cmp(&affinities[*right])
+                        .then(loads[*right].cmp(&loads[*left]))
+                        .then(sizes[*right].cmp(&sizes[*left]))
+                        .then(right.cmp(left))
+                })
                 .ok_or(AssociativeMemoryError::InvalidArtifact)?;
             sizes[selected] += 1;
             loads[selected] += frequency[&address];
             learned.insert(address, selected);
         }
-        if learned != self.routes { return Err(AssociativeMemoryError::InvalidArtifact); }
+        if learned != self.routes {
+            return Err(AssociativeMemoryError::InvalidArtifact);
+        }
         Ok(source_cut)
     }
 }
@@ -91,9 +106,14 @@ type Frequency = BTreeMap<String, u64>;
 type Affinities = BTreeMap<(String, String), u64>;
 
 impl RoutingTrace {
-    fn counts(&self, routes: &BTreeMap<String, usize>) -> Result<(Digest32, Frequency, Affinities), AssociativeMemoryError> {
-        if self.schema != TRACE_SCHEMA || !(1..(1_u64 << 53)).contains(&self.prefix_end_sequence)
-            || !(1..=1024).contains(&self.observations.len()) {
+    fn counts(
+        &self,
+        routes: &BTreeMap<String, usize>,
+    ) -> Result<(Digest32, Frequency, Affinities), AssociativeMemoryError> {
+        if self.schema != TRACE_SCHEMA
+            || !(1..(1_u64 << 53)).contains(&self.prefix_end_sequence)
+            || !(1..=1024).contains(&self.observations.len())
+        {
             return Err(AssociativeMemoryError::InvalidArtifact);
         }
         let source_cut = canonical_digest(&self.source_cut_digest)?;
@@ -102,15 +122,22 @@ impl RoutingTrace {
         bytes.extend_from_slice(&self.prefix_end_sequence.to_be_bytes());
         bytes.extend_from_slice(&(self.observations.len() as u64).to_be_bytes());
         let mut frequency: Frequency = routes.keys().map(|address| (address.clone(), 0)).collect();
-        for address in routes.keys() { canonical_digest(address)?; }
+        for address in routes.keys() {
+            canonical_digest(address)?;
+        }
         let mut edges = Affinities::new();
         let mut requests = BTreeSet::new();
         let mut previous_sequence = 0;
         for observation in &self.observations {
-            if observation.sequence <= previous_sequence || observation.sequence > self.prefix_end_sequence
+            if observation.sequence <= previous_sequence
+                || observation.sequence > self.prefix_end_sequence
                 || !(1..=8).contains(&observation.addresses.len())
-                || observation.addresses.windows(2).any(|pair| pair[0] >= pair[1])
-                || !requests.insert(observation.request_digest.clone()) {
+                || observation
+                    .addresses
+                    .windows(2)
+                    .any(|pair| pair[0] >= pair[1])
+                || !requests.insert(observation.request_digest.clone())
+            {
                 return Err(AssociativeMemoryError::InvalidArtifact);
             }
             previous_sequence = observation.sequence;
@@ -120,7 +147,9 @@ impl RoutingTrace {
             bytes.extend_from_slice(&(observation.addresses.len() as u64).to_be_bytes());
             for address in &observation.addresses {
                 bytes.extend_from_slice(canonical_digest(address)?.as_array());
-                *frequency.get_mut(address).ok_or(AssociativeMemoryError::InvalidArtifact)? += 1;
+                *frequency
+                    .get_mut(address)
+                    .ok_or(AssociativeMemoryError::InvalidArtifact)? += 1;
             }
             for (index, left) in observation.addresses.iter().enumerate() {
                 for right in observation.addresses.iter().skip(index + 1) {
@@ -129,7 +158,8 @@ impl RoutingTrace {
             }
         }
         if previous_sequence != self.prefix_end_sequence
-            || Digest32::of_bytes(&bytes) != canonical_digest(&self.trace_digest)? {
+            || Digest32::of_bytes(&bytes) != canonical_digest(&self.trace_digest)?
+        {
             return Err(AssociativeMemoryError::BindingMismatch);
         }
         Ok((source_cut, frequency, edges))
@@ -137,8 +167,12 @@ impl RoutingTrace {
 }
 
 fn canonical_digest(value: &str) -> Result<Digest32, AssociativeMemoryError> {
-    let digest: Digest32 = value.parse().map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
-    if digest.is_zero() || digest.to_string() != value { return Err(AssociativeMemoryError::InvalidArtifact); }
+    let digest: Digest32 = value
+        .parse()
+        .map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
+    if digest.is_zero() || digest.to_string() != value {
+        return Err(AssociativeMemoryError::InvalidArtifact);
+    }
     Ok(digest)
 }
 

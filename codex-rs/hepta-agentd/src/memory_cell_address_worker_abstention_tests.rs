@@ -23,12 +23,25 @@ async fn multiple_cutoffs_abstain_without_masking_a_real_worker_failure() {
     let snapshot = owner.snapshot().await;
     let release = ReleaseFixture::new(&snapshot);
     let fixture = WorkerFixture::new();
-    let worker = Arc::new(MemoryCellAddressWorkerV1::start(fixture.config).await.unwrap());
+    let worker = Arc::new(
+        MemoryCellAddressWorkerV1::start(fixture.config)
+            .await
+            .unwrap(),
+    );
     let resolver: Arc<dyn MemoryCellAddressResolverV1> = worker.clone();
-    owner.state.attach_memory_cells(Arc::new(AgentdMemoryCellRuntimeV1::new(
-        owner.state.identity().agent_id.clone(), /*spawn_generation*/ 1,
-        CognitiveScope::AgentPrivate, Arc::clone(&release.host), resolver,
-    ).unwrap())).unwrap();
+    owner
+        .state
+        .attach_memory_cells(Arc::new(
+            AgentdMemoryCellRuntimeV1::new(
+                owner.state.identity().agent_id.clone(),
+                /*spawn_generation*/ 1,
+                CognitiveScope::AgentPrivate,
+                Arc::clone(&release.host),
+                resolver,
+            )
+            .unwrap(),
+        ))
+        .unwrap();
     owner.ready();
     let before = worker.metrics();
     let mut query = request(snapshot.scope().clone());
@@ -41,35 +54,77 @@ async fn multiple_cutoffs_abstain_without_masking_a_real_worker_failure() {
         let readout = owner.client.memory_cell_read(query.clone()).await.unwrap();
         readout.validate().unwrap();
         assert_eq!(
-            (readout.status, readout.operation, readout.value, readout.source_ids, readout.cell_digests),
-            (MemoryReadStatusV1::Abstain, None, Value::Null, vec![], vec![])
+            (
+                readout.status,
+                readout.operation,
+                readout.value,
+                readout.source_ids,
+                readout.cell_digests
+            ),
+            (
+                MemoryReadStatusV1::Abstain,
+                None,
+                Value::Null,
+                vec![],
+                vec![]
+            )
         );
-        assert_eq!(readout.reason.as_deref(), Some("address resolver declined the request"));
+        assert_eq!(
+            readout.reason.as_deref(),
+            Some("address resolver declined the request")
+        );
     }
     let after = worker.metrics();
     assert_eq!(
-        (after.attempted_requests - before.attempted_requests,
-         after.host_time_abstentions - before.host_time_abstentions,
-         after.validated_responses - before.validated_responses),
+        (
+            after.attempted_requests - before.attempted_requests,
+            after.host_time_abstentions - before.host_time_abstentions,
+            after.validated_responses - before.validated_responses
+        ),
         (4, 4, 0)
     );
     assert_eq!(
         (after.stdin_bytes, after.stdout_bytes, after.process_starts),
-        (before.stdin_bytes, before.stdout_bytes, before.process_starts)
+        (
+            before.stdin_bytes,
+            before.stdout_bytes,
+            before.process_starts
+        )
     );
 
     // The unchanged actual Python wire fixture reports unavailable. Both calls
     // must remain errors, not be relabeled as a valid unsupported request.
     query.text = "unavailable".to_string();
-    assert_eq!(worker.resolve(&query, &snapshot).await.unwrap_err(), "address worker reported unavailable");
+    assert_eq!(
+        worker.resolve(&query, &snapshot).await.unwrap_err(),
+        "address worker reported unavailable"
+    );
     let failed = owner.client.memory_cell_read(query.clone()).await.unwrap();
     failed.validate().unwrap();
     assert_eq!(
-        (failed.status, failed.operation, failed.value, failed.source_ids, failed.cell_digests),
-        (MemoryReadStatusV1::Unavailable, None, Value::Null, vec![], vec![])
+        (
+            failed.status,
+            failed.operation,
+            failed.value,
+            failed.source_ids,
+            failed.cell_digests
+        ),
+        (
+            MemoryReadStatusV1::Unavailable,
+            None,
+            Value::Null,
+            vec![],
+            vec![]
+        )
     );
-    assert_eq!(failed.reason.as_deref(), Some("configured address resolver is unavailable"));
-    assert_eq!(worker.metrics().host_time_abstentions, after.host_time_abstentions);
+    assert_eq!(
+        failed.reason.as_deref(),
+        Some("configured address resolver is unavailable")
+    );
+    assert_eq!(
+        worker.metrics().host_time_abstentions,
+        after.host_time_abstentions
+    );
 
     // A later genuine worker rejection still uses the pipe and its validated
     // response counter; it does not become a synthetic host abstention.
@@ -79,9 +134,11 @@ async fn multiple_cutoffs_abstain_without_masking_a_real_worker_failure() {
     assert_eq!(declined.status, MemoryReadStatusV1::Abstain);
     let final_metrics = worker.metrics();
     assert_eq!(
-        (final_metrics.attempted_requests - before.attempted_requests,
-         final_metrics.host_time_abstentions - before.host_time_abstentions,
-         final_metrics.validated_responses - before.validated_responses),
+        (
+            final_metrics.attempted_requests - before.attempted_requests,
+            final_metrics.host_time_abstentions - before.host_time_abstentions,
+            final_metrics.validated_responses - before.validated_responses
+        ),
         (8, 4, 2)
     );
     owner.finish().await;
