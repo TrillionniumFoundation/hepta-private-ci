@@ -1,0 +1,82 @@
+{
+  "accuracy_ceiling_inferred_from_label_multiplicity": false,
+  "adequacy_threshold_changed": false,
+  "complete_raw_audit_file_sha256": "d0b2656d281822c858204edfc0d0aa26ecf66d86d801a81150e772c3467effbb",
+  "heldout_predictions_or_pixels_read": false,
+  "implementation_sha256": "d920458bb93fd71c6f36b75e1439b07cf32b37ccd80c9887f3fe2cdf6671eeb7",
+  "input_annotation_sha256": {
+    "action": "5b27beaa97df0a1ea258437b179ed17092981a93501a22a572d64dd46fb12575",
+    "sound": "0200a50644ab9d36a2dd80e5239e709cabeeaf2e4274eca201c90743b89cc6f5"
+  },
+  "interpretation": "Multiple overlapping annotated labels make a single selected-label classification target ambiguous; this descriptive training diagnostic does not excuse or change the frozen60percent empirical gate.",
+  "only_training_annotations_read": true,
+  "roles": {
+    "generator_train": {
+      "action": {
+        "classes_present": 54,
+        "overlapping_class_count_histogram": {
+          "1": 202,
+          "2": 48,
+          "3": 6
+        },
+        "published_class_count": 63,
+        "source_uniform_fraction_with_other_labels_in_same_target": 0.2109375,
+        "source_uniform_selected_annotation_fraction_in_target": 0.6182521960200177,
+        "source_uniform_selected_label_duration_seconds": 1.4702490078125001
+      },
+      "annotations_unchanged": true,
+      "retained_events": 256,
+      "sound": {
+        "classes_present": 14,
+        "overlapping_class_count_histogram": {
+          "1": 58,
+          "2": 120,
+          "3": 64,
+          "4": 12,
+          "5": 2
+        },
+        "published_class_count": 17,
+        "source_uniform_fraction_with_other_labels_in_same_target": 0.7734375,
+        "source_uniform_selected_annotation_fraction_in_target": 0.8778321297114996,
+        "source_uniform_selected_label_duration_seconds": 0.87443840234375
+      },
+      "sources": 256
+    },
+    "observer_train": {
+      "action": {
+        "classes_present": 55,
+        "overlapping_class_count_histogram": {
+          "1": 2000,
+          "2": 433,
+          "3": 76,
+          "4": 8
+        },
+        "published_class_count": 63,
+        "source_uniform_fraction_with_other_labels_in_same_target": 0.17963634672619047,
+        "source_uniform_selected_annotation_fraction_in_target": 0.6300678834562587,
+        "source_uniform_selected_label_duration_seconds": 1.4487107993047805
+      },
+      "annotations_unchanged": true,
+      "retained_events": 2517,
+      "sound": {
+        "classes_present": 14,
+        "overlapping_class_count_histogram": {
+          "1": 638,
+          "2": 1162,
+          "3": 572,
+          "4": 117,
+          "5": 27,
+          "6": 1
+        },
+        "published_class_count": 17,
+        "source_uniform_fraction_with_other_labels_in_same_target": 0.7434337797619047,
+        "source_uniform_selected_annotation_fraction_in_target": 0.8961636777519226,
+        "source_uniform_selected_label_duration_seconds": 0.8536148963471912
+      },
+      "sources": 512
+    }
+  },
+  "schema": "hepta.closure.training-window-ambiguity-audit.v1",
+  "source_or_event_filtering": false,
+  "source_protocol_sha256": "ad58bf5529af473f722c8e48a44f34ae07e364356b664a3a79458fecf1405b9d"
+}

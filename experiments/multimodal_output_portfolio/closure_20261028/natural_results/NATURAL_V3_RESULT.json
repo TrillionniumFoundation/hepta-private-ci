@@ -1,0 +1,124 @@
+{
+  "all_original768_entries_and_holdout_sampling_unchanged": true,
+  "calibration_compared_against960prior_original_video_ids": true,
+  "candidates_completed": 18,
+  "created_at_unix": 1793180307.2865043,
+  "development_accuracy": {
+    "action": 0.34375,
+    "sound": 0.546875
+  },
+  "evidence_sha256": {
+    "FAILED_ADEQUACY_ENTRY_CHECK.json": "ff2d18447268f0437d0e69bee09147f4049fc0e9e46e673b2fb15af433929ba5",
+    "OBSERVER_V3_CALIBRATION.json": "e4673d2ac92d36b36de56bfd46134d97d376b358488ce8baae926a784133f1ed",
+    "OBSERVER_V3_CALIBRATION_SOURCE_AUDIT.json": "133930bc409075012a2402ca9d1d52a506fb29843a0a9ef11390b1a0f3707e3f"
+  },
+  "failed_adequacy_rejected_by_real_production_entries": true,
+  "frozen_observer_file_sha256": "cedc4d07d09af4f382bc8f1513e3c566320b9af4d9ef2bfb5edd4e2ec5da9e97",
+  "independent_calibration": {
+    "action": {
+      "accuracy": 0.328125,
+      "binomial95_interval": [
+        0.21587199889372471,
+        0.45687678677855953
+      ],
+      "correct": 21,
+      "majority_accuracy": 0.15625,
+      "majority_correct": 10,
+      "passed_original_gate": false,
+      "sources": 64,
+      "unseen_training_class_fraction": 0.0
+    },
+    "sound": {
+      "accuracy": 0.46875,
+      "binomial95_interval": [
+        0.3427965289396206,
+        0.5976901554016487
+      ],
+      "correct": 30,
+      "majority_accuracy": 0.578125,
+      "majority_correct": 37,
+      "passed_original_gate": false,
+      "sources": 64,
+      "unseen_training_class_fraction": 0.0
+    }
+  },
+  "independent_guard_review_file_sha256": "b3e06170562b68b3aef48480341d2f9f1a9b42f7f7fe0860a0616e963731e495",
+  "independent_observer_adequate": false,
+  "inference_limits": [
+    "Per-modality confidence intervals assume independent original videos; participant independence is unknown",
+    "Current64cal labels were all present in observer training; unseen labels do not explain this measured failure",
+    "Training-window label multiplicity does not prove a top1 accuracy ceiling or isolate the cause of errors",
+    "No cross-study gain is inferred from comparing different old/new cohorts",
+    "A negative observer result is a scientific blocker, not a software bug repaired by changing the gate",
+    "Future physicalCPU has no enforced upper support; strict NDU exponential-moment certificate remains unavailable"
+  ],
+  "mechanism_validation": {
+    "fixed_interpolation_output_identity": true,
+    "full_size_four_media_draws": 2,
+    "same_sample_score_replay_max_absolute_error": 0.0,
+    "scope": "fixed zero public-feature test provider; no semantic or native execution claim",
+    "source": "NATURAL_EXECUTION_CHECK_001.json"
+  },
+  "microbatch_reduction_and_exact_recovery_fixture_passed": true,
+  "mlp_updates_completed": 3072,
+  "multilabel_proposal": "separate unregistered proposal; no label, score, source, threshold or candidate changed in this study",
+  "new_actual_ndu_generator_updates": 0,
+  "new_generator_efficacy_measured": false,
+  "new_policy_calibration_sources_accessed": 0,
+  "new_qualification_sources_accessed": 0,
+  "observer_resources": [
+    {
+      "includes_feature_validation_training_selection_and_reporting_before_this_receipt": true,
+      "module_import_CPU_seconds_before_dispatch": 1.521008,
+      "total_process_self_children_CPU_seconds": 2.883601,
+      "wall_seconds_after_imports": 1.1044633350029471
+    },
+    {
+      "includes_feature_validation_training_selection_and_reporting_before_this_receipt": true,
+      "module_import_CPU_seconds_before_dispatch": 1.715263,
+      "total_process_self_children_CPU_seconds": 28.730898000000003,
+      "wall_seconds_after_imports": 15.048441318002006
+    }
+  ],
+  "observer_training_events": 2517,
+  "original_media_joint_observer_correctness": {
+    "correct": 12,
+    "is_generator_quality_measurement": false,
+    "sources": 64
+  },
+  "phase_status": "completed independent observer study; unqualified; downstream qualified generator study blocked by its unchanged entry guard",
+  "prepared_source_roles": {
+    "development": 64,
+    "generator_train": 256,
+    "observer_calibration": 64,
+    "observer_train": 512
+  },
+  "same_original_video_bytes_detected_across_current_and_checked_history": false,
+  "schema": "hepta.closure.natural-v3-result.v1",
+  "selected_models": {
+    "action": "action_s3d_mlp_1024",
+    "sound": "sound_ridge_100"
+  },
+  "source_protocol_sha256": "ad58bf5529af473f722c8e48a44f34ae07e364356b664a3a79458fecf1405b9d",
+  "task": "same-event2second112px8fps reconstruction with exact originally selected action/sound template labels",
+  "thresholds_unchanged": {
+    "action_accuracy": 0.6,
+    "both_modalities_must_exceed_own_training_majority_accuracy": true,
+    "sound_accuracy": 0.6
+  },
+  "training_source_coverage": {
+    "generator": {
+      "action": 54,
+      "sound": 14
+    },
+    "observer": {
+      "action": 55,
+      "sound": 14
+    },
+    "published": {
+      "action": 63,
+      "sound": 17
+    }
+  },
+  "warmstart003_updates": 0
+}

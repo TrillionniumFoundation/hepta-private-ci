@@ -1,0 +1,97 @@
+{
+  "action_candidates": 12,
+  "actual_training_retained_events": 2517,
+  "actual_training_sources": 512,
+  "all63action_and17sound_classes_retained": true,
+  "ambiguity_used_to_change_labels_sources_gate_or_candidates": false,
+  "created_at_unix": 1793178737.0008743,
+  "development_sources": 64,
+  "execution_order": [
+    "finish all v3 training-source preparation",
+    "fit registered observer candidates and select only on original development",
+    "freeze exact selected weights and code",
+    "prepare the original64 observer calibration sources under that freeze",
+    "evaluate unchanged empirical adequacy",
+    "qualification remains blocked if either modality fails"
+  ],
+  "feature_implementation_sha256": {
+    "data_migrate_v3.py": "a33999c261b78fa51fd4c39c8afd6150ec5d7716cc4627f87b25cd8a3048f727",
+    "data_prepare.py": "bfde825c502bcb8a2f8179db6934abe2168a3b87a903b3f3c4994204c5c5ba37",
+    "data_prepare_v2.py": "cb90cfb1807250af63081f8e6bb304c8785cca6912033a537fefecc9016237a9",
+    "data_prepare_v3.py": "602ba1726562e94f1032ac969e6796556758887dde0a82891889bef34f6d845d",
+    "data_v3_contract.py": "11e4dd6a0480c9739d6ce50179a6737c8ea19ee6f2b89931a8d8cd46e2ac8c07",
+    "semantic_backbones.py": "7e7d7049f12b13dc3f09bfe6cb4935e4d2de8f380e0f836e1dceb7e0548464b9",
+    "semantic_tsm.py": "f600fcd0f39a33c107260836e32ad3a5675b3744808e9557106699c030c3fb28"
+  },
+  "feature_protocol_file_sha256": "d62d15e2222629d1788e5680805ea719c237e5827e1a95d351622e7ae23feb38",
+  "independent_gate_unchanged": {
+    "action_accuracy": 0.6,
+    "each_exceeds_own_training_majority": true,
+    "sound_accuracy": 0.6
+  },
+  "intended_observer_output": "/dev/shm/hepta-ndu-closure-20261028/natural_observer_v3_001",
+  "mlp_optimization_updates": 3072,
+  "new_development_predictions_before_registration": 0,
+  "new_observer_calibration_pixels_or_predictions_before_registration": 0,
+  "new_policy_calibration_or_qualification_pixels_or_predictions_before_registration": 0,
+  "observer_calibration_sources": 64,
+  "observer_implementation_sha256": "4d34eceb37a498f6b8699fd8d30e69b3f4fb5504fd68adff283764f149bc06c5",
+  "observer_specification": {
+    "adequacy": {
+      "action_accuracy": 0.6,
+      "both_modalities_must_exceed_own_training_majority_accuracy": true,
+      "sound_accuracy": 0.6
+    },
+    "calibration_role": "observer_calibration",
+    "classes": "all published frozen ontology IDs including training-unseen IDs; never filter by held-out performance",
+    "development_role": "development",
+    "execution_recovery": {
+      "checkpoint_every": 64,
+      "state": "model, AdamW, sampler RNG, global dropout RNG, past candidate states and source/protocol guard"
+    },
+    "features": {
+      "action": "two preregistered candidates: S3D 1424 features and Something-Something V2 TSM 2222 features, actual video only",
+      "sound": "frozen PANN MobileNetV2 1024 embedding + 527 probabilities, actual audio only"
+    },
+    "mlp": {
+      "adamw_lr": 0.001,
+      "batch": 64,
+      "checkpoint_steps": [
+        256,
+        1024
+      ],
+      "dropout": 0.15,
+      "hidden": 128,
+      "seed": 6317,
+      "steps": 1024,
+      "weight_decay": 0.01
+    },
+    "no_output_reference_shortcut": "generated output features must be recomputed from its actual physical media, never copied from this target feature cache",
+    "normalization": "source-uniform train mean/std, std floor 0.01, feature clamp [-8,8]",
+    "qualification_access": false,
+    "ridge_lambdas": [
+      0.1,
+      1.0,
+      10.0,
+      100.0
+    ],
+    "schema": "hepta.closure.semantic-observer-protocol.v1",
+    "selection": "maximum source-uniform development top-1 accuracy; first registered candidate wins ties",
+    "training_role": "observer_train",
+    "uncertainty": "exact binomial interval when one event per independent video; source-bootstrap paired contrasts; no participant-independence claim",
+    "weights": {
+      "MobileNetV2_mAP_0.383.pth": "22437af9eb5ed1854b5ad285b4a17d5fc566f1a3b23df40db5541f5705ca340f",
+      "TSM_somethingv2_RGB_resnet50_shift8_blockres_avg_segment8_e45.pth": "74bb90d6ecf5b03ed78ac6572d2ced7cd3d0f8dc7fdba0bd6ce11400a5908d38",
+      "s3d-d76dad2f.pth": "d76dad2f4b2a6701ad7f64e85b294b2d1989f1ea0d3f8b240446ed2152850bbb"
+    }
+  },
+  "schema": "hepta.closure.observer-v3-execution-registration.v1",
+  "selection_only_original_development": true,
+  "sound_candidates": 6,
+  "source_and_gate_changes_after_calibration_permitted": false,
+  "source_protocol_file_sha256": "27fe1c30e95216d68b1be2d20855188db468472be85ef1839666dd2f57dacd40",
+  "source_protocol_sha256": "ad58bf5529af473f722c8e48a44f34ae07e364356b664a3a79458fecf1405b9d",
+  "top1_accuracy_ceiling_inferred_from_ambiguity_fraction": false,
+  "training_sources_independent_of_generator_sources": true,
+  "training_window_ambiguity_diagnostic_sha256": "d0b2656d281822c858204edfc0d0aa26ecf66d86d801a81150e772c3467effbb"
+}

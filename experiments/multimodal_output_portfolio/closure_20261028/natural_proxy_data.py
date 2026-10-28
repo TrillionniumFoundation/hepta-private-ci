@@ -4,6 +4,7 @@ Only the small pretrained context features remain resident. Neither trainable
 encoder states nor generated emissions are cached. Actual deployment episodes
 always recompute their public features and pay their full execution costs.
 """
+import argparse
 import json
 from pathlib import Path
 import time
@@ -21,7 +22,7 @@ from .semantic_tsm import TSM_FILE, TSM_SHA, TsmObserver
 CACHE_FILES = ("natural_proxy_data.py", "natural_port.py", "semantic_backbones.py", "semantic_tsm.py")
 
 
-def context_cache(root, rows, output):
+def context_cache(root, rows, output, *, require_existing=False):
     plan = json.loads((root / "SOURCE_PROTOCOL.json").read_text())
     specification = {"schema": "hepta.closure.proxy-cache-contract.v2",
         "source_protocol_sha256": plan["protocol_sha256"],
@@ -33,6 +34,8 @@ def context_cache(root, rows, output):
         "features": ["video_features", "audio_features"],
         "no_trainable_state_or_emission_cache": True}
     cache_path, receipt_path = output / "PUBLIC_CONTEXT_CACHE.npz", output / "PUBLIC_CONTEXT_CACHE.json"
+    if require_existing and not (cache_path.exists() and receipt_path.exists()):
+        raise ValueError("Warmstart requires its complete independently prepared public-feature cache")
     if cache_path.exists() and receipt_path.exists():
         receipt = json.loads(receipt_path.read_text())
         if receipt["contract"] != specification or digest(cache_path.read_bytes()) != receipt["sha256"]:
@@ -90,3 +93,25 @@ class LazyProxyDataset:
         for name in ("video", "image"):
             truth[name] = truth[name].float() / 255
         return public, truth
+
+
+if __name__ == "__main__":
+    from .natural_train import generator_rows
+    from .data_v3_contract import APPROVED_SOURCE_SHA
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--assets", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    torch.set_num_threads(2)
+    started, entry_cpu = time.monotonic(), cpu_seconds()
+    plan, rows = generator_rows(args.assets, "generator_train")
+    if plan["protocol_sha256"] != APPROVED_SOURCE_SHA or len(rows) != 256:
+        raise ValueError("Public cache requires the complete approved v3 training cohort")
+    args.output.mkdir(parents=True, exist_ok=True)
+    context_cache(args.assets, rows, args.output)
+    save(args.output / f"CACHE_RESOURCE_{time.time_ns()}.json", {
+        "source_protocol_sha256": plan["protocol_sha256"],
+        "total_process_self_children_CPU_seconds": cpu_seconds(),
+        "module_import_CPU_seconds_before_dispatch": entry_cpu,
+        "wall_seconds_after_module_imports": time.monotonic()-started,
+        "training_optimizer_updates": 0, "purpose": "separate public-feature preparation releases pretrained models before warmstart"})

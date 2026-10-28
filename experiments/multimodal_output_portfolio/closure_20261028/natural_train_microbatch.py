@@ -36,7 +36,7 @@ def full_checkpoint(path, *, model, optimizer, rng, step, protocol_sha, source_p
             "parameter_sha256": record["parameter_sha256"]}
 
 
-def run(root, output, verification, resume=False):
+def run(root, output, verification, cache_from, resume=False):
     torch.set_num_threads(2)
     check = json.loads(verification.read_text())
     if not check.get("passed") or any(check["source_sha256"][name] != digest((Path(__file__).parent/name).read_bytes())
@@ -55,7 +55,9 @@ def run(root, output, verification, resume=False):
                 "reduction": "one fourth of each of four per-example proxy losses, then one AdamW update",
                 "floating_point_scope": "mathematically equivalent batch gradient; reduction ordering may differ from dense-batch v2",
                 "batch_independence": "model has no batch normalization, dropout or cross-example operation; the proxy loss returns one scalar per example",
-                "checkpoint_frequency": 64, "cache_from": None,
+                "checkpoint_frequency": 64, "cache_from": str(cache_from),
+                "public_cache_receipt_sha256": digest((cache_from/"PUBLIC_CONTEXT_CACHE.json").read_bytes()),
+                "public_feature_model_lifetime": "separate completed process before optimizer; warmstart verifies and loads only small pinned feature arrays",
                 "training_source_amendment": plan["coverage_amendment"],
                 "dataset_storage": "lazy NPZ one source at a time; only pinned frozen public features resident",
                 "initialization_seed_reset_immediately_before_constructor": True,
@@ -63,13 +65,15 @@ def run(root, output, verification, resume=False):
                 "training_sources": [row["source_id"] for _, row in rows]}
     if not resume:
         output.mkdir(parents=True, exist_ok=False)
+        for name in ("PUBLIC_CONTEXT_CACHE.npz", "PUBLIC_CONTEXT_CACHE.json"):
+            shutil.copyfile(cache_from/name,output/name)
         save(output / "WARMSTART_PROTOCOL.json", protocol)
         shutil.copyfile(verification, output / "EXECUTION_CHECK.json")
     elif json.loads((output / "WARMSTART_PROTOCOL.json").read_text()) != protocol:
         raise ValueError("Full resumed warmstart protocol/source identity changed")
     protocol_sha = digest(protocol)
     start, cpu_start = time.monotonic(), cpu_seconds()
-    data = LazyProxyDataset(rows, plan["ontology"], context_cache(root, rows, output))
+    data = LazyProxyDataset(rows, plan["ontology"], context_cache(root, rows, output, require_existing=True))
     torch.manual_seed(WARMSTART["seed"])
     model = NaturalGenerator(plan["ontology"])
     initial_hashes = {key: parameter_hash(module) for key, module in model.components().items()}
@@ -137,8 +141,8 @@ def run(root, output, verification, resume=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    for name in ("assets", "output", "verification"):
+    for name in ("assets", "output", "verification", "cache-from"):
         parser.add_argument("--" + name, type=Path, required=True)
     parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()
-    run(args.assets, args.output, args.verification, args.resume)
+    run(args.assets, args.output, args.verification, args.cache_from, args.resume)

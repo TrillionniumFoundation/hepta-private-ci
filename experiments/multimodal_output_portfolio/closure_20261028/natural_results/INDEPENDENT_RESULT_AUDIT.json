@@ -1,0 +1,1370 @@
+{
+  "all_64_heldout_freeze_bindings_match": true,
+  "auditor_source": {
+    "bytes": 19936,
+    "sha256": "12bee6c32a7599f29e910e7e054d761d291b297edbacecc4ae20ada5b58dcb9b"
+  },
+  "calibration_events": 64,
+  "calibration_sources": 64,
+  "downstream_counters_zero": true,
+  "generator_efficacy_or_native_capability_claimed": false,
+  "independent_observer_adequate": false,
+  "inputs": {
+    "/dev/shm/hepta-ndu-closure-20261028/natural_assets_v3/FEATURE_PROTOCOL.json": {
+      "bytes": 1932,
+      "sha256": "d62d15e2222629d1788e5680805ea719c237e5827e1a95d351622e7ae23feb38"
+    },
+    "/dev/shm/hepta-ndu-closure-20261028/natural_assets_v3/PARENT_SOURCE_PROTOCOL.json": {
+      "bytes": 3226031,
+      "sha256": "5180ec5c71783fc421a969a3238e4bbf71ec0fa43cbb48479b7815233e4c172c"
+    },
+    "/dev/shm/hepta-ndu-closure-20261028/natural_assets_v3/SOURCE_PROTOCOL.json": {
+      "bytes": 4469113,
+      "sha256": "27fe1c30e95216d68b1be2d20855188db468472be85ef1839666dd2f57dacd40"
+    },
+    "/dev/shm/hepta-ndu-closure-20261028/natural_observer_v3_001/OBSERVER_CALIBRATION.json": {
+      "bytes": 8900,
+      "sha256": "e4673d2ac92d36b36de56bfd46134d97d376b358488ce8baae926a784133f1ed"
+    },
+    "/dev/shm/hepta-ndu-closure-20261028/natural_observer_v3_001/OBSERVER_FREEZE.json": {
+      "bytes": 89339,
+      "sha256": "cedc4d07d09af4f382bc8f1513e3c566320b9af4d9ef2bfb5edd4e2ec5da9e97"
+    },
+    "/dev/shm/hepta-ndu-closure-20261028/natural_observer_v3_001/PROTOCOL.json": {
+      "bytes": 2314,
+      "sha256": "3f2fd614f79a1232bf8f89d5e61c073f73320eff55fee2efd2c37a7764e1c539"
+    },
+    "/dev/shm/hepta-ndu-unified-20261028/repo/experiments/multimodal_output_portfolio/closure_20261028/natural_results/FAILED_ADEQUACY_ENTRY_CHECK.json": {
+      "bytes": 988,
+      "sha256": "ff2d18447268f0437d0e69bee09147f4049fc0e9e46e673b2fb15af433929ba5"
+    },
+    "/dev/shm/hepta-ndu-unified-20261028/repo/experiments/multimodal_output_portfolio/closure_20261028/natural_results/NATURAL_V3_RESULT.json": {
+      "bytes": 4989,
+      "sha256": "a66caaafc6f4525f3bafba7ea7809d7488685775f7a301182f0df2fe971ccfe1"
+    },
+    "/dev/shm/hepta-ndu-unified-20261028/repo/experiments/multimodal_output_portfolio/closure_20261028/semantic_observer.py": {
+      "bytes": 20766,
+      "sha256": "4d34eceb37a498f6b8699fd8d30e69b3f4fb5504fd68adff283764f149bc06c5"
+    }
+  },
+  "joint_original_media_observer_correct": 12,
+  "limitations": [
+    "Recorded predictions were compared with frozen labels; inference from selected checkpoint tensors was not reproduced or authenticated.",
+    "Checkpoint files and retained NPZ bytes were stream-hashed, never unpickled, decoded or fed into any model.",
+    "Original MP4 identity is checked against allocation and receipts; original deleted MP4 bytes and annotation semantics were not re-downloaded or independently decoded.",
+    "Unique original-video identities do not establish participant independence or future population accuracy.",
+    "Visible directory absence plus zero counters and bound rejection receipts is not proof no process ever ran elsewhere; no global execution-history claim is made.",
+    "The separate 960-source history audit is bound by its reported file hash but not independently re-executed here."
+  ],
+  "linux_process_memory_kib": {
+    "VmHWM": 32872,
+    "VmRSS": 32872
+  },
+  "modalities": {
+    "action": {
+      "accuracy": 0.328125,
+      "binomial95_interval": [
+        0.21587199889372471,
+        0.4568767867785596
+      ],
+      "correct": 21,
+      "majority_accuracy": 0.15625,
+      "majority_correct": 10,
+      "passed_original_gate": false,
+      "sources": 64,
+      "training_majority_label": 45,
+      "training_present_class_count": 55,
+      "unseen_training_class_fraction": 0.0
+    },
+    "sound": {
+      "accuracy": 0.46875,
+      "binomial95_interval": [
+        0.3427965289396204,
+        0.5976901554016487
+      ],
+      "correct": 30,
+      "majority_accuracy": 0.578125,
+      "majority_correct": 37,
+      "passed_original_gate": false,
+      "sources": 64,
+      "training_majority_label": 7,
+      "training_present_class_count": 14,
+      "unseen_training_class_fraction": 0.0
+    }
+  },
+  "model_forward_calls": 0,
+  "native_owner_calls": 0,
+  "new_source_media_accesses": 0,
+  "no_overlap_with_frozen_training_development_original_hashes": true,
+  "numpy_imported": false,
+  "observer_freeze_canonical_sha256": "14e38c9a550837afdded3f174c08f6ccac58fa347326fc845b405f08c1b7f11d",
+  "observer_freeze_raw_file_sha256": "cedc4d07d09af4f382bc8f1513e3c566320b9af4d9ef2bfb5edd4e2ec5da9e97",
+  "original_768_allocated_entries_equal_parent": true,
+  "peak_rss_kib": 209284,
+  "recorded_production_entry_rejections_consistent": true,
+  "reserved_policy_or_qualification_files_read": 0,
+  "reserved_prepared_directory_exists": {
+    "policy_calibration": false,
+    "qualification": false
+  },
+  "retained_files_stream_hash_verified": 128,
+  "schema": "hepta.independent.natural-v3-recorded-result-audit.v1",
+  "scope": "Independent arithmetic, source/receipt/hash and visible filesystem audit of already-recorded calibration results; no model inference reproduced.",
+  "selected_checkpoint_byte_bindings": {
+    "action": {
+      "bytes": 788149,
+      "sha256": "3fd931f63547bf8c655626123b62897844c4a9af4dd57426478349ed76c4b3cf"
+    },
+    "sound": {
+      "bytes": 238112,
+      "sha256": "f31cd8bac71260cc385531fa374820ced64d1ff8ff496bab76915137f5c0a4d6"
+    }
+  },
+  "source_id_order": "lexicographic directory/source_id order, matching load_role; retained events retain original order",
+  "source_protocol_canonical_sha256": "ad58bf5529af473f722c8e48a44f34ae07e364356b664a3a79458fecf1405b9d",
+  "source_rows": [
+    {
+      "action_correct": false,
+      "action_prediction": 46,
+      "event_id": "video_10036-closure-0",
+      "original_source_sha256": "21b30c5cbc4d5d986306a036cee2d738acca1cc0ce94f32f37dc5f72bf56359e",
+      "receipt": {
+        "bytes": 2481,
+        "sha256": "a36b7b41be7546f2bea4432ec4c2075a6c90a662b44b24ba13aad52c969f00bb"
+      },
+      "reference_action": 49,
+      "reference_sound": 11,
+      "retained_files": {
+        "EVENT.npz": "e898073699d07b3b70406ca9040a3b905f433df7bf58c016e9ddbbb5a1627c4b",
+        "FEATURES.npz": "9a9707bd2b62a281724c35929ed88a672ba9da3ab5354b45a222dc9608028c86"
+      },
+      "sound_correct": false,
+      "sound_prediction": 7,
+      "source_id": "video_10036"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 46,
+      "event_id": "video_10238-closure-0",
+      "original_source_sha256": "056628f5f4635f13405c29dae74c81a7f932ab4c059a72066cdcae8e6699c08e",
+      "receipt": {
+        "bytes": 2528,
+        "sha256": "51e79e0220009538a49c6719b7869e9a40dd80a7da42f452d2dcdf05c58bf28d"
+      },
+      "reference_action": 54,
+      "reference_sound": 11,
+      "retained_files": {
+        "EVENT.npz": "141e356e349e65a34a4d4c48b21d8a7a5bf9fea8ec1b3acd8ceeb6783c76a75d",
+        "FEATURES.npz": "1f131634d7baa7e8b02ceef814920fcf5c5cfdda0f24ec8ff771eb34fca4f9ca"
+      },
+      "sound_correct": false,
+      "sound_prediction": 12,
+      "source_id": "video_10238"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 54,
+      "event_id": "video_10245-closure-0",
+      "original_source_sha256": "1e444fa4f783227c6e782519539d858358c52c1d6a8fd8d27c502f2d9b175b1a",
+      "receipt": {
+        "bytes": 2547,
+        "sha256": "8f03c19c8495e283d38fb537bb70d3bbd7dc82ac1a964644b74dca82a890c0ee"
+      },
+      "reference_action": 45,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "9bc83533ac5f908c214c253768349e0f78b0417ac4707f2ba980e16508bd529d",
+        "FEATURES.npz": "e8fae87cb45c9b8351e5db0866580e5d5c82c34b67b3e6aa3280efacedf0e1dc"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_10245"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 45,
+      "event_id": "video_10429-closure-0",
+      "original_source_sha256": "10c68c10c930af2ad2456b233aca4adc3e8358c5e7e74522f14b11f59282deea",
+      "receipt": {
+        "bytes": 2549,
+        "sha256": "a12f98b3c85cecdc903e3388dd304729e2e286c4a30d8576491c25245fe59b8b"
+      },
+      "reference_action": 45,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "879ec19dfae073ee55a836507636c48f35b25182a0fd6cb3f3662f0bc106a339",
+        "FEATURES.npz": "e18f1718960dcf800aeb3a92aeb6dd3d6dd4a704bc47540292d6f988f0a3bd79"
+      },
+      "sound_correct": false,
+      "sound_prediction": 11,
+      "source_id": "video_10429"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 14,
+      "event_id": "video_10673-closure-0",
+      "original_source_sha256": "68e33e82bf339b28083d8108dd236efdc0d25481fdf48489421a9e05d440aea4",
+      "receipt": {
+        "bytes": 2543,
+        "sha256": "93b9502d84ee3170e0727b661e128cccc1e754dd2234aa09a143112fcec2d271"
+      },
+      "reference_action": 48,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "1ce6582d98ff80b4dd2001c9386c459fbd5e458f4e4d95e3fa13bd5ae333aa85",
+        "FEATURES.npz": "98349e42000a83a359103b8af6c8fc213bae112b5553fbcb2170745b5104b108"
+      },
+      "sound_correct": false,
+      "sound_prediction": 12,
+      "source_id": "video_10673"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 7,
+      "event_id": "video_10699-closure-0",
+      "original_source_sha256": "de2ae3312a444d8ab3a21effad341a26a15eef97a261470c18c6f7ab22ea1707",
+      "receipt": {
+        "bytes": 2550,
+        "sha256": "d995e96ccd1e2d263ea8d62b6612c1ca46d0ebc5f5691d907f14ab309056c2e5"
+      },
+      "reference_action": 7,
+      "reference_sound": 10,
+      "retained_files": {
+        "EVENT.npz": "8f890400f35486bd3178ccf8695985c0c6653e8b8625a7c342757e103cab7e82",
+        "FEATURES.npz": "d42b4cae331f47d189eede0793f55a4a9bdd63b399ef03e9aa206be370a6a40e"
+      },
+      "sound_correct": false,
+      "sound_prediction": 7,
+      "source_id": "video_10699"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 59,
+      "event_id": "video_11038-closure-0",
+      "original_source_sha256": "acaa1007c725cb6a5f6741014682d60d573c9665a72ccb5a3318f81ceb9903c8",
+      "receipt": {
+        "bytes": 2491,
+        "sha256": "a7f486a2a52e94d9fd18bdf6b31ec48da79dcc5a52108126e857e517283531fe"
+      },
+      "reference_action": 59,
+      "reference_sound": 11,
+      "retained_files": {
+        "EVENT.npz": "dc5acf26d343ffcd27463da9d885a5a7b13ebb187b014c646d55af1b17552d13",
+        "FEATURES.npz": "370383377ef2a48f4ed1649f3b9e89b25bfdec6fe070134d8c25155aaa826bfb"
+      },
+      "sound_correct": false,
+      "sound_prediction": 12,
+      "source_id": "video_11038"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 45,
+      "event_id": "video_11164-closure-0",
+      "original_source_sha256": "6cc05ec26cf7fd0475d8c807a957b4602b37a10cc4c7697837e7e76e7f45a286",
+      "receipt": {
+        "bytes": 2539,
+        "sha256": "16159122572597a7fc79b7863b2caaac361cc4378619275afe091b579361edf5"
+      },
+      "reference_action": 20,
+      "reference_sound": 8,
+      "retained_files": {
+        "EVENT.npz": "27e526475e2ca1fae4b1085239dea0f8250eecaae010b2000d174c62b071fe22",
+        "FEATURES.npz": "b7332f372293603692cc7e0c2d5f287e86805860549e929470c9620fac7dd6fc"
+      },
+      "sound_correct": false,
+      "sound_prediction": 11,
+      "source_id": "video_11164"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 22,
+      "event_id": "video_11249-closure-0",
+      "original_source_sha256": "bf6f4c0bb46c96dc746fa623c152fe30a8570031b16ad116500bab8eb505b1e9",
+      "receipt": {
+        "bytes": 2558,
+        "sha256": "c92b2e56c524838b033690a259d35844cfe9e05b388e0f7ef9aedf5036495b59"
+      },
+      "reference_action": 55,
+      "reference_sound": 6,
+      "retained_files": {
+        "EVENT.npz": "4303efd8a3313feb110b9b299b614c7610ff733affc2e49dbeb10e17e4251635",
+        "FEATURES.npz": "e7f519d6c71adae68483630497719bda24f52c09bc2d898e67a4e2df1cc5bc6e"
+      },
+      "sound_correct": false,
+      "sound_prediction": 7,
+      "source_id": "video_11249"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 48,
+      "event_id": "video_11363-closure-0",
+      "original_source_sha256": "da5ec177d017d9de0c6957905dc2db3f0bc5a51bcc7cd8fb2530911460569f9d",
+      "receipt": {
+        "bytes": 2537,
+        "sha256": "b0708c0fcefeeceb33df0f6af66d53620b21a49e962710b193b286c716bcf016"
+      },
+      "reference_action": 48,
+      "reference_sound": 11,
+      "retained_files": {
+        "EVENT.npz": "8ee33b8f6536f63e007c1d7d1ce892d79e8d7a812ebdb16e91d17c39d54f2fd4",
+        "FEATURES.npz": "7509bedc48e47883f0556a73f6b930b642c45579a699fb32647c521239ca1463"
+      },
+      "sound_correct": false,
+      "sound_prediction": 12,
+      "source_id": "video_11363"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 6,
+      "event_id": "video_11386-closure-0",
+      "original_source_sha256": "2dbece5842f45d0f7d816fb4ad080308542babb2057873bc13e34aa4ade98fd8",
+      "receipt": {
+        "bytes": 2550,
+        "sha256": "c115f95519f14235a5cd66235bd4cfb1e6bac2cf9118f4a7bea44b1d28ef6f88"
+      },
+      "reference_action": 21,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "736d0772b0f75e7dbe7c3ca28cf047592531fb62a0d33ffbbfaca4b0f0abc389",
+        "FEATURES.npz": "e6357225f977dc7d0bda59677d7542d009fa155525e39cef6db37b04ec8b243a"
+      },
+      "sound_correct": false,
+      "sound_prediction": 12,
+      "source_id": "video_11386"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 22,
+      "event_id": "video_11426-closure-0",
+      "original_source_sha256": "93000325d1da443f54bd6397e8bce3e8d067f781bd21e62044cfa6968c9fd0fa",
+      "receipt": {
+        "bytes": 2554,
+        "sha256": "458b568ec033387e38ade24d8a4f159896d75abd50b9cf8251124536321bad6e"
+      },
+      "reference_action": 45,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "91c3f8613ee3e8f9918b6ef21e5b4b8b3b82654730ef286b9a298393fe1419a6",
+        "FEATURES.npz": "9707b95319228511f0408c7d39ab2ffc73c7b33c08e32f06bc14f924a482fa73"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_11426"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 22,
+      "event_id": "video_11586-closure-0",
+      "original_source_sha256": "97f75f103ecf44a86cc2f2efebce0dee71a785bb01e17b748f048ce38fe6b9e3",
+      "receipt": {
+        "bytes": 2523,
+        "sha256": "d488f2167d76151e688e42340b5c254778fae453867b0b496e0a1d1ac2042153"
+      },
+      "reference_action": 20,
+      "reference_sound": 8,
+      "retained_files": {
+        "EVENT.npz": "1f07b1b2805619b6325c02aaf8eea345b5cf13e9eae0d10f98b14b96ed499935",
+        "FEATURES.npz": "84b9d6381f22d53a1a07564f0ea9f74911096db307e18a86411806cc718fbe26"
+      },
+      "sound_correct": true,
+      "sound_prediction": 8,
+      "source_id": "video_11586"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 20,
+      "event_id": "video_1435-closure-0",
+      "original_source_sha256": "24a33f5e634e60895f782fb9786ea6380e61453ee41728bd7dd1347db520d5d0",
+      "receipt": {
+        "bytes": 2520,
+        "sha256": "dd9717dc3bf5497bbd416bbd82bb68a736f4685c87b343567dd95994cb55fa86"
+      },
+      "reference_action": 20,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "cd14713128357ad161d606b8746ceb65770c28dcb5227c3017c107114ce2bc55",
+        "FEATURES.npz": "3eb52f94d0db65e8c8d9f70c87c332e6c63d4e5e1cb68c404a4dccecdf684e55"
+      },
+      "sound_correct": false,
+      "sound_prediction": 11,
+      "source_id": "video_1435"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 45,
+      "event_id": "video_16-closure-0",
+      "original_source_sha256": "7d6a510f770a527f753417af3e4982f56610e8bb6fd9c531cf0e941abe2cc58b",
+      "receipt": {
+        "bytes": 2517,
+        "sha256": "67eb3c73faa9b7dd3dcd7877a9fe263a2918b72d39b046726f2d2600d5bde930"
+      },
+      "reference_action": 58,
+      "reference_sound": 11,
+      "retained_files": {
+        "EVENT.npz": "3425cd4b670209b0d62672a5b4e03a14fbdabef05c5e2d9a1160dd3262189ad4",
+        "FEATURES.npz": "af2eafe0a7227418a990c4b28ef22f8ee8dbc19c4130217233ce2be12c17e1e4"
+      },
+      "sound_correct": true,
+      "sound_prediction": 11,
+      "source_id": "video_16"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 4,
+      "event_id": "video_1915-closure-0",
+      "original_source_sha256": "fcaf6801635da10a1957929cc7406770d96c86f79c2901fa82513582cf73526c",
+      "receipt": {
+        "bytes": 2541,
+        "sha256": "3d5c3e6c2fd2f89e1fab9d0c44a979691b2fe368efe9197ca5caa3ff9e402ebb"
+      },
+      "reference_action": 14,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "0a45b58d442393a6979eb070d244a92ef357cb35be469ef004df34937ff4ab72",
+        "FEATURES.npz": "589b5d028f1e63f0352eaa24ed26f8854277780b43a17a53fdafe6c9eb3258bf"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_1915"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 46,
+      "event_id": "video_2008-closure-0",
+      "original_source_sha256": "697d0d94dd54ea690a86862125d276d4aef8dfe8ccf090cb09229ae0f03646ad",
+      "receipt": {
+        "bytes": 2557,
+        "sha256": "7fd1c00f3a0e18151de2c2001a7b038cd0e169385d2bc6c864de51af933440b2"
+      },
+      "reference_action": 26,
+      "reference_sound": 5,
+      "retained_files": {
+        "EVENT.npz": "601c238f7ccd8bfcd4ae63dbc616fc56175cd1aead98ffc512adcf598c1c4500",
+        "FEATURES.npz": "ca77be2ee872b5adaf2d61f7ee8a815d3a5204224c5506995a308e84bb92672f"
+      },
+      "sound_correct": true,
+      "sound_prediction": 5,
+      "source_id": "video_2008"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 52,
+      "event_id": "video_2123-closure-0",
+      "original_source_sha256": "76fdeda7a5c66ef70dc9e9d3ea4c00ba32924343fbdca10964d4e1bb4b64de9f",
+      "receipt": {
+        "bytes": 2528,
+        "sha256": "86fc38aa8369f93e62242ac7b67fc2b4e7e25578891376a95b9f7acf49ab14c6"
+      },
+      "reference_action": 46,
+      "reference_sound": 11,
+      "retained_files": {
+        "EVENT.npz": "7b1dc3e5fa84042db75d1c4bcfd0b33ebd98968617ef573419745a45f0eadf8b",
+        "FEATURES.npz": "dc0d0079ba3718c52cf8578f191621c0b07f0b45329d8390dd7c83dbf96e410a"
+      },
+      "sound_correct": false,
+      "sound_prediction": 12,
+      "source_id": "video_2123"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 59,
+      "event_id": "video_2207-closure-0",
+      "original_source_sha256": "9665a6f3a905aab6a113c9d6472fd9d034689e49dfeafe65fb20e749a7d14b1e",
+      "receipt": {
+        "bytes": 2481,
+        "sha256": "930609d22a94fb979c1cb82945dbd88ff1e81902c3692d015b3854f3e92954eb"
+      },
+      "reference_action": 59,
+      "reference_sound": 11,
+      "retained_files": {
+        "EVENT.npz": "c2cdaf9502dfc67589955b9412a6bc74415b7a6ca9c8a5592c6ef9bdb1d740e9",
+        "FEATURES.npz": "fc398214018b64a4d833ec5c69275e843d1878fe6bcf8f894faf82f1e85f05e9"
+      },
+      "sound_correct": true,
+      "sound_prediction": 11,
+      "source_id": "video_2207"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 48,
+      "event_id": "video_2434-closure-0",
+      "original_source_sha256": "be0de2cb5dd2dee360404b272dc6d5d9ad377678ceb3a63755ec066a3a68dda4",
+      "receipt": {
+        "bytes": 2543,
+        "sha256": "647a2318bada8f1d339ea4cb34c86482032c97996ce57a083fc7375635f80eca"
+      },
+      "reference_action": 48,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "e149ef8109e0078609440ec61aabc1d74d8c877b794ccb17398a8a8e9f478d69",
+        "FEATURES.npz": "8f0bc49d1f741570f9f4e8a18461b9a265e0be5d2ea5010936ecfe7c68260263"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_2434"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 14,
+      "event_id": "video_2476-closure-0",
+      "original_source_sha256": "37b27452ef23c86bb7b3d9eb9caff7c5ceebff2b50a99db41d1373f00fa3da08",
+      "receipt": {
+        "bytes": 2541,
+        "sha256": "0a24b8b287e2bb835dd4df1209e0564b7eb02f292c921e6fb7801dce0d375b79"
+      },
+      "reference_action": 14,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "d854bc6183b6024edfb7cd5c06bff83d2ccaedfa4ad4dcbd1a37d1aeee7497f0",
+        "FEATURES.npz": "b67a6cc5db13defd813b77e70d6d82eb69824202bde00e60cb5e7e025d59a645"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_2476"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 22,
+      "event_id": "video_2697-closure-0",
+      "original_source_sha256": "b1bc318e9b7c94822b8b8a58cc8281b15dab81d8a8ec6761345a694f699cdb58",
+      "receipt": {
+        "bytes": 2530,
+        "sha256": "4c83ae50675bbc7558928ea0a414fbad18548971c26d05f9a75f96a52524b51b"
+      },
+      "reference_action": 22,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "6cdad97700053a98626391993c0d63b779e1ef7523a89eff03c5b8aa59320632",
+        "FEATURES.npz": "4626d5b4d79b4ba2b7311f9ec1779f078c1e6c95d3b91c87e5634e777909aef8"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_2697"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 22,
+      "event_id": "video_3051-closure-0",
+      "original_source_sha256": "86cc02978c9d0d46484e8e886d90814a4a4163bec3a7504b77b4cc9ff29925d7",
+      "receipt": {
+        "bytes": 2536,
+        "sha256": "841521fbeec528b730afe42098156853f11da9132aaa6fa002de2cd589ae9dfb"
+      },
+      "reference_action": 22,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "3a62aa433492dda5476d150bf38fbc6984339a48a371ae206683b4e3753f0043",
+        "FEATURES.npz": "49ef1fb623eaacc106645bf9f9aa65fc0f2d8b7e43051e88a7beabaa39c14885"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_3051"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 45,
+      "event_id": "video_3167-closure-0",
+      "original_source_sha256": "b6a3a9e5506c41cfbcefad01633791f52700e40d887c6cf74e278ea90645eecf",
+      "receipt": {
+        "bytes": 2547,
+        "sha256": "4ea6a7a7461f3351fb55b8f0cb836cd51a3274c2a10911be8c9c06a56146b35d"
+      },
+      "reference_action": 14,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "cd136e75c98d356f01d8a89adb3df2e827766054f534ae6b2f5542b29f337b01",
+        "FEATURES.npz": "8e981b45bd9019d5874a0772dd9f0b14de10e2a9e83ba89b5ba4df3029b1c98f"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_3167"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 7,
+      "event_id": "video_3203-closure-0",
+      "original_source_sha256": "e3f76623581b955368db24a231b6baf76bd2b64f5f86a146fb1819763a4a061d",
+      "receipt": {
+        "bytes": 2529,
+        "sha256": "a1ad2f24ae30d33831e175e53200ff2b1da12fa74afdadaf471864d7ba735074"
+      },
+      "reference_action": 22,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "94e2bfd7e1df5f83bdaebc24f06809534f5e0445b7780a5fbee7e7dd34e5b6d2",
+        "FEATURES.npz": "c4f02a3ccb589f32bb0e80d8bc38a09068630d36fe77f40dee27120d9f1811b9"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_3203"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 24,
+      "event_id": "video_3229-closure-0",
+      "original_source_sha256": "374199878d9b3037d5972ab09e372f9dcf52ba67fe2faa65ae68ca2dbd025632",
+      "receipt": {
+        "bytes": 2542,
+        "sha256": "fdf7e166db76dc992f79e7025939f5d94d6a8ffd57666c16a94e4819c25bbe35"
+      },
+      "reference_action": 23,
+      "reference_sound": 10,
+      "retained_files": {
+        "EVENT.npz": "c634c054c18ec8de7aa72f951d737bb4fcaa003c28624e47ababb41cf8fc4970",
+        "FEATURES.npz": "f948cc44e4c195d42da0ac22c7ef905a0b1e05ae11143d594e3b562b0fbc2c41"
+      },
+      "sound_correct": false,
+      "sound_prediction": 11,
+      "source_id": "video_3229"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 9,
+      "event_id": "video_3310-closure-0",
+      "original_source_sha256": "33908b51fb1a5cd847576a85f5c5d648a62afe4704c4c1c707ea71bd26ab76be",
+      "receipt": {
+        "bytes": 2547,
+        "sha256": "8150c1490f302b3d5ed32309145b33238f6c24cb419bc66333f164cfc4377ea3"
+      },
+      "reference_action": 45,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "65c047e9d809cba9c40a1edbe09a0a2d46a250ba86c7c67ddc652a2e1ec839b8",
+        "FEATURES.npz": "9537b9f2e715d1cd8f42d15fc2762e45208a0f1f3986a6789f6afa12721f3b64"
+      },
+      "sound_correct": false,
+      "sound_prediction": 12,
+      "source_id": "video_3310"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 46,
+      "event_id": "video_3373-closure-0",
+      "original_source_sha256": "74bdaaea9064707555003227fc1d0e47235598161e2c72e98d43b907aa4ac242",
+      "receipt": {
+        "bytes": 2534,
+        "sha256": "60823d5a56ac4805c3dfd984f3e898cb7cc74dc6b20b284a9135fbae7e341590"
+      },
+      "reference_action": 46,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "e42e3bec0d6d93156de7ca446743556739f49c40180398cc7fd6a01b23789945",
+        "FEATURES.npz": "40db785240b702403ebbc26128e4c12cd14b4621b834e3ffe370c472bd8dfa61"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_3373"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 20,
+      "event_id": "video_3497-closure-0",
+      "original_source_sha256": "16156d51cf068e219912b686564c3b30e7db63e13b37127949caafec0d3ed0fd",
+      "receipt": {
+        "bytes": 2517,
+        "sha256": "fabab6ed81fa7d1e6d706ac7901f5ce085bc9f73658fa192ed09b843f7613d82"
+      },
+      "reference_action": 20,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "17955c6d50a8fd4b8e1d7c0fa5e7c8e14a000f69f5aa13d78e4541aad0a0a8cb",
+        "FEATURES.npz": "cc5c084ac10849733fb1275f4fbf9de12b3257d00d6a7e48e4531d6084ea5f99"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_3497"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 46,
+      "event_id": "video_3626-closure-0",
+      "original_source_sha256": "b6c96b7535559d4f043fcbb89e0231a391b94c8ec08aecc06e45336b698aed76",
+      "receipt": {
+        "bytes": 2530,
+        "sha256": "9359a441d0093a691167796f604b19f7df6b7a5c461cf7c07bd58711380776c2"
+      },
+      "reference_action": 46,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "c707f9a2d8a7eb226cffc61bdb53c1a3d4de57c057eb8045ca514480a27d9c9e",
+        "FEATURES.npz": "573bba6e0a7e8bf8e0d100d8c7880bd44a1e45b61f2ec2ddb5160890d943de42"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_3626"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 20,
+      "event_id": "video_4078-closure-0",
+      "original_source_sha256": "cd42e73b87f1cca307d6e4a6c97a1d9c264ad42e79ff4d7b385c73b86726e303",
+      "receipt": {
+        "bytes": 2524,
+        "sha256": "b2a854889688ef5e9c6b776df1bc95835d4d68b2fc9330566981e93a091184fe"
+      },
+      "reference_action": 49,
+      "reference_sound": 8,
+      "retained_files": {
+        "EVENT.npz": "ce685c6333020319a29f83959f8e60a988559ed837ce0d90fb2413f70d52d52c",
+        "FEATURES.npz": "b174feeb1e61a8a01ab8fb5cbdfca6cce5db482e9aed369c17fcff8f034047ff"
+      },
+      "sound_correct": false,
+      "sound_prediction": 12,
+      "source_id": "video_4078"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 58,
+      "event_id": "video_4222-closure-0",
+      "original_source_sha256": "c6dc3471aba39255cffdff37880bf5c3b02a6b4b39e31dc0ebecf5581926f307",
+      "receipt": {
+        "bytes": 2531,
+        "sha256": "2a46955cddaf55850f3fb1742c7e60b30a210cd2676387c763d03f94fc19cced"
+      },
+      "reference_action": 57,
+      "reference_sound": 11,
+      "retained_files": {
+        "EVENT.npz": "89c3288146f40d6341ef8eb925ba01d0f72fdb78fbee2588a37df88d6e9202ea",
+        "FEATURES.npz": "5f19d51d025434a44cee9a8a213f069b1529ebd9c0cd853e5ce7d9bb84c94c34"
+      },
+      "sound_correct": false,
+      "sound_prediction": 7,
+      "source_id": "video_4222"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 22,
+      "event_id": "video_4422-closure-0",
+      "original_source_sha256": "0def385371fb6f2ca4a7addf27ddf35768dfae5db4d81bd59474bc334beeaa3d",
+      "receipt": {
+        "bytes": 2532,
+        "sha256": "520487efd19a9630d65a0ec7eee8e5eb31487a2c4b5adb41dd65e1fa76b0f60a"
+      },
+      "reference_action": 46,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "8c7962dad98786f51053e59c2564f0300818dc045e660e9c8241ba95ba198f49",
+        "FEATURES.npz": "de0164c7bf57edf049afd8b7a9107ac36b6a50a5f3eeb0d40945d6ac4c813627"
+      },
+      "sound_correct": false,
+      "sound_prediction": 4,
+      "source_id": "video_4422"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 22,
+      "event_id": "video_4477-closure-0",
+      "original_source_sha256": "8c28cef76bffdf55390ac1f603673b00ff9fab90f4bc9e29f46e627ae3ffb2cf",
+      "receipt": {
+        "bytes": 2540,
+        "sha256": "522bf66fef82d4b937824c0d25dd990745227104e6f6884681cdff948d94c9cd"
+      },
+      "reference_action": 45,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "81ff41c1e0aff73adc09d028ea55b8551515ec559f614b32b265096e995b048a",
+        "FEATURES.npz": "d43ad92c633549de2079cd551a654c7a622550470046eca6c30fd2067fc9148f"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_4477"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 45,
+      "event_id": "video_4510-closure-0",
+      "original_source_sha256": "3a4230ecaa63aeb77f2eb5c4eaea7144937d681851a37778dfdd9ba98e6a5ccf",
+      "receipt": {
+        "bytes": 2547,
+        "sha256": "a18dbd2c059fcbb170db3b99fe26f1d113538cfc87e12117f558978ce6934663"
+      },
+      "reference_action": 45,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "3ca00397c68f1e7a53b5c87bda321e05ea38f49b06846dbff553704a964549b5",
+        "FEATURES.npz": "3c0bf1531f7570fa474f721f15a8282b04bd6ea77ac2bd23b7e67f2be243e59f"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_4510"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 45,
+      "event_id": "video_478-closure-0",
+      "original_source_sha256": "114529223ee5adb44a98536778ac7c94c50bdb7557a7ebe8efe5350a5cbafd31",
+      "receipt": {
+        "bytes": 2532,
+        "sha256": "7841e0b6c4b5ea8496fd508b640fc794f5cebaf3d18a359e122a9119a9cc1eeb"
+      },
+      "reference_action": 15,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "6c6b0f836172e7bab0ba039ea6f1c7c749da1498f8455330bc419c2a0b0eed40",
+        "FEATURES.npz": "804f615376e87d1548a92433b025a648ec25047868b888192fa38921cdb73cb8"
+      },
+      "sound_correct": false,
+      "sound_prediction": 11,
+      "source_id": "video_478"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 48,
+      "event_id": "video_4801-closure-0",
+      "original_source_sha256": "87ff6a31c55ddaf4d533d3ef63263e7732b3484dbe3a8d61bfa95421fabfdaeb",
+      "receipt": {
+        "bytes": 2528,
+        "sha256": "723cb440447185639611c0fdf8066f51bdeffc98fa79559510731b56ea960e03"
+      },
+      "reference_action": 15,
+      "reference_sound": 11,
+      "retained_files": {
+        "EVENT.npz": "6c179f3f78b190ef0e708a80f0a16433ac73f9e42c3debbd60b7a15be9f5ce34",
+        "FEATURES.npz": "e01c21a6d380df77c3b1fbb4741f3a2229331d8b41517af6311ebaa7a080eb84"
+      },
+      "sound_correct": false,
+      "sound_prediction": 7,
+      "source_id": "video_4801"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 14,
+      "event_id": "video_5459-closure-0",
+      "original_source_sha256": "203c6430944ac1c52505d7183a4849d3ee3863314a9ea947c0589bb19a351351",
+      "receipt": {
+        "bytes": 2537,
+        "sha256": "36f802ad66c3764ea6491b4fe381606562fb96558cd00dbd2d107071c6603266"
+      },
+      "reference_action": 22,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "89b0ebeb58e79f14ce4a4a979ce6728f5be47ebfb9f29b4103d4eaffc1c0e2fc",
+        "FEATURES.npz": "288e6ffde1c2d76bca8e08155810166356927f3ccfc35bcba2522a2e20babccf"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_5459"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 49,
+      "event_id": "video_5773-closure-0",
+      "original_source_sha256": "7d3b7d8ce0743083a9af8931d85b07f7752ab0ddb69745270ecf40bf74252308",
+      "receipt": {
+        "bytes": 2533,
+        "sha256": "c368699ea52346d2cd807eabefa819a85db6fce00e618a03cb9600fed6555fc7"
+      },
+      "reference_action": 7,
+      "reference_sound": 8,
+      "retained_files": {
+        "EVENT.npz": "ec298369a2ba6576f7008ab281c874fa671bb4fa5bba3eb30fcc4f71cdda1ce7",
+        "FEATURES.npz": "9e2de5dbbb030ed8680a920cc85e1d3de833c84b52504aa8e01aa3ca7f7c211b"
+      },
+      "sound_correct": false,
+      "sound_prediction": 12,
+      "source_id": "video_5773"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 46,
+      "event_id": "video_5888-closure-0",
+      "original_source_sha256": "661da551a854783da31de0807fde75c75f2c2e9daf025621d2782eba62b47c16",
+      "receipt": {
+        "bytes": 2537,
+        "sha256": "af4567c806edc164c83aaadd09931003b14a8d1787c5878e9fa24a2f2cd191e6"
+      },
+      "reference_action": 53,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "d7837329695f65e9755efed99cacec9cc1d5e15d0e517745f3d53837b080da0c",
+        "FEATURES.npz": "6c2c99f5378612d93cd72897db60588bb40ce5a54deb7c02a76bf7f26c737659"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_5888"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 46,
+      "event_id": "video_6128-closure-0",
+      "original_source_sha256": "9e1bc8f44e2620bcfe400e5bdc451d679ae7289772ebfef8bc92be347903dcea",
+      "receipt": {
+        "bytes": 2551,
+        "sha256": "bf3140b0259ab87f5a51be465249d85eb4240839daa5b7ff739f4a242b1964fb"
+      },
+      "reference_action": 38,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "9099bf92bdb880c20f536cefc9a1b01e54b3b67f5a71c52d69201a064096e635",
+        "FEATURES.npz": "da1ef41370c59882b7d07db2eae243286bd4d6e0bc46d6f1bc6258e070056991"
+      },
+      "sound_correct": false,
+      "sound_prediction": 12,
+      "source_id": "video_6128"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 22,
+      "event_id": "video_6309-closure-0",
+      "original_source_sha256": "526451fcccc074d4fb48974bf593428182e2bde2493cfdcd9393a081c0c06c70",
+      "receipt": {
+        "bytes": 2524,
+        "sha256": "957202d3eab5e1fb51ff43f88862b524f5478ccb3bed0691940b8a50c4c5a76a"
+      },
+      "reference_action": 26,
+      "reference_sound": 5,
+      "retained_files": {
+        "EVENT.npz": "eae1a9eda160b439aef1b2ae1d017507b229ba7ae5820b5f9b4145d90c9f192f",
+        "FEATURES.npz": "f08a659ea38ab4fba613a3329b741c4a8344f81e3af18e27f19286fe2d72634e"
+      },
+      "sound_correct": true,
+      "sound_prediction": 5,
+      "source_id": "video_6309"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 58,
+      "event_id": "video_6317-closure-0",
+      "original_source_sha256": "f240cfdc20e23a390d399cc91d6aabe90218adf44c9b716a59fa9aec10a21f11",
+      "receipt": {
+        "bytes": 2529,
+        "sha256": "e0fb4c8d8b7e7e103ef9bd5fa4a62775ae8c273d1c80de06add52823f1e8745d"
+      },
+      "reference_action": 57,
+      "reference_sound": 11,
+      "retained_files": {
+        "EVENT.npz": "615b81dd5de9fd72d2aac0b561520f106bffa41c629e3abe7d394b6cd2d283df",
+        "FEATURES.npz": "1e27298143672f2eddb2b878f51169683a04d2c3041efc4f701c213ae65b3d43"
+      },
+      "sound_correct": true,
+      "sound_prediction": 11,
+      "source_id": "video_6317"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 48,
+      "event_id": "video_6506-closure-0",
+      "original_source_sha256": "eb59823f801a5ed34af115f284f607a210d1dc2c740bfd5fd45e0c55ce8112c5",
+      "receipt": {
+        "bytes": 2541,
+        "sha256": "dd0c885bbd9bfe0c45703525b682071edaf4198bd9cbdc699a9cd83990fd7920"
+      },
+      "reference_action": 48,
+      "reference_sound": 11,
+      "retained_files": {
+        "EVENT.npz": "254adc7f0bfbaf1278a81f323cd811c6de46368984ab0bf8731e29a8a85545f0",
+        "FEATURES.npz": "f5210a12cbf4c0ff856e69f84169396d57a0ec7186a8fcb4448ce8af2244b535"
+      },
+      "sound_correct": true,
+      "sound_prediction": 11,
+      "source_id": "video_6506"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 59,
+      "event_id": "video_6531-closure-0",
+      "original_source_sha256": "fdfaaca68652f738ddbea2b646bd65063d19487a1fb84ec929be61f1470e1954",
+      "receipt": {
+        "bytes": 2493,
+        "sha256": "9bb70fa68635280c4b923409033b97b6530440a607eca01e2f2c988b241e0536"
+      },
+      "reference_action": 59,
+      "reference_sound": 11,
+      "retained_files": {
+        "EVENT.npz": "6367bf19d4dd21df52e9e015c8e7bc2dde21794757d69257cbb3d992cd091617",
+        "FEATURES.npz": "f64e7855a0b0142e08a641c5df4eb722d60968b3cc9b71f85933898799d67d8b"
+      },
+      "sound_correct": false,
+      "sound_prediction": 12,
+      "source_id": "video_6531"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 49,
+      "event_id": "video_6992-closure-0",
+      "original_source_sha256": "0d77ce6f266a064ef578874158a6b90b7662571712c90fd8ad945a042d168349",
+      "receipt": {
+        "bytes": 2549,
+        "sha256": "1bba11d65e435c2890fa6d6818b9d47fb41154c58ec8c65119d4364514250f4b"
+      },
+      "reference_action": 46,
+      "reference_sound": 9,
+      "retained_files": {
+        "EVENT.npz": "4c5af1b3c6f3588bb7000c2560146538279ca5f02e117589d307e9d20889d717",
+        "FEATURES.npz": "bd975e11448590a47cb728fafa9796f9a3633b2c4404cccdb7d3ffc3d06b432c"
+      },
+      "sound_correct": false,
+      "sound_prediction": 12,
+      "source_id": "video_6992"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 13,
+      "event_id": "video_7013-closure-0",
+      "original_source_sha256": "e73660a3d76b330bd19c0804ec30fb288570ff12dcb7fbd38edcd9ddf0f2c922",
+      "receipt": {
+        "bytes": 2523,
+        "sha256": "eafd2e1d49739e2137986ad1dd5c1d32c2fff84530dac8762e811203f1b8bd8b"
+      },
+      "reference_action": 13,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "bec13a2bcf0bc9a6a4fb4de5e2deb3a972e9b486602d5dce2da7ef358484f7e8",
+        "FEATURES.npz": "631209ba65d9a6424fd51fdff4f1bf9cda3859534d767a3a8696698c5eca03fd"
+      },
+      "sound_correct": false,
+      "sound_prediction": 12,
+      "source_id": "video_7013"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 45,
+      "event_id": "video_7015-closure-0",
+      "original_source_sha256": "a74856e3da6cf0aaf147d2b4c098eda6524515c5378384babdc25b1a0f643d90",
+      "receipt": {
+        "bytes": 2526,
+        "sha256": "0d5b76b0a9967f830c2dc3a9adcfcd36d055b95c74f76e636efcf08f1f6000d0"
+      },
+      "reference_action": 20,
+      "reference_sound": 8,
+      "retained_files": {
+        "EVENT.npz": "6b7c7e9897626c0bbb8a6cb1882c419f047d79f56b8287e19eddd87de12a2c2e",
+        "FEATURES.npz": "11ffe338700b4e98f6423d4ee8a43136dd93ebb5cb0420db3012f4910b116ccd"
+      },
+      "sound_correct": false,
+      "sound_prediction": 7,
+      "source_id": "video_7015"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 46,
+      "event_id": "video_7024-closure-0",
+      "original_source_sha256": "15094a5a366d81b951e7f984b59e414629ae07eaf25c1316852c9e9af91763b3",
+      "receipt": {
+        "bytes": 2502,
+        "sha256": "3db04d19d949c594da44d55b9101410dfe119af9ed4aaa18cc1144d7a7497fb2"
+      },
+      "reference_action": 15,
+      "reference_sound": 6,
+      "retained_files": {
+        "EVENT.npz": "b3eb3efec709d30bc8ff43b3a61ac4fa6105c3abe67d6e6f9375282c08d48824",
+        "FEATURES.npz": "22d388335c6efec5e823c158f59fcd73d997b1d7f9234cc5fd2d6a6b90abef96"
+      },
+      "sound_correct": false,
+      "sound_prediction": 7,
+      "source_id": "video_7024"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 22,
+      "event_id": "video_7174-closure-0",
+      "original_source_sha256": "0964f23861f985907ed1b780683cae36d40417727f5be0b55282a5517b02baa6",
+      "receipt": {
+        "bytes": 2537,
+        "sha256": "d84f13bb5a4b187ecd2fa391f692f13e2dbd602eabd3b005b546bd4f61d0cc3a"
+      },
+      "reference_action": 45,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "7135c9866e410eaf5d5621c2b151d8fb7719732ec7894dff07b76fa2aeb59ed2",
+        "FEATURES.npz": "706fa9d39713cecb86699a5fbf946c4b1b62e2b97bd9400de59498e607fe6422"
+      },
+      "sound_correct": false,
+      "sound_prediction": 12,
+      "source_id": "video_7174"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 59,
+      "event_id": "video_748-closure-0",
+      "original_source_sha256": "cd33030ab58133cc04253eb4de7977022f61229c50f0d4dae146e61e3d6ac02a",
+      "receipt": {
+        "bytes": 2491,
+        "sha256": "9afd4c811760890c81ac6d31e9ebbf025a44bd5f11c9d4c694b2b02169851e83"
+      },
+      "reference_action": 59,
+      "reference_sound": 11,
+      "retained_files": {
+        "EVENT.npz": "ff9f3b37110a810b3b62b2cdc0ce9a3c325978f781e802aa763ff3bd886a382b",
+        "FEATURES.npz": "bb9d3e46b343d5ef63567f0b45afa77cfc1b15fae8e07d6aa9d872706bfe1b95"
+      },
+      "sound_correct": false,
+      "sound_prediction": 7,
+      "source_id": "video_748"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 22,
+      "event_id": "video_7569-closure-0",
+      "original_source_sha256": "5fe4023ded4d060f99ef91691c4a2389ecacc709f3b1215f8b6e95bdcbc8c8f4",
+      "receipt": {
+        "bytes": 2482,
+        "sha256": "14a01d6eed983b9029034462dfbaa24cd33455e20adc42bfcb120225ca3156ec"
+      },
+      "reference_action": 23,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "10655946c2289002dcb231ff8c5c61695fc5e5db77f6f2c5b44af432deb75813",
+        "FEATURES.npz": "4400c448296b31ae18f7faf1396c967b7d0a2c360c4ae21745a7a104e13db12c"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_7569"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 45,
+      "event_id": "video_7733-closure-0",
+      "original_source_sha256": "9ed7eb6c83d156e35a91c5ae59ab77e1932c6a36181228adc947c5474aaf4a08",
+      "receipt": {
+        "bytes": 2543,
+        "sha256": "7e157ae92fb76c8faeb96377b191dd6745182c9f6dd5285703d270273345860d"
+      },
+      "reference_action": 45,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "09a24326626013c8bcbb925184d9bf469631399fbbe506f16f4830d3e629fa33",
+        "FEATURES.npz": "5a254fa11176701cb4c97198d031c952bb3d82fe4d297539d52800d41fe9beca"
+      },
+      "sound_correct": false,
+      "sound_prediction": 4,
+      "source_id": "video_7733"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 13,
+      "event_id": "video_7816-closure-0",
+      "original_source_sha256": "22d6df288bbcdc924243c2961b1a870c8673bc0fbd4d8054fb85e788a444c49a",
+      "receipt": {
+        "bytes": 2541,
+        "sha256": "562baead9854c4126913e6c7f443ed693f727d0f5d1b17a4d64e3f39a5d237e6"
+      },
+      "reference_action": 53,
+      "reference_sound": 11,
+      "retained_files": {
+        "EVENT.npz": "4f653dff792e9a834491cd1dad97a8522bb3be4671ddc3de0de637be2a28209b",
+        "FEATURES.npz": "fff11c457aa684a00b0028a3b0be3e4954ea96e75c3f2f4f97a34784133159e2"
+      },
+      "sound_correct": false,
+      "sound_prediction": 7,
+      "source_id": "video_7816"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 48,
+      "event_id": "video_7868-closure-0",
+      "original_source_sha256": "659698b9316c4dcc58ae30f4d63f9d8d60f7afc9c4a155303e8a42c6f4d71e39",
+      "receipt": {
+        "bytes": 2523,
+        "sha256": "3771174a3ca7370c8cad3ba383f625a5dab73b8f9e373e2d89349b5999e119c7"
+      },
+      "reference_action": 22,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "0e690c9ff6bc5bbe4343c9f6e690c2972049d7c09d3dd83e255ef42b78ae63d5",
+        "FEATURES.npz": "c76b9b1703fe95933498134f982a1b40ad5a31d614edf34da52e2a960bbd7003"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_7868"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 48,
+      "event_id": "video_7980-closure-0",
+      "original_source_sha256": "20074db3737d039f4a2fe24d3ade8b6fb25667b3dd7fe70fb539bc9d56fe7571",
+      "receipt": {
+        "bytes": 2517,
+        "sha256": "c946facafe9285182b0616ceb2b93f7b8c1171762fb3a40dbc4d065adfa917b5"
+      },
+      "reference_action": 23,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "b9af692d6774ae14299bd35859959b7ff8de949d3ea0d0dd9312c8dd163cad0d",
+        "FEATURES.npz": "9da68bc300d0490a3d173f0515ed2aa83c8c6254387e5b76d0da125098cd781c"
+      },
+      "sound_correct": false,
+      "sound_prediction": 11,
+      "source_id": "video_7980"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 45,
+      "event_id": "video_8235-closure-0",
+      "original_source_sha256": "5515e14a911010de0835b4c51d49812572d8a920d4e152e29cd790604c9c5e66",
+      "receipt": {
+        "bytes": 2561,
+        "sha256": "53f66d525be7e542694f191f78520e0fa109f49a5ecb2ffbc0f62c16feaf12bf"
+      },
+      "reference_action": 21,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "97b1235bcb2db9e646f7c9af1271226f500f0a4484c256b799184f1f870e8481",
+        "FEATURES.npz": "b96078b0a2deb0e3c5f95da70fcea37019a4ce0514e11940d175f936d441c31d"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_8235"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 45,
+      "event_id": "video_8790-closure-0",
+      "original_source_sha256": "bfa166a952b86c1ac9182bec1c0dd7d3eeed218e7940e6b1837c7d7d2dbc0303",
+      "receipt": {
+        "bytes": 2515,
+        "sha256": "8c81c98a4151aac4680d5f65fad96bf6fa46a5e3466ae591e69b37a34427ffdf"
+      },
+      "reference_action": 48,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "def3312f328b63d0eea1e88091974943c49a171389e927c2f547bf549bdadaf3",
+        "FEATURES.npz": "dc73e2ebf5fa7bc9b40876b75ee6e974f5b242f8f60b35d23b4585fa5a2aaf2b"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_8790"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 20,
+      "event_id": "video_9052-closure-0",
+      "original_source_sha256": "2fa85a4c2320680c41c8195d59c0865ca54f0f0604b7ccd42b793075b891c78a",
+      "receipt": {
+        "bytes": 2517,
+        "sha256": "477a35dd99bbec56abd77464e89bad3707e55dd9dc935fc295a42475a82bdc57"
+      },
+      "reference_action": 23,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "4d040769472e65a58bb1f56f3301651328e6ac3341aee751369b9ed875594657",
+        "FEATURES.npz": "0f28d0231565c775eac435371346f3842c2452332796d08078383e3cdeb7299e"
+      },
+      "sound_correct": false,
+      "sound_prediction": 12,
+      "source_id": "video_9052"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 22,
+      "event_id": "video_9276-closure-0",
+      "original_source_sha256": "fe330bfcd3bf9dba96941c7b4f95fe8a0f9f0509d188f7e3da709ff79147c48e",
+      "receipt": {
+        "bytes": 2531,
+        "sha256": "6e6bfba6f1b21227e622d32dcc26fd03108bce6fbe465c9d25418c18687e2826"
+      },
+      "reference_action": 22,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "b5e13140254913f1d7c548937c14d319dd3d881689a85970533ca610250c503d",
+        "FEATURES.npz": "09df321dcc82cf58c25ff0d66758469df52af887bfc5136345232d74c5242c96"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_9276"
+    },
+    {
+      "action_correct": true,
+      "action_prediction": 45,
+      "event_id": "video_9482-closure-0",
+      "original_source_sha256": "5b5ac386f21885d177af4cca8535a9032d008a2f869b53fdccc3a114079f5a3a",
+      "receipt": {
+        "bytes": 2551,
+        "sha256": "48ad4b7a45266a7fd07b0e9654fff01664016efe75174c3f4d335fd50e0349e0"
+      },
+      "reference_action": 45,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "042cad181f6c315dadc9de75dc364a9e9b83034ae1a45e60d9dd3e5239cabf97",
+        "FEATURES.npz": "8ceb7873b4cd95cf35657ef26d47482ff796c2343f09c9fb49bb70b59e2e8199"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_9482"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 22,
+      "event_id": "video_9819-closure-0",
+      "original_source_sha256": "d620e02912878233bafbc6e79754703eaa7cc97d02c3453346615ff39f970dbc",
+      "receipt": {
+        "bytes": 2492,
+        "sha256": "28a880f2b91274138a02d82330d06f4b121ceaaa8ef0004d59e9183b1312f338"
+      },
+      "reference_action": 59,
+      "reference_sound": 11,
+      "retained_files": {
+        "EVENT.npz": "941932830a85434326c9fe93e3a4401454f6628b7ec70db6db920d4332791537",
+        "FEATURES.npz": "616c4d97ecebf4c51aab00e97c99a2d0f0f1866e93150a07f294a15feaea952f"
+      },
+      "sound_correct": false,
+      "sound_prediction": 12,
+      "source_id": "video_9819"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 22,
+      "event_id": "video_9853-closure-0",
+      "original_source_sha256": "a0ee205d15deaede9f44a419f4e73790d370836302f3819150a4a3628ed9bb83",
+      "receipt": {
+        "bytes": 2533,
+        "sha256": "cff9b276896bc0fac0537143bdb8e6c85a1f1c1fb47fbbcd5453202a4a80323d"
+      },
+      "reference_action": 20,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "473d3451315323c34aa1bee564fb2873b552af85195d3cee20119655f72cde8c",
+        "FEATURES.npz": "8463585b5b41d7b14eecc6a29d839889cd522fc08402709526605e16bae4de3b"
+      },
+      "sound_correct": false,
+      "sound_prediction": 12,
+      "source_id": "video_9853"
+    },
+    {
+      "action_correct": false,
+      "action_prediction": 14,
+      "event_id": "video_9967-closure-0",
+      "original_source_sha256": "0749537c795afb0f3df191ab0e571abf2970023aa5805924a07ed1313acfcdf2",
+      "receipt": {
+        "bytes": 2544,
+        "sha256": "4c881b98ff9eff9a4e20198fa12c11d00888dbe7a2132fc69b5f33af481e1a72"
+      },
+      "reference_action": 45,
+      "reference_sound": 7,
+      "retained_files": {
+        "EVENT.npz": "643249309d3a47f8368626eef7d2330e536888993da69dc70441b1c2c7705d37",
+        "FEATURES.npz": "dbe89b6f845597c05dce8f0bbe888a1ed56ee283f8e5b45c8ecbe9908117f83a"
+      },
+      "sound_correct": true,
+      "sound_prediction": 7,
+      "source_id": "video_9967"
+    }
+  ],
+  "status": "PASS",
+  "torch_imported": false,
+  "training_event_count": 2517,
+  "training_source_count": 512,
+  "unchanged_thresholds": {
+    "action_accuracy": 0.6,
+    "both_modalities_must_exceed_own_training_majority_accuracy": true,
+    "sound_accuracy": 0.6
+  },
+  "unique_calibration_original_source_sha256": 64,
+  "visible_directory_names": {
+    "/dev/shm/hepta-ndu-closure-20261028": [
+      "deps",
+      "generator_preflight",
+      "natural_assets",
+      "natural_assets_v2",
+      "natural_assets_v3",
+      "natural_coverage_v3_proposal",
+      "natural_execution_check_001",
+      "natural_observer_v3_001",
+      "natural_proxy_cache",
+      "natural_v3_training_archives",
+      "preactual_actor_feature_sources",
+      "preactual_cost_scope_sources"
+    ],
+    "/dev/shm/hepta-ndu-unified-20261028/repo/experiments/multimodal_output_portfolio/closure_20261028/natural_results": []
+  }
+}
