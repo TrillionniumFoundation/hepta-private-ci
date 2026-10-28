@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-28T10:52:06.158939+00:00",
+  "status": "PASS_STATIC_SCOPED",
+  "blocking_findings": [],
+  "scope": "Independent read-only review; no Rust/Cargo/Bazel, source mutation, chmod, or scientific execution.",
+  "baseline_source_commit": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+  "patch": {
+    "path": "/workspace/scratch/e8a4dc33549f/supervisor_restart_candidate_20261028/supervisor_restart_events.patch",
+    "bytes": 4979,
+    "sha256": "35bbd93f2239b398b9c1ee2e7bf2624b1de8b9c84f53eaa879969b97c977fd96",
+    "git_blob": "70b2cbadcb67d9791ab3efa40866a3d090986919"
+  },
+  "candidate_review": {
+    "path": "/workspace/scratch/e8a4dc33549f/supervisor_restart_candidate_20261028/STATIC_REVIEW.json",
+    "sha256": "f87ba5ca74d9e51dabbd9df81074de0cd6b1c7eec387f82354cf2101ec8d4107"
+  },
+  "files": {
+    "codex-rs/hepta-supervisor/src/restart_budget.rs": {
+      "original": {
+        "bytes": 7464,
+        "sha256": "51f36c3f3fd7f57755d6b6c0b9df3a5e2233dfb4f630bf18d9115341c474b93c",
+        "git_blob": "35dcd4c52989089631237b9498d7a36ce48fb109"
+      },
+      "replacement": {
+        "bytes": 8697,
+        "sha256": "c1e038fda05361994f5411b0733559aa6883686da9b174b1ed44303e3cee8f02",
+        "git_blob": "f2d595a709c9caf8a470f4f47e644879aadd38d8"
+      },
+      "replacement_path": "/workspace/scratch/e8a4dc33549f/supervisor_restart_candidate_20261028/replacements/codex-rs/hepta-supervisor/src/restart_budget.rs",
+      "base_commit_blob": "35dcd4c52989089631237b9498d7a36ce48fb109"
+    },
+    "codex-rs/hepta-supervisor/src/tick.rs": {
+      "original": {
+        "bytes": 13368,
+        "sha256": "41a6deb682fa12fd2c8220dd69df00ae08e3c1cf4823d1bcd673bb0bf4864975",
+        "git_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252"
+      },
+      "replacement": {
+        "bytes": 13846,
+        "sha256": "1e57fd314eb71c9661b51ccd0d064b56a4dbf55ac34dfe4c051ea3dd3fcf4387",
+        "git_blob": "cad2254c7762544397651f14e11bcce7bc7568d3"
+      },
+      "replacement_path": "/workspace/scratch/e8a4dc33549f/supervisor_restart_candidate_20261028/replacements/codex-rs/hepta-supervisor/src/tick.rs",
+      "base_commit_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252"
+    },
+    "codex-rs/hepta-supervisor/src/control.rs": {
+      "original": {
+        "bytes": 8152,
+        "sha256": "77614635783d80778f597439f68400d594b0a1667bfe0f451b232fb8e66a4cef",
+        "git_blob": "97faf9d3ee33b31808aedfa47bf650fd17938e60"
+      },
+      "replacement": {
+        "bytes": 8159,
+        "sha256": "ee36a3772c655a62a7f004223cb383d3a1e87dd380a2adc73d58dd2e65e35990",
+        "git_blob": "9f9539b27f4f3e9f6e87d19fd75e541cb1a68ebe"
+      },
+      "replacement_path": "/workspace/scratch/e8a4dc33549f/supervisor_restart_candidate_20261028/replacements/codex-rs/hepta-supervisor/src/control.rs",
+      "base_commit_blob": "97faf9d3ee33b31808aedfa47bf650fd17938e60"
+    },
+    "codex-rs/hepta-supervisor/tests/restart_budget.rs": {
+      "original": {
+        "bytes": 8935,
+        "sha256": "79a1801d82edc8179022347e0c52340dff09912e6fabb22f17e0978b5978a288",
+        "git_blob": "eefe955d392c6a2e0d0ecabfdd4c9a67df0502ab"
+      },
+      "replacement": {
+        "bytes": 9153,
+        "sha256": "f31e4546f3dec030ef9265593859088ffcd845f325ecad88c1cf0468df038d26",
+        "git_blob": "b6cf08e969c34ae862599e75296dbfb73fcfa4b3"
+      },
+      "replacement_path": "/workspace/scratch/e8a4dc33549f/supervisor_restart_candidate_20261028/replacements/codex-rs/hepta-supervisor/tests/restart_budget.rs",
+      "base_commit_blob": "eefe955d392c6a2e0d0ecabfdd4c9a67df0502ab"
+    },
+    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs": {
+      "original": {
+        "bytes": 10613,
+        "sha256": "7f98a1d45e5d0dabf53dd58f65e05f412f7702c42a3348c4134da65d4f41676a",
+        "git_blob": "e9e079316e42b20a09c259217ec9ff68e03d6ae4"
+      },
+      "replacement": {
+        "bytes": 10831,
+        "sha256": "92cb8b96053061825f041b14d4288aeed7dcc03e917690bf00c67d4cda0603e1",
+        "git_blob": "a1e03c1791fd223b9017f5dded7d0db7c5ac4337"
+      },
+      "replacement_path": "/workspace/scratch/e8a4dc33549f/supervisor_restart_candidate_20261028/replacements/codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "base_commit_blob": "e9e079316e42b20a09c259217ec9ff68e03d6ae4"
+    }
+  },
+  "performed": {
+    "base_git_tree_and_blob_identity_verified": true,
+    "original_worktree_bytes_unchanged": true,
+    "replacement_hashes_verified": true,
+    "strict_in_memory_patch_reconstruction": true,
+    "files_reconstructed": 5,
+    "hunks_reconstructed": 7,
+    "whole_codex_rs_consumer_search": true,
+    "rust_calls": 0,
+    "scientific_calls": 0
+  },
+  "actual_failure": {
+    "run": 40639726155,
+    "job": 122655390371,
+    "path": "/workspace/scratch/e8a4dc33549f/ci_49329_windows_shard1.log",
+    "bytes": 851514,
+    "sha256": "5ddb0254c2c731a895d7f1bc5be0a93416ca0fcd1d81518dfae3370cd9b0e9e3",
+    "assertion": "AutomaticRestartQueued { attempt: 2 } missing at restart_budget_recovery.rs:251"
+  },
+  "findings": [
+    "Exhausted attempts comes from validated durable state; successful new claim returns only after write_restart_budget succeeds. No second read or guessed configuration count was introduced.",
+    "Order remains durable claim, successful deadline, original RestartQueued, new AutomaticRestartQueued, original finalize_exit. Manual generic events remain unchanged.",
+    "Exhaustion consumes no new attempt, preserves pending=false and no next deadline, and still returns SupervisorError::RestartBudgetExhausted through tick_slot/tick/record_fault.",
+    "The two integration assertion changes require one fault with exact AgentId and full existing public error text, aligning the existing lib contract. Backoff, spawn, automatic-event and no-more-spawn assertions remain.",
+    "New unit test makes two actual durable claims/completions, compares exhausted payload to persistent count, and verifies rejection preserves state.",
+    "All private Exhausted match sites were updated; whole-workspace search found no additional automatic-event production consumer. Events are not encoded in the daemon control-state digest."
+  ],
+  "limitations": [
+    "Additional events consume existing bounded-history capacity and may evict older entries sooner.",
+    "Events remain in-memory observations, not a durable event log or recovery replay guarantee.",
+    "No Rust compilation, rustfmt, tests, Windows execution or CI pass is claimed."
+  ],
+  "suggested_remote_commands": [
+    "just test --locked -p codex-hepta-supervisor --test restart_budget --test restart_budget_recovery --retries 0 --no-tests=fail",
+    "just test --locked --lib -p codex-hepta-supervisor --retries 0 --no-tests=fail -E 'test(restart_budget::tests::) | test(=supervisor::tests::flapping_running_agent_stops_after_restart_budget_is_exhausted) | test(=supervisor::tests::unexpected_running_exit_uses_durable_restart_budget_and_backoff)'"
+  ],
+  "qualification": false
+}

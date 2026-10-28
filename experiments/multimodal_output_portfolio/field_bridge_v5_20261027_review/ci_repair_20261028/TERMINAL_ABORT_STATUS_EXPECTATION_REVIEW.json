@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-28T11:16:12.732535+00:00",
+  "source_head": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+  "status": "TEST_EXPECTATION_STATICALLY_CORRECTED_NATIVE_EXECUTION_PENDING",
+  "independent_reviewer": "hepta_evidence",
+  "independent_review_received": true,
+  "actual_failure": {
+    "job_id": 122753976884,
+    "attempt_thread_ids": [
+      9812,
+      6612,
+      5812
+    ],
+    "actual": "(true, 3, Interrupted)",
+    "expected_before": "(true, 3, PendingInit)",
+    "tail_repeat_is_not_a_fourth_attempt": true,
+    "decoded_log_sha256": "9fabba0a27c9ceb1b4fc59206f644ea02364943797fb6209954041c26893c640"
+  },
+  "reason": [
+    "abort_all_tasks invokes detach_active_task_for_abort; while holding active-turn lock mark_interrupted updates agent status before claim/detach and handoff.",
+    "Interrupted is explicitly non-final in agent/status.rs::is_final; it is not proof of terminal event publication.",
+    "prepare_terminal_event prepares/persists; actual publication remains after cleanup, exact owner retirement and callbacks in the original locked terminalization completion boundary."
+  ],
+  "exact_change": "ThreadIdle=(2, initial_status); TurnAbort=(3, AgentStatus::Interrupted); all other source bytes unchanged except explanatory comment and tuple variable.",
+  "assertions_retained": [
+    "no terminal at gate",
+    "exact flush count and admission fence",
+    "shutdown waiting",
+    "successor rejected before gate release",
+    "successor admitted immediately after terminal",
+    "turn id and event order",
+    "persisted terminal serde_json::Value equality",
+    "exactly two terminals and no extra terminal"
+  ],
+  "evidence_limit": "The three prior executions reached the gate and failed at the tuple; later assertions did not execute. Persisted equality is JSON value equality, not literal physical file byte comparison. No candidate native pass is claimed.",
+  "sources": [
+    {
+      "path": "codex-rs/core/src/session/tests/terminal_event_tests.rs",
+      "f20_sha256": "e591a8e9d512b23869e2b2585e2e876c7c6c22e4103ddb757e428dc5886cf057",
+      "candidate_sha256": "8a32ad1cb289e0ba3464f0dbe11458a8462ef474584db8ba137d308093cc3d09",
+      "candidate_bytes": 9179,
+      "unchanged": false
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod.rs",
+      "f20_sha256": "9c8be7d120e58bef5ffe8958dbb06ca8efd94f2d4e7330dc645e49f7696c009a",
+      "candidate_sha256": "9c8be7d120e58bef5ffe8958dbb06ca8efd94f2d4e7330dc645e49f7696c009a",
+      "candidate_bytes": 179917,
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/core/src/session/mod.rs",
+      "f20_sha256": "d16ad51556a4f4f481cccea9fc21cbb04649d7595dcd62fbb2a6c58d4dee6967",
+      "candidate_sha256": "d16ad51556a4f4f481cccea9fc21cbb04649d7595dcd62fbb2a6c58d4dee6967",
+      "candidate_bytes": 215795,
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/core/src/session/terminal_event.rs",
+      "f20_sha256": "9b4db5911927bd477f842bbdc901517d3f55199df4c9fe7b7f6f98dc220f49f1",
+      "candidate_sha256": "9b4db5911927bd477f842bbdc901517d3f55199df4c9fe7b7f6f98dc220f49f1",
+      "candidate_bytes": 4419,
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/core/src/agent/status.rs",
+      "f20_sha256": "3e72128ca9006ae3e100f130af3d5b4fe501ee32753f4175d6d91b3ebe883fa7",
+      "candidate_sha256": "3e72128ca9006ae3e100f130af3d5b4fe501ee32753f4175d6d91b3ebe883fa7",
+      "candidate_bytes": 1165,
+      "unchanged": true
+    }
+  ],
+  "rust_commands_executed": 0,
+  "production_order_changed": false,
+  "scientific_runs": 0,
+  "admission": false
+}

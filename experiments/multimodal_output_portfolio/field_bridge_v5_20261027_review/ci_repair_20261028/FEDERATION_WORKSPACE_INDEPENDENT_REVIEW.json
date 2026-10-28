@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-28T11:14:57.964338+00:00",
+  "judgment": "BOUNDED_STATIC_REVIEW_PASS_NATIVE_EXECUTION_PENDING",
+  "reviewer": "independent architecture reviewer",
+  "scope": "Four frozen scratch candidate replacements. No edit, Rust command, model, or scientific asset use.",
+  "source_head": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+  "candidate_patch": {
+    "path": "/workspace/scratch/e8a4dc33549f/federation_workspace_candidate_20261028/candidate.patch",
+    "bytes": 16350,
+    "sha256": "7a1ab779e5dc2ee96ab7c1cc96271c5be18dd10b8b222865936f4ed200b93642"
+  },
+  "candidate_author_identity": {
+    "path": "/workspace/scratch/e8a4dc33549f/federation_workspace_candidate_20261028/CANDIDATE_INITIAL_IDENTITY.json",
+    "bytes": 1981,
+    "sha256": "5484a6dc283e1e3d370e8f2fa05fa68189ffc83ed7110dfbf956be17f13a6ffa"
+  },
+  "candidate_files": [
+    {
+      "repository_path": "codex-rs/hepta-memory/src/cognitive_path.rs",
+      "original": {
+        "path": "/workspace/scratch/e8a4dc33549f/federation_workspace_candidate_20261028/originals/codex-rs/hepta-memory/src/cognitive_path.rs",
+        "bytes": 2134,
+        "sha256": "cf9e8bed3cfe7d8f8169fa6f8f0563973efc1844870cbafa798c240b58c493be"
+      },
+      "replacement": {
+        "path": "/workspace/scratch/e8a4dc33549f/federation_workspace_candidate_20261028/replacements/codex-rs/hepta-memory/src/cognitive_path.rs",
+        "bytes": 3370,
+        "sha256": "b5957795bf90945a90b5ae53b1c8fd349832073597a3ade87aadcb273024daf1"
+      },
+      "repo_original_still_exact": true
+    },
+    {
+      "repository_path": "codex-rs/hepta-memory/src/cognitive_path_tests.rs",
+      "original": {
+        "path": "/workspace/scratch/e8a4dc33549f/federation_workspace_candidate_20261028/originals/codex-rs/hepta-memory/src/cognitive_path_tests.rs",
+        "bytes": 4890,
+        "sha256": "fd7c55f420653e40d52a4aa4723d77939ac2d36d87fbb40cc3d8561acdf21e56"
+      },
+      "replacement": {
+        "path": "/workspace/scratch/e8a4dc33549f/federation_workspace_candidate_20261028/replacements/codex-rs/hepta-memory/src/cognitive_path_tests.rs",
+        "bytes": 7160,
+        "sha256": "98874cbfcbd1af3775a1a731de86bdc890e3159ae3b0bedb8d655886274c78de"
+      },
+      "repo_original_still_exact": true
+    },
+    {
+      "repository_path": "codex-rs/hepta-memory/src/lib.rs",
+      "original": {
+        "path": "/workspace/scratch/e8a4dc33549f/federation_workspace_candidate_20261028/originals/codex-rs/hepta-memory/src/lib.rs",
+        "bytes": 23658,
+        "sha256": "d9a0522fa7d6abccdfc1523c86f9972391ef61c5694be5d10edae39032d09697"
+      },
+      "replacement": {
+        "path": "/workspace/scratch/e8a4dc33549f/federation_workspace_candidate_20261028/replacements/codex-rs/hepta-memory/src/lib.rs",
+        "bytes": 23714,
+        "sha256": "fafebe2604ffe5c7aec5a7854be714a180e721e6fca297b16d217de776a770a9"
+      },
+      "repo_original_still_exact": true
+    },
+    {
+      "repository_path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "original": {
+        "path": "/workspace/scratch/e8a4dc33549f/federation_workspace_candidate_20261028/originals/codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+        "bytes": 54709,
+        "sha256": "9d1fab18becbfbbcbca8f02b6bab72b58b41c55f5822a9a77560c2ae5c7d3c68"
+      },
+      "replacement": {
+        "path": "/workspace/scratch/e8a4dc33549f/federation_workspace_candidate_20261028/replacements/codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+        "bytes": 60403,
+        "sha256": "58b761d2c6577cf2c631a9bfbfa45ce9b698f43a1d6644d4433ea8879ae57749"
+      },
+      "repo_original_still_exact": true
+    }
+  ],
+  "related_sources_read": [
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/codex-rs/hepta-memory/src/framing.rs",
+      "bytes": 1280,
+      "sha256": "95af3ea198d77dfd1012d43d65159ccfedd1d4c668aec738772c4044c3d14483"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/codex-rs/ext/hepta-memory/src/framing.rs",
+      "bytes": 1274,
+      "sha256": "d5ee494b533cfdb8d664932e7d31893e398faa2dfe4c0fa0267773fbef6fd11c"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/codex-rs/hepta-agentd/src/state_control.rs",
+      "bytes": 58121,
+      "sha256": "08cac64fa29ee427e4dd49efce235a7ce9b7e0c1411c8778a29c07868d4be458"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/codex-rs/hepta-fleet/src/model.rs",
+      "bytes": 6311,
+      "sha256": "64ecaff8ecfc2a60129e300eb24f460160f01636a65fe8d9ace4ea6b5a400d4e"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/codex-rs/utils/path-uri/src/lib.rs",
+      "bytes": 35915,
+      "sha256": "883cd0cb547512ef0c4845a2a4254be9c24d0e7d76913d2a39955e5706abe1dc"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/codex-rs/ext/extension-api/src/state.rs",
+      "bytes": 4661,
+      "sha256": "b7b6064ab9df274fcb52e5457c5e05b2b9cad92f188714939864164f022b49a1"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/codex-rs/ext/extension-api/src/contributors/model_provider_input.rs",
+      "bytes": 8334,
+      "sha256": "85b255dce60ca0d758daafdf6dbd74ceda0457f269f945a2d68bdb1d13eaefd9"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/codex-rs/ext/extension-api/Cargo.toml",
+      "bytes": 739,
+      "sha256": "39f81dc7f64efedecb10f005525ec323943b249c00e87778825a4fdf260c9a51"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/codex-rs/state/Cargo.toml",
+      "bytes": 1002,
+      "sha256": "2da10f840265545592862302111b14b4e6ae83d3e0ed567e8fb1a1c4ecd12b3d"
+    }
+  ],
+  "blocking_findings": [],
+  "resolved_during_design_review": [
+    {
+      "issue": "A proposed filesystem await after a successful database grant check would add a stale-authorization waiting window.",
+      "final_code": "Filesystem resolver now runs before now/revalidate_product_federated_batch; the actual authorization revalidation remains the final await, followed by the unchanged synchronous status and final-time checks."
+    }
+  ],
+  "findings": [
+    {
+      "area": "Shared path boundary",
+      "result": "The public helper rejects unsupported platforms and relative paths, reuses the existing no-redirection implementation, propagates resolution/metadata errors, and additionally requires an existing directory. It performs no write or grant operation."
+    },
+    {
+      "area": "Windows alias scope",
+      "result": "Existing same_components permits only drive/VerbatimDisk and UNC/VerbatimUNC prefix pairs with exact remaining components; other prefix variants fail. The existing ancestor reparse-point checks remain byte-identical. No lossy decoding or broad case folding was added."
+    },
+    {
+      "area": "Turn preparation",
+      "result": "PathUri::to_abs_path uses current-host rules, rejects foreign conventions/encoded Windows separators, and preserves native fallback path bytes. A single successful resolver result supplies the access digest, prepared workspace and federated source binding. Failed resolution leaves no prepared material."
+    },
+    {
+      "area": "Physical-send assembly",
+      "result": "The current input is resolved once; exact canonical path bytes are compared to the prepared workspace, and the same canonical object is used for access digest and V2 source binding. A real different directory cannot reuse the prepared attachment."
+    },
+    {
+      "area": "Final use",
+      "result": "The guard owns the physical input path and expected canonical path. It rejects resolution failure or changed canonical bytes, then runs the original capability revalidation and synchronous expiry/clock checks. No new await follows a Current result or final_use_now."
+    },
+    {
+      "area": "Ownership and asynchronous behavior",
+      "result": "ExtensionData::get returns Arc<T>; the new filesystem await does not retain its map mutex. spawn_blocking owns a cloned PathBuf and returns owned data. The mandatory extension-api/state dependencies already enable Tokio runtime support; no new Cargo dependency or feature is required."
+    },
+    {
+      "area": "Persistent compatibility",
+      "result": "The V1 workspace digest, official agentd canonical issuer, V2 federated binding encoder, combined binding encoder and existing time predicate are unchanged. Official grants whose consumer path is the OS canonical spelling keep the same bytes/digest. Ad hoc grants created with another noncanonical digest are not guaranteed to become valid."
+    },
+    {
+      "area": "Test preservation",
+      "result": "Every original line of both affected test bodies remains in original order; new assertions add native/canonical digest equivalence, same-content/source-binding, different-workspace refusal and real symlink/junction redirection refusal. The original later revoke assertions remain."
+    }
+  ],
+  "byte_identical_regions": [
+    {
+      "region": "federated_source_binding_v2",
+      "bytes": 822,
+      "sha256": "6818d6a373afb86d55f103334b11432b1890e4ac0016d9212f1936cef171d55f",
+      "byte_identical": true
+    },
+    {
+      "region": "combined_material_binding",
+      "bytes": 4571,
+      "sha256": "dd7f12a0b17907b424827e8ffdce88d6adab7345c43dcdc0ae7737b2e84528fd",
+      "byte_identical": true
+    },
+    {
+      "region": "final_capability_time_predicate",
+      "bytes": 281,
+      "sha256": "c7f1b3f2114f8eae72e259072686bc07f2251421129204c20d1c1bdb99f9e088",
+      "byte_identical": true
+    },
+    {
+      "region": "guard_existing_database_revalidation_and_clock_tail",
+      "bytes": 2291,
+      "sha256": "73180949300382cb1dda7e4eef432e3d27e221638e0ce1855ab1ee9f5a12cadc",
+      "byte_identical": true
+    },
+    {
+      "region": "existing_no_redirection_resolver_and_component_logic",
+      "bytes": 1755,
+      "sha256": "11ff5690ec8e2ea2718af4847597cd87b609bf393c376a0adc5441ab1a72a8e7",
+      "byte_identical": true
+    }
+  ],
+  "actual_static_checks": {
+    "all_four_replacement_sha256_match_author_freeze": true,
+    "originals_match_repository_at_review": true,
+    "old_test_lines_ordered_subsequence": true,
+    "all_three_entries_call_shared_async_resolver": true,
+    "no_raw_input_cwd_access_digest_remains": true,
+    "no_inferred_string_path_conversion_remains_in_prepare": true,
+    "git_apply_check_exit_code": 0,
+    "git_apply_check_stdout": "",
+    "git_apply_check_stderr": ""
+  },
+  "native_test_evidence": {
+    "candidate_executed": false,
+    "candidate_compiled": false,
+    "candidate_formatted_by_reviewer": false,
+    "existing_f20_failure": "The unmodified f20 source still has the exact federation is_active failure in completed Windows job122753976884; that is not execution of this scratch candidate.",
+    "existing_failure_receipt": {
+      "path": "/workspace/scratch/e8a4dc33549f/ci_f20_windows_shards_1_2_comparison_20261028.json",
+      "bytes": 34633,
+      "sha256": "94a2a52eb2484a413e59eab056b5d37fab3eb01fb130208f68729cf0f4a1347d"
+    }
+  },
+  "limits": [
+    "This is an observation of pathname canonical identity, not a retained-descriptor directory identity or qualified Windows ACL/recovery backend.",
+    "There is no atomic filesystem-plus-database lock. A path can change after its check, including while the subsequent database revalidation awaits. The candidate does not eliminate TOCTOU.",
+    "The final-use redirection fixture directly exercises a real symlink/junction switch. Missing path, ordinary file and relative path rejection are resolver unit coverage, not separately executed final-use guard tests.",
+    "The actual temporary-directory fixtures exercise ordinary/verbatim drive spellings on Windows. UNC handling was inspected statically; no real UNC share test was run.",
+    "Other platforms are explicitly refused by the helper and are not qualified by these tests.",
+    "Combined local/federated material binding still includes the raw input cwd in its own existing encoder. No global model-input path-identity normalization is claimed.",
+    "A successful static review does not establish compilation, Clippy, Windows native test success, or full repository CI success."
+  ],
+  "preservation": {
+    "repository_modified": false,
+    "candidate_modified": false,
+    "rust_commands_executed": 0,
+    "model_calls": 0,
+    "scientific_assets_read": false,
+    "native_qualification": false,
+    "source_binding_or_grant_version_bumped": false
+  },
+  "candidate_author_static_review": {
+    "path": "/workspace/scratch/e8a4dc33549f/federation_workspace_candidate_20261028/STATIC_REVIEW.json",
+    "bytes": 19618,
+    "sha256": "ee9eac7c5307011dc177229e1a403af97e72ca722fd45f3900b8f62ed55d60d9"
+  }
+}

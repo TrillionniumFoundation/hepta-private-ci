@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-28T10:44:29.104439+00:00",
+  "status": "static_candidate_only_not_applied",
+  "baseline_source_commit": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+  "actual_failure": {
+    "run": 40639726155,
+    "job": 122655390371,
+    "source_commit": "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c",
+    "log_path": "/workspace/scratch/e8a4dc33549f/ci_49329_windows_shard1.log",
+    "failure_location": "hepta-supervisor/tests/restart_budget_recovery.rs:251",
+    "assertion": "AutomaticRestartQueued { attempt: 2 } absent"
+  },
+  "finding": [
+    "Production automatic restart success currently constructs only RestartQueued. The two automatic enum variants are otherwise never constructed in production source.",
+    "Both integration tests expect AutomaticRestartBudgetExhausted but also expect an empty fourth-crash TickReport; existing native unit tests and real tick_slot propagation require a RestartBudgetExhausted fault."
+  ],
+  "files": {
+    "codex-rs/hepta-supervisor/src/restart_budget.rs": {
+      "original": {
+        "bytes": 7464,
+        "sha256": "51f36c3f3fd7f57755d6b6c0b9df3a5e2233dfb4f630bf18d9115341c474b93c",
+        "git_blob": "35dcd4c52989089631237b9498d7a36ce48fb109"
+      },
+      "replacement": {
+        "bytes": 8697,
+        "sha256": "c1e038fda05361994f5411b0733559aa6883686da9b174b1ed44303e3cee8f02",
+        "git_blob": "f2d595a709c9caf8a470f4f47e644879aadd38d8"
+      },
+      "replacement_path": "/workspace/scratch/e8a4dc33549f/supervisor_restart_candidate_20261028/replacements/codex-rs/hepta-supervisor/src/restart_budget.rs",
+      "base_commit_blob": "35dcd4c52989089631237b9498d7a36ce48fb109"
+    },
+    "codex-rs/hepta-supervisor/src/tick.rs": {
+      "original": {
+        "bytes": 13368,
+        "sha256": "41a6deb682fa12fd2c8220dd69df00ae08e3c1cf4823d1bcd673bb0bf4864975",
+        "git_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252"
+      },
+      "replacement": {
+        "bytes": 13846,
+        "sha256": "1e57fd314eb71c9661b51ccd0d064b56a4dbf55ac34dfe4c051ea3dd3fcf4387",
+        "git_blob": "cad2254c7762544397651f14e11bcce7bc7568d3"
+      },
+      "replacement_path": "/workspace/scratch/e8a4dc33549f/supervisor_restart_candidate_20261028/replacements/codex-rs/hepta-supervisor/src/tick.rs",
+      "base_commit_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252"
+    },
+    "codex-rs/hepta-supervisor/src/control.rs": {
+      "original": {
+        "bytes": 8152,
+        "sha256": "77614635783d80778f597439f68400d594b0a1667bfe0f451b232fb8e66a4cef",
+        "git_blob": "97faf9d3ee33b31808aedfa47bf650fd17938e60"
+      },
+      "replacement": {
+        "bytes": 8159,
+        "sha256": "ee36a3772c655a62a7f004223cb383d3a1e87dd380a2adc73d58dd2e65e35990",
+        "git_blob": "9f9539b27f4f3e9f6e87d19fd75e541cb1a68ebe"
+      },
+      "replacement_path": "/workspace/scratch/e8a4dc33549f/supervisor_restart_candidate_20261028/replacements/codex-rs/hepta-supervisor/src/control.rs",
+      "base_commit_blob": "97faf9d3ee33b31808aedfa47bf650fd17938e60"
+    },
+    "codex-rs/hepta-supervisor/tests/restart_budget.rs": {
+      "original": {
+        "bytes": 8935,
+        "sha256": "79a1801d82edc8179022347e0c52340dff09912e6fabb22f17e0978b5978a288",
+        "git_blob": "eefe955d392c6a2e0d0ecabfdd4c9a67df0502ab"
+      },
+      "replacement": {
+        "bytes": 9153,
+        "sha256": "f31e4546f3dec030ef9265593859088ffcd845f325ecad88c1cf0468df038d26",
+        "git_blob": "b6cf08e969c34ae862599e75296dbfb73fcfa4b3"
+      },
+      "replacement_path": "/workspace/scratch/e8a4dc33549f/supervisor_restart_candidate_20261028/replacements/codex-rs/hepta-supervisor/tests/restart_budget.rs",
+      "base_commit_blob": "eefe955d392c6a2e0d0ecabfdd4c9a67df0502ab"
+    },
+    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs": {
+      "original": {
+        "bytes": 10613,
+        "sha256": "7f98a1d45e5d0dabf53dd58f65e05f412f7702c42a3348c4134da65d4f41676a",
+        "git_blob": "e9e079316e42b20a09c259217ec9ff68e03d6ae4"
+      },
+      "replacement": {
+        "bytes": 10831,
+        "sha256": "92cb8b96053061825f041b14d4288aeed7dcc03e917690bf00c67d4cda0603e1",
+        "git_blob": "a1e03c1791fd223b9017f5dded7d0db7c5ac4337"
+      },
+      "replacement_path": "/workspace/scratch/e8a4dc33549f/supervisor_restart_candidate_20261028/replacements/codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "base_commit_blob": "e9e079316e42b20a09c259217ec9ff68e03d6ae4"
+    }
+  },
+  "patch": {
+    "path": "/workspace/scratch/e8a4dc33549f/supervisor_restart_candidate_20261028/supervisor_restart_events.patch",
+    "bytes": 4979,
+    "sha256": "35bbd93f2239b398b9c1ee2e7bf2624b1de8b9c84f53eaa879969b97c977fd96",
+    "git_blob": "70b2cbadcb67d9791ab3efa40866a3d090986919"
+  },
+  "semantics": {
+    "persisted_attempt_source": "RestartBudgetError::Exhausted carries state.attempts directly from read_restart_budget after schema, timestamp/window, attempt-bound and pending-state checks; no new read or guessed configuration value.",
+    "queue_order": "Existing claim_restart write completes before deadline calculation and both queue events; original RestartQueued retained, new AutomaticRestartQueued follows; exit finalization remains at its original call site.",
+    "exhaustion": "Consumes no new attempt, emits the verified stored count, keeps restart_pending false and the existing SupervisorError fault; updates only its in-memory count projection from that same stored value.",
+    "manual_path": "Only the pattern for the private error payload changes to { .. }; manual commands, generic event, returned public error and transition order are byte-identical.",
+    "test_changes": "Existing backoff/spawn/automatic-event assertions are retained. Only two contradictory fourth-crash empty-report assertions become exact one-fault, matching AgentId and full expected public error string.",
+    "new_unit_test": "Two actual durable claims/completions followed by exhaustion: emitted private error count must equal freshly read persistent count, and rejection leaves the persisted state unchanged. This test was prepared, not executed."
+  },
+  "consumer_review": {
+    "automatic_variants": "Repository Rust search found only model definitions and these two integration consumers before patch.",
+    "generic_event": "All existing generic queue constructions retained, including both manual paths.",
+    "bounded_history": "AgentSlot::event still uses BoundedQueue with unchanged capacity. Main supervisor length assertions require <= 8, not an exact event count.",
+    "ordered_existing_test": "The MatrixKillRequested-before-KillRequested relative-order assertion is unrelated to automatic restart queue/exhaustion. Existing events are not reordered.",
+    "control_digest": "Current daemon ControlStateMaterial does not include the events vector. restart_attempt was already in the control-state digest; exhausted projection now reflects the actual stored count.",
+    "remaining_limit": "Additional automatic event records occupy the same bounded history and can evict older records earlier. No claim of full native consumer validation."
+  },
+  "validation": {
+    "static_replacement_occurrence_checks": true,
+    "base_blob_matches_for_all_five_files": true,
+    "original_repository_bytes_unchanged": true,
+    "rust_compilation_or_tests": false,
+    "rustfmt_executed": false,
+    "remote_ci_for_candidate": false
+  },
+  "scope_exclusions": [
+    "No journal format or durable claim protocol change",
+    "No timeout increase",
+    "No manual restart semantic change",
+    "No authority or permission gate change",
+    "No changes to maintenance workflow/source or scientific files"
+  ]
+}

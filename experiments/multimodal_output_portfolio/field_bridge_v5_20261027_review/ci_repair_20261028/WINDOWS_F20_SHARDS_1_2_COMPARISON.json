@@ -1,0 +1,1284 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-28T11:11:00.000422+00:00",
+  "scope": "Read-only comparison of completed Windows shards 1 and 2 only. This is not all-CI or all-Windows qualification.",
+  "source_head": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+  "tested_merge": "896a6c13f90eb3a02fffea0d8deeb9c03aa3a347",
+  "base_head": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+  "run_id": 40669844250,
+  "run_attempt": 1,
+  "jobs": [
+    {
+      "id": 122753976884,
+      "shard": 1,
+      "conclusion": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40669844250/job/122753976884",
+      "checkout": [
+        {
+          "line": 182,
+          "text": "HEAD is now at 896a6c1 Merge f20db50ec8f891d286465e635c68e83749b9b3b4 into 0acfd9b27db910c180b0d8911f39aea469b7f864"
+        },
+        {
+          "line": 183,
+          "text": "##[endgroup]"
+        },
+        {
+          "line": 184,
+          "text": "[command]\"C:\\Program Files\\Git\\bin\\git.exe\" log -1 --format=%H"
+        },
+        {
+          "line": 185,
+          "text": "896a6c13f90eb3a02fffea0d8deeb9c03aa3a347"
+        }
+      ]
+    },
+    {
+      "id": 122753977008,
+      "shard": 2,
+      "conclusion": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40669844250/job/122753977008",
+      "checkout": [
+        {
+          "line": 177,
+          "text": "HEAD is now at 896a6c1 Merge f20db50ec8f891d286465e635c68e83749b9b3b4 into 0acfd9b27db910c180b0d8911f39aea469b7f864"
+        },
+        {
+          "line": 178,
+          "text": "##[endgroup]"
+        },
+        {
+          "line": 179,
+          "text": "[command]\"C:\\Program Files\\Git\\bin\\git.exe\" log -1 --format=%H"
+        },
+        {
+          "line": 180,
+          "text": "896a6c13f90eb3a02fffea0d8deeb9c03aa3a347"
+        }
+      ]
+    }
+  ],
+  "complete_log_identities": {
+    "49329_shard1": {
+      "path": "/workspace/scratch/e8a4dc33549f/ci_49329_windows_shard1.log",
+      "stored_bytes": 851514,
+      "stored_sha256": "5ddb0254c2c731a895d7f1bc5be0a93416ca0fcd1d81518dfae3370cd9b0e9e3",
+      "decoded_utf8_bytes": 851514,
+      "decoded_utf8_sha256": "5ddb0254c2c731a895d7f1bc5be0a93416ca0fcd1d81518dfae3370cd9b0e9e3"
+    },
+    "49329_shard2": {
+      "path": "/workspace/scratch/e8a4dc33549f/ci_49329_windows_review_20261028/job_122655390544.log.gz",
+      "stored_bytes": 373913,
+      "stored_sha256": "541ab07990f5e12bbeed7a349f1a09e5d0b99c7218200046368b4ea5f073eb6c",
+      "decoded_utf8_bytes": 2033581,
+      "decoded_utf8_sha256": "7be1c6a8257c8a09ebc0b7dda0f40a539d0e188021ce76ec3c7ac1c4d17f85ae"
+    },
+    "f20_shard1": {
+      "path": "/workspace/scratch/e8a4dc33549f/ci_f20_windows_shard1.log",
+      "stored_bytes": 1086557,
+      "stored_sha256": "9fabba0a27c9ceb1b4fc59206f644ea02364943797fb6209954041c26893c640",
+      "decoded_utf8_bytes": 1086557,
+      "decoded_utf8_sha256": "9fabba0a27c9ceb1b4fc59206f644ea02364943797fb6209954041c26893c640",
+      "gzip": {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_f20_windows_shard1.log.gz",
+        "bytes": 156656,
+        "sha256": "c0d11552a0a9ba3f2cb80b73cef5683af38f42259e462b05fc2a35b3397277e1",
+        "decompresses_to_exact_decoded_log": true,
+        "mtime": 0
+      },
+      "connector_string_transcription": {
+        "encoding": "UTF-8",
+        "BOM_preserved": true,
+        "CRLF_count": 7090,
+        "LF_count": 7091,
+        "utf16_code_units": 1086555,
+        "transfer": "Literal UTF-8 through a raw local PTY to an exact-length file receiver; byte length, Unicode units and line-ending counts matched the connector-returned string. No log text executed as code."
+      }
+    },
+    "f20_shard2": {
+      "path": "/workspace/scratch/e8a4dc33549f/ci_f20_windows_shard2.log",
+      "stored_bytes": 1911084,
+      "stored_sha256": "a67ca28524f2483449336f6639a1cdff15d0454284cb6eec259a734af4406059",
+      "decoded_utf8_bytes": 1911084,
+      "decoded_utf8_sha256": "a67ca28524f2483449336f6639a1cdff15d0454284cb6eec259a734af4406059",
+      "gzip": {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_f20_windows_shard2.log.gz",
+        "bytes": 326347,
+        "sha256": "8337fc6973e9f201636e71cad51f3eeced5961b50043317f89029b38fc0031ab",
+        "decompresses_to_exact_decoded_log": true,
+        "mtime": 0
+      },
+      "connector_string_transcription": {
+        "encoding": "UTF-8",
+        "BOM_preserved": true,
+        "CRLF_count": 9682,
+        "LF_count": 9684,
+        "utf16_code_units": 1909834,
+        "transfer": "Literal UTF-8 through a raw local PTY to an exact-length file receiver; byte length, Unicode units and line-ending counts matched the connector-returned string. No log text executed as code."
+      }
+    }
+  },
+  "evidence_rules": [
+    "Individual PASS requires literal named test ... ok within original test output, not a target PASSED summary.",
+    "Diagnostic tail reprints are retained in the complete logs but excluded from native named-result inventories; repeated lines alone do not establish additional executions.",
+    "Both ok and FAILED are retained when a test differs across actual retry outputs.",
+    "A newly observed failure is not by itself a new source regression.",
+    "The app-server-protocol full stdout was skipped by Bazel UI size limits; its three explicit failure-list names remain observable in the diagnostic tail."
+  ],
+  "four_evaluated_shadow_repairs": {
+    "status": "FOUR_NAMED_NATIVE_PASS",
+    "rows": [
+      {
+        "test": "evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+        "old_named_failed": [
+          3571
+        ],
+        "new_named_ok": [
+          3311
+        ],
+        "new_exact_named_evidence": [
+          {
+            "line": 3311,
+            "text": "test evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes ... ok"
+          }
+        ]
+      },
+      {
+        "test": "evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port",
+        "old_named_failed": [
+          3570
+        ],
+        "new_named_ok": [
+          3376
+        ],
+        "new_exact_named_evidence": [
+          {
+            "line": 3376,
+            "text": "test evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port ... ok"
+          }
+        ]
+      },
+      {
+        "test": "evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch",
+        "old_named_failed": [
+          3573
+        ],
+        "new_named_ok": [
+          3314
+        ],
+        "new_exact_named_evidence": [
+          {
+            "line": 3314,
+            "text": "test evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch ... ok"
+          }
+        ]
+      },
+      {
+        "test": "evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+        "old_named_failed": [
+          3575
+        ],
+        "new_named_ok": [
+          3315
+        ],
+        "new_exact_named_evidence": [
+          {
+            "line": 3315,
+            "text": "test evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded ... ok"
+          }
+        ]
+      }
+    ],
+    "target_overall_still_failed": "hepta-intelligence still has other UnsafeStateDirectory failures."
+  },
+  "shard1_comparison": {
+    "old_log": "49329_shard1",
+    "new_log": "f20_shard1",
+    "old_unique_named_failure_count": 5,
+    "new_unique_named_failure_count": 7,
+    "same_named_failure_count": 5,
+    "same_named_failures": [
+      {
+        "test": "cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send",
+        "old": {
+          "FAILED": [
+            3838
+          ]
+        },
+        "new": {
+          "FAILED": [
+            4482
+          ]
+        }
+      },
+      {
+        "test": "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+        "old": {
+          "FAILED": [
+            3534
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3968
+          ]
+        }
+      },
+      {
+        "test": "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running",
+        "old": {
+          "FAILED": [
+            3535
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3969
+          ]
+        }
+      },
+      {
+        "test": "registry::tests::workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths",
+        "old": {
+          "FAILED": [
+            3338
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3700
+          ]
+        }
+      },
+      {
+        "test": "restart_budget_survives_repeated_supervisord_recovery",
+        "old": {
+          "FAILED": [
+            3744
+          ]
+        },
+        "new": {
+          "FAILED": [
+            4389
+          ]
+        }
+      }
+    ],
+    "newly_failed_observations": [
+      {
+        "test": "rmcp_client::tests::active_time_timeout_pauses_while_elicitation_is_pending",
+        "old": {},
+        "new": {
+          "FAILED": [
+            4295
+          ]
+        }
+      },
+      {
+        "test": "session::tests::terminal_event_tests::turn_aborted_is_published_after_durable_cleanup_and_admission_release",
+        "old": {},
+        "new": {
+          "FAILED": [
+            5064,
+            5379,
+            5693
+          ]
+        }
+      }
+    ],
+    "old_failures_now_only_named_ok": [],
+    "old_failures_unobserved": []
+  },
+  "shard2_comparison": {
+    "old_log": "49329_shard2",
+    "new_log": "f20_shard2",
+    "old_unique_named_failure_count": 42,
+    "new_unique_named_failure_count": 38,
+    "same_named_failure_count": 37,
+    "same_named_failures": [
+      {
+        "test": "cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation",
+        "old": {
+          "FAILED": [
+            4361
+          ]
+        },
+        "new": {
+          "FAILED": [
+            4065
+          ]
+        }
+      },
+      {
+        "test": "cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers",
+        "old": {
+          "FAILED": [
+            4364
+          ]
+        },
+        "new": {
+          "FAILED": [
+            4067
+          ]
+        }
+      },
+      {
+        "test": "cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission",
+        "old": {
+          "FAILED": [
+            4363
+          ]
+        },
+        "new": {
+          "FAILED": [
+            4068
+          ]
+        }
+      },
+      {
+        "test": "cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence",
+        "old": {
+          "FAILED": [
+            4366
+          ]
+        },
+        "new": {
+          "FAILED": [
+            4069
+          ]
+        }
+      },
+      {
+        "test": "lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal",
+        "old": {
+          "FAILED": [
+            4097
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3795
+          ]
+        }
+      },
+      {
+        "test": "lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation",
+        "old": {
+          "FAILED": [
+            4098
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3797
+          ]
+        }
+      },
+      {
+        "test": "lease_lifecycle::tests::issue_unknown_reconciles_without_duplicate_issue",
+        "old": {
+          "FAILED": [
+            4096
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3796
+          ]
+        }
+      },
+      {
+        "test": "lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown",
+        "old": {
+          "FAILED": [
+            4099
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3798
+          ]
+        }
+      },
+      {
+        "test": "lease_lifecycle::tests::renew_unknown_blocks_fabricated_success_until_reconciled",
+        "old": {
+          "FAILED": [
+            4105
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3801
+          ]
+        }
+      },
+      {
+        "test": "lease_lifecycle::tests::reused_operation_id_with_changed_semantics_conflicts",
+        "old": {
+          "FAILED": [
+            4101
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3800
+          ]
+        }
+      },
+      {
+        "test": "lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation",
+        "old": {
+          "FAILED": [
+            4102
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3802
+          ]
+        }
+      },
+      {
+        "test": "prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift",
+        "old": {
+          "FAILED": [
+            3616
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3352
+          ]
+        }
+      },
+      {
+        "test": "prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input",
+        "old": {
+          "FAILED": [
+            3614
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3357
+          ]
+        }
+      },
+      {
+        "test": "prompt_delivery::tests::revocation_after_exercise_prevents_delivery_of_the_selected_realization",
+        "old": {
+          "FAILED": [
+            3615
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3355
+          ]
+        }
+      },
+      {
+        "test": "prompt_pipeline::tests::exercised_portfolio_compiles_attaches_and_observes_exact_delivery",
+        "old": {
+          "FAILED": [
+            3620
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3356
+          ]
+        }
+      },
+      {
+        "test": "prompt_pipeline::tests::materialization_drift_after_compilation_blocks_attachment_preparation",
+        "old": {
+          "FAILED": [
+            3617
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3358
+          ]
+        }
+      },
+      {
+        "test": "prompt_pipeline::tests::revocation_after_compilation_blocks_attachment_preparation",
+        "old": {
+          "FAILED": [
+            3618
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3359
+          ]
+        }
+      },
+      {
+        "test": "prompt_pipeline::tests::serialization_without_selected_prompt_bytes_fails_closed",
+        "old": {
+          "FAILED": [
+            3619
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3361
+          ]
+        }
+      },
+      {
+        "test": "runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once",
+        "old": {
+          "FAILED": [
+            5184
+          ]
+        },
+        "new": {
+          "FAILED": [
+            4884
+          ]
+        }
+      },
+      {
+        "test": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+        "old": {
+          "FAILED": [
+            5183
+          ]
+        },
+        "new": {
+          "FAILED": [
+            4883
+          ]
+        }
+      },
+      {
+        "test": "runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence",
+        "old": {
+          "FAILED": [
+            5182
+          ]
+        },
+        "new": {
+          "FAILED": [
+            4882
+          ]
+        }
+      },
+      {
+        "test": "sandbox_fetches_and_enforces_cloud_managed_permission_profile",
+        "old": {
+          "FAILED": [
+            5262
+          ]
+        },
+        "new": {
+          "FAILED": [
+            4935
+          ]
+        }
+      },
+      {
+        "test": "setup_helper_embeds_as_invoker_manifest",
+        "old": {
+          "FAILED": [
+            3837
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3772
+          ]
+        }
+      },
+      {
+        "test": "suite::resume::exec_resume_last_repairs_rollout_missing_from_state_db",
+        "old": {
+          "FAILED": [
+            5621,
+            5656,
+            5691
+          ]
+        },
+        "new": {
+          "FAILED": [
+            5729,
+            5764,
+            5799
+          ]
+        }
+      },
+      {
+        "test": "suite::v2::attestation::attestation_generate_round_trip_adds_header_to_responses_websocket_handshake",
+        "old": {
+          "FAILED": [
+            8103,
+            8233,
+            8363
+          ]
+        },
+        "new": {
+          "FAILED": [
+            7686,
+            7814,
+            7971
+          ]
+        }
+      },
+      {
+        "test": "suite::v2::bedrock_setup::discover_bedrock_profiles_and_environment_credentials",
+        "old": {
+          "FAILED": [
+            7809,
+            7883,
+            7957
+          ]
+        },
+        "new": {
+          "FAILED": [
+            7392,
+            7466,
+            7540
+          ]
+        }
+      },
+      {
+        "test": "suite::v2::bedrock_setup::setup_bedrock_profile_and_environment",
+        "old": {
+          "FAILED": [
+            7359,
+            7508,
+            7657
+          ]
+        },
+        "new": {
+          "FAILED": [
+            5275,
+            5423,
+            5570
+          ]
+        }
+      },
+      {
+        "test": "suite::v2::bedrock_setup::setup_bedrock_rejects_invalid_or_conflicting_credentials",
+        "old": {
+          "FAILED": [
+            8458,
+            8570,
+            8686
+          ]
+        },
+        "new": {
+          "FAILED": [
+            8065,
+            8178,
+            8291
+          ]
+        }
+      },
+      {
+        "test": "suite::v2::client_metadata::turn_start_forwards_client_metadata_to_responses_request_v2",
+        "old": {
+          "FAILED": [
+            5303,
+            5405,
+            5509
+          ]
+        },
+        "new": {
+          "FAILED": [
+            4966,
+            5069,
+            5172
+          ]
+        }
+      },
+      {
+        "test": "suite::v2::client_metadata::turn_start_forwards_client_metadata_to_responses_websocket_request_body_v2",
+        "old": {
+          "FAILED": [
+            8509,
+            8622,
+            8735
+          ]
+        },
+        "new": {
+          "FAILED": [
+            8117,
+            8230,
+            8343
+          ]
+        }
+      },
+      {
+        "test": "suite::v2::residency::managed_residency_overrides_provider_headers::websocket",
+        "old": {
+          "FAILED": [
+            7082,
+            7190,
+            7296
+          ]
+        },
+        "new": {
+          "FAILED": [
+            7116,
+            7221,
+            7328
+          ]
+        }
+      },
+      {
+        "test": "suite::v2::thread_fork::thread_fork_defers_inherited_active_goal_until_next_turn",
+        "old": {
+          "FAILED": [
+            6564,
+            6742,
+            6920
+          ]
+        },
+        "new": {
+          "FAILED": [
+            6598,
+            6776,
+            6954
+          ]
+        }
+      },
+      {
+        "test": "suite::v2::thread_queue::interrupt_preserves_queue_and_queue_start_can_resume_a_non_head_item",
+        "old": {
+          "FAILED": [
+            5786,
+            6084,
+            6323
+          ]
+        },
+        "new": {
+          "FAILED": [
+            5894,
+            6138,
+            6345
+          ]
+        }
+      },
+      {
+        "test": "suite::v2::thread_resume::cold_resume_reresolves_persisted_active_permission_profile",
+        "old": {
+          "FAILED": [
+            7410,
+            7557,
+            7705
+          ]
+        },
+        "new": {
+          "FAILED": [
+            5324,
+            5472,
+            5620
+          ]
+        }
+      },
+      {
+        "test": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+        "old": {
+          "FAILED": [
+            3975
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3652
+          ]
+        }
+      },
+      {
+        "test": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+        "old": {
+          "FAILED": [
+            3976
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3656
+          ]
+        }
+      },
+      {
+        "test": "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+        "old": {
+          "FAILED": [
+            4012
+          ]
+        },
+        "new": {
+          "FAILED": [
+            3689
+          ]
+        }
+      }
+    ],
+    "newly_failed_observations": [
+      {
+        "test": "suite::v2::plugin_list::plugin_list_honors_global_remote_catalog_cache_ttl",
+        "old": {
+          "ok": [
+            8069,
+            8200,
+            8329
+          ]
+        },
+        "new": {
+          "ok": [
+            7651,
+            7936
+          ],
+          "FAILED": [
+            7779
+          ]
+        }
+      }
+    ],
+    "old_failures_now_only_named_ok": [
+      {
+        "test": "evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+        "old": {
+          "FAILED": [
+            3571
+          ]
+        },
+        "new": {
+          "ok": [
+            3311
+          ]
+        }
+      },
+      {
+        "test": "evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port",
+        "old": {
+          "FAILED": [
+            3570
+          ]
+        },
+        "new": {
+          "ok": [
+            3376
+          ]
+        }
+      },
+      {
+        "test": "evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+        "old": {
+          "FAILED": [
+            3575
+          ]
+        },
+        "new": {
+          "ok": [
+            3315
+          ]
+        }
+      },
+      {
+        "test": "evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch",
+        "old": {
+          "FAILED": [
+            3573
+          ]
+        },
+        "new": {
+          "ok": [
+            3314
+          ]
+        }
+      },
+      {
+        "test": "suite::v2::thread_resume::thread_resume_rejects_mismatched_path_for_running_thread_id",
+        "old": {
+          "FAILED": [
+            5781
+          ],
+          "ok": [
+            6080,
+            6319
+          ]
+        },
+        "new": {
+          "ok": [
+            5889,
+            6133,
+            6340
+          ]
+        }
+      }
+    ],
+    "old_failures_unobserved": []
+  },
+  "five_prior_shard1_failures_same": [
+    {
+      "test": "registry::tests::workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths",
+      "current": [
+        {
+          "line": 3714,
+          "text": "---- registry::tests::workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths stdout ----"
+        },
+        {
+          "line": 3715,
+          "text": "Error: Invalid(\"workspace root must be canonical and must not traverse a symlink: D:\\\\tmp\\\\.tmptrendW\\\\sweep\\\\a\")"
+        }
+      ],
+      "classification": "same canonical workspace rejection; this f20 source predates the later one-line canonical fixture candidate"
+    },
+    {
+      "test": "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+      "current": [
+        {
+          "line": 3975,
+          "text": "thread 'git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running' (8780) panicked at git-utils/src\\git_process_tests.rs:75:6:"
+        },
+        {
+          "line": 3976,
+          "text": "wait for Git wrapper child readiness: Elapsed(())"
+        }
+      ],
+      "classification": "same 30-second readiness Elapsed at line75; tested cleanup still not reached"
+    },
+    {
+      "test": "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running",
+      "current": [
+        {
+          "line": 3981,
+          "text": "thread 'git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running' (6440) panicked at git-utils/src\\git_process_tests.rs:75:6:"
+        },
+        {
+          "line": 3982,
+          "text": "wait for Git wrapper child readiness: Elapsed(())"
+        }
+      ],
+      "classification": "same readiness error"
+    },
+    {
+      "test": "restart_budget_survives_repeated_supervisord_recovery",
+      "current": [
+        {
+          "line": 4395,
+          "text": "thread 'restart_budget_survives_repeated_supervisord_recovery' (6108) panicked at hepta-supervisor/tests/restart_budget_recovery.rs:251:5:"
+        },
+        {
+          "line": 4396,
+          "text": "assertion failed: supervisor.snapshot(&agent_id).expect(\"snapshot\").events.iter().any(|event|"
+        },
+        {
+          "line": 4397,
+          "text": "        matches!(&event.kind, SupervisorEventKind::AutomaticRestartQueued"
+        },
+        {
+          "line": 4398,
+          "text": "            { attempt: 2 }))"
+        }
+      ],
+      "classification": "same missing AutomaticRestartQueued attempt2 at line251"
+    },
+    {
+      "test": "cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send",
+      "current": [
+        {
+          "line": 4549,
+          "text": "thread 'cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send' (7476) panicked at ext/hepta-memory/src\\cognitive\\federation.rs:1309:9:"
+        },
+        {
+          "line": 4550,
+          "text": "assertion failed: EphemeralModelInputContributor::is_active(&extension, &thread_store,"
+        },
+        {
+          "line": 4551,
+          "text": "    &turn_store)"
+        }
+      ],
+      "classification": "same is_active=false at line1309"
+    }
+  ],
+  "three_schema_failures_same_names": {
+    "rows": [
+      {
+        "test": "schema_fixtures_tests::experimental_precomputed_exports_match_generated",
+        "failure_summary_lines": {
+          "49329_shard1": [
+            4896
+          ],
+          "f20_shard1": [
+            6225
+          ]
+        }
+      },
+      {
+        "test": "schema_fixtures_tests::json_schema_fixtures_match_generated",
+        "failure_summary_lines": {
+          "49329_shard1": [
+            4897
+          ],
+          "f20_shard1": [
+            6226
+          ]
+        }
+      },
+      {
+        "test": "schema_fixtures_tests::stable_precomputed_exports_match_schema_fixtures",
+        "failure_summary_lines": {
+          "49329_shard1": [
+            4898
+          ],
+          "f20_shard1": [
+            6227
+          ]
+        }
+      }
+    ],
+    "current_summary": [
+      {
+        "line": 6224,
+        "text": "failures:"
+      },
+      {
+        "line": 6225,
+        "text": "    schema_fixtures_tests::experimental_precomputed_exports_match_generated"
+      },
+      {
+        "line": 6226,
+        "text": "    schema_fixtures_tests::json_schema_fixtures_match_generated"
+      },
+      {
+        "line": 6227,
+        "text": "    schema_fixtures_tests::stable_precomputed_exports_match_schema_fixtures"
+      },
+      {
+        "line": 6228,
+        "text": ""
+      },
+      {
+        "line": 6229,
+        "text": "test result: FAILED. 44 passed; 3 failed; 1 ignored; 0 measured; 256 filtered out; finished in 122.60s"
+      }
+    ],
+    "stdout_ui_omission": [
+      {
+        "line": 4589,
+        "text": "FAIL: //codex-rs/app-server-protocol:app-server-protocol-unit-tests (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server-protocol/app-server-protocol-unit-tests/test.log)"
+      },
+      {
+        "line": 4590,
+        "text": "INFO: From Testing //codex-rs/app-server-protocol:app-server-protocol-unit-tests:"
+      },
+      {
+        "line": 4591,
+        "text": "stdout (D:/o/execroot/_main/bazel-out/_tmp/actions/stdout-4291) 1126789 exceeds maximum size of --experimental_ui_max_stdouterr_bytes=1048576 bytes; skipping"
+      }
+    ],
+    "full_schema_diff_available_from_this_log": false,
+    "same_error_bytes_claimed": false
+  },
+  "macro_fix_and_terminal_test": {
+    "E0659_present_in_f20_shard_logs": false,
+    "terminal_test_compiled_and_executed": true,
+    "named_result": "FAIL",
+    "test": "session::tests::terminal_event_tests::turn_aborted_is_published_after_durable_cleanup_and_admission_release",
+    "source_location": "core/src/session/tests/terminal_event_tests.rs:173:5",
+    "actual_tuple": "(true, 3, Interrupted)",
+    "expected_tuple": "(true, 3, PendingInit)",
+    "first_failure": [
+      {
+        "line": 5121,
+        "text": "thread 'session::tests::terminal_event_tests::turn_aborted_is_published_after_durable_cleanup_and_admission_release' (9812) panicked at core/src\\session\\tests\\terminal_event_tests.rs:173:5:"
+      },
+      {
+        "line": 5122,
+        "text": "assertion failed: `(left == right)`"
+      },
+      {
+        "line": 5123,
+        "text": ""
+      },
+      {
+        "line": 5124,
+        "text": "Diff < left / right > :"
+      },
+      {
+        "line": 5125,
+        "text": " ("
+      },
+      {
+        "line": 5126,
+        "text": "     true,"
+      },
+      {
+        "line": 5127,
+        "text": "     3,"
+      },
+      {
+        "line": 5128,
+        "text": "<    Interrupted,"
+      },
+      {
+        "line": 5129,
+        "text": ">    PendingInit,"
+      },
+      {
+        "line": 5130,
+        "text": " )"
+      }
+    ],
+    "native_named_failure_lines": [
+      5064,
+      5379,
+      5693
+    ],
+    "other_terminal_tests_not_printed": "No individual PASS is inferred for terminal tests absent from these two complete job logs."
+  },
+  "other_newly_observed_failures": [
+    {
+      "test": "rmcp_client::tests::active_time_timeout_pauses_while_elicitation_is_pending",
+      "source_location": "rmcp-client/src/rmcp_client.rs:1604:9",
+      "current": [
+        {
+          "line": 4303,
+          "text": "thread 'rmcp_client::tests::active_time_timeout_pauses_while_elicitation_is_pending' (2312) panicked at rmcp-client/src\\rmcp_client.rs:1604:9:"
+        },
+        {
+          "line": 4304,
+          "text": "assertion failed: `(left == right)`"
+        },
+        {
+          "line": 4305,
+          "text": ""
+        },
+        {
+          "line": 4306,
+          "text": "Diff < left / right > :"
+        },
+        {
+          "line": 4307,
+          "text": "<Ok("
+        },
+        {
+          "line": 4308,
+          "text": "<    \"done\","
+        },
+        {
+          "line": 4309,
+          "text": ">Err("
+        },
+        {
+          "line": 4310,
+          "text": ">    (),"
+        },
+        {
+          "line": 4311,
+          "text": " )"
+        }
+      ],
+      "old_named_result": "UNOBSERVED",
+      "old_target_pass_is_not_individual_pass": true,
+      "root_cause": "not yet diagnosed"
+    },
+    {
+      "test": "suite::v2::plugin_list::plugin_list_honors_global_remote_catalog_cache_ttl",
+      "old_named": {
+        "ok": [
+          8069,
+          8200,
+          8329
+        ]
+      },
+      "new_named": {
+        "ok": [
+          7651,
+          7936
+        ],
+        "FAILED": [
+          7779
+        ]
+      },
+      "classification": "one FAILED and two ok observations in actual retry output; retain intermittent failure, no source-causality claim"
+    }
+  ],
+  "source_blob_comparison": [
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "git_blobs": {
+        "old": "78b8ef7bba2fdbcda174b46d3f61f39c45a707bc",
+        "new": "cf7d87ed8104e5bdd1c3db87963a76c0fc505fb5"
+      },
+      "same_blob_old_and_new": false
+    },
+    {
+      "path": "codex-rs/core/src/session/tests/terminal_event_tests.rs",
+      "git_blobs": {
+        "old": "2ed38e90bbb6e57670897c2c92f15e88704a6515",
+        "new": "6d1f9331c8a372007e4674fddfab3b4e8d5f06b3"
+      },
+      "same_blob_old_and_new": false
+    },
+    {
+      "path": "codex-rs/git-utils/src/git_process_tests.rs",
+      "git_blobs": {
+        "old": "1640d626680ed7e2eab9e97f2115f7f27dabdf2f",
+        "new": "1640d626680ed7e2eab9e97f2115f7f27dabdf2f"
+      },
+      "same_blob_old_and_new": true
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry_tests.rs",
+      "git_blobs": {
+        "old": "d462cc845a448c802d32e56ab2de00ee3249ee11",
+        "new": "d462cc845a448c802d32e56ab2de00ee3249ee11"
+      },
+      "same_blob_old_and_new": true
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "git_blobs": {
+        "old": "e9e079316e42b20a09c259217ec9ff68e03d6ae4",
+        "new": "e9e079316e42b20a09c259217ec9ff68e03d6ae4"
+      },
+      "same_blob_old_and_new": true
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "git_blobs": {
+        "old": "61b143142015b17924d9f2804714fb9968b2e9a6",
+        "new": "61b143142015b17924d9f2804714fb9968b2e9a6"
+      },
+      "same_blob_old_and_new": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client.rs",
+      "git_blobs": {
+        "old": "0dd10638df13ab8b4bc33279247a53d9f660a75e",
+        "new": "0dd10638df13ab8b4bc33279247a53d9f660a75e"
+      },
+      "same_blob_old_and_new": true
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/plugin_list.rs",
+      "git_blobs": {
+        "old": "80ec20880d1d0898266ef164bfcccc19d1ed98b0",
+        "new": "80ec20880d1d0898266ef164bfcccc19d1ed98b0"
+      },
+      "same_blob_old_and_new": true
+    }
+  ],
+  "remaining_shard2_boundaries": "37 unique named failures occur in both old and new shard2. These include existing Unsupported Unix/private-state owners, four writable recovery failures, Windows sandbox, and app-server/CLI failures; their full individual inventory is retained above. No blanket fix or skip is recommended.",
+  "preservation": {
+    "repository_changes": [],
+    "rust_executed": false,
+    "models_executed": false,
+    "scientific_assets_read": false,
+    "old_logs_and_receipts_modified": false,
+    "only_completed_requested_logs_fetched": true,
+    "shard3_not_fetched_or_polled": true,
+    "global_ci_pass_claimed": false
+  }
+}

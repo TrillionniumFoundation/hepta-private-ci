@@ -1,0 +1,280 @@
+{
+  "schema": 1,
+  "status": "ACTUAL_FAILURE_IDENTIFIED_NARROW_CANDIDATE_PREPARED_NOT_EXECUTED",
+  "run_id": 40669844250,
+  "head": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+  "actual_checkout_merge": "896a6c13f90eb3a02fffea0d8deeb9c03aa3a347",
+  "jobs": [
+    {
+      "job_id": 122753977147,
+      "platform": "macOS aarch64-apple-darwin",
+      "provider_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40669844250/job/122753977147",
+      "observed_conclusion": "FAILURE",
+      "failing_step": "bazel build --config=clippy lint targets",
+      "upload_execution_logs": "SUCCESS",
+      "clean_worktree_check": "SUCCESS",
+      "first_fatal_lines": [
+        8296,
+        8315
+      ],
+      "first_fatal_excerpt": [
+        "2026-10-28T10:44:08.3339140Z ERROR: /Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-fleet/BUILD.bazel:3:17: Clippy //codex-rs/hepta-fleet:hepta-fleet-unit-tests-bin failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_test rule target //codex-rs/hepta-fleet:hepta-fleet-unit-tests-bin) bazel-out/darwin_arm64-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper ... (remaining 135 arguments skipped)",
+        "2026-10-28T10:44:08.3444510Z ",
+        "2026-10-28T10:44:08.3590620Z Use --sandbox_debug to see verbose messages from the sandbox and retain the sandbox build root for debugging",
+        "2026-10-28T10:44:08.3616010Z error: used `unwrap()` on a `Result` value",
+        "2026-10-28T10:44:08.3618030Z    --> hepta-fleet/src/authority_port.rs:197:9",
+        "2026-10-28T10:44:08.3618480Z     |",
+        "2026-10-28T10:44:08.3618820Z 197 | /         ledger",
+        "2026-10-28T10:44:08.3619200Z 198 | |             .admit_host(HostObservation {",
+        "2026-10-28T10:44:08.3619680Z 199 | |                 host_id: \"host-one\".into(),",
+        "2026-10-28T10:44:08.3620100Z 200 | |                 failure_domain_id: \"rack-one\".into(),",
+        "2026-10-28T10:44:08.3620600Z ...   |",
+        "2026-10-28T10:44:08.3620900Z 209 | |             })",
+        "2026-10-28T10:44:08.3621280Z 210 | |             .unwrap();",
+        "2026-10-28T10:44:08.3621650Z     | |_____________________^",
+        "2026-10-28T10:44:08.3622010Z     |",
+        "2026-10-28T10:44:08.3622350Z     = note: if this value is an `Err`, it will panic",
+        "2026-10-28T10:44:08.3623250Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used",
+        "2026-10-28T10:44:08.3624120Z     = note: requested on the command line with `-D clippy::unwrap-used`",
+        "2026-10-28T10:44:08.3624510Z ",
+        "2026-10-28T10:44:08.3624730Z error: aborting due to 1 previous error"
+      ],
+      "tail_reprint_start_lines": [
+        8322,
+        8333
+      ],
+      "reprints_are_not_retries": true,
+      "observed_unique_primary_fatal_diagnostic_count": 1,
+      "full_decoded_log": {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_f20_clippy_review_20261028/job_122753977147.log",
+        "bytes": 935658,
+        "sha256": "3913a5c1cbc70546685d3750a1a32a59b88b051ff37a77764ebb9df4cc46f2f1"
+      },
+      "line_count": 8480,
+      "lossless_gzip": {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_f20_clippy_review_20261028/job_122753977147.log.gz",
+        "bytes": 95944,
+        "sha256": "bfb21b021cb3a3b2d1ee86d210dbe9d70c7732a27fae48ba674d1692d3c4a4ed"
+      },
+      "transport_json": {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_f20_clippy_review_20261028/job_122753977147.transport.json",
+        "bytes": 946802,
+        "sha256": "28de4dd490d0cf6ae9ee160571e845207634bf4840298d797478e7c22291ccdc"
+      }
+    },
+    {
+      "job_id": 122753977228,
+      "platform": "Linux x86_64-unknown-linux-gnu",
+      "provider_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40669844250/job/122753977228",
+      "observed_conclusion": "FAILURE",
+      "failing_step": "bazel build --config=clippy lint targets",
+      "upload_execution_logs": "SUCCESS",
+      "clean_worktree_check": "SUCCESS",
+      "first_fatal_lines": [
+        6737,
+        6756
+      ],
+      "first_fatal_excerpt": [
+        "2026-10-28T10:46:38.1301057Z ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-fleet/BUILD.bazel:3:17: Clippy //codex-rs/hepta-fleet:hepta-fleet-unit-tests-bin failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_test rule target //codex-rs/hepta-fleet:hepta-fleet-unit-tests-bin) bazel-out/local_linux-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper ... (remaining 136 arguments skipped)",
+        "2026-10-28T10:46:38.1335654Z ",
+        "2026-10-28T10:46:38.1366483Z Use --sandbox_debug to see verbose messages from the sandbox and retain the sandbox build root for debugging",
+        "2026-10-28T10:46:38.1436604Z error: used `unwrap()` on a `Result` value",
+        "2026-10-28T10:46:38.1477778Z    --> hepta-fleet/src/authority_port.rs:197:9",
+        "2026-10-28T10:46:38.1505924Z     |",
+        "2026-10-28T10:46:38.1515981Z 197 | /         ledger",
+        "2026-10-28T10:46:38.1516596Z 198 | |             .admit_host(HostObservation {",
+        "2026-10-28T10:46:38.1517261Z 199 | |                 host_id: \"host-one\".into(),",
+        "2026-10-28T10:46:38.1517945Z 200 | |                 failure_domain_id: \"rack-one\".into(),",
+        "2026-10-28T10:46:38.1518611Z ...   |",
+        "2026-10-28T10:46:38.1519039Z 209 | |             })",
+        "2026-10-28T10:46:38.1519520Z 210 | |             .unwrap();",
+        "2026-10-28T10:46:38.1520029Z     | |_____________________^",
+        "2026-10-28T10:46:38.1520541Z     |",
+        "2026-10-28T10:46:38.1521034Z     = note: if this value is an `Err`, it will panic",
+        "2026-10-28T10:46:38.1522095Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used",
+        "2026-10-28T10:46:38.1523294Z     = note: requested on the command line with `-D clippy::unwrap-used`",
+        "2026-10-28T10:46:38.1523914Z ",
+        "2026-10-28T10:46:38.1524207Z error: aborting due to 1 previous error"
+      ],
+      "tail_reprint_start_lines": [
+        6762,
+        6773
+      ],
+      "reprints_are_not_retries": true,
+      "observed_unique_primary_fatal_diagnostic_count": 1,
+      "full_decoded_log": {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_f20_clippy_review_20261028/job_122753977228.log",
+        "bytes": 876290,
+        "sha256": "c2e447e541c13b018f875cc6dd6408772eeac808dd38da59a1aaaeb40e6e1489"
+      },
+      "line_count": 6908,
+      "lossless_gzip": {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_f20_clippy_review_20261028/job_122753977228.log.gz",
+        "bytes": 92360,
+        "sha256": "fc8c368c71b4d3ebfd5eb08cd82b383e2617d7ad07ad451822ba84214e4d8e30"
+      },
+      "transport_json": {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_f20_clippy_review_20261028/job_122753977228.transport.json",
+        "bytes": 889121,
+        "sha256": "75cbe2e061f885fc93ee54de25bcb842f40be5964b400a563dddff32f7bff7c9"
+      }
+    }
+  ],
+  "finding": {
+    "file": "codex-rs/hepta-fleet/src/authority_port.rs",
+    "source_line": 197,
+    "unwrap_line": 210,
+    "function": "tests::ledger",
+    "target": "//codex-rs/hepta-fleet:hepta-fleet-unit-tests-bin",
+    "lint": "clippy::unwrap_used",
+    "severity": "deny",
+    "source_identical_to_base_and_both_prior_heads": true,
+    "actual_merge_blob": "55e117dafe84709451a638bb8f6bafa41c38bd5a",
+    "source_provider_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/896a6c13f90eb3a02fffea0d8deeb9c03aa3a347/codex-rs/hepta-fleet/src/authority_port.rs",
+    "causal_boundary": "The offending source blob is unchanged from base0ac,49329,f20 and actual merge. Do not attribute it to the current terminalization/fixture repairs. Other targets may remain unverified after this failing build; absence of later diagnostics is not PASS."
+  },
+  "why_expect_alone_is_insufficient": {
+    "workspace_policy": "Cargo.toml denies both expect_used and unwrap_used; clippy.toml enables both existing allow-in-tests settings. No setting is changed.",
+    "official_check": "Clippy1.95 unwrap_expect_used::check shares type/error/test-context logic for Unwrap and Expect; methods/mod.rs passes the corresponding allow-in-tests boolean. The helper is not itself a #[test] function.",
+    "test_context_detection": "clippy_utils::is_cfg_test matches a direct CfgEntry::NameValue with sym::test; it does not descend through the all(test,unix) entry. is_in_test is is_in_test_function || is_in_cfg_test. A bare cfg(test) ancestor is recognized.",
+    "original_diagnostic_consistency": "The helper under cfg(all(test,unix)) is reported while actual #[test] functions are permitted by existing config. expect-only would switch to the equally denied lint under the same unrecognized helper context.",
+    "official_sources": [
+      {
+        "url": "https://github.com/rust-lang/rust-clippy/blob/rust-1.95.0/clippy_lints/src/methods/unwrap_expect_used.rs",
+        "git_blob": "6d8777cbc23f8724c67ad45cf869dc63f6642fd4"
+      },
+      {
+        "url": "https://github.com/rust-lang/rust-clippy/blob/rust-1.95.0/clippy_utils/src/lib.rs",
+        "git_blob": "cc6d2b10be1fb5d1bf97afa2ac961e5cce539af1"
+      },
+      {
+        "url": "https://github.com/rust-lang/rust-clippy/blob/rust-1.95.0/clippy_lints/src/methods/mod.rs",
+        "git_blob": "74db7ae03ba0b30c89235c6a96dd6e15fd8ff020",
+        "lines": [
+          5725,
+          5783
+        ]
+      }
+    ],
+    "source_files": [
+      {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_f20_clippy_review_20261028/CLIPPY_1_95_SOURCES.json",
+        "bytes": 145249,
+        "sha256": "c1715bfe2ca6ba7e1f599e566f856719e12f8d8b7309a97edc8783d9f9cb2a80"
+      },
+      {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_f20_clippy_review_20261028/OFFICIAL_METHOD_DISPATCH_EXCERPT.json",
+        "bytes": 2702,
+        "sha256": "f6ae5affe9bf49bbcb7d8ccc7c51dcf548b69c9b3b2c988d789db862093fdd86"
+      }
+    ],
+    "runtime_status": "Source-level explanation; no native Clippy rerun in this review."
+  },
+  "candidate": {
+    "status": "PREPARED_NOT_APPLIED_NOT_COMPILED",
+    "target": "codex-rs/hepta-fleet/src/authority_port.rs",
+    "base_sha256": "72b4e86e8adfcdff4edc62507458e64da8489dd7be4dd476c91638777ef4eb83",
+    "base_git_blob": "55e117dafe84709451a638bb8f6bafa41c38bd5a",
+    "historical_blobs": {
+      "0acfd9b27db910c180b0d8911f39aea469b7f864": "55e117dafe84709451a638bb8f6bafa41c38bd5a",
+      "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c": "55e117dafe84709451a638bb8f6bafa41c38bd5a",
+      "f20db50ec8f891d286465e635c68e83749b9b3b4": "55e117dafe84709451a638bb8f6bafa41c38bd5a"
+    },
+    "replacement": {
+      "path": "/workspace/scratch/e8a4dc33549f/ci_f20_clippy_review_20261028/replacements/codex-rs/hepta-fleet/src/authority_port.rs",
+      "bytes": 10267,
+      "sha256": "ef564f78ed3eafe0012b3f03871e4cea275b25092adf098bcb729ba5a178ce7a"
+    },
+    "patch": {
+      "path": "/workspace/scratch/e8a4dc33549f/ci_f20_clippy_review_20261028/authority_port_test_context.patch",
+      "bytes": 522,
+      "sha256": "b220e72cf3ca28dcc1f0f2482ebbcfaf03b8ac1d24db91315573b576357d61aa"
+    },
+    "git_apply_check_exit_code": 0,
+    "production_prefix_exact": true,
+    "inverse_two_substitutions_exact": true,
+    "test_gate_truth_table": [
+      {
+        "test": false,
+        "unix": false,
+        "before_all": false,
+        "after_stacked": false
+      },
+      {
+        "test": false,
+        "unix": true,
+        "before_all": false,
+        "after_stacked": false
+      },
+      {
+        "test": true,
+        "unix": false,
+        "before_all": false,
+        "after_stacked": false
+      },
+      {
+        "test": true,
+        "unix": true,
+        "before_all": true,
+        "after_stacked": true
+      }
+    ],
+    "limits": "No Rust/Cargo execution, no lint allowance/severity change, no production or assertion removal; actual Clippy pass pending."
+  },
+  "candidate_semantics": {
+    "gate_change": "#[cfg(all(test, unix))] becomes stacked #[cfg(test)] and #[cfg(unix)]. Both compile exactly for test && unix; no newly included/excluded platform or production code.",
+    "unwrap_change": "The one fixture host-admission call now expects success with context admit fixture host-one to lease ledger. Failure still panics; success still returns the same populated LeaseLedger.",
+    "unchanged": [
+      "Production prefix bytes",
+      "Assertions and test invocation bodies",
+      "Lint deny levels and allow-in-tests configuration",
+      "Non-Unix absence of this pre-existing Unix-only test module"
+    ],
+    "static_verification": [
+      "Exact inverse of two specified substitutions restores original file bytes",
+      "Four-value Boolean compilation-set equivalence table",
+      "git apply --check exit0 against unchanged repository source",
+      "Historical Git blob equality",
+      "Official source blobs verified"
+    ],
+    "native_tests": 0,
+    "native_clippy_runs": 0
+  },
+  "scoped_same_pattern_scan": {
+    "scope": "codex-rs/hepta-fleet/src",
+    "pattern": "#[cfg(all(test,",
+    "observed_matches": [
+      {
+        "path": "authority_port.rs",
+        "line": 149
+      }
+    ],
+    "conclusion": "No second same-spelling gate in this target source tree; no workspace-wide lint-clean claim and no unrelated edits."
+  },
+  "preservation": {
+    "decoded_transport_note": "github_fetch_workflow_job_logs returns decoded text. JSON retains the exact returned string; .log is its UTF-8 encoding including BOM; gzip is lossless with deterministic mtime. These are not falsely described as original compressed HTTP response bytes.",
+    "transport_errors": 0,
+    "retrieval_retries": 0,
+    "repo_modified": false,
+    "uploads": 0,
+    "rust_or_cargo_execution": 0
+  },
+  "policy_inputs": [
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/codex-rs/clippy.toml",
+      "bytes": 2754,
+      "sha256": "323037ae6e8136646a8a80fd59724b32bbb3e3b2b7ea745ac79841443d4a71a9"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/codex-rs/Cargo.toml",
+      "bytes": 21574,
+      "sha256": "0e3fc0b7dc3ec907e02059a1bc79579077c8e5d1a0ac936b4f1bd984e94afdb4"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/codex-rs/hepta-fleet/Cargo.toml",
+      "bytes": 631,
+      "sha256": "c651dae8fede019ba6409f9e59815796444e4a9fb4a698aad40db94859dc3870"
+    }
+  ],
+  "next_required": "Root may apply this narrow candidate, format and commit. Actual subsequent macOS/Linux clippy must establish PASS; retain original job FAIL evidence."
+}

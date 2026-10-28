@@ -1,0 +1,373 @@
+{
+  "schema_version": 1,
+  "status": "SCRATCH_CANDIDATE_STATIC_REVIEW_COMPLETE_NATIVE_VALIDATION_PENDING",
+  "created_at_utc": "2026-10-28T11:08:44.212529+00:00",
+  "authorization": "Parent explicitly authorized a scratch-only minimal federation workspace resolver candidate and meaningful tests. No repository source mutation or Rust command.",
+  "observed_head": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+  "candidate": {
+    "status": "CANDIDATE_NOT_APPLIED_NOT_COMPILED_NOT_TESTED",
+    "source_repository": "/workspace/scratch/e8a4dc33549f/hepta",
+    "observed_git_head": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+    "paths": [
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_path.rs",
+        "original_sha256": "cf9e8bed3cfe7d8f8169fa6f8f0563973efc1844870cbafa798c240b58c493be",
+        "replacement_sha256": "b5957795bf90945a90b5ae53b1c8fd349832073597a3ade87aadcb273024daf1",
+        "original_bytes": 2134,
+        "replacement_bytes": 3370,
+        "added_lines": 34,
+        "removed_lines": 1
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_path_tests.rs",
+        "original_sha256": "fd7c55f420653e40d52a4aa4723d77939ac2d36d87fbb40cc3d8561acdf21e56",
+        "replacement_sha256": "98874cbfcbd1af3775a1a731de86bdc890e3159ae3b0bedb8d655886274c78de",
+        "original_bytes": 4890,
+        "replacement_bytes": 7160,
+        "added_lines": 51,
+        "removed_lines": 0
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/lib.rs",
+        "original_sha256": "d9a0522fa7d6abccdfc1523c86f9972391ef61c5694be5d10edae39032d09697",
+        "replacement_sha256": "fafebe2604ffe5c7aec5a7854be714a180e721e6fca297b16d217de776a770a9",
+        "original_bytes": 23658,
+        "replacement_bytes": 23714,
+        "added_lines": 1,
+        "removed_lines": 0
+      },
+      {
+        "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+        "original_sha256": "9d1fab18becbfbbcbca8f02b6bab72b58b41c55f5822a9a77560c2ae5c7d3c68",
+        "replacement_sha256": "58b761d2c6577cf2c631a9bfbfa45ce9b698f43a1d6644d4433ea8879ae57749",
+        "original_bytes": 54709,
+        "replacement_bytes": 60403,
+        "added_lines": 136,
+        "removed_lines": 8
+      }
+    ],
+    "patch_sha256": "7a1ab779e5dc2ee96ab7c1cc96271c5be18dd10b8b222865936f4ed200b93642",
+    "patch_bytes": 16350,
+    "git_apply_check": {
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "repository_modified": false,
+    "rust_commands_executed": 0
+  },
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_path.rs",
+      "bytes": 2134,
+      "sha256": "cf9e8bed3cfe7d8f8169fa6f8f0563973efc1844870cbafa798c240b58c493be",
+      "head_git_blob": "b084411f8d0fd6352669e8ca8c67bf4bf9f9f2b8",
+      "equals_observed_head_blob": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/hepta-memory/src/cognitive_path.rs"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_path_tests.rs",
+      "bytes": 4890,
+      "sha256": "fd7c55f420653e40d52a4aa4723d77939ac2d36d87fbb40cc3d8561acdf21e56",
+      "head_git_blob": "d7e5ac377bc82c67bd415b725e8d2e6f50ba804d",
+      "equals_observed_head_blob": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/hepta-memory/src/cognitive_path_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "bytes": 23658,
+      "sha256": "d9a0522fa7d6abccdfc1523c86f9972391ef61c5694be5d10edae39032d09697",
+      "head_git_blob": "8d70d05e03095908d324be4bdac396ec681991b4",
+      "equals_observed_head_blob": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/hepta-memory/src/lib.rs"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "bytes": 54709,
+      "sha256": "9d1fab18becbfbbcbca8f02b6bab72b58b41c55f5822a9a77560c2ae5c7d3c68",
+      "head_git_blob": "61b143142015b17924d9f2804714fb9968b2e9a6",
+      "equals_observed_head_blob": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/framing.rs",
+      "bytes": 1280,
+      "sha256": "95af3ea198d77dfd1012d43d65159ccfedd1d4c668aec738772c4044c3d14483",
+      "head_git_blob": "cab115c3246c0dfc2f0f262e0cf536c38b0f9878",
+      "equals_observed_head_blob": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/hepta-memory/src/framing.rs"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/framing.rs",
+      "bytes": 1274,
+      "sha256": "d5ee494b533cfdb8d664932e7d31893e398faa2dfe4c0fa0267773fbef6fd11c",
+      "head_git_blob": "ac3e6ce3769cd638460e6f636f374ea6c1f78c9b",
+      "equals_observed_head_blob": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/ext/hepta-memory/src/framing.rs"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/model.rs",
+      "bytes": 6311,
+      "sha256": "64ecaff8ecfc2a60129e300eb24f460160f01636a65fe8d9ace4ea6b5a400d4e",
+      "head_git_blob": "4e8ab6ced19748d22b543a6dbded5d9942ea463c",
+      "equals_observed_head_blob": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/hepta-fleet/src/model.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "bytes": 58121,
+      "sha256": "08cac64fa29ee427e4dd49efce235a7ce9b7e0c1411c8778a29c07868d4be458",
+      "head_git_blob": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28",
+      "equals_observed_head_blob": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/hepta-agentd/src/state_control.rs"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+      "bytes": 47495,
+      "sha256": "a1078bef3cddf047f6f74b8234b2017f218b84ed9a09bc4c6baec25aa00fb201",
+      "head_git_blob": "7ad7a60f7832b037819ae1966b25054d048c641f",
+      "equals_observed_head_blob": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/hepta-memory/src/cognitive_runtime.rs"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_federation.rs",
+      "bytes": 44445,
+      "sha256": "cae56a5f31258d6e209045c24384161964bf526713f71922c6739be126220b6b",
+      "head_git_blob": "6a04c2f7552a0f7f29a9275fce661e49666c795c",
+      "equals_observed_head_blob": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/hepta-memory/src/cognitive_federation.rs"
+    },
+    {
+      "path": "codex-rs/utils/absolute-path/src/lib.rs",
+      "bytes": 26629,
+      "sha256": "a6f3553c4aefe49082b6bd8fb671eaaf14cf81cb134940bbd6b769024af01b70",
+      "head_git_blob": "fc26cc4f56a97659e9c593570a1b847d3bb345e5",
+      "equals_observed_head_blob": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/utils/absolute-path/src/lib.rs"
+    },
+    {
+      "path": "codex-rs/utils/path-uri/src/lib.rs",
+      "bytes": 35915,
+      "sha256": "883cd0cb547512ef0c4845a2a4254be9c24d0e7d76913d2a39955e5706abe1dc",
+      "head_git_blob": "a4731dfcc7a0ca9f0d93cb018df862039460b306",
+      "equals_observed_head_blob": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/utils/path-uri/src/lib.rs"
+    },
+    {
+      "path": "codex-rs/ext/extension-api/src/contributors/model_provider_input.rs",
+      "bytes": 8334,
+      "sha256": "85b255dce60ca0d758daafdf6dbd74ceda0457f269f945a2d68bdb1d13eaefd9",
+      "head_git_blob": "a95c3cc53da6c4e7908953b01bae70358f357300",
+      "equals_observed_head_blob": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/ext/extension-api/src/contributors/model_provider_input.rs"
+    },
+    {
+      "path": "codex-rs/ext/extension-api/src/state.rs",
+      "bytes": 4661,
+      "sha256": "b7b6064ab9df274fcb52e5457c5e05b2b9cad92f188714939864164f022b49a1",
+      "head_git_blob": "7d6e79dc5872968147c1aba00b4aa08d1efdae4c",
+      "equals_observed_head_blob": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/ext/extension-api/src/state.rs"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/Cargo.toml",
+      "bytes": 1184,
+      "sha256": "6b0cd713fab0d2038840dd6d18ad856bf59de3a34f936977e2fa1c2539da3f91",
+      "head_git_blob": "2d17c6481dbe0d75bd057e2edc9e3ee46de88c73",
+      "equals_observed_head_blob": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/ext/hepta-memory/Cargo.toml"
+    },
+    {
+      "path": "codex-rs/hepta-memory/Cargo.toml",
+      "bytes": 1399,
+      "sha256": "5ec9e7bd2a5757cc6241351e65d93cb35812d960ba4516343b4cd66dbbeb016c",
+      "head_git_blob": "6ba04f39f78e7d6295c9922d279e37e0492180f2",
+      "equals_observed_head_blob": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/hepta-memory/Cargo.toml"
+    }
+  ],
+  "actual_failure": {
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40639726155/job/122655390371",
+    "log": {
+      "path": "/workspace/scratch/e8a4dc33549f/ci_49329_windows_shard1.log",
+      "bytes": 851514,
+      "sha256": "5ddb0254c2c731a895d7f1bc5be0a93416ca0fcd1d81518dfae3370cd9b0e9e3"
+    },
+    "first_failure_excerpt": [
+      {
+        "line": 3902,
+        "text": "2026-10-28T06:14:54.4277745Z ---- cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send stdout ----"
+      },
+      {
+        "line": 3903,
+        "text": "2026-10-28T06:14:54.4278216Z "
+      },
+      {
+        "line": 3904,
+        "text": "2026-10-28T06:14:54.4278783Z thread 'cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send' (8964) panicked at ext/hepta-memory/src\\cognitive\\federation.rs:1309:9:"
+      },
+      {
+        "line": 3905,
+        "text": "2026-10-28T06:14:54.4279704Z assertion failed: EphemeralModelInputContributor::is_active(&extension, &thread_store,"
+      },
+      {
+        "line": 3906,
+        "text": "2026-10-28T06:14:54.4280438Z     &turn_store)"
+      },
+      {
+        "line": 3907,
+        "text": "2026-10-28T06:14:54.4280787Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      {
+        "line": 3908,
+        "text": "2026-10-28T06:14:54.4281091Z "
+      }
+    ],
+    "named_test": "cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send",
+    "target": "//codex-rs/ext/hepta-memory:hepta-memory-unit-tests",
+    "limit": "Actual failure is is_active=false. The log does not print native path values or the failing discovery predicate; the representation mismatch is established from source, not a newly executed Windows reproduction."
+  },
+  "prior_independent_diagnosis": {
+    "path": "/workspace/scratch/e8a4dc33549f/ci_49329_git_readiness_federation_identity_review_20261028.json",
+    "bytes": 25672,
+    "sha256": "c7283e291a59b06cf041853b166837ae84c147ff0f59b430d65325f1ab8fbb78"
+  },
+  "source_inference": [
+    "WorkspaceBinding validates and stores OS canonical paths. The official agentd grant producer hashes that stored path.",
+    "PathUri transport normalizes Windows verbatim namespace spelling into an ordinary native path. The original prepare path hashed that transport spelling; original physical-send separately compared and hashed input.cwd.",
+    "The shared digest uses raw native bytes (UTF-16LE on Windows). Thus the two Windows spellings can produce different grant identity without denoting different directories.",
+    "The candidate restores a checked OS canonical directory before the existing equality/access/source-binding calculations. It does not change digest byte encoding or reinterpret persisted capabilities."
+  ],
+  "changes": [
+    "Narrow public canonical_federation_workspace returns only a checked absolute existing-directory PathBuf; no capability, access flag, IO handle or security bypass is exposed.",
+    "It reuses unchanged canonical_path_without_redirection and supported drive/UNC component matching and Windows ancestor reparse checks; unsupported platforms, relative paths, nonexistent paths, non-directories, redirections and IO failures reject.",
+    "Prepare first uses PathUri.to_abs_path for native convention and lossless decoding, resolves once, and uses that one canonical PathBuf for recall, V2 source binding and prepared state.",
+    "Physical-send resolves once; the prepared equality, FederationConsumerAccess digest and V2 source binding all use the same result.",
+    "Final-use guard captures requested path and canonical expected path. Its readonly filesystem check is before the original capability/time/revocation chain, leaving actual federation revalidation as the last await.",
+    "Existing grant/content/budget/revocation test assertions remain. New real-directory controls require positive ordinary/verbatim equivalence and reject a different directory plus actual post-assembly symlink or junction redirection."
+  ],
+  "unchanged_source_regions": [
+    {
+      "start": "fn federation_source_binding(",
+      "end_before": "fn api_digest(",
+      "unchanged_bytes": 821,
+      "sha256": "753da9277c6cdcbf6b21224694b941c890dff8c7dee233469cbc9a8d49572c34"
+    },
+    {
+      "start": "fn combine_cognitive_materials(",
+      "end_before": "fn compact_local_memory(",
+      "unchanged_bytes": 4570,
+      "sha256": "c48823ef5f73d92e6e9463ea8dbd6a03669edc57df17f35f6ea36a467ce15eb5"
+    },
+    {
+      "start": "fn final_use_capability_window_current(",
+      "end_before": "#[cfg(test)]",
+      "unchanged_bytes": 280,
+      "sha256": "0c969a6e24cc8016d5b3ada888887466631d5996795825b7e719cfa461b32a6b"
+    },
+    {
+      "start": "let now = now_unix_seconds().ok_or_else(|| {",
+      "end_before": "pub(crate) struct FederatedCognitiveExtension",
+      "unchanged_bytes": 2311,
+      "sha256": "eb7f9a02b54bf9fae5a039b122ef3c1c7a4e85318af2b4ec4c2cb167d4b32861"
+    },
+    {
+      "start": "/// Return the OS canonical spelling only when no path component redirects it.",
+      "unchanged_bytes": 1914,
+      "sha256": "c862bfbd508d164b6cfb26c92a27ec811c1a10894f64dd9f13326c053240b34b"
+    }
+  ],
+  "compatibility": {
+    "canonical_official_grants": "Existing V1 grant identity is preserved; no row migration, alternate digest acceptance or authority reissue is needed for unchanged canonical directories.",
+    "manually_bound_alias_grants": "No compatibility promise for callers that manually issued grants with a noncanonical raw-path digest. They must use the normal canonical issuer; candidate does not broaden grant acceptance.",
+    "v1_digest": "Domain, framing, native-byte encoding, and double hashing unchanged.",
+    "v2_federation_source_binding": "Function and domain unchanged; all federation callers now supply the same checked canonical path.",
+    "combined_material_binding": "combine_cognitive_materials remains byte-identical and still binds raw physical input.cwd. It is separate from persisted grant authorization; this candidate does not unify every model-input path identity.",
+    "global_pathuri_and_path_bytes": "No changes to generic PathUri equality, prefix normalization, framing helpers or owner workspace scope.",
+    "path_limit": "This is a point-in-time pathname observation. No descriptor-bound filesystem/DB atomicity, no protection against a change after the check, and no file-ID detection of same-spelling directory replacement are claimed.",
+    "platform_limit": "Drive-prefix aliases are exercised by proposed real Windows tests. Existing UNC prefix logic is reused but no real UNC share was tested; no equivalence for arbitrary case, 8.3 aliases or device namespaces is promised."
+  },
+  "static_validation": {
+    "git_apply_check": {
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "original_existing_test_lines_all_retained_in_order": {
+      "codex-rs/hepta-memory/src/cognitive_path_tests.rs": true,
+      "codex-rs/ext/hepta-memory/src/cognitive/federation.rs": true
+    },
+    "four_live_repository_files_equal_original_bytes": true,
+    "all_unchanged_regions_equal_bytes": true,
+    "added_lines": 222,
+    "removed_lines": 9,
+    "rust_commands": 0,
+    "native_tests": 0,
+    "windows_tests": 0,
+    "models": 0,
+    "compile_status": "NOT_EXECUTED",
+    "format_status": "NOT_EXECUTED; parent owns formatting after application",
+    "test_status": "NOT_EXECUTED; source-level tests authored only",
+    "size_scope": "One coherent identity boundary across prepare/physical/final use. The 8-line async adapter remains co-located with existing federation flows; the new public validation is in the existing small cognitive_path module."
+  },
+  "required_remote_verification": [
+    {
+      "package": "codex-hepta-memory",
+      "filter": "cognitive_path::tests::federation_workspace_aliases_preserve_existing_canonical_grants",
+      "platforms": [
+        "Windows",
+        "Linux",
+        "macOS"
+      ]
+    },
+    {
+      "package": "codex-hepta-memory",
+      "filter": "cognitive_path::tests::federation_workspace_requires_existing_absolute_directory",
+      "platforms": [
+        "Windows",
+        "Linux",
+        "macOS"
+      ]
+    },
+    {
+      "package": "codex-hepta-memory",
+      "filter": "cognitive_path::tests::native_and_os_canonical_roots_share_store_identity_and_source_replay",
+      "platforms": [
+        "Windows",
+        "Linux",
+        "macOS"
+      ]
+    },
+    {
+      "package": "codex-hepta-memory",
+      "filter": "cognitive_path::tests::symlinked_fleet_and_database_are_rejected",
+      "platforms": [
+        "Linux",
+        "macOS"
+      ]
+    },
+    {
+      "package": "codex-hepta-memory",
+      "filter": "cognitive_path::tests::junction_and_its_descendants_are_rejected",
+      "platforms": [
+        "Windows"
+      ]
+    },
+    {
+      "package": "codex-hepta-memory-extension",
+      "filter": "cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send",
+      "platforms": [
+        "Windows",
+        "Linux",
+        "macOS"
+      ]
+    },
+    {
+      "requirement": "Each filtered test must execute a nonzero named testcase with PASS, not merely disappear from a failure list. Preserve first failures and platform fixture failures; target-only evidence remains target-level."
+    },
+    {
+      "requirement": "Use repository just test / CI defaults, then affected Clippy and format gates. Neither compilation nor CI green is claimed here."
+    }
+  ],
+  "independent_review": "Requested from /root/hepta_architecture; its separate receipt is authoritative for its own inspected SHA and findings."
+}
