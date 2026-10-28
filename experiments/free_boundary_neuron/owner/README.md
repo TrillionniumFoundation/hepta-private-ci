@@ -130,17 +130,17 @@ Do not reuse or overwrite an existing destination.
 ```bash
 python -m experiments.free_boundary_neuron.owner.run \
   --binary "$PWD/experiments/free_boundary_neuron/owner/runs/build01/target/debug/examples/free_boundary_host" \
-  --model "$PWD/experiments/free_boundary_neuron/math/results/readout_affine_v1.json" \
-  --destination "$PWD/experiments/free_boundary_neuron/owner/results/registered-01" \
+  --model "$PWD/experiments/free_boundary_neuron/results/math/run001/readout_affine_v1.json" \
+  --destination "$PWD/experiments/free_boundary_neuron/results/owner/run001" \
   --source-seal /absolute/path/to/SOURCE_SEAL.json \
   --build-receipt "$PWD/experiments/free_boundary_neuron/owner/runs/build01/BUILD_RECEIPT.json"
 
 python -m experiments.free_boundary_neuron.owner.audit \
-  --root "$PWD/experiments/free_boundary_neuron/owner/results/registered-01" \
-  --model "$PWD/experiments/free_boundary_neuron/math/results/readout_affine_v1.json" \
+  --root "$PWD/experiments/free_boundary_neuron/results/owner/run001" \
+  --model "$PWD/experiments/free_boundary_neuron/results/math/run001/readout_affine_v1.json" \
   --binary "$PWD/experiments/free_boundary_neuron/owner/runs/build01/target/debug/examples/free_boundary_host" \
   --source-seal /absolute/path/to/SOURCE_SEAL.json \
-  --output "$PWD/experiments/free_boundary_neuron/owner/results/registered-01/AUDIT.json"
+  --output "$PWD/experiments/free_boundary_neuron/results/owner/run001/AUDIT.json"
 ```
 
 There are 56 paired contexts and 168 episodes. Each natural episode directory
