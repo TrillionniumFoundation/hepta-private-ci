@@ -1,0 +1,410 @@
+{
+  "schema_version": 1,
+  "at_utc": "2026-10-28T10:21:45.825300+00:00",
+  "source_head": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+  "tested_merge": "896a6c13f90eb3a02fffea0d8deeb9c03aa3a347",
+  "tested_tree": "5573f689119dfde4f2883272373b2077f797509c",
+  "run_id": 40669844250,
+  "job_id": 122753976654,
+  "artifact_id": 12808305401,
+  "artifact_bytes": 57632,
+  "artifact_sha256": "21cbfea41fd291edd10dfcd3b7e36a585895cf1e70ea2859e8c5e4e2e7c01131",
+  "artifact_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40669844250/artifacts/12808305401",
+  "provider_digest_matches": true,
+  "zip_crc_verified": true,
+  "receipt_sha256": "18fdb8273b479d3424b649f33c51c89e6df47c945fcba9a5e727bc92e16677f2",
+  "all_stream_segments_and_complete_stream_sha_verified": true,
+  "diagnostic_stderr_bytes": 891360,
+  "diagnostic_stderr_sha256": "333065dee308bc93a6bff56670c824e78d1378e6dcd0bcaa38ce8b3c6acd8ef9",
+  "diagnostic_stderr_complete": true,
+  "diagnostic_exit_code": 1,
+  "canonical_action_result": "FAIL",
+  "host_diagnostic_is_canonical_action": false,
+  "scope": "The host diagnostic identifies concrete advisory failures on the exact candidate inputs. It is separate from the canonical Docker action; no canonical pass or runtime exploitability is inferred.",
+  "observability_blocker": "CLOSED for this complete artifact",
+  "dependency_policy_blocker": "OPEN; 22 advisory errors across 16 packages remain",
+  "counts": {
+    "unmaintained": 6,
+    "vulnerability": 16
+  },
+  "packages": [
+    "anymap2",
+    "basic-toml",
+    "crypto-bigint",
+    "matrix-sdk-crypto",
+    "rustls",
+    "rustls-webpki",
+    "unsafe-libyaml",
+    "webpki-root-certs",
+    "webpki-roots",
+    "zbus_names",
+    "zip",
+    "zstd",
+    "zstd-safe",
+    "zstd-sys",
+    "zvariant",
+    "zvariant_derive"
+  ],
+  "statistics": {
+    "advisories": {
+      "errors": 22,
+      "helps": 0,
+      "notes": 22,
+      "warnings": 3
+    },
+    "bans": {
+      "errors": 0,
+      "helps": 0,
+      "notes": 22,
+      "warnings": 81
+    },
+    "licenses": {
+      "errors": 0,
+      "helps": 1325,
+      "notes": 0,
+      "warnings": 1
+    },
+    "sources": {
+      "errors": 0,
+      "helps": 0,
+      "notes": 6,
+      "warnings": 1
+    }
+  },
+  "advisories": [
+    {
+      "line": 1,
+      "package": "anymap2",
+      "advisory_id": "RUSTSEC-2026-0319",
+      "kind": "unmaintained",
+      "reported_date": "2026-10-02",
+      "locked_packages": [
+        "anymap2 0.13.0 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "No safe upgrade is available!"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0319.html",
+      "upstream_announcement": "https://github.com/rustsec/advisory-db/issues/3300#issuecomment-5939722190"
+    },
+    {
+      "line": 2,
+      "package": "basic-toml",
+      "advisory_id": "RUSTSEC-2026-0374",
+      "kind": "unmaintained",
+      "reported_date": "2026-09-26",
+      "locked_packages": [
+        "basic-toml 0.1.10 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "No safe upgrade is available!"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0374.html",
+      "upstream_announcement": "https://github.com/dtolnay/basic-toml/commit/dd2ea1df197f255a402b8990cb852ade3e37ea34"
+    },
+    {
+      "line": 3,
+      "package": "crypto-bigint",
+      "advisory_id": "RUSTSEC-2026-0387",
+      "kind": "vulnerability",
+      "reported_date": "2026-10-23",
+      "locked_packages": [
+        "crypto-bigint 0.5.5 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "Upgrade to >=0.7.6 (try `cargo update -p crypto-bigint`)"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0387.html",
+      "upstream_announcement": "https://github.com/RustCrypto/crypto-bigint/pull/1365"
+    },
+    {
+      "line": 4,
+      "package": "matrix-sdk-crypto",
+      "advisory_id": "RUSTSEC-2026-0318",
+      "kind": "vulnerability",
+      "reported_date": "2026-09-29",
+      "locked_packages": [
+        "matrix-sdk-crypto 0.18.0 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "Upgrade to >=0.19.0 (try `cargo update -p matrix-sdk-crypto`)"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0318.html",
+      "upstream_announcement": "https://github.com/matrix-org/matrix-rust-sdk/pull/6670"
+    },
+    {
+      "line": 5,
+      "package": "rustls",
+      "advisory_id": "RUSTSEC-2026-0346",
+      "kind": "vulnerability",
+      "reported_date": "2026-10-14",
+      "locked_packages": [
+        "rustls 0.23.45 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "Upgrade to >=0.23.46 (try `cargo update -p rustls`)"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0346.html",
+      "upstream_announcement": "https://github.com/rustls/rustls/pull/3299"
+    },
+    {
+      "line": 6,
+      "package": "rustls",
+      "advisory_id": "RUSTSEC-2026-0347",
+      "kind": "vulnerability",
+      "reported_date": "2026-10-14",
+      "locked_packages": [
+        "rustls 0.23.45 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "Upgrade to >=0.23.46 (try `cargo update -p rustls`)"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0347.html",
+      "upstream_announcement": "https://github.com/rustls/rustls/pull/3300"
+    },
+    {
+      "line": 7,
+      "package": "rustls",
+      "advisory_id": "RUSTSEC-2026-0348",
+      "kind": "vulnerability",
+      "reported_date": "2026-10-14",
+      "locked_packages": [
+        "rustls 0.23.45 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "Upgrade to >=0.23.46 (try `cargo update -p rustls`)"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0348.html",
+      "upstream_announcement": "https://github.com/rustls/rustls/pull/3297"
+    },
+    {
+      "line": 8,
+      "package": "rustls",
+      "advisory_id": "RUSTSEC-2026-0349",
+      "kind": "vulnerability",
+      "reported_date": "2026-10-14",
+      "locked_packages": [
+        "rustls 0.23.45 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "Upgrade to >=0.23.46 (try `cargo update -p rustls`)"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0349.html",
+      "upstream_announcement": "https://github.com/rustls/rustls/pull/3355"
+    },
+    {
+      "line": 9,
+      "package": "rustls-webpki",
+      "advisory_id": "RUSTSEC-2026-0382",
+      "kind": "vulnerability",
+      "reported_date": "2026-10-20",
+      "locked_packages": [
+        "rustls-webpki 0.103.15 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "Upgrade to >=0.103.16, <0.104.0-alpha.1 OR >=0.104.0-alpha.8 (try `cargo update -p rustls-webpki`)"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0382.html",
+      "upstream_announcement": "https://github.com/rustls/webpki/pull/546"
+    },
+    {
+      "line": 10,
+      "package": "unsafe-libyaml",
+      "advisory_id": "RUSTSEC-2024-0449",
+      "kind": "unmaintained",
+      "reported_date": "2024-03-25",
+      "locked_packages": [
+        "unsafe-libyaml 0.2.11 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "No safe upgrade is available!"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2024-0449.html",
+      "upstream_announcement": "https://github.com/dtolnay/unsafe-libyaml"
+    },
+    {
+      "line": 11,
+      "package": "webpki-root-certs",
+      "advisory_id": "RUSTSEC-2026-0383",
+      "kind": "vulnerability",
+      "reported_date": "2026-10-19",
+      "locked_packages": [
+        "webpki-root-certs 1.0.5 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "Upgrade to >=1.0.10 (try `cargo update -p webpki-root-certs`)"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0383.html",
+      "upstream_announcement": "https://github.com/rustls/webpki-roots/pull/133"
+    },
+    {
+      "line": 12,
+      "package": "webpki-roots",
+      "advisory_id": "RUSTSEC-2026-0381",
+      "kind": "vulnerability",
+      "reported_date": "2026-10-19",
+      "locked_packages": [
+        "webpki-roots 1.0.9 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "Upgrade to >=1.0.10 (try `cargo update -p webpki-roots`)"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0381.html",
+      "upstream_announcement": "https://github.com/rustls/webpki-roots/pull/133"
+    },
+    {
+      "line": 13,
+      "package": "zbus_names",
+      "advisory_id": "RUSTSEC-2026-0371",
+      "kind": "unmaintained",
+      "reported_date": "2026-10-16",
+      "locked_packages": [
+        "zbus_names 3.0.0 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "No safe upgrade is available!"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0371.html",
+      "upstream_announcement": "https://github.com/z-galaxy/zbus/issues/2043"
+    },
+    {
+      "line": 14,
+      "package": "zip",
+      "advisory_id": "RUSTSEC-2026-0367",
+      "kind": "vulnerability",
+      "reported_date": "2026-10-09",
+      "locked_packages": [
+        "zip 2.4.2 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "Upgrade to >=9.0.0 (try `cargo update -p zip`)"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0367.html",
+      "upstream_announcement": null
+    },
+    {
+      "line": 15,
+      "package": "zip",
+      "advisory_id": "RUSTSEC-2026-0368",
+      "kind": "vulnerability",
+      "reported_date": "2026-10-09",
+      "locked_packages": [
+        "zip 2.4.2 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "Upgrade to >=9.0.0 (try `cargo update -p zip`)"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0368.html",
+      "upstream_announcement": null
+    },
+    {
+      "line": 16,
+      "package": "zip",
+      "advisory_id": "RUSTSEC-2026-0369",
+      "kind": "vulnerability",
+      "reported_date": "2026-10-10",
+      "locked_packages": [
+        "zip 2.4.2 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "Upgrade to >=9.0.0 (try `cargo update -p zip`)"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0369.html",
+      "upstream_announcement": null
+    },
+    {
+      "line": 17,
+      "package": "zstd",
+      "advisory_id": "RUSTSEC-2026-0391",
+      "kind": "vulnerability",
+      "reported_date": "2026-10-16",
+      "locked_packages": [
+        "zstd 0.13.3 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "Upgrade to >=0.14.3 (try `cargo update -p zstd`)"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0391.html",
+      "upstream_announcement": "https://github.com/gyscos/zstd-rs/commit/74ace2dcdca62a2ce0f034895d6079458311e003"
+    },
+    {
+      "line": 18,
+      "package": "zstd-safe",
+      "advisory_id": "RUSTSEC-2026-0398",
+      "kind": "vulnerability",
+      "reported_date": "2026-10-16",
+      "locked_packages": [
+        "zstd-safe 7.2.4 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "Upgrade to >=8.2.0 (try `cargo update -p zstd-safe`)"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0398.html",
+      "upstream_announcement": "https://github.com/gyscos/zstd-rs/commit/80506be743fae2ed0c2fe8b21c374c6a2eab0be7"
+    },
+    {
+      "line": 19,
+      "package": "zstd-safe",
+      "advisory_id": "RUSTSEC-2026-0403",
+      "kind": "vulnerability",
+      "reported_date": "2026-10-16",
+      "locked_packages": [
+        "zstd-safe 7.2.4 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "Upgrade to >=8.2.0 (try `cargo update -p zstd-safe`)"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0403.html",
+      "upstream_announcement": "https://github.com/gyscos/zstd-rs/commit/006e1d1ad1eeaf6b5d4c28329e70217adabcec43"
+    },
+    {
+      "line": 20,
+      "package": "zstd-sys",
+      "advisory_id": "RUSTSEC-2026-0410",
+      "kind": "vulnerability",
+      "reported_date": "2026-10-16",
+      "locked_packages": [
+        "zstd-sys 2.0.16+zstd.1.5.7 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "Upgrade to >=2.1.2 (try `cargo update -p zstd-sys`)"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0410.html",
+      "upstream_announcement": "https://github.com/gyscos/zstd-rs/commit/165d1625553c236b9700ca794b8a7c51f5d98314"
+    },
+    {
+      "line": 21,
+      "package": "zvariant",
+      "advisory_id": "RUSTSEC-2026-0370",
+      "kind": "unmaintained",
+      "reported_date": "2026-10-16",
+      "locked_packages": [
+        "zvariant 4.2.0 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "No safe upgrade is available!"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0370.html",
+      "upstream_announcement": "https://github.com/z-galaxy/zbus/issues/2043"
+    },
+    {
+      "line": 22,
+      "package": "zvariant_derive",
+      "advisory_id": "RUSTSEC-2026-0372",
+      "kind": "unmaintained",
+      "reported_date": "2026-10-16",
+      "locked_packages": [
+        "zvariant_derive 4.2.0 registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "solution": [
+        "No safe upgrade is available!"
+      ],
+      "official_advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0372.html",
+      "upstream_announcement": "https://github.com/z-galaxy/zbus/issues/2043"
+    }
+  ],
+  "next_bounded_stage": "Four exact TLS package updates and actual Cargo/Bazel lock regeneration. No advisory ignores or severity reductions. Other dependency families require separate compatibility work.",
+  "scientific_status": "FAIL",
+  "admission": false,
+  "scientific_raw_payloads_included": false
+}
