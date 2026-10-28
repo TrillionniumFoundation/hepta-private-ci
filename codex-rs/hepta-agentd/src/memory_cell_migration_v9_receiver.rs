@@ -56,7 +56,9 @@ impl MemoryCellMigrationReceiverV9 {
                 let raw = wire.read(usize::try_from(request.payload_bytes).map_err(failure)?)?;
                 let result = match self.store.commit(&request.intent, &raw, observe) {
                     Ok(receipt) => ProviderEffectDispatch::Ack(receipt),
-                    Err(_) => ProviderEffectDispatch::Rejected { reason_code: "migration_image_rejected".into() },
+                    // A filesystem error can follow the CURRENT fsync. Never
+                    // turn an ambiguous committed effect into a rejection.
+                    Err(_) => ProviderEffectDispatch::Unknown,
                 };
                 Outcome::Dispatch(result)
             }

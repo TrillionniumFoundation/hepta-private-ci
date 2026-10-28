@@ -188,7 +188,7 @@ impl MemoryCellMigrationStoreV9 {
     }
 
     fn transaction_path(&self, intent: &ProviderEffectIntent) -> PathBuf {
-        self.root.join("transactions").join(format!("{}.json", Sha256Digest::for_bytes(intent.key.as_str().as_bytes())))
+        self.root.join("transactions").join(format!("{}.json", Sha256Digest::for_bytes(intent.key.as_str().as_bytes()).as_str()))
     }
     fn image_path(&self, intent: &ProviderEffectIntent) -> PathBuf { self.root.join("images").join(intent.payload_sha256.as_str()) }
     fn payload_path(&self, intent: &ProviderEffectIntent) -> PathBuf { self.image_path(intent).join("PAYLOAD") }
@@ -196,7 +196,7 @@ impl MemoryCellMigrationStoreV9 {
 
 fn ack(intent: &ProviderEffectIntent) -> ProviderEffectAck {
     ProviderEffectAck::new(intent.key.clone(), intent.payload_sha256.clone(),
-        Sha256Digest::for_bytes(format!("hepta.memory.migration.v9:{}:{}", intent.key.as_str(), intent.payload_sha256).as_bytes()),
+        Sha256Digest::for_bytes(format!("hepta.memory.migration.v9:{}:{}", intent.key.as_str(), intent.payload_sha256.as_str()).as_bytes()),
         ProviderEffectAckStatus::Completed)
 }
 
