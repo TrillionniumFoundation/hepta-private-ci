@@ -1,0 +1,122 @@
+{
+  "actual_denied_proposals": 8,
+  "actual_generator_calls": 25,
+  "actual_native_kernel_executions": 340,
+  "actual_retries": 5,
+  "checks": {
+    "all_13_components_changed": true,
+    "all_13_components_have_nonzero_actual_reward_gradient_each_update": true,
+    "all_cold_replayed_prefix_counts_10": true,
+    "all_current_checkpoints_match_native_host_binding": true,
+    "all_episode_profile_hashes_match": true,
+    "all_original_kernel_counts_17": true,
+    "all_private_scoring_after_owner_closed": true,
+    "budget_denial_observed": true,
+    "every_actual_emission_scored_once": true,
+    "expiry_denial_observed": true,
+    "failed_episodes_retain_full_actual_cost": true,
+    "native_authority_remains_DENY_ALL": true,
+    "no_qualification_sources_consumed": true,
+    "successful_actual_retry_observed": true
+  },
+  "development_net_returns_descriptive_only": [
+    0.47295801326182696,
+    0.25255533983181905,
+    -0.017281798009000007,
+    -0.017284287274000002
+  ],
+  "development_population_ce_descriptive_only": 0.1335961563685983,
+  "efficacy_claim": false,
+  "failed_terminal_episodes": 8,
+  "final_checkpoint": {
+    "parameter_sha256": "36cc4817d4ec503aee05c87c2bfbf55d8f5cd0c9a062e6bf53adcfadf3d9d6df",
+    "path": "/workspace/scratch/627fa3bea56c/runs/native-joint-gradient-001/theta-08.pt",
+    "profile_sha256": "7616e3ad5e7a306e76ed3e272044dc420653b0196b5e865f7504d1ae2b2b3ace",
+    "sha256": "13c9317d2f2fee97b3f5b4ca24c3864b27dbac4cf33a2c6fda6bb91823fabe06",
+    "step": 8
+  },
+  "limitations": [
+    "One new host profile only; no rewriting historical training objectives",
+    "Original native kernel/readout/calibration remain unchanged and advisory",
+    "CPU costs measured, direct parameter/runtime derivatives omitted under explicit conditional exogeneity model",
+    "Variable CPU has no finite future bound; no rigorous tail certificate",
+    "Eight training sources and four development sources provide mechanism evidence, not efficacy or generalization",
+    "Natural semantic observer adequacy and all previous failed capability gates remain unresolved"
+  ],
+  "new_qualification": false,
+  "original_development_complete_episodes": 4,
+  "production_gates_passed": false,
+  "profile_sha256": "7616e3ad5e7a306e76ed3e272044dc420653b0196b5e865f7504d1ae2b2b3ace",
+  "protocol_sha256": "bb922f84cd6080d04d650041810fed6c5a142607e8170169fa7a92db95588436",
+  "schema": "hepta.ndu.native-joint-gradient-result.v1",
+  "snapshots": [
+    {
+      "parameter_sha256": "48f217de812ebcc4a85f0363994eb708b342c6e9d72a6021ca79126f7f0c894f",
+      "path": "/workspace/scratch/627fa3bea56c/runs/native-joint-gradient-001/theta-00.pt",
+      "profile_sha256": "7616e3ad5e7a306e76ed3e272044dc420653b0196b5e865f7504d1ae2b2b3ace",
+      "sha256": "38aeb5d25a12242f3ee4e5c9c0b59be1e5de7a2f7b02be4c78197b6912b326a4",
+      "step": 0
+    },
+    {
+      "parameter_sha256": "bc7b51482c561a1a29c97651d5bc2678ebaa5cf60eb4276ab088e315ba34920e",
+      "path": "/workspace/scratch/627fa3bea56c/runs/native-joint-gradient-001/theta-01.pt",
+      "profile_sha256": "7616e3ad5e7a306e76ed3e272044dc420653b0196b5e865f7504d1ae2b2b3ace",
+      "sha256": "794a35c522b26cbea4faee7c313198266995d3f09feef65c590902ff927f6819",
+      "step": 1
+    },
+    {
+      "parameter_sha256": "5adbdf42634b783dec25de50713f06b65054144057a820b783ee9341fe1bf36a",
+      "path": "/workspace/scratch/627fa3bea56c/runs/native-joint-gradient-001/theta-02.pt",
+      "profile_sha256": "7616e3ad5e7a306e76ed3e272044dc420653b0196b5e865f7504d1ae2b2b3ace",
+      "sha256": "bc6b65ece0ceceaec9d0bd3a033873ce77ee41cc0f40c5f4aaca71aef0a72fb8",
+      "step": 2
+    },
+    {
+      "parameter_sha256": "6224488b78d4e24d4708c9fe5649b2a07f98c2c21350c51125148804441cf786",
+      "path": "/workspace/scratch/627fa3bea56c/runs/native-joint-gradient-001/theta-03.pt",
+      "profile_sha256": "7616e3ad5e7a306e76ed3e272044dc420653b0196b5e865f7504d1ae2b2b3ace",
+      "sha256": "7985cb0dfa31e82f301cd64ac048c695a82c4ac6c6b7aaa56e6635ab3372088d",
+      "step": 3
+    },
+    {
+      "parameter_sha256": "86a38ebbb8e900064648c9c0733ec7252f91b2c1e25fbf1505e8be71c388affd",
+      "path": "/workspace/scratch/627fa3bea56c/runs/native-joint-gradient-001/theta-04.pt",
+      "profile_sha256": "7616e3ad5e7a306e76ed3e272044dc420653b0196b5e865f7504d1ae2b2b3ace",
+      "sha256": "ee5582a900c916ba38f19da82159a3cc32bc9d4e6c1d7b904c529a1aa470eb2b",
+      "step": 4
+    },
+    {
+      "parameter_sha256": "d8cefd1b177e0f08d6a4f287264c93de89503ed6d1e8ceb2071df9d743185869",
+      "path": "/workspace/scratch/627fa3bea56c/runs/native-joint-gradient-001/theta-05.pt",
+      "profile_sha256": "7616e3ad5e7a306e76ed3e272044dc420653b0196b5e865f7504d1ae2b2b3ace",
+      "sha256": "bf2645fb9c6fab216394c5f43a371f31e5b531cab78fba3f0bfee16d09e32a07",
+      "step": 5
+    },
+    {
+      "parameter_sha256": "0577cf2d9187ffe7183945ba2d1e4d8ac1bc5f1bc76a027504e76c003cef7ce2",
+      "path": "/workspace/scratch/627fa3bea56c/runs/native-joint-gradient-001/theta-06.pt",
+      "profile_sha256": "7616e3ad5e7a306e76ed3e272044dc420653b0196b5e865f7504d1ae2b2b3ace",
+      "sha256": "4c536340c3c209785a5aabd07fac33db8a577729a62dfaf73596621c17d4b2fc",
+      "step": 6
+    },
+    {
+      "parameter_sha256": "8fb6e237f01e63248aa05178dd5ae8ab98044f00a3c78eb2209ea22d07d472e3",
+      "path": "/workspace/scratch/627fa3bea56c/runs/native-joint-gradient-001/theta-07.pt",
+      "profile_sha256": "7616e3ad5e7a306e76ed3e272044dc420653b0196b5e865f7504d1ae2b2b3ace",
+      "sha256": "f1734b3769f36ad063ac0ec967eb8e7f95e1158bfda7b42172ee25077e0a5009",
+      "step": 7
+    },
+    {
+      "parameter_sha256": "36cc4817d4ec503aee05c87c2bfbf55d8f5cd0c9a062e6bf53adcfadf3d9d6df",
+      "path": "/workspace/scratch/627fa3bea56c/runs/native-joint-gradient-001/theta-08.pt",
+      "profile_sha256": "7616e3ad5e7a306e76ed3e272044dc420653b0196b5e865f7504d1ae2b2b3ace",
+      "sha256": "13c9317d2f2fee97b3f5b4ca24c3864b27dbac4cf33a2c6fda6bb91823fabe06",
+      "step": 8
+    }
+  ],
+  "tail_certificate_issued": false,
+  "total_measured_self_children_cpu_seconds": 24.735919,
+  "total_wall_seconds": 27.34194166299858,
+  "train_complete_episodes": 16,
+  "train_updates": 8
+}

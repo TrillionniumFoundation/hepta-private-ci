@@ -1,0 +1,19 @@
+{
+  "charged_episode_self_plus_child_cpu_seconds": 16.383601427000006,
+  "charged_every_episode_preparation_cpu_seconds": 0.348374999999999,
+  "cpu_direct_parameter_derivative_estimated": false,
+  "excluded_setup": "one-time corpus/model initialization, backward/optimizer/checkpoint writes, archival and diagnostic JSON reports only",
+  "finite_cpu_bound_enforced": false,
+  "included_preparation": "Every complete() starts CPU timing before public tensor conversions, input digest, current checkpoint/parameter hashes and policy manifest. Charged once in per_episode_preparation_cpu separately from actual episode snapshot/load/verify CPU.",
+  "measured_run_self_plus_child_cpu_seconds": 19.892039999999998,
+  "native_cpu_seconds_label": "all child CPU including FFmpeg; not pure original owner CPU",
+  "new_generation_calls": 0,
+  "new_owner_kernel_calls": 0,
+  "outside_episode_cpu_seconds": 3.5084385729999923,
+  "profile_sha256": "20adfb58197901642bf7281e9ff8a27426480588d34b70a48af7f377f99c4727",
+  "retired_previous_run": "001 excluded per-episode preparation, preserved separately; not selected or pooled",
+  "run": "native-joint-gradient-002",
+  "schema": "hepta.ndu.native-joint-gradient-cost-scope-audit.v2",
+  "tail_certificate_issued": false,
+  "total_episode_normalized_cost": 0.364383601427
+}

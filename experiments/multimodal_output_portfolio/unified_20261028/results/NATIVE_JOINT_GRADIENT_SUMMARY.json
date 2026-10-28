@@ -1,0 +1,127 @@
+{
+  "actual_denied_proposals": 8,
+  "actual_generator_calls": 25,
+  "actual_native_kernel_executions": 340,
+  "actual_retries": 5,
+  "checks": {
+    "all_13_components_changed": true,
+    "all_13_components_have_nonzero_actual_reward_gradient_each_update": true,
+    "all_cold_replayed_prefix_counts_10": true,
+    "all_current_checkpoints_match_native_host_binding": true,
+    "all_episode_profile_hashes_match": true,
+    "all_original_kernel_counts_17": true,
+    "all_per_episode_input_and_policy_preparation_cpu_charged": true,
+    "all_private_scoring_after_owner_closed": true,
+    "budget_denial_observed": true,
+    "every_actual_emission_scored_once": true,
+    "expiry_denial_observed": true,
+    "failed_episodes_retain_full_actual_cost": true,
+    "native_authority_remains_DENY_ALL": true,
+    "no_qualification_sources_consumed": true,
+    "successful_actual_retry_observed": true
+  },
+  "development_net_returns_descriptive_only": [
+    0.4731812869501587,
+    0.25264228287954565,
+    -0.01729021406000001,
+    -0.017314425459
+  ],
+  "development_population_ce_descriptive_only": 0.1336285639274794,
+  "efficacy_claim": false,
+  "episode_charged_self_children_cpu_seconds": 16.383601427000006,
+  "episode_preparation_cpu_seconds": 0.348374999999999,
+  "failed_terminal_episodes": 8,
+  "final_checkpoint": {
+    "parameter_sha256": "d488497d3fd0753a3b3df49d7b04a4d61aece33303becdae831386bfa6158e93",
+    "path": "/dev/shm/hepta-ndu-unified-20261028/native-joint-gradient-002/theta-08.pt",
+    "profile_sha256": "20adfb58197901642bf7281e9ff8a27426480588d34b70a48af7f377f99c4727",
+    "sha256": "5b7361af1b0c3e895d051e55344debb211409b96696de62e6b781180c7a4a563",
+    "step": 8
+  },
+  "limitations": [
+    "One new host profile only; no rewriting historical training objectives",
+    "Original native kernel/readout/calibration remain unchanged and advisory",
+    "CPU costs measured, direct parameter/runtime derivatives omitted under explicit conditional exogeneity model",
+    "Variable CPU has no finite future bound; no rigorous tail certificate",
+    "Eight training sources and four development sources provide mechanism evidence, not efficacy or generalization",
+    "Natural semantic observer adequacy and all previous failed capability gates remain unresolved"
+  ],
+  "new_qualification": false,
+  "original_development_complete_episodes": 4,
+  "outside_episode_setup_training_reporting_cpu_seconds": 3.5084385729999923,
+  "production_gates_passed": false,
+  "profile_sha256": "20adfb58197901642bf7281e9ff8a27426480588d34b70a48af7f377f99c4727",
+  "protocol_sha256": "38f18907c279fab72184d3be611b9d44c92869263b1e943770b0bb4bab192afc",
+  "schema": "hepta.ndu.native-joint-gradient-result.v1",
+  "snapshots": [
+    {
+      "parameter_sha256": "48f217de812ebcc4a85f0363994eb708b342c6e9d72a6021ca79126f7f0c894f",
+      "path": "/dev/shm/hepta-ndu-unified-20261028/native-joint-gradient-002/theta-00.pt",
+      "profile_sha256": "20adfb58197901642bf7281e9ff8a27426480588d34b70a48af7f377f99c4727",
+      "sha256": "016de0f80f39ef75df56386818d5677391bfadcdb3e29b16afd8594069844b7a",
+      "step": 0
+    },
+    {
+      "parameter_sha256": "b34eb18b1c3df4289d74e1e593b575e7fbe7df2fa7972c3f72a410c10e59a5f6",
+      "path": "/dev/shm/hepta-ndu-unified-20261028/native-joint-gradient-002/theta-01.pt",
+      "profile_sha256": "20adfb58197901642bf7281e9ff8a27426480588d34b70a48af7f377f99c4727",
+      "sha256": "b82039775529af7e22df00ba671fd9f1006f6e9d487480c717f0a37a84e3b0dd",
+      "step": 1
+    },
+    {
+      "parameter_sha256": "9fe5d83a04bcbd118e2252739d18b0a7901f8c29cd36e2338c59124abb9da9be",
+      "path": "/dev/shm/hepta-ndu-unified-20261028/native-joint-gradient-002/theta-02.pt",
+      "profile_sha256": "20adfb58197901642bf7281e9ff8a27426480588d34b70a48af7f377f99c4727",
+      "sha256": "9d8c59dcef1d45e52f147f194d308f402f1115005db7f96f4e1c478cedefe536",
+      "step": 2
+    },
+    {
+      "parameter_sha256": "62f11a72023a97b181fea011efaa82a595d4417e7960d7fd244756635519a791",
+      "path": "/dev/shm/hepta-ndu-unified-20261028/native-joint-gradient-002/theta-03.pt",
+      "profile_sha256": "20adfb58197901642bf7281e9ff8a27426480588d34b70a48af7f377f99c4727",
+      "sha256": "3de8392f03ab73cdc32647ff54ac808201c2c4c9a41449913b72a482d1d94c7f",
+      "step": 3
+    },
+    {
+      "parameter_sha256": "a853920d64c20697a9ee0b6759c9520ee06eff797983adda48bfe02be998386c",
+      "path": "/dev/shm/hepta-ndu-unified-20261028/native-joint-gradient-002/theta-04.pt",
+      "profile_sha256": "20adfb58197901642bf7281e9ff8a27426480588d34b70a48af7f377f99c4727",
+      "sha256": "61b54b0a30fdcf9e7f57b575783b8e10418422f109de961ac64a867bad83389c",
+      "step": 4
+    },
+    {
+      "parameter_sha256": "f88730eaa535d9e51994da536b3ca3eed0695c1a19a70e63638c6ee1370fb47a",
+      "path": "/dev/shm/hepta-ndu-unified-20261028/native-joint-gradient-002/theta-05.pt",
+      "profile_sha256": "20adfb58197901642bf7281e9ff8a27426480588d34b70a48af7f377f99c4727",
+      "sha256": "83884903149ba48a4b3283fe1b4760e0b11693f8c83c042eae0206577da6127b",
+      "step": 5
+    },
+    {
+      "parameter_sha256": "7ce833c0d938af898fbcaa659dbf9193518138824343d0bac507ad2ce5fbc012",
+      "path": "/dev/shm/hepta-ndu-unified-20261028/native-joint-gradient-002/theta-06.pt",
+      "profile_sha256": "20adfb58197901642bf7281e9ff8a27426480588d34b70a48af7f377f99c4727",
+      "sha256": "99ee0e3c7f3837318671159ffb5852507d25afee32f0f05b819758b89d6799d1",
+      "step": 6
+    },
+    {
+      "parameter_sha256": "ca1b7c188a57a06b29651a9fce808347ce900b2d3eb0d2dd051652079b84771b",
+      "path": "/dev/shm/hepta-ndu-unified-20261028/native-joint-gradient-002/theta-07.pt",
+      "profile_sha256": "20adfb58197901642bf7281e9ff8a27426480588d34b70a48af7f377f99c4727",
+      "sha256": "9e1ca83b38c11f6734c4c3356fc692662e6cacd6af9e4d198a9e07e341940441",
+      "step": 7
+    },
+    {
+      "parameter_sha256": "d488497d3fd0753a3b3df49d7b04a4d61aece33303becdae831386bfa6158e93",
+      "path": "/dev/shm/hepta-ndu-unified-20261028/native-joint-gradient-002/theta-08.pt",
+      "profile_sha256": "20adfb58197901642bf7281e9ff8a27426480588d34b70a48af7f377f99c4727",
+      "sha256": "5b7361af1b0c3e895d051e55344debb211409b96696de62e6b781180c7a4a563",
+      "step": 8
+    }
+  ],
+  "tail_certificate_issued": false,
+  "total_episode_normalized_cost": 0.364383601427,
+  "total_measured_self_children_cpu_seconds": 19.892039999999998,
+  "total_wall_seconds": 19.525521578005282,
+  "train_complete_episodes": 16,
+  "train_updates": 8
+}

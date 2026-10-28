@@ -1,0 +1,225 @@
+{
+  "baseline": "zero on first batch, previous batch mean moment_cost thereafter; independent of current random draws",
+  "continuation": {
+    "actions": {
+      "keep": "initial stochastic four-media neural emission",
+      "swap": "fresh independent four-media emission from advanced episode RNG"
+    },
+    "binary_sha256": "ba5fc96e8139e652fd1d7ae0f9713b66ccd879b12e190e4dcc93bca43426143b",
+    "calibration_scope": "original registered scalar encoder validity only, no claim of natural-semantic calibration",
+    "calibration_sha256": "8de3536b03f2fa2b6475b64635dbbd3345279a867cf82cf770fee495dc59c929",
+    "control_mode": "fast without forecasts; mandatory actual cold replay; 17 original kernels per episode",
+    "cpu_accounting": "all measured self+child CPU; inherited native_cpu_seconds field includes FFmpeg children as well as native owner",
+    "cpu_gradient_model": "observed CPU realization conditionally exogenous; estimate stochastic-action LR only; no direct parameter derivative through runtime",
+    "density": "Gaussian fixed normalizers restored in helper; every actually executed conditional sample density appears once",
+    "extra_cpu_charges": [
+      "current-snapshot load/hash/tensor/vocabulary verification",
+      "post-stop identity check, final physical readback and private scoring"
+    ],
+    "failure_utility": 0.0,
+    "fault": "when declared in public scenario, truncate only initial generated video.mkv to eight bytes",
+    "implementation_sha256": {
+      "control.py": "84abf089a939c82b34ca2aa4f73b9d1410790683b1568a20c7768ef12364f304",
+      "native_joint_episode.py": "588c76cba257a924c39fc73d1a26783d4c5cc80e72ab35fb70bbe5d48934ef1d",
+      "native_joint_gradient.py": "e2ed96312f92c8f628f7670315fdadd0982882b17855b12a2065db6dee7f4cb3",
+      "natural_model.py": "0fdded638147120bda44273265b38d1ecc06aa1bec0ded1393426ed95eee421e",
+      "profile.py": "bbcc565becb5a1b8d06f9d2a4b4a82d9cded89e8c7ea2fe386c185688c402650"
+    },
+    "native_authority": "DENY_ALL",
+    "native_decision": "unchanged original readout on arrived public transport-integrity scalar; original expiry and host media-budget checks",
+    "parameter_update": "only after K complete trajectories; each next episode verifies current checkpoint tensors, vocabulary and parameter hash",
+    "private_score_phase": "only after owner closes, reopen final physical four files and apply frozen natural score",
+    "profile_binding_level": "host receipts only; original native scope objective unchanged",
+    "public_feedback": "+1 physical four-file integrity/readback success; -1 actual codec or declared video transport failure",
+    "readout_sha256": "70c61b3712724534bbdeaa0b1860b4520987c2671fa90cb15f93764bff9d75c0",
+    "schema": "hepta.ndu.actual-natural-native-full-trajectory.v1",
+    "stop": "after actual native decision and optional admitted swap; maximum two emitted bundles",
+    "tariff": {
+      "delivery": 0.002,
+      "generator_call": 0.01,
+      "native_cpu_second": 0.001,
+      "native_kernel": 0.0001,
+      "python_cpu_second": 0.001,
+      "refused_proposal": 0.005,
+      "wall_second": 0.0
+    },
+    "unbilled_setup_or_training": "one-time corpus/model load, input tensor setup, optimizer/backward, checkpoint writes and diagnostic JSON serialization reported separately; not deployment return",
+    "unexpected_computation_exception": "abort entire diagnostic, never silently omit an episode; sampled codec/transport failures retained with zero gross utility"
+  },
+  "development_scenarios": "first four training scenario types; four original development sources; no selection",
+  "development_sources": [
+    {
+      "event_id": "video_5422-event-0",
+      "index": 102,
+      "source_id": "video_5422",
+      "split": "development"
+    },
+    {
+      "event_id": "video_2383-event-0",
+      "index": 104,
+      "source_id": "video_2383",
+      "split": "development"
+    },
+    {
+      "event_id": "video_1182-event-0",
+      "index": 108,
+      "source_id": "video_1182",
+      "split": "development"
+    },
+    {
+      "event_id": "video_6115-event-0",
+      "index": 112,
+      "source_id": "video_6115",
+      "split": "development"
+    }
+  ],
+  "efficacy_claim": false,
+  "finite_net_return_support": false,
+  "independent_complete_episodes_per_update": 2,
+  "initial_checkpoint_sha256": "2c7068783532059479df475bb8c7b8d2c4721560a193a40513e8d0a50ef28617",
+  "initial_parent_profile_sha256": "bb9f08dca8ad9e7854990219c695685a05f90d7c711e0418d0dbd0a6df9da273",
+  "joint_batch_reason": "retains cross scores if measured costs couple trajectories; mean already divides K, no additional division",
+  "new_qualification": false,
+  "objective": {
+    "actual_trajectory_tariff": {
+      "delivery": 0.002,
+      "generator_call": 0.01,
+      "native_cpu_second": 0.001,
+      "native_kernel": 0.0001,
+      "python_cpu_second": 0.001,
+      "refused_proposal": 0.005,
+      "wall_second": 0.0
+    },
+    "cost_scope": [
+      "current-snapshot load/hash/tensor/vocabulary verification",
+      "post-stop identity check, final physical readback and private scoring"
+    ],
+    "cpu_gradient_model": "observed CPU realization conditionally exogenous; estimate stochastic-action LR only; no direct parameter derivative through runtime",
+    "failure_utility": 0.0,
+    "gross_score": {
+      "audio": "exp(-min(10, .5*waveform_MSE/(target_power+1e-5)+.5*mean_abs(log1p(20*STFTabs(output))-log1p(20*STFTabs(target))))) after int16 WAV reopen",
+      "failure_utility": 0.0,
+      "gamma": 2.0,
+      "image": "exp(-10*mean squared RGB error after PNG reopen)",
+      "joint": "clip(.5*min(four qualities)+.5*geometric_mean(four qualities)-.1*mean_abs(image-video[2]),0,1)",
+      "risk_scope": "population",
+      "schema": "hepta.natural.joint-score.v1",
+      "semantic_gate": "requires independent-source observer adequacy and generated action/sound agreement; reconstruction score alone never certifies natural semantic generation",
+      "text": "multiset token F1 over emitted UTF8 and official action/sound caption",
+      "video": "exp(-10*mean squared RGB error after FFV1 Matroska reopen)"
+    }
+  },
+  "observer": {
+    "frozen_natural_score_source_sha256": "0fdded638147120bda44273265b38d1ecc06aa1bec0ded1393426ed95eee421e",
+    "physical_reopen_source_sha256": "588c76cba257a924c39fc73d1a26783d4c5cc80e72ab35fb70bbe5d48934ef1d"
+  },
+  "optimizer": {
+    "global_grad_clip_l2": 1.0,
+    "kind": "Adam",
+    "learning_rate": 1e-05
+  },
+  "production_gates_passed": false,
+  "profile_sha256": "7616e3ad5e7a306e76ed3e272044dc420653b0196b5e865f7504d1ae2b2b3ace",
+  "scenarios": [
+    {
+      "budget": 2,
+      "expires": 7,
+      "fault": true
+    },
+    {
+      "budget": 2,
+      "expires": 7,
+      "fault": false
+    },
+    {
+      "budget": 2,
+      "expires": 6,
+      "fault": true
+    },
+    {
+      "budget": 1,
+      "expires": 7,
+      "fault": true
+    },
+    {
+      "budget": 1,
+      "expires": 6,
+      "fault": true
+    },
+    {
+      "budget": 2,
+      "expires": 7,
+      "fault": true
+    },
+    {
+      "budget": 2,
+      "expires": 6,
+      "fault": false
+    },
+    {
+      "budget": 1,
+      "expires": 7,
+      "fault": false
+    }
+  ],
+  "schema": "hepta.ndu.native-joint-gradient-diagnostic.v1",
+  "scope": "bounded mechanism proof of one new actual-trajectory profile, not a claim that prior profiles are identical or that original owner kernel parameters are trained",
+  "seed": 28261001,
+  "source_arrays_sha256": "e21187f994c49fcc650a347102e96c87b7f5a18100eaf5a786f970db46b8d652",
+  "source_events_sha256": "85e8a7606f41369bc25c53321e81c8ab9d14600457ffdf6ca900be8abe8017f4",
+  "source_protocol_sha256": "a81efda842c102734a0f8beef44236827219a27824cdc691d21e426fae899df8",
+  "source_selection": "first event from each of first distinct original split sources, before generating outcomes",
+  "steps": 8,
+  "surrogate": "(mean_k moment_cost(complete_net_return_k,gamma)-previous_batch_baseline) * sum_k sum_actual_emissions log p_theta",
+  "tail_certificate_issued": false,
+  "train_sources": [
+    {
+      "event_id": "video_563-event-0",
+      "index": 0,
+      "source_id": "video_563",
+      "split": "train"
+    },
+    {
+      "event_id": "video_10631-event-0",
+      "index": 2,
+      "source_id": "video_10631",
+      "split": "train"
+    },
+    {
+      "event_id": "video_6856-event-0",
+      "index": 6,
+      "source_id": "video_6856",
+      "split": "train"
+    },
+    {
+      "event_id": "video_3598-event-0",
+      "index": 9,
+      "source_id": "video_3598",
+      "split": "train"
+    },
+    {
+      "event_id": "video_6692-event-0",
+      "index": 12,
+      "source_id": "video_6692",
+      "split": "train"
+    },
+    {
+      "event_id": "video_7105-event-0",
+      "index": 14,
+      "source_id": "video_7105",
+      "split": "train"
+    },
+    {
+      "event_id": "video_3507-event-0",
+      "index": 16,
+      "source_id": "video_3507",
+      "split": "train"
+    },
+    {
+      "event_id": "video_11008-event-0",
+      "index": 20,
+      "source_id": "video_11008",
+      "split": "train"
+    }
+  ]
+}
