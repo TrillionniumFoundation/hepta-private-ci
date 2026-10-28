@@ -6,3 +6,7 @@ codex-rs/hepta-shadow-qualification/fixtures/live_product_oracle_v2_2f704.json t
 codex-rs/hepta-evidence/migrations/*.sql text eol=lf
 codex-rs/hepta-memory/migrations/*.sql text eol=lf
 codex-rs/hepta-supervisor/fixtures/robrix-control-v2/** text eol=lf
+
+# Compressed evidence chunks are byte-addressed by the published manifest.
+experiments/continuous_boundary_flow/evidence/bundle/*.part binary
+experiments/continuous_boundary_policy/evidence/bundle/*.part binary
