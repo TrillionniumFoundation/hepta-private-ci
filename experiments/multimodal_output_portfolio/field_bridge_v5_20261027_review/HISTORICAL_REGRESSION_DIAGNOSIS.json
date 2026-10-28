@@ -1,0 +1,723 @@
+{
+  "confirmed_findings": [
+    "Every seed has exact-replay differences in frozen original-model task and clean endpoints.",
+    "A cause that requires the new gate or short transactions cannot explain all observed failures.",
+    "A cause that requires adapter checkpoint reloading cannot explain frozen original-model differences.",
+    "Original model identities, pinned asset identities, panel identities, visible thread settings, package versions and five checked torch binaries match.",
+    "Ordinary48 reward/audit drift differences are at most 2.220446049250313e-16; observed drift is almost entirely common to the two observers."
+  ],
+  "core_source_checks": {
+    "field_bridge_20261027/adaptation.py": {
+      "current_sha256": "95c2acfe820febb905c11b5057f7817af4d244db1e52adab7744d2c1d931b2d8",
+      "match": true,
+      "old_sha256": "95c2acfe820febb905c11b5057f7817af4d244db1e52adab7744d2c1d931b2d8"
+    },
+    "field_bridge_20261027/adapters.py": {
+      "current_sha256": "2818464ba927b8e0ed5c92315a5bf26832672391c1fbbba709d6ed72cdc76b7b",
+      "match": true,
+      "old_sha256": "2818464ba927b8e0ed5c92315a5bf26832672391c1fbbba709d6ed72cdc76b7b"
+    },
+    "field_bridge_v3_20261027/learning.py": {
+      "current_sha256": "97c3baabe208fd8d5e8ac9beb5ae4a244b3c8d6aac565e727fd64eed8c1371b7",
+      "match": true,
+      "old_sha256": "97c3baabe208fd8d5e8ac9beb5ae4a244b3c8d6aac565e727fd64eed8c1371b7"
+    },
+    "field_bridge_v3_20261027/source_roles.py": {
+      "current_sha256": "0bf34863b1c6f43423484d115acb590bc6ea515c12c30a105e6e45c41f9a97cb",
+      "match": true,
+      "old_sha256": "0bf34863b1c6f43423484d115acb590bc6ea515c12c30a105e6e45c41f9a97cb"
+    },
+    "v6/conditioned.py": {
+      "current_sha256": "ccb5f9a78e58d6f1d1511a95f50de3602e1f39e7254fce5566e97a994d5b4cba",
+      "match": true,
+      "old_sha256": "ccb5f9a78e58d6f1d1511a95f50de3602e1f39e7254fce5566e97a994d5b4cba"
+    },
+    "v6/data.py": {
+      "current_sha256": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29",
+      "match": true,
+      "old_sha256": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29"
+    },
+    "v6/neural.py": {
+      "current_sha256": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742",
+      "match": true,
+      "old_sha256": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742"
+    },
+    "v6/observer.py": {
+      "current_sha256": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e",
+      "match": true,
+      "old_sha256": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e"
+    }
+  },
+  "delta_convention": "V5 minus V3; sample/path utility deltas computed directly from saved float64 arrays",
+  "disposition": "Preserve the frozen AUDIT.json FAIL. Any later within-run or portability diagnosis must have separate registration and scope; it cannot turn this historical exact-regression result into PASS.",
+  "evidence_limit": "Old aggregate utilities and audit summaries are available, but the required old per-row pixels/captions/output hashes and selected ordinary checkpoint bytes are not present in the current checkout. A binary checksum does not recover those bytes.",
+  "existing_exact_regression_gate_changed": false,
+  "existing_failed_audit": {
+    "binding": {
+      "bytes": 213,
+      "path": "/workspace/scratch/e8a4dc33549f/v5_run/AUDIT.json",
+      "sha256": "35af3341f3fc283c41beda469e5c9ff2531f7bf01d537cb4dcc9c4a7fd6b42df"
+    },
+    "log": {
+      "bytes": 1365,
+      "path": "/workspace/scratch/e8a4dc33549f/v5_artifact_audit.log",
+      "sha256": "3634fee862e15a516ce1adf201eed8e0fdef264242534301556d5e3001c568f8"
+    },
+    "record": {
+      "development_entry": {
+        "new_holdout_authorized": false,
+        "passed": false
+      },
+      "error": "Ordinary48 historical endpoint regression failed",
+      "error_type": "ValueError",
+      "integrity_status": "FAIL"
+    }
+  },
+  "existing_failure_overwritten": false,
+  "generator_or_observer_forward_calls": 0,
+  "generator_or_observer_instances_created": 0,
+  "hypotheses_not_proven": [
+    "Small floating-point generator differences may move hard pixels across uint8 quantization boundaries.",
+    "The shared pixel-MSE/scoring path may contribute numerical drift.",
+    "CPU/ISA/backend dispatch or process-context effects remain possible; old CPU/ISA was not recorded.",
+    "Some learned paths may have small parameter differences; old adapter checkpoint bytes are absent from the current Git evidence."
+  ],
+  "implementation_difference": {
+    "new": "V5 seals training, then evaluates loaded checkpoints in separate processes.",
+    "old": "V3 run_stage scores each trained model immediately inside its training process.",
+    "scope_limit": "Both independently load the same original model for frozen endpoints, which also differ."
+  },
+  "minimum_next_diagnostic": {
+    "action": "Recover one exact historical hard-output file before proposing any tolerance.",
+    "archive_member": "development/17/original-task.npz",
+    "interpretation": {
+      "different_hard_bytes": "Generation or quantization differs; subsequent environment reproduction would require a separately registered diagnostic.",
+      "identical_hard_bytes_different_utilities": "Investigate fixed target pixel-MSE and score arithmetic using existing arrays; generator replay is unnecessary."
+    },
+    "model_calls_required": 0,
+    "new_comparator": {
+      "bytes": 1972069,
+      "path": "/workspace/scratch/e8a4dc33549f/v5_run/evaluate/17/original-task.npz",
+      "sha256": "1cbbc7eb6610cd9560cae90303407643e4467a4e387e59d1c4f943278555a810"
+    },
+    "original_run_path": "/tmp/hepta-field-v3-run/development/17/original-task.npz",
+    "read_only_fields": [
+      "pixels_u8",
+      "captions_utf8",
+      "output_sha256",
+      "values_reward",
+      "values_audit"
+    ],
+    "required_sha256": "47ad388b03bf2109b01737107196019156c9f7cf0cebbbe71a92c060caa08c9e",
+    "required_sha_source": {
+      "bytes": 217246,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/INDEPENDENT_TRAINING_HARD_SCORE_AUDIT-development.json",
+      "sha256": "0265f8a7d26ed56caf61d074bb67516ab5a7cdfb320e26709d64f8ac93bb0045"
+    },
+    "rows": 2048
+  },
+  "model_checkpoint_loads": 0,
+  "new_acceptance_tolerance": null,
+  "new_holdout_access": false,
+  "new_holdout_authorized": false,
+  "observers": [
+    "reward",
+    "audit"
+  ],
+  "old_source_identity_receipt": {
+    "bytes": 4122,
+    "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/development/17/START.json",
+    "sha256": "709fb5107cf1add3208482a3b78f78030bea9f47dcedd4e6c55773afed92855b"
+  },
+  "recorded_at_utc": "2026-10-28T01:42:29.946860+00:00",
+  "runtime": {
+    "binary_checks": {
+      "torch/_C.cpython-312-x86_64-linux-gnu.so": {
+        "current_sha256": "5dc8a93ddc69041dbd3f796794e0c2b3f72b47e0dc24ae2b46d9e7d0dc78953b",
+        "match": true,
+        "old_sha256": "5dc8a93ddc69041dbd3f796794e0c2b3f72b47e0dc24ae2b46d9e7d0dc78953b"
+      },
+      "torch/lib/libc10.so": {
+        "current_sha256": "bececfaaf6042b3b48a75e74eed9728e9139bcdfca5f2b30437886de4f25c1d9",
+        "match": true,
+        "old_sha256": "bececfaaf6042b3b48a75e74eed9728e9139bcdfca5f2b30437886de4f25c1d9"
+      },
+      "torch/lib/libgomp.so.1": {
+        "current_sha256": "e4b79735f816cbb906c8bf35b31847c5ce667cfbdbe76bd18aaf6e7baad2686e",
+        "match": true,
+        "old_sha256": "e4b79735f816cbb906c8bf35b31847c5ce667cfbdbe76bd18aaf6e7baad2686e"
+      },
+      "torch/lib/libtorch_cpu.so": {
+        "current_sha256": "629d28a5fb24e2c33df077e2d98d5da0c73d0b53e628bb826fd4ba36616b482b",
+        "match": true,
+        "old_sha256": "629d28a5fb24e2c33df077e2d98d5da0c73d0b53e628bb826fd4ba36616b482b"
+      },
+      "torch/lib/libtorch_python.so": {
+        "current_sha256": "cd4e33c6822cbc72930a35f857029782e903b9d4a7977296153e9ce80c35c278",
+        "match": true,
+        "old_sha256": "cd4e33c6822cbc72930a35f857029782e903b9d4a7977296153e9ce80c35c278"
+      }
+    },
+    "current_diagnostic_process": {
+      "allowed_environment": {
+        "ATEN_CPU_CAPABILITY": null,
+        "MKL_CBWR": null,
+        "MKL_NUM_THREADS": null,
+        "OMP_NUM_THREADS": null,
+        "ONEDNN_MAX_CPU_ISA": null,
+        "OPENBLAS_NUM_THREADS": null
+      },
+      "caveat": "Current diagnostic-process observation, not a recovered environment snapshot of either historical worker",
+      "cpu_capability": "AVX512",
+      "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+      "machine": "x86_64",
+      "numpy": "2.3.5",
+      "pillow": "12.3.0",
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "torch": "2.8.0+cpu",
+      "torch_build_configuration": "PyTorch built with:\n  - GCC 13.3\n  - C++ Version: 201703\n  - Intel(R) oneAPI Math Kernel Library Version 2024.2-Product Build 20240605 for Intel(R) 64 architecture applications\n  - Intel(R) MKL-DNN v3.7.1 (Git Hash 8d263e693366ef8db40acc569cc7d8edf644556d)\n  - OpenMP 201511 (a.k.a. OpenMP 4.5)\n  - LAPACK is enabled (usually provided by MKL)\n  - NNPACK is enabled\n  - CPU capability usage: AVX512\n  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, COMMIT_SHA=a1cb3cc05d46d198467bebbb6e8fba50a325d4e7, CXX_COMPILER=/opt/rh/gcc-toolset-13/root/usr/bin/c++, CXX_FLAGS= -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOCUPTI -DLIBKINETO_NOROCTRACER -DLIBKINETO_NOXPUPTI=ON -DUSE_FBGEMM -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -DC10_NODEPRECATED -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=range-loop-construct -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-parameter -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=old-style-cast -faligned-new -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-dangling-reference -Wno-error=dangling-reference -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, TORCH_VERSION=2.8.0, USE_CUDA=0, USE_CUDNN=OFF, USE_CUSPARSELT=OFF, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=OFF, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, USE_XCCL=OFF, USE_XPU=OFF, \n"
+    },
+    "old_binary_identity_receipt": {
+      "bytes": 978350,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/V3_PUBLIC_TORCH_RUNTIME_RECLAIM_IDENTITIES.json.gz",
+      "sha256": "80dfbaa885d57ce345aca102dff2cbf3667138e100c06361dc1d853e8c40f21f"
+    },
+    "old_hard_score_audit_receipt": {
+      "bytes": 217246,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/INDEPENDENT_TRAINING_HARD_SCORE_AUDIT-development.json",
+      "sha256": "0265f8a7d26ed56caf61d074bb67516ab5a7cdfb320e26709d64f8ac93bb0045"
+    },
+    "old_recorded": {
+      "cpu_isa": null,
+      "cpu_model": null,
+      "hard_score_audit_torch_threads": 2,
+      "interop_threads": 1,
+      "machine": "x86_64",
+      "numpy": "2.3.5",
+      "pillow": "12.3.0",
+      "python": "3.12.14",
+      "runtime_canonical_torch_threads_not_training_endpoint": 1,
+      "torch": "2.8.0+cpu",
+      "training_and_development_endpoint_torch_threads": 2
+    },
+    "old_runtime_receipt": {
+      "bytes": 1444,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/ARCHIVE_RUNTIME_ENVIRONMENT.json",
+      "sha256": "9f033bc6d08c3edb97fb39ef68f88a2ff1a5bafe8bdf46a3931fb56f7efa6fd4"
+    },
+    "thread_evidence": "V3 training_run.py sets 2/1 before the whole development run, including hard_panel endpoints; V5 run.py also sets 2/1. runtime_canonical_torch_threads=1 belongs to a separate runtime experiment."
+  },
+  "schema": "hepta.field-bridge.v5.historical-regression-diagnosis.1",
+  "scientific_protocol": {
+    "bytes": 3970,
+    "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v5_20261027/PROTOCOL.json",
+    "sha256": "0cd30fe8ea8bb872f118ea88f7ed7b3c237e26a4074524ec64aaa10787425fb1"
+  },
+  "scientific_source_freeze": {
+    "bytes": 8268,
+    "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v5_20261027/SOURCE_FREEZE.json",
+    "sha256": "f86ef86edc02d81d2c68476c5742b332582cfb8a2096f6514dcdc616cdb64ab8"
+  },
+  "scope": "Post-outcome read-only diagnosis of existing artifacts; not a replacement qualification or relaxed regression gate",
+  "seeds": {
+    "17": {
+      "all_pinned_file_identities_match": true,
+      "endpoints": {
+        "clean": {
+          "frozen": {
+            "changed_sample_rows": 2,
+            "changed_utility_values": 4,
+            "exact": false,
+            "maximum_absolute_difference": 5.863606930001097e-07,
+            "maximum_reward_audit_delta_disagreement": 0.0,
+            "mean_delta_by_observer": {
+              "audit": -5.893525669656979e-10,
+              "reward": -5.893525669656979e-10
+            },
+            "shape": [
+              2,
+              512
+            ]
+          },
+          "ordinary48": {
+            "changed_sample_schedule_rows": 19,
+            "changed_utility_values": 38,
+            "exact": false,
+            "maximum_absolute_difference": 5.587935447692871e-07,
+            "maximum_reward_audit_delta_disagreement": 1.1102230246251565e-16,
+            "mean_delta_by_observer": {
+              "audit": 2.4156179270415357e-10,
+              "reward": 2.4156179270415357e-10
+            },
+            "per_schedule_changed_rows": [
+              4,
+              5,
+              5,
+              5
+            ],
+            "per_schedule_max_abs_difference": [
+              5.587935447692871e-07,
+              5.468726158586179e-07,
+              4.5746564858450967e-07,
+              1.3560056688621813e-07
+            ],
+            "per_schedule_mean_delta_by_observer": [
+              [
+                -7.799826561537271e-10,
+                -7.799826561537271e-10
+              ],
+              [
+                -7.450580599525913e-10,
+                -7.450580597357509e-10
+              ],
+              [
+                2.5771441868570333e-09,
+                2.577144186640193e-09
+              ],
+              [
+                -8.58562999341006e-11,
+                -8.58562999341006e-11
+              ]
+            ],
+            "shape": [
+              4,
+              2,
+              512
+            ]
+          },
+          "panel_identity_match": true,
+          "panel_sha256": "1799e3030b7090afc828b974f1b3be290545b6ec95f02b4affbe1a7652e90472"
+        },
+        "task": {
+          "frozen": {
+            "changed_sample_rows": 12,
+            "changed_utility_values": 24,
+            "exact": false,
+            "maximum_absolute_difference": 8.1434845922157e-07,
+            "maximum_reward_audit_delta_disagreement": 0.0,
+            "mean_delta_by_observer": {
+              "audit": -1.133412297230161e-09,
+              "reward": -1.133412297230161e-09
+            },
+            "shape": [
+              2,
+              2048
+            ]
+          },
+          "ordinary48": {
+            "changed_sample_schedule_rows": 65,
+            "changed_utility_values": 130,
+            "exact": false,
+            "maximum_absolute_difference": 8.568167686462402e-07,
+            "maximum_reward_audit_delta_disagreement": 1.1102230246251565e-16,
+            "mean_delta_by_observer": {
+              "audit": -2.093656804050487e-10,
+              "reward": -2.093656804050487e-10
+            },
+            "per_schedule_changed_rows": [
+              17,
+              15,
+              14,
+              19
+            ],
+            "per_schedule_max_abs_difference": [
+              6.016343832015991e-07,
+              8.568167686462402e-07,
+              8.143484593325923e-07,
+              7.398426532523317e-07
+            ],
+            "per_schedule_mean_delta_by_observer": [
+              [
+                5.979018168696289e-10,
+                5.979018168696289e-10
+              ],
+              [
+                4.3055479168919997e-10,
+                4.305547917976202e-10
+              ],
+              [
+                -6.873960956108212e-10,
+                -6.873960956108212e-10
+              ],
+              [
+                -1.1785232345682024e-09,
+                -1.1785232346766226e-09
+              ]
+            ],
+            "shape": [
+              4,
+              2,
+              2048
+            ]
+          },
+          "panel_identity_match": true,
+          "panel_sha256": "45a6f75f98fcc55bf3adccd6906795b44b141391b2845a1c3466229d62fc6913"
+        }
+      },
+      "model_identity_match": true,
+      "new_asset_receipt": {
+        "bytes": 1640,
+        "path": "/workspace/scratch/e8a4dc33549f/v5_run/evaluate/17/ASSETS.json",
+        "sha256": "d987e9985d11f392ab62604e0c5251acc527f3e857d7c4c015370b6078fea96a"
+      },
+      "new_endpoints": {
+        "bytes": 362504,
+        "path": "/workspace/scratch/e8a4dc33549f/v5_run/evaluate/17/ENDPOINTS.npz",
+        "sha256": "d6d7459d450096eab96a38efce79e6c3031cdf16c2c4353fd7a2ca778f1255f5"
+      },
+      "new_method": "ordinary_48",
+      "observer_axes_match": true,
+      "old_asset_receipt": {
+        "bytes": 1627,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/reference/17/ASSET_IDENTITIES.json",
+        "sha256": "df102a2ed0914f5715ca455cfc482b451d8231ba1cefaa363237efbd4db6168d"
+      },
+      "old_endpoints": {
+        "bytes": 774322,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/development/17/ENDPOINTS.npz",
+        "sha256": "bc708f54093598e302a19f371dc311d12332ac21be2e39d5c1d168bd2b27e4bb"
+      },
+      "old_method": "ordinary_2",
+      "schedule_axes_match": true,
+      "schedule_ids": [
+        6000,
+        6001,
+        6002,
+        6003
+      ]
+    },
+    "29": {
+      "all_pinned_file_identities_match": true,
+      "endpoints": {
+        "clean": {
+          "frozen": {
+            "changed_sample_rows": 3,
+            "changed_utility_values": 6,
+            "exact": false,
+            "maximum_absolute_difference": 7.003545761108398e-07,
+            "maximum_reward_audit_delta_disagreement": 0.0,
+            "mean_delta_by_observer": {
+              "audit": 1.0149960873954283e-09,
+              "reward": 1.0149960873954283e-09
+            },
+            "shape": [
+              2,
+              512
+            ]
+          },
+          "ordinary48": {
+            "changed_sample_schedule_rows": 50,
+            "changed_utility_values": 100,
+            "exact": false,
+            "maximum_absolute_difference": 7.897615432739258e-07,
+            "maximum_reward_audit_delta_disagreement": 1.1102230246251565e-16,
+            "mean_delta_by_observer": {
+              "audit": 1.5284967959838976e-09,
+              "reward": 1.5284967959296875e-09
+            },
+            "per_schedule_changed_rows": [
+              3,
+              40,
+              4,
+              3
+            ],
+            "per_schedule_max_abs_difference": [
+              7.003545761108398e-07,
+              7.897615432739258e-07,
+              2.644956111907959e-07,
+              7.003545761108398e-07
+            ],
+            "per_schedule_mean_delta_by_observer": [
+              [
+                1.0149960873954283e-09,
+                1.0149960873954283e-09
+              ],
+              [
+                4.540925146968508e-09,
+                4.5409251471853485e-09
+              ],
+              [
+                -4.569301380406149e-10,
+                -4.569301380406149e-10
+              ],
+              [
+                1.0149960873954283e-09,
+                1.0149960873954283e-09
+              ]
+            ],
+            "shape": [
+              4,
+              2,
+              512
+            ]
+          },
+          "panel_identity_match": true,
+          "panel_sha256": "0a844051b68fed2584ca007011df970fc0c1fc2049521349abb808a71496fcf3"
+        },
+        "task": {
+          "frozen": {
+            "changed_sample_rows": 17,
+            "changed_utility_values": 34,
+            "exact": false,
+            "maximum_absolute_difference": 7.390975951260259e-07,
+            "maximum_reward_audit_delta_disagreement": 0.0,
+            "mean_delta_by_observer": {
+              "audit": -1.5555997379449425e-09,
+              "reward": -1.5555997379449425e-09
+            },
+            "shape": [
+              2,
+              2048
+            ]
+          },
+          "ordinary48": {
+            "changed_sample_schedule_rows": 247,
+            "changed_utility_values": 494,
+            "exact": false,
+            "maximum_absolute_difference": 8.76933336280139e-07,
+            "maximum_reward_audit_delta_disagreement": 2.220446049250313e-16,
+            "mean_delta_by_observer": {
+              "audit": -1.786247595691494e-10,
+              "reward": -1.7862475955559686e-10
+            },
+            "per_schedule_changed_rows": [
+              17,
+              192,
+              21,
+              17
+            ],
+            "per_schedule_max_abs_difference": [
+              7.390975951260259e-07,
+              8.76933336280139e-07,
+              5.554407834784669e-07,
+              7.390975951260259e-07
+            ],
+            "per_schedule_mean_delta_by_observer": [
+              [
+                -1.5555997379449425e-09,
+                -1.5555997379449425e-09
+              ],
+              [
+                2.6515408532018503e-09,
+                2.6515408532018503e-09
+              ],
+              [
+                -2.548404155343527e-10,
+                -2.548404155885628e-10
+              ],
+              [
+                -1.5555997379449425e-09,
+                -1.5555997379449425e-09
+              ]
+            ],
+            "shape": [
+              4,
+              2,
+              2048
+            ]
+          },
+          "panel_identity_match": true,
+          "panel_sha256": "bbb76f5a5f0941f4aee763f25bbad5d3dd64f1c2885598f25af1ea3387bb5fad"
+        }
+      },
+      "model_identity_match": true,
+      "new_asset_receipt": {
+        "bytes": 1640,
+        "path": "/workspace/scratch/e8a4dc33549f/v5_run/evaluate/29/ASSETS.json",
+        "sha256": "46672021f97921ef642606e3ec39c37f9669b2d85babcdad2b7e185c6ad5facd"
+      },
+      "new_endpoints": {
+        "bytes": 344322,
+        "path": "/workspace/scratch/e8a4dc33549f/v5_run/evaluate/29/ENDPOINTS.npz",
+        "sha256": "34a89a05b6bf27b1f72c43053383dd9d077c8a7d424ff14a773ad99316b59d79"
+      },
+      "new_method": "ordinary_48",
+      "observer_axes_match": true,
+      "old_asset_receipt": {
+        "bytes": 1627,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/reference/29/ASSET_IDENTITIES.json",
+        "sha256": "3daa3577277003df6e9671591c8cd426ec34d448676c2e5f9109e33d9e02cd6d"
+      },
+      "old_endpoints": {
+        "bytes": 599300,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/development/29/ENDPOINTS.npz",
+        "sha256": "751851494f31fd03094e72491286531a3f878351e9a84394fe11ad35d9c9661c"
+      },
+      "old_method": "ordinary_3",
+      "schedule_axes_match": true,
+      "schedule_ids": [
+        6000,
+        6001,
+        6002,
+        6003
+      ]
+    },
+    "43": {
+      "all_pinned_file_identities_match": true,
+      "endpoints": {
+        "clean": {
+          "frozen": {
+            "changed_sample_rows": 6,
+            "changed_utility_values": 12,
+            "exact": false,
+            "maximum_absolute_difference": 7.592141627599247e-07,
+            "maximum_reward_audit_delta_disagreement": 0.0,
+            "mean_delta_by_observer": {
+              "audit": -1.7695128918995134e-09,
+              "reward": -1.7695128918995134e-09
+            },
+            "shape": [
+              2,
+              512
+            ]
+          },
+          "ordinary48": {
+            "changed_sample_schedule_rows": 472,
+            "changed_utility_values": 944,
+            "exact": false,
+            "maximum_absolute_difference": 1.5810132026894408e-06,
+            "maximum_reward_audit_delta_disagreement": 2.220446049250313e-16,
+            "mean_delta_by_observer": {
+              "audit": 1.1216070561193264e-08,
+              "reward": 1.1216070561139053e-08
+            },
+            "per_schedule_changed_rows": [
+              460,
+              3,
+              5,
+              4
+            ],
+            "per_schedule_max_abs_difference": [
+              1.5810132026894408e-06,
+              3.9786100392014134e-07,
+              5.200505256430787e-07,
+              3.591179846829107e-07
+            ],
+            "per_schedule_mean_delta_by_observer": [
+              [
+                4.85888449468664e-08,
+                4.858884494708324e-08
+              ],
+              [
+                -8.600181899097448e-10,
+                -8.600181899097448e-10
+              ],
+              [
+                -1.7833372109761492e-09,
+                -1.7833372109761492e-09
+              ],
+              [
+                -1.081207301424289e-09,
+                -1.081207301424289e-09
+              ]
+            ],
+            "shape": [
+              4,
+              2,
+              512
+            ]
+          },
+          "panel_identity_match": true,
+          "panel_sha256": "bad7ae01c40012bba172b5cc8aef3ef3a327993cacd3bf2d74d8107c840e5c06"
+        },
+        "task": {
+          "frozen": {
+            "changed_sample_rows": 10,
+            "changed_utility_values": 20,
+            "exact": false,
+            "maximum_absolute_difference": 6.102025509324704e-07,
+            "maximum_reward_audit_delta_disagreement": 0.0,
+            "mean_delta_by_observer": {
+              "audit": 9.14951668574103e-11,
+              "reward": 9.14951668574103e-11
+            },
+            "shape": [
+              2,
+              2048
+            ]
+          },
+          "ordinary48": {
+            "changed_sample_schedule_rows": 1958,
+            "changed_utility_values": 3916,
+            "exact": false,
+            "maximum_absolute_difference": 3.3698976040774653e-06,
+            "maximum_reward_audit_delta_disagreement": 2.220446049250313e-16,
+            "mean_delta_by_observer": {
+              "audit": -7.218932296393105e-09,
+              "reward": -7.218932296542183e-09
+            },
+            "per_schedule_changed_rows": [
+              1905,
+              16,
+              22,
+              15
+            ],
+            "per_schedule_max_abs_difference": [
+              3.3698976040774653e-06,
+              6.221234798431396e-07,
+              8.732080459816771e-07,
+              6.83963298775403e-07
+            ],
+            "per_schedule_mean_delta_by_observer": [
+              [
+                -2.7708119887804965e-08,
+                -2.7708119887371284e-08
+              ],
+              [
+                -5.184119805526702e-11,
+                -5.184119800105691e-11
+              ],
+              [
+                -7.543349058456231e-10,
+                -7.54334905791413e-10
+              ],
+              [
+                -3.6143319446287764e-10,
+                -3.6143319440866753e-10
+              ]
+            ],
+            "shape": [
+              4,
+              2,
+              2048
+            ]
+          },
+          "panel_identity_match": true,
+          "panel_sha256": "8cfe84b817c193384f6626e69edbe9d52b3d2ba6df9449f8b62004e893e21d42"
+        }
+      },
+      "model_identity_match": true,
+      "new_asset_receipt": {
+        "bytes": 1640,
+        "path": "/workspace/scratch/e8a4dc33549f/v5_run/evaluate/43/ASSETS.json",
+        "sha256": "adc302122f84ef711a3cad93d9adfea75b70a2c0d969408e436efa84c4189048"
+      },
+      "new_endpoints": {
+        "bytes": 325903,
+        "path": "/workspace/scratch/e8a4dc33549f/v5_run/evaluate/43/ENDPOINTS.npz",
+        "sha256": "6a47e811be0fad893c4aac8828e2c607befb400313192ddafdeadc2247e2b9ea"
+      },
+      "new_method": "ordinary_48",
+      "observer_axes_match": true,
+      "old_asset_receipt": {
+        "bytes": 1627,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/reference/43/ASSET_IDENTITIES.json",
+        "sha256": "ae3916e0d5e4eecd366bbfc8040f36a394ba72bb1ceddf923cf3d3c59276ba5f"
+      },
+      "old_endpoints": {
+        "bytes": 633943,
+        "path": "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/development/43/ENDPOINTS.npz",
+        "sha256": "861b740183f8e320544e926a42ff6a18b5283be2c629e3e75c8af7bb5d9ebb67"
+      },
+      "old_method": "ordinary_3",
+      "schedule_axes_match": true,
+      "schedule_ids": [
+        6000,
+        6001,
+        6002,
+        6003
+      ]
+    }
+  },
+  "status": "UNRESOLVED_HISTORICAL_EXACT_REPLAY_FAILURE"
+}
