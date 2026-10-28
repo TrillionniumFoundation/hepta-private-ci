@@ -27,7 +27,7 @@
 | 可靠寻址 | 固定预训练表示、受限学习输出、确定性寻址、oracle 和 unknown 拒绝 | 新 residual 实验的学习路由在 calibration 不能满足约束，按预声明规则全拒；确定性端到端组合 87.5%。内容与访问失败已经分开。 |
 | 固定多类型组合 | 情景事实、语义策略、四步技能程序与共同解释器；训练外的已知实体/技能配对 | Oracle 下参数与同信息 SQL/planner 都是 100%。当前没有跨类型网络相对强显式基线的质量收益。 |
 | 参数分化 | 梯度分区提出子 cell、真实 child adapter、固定专家、等参数 rank-8、蒸馏合并、sleep/wake | 动态子 cell 不超过 rank-8；合并退化；三 seed 的分裂/合并准入全部 false。候选真实训练，但没有激活无收益拓扑。 |
-| 持续维护与真实执行 | 更正、完整重放、旧能力保持、删除后重建、当前版本拒绝、owner 停止；两遍 192 周期维护和独立原生执行链 | 受测有限域质量保持，但没有完整生命周期成本优势。Python 新模型停止与原生 V9 停止各自成立；新 residual 的原生联合闭环尚未实现。 |
+| 持续维护与真实执行 | 更正、完整重放、旧能力保持、删除后重建、当前版本拒绝、owner 停止；两遍语义和一遍技能维护，各 192 周期，另有独立原生执行链 | 受测有限域质量保持，但没有完整生命周期成本优势。Python 新模型停止与原生 V9 停止各自成立；新 residual 的原生联合闭环尚未实现。 |
 
 ## 1. 知识进入了哪些参数
 
@@ -122,12 +122,14 @@ Oracle 条件下，144 个 exception 组合请求被精确规则直接停止；�
 
 ## 4. 长期维护的质量与成本
 
+### 语义维护：两遍相同的冻结协议
+
 这项长跑专门检验语义记忆，协议为 64 周期 × 3 seeds、8 个固定地址，每周期完整重放当前有效的 canonical 记录；
 每八周期执行一次删除和保留数据 clean rebuild。每遍共 192 次更新、24 次重建、
-216 次 fit、219 次新进程 reader。它没有执行技能 cell 的 64 周期维护；技能参数、
-固定组合，以及原生 V9 的三阶段语义/程序维护分别由各自实验提供证据。
+216 次 fit、219 次新进程 reader。这两遍不包含技能维护；技能使用下文另立并冻结的
+协议，原生 V9 的三阶段语义/程序维护则由独立的原生实验提供证据。
 
-| 每遍终态指标 | 参数臂 | Exact-SQL 臂 |
+| 每遍各周期末的累计指标 | 参数臂 | Exact-SQL 臂 |
 |---|---:|---:|
 | 当前有效读取 | 1512/1512 | 1512/1512 |
 | 被更正值 | 207/207 | 207/207 |
@@ -175,6 +177,60 @@ Clean run [40681620656](https://github.com/TrillionniumFoundation/hepta-private-
 [质量审计](../memory-cell-adapters/evaluation/AUDIT-longrun-ci.json)、
 [成本审计](../memory-cell-adapters/evaluation/AUDIT-longrun-ci-costs.json)。
 
+### 技能维护：独立冻结的 64 × 3 周期
+
+[Skill run 40742088819](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40742088819)
+成功，source `4693e8028fb8563ec730dcb55458a212389154a5`，
+tree `df3224a5a13c1fcc0a41d3b0278a864174e12d7e`。运行前已固定来源更正规则、
+600 步训练预算、每八周期删除重建、四个公开执行 probe 和独立审计代码。
+
+本次同样完成 192 周期、216 次 fit、219 次新进程读取。每个被更正程序必须改变
+至少一个公开 probe 的行为；程序选择只读作者定义的来源，不读模型结果或损失。
+每次 clean rebuild 重新构造网络，起始参数摘要必须等于该 runner 保留的未训练
+初始化。全 216 份 600 × 32 采样序列以原始 int64 字节保留。
+
+参数和 SQL 两臂的周期末累计精确程序读取均为 **1512/1512**，更正 **207/207**，
+未更改能力 **1305/1305**，撤销拒绝 **24/24**。实际执行的状态、结果与完整轨迹
+也全部匹配；每个 workflow 的四个公开 probe 全部正确才计为成功。包括初始读取
+和全部中间阶段，每臂共 1728 个有效程序、6912 次公开 probe 执行，没有只保留
+周期末的较好 checkpoint。
+
+独立审计通过 **28,467** 项核对，直接解码 222 个 checkpoint 的 float32 参数，
+用独立 NumPy 算术和独立解释器核对原始读取与执行输出，不导入实验模型或 trainer。
+19 个冻结来源／协议文件（含支持代码），以及 workflow/request，均逐字节绑定回原始提交。
+
+| 技能维护成本切片 | 实测 |
+|---|---:|
+| 完成的 fit 子进程 CPU | 433.334382 s |
+| 完成的 reader 子进程 CPU | 228.331255 s |
+| 维护采样窗口 wall | 669.297076051 s |
+| Wrapper＋后续独立打包，去重后的 CPU | 785.766679218 s |
+| 八 workflow 参数读取 loop 中位数 | 1.010242 ms |
+| 同进程八 workflow SQL loop 中位数 | 0.123206 ms |
+| 整个 fresh-reader 进程中位数 | 1.021130909 s |
+| 216 个新 checkpoint | 13,105,634 B |
+| 原始采样日程 | 33,177,600 B |
+
+2913 次采样记录了 46 次进程退出相关读取错误，RSS/PSS 未知区间为
+20.962605019 秒，存储未知区间为 0.009797947 秒。采样 RSS/PSS 峰值分别为
+690,384,896 / 521,078,784 B。该 runner 使用 AMD EPYC 9V45，与语义 clean run 的
+Xeon 不同；不能把 wall 或 CPU 差异解释为算法加速。`full_cost_exact=false` 保留。
+
+第一次审计的旧报告 writer 因富含执行信息的 phase 记录超过 400,000 B 分片上限而
+退出。原始失败回执、来源和已写出的 57 个检查分片完整归档。修复仅新增按编码
+字节拆分的 writer，并替换主审计器的一行 import；全部比较逻辑与训练结果未改。
+两项传输回归测试通过，第二次审计完整退出零，57 个检查分片与首轮逐字节相同。
+这次修复没有触发重新训练。
+
+三遍维护共完成 648 次 fit、388,800 步、12,441,600 次样本呈现。按互不重叠范围
+相加的已知 CPU 下界为 **3468.069704855 秒**；原生 CI、原始 Formal-01、首次中断
+尝试、未测准备/上传以及全部审计等仍未计入，不能称为全研究总成本。
+
+来源：[技能协议与说明](../memory-cell-adapters/skill_longrun/README.md)、
+[完整原始归档](../memory-cell-adapters/skill_longrun/evidence/longrun64x3-skill/README.md)、
+[独立审计](../memory-cell-adapters/evaluation/AUDIT-skill-longrun.json)、
+[成本分解](../memory-cell-adapters/skill_longrun/evidence/longrun64x3-skill/COST_SUMMARY.json)。
+
 ## 5. 原生验证与最终化状态
 
 Formal-06 的 951 项普通测试及 3/3 actual 原生测试通过，但最后的 structure scorer
@@ -183,19 +239,34 @@ Formal-05 还揭示了重复获取 owner snapshot 跨秒造成完整 export 不�
 修复分别规范了真实 wire 比较、改用已经保存的同一份 snapshot；没有改变数值、数据、
 训练预算、阈值或科学准入条件。
 
-修复后的 formal-07 已提交：source `8510464dd7c4bbed20b5dfa81d3b65eaf6671132`，
+修复后的 **formal-07 已完成并通过**：source `8510464dd7c4bbed20b5dfa81d3b65eaf6671132`，
 tree `71ff3402b3da1ad2d7fa9a39873364fbd9f4f7a5`，
 [run 40733474806](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40733474806)，
-job `122975678245`。截至本文件本次编辑，正式运行仍在进行；不能提前记为通过。
+job `122975678245`。GitHub run/job 均 success，原始 receipt 为 `passed=true`，
+9 项命令全部退出零，**951/951 普通测试和 3/3 actual 原生测试通过**。
+原始 ZIP 与 GitHub 的字节数和 SHA-256 相符，完整 TAR 的 487 个 regular members
+均已核验；没有把 formal-06 重新评分后改称 formal-07。
 
-通过后仍需单独执行 exact-source 最终化：认证原始 GitHub artifact、核对全部 TAR
-成员及三份 longrun/source freeze，之后运行原始 `ci_finalize.py` 的十包 `just fix`
+原生持续训练有 6 个真实 worker、36 次 fit，两种表示分别覆盖 9 → 17 → 25 个
+当前实体。每阶段 trained 与 clean 均达到 future 144/144 reads、24/24 decisions，
+retention 48/48 reads、8/8 decisions；未训练和 frozen 控制不同，参数因果门槛通过。
+迁移后读取发生在原来源根目录不可用的条件下，保留真实 owner/runtime 身份证据。
+
+原生结构研究执行 27 个训练进程、3 个选择进程和 256 次 fit，但三个 stage 的独占
+search/replay/communication wall 成本仍缺失，决策是 `NoChange / MissingMeasurements`，
+没有发布新拓扑。独立原生语言候选的 known correct coverage 为 94/144（65.2778%），
+unsupported acceptance 为 8/96（8.3333%）；仍为 shadow，质量门槛为 false。
+这些原生指标使用另一套任务与模型，不能与 residual 实验混合为同一统计结果。
+
+截至本文件本次编辑，仍需单独执行 exact-source 最终化：认证原始 GitHub artifact、
+核对全部 TAR 成员及四份 longrun/source freeze，之后运行原始 `ci_finalize.py` 的十包 `just fix`
 和 `just fmt`，保留补丁、日志与最终树。最终 fix/fmt 之后不再手工运行测试。
 这些构建/完整性门槛通过，也不会把科学收益的 false 改成 true。
 
 失败和诊断证据分别保留在 [formal-04](evidence/native-formal-04/)、
 [formal-05](evidence/native-formal-05/)、[formal-06](evidence/native-formal-06/)
-及 [wire/snapshot 回归](evidence/selection-wire-regression/)。
+及 [wire/snapshot 回归](evidence/selection-wire-regression/)；成功的完整原始证据见
+[formal-07](evidence/native-formal-07/README.md)。
 
 ## 结论对实现的影响
 

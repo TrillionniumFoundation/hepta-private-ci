@@ -73,7 +73,31 @@ and a retained-data rebuild rather than physical erasure.
 
 ## Evidence status
 
-The boundary tests use invented data and execute no training. Formal results
-will be linked only after the complete original CI artifact is verified and
-the independent auditor has read its raw files. No formal outcome is asserted
-by the existence of this implementation or its test receipt.
+The formal skill run completed successfully on 2026-10-28:
+[run 40742088819](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40742088819),
+job `123006077672`, source `4693e8028fb8563ec730dcb55458a212389154a5`.
+Its original GitHub ZIP and nested TAR identities were verified, and all 4399
+regular output files are retained. The [archive guide](evidence/longrun64x3-skill/README.md)
+provides exact identities, restoration commands, quality and cost boundaries.
+
+The run completed 192 cycles, 216 fixed-budget fits and 219 fresh readers.
+Both parameter and exact-SQL arms recovered 1512/1512 active programs at cycle
+ends, including 207/207 changed and 1305/1305 retained programs, with 24/24
+revoked requests refused. Exact execution status, value and complete trace on
+all four public probes achieved the same counts. The
+[independent audit](../evaluation/AUDIT-skill-longrun.json) passed 28467 checks;
+these are checks on one finite experiment, not independent trials or evidence
+of superiority over SQL.
+
+The first audit invocation failed while serializing an oversized detail part.
+Its complete partial output is [preserved](../evaluation/skill-audit-serialization-failure/README.md).
+A skill-specific output writer fixed only report splitting; all comparisons,
+thresholds, runtime source files and original evidence stayed unchanged. The
+second invocation completed without any fit rerun. Source identities and both
+attempts are retained, including the post-formal serializer change.
+
+The disjoint observed wrapper-plus-packaging CPU total is 785.766679218 seconds.
+Nested worker/manager/monitor CPU scopes must not be added to it. Resource
+sampling retains explicit unknown intervals, and `full_cost_exact=false`
+remains. This result establishes bounded skill maintenance at known addresses;
+it does not close the residual model's native Agentd integration boundary.
