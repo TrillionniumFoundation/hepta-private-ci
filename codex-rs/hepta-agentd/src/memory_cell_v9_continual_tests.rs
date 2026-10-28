@@ -59,7 +59,7 @@ async fn continual(config: &ChildConfig) -> Value {
         data::append(&owner,&stage.writes).await;
         let snapshot = owner.snapshot().await;
         let owner_identity = data::save(&directory.join("OWNER_EXPORT.json"),&serde_json::to_value(&snapshot).unwrap());
-        let paired = fit::fit(&training,&owner,&config.representation,parents,&directory).await;
+        let paired = fit::fit(&training,&snapshot,&config.representation,parents,&directory).await;
         data::save(&directory.join("FIT_LOCK.json"),&json!({"owner_cut":snapshot.owner_cut_digest(),
             "configuration":paired["configuration"],"code_identity":code,"request_digest":paired["request_digest"],
             "future_outcomes_seen":false,"fixture_sha256":data::FIXTURE_SHA}));

@@ -53,14 +53,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           python3 -B qualification/memory-cell-completion/authenticate_ci_artifact.py \
-            --transport qualification/memory-cell-completion/evidence/native-formal-06/TRANSPORT.json \
-            --origin qualification/memory-cell-completion/evidence/native-formal-06/GITHUB_ORIGIN.json \
+            --transport qualification/memory-cell-completion/evidence/native-formal-07/TRANSPORT.json \
+            --origin qualification/memory-cell-completion/evidence/native-formal-07/GITHUB_ORIGIN.json \
             --output memory-v9-completion-preflight/GITHUB_AUTHENTICATION.json
       - name: Verify every retained native file and independent adapter source proof
         timeout-minutes: 10
         run: |
           python3 -B qualification/memory-cell-completion/finalize_preflight.py \
-            --transport qualification/memory-cell-completion/evidence/native-formal-06/TRANSPORT.json \
+            --transport qualification/memory-cell-completion/evidence/native-formal-07/TRANSPORT.json \
             --request qualification/memory-cell-v9/FINALIZE_REQUEST.json \
             --adapter-freeze qualification/memory-cell-adapters/longrun/evidence/longrun64x3/RAW_FREEZE-run-01.json \
             --adapter-freeze qualification/memory-cell-adapters/longrun/evidence/longrun64x3/RAW_FREEZE-run-02-resume.json \

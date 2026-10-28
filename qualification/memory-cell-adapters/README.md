@@ -146,7 +146,7 @@ RSS 尚未测量，不能从唯一参数数目推断部署内存相等。见
 删除后七项 7/7 保留；删除来源不在重建 lineage 中；从相同初始化和训练日程独立
 重复的 clean rebuild 参数完全相同。这是一个有限反事实检查，不是一般机器遗忘保证。
 
-实际 owner 验证了旧版本拒绝、依赖撤销后停止参数/事件读取、sleep 移除缓存引用、
+Python 研究 owner 验证了旧版本拒绝、依赖撤销后停止参数/事件读取、sleep 移除缓存引用、
 wake 核对参数/encoder/typed config、步数上限，以及 owner stop 后的请求不再读取。
 
 额外的 64 周期 × 3 seeds 持续维护实验见 [longrun](longrun/)。首链已完成

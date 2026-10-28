@@ -30,7 +30,9 @@ def selection(directory, code, export, prefix, claimed):
     require(frame == {"schema": "hepta.memory.v9.structure-selection.v1", "source_cut_digest": export["owner_cut_digest"],
                       "addresses": sorted(digest(entity.encode()) for entity in facts),
                       "observations": observations, "resident_budget_bytes": 16384}, "selector saw facts, future labels or invented coaccess")
-    expected = select(frame)
+    # The worker emits JSON: integer proxy shard keys arrive as string keys.
+    # Reproduce that wire representation before comparing every claimed value.
+    expected = decode(canonical(select(frame)))
     for key in expected.keys() - {"wall_ns"}:
         require(result[key] == expected[key], "prefix-only selection cannot be reproduced")
     require(result == claimed, "selected routes differ from exact worker response")

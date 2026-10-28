@@ -1,7 +1,7 @@
 {
-  "attempt": "formal-06-bounded-resource-sampling",
+  "attempt": "formal-07-exact-wire-and-owner-snapshot",
   "mode": "formal",
-  "purpose": "Verify the measured supervision fix after formal-04 retained 67,109,155 bytes of structure samples, exceeding the unchanged 64 MiB cap, and the byte continual child did not complete its third stage within the prior execution envelope. Use 200 ms sampling, retain explicit sampling uncertainty, and allow 1200 seconds per continual child with parent and CI headroom. Keep model workers, all 600-step fits, data, selectors, thresholds and scientific gates unchanged. Preserve all earlier attempts; formal-05 continues separately with its original inputs and portable evidence transport. Failure diagnostics must retain the resource exit/cap state in parent test logs.",
+  "purpose": "Verify two defects evidenced by the preserved formal-05 and formal-06 raw artifacts. Compare the recomputed structure selection after its exact JSON wire encoding so integer shard keys match the retained strings without changing values or gates. Pass the exact already-saved owner snapshot into continual fit so an observed-at second rollover cannot change the training export. Keep all model workers, 600-step fits, data, selectors, thresholds, source-scope equality, sampling bounds and scientific gates unchanged. Preserve both failed attempts and their original receipts. Formal-06 passed every ordinary and actual native test but its final structure scorer rejected the JSON key representation; formal-05 additionally demonstrated the duplicate-snapshot timing race. This request does not promote any scientific result or integrate the separate residual tensor profile.",
   "schema": "hepta.memory.v9.verification-request.v1",
   "tests_before_final_fix_and_format": true
 }

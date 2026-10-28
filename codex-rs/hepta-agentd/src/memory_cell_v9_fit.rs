@@ -13,7 +13,6 @@ use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 
 use crate::MemoryCellTrainerConfigV1;
-use crate::memory_cell_test_support::ControlFixture;
 use crate::memory_cell_training_test_support::CODE_FILES;
 
 use super::data::save;
@@ -36,10 +35,11 @@ pub(super) fn code_identity(config: &MemoryCellTrainerConfigV1) -> Value {
     json!({"files":files,"digest":Digest32::of_bytes(&raw).to_string()})
 }
 
-pub(super) async fn fit(config: &MemoryCellTrainerConfigV1, owner: &ControlFixture,
+pub(super) async fn fit(config: &MemoryCellTrainerConfigV1, snapshot: &codex_hepta_memory::MemoryCellOwnerSnapshotV1,
     representation: &str, parents: Value, directory: &Path) -> Value {
     let code = code_identity(config);
-    let snapshot = owner.snapshot().await;
+    // Train from the exact export already retained by the caller. A second
+    // snapshot could cross a wall-clock second and change its observation time.
     let configuration = json!({"seed":91317,"steps":600,"dimension":48,"hidden":32,
         "threshold":if representation == "catalog" {0.5} else {0.9}});
     let frame = json!({"schema":"hepta.memory.v9.paired-fit.v1",
