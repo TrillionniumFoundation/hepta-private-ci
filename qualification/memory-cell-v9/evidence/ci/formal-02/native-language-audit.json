@@ -1,0 +1,175 @@
+{
+  "evidence_grants_authority": false,
+  "fixture_matches_independent_inputs": true,
+  "fixture_sha256": "cb1dabcd85fe5dd7ec1b3e4246d6b4cb51c25d408bc2d295ce155088b4cac357",
+  "models_executed": 0,
+  "population_risk_established": false,
+  "reports": [
+    {
+      "arm": "frozen-v7",
+      "counts": {
+        "ambiguous_alias": {
+          "errors": 0,
+          "native_correct": 8,
+          "negative_routes": 0,
+          "routing_correct": 8,
+          "rows": 8,
+          "wrong_native_accepts": 0
+        },
+        "known": {
+          "errors": 0,
+          "native_correct": 52,
+          "negative_routes": 0,
+          "routing_correct": 52,
+          "rows": 144,
+          "wrong_native_accepts": 0
+        },
+        "time_conflict": {
+          "errors": 0,
+          "native_correct": 12,
+          "negative_routes": 0,
+          "routing_correct": 12,
+          "rows": 12,
+          "wrong_native_accepts": 0
+        },
+        "unknown_entity": {
+          "errors": 0,
+          "native_correct": 12,
+          "negative_routes": 0,
+          "routing_correct": 12,
+          "rows": 12,
+          "wrong_native_accepts": 0
+        },
+        "unsupported": {
+          "errors": 0,
+          "native_correct": 90,
+          "negative_routes": 6,
+          "routing_correct": 90,
+          "rows": 96,
+          "wrong_native_accepts": 6
+        }
+      },
+      "host_time_abstentions": 0,
+      "input_sha256": "daebaee6a86025f6c2ee1263372ffde75246868f05b9756dbce40b8ee29cdf8e",
+      "known_correct_coverage": 0.3611111111111111,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "owner_source_value_consistency_verified": true,
+      "quality_gate_passed": false,
+      "retained_worker_frames": 544,
+      "unsupported_route_acceptance_rate": 0.0625,
+      "worker_request_bytes": 870634,
+      "worker_response_bytes": 549875
+    },
+    {
+      "arm": "frozen-v8-shadow",
+      "counts": {
+        "ambiguous_alias": {
+          "errors": 0,
+          "native_correct": 8,
+          "negative_routes": 0,
+          "routing_correct": 8,
+          "rows": 8,
+          "wrong_native_accepts": 0
+        },
+        "known": {
+          "errors": 0,
+          "native_correct": 78,
+          "negative_routes": 0,
+          "routing_correct": 78,
+          "rows": 144,
+          "wrong_native_accepts": 0
+        },
+        "time_conflict": {
+          "errors": 0,
+          "native_correct": 12,
+          "negative_routes": 0,
+          "routing_correct": 12,
+          "rows": 12,
+          "wrong_native_accepts": 0
+        },
+        "unknown_entity": {
+          "errors": 0,
+          "native_correct": 12,
+          "negative_routes": 0,
+          "routing_correct": 12,
+          "rows": 12,
+          "wrong_native_accepts": 0
+        },
+        "unsupported": {
+          "errors": 0,
+          "native_correct": 86,
+          "negative_routes": 10,
+          "routing_correct": 86,
+          "rows": 96,
+          "wrong_native_accepts": 10
+        }
+      },
+      "host_time_abstentions": 0,
+      "input_sha256": "3bc76c8bddfe2b954a208116e604966ea880cf5cbcc8a7b2d6f7a3bec5b8bd8a",
+      "known_correct_coverage": 0.5416666666666666,
+      "model_digest": "0182aebb86e3f2ed7dd089864762970791b70cff2240861602ef15be2461ac86",
+      "owner_source_value_consistency_verified": true,
+      "quality_gate_passed": false,
+      "retained_worker_frames": 544,
+      "unsupported_route_acceptance_rate": 0.10416666666666667,
+      "worker_request_bytes": 870634,
+      "worker_response_bytes": 601969
+    },
+    {
+      "arm": "candidate-v9-shadow",
+      "counts": {
+        "ambiguous_alias": {
+          "errors": 0,
+          "native_correct": 8,
+          "negative_routes": 0,
+          "routing_correct": 8,
+          "rows": 8,
+          "wrong_native_accepts": 0
+        },
+        "known": {
+          "errors": 0,
+          "native_correct": 94,
+          "negative_routes": 0,
+          "routing_correct": 94,
+          "rows": 144,
+          "wrong_native_accepts": 0
+        },
+        "time_conflict": {
+          "errors": 0,
+          "native_correct": 12,
+          "negative_routes": 0,
+          "routing_correct": 12,
+          "rows": 12,
+          "wrong_native_accepts": 0
+        },
+        "unknown_entity": {
+          "errors": 0,
+          "native_correct": 12,
+          "negative_routes": 0,
+          "routing_correct": 12,
+          "rows": 12,
+          "wrong_native_accepts": 0
+        },
+        "unsupported": {
+          "errors": 0,
+          "native_correct": 88,
+          "negative_routes": 8,
+          "routing_correct": 88,
+          "rows": 96,
+          "wrong_native_accepts": 8
+        }
+      },
+      "host_time_abstentions": 0,
+      "input_sha256": "d53fb4a926e6595154f397d4cda0cbf2187cca4b3b1f74b8da3a8022c5b40e99",
+      "known_correct_coverage": 0.6527777777777778,
+      "model_digest": "36bf40924f93fdc47ab569b02132adb1edef659338d4b82ea1bd695fdfdb40bf",
+      "owner_source_value_consistency_verified": true,
+      "quality_gate_passed": false,
+      "retained_worker_frames": 544,
+      "unsupported_route_acceptance_rate": 0.08333333333333333,
+      "worker_request_bytes": 870634,
+      "worker_response_bytes": 619724
+    }
+  ],
+  "schema": "hepta.memory.v9.native-evidence-audit.v1"
+}
