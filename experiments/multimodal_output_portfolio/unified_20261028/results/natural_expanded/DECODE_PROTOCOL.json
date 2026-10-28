@@ -1,0 +1,9 @@
+{
+  "source_protocol_sha256": "ac8861da9884414983f8adce055bfd5352b658680f6a86cfc4bbccc599d05473",
+  "full_source_decode": "ffmpeg fps=8,scale=32:32 area; mono audio 8000Hz",
+  "window_alignment": "round(start_seconds*8)/8; matching audio sample boundaries",
+  "retain_raw_source": false,
+  "raw_source_custody": "SHA256, official archive generation, URL, ZIP member/CRC and HTTP-range receipts permit exact recovery",
+  "chosen_before_model_training": true,
+  "sha256": "4e29d8a49605d901355283300f48450547358033066fd23da74eee616b480b8f"
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "hepta.ndu.unified-profile.v1",
+  "time_discount": 1.0,
+  "cost_treatment": "actual_joint_increment_once",
+  "stopping": "explicit_delivered_terminal_outcome",
+  "reward_source": "bound_external_post_codec_observer",
+  "objective_sha256": "eaebb1f04ea6ce8b8dac80abeade9af11a920d8987d45c742076d9860dea1f5e",
+  "observer_sha256": "0fdded638147120bda44273265b38d1ecc06aa1bec0ded1393426ed95eee421e",
+  "continuation_sha256": "4abf66314111744789a6fb75cff2e063816e36f872432b9933c48f4b87f044dd",
+  "gamma": 2.0,
+  "aggregation": "population",
+  "cost_unit": "normalized_utility",
+  "utility_bounds": [
+    0.0,
+    1.0
+  ],
+  "required_modalities": [
+    "text",
+    "audio",
+    "image",
+    "video"
+  ]
+}
