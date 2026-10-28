@@ -1404,12 +1404,51 @@ fn open_private(
     Ok(file)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn prepare_directory(root: &Path) -> Result<File, DurableRegistryError> {
+    codex_utils_path::private_state::prepare_directory(root).map_err(map_windows_state_error)
+}
+
+#[cfg(windows)]
+fn open_private(
+    directory: &File,
+    name: &str,
+    access: Access,
+) -> Result<File, DurableRegistryError> {
+    use codex_utils_path::private_state;
+    let access = match access {
+        Access::Read => private_state::Access::Read,
+        Access::Create => private_state::Access::Create,
+    };
+    private_state::open_private(directory, name, access).map_err(map_windows_state_error)
+}
+
+#[cfg(windows)]
+fn entry_exists(directory: &File, name: &str) -> Result<bool, DurableRegistryError> {
+    codex_utils_path::private_state::entry_exists(directory, name).map_err(map_windows_state_error)
+}
+
+#[cfg(windows)]
+fn replace_state(directory: &File) -> Result<(), DurableRegistryError> {
+    codex_utils_path::private_state::replace(directory, "registry.next", "registry.json")
+        .map_err(map_windows_state_error)
+}
+
+#[cfg(windows)]
+fn map_windows_state_error(error: std::io::Error) -> DurableRegistryError {
+    if error.kind() == std::io::ErrorKind::PermissionDenied {
+        DurableRegistryError::UnsafeStateDirectory
+    } else {
+        DurableRegistryError::Unavailable
+    }
+}
+
+#[cfg(not(any(unix, windows)))]
 fn prepare_directory(_root: &Path) -> Result<File, DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn open_private(
     _directory: &File,
     _name: &str,
@@ -1427,7 +1466,7 @@ fn entry_exists(directory: &File, name: &str) -> Result<bool, DurableRegistryErr
     }
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
@@ -1438,7 +1477,7 @@ fn replace_state(directory: &File) -> Result<(), DurableRegistryError> {
         .map_err(|_| DurableRegistryError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn replace_state(_directory: &File) -> Result<(), DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
@@ -2811,3 +2850,7 @@ mod tests {
 #[cfg(all(test, unix))]
 #[path = "durable_payloads_tests.rs"]
 mod payload_tests;
+
+#[cfg(all(test, windows))]
+#[path = "durable_windows_tests.rs"]
+mod windows_tests;

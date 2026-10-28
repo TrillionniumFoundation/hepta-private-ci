@@ -438,11 +438,53 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Fi
     Ok(file)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn prepare_directory(root: &Path) -> Result<File, FinalUseError> {
+    codex_utils_path::private_state::prepare_directory(root).map_err(map_windows_state_error)
+}
+
+#[cfg(windows)]
+fn open_private(directory: &File, name: &str, access: Access) -> Result<File, FinalUseError> {
+    use codex_utils_path::private_state;
+    let access = match access {
+        Access::Read => private_state::Access::Read,
+        Access::Write => private_state::Access::Write,
+        Access::Create => private_state::Access::Create,
+    };
+    private_state::open_private(directory, name, access).map_err(map_windows_state_error)
+}
+
+#[cfg(windows)]
+fn entry_exists(directory: &File, name: &str) -> Result<bool, FinalUseError> {
+    codex_utils_path::private_state::entry_exists(directory, name).map_err(map_windows_state_error)
+}
+
+#[cfg(windows)]
+fn replace_state(directory: &File) -> Result<(), FinalUseError> {
+    codex_utils_path::private_state::replace(directory, "authority.next", "authority.json")
+        .map_err(map_windows_state_error)
+}
+
+#[cfg(windows)]
+fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
+    codex_utils_path::private_state::replace(directory, "authority.claims.next", "authority.claims")
+        .map_err(map_windows_state_error)
+}
+
+#[cfg(windows)]
+fn map_windows_state_error(error: std::io::Error) -> FinalUseError {
+    if error.kind() == std::io::ErrorKind::PermissionDenied {
+        FinalUseError::UnsafeStateDirectory
+    } else {
+        FinalUseError::Unavailable
+    }
+}
+
+#[cfg(not(any(unix, windows)))]
 fn prepare_directory(_root: &Path) -> Result<File, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn open_private(_directory: &File, _name: &str, _access: Access) -> Result<File, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
@@ -473,15 +515,15 @@ fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
     .map_err(|_| FinalUseError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn replace_state(_directory: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn replace_claims(_directory: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
@@ -489,3 +531,7 @@ fn replace_claims(_directory: &File) -> Result<(), FinalUseError> {
 #[cfg(all(test, unix))]
 #[path = "final_use_store_tests.rs"]
 mod tests;
+
+#[cfg(all(test, windows))]
+#[path = "final_use_store_windows_tests.rs"]
+mod windows_tests;
