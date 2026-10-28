@@ -64,6 +64,14 @@ NAMESPACE_TESTS = (
     "non_managed_inner_command_omits_route_spec",
     "managed_proxy_inner_command_requires_route_spec",
 )
+PIDFD_TESTS = (
+    "normal_child_exit_is_reaped_with_original_status",
+    "owner_already_dead_before_inner_entry_exits_before_command",
+    "actual_owner_exit_wakes_blocking_reaper_without_sigchld",
+    "ordinary_descriptor_cannot_replace_owner_pidfd",
+    "pidfd_type_check_does_not_consume_real_child_exit_status",
+    "restoring_sigchld_does_not_reblock_forwarded_signals",
+)
 MAX_JSON = 64 * 1024 * 1024
 MAX_ARCHIVE = 1024 * 1024 * 1024
 MAX_EXECUTABLE = 512 * 1024 * 1024
@@ -365,20 +373,59 @@ class Evidence:
                 "original complete ordinary/model test selector required",
             )
         if name == "namespace-and-pidfd":
+            selectors = [f"test({test})" for test in NAMESPACE_TESTS]
+            selectors.append("test(pidfd_reaper::tests::)")
+            require(
+                record["command"]
+                == [
+                    "just",
+                    "test",
+                    "--locked",
+                    "-p",
+                    "codex-linux-sandbox",
+                    "--lib",
+                    "-E",
+                    " | ".join(selectors),
+                    "--no-capture",
+                ],
+                "original complete namespace/pidfd command required",
+            )
             # Raw command bytes and digest were already authenticated above.
             # Match actual PASS lines after removing nextest ANSI styling,
             # just as ci.observed_test_counts does; do not alter the log.
             visible = re.sub(r"\x1b\[[0-9;]*m", "", text)
+            terminal_tests = []
+            for line in visible.split("\n"):
+                match = re.fullmatch(
+                    r"[ \t]*PASS[ \t]+\[[ \t]*[0-9]+(?:\.[0-9]+)?s[ \t]*\]"
+                    r"(?:[ \t]+\([ \t]*[0-9]+/[ \t]*[0-9]+\))?"
+                    r"[ \t]+codex-linux-sandbox[ \t]+"
+                    r"([A-Za-z0-9_]+(?:::[A-Za-z0-9_]+)+)[ \t]*\r?",
+                    line,
+                )
+                if match:
+                    terminal_tests.append(match[1])
             require(
                 all(
-                    re.search(r"PASS[^\n]*" + re.escape(test), visible)
+                    terminal_tests.count("linux_run_main::tests::" + test) == 1
                     for test in NAMESPACE_TESTS
                 ),
-                "original namespace controls must actually pass",
+                "all eight exact namespace controls must pass once",
             )
             require(
-                len(re.findall(r"PASS[^\n]*pidfd_reaper::tests::", visible)) >= 6,
-                "all six pidfd controls must actually pass",
+                all(
+                    terminal_tests.count("pidfd_reaper::tests::" + test) == 1
+                    for test in PIDFD_TESTS
+                ),
+                "all six pidfd controls must pass once with exact names",
+            )
+            require(
+                len(terminal_tests) == len(NAMESPACE_TESTS) + len(PIDFD_TESTS),
+                "unexpected namespace/pidfd terminal PASS record",
+            )
+            require(
+                passed == len(terminal_tests),
+                "namespace/pidfd summary must equal exact terminal PASS records",
             )
         return {"record": name + ".json", "passed": passed, "raw": regular(log)}
 
