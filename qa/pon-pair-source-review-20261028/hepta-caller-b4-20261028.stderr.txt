@@ -1,0 +1,33 @@
+test_canonical_kernel_authority_inventory_is_declared_in_callers_manifest (test_kernel_authority_closed_world.KernelAuthorityClosedWorldTests.test_canonical_kernel_authority_inventory_is_declared_in_callers_manifest) ... ok
+test_every_public_authority_free_function_is_explicitly_classified (test_kernel_authority_closed_world.KernelAuthorityClosedWorldTests.test_every_public_authority_free_function_is_explicitly_classified) ... ok
+test_every_public_authority_method_is_explicitly_classified (test_kernel_authority_closed_world.KernelAuthorityClosedWorldTests.test_every_public_authority_method_is_explicitly_classified) ... ok
+test_type_anchored_callers_match_independent_closed_set (test_kernel_authority_closed_world.KernelAuthorityClosedWorldTests.test_type_anchored_callers_match_independent_closed_set) ... 
+  test_type_anchored_callers_match_independent_closed_set (test_kernel_authority_closed_world.KernelAuthorityClosedWorldTests.test_type_anchored_callers_match_independent_closed_set) (boundary='final_use_open_state') ... FAIL
+test_cfg_production_alternatives_remain_visible (test_verify_hepta_callers.CallerProofTests.test_cfg_production_alternatives_remain_visible) ... ok
+test_cfg_test_callsite_does_not_manufacture_product_caller (test_verify_hepta_callers.CallerProofTests.test_cfg_test_callsite_does_not_manufacture_product_caller) ... ok
+test_cfg_test_fields_preserve_the_production_suffix (test_verify_hepta_callers.CallerProofTests.test_cfg_test_fields_preserve_the_production_suffix) ... ok
+test_comment_and_string_do_not_manufacture_callers (test_verify_hepta_callers.CallerProofTests.test_comment_and_string_do_not_manufacture_callers) ... ok
+test_exact_caller_set_passes (test_verify_hepta_callers.CallerProofTests.test_exact_caller_set_passes) ... ok
+test_inventory_omission_fails (test_verify_hepta_callers.CallerProofTests.test_inventory_omission_fails) ... ok
+test_last_cfg_test_field_does_not_remove_enclosing_brace (test_verify_hepta_callers.CallerProofTests.test_last_cfg_test_field_does_not_remove_enclosing_brace) ... ok
+test_method_call_pattern_passes (test_verify_hepta_callers.CallerProofTests.test_method_call_pattern_passes) ... ok
+test_positive_authority_fails (test_verify_hepta_callers.CallerProofTests.test_positive_authority_fails) ... ok
+test_typed_receiver_rejects_arbitrary_field_alias_in_split_impl (test_verify_hepta_callers.CallerProofTests.test_typed_receiver_rejects_arbitrary_field_alias_in_split_impl) ... ok
+test_typed_receiver_rejects_arbitrary_unregistered_parameter (test_verify_hepta_callers.CallerProofTests.test_typed_receiver_rejects_arbitrary_unregistered_parameter) ... ok
+test_typed_related_method_cannot_bypass_closed_set (test_verify_hepta_callers.CallerProofTests.test_typed_related_method_cannot_bypass_closed_set) ... ok
+test_unexpected_product_caller_fails (test_verify_hepta_callers.CallerProofTests.test_unexpected_product_caller_fails) ... ok
+
+======================================================================
+FAIL: test_type_anchored_callers_match_independent_closed_set (test_kernel_authority_closed_world.KernelAuthorityClosedWorldTests.test_type_anchored_callers_match_independent_closed_set) (boundary='final_use_open_state')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/56818e4fba76/hepta-next/qa/b4-no-bypass/test_kernel_authority_closed_world.py", line 211, in test_type_anchored_callers_match_independent_closed_set
+    self.assertEqual(
+AssertionError: Items in the first set but not the second:
+'codex-rs/hepta-agentd/src/automation_effect_host_pon_growth_remote_config.rs'
+'codex-rs/hepta-agentd/src/automation_effect_host_pon_growth.rs' : final_use_open_state: independent kernel.authority caller set drifted
+
+----------------------------------------------------------------------
+Ran 17 tests in 1.132s
+
+FAILED (failures=1)
