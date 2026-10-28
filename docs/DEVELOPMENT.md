@@ -1938,3 +1938,22 @@ Windows storage/caller/loader/Job and Unknown custody remain OPEN. Continue the
 existing PN0–PN6 dependency order and all original model, I09/I10, release, PN1
 and WAN gates without changing any deadline, resource or historical failure.
 `task_complete=false`, `merge_ready=false`, **NO_GO**.
+
+PN0's [ordinary Windows prompt-store source follow-up](../qualification/pn0-ci/aca-public-prompt-owner-20261028/README.md)
+keeps `AgentdState::new` and the public pipeline entry while composing actual
+native namespace owners into the existing registry and runtime stores. Runtime
+I/O retains the real marker lock, original S1 format and8MiB cap; fresh state
+must be durable before return, while cold existing-marker/missing-state fails.
+Create-only semantics, all principal/ACL/volume/ancestor checks and ordinary
+registry/FinalUse guards remain. Supported canonical disk spelling reaches those
+same native checks. Shared revalidation and post-rename refusal keep authoritative
+views closed after namespace or durability failure. Cross-error Created custody
+is still OPEN; normal error return only closes held handles without repair.
+
+The initial canonical-caller source defect and first actual Windows-GNU strict
+Clippy failure are retained. Corrected private-state library cfg(test) Clippy
+exited0 with the original `-D warnings`; no binary was linked or run. Agentd
+caller compilation, the new native regression and all original public-caller
+controls remain unexecuted for this source. This cannot close the four-lane
+deletion/terminal failures, ordinary FinalUse/UDS, model/genesis/I09-I10, release
+or WAN gates. Continue the existing acceptance order and limits; **NO_GO**.

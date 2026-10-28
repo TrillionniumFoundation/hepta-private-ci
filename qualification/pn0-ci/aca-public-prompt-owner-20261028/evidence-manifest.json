@@ -1,0 +1,121 @@
+{
+  "schema": "pn0-public-prompt-owner-source-evidence-v1",
+  "created_utc": "2026-10-28T15:51:36.034869+00:00",
+  "base": "aca32e0df184a4a0b1c094918d1cf3dbd20e4588",
+  "live_source_parent": "91272e293e2a7a8964e4147b80d4e4c3a4389d44",
+  "source_patch_sha256": "d66688a3affa853d00be05edd8e8f74c216e8acf541debc3d5d991f4838c053f",
+  "actual_validation": {
+    "initial_v2_Windows_GNU_clippy": {
+      "exit": 101,
+      "elapsed_seconds": 11.516034478030633,
+      "reason": "large_enum_variant; both lib and cfg(test) lib rejected"
+    },
+    "corrected_v3_Windows_GNU_clippy": {
+      "exit": 0,
+      "elapsed_seconds": 0.8036263239919208,
+      "scope": "only codex-utils-windows-private-state with cfg(test), original -D warnings"
+    },
+    "agentd_caller_typecheck": "NOT_RUN",
+    "binary_link": "NOT_RUN",
+    "Windows_native_tests": "NOT_RUN",
+    "public_pipeline_execution": "NOT_RUN",
+    "old_model_SDK_supervisor_PN1_budget_reset": false,
+    "final_fmt": {
+      "exit_code": 0,
+      "elapsed_seconds": 0.24970338901039213,
+      "changes": "format-only in new module and appended test; exact delta retained",
+      "no_runtime_tests_or_checks_repeated_after_fmt": true
+    }
+  },
+  "remaining": [
+    "Created role drops only when public factory refuses; no cross-Err retained custody",
+    "generic Windows registry path guard and ordinary FinalUse remain closed",
+    "actual original four-lane deletion/query/terminal and original caller tests required",
+    "real model/genesis/I09-I10 release/custody/WAN gates open"
+  ],
+  "members": [
+    {
+      "name": "initial-source-review.json",
+      "bytes": 17749,
+      "sha256": "7921a3a7f0e3adb41c32ced665259f3b7273188cc7e8cbe07c2d117fbbe29f4c",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/aca-public-prompt-owner-independent-source-20261028-002.json"
+    },
+    {
+      "name": "revision002-source-review.json",
+      "bytes": 25967,
+      "sha256": "fe5aa4934bdb27d3bbefc983efde349fdc06228cee2750159d8e37feba51970a",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/aca-public-prompt-owner-independent-source-revision-002-20261028-002.json"
+    },
+    {
+      "name": "revision003-source-review.json",
+      "bytes": 7365,
+      "sha256": "db10dfe62551663393e4ada1f9b4e837a3d8bad8cce59a3e40dc3f20ce8a37a4",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/aca-public-prompt-owner-independent-source-revision-003-20261028-002.json"
+    },
+    {
+      "name": "revision003-source.patch",
+      "bytes": 23628,
+      "sha256": "d66688a3affa853d00be05edd8e8f74c216e8acf541debc3d5d991f4838c053f",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-public-prompt-owner-source-candidate-20261028-002/revision-003/aca-atomic-public-prompt-owner-v3.patch"
+    },
+    {
+      "name": "revision003-source-manifest.json",
+      "bytes": 16815,
+      "sha256": "a9346ab0982a54ceb804d22088286bb4702da1f4ecf825787152067a14c1658e",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-public-prompt-owner-source-candidate-20261028-002/revision-003/manifest.json"
+    },
+    {
+      "name": "original-revision002-Windows-GNU-clippy.raw.log",
+      "bytes": 1756,
+      "sha256": "c1d821c8093da51ed7d603f38eda508e9cfac3678cd98a8254b8c2a64c623ea9",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-public-prompt-owner-validation-20261028-002/Windows-GNU-clippy.raw.log"
+    },
+    {
+      "name": "original-revision002-terminal.json",
+      "bytes": 408,
+      "sha256": "d84c00ee5e79e75221aeefd02f7b89df5244048aa433d969b5af78746d9c54b3",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-public-prompt-owner-validation-20261028-002/terminal.json"
+    },
+    {
+      "name": "revision003-Windows-GNU-clippy.raw.log",
+      "bytes": 320,
+      "sha256": "6d0de12e7cc038e2039f3be9df5cb9fa803e4355d28dd817ff29d1d589338cb9",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-public-prompt-owner-validation-20261028-002/revision003-Windows-GNU-clippy.raw.log"
+    },
+    {
+      "name": "revision003-terminal.json",
+      "bytes": 742,
+      "sha256": "29bc99928b603726439695200c6520585f353f911c29febbfdfd5d2ac6aa94f6",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-public-prompt-owner-validation-20261028-002/revision003-terminal.json"
+    },
+    {
+      "name": "final-fmt.raw.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-public-prompt-owner-validation-20261028-002/final-fmt.raw.log"
+    },
+    {
+      "name": "final-fmt-terminal.json",
+      "bytes": 2289,
+      "sha256": "e153d69ba17ecbdfd0b6d656a4b239e1a206d0ca73361f07132dcf16baaff4c9",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-public-prompt-owner-validation-20261028-002/final-fmt-terminal.json"
+    },
+    {
+      "name": "final-format-only.delta.patch",
+      "bytes": 1918,
+      "sha256": "d357fde396782c82ae6ee4ab5a68e48469d2545a0bd0426baa407cd77037e24a",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-public-prompt-owner-validation-20261028-002/final-format-only.delta.patch"
+    }
+  ],
+  "task_complete": false,
+  "merge_ready": false,
+  "final_source_sha256": {
+    "codex-rs/hepta-agentd/src/prompt_runtime.rs": "f64077547cf54cdd18a27c69cf7de83af4986bb6e5c971df2da4b6c99a34a2f5",
+    "codex-rs/hepta-agentd/src/prompt_runtime_windows.rs": "39c78dc6c8931f7459f45b17af0227e9074f35ad7e1698604309714443230a53",
+    "codex-rs/hepta-prompt-registry/src/durable.rs": "ab226b6bd30f4089f6599748662de3b1a011ce03d67aaff05d0ba5bfc21c07a6",
+    "codex-rs/utils/windows-private-state/src/fresh_private_directory.rs": "99bd2f7a256c90fdae8c54de80cf08b63c2d70b7e2fcd7bb535be6047a856e4e",
+    "codex-rs/utils/windows-private-state/src/parent_anchor.rs": "790b4ac7105d585fa07793b584426cd919ac50a1f2e07170236aef91e49e0bf2",
+    "codex-rs/utils/windows-private-state/src/parent_anchor_tests.rs": "7c8ad289fa41d9bab6c1e7689b7972ebedd22631d4488528242ba6fae2d65038",
+    "codex-rs/utils/windows-private-state/src/private_owner_lock.rs": "9f6ef5f7ac348bf2ebac9c3872b19df16776ea88c47b2009aab05ca3f91f1c82"
+  }
+}

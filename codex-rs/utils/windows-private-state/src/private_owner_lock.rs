@@ -177,6 +177,13 @@ impl OwnerLock {
     /// Revalidate the actual locked empty marker and shared held namespace.
     /// Any identity/descriptor/principal drift or poison permanently refuses it.
     pub fn revalidate(&mut self) -> Result<(), ValidationError> {
+        self.revalidate_shared()
+    }
+
+    /// Revalidate this same retained owner for shared store read barriers.
+    /// Interior locking preserves sticky refusal without cloning authority or
+    /// changing the original exclusive revalidate API and its callers.
+    pub fn revalidate_shared(&self) -> Result<(), ValidationError> {
         let mut held = self
             .context
             .lock()

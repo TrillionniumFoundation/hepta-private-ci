@@ -119,15 +119,29 @@ impl DurablePromptRegistry {
         &self.registry
     }
 
+    #[cfg(not(windows))]
     #[must_use]
     pub const fn requires_reopen(&self) -> bool {
         self.poisoned
+    }
+
+    /// Also probe the same retained Windows owner; native refusal is sticky.
+    /// This diagnostic does not replace the per-operation admission barrier.
+    #[cfg(windows)]
+    #[must_use]
+    pub fn requires_reopen(&self) -> bool {
+        self.poisoned || self.store.root.revalidate_shared().is_err()
     }
 
     fn ensure_available(&self) -> Result<(), DurableRegistryError> {
         if self.poisoned {
             return Err(DurableRegistryError::ReopenRequired);
         }
+        #[cfg(windows)]
+        self.store
+            .root
+            .revalidate_shared()
+            .map_err(|_| DurableRegistryError::ReopenRequired)?;
         Ok(())
     }
 
@@ -412,9 +426,7 @@ impl DurablePromptRegistry {
         &mut self,
         mutation: impl FnOnce(&mut PromptRegistry) -> Result<RegistryReceipt, Error>,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
-        if self.poisoned {
-            return Err(DurableRegistryError::ReopenRequired);
-        }
+        self.ensure_available()?;
         let mut next = self.registry.clone();
         let receipt = mutation(&mut next).map_err(DurableRegistryError::Core)?;
         if receipt.disposition != crate::MutationDisposition::Unchanged {
@@ -424,7 +436,13 @@ impl DurablePromptRegistry {
                     self.poisoned = true;
                     return Err(DurableRegistryError::IndeterminateDurability);
                 }
-                Err(error) => return Err(error),
+                Err(error) => {
+                    #[cfg(windows)]
+                    if self.store.root.revalidate_shared().is_err() {
+                        self.poisoned = true;
+                    }
+                    return Err(error);
+                }
             }
         }
         Ok(receipt)
