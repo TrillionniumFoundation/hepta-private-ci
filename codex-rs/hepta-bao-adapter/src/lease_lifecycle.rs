@@ -509,7 +509,21 @@ fn persist(path: &Path, state: &StoredRegistryV1) -> Result<(), LeaseRegistryErr
         .and_then(|()| file.sync_all())
         .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
     std::fs::rename(&next, path).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    File::open(parent)
+    #[cfg(windows)]
+    let directory = {
+        use std::os::windows::fs::OpenOptionsExt;
+
+        // FlushFileBuffers requires write access on a directory handle.
+        // Preserve the real durability barrier and every failure result.
+        File::options()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+            .open(parent)
+    };
+    #[cfg(not(windows))]
+    let directory = File::open(parent);
+    directory
         .and_then(|directory| directory.sync_all())
         .map_err(|_| LeaseRegistryErrorV1::Unavailable)
 }
