@@ -38,7 +38,8 @@ build is already reported in the formal stage-cost table: adding this subtotal
 requires replacing that final-build row, not counting it twice. These engineering
 iterations must not be added again to owner runtime or audit counters.
 
-`BUILD.previous.1.log` and `BUILD.previous.3.log` have identical bytes; their
-receipts identify distinct invocations and binary hashes. Both logs retain their
-original names for the receipt/history mapping. Copies and log files are not
+`cargo-build.previous.1.log` and `cargo-build.previous.3.log` have identical bytes; their
+receipts identify distinct invocations and binary hashes. The archive uses a `cargo-build` prefix so plain logs are not mistaken for
+Bazel `BUILD.*` source files. The original-to-archive name mapping and unchanged
+byte hashes are recorded in `../LOG_NAMES.json`. Copies and log files are not
 additional build executions.
