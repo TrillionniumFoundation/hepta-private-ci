@@ -14,11 +14,39 @@ MAX_PROCESSES = 4096
 MAX_FILES = 100000
 
 
+def namespace_pids(path):
+    fields = {line.split(':', 1)[0]: line.split(':', 1)[1].split()
+              for line in path.read_text().splitlines() if ':' in line}
+    return [int(value) for value in fields['NSpid']]
+
+
+def namespace_index():
+    values = namespace_pids(Path('/proc/self/status'))
+    if not values or values[-1] != os.getpid():
+        raise ValueError('caller PID namespace cannot be identified')
+    return len(values) - 1
+
+
+def callable_pid(proc_pid, expected_start):
+    """Map a previously observed identity to the caller's syscall PID view."""
+    if process_stat(proc_pid)['start_ticks'] != expected_start:
+        raise ValueError('process identity changed before namespace mapping')
+    values = namespace_pids(Path('/proc') / str(proc_pid) / 'status')
+    depth = namespace_index()
+    if len(values) <= depth or values[0] != proc_pid:
+        raise ValueError('observed process is outside the caller PID namespace')
+    result = values[depth]
+    if process_stat(proc_pid)['start_ticks'] != expected_start:
+        raise ValueError('process identity changed during namespace mapping')
+    return result
+
+
 def visible_pid(namespace_pid):
     """Resolve this process or its direct child in the mounted /proc PID view."""
     own = int(Path('/proc/self/stat').read_text().split(' ', 1)[0])
     if namespace_pid == os.getpid():
         return own
+    depth = namespace_index()
     for path in Path('/proc').iterdir():
         if not path.name.isdecimal():
             continue
@@ -26,9 +54,8 @@ def visible_pid(namespace_pid):
             value = process_stat(int(path.name))
             if value['ppid'] != own:
                 continue
-            fields = {line.split(':', 1)[0]: line.split(':', 1)[1].split()
-                      for line in (path / 'status').read_text().splitlines() if ':' in line}
-            if int(fields['NSpid'][-1]) == namespace_pid:
+            values = namespace_pids(path / 'status')
+            if len(values) > depth and values[depth] == namespace_pid:
                 return int(path.name)
         except (OSError, ValueError, KeyError, IndexError):
             continue
@@ -38,7 +65,7 @@ def visible_pid(namespace_pid):
 def process_stat(pid):
     raw = (Path('/proc') / str(pid) / 'stat').read_text()
     fields = raw[raw.rfind(')') + 2:].split()
-    return {'pid': pid, 'ppid': int(fields[1]), 'session': int(fields[3]),
+    return {'pid': pid, 'ppid': int(fields[1]), 'process_group': int(fields[2]), 'session': int(fields[3]),
             'start_ticks': int(fields[19]), 'state': fields[0]}
 
 
