@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-28 02:07:43 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 4145,
+  "purpose": "Post-archive CI observation. The earlier CI_RECEIPT.json remains an unchanged archived snapshot.",
+  "head_sha": "f0897403189e866ffaa16c186fdb4ded2d3b5341",
+  "base_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+  "merge_sha": "4b2140f56d84cbcc79bfdfda185cb8348463edde",
+  "draft": true,
+  "all_repository_checks_passed": false,
+  "terminal_snapshot": false,
+  "check_counts": {
+    "skipped": 10,
+    "success": 13,
+    "in_progress": 16,
+    "failure": 2
+  },
+  "checks": [
+    {
+      "id": 122582802842,
+      "name": "NDU v6 neural rollout smoke / Python, native NDU, and real rollout",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40617010153/job/122582802842"
+    },
+    {
+      "id": 122582802757,
+      "name": "repo-checks / build-test",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40617010153/job/122582802757"
+    },
+    {
+      "id": 122582802710,
+      "name": "repo-checks / Native Hepta paths on windows-latest",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40617010153/job/122582802710"
+    },
+    {
+      "id": 122582802671,
+      "name": "cargo-deny / cargo-deny",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40617010153/job/122582802671"
+    },
+    {
+      "id": 122582802606,
+      "name": "repo-checks / Native Hepta paths on macos-15",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40617010153/job/122582802606"
+    },
+    {
+      "id": 122582802586,
+      "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40617010153/job/122582802586"
+    },
+    {
+      "id": 122582802583,
+      "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40617010153/job/122582802583"
+    },
+    {
+      "id": 122582509024,
+      "name": "Codespell / Check for spelling errors",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40617010153/job/122582509024"
+    },
+    {
+      "id": 122582509001,
+      "name": "Blob size policy / Blob size policy",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40617010153/job/122582509001"
+    },
+    {
+      "id": 122581979691,
+      "name": "Architecture convergence (base-merge)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40617010152/job/122581979691"
+    },
+    {
+      "id": 122581979400,
+      "name": "Architecture convergence (source-head)",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40617010152/job/122581979400"
+    }
+  ],
+  "workflows": [
+    {
+      "id": 40617010151,
+      "name": "v8-canary",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 31917,
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40617010151/jobs",
+      "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40617010151/logs",
+      "workflow_id": 336746138
+    },
+    {
+      "id": 40617010152,
+      "name": "Hepta architecture convergence",
+      "status": "in_progress",
+      "conclusion": null,
+      "run_number": 18907,
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40617010152/jobs",
+      "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40617010152/logs",
+      "workflow_id": 344551465
+    },
+    {
+      "id": 40617010153,
+      "name": "blocking-ci",
+      "status": "in_progress",
+      "conclusion": null,
+      "run_number": 32098,
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40617010153/jobs",
+      "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40617010153/logs",
+      "workflow_id": 336746106
+    }
+  ],
+  "historical_head": {
+    "sha": "ab620ac07b401a29505a0445297f842109e035f5",
+    "source_head_job": 122578287176,
+    "conclusion": "cancelled",
+    "log_error": "The operation was canceled.",
+    "required_architecture_job": 122581941057,
+    "required_architecture_conclusion": "failure",
+    "superseded_by": "f0897403189e866ffaa16c186fdb4ded2d3b5341",
+    "causal_note": "Cancellation coincided with the later push and the workflow uses cancel-in-progress; causation beyond those observations is not independently established."
+  },
+  "cargo_deny": {
+    "current_job": 122582802671,
+    "current_conclusion": "failure",
+    "historical_job": 122578880562,
+    "historical_conclusion": "failure",
+    "root_cause": null,
+    "log_availability": "unavailable",
+    "retrieval_evidence": [
+      "The purpose-built job-log tool returned Transport closed for job 122578880562.",
+      "Approved GitHub fetch rejected the API log and job-page URLs as unsupported endpoints.",
+      "The standard gh CLI is not installed; no credentials were inspected and no login was attempted."
+    ],
+    "additional_retries": false
+  },
+  "codespell_policy": {
+    "state": "implemented_locally_not_published",
+    "remote_raw_check_passed": false,
+    "original_four_files_changed": false,
+    "global_ignore_configuration_changed": false,
+    "scientific_gates_changed": false,
+    "details": "Separate CODESPELL_POLICY_RECEIPT.json records explicit historical classification and local validation; no claim that raw lint is clean."
+  },
+  "qualification": {
+    "production_deployment_qualified": false,
+    "scientific_qualification_advanced": false
+  }
+}
