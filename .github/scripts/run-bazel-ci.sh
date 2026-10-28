@@ -418,7 +418,6 @@ if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
     fi
     post_config_bazel_args+=("--test_env=${env_var}")
   done
-  post_config_bazel_args+=("--test_tmpdir=${TEMP}")
 fi
 
 # Windows durable-state tests use the verified NTFS TEMP/TMP directory.
@@ -427,9 +426,11 @@ fi
 if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
   if command -v cygpath >/dev/null 2>&1; then
     verified_shell_temp="$(cygpath -u "$TEMP")"
+    verified_native_temp="$(cygpath -w "$verified_shell_temp")"
   elif [[ "$TEMP" == /* ]]; then
     # POSIX test harness emulating a Windows runner.
     verified_shell_temp="$TEMP"
+    verified_native_temp="$TEMP"
   else
     echo "Verified Windows test temporary path cannot be translated" >&2
     exit 1
@@ -438,6 +439,9 @@ if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
     echo "Verified Windows test temporary directory is missing" >&2
     exit 1
   fi
+  # Bazel is native Windows; its test_tmpdir must use a native verified path.
+  # Git Bash utilities separately require the POSIX form for mktemp.
+  post_config_bazel_args+=("--test_tmpdir=${verified_native_temp}")
   export TMPDIR="$verified_shell_temp"
 fi
 

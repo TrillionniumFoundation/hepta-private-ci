@@ -279,7 +279,16 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             self.assertIn(f"--test_env={name}", args)
             self.assertNotIn(f"--action_env={name}", args)
             self.assertNotIn(f"--host_action_env={name}", args)
-        self.assertIn(f"--test_tmpdir={self.env['TEMP']}", args)
+        test_tmpdirs = [
+            arg.split("=", 1)[1] for arg in args if arg.startswith("--test_tmpdir=")
+        ]
+        self.assertEqual(len(test_tmpdirs), 1)
+        if os.name == "nt":
+            self.assertTrue(Path(test_tmpdirs[0]).is_absolute())
+        self.assertTrue(
+            os.path.samefile(test_tmpdirs[0], self.env["TEMP"]),
+            f"Unverified Bazel test_tmpdir: {test_tmpdirs[0]}",
+        )
 
     def test_linux_runner_does_not_receive_windows_volume_paths(self) -> None:
         self.env["RUNNER_OS"] = "Linux"
