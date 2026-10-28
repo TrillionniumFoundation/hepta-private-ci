@@ -1,0 +1,41 @@
+{
+  "schema": "hepta-smollm-final-pair-pin-local-static-v1",
+  "captured_utc": "2026-10-27T10:45:58.758678+00:00",
+  "original_parent_commit": "c23a2c90a2d0cfd6c09f2bd492a84c6758faafc6",
+  "scope": "precommit static verification; future containing commit identity recorded externally",
+  "workflow_sha256": "d9c944187fd5280f7000baaf8a14b82bfda65f9ff04bd5c9acabbdf1d263d3e7",
+  "changed_workflow_fields": [
+    "CHAIN_SOURCE_SHA",
+    "CHAIN_BASE_SHA",
+    "HEPTA_PON_CHAIN_SOURCE"
+  ],
+  "other_workflow_nodes_identical": true,
+  "original_nextest_bytes_preserved": true,
+  "unittest": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v scripts.tests.test_hepta_ci_smollm_pair",
+    "exit_code": 0,
+    "passed": 9,
+    "failed": 0,
+    "seconds": 0.031
+  },
+  "configuration_checks": [
+    "YAML parse and equality after replacing exactly three pin fields",
+    "TOML parse and byte equality to original parent",
+    "Python AST parse for five harness/test modules",
+    "seven archived publication members sizes and SHA256; original Git commit SHA1 framing; original-to-remote tree/parent mappings",
+    "git diff --check"
+  ],
+  "format": {
+    "command": "UV_CACHE_DIR=/workspace/scratch/56818e4fba76/hepta-format-cache uv run --frozen --project scripts ruff format --check scripts/hepta_ci_smollm_common.py scripts/hepta_ci_smollm_pair.py scripts/hepta_ci_smollm_readback.py scripts/hepta_ci_smollm_resources.py scripts/tests/test_hepta_ci_smollm_pair.py",
+    "exit_code": 0,
+    "stdout": "5 files already formatted",
+    "scope": "exact Python scripts formatter path from scripts/format.py; no Rust/Bazel/just formatter execution"
+  },
+  "local_hepta_rust_cargo_bazel_execution": false,
+  "hosted_pair_ci_execution": false,
+  "model_owner_execution": false,
+  "independent_accepted": false,
+  "product_artifact_installed": false,
+  "production_activation": false,
+  "adoption": "no-update"
+}

@@ -1,0 +1,1958 @@
+{
+  "schema": "hepta-bigint-published-release-review-v1",
+  "index_commit": "d81bdb3483af17165174bb94e0a2aca7353f24cc",
+  "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/cr/yp/crypto-bigint",
+  "records": [
+    {
+      "name": "crypto-bigint",
+      "vers": "0.5.0",
+      "deps": [
+        {
+          "name": "bincode",
+          "req": "^1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "criterion",
+          "req": "^0.4",
+          "features": ["html_reports"],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "der",
+          "req": "^0.7",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "generic-array",
+          "req": "^0.14",
+          "features": [],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "hex-literal",
+          "req": "^0.3",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-bigint",
+          "req": "^0.4",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-integer",
+          "req": "^0.1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-traits",
+          "req": "^0.2",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "proptest",
+          "req": "^1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rand_chacha",
+          "req": "^0.3",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.6.4",
+          "features": [],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.6",
+          "features": ["std"],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rlp",
+          "req": "^0.5",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "serdect",
+          "req": "^0.2",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "subtle",
+          "req": "^2.4",
+          "features": [],
+          "optional": false,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "zeroize",
+          "req": "^1",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        }
+      ],
+      "cksum": "071c0f5945634bc9ba7a452f492377dd6b1993665ddb58f28704119b32f07a9a",
+      "features": {
+        "alloc": [],
+        "default": ["rand"],
+        "rand": ["rand_core/std"]
+      },
+      "features2": {
+        "serde": ["dep:serdect"]
+      },
+      "yanked": false,
+      "rust_version": "1.65",
+      "pubtime": "2023-02-27T23:51:39Z",
+      "v": 2
+    },
+    {
+      "name": "crypto-bigint",
+      "vers": "0.5.1",
+      "deps": [
+        {
+          "name": "bincode",
+          "req": "^1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "criterion",
+          "req": "^0.4",
+          "features": ["html_reports"],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "der",
+          "req": "^0.7",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "generic-array",
+          "req": "^0.14",
+          "features": [],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "hex-literal",
+          "req": "^0.3",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-bigint",
+          "req": "^0.4",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-integer",
+          "req": "^0.1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-traits",
+          "req": "^0.2",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "proptest",
+          "req": "^1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rand_chacha",
+          "req": "^0.3",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.6.4",
+          "features": [],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.6",
+          "features": ["std"],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rlp",
+          "req": "^0.5",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "serdect",
+          "req": "^0.2",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "subtle",
+          "req": "^2.4",
+          "features": [],
+          "optional": false,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "zeroize",
+          "req": "^1",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        }
+      ],
+      "cksum": "7c2538c4e68e52548bacb3e83ac549f903d44f011ac9d5abb5e132e67d0808f7",
+      "features": {
+        "alloc": [],
+        "default": ["rand"],
+        "rand": ["rand_core/std"]
+      },
+      "features2": {
+        "serde": ["dep:serdect"]
+      },
+      "yanked": false,
+      "rust_version": "1.65",
+      "pubtime": "2023-03-13T18:26:08Z",
+      "v": 2
+    },
+    {
+      "name": "crypto-bigint",
+      "vers": "0.5.2",
+      "deps": [
+        {
+          "name": "bincode",
+          "req": "^1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "criterion",
+          "req": "^0.4",
+          "features": ["html_reports"],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "der",
+          "req": "^0.7",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "generic-array",
+          "req": "^0.14",
+          "features": [],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "hex-literal",
+          "req": "^0.4",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-bigint",
+          "req": "^0.4",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-integer",
+          "req": "^0.1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-traits",
+          "req": "^0.2",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "proptest",
+          "req": "^1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rand_chacha",
+          "req": "^0.3",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.6.4",
+          "features": [],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.6",
+          "features": ["std"],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rlp",
+          "req": "^0.5",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "serdect",
+          "req": "^0.2",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "subtle",
+          "req": "^2.4",
+          "features": [],
+          "optional": false,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "zeroize",
+          "req": "^1",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        }
+      ],
+      "cksum": "cf4c2f4e1afd912bc40bfd6fed5d9dc1f288e0ba01bfcc835cc5bc3eb13efe15",
+      "features": {
+        "alloc": [],
+        "default": ["rand"],
+        "rand": ["rand_core/std"]
+      },
+      "features2": {
+        "serde": ["dep:serdect"]
+      },
+      "yanked": false,
+      "rust_version": "1.65",
+      "pubtime": "2023-04-26T21:26:03Z",
+      "v": 2
+    },
+    {
+      "name": "crypto-bigint",
+      "vers": "0.5.3",
+      "deps": [
+        {
+          "name": "bincode",
+          "req": "^1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "criterion",
+          "req": "^0.5",
+          "features": ["html_reports"],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "der",
+          "req": "^0.7",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "generic-array",
+          "req": "^0.14",
+          "features": [],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "hex-literal",
+          "req": "^0.4",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-bigint",
+          "req": "^0.4",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-integer",
+          "req": "^0.1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-traits",
+          "req": "^0.2",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "proptest",
+          "req": "^1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rand_chacha",
+          "req": "^0.3",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.6.4",
+          "features": [],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.6",
+          "features": ["std"],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rlp",
+          "req": "^0.5",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "serdect",
+          "req": "^0.2",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "subtle",
+          "req": "^2.4",
+          "features": [],
+          "optional": false,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "zeroize",
+          "req": "^1",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        }
+      ],
+      "cksum": "740fe28e594155f10cfc383984cbefd529d7396050557148f79cb0f621204124",
+      "features": {
+        "default": ["rand"],
+        "extra-sizes": [],
+        "rand": ["rand_core/std"]
+      },
+      "features2": {
+        "alloc": ["serdect?/alloc"],
+        "serde": ["dep:serdect"]
+      },
+      "yanked": false,
+      "rust_version": "1.65",
+      "pubtime": "2023-09-04T21:23:38Z",
+      "v": 2
+    },
+    {
+      "name": "crypto-bigint",
+      "vers": "0.5.4",
+      "deps": [
+        {
+          "name": "bincode",
+          "req": "^1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "criterion",
+          "req": "^0.5",
+          "features": ["html_reports"],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "der",
+          "req": "^0.7",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "generic-array",
+          "req": "^0.14",
+          "features": [],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "hex-literal",
+          "req": "^0.4",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-bigint",
+          "req": "^0.4",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-integer",
+          "req": "^0.1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-traits",
+          "req": "^0.2",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "proptest",
+          "req": "^1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rand_chacha",
+          "req": "^0.3",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.6.4",
+          "features": [],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.6",
+          "features": ["std"],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rlp",
+          "req": "^0.5",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "serdect",
+          "req": "^0.2",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "subtle",
+          "req": "^2.4",
+          "features": [],
+          "optional": false,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "zeroize",
+          "req": "^1",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        }
+      ],
+      "cksum": "28f85c3514d2a6e64160359b45a3918c3b4178bcbf4ae5d03ab2d02e521c479a",
+      "features": {
+        "default": ["rand"],
+        "extra-sizes": [],
+        "rand": ["rand_core/std"]
+      },
+      "features2": {
+        "alloc": ["serdect?/alloc"],
+        "serde": ["dep:serdect"]
+      },
+      "yanked": false,
+      "rust_version": "1.65",
+      "pubtime": "2023-11-13T02:30:14Z",
+      "v": 2
+    },
+    {
+      "name": "crypto-bigint",
+      "vers": "0.5.5",
+      "deps": [
+        {
+          "name": "bincode",
+          "req": "^1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "criterion",
+          "req": "^0.5",
+          "features": ["html_reports"],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "der",
+          "req": "^0.7",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "generic-array",
+          "req": "^0.14",
+          "features": [],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "hex-literal",
+          "req": "^0.4",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-bigint",
+          "req": "^0.4",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-integer",
+          "req": "^0.1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-traits",
+          "req": "^0.2",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "proptest",
+          "req": "^1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rand_chacha",
+          "req": "^0.3",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.6.4",
+          "features": [],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.6",
+          "features": ["std"],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rlp",
+          "req": "^0.5",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "serdect",
+          "req": "^0.2",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "subtle",
+          "req": "^2.4",
+          "features": [],
+          "optional": false,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "zeroize",
+          "req": "^1",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        }
+      ],
+      "cksum": "0dc92fb57ca44df6db8059111ab3af99a63d5d0f8375d9972e319a379c6bab76",
+      "features": {
+        "default": ["rand"],
+        "extra-sizes": [],
+        "rand": ["rand_core/std"]
+      },
+      "features2": {
+        "alloc": ["serdect?/alloc"],
+        "serde": ["dep:serdect"]
+      },
+      "yanked": false,
+      "rust_version": "1.65",
+      "pubtime": "2023-11-18T22:56:54Z",
+      "v": 2
+    },
+    {
+      "name": "crypto-bigint",
+      "vers": "0.7.6",
+      "deps": [
+        {
+          "name": "chacha20",
+          "req": "^0.10",
+          "features": ["rng"],
+          "optional": false,
+          "default_features": false,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "cpubits",
+          "req": "^0.1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "criterion",
+          "req": "^0.7",
+          "features": ["html_reports"],
+          "optional": false,
+          "default_features": true,
+          "target": "cfg(any(unix, windows))",
+          "kind": "dev"
+        },
+        {
+          "name": "ctutils",
+          "req": "^0.4.5",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "der",
+          "req": "^0.8",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "getrandom",
+          "req": "^0.4",
+          "features": ["sys_rng"],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "hex-literal",
+          "req": "^1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "hybrid-array",
+          "req": "^0.4.12",
+          "features": [],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "num-bigint",
+          "req": "^0.5",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-integer",
+          "req": "^0.1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-modular",
+          "req": "^0.7",
+          "features": ["num-bigint", "num-traits"],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-traits",
+          "req": "^0.2.19",
+          "features": [],
+          "optional": false,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "proptest",
+          "req": "^1.11",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": "cfg(any(unix, windows))",
+          "kind": "dev"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.10",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.10",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rlp",
+          "req": "^0.6",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "serdect",
+          "req": "^0.4",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "subtle",
+          "req": "^2.6",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "zeroize",
+          "req": "^1",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        }
+      ],
+      "cksum": "6bb08299a6046833a879ace115697f12fd2bd6c8d3e93c909ffc9e0738e7cae0",
+      "features": {
+        "extra-sizes": []
+      },
+      "features2": {
+        "alloc": ["serdect?/alloc"],
+        "default": ["rand_core"],
+        "der": ["dep:der", "hybrid-array"],
+        "getrandom": ["dep:getrandom", "rand_core"],
+        "rand_core": ["dep:rand_core"],
+        "serde": ["dep:serdect"],
+        "subtle": ["dep:subtle", "ctutils/subtle", "hybrid-array?/subtle"]
+      },
+      "yanked": true,
+      "rust_version": "1.87",
+      "pubtime": "2026-10-23T12:25:51Z",
+      "v": 2
+    },
+    {
+      "name": "crypto-bigint",
+      "vers": "0.7.7",
+      "deps": [
+        {
+          "name": "chacha20",
+          "req": "^0.10",
+          "features": ["rng"],
+          "optional": false,
+          "default_features": false,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "cpubits",
+          "req": "^0.1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "criterion",
+          "req": "^0.7",
+          "features": ["html_reports"],
+          "optional": false,
+          "default_features": true,
+          "target": "cfg(any(unix, windows))",
+          "kind": "dev"
+        },
+        {
+          "name": "ctutils",
+          "req": "^0.4.5",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "der",
+          "req": "^0.8",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "getrandom",
+          "req": "^0.4",
+          "features": ["sys_rng"],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "hex-literal",
+          "req": "^1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "hybrid-array",
+          "req": "^0.4.12",
+          "features": [],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "num-bigint",
+          "req": "^0.5",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-integer",
+          "req": "^0.1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-modular",
+          "req": "^0.7",
+          "features": ["num-bigint", "num-traits"],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-traits",
+          "req": "^0.2.19",
+          "features": [],
+          "optional": false,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "proptest",
+          "req": "^1.11",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": "cfg(any(unix, windows))",
+          "kind": "dev"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.10",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.10",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rlp",
+          "req": "^0.6",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "serdect",
+          "req": "^0.4",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "subtle",
+          "req": "^2.6",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "zeroize",
+          "req": "^1",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        }
+      ],
+      "cksum": "cc907c45bb7e9ef8fc3778defd0f3cd8c81288f1b4e748eba064948f20c47122",
+      "features": {
+        "extra-sizes": []
+      },
+      "features2": {
+        "alloc": ["serdect?/alloc"],
+        "default": ["rand_core"],
+        "der": ["dep:der", "hybrid-array"],
+        "getrandom": ["dep:getrandom", "rand_core"],
+        "rand_core": ["dep:rand_core"],
+        "serde": ["dep:serdect"],
+        "subtle": ["dep:subtle", "ctutils/subtle", "hybrid-array?/subtle"]
+      },
+      "yanked": true,
+      "rust_version": "1.87",
+      "pubtime": "2026-10-24T14:44:51Z",
+      "v": 2
+    },
+    {
+      "name": "crypto-bigint",
+      "vers": "0.7.8",
+      "deps": [
+        {
+          "name": "chacha20",
+          "req": "^0.10",
+          "features": ["rng"],
+          "optional": false,
+          "default_features": false,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "cpubits",
+          "req": "^0.1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "criterion",
+          "req": "^0.7",
+          "features": ["html_reports"],
+          "optional": false,
+          "default_features": true,
+          "target": "cfg(any(unix, windows))",
+          "kind": "dev"
+        },
+        {
+          "name": "ctutils",
+          "req": "^0.4.5",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "der",
+          "req": "^0.8",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "getrandom",
+          "req": "^0.4",
+          "features": ["sys_rng"],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "hex-literal",
+          "req": "^1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "hybrid-array",
+          "req": "^0.4.12",
+          "features": [],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "num-bigint",
+          "req": "^0.5",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-integer",
+          "req": "^0.1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-modular",
+          "req": "^0.7",
+          "features": ["num-bigint", "num-traits"],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-traits",
+          "req": "^0.2.19",
+          "features": [],
+          "optional": false,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "proptest",
+          "req": "^1.11",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": "cfg(any(unix, windows))",
+          "kind": "dev"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.10",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.10",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rlp",
+          "req": "^0.6",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "serdect",
+          "req": "^0.4",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "subtle",
+          "req": "^2.6",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "zeroize",
+          "req": "^1",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        }
+      ],
+      "cksum": "d726facc8b27e604391b232b970cdc19b5468c69f08b466b9734c759216c7415",
+      "features": {
+        "extra-sizes": []
+      },
+      "features2": {
+        "alloc": ["serdect?/alloc"],
+        "default": ["rand_core"],
+        "der": ["dep:der", "hybrid-array"],
+        "getrandom": ["dep:getrandom", "rand_core"],
+        "rand_core": ["dep:rand_core"],
+        "serde": ["dep:serdect"],
+        "subtle": ["dep:subtle", "ctutils/subtle", "hybrid-array?/subtle"]
+      },
+      "yanked": true,
+      "rust_version": "1.87",
+      "pubtime": "2026-10-25T00:38:26Z",
+      "v": 2
+    },
+    {
+      "name": "crypto-bigint",
+      "vers": "0.7.9",
+      "deps": [
+        {
+          "name": "chacha20",
+          "req": "^0.10",
+          "features": ["rng"],
+          "optional": false,
+          "default_features": false,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "cpubits",
+          "req": "^0.1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "criterion",
+          "req": "^0.7",
+          "features": ["html_reports"],
+          "optional": false,
+          "default_features": true,
+          "target": "cfg(any(unix, windows))",
+          "kind": "dev"
+        },
+        {
+          "name": "ctutils",
+          "req": "^0.4.5",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "der",
+          "req": "^0.8",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "getrandom",
+          "req": "^0.4",
+          "features": ["sys_rng"],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "hex-literal",
+          "req": "^1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "hybrid-array",
+          "req": "^0.4.12",
+          "features": [],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "num-bigint",
+          "req": "^0.5",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-integer",
+          "req": "^0.1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-modular",
+          "req": "^0.7",
+          "features": ["num-bigint", "num-traits"],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-traits",
+          "req": "^0.2.19",
+          "features": [],
+          "optional": false,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "proptest",
+          "req": "^1.11",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": "cfg(any(unix, windows))",
+          "kind": "dev"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.10",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.10",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rlp",
+          "req": "^0.6",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "serdect",
+          "req": "^0.4",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "subtle",
+          "req": "^2.6",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "zeroize",
+          "req": "^1",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        }
+      ],
+      "cksum": "d811ea23fdfbcce2e2d5132344d471abdb8f901ac496a0893a3df92e70525e52",
+      "features": {
+        "extra-sizes": []
+      },
+      "features2": {
+        "alloc": ["serdect?/alloc"],
+        "default": ["rand_core"],
+        "der": ["dep:der", "hybrid-array"],
+        "getrandom": ["dep:getrandom", "rand_core"],
+        "rand_core": ["dep:rand_core"],
+        "serde": ["dep:serdect"],
+        "subtle": ["dep:subtle", "ctutils/subtle", "hybrid-array?/subtle"]
+      },
+      "yanked": false,
+      "rust_version": "1.87",
+      "pubtime": "2026-10-25T19:09:36Z",
+      "v": 2
+    },
+    {
+      "name": "crypto-bigint",
+      "vers": "0.7.10",
+      "deps": [
+        {
+          "name": "chacha20",
+          "req": "^0.10",
+          "features": ["rng"],
+          "optional": false,
+          "default_features": false,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "cpubits",
+          "req": "^0.1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "criterion",
+          "req": "^0.7",
+          "features": ["html_reports"],
+          "optional": false,
+          "default_features": true,
+          "target": "cfg(any(unix, windows))",
+          "kind": "dev"
+        },
+        {
+          "name": "ctutils",
+          "req": "^0.4.6",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "der",
+          "req": "^0.8",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "getrandom",
+          "req": "^0.4",
+          "features": ["sys_rng"],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "hex-literal",
+          "req": "^1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "hybrid-array",
+          "req": "^0.4.12",
+          "features": [],
+          "optional": true,
+          "default_features": true,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "num-bigint",
+          "req": "^0.5",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-integer",
+          "req": "^0.1",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-modular",
+          "req": "^0.7",
+          "features": ["num-bigint", "num-traits"],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "num-traits",
+          "req": "^0.2.19",
+          "features": [],
+          "optional": false,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "proptest",
+          "req": "^1.11",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": "cfg(any(unix, windows))",
+          "kind": "dev"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.10",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "rand_core",
+          "req": "^0.10",
+          "features": [],
+          "optional": false,
+          "default_features": true,
+          "target": null,
+          "kind": "dev"
+        },
+        {
+          "name": "rlp",
+          "req": "^0.6",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "serdect",
+          "req": "^0.4",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "subtle",
+          "req": "^2.6",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        },
+        {
+          "name": "zeroize",
+          "req": "^1",
+          "features": [],
+          "optional": true,
+          "default_features": false,
+          "target": null,
+          "kind": "normal"
+        }
+      ],
+      "cksum": "9c035cb64cba03dad2fb921f3e218785e8cf9a41790da5eb3a1400f62fa2be11",
+      "features": {
+        "extra-sizes": []
+      },
+      "features2": {
+        "alloc": ["serdect?/alloc"],
+        "default": ["rand_core"],
+        "der": ["dep:der", "hybrid-array"],
+        "getrandom": ["dep:getrandom", "rand_core"],
+        "rand_core": ["dep:rand_core"],
+        "serde": ["dep:serdect"],
+        "subtle": ["dep:subtle", "ctutils/subtle", "hybrid-array?/subtle"]
+      },
+      "yanked": false,
+      "rust_version": "1.87",
+      "pubtime": "2026-10-26T04:00:33Z",
+      "v": 2
+    }
+  ]
+}

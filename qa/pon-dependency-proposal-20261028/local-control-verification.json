@@ -1,0 +1,364 @@
+{
+  "schema": "hepta-dependency-proposal-local-controls-v1",
+  "observed_at_utc": "2026-10-28T03:39:01.327170+00:00",
+  "base_sha": "f5c1a5ddb05498df09195db2f814320423f765a6",
+  "base_tree": "2eb92c9313add421b4fb4ae2a6db503df97991d0",
+  "local_cargo_rust_or_bazel_executed": false,
+  "native_qualification": false,
+  "all_advisories_closed": false,
+  "control_test_count": 12,
+  "source_negative_cases": 12,
+  "source_validators_per_case": 2,
+  "checks": [
+    {
+      "name": "ruff-format",
+      "command": [
+        "/tmp/pure-pon-hepta-python-20261028/bin/ruff",
+        "format",
+        "--check",
+        "scripts/hepta_pon_dependency_proposal.py",
+        "scripts/test_hepta_pon_dependency_proposal.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.009673626991570927,
+      "logs": {
+        "stdout": {
+          "path": "qa/pon-dependency-proposal-20261028/logs/ruff-format.stdout.txt",
+          "bytes": 26,
+          "sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938"
+        },
+        "stderr": {
+          "path": "qa/pon-dependency-proposal-20261028/logs/ruff-format.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "ruff-check",
+      "command": [
+        "/tmp/pure-pon-hepta-python-20261028/bin/ruff",
+        "check",
+        "scripts/hepta_pon_dependency_proposal.py",
+        "scripts/test_hepta_pon_dependency_proposal.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.007785231995512731,
+      "logs": {
+        "stdout": {
+          "path": "qa/pon-dependency-proposal-20261028/logs/ruff-check.stdout.txt",
+          "bytes": 19,
+          "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+        },
+        "stderr": {
+          "path": "qa/pon-dependency-proposal-20261028/logs/ruff-check.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "python-controls",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_pon_dependency_proposal.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.10056442199856974,
+      "logs": {
+        "stdout": {
+          "path": "qa/pon-dependency-proposal-20261028/logs/python-controls.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "qa/pon-dependency-proposal-20261028/logs/python-controls.stderr.txt",
+          "bytes": 2135,
+          "sha256": "b6835c90ba8b45451c7f6c8c502fcd135a044c93bce169755002043cc01f067c"
+        }
+      }
+    },
+    {
+      "name": "actionlint",
+      "command": [
+        "/tmp/hepta-actionlint-1.7.12/actionlint",
+        ".github/workflows/hepta-pon-rustsec-lock-proposal.yml",
+        ".github/workflows/hepta-cell-smollm.yml"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.0029617309919558465,
+      "logs": {
+        "stdout": {
+          "path": "qa/pon-dependency-proposal-20261028/logs/actionlint.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "qa/pon-dependency-proposal-20261028/logs/actionlint.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "exact-prettier",
+      "command": [
+        "node",
+        "/tmp/hepta-deps-r8-prettier-3.5.3/package/bin/prettier.cjs",
+        "--check",
+        ".github/workflows/hepta-cell-smollm.yml",
+        ".github/workflows/hepta-pon-rustsec-lock-proposal.yml"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.19322563799505588,
+      "logs": {
+        "stdout": {
+          "path": "qa/pon-dependency-proposal-20261028/logs/exact-prettier.stdout.txt",
+          "bytes": 66,
+          "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+        },
+        "stderr": {
+          "path": "qa/pon-dependency-proposal-20261028/logs/exact-prettier.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "tracked-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.012071717996150255,
+      "logs": {
+        "stdout": {
+          "path": "qa/pon-dependency-proposal-20261028/logs/tracked-diff-check.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "qa/pon-dependency-proposal-20261028/logs/tracked-diff-check.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "workspace-preflight-controls",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_workspace.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.14766123099252582,
+      "logs": {
+        "stdout": {
+          "path": "qa/pon-dependency-proposal-20261028/logs/workspace-preflight-controls.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "qa/pon-dependency-proposal-20261028/logs/workspace-preflight-controls.stderr.txt",
+          "bytes": 8593,
+          "sha256": "98dbd55ebf8afa2b78cc4ddc32b43c01ff08d6ca86ac28dcf4b957a755d9b564"
+        }
+      }
+    },
+    {
+      "name": "workspace-preflight",
+      "command": [
+        "python3",
+        "scripts/hepta_workspace.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.2514699149905937,
+      "logs": {
+        "stdout": {
+          "path": "qa/pon-dependency-proposal-20261028/logs/workspace-preflight.stdout.txt",
+          "bytes": 76,
+          "sha256": "6a437814142f1071f98664abc8a131c5c26d3dc40521307842b1acda091272f0"
+        },
+        "stderr": {
+          "path": "qa/pon-dependency-proposal-20261028/logs/workspace-preflight.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "unchanged_dependency_inputs": [
+    {
+      "path": "codex-rs/Cargo.toml",
+      "bytes": 21984,
+      "sha256": "de8f230215a50fb76b1059848ab0eb7bd4aef1902f4c0f814377fe325f9aecdf",
+      "equal_to_base": true
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "bytes": 421926,
+      "sha256": "df846f073dc8da280a4eec65f07703987ef816d93b00fefc8dd9bc06e94bc4de",
+      "equal_to_base": true
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "bytes": 1710477,
+      "sha256": "255c63219eed1dbff8a4e3ccbffee1ff59de6bb56606625b13953580d83e90b5",
+      "equal_to_base": true
+    }
+  ],
+  "candidate_files": [
+    {
+      "path": ".github/workflows/hepta-cell-smollm.yml",
+      "bytes": 14317,
+      "sha256": "f3536233cae05727bd3759a6a5ff546408bbdec1e5bbde681042913ba2ac020d"
+    },
+    {
+      "path": ".github/workflows/hepta-pon-rustsec-lock-proposal.yml",
+      "bytes": 6210,
+      "sha256": "16c6d98693e4f90132dd450faf6abbd0bfe730958f3660a8151da2fdab7680c7"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/README.md",
+      "bytes": 8803,
+      "sha256": "2ab1730114c889b4e07826781ebd70af620fde8ea2f0a6f9241104fc9ea0a00c"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/api-source-identities.json",
+      "bytes": 2955,
+      "sha256": "f87b9c78cdf2261cd199be836042fbbfcebdf39d6d2e6162e199dd5d6d30c725"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/aws-config-1.8.12-static-review.json",
+      "bytes": 1916,
+      "sha256": "ad1518292bd8f2fbad5bea73c8188946f546e9a34fdc50c5473b6b31675bda9b"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/aws-p256-migration-review.md",
+      "bytes": 6401,
+      "sha256": "c7d1ee19f09b7aa6ccd22e0c7cd75f4bd21d80898848356ddc8b6e2965b8a1f5"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/logs/actionlint.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/logs/actionlint.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/logs/exact-prettier.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/logs/exact-prettier.stdout.txt",
+      "bytes": 66,
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/logs/python-controls.stderr.txt",
+      "bytes": 2135,
+      "sha256": "b6835c90ba8b45451c7f6c8c502fcd135a044c93bce169755002043cc01f067c"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/logs/python-controls.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/logs/ruff-check.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/logs/ruff-check.stdout.txt",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/logs/ruff-format.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/logs/ruff-format.stdout.txt",
+      "bytes": 26,
+      "sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/logs/tracked-diff-check.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/logs/tracked-diff-check.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/logs/workspace-preflight-controls.stderr.txt",
+      "bytes": 8593,
+      "sha256": "98dbd55ebf8afa2b78cc4ddc32b43c01ff08d6ca86ac28dcf4b957a755d9b564"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/logs/workspace-preflight-controls.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/logs/workspace-preflight.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/logs/workspace-preflight.stdout.txt",
+      "bytes": 76,
+      "sha256": "6a437814142f1071f98664abc8a131c5c26d3dc40521307842b1acda091272f0"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/upstream-versions.json",
+      "bytes": 107015,
+      "sha256": "1b36a643330df9f29e14b96ba3eefd2ecd1dedc6a68974164773da7f6f340a2a"
+    },
+    {
+      "path": "qa/pon-dependency-proposal-20261028/yaml-format-verification.json",
+      "bytes": 1224,
+      "sha256": "3e4424e22a8d4ec745a6ab5fb7a9cd4ab1fe877a0d0cff92431af09f7d2999c5"
+    },
+    {
+      "path": "scripts/hepta_pon_dependency_proposal.py",
+      "bytes": 16419,
+      "sha256": "dc87fbf17a213dc5dcdc31d3a2cf91165bdf34b079ce687046f463869d7a25bd"
+    },
+    {
+      "path": "scripts/test_hepta_pon_dependency_proposal.py",
+      "bytes": 14411,
+      "sha256": "54d661b38ed7ebe932e23cd58a53ac3263ecc65ce6cf3d588abd9e710c1f5e8e"
+    }
+  ],
+  "precommit_preflight": {
+    "observed_at_utc": "2026-10-28T03:40:45.742975+00:00",
+    "repository_entrypoint": ".github/workflows/hepta-repository-integrity.yml: workspace-preflight structural step",
+    "scope": "Both original Python structural preflight commands; native Cargo metadata remains hosted per explicit user constraint",
+    "local_native_commands_executed": false
+  }
+}

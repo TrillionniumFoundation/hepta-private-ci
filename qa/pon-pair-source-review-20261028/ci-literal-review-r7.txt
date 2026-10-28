@@ -1,0 +1,14 @@
+CI 精确计数与等价拒绝修复只读审阅（r7）
+
+结论：支持三处精确计数 literal 更新及 Hepta 一处无符号比较改写；不删除测试、不改成 >=、不加入 allow，不降低资源/密码/确认条件。没有执行 Rust、Cargo、Bazel、native 或 PQ，也没有修改仓库。
+
+1. reserve 原7项来自1127a20ef5deaf78746de585f9846a72b5139c97；当前原7个函数体逐字节相同。新增Linux-only owned_start_quantum_pays_termination_without_extra_free_credit 和 termination_cannot_borrow_another_live_owners_start_quantum，来自本地2cd74c9cd4cb3c3011f5146fdf369d7f3e81b7c9，由远端8a35529679c3d176fd7586ab1ecf4e004f25af79发布。它们检查原owner已购reserve终止结算及不得借用另一owner reserve，使用冻结refill边界夹具，不能冒充实际CPU耗尽。e25四priority service lanes均160/160 passed，其中reserve唯一成功9、final_samples4，随后过期exact7拒绝。
+建议priority reserve-selectors 7→9；branch的owned-cpu 7 passed→9 passed；保留final_samples精确4。两workflow只运行Linux，两新增cfg适用。branch后续owned-cpu原未执行，被前一migration count挡住，不能给它retroactive通过。
+
+2. migration旧35来自189c0ae529b0bdfb587b2dca0d7ae061dd5a7a17，原24个migration及11个growth IO名字全保留。11个IO整个blob相同。新增store::reorg_cancellation::tests::cancelled_lifecycle_survives_explicit_authenticated_migration_without_rewriting_source，与上面同一2cd74/8a355引入发布，检查取消后的lifecycle字节经显式迁移和reopen保留、source不重写。四branch lanes实际均36 passed/0 failed/0 ignored。日志37行成功输出包含fork内重复selector，唯一selector36，不能算作37独立测试。
+原partial-reorganization测试的故障注入从PeerPollCancelled变为StoragePacket以保留未完成staging分支，预期error同步改；普通取消已有terminal lifecycle新测试。因此不能声称原35个函数体全部没变，但名字及断言未被本次count建议删除。本次仅exact35→36，保留原完整selector和0failed/0ignored。
+
+3. Hepta目标文件在base3e9efb15faa261a4dc3ffc3205cd259aaee41a3f及a3745f5485b87cf313b28a8368f6506994b2dd1b同为blob9eff836eac79e0771042b0479cf7e5aff9ab99af。block_height类型是hepta-agent-protocol/src/lib.rs的Option<u64>，JSON parser仅用as_u64接收非空值。None的is_none_or仍true，Some(0)的<=0和==0都true，任意正u64都false。
+建议只改height <= 0为height == 0。条件在owner_generation==0 inactive Growth observation里，stored_exact仍须正高度、非零work与精确membership SQL查询数，其他domain/ownership/authority守卫不变。原Windows Clippy job122564661092是实际依据。该等价修复不证明生产授权或paired通过。
+
+JSON保留全部原/新selectors、source IDs和原四lane列表；原workflow所有失败保持失败。

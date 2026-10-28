@@ -1,0 +1,71 @@
+{
+  "schema": "hepta-published-crate-static-review-v1",
+  "observed_at_utc": "2026-10-28T03:33:23.059722+00:00",
+  "url": "https://static.crates.io/crates/aws-config/aws-config-1.8.12.crate",
+  "archive_sha256": "96571e6996817bf3d58f6b569e4b9fd2e9d2fcf9f7424eed07b2ce9bb87535e5",
+  "archive_bytes": 152157,
+  "checksum_matches_official_index": true,
+  "vcs": {
+    "git": {
+      "sha1": "f031610a8cbb4ac2dac3229bfaeaa88182787ab4"
+    },
+    "path_in_vcs": "sdk/aws-config"
+  },
+  "files": {
+    ".cargo_vcs_info.json": {
+      "sha256": "b7e428e377a5a33a8130413ab432b8c4374dc0928777cfc5e274cfce9313f7e5",
+      "bytes": 108
+    },
+    "Cargo.toml": {
+      "sha256": "4608381f2cb65065306fbcab80d31c9526fa1521631135ba034cf6f105d0441f",
+      "bytes": 4831
+    },
+    "src/login/dpop.rs": {
+      "sha256": "193b7f82596039443f000001f76bf1c74fc9ae78d5f74d2b6c266953a20da4e7",
+      "bytes": 10766
+    }
+  },
+  "native_execution": false,
+  "api_lines": [
+    {
+      "line": 21,
+      "text": "use p256::ecdsa::signature::RandomizedSigner;"
+    },
+    {
+      "line": 22,
+      "text": "use p256::ecdsa::{Signature, SigningKey};"
+    },
+    {
+      "line": 23,
+      "text": "use p256::elliptic_curve::sec1::ToEncodedPoint;"
+    },
+    {
+      "line": 24,
+      "text": "use p256::SecretKey;"
+    },
+    {
+      "line": 25,
+      "text": "use rand::SeedableRng;"
+    },
+    {
+      "line": 72,
+      "text": "let point = public_key.to_encoded_point(false);"
+    },
+    {
+      "line": 106,
+      "text": "let mut rng = rand::rngs::StdRng::from_entropy();"
+    },
+    {
+      "line": 107,
+      "text": "let signature: Signature = signing_key.sign_with_rng(&mut rng, message.as_bytes());"
+    },
+    {
+      "line": 162,
+      "text": "let private_key = SecretKey::from_sec1_pem(private_key_pem)"
+    },
+    {
+      "line": 263,
+      "text": "let private_key = SecretKey::from_sec1_pem(TEST_KEY).unwrap();"
+    }
+  ]
+}

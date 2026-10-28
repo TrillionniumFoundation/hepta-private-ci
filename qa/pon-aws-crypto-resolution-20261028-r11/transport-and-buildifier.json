@@ -1,0 +1,22 @@
+{
+  "source_transport": {
+    "bytes": 335041,
+    "sha256": "30985518acf4714a613407650a0a4ffeda6ff1dca3cdf8dd43c3bc5ab84e9cc0",
+    "members": [
+      "original/MODULE.bazel.lock",
+      "original/codex-rs/Cargo.lock",
+      "original/codex-rs/Cargo.toml",
+      "overrides/BUILD.bazel",
+      "overrides/src/login/dpop.rs",
+      "upstream/aws-config-main-c975.Cargo.toml.txt",
+      "upstream/index-records.json"
+    ]
+  },
+  "buildifier": {
+    "old_sha256": "e24dd83532b0db7450611a9fec2a42fc3a910d96ccf8f13e433ea668aa176050",
+    "new_sha256": "a6167fd9c40bf7758c1a3e1667b5d96576b58e5d1688a89ba679db540a7b3999",
+    "python_ast_equal": true,
+    "initial_original_check_exit": 4,
+    "derived_installed_bytes_are_not_original_hosted_bytes": true
+  }
+}

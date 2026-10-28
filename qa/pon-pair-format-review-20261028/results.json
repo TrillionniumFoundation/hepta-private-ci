@@ -1,0 +1,72 @@
+{
+  "schema": "hepta-observed-format-repair-r7",
+  "base": "f50ea5dd8ac77c8cefb1de4a29a195091e5a3ec4",
+  "original_failure_job": 122598462803,
+  "paths": {
+    "scripts/hepta_lane_e_writer_source.py": {
+      "before_sha256": "7edd1007d97b6aa1f42b9be7b5e4eb54021bea77f981ee7bf880ba3e9c63d8e3",
+      "after_sha256": "633179fd1ad5997e38c6e1a5a7a91ebf0f7d4d0971e0c3a0a62fc525bdddc5fd",
+      "ast_without_locations_equal": true
+    },
+    "scripts/test_hepta_lane_e_registry.py": {
+      "before_sha256": "b2fd9172d64e4f7892e231cfe8ed65a96c2aa3c0736c0f170dc0e25a467874ab",
+      "after_sha256": "8e965ea1beb7e6b7f43e1cb36203f35bae6fef359ac66fe0a168613ea4315b46",
+      "ast_without_locations_equal": true
+    }
+  },
+  "operations": [
+    {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "--version"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.011768305004807189
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "scripts/hepta_lane_e_writer_source.py",
+        "scripts/test_hepta_lane_e_registry.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.01681975700194016
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "--check",
+        "scripts",
+        ".github"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.04355886900157202
+    }
+  ],
+  "full_scope_format_check": "188 files already formatted\n",
+  "local_hepta_native_build_executed": false,
+  "original_failed_ci_result_preserved": true,
+  "first_local_offline_cache_attempt": "exit 1: requested locked Ruff wheel absent from fresh cache; subsequent run reused the existing task cache without network",
+  "preview_exit_code": 1,
+  "preview_scope": "expected formatter diff of exactly these two files, not a successful format check"
+}

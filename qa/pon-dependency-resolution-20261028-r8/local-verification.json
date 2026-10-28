@@ -1,0 +1,379 @@
+{
+  "schema": "hepta-pon-resolution-local-verification-v1",
+  "recorded_at_utc": "2026-10-28T04:31:29.342276+00:00",
+  "result": "PASS_STATIC_ONLY",
+  "local_preparation_commit": "a7c60b3fde2aa4699f4010004563abc2895b11b0",
+  "proposal_remote_source": "366dc9374ab554036873fdb66e3497151d36d273",
+  "shared_preparation_tree": "fc1a413a036ebef783d6e1d6e04facbc0448fb44",
+  "imported_from_artifact_id": 12791038108,
+  "original_source_tree_checked_before_import": true,
+  "proposal_bytes_checked_after_import": true,
+  "candidate_includes_manifest_and_both_generated_locks": true,
+  "checks": [
+    {
+      "name": "ruff-check",
+      "command": [
+        "/tmp/pure-pon-hepta-python-20261028/bin/ruff",
+        "check",
+        "scripts/test_hepta_pon_dependency_proposal.py",
+        "qa/pon-dependency-resolution-20261028-r8/verify_resolution.py"
+      ],
+      "started_at_utc": "2026-10-28T04:27:49.074100+00:00",
+      "cwd": "/workspace/scratch/56818e4fba76/hepta-deps-r8",
+      "scope": "Local Python/JS/static controls; no Hepta Cargo/Rust/Bazel command",
+      "exit_code": 0,
+      "state": "passed",
+      "wall_seconds": 0.016433716999017633,
+      "logs": {
+        "stdout": {
+          "path": "local-logs/ruff-check.stdout.txt",
+          "bytes": 19,
+          "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+        },
+        "stderr": {
+          "path": "local-logs/ruff-check.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "ruff-format-check",
+      "command": [
+        "/tmp/pure-pon-hepta-python-20261028/bin/ruff",
+        "format",
+        "--check",
+        "scripts/test_hepta_pon_dependency_proposal.py",
+        "qa/pon-dependency-resolution-20261028-r8/verify_resolution.py"
+      ],
+      "started_at_utc": "2026-10-28T04:27:49.102645+00:00",
+      "cwd": "/workspace/scratch/56818e4fba76/hepta-deps-r8",
+      "scope": "Local Python/JS/static controls; no Hepta Cargo/Rust/Bazel command",
+      "exit_code": 0,
+      "state": "passed",
+      "wall_seconds": 0.008160269004292786,
+      "logs": {
+        "stdout": {
+          "path": "local-logs/ruff-format-check.stdout.txt",
+          "bytes": 26,
+          "sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938"
+        },
+        "stderr": {
+          "path": "local-logs/ruff-format-check.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "proposal-controls",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_pon_dependency_proposal.py"
+      ],
+      "started_at_utc": "2026-10-28T04:27:49.085324+00:00",
+      "cwd": "/workspace/scratch/56818e4fba76/hepta-deps-r8",
+      "scope": "Local Python/JS/static controls; no Hepta Cargo/Rust/Bazel command",
+      "exit_code": 0,
+      "state": "passed",
+      "wall_seconds": 0.16857967000396457,
+      "logs": {
+        "stdout": {
+          "path": "local-logs/proposal-controls.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "local-logs/proposal-controls.stderr.txt",
+          "bytes": 2312,
+          "sha256": "3c9e6eccedd53a4a423c80f2171014bbb3c28ec4ccbbf58205c6e506a24d238e"
+        }
+      }
+    },
+    {
+      "name": "workspace-controls",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_workspace.py"
+      ],
+      "started_at_utc": "2026-10-28T04:27:49.108876+00:00",
+      "cwd": "/workspace/scratch/56818e4fba76/hepta-deps-r8",
+      "scope": "Local Python/JS/static controls; no Hepta Cargo/Rust/Bazel command",
+      "exit_code": 0,
+      "state": "passed",
+      "wall_seconds": 0.2654484609956853,
+      "logs": {
+        "stdout": {
+          "path": "local-logs/workspace-controls.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "local-logs/workspace-controls.stderr.txt",
+          "bytes": 8593,
+          "sha256": "62ec73a89ca753109ce83dfada5217b2b72f9fdb5e14e232955cf585da6291ed"
+        }
+      }
+    },
+    {
+      "name": "workspace-preflight",
+      "command": ["python3", "-B", "scripts/hepta_workspace.py"],
+      "started_at_utc": "2026-10-28T04:27:49.196634+00:00",
+      "cwd": "/workspace/scratch/56818e4fba76/hepta-deps-r8",
+      "scope": "Local Python/JS/static controls; no Hepta Cargo/Rust/Bazel command",
+      "exit_code": 0,
+      "state": "passed",
+      "wall_seconds": 0.41605969400552567,
+      "logs": {
+        "stdout": {
+          "path": "local-logs/workspace-preflight.stdout.txt",
+          "bytes": 76,
+          "sha256": "6a437814142f1071f98664abc8a131c5c26d3dc40521307842b1acda091272f0"
+        },
+        "stderr": {
+          "path": "local-logs/workspace-preflight.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "actionlint",
+      "command": [
+        "/tmp/hepta-actionlint-1.7.12/actionlint",
+        ".github/workflows/hepta-pon-rustsec-lock-proposal.yml"
+      ],
+      "started_at_utc": "2026-10-28T04:27:49.209278+00:00",
+      "cwd": "/workspace/scratch/56818e4fba76/hepta-deps-r8",
+      "scope": "Local Python/JS/static controls; no Hepta Cargo/Rust/Bazel command",
+      "exit_code": 0,
+      "state": "passed",
+      "wall_seconds": 0.009257537007215433,
+      "logs": {
+        "stdout": {
+          "path": "local-logs/actionlint.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "local-logs/actionlint.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "exact-prettier",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/tmp/hepta-deps-r8-prettier-3.5.3/package/bin/prettier.cjs",
+        "--check",
+        ".github/workflows/hepta-pon-rustsec-lock-proposal.yml",
+        "qa/pon-dependency-resolution-20261028-r8/README.md",
+        "qa/pon-dependency-resolution-20261028-r8/pre-import-review.json",
+        "qa/pon-dependency-resolution-20261028-r8/import-review.json",
+        "qa/pon-dependency-resolution-20261028-r8/trigger-lifecycle-review.json"
+      ],
+      "started_at_utc": "2026-10-28T04:27:49.219847+00:00",
+      "cwd": "/workspace/scratch/56818e4fba76/hepta-deps-r8",
+      "scope": "Local Python/JS/static controls; no Hepta Cargo/Rust/Bazel command",
+      "exit_code": 0,
+      "state": "passed",
+      "wall_seconds": 0.36772987399308477,
+      "logs": {
+        "stdout": {
+          "path": "local-logs/exact-prettier.stdout.txt",
+          "bytes": 66,
+          "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+        },
+        "stderr": {
+          "path": "local-logs/exact-prettier.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "artifact-graph-review",
+      "command": [
+        "python3",
+        "-B",
+        "qa/pon-dependency-resolution-20261028-r8/verify_resolution.py"
+      ],
+      "started_at_utc": "2026-10-28T04:27:49.240288+00:00",
+      "cwd": "/workspace/scratch/56818e4fba76/hepta-deps-r8",
+      "scope": "Local Python/JS/static controls; no Hepta Cargo/Rust/Bazel command",
+      "exit_code": 0,
+      "state": "passed",
+      "wall_seconds": 1.3692517400049837,
+      "logs": {
+        "stdout": {
+          "path": "local-logs/artifact-graph-review.stdout.txt",
+          "bytes": 12257,
+          "sha256": "e5303c33df8bdd9c9d513f9ce6f3f72d05a9989fa648ccded2e3f04fb0d79124"
+        },
+        "stderr": {
+          "path": "local-logs/artifact-graph-review.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "tracked-diff-check",
+      "command": ["git", "diff", "--check"],
+      "started_at_utc": "2026-10-28T04:27:49.114088+00:00",
+      "cwd": "/workspace/scratch/56818e4fba76/hepta-deps-r8",
+      "scope": "Local Python/JS/static controls; no Hepta Cargo/Rust/Bazel command",
+      "exit_code": 0,
+      "state": "passed",
+      "wall_seconds": 0.03383356200356502,
+      "logs": {
+        "stdout": {
+          "path": "local-logs/tracked-diff-check.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "local-logs/tracked-diff-check.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "supplemental-format",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/tmp/hepta-deps-r8-prettier-3.5.3/package/bin/prettier.cjs",
+        "--write",
+        "qa/pon-dependency-resolution-20261028-r8/README.md",
+        "qa/pon-dependency-resolution-20261028-r8/deny-readback.json",
+        "qa/pon-dependency-resolution-20261028-r8/patch-review.json",
+        "qa/pon-dependency-resolution-20261028-r8/github/proposal-job-log-identity.json"
+      ],
+      "exit_code": 0,
+      "state": "passed",
+      "wall_seconds": 0.21458653100125957,
+      "logs": {
+        "stdout": {
+          "path": "local-logs/supplemental-format.stdout.txt",
+          "bytes": 303,
+          "sha256": "637e720fa1291ec86e27ab9459f2b78108731bcd132941010d8be2d05e984129"
+        },
+        "stderr": {
+          "path": "local-logs/supplemental-format.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "supplemental-format-check",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/tmp/hepta-deps-r8-prettier-3.5.3/package/bin/prettier.cjs",
+        "--check",
+        "qa/pon-dependency-resolution-20261028-r8/README.md",
+        "qa/pon-dependency-resolution-20261028-r8/deny-readback.json",
+        "qa/pon-dependency-resolution-20261028-r8/patch-review.json",
+        "qa/pon-dependency-resolution-20261028-r8/github/proposal-job-log-identity.json"
+      ],
+      "exit_code": 0,
+      "state": "passed",
+      "wall_seconds": 0.21461966598872095,
+      "logs": {
+        "stdout": {
+          "path": "local-logs/supplemental-format-check.stdout.txt",
+          "bytes": 66,
+          "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+        },
+        "stderr": {
+          "path": "local-logs/supplemental-format-check.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "format_operations": [
+    {
+      "name": "ruff-format",
+      "command": [
+        "/tmp/pure-pon-hepta-python-20261028/bin/ruff",
+        "format",
+        "scripts/test_hepta_pon_dependency_proposal.py",
+        "qa/pon-dependency-resolution-20261028-r8/verify_resolution.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.03245978899940383
+    },
+    {
+      "name": "prettier-format",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/tmp/hepta-deps-r8-prettier-3.5.3/package/bin/prettier.cjs",
+        "--write",
+        ".github/workflows/hepta-pon-rustsec-lock-proposal.yml",
+        "qa/pon-dependency-resolution-20261028-r8/README.md",
+        "qa/pon-dependency-resolution-20261028-r8/pre-import-review.json",
+        "qa/pon-dependency-resolution-20261028-r8/import-review.json",
+        "qa/pon-dependency-resolution-20261028-r8/trigger-lifecycle-review.json"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.31543958200199995
+    }
+  ],
+  "passing_python_test_counts": {
+    "proposal-controls": 13,
+    "workspace-controls": 51
+  },
+  "structural_preflight": {
+    "local_manifests": 196,
+    "errors": 0,
+    "workspace_code_executed": false
+  },
+  "preserved_original_proposal_test_asts": 12,
+  "new_applied_graph_rejection_control": true,
+  "source_control_negative_cases": 12,
+  "source_control_validators": 2,
+  "source_control_negative_evaluations": 24,
+  "other_existing_workflow_files_unchanged": 86,
+  "old_qa_directory_unchanged": true,
+  "tracked_changed_paths": [
+    ".github/workflows/hepta-pon-rustsec-lock-proposal.yml",
+    "MODULE.bazel.lock",
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "scripts/test_hepta_pon_dependency_proposal.py"
+  ],
+  "only_new_directory": "qa/pon-dependency-resolution-20261028-r8",
+  "candidate_file_manifest": "candidate-files.json",
+  "local_cargo_rust_bazel_execution": false,
+  "local_native_commands_deferred_reason": "User prohibition on local Hepta Cargo/Rust/Bazel build/test/fmt/fix overrides the AGENTS native command guidance. Actual lock generation/check occurred in the retained hosted run.",
+  "original_rustsec_error_count": 5,
+  "candidate_targeted_rustsec_error_count": 4,
+  "remaining_crypto_bigint_error_count": 1,
+  "original_yanked_warning_count": 3,
+  "native_qualification": false,
+  "fresh_candidate_rustsec_qualification": false,
+  "all_advisories_closed": false,
+  "remote_publish_performed": false,
+  "remote_configuration_mutations_performed": false
+}

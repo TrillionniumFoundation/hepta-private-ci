@@ -1,0 +1,69 @@
+{
+  "readback_method": "github_fetch_workflow_run_jobs",
+  "repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+  "run_id": 40630709963,
+  "job": {
+    "id": 122629819533,
+    "name": "cargo-deny / cargo-deny",
+    "status": "completed",
+    "conclusion": "failure",
+    "run_id": 40630709963,
+    "logs_url": null,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1
+      },
+      {
+        "name": "Build EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2
+      },
+      {
+        "name": "Checkout",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3
+      },
+      {
+        "name": "Run ./.github/actions/setup-ci-build",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4
+      },
+      {
+        "name": "Install Rust toolchain",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5
+      },
+      {
+        "name": "Run cargo-deny",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 6
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7
+      },
+      {
+        "name": "Post Checkout",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15
+      }
+    ]
+  }
+}

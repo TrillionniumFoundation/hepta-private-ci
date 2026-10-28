@@ -1,0 +1,1493 @@
+{
+  "source": "f031610a8cbb4ac2dac3229bfaeaa88182787ab4",
+  "files": [
+    {
+      "path": "test-data/assume-role-tests.json",
+      "git_blob": "26bcf4308dd8673e776e5b2779183e16d6125b31",
+      "bytes": 15236,
+      "sha256": "bf9bf7a8c19f3edc6be616f7cb73a23239546edd08d68b62a6af875d4d6c6511"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/e2e_fips_and_dual_stack_sso/env.json",
+      "git_blob": "7e1f0ed5e68c44add3e2ecfa39c3247fed1a9cb4",
+      "bytes": 155,
+      "sha256": "c257cc2ab0af51031e15e862f926b208f254893e4cd18536cf3abb211274ba4f"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/e2e_fips_and_dual_stack_sso/fs/home/.aws/config",
+      "git_blob": "7967221048a7048d655c02a319306c8b7045bded",
+      "bytes": 164,
+      "sha256": "de549e51ee893e2294c81cdbd204198a1419d804dafbd80990869c0ec6d3ea1c"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/e2e_fips_and_dual_stack_sso/fs/home/.aws/sso/cache/dace00cba5f8355ec9d274ceb2bcebdfbeed0e12.json",
+      "git_blob": "c4cca143fbc51e0745810515d3130baa3a989c91",
+      "bytes": 121,
+      "sha256": "d946831b9c6151ad28a3a008502cddec93f54218b732a6fd1b27990d4f3f7e96"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/e2e_fips_and_dual_stack_sso/http-traffic.json",
+      "git_blob": "f7f80963e890e167104ba5b50eba627d7979c3ce",
+      "bytes": 2202,
+      "sha256": "c505cf45471ec3854cc2347fdc6d867b21b74585b90f3ac3e2033e8917c34dd9"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/e2e_fips_and_dual_stack_sso/test-case.json",
+      "git_blob": "a2782c6c056140f7a6936da79bb3bf2f6365110c",
+      "bytes": 332,
+      "sha256": "edf65f5aafb55479ad5776d00cc27ba233ef613afe206024bcd82408723c69fd"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/ecs_assume_role/env.json",
+      "git_blob": "dc9f3f5948efca7fad39716f61fbc8da06901548",
+      "bytes": 122,
+      "sha256": "6fabfc6fa54d8f94acaf889d7f5b76f5184539d4ac0f6c2a6c93274199459385"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/ecs_assume_role/fs/home/.aws/config",
+      "git_blob": "3631de7e24d6733a527ca1ab17aa3c1435b5870c",
+      "bytes": 127,
+      "sha256": "10a5db0cf4a27111f4b6830f6bb01b8aca5d86a371355ccb060e767bb6a6ad9a"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/ecs_assume_role/http-traffic.json",
+      "git_blob": "a34024cc4f9bc023cf66c2cd347b9ebae76c41c6",
+      "bytes": 6421,
+      "sha256": "f4068c6d4f25a38f6e8967fcd3cb959ab6e667d64a1f7402b269a42e06b95d05"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/ecs_assume_role/test-case.json",
+      "git_blob": "1c427a5b4b491213581400a1296f78e87a3e1ef5",
+      "bytes": 339,
+      "sha256": "c51b12d515483f748bc7919a79b0e34703ef4d36d7b3ee7ae3c72fd2b3ed848f"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/ecs_credentials/env.json",
+      "git_blob": "e8c4070c682dffa48c724cbf1f4fb4ec3ca5b969",
+      "bytes": 151,
+      "sha256": "c4a50e8b0a8be3f393a9d521ebb3ad0275b836ccbc39a5a7194e7b3122b1a1e3"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/ecs_credentials/http-traffic.json",
+      "git_blob": "41c019d1d099ebb96b2bc8855feba5e7cd27a720",
+      "bytes": 2071,
+      "sha256": "34efaacdeecbcbf8101a6b05e425690d058c29924baafa1c5b2fa9ee3c8bf0b1"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/ecs_credentials/test-case.json",
+      "git_blob": "2067729f7c67e2658056b31bdeb49c04a3434c45",
+      "bytes": 305,
+      "sha256": "4ea08990c0952e8a7d27a1991cbca057bc941ccbe307acd6acce0c993c7dc90e"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/ecs_credentials_invalid_profile/env.json",
+      "git_blob": "e8c4070c682dffa48c724cbf1f4fb4ec3ca5b969",
+      "bytes": 151,
+      "sha256": "c4a50e8b0a8be3f393a9d521ebb3ad0275b836ccbc39a5a7194e7b3122b1a1e3"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/ecs_credentials_invalid_profile/fs/home/.aws/config",
+      "git_blob": "ee7716ed0674ab43207ca92632e8a1e7590644b2",
+      "bytes": 72,
+      "sha256": "a7bfc371860fd2103b66e8ba05aeaddcbadf0b38011b03c9c891dcd3a2700ef8"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/ecs_credentials_invalid_profile/http-traffic.json",
+      "git_blob": "41c019d1d099ebb96b2bc8855feba5e7cd27a720",
+      "bytes": 2071,
+      "sha256": "34efaacdeecbcbf8101a6b05e425690d058c29924baafa1c5b2fa9ee3c8bf0b1"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/ecs_credentials_invalid_profile/test-case.json",
+      "git_blob": "2067729f7c67e2658056b31bdeb49c04a3434c45",
+      "bytes": 305,
+      "sha256": "4ea08990c0952e8a7d27a1991cbca057bc941ccbe307acd6acce0c993c7dc90e"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/eks_pod_identity_credentials/env.json",
+      "git_blob": "45324e91b508dc7e10e117ddeadc2f02527a8667",
+      "bytes": 189,
+      "sha256": "af2e8ce84f1bae916dae822721da30da1109a07e93923cb3e25aa97965d206c5"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/eks_pod_identity_credentials/fs/token.jwt",
+      "git_blob": "661b5e547a83fbc2ffbd428844a466bd127e6bc4",
+      "bytes": 9,
+      "sha256": "9c928547a5dce2fcc2788de34fe163942f64e50fea570d33774822d5eacbf1ec"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/eks_pod_identity_credentials/http-traffic.json",
+      "git_blob": "59ac7db15d2cbbe0919d7486d3e0ee6b1e0b2919",
+      "bytes": 2056,
+      "sha256": "44776cbf475e4496084098a38d1031d6c10ec51b451d8a8d7a7b4b51f62adbd0"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/eks_pod_identity_credentials/test-case.json",
+      "git_blob": "ee79a7c61f54bb40fc556564cdd45d726107f19d",
+      "bytes": 331,
+      "sha256": "7cddf6d7a511ab29d891d8542f5140692378d12ecba311db52c2e03efdfed40f"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/eks_pod_identity_no_token_file/env.json",
+      "git_blob": "45324e91b508dc7e10e117ddeadc2f02527a8667",
+      "bytes": 189,
+      "sha256": "af2e8ce84f1bae916dae822721da30da1109a07e93923cb3e25aa97965d206c5"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/eks_pod_identity_no_token_file/http-traffic.json",
+      "git_blob": "a0965529c7ec27dd2620f89212ac5aa07bfced6a",
+      "bytes": 82,
+      "sha256": "cdc385c0c7788716ac286b1f8d3070e0519f97dd9e43448bc911dc907e69b07a"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/eks_pod_identity_no_token_file/test-case.json",
+      "git_blob": "6e2b5c09f54f5f2dbd343974b6e797c609b7ed61",
+      "bytes": 209,
+      "sha256": "3811a8d283b65dba946d0461f368eb3cffe457a251d6f4159809e0041e51a10f"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/environment_variables/env.json",
+      "git_blob": "dba68846bfb634c205acaa5370481d478deb6898",
+      "bytes": 156,
+      "sha256": "0ff7e8be3dd10bd31e5db2c43f513149d1f74dbb1233cbaa7dc86311cd707cb8"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/environment_variables/http-traffic.json",
+      "git_blob": "440bac5f105c6c5aadd80133650ac1bb87116ee7",
+      "bytes": 109,
+      "sha256": "ba6d06c1fcdc6757836e1606ce918f17b30c9db7c5b92978368820cae9bd5053"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/environment_variables/test-case.json",
+      "git_blob": "ecb27751c953dc666f854d9c712dd356b11a6340",
+      "bytes": 262,
+      "sha256": "20557810f998e6182049e6d918bef4105bf1b8c5427b27ab0034cfdcbba67213"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/environment_variables_blank/env.json",
+      "git_blob": "3b978c4360a4ee2b77d49fb36f9281a556fce01e",
+      "bytes": 115,
+      "sha256": "c19d7249161ad76ea025630ea8e60038155d3839990af9f27e7a5c0408220987"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/environment_variables_blank/fs/home/.aws/config",
+      "git_blob": "f072e0c781566018b1c0adcc0d6c802ac8d26786",
+      "bytes": 218,
+      "sha256": "480ddd77c5fbc72ff0bd731735bc9d3661342491aa84d666fc5b8e9e280acbda"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/environment_variables_blank/http-traffic.json",
+      "git_blob": "489a35c6115b39458d8fd4e17f39da16f57856d1",
+      "bytes": 100,
+      "sha256": "bc57c91d8b4df11700d7255c95260be8cf0bac4db863b97e484f87a44a9aaa11"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/environment_variables_blank/test-case.json",
+      "git_blob": "0d71cdbbb7fc4295d8542ba74309a411dd990e4a",
+      "bytes": 286,
+      "sha256": "f07f8cb178ef772e1fc7ad6d5a1b01ce195b6e3ce1e5d62d233ca22c59d4f7ff"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_assume_role/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_assume_role/fs/home/.aws/config",
+      "git_blob": "638bdfbc5c8e2e97dd7a319dd255c3dedc627c97",
+      "bytes": 134,
+      "sha256": "8cac568829de6742c390182dcb58c034fa3bff34842f6c554d38338e2bcdd871"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_assume_role/http-traffic.json",
+      "git_blob": "285f10b37cb58139be25ace61e43b27a82be0614",
+      "bytes": 13732,
+      "sha256": "6d5faee4bc4bd3dc944eae60d66cc10958bc0687675713659dd8681fe44ec71f"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_assume_role/test-case.json",
+      "git_blob": "963080a07f9a7035209014f9cafcc9f39a01b5c2",
+      "bytes": 331,
+      "sha256": "b5f32749a8318ae097854b1b8dd8ae3589fa6eb37fb512c3ca13f1ec308444b8"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_config_with_no_creds/env.json",
+      "git_blob": "db12cd280b547d19fc5c21d9e17331085af0888b",
+      "bytes": 51,
+      "sha256": "2d8ad36e541bbb8536b150b7356fd34a5bcb67d5fb92a26ee7dd0ea2bdf85122"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_config_with_no_creds/fs/home/.aws/config",
+      "git_blob": "490734a8290928b5ba0216632053b683430d32c8",
+      "bytes": 27,
+      "sha256": "33b1002a3c56c0c12279290f14325a59dfd82e4e8ab10e2d8275c0ee3da21bb5"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_config_with_no_creds/http-traffic.json",
+      "git_blob": "9033ccb10cee5b1435128554936f9f93d8665c90",
+      "bytes": 9461,
+      "sha256": "461ea943c4d34406a3752173134ce33fa95283c16dfc54f554cbaf0d7e982a2b"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_config_with_no_creds/test-case.json",
+      "git_blob": "73a9fe8bb21d2ec3a4c48492cee118ca9184801a",
+      "bytes": 319,
+      "sha256": "63504f271cf65d4f25a949cf3989dd2057da87e298ad94cee14598ce6dc5b834"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_default_chain_error/env.json",
+      "git_blob": "db12cd280b547d19fc5c21d9e17331085af0888b",
+      "bytes": 51,
+      "sha256": "2d8ad36e541bbb8536b150b7356fd34a5bcb67d5fb92a26ee7dd0ea2bdf85122"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_default_chain_error/fs/home/.aws/config",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_default_chain_error/http-traffic.json",
+      "git_blob": "91db215749e065d2d3b66cb6db1da03e55fac30f",
+      "bytes": 5985,
+      "sha256": "2a4a3e650b6a7caee4a54a5c82439d74cf09eeb18585d13fc6b081330e26fc36"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_default_chain_error/test-case.json",
+      "git_blob": "da2abbfc5c53c95b5c41070b8553ea813ffb7369",
+      "bytes": 288,
+      "sha256": "b9c4c4ae33a3205cc25561e8194507abaa5aab67e38b83ba1965de8daf44070b"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_default_chain_retries/env.json",
+      "git_blob": "db12cd280b547d19fc5c21d9e17331085af0888b",
+      "bytes": 51,
+      "sha256": "2d8ad36e541bbb8536b150b7356fd34a5bcb67d5fb92a26ee7dd0ea2bdf85122"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_default_chain_retries/fs/home/.aws/config",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_default_chain_retries/http-traffic.json",
+      "git_blob": "1a639488c71531cc497a2bc7f77cc36b95cf31e1",
+      "bytes": 14269,
+      "sha256": "7a0b14e6472179d8202a20b8bd0c3f9acdeb9c0db3cf1fea4502588ce1719048"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_default_chain_retries/test-case.json",
+      "git_blob": "b8048ebbf6337a5d2f8132786e22b3a4747cf11e",
+      "bytes": 383,
+      "sha256": "bf7382c0f1c8ef562923d66160f7554eed8708af2c37fd32fd626541658b4489"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_default_chain_success/env.json",
+      "git_blob": "db12cd280b547d19fc5c21d9e17331085af0888b",
+      "bytes": 51,
+      "sha256": "2d8ad36e541bbb8536b150b7356fd34a5bcb67d5fb92a26ee7dd0ea2bdf85122"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_default_chain_success/fs/home/.aws/config",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_default_chain_success/http-traffic.json",
+      "git_blob": "a1f57fc6ef75fad5c1330dc0d267f64acda00094",
+      "bytes": 9421,
+      "sha256": "c75e0928855bf5f21c6d331a8aeb135d920dec4bb75d164156057051a90ba654"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_default_chain_success/test-case.json",
+      "git_blob": "f951f70eea812c9e4e0ecd3c9c86c24580f6ff6b",
+      "bytes": 383,
+      "sha256": "9328c79c8bd8310ae2094937eaea4880754750a8cdf1940dc18d27f32b56992c"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_disabled/env.json",
+      "git_blob": "b7e3ba4252c926232d2a7f24902974b2fec861b3",
+      "bytes": 61,
+      "sha256": "0a795fba4bc0ea8b470f1bb8148a505bd1daf9ba791d5075e3112f5c289dbef2"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_disabled/http-traffic.json",
+      "git_blob": "d313739d7a81746be2030a4ce60a1343e65e1a74",
+      "bytes": 69,
+      "sha256": "29a4c5138fbc1e087f7390f4ae348a1f48c4848af0ff32ae2f80bf5e0fa48649"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_disabled/test-case.json",
+      "git_blob": "47122825013828d53c58249a1c63aa2f1e358e94",
+      "bytes": 225,
+      "sha256": "27870707bacc86bb6a5c8a74146b023ab1395e1a8067567001dcc078857e820d"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_no_iam_role/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_no_iam_role/fs/home/.aws/config",
+      "git_blob": "e9a026444005381a54445371920a057d433d605f",
+      "bytes": 125,
+      "sha256": "cb6ab89b87b9bc7a21947121c4454ab934abf3429b0d01d6bd6738deac4bd965"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_no_iam_role/http-traffic.json",
+      "git_blob": "91db215749e065d2d3b66cb6db1da03e55fac30f",
+      "bytes": 5985,
+      "sha256": "2a4a3e650b6a7caee4a54a5c82439d74cf09eeb18585d13fc6b081330e26fc36"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_no_iam_role/test-case.json",
+      "git_blob": "5c4a015f99035f6de55ff9a5deeb90354e230d01",
+      "bytes": 210,
+      "sha256": "fcd07bbf77cc9c3eb56648c64af148597e0a69980dae10d915b0d0aa6e8c416b"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_token_fail/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_token_fail/fs/home/.aws/config",
+      "git_blob": "e9a026444005381a54445371920a057d433d605f",
+      "bytes": 125,
+      "sha256": "cb6ab89b87b9bc7a21947121c4454ab934abf3429b0d01d6bd6738deac4bd965"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_token_fail/http-traffic.json",
+      "git_blob": "588e7cec962abb8e4d1f12165037709728a875c5",
+      "bytes": 1437,
+      "sha256": "ce050734738a43a205f4b3a6e5d203ac9660642027072281fd71538ac1b260bf"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/imds_token_fail/test-case.json",
+      "git_blob": "b4e7ca9090531d8c2f9a0e663910ecc0efc3007b",
+      "bytes": 180,
+      "sha256": "1ea516ff10a39e21b7e7bbf3b5216a34fa9988f6b8c166d4a17e679402e7a37f"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/prefer_environment/env.json",
+      "git_blob": "9c196d40c999d43692cd23dd17567624a1cbef23",
+      "bytes": 105,
+      "sha256": "9ef53043224069ad82af40cf981e9ab3cc306be920d0b17e80d4ccd0345b2572"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/prefer_environment/fs/home/.aws/config",
+      "git_blob": "a7e5ed58158e3ac104945bc0aeefdf42685dff01",
+      "bytes": 142,
+      "sha256": "85c0097b8234c69964eb83856a25295d531a6096518b30ac0136c056d82c7e45"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/prefer_environment/fs/home/.aws/credentials",
+      "git_blob": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/prefer_environment/http-traffic.json",
+      "git_blob": "d313739d7a81746be2030a4ce60a1343e65e1a74",
+      "bytes": 69,
+      "sha256": "29a4c5138fbc1e087f7390f4ae348a1f48c4848af0ff32ae2f80bf5e0fa48649"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/prefer_environment/test-case.json",
+      "git_blob": "97751f5ef4e0661e0b8de4a9e8924c108e171697",
+      "bytes": 209,
+      "sha256": "a9c8eb1de5107112e1a076cf2ffc3a8345d3d5136ee59c7e366ad4d49653fd5f"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_name/env.json",
+      "git_blob": "053cbf1bedc13a2763b958d2b4ff7c1cddf60a4d",
+      "bytes": 80,
+      "sha256": "f2a15360a2b4953a736b3e5aed9917d50bb3e9ccc5a4e0a11e84331d4e8712cc"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_name/fs/home/.aws/config",
+      "git_blob": "cd3647966900c5325526320f880efed19518119b",
+      "bytes": 243,
+      "sha256": "fb2f2f31542da0bf9bd489168ed8afdbf6c8386070a21d2f985319d3b46bb299"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_name/http-traffic.json",
+      "git_blob": "489a35c6115b39458d8fd4e17f39da16f57856d1",
+      "bytes": 100,
+      "sha256": "bc57c91d8b4df11700d7255c95260be8cf0bac4db863b97e484f87a44a9aaa11"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_name/test-case.json",
+      "git_blob": "f7a1a28b8b8ffa37892c99a05929f89a6bc3b83c",
+      "bytes": 238,
+      "sha256": "65be6b8a7a3504691282f17f8545314458ae066487cf976d71fb49590717c420"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_overrides_web_identity/env.json",
+      "git_blob": "233d9a0b0107f721ba762337604f1c691afd8c38",
+      "bytes": 146,
+      "sha256": "eb814ac9730262cb69f83ee9dbd7952ceac909829f6d7181c4882d7e54641084"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_overrides_web_identity/fs/home/.aws/config",
+      "git_blob": "b59c920d17639ed74ea535133df819e3ce86f6d3",
+      "bytes": 89,
+      "sha256": "05b3bf1742ab0874f176e3af86d40111bb7d4f5dd0dceace6b7e4eb3cab06a84"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_overrides_web_identity/fs/token.jwt",
+      "git_blob": "f7627e85cb56d175597a4a486bf4158f5940c53b",
+      "bytes": 16,
+      "sha256": "e8f3e92d0076e8516e58ad544b00d49a15f64285f9bed313fa281aef038cfb75"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_overrides_web_identity/http-traffic.json",
+      "git_blob": "489a35c6115b39458d8fd4e17f39da16f57856d1",
+      "bytes": 100,
+      "sha256": "bc57c91d8b4df11700d7255c95260be8cf0bac4db863b97e484f87a44a9aaa11"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_overrides_web_identity/test-case.json",
+      "git_blob": "4cc9266a3b2e3fe795502e1a18cc6f85a07f0f22",
+      "bytes": 281,
+      "sha256": "6a039535def1ad507c7fad8e0260a758c3aae9c2d12c95d743073767e17a80f2"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_static_keys/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_static_keys/fs/home/.aws/config",
+      "git_blob": "d203db07874b4cdcc614f31a2152e955bbbbc91e",
+      "bytes": 231,
+      "sha256": "862ce887e24a2d1cf261ffcd74f0be12ca504fb213cc406dffb9421ac40ea135"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_static_keys/fs/home/.aws/credentials",
+      "git_blob": "911f7ec09d4facd9d15930eb9ea9a708a34c7d85",
+      "bytes": 81,
+      "sha256": "04dff4d34f2f61376d2aa5dfb00591d1e80c441b7d6ac77898c162e2c5840acb"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_static_keys/http-traffic.json",
+      "git_blob": "489a35c6115b39458d8fd4e17f39da16f57856d1",
+      "bytes": 100,
+      "sha256": "bc57c91d8b4df11700d7255c95260be8cf0bac4db863b97e484f87a44a9aaa11"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_static_keys/test-case.json",
+      "git_blob": "c56a02bac65faa0b3440bfb48c9461371e522ff7",
+      "bytes": 200,
+      "sha256": "5e11fbebb04ce369bfff772ea9dd9b1e04614510dd10bb9a6e10c2ea5f32c6a6"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_static_keys_case_insensitive/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_static_keys_case_insensitive/fs/home/.aws/config",
+      "git_blob": "a8c11c6e8c4d1c305f6289c649a6a0c39f7e9932",
+      "bytes": 29,
+      "sha256": "a3199a68b921c4cdb3c3e431a6449c9936ae9d82cebc0998e74a56f0ee2cc128"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_static_keys_case_insensitive/fs/home/.aws/credentials",
+      "git_blob": "bac520774d7380d263d4760af21a2251b1cb2e93",
+      "bytes": 81,
+      "sha256": "3b7e388ab2d536fdcf5bfa17a38010c14b73214ad263f4600a1e04e437fd40a4"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_static_keys_case_insensitive/http-traffic.json",
+      "git_blob": "489a35c6115b39458d8fd4e17f39da16f57856d1",
+      "bytes": 100,
+      "sha256": "bc57c91d8b4df11700d7255c95260be8cf0bac4db863b97e484f87a44a9aaa11"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/profile_static_keys_case_insensitive/test-case.json",
+      "git_blob": "c56a02bac65faa0b3440bfb48c9461371e522ff7",
+      "bytes": 200,
+      "sha256": "5e11fbebb04ce369bfff772ea9dd9b1e04614510dd10bb9a6e10c2ea5f32c6a6"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/sso_assume_role/env.json",
+      "git_blob": "5b93b6dd7f3a1a64fe96bdcd1eafaa760e0a5e20",
+      "bytes": 80,
+      "sha256": "c647c15ba06c14f0e622378037de35e1f39bfa38e79c62bda8b77841a81e3cab"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/sso_assume_role/fs/home/.aws/config",
+      "git_blob": "7967221048a7048d655c02a319306c8b7045bded",
+      "bytes": 164,
+      "sha256": "de549e51ee893e2294c81cdbd204198a1419d804dafbd80990869c0ec6d3ea1c"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/sso_assume_role/fs/home/.aws/sso/cache/dace00cba5f8355ec9d274ceb2bcebdfbeed0e12.json",
+      "git_blob": "c4cca143fbc51e0745810515d3130baa3a989c91",
+      "bytes": 121,
+      "sha256": "d946831b9c6151ad28a3a008502cddec93f54218b732a6fd1b27990d4f3f7e96"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/sso_assume_role/http-traffic.json",
+      "git_blob": "ea606c0a8f1946d6b3b57ef4d9eb81c6dd6b91d9",
+      "bytes": 2204,
+      "sha256": "7be7e3bb2803832e8886927661015081dd4555229cbe847a3867edecfc09ded4"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/sso_assume_role/test-case.json",
+      "git_blob": "c7ec81834b576637e1f09a024754a1c6d17aa893",
+      "bytes": 285,
+      "sha256": "8020c0e968614e9c05446cfdc959b4e57779c927c519d57005f27e5b1931deb6"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/sso_no_token_file/env.json",
+      "git_blob": "5b93b6dd7f3a1a64fe96bdcd1eafaa760e0a5e20",
+      "bytes": 80,
+      "sha256": "c647c15ba06c14f0e622378037de35e1f39bfa38e79c62bda8b77841a81e3cab"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/sso_no_token_file/fs/home/.aws/config",
+      "git_blob": "7967221048a7048d655c02a319306c8b7045bded",
+      "bytes": 164,
+      "sha256": "de549e51ee893e2294c81cdbd204198a1419d804dafbd80990869c0ec6d3ea1c"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/sso_no_token_file/fs/home/.aws/sso/cache/differenthashthatdoesntmatch.json",
+      "git_blob": "c4cca143fbc51e0745810515d3130baa3a989c91",
+      "bytes": 121,
+      "sha256": "d946831b9c6151ad28a3a008502cddec93f54218b732a6fd1b27990d4f3f7e96"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/sso_no_token_file/http-traffic.json",
+      "git_blob": "a0965529c7ec27dd2620f89212ac5aa07bfced6a",
+      "bytes": 82,
+      "sha256": "cdc385c0c7788716ac286b1f8d3070e0519f97dd9e43448bc911dc907e69b07a"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/sso_no_token_file/test-case.json",
+      "git_blob": "9617044ce593d48787a731a54f6c746c713b4a2a",
+      "bytes": 229,
+      "sha256": "7538f2ffdc094a6b180fe7c7c88c168e1b0386d5ffde95b7b1bea64a80a57726"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/sso_server_error/env.json",
+      "git_blob": "5b93b6dd7f3a1a64fe96bdcd1eafaa760e0a5e20",
+      "bytes": 80,
+      "sha256": "c647c15ba06c14f0e622378037de35e1f39bfa38e79c62bda8b77841a81e3cab"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/sso_server_error/fs/home/.aws/config",
+      "git_blob": "7967221048a7048d655c02a319306c8b7045bded",
+      "bytes": 164,
+      "sha256": "de549e51ee893e2294c81cdbd204198a1419d804dafbd80990869c0ec6d3ea1c"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/sso_server_error/fs/home/.aws/sso/cache/dace00cba5f8355ec9d274ceb2bcebdfbeed0e12.json",
+      "git_blob": "c4cca143fbc51e0745810515d3130baa3a989c91",
+      "bytes": 121,
+      "sha256": "d946831b9c6151ad28a3a008502cddec93f54218b732a6fd1b27990d4f3f7e96"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/sso_server_error/http-traffic.json",
+      "git_blob": "73bb4a76759bbfe6145acf6fd9620e30d86e0969",
+      "bytes": 1165,
+      "sha256": "f2622b905bd6737a79ec5a21afb639da160bb586cb88f75fc8f46f15ce106fef"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/sso_server_error/test-case.json",
+      "git_blob": "7fa3da7d4bf19c1562708f4fad1ec2b90ccf8f11",
+      "bytes": 247,
+      "sha256": "95396553ea2e9eb864385228f6685375ac8c2809345830ef194cd43a1cf4739d"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_source_profile_no_env/env.json",
+      "git_blob": "771e473b2485d771d6e6752288e09f9a8c359057",
+      "bytes": 99,
+      "sha256": "07ded18a7071c74b78582cc510789f8eda9e03f6fe2b248b53c0063f981ae819"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_source_profile_no_env/fs/home/.aws/config",
+      "git_blob": "bb4e50451e399819443446ca95872d90c51a6b1d",
+      "bytes": 126,
+      "sha256": "a0a13cfc7848b19bebec9729a5aed4925ef72bb35d41d92f40048c2207254f78"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_source_profile_no_env/fs/token.jwt",
+      "git_blob": "91d25a8217d358db0187e655aad7981456c931eb",
+      "bytes": 10,
+      "sha256": "1bc6594e9a313bf218da910b0244d07d58f6a0e8ce0a1148cd376db876f315c7"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_source_profile_no_env/http-traffic.json",
+      "git_blob": "8182c592d746d367ba8133e5c7382b8ca4c01bdd",
+      "bytes": 87,
+      "sha256": "90deff84633e14dc387926742ce58924335447d54d96ba42e2c3016fa9c03419"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_source_profile_no_env/test-case.json",
+      "git_blob": "ce3ae3cf1818ef01f5411efc9c5da0d281010aa1",
+      "bytes": 323,
+      "sha256": "5c274159c42578e7a85a9649bde98737ec6ac575dd9dfa8d565db9dbbbe89610"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_env/env.json",
+      "git_blob": "f57ba580258cf62dac7bcc956587b1289e0dd93d",
+      "bytes": 184,
+      "sha256": "4f27e81bd5c9676de5639dd36e11b05f148ab6c289cd1227a32e660fdc7f2763"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_env/fs/token.jwt",
+      "git_blob": "4467c73301f74020cfa3bd31e6a23f5125937083",
+      "bytes": 266,
+      "sha256": "fb50ec635043715d9927381d53968d6c3fbf1e184f3407354687473b55f18ea3"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_env/http-traffic.json",
+      "git_blob": "cc05fdb610b3e9456b6a594b646d71b52c7c7a92",
+      "bytes": 3734,
+      "sha256": "f00bc93927a4eb63939ba06e86c6e1b19d50af74b65d4f0b5c9f40e374ac33a7"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_env/test-case.json",
+      "git_blob": "5ffa6f86c9f9a43a501bbcd15299a3e61a543134",
+      "bytes": 339,
+      "sha256": "75669dc6a1ab22d9d213d325029cddbe13fd9b3039ce71a66b2e80289010129a"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_invalid_jwt/env.json",
+      "git_blob": "4e6f75b9f20e5358591bb37b7ab96d60a2352d7b",
+      "bytes": 73,
+      "sha256": "12fe94e8229e867dac94a00c5df10323955912939910ba0e6fa0ce381b4e4352"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_invalid_jwt/fs/home/.aws/config",
+      "git_blob": "a396a64cb61ddae3aaf10a63551163b518ed8737",
+      "bytes": 170,
+      "sha256": "062482ce9483a885eece20cd194635a0c590e56cb89654262004b48d29b2b56d"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_invalid_jwt/fs/token.jwt",
+      "git_blob": "1d0a48c8754babf6bcc745caba55baac7f948944",
+      "bytes": 834,
+      "sha256": "ff6af3a020cf6b10e8ebe0b261673f79ba80c976f476713f0380e4ea22f9aac4"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_invalid_jwt/http-traffic.json",
+      "git_blob": "a3962e5e79518b8e954c721f04baf0d0e33aedfd",
+      "bytes": 3703,
+      "sha256": "090bc9acbf54e382317d5d2ba7f94201235ed1e4fa0eab9574bd71d632d14e8f"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_invalid_jwt/test-case.json",
+      "git_blob": "c4fe9c61dc2890ae7024b5c4120f3231eccfa390",
+      "bytes": 253,
+      "sha256": "a2d89b6a54fc8fb709e2114bbaf3fe364af8e30d6db4d8e162b105d86e4f37c6"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_profile/env.json",
+      "git_blob": "4e6f75b9f20e5358591bb37b7ab96d60a2352d7b",
+      "bytes": 73,
+      "sha256": "12fe94e8229e867dac94a00c5df10323955912939910ba0e6fa0ce381b4e4352"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_profile/fs/home/.aws/config",
+      "git_blob": "e3b9ce55b1cb2fd31719f59d225ef6187ab75006",
+      "bytes": 98,
+      "sha256": "a5ecfb2e9ba60f72584a177f334ae2044c29a6e750fefc7e17288a3dda909166"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_profile/fs/token.jwt",
+      "git_blob": "91d25a8217d358db0187e655aad7981456c931eb",
+      "bytes": 10,
+      "sha256": "1bc6594e9a313bf218da910b0244d07d58f6a0e8ce0a1148cd376db876f315c7"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_profile/http-traffic.json",
+      "git_blob": "076b5a0ec6df930730c23e639b6bffc16b97236c",
+      "bytes": 4434,
+      "sha256": "237b0a29778d67d4678f054712cf62678197d98eb8211f2eb30b4a42535e1a1e"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_profile/test-case.json",
+      "git_blob": "9536ea490167b7165a5c23c580015a6c3b227769",
+      "bytes": 346,
+      "sha256": "0c8aabfa308aabb7ade95ee58011d86bc15041d3b39a32cb348e57229aa84c31"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_source_profile/env.json",
+      "git_blob": "4e6f75b9f20e5358591bb37b7ab96d60a2352d7b",
+      "bytes": 73,
+      "sha256": "12fe94e8229e867dac94a00c5df10323955912939910ba0e6fa0ce381b4e4352"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_source_profile/fs/home/.aws/config",
+      "git_blob": "902524f6bca218d9d9173fd40b3b1ff4770bcbf6",
+      "bytes": 177,
+      "sha256": "71668c8cd3b88506c446641232d5b80bbba94eae494d5bfd41ff95cd3da4c82b"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_source_profile/fs/token.jwt",
+      "git_blob": "91d25a8217d358db0187e655aad7981456c931eb",
+      "bytes": 10,
+      "sha256": "1bc6594e9a313bf218da910b0244d07d58f6a0e8ce0a1148cd376db876f315c7"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_source_profile/http-traffic.json",
+      "git_blob": "b7b5708380c56d04b25c189a7da19be0046b1401",
+      "bytes": 9069,
+      "sha256": "be3703fab02eeb904bb6affb47f00ad1bde5e6b61db665a1c30c8bcabcf6adad"
+    },
+    {
+      "path": "test-data/default-credential-provider-chain/web_identity_token_source_profile/test-case.json",
+      "git_blob": "87724dc426d6b60d4b10a829a7e64f0e095ad147",
+      "bytes": 336,
+      "sha256": "e3e71723bbf512f4b3e633e09f689f77f053622f4052bf060c9ff3f3d2d0c144"
+    },
+    {
+      "path": "test-data/default-token-provider-chain/profile_keys/env.json",
+      "git_blob": "f86eb48eb68f401a127c5b66a6477adc60331c6b",
+      "bytes": 24,
+      "sha256": "9fc2210b628ac14eb64d6582f53eb0f89a2a5125c681b3e66bee49a36a7a4cc8"
+    },
+    {
+      "path": "test-data/default-token-provider-chain/profile_keys/fs/home/.aws/config",
+      "git_blob": "8600cea36823398017b7b4a350a99a75e8914172",
+      "bytes": 155,
+      "sha256": "e51d2bac311c5b3a2e5b24fa0f3b3b026d79d650f23a1637157cac3e05280bb9"
+    },
+    {
+      "path": "test-data/default-token-provider-chain/profile_keys/fs/home/.aws/sso/cache/d12208e38164f558a1d06c99432ab77dbb346c45.json",
+      "git_blob": "29c690fd09c24075c0d495ef750b321a2bbd29c3",
+      "bytes": 123,
+      "sha256": "b59fa4209aa33f6a1dcc9fa7e1d02d5ed991bf633879169313796e0b102b05b1"
+    },
+    {
+      "path": "test-data/default-token-provider-chain/profile_keys/http-traffic.json",
+      "git_blob": "51c2a6c20d70dfde21034530910af91ac672507a",
+      "bytes": 106,
+      "sha256": "13e44cbcc57ed74180fde867d94f0a3a71570bfeee657540118bb1b0fd3611c6"
+    },
+    {
+      "path": "test-data/default-token-provider-chain/profile_keys/test-case.json",
+      "git_blob": "547c0dfe72d54412d3632111c29f724a2600c6bd",
+      "bytes": 199,
+      "sha256": "4f1a1e57d7724b10aa2543a89c4719cc2d03667f8383a71555ff737c391025c2"
+    },
+    {
+      "path": "test-data/default-token-provider-chain/profile_keys_case_insensitive/env.json",
+      "git_blob": "f86eb48eb68f401a127c5b66a6477adc60331c6b",
+      "bytes": 24,
+      "sha256": "9fc2210b628ac14eb64d6582f53eb0f89a2a5125c681b3e66bee49a36a7a4cc8"
+    },
+    {
+      "path": "test-data/default-token-provider-chain/profile_keys_case_insensitive/fs/home/.aws/config",
+      "git_blob": "170ea69cf5990f1fa0f9bd9bc152a688ae5ed95c",
+      "bytes": 155,
+      "sha256": "7a3d3bab7a878e38334611282503dd6728ffed5b1c05d3e81218888d7d95e8ce"
+    },
+    {
+      "path": "test-data/default-token-provider-chain/profile_keys_case_insensitive/fs/home/.aws/sso/cache/d12208e38164f558a1d06c99432ab77dbb346c45.json",
+      "git_blob": "29c690fd09c24075c0d495ef750b321a2bbd29c3",
+      "bytes": 123,
+      "sha256": "b59fa4209aa33f6a1dcc9fa7e1d02d5ed991bf633879169313796e0b102b05b1"
+    },
+    {
+      "path": "test-data/default-token-provider-chain/profile_keys_case_insensitive/http-traffic.json",
+      "git_blob": "66531cb7fb6bb83b002299a1465bd2e1dfc63fec",
+      "bytes": 133,
+      "sha256": "b3b01db8474843db4e0376e1c09cba7acdca8f3f621591c592f8e5466bfffd0d"
+    },
+    {
+      "path": "test-data/default-token-provider-chain/profile_keys_case_insensitive/test-case.json",
+      "git_blob": "8e0930f2ac1bee1ad89b964df0cac55a64bbcd01",
+      "bytes": 243,
+      "sha256": "e019cfd6e12a28bbb46405df84ba5166e5b79f86fde91c51cb1caab35fe04902"
+    },
+    {
+      "path": "test-data/default-token-provider-chain/profile_name/env.json",
+      "git_blob": "95de9aa00814132a3e25e369356d3452f3de7554",
+      "bytes": 58,
+      "sha256": "350ad030817b7fd23c7025cc021da69a8fa8fbc4e880f6a2b3dfb0251b419d01"
+    },
+    {
+      "path": "test-data/default-token-provider-chain/profile_name/fs/home/.aws/config",
+      "git_blob": "3be74934faf15d703718e149194eb83ae329633e",
+      "bytes": 347,
+      "sha256": "258d157a02a69002385a856df3895893e3be6a5baaf4d91deec76ce37366ceb1"
+    },
+    {
+      "path": "test-data/default-token-provider-chain/profile_name/fs/home/.aws/sso/cache/29faa2f70ab0f58f60e284d585d95865572f5cbd.json",
+      "git_blob": "29c690fd09c24075c0d495ef750b321a2bbd29c3",
+      "bytes": 123,
+      "sha256": "b59fa4209aa33f6a1dcc9fa7e1d02d5ed991bf633879169313796e0b102b05b1"
+    },
+    {
+      "path": "test-data/default-token-provider-chain/profile_name/http-traffic.json",
+      "git_blob": "e73bae7f4a7c2d282701a02020af64a446a4fac5",
+      "bytes": 114,
+      "sha256": "a8da8cbc15ea0c73694327cdf6ca7a911570e89da80eab58b05797926046bd7f"
+    },
+    {
+      "path": "test-data/default-token-provider-chain/profile_name/test-case.json",
+      "git_blob": "169e400f66d4d1541511f5c7b14dbdf7407e28ff",
+      "bytes": 207,
+      "sha256": "00e892014113ca8cc5e5be8b7f06e2aab2166e5b870b793e6414d5cd5958352b"
+    },
+    {
+      "path": "test-data/ecs-tests.json",
+      "git_blob": "10a040bf4a267276ce378b0c52a2c9021d2befa3",
+      "bytes": 2580,
+      "sha256": "a8c3c6c81e4c2b6cec0351bd87d242e54eab3dfcb726416771eeece3d8129e2b"
+    },
+    {
+      "path": "test-data/imds-config/imds-endpoint-tests.json",
+      "git_blob": "a0bc1c9201be0959b02d404647bb620dd19646ab",
+      "bytes": 3827,
+      "sha256": "3b534d0bfa4f392a37ddd4b01897f071ec29c2102b16c1e4dd87382be70dc2f4"
+    },
+    {
+      "path": "test-data/login-provider-test-cases.json",
+      "git_blob": "6c71b52016598bcd102d6fc1f36e30f82024eb2f",
+      "bytes": 15006,
+      "sha256": "5290e7cbb9b8735816275356c39de2a106a273d5b829142285e346df90f575a5"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_global_env_url/env.json",
+      "git_blob": "806fe9c81c6111deb4624802c69d031bb2ead60e",
+      "bytes": 78,
+      "sha256": "e2368552fcd26b2f4bbdc8b811a3a01c3715401fc81b57a2a9cadf0f2f0e5692"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_global_env_url/fs/home/.aws/config",
+      "git_blob": "a7e5ed58158e3ac104945bc0aeefdf42685dff01",
+      "bytes": 142,
+      "sha256": "85c0097b8234c69964eb83856a25295d531a6096518b30ac0136c056d82c7e45"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_global_env_url/fs/home/.aws/credentials",
+      "git_blob": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_global_env_url/http-traffic.json",
+      "git_blob": "b567876d56499a955b6d5f16250c31ac0a0e566d",
+      "bytes": 3427,
+      "sha256": "5c2d48f113d4645488d4e11cf01dd04ea79bd3d80ac7fd8ba7646fa3768cbadc"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_global_env_url/test-case.json",
+      "git_blob": "75cc3d62cee32a4924dd18ac51656319ab1d9f7b",
+      "bytes": 332,
+      "sha256": "83aef6210c93f90ce7a25683b73a460f384bfc4bdb5ccdd869d9073a7d01fef0"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_global_profile_url/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_global_profile_url/fs/home/.aws/config",
+      "git_blob": "a00d07b3b55248ceeb6389e9d2d0d8914957c174",
+      "bytes": 192,
+      "sha256": "56f37abf98c2fc929389a2977c2b2110a27cab9fe4757899ad4d5336e5833121"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_global_profile_url/fs/home/.aws/credentials",
+      "git_blob": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_global_profile_url/http-traffic.json",
+      "git_blob": "44fe3946c16a7e4d8d8ee154f2b3b8e457061d32",
+      "bytes": 3435,
+      "sha256": "7ff7b72838a69a2ff80e55317af149553b96997960409cdaa84d06facaa0d19d"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_global_profile_url/test-case.json",
+      "git_blob": "0f2172ffb0204cd5c8513475cd788db6aaf54280",
+      "bytes": 328,
+      "sha256": "2c688f97c0793313d7e813fc0c24030eb8d2e699d2dda7cfb9530c465f4e47f7"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_service_env_url/env.json",
+      "git_blob": "dfb5bc964801440409f792969c6dc1c0622a75ef",
+      "bytes": 79,
+      "sha256": "62c11ab956eef207f0441acba2e16a0a170ffe94ebddba54bf05dcac35d53017"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_service_env_url/fs/home/.aws/config",
+      "git_blob": "a7e5ed58158e3ac104945bc0aeefdf42685dff01",
+      "bytes": 142,
+      "sha256": "85c0097b8234c69964eb83856a25295d531a6096518b30ac0136c056d82c7e45"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_service_env_url/fs/home/.aws/credentials",
+      "git_blob": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_service_env_url/http-traffic.json",
+      "git_blob": "1bb9861932fb891cbc48912ad5c312c30b533034",
+      "bytes": 3421,
+      "sha256": "b259d1880bbba733296e6bd3aefe9c57986699c7b2c6bb9d2f5c78f282673c1a"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_service_env_url/test-case.json",
+      "git_blob": "cfc1f8b0d6e68a2251e2c1e80c3c81a67a7eaf28",
+      "bytes": 337,
+      "sha256": "ae6cc42be5d4cf36856e2ba9f9d3831e71c1938e3dfd47fc9812248ba85c04c4"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_service_profile_url/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_service_profile_url/fs/home/.aws/config",
+      "git_blob": "8b102c3b81475c4d30dafd1f205f090a4c075afb",
+      "bytes": 246,
+      "sha256": "bb34a0b5accd7b09635c7e03387771a2af7007b5a72ead6d1c8d749cc16aee3b"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_service_profile_url/fs/home/.aws/credentials",
+      "git_blob": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_service_profile_url/http-traffic.json",
+      "git_blob": "3c813a1a29a4f2647d233f775e83f696e02fdb28",
+      "bytes": 3444,
+      "sha256": "e9d9cde4c3b66f55cd68760f0363cb632c5af74e1f2ff0f555d0d0a2b487b45d"
+    },
+    {
+      "path": "test-data/profile-provider/assume_role_override_service_profile_url/test-case.json",
+      "git_blob": "f17f421066c752057693b7398d4379886a0537ab",
+      "bytes": 338,
+      "sha256": "7385f210c0b80f88b19635298eb181c62a2101007d95ad809eb09baa4b0b365f"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process/fs/home/.aws/config",
+      "git_blob": "9811adfbd14e1ab03086f53da3c514e40e3df612",
+      "bytes": 571,
+      "sha256": "57899dfdc264179640c99c7869a7f1ffd484c668c94ad14e5fc9dda2a3118171"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process/fs/home/.aws/credentials",
+      "git_blob": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process/http-traffic.json",
+      "git_blob": "e7ade3e074db627039c3bf3d17379bc8d47a8eb5",
+      "bytes": 86,
+      "sha256": "ff39994341f2b7136a4c34070f05da03bad4a49b1c6f0b239d2e152dd4d70c66"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process/test-case.json",
+      "git_blob": "8427a18944f739dd5296f3adce51ab6ec7dc9e90",
+      "bytes": 332,
+      "sha256": "5a5d1aa6827244b2255d596ce4a38e91e41e14f4df0a449b44a37ac510bc9267"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process_account_id_fallback/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process_account_id_fallback/fs/home/.aws/config",
+      "git_blob": "0eddabc62f5c9ba947dd55638c4a8cfda9ec6f1e",
+      "bytes": 478,
+      "sha256": "0e8a57e55b884513b5dc70fbb019dab7edc8f1e9bfdb8df8e9612db7d6fd887b"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process_account_id_fallback/fs/home/.aws/credentials",
+      "git_blob": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process_account_id_fallback/http-traffic.json",
+      "git_blob": "0d947ef869e6e072dafd76e362be1f9c355bc44c",
+      "bytes": 106,
+      "sha256": "0d2e96c1389da08d009bfa641e8f75a008d481372f820e6cbfea8199fc571047"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process_account_id_fallback/test-case.json",
+      "git_blob": "10f1746d30a451958140bfb90322fe21a1bd3168",
+      "bytes": 391,
+      "sha256": "208d7936e46c171d0ae04f727f140f928870ea0f8d349f32169ecf6dd54c2e76"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process_failure/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process_failure/fs/home/.aws/config",
+      "git_blob": "13f1cd1a6c44bf29863b302c993297a2b692b0aa",
+      "bytes": 95,
+      "sha256": "4e16bc9a750ccd5ce59ffefdac2c4d9f81da2183fd4281954caf44d9806f2e2c"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process_failure/fs/home/.aws/credentials",
+      "git_blob": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process_failure/http-traffic.json",
+      "git_blob": "e7ade3e074db627039c3bf3d17379bc8d47a8eb5",
+      "bytes": 86,
+      "sha256": "ff39994341f2b7136a4c34070f05da03bad4a49b1c6f0b239d2e152dd4d70c66"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process_failure/test-case.json",
+      "git_blob": "16b75a9476e79a419e8acffa02e9cf2822f7aa36",
+      "bytes": 304,
+      "sha256": "4c321c208af7c674a5a6234b31054428e8a245173c440427a89b9c46a321d7de"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process_invalid/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process_invalid/fs/home/.aws/config",
+      "git_blob": "f42737c30c75f4769948cd02eb1555e7032b6dff",
+      "bytes": 108,
+      "sha256": "de914ca034c7027fd9f90e96b683f5831de2cb268220ba8b575049bf7a40dd06"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process_invalid/fs/home/.aws/credentials",
+      "git_blob": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process_invalid/http-traffic.json",
+      "git_blob": "e7ade3e074db627039c3bf3d17379bc8d47a8eb5",
+      "bytes": 86,
+      "sha256": "ff39994341f2b7136a4c34070f05da03bad4a49b1c6f0b239d2e152dd4d70c66"
+    },
+    {
+      "path": "test-data/profile-provider/credential_process_invalid/test-case.json",
+      "git_blob": "795134a98c7cee874c139bee4406d75ceee7f7c6",
+      "bytes": 272,
+      "sha256": "cf3e297f47f16390b96be8f14064df395dca2c422fdcea27c4646fb126889a84"
+    },
+    {
+      "path": "test-data/profile-provider/e2e_assume_role/env.json",
+      "git_blob": "d25d3cebf852340df9aa98f9433a8ed58b04aefc",
+      "bytes": 122,
+      "sha256": "71458260cea6d8238cfbe20bcb39ec3d33e105f830958aea7c4077b2f218c584"
+    },
+    {
+      "path": "test-data/profile-provider/e2e_assume_role/fs/home/.aws/config",
+      "git_blob": "a7e5ed58158e3ac104945bc0aeefdf42685dff01",
+      "bytes": 142,
+      "sha256": "85c0097b8234c69964eb83856a25295d531a6096518b30ac0136c056d82c7e45"
+    },
+    {
+      "path": "test-data/profile-provider/e2e_assume_role/fs/home/.aws/credentials",
+      "git_blob": "c36049f418cc08f8f2c0c65d28836df1cb29c32c",
+      "bytes": 95,
+      "sha256": "cad261edb0131559457aec809fe6b91eaeb3b3161b46eda255319b3ac6951c5b"
+    },
+    {
+      "path": "test-data/profile-provider/e2e_assume_role/http-traffic.json",
+      "git_blob": "b30b6881590ab91e60b56dfc4b626f466bb171ee",
+      "bytes": 3437,
+      "sha256": "80a4b7292bd207b99c24233d1d592e8cf8950d1cfc82fec728dfa580d80b89df"
+    },
+    {
+      "path": "test-data/profile-provider/e2e_assume_role/test-case.json",
+      "git_blob": "7b73863d629b538c4f40c8d4df800f367e12b527",
+      "bytes": 308,
+      "sha256": "d3b84bae9a0f47e5afe8d0c3a210140c53b92399f820150b2023b25cd009a803"
+    },
+    {
+      "path": "test-data/profile-provider/e2e_fips_and_dual_stack_sts/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/profile-provider/e2e_fips_and_dual_stack_sts/fs/home/.aws/config",
+      "git_blob": "17d486343792bc2d4bd0eb79f0c1fc476233a692",
+      "bytes": 197,
+      "sha256": "116dfb2210bab3460777a1bdf8b9903c6ad6a960bc24b7d3fb3f3278b37b83bd"
+    },
+    {
+      "path": "test-data/profile-provider/e2e_fips_and_dual_stack_sts/fs/home/.aws/credentials",
+      "git_blob": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "test-data/profile-provider/e2e_fips_and_dual_stack_sts/http-traffic.json",
+      "git_blob": "000b74b8e20c207b0989f1c7326be612fccf6e2f",
+      "bytes": 3435,
+      "sha256": "c60775ed1f0fe66956d9b05ec05d819f10863b5505ed68631a1af78377874847"
+    },
+    {
+      "path": "test-data/profile-provider/e2e_fips_and_dual_stack_sts/test-case.json",
+      "git_blob": "8bad7727278c39e103b1608129b550b92b9a4256",
+      "bytes": 351,
+      "sha256": "b69b1cca5b295636f390b9f2a8fac56ea29a877e460eccdfd46914d4c8620b6f"
+    },
+    {
+      "path": "test-data/profile-provider/empty_config/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/profile-provider/empty_config/http-traffic.json",
+      "git_blob": "0d325c157c792fd08081469b62d2be71ac9113af",
+      "bytes": 119,
+      "sha256": "88ca6792a373fd5f8d8c0b626a2b1a7b9d4ee49a8a9a03736eebad7a3d5c4f3d"
+    },
+    {
+      "path": "test-data/profile-provider/empty_config/test-case.json",
+      "git_blob": "d954e883ab6fc83fe3ea0c8c919db7aec134d2bb",
+      "bytes": 146,
+      "sha256": "ddeaa1f57553e6c2fddd008337ca43b3f6cd8421777dcd13f047cfa95f206d2b"
+    },
+    {
+      "path": "test-data/profile-provider/invalid_config/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/profile-provider/invalid_config/fs/home/.aws/config",
+      "git_blob": "eba61765c136d34332d5ba5f91e1c1fe0b099b0c",
+      "bytes": 57,
+      "sha256": "08f09e0148923a0e3deae49299950efbef8a72ab316d42b3b09c27d5e32aee1d"
+    },
+    {
+      "path": "test-data/profile-provider/invalid_config/http-traffic.json",
+      "git_blob": "b8770a0948eb92167a11537030ab65e553060839",
+      "bytes": 121,
+      "sha256": "3db11be0204d28295a63da1cfdd3556cd4cdb413a89759a3cd2bb71841c3c3d4"
+    },
+    {
+      "path": "test-data/profile-provider/invalid_config/test-case.json",
+      "git_blob": "21bce59c31c9179ea8cf02660ebc538d58f7efde",
+      "bytes": 134,
+      "sha256": "f376df761d08556c62b558ac80f3bbc5dbf6f528162b9f925efa79085c39dba8"
+    },
+    {
+      "path": "test-data/profile-provider/invalid_sso_credentials_config/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/profile-provider/invalid_sso_credentials_config/fs/home/.aws/config",
+      "git_blob": "3cf147e2652da8e161242aa0e23679491a98b28b",
+      "bytes": 148,
+      "sha256": "e75c036367e40ff337ca83c462dc1c6e5d67ef5d4c9160915fb0e450dd18ec3b"
+    },
+    {
+      "path": "test-data/profile-provider/invalid_sso_credentials_config/http-traffic.json",
+      "git_blob": "b8770a0948eb92167a11537030ab65e553060839",
+      "bytes": 121,
+      "sha256": "3db11be0204d28295a63da1cfdd3556cd4cdb413a89759a3cd2bb71841c3c3d4"
+    },
+    {
+      "path": "test-data/profile-provider/invalid_sso_credentials_config/test-case.json",
+      "git_blob": "bc67c4ea7b3e2da0b9d072e298a64dc954e1f948",
+      "bytes": 238,
+      "sha256": "cab21b3cd61a2725e0858ac9b3571809b97605d638099aacb897f4107bc7d67b"
+    },
+    {
+      "path": "test-data/profile-provider/region_override/env.json",
+      "git_blob": "b4c76e3c811832497bd0a9a7f73fd9e3352f8bcb",
+      "bytes": 51,
+      "sha256": "e64a30a71a7c6b28ff99bdacbd69344ae440a3ee63a81a28602bda482a318347"
+    },
+    {
+      "path": "test-data/profile-provider/region_override/fs/home/.aws/config",
+      "git_blob": "c21d2474732e99d42acd909978bba7482f847251",
+      "bytes": 197,
+      "sha256": "7ea989633662efae8be2367e7490854b660421873bee0b54054e5892f653ed52"
+    },
+    {
+      "path": "test-data/profile-provider/region_override/fs/home/.aws/credentials",
+      "git_blob": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "test-data/profile-provider/region_override/http-traffic.json",
+      "git_blob": "dd8b401e9a5716e54a88427e31e5e027a132bec2",
+      "bytes": 3446,
+      "sha256": "ca002ddd5788d8819293653ab0d36c1b08276d48004c0f690cd132b6115979f0"
+    },
+    {
+      "path": "test-data/profile-provider/region_override/test-case.json",
+      "git_blob": "2144cba97e94bb1f19ed2204e3cde29bcbbfa370",
+      "bytes": 347,
+      "sha256": "479b96756608bf273e0f96c637898747467979e0ed78bbe83973bda002ced4e7"
+    },
+    {
+      "path": "test-data/profile-provider/retry_on_error/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/profile-provider/retry_on_error/fs/home/.aws/config",
+      "git_blob": "a7e5ed58158e3ac104945bc0aeefdf42685dff01",
+      "bytes": 142,
+      "sha256": "85c0097b8234c69964eb83856a25295d531a6096518b30ac0136c056d82c7e45"
+    },
+    {
+      "path": "test-data/profile-provider/retry_on_error/fs/home/.aws/credentials",
+      "git_blob": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "test-data/profile-provider/retry_on_error/http-traffic.json",
+      "git_blob": "8ffa30809c3a4fad30868f2d6320a92dcfb449ec",
+      "bytes": 5903,
+      "sha256": "fb487c1bf36350feb51c8d40a8372fc32ed7f40695652acaf110f0bb6de9cc1d"
+    },
+    {
+      "path": "test-data/profile-provider/retry_on_error/test-case.json",
+      "git_blob": "35a6a7b722dbe5480b5284ce56c07a6f24279c5f",
+      "bytes": 307,
+      "sha256": "4ee80c9677233bed74d650bb038ee743e43bcd6e8726a3c5a9866e19dbd71f1d"
+    },
+    {
+      "path": "test-data/profile-provider/sso_credentials/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/profile-provider/sso_credentials/fs/home/.aws/config",
+      "git_blob": "91939db9255779843e4a8e3efcd00c3d9d6ad441",
+      "bytes": 205,
+      "sha256": "b00752fa7dc3e01d91e5c2502edbd648ece5a9f5e87af9d47852393e1a5fe412"
+    },
+    {
+      "path": "test-data/profile-provider/sso_credentials/fs/home/.aws/credentials",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-data/profile-provider/sso_credentials/fs/home/.aws/sso/cache/34c6fceca75e456f25e7e99531e2425c6c1de443.json",
+      "git_blob": "06853e98f985a4821622c1707102429a17f0bf4f",
+      "bytes": 350,
+      "sha256": "2703361dcbacaeb8212e650e8b2f91b4e303bb67457fb76d439c9393c05b4d41"
+    },
+    {
+      "path": "test-data/profile-provider/sso_credentials/http-traffic.json",
+      "git_blob": "e92f6fafd39eb98bade23bc846c09fb6a2f1fc74",
+      "bytes": 2074,
+      "sha256": "6631a618a116ce878fcc9b836a2371bbda73d7f2fce0ad82f0d8829972d721e3"
+    },
+    {
+      "path": "test-data/profile-provider/sso_credentials/test-case.json",
+      "git_blob": "e48324f8e98af00651f12d87774433d822dc04ca",
+      "bytes": 334,
+      "sha256": "af1048a964863acf2c775d500557e0099aed7e014ac6c6e8ef9150a652d3068b"
+    },
+    {
+      "path": "test-data/profile-provider/sso_override_global_env_url/env.json",
+      "git_blob": "806fe9c81c6111deb4624802c69d031bb2ead60e",
+      "bytes": 78,
+      "sha256": "e2368552fcd26b2f4bbdc8b811a3a01c3715401fc81b57a2a9cadf0f2f0e5692"
+    },
+    {
+      "path": "test-data/profile-provider/sso_override_global_env_url/fs/home/.aws/config",
+      "git_blob": "91939db9255779843e4a8e3efcd00c3d9d6ad441",
+      "bytes": 205,
+      "sha256": "b00752fa7dc3e01d91e5c2502edbd648ece5a9f5e87af9d47852393e1a5fe412"
+    },
+    {
+      "path": "test-data/profile-provider/sso_override_global_env_url/fs/home/.aws/credentials",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-data/profile-provider/sso_override_global_env_url/fs/home/.aws/sso/cache/34c6fceca75e456f25e7e99531e2425c6c1de443.json",
+      "git_blob": "06853e98f985a4821622c1707102429a17f0bf4f",
+      "bytes": 350,
+      "sha256": "2703361dcbacaeb8212e650e8b2f91b4e303bb67457fb76d439c9393c05b4d41"
+    },
+    {
+      "path": "test-data/profile-provider/sso_override_global_env_url/http-traffic.json",
+      "git_blob": "ae5f568852507b2fb7165ba99b117b8e87011006",
+      "bytes": 2051,
+      "sha256": "58da916147fb173913c82301a8a06336cdced8069d676196c24d500be259abf0"
+    },
+    {
+      "path": "test-data/profile-provider/sso_override_global_env_url/test-case.json",
+      "git_blob": "d95939b2043fb4454f9cc54d2d9b66e4e465ecb3",
+      "bytes": 371,
+      "sha256": "34e3e2d7b3dfb4cb61bfd128fd990528e56a18686af91a2e63e11060f12c35c1"
+    },
+    {
+      "path": "test-data/profile-provider/sso_token/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/profile-provider/sso_token/fs/env.json",
+      "git_blob": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "test-data/profile-provider/sso_token/fs/home/.aws/config",
+      "git_blob": "3cf147e2652da8e161242aa0e23679491a98b28b",
+      "bytes": 148,
+      "sha256": "e75c036367e40ff337ca83c462dc1c6e5d67ef5d4c9160915fb0e450dd18ec3b"
+    },
+    {
+      "path": "test-data/profile-provider/sso_token/fs/home/.aws/credentials",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-data/profile-provider/sso_token/fs/home/.aws/sso/cache/34c6fceca75e456f25e7e99531e2425c6c1de443.json",
+      "git_blob": "06853e98f985a4821622c1707102429a17f0bf4f",
+      "bytes": 350,
+      "sha256": "2703361dcbacaeb8212e650e8b2f91b4e303bb67457fb76d439c9393c05b4d41"
+    },
+    {
+      "path": "test-data/profile-provider/sso_token/fs/http-traffic.json",
+      "git_blob": "e92f6fafd39eb98bade23bc846c09fb6a2f1fc74",
+      "bytes": 2074,
+      "sha256": "6631a618a116ce878fcc9b836a2371bbda73d7f2fce0ad82f0d8829972d721e3"
+    },
+    {
+      "path": "test-data/profile-provider/sso_token/fs/test-case.json",
+      "git_blob": "7ff24f62a8323e696cefef07682533c5ed6b06c6",
+      "bytes": 232,
+      "sha256": "a61ddf8758b6b50eb66ea6447706c1b78ff52d6ef004cb310e41f3260c108e2a"
+    },
+    {
+      "path": "test-data/profile-provider/sso_token/http-traffic.json",
+      "git_blob": "6a053d6a3bb55bb357bbc378355260ddad36f694",
+      "bytes": 77,
+      "sha256": "3286d4bbc67e04942af657b22f2107ac4b37147430d3e590cd3d5650e4ed7bab"
+    },
+    {
+      "path": "test-data/profile-provider/sso_token/test-case.json",
+      "git_blob": "2a0e6c87d265e2b5be92cd92bc23fee62bbebf8b",
+      "bytes": 371,
+      "sha256": "db964f61a1d41498df78a6e755a25020c7c212f34d8b571ff327537f177a82a5"
+    },
+    {
+      "path": "integration-tests/eks-credentials/.npmignore",
+      "git_blob": "c1d6d45dcf388eb07c3879d309dd5e4fb06d26ef",
+      "bytes": 65,
+      "sha256": "8610ff2e37f5501913393f902e5bb07d0c0da081604f606945e1129b6f17367f"
+    },
+    {
+      "path": "integration-tests/eks-credentials/README.md",
+      "git_blob": "a37f902e3cae6c19912c86ddb2fe2f532bef7af5",
+      "bytes": 710,
+      "sha256": "4b65bb1f2e967e14097fbf51627b86582378de544e486fdc3b9ea80f6064f065"
+    },
+    {
+      "path": "integration-tests/eks-credentials/bin/eks-credentials.ts",
+      "git_blob": "b2de8294b06e33ec2fe3d25537fdfb7573fea97d",
+      "bytes": 1090,
+      "sha256": "1163994406017b47fa9f12aa41197e951d02403f8950a9a24b27cfd15083c87b"
+    },
+    {
+      "path": "integration-tests/eks-credentials/cdk.json",
+      "git_blob": "a7f92ed321f3348aab2f4e3a1d6b549abcdbe1ac",
+      "bytes": 87,
+      "sha256": "32d1da15348417626e759607873a2c197b0490fb28e30b7b41ee7fa4551f178b"
+    },
+    {
+      "path": "integration-tests/eks-credentials/jest.config.js",
+      "git_blob": "d9564adce4deba45fcfb50048efbaeffa8d7cb66",
+      "bytes": 274,
+      "sha256": "6c8c109f8856fc54d3d1ae4af843dcb95c47ea9f3a317749cc431e60ce323f5d"
+    },
+    {
+      "path": "integration-tests/eks-credentials/lib/eks-credentials-stack.ts",
+      "git_blob": "33966d8e670dddda2a85bb37eaae7f4abf7df1df",
+      "bytes": 3869,
+      "sha256": "6a8d5c533222a608d31276aed1b6941c132d2a7f8a3460fa4110d7463f9c225e"
+    },
+    {
+      "path": "integration-tests/eks-credentials/package-lock.json",
+      "git_blob": "845889f40f432beacd764b7df459773d20e8efe0",
+      "bytes": 18027,
+      "sha256": "58319039c3c17d8bdcb4ab057a92ad1480e095e1b29fe8d784c11d52fa008e23"
+    },
+    {
+      "path": "integration-tests/eks-credentials/package.json",
+      "git_blob": "c433ea8e09292c59e82acd6038ccbec62ad47b96",
+      "bytes": 491,
+      "sha256": "9eb4ef48ac3d0e4e12cf1a21a1d1269046af45640d4c84177e4c5da31f84bd68"
+    },
+    {
+      "path": "integration-tests/eks-credentials/test.rs",
+      "git_blob": "a3ef1c4d051e3b536fce8b68150848061975bd4d",
+      "bytes": 537,
+      "sha256": "6a108dda45a5a78a7cc318b345c83353e89ec2b3f83bbe0ff3a1981c4e322e60"
+    },
+    {
+      "path": "integration-tests/eks-credentials/tsconfig.json",
+      "git_blob": "9f8e8beabd2331151f877be0cd3cd3b7b316eb8e",
+      "bytes": 650,
+      "sha256": "d0d12209e4c7f93d0ad3412455403789e80e8530767692056e6eece915dd0c3c"
+    },
+    {
+      "path": "fuzz/Cargo.toml",
+      "git_blob": "c738510c92f7e237f594e21375db436220f5101f",
+      "bytes": 562,
+      "sha256": "b7f4289fe4b478e1ab953a3308df6a1cf1be1787ecca63185f343b98d65d36f0"
+    },
+    {
+      "path": "fuzz/fuzz_targets/profile-parser.rs",
+      "git_blob": "ceec6892578e77cd48523a9f837507d00d0b4a49",
+      "bytes": 870,
+      "sha256": "b94a82170476476ec3c787b2210a3b4f08852d3d50d7cd38de26a06efa53c397"
+    }
+  ],
+  "file_count": 247,
+  "total_bytes": 230651,
+  "wall_seconds": 4.166664913005661,
+  "source_executed": false,
+  "public_upstream_test_vectors_only": true,
+  "original_crate_src_matches_git_blobs": true
+}

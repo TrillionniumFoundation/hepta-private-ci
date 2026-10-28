@@ -1,0 +1,24 @@
+{
+  "schema": "hepta-aws-workflow-context-repair-v1",
+  "observed_source": "67562d4fa3d43e09775129faf3a03b86b4cb4a1a",
+  "observed_tree": "ff62a77d2e1240eddb4b82a269ec35f196dd542b",
+  "run_id": 40742189167,
+  "run_conclusion": "failure",
+  "actual_jobs": 0,
+  "planned_scenarios": 5,
+  "unobserved_scenarios": 5,
+  "native_tests_observed": 0,
+  "diagnosis_basis": "job-level runner context is forbidden by the official GitHub context availability table; this is a source diagnosis, not a retrieved server annotation",
+  "reference": "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#context-availability",
+  "old_workflow_sha256": "8cbfd2b8e239c8a6f34007296ef6545157e578a6d8300a71d9ba10c0f8cc1fa1",
+  "new_workflow_sha256": "f4d4996382ca48849e19e46d69783c2c9abb0e615c653cfcc1c118e7e55df14a",
+  "only_semantic_change": "move the identical target directory expression from job env to both consumer step env mappings",
+  "consumer_steps": [
+    "Run metadata, compiler features, complete discovery and selected cases",
+    "Reconcile all selected identities and retain failures and unknown outcomes"
+  ],
+  "other_yaml_structure_equal": true,
+  "budgets_features_cases_permissions_pins_unchanged": true,
+  "local_native_executed": false,
+  "hosted_acceptance": "NOT_OBSERVED"
+}

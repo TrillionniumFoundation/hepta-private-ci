@@ -1,0 +1,70 @@
+{
+  "schema": "hepta-aws-crypto-source-static-review-v1",
+  "original_files": 319,
+  "proposed_vendor_files": 321,
+  "original_omissions": [
+    "Cargo.lock"
+  ],
+  "existing_files_changed": [
+    "Cargo.toml",
+    "src/login/dpop.rs"
+  ],
+  "new_files": [
+    "BUILD.bazel",
+    "HEPTA_PATCH.md",
+    "src/login/dpop_migration_tests.rs"
+  ],
+  "all_original_provider_feature_definitions_preserved": true,
+  "original_dpop_test_block_byte_identical": true,
+  "published_archives_match_frozen_registry": {
+    "aws-config-1.8.12.crate": {
+      "bytes": 152157,
+      "sha256": "96571e6996817bf3d58f6b569e4b9fd2e9d2fcf9f7424eed07b2ce9bb87535e5"
+    },
+    "aws-sigv4-1.3.7.crate": {
+      "bytes": 95976,
+      "sha256": "69e523e1c4e8e7e8ff219d732988e22bfeae8a1cafdbe6d9eca1546fa080be7c"
+    },
+    "aws-sigv4-1.6.4.crate": {
+      "bytes": 104030,
+      "sha256": "f385da9b7757ed4c8214797ad663ff534fb622006143530aa80e21f8e06ff85c"
+    },
+    "ecdsa-0.17.0.crate": {
+      "bytes": 36763,
+      "sha256": "c0681a4fc24c767085329728d8dfba959af91228aa4610cca4f8ce317ba46ae0"
+    },
+    "elliptic-curve-0.14.3.crate": {
+      "bytes": 51761,
+      "sha256": "900f37e7e18d74a2347389af6cd69e3a30d5cc9e697f40004865679aa75e9c7c"
+    },
+    "getrandom-0.4.3.crate": {
+      "bytes": 52437,
+      "sha256": "300e883d756b2e4ec94e02791f39b04b522276138852cfc41d9fb7e904106099"
+    },
+    "p256-0.14.0.crate": {
+      "bytes": 77479,
+      "sha256": "d2c9239b2dbc807adbbe147e8cf72ea7450c3a0aabe62cb8e75ff4ec22e1f72a"
+    },
+    "rand-0.10.3.crate": {
+      "bytes": 105994,
+      "sha256": "65c9fb96cbc91e3478eaae79a69fcd3f1ae4ad052e471fe6732fff548984b4af"
+    },
+    "signature-3.0.0.crate": {
+      "bytes": 15027,
+      "sha256": "28d567dcbaf0049cb8ac2608a76cd95ff9e4412e1899d389ee400918ca7537f5"
+    }
+  },
+  "sigv4_original_fixture_files_preserved": 808,
+  "workspace_semantic_mutations_only": [
+    "one explicit upstream test member",
+    "exact aws-config and aws-sigv4 versions",
+    "one aws-config path patch"
+  ],
+  "workspace_proposal": {
+    "bytes": 22198,
+    "sha256": "ce69b71ab8f3383e1ad34c7000d1c97ef356a72b6c1615c96d8917441746fb00"
+  },
+  "local_native_execution": false,
+  "compiled_or_native_qualified": false,
+  "bigint_blocker_closed": false
+}

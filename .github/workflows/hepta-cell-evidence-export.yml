@@ -1,0 +1,48 @@
+name: Hepta original Cell evidence export
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-cell-evidence-export.yml
+      - scripts/hepta_ci_artifact_receipts.py
+      - scripts/tests/test_hepta_ci_artifact_receipts.py
+      - qualification/learning-generations/cell-smollm-40607183163-export.json
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-receipts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEPTA_CI_LANE: source-head
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.TESTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exporter controls and exact current source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+          python3 -m unittest -v scripts.tests.test_hepta_ci_artifact_receipts
+      - name: Verify complete original ZIP digests and retain original small receipts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-export-execution.json" --timeout-seconds 780 -- python3 scripts/hepta_ci_artifact_receipts.py --manifest qualification/learning-generations/cell-smollm-40607183163-export.json --output "$RUNNER_TEMP/cell-export"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-original-cell-receipts-40607183163-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/cell-export/
+            ${{ runner.temp }}/cell-export-execution.json*
+          if-no-files-found: error
+          retention-days: 30

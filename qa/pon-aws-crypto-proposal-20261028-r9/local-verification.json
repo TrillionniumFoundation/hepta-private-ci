@@ -1,0 +1,238 @@
+{
+  "schema": "hepta-aws-crypto-local-review-v1",
+  "remote_cas_parent": "682a88a7f847e31ffb6cd5e0a630dd71dde4bfee",
+  "stages": [
+    {
+      "name": "static-source-review",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/hepta_pon_aws_crypto_proposal.py",
+        "static"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.16127741998934653,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/static-source-review.stdout.txt",
+          "bytes": 2254,
+          "sha256": "6e79b6becb43a9a97f8629e37d9d35dc6a7a35f233c26aec3a4bb87052217858"
+        },
+        "stderr": {
+          "path": "local-logs/static-source-review.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "source-and-failure-controls",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_pon_aws_crypto_*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 1.5315593569976045,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/source-and-failure-controls.stdout.txt",
+          "bytes": 171,
+          "sha256": "53e0d71063cb31f1983149a77b7be72603c25c1b61fa7d03231928d75457cd9f"
+        },
+        "stderr": {
+          "path": "local-logs/source-and-failure-controls.stderr.txt",
+          "bytes": 2333,
+          "sha256": "55851eb462972cbb107e4b5ee648e547606090c8e72e9e1443af3ef25a3a2fba"
+        }
+      }
+    },
+    {
+      "name": "existing-source-controls",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_pon_dependency_proposal.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.10348653300025035,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/existing-source-controls.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "local-logs/existing-source-controls.stderr.txt",
+          "bytes": 2312,
+          "sha256": "e16701d960014463fb9cc92244ae97f92d5f18163183cde5c2c2e905fd39dd97"
+        }
+      }
+    },
+    {
+      "name": "structural-preflight",
+      "command": ["python3", "-B", "scripts/hepta_workspace.py"],
+      "exit_code": 0,
+      "wall_seconds": 0.2736324560100911,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/structural-preflight.stdout.txt",
+          "bytes": 76,
+          "sha256": "6a437814142f1071f98664abc8a131c5c26d3dc40521307842b1acda091272f0"
+        },
+        "stderr": {
+          "path": "local-logs/structural-preflight.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "ruff-check",
+      "command": [
+        "/tmp/pure-pon-hepta-python-20261028/bin/ruff",
+        "check",
+        "scripts/hepta_pon_aws_crypto_source.py",
+        "scripts/hepta_pon_aws_crypto_proposal.py",
+        "scripts/test_hepta_pon_aws_crypto_source.py",
+        "scripts/test_hepta_pon_aws_crypto_proposal.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.011927055995329283,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/ruff-check.stdout.txt",
+          "bytes": 19,
+          "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+        },
+        "stderr": {
+          "path": "local-logs/ruff-check.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "ruff-format-check",
+      "command": [
+        "/tmp/pure-pon-hepta-python-20261028/bin/ruff",
+        "format",
+        "--check",
+        "scripts/hepta_pon_aws_crypto_source.py",
+        "scripts/hepta_pon_aws_crypto_proposal.py",
+        "scripts/test_hepta_pon_aws_crypto_source.py",
+        "scripts/test_hepta_pon_aws_crypto_proposal.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.007195390004198998,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/ruff-format-check.stdout.txt",
+          "bytes": 26,
+          "sha256": "177f260a5645724013185e4b140c7045cc39e56c0c97b120f5cb23599f85f0de"
+        },
+        "stderr": {
+          "path": "local-logs/ruff-format-check.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "actionlint",
+      "command": [
+        "/tmp/hepta-actionlint-1.7.12/actionlint",
+        ".github/workflows/hepta-pon-aws-crypto-proposal.yml"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.005247715991572477,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/actionlint.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "local-logs/actionlint.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "source_controls_passed": 12,
+  "existing_source_controls_passed": 13,
+  "structural_preflight_manifests": 196,
+  "structural_preflight_errors": 0,
+  "existing_workflows_byte_unchanged": 87,
+  "new_bootstrap_ast_equals_retained_validated_source_contract": true,
+  "workflow_format_yaml_ast_preserved": true,
+  "production_sources_and_locks_unchanged": true,
+  "deny_policy_and_blob_policy_unchanged": true,
+  "native_or_crypto_tests_executed": false,
+  "cargo_rust_bazel_executed_locally": false,
+  "qualification": false,
+  "bigint_blocker_closed": false,
+  "combined_candidate_base": "541ce975fe20924bb915dace4415fbcf771e8176",
+  "source_payload_commit": "d189b9e6c321fb212f943d3412014e1d4c7ed00e",
+  "generator_parent_commit": "d189b9e6c321fb212f943d3412014e1d4c7ed00e",
+  "new_source_control_tests": 6,
+  "new_hosted_failure_control_tests": 6,
+  "initial_diff_format_failure": {
+    "exit_code": 2,
+    "cause": "Literal single-space blank context lines in newly stored unified diff files",
+    "retained_stdout": {
+      "path": "local-logs/initial-patch-context-diff-check.stdout.raw.json",
+      "encoding": "base64",
+      "decoded_bytes": 889,
+      "decoded_sha256": "806c0afd7026f13687e89bb3d6a7c1024fb44c0aa118a7c898a560983d93e17c"
+    },
+    "retained_stderr": "local-logs/initial-patch-context-diff-check.stderr.txt",
+    "correction": "Standard zero-context unified diffs; full before/after file bytes and source-spec unchanged",
+    "qualification_claim": false
+  },
+  "final_blob_policy": {
+    "scope": "Original policy also run on exact final local commit; post-commit receipt is external to avoid a self-referential source identity.",
+    "repo_staged_receipt": "blob-policy-review.json",
+    "max_bytes": 512000,
+    "allowlist_unchanged": true
+  },
+  "review_commit_split": {
+    "source_payload": "d189b9e6c321fb212f943d3412014e1d4c7ed00e",
+    "source_modules": "348-line pure assembler and 155-line source controls",
+    "generator_modules": "495-line hosted lifecycle and 292-line failure/identity controls",
+    "mechanical_evidence": "Exact upstream archives, original-file identities, unchanged fixtures and raw validation output retained separately from executable logic."
+  },
+  "raw_log_transport_format_failure": {
+    "exit_code": 2,
+    "cause": "The retained original diff diagnostic itself includes literal trailing whitespace.",
+    "retained_stdout": {
+      "path": "local-logs/raw-log-whitespace-diff-check.stdout.raw.json",
+      "encoding": "base64",
+      "decoded_bytes": 1226,
+      "decoded_sha256": "e68bf55e646da282b042536fbadd868ded85720a3923d537db79014db2a8466a"
+    },
+    "retained_stderr": {
+      "path": "local-logs/raw-log-whitespace-diff-check.stderr.raw.json",
+      "encoding": "base64",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "correction": "Lossless base64 JSON stores the exact original diagnostic bytes; decoding verifies the recorded size and SHA-256.",
+    "qualification_claim": false
+  }
+}

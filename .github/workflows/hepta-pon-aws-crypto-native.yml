@@ -1,0 +1,160 @@
+name: Hepta AWS crypto committed native qualification
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "MODULE.bazel.lock"
+      - "codex-rs/aws-auth/**"
+      - "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/**"
+      - "scripts/hepta_pon_aws*.py"
+      - "scripts/test_hepta_pon_aws*.py"
+      - "qa/pon-aws-crypto-resolution-20261028-r11/**"
+      - ".github/workflows/hepta-pon-aws-crypto-native.yml"
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact committed source, equal to the selected workflow SHA
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: hepta-aws-native-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    name: AWS native ${{ matrix.scenario }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario:
+          - provider-default
+          - provider-login-only
+          - auth-default
+          - auth-sigv4a
+          - upstream-sigv4a
+    env:
+      RUSTUP_TOOLCHAIN: "1.96.0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Reject ambiguous or fork sources before checkout
+        id: identity
+        timeout-minutes: 2
+        run: |
+          python3 - <<'PY_SOURCE'
+          import json
+          import os
+          import re
+          from pathlib import Path
+          repository = "TrillionniumFoundation/hepta-private-ci"
+          event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text())
+          if os.environ.get("GITHUB_REPOSITORY") != repository:
+              raise ValueError("unexpected proposal repository")
+          kind = os.environ.get("GITHUB_EVENT_NAME")
+          if kind == "workflow_dispatch":
+              if "pull_request" in event:
+                  raise ValueError("dispatch cannot contain a PR source")
+              source = event.get("inputs", {}).get("source_sha")
+              if source != os.environ.get("GITHUB_SHA"):
+                  raise ValueError("dispatch source must equal the workflow run SHA")
+          elif kind == "pull_request":
+              if event.get("inputs") or event.get("action") not in {"opened", "synchronize", "reopened"}:
+                  raise ValueError("PR source cannot use dispatch inputs or another action")
+              pr = event.get("pull_request", {})
+              head = pr.get("head", {})
+              head_repo = head.get("repo", {})
+              if head_repo.get("full_name") != repository or head_repo.get("fork") is not False:
+                  raise ValueError("proposal rejects fork and foreign-repository PR sources")
+              if pr.get("base", {}).get("repo", {}).get("full_name") != repository:
+                  raise ValueError("proposal PR base repository mismatch")
+              number = event.get("number")
+              if type(number) is not int or number <= 0 or os.environ.get("GITHUB_REF") != f"refs/pull/{number}/merge":
+                  raise ValueError("proposal PR event/ref mismatch")
+              source = head.get("sha")
+          else:
+              raise ValueError("proposal requires workflow_dispatch or a restricted pull_request event")
+          if not isinstance(source, str) or not re.fullmatch(r"[0-9a-f]{40}", source):
+              raise ValueError("source must be one complete lowercase commit SHA")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write("source=" + source + "\n")
+          PY_SOURCE
+      - name: Checkout exact declared source without retained credentials
+        id: checkout
+        timeout-minutes: 3
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ steps.identity.outputs.source }}
+          persist-credentials: false
+      - name: Freeze scenario and original lock identities before tool installation
+        id: prepare
+        timeout-minutes: 3
+        env:
+          EXPECTED_SOURCE_SHA: ${{ steps.identity.outputs.source }}
+          SCENARIO: ${{ matrix.scenario }}
+        run: |
+          python3 -B scripts/hepta_workspace.py
+          python3 -B -m unittest discover -s scripts -p 'test_hepta_pon_aws*.py' -v
+          python3 -B scripts/hepta_pon_aws_native.py prepare \
+            --source "$EXPECTED_SOURCE_SHA" --scenario "$SCENARIO" \
+            --output "$RUNNER_TEMP/aws-crypto-native"
+      - name: Install native prerequisites
+        timeout-minutes: 5
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libssl-dev
+      - name: Install pinned Rust compiler
+        timeout-minutes: 5
+        run: rustup toolchain install 1.96.0 --profile minimal
+      - name: Install original pinned test entry points
+        timeout-minutes: 3
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Run metadata, compiler features, complete discovery and selected cases
+        id: native
+        timeout-minutes: 35
+        env:
+          EXPECTED_SOURCE_SHA: ${{ steps.identity.outputs.source }}
+          CARGO_TARGET_DIR: ${{ runner.temp }}/aws-crypto-target
+        run: |
+          python3 -B scripts/hepta_pon_aws_native.py run \
+            --source "$EXPECTED_SOURCE_SHA" \
+            --output "$RUNNER_TEMP/aws-crypto-native"
+      - name: Reconcile all selected identities and retain failures and unknown outcomes
+        if: always() && steps.prepare.outcome == 'success'
+        timeout-minutes: 3
+        env:
+          EXPECTED_SOURCE_SHA: ${{ steps.identity.outputs.source }}
+          NATIVE_STEP_OUTCOME: ${{ steps.native.outcome }}
+          CARGO_TARGET_DIR: ${{ runner.temp }}/aws-crypto-target
+        run: |
+          python3 -B scripts/hepta_pon_aws_native.py finalize \
+            --source "$EXPECTED_SOURCE_SHA" \
+            --output "$RUNNER_TEMP/aws-crypto-native"
+      - name: Retain complete bounded evidence including public upstream fixtures
+        if: always() && steps.checkout.outcome == 'success'
+        timeout-minutes: 3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: aws-crypto-native-${{ matrix.scenario }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/aws-crypto-native/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Require unchanged committed source
+        if: always() && steps.checkout.outcome == 'success'
+        timeout-minutes: 2
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"

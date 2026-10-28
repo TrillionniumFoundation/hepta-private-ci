@@ -1,0 +1,88 @@
+{
+  "schema": "hepta-r8-evidence-transport-correction-v1",
+  "local_parent": "d9dfaa943beb6eff8ac28e137b3db5f83df3b715",
+  "remote_parent": "682a88a7f847e31ffb6cd5e0a630dd71dde4bfee",
+  "parent_tree": "860d905d3ca40805f053dae7d09bc446dac5285f",
+  "base": "3e9efb15faa261a4dc3ffc3205cd259aaee41a3f",
+  "actual_merge": "f9923f7809bf78de8e54885699b67f3816bf2be2",
+  "original_zip": {
+    "bytes": 1270736,
+    "sha256": "7cb5ad030c5d63ae3dce23cc35a6aeb05d6882571b096ef724afc5a66649f330",
+    "historical_git_blob": "9899846396fef57c538c9964732eda1afec5ad2e",
+    "historical_git_commit": "682a88a7f847e31ffb6cd5e0a630dd71dde4bfee",
+    "repository_path": "qa/pon-dependency-resolution-20261028-r8/artifact-12791038108.zip",
+    "external_archive": "recovery/round8/hepta-pon-dependency-proposal-r8.zip",
+    "external_bytes_equal_previous_repository_copy": true,
+    "removed_from_current_tree": true,
+    "historical_objects_rewritten": false
+  },
+  "payload_members": 23,
+  "payload_bytes": 12634631,
+  "metadata": {
+    "path": "artifact-12791038108-zip-envelope.json",
+    "sha256": "589d650c531fed943a7d8746ca626936be9d2d232b298c1e5bb319cdfebc284d",
+    "every_original_zip_byte_interval_covered": true,
+    "all_23_member_bytes_and_hashes_verified": true
+  },
+  "lossless_single_tar_xz_attempt": {
+    "bytes": 668848,
+    "sha256": "806dcaa58afa6708ccf2f6feebf0812ba48ba5536c5d690749c7f0142af7c6d1",
+    "original_members": 23,
+    "additional_zip_metadata_files": 1,
+    "payload_equivalence_verified": true,
+    "below_existing_512000_byte_limit": false,
+    "checked_in": false
+  },
+  "retained_original_failures": [
+    {
+      "kind": "blob-size",
+      "run_id": 40633626405,
+      "job_id": 122635981941,
+      "conclusion": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40633626405/job/122635981941",
+      "retained_raw_log": "recovery/round8/hepta-682-blob-size-original.log",
+      "bytes": 1276063,
+      "sha256": "2141c68970adf292c65a9fca3b9f1fe3fdbe352839bb4b92e0c6343b6430acf2",
+      "diagnostic_excerpts": [
+        "2026-10-28T04:43:19.0833536Z   BASE_SHA: 3e9efb15faa261a4dc3ffc3205cd259aaee41a3f",
+        "2026-10-28T04:43:19.0833875Z   HEAD_SHA: 682a88a7f847e31ffb6cd5e0a630dd71dde4bfee",
+        "2026-10-28T04:43:19.6021134Z - qa/pon-dependency-resolution-20261028-r8/artifact-12791038108.zip: 1270736 bytes (1241.0 KiB) [binary, blocked]",
+        "2026-10-28T04:43:19.6091488Z - qa/pon-dependency-resolution-20261028-r8/artifact-12791038108.zip: 1270736 bytes > 512000 bytes",
+        "2026-10-28T04:43:19.6104519Z ##[error]Process completed with exit code 1."
+      ]
+    },
+    {
+      "kind": "cargo-deny",
+      "run_id": 40633626405,
+      "job_id": 122636269894,
+      "conclusion": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40633626405/job/122636269894",
+      "retained_raw_log": "recovery/round8/hepta-682-cargo-deny-original.log",
+      "bytes": 182762,
+      "sha256": "e2bf6880ec48e7e6bc7223884a621e941f8f38423b0bbd138a35f943f452527e",
+      "diagnostic_excerpts": [
+        "2026-10-28T04:44:09.4604507Z error[vulnerability]: Multiple timing variability issues in operations intended to be constant-time",
+        "2026-10-28T04:44:09.4607507Z 386 \u2502 crypto-bigint 0.5.5 registry+https://github.com/rust-lang/crates.io-index",
+        "2026-10-28T04:44:09.4609777Z     \u251c ID: RUSTSEC-2026-0387",
+        "2026-10-28T04:44:09.4798250Z advisories FAILED, bans ok, licenses ok, sources ok"
+      ]
+    }
+  ],
+  "current_original_cargo_deny": {
+    "vulnerability_error_count": 1,
+    "remaining": ["RUSTSEC-2026-0387"],
+    "removed_from_this_job": [
+      "RUSTSEC-2026-0385",
+      "RUSTSEC-2026-0391",
+      "RUSTSEC-2026-0398",
+      "RUSTSEC-2026-0403"
+    ],
+    "whole_job_passed": false,
+    "bigint_blocker_closed": false
+  },
+  "policy_limit_unchanged": 512000,
+  "allowlist_changed": false,
+  "qualification_workflows_changed": false,
+  "production_source_or_locks_changed": false,
+  "local_cargo_rust_bazel_executed": false
+}

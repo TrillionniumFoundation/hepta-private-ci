@@ -1,0 +1,13 @@
+--- a/codex-rs/Cargo.toml
++++ b/codex-rs/Cargo.toml
+@@ -182,0 +183 @@
++    "third_party/aws-config-1.8.12-hepta-p256014",
+@@ -371 +372 @@
+-aws-config = "1"
++aws-config = "=1.8.12"
+@@ -373 +374 @@
+-aws-sigv4 = "1"
++aws-sigv4 = "=1.6.4"
+@@ -676,0 +678,2 @@
++# Minimal upstream-compatible DPoP migration; all credential features retained.
++aws-config = { path = "third_party/aws-config-1.8.12-hepta-p256014" }

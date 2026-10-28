@@ -1,0 +1,166 @@
+{
+  "schema": "hepta-windows-fixtures-local-verification-v1",
+  "base_commit": "334de7a4d9a1b7a813c34eeaadf1ed7c65ad37c5",
+  "branch": "fix/hepta-windows-fixture-r9",
+  "stages": [
+    {
+      "name": "static-evidence",
+      "command": [
+        "python3",
+        "-B",
+        "qa/pon-windows-fixtures-20261028-r9/verify_evidence.py"
+      ],
+      "started_at": "2026-10-28T05:41:43.025322+00:00",
+      "wall_seconds": 0.1293284230050631,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/static-evidence.stdout.txt",
+          "bytes": 925,
+          "sha256": "e4c927b472222b5c55844a2639c8045c23b370df2cdb1fb4e750e3a97570f420"
+        },
+        "stderr": {
+          "path": "local-logs/static-evidence.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "evidence-negative-controls",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/pon-windows-fixtures-20261028-r9",
+        "-p",
+        "test_verify_evidence.py",
+        "-v"
+      ],
+      "started_at": "2026-10-28T05:41:43.155046+00:00",
+      "wall_seconds": 0.16127770800085273,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/evidence-negative-controls.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "local-logs/evidence-negative-controls.stderr.txt",
+          "bytes": 895,
+          "sha256": "fdf404435ebf32acde21c5cb9fb55e07b010eb1914c94c305ceb56e7d6bb83ca"
+        }
+      }
+    },
+    {
+      "name": "structural-preflight",
+      "command": ["python3", "-B", "scripts/hepta_workspace.py"],
+      "started_at": "2026-10-28T05:41:43.316648+00:00",
+      "wall_seconds": 0.2850715570093598,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/structural-preflight.stdout.txt",
+          "bytes": 76,
+          "sha256": "6a437814142f1071f98664abc8a131c5c26d3dc40521307842b1acda091272f0"
+        },
+        "stderr": {
+          "path": "local-logs/structural-preflight.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "ruff-check",
+      "command": [
+        "/tmp/pure-pon-hepta-python-20261028/bin/ruff",
+        "check",
+        "qa/pon-windows-fixtures-20261028-r9/verify_evidence.py",
+        "qa/pon-windows-fixtures-20261028-r9/test_verify_evidence.py"
+      ],
+      "started_at": "2026-10-28T05:41:43.602071+00:00",
+      "wall_seconds": 0.014636218998930417,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/ruff-check.stdout.txt",
+          "bytes": 19,
+          "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+        },
+        "stderr": {
+          "path": "local-logs/ruff-check.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "ruff-format-check",
+      "command": [
+        "/tmp/pure-pon-hepta-python-20261028/bin/ruff",
+        "format",
+        "--check",
+        "qa/pon-windows-fixtures-20261028-r9/verify_evidence.py",
+        "qa/pon-windows-fixtures-20261028-r9/test_verify_evidence.py"
+      ],
+      "started_at": "2026-10-28T05:41:43.617061+00:00",
+      "wall_seconds": 0.009102786003495567,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/ruff-format-check.stdout.txt",
+          "bytes": 26,
+          "sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938"
+        },
+        "stderr": {
+          "path": "local-logs/ruff-format-check.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "prettier-check",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/tmp/hepta-deps-r8-prettier-3.5.3/package/bin/prettier.cjs",
+        "--check",
+        "qa/pon-windows-fixtures-20261028-r9/README.md",
+        "qa/pon-windows-fixtures-20261028-r9/matrix-socket-review.md",
+        "qa/pon-windows-fixtures-20261028-r9/provenance.json",
+        "qa/pon-windows-fixtures-20261028-r9/windows-shard1-matrix.json",
+        "qa/pon-windows-fixtures-20261028-r9/windows-shard3-matrix.json"
+      ],
+      "started_at": "2026-10-28T05:41:43.626463+00:00",
+      "wall_seconds": 0.31976719699741807,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/prettier-check.stdout.txt",
+          "bytes": 66,
+          "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+        },
+        "stderr": {
+          "path": "local-logs/prettier-check.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "original_shard3_unique_failed_cases": 43,
+  "original_shard1_unique_failed_cases": 6,
+  "original_shard1_failure_observations": 8,
+  "native_tests_executed": false,
+  "local_rust_cargo_bazel_or_native_formatter_executed": false,
+  "rust_compilation_or_syntax_parser_claim": false,
+  "windows_blockers_closed": false,
+  "additional_large_writes_over_50mb": false,
+  "original_tests_or_timeouts_removed": false,
+  "inherited_untracked_diagnostic": "Original 889-byte raw diagnostic from the frozen AWS proposal remains untracked and unchanged; excluded from this candidate."
+}

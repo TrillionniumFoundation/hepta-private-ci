@@ -1,0 +1,62 @@
+Hepta privileged CURRENT caller：继承缺项、语义审阅与最小候选修复
+2026-10-28；本记录的 inherited-debt 部分在修改源码之前写入。
+
+冻结起点与原始失败
+本地 hepta-next HEAD = a3745f5485b87cf313b28a8368f6506994b2dd1b，最初 git status --short / git diff --stat 为空。
+PR 4080 base = 3e9efb15faa261a4dc3ffc3205cd259aaee41a3f；GitHub prospective merge = d770b6b919f068eee762aaac0ed0e481a828d024。
+blocking-ci run 40611414728、job 122564660595 的原始日志：2026-10-28T00:55:16.9820407Z FAIL_HEPTA_CALLER_PROOF: learning_artifact_verified_current_view: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/neural_cognitive_ranker.rs']。随后 exit 1。
+https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40611414728/job/122564660595
+
+源码历史（真实 Git 对象，只读命令）
+git ls-tree 在 base 3e9efb15 与 source a3745f54 上均得到：
+  CALLERS.toml blob a9f08f8729bf81a078ae3c4277e3a97ff2a564f4
+  codex-rs/hepta-agentd/src/neural_cognitive_ranker.rs blob d715733ba6fb9fcb49529735088138cb40091e64
+git diff base source -- 这两个文件及 scripts/verify_hepta_callers.py 为空。
+git log --follow -- neural_cognitive_ranker.rs 只有引入提交 3b973e7d96eece8fb88c9a2fea2c7b52c0ab04b8（2026-10-22，Implement controlled neural lineage and harden native App Server observations）；该提交新增 230 行 neural 文件，没有修改 CALLERS.toml。
+因此该异常是 base 已包含的真实 product callsite 清单缺项，不能归因于 a374 新引入的授权旁路，也不能用继承事实忽略现有失败。
+
+语义审阅结论
+1. neural_cognitive_ranker.rs:128–224 的 load_neural_evaluated_published 先要求原 VerifiedSelfEvolutionSelectionV1 的 product qualification 和时效，逐项核对 candidate/predecessor、generation、payload/objective/dataset、family/execution profile 和 V2 source，再经原 load_pinned_candidate 固定参数字节。
+2. :201–206 从 CurrentCognitiveRegistry 取得 opaque VerifiedCurrentRegistryViewV1，保存 trust digest，并对 RevalidatingCandidate 调用原 with_current。没有构造假的 CURRENT、注入 verified=true 或直接授予 selection/FinalUse 的旁路。
+3. cognitive_bootstrap.rs:98–145 的普通分派在 neural/tabular 共用分支之前走原 prepare_self_evolution_product_selection_v1 与 admit_self_evolution_selection_v1。
+4. cognitive_process_current.rs:74–126 的普通 provider 使用原 ArtifactOwnerCurrentReaderV1、可信 signed head floor 与实际 ACK 状态复核。
+5. 同一个 PinnedCognitiveRanker 后续使用继续走 cognitive_ranker.rs:488–539 的前/后 CURRENT、trust、时效、selection、source-window 复核。pinned.rs 的 with_current 仍拒绝无效时效、非延伸前沿、不同 pin 与撤销候选；异常保持消费者关闭。
+6. 以上是静态调用链审阅，不是任意调用者/实现/控制流的形式化证明。原 closed-set 的 caller_markers 是原文字符串检查，不能独自证明先验授权。neural unit fixture 直接构造 HostPinned，不能当生产构造器资格正例；既有 hosted bootstrap 三项通过的实际意义是受控/不可信资格与 descriptor 拒绝，不能升级为生产 bootstrap 验收。
+
+授权的最小修复范围
+仅在 CALLERS.toml 的 learning_artifact_verified_current_view.product_callers 增加精确路径 codex-rs/hepta-agentd/src/neural_cognitive_ranker.rs，并在该文件真实 current_view 绑定处显式写 VerifiedCurrentRegistryViewV1 类型。不改变业务控制流、pattern、markers、ignored paths、权限、fallback、native deadline 或重试策略；不往注释填 marker 取绿。
+本次不 commit、不 push、不触发 workflow。root 将在单独检查后统一提交；另两份 workflow pin 由 root 负责。
+
+执行限制与 AGENTS
+已完整读取 hepta-next/AGENTS.md。该文件通常要求 just fmt 和相关 Rust 测试；当前明确任务约束禁止运行 Rust/Cargo/Bazel，因此本次不执行这些 native 命令，不把它们计为通过。只运行已授权的 Python closed-set guard 与拒绝控制。没有 dependency/lockfile 变动。
+
+第一阶段实际 Python 结果（仅 neural 单条修复之后）
+1. verify_hepta_callers.py self-test：exit 0，PASS_HEPTA_CALLER_PROOF_SELF_TEST。
+2. test_hepta_typed_callers.py：10/10 PASS，0 FAIL，0 skip；0.002 秒测试时间。
+3. qa/b4-no-bypass：17 执行，16 PASS，1 FAIL，0 skip；1.132 秒。失败 test_type_anchored_callers_match_independent_closed_set，boundary final_use_open_state，发现 automation_effect_host_pon_growth.rs 和 automation_effect_host_pon_growth_remote_config.rs。
+4. 全仓 verify：exit 1，FAIL_HEPTA_CALLER_PROOF: final_use_open_state: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/automation_effect_host_pon_growth.rs', 'codex-rs/hepta-agentd/src/automation_effect_host_pon_growth_remote_config.rs']。
+5. 原17项日志保留 hepta-caller-b4-20261028.stdout.txt / .stderr.txt；不因后续修补覆盖它。运行未完成前重定向出的 hepta-caller-guard-20261028.json 为空，不是成功receipt。
+现有未登记 product caller、任意 typed receiver/field alias、inventory omission、positive authority 和 cfg/comment/string 控制均真实通过。没有新增镜像实现或静态值测试。
+
+第二阶段新增只读审阅（修改另两个 inventory 之前）
+两个旧文件与独立 inventory 在 base 3e9efb15 和 source a3745f54 的 Git blob 均相同：
+  automation_effect_host_pon_growth.rs = 9eff836eac79e0771042b0479cf7e5aff9ab99af
+  automation_effect_host_pon_growth_remote_config.rs = 56efd22e4824af1cdb10d51eae0758696fceda6e
+  qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json = 3bcc1751701ce5da7d5d830b09a3c4ef898c2303
+两个文件均由提交 50e9a5f9654dcc360af2d0467f00c413c1203526 引入，主题 feat(pon): bind local and resident growth providers to original effect authority。
+它们是原 AgentdAutomationEffectHost 的 V4 本地 / V5 resident transport 构造分支：校验固定 profile、context、contract digest/signature、binary pin 与旧 FinalUse 配置后，返回同一私有 host；V5 另核对 server/resource/credential，未提供本地 store fallback。
+实际执行仍走 automation_effect_host.rs:1269 的原 execute：subject/destination/scope、exact payload、撤销刷新、TaskFlow owner 与当前 lease/fence。原 authorized_effect.rs:680 的 owner 依次检查 claimed step/binding，持久消耗 FinalUse nonce，持久记录不可变 attempt，再经 with_verified_effect 调用 driver；provider observation 先落盘，再投影 TaskFlow step/run。重复/不确定 attempt 要求恢复，不能凭新grant重发。final_use.rs:688 的 active-effect guard 保持到同步provider结束或unwind，撤销提交在effect期间拒绝。
+PoN adapter 的 lookup 缺包/不确定返回 Unknown，不制造全网 absence；terminal ACK与重新读取的 active-chain depth/work observation 分开，orphan/reorg不能把旧ACK变成当前确认。此处是对原owner控制流的静态审阅，并非新原生故障执行。
+必须保留的限制：两分支都调用 FinalUseAuthority::open_state_dir；final_use.rs:339–390 明确它是 compatibility constructor，使用系统时钟、没有 external rollback oracle，不是 production trust composition。不能因 inventory 修补而声明完整生产 FinalUse、WP3 PQ授权迁移或WP4模型资格通过。V4/V5 的配置与可信 signer来源仍属于原部署信任假设。
+获准的第二阶段修补只在 CALLERS.toml.final_use_open_state.product_callers 与独立 KERNEL_AUTHORITY_BOUNDARIES.json 的同一边界 allowedCallers 分别加入上述两条精确路径。不改 authority 代码、pattern、markers、ignored paths、失败规则或业务行为。
+
+第二阶段实际 Python 结果
+1. 全仓 python3 scripts/verify_hepta_callers.py verify：exit 0，PASS_HEPTA_CALLER_CLOSED_SET；45 个 privileged boundary，扫描 5,268 个 Rust 文件；authorityGranted=false。真实 receipt 为 hepta-caller-guard-second-20261028.json，stderr为空。两个已审阅边界分别列出3个和5个精确caller。
+2. python3 -m unittest discover -s qa/b4-no-bypass -p 'test_*.py' -v：17/17 PASS，0 FAIL，0 skip；1.208 秒；原始完整输出 hepta-caller-b4-second-20261028.stdout.txt / .stderr.txt。保留第一轮17=16PASS+1FAIL，不覆盖。
+3. python3 -m unittest discover -s scripts -p 'test_hepta_typed_callers.py' -v：10/10 PASS，0 FAIL，0 skip；0.023 秒；原始完整输出 hepta-caller-typed-second-20261028.stdout.txt / .stderr.txt。
+4. git diff --check：exit 0。
+本次没有添加测试：现有 suite 已把真实额外caller、别名receiver、缺失inventory、伪造authority与注释/测试代码输入交给原guard验证，不需要镜像实现或静态值断言。
+
+最终候选范围与判定
+仅修改三个tracked文件：CALLERS.toml 的两个精确 product_callers 列表；neural_cognitive_ranker.rs 一处真实 opaque 类型标注；qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json 同一 FinalUse边界的两个精确 allowedCallers。未修改任何guard算法、authority实现、fallback、ignore或native执行设置。未commit或push，由root统一检查、提交与发布。
+局部caller盘点修复的Python门已通过；原a374 CI的失败历史不变。本次没有运行rustfmt、Rust编译/native测试、完整repo-checks剩余步骤、Cargo依赖升级或Bazel；没有执行密码/重放。生产FinalUse外部时间/防回滚信任缺口、WP3全授权PQ迁移、WP4真实收益与WP5独立WAN门均不因此通过。

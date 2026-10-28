@@ -108,7 +108,7 @@ impl Context {
                 || observation.active_work_depth_hex.is_some()
                 || observation.accepted_task.is_some()
                 || (observation.stored_exact
-                    && (observation.block_height.is_none_or(|height| height <= 0)
+                    && (observation.block_height.is_none_or(|height| height == 0)
                         || !observation
                             .block_chainwork_hex
                             .as_deref()

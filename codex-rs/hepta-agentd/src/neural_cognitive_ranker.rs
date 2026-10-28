@@ -197,7 +197,7 @@ impl PinnedCognitiveRanker {
         // Keep the exact bytes captured by the existing loader. The inference
         // port never receives a mutable payload path to reopen.
         let parameters = loaded.bytes().to_vec();
-        let current_view = current.current()?;
+        let current_view: VerifiedCurrentRegistryViewV1 = current.current()?;
         let current_owner_trust_digest = current_view.trust_digest();
         let mut candidate = RevalidatingCandidate::new(loaded);
         candidate

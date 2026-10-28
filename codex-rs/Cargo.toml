@@ -180,6 +180,7 @@ members = [
     "codex-api",
     "state",
     "terminal-detection",
+    "third_party/aws-config-1.8.12-hepta-p256014",
     "third_party/i18n-config-0.4.8",
     "test-binary-support",
     "thread-manager-sample",
@@ -368,9 +369,9 @@ assert_matches = "1.5.0"
 async-channel = "2.3.1"
 async-io = "2.6.0"
 async-stream = "0.3.6"
-aws-config = "1"
+aws-config = "=1.8.12"
 aws-credential-types = "1"
-aws-sigv4 = "1"
+aws-sigv4 = "=1.6.4"
 aws-types = "1"
 axum = { version = "0.8", default-features = false }
 base64 = "0.22.1"
@@ -582,7 +583,7 @@ zip = { version = "9.0.4", default-features = false, features = [
     "zstd",
     "xz",
 ] }
-zstd = "0.13"
+zstd = "0.14.3"
 
 wiremock = "0.6"
 zeroize = "1.8.2"
@@ -674,6 +675,8 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Minimal upstream-compatible DPoP migration; all credential features retained.
+aws-config = { path = "third_party/aws-config-1.8.12-hepta-p256014" }
 # Backport the upstream maintained TOML parser migration for age localization.
 i18n-config = { path = "third_party/i18n-config-0.4.8" }
 # Replace the unmaintained event-handler type map without changing store/crypto code.

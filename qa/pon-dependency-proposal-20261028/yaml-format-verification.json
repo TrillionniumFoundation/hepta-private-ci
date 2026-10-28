@@ -1,0 +1,27 @@
+{
+  "schema": "hepta-exact-prettier-yaml-control-v1",
+  "observed_at_utc": "2026-10-28T03:38:40.250072+00:00",
+  "original_failed_job_id": 122604142276,
+  "prettier_version": "3.5.3",
+  "archive_url": "https://registry.npmjs.org/prettier/-/prettier-3.5.3.tgz",
+  "archive_sha512_base64": "QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==",
+  "matches_root_pnpm_lock": true,
+  "native_execution": false,
+  "paths": [
+    {
+      "path": ".github/workflows/hepta-cell-smollm.yml",
+      "before_sha256": "86f74a74a902ba05981a79b3757c2adaf2e5af35a29097b77bdc4ba3ff88169f",
+      "after_sha256": "f3536233cae05727bd3759a6a5ff546408bbdec1e5bbde681042913ba2ac020d",
+      "yaml_ast_equal": true
+    },
+    {
+      "path": ".github/workflows/hepta-pon-rustsec-lock-proposal.yml",
+      "before_sha256": "16c6d98693e4f90132dd450faf6abbd0bfe730958f3660a8151da2fdab7680c7",
+      "after_sha256": "16c6d98693e4f90132dd450faf6abbd0bfe730958f3660a8151da2fdab7680c7",
+      "yaml_ast_equal": true
+    }
+  ],
+  "format_stdout": ".github/workflows/hepta-cell-smollm.yml 46ms\n.github/workflows/hepta-pon-rustsec-lock-proposal.yml 10ms (unchanged)\n",
+  "format_stderr": "",
+  "format_exit_code": 0
+}

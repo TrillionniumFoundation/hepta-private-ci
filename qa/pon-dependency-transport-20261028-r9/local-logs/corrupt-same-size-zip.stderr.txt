@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/56818e4fba76/hepta-deps-r8/qa/pon-dependency-resolution-20261028-r8/verify_resolution.py", line 553, in <module>
+    json.dumps(verify(arguments.current_kind, arguments.artifact_zip), indent=2)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/56818e4fba76/hepta-deps-r8/qa/pon-dependency-resolution-20261028-r8/verify_resolution.py", line 102, in verify
+    require(
+  File "/workspace/scratch/56818e4fba76/hepta-deps-r8/qa/pon-dependency-resolution-20261028-r8/verify_resolution.py", line 56, in require
+    raise ValueError(reason)
+ValueError: archive identity

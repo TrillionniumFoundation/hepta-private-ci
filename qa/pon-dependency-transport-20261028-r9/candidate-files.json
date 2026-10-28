@@ -1,0 +1,155 @@
+{
+  "schema": "hepta-transport-candidate-files-v1",
+  "parent_local_commit": "d9dfaa943beb6eff8ac28e137b3db5f83df3b715",
+  "remote_cas_parent": "682a88a7f847e31ffb6cd5e0a630dd71dde4bfee",
+  "only_unlisted_file": "qa/pon-dependency-transport-20261028-r9/candidate-files.json",
+  "files": [
+    {
+      "status": "M",
+      "path": "qa/pon-dependency-resolution-20261028-r8/README.md",
+      "bytes": 12803,
+      "sha256": "8d68741d9aa0196f7a216f8fa09b5f5f3f0e9c9f48b3cc9d0c110d71941cf677",
+      "git_blob": "0555487339b91003557e2ba0be60788cf01d5877"
+    },
+    {
+      "status": "D",
+      "path": "qa/pon-dependency-resolution-20261028-r8/artifact-12791038108.zip",
+      "old_bytes": 1270736,
+      "old_sha256": "7cb5ad030c5d63ae3dce23cc35a6aeb05d6882571b096ef724afc5a66649f330",
+      "old_git_blob": "9899846396fef57c538c9964732eda1afec5ad2e"
+    },
+    {
+      "status": "M",
+      "path": "qa/pon-dependency-resolution-20261028-r8/verify_resolution.py",
+      "bytes": 19690,
+      "sha256": "347c8f055a6f7c01064239e990e0aafa31706c4d40a2db9de2b1eabd8cf3f7e4",
+      "git_blob": "9eb5f6ab2c7a978814dee3221c078767e8445563"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-dependency-transport-20261028-r9/README.md",
+      "bytes": 4232,
+      "sha256": "62d7ddfe99258b28699077faa3dafc235bcb69d6ee62ac0b133b848e1d1aaf79",
+      "git_blob": "b8f82ad58424800aa33c61bec0db402a93b9c6ea"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-dependency-transport-20261028-r9/artifact-12791038108-zip-envelope.json",
+      "bytes": 27088,
+      "sha256": "589d650c531fed943a7d8746ca626936be9d2d232b298c1e5bb319cdfebc284d",
+      "git_blob": "16b1602adbdaa06800cab790100acefa87bc55f9"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-dependency-transport-20261028-r9/local-logs/corrupt-same-size-zip.stderr.txt",
+      "bytes": 673,
+      "sha256": "7f32adfa12e961d36042f41052e7d90ebf4354e37120fb5e582000d1e7bef3ec",
+      "git_blob": "2f1627d46f3ee371b4355cb69347a40e484d597d"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-dependency-transport-20261028-r9/local-logs/corrupt-same-size-zip.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-dependency-transport-20261028-r9/local-logs/external-zip-full-graph.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-dependency-transport-20261028-r9/local-logs/external-zip-full-graph.stdout.txt",
+      "bytes": 12257,
+      "sha256": "e5303c33df8bdd9c9d513f9ce6f3f72d05a9989fa648ccded2e3f04fb0d79124",
+      "git_blob": "d690d84b47c9b1754b47eaf7b616211bdd286002"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-dependency-transport-20261028-r9/local-logs/missing-external-file.stderr.txt",
+      "bytes": 719,
+      "sha256": "4600259a7c366ff79e218401c3e004d07f5e6647c22757d6bb8220803f747e7e",
+      "git_blob": "156979c061402ce56f99eb68d991646ac558fd76"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-dependency-transport-20261028-r9/local-logs/missing-external-file.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-dependency-transport-20261028-r9/local-logs/missing-required-argument.stderr.txt",
+      "bytes": 208,
+      "sha256": "7e003e0627b6fd3976a1ebccbcb3cccb3fb6a50e1743a1f7367acedbe46a9949",
+      "git_blob": "88513506e287c0536412213cdcb411990d24a2ff"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-dependency-transport-20261028-r9/local-logs/missing-required-argument.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-dependency-transport-20261028-r9/local-logs/original-blob-size-policy.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-dependency-transport-20261028-r9/local-logs/original-blob-size-policy.stdout.txt",
+      "bytes": 15585,
+      "sha256": "137b71ec4c6101f43c4a86689bbd1eb5c0d563c012c97c32143bd80fc4b362de",
+      "git_blob": "e35a9cb395207e7c4c805d0cbf2ca4cf30187831"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-dependency-transport-20261028-r9/local-logs/symlink-zip.stderr.txt",
+      "bytes": 719,
+      "sha256": "4600259a7c366ff79e218401c3e004d07f5e6647c22757d6bb8220803f747e7e",
+      "git_blob": "156979c061402ce56f99eb68d991646ac558fd76"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-dependency-transport-20261028-r9/local-logs/symlink-zip.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-dependency-transport-20261028-r9/local-logs/truncated-zip.stderr.txt",
+      "bytes": 719,
+      "sha256": "4600259a7c366ff79e218401c3e004d07f5e6647c22757d6bb8220803f747e7e",
+      "git_blob": "156979c061402ce56f99eb68d991646ac558fd76"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-dependency-transport-20261028-r9/local-logs/truncated-zip.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-dependency-transport-20261028-r9/local-verification.json",
+      "bytes": 5774,
+      "sha256": "91d809625dfe4eb6e4d5cd8086aff5f306bdda37b919c886c9233dcd0c7f895f",
+      "git_blob": "5448f21d81c9a857271518d4cf4850a7c3da2864"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-dependency-transport-20261028-r9/transport-readback.json",
+      "bytes": 4093,
+      "sha256": "a172ee11800f7bdf2dbb10115cd74beccd75caf26066f05db9ecb9d13b21877f",
+      "git_blob": "f6e16eb25e6784e1031cf4415d2a3c43d8e874a3"
+    }
+  ]
+}

@@ -1,0 +1,429 @@
+{
+  "schema": "hepta-pon-dependency-resolution-static-review-v1",
+  "result": "PASS",
+  "current_worktree_kind": "original",
+  "source": "366dc9374ab554036873fdb66e3497151d36d273",
+  "source_tree": "fc1a413a036ebef783d6e1d6e04facbc0448fb44",
+  "synthetic_merge": "6b07dcdbd4e44ea31758db6df015aa7fe27ca165",
+  "merge_parents": [
+    "3e9efb15faa261a4dc3ffc3205cd259aaee41a3f",
+    "366dc9374ab554036873fdb66e3497151d36d273"
+  ],
+  "run_id": 40630710054,
+  "run_attempt": 1,
+  "job_id": 122626157535,
+  "artifact_id": 12791038108,
+  "archive_sha256": "7cb5ad030c5d63ae3dce23cc35a6aeb05d6882571b096ef724afc5a66649f330",
+  "archive_bytes": 1270736,
+  "archive_members": 23,
+  "manifest_files_verified": 22,
+  "decompressed_bytes": 12634631,
+  "hosted_stages": [
+    {
+      "name": "cargo-version",
+      "cwd": ".",
+      "command": ["cargo", "+1.96.0", "--version", "--verbose"],
+      "state": "succeeded",
+      "exit_code": 0,
+      "started_at_utc": "2026-10-28T04:13:45.939178+00:00",
+      "wall_seconds": 0.015193010999993817,
+      "finished_at_utc": "2026-10-28T04:13:45.954852+00:00"
+    },
+    {
+      "name": "bazel-version",
+      "cwd": ".",
+      "command": ["bazel", "--version"],
+      "state": "succeeded",
+      "exit_code": 0,
+      "started_at_utc": "2026-10-28T04:13:45.955472+00:00",
+      "wall_seconds": 0.8960932110000002,
+      "finished_at_utc": "2026-10-28T04:13:46.852083+00:00"
+    },
+    {
+      "name": "just-version",
+      "cwd": ".",
+      "command": ["just", "--version"],
+      "state": "succeeded",
+      "exit_code": 0,
+      "started_at_utc": "2026-10-28T04:13:46.868349+00:00",
+      "wall_seconds": 0.0011597989999998504,
+      "finished_at_utc": "2026-10-28T04:13:46.909680+00:00"
+    },
+    {
+      "name": "cargo-update",
+      "cwd": "codex-rs",
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "update",
+        "--package",
+        "ctutils",
+        "--precise",
+        "0.4.6"
+      ],
+      "state": "succeeded",
+      "exit_code": 0,
+      "started_at_utc": "2026-10-28T04:13:46.937989+00:00",
+      "wall_seconds": 10.121449831,
+      "finished_at_utc": "2026-10-28T04:13:57.070362+00:00"
+    },
+    {
+      "name": "cargo-metadata",
+      "cwd": "codex-rs",
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "metadata",
+        "--locked",
+        "--all-features",
+        "--format-version",
+        "1"
+      ],
+      "state": "succeeded",
+      "exit_code": 0,
+      "started_at_utc": "2026-10-28T04:13:57.071257+00:00",
+      "wall_seconds": 8.299471838000002,
+      "finished_at_utc": "2026-10-28T04:14:05.371373+00:00"
+    },
+    {
+      "name": "bazel-lock-update",
+      "cwd": ".",
+      "command": ["just", "bazel-lock-update"],
+      "state": "succeeded",
+      "exit_code": 0,
+      "started_at_utc": "2026-10-28T04:14:05.419435+00:00",
+      "wall_seconds": 28.784668764000003,
+      "finished_at_utc": "2026-10-28T04:14:34.224422+00:00"
+    },
+    {
+      "name": "bazel-lock-check",
+      "cwd": ".",
+      "command": ["just", "bazel-lock-check"],
+      "state": "succeeded",
+      "exit_code": 0,
+      "started_at_utc": "2026-10-28T04:14:34.225442+00:00",
+      "wall_seconds": 4.280371814000006,
+      "finished_at_utc": "2026-10-28T04:14:38.506615+00:00"
+    }
+  ],
+  "files": {
+    "codex-rs/Cargo.toml": {
+      "original": {
+        "bytes": 21984,
+        "sha256": "de8f230215a50fb76b1059848ab0eb7bd4aef1902f4c0f814377fe325f9aecdf"
+      },
+      "proposal": {
+        "bytes": 21986,
+        "sha256": "0fae52faff29eaf45862de2d95289f26653c4a9f3fdccfa03b5cd3581246b857"
+      }
+    },
+    "codex-rs/Cargo.lock": {
+      "original": {
+        "bytes": 421926,
+        "sha256": "df846f073dc8da280a4eec65f07703987ef816d93b00fefc8dd9bc06e94bc4de"
+      },
+      "proposal": {
+        "bytes": 421404,
+        "sha256": "e113db5c407fde385abaaad646e074cf0ba7a09e8905673be2e3fa71db75d6ec"
+      }
+    },
+    "MODULE.bazel.lock": {
+      "original": {
+        "bytes": 1710477,
+        "sha256": "255c63219eed1dbff8a4e3ccbffee1ff59de6bb56606625b13953580d83e90b5"
+      },
+      "proposal": {
+        "bytes": 1708863,
+        "sha256": "814df2533141cdad6b2114ff421a299b93d68508b71853c906b6c80912e3a60a"
+      }
+    }
+  },
+  "cargo_packages_before": 1533,
+  "cargo_packages_after": 1531,
+  "cargo_removed": [
+    [
+      "ctutils",
+      "0.4.2",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ],
+    ["zstd", "0.13.3", "registry+https://github.com/rust-lang/crates.io-index"],
+    [
+      "zstd-safe",
+      "7.2.4",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ]
+  ],
+  "cargo_added": [
+    [
+      "ctutils",
+      "0.4.6",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ]
+  ],
+  "changed_dependency_tokens": [
+    ["codex-app-server-protocol", "0.0.0", ""],
+    ["codex-cli", "0.0.0", ""],
+    ["codex-core", "0.0.0", ""],
+    ["codex-http-client", "0.0.0", ""],
+    ["codex-queue-extension", "0.0.0", ""],
+    ["codex-rollout", "0.0.0", ""],
+    ["codex-thread-store", "0.0.0", ""],
+    ["core_test_support", "0.0.0", ""],
+    ["zip", "9.0.5", "registry+https://github.com/rust-lang/crates.io-index"],
+    ["zstd", "0.14.3", "registry+https://github.com/rust-lang/crates.io-index"]
+  ],
+  "changed_resolved_edges": [
+    {
+      "package": ["codex-app-server-protocol", "0.0.0", ""],
+      "removed": [
+        [
+          "zstd",
+          "0.13.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ],
+      "added": [
+        [
+          "zstd",
+          "0.14.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ]
+    },
+    {
+      "package": ["codex-cli", "0.0.0", ""],
+      "removed": [
+        [
+          "zstd",
+          "0.13.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ],
+      "added": [
+        [
+          "zstd",
+          "0.14.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ]
+    },
+    {
+      "package": ["codex-core", "0.0.0", ""],
+      "removed": [
+        [
+          "zstd",
+          "0.13.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ],
+      "added": [
+        [
+          "zstd",
+          "0.14.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ]
+    },
+    {
+      "package": ["codex-http-client", "0.0.0", ""],
+      "removed": [
+        [
+          "zstd",
+          "0.13.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ],
+      "added": [
+        [
+          "zstd",
+          "0.14.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ]
+    },
+    {
+      "package": ["codex-queue-extension", "0.0.0", ""],
+      "removed": [
+        [
+          "zstd",
+          "0.13.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ],
+      "added": [
+        [
+          "zstd",
+          "0.14.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ]
+    },
+    {
+      "package": ["codex-rollout", "0.0.0", ""],
+      "removed": [
+        [
+          "zstd",
+          "0.13.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ],
+      "added": [
+        [
+          "zstd",
+          "0.14.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ]
+    },
+    {
+      "package": ["codex-thread-store", "0.0.0", ""],
+      "removed": [
+        [
+          "zstd",
+          "0.13.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ],
+      "added": [
+        [
+          "zstd",
+          "0.14.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ]
+    },
+    {
+      "package": ["core_test_support", "0.0.0", ""],
+      "removed": [
+        [
+          "zstd",
+          "0.13.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ],
+      "added": [
+        [
+          "zstd",
+          "0.14.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ]
+    },
+    {
+      "package": [
+        "digest",
+        "0.11.3",
+        "registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "removed": [
+        [
+          "ctutils",
+          "0.4.2",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ],
+      "added": [
+        [
+          "ctutils",
+          "0.4.6",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ]
+    },
+    {
+      "package": [
+        "universal-hash",
+        "0.6.1",
+        "registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "removed": [
+        [
+          "ctutils",
+          "0.4.2",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ],
+      "added": [
+        [
+          "ctutils",
+          "0.4.6",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ]
+      ]
+    }
+  ],
+  "metadata_packages_and_nodes_verified": 1531,
+  "metadata_dependency_edges_verified": 7547,
+  "workspace_members": 194,
+  "selected_registry_packages": {
+    "ctutils": {
+      "version": "0.4.6",
+      "checksum": "fe3e9d21d39e6f39ff46e03d5b621424f88ee23d8a1672c6bfc9ccc7f2da4f6a",
+      "index_sha256": "c1c41905bc4363430783265bfe2b9232f4ef8c40e8a0b1f2119c6d258897852c",
+      "index_commit": "2a8f22b30d18acd13913a6c2ecdcb105ed49cb18",
+      "yanked": false
+    },
+    "zstd": {
+      "version": "0.14.3",
+      "checksum": "db3ae9bf90af6e40197bef767eeefc46ad6397420fe873830bd85e5fbbfb3c70",
+      "index_sha256": "f35dc564727e5da847da4e0acc917668a9c8a6321f3f6a116e8beca0b22a0542",
+      "index_commit": "2a8f22b30d18acd13913a6c2ecdcb105ed49cb18",
+      "yanked": false
+    },
+    "zstd-safe": {
+      "version": "8.2.0",
+      "checksum": "ded520f16b29e1a9b771c722221b2b0a0398c2316d9bb3c42b458a5414d7434b",
+      "index_sha256": "138ba90e3c03693c02d8b2216d5726a6e924a17056f9b2c581bdc23124bce584",
+      "index_commit": "2a8f22b30d18acd13913a6c2ecdcb105ed49cb18",
+      "yanked": false
+    }
+  },
+  "resolved_target_features": {
+    "aws-config@1.8.12": [
+      "credentials-login",
+      "credentials-process",
+      "default",
+      "default-https-client",
+      "rt-tokio",
+      "sso"
+    ],
+    "crypto-bigint@0.5.5": ["generic-array", "rand_core", "zeroize"],
+    "ctutils@0.4.6": [],
+    "elliptic-curve@0.13.8": [
+      "alloc",
+      "arithmetic",
+      "digest",
+      "ff",
+      "group",
+      "hazmat",
+      "pem",
+      "pkcs8",
+      "sec1",
+      "std"
+    ],
+    "p256@0.13.2": [
+      "alloc",
+      "arithmetic",
+      "default",
+      "digest",
+      "ecdsa",
+      "ecdsa-core",
+      "pem",
+      "pkcs8",
+      "sha2",
+      "sha256",
+      "std"
+    ],
+    "zstd@0.14.3": ["arrays", "default", "legacy", "zdict_builder"],
+    "zstd-safe@8.2.0": ["arrays", "legacy", "std", "zdict_builder"],
+    "zstd-sys@2.1.2+zstd.1.5.7": ["legacy", "std", "zdict_builder"]
+  },
+  "bazel_removed_facts": ["ctutils_0.4.2", "zstd_0.13.3", "zstd-safe_7.2.4"],
+  "bazel_added_facts": ["ctutils_0.4.6"],
+  "bazel_other_sections_and_facts_unchanged": true,
+  "credentials_login_retained": true,
+  "crypto_bigint_blocker_closed": false,
+  "local_cargo_rust_bazel_executed": false,
+  "native_qualification": false,
+  "all_advisories_closed": false
+}

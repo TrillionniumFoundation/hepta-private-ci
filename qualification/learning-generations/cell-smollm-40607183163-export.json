@@ -1,0 +1,38 @@
+{
+  "schema": "hepta-pinned-cell-receipt-export-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "run": 40607183163,
+  "source": "50f4fe8089b43dfcea9e2dfce65dc1c042038918",
+  "artifacts": [
+    {
+      "id": 12781984588,
+      "name": "hepta-cell-smollm-ubuntu-24.04-source-head-1",
+      "bytes": 1708544417,
+      "sha256": "adbf3cd2247bb7907c1a5a03899a6953ccd4a3c3e9b7d449c3e0b6aa3dd521d2"
+    },
+    {
+      "id": 12781233928,
+      "name": "hepta-cell-smollm-ubuntu-24.04-base-merge-1",
+      "bytes": 1708544504,
+      "sha256": "8674e4291a07cfabbc450bb8addea7b12eb0a2b1a70d84bad082a2b337765997"
+    }
+  ],
+  "required": [
+    "candidate-tuple.json",
+    "smollm-preparation.json",
+    "smollm-material.json",
+    "smollm-native.json",
+    "smollm-comparison.json",
+    "smollm-readback.json",
+    "smollm-native/readback.json",
+    "smollm-native/cell-precommit.json",
+    "smollm-native/cell-acquired.json",
+    "smollm-native/cell-gen2/transport-report.json",
+    "smollm-native/cell-gen3/transport-report.json",
+    "smollm-native/material/material-publication-result.json",
+    "smollm-native/native/native-owner-bridge-result.json",
+    "smollm-native/comparison/native-comparison-result.json",
+    "smollm-native/comparison/frozen-controlled-comparison.json",
+    "smollm-native/comparison/actual-forward-observations.json"
+  ]
+}

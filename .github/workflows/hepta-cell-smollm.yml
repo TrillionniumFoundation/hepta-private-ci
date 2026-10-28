@@ -1,0 +1,202 @@
+name: Hepta Cell and original SmolLM owners
+on:
+  pull_request:
+    paths:
+      - codex-rs/**
+      - scripts/**
+      - qualification/learning-generations/**
+      - justfile
+      - AGENTS.md
+      - .github/workflows/hepta-pon-native-pair.yml
+      - .github/workflows/hepta-cell-smollm.yml
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-cell-smollm-${{ github.event.pull_request.number }}
+  # Keep an executing source's observations; a successor waits in this group.
+  cancel-in-progress: false
+jobs:
+  cell-smollm:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04]
+        lane: [source-head, base-merge]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: hepta
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
+      CHAIN_SOURCE_SHA: 131f673d9563e72aca7139f3239856957d118d49
+      CHAIN_BASE_SHA: 57c1ed545d067937cbd7aaa7570d5f22123265e6
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '131f673d9563e72aca7139f3239856957d118d49' || '66634191298767b40691d6b2a298418ec19e3673' }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.TESTED_SHA }}
+          path: hepta
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: TrillionniumFoundation/Trillionnium-Chain
+          ref: ${{ env.HEPTA_PON_CHAIN_SOURCE }}
+          path: chain
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare native prerequisites and verify both exact source tuples
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/pon-pair"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test "$(git -C ../chain rev-parse HEAD)" = "$HEPTA_PON_CHAIN_SOURCE"
+          if test "$HEPTA_CI_LANE" = source-head; then
+            test "$TESTED_SHA" = "$SOURCE_SHA"
+            test "$HEPTA_PON_CHAIN_SOURCE" = "$CHAIN_SOURCE_SHA"
+          else
+            test "$HEPTA_CI_LANE" = base-merge
+            test "$(git show -s --format=%P HEAD)" = "$BASE_SHA $SOURCE_SHA"
+            test "$(git rev-parse HEAD^{tree})" = "$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            test "$(git -C ../chain show -s --format=%P HEAD)" = "$CHAIN_BASE_SHA $CHAIN_SOURCE_SHA"
+            test "$(git -C ../chain rev-parse HEAD^{tree})" = "$(git -C ../chain merge-tree --write-tree "$CHAIN_BASE_SHA" "$CHAIN_SOURCE_SHA")"
+          fi
+          (cd ../chain && bash scripts/project-preflight.sh --audit)
+          python3 -m unittest -v scripts.tests.test_hepta_ci_candidate
+          python3 -m unittest -v scripts.tests.test_hepta_ci_smollm_pair
+          python3 scripts/hepta_ci_candidate.py \
+            --source "$SOURCE_SHA" --tested "$TESTED_SHA" --base "$BASE_SHA" \
+            --lane "$HEPTA_CI_LANE" \
+            --pair-repository ../chain --pair-source "$CHAIN_SOURCE_SHA" \
+            --pair-tested "$HEPTA_PON_CHAIN_SOURCE" --pair-base "$CHAIN_BASE_SHA" \
+            > "$RUNNER_TEMP/pon-pair/candidate-tuple.json"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/pon-pair/hepta-identity.txt"
+          git -C ../chain rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/pon-pair/chain-identity.txt"
+          printf 'lane=%s\nhepta_source=%s\nhepta_base=%s\nhepta_tested=%s\nchain_source=%s\nchain_base=%s\nchain_tested=%s\n' \
+            "$HEPTA_CI_LANE" "$SOURCE_SHA" "$BASE_SHA" "$TESTED_SHA" \
+            "$CHAIN_SOURCE_SHA" "$CHAIN_BASE_SHA" "$HEPTA_PON_CHAIN_SOURCE" \
+            > "$RUNNER_TEMP/pon-pair/tuple.txt"
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component rust-src
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve existing verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}/hepta
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Prepare existing pinned model conformance environment
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/pon-model-env"
+          "$RUNNER_TEMP/pon-model-env/bin/python" -m pip install --disable-pip-version-check --only-binary=:all: -r ../chain/formal/pon-nakamoto-v1/requirements.txt
+      - name: Prefetch locked Hepta dependencies before offline test execution
+        timeout-minutes: 12
+        env:
+          CARGO_NET_RETRY: "5"
+          CARGO_HTTP_TIMEOUT: "60"
+          CARGO_HTTP_MULTIPLEXING: "false"
+        run: |
+          # Network-only prefetch, before unchanged offline native tests.
+          # A failed fetch does not grant test credit; retry the identical locked
+          # dependency set a bounded three times within the original 600s owner.
+          # Avoid shared HTTP/2 streams after the actual radix_trie curl(16) failure.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-dependency-fetch.json" --timeout-seconds 600 -- \
+            bash -c 'cd codex-rs || exit; for attempt in 1 2 3; do cargo fetch --locked && exit 0; code=$?; if test "$attempt" -eq 3; then exit "$code"; fi; printf "locked Cargo prefetch attempt %s failed with exit %s; retrying\n" "$attempt" "$code" >&2; sleep 3; done'
+      - name: Require native compile-only and execution wrapper controls
+        env:
+          CARGO_NET_OFFLINE: "true"
+          RUSTUP_TOOLCHAIN: "1.96.0"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/nextest-wrapper-controls.json" --minimum-tests 12 -- python3 scripts/test_run_nextest.py -v
+      - name: Require ordinary neural host configuration and bounded cleanup controls
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/neural-host-boundaries.json" --minimum-tests 5 -- just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(smollm_cognitive_)' --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/neural-host-session.json" --minimum-tests 3 -- just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(smollm_neural_read::driver::session::tests::)' --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/neural-host-qualification-refusal.json" --minimum-tests 3 -- just test --locked -p codex-hepta-agentd --test neural_cognitive_bootstrap --no-capture
+          # A help-only build/run proves the fixed entry point exists. It does
+          # not load a model or grant product-qualification/ordinary-read credit.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/neural-host-cli-smoke.json" -- cargo run --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --bin hepta-neural-agentd -- --help
+      - name: Prepare fixed public SmolLM material and three original CPU training generations
+        id: smollm_prepare
+        if: matrix.runner == 'ubuntu-24.04'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-cell-build.json" -- cargo +1.95.0 build --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-data-availability --bin trnm-cell
+          export HEPTA_PON_CELL_BINARY="$(realpath ../chain/trillionnium/target/release/trnm-cell)"
+          export HEPTA_PON_CELL_SHA256="$(sha256sum "$HEPTA_PON_CELL_BINARY" | cut -d' ' -f1)"
+          printf 'HEPTA_PON_CELL_BINARY=%s\nHEPTA_PON_CELL_SHA256=%s\n' "$HEPTA_PON_CELL_BINARY" "$HEPTA_PON_CELL_SHA256" >> "$GITHUB_ENV"
+          printf '%s\n' "$HEPTA_PON_CELL_SHA256" > "$RUNNER_TEMP/pon-pair/cell-binary.sha256"
+          # Reuse the existing isolated model environment; no GPU/runtime substitute.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/smollm-environment.json" --timeout-seconds 900 -- bash -euo pipefail -c '
+            py="$RUNNER_TEMP/pon-model-env/bin/python"
+            "$py" -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu torch==2.9.1+cpu
+            "$py" -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: transformers==4.57.3 peft==0.18.0 safetensors==0.7.0 tokenizers==0.22.2 numpy==1.26.4 accelerate==1.12.0
+            "$py" -m pip check
+          '
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/smollm-preparation.json" --timeout-seconds 1200 -- "$RUNNER_TEMP/pon-model-env/bin/python" scripts/hepta_ci_smollm_pair.py prepare --chain "$(realpath ../chain)" --materials "$RUNNER_TEMP/pon-smollm-materials" --output "$RUNNER_TEMP/pon-pair/smollm-native"
+      - name: Publish retrieved neural material through the original persistent artifact owner
+        if: ${{ !cancelled() && matrix.runner == 'ubuntu-24.04' && steps.smollm_prepare.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+          HEPTA_PN3_ARTIFACT_NATIVE_CONFIG: ${{ runner.temp }}/pon-pair/smollm-native/material-input.json
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/smollm-material.json" --timeout-seconds 1200 --minimum-tests 1 -- just test --locked --profile smollm-material -p codex-hepta-agentd --test neural_artifact_native -E 'test(=real_smollm_material_publishes_and_recovers_through_original_artifact_owner)' --run-ignored only --retries 0 --test-threads 1 --no-capture
+      - name: Execute original SmolLM FinalUse read refusal recovery and terminal unload
+        if: ${{ !cancelled() && matrix.runner == 'ubuntu-24.04' && steps.smollm_prepare.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+          HEPTA_PN3_NEURAL_NATIVE_CONFIG: ${{ runner.temp }}/pon-pair/smollm-native/native-input.json
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/smollm-native.json" --timeout-seconds 1200 --minimum-tests 1 -- just test --locked --profile smollm-pair -p codex-hepta-infer-worker-host --lib -E 'test(=smollm_neural_read::tests::native::real_smollm_parent_query_original_control_final_use_and_terminal_unload)' --run-ignored only --retries 0 --test-threads 1 --no-capture
+      - name: Execute original gen2 gen3 holdout comparison once including no-update
+        if: ${{ !cancelled() && matrix.runner == 'ubuntu-24.04' && steps.smollm_prepare.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+          HEPTA_PN3_NEURAL_COMPARISON_CONFIG: ${{ runner.temp }}/pon-pair/smollm-native/comparison-input.json
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/smollm-comparison.json" --timeout-seconds 1200 --minimum-tests 1 -- just test --locked --profile smollm-pair -p codex-hepta-agentd --test neural_comparison_native -E 'test(=real_gen2_gen3_forwards_score_only_after_original_holdout_consumption)' --run-ignored only --retries 0 --test-threads 1 --no-capture
+      - name: Read original model observations without product or independent qualification
+        if: ${{ always() && matrix.runner == 'ubuntu-24.04' && steps.smollm_prepare.outcome == 'success' }}
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/smollm-readback.json" --timeout-seconds 180 -- "$RUNNER_TEMP/pon-model-env/bin/python" scripts/hepta_ci_smollm_pair.py verify --chain "$(realpath ../chain)" --output "$RUNNER_TEMP/pon-pair/smollm-native"
+      - name: Preserve exact tested source and scope
+        if: always()
+        run: |
+          set -uo pipefail
+          mkdir -p "$RUNNER_TEMP/pon-pair"
+          printf 'Exact paired Cell and original neural owners %s observation only. Both declared adapters and all base dependencies must traverse native publisher-replica-consumer processes before the original material, FinalUse and holdout tests. Publisher-offline retrieval, storage publication and controlled model execution grant no product installation, independent efficacy, WAN, quantum or PoN activation qualification. Every missing, failed or timed-out phase remains failed.\n' "$HEPTA_CI_LANE" > "$RUNNER_TEMP/pon-pair/SCOPE.txt"
+          printf 'The Linux x86_64 SmolLM lane separately retains three public-fixture training executions and the existing controlled FinalUse/read/unload and gen2/gen3 holdout tests only when their actual native commands and readback complete. No product bootstrap or independent holdout is introduced; every attempt retains its original seed and decision, and adoption remains no-update. ARM model execution is not claimed.\n' >> "$RUNNER_TEMP/pon-pair/SCOPE.txt"
+          failed=0
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA" || failed=1
+          test "$(git -C ../chain rev-parse HEAD)" = "$HEPTA_PON_CHAIN_SOURCE" || failed=1
+          git diff --exit-code || failed=1
+          git diff --cached --exit-code || failed=1
+          git -C ../chain diff --exit-code || failed=1
+          git -C ../chain diff --cached --exit-code || failed=1
+          test -z "$(git status --porcelain --untracked-files=normal)" || failed=1
+          test -z "$(git -C ../chain status --porcelain --untracked-files=normal)" || failed=1
+          exit "$failed"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-cell-smollm-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pon-pair/
+          if-no-files-found: error
+          retention-days: 14

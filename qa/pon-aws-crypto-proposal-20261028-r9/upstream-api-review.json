@@ -1,0 +1,222 @@
+{
+  "schema": "hepta-aws-crypto-upstream-api-review-v1",
+  "registry_snapshot": "d81bdb3483af17165174bb94e0a2aca7353f24cc",
+  "aws_config_release_vcs": "f031610a8cbb4ac2dac3229bfaeaa88182787ab4",
+  "aws_sigv4_release_vcs": "c42d314c972a95e7cfd9583eef5113a2e1d6dccb",
+  "sigv4_normal_dependency_changes": {
+    "aws-credential-types": {
+      "before": {
+        "version": "1.2.11"
+      },
+      "after": {
+        "version": "1.3.1"
+      }
+    },
+    "aws-smithy-eventstream": {
+      "before": {
+        "version": "0.60.14",
+        "optional": true
+      },
+      "after": {
+        "version": "0.61.6",
+        "optional": true
+      }
+    },
+    "aws-smithy-http": {
+      "before": {
+        "version": "0.62.6"
+      },
+      "after": {
+        "version": "0.64.3"
+      }
+    },
+    "aws-smithy-runtime-api": {
+      "before": {
+        "version": "1.9.3",
+        "features": ["client"]
+      },
+      "after": {
+        "version": "1.19.2",
+        "features": ["client"]
+      }
+    },
+    "aws-smithy-types": {
+      "before": {
+        "version": "1.3.5"
+      },
+      "after": {
+        "version": "1.9.1"
+      }
+    },
+    "bytes": {
+      "before": {
+        "version": "1.10.0"
+      },
+      "after": {
+        "version": "1.11.1"
+      }
+    },
+    "crypto-bigint": {
+      "before": {
+        "version": "0.5.4",
+        "optional": true
+      },
+      "after": {
+        "version": "0.7.10",
+        "optional": true
+      }
+    },
+    "ecdsa": {
+      "before": null,
+      "after": {
+        "version": "0.17.0",
+        "optional": true
+      }
+    },
+    "hmac": {
+      "before": {
+        "version": "0.12"
+      },
+      "after": {
+        "version": "0.13"
+      }
+    },
+    "http": {
+      "before": {
+        "version": "1.1.0",
+        "optional": true
+      },
+      "after": {
+        "version": "1.3.1",
+        "optional": true
+      }
+    },
+    "http0": {
+      "before": {
+        "version": "0.2.9",
+        "optional": true,
+        "package": "http"
+      },
+      "after": {
+        "version": "0.2.12",
+        "optional": true,
+        "package": "http"
+      }
+    },
+    "p256": {
+      "before": {
+        "version": "0.11",
+        "features": ["ecdsa"],
+        "optional": true
+      },
+      "after": {
+        "version": "0.14.0",
+        "features": ["ecdsa"],
+        "optional": true
+      }
+    },
+    "ring": {
+      "before": {
+        "version": "0.17.5",
+        "optional": true
+      },
+      "after": null
+    },
+    "sha2": {
+      "before": {
+        "version": "0.10"
+      },
+      "after": {
+        "version": "0.11"
+      }
+    },
+    "subtle": {
+      "before": {
+        "version": "2.5.0",
+        "optional": true
+      },
+      "after": {
+        "version": "2.6.0",
+        "optional": true
+      }
+    },
+    "time": {
+      "before": {
+        "version": "0.3.5"
+      },
+      "after": {
+        "version": "0.3.35"
+      }
+    },
+    "tracing": {
+      "before": {
+        "version": "0.1.40"
+      },
+      "after": {
+        "version": "0.1.44"
+      }
+    },
+    "zeroize": {
+      "before": {
+        "version": "^1.7.0",
+        "optional": true
+      },
+      "after": {
+        "version": "1.8.0",
+        "optional": true
+      }
+    }
+  },
+  "sigv4_before_features": {
+    "default": ["sign-http", "http1"],
+    "http0-compat": ["dep:http0"],
+    "http1": ["dep:http"],
+    "sign-eventstream": ["dep:aws-smithy-eventstream"],
+    "sign-http": ["dep:http0", "dep:percent-encoding", "dep:form_urlencoded"],
+    "sigv4a": [
+      "dep:p256",
+      "dep:crypto-bigint",
+      "dep:subtle",
+      "dep:zeroize",
+      "dep:ring"
+    ]
+  },
+  "sigv4_after_features": {
+    "default": ["sign-http", "http1"],
+    "http0-compat": ["dep:http0"],
+    "http1": ["dep:http"],
+    "sign-eventstream": ["dep:aws-smithy-eventstream"],
+    "sign-http": ["dep:percent-encoding", "dep:form_urlencoded"],
+    "sigv4a": [
+      "dep:p256",
+      "dep:ecdsa",
+      "dep:crypto-bigint",
+      "dep:subtle",
+      "dep:zeroize"
+    ]
+  },
+  "sigv4_msrv_before": "1.88",
+  "sigv4_msrv_after": "1.94.1",
+  "preserved_api_contracts": [
+    "SEC1 PEM private key parsing",
+    "SigningKey from borrowed SecretKey",
+    "ES256 SHA-256 raw 64-byte DPoP signature",
+    "base64url without padding",
+    "original JWK/payload claims",
+    "original provider feature definitions and SSO/login/default chain"
+  ],
+  "required_api_migration": [
+    "ToEncodedPoint/to_encoded_point -> ToSec1Point/to_sec1_point",
+    "rand_core 0.6 -> 0.10 traits through rand 0.10.3",
+    "infallible sign_with_rng -> actual fallible try_sign_with_rng with OS SysRng"
+  ],
+  "explicit_residuals": [
+    "UUID v4 generation retains upstream entropy failure behavior",
+    "not a whole-program constant-time proof on all compilers/CPUs",
+    "upstream SigV4a KDF retains secret-derived rejection comparison",
+    "upstream notes an unwiped FieldBytes stack copy beyond its API",
+    "full new AWS/Smithy graph/API changes require real hosted resolution and fresh native qualification"
+  ],
+  "local_native_execution": false,
+  "qualification": false
+}

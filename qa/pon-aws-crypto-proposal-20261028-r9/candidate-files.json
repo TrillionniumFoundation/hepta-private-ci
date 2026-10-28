@@ -1,0 +1,444 @@
+{
+  "schema": "hepta-aws-crypto-proposal-file-manifest-v1",
+  "combined_candidate_base": "541ce975fe20924bb915dace4415fbcf771e8176",
+  "source_payload_commit": "d189b9e6c321fb212f943d3412014e1d4c7ed00e",
+  "source_scope": "Both the reviewed source payload and hosted generator; transport correction is the preceding independent 541ce975 commit.",
+  "excluded_self": "qa/pon-aws-crypto-proposal-20261028-r9/candidate-files.json",
+  "self_exclusion_reason": "Avoid recursive content hash; final git commit binds this manifest byte-for-byte.",
+  "files": [
+    {
+      "status": "A",
+      "path": ".github/workflows/hepta-pon-aws-crypto-proposal.yml",
+      "mode": "100644",
+      "git_blob": "f5fc9d794f45276fc4e6857dad03070d6538abe7",
+      "bytes": 6524,
+      "sha256": "cc4635f8e81dda7333da1e4ef882bcd1eb3a1bec94368c0c69c9f14dea03da43"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/README.md",
+      "mode": "100644",
+      "git_blob": "8e15b61025a5b5d20d79c0f29bdeb0b5ad7abec4",
+      "bytes": 14902,
+      "sha256": "51de1350f605f2055470b03a69ce51d90f0bc426a2c522edd39ca5f9fb0dc313"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/blob-policy-review.json",
+      "mode": "100644",
+      "git_blob": "d008ea971d0ec6c3fd9a6c71c7c6b187ed88c622",
+      "bytes": 1537,
+      "sha256": "6d7573f143788ef217800b61545f194d09c9a1499a74de85dc487651cb7197a3"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/dependency-path-review.json",
+      "mode": "100644",
+      "git_blob": "c4ce8b7c0c52350c120de49c65227876bdd1339e",
+      "bytes": 6522,
+      "sha256": "2685fcee2b8d3c1d6f23da6b4a0947c7a9ff702230b7ccf77317274181c837de"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/actionlint.stderr.txt",
+      "mode": "100644",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/actionlint.stdout.txt",
+      "mode": "100644",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/existing-source-controls.stderr.txt",
+      "mode": "100644",
+      "git_blob": "0ad6c7ce046e70867faef4b6fc83769ccc703520",
+      "bytes": 2312,
+      "sha256": "e16701d960014463fb9cc92244ae97f92d5f18163183cde5c2c2e905fd39dd97"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/existing-source-controls.stdout.txt",
+      "mode": "100644",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/initial-patch-context-diff-check.stderr.txt",
+      "mode": "100644",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/initial-patch-context-diff-check.stdout.raw.json",
+      "mode": "100644",
+      "git_blob": "08491b074f7a028ae8e07fbd8d55ae8d63052a43",
+      "bytes": 1480,
+      "sha256": "732e789ed022d425a65e776076e18fc71ec123faaf09b2351fa244a1d2633431"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/original-blob-policy.stderr.txt",
+      "mode": "100644",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/original-blob-policy.stdout.txt",
+      "mode": "100644",
+      "git_blob": "23237b1f801dcf0abb074f2075155fffd4df298e",
+      "bytes": 21413,
+      "sha256": "38b85b8ff3f7c9794022cfc54c2a95a2568bea44b6e65ccc87548697e54f6eac"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/raw-log-whitespace-diff-check.stderr.raw.json",
+      "mode": "100644",
+      "git_blob": "d0ec52e07bb5e97fbe688aeb6107591cc0948cd7",
+      "bytes": 290,
+      "sha256": "75982be523284da441c27e90aa0a6a93c1104e4f6ad39b603a518119b63eeab3"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/raw-log-whitespace-diff-check.stdout.raw.json",
+      "mode": "100644",
+      "git_blob": "054e723b7c07b52160f3204c972dbb6a5a107dc7",
+      "bytes": 1929,
+      "sha256": "2624f9b4633eba18c3ad7d12761f1be86a6a7043193824f95d638e708996d94e"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/ruff-check.stderr.txt",
+      "mode": "100644",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/ruff-check.stdout.txt",
+      "mode": "100644",
+      "git_blob": "1f5f344d054fae10f39140fb7199c99321d9190a",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/ruff-format-check.stderr.txt",
+      "mode": "100644",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/ruff-format-check.stdout.txt",
+      "mode": "100644",
+      "git_blob": "ddcd0f8f66f25c19eeacd57ec4dac96669cf18f2",
+      "bytes": 26,
+      "sha256": "177f260a5645724013185e4b140c7045cc39e56c0c97b120f5cb23599f85f0de"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/source-and-failure-controls.stderr.txt",
+      "mode": "100644",
+      "git_blob": "a454855dca233b2397745aae246437f3cc1fb381",
+      "bytes": 2333,
+      "sha256": "55851eb462972cbb107e4b5ee648e547606090c8e72e9e1443af3ef25a3a2fba"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/source-and-failure-controls.stdout.txt",
+      "mode": "100644",
+      "git_blob": "e8de9d26151660d7e1c000c5eb79f475b37e7a42",
+      "bytes": 171,
+      "sha256": "53e0d71063cb31f1983149a77b7be72603c25c1b61fa7d03231928d75457cd9f"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/static-source-review.stderr.txt",
+      "mode": "100644",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/static-source-review.stdout.txt",
+      "mode": "100644",
+      "git_blob": "cb0739d1b4b61bed8096fa91dd25593ffec646d0",
+      "bytes": 2254,
+      "sha256": "6e79b6becb43a9a97f8629e37d9d35dc6a7a35f233c26aec3a4bb87052217858"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/structural-preflight.stderr.txt",
+      "mode": "100644",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-logs/structural-preflight.stdout.txt",
+      "mode": "100644",
+      "git_blob": "23fb3f82f1caa351e32a04040f9582166329e5c4",
+      "bytes": 76,
+      "sha256": "6a437814142f1071f98664abc8a131c5c26d3dc40521307842b1acda091272f0"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/local-verification.json",
+      "mode": "100644",
+      "git_blob": "d26fe6c9561cd6375de65e74883d0d0ebaa01b0f",
+      "bytes": 8438,
+      "sha256": "54e0140b1a6e0510271d16cfe91d002ac518cbf868287aa39256b5a61e110223"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/overrides/BUILD.bazel",
+      "mode": "100644",
+      "git_blob": "a0d1ff938cf84962c1d1cc94e23646930c780466",
+      "bytes": 1078,
+      "sha256": "e24dd83532b0db7450611a9fec2a42fc3a910d96ccf8f13e433ea668aa176050"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/overrides/Cargo.toml",
+      "mode": "100644",
+      "git_blob": "91c21e226c30fd4ccdaafad333b0275ed922a700",
+      "bytes": 4986,
+      "sha256": "ca14f92236c035fe094883b6bd611f2fbaae74539f6f086cd066938e4eece060"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/overrides/HEPTA_PATCH.md",
+      "mode": "100644",
+      "git_blob": "f1d168c42ce0e7cd7cf5e346abef899c72fddc7d",
+      "bytes": 3485,
+      "sha256": "ca90e91a3a997fded9c51f34d011c33e40f2df7d739c6086cbfa14becd3d7cea"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/overrides/src/login/dpop.rs",
+      "mode": "100644",
+      "git_blob": "bd850554a2cf2bccff35ce4d5e71ad7f4cd03696",
+      "bytes": 10943,
+      "sha256": "b5c70689e6eb7fc15130a2fc85ff71bbac7661fd464397ad0586536518707b06"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/overrides/src/login/dpop_migration_tests.rs",
+      "mode": "100644",
+      "git_blob": "b4b6a058265ed995e9d4b1f6e50289305973e448",
+      "bytes": 4948,
+      "sha256": "4adcbbdec24366bdd66f625df7d388e3ed95bac64826332554f8212101aabd36"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/provider-source.patch",
+      "mode": "100644",
+      "git_blob": "7f820dfff52f7d080bbc1c8fa4f7a282e662d32a",
+      "bytes": 11513,
+      "sha256": "83440ac4325df438cb09c82a2a5623521e81b1e5e078f61566e30973ad0a95af"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/source-spec.json",
+      "mode": "100644",
+      "git_blob": "d17ccc8c5653ee62aa97e836c4a995996d243306",
+      "bytes": 60852,
+      "sha256": "dae83c358161dd1ba2a2a0aa7d15aeb2b2deab1e52d49e1255eb71af7a86d92a"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/upstream-api-review.json",
+      "mode": "100644",
+      "git_blob": "77fb17d4bb44fa3d4e9cdbdd36f1498db64475ee",
+      "bytes": 5097,
+      "sha256": "296998b2dc9224ee359d021d31826dda90cd09d6ff48c91dbb926759158af84b"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/upstream/aws-config-1.8.12-extra-source.tar.xz",
+      "mode": "100644",
+      "git_blob": "9ac59f5c10d0215276b464d4a72f4c801116d029",
+      "bytes": 26560,
+      "sha256": "336ea364820eeddf589bcf4715ef9c9bf1fec2b09da21280d8f072f5fae5eafd"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/upstream/aws-config-1.8.12.crate",
+      "mode": "100644",
+      "git_blob": "38e93c56d7d5ed2fb7ee83e94228dce0508acbc9",
+      "bytes": 152157,
+      "sha256": "96571e6996817bf3d58f6b569e4b9fd2e9d2fcf9f7424eed07b2ce9bb87535e5"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/upstream/aws-config-extra-source-downloads.json",
+      "mode": "100644",
+      "git_blob": "6cc49d97f24770e9b9c0d74a00ce4ec6c3e38b98",
+      "bytes": 67399,
+      "sha256": "85d11eb64f060c077f7a3771014300713a19afc4844e5b35bd66baba846a5731"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/upstream/aws-config-git-trees.json",
+      "mode": "100644",
+      "git_blob": "e7d6eb5a9853fb1a560ba7ef298828a3541f0863",
+      "bytes": 185000,
+      "sha256": "4537b3d5c8ac265924c1c0874d52b6ee57874112061d5795ceeffaa6a236bd7f"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/upstream/aws-config-main-c975.Cargo.toml.txt",
+      "mode": "100644",
+      "git_blob": "6630c4c8b4bbcca8380d052dac20be3c10ab5752",
+      "bytes": 5816,
+      "sha256": "e72c0d43aebf52bebcd11965c4819f567ea63ef87794cd074ed8ad081980150f"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/upstream/aws-sigv4-1.3.7.crate",
+      "mode": "100644",
+      "git_blob": "013c8761571a6858ea902ddac9ae383752aa39be",
+      "bytes": 95976,
+      "sha256": "69e523e1c4e8e7e8ff219d732988e22bfeae8a1cafdbe6d9eca1546fa080be7c"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/upstream/aws-sigv4-1.6.4.crate",
+      "mode": "100644",
+      "git_blob": "f19fcc1aaa0ecf252665ec48d534c035584754bb",
+      "bytes": 104030,
+      "sha256": "f385da9b7757ed4c8214797ad663ff534fb622006143530aa80e21f8e06ff85c"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/upstream/crypto-bigint-release-records.json",
+      "mode": "100644",
+      "git_blob": "563c2b00648e22d9fd11d91aae703a96191a5ec8",
+      "bytes": 48966,
+      "sha256": "cba602c0b95f3fbe08cd59709d84e2481bae10d899763df114d2e3338875f92f"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/upstream/ecdsa-0.17.0.crate",
+      "mode": "100644",
+      "git_blob": "a4edc05b804df42c2d4c563339878f195d69922f",
+      "bytes": 36763,
+      "sha256": "c0681a4fc24c767085329728d8dfba959af91228aa4610cca4f8ce317ba46ae0"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/upstream/elliptic-curve-0.14.3.crate",
+      "mode": "100644",
+      "git_blob": "06918d8dfefbf3a397fc4d29d9f0cae4879de060",
+      "bytes": 51761,
+      "sha256": "900f37e7e18d74a2347389af6cd69e3a30d5cc9e697f40004865679aa75e9c7c"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/upstream/getrandom-0.4.3.crate",
+      "mode": "100644",
+      "git_blob": "e0d27cb0f8acdfa21d6797ae2b3e9282efd59bae",
+      "bytes": 52437,
+      "sha256": "300e883d756b2e4ec94e02791f39b04b522276138852cfc41d9fb7e904106099"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/upstream/index-records.json",
+      "mode": "100644",
+      "git_blob": "9ff924f0e7dcfc4961973393c38c23bfcf0fd61c",
+      "bytes": 74822,
+      "sha256": "2d28c7cef9f149ffac168f868ea0788ecceab9c5a95ec0f118297ad774b3ad3d"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/upstream/p256-0.14.0.crate",
+      "mode": "100644",
+      "git_blob": "58c525f669df346409c082abd3e218473820f080",
+      "bytes": 77479,
+      "sha256": "d2c9239b2dbc807adbbe147e8cf72ea7450c3a0aabe62cb8e75ff4ec22e1f72a"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/upstream/rand-0.10.3.crate",
+      "mode": "100644",
+      "git_blob": "154f928cc964a4052a6c641f09f68bf4f815fb01",
+      "bytes": 105994,
+      "sha256": "65c9fb96cbc91e3478eaae79a69fcd3f1ae4ad052e471fe6732fff548984b4af"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/upstream/signature-3.0.0.crate",
+      "mode": "100644",
+      "git_blob": "7f6c592179ac68f89d396d18c5d7daa38340a825",
+      "bytes": 15027,
+      "sha256": "28d567dcbaf0049cb8ac2608a76cd95ff9e4412e1899d389ee400918ca7537f5"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/upstream/sigv4-original-vector-equivalence.json",
+      "mode": "100644",
+      "git_blob": "61aa4f88ea088a8c590713773925a657873d65dd",
+      "bytes": 167164,
+      "sha256": "2e22bf9ac0aa22bcbe8e4af0db210f0532a007cae7cd9fa2c850c0d347decb0a"
+    },
+    {
+      "status": "A",
+      "path": "qa/pon-aws-crypto-proposal-20261028-r9/workspace.patch",
+      "mode": "100644",
+      "git_blob": "914c2a21260272c353a454b43bae871954a191a6",
+      "bytes": 407,
+      "sha256": "923ed20f34bbf78274fd1f36aeaafd0a1ed58b5ce76b3119a32beb4f97fb6ec9"
+    },
+    {
+      "status": "A",
+      "path": "scripts/hepta_pon_aws_crypto_proposal.py",
+      "mode": "100644",
+      "git_blob": "fb07a3a34e6b3ce5e83074fcbf88d16021bf2594",
+      "bytes": 16643,
+      "sha256": "edeaf1b239f9962c966d856365d8336c1002daacf4a3578f91b8ce5d91e8ca59"
+    },
+    {
+      "status": "A",
+      "path": "scripts/hepta_pon_aws_crypto_source.py",
+      "mode": "100644",
+      "git_blob": "32acff2a573f3fe2c6b9e37963e6f86a52a26409",
+      "bytes": 12774,
+      "sha256": "c697e6c9355141dc4ccd3fd5a19725d37ba0d3696f5f5b723cd7c75604ad78b4"
+    },
+    {
+      "status": "A",
+      "path": "scripts/test_hepta_pon_aws_crypto_proposal.py",
+      "mode": "100644",
+      "git_blob": "e2f4a7ec1401a7795f85256a5c9e14d556cdb8b7",
+      "bytes": 11588,
+      "sha256": "14a9bdd94e897a2ad619a0505ef64207d33bcb06c1848912a9b3291186b635d1"
+    },
+    {
+      "status": "A",
+      "path": "scripts/test_hepta_pon_aws_crypto_source.py",
+      "mode": "100644",
+      "git_blob": "f7cb0905c469f307bd34197f883c3582b97de002",
+      "bytes": 6236,
+      "sha256": "75d2a37e22db1da621a9427cdc826ebad93d2134cdec31fc8c569d86441cf5ab"
+    }
+  ],
+  "production_files_changed": false,
+  "bigint_blocker_closed": false
+}
