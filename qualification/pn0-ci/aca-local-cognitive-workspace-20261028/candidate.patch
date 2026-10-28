@@ -1,0 +1,110 @@
+diff --git a/codex-rs/ext/hepta-memory/src/cognitive/mod.rs b/codex-rs/ext/hepta-memory/src/cognitive/mod.rs
+index 91c3baa77..ca8b11835 100644
+--- a/codex-rs/ext/hepta-memory/src/cognitive/mod.rs
++++ b/codex-rs/ext/hepta-memory/src/cognitive/mod.rs
+@@ -46,6 +46,7 @@ use codex_hepta_memory::RetrievalChannel;
+ use codex_hepta_memory::RetrievalRequest;
+ use codex_hepta_memory::RevalidationStatus;
+ use codex_hepta_memory::SourceRevalidationBinding;
++use codex_hepta_memory::canonical_workspace_binding;
+ use codex_protocol::user_input::UserInput;
+ use serde::Serialize;
+ use sha2::Digest;
+@@ -381,9 +382,10 @@ impl CognitiveExtension {
+             return None;
+         }
+         let prepared = input.turn_store.get::<PreparedCognitiveAttachment>()?;
++        let workspace = canonical_workspace_binding(input.cwd).ok()??;
+         if prepared.thread_id != input.thread_id
+             || prepared.turn_id != input.turn_id
+-            || path_identity_bytes(prepared.workspace.as_path()) != path_identity_bytes(input.cwd)
++            || path_identity_bytes(prepared.workspace.as_path()) != path_identity_bytes(&workspace)
+         {
+             return None;
+         }
+@@ -400,7 +402,7 @@ impl CognitiveExtension {
+         let store = self.store()?;
+         let access = CognitiveAccess::workspace_private(
+             store.owner_agent_id().clone(),
+-            workspace_digest(input.cwd),
++            workspace_digest(workspace.as_path()),
+         );
+         let explanations = self
+             .revalidate_bindings(&access, &prepared.bindings, now)
+@@ -410,7 +412,7 @@ impl CognitiveExtension {
+         let source_binding_sha256 = cognitive_source_binding(
+             input.thread_id,
+             input.turn_id,
+-            input.cwd,
++            workspace.as_path(),
+             &prepared.query_sha256,
+             &prepared.bindings,
+             &content_sha256,
+@@ -468,6 +470,9 @@ impl TurnInputContributor for CognitiveExtension {
+             if !workspace.is_absolute() {
+                 return Vec::new();
+             }
++            let Ok(Some(workspace)) = canonical_workspace_binding(&workspace) else {
++                return Vec::new();
++            };
+             let capture = capture_directive(&input.user_input);
+             let witness = ExactDirectiveWitness {
+                 turn_id: input.turn_id.clone(),
+@@ -579,10 +584,13 @@ impl EphemeralModelInputContributor for CognitiveExtension {
+             let Some(prepared) = input.turn_store.get::<PreparedCognitiveAttachment>() else {
+                 return Ok(None);
+             };
++            let Ok(Some(workspace)) = canonical_workspace_binding(input.cwd) else {
++                return Ok(None);
++            };
+             if prepared.thread_id != input.thread_id
+                 || prepared.turn_id != input.turn_id
+                 || path_identity_bytes(prepared.workspace.as_path())
+-                    != path_identity_bytes(input.cwd)
++                    != path_identity_bytes(&workspace)
+             {
+                 return Ok(None);
+             }
+@@ -606,7 +614,7 @@ impl EphemeralModelInputContributor for CognitiveExtension {
+             };
+             let access = CognitiveAccess::workspace_private(
+                 store.owner_agent_id().clone(),
+-                workspace_digest(input.cwd),
++                workspace_digest(workspace.as_path()),
+             );
+             let Some(explanations) = self
+                 .revalidate_bindings(&access, &prepared.bindings, now)
+@@ -621,7 +629,7 @@ impl EphemeralModelInputContributor for CognitiveExtension {
+             let source_binding_sha256 = cognitive_source_binding(
+                 input.thread_id,
+                 input.turn_id,
+-                input.cwd,
++                workspace.as_path(),
+                 &prepared.query_sha256,
+                 &prepared.bindings,
+                 &content_sha256,
+diff --git a/codex-rs/ext/hepta-memory/src/cognitive/tools.rs b/codex-rs/ext/hepta-memory/src/cognitive/tools.rs
+index 9114a6184..c70c0be76 100644
+--- a/codex-rs/ext/hepta-memory/src/cognitive/tools.rs
++++ b/codex-rs/ext/hepta-memory/src/cognitive/tools.rs
+@@ -26,6 +26,7 @@ use codex_hepta_memory::ProductionCognitiveMutationError;
+ use codex_hepta_memory::RetrievalRequest;
+ use codex_hepta_memory::SourceDraft;
+ use codex_hepta_memory::StableMemoryId;
++use codex_hepta_memory::canonical_workspace_binding;
+ use codex_tools::ResponsesApiNamespace;
+ use codex_tools::ResponsesApiNamespaceTool;
+ use serde::Deserialize;
+@@ -277,7 +278,11 @@ impl CognitiveTool {
+     fn validate_call_scope(&self, call: &ToolCall) -> Result<(), FunctionCallError> {
+         if call.turn_id != self.witness.turn_id
+             || !call.environments.iter().any(|environment| {
+-                path_identity_bytes(environment.cwd.as_path())
++                let Ok(Some(workspace)) = canonical_workspace_binding(environment.cwd.as_path())
++                else {
++                    return false;
++                };
++                path_identity_bytes(workspace.as_path())
+                     == path_identity_bytes(self.witness.workspace.as_path())
+             })
+         {

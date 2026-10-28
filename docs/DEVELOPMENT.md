@@ -1918,3 +1918,23 @@ the second test preserves fixed transport-error redaction. This is a separate
 local role, not a reset of prior SDK, supervisor, host, model or PN1 budgets.
 Darwin system-alias policy, original RPC/filesystem failures and Windows native
 isolation remain unqualified; the original native jobs must still execute.
+
+PN0's [local cognitive workspace identity follow-up](../qualification/pn0-ci/aca-local-cognitive-workspace-20261028/README.md)
+uses the existing checked canonical workspace in the original preparation,
+both attachment revalidations and tool-call scope validator. The same value
+feeds the existing access digest and source binding. The fourth consumer is
+necessary because the actual tool transport normalizes Windows verbatim path
+prefixes; leaving its raw comparison would introduce a new scope mismatch.
+The original helper, tests, turn/content/revision checks, assertions and limits
+remain unchanged. This path-only check grants no held namespace authority.
+
+The original package command actually completed on the recorded two-file Linux
+candidate:100 passed,0 failed,0 skipped, exit0, with unchanged source hashes.
+Scoped strict Clippy also exited0; it changed no source. Full raw outputs and
+independent source review are retained. No Windows native
+execution or published-head qualification follows. Keep the original four lanes'
+20 deletion groups at18/20, query at6/6 and terminal at1/3 separately; ordinary
+Windows storage/caller/loader/Job and Unknown custody remain OPEN. Continue the
+existing PN0–PN6 dependency order and all original model, I09/I10, release, PN1
+and WAN gates without changing any deadline, resource or historical failure.
+`task_complete=false`, `merge_ready=false`, **NO_GO**.

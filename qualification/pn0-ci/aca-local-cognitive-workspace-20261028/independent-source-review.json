@@ -1,0 +1,211 @@
+{
+  "schema": "independent-aca-cognitive-four-consumer-source-review-v1",
+  "reviewed_utc": "2026-10-28T15:28:52.961071+00:00",
+  "review_complete": true,
+  "conclusion": "NO_NEW_STATIC_BLOCKER_FOR_FROZEN_FOUR_CONSUMER_CANDIDATE",
+  "candidate": {
+    "manifest": {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-local-cognitive-workspace-four-consumer-candidate-20261028-003/08-manifest.json",
+      "bytes": 2453,
+      "sha256": "a9629111c48975241a209a08a90462a2668822d07bcb6aece9e073a4e65bdffd"
+    },
+    "verified_manifest_members": 8,
+    "patch": {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-local-cognitive-workspace-four-consumer-candidate-20261028-003/05-aca-two-source-candidate.patch",
+      "bytes": 5172,
+      "sha256": "f3f73371f5f79b48e1657cf5ec786e04af53e6e025401365e6406682aabb0d7a"
+    },
+    "base_head": "aca32e0df184a4a0b1c094918d1cf3dbd20e4588",
+    "base_tree": "a2fe6bc41eb50fcc764c9d0770b133b34c893201",
+    "branch": "fix/hepta-local-cognitive-workspace-aca-20261028",
+    "worktree": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024",
+    "live_source_pins": [
+      {
+        "path": "codex-rs/ext/hepta-memory/src/cognitive/mod.rs",
+        "bytes": 34519,
+        "sha256": "79319d51fa727a65879f2ee1ac01ca05ed82f39292f56a4a4f4b2acf0c597256",
+        "working_git_blob": "ca8b118355ebff022e6755040b77013b3ee22722",
+        "current_equals_frozen": true
+      },
+      {
+        "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+        "bytes": 37149,
+        "sha256": "72492180b7bd962ef7dc605e7a6d980d43fe0814dadd34d7d042a5ae316c65b1",
+        "working_git_blob": "c70c0be761ff34c961e63cc6fb204425fbcb5017",
+        "current_equals_frozen": true
+      }
+    ],
+    "only_two_dirty_source_paths": [
+      "codex-rs/ext/hepta-memory/src/cognitive/mod.rs",
+      "codex-rs/ext/hepta-memory/src/cognitive/tools.rs"
+    ],
+    "staged_or_untracked_source": false
+  },
+  "original_three_point_finding": {
+    "state": "R01_RESOLVED_IN_FROZEN_FOURTH_CONSUMER_SOURCE",
+    "old_three_point_manifest": {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-local-cognitive-workspace-candidate-20261028-002/07-manifest.json",
+      "bytes": 1695,
+      "sha256": "71b9e8f0013ba80882ccfeb6d8f87025b86181ca1113c06f66587f90ba9697e4"
+    },
+    "old_three_point_after": {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-local-cognitive-workspace-candidate-20261028-002/03-mod.after.rs",
+      "bytes": 34519,
+      "sha256": "79319d51fa727a65879f2ee1ac01ca05ed82f39292f56a4a4f4b2acf0c597256"
+    },
+    "finding": "The new TurnInput producer stores a canonical Windows-verbatim witness, but the old CognitiveTool::validate_call_scope compared raw ToolEnvironment.cwd bytes. The real tool transport decodes PathUri via to_abs_path; AbsolutePathBuf normalization strips supported verbatim prefixes. The same accepted Windows workspace therefore could fail the old raw tool gate. This is a static dataflow finding, not a newly executed native RED or proof of historical failure cause.",
+    "frozen_resolution": "Existing tool validator now obtains fresh canonical_workspace_binding for each existing environment and compares that result with the same witness workspace. Error/None returnsfalse within original any-environment check; original turn-id check and typed scope-mismatch error are byte-preserved. No rawalias field, bypass or alternate authority path added.",
+    "tool_remainder_exact_to_base_after_two_admitted_substitutions": true
+  },
+  "four_consumers": [
+    {
+      "source": "cognitive/mod.rs",
+      "consumer": "TurnInputContributor::contribute",
+      "identity_flow": "One checked canonical primaryworkspace precedes ExactDirectiveWitness workspace/hash, retrieval CognitiveAccess, preparedattachment workspace and cognitive_source_binding; all use thatsamePathBuf.",
+      "error_behavior": "Vec::new; no new witness/prepared accepted on helpererror/None"
+    },
+    {
+      "source": "cognitive/mod.rs",
+      "consumer": "revalidate_prepared_attachment",
+      "identity_flow": "Fresh checked canonical input.cwd compared bytewise with stored preparedworkspace; samevalue drives accessdigest and reconstructed sourcebinding. Thread/turn/content/length/context budget and original revalidation predicates untouched.",
+      "error_behavior": "OptionNone via .ok()?? or existing mismatches"
+    },
+    {
+      "source": "cognitive/mod.rs",
+      "consumer": "EphemeralModelInputContributor::contribute",
+      "identity_flow": "Fresh checked canonical input.cwd compared to preparedworkspace and used for local access/sourcebinding. Original schema/requestkind/generate/thread/turn/scope/token/content checks and await/revalidation paths retained.",
+      "error_behavior": "Ok(None); no physicalsend proposal"
+    },
+    {
+      "source": "cognitive/tools.rs",
+      "consumer": "CognitiveTool::validate_call_scope",
+      "identity_flow": "Original ToolEnvironment set remains any-environment; eachview freshcheckedcanonical before exactmatch to samecanonical directivewitness. Existing contentverification and workspaceSHA consumers use witness directly.",
+      "error_behavior": "Rejectedhelperview false; ifnomatch original hepta_cognitive_scope_mismatch typederror"
+    }
+  ],
+  "other_witness_and_binding_consumers": {
+    "complete_witness_field_scan": "ExactDirectiveWitness production consumers are CognitiveTurnWitnesses storage/get, verifies_content and cognitive/tools.rs; all tool access_and_scope/correct/forget/recall/explain workspacebindings take the same witness.workspace_sha256. No remaining rawenvironment-vs-newwitness compare found.",
+    "exact_content_and_witness_state": "verifies_content byte-length/SHA/byte_exact_verification_allowed and bounded per-thread witness equality/poisoning/eviction code remain unchanged. No sidechannel accepts oldstale binding as canonical authority.",
+    "federation_precedent": "Existing federation preparation and revalidate already use the exact same canonical helper, unchanged. Combinedmaterial generation still includes raw current input.cwd in its fresh request-level transcript hash; that digest is generated at the current physicalsend after both canonical material checks, not compared to an old rawpreparedworkspace. No samekind producer/consumer mismatch identified there; this review does not promise universal combineddigest aliasinvariance.",
+    "source_binding_scope": "Workspace identity normalization only. Original projectedmemory revisions/status/current source binding and derived content hashes remain required. No new schema/serialization/namespace/receipt authority or new grant/registration is manufactured."
+  },
+  "access_and_race_assessment": {
+    "scope_effect": "Intended acceptance of OS-canonical drive/UNC namespace spellings for the same unchanged pathcomponents. Differentworkspace or redirection/reparse/unknown/IOerror still refused by the unchanged existing helper. Non-Windows canonical mismatch or nonexistentworkspace now also abstains rather than being silently admitted.",
+    "Windows_guard_preserved": "Helper checks canonical-vs-requested components, onlysame drive or UNC prefix-kind equivalence, and every originalancestor reparse bit. It is unchanged, not a new filesystem authority constructor.",
+    "TOCTOU_limit": "Existing helper is filesystem/path based and does not hold a descriptor or protect the namespace across canonicalize, ancestor checks, asyncstorework and later effects. Fresh consumerchecks do not establish inode custody, remoteexecutor identity, anti-replacement or wholeWindows loader/authority security. Do not describe it as descriptor-bound recovery/admission.",
+    "any_environment_policy": "Existing anymatchingToolEnvironment policy retained, not expanded to accept arbitrary rawaliases or malformedpaths. This patch does not add an environment-ID/remote-FS authority proof."
+  },
+  "mechanically_preserved": {
+    "protected_full_source_files": [
+      {
+        "relative": "codex-rs/ext/hepta-memory/src/cognitive/tests.rs",
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/ext/hepta-memory/src/cognitive/tests.rs",
+        "bytes": 31200,
+        "sha256": "217f897fbff47a938930e3ae0f64b0db24f2eb74f9e9e862e13f60ba0fb92915",
+        "base_git_blob": "d4bd4dfed109b3f508d0145cff8c4433ae65cd6c",
+        "exact_base_bytes_preserved": true
+      },
+      {
+        "relative": "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs",
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs",
+        "bytes": 27099,
+        "sha256": "527e98d8e3184c81172c478fe67a68feb9b698a8b25d3ccc939960a6c6b479da",
+        "base_git_blob": "13c14da1bc0b6db76f81b0c96ba2ed668b45635b",
+        "exact_base_bytes_preserved": true
+      },
+      {
+        "relative": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+        "bytes": 56154,
+        "sha256": "21b2e32f13176b53e646a851c3b9070dfd13cec668aab45bae8ce0d5c05128b8",
+        "base_git_blob": "f05b899397d47c5450dd2a198c42ac427f1dbbe0",
+        "exact_base_bytes_preserved": true
+      },
+      {
+        "relative": "codex-rs/hepta-memory/src/framing.rs",
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-memory/src/framing.rs",
+        "bytes": 1850,
+        "sha256": "cd389c1a451471a19eca4fea75bbf80f9395e6a36fcf5de25dec3340af5f9c2c",
+        "base_git_blob": "859121597095da843a2852eec569536bfe1e2c6a",
+        "exact_base_bytes_preserved": true
+      },
+      {
+        "relative": "codex-rs/hepta-memory/src/cognitive_path.rs",
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-memory/src/cognitive_path.rs",
+        "bytes": 2142,
+        "sha256": "a6f0bd73a8a93fa6cd509628550a89a716ef912ced075a7c27775dc29ee6b449",
+        "base_git_blob": "72f6a6e248ef47348ac3e4c111cb149d1bbcb68f",
+        "exact_base_bytes_preserved": true
+      },
+      {
+        "relative": "codex-rs/hepta-memory/src/cognitive_path_tests.rs",
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-memory/src/cognitive_path_tests.rs",
+        "bytes": 5582,
+        "sha256": "0e3918d88bbf5b8f1d1eb40d6c1a07270c6380f00e8372d8cc1e6381dbe066ce",
+        "base_git_blob": "63c60da63d887424edc3415e98634b1ef96f950f",
+        "exact_base_bytes_preserved": true
+      },
+      {
+        "relative": "codex-rs/ext/hepta-memory/src/framing.rs",
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/ext/hepta-memory/src/framing.rs",
+        "bytes": 1274,
+        "sha256": "d5ee494b533cfdb8d664932e7d31893e398faa2dfe4c0fa0267773fbef6fd11c",
+        "base_git_blob": "ac3e6ce3769cd638460e6f636f374ea6c1f78c9b",
+        "exact_base_bytes_preserved": true
+      }
+    ],
+    "actual_tool_transport_context": [
+      {
+        "relative": "codex-rs/core/src/tools/handlers/extension_tools.rs",
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/tools/handlers/extension_tools.rs",
+        "bytes": 22169,
+        "sha256": "4f961a7961e1ed35951747eb16b8a9a1d006a350e22c55f2e616f221e93e7cd3",
+        "base_git_blob": "d31872a5256d873941b13696845d82eaf9239de9"
+      },
+      {
+        "relative": "codex-rs/tools/src/tool_call.rs",
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/tools/src/tool_call.rs",
+        "bytes": 6227,
+        "sha256": "80732210d789f1b9d9a5af7ff33f3b2f7e8d68441ac12d2b0e38e04d066e554e",
+        "base_git_blob": "e2dbe5039efa816ee7049d2dfa7e176af68ff3a9"
+      },
+      {
+        "relative": "codex-rs/utils/path-uri/src/lib.rs",
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/path-uri/src/lib.rs",
+        "bytes": 35915,
+        "sha256": "883cd0cb547512ef0c4845a2a4254be9c24d0e7d76913d2a39955e5706abe1dc",
+        "base_git_blob": "a4731dfcc7a0ca9f0d93cb018df862039460b306"
+      },
+      {
+        "relative": "codex-rs/utils/absolute-path/src/lib.rs",
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/absolute-path/src/lib.rs",
+        "bytes": 26629,
+        "sha256": "a6f3553c4aefe49082b6bd8fb671eaaf14cf81cb134940bbd6b769024af01b70",
+        "base_git_blob": "fc26cc4f56a97659e9c593570a1b847d3bb345e5"
+      }
+    ],
+    "module_guards": "Only admittedmod3point edits plus toolsimport/validator rewrite. Original expired/revoked/inactive/current-revision/restore/clock/budget/physicalsend guard implementations outside these substitutions remain byte-identical; no new acceptance flag or deadline/cap numeric edit.",
+    "all_original_tests": "No originaltest/assert/fixturefile changed; six original Windows failures remain open. A preserved test is not an executed test.",
+    "helper_tests_and_existing_federation_paths": "All protected helper/federation/test bytes match actualACA Git blobs. No FENCE/CI/role/sourceownership mutation."
+  },
+  "validation_NOT_RUN": [
+    "Rust compilation",
+    "just test originalpackage/fulloriginalcontrols",
+    "formatter or Clippy",
+    "Windows ABI/native",
+    "model/genesis/I09 runtime",
+    "CI/PRpreview/mainqualification"
+  ],
+  "owner_next_step": "Root may proceed with the authorized originalLinux component validation and finalformatter. This source-only review does not qualify Windows, demonstrate the historicalcause or close any originalfailure; keep all originalguards/assertions/budgets and exactsource/native gates.",
+  "actions_not_taken": [
+    "source_or_tests_edit",
+    "fmt_build_test_native_VM_model",
+    "network_fetch_CI_push_cancel",
+    "Gitref_or_branch_mutation",
+    "budget_reset_or_guard_assertion_limit_change"
+  ],
+  "task_complete": false,
+  "merge_ready": false,
+  "Windows_native_qualified": false,
+  "NO_GO_for_full_project": true
+}

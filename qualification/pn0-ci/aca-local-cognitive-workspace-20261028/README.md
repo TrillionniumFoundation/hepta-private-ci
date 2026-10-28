@@ -1,0 +1,13 @@
+# PN0 local cognitive workspace identity
+
+This is the existing PN0 Windows follow-up, not a new acceptance plan. The source candidate changes only the local cognitive extension's workspace identity flow. Preparation, prepared attachment revalidation, ephemeral contribution and tool-call scope validation now use the same existing `canonical_workspace_binding`. It recognizes the supported normal/verbatim Windows namespace spellings while retaining the helper's rejection of redirects, reparse points, missing paths and I/O errors. The canonical value feeds the original workspace digest and source binding; all turn, content, revision and budget checks remain.
+
+The initial three-consumer candidate omitted the tool-call validator. Independent source review found that the real transport removes Windows verbatim prefixes, so a canonical witness would fail the old raw comparison. The final fourth-consumer source fixes that consistency defect. This is a static finding, not an executed native reproduction or a proven explanation of every historical failure. The original tests and helper remain byte-identical.
+
+The original `just test --locked -p codex-hepta-memory-extension --lib` actually ran on Linux: **100 passed, 0 failed, 0 skipped**, exit 0. Build plus test took 310.412564 seconds; nextest's test summary took 1.746 seconds. Both changed source hashes were unchanged across execution. The complete original output, tested-source identities, terminal and independent review are preserved in [the manifest](evidence-manifest.json). The source was the recorded two-file candidate on ACA, not a published commit or actual PR preview. The nextest configuration warning about `profile.local.inherits` remains in the raw log; configuration and original test limits were not changed.
+
+Scoped `just clippy --locked -p codex-hepta-memory-extension --lib -- -D warnings` also actually exited 0 in 158.898961 seconds; it changed no source. Its original output and terminal are preserved separately.
+
+Final `just fmt` exited 0 in 0.133480 seconds and left both tested source hashes unchanged. Tests were not repeated after formatting, as the repository requires.
+
+This path-based helper does not hold filesystem descriptors or prove namespace custody across asynchronous work. The four original Windows lanes, twenty deletion groups, query and terminal groups retain their separate outcomes: 18/20, 6/6 and 1/3 per lane. No native Windows run occurred for this patch. Ordinary Windows storage owners, token/ACL/loader/desktop/stdio/Job/caller and Unknown terminal custody remain separate open PN0 work. The original model, I09/I10, release, PN1, WAN and expired-budget gates remain unchanged; `task_complete=false`, `merge_ready=false`, **NO_GO**.
