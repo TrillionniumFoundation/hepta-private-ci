@@ -1,0 +1,25 @@
+{
+  "child_cpu_seconds": 33.23664600000001,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.adaptive_neuron_v2.learning.runner",
+    "--phase",
+    "screening",
+    "--source-seal",
+    "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_neuron_v2/results/registration001/SOURCE_SEAL.json",
+    "--output-dir",
+    "/dev/shm/hepta-adaptive-v2-batch001/scientific001/learning/screening"
+  ],
+  "complete": true,
+  "error": null,
+  "exit_code": 0,
+  "logs": {
+    "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout.log": "21c286ec424c9c1dee488e6585f3f001b551805ffca846f4bc818dd26658f2ee"
+  },
+  "parent_cpu_seconds": 0.001842341000000025,
+  "schema": "hepta.adaptive-neuron.command-cost.v2",
+  "scope": "Before command directory creation through subprocess exit and output-file close; includes process startup/imports, all child work and failed attempts. Subordinate timers are nested, not additional.",
+  "wall_seconds": 32.40621735300374
+}

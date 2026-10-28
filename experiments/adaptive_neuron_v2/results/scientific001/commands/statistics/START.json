@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.adaptive_neuron_v2.statistics",
+    "--root",
+    "/dev/shm/hepta-adaptive-v2-batch001/scientific001/raw/native",
+    "--audit-root",
+    "/dev/shm/hepta-adaptive-v2-batch001/scientific001/raw/audit",
+    "--destination",
+    "/dev/shm/hepta-adaptive-v2-batch001/scientific001/statistics",
+    "--source-seal",
+    "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_neuron_v2/results/registration001/SOURCE_SEAL.json"
+  ]
+}

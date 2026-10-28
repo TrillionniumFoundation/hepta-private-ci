@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.adaptive_neuron_v2.deployment",
+    "audit",
+    "--binary",
+    "/dev/shm/hepta-adaptive-v2-batch001/sealed-builds/build01/target/release/examples/adaptive_neuron_host",
+    "--training",
+    "/dev/shm/hepta-adaptive-v2-batch001/scientific001/learning/confirmation",
+    "--learning-audit",
+    "/dev/shm/hepta-adaptive-v2-batch001/scientific001/LEARNING_AUDIT_confirmation.json",
+    "--root",
+    "/dev/shm/hepta-adaptive-v2-batch001/scientific001/raw/native",
+    "--destination",
+    "/dev/shm/hepta-adaptive-v2-batch001/scientific001/raw/audit",
+    "--source-seal",
+    "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_neuron_v2/results/registration001/SOURCE_SEAL.json"
+  ]
+}

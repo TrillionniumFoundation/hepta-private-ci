@@ -1,0 +1,34 @@
+{
+  "accounting": "This enclosing interval includes child subprocesses. Nested receipts explain its components and must not be added to it again.",
+  "complete": true,
+  "cpu": {
+    "child_system_seconds": 55.612868,
+    "child_user_seconds": 439.589622,
+    "self_system_seconds": 0.11157899999999998,
+    "self_user_seconds": 0.805472
+  },
+  "error": null,
+  "facts": {
+    "binary_sha256": "261c63bc5f3a8ca1940dac27424ef8740e03ddc918b12f29af7d44b4b4ad25e4",
+    "disjoint_subprocess_cpu_seconds": 495.224853428,
+    "disjoint_subprocess_wall_seconds": 508.4250095219977,
+    "independent_native_replay_episodes": 2880,
+    "native_episodes": 2880,
+    "scientific_fits": 45,
+    "source": {
+      "seal_sha256": "594b1180532dc32b7d659f6d1031fa4047c9c6446b393a17590d27eab484019f",
+      "source_commit": "58c1f6caabd28ad99f2d425cfaa5c4e050f7a19a",
+      "source_tree": "142ae37061052500fcb445a713d8fd141dc5e46b",
+      "verified_inputs": 141
+    },
+    "statistics_sha256": "241d053e747ba1a0cde3bfebb58e7123377494d41b2342dce46f0c3232f44af1"
+  },
+  "finished_at_utc": "2026-10-28T11:00:45.176804+00:00",
+  "identity": {
+    "stage": "complete_registered_batch"
+  },
+  "schema": "hepta.adaptive-neuron.cost-stage.v2",
+  "scope": "All registered source/environment verification, two sealed builds, 45 fits, learning audits, 2880 native episodes, every native cold replay, and registered statistics. Archive transfer is separately measured after this interval.",
+  "started_at_utc": "2026-10-28T10:52:15.853551+00:00",
+  "wall_seconds": 509.32329921900237
+}

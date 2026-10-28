@@ -1,0 +1,988 @@
+{
+  "audit_cpu_seconds": 13.352311298,
+  "audit_wall_seconds": 14.228571655999986,
+  "deployed_models_rebuilt_from_checkpoints": true,
+  "fit_records": [
+    {
+      "actual_neural_cell_updates": 1507328,
+      "arm": "standard",
+      "checkpoint_sha256": "cca5c4b953fdb5f9a2160de151dcb7a467ab022892cc35e10f6dae3bb7b36cd9",
+      "history_rows_verified": 128,
+      "seed": 601,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.1795889535981445
+    },
+    {
+      "actual_neural_cell_updates": 1507328,
+      "arm": "fixed_theta",
+      "checkpoint_sha256": "0991d4f92bdb0e55580740aa6e48ab399d0bdfc1dcdeb305382fdddaf7cf9ede",
+      "history_rows_verified": 128,
+      "seed": 601,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.1772842603804976
+    },
+    {
+      "actual_neural_cell_updates": 1507328,
+      "arm": "meta_theta",
+      "checkpoint_sha256": "5c82147c3165bba99ad285d8abdbfb3cffd3e434a7856d1d5a8da4574f870b73",
+      "history_rows_verified": 128,
+      "seed": 601,
+      "theta_change": [
+        0.5296034644263823,
+        0.09957709596756503,
+        -0.039955754829572185
+      ],
+      "weight_change_l2": 0.17715859290374011
+    },
+    {
+      "actual_neural_cell_updates": 1589248,
+      "arm": "standard",
+      "checkpoint_sha256": "af957037125655448b84ac2230254649ef12ed2b7f9e127714556152d927f056",
+      "history_rows_verified": 128,
+      "seed": 607,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.2059919677489588
+    },
+    {
+      "actual_neural_cell_updates": 1589248,
+      "arm": "fixed_theta",
+      "checkpoint_sha256": "7c296c5ee5ecb8cae2138f056096137e4f5b54b469f4784c4f5799ceb4fa8139",
+      "history_rows_verified": 128,
+      "seed": 607,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.20464733352606254
+    },
+    {
+      "actual_neural_cell_updates": 1589248,
+      "arm": "meta_theta",
+      "checkpoint_sha256": "9d3bcfc0f0f0a0954d1fef6bd136d16db0f8c8f2d0f0f567be55297d4023463a",
+      "history_rows_verified": 128,
+      "seed": 607,
+      "theta_change": [
+        0.43456917053179334,
+        0.1603382022808153,
+        -0.024966936513019428
+      ],
+      "weight_change_l2": 0.20480428437287143
+    },
+    {
+      "actual_neural_cell_updates": 1523712,
+      "arm": "standard",
+      "checkpoint_sha256": "9b15f0d2db53e4bdfd18e7fd8cd804ca8344baaaa8645b80bb854c350ce4fcca",
+      "history_rows_verified": 128,
+      "seed": 613,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.18229527242637414
+    },
+    {
+      "actual_neural_cell_updates": 1523712,
+      "arm": "fixed_theta",
+      "checkpoint_sha256": "f66f2ecae13463b093781f65155bc903acfb812039abb07241237a0bdfd024aa",
+      "history_rows_verified": 128,
+      "seed": 613,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.1810486593405726
+    },
+    {
+      "actual_neural_cell_updates": 1523712,
+      "arm": "meta_theta",
+      "checkpoint_sha256": "de66d3f200a23fdf7464f7e2bc71d81c87be4587cd12229593432d7c12234d74",
+      "history_rows_verified": 128,
+      "seed": 613,
+      "theta_change": [
+        0.6752757332704953,
+        0.2856587751630828,
+        -0.03853388420621262
+      ],
+      "weight_change_l2": 0.18099893286999869
+    },
+    {
+      "actual_neural_cell_updates": 1564672,
+      "arm": "standard",
+      "checkpoint_sha256": "fc2fe7b47da12e2bf7d7759729ce62509b9267dfdc7ddf737c417536858cfa92",
+      "history_rows_verified": 128,
+      "seed": 617,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.2268854134777053
+    },
+    {
+      "actual_neural_cell_updates": 1564672,
+      "arm": "fixed_theta",
+      "checkpoint_sha256": "ee7643ad7ae510f4fc50a42f528bc06f2348e705ace876cbbbcad688f6f0ad67",
+      "history_rows_verified": 128,
+      "seed": 617,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.2257522829379874
+    },
+    {
+      "actual_neural_cell_updates": 1564672,
+      "arm": "meta_theta",
+      "checkpoint_sha256": "02c6eba9c37028f84ec977330de70826a6b59417695d77b5539b3ba3abf99cd4",
+      "history_rows_verified": 128,
+      "seed": 617,
+      "theta_change": [
+        0.6745282659664283,
+        0.24664423078938258,
+        -0.038813114498897655
+      ],
+      "weight_change_l2": 0.22576569778994013
+    },
+    {
+      "actual_neural_cell_updates": 1589248,
+      "arm": "standard",
+      "checkpoint_sha256": "70cd242000f1c70440b4b9fd02af4862f605103012a5a185fdf039233eac1be3",
+      "history_rows_verified": 128,
+      "seed": 619,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.1936822660145193
+    },
+    {
+      "actual_neural_cell_updates": 1589248,
+      "arm": "fixed_theta",
+      "checkpoint_sha256": "195a47c7a1c2d41de36e933910b7ce9c5e9d68eb6c9d751f712058c5796e9443",
+      "history_rows_verified": 128,
+      "seed": 619,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.19738360323511187
+    },
+    {
+      "actual_neural_cell_updates": 1589248,
+      "arm": "meta_theta",
+      "checkpoint_sha256": "1935faa09cee101ab0153b46587034cf08ebac77bcf01b03176458082902ca92",
+      "history_rows_verified": 128,
+      "seed": 619,
+      "theta_change": [
+        0.6339016051952979,
+        0.32563530322939505,
+        -0.035673590516079795
+      ],
+      "weight_change_l2": 0.19532287687088448
+    },
+    {
+      "actual_neural_cell_updates": 1482752,
+      "arm": "standard",
+      "checkpoint_sha256": "d2e719fbc985082294063fae4c82056f727c067c6d4e647b4b2303c6b042e550",
+      "history_rows_verified": 128,
+      "seed": 631,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.16911098744975614
+    },
+    {
+      "actual_neural_cell_updates": 1482752,
+      "arm": "fixed_theta",
+      "checkpoint_sha256": "88d138026fb407f9c229f812ce23178b582ea666fbf584e5646140358ff7378b",
+      "history_rows_verified": 128,
+      "seed": 631,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.1686948677817706
+    },
+    {
+      "actual_neural_cell_updates": 1482752,
+      "arm": "meta_theta",
+      "checkpoint_sha256": "b0adf91e1303ef479e7ea6655ae6a7ee7dc61d5ca37fa108f7cb8c7b9a8c1e12",
+      "history_rows_verified": 128,
+      "seed": 631,
+      "theta_change": [
+        0.47322092058487564,
+        0.16108599115209254,
+        -0.023719883509461345
+      ],
+      "weight_change_l2": 0.16826320573086836
+    },
+    {
+      "actual_neural_cell_updates": 1597440,
+      "arm": "standard",
+      "checkpoint_sha256": "b658dc17ab10a3a6f6634deeb6fa5eb423a7d5b4ab7485bb8b81e29e829d288a",
+      "history_rows_verified": 128,
+      "seed": 641,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.18865820482068685
+    },
+    {
+      "actual_neural_cell_updates": 1597440,
+      "arm": "fixed_theta",
+      "checkpoint_sha256": "682dca489e8b8c05954e7773e89c7b04d44cd621786cd9590e11368ab3e5ec96",
+      "history_rows_verified": 128,
+      "seed": 641,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.18999008693877678
+    },
+    {
+      "actual_neural_cell_updates": 1597440,
+      "arm": "meta_theta",
+      "checkpoint_sha256": "91df11c8fbcd77ab68808a4e5b84a5359ae8ee8e478c4306ffee040195ea96a2",
+      "history_rows_verified": 128,
+      "seed": 641,
+      "theta_change": [
+        0.3457384241057371,
+        0.136498070300074,
+        -0.020816862349666607
+      ],
+      "weight_change_l2": 0.1890384788769807
+    },
+    {
+      "actual_neural_cell_updates": 1540096,
+      "arm": "standard",
+      "checkpoint_sha256": "5d28962560c6d10a5cbba4c485953f16386dc4b8878b6bea41d9f32fb3e37b9b",
+      "history_rows_verified": 128,
+      "seed": 643,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.14983095660181037
+    },
+    {
+      "actual_neural_cell_updates": 1540096,
+      "arm": "fixed_theta",
+      "checkpoint_sha256": "8f0712d781e60fdd4aa7c2dca805d6743458b109e5a335d0a5a38761f441bce8",
+      "history_rows_verified": 128,
+      "seed": 643,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.14969039026958691
+    },
+    {
+      "actual_neural_cell_updates": 1540096,
+      "arm": "meta_theta",
+      "checkpoint_sha256": "c14608e011f0200722b02e12893a335337e7d443c6753b4befb6fa20a3c1f9d6",
+      "history_rows_verified": 128,
+      "seed": 643,
+      "theta_change": [
+        -0.005747937674959264,
+        0.06641811008609633,
+        0.005271827468659299
+      ],
+      "weight_change_l2": 0.15076476961563803
+    },
+    {
+      "actual_neural_cell_updates": 1597440,
+      "arm": "standard",
+      "checkpoint_sha256": "11edfa79bddcf75d290cd15b499c8c1c7bd89ac1f5f7e6ee4998eb72f99656b7",
+      "history_rows_verified": 128,
+      "seed": 647,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.166184546270647
+    },
+    {
+      "actual_neural_cell_updates": 1597440,
+      "arm": "fixed_theta",
+      "checkpoint_sha256": "e65fdd5632bcf10358e074517d185e8e357f8b45e957fec3162fc76effa1744e",
+      "history_rows_verified": 128,
+      "seed": 647,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.16499926992557695
+    },
+    {
+      "actual_neural_cell_updates": 1597440,
+      "arm": "meta_theta",
+      "checkpoint_sha256": "29c45af99493d9eade7a365700c43de6f419e9c230cfecaa35934f91351c4a95",
+      "history_rows_verified": 128,
+      "seed": 647,
+      "theta_change": [
+        0.24316808635336154,
+        0.13428549237414034,
+        -0.007146019113157126
+      ],
+      "weight_change_l2": 0.16575104812473715
+    },
+    {
+      "actual_neural_cell_updates": 1564672,
+      "arm": "standard",
+      "checkpoint_sha256": "b55024bac1d379590eb0d8e8d4b458f7cdc2175ceca2ea2cf32425e97b927934",
+      "history_rows_verified": 128,
+      "seed": 653,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.1600054174518447
+    },
+    {
+      "actual_neural_cell_updates": 1564672,
+      "arm": "fixed_theta",
+      "checkpoint_sha256": "c894dc1a1ee5c338eb75c4916ebffc2b894f48aa5c9e864f6b6b394104fe4b30",
+      "history_rows_verified": 128,
+      "seed": 653,
+      "theta_change": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_change_l2": 0.15870995384790168
+    },
+    {
+      "actual_neural_cell_updates": 1564672,
+      "arm": "meta_theta",
+      "checkpoint_sha256": "cd61a989aa8b060e321d35ece1eae4508e506f1bd99a358cab787b32b05bc369",
+      "history_rows_verified": 128,
+      "seed": 653,
+      "theta_change": [
+        0.10057280194067728,
+        0.10032258749217693,
+        0.01883861915395539
+      ],
+      "weight_change_l2": 0.15809532974463933
+    }
+  ],
+  "fits_verified": 30,
+  "hypergradient_checks": [
+    {
+      "checkpoint_sha256": "5c82147c3165bba99ad285d8abdbfb3cffd3e434a7856d1d5a8da4574f870b73",
+      "checks": [
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            -2.9012447480972892e-05,
+            -2.4893470317676972e-05,
+            9.782232579125274e-07
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.001,
+          "full_update_difference": [
+            -2.9012433844233243e-05,
+            -2.489347111778173e-05,
+            9.782233634236803e-07
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 1.3636344025882482e-11
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            -2.9012447480972892e-05,
+            -2.4893470317676972e-05,
+            9.782232579125274e-07
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0003,
+          "full_update_difference": [
+            -2.9012446241723687e-05,
+            -2.48934704331442e-05,
+            9.782233356681047e-07
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 1.2392132528971926e-12
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            -2.9012447480972892e-05,
+            -2.4893470317676972e-05,
+            9.782232579125274e-07
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0001,
+          "full_update_difference": [
+            -2.9012447444465295e-05,
+            -2.4893470063069856e-05,
+            9.782236132238609e-07
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 3.55310985862004e-13
+        }
+      ],
+      "seed": 601
+    },
+    {
+      "checkpoint_sha256": "9d3bcfc0f0f0a0954d1fef6bd136d16db0f8c8f2d0f0f567be55297d4023463a",
+      "checks": [
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            -2.190829179061991e-06,
+            -1.3557735745015653e-05,
+            8.590704445371804e-07
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.001,
+          "full_update_difference": [
+            -2.190852527172993e-06,
+            -1.3557730271784862e-05,
+            8.590706201960785e-07
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 2.3348059849809175e-11
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            -2.190829179061991e-06,
+            -1.3557735745015653e-05,
+            8.590704445371804e-07
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0003,
+          "full_update_difference": [
+            -2.1908314051799493e-06,
+            -1.3557735212277324e-05,
+            8.59070592440503e-07
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 2.2261130814330473e-12
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            -2.190829179061991e-06,
+            -1.3557735745015653e-05,
+            8.590704445371804e-07
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0001,
+          "full_update_difference": [
+            -2.1908294622896562e-06,
+            -1.3557734934721566e-05,
+            8.590705924405029e-07
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 8.102831018800833e-13
+        }
+      ],
+      "seed": 607
+    },
+    {
+      "checkpoint_sha256": "de66d3f200a23fdf7464f7e2bc71d81c87be4587cd12229593432d7c12234d74",
+      "checks": [
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            -2.6163649359270446e-05,
+            -3.2375311258314507e-05,
+            1.8828511047537777e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.001,
+          "full_update_difference": [
+            -2.616364247476355e-05,
+            -3.237530554756063e-05,
+            1.8828512915458617e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 6.884326778469606e-12
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            -2.6163649359270446e-05,
+            -3.2375311258314507e-05,
+            1.8828511047537777e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0003,
+          "full_update_difference": [
+            -2.6163648840042224e-05,
+            -3.2375310765608845e-05,
+            1.8828511897754179e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 5.192146373377314e-13
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            -2.6163649359270446e-05,
+            -3.2375311258314507e-05,
+            1.8828511047537777e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0001,
+          "full_update_difference": [
+            -2.6163649580190906e-05,
+            -3.237531132072036e-05,
+            1.8828510972568324e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 2.2091468013260697e-13
+        }
+      ],
+      "seed": 613
+    },
+    {
+      "checkpoint_sha256": "02c6eba9c37028f84ec977330de70826a6b59417695d77b5539b3ba3abf99cd4",
+      "checks": [
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            4.158829578494771e-05,
+            4.262692598711753e-05,
+            -3.312395477325635e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.001,
+          "full_update_difference": [
+            4.1588284205307247e-05,
+            4.262691855050349e-05,
+            -3.312395857602013e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 1.157915890773381e-11
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            4.158829578494771e-05,
+            4.262692598711753e-05,
+            -3.312395477325635e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0003,
+          "full_update_difference": [
+            4.15882946599074e-05,
+            4.2626925137826774e-05,
+            -3.3123953580016523e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 1.1249935277106903e-12
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            4.158829578494771e-05,
+            4.262692598711753e-05,
+            -3.312395477325635e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0001,
+          "full_update_difference": [
+            4.158829558509325e-05,
+            4.262692587797545e-05,
+            -3.312395358001652e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 1.9984615141665191e-13
+        }
+      ],
+      "seed": 617
+    },
+    {
+      "checkpoint_sha256": "1935faa09cee101ab0153b46587034cf08ebac77bcf01b03176458082902ca92",
+      "checks": [
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            -5.444275718271348e-05,
+            -3.9429523694384236e-05,
+            4.076686630546323e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.001,
+          "full_update_difference": [
+            -5.444275119614872e-05,
+            -3.942952062074845e-05,
+            4.076687043497174e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 5.986238852231745e-12
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            -5.444275718271348e-05,
+            -3.9429523694384236e-05,
+            4.076686630546323e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0003,
+          "full_update_difference": [
+            -5.44427566917527e-05,
+            -3.942952335004672e-05,
+            4.076686580904247e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 4.909340530701859e-13
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            -5.444275718271348e-05,
+            -3.9429523694384236e-05,
+            4.076686630546323e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0001,
+          "full_update_difference": [
+            -5.444275696930845e-05,
+            -3.942952325752813e-05,
+            4.076686488385661e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 4.36838879785354e-13
+        }
+      ],
+      "seed": 619
+    },
+    {
+      "checkpoint_sha256": "b0adf91e1303ef479e7ea6655ae6a7ee7dc61d5ca37fa108f7cb8c7b9a8c1e12",
+      "checks": [
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            1.3583309589398475e-05,
+            1.1024644024502208e-05,
+            4.576240013323119e-07
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.001,
+          "full_update_difference": [
+            1.3583291824659227e-05,
+            1.1024648249868818e-05,
+            4.576241607878728e-07
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 1.7764497947285758e-11
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            1.3583309589398475e-05,
+            1.1024644024502208e-05,
+            4.576240013323119e-07
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0003,
+          "full_update_difference": [
+            1.3583307811870783e-05,
+            1.1024644530621687e-05,
+            4.5762393874326795e-07
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 1.777503546971359e-12
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            1.3583309589398475e-05,
+            1.1024644024502208e-05,
+            4.576240013323119e-07
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0001,
+          "full_update_difference": [
+            1.3583309477205319e-05,
+            1.1024643420398661e-05,
+            4.576244938547802e-07
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 6.040968873573524e-13
+        }
+      ],
+      "seed": 631
+    },
+    {
+      "checkpoint_sha256": "91df11c8fbcd77ab68808a4e5b84a5359ae8ee8e478c4306ffee040195ea96a2",
+      "checks": [
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            3.082446141543439e-05,
+            1.3813047642029883e-05,
+            -1.7154621746258573e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.001,
+          "full_update_difference": [
+            3.082446320412657e-05,
+            1.3813046872979129e-05,
+            -1.7154623555004633e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 1.7886370464342914e-12
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            3.082446141543439e-05,
+            1.3813047642029883e-05,
+            -1.7154621746258573e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0003,
+          "full_update_difference": [
+            3.082446159430319e-05,
+            1.3813047557616661e-05,
+            -1.7154622167225855e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 1.7886328114029773e-13
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            3.082446141543439e-05,
+            1.3813047642029883e-05,
+            -1.7154621746258573e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0001,
+          "full_update_difference": [
+            3.082446131674743e-05,
+            1.381304737257949e-05,
+            -1.7154622167225853e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 2.6944667097229677e-13
+        }
+      ],
+      "seed": 641
+    },
+    {
+      "checkpoint_sha256": "c14608e011f0200722b02e12893a335337e7d443c6753b4befb6fa20a3c1f9d6",
+      "checks": [
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            3.319349905497908e-06,
+            3.29432908840497e-06,
+            -8.371599620127397e-08
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.001,
+          "full_update_difference": [
+            3.319359093145735e-06,
+            3.2943284211661705e-06,
+            -8.371600634937693e-08
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 9.187617329864421e-12
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            3.319349905497908e-06,
+            3.29432908840497e-06,
+            -8.371599620127397e-08
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0003,
+          "full_update_difference": [
+            3.3193508127323432e-06,
+            3.2943290687962685e-06,
+            -8.37159970975184e-08
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 9.072314235913984e-13
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            3.319349905497908e-06,
+            3.29432908840497e-06,
+            -8.371599620127397e-08
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0001,
+          "full_update_difference": [
+            3.31935007258366e-06,
+            3.294328976277683e-06,
+            -8.371608961610377e-08
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 1.670851971718904e-13
+        }
+      ],
+      "seed": 643
+    },
+    {
+      "checkpoint_sha256": "29c45af99493d9eade7a365700c43de6f419e9c230cfecaa35934f91351c4a95",
+      "checks": [
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            -8.554916174259713e-05,
+            -3.753848002394026e-05,
+            6.1967948741716186e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.001,
+          "full_update_difference": [
+            -8.554918196068684e-05,
+            -3.753847316323444e-05,
+            6.19679541014051e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 2.021636021477086e-11
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            -8.554916174259713e-05,
+            -3.753848002394026e-05,
+            6.1967948741716186e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0003,
+          "full_update_difference": [
+            -8.554916367901437e-05,
+            -3.7538479176942495e-05,
+            6.196794744006696e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 1.9362515955013848e-12
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            -8.554916174259713e-05,
+            -3.753848002394026e-05,
+            6.1967948741716186e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0001,
+          "full_update_difference": [
+            -8.5549162198717e-05,
+            -3.7538480102128347e-05,
+            6.196794744006695e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 4.560808521868683e-13
+        }
+      ],
+      "seed": 647
+    },
+    {
+      "checkpoint_sha256": "cd61a989aa8b060e321d35ece1eae4508e506f1bd99a358cab787b32b05bc369",
+      "checks": [
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            5.507056895832834e-05,
+            3.2566561083197996e-05,
+            -1.9618494158987297e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.001,
+          "full_update_difference": [
+            5.507052380782085e-05,
+            3.256655820016441e-05,
+            -1.9618495161743965e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 4.5148021166661224e-11
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            5.507056895832834e-05,
+            3.2566561083197996e-05,
+            -1.9618494158987297e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0003,
+          "full_update_difference": [
+            5.507056486756905e-05,
+            3.256656092946268e-05,
+            -1.9618494791669625e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 4.090534025245163e-12
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            5.507056895832834e-05,
+            3.2566561083197996e-05,
+            -1.9618494158987297e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0001,
+          "full_update_difference": [
+            5.507056838327529e-05,
+            3.256656083694409e-05,
+            -1.9618495716855477e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 5.750213863811434e-13
+        }
+      ],
+      "seed": 653
+    }
+  ],
+  "hypergradient_probe_cell_updates": 268800,
+  "optimizer_and_history_verified": true,
+  "passed": true,
+  "phase": "confirmation",
+  "protocol_sha256": "1771097fb66caeeaf1f4ab236d7692384d34010adf036be41b6b1e0ae04f784e",
+  "raw_files_unchanged": true,
+  "raw_files_verified": 392,
+  "schema": "hepta.adaptive-neuron.learning-audit.v2",
+  "scope": "Independent raw-data hash and optimizer-history reconstruction, checkpoint/model/work checks and full-update derivative probes. Does not rerun the training trajectory or establish efficacy superiority. Timing includes these computations and source verification, excluding process import/startup and final receipt write.",
+  "shared_causal_schedule_verified": true,
+  "source": {
+    "seal_sha256": "594b1180532dc32b7d659f6d1031fa4047c9c6446b393a17590d27eab484019f",
+    "source_commit": "58c1f6caabd28ad99f2d425cfaa5c4e050f7a19a",
+    "source_tree": "142ae37061052500fcb445a713d8fd141dc5e46b",
+    "verified_inputs": 141
+  },
+  "source_seal_sha256": "594b1180532dc32b7d659f6d1031fa4047c9c6446b393a17590d27eab484019f",
+  "training_index_sha256": "c3b65a83711c0b070f69a2d39c27fbc7a0bb9e9f1b1d20cb15530f4190c2d5ed"
+}
