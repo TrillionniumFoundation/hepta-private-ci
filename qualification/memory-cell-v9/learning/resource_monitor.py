@@ -12,6 +12,7 @@ import json
 import os
 from pathlib import Path
 import resource
+import signal
 import subprocess
 import sys
 import time
@@ -69,6 +70,23 @@ def observe(root_pid, known, roots, began):
 
 
 def run(args):
+    termination = [None]
+
+    def request_stop(number, _frame):
+        # Do not raise here: Popen must return and publish the owned PID before
+        # cleanup can safely stop its fresh session and observed descendants.
+        if termination[0] is None:
+            termination[0] = number
+
+    previous_handler = signal.signal(signal.SIGTERM, request_stop)
+    try:
+        result = supervised_run(args, termination)
+        return result if termination[0] is None else 1
+    finally:
+        signal.signal(signal.SIGTERM, previous_handler)
+
+
+def supervised_run(args, termination):
     if not sys.platform.startswith('linux') or not hasattr(os, 'wait4'):
         raise ValueError('this resource accounting profile requires Linux /proc and wait4')
     if not 5 <= args.interval_ms <= 1000 or not 1 <= args.timeout_seconds <= 3600:
@@ -101,12 +119,13 @@ def run(args):
     with stdout_path.open('xb') as stdout, stderr_path.open('xb') as stderr, sample_path.open('xb') as sample_log:
         try:
             # The fresh session and unreaped direct child anchor group cleanup.
-            process = subprocess.Popen(command, stdout=stdout, stderr=stderr, start_new_session=True)
-            root_pid = process.pid
-            spawned_at = time.monotonic_ns()
-            root_visible_pid = visible_pid(root_pid)
-            known[root_visible_pid] = process_stat(root_visible_pid)['start_ticks']
-            while True:
+            if termination[0] is None:
+                process = subprocess.Popen(command, stdout=stdout, stderr=stderr, start_new_session=True)
+                root_pid = process.pid
+                spawned_at = time.monotonic_ns()
+                root_visible_pid = visible_pid(root_pid)
+                known[root_visible_pid] = process_stat(root_visible_pid)['start_ticks']
+            while termination[0] is None:
                 current = observe(root_visible_pid, known, roots, began)
                 if first_sample_at is None:
                     first_sample_at = current['monotonic_ns']
@@ -145,6 +164,8 @@ def run(args):
             if process is None:
                 launch_error = monitor_error
         finally:
+            if termination[0] is not None:
+                monitor_error = monitor_error or f'termination requested by {signal.Signals(termination[0]).name}'
             if process is not None:
                 if monitor_error is not None or timed_out or not exited:
                     cleanup = cleanup_tree(root_pid, root_visible_pid, exited, known, monitor_visible_pid)
@@ -158,6 +179,8 @@ def run(args):
                         monitor_error = monitor_error or 'direct child did not exit within bounded cleanup'
         os.fsync(sample_log.fileno())
     observation_ended = time.monotonic_ns()
+    if termination[0] is not None:
+        monitor_error = monitor_error or f'termination requested by {signal.Signals(termination[0]).name}'
     pre_gap = (first_sample_at if first_sample_at is not None else observation_ended) - began
     post_gap = observation_ended - previous['monotonic_ns'] if previous is not None else 0
     for value in totals.values():
@@ -170,6 +193,7 @@ def run(args):
         'monitor_pid': os.getpid(), 'child_pid': root_pid,
         'monitor_proc_visible_pid': monitor_visible_pid, 'child_proc_visible_pid': root_visible_pid,
         'exit_code': status, 'timed_out_or_sample_cap': timed_out,
+        'termination_signal': signal.Signals(termination[0]).name if termination[0] is not None else None,
         'started_monotonic_ns': began, 'child_spawned_monotonic_ns': spawned_at,
         'child_reaped_monotonic_ns': exited_at, 'observations_ended_monotonic_ns': observation_ended,
         'wall_ns_through_observation_close': observation_ended - began,
@@ -198,12 +222,24 @@ def run(args):
         'passed': monitor_error is None and exited and status == 0 and not timed_out and samples > 0
                   and child_usage is not None and cleanup['observed_tree_stopped']}
     with output.open('xb') as handle:
-        handle.write(encoded(receipt))
-        handle.flush()
-        os.fsync(handle.fileno())
-    print(json.dumps({'receipt': str(output), 'passed': receipt['passed'], 'samples': samples,
-                      'exit_code': status, 'full_cost_exact': False}, sort_keys=True), flush=True)
-    return 0 if receipt['passed'] else 1
+        while True:
+            if termination[0] is not None:
+                receipt.update(termination_signal=signal.Signals(termination[0]).name,
+                               monitor_error=receipt['monitor_error'] or f'termination requested by {signal.Signals(termination[0]).name}',
+                               all_sample_points_complete=False, passed=False)
+            handle.seek(0)
+            handle.write(encoded(receipt))
+            handle.truncate()
+            handle.flush()
+            os.fsync(handle.fileno())
+            print(json.dumps({'receipt': str(output), 'passed': receipt['passed'], 'samples': samples,
+                              'exit_code': status, 'full_cost_exact': False}, sort_keys=True), flush=True)
+            # The first stop can arrive during encoding, fsync or status output.
+            # Republish a failed receipt/status before returning, even if the
+            # child had exited zero. Further stops cannot restore success.
+            if termination[0] is None or receipt['termination_signal'] is not None:
+                break
+    return 0 if receipt['passed'] and termination[0] is None else 1
 
 
 def main():
