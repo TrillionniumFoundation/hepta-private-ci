@@ -95,6 +95,8 @@ def main():
     commands = [
         [python, "-I", "-B", "-m", "unittest", "discover", "-s", str(PROJECT / "addressing"), "-p", "*_tests.py"],
         [python, "-I", "-B", "-m", "unittest", "discover", "-s", str(PROJECT / "learning"), "-p", "*_tests.py"],
+        [python, "-I", "-B", str(PROJECT / "learning/fresh_reader.py"), "qualify", "--demo",
+         "--output", str(output / "fresh-reader")],
         ["cargo", "build", "--locked", "--manifest-path", "codex-rs/Cargo.toml", "-p", "codex-app-server", "--bin", "codex-app-server"],
         ordinary,
     ]
@@ -123,7 +125,7 @@ def main():
     receipt["final_tracked_changes"] = git("status", "--porcelain", "--untracked-files=no")
     (output / "generated.patch").write_bytes(subprocess.check_output(["git", "diff", "--binary"], cwd=ROOT))
     receipt["files"] = {str(path.relative_to(output)): identity(path) for path in sorted(output.rglob("*")) if path.is_file()}
-    required = ["legacy-network-process.json"]
+    required = ["legacy-network-process.json", "fresh-reader/receipt.json"]
     if request["mode"] == "formal":
         required.extend(name for name in exports.values() if name != "legacy-network-process.json")
         required.extend(("native-language-audit.json", "continual-learning-score.json", "structure-learning-score.json"))
