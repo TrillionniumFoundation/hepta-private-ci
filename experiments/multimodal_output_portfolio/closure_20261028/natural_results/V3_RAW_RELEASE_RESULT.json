@@ -1,0 +1,23 @@
+{
+  "after": {
+    "cgroup_memory_current_bytes": 7843164160,
+    "shm_available_bytes": 883359744
+  },
+  "all_target_paths_absent": true,
+  "before": {
+    "cgroup_memory_current_bytes": 8256282624,
+    "shm_available_bytes": 465661952
+  },
+  "calibration_consumption_marker_retained": true,
+  "created_at_unix": 1793182581.0771341,
+  "limits": "The observed global memory delta includes unrelated shared workloads; exact owned release accounting is the file/inode manifest. Restore each file using its recorded archive identity and member mapping.",
+  "logical_bytes_unlinked": 624725192,
+  "observer_training_feature_files_retained": 512,
+  "plan_sha256": "77e39972e26c2c2c57b81fd85d54f47c6cd98b99e1c15bb3a217df1afc9acd86",
+  "release_journal_sha256": "296c806bcaef9812473dbabd65d8be92d508f19dacdfefebfb943303f1f1e1ec",
+  "released_files": 768,
+  "schema": "hepta.closure.verified-owned-raw-release-result.v1",
+  "source_and_observer_freezes_unchanged": true,
+  "source_receipts_retained": 896,
+  "unique_fully_unlinked_inode_bytes": 416679607
+}

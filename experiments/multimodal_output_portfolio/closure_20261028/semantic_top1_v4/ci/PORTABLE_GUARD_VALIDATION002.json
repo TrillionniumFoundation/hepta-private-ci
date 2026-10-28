@@ -1,0 +1,42 @@
+{
+  "actual_resource_observation": {
+    "VmHWM_bytes": 37728256,
+    "VmRSS_bytes": 26132480,
+    "cgroup_ancestor_observations": [
+      {
+        "current_bytes": 8460926976,
+        "limit_bytes": 8589934592,
+        "memory_current_raw": "8460926976",
+        "memory_max_raw": "8589934592",
+        "path": "/sys/fs/cgroup",
+        "remaining_bytes": 129007616,
+        "visible_hierarchy_root": true
+      }
+    ],
+    "cgroup_current_bytes": 8460926976,
+    "cgroup_limit_bytes": 8589934592,
+    "cgroup_membership": "/",
+    "cgroup_mount_root": "/",
+    "cgroup_mountpoint": "/sys/fs/cgroup",
+    "current_cgroup_path": "/sys/fs/cgroup",
+    "effective_headroom_bytes": 129007616,
+    "host_available_bytes": 3487760384,
+    "host_total_bytes": 10451435520,
+    "invisible_ancestor_limits_known": false,
+    "mapping_kind": "membership_relative_to_mount_root",
+    "observation_is_future_memory_guarantee": false,
+    "observation_status": "observed_visible_limits",
+    "scope": "Host MemAvailable and observable current/ancestor cgroup-v2 limits only. Unobservable ancestor restrictions and concurrent allocation changes are not inferred."
+  },
+  "current_pilot_file_sha256": "8cdef6b074217504d1cdcc419dfa635f758c042978ab00dfdc1fadaf1da31615",
+  "fitting_updates": 0,
+  "holdout_media_accesses": 0,
+  "model_loads": 0,
+  "network_requests": 0,
+  "passed": true,
+  "schema": "hepta.closure.top1-v4-portable-guards.v1",
+  "test_log": "test_actual_registered_archive_and_roles (experiments.multimodal_output_portfolio.closure_20261028.semantic_top1_v4.ci_tests.PilotGuards.test_actual_registered_archive_and_roles) ... ok\ntest_archive_rejects_link (experiments.multimodal_output_portfolio.closure_20261028.semantic_top1_v4.ci_tests.PilotGuards.test_archive_rejects_link) ... ok\ntest_archive_rejects_unregistered_member (experiments.multimodal_output_portfolio.closure_20261028.semantic_top1_v4.ci_tests.PilotGuards.test_archive_rejects_unregistered_member) ... ok\ntest_corrupted_archive_is_rejected (experiments.multimodal_output_portfolio.closure_20261028.semantic_top1_v4.ci_tests.PilotGuards.test_corrupted_archive_is_rejected) ... ok\ntest_forbidden_paths (experiments.multimodal_output_portfolio.closure_20261028.semantic_top1_v4.ci_tests.PilotGuards.test_forbidden_paths) ... ok\ntest_invalid_memory_value_blocks (experiments.multimodal_output_portfolio.closure_20261028.semantic_top1_v4.ci_runtime_tests.ResourceGuards.test_invalid_memory_value_blocks) ... ok\ntest_mount_escapes_are_decoded_and_membership_root_is_resolved (experiments.multimodal_output_portfolio.closure_20261028.semantic_top1_v4.ci_runtime_tests.ResourceGuards.test_mount_escapes_are_decoded_and_membership_root_is_resolved) ... ok\ntest_multiple_mappings_and_traversal_block (experiments.multimodal_output_portfolio.closure_20261028.semantic_top1_v4.ci_runtime_tests.ResourceGuards.test_multiple_mappings_and_traversal_block) ... ok\ntest_namespace_root_retains_its_own_real_cap (experiments.multimodal_output_portfolio.closure_20261028.semantic_top1_v4.ci_runtime_tests.ResourceGuards.test_namespace_root_retains_its_own_real_cap) ... ok\ntest_nested_parent_is_more_restrictive (experiments.multimodal_output_portfolio.closure_20261028.semantic_top1_v4.ci_runtime_tests.ResourceGuards.test_nested_parent_is_more_restrictive) ... ok\ntest_nonroot_bind_mount_missing_interfaces_blocks (experiments.multimodal_output_portfolio.closure_20261028.semantic_top1_v4.ci_runtime_tests.ResourceGuards.test_nonroot_bind_mount_missing_interfaces_blocks) ... ok\ntest_partial_or_nonroot_missing_pair_blocks (experiments.multimodal_output_portfolio.closure_20261028.semantic_top1_v4.ci_runtime_tests.ResourceGuards.test_partial_or_nonroot_missing_pair_blocks) ... ok\ntest_true_visible_root_without_files_is_explicit_host_observation (experiments.multimodal_output_portfolio.closure_20261028.semantic_top1_v4.ci_runtime_tests.ResourceGuards.test_true_visible_root_without_files_is_explicit_host_observation) ... ok\ntest_unlimited_child_does_not_erase_parent_cap (experiments.multimodal_output_portfolio.closure_20261028.semantic_top1_v4.ci_runtime_tests.ResourceGuards.test_unlimited_child_does_not_erase_parent_cap) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.141s\n\nOK\n",
+  "tests_run": 14,
+  "torch_imported": false,
+  "wall_seconds": 0.14252460900024744
+}

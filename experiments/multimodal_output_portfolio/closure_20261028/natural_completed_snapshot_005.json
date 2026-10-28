@@ -1,0 +1,422 @@
+{
+  "active_writing_file_included": false,
+  "checks": {
+    "codespell_existing_repository_config_exit_code": 0,
+    "current_portable_implementation_pins_match": 19,
+    "json_and_jsonl_parse_passed": true,
+    "metadata_HEAD_payload_bytes_read": 0,
+    "numerical_mechanism_function_ASTs_and_CLI_equal_original": true,
+    "official_fixed_endpoint_HEAD_requests_succeeded": 5,
+    "original_registered_source_pins_unchanged": 10,
+    "portable_seed_and_resource_behavior_tests_passed": 14,
+    "python_ast_passed": true,
+    "report_relative_evidence_links_verified": true,
+    "torch_imported_by_behavior_tests": false,
+    "workflow_yaml_parse_passed": true
+  },
+  "created_at_unix": 1793186326.5454366,
+  "file_count": 76,
+  "files": [
+    {
+      "bytes": 3104,
+      "path": ".github/workflows/ndu-natural-observer-v4.yml",
+      "sha256": "51fabeb4721859203b2f8348e439a3a430e22ea749cdcb54d441e5da55fed41d"
+    },
+    {
+      "bytes": 9889,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/natural_results/TRAINING_ONLY_NEXT_STUDY_DIAGNOSTIC_001.json",
+      "sha256": "4dba0c87392c618c2af4882146b3ab81fd73b2371245063db25a5b820ec275ec"
+    },
+    {
+      "bytes": 1049,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/natural_results/V3_RAW_RELEASE_RESULT.json",
+      "sha256": "7b32804e58cbc16f7b5e10c23fdbb88b4c64191dd38f816742cc26d3b1d008d8"
+    },
+    {
+      "bytes": 14030,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/natural_v3_archive_index.json",
+      "sha256": "9d6b734a37acc6d58cb8a4735b043ed7fd13631ff8bcbf6db816941ee6db57e1"
+    },
+    {
+      "bytes": 12827,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/README.md",
+      "sha256": "6335f4bc05a0aa913713c361934ac473fa311a920b36456bc9c4b852b437d5c6"
+    },
+    {
+      "bytes": 3758,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/LOCAL_PORTABLE_RESOURCE_ATTEMPT002.json",
+      "sha256": "f2edbeed2e3fa8cf8a68ca577ec0e48225efac826e00d17a65f00d968fd210a3"
+    },
+    {
+      "bytes": 1024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/LOCAL_RESOURCE_ATTEMPT001.json",
+      "sha256": "b95c148ef1ff68d40d74d6dc713eceabf69225c24d34625dfe44c81ab6e75ae6"
+    },
+    {
+      "bytes": 19666,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/PILOT.json",
+      "sha256": "8cdef6b074217504d1cdcc419dfa635f758c042978ab00dfdc1fadaf1da31615"
+    },
+    {
+      "bytes": 2812,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/PORTABILITY_AMENDMENT.json",
+      "sha256": "8485238cea591e798a4f42f2769f9d5e9002f998c40583bd22c08202c9dd598e"
+    },
+    {
+      "bytes": 4305,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/PORTABILITY_AMENDMENT002.json",
+      "sha256": "83340e358910ea4aede9f05e140984b59434509344713fe0790ce8b030e70fff"
+    },
+    {
+      "bytes": 4396,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/PORTABLE_GUARD_VALIDATION002.json",
+      "sha256": "29b7e7190646968db6271813e15b58ebdaf12bcd2169553c18e9f088cc255e40"
+    },
+    {
+      "bytes": 2492,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/PUBLIC_ENDPOINTS.json",
+      "sha256": "8d1cb1f6ad3a983ada9fa17a9249771cc079905b988952a83550de2f16e88a23"
+    },
+    {
+      "bytes": 3096,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/PYTHON_AVAILABILITY.json",
+      "sha256": "c2ad3f401b77e25d6e1875154aa41cb6b1d4b91f2b74a02fc82e7fa1ef7c0f51"
+    },
+    {
+      "bytes": 31365,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/REGISTRATION.json",
+      "sha256": "dbbe54b0b15e789f4955f020e5a2cbef91c1759810c886400d801308824708b5"
+    },
+    {
+      "bytes": 817,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/RUNTIME_PORT_EQUIVALENCE.json",
+      "sha256": "1bcb124a21dec6d8af52050cf7697e26d00c534ce78e48379cacf671bc9e91df"
+    },
+    {
+      "bytes": 19169,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/initial_resource_assumption/PILOT.json",
+      "sha256": "a9d68c3071921907813c8edeea152eabea8af874669a8e5ae6e5f706df5a6c84"
+    },
+    {
+      "bytes": 15386,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/initial_resource_assumption/ci_pilot.py.txt",
+      "sha256": "491f6e53ae3f3fd21d0d3453fa44bc93f9b6463b88c651e5acbd6fd74cab0c65"
+    },
+    {
+      "bytes": 2711,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/initial_resource_assumption/ci_tests.py.txt",
+      "sha256": "f6e716e7d2534e9635a21c25b4eb07549d58910f31296eddfff89cef190cc881"
+    },
+    {
+      "bytes": 6294,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/initial_resource_assumption/seed_pack.py.txt",
+      "sha256": "e667bd336ac90271cf603927a7773a212255fce1d0b4671f39b6e71f3b39cd1c"
+    },
+    {
+      "bytes": 38023,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-001.jsonl",
+      "sha256": "76199edd18bd6279fe6daaff0783328b6f99c316505fd6f9fd33a495f3460e76"
+    },
+    {
+      "bytes": 38023,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-002.jsonl",
+      "sha256": "214b4e531cfa2e9573785840f6f1ec6ebd9d665bd2ce1933436780a876c9b93b"
+    },
+    {
+      "bytes": 38023,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-003.jsonl",
+      "sha256": "744db1056c652c3912fcb291631aac3f25e200d99be7500107bd36f175ed4dc2"
+    },
+    {
+      "bytes": 38023,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-004.jsonl",
+      "sha256": "55af109c2fd7c798b04a2f4c9a164e4a03dcb6ee5554599f7633370d2e376dc0"
+    },
+    {
+      "bytes": 38023,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-005.jsonl",
+      "sha256": "c89a1c602150b26d12357af1e99282721cdff540596a6f8436c9c327d08a3c1f"
+    },
+    {
+      "bytes": 38023,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-006.jsonl",
+      "sha256": "2902ff6f3746978cf34be8d42685663c9cd3454318367289411f39a1e49ac498"
+    },
+    {
+      "bytes": 38023,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-007.jsonl",
+      "sha256": "3f7b2490be67cad4466bd2b28a825448d9d2833606468bc81efc6abd42d240d5"
+    },
+    {
+      "bytes": 38023,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-008.jsonl",
+      "sha256": "5b284e1b2acdf92d80fcbc287699130384e0e1f1e667600d3633422aeae8fd55"
+    },
+    {
+      "bytes": 38023,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-009.jsonl",
+      "sha256": "0252410231bf68c72ebe844bdbc35166b153aed3016559640d1925517c2f315f"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-010.jsonl",
+      "sha256": "83632fbbbb88a3e568a68108f8a79c62a49fe7e7e913118231cbdbde2779818c"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-011.jsonl",
+      "sha256": "cf43ef42f2ae4748ac437acd03fcb558ed0fd8c745117429daba5e53fc46f196"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-012.jsonl",
+      "sha256": "d86bdf0eccd3ac500f62d04353c06cbbdc21f2b5bce31a951fa048a899561ff1"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-013.jsonl",
+      "sha256": "6ff1858b76cc716879ac729a7f07611ab10ef087c1b3fd599cd1e434ddd55b27"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-014.jsonl",
+      "sha256": "cce90761c0576437124e697fe25883a0049f52e18c8dd4b2cb815fef83f2f810"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-015.jsonl",
+      "sha256": "4525082d0c95afb90a673138d9ea8b47129293180ddd6277bf20bd27fce7f292"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-016.jsonl",
+      "sha256": "aad2a7b412b5bfd017e2d0445d0b5bfa897fcbe632c0b45b4532ac9861e4058f"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-017.jsonl",
+      "sha256": "f9a86fb0861cfc1a040dcc58926d58cbd3ec0bd5e7a78c639d34bf2971d435ab"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-018.jsonl",
+      "sha256": "64ee8ff4cd0679c41807cd6ce0849939e4e9cfe0d64f92fc2c5bc4044545b164"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-019.jsonl",
+      "sha256": "bf6290e48014a0646e7aa28094c055dd515ea8352644de6ed4b218770b8f7c32"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-020.jsonl",
+      "sha256": "6e0dc709e0c2e197ebcc585bebe248e473a2f767e26785133db885fca6284b3f"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-021.jsonl",
+      "sha256": "08e94527e4ef6f8e3b6eb7d42339452156abdad4b34542f912a576e22e2c6308"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-022.jsonl",
+      "sha256": "305232e6efb8a188fbb60aa0bbcd1121e9796482ac21778282075960dec22e00"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-023.jsonl",
+      "sha256": "484d636e10e7b8cc9b7cf4976945984353cc5cc5607e009ac0a2b04a41a4d098"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-024.jsonl",
+      "sha256": "48530193dfa98e73e98a1459e2e51fd505486f0d9bb6cdaf9535c650959162aa"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-025.jsonl",
+      "sha256": "7bbacab99bdc254b76e87bd239ded3753caf79108272f52c0e967250a0de8664"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-026.jsonl",
+      "sha256": "6b00c456e8300a112a99ded3f9674d0cbac68adbc6ab25a9dd80f4bb0f370abf"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-027.jsonl",
+      "sha256": "18f9d8079231aa6c57b1ead1c811d6acbed2f57c5c8fcc2d0feefcf0a9841b97"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-028.jsonl",
+      "sha256": "08b6492b1492a2604deb5c4df45f7db47ba8ad6edc3dee4562068cdb09ce71b6"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-029.jsonl",
+      "sha256": "ec0c379221bd7b89d26e11c44aba0004da87064bef21d03837eb1d5b062af686"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-030.jsonl",
+      "sha256": "a5e4961437766023267b815fcd9aed36eff05b5d4d1ecfe6bafdda8f5417c3d1"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-031.jsonl",
+      "sha256": "ed79d699ceb7dbb3e58a429c9e56a399667ed5281c77a2d96f6850f42110a4e8"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-032.jsonl",
+      "sha256": "67370308552f0469e115b7182d13814e815c742d1d349007857da1e5fc9683e5"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-033.jsonl",
+      "sha256": "a704d8d2e6cc394ffece57c036d8bf03559e1c7837f7a83660d819cf50721276"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-034.jsonl",
+      "sha256": "3613b4276e9337017b59bb46c7f54da3eed1a4c4839cd0a66126c022434cd706"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-035.jsonl",
+      "sha256": "293c5d6cdcda97c1642abdb7e4756d2b02b3a20c7a3a2431a9ebeef213cb6693"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-036.jsonl",
+      "sha256": "ce371d721542973e274dfe62f313882442846b847658ec9e635b598d965b6beb"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-037.jsonl",
+      "sha256": "a32a9f3d253803043032090a8f05ecd79ee80fffc3f7a987c53217b8073fb32d"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-038.jsonl",
+      "sha256": "c71a1641f16caec6933131a6cb748506ae44da88d84b2c286e9a8bd0ad57c474"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-039.jsonl",
+      "sha256": "fd595a8faa4037c59c7d322a223f8342da4302e126982ea15f7e230534ed2419"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-040.jsonl",
+      "sha256": "075ff6f0d804fbdc6c14a6035a43078cbcf9d845664229a8b58258e109092460"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-041.jsonl",
+      "sha256": "babdae8bc260cb5776886f1866f19147eb961574e3fe01c52b6bdd41d745d664"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-042.jsonl",
+      "sha256": "df6be36ef6a2e54a391a12a6050adbd6dede5cdec1964f4132c9899bf53b4eba"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-043.jsonl",
+      "sha256": "4524c90606fac5587e64e078b5351d0395b99e54c0abeccfda26d201399ddab7"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-044.jsonl",
+      "sha256": "83cd78f2886c632da03e3c70e490ecb14c2383e5483bf199031a58ac7ce65180"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-045.jsonl",
+      "sha256": "1cdedf5a5719bc872b77247adc30ac8e55e97e1d6390bee8a42f94a5c5fb52e9"
+    },
+    {
+      "bytes": 38024,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-046.jsonl",
+      "sha256": "c7d305be8aa9b3f514292eae62d31ffd58809be38c1f7ab48e96125b5d65c94f"
+    },
+    {
+      "bytes": 37740,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/part-047.jsonl",
+      "sha256": "47f2914d8cff390ca5be4e2fb23fa3d2bc99d9c77ab4dc1e32221a18067401dc"
+    },
+    {
+      "bytes": 11204,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci_mechanism.py",
+      "sha256": "949c444cc0cf1ea900d00866d5ca67ce8b4a52750cc7ede9e90601dd8eb9a120"
+    },
+    {
+      "bytes": 15412,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci_pilot.py",
+      "sha256": "f3c67d96c6a7c2be37e7cc8b5a705f519da7e1b9d39d85106461c8b66360cdd2"
+    },
+    {
+      "bytes": 7134,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci_runtime.py",
+      "sha256": "037d3c0601c337051abb9ce84085944530e4ceb770e25fe3c9fea93959a55f9d"
+    },
+    {
+      "bytes": 3659,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci_runtime_tests.py",
+      "sha256": "6a310b61617bdc664e1fecf4e317ad45c46d1432e3fdeb296ed13f997700b144"
+    },
+    {
+      "bytes": 2756,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci_tests.py",
+      "sha256": "5dd7765c14bb7b8a2100040c09620db07b80207ec371826081bb0687515dd6bd"
+    },
+    {
+      "bytes": 2401,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/features.py",
+      "sha256": "25bbc36d35886c26a4fc9942174334d88ce38b1e5a020fd17e096156bed68176"
+    },
+    {
+      "bytes": 12013,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/mechanism.py",
+      "sha256": "1d41eb5d3bf9764cab4d029f2ba7b7164b079eb04b981e23193ad0c903f52c20"
+    },
+    {
+      "bytes": 13548,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/registration.py",
+      "sha256": "ee45ccfd437988f717ebd644814cdd4a7217fa7ba1fac19c459f63a1728163a0"
+    },
+    {
+      "bytes": 6353,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/seed_pack.py",
+      "sha256": "df7422e43e6c61a216afbab8678c42e7ce5199196fe5f5e11c488c9761c1a955"
+    },
+    {
+      "bytes": 15722,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_training_diagnostic.py",
+      "sha256": "c19a26fadcf10ff3046b76c7f44c8f04dffb047a2bcdc8a6a671d7338e8bfc13"
+    }
+  ],
+  "independent_observer_adequate": false,
+  "large_evidence_custody": "All14 parts durably confirmed; 480934288 compressed bytes. natural_v3_archive_index.json binds complete plans, independent upload confirmation, exact authorized raw release, retained observer-training cache/consumption markers, and the full training-only diagnostic. No independent remote download readback is claimed.",
+  "maximum_blob_bytes": 38024,
+  "new_training_or_holdout_access": false,
+  "previous_completed_snapshot_sha256": "809c496e3324ee39d6ca38f817af0c4eb1d0c8e2ad58b8ddaac36e8f757da342",
+  "publication_boundary": "This increment preserves snapshots001\u2013004 and all original studies. It adds final custody, training-only diagnostics, and a separately registered original-top1 observer follow-up with a fixed training-source CI pilot.",
+  "schema": "hepta.closure.natural-completed-result-snapshot.v1",
+  "source_protocol_sha256": "ad58bf5529af473f722c8e48a44f34ae07e364356b664a3a79458fecf1405b9d",
+  "total_bytes": 2035227,
+  "v4_status": {
+    "full_fitting_status": "Architecture/folds/candidates/update budget registered; fitting implementation must be independently pinned before any optimizer execution.",
+    "mechanism_status": "Local attempts blocked before heavy imports/downloads; portable CI entry prepared. No feature/RSS mechanism pass or semantic improvement claimed.",
+    "new_adequacy_sources_allocated_or_accessed": 0,
+    "new_model_feature_executions": 0,
+    "new_optimizer_updates": 0,
+    "old_development_or_calibration_predictions_read_for_v4": false,
+    "original_observer_task_gate_or_ontology_modified": false,
+    "portable_pilot_sha256": "bd0c1db20bf48ca74cb65675fa0ca5eb212b871ba0ac802fc265ae03bae083f0",
+    "registration_sha256": "07152eb03b3df4d98ca97f5cf7b21b884eaac9311e9ece9c82d705c5143e30c2",
+    "reserved_policy_or_qualification_sources_accessed": 0
+  }
+}

@@ -1,0 +1,70 @@
+name: NDU original top1 observer v4 training-source mechanism
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - ".github/workflows/ndu-natural-observer-v4.yml"
+      - "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ndu-natural-observer-v4-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  fixed-eight-training-sources:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && (github.event_name == 'workflow_dispatch' || (github.event.pull_request.number == 4155 && github.event.pull_request.head.repo.full_name == github.repository))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONNOUSERSITE: "1"
+      PYTHONHASHSEED: "0"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "2"
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Prepare evidence directory
+        run: mkdir -p "$RUNNER_TEMP/hepta-observer-v4"
+      - name: Check out the exact candidate without persisted credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TESTED_SHA }}
+          persist-credentials: false
+      - name: Install the registered Python release
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Verify portable seed and execution guards without models
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          python -B -m unittest experiments.multimodal_output_portfolio.closure_20261028.semantic_top1_v4.ci_tests -v 2>&1 | tee "$RUNNER_TEMP/hepta-observer-v4/guards.log"
+          python -B -m experiments.multimodal_output_portfolio.closure_20261028.semantic_top1_v4.ci_pilot \
+            --verify-seed-only --output "$RUNNER_TEMP/hepta-observer-v4/seed-check" \
+            2>&1 | tee "$RUNNER_TEMP/hepta-observer-v4/seed-check.log"
+      - name: Run exactly eight registered training sources and forty-three events
+        run: |
+          set -euo pipefail
+          python -B -m experiments.multimodal_output_portfolio.closure_20261028.semantic_top1_v4.ci_pilot \
+            --output "$RUNNER_TEMP/hepta-observer-v4/pilot" \
+            2>&1 | tee "$RUNNER_TEMP/hepta-observer-v4/pilot.log"
+          git diff --exit-code
+      - name: Preserve real media, features, costs, and partial failure evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-natural-observer-v4-${{ env.TESTED_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/hepta-observer-v4/
+            !${{ runner.temp }}/hepta-observer-v4/**/assets/**
+          if-no-files-found: error
+          retention-days: 30
