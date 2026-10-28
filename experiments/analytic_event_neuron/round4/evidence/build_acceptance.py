@@ -92,6 +92,18 @@ def build(root, output):
         },
         "calibration_profiles": profiles,
         "runtime_gates": runtime["acceptance"],
+        "native_replay_scope": review["native_replay_scope"],
+        "runtime_interruption_and_recovery": {
+            "interrupted_attempts_receipt_sha256": digest(root / "RUNTIME_INTERRUPTION.json"),
+            "recovery_completion_sha256": digest(root / "runtime_recovery/COMPLETED.json"),
+            "failed_detached_launch_receipt_sha256": digest(root / "RUNTIME_DETACHED_LAUNCH_FAILURE.json"),
+            "complete_registered_cohorts_only_enter_scientific_statistics": True,
+            "interrupted_attempts_are_additional_work_not_new_independent_samples": True,
+            "interrupted_total_native_calls": None,
+            "interrupted_total_cpu_seconds": None,
+            "interrupted_full_wall_seconds": None,
+            "scope": "Exact interrupted bytes and observed lifetime bounds are preserved; completed retries use the same frozen cohorts. Unknown costs are not represented as zero.",
+        },
         "runtime_primary_utility_contrasts": {
             key: runtime["utility_contrasts"][key] for key in ("event_vs_direct", "event_vs_float")
         },
@@ -115,7 +127,7 @@ def build(root, output):
             {"order": 4, "delivered": "Registered hidden-state task with paid sensor acquisition, wait/repair/stop and final realized utility.",
              "boundary": "The environment is controlled synthetic data; primary runtime claims are paired noninferiority, with descriptive secondary utility comparisons."},
             {"order": 5, "delivered": "Actual Hepta text/PNG delivery and readback, native state evolution, action choice, final scoring and complete cohort native replay.",
-             "boundary": "The existing binary is reused byte-exactly; no fresh Rust build. Qualification failure/recovery calls are separately counted and not all replayed."},
+             "boundary": "The existing binary is reused byte-exactly; no fresh Rust build. Interrupted partial/unreturned calls and qualification failure/recovery calls are separately reported and not exhaustively replayed."},
             {"order": 6, "delivered": "Versioned adapter state, positive categorical Q24 release, fresh-process recovery, corruption/failure qualification and separately reported costs/retention/calibration.",
              "boundary": "Original-information calibration still fails. No unlimited retention, general-purpose out-of-domain claim, isolated hardware speed/energy result, or production promotion."},
         ],
