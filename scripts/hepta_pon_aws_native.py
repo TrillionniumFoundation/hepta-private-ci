@@ -213,12 +213,25 @@ def prepare(output, source, scenario):
         "--format-version",
         "1",
     ]
+    compile_features = [
+        "cargo",
+        "+1.96.0",
+        "check",
+        *arguments,
+        "--tests",
+        "--profile",
+        "test",
+        "--message-format",
+        "json",
+    ]
     discover = [
         "cargo",
         "+1.96.0",
         "nextest",
         "list",
         *arguments,
+        "--cargo-profile",
+        "test",
         "--config-file",
         str(config),
         "--profile",
@@ -230,6 +243,8 @@ def prepare(output, source, scenario):
         "just",
         "test",
         *arguments,
+        "--cargo-profile",
+        "test",
         "--config-file",
         str(config),
         "--retries",
@@ -244,7 +259,7 @@ def prepare(output, source, scenario):
         manifest.parent / "Cargo.lock" if upstream else ROOT / "codex-rs/Cargo.lock"
     )
     record = {
-        "schema": "hepta-aws-native-observation-v1",
+        "schema": "hepta-aws-native-observation-v2",
         "source": before,
         "scenario": scenario,
         "complete_scenario_denominator": list(SCENARIOS),
@@ -257,6 +272,8 @@ def prepare(output, source, scenario):
         "job_minutes": 50,
         "native_step_minutes": 35,
         "test_retries": 0,
+        "cargo_profile": "test",
+        "feature_evidence": "Actual cargo check --tests compiler-artifact features, with the same package/manifest/feature arguments and test profile as nextest; workspace metadata alone cannot prove isolated features",
         "deadline_policy": "Hosted step/job watchdog only; interrupted outcomes stay unknown; original nextest case timeouts unchanged",
         "original_inputs": {
             name: identity((ROOT / name).read_bytes()) for name in INPUTS
@@ -268,6 +285,7 @@ def prepare(output, source, scenario):
         ),
         "lock_path": str(locked),
         "lock_before": identity(locked.read_bytes()),
+        "actual_compilation": None,
         "test_inventory": None,
         "terminal_cases": None,
         "stages": [
@@ -283,6 +301,7 @@ def prepare(output, source, scenario):
                 ("nextest-version", ["cargo", "nextest", "--version"]),
                 ("just-version", ["just", "--version"]),
                 ("metadata", metadata),
+                ("compile-features", compile_features),
                 ("discovery", discover),
                 ("tests", tests),
             ]
@@ -296,14 +315,18 @@ def prepare(output, source, scenario):
     write_json(output / "record.json", record)
 
 
-def check_features(raw, scenario):
-    metadata = json.loads(raw)
-    nodes = {node["id"]: set(node["features"]) for node in metadata["resolve"]["nodes"]}
-    packages = {
-        package["name"]: package
-        for package in metadata["packages"]
-        if package["name"] in {"aws-config", "aws-sigv4"}
-    }
+def subject_packages(metadata, scenario):
+    names = {"aws-config"}
+    if scenario.startswith("auth-"):
+        names |= {"aws-sigv4", "codex-aws-auth"}
+    elif scenario == "upstream-sigv4a":
+        names = {"aws-sigv4"}
+    selected = [package for package in metadata["packages"] if package["name"] in names]
+    packages = {package["name"]: package for package in selected}
+    require(
+        set(packages) == names and len(selected) == len(names),
+        "missing or ambiguous selected package",
+    )
     if scenario != "upstream-sigv4a":
         provider = packages["aws-config"]
         require(
@@ -311,7 +334,63 @@ def check_features(raw, scenario):
             and Path(provider["manifest_path"]) == ROOT / VENDOR / "Cargo.toml",
             "provider owner differs",
         )
-        enabled = nodes[provider["id"]]
+    return packages
+
+
+def metadata_features(raw, scenario):
+    """Record workspace-wide resolution without confusing it with build scope."""
+    metadata = json.loads(raw)
+    packages = subject_packages(metadata, scenario)
+    nodes = {node["id"]: node["features"] for node in metadata["resolve"]["nodes"]}
+    return {
+        name: sorted(nodes[package["id"]]) for name, package in sorted(packages.items())
+    }
+
+
+def compiled_features(raw, metadata_raw, scenario):
+    metadata = json.loads(metadata_raw)
+    packages = subject_packages(metadata, scenario)
+    by_id = {package["id"]: name for name, package in packages.items()}
+    observed = {}
+    artifacts = []
+    libraries = set()
+    for line in raw.splitlines():
+        message = json.loads(line)
+        if (
+            message.get("reason") != "compiler-artifact"
+            or message.get("package_id") not in by_id
+        ):
+            continue
+        name = by_id[message["package_id"]]
+        kinds = message.get("target", {}).get("kind")
+        require(
+            isinstance(kinds, list)
+            and bool(kinds)
+            and all(isinstance(kind, str) for kind in kinds),
+            "missing compilation target kind",
+        )
+        if "lib" in kinds:
+            libraries.add(name)
+        features = message.get("features")
+        require(
+            isinstance(features, list)
+            and all(isinstance(value, str) for value in features)
+            and len(features) == len(set(features)),
+            "missing or malformed compiler features",
+        )
+        enabled = sorted(features)
+        require(
+            name not in observed or observed[name] == enabled,
+            "inconsistent compiler features for one package",
+        )
+        observed[name] = enabled
+        artifacts.append(message)
+    require(
+        set(observed) == set(packages) and libraries == set(packages),
+        "missing required library compiler artifact",
+    )
+    if scenario != "upstream-sigv4a":
+        enabled = set(observed["aws-config"])
         require(
             {"credentials-login", "rt-tokio"} <= enabled, "login provider not active"
         )
@@ -326,22 +405,21 @@ def check_features(raw, scenario):
                 not {"default", "sso", "credentials-process"} & enabled,
                 "login-only scenario is not isolated",
             )
-    signer = packages.get("aws-sigv4")
     if scenario in {"auth-sigv4a", "upstream-sigv4a"}:
         require(
-            signer is not None and "sigv4a" in nodes[signer["id"]],
+            "sigv4a" in observed["aws-sigv4"],
             "SigV4a was not activated",
         )
-    return {
-        name: sorted(nodes[package["id"]]) for name, package in sorted(packages.items())
-    }
+    return {"actual_features": observed, "compiler_artifacts": artifacts}
 
 
 def run(output, source):
     source_state(source, output)
     record = json.loads((output / "record.json").read_text())
     require(
-        record["source"]["commit"] == source and record["state"] == "prepared",
+        record["schema"] == "hepta-aws-native-observation-v2"
+        and record["source"]["commit"] == source
+        and record["state"] == "prepared",
         "not a fresh prepared observation",
     )
     target = Path(os.environ["CARGO_TARGET_DIR"]).resolve()
@@ -385,7 +463,13 @@ def run(output, source):
                 write_json(output / "record.json", record)
                 return result.returncode
             if stage["name"] == "metadata":
-                record["actual_features"] = check_features(
+                record["workspace_metadata_features"] = metadata_features(
+                    (output / "logs/metadata.stdout.txt").read_bytes(),
+                    record["scenario"],
+                )
+            if stage["name"] == "compile-features":
+                record["actual_compilation"] = compiled_features(
+                    (output / "logs/compile-features.stdout.txt").read_bytes(),
                     (output / "logs/metadata.stdout.txt").read_bytes(),
                     record["scenario"],
                 )
@@ -418,7 +502,11 @@ def finalize(output, source):
         record_path.is_file(), "prepared record missing; no observation can qualify"
     )
     record = json.loads(record_path.read_text())
-    require(record["source"]["commit"] == source, "finalizer source mismatch")
+    require(
+        record["schema"] == "hepta-aws-native-observation-v2"
+        and record["source"]["commit"] == source,
+        "finalizer source mismatch",
+    )
     record["workflow_native_step_outcome"] = os.environ.get("NATIVE_STEP_OUTCOME")
     for stage in record["stages"]:
         if stage["state"] == "running":
@@ -451,6 +539,7 @@ def finalize(output, source):
         not errors
         and record["state"] == "commands_completed"
         and record["workflow_native_step_outcome"] == "success"
+        and bool(record["actual_compilation"])
         and bool(
             record["terminal_cases"] and record["terminal_cases"]["all_selected_passed"]
         )

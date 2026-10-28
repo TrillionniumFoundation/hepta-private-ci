@@ -46,7 +46,121 @@ def junit(second="", omit_second=False):
     ).encode()
 
 
+def compiler_fixture(scenario="provider-login-only"):
+    features = {"aws-config": ["credentials-login", "rt-tokio"]}
+    if scenario != "provider-login-only":
+        features["aws-config"] += [
+            "default",
+            "sso",
+            "credentials-process",
+            "default-https-client",
+        ]
+    if scenario.startswith("auth-"):
+        features |= {"aws-sigv4": ["default", "sign-http"], "codex-aws-auth": []}
+        if scenario == "auth-sigv4a":
+            features["aws-sigv4"].append("sigv4a")
+    if scenario == "upstream-sigv4a":
+        features = {"aws-sigv4": ["sigv4a"]}
+    packages = [
+        {
+            "name": name,
+            "id": "synthetic-" + name,
+            "source": None,
+            "manifest_path": str(native.ROOT / native.VENDOR / "Cargo.toml"),
+        }
+        for name in features
+    ]
+    metadata = {
+        "packages": packages,
+        "resolve": {
+            "nodes": [
+                {"id": package["id"], "features": features[package["name"]]}
+                for package in packages
+            ]
+        },
+    }
+    messages = [
+        {
+            "reason": "compiler-artifact",
+            "package_id": package["id"],
+            "target": {"kind": ["lib"]},
+            "features": list(features[package["name"]]),
+        }
+        for package in packages
+    ]
+    return metadata, messages
+
+
+def compiler_lines(messages):
+    return "\n".join(json.dumps(message) for message in messages).encode()
+
+
 class NativeObserverControls(unittest.TestCase):
+    def test_compiled_login_scope_can_differ_from_workspace_wide_metadata(self):
+        metadata, messages = compiler_fixture()
+        metadata["resolve"]["nodes"][0]["features"] += ["default", "sso"]
+        raw = json.dumps(metadata)
+        self.assertIn(
+            "sso", native.metadata_features(raw, "provider-login-only")["aws-config"]
+        )
+        result = native.compiled_features(
+            compiler_lines(messages), raw, "provider-login-only"
+        )
+        self.assertEqual(
+            result["actual_features"], {"aws-config": ["credentials-login", "rt-tokio"]}
+        )
+
+    def test_missing_ambiguous_or_non_library_compile_evidence_is_rejected(self):
+        metadata, messages = compiler_fixture()
+        cases = [[]]
+        changed = json.loads(json.dumps(messages))
+        changed[0]["target"]["kind"] = ["example"]
+        cases.append(changed)
+        for key, value in [
+            ("features", None),
+            ("features", ["credentials-login", "credentials-login"]),
+            ("package_id", "foreign-id"),
+        ]:
+            changed = json.loads(json.dumps(messages))
+            changed[0][key] = value
+            cases.append(changed)
+        changed = json.loads(json.dumps(messages))
+        changed.append({**changed[0], "features": ["credentials-login"]})
+        cases.append(changed)
+        for values in cases:
+            with self.subTest(values=values), self.assertRaises(ValueError):
+                native.compiled_features(
+                    compiler_lines(values), json.dumps(metadata), "provider-login-only"
+                )
+        metadata["packages"].append(metadata["packages"][0])
+        with self.assertRaisesRegex(ValueError, "ambiguous"):
+            native.compiled_features(
+                compiler_lines(messages), json.dumps(metadata), "provider-login-only"
+            )
+
+    def test_compiler_features_must_really_keep_providers_and_activate_sigv4a(self):
+        for scenario in native.SCENARIOS:
+            metadata, messages = compiler_fixture(scenario)
+            result = native.compiled_features(
+                compiler_lines(messages), json.dumps(metadata), scenario
+            )
+            self.assertTrue(result["actual_features"])
+            changed = json.loads(json.dumps(messages))
+            if scenario == "provider-login-only":
+                changed[0]["features"].append("sso")
+            elif scenario in {"auth-sigv4a", "upstream-sigv4a"}:
+                next(
+                    message
+                    for message in changed
+                    if message["package_id"] == "synthetic-aws-sigv4"
+                )["features"].remove("sigv4a")
+            else:
+                changed[0]["features"].remove("sso")
+            with self.subTest(scenario=scenario), self.assertRaises(ValueError):
+                native.compiled_features(
+                    compiler_lines(changed), json.dumps(metadata), scenario
+                )
+
     def test_discovery_keeps_ignored_and_exact_selected_identities(self):
         cases = native.discovery(json.dumps(listing()))
         result = native.reconcile(cases, junit())
@@ -151,7 +265,7 @@ class NativeObserverControls(unittest.TestCase):
             record = json.loads((output / "record.json").read_text())
             self.assertEqual(record["stages"][0]["exit_code"], 23)
             self.assertEqual(
-                [s["state"] for s in record["stages"][1:]], ["not_started"] * 6
+                [s["state"] for s in record["stages"][1:]], ["not_started"] * 7
             )
             self.assertIsNone(record["test_inventory"])
             self.assertEqual(
@@ -186,6 +300,41 @@ class NativeObserverControls(unittest.TestCase):
             self.assertEqual(len(record["terminal_cases"]["unobserved"]), 2)
             self.assertFalse(record["native_scenario_passed"])
             self.assertFalse(record["bigint_blocker_closed"])
+
+    def test_zero_exit_and_complete_junit_still_require_compiler_evidence(self):
+        metadata, messages = compiler_fixture("provider-default")
+        compilation = native.compiled_features(
+            compiler_lines(messages), json.dumps(metadata), "provider-default"
+        )
+        for evidence, expected in [(None, 1), (compilation, 0)]:
+            with self.subTest(evidence=evidence), TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                output = root / "evidence"
+                state = {"commit": SHA, "tree": "b" * 40, "parents": [], "dirty": False}
+                with patch.object(native, "source_state", return_value=state):
+                    native.prepare(output, SHA, "provider-default")
+                    record = json.loads((output / "record.json").read_text())
+                    record["state"] = "commands_completed"
+                    record["actual_compilation"] = evidence
+                    record["test_inventory"] = native.discovery(json.dumps(listing()))
+                    for stage in record["stages"]:
+                        stage.update(state="succeeded", exit_code=0)
+                    native.write_json(output / "record.json", record)
+                    result = root / "target/nextest/local/junit.xml"
+                    result.parent.mkdir(parents=True)
+                    result.write_bytes(junit())
+                    with patch.dict(
+                        os.environ,
+                        {
+                            "CARGO_TARGET_DIR": str(root / "target"),
+                            "NATIVE_STEP_OUTCOME": "success",
+                        },
+                    ):
+                        self.assertEqual(native.finalize(output, SHA), expected)
+                record = json.loads((output / "record.json").read_text())
+                self.assertEqual(record["native_scenario_passed"], expected == 0)
+                self.assertFalse(record["bigint_blocker_closed"])
+                self.assertFalse(record["whole_product_qualified"])
 
     def test_stale_junit_is_rejected_before_any_native_command(self):
         with TemporaryDirectory() as temporary:

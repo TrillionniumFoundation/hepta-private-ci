@@ -167,11 +167,34 @@ mock is introduced.
 
 Before installing native tools, each job binds the clean source/tree, complete
 installed input inventory, original locks, scenario, run and attempt. It then
-records pinned tool versions, actual metadata, complete nextest discovery and
-the original repository `just test` execution. It uses zero retries, two test
+records pinned tool versions, actual metadata, compiler feature artifacts,
+complete nextest discovery and the original repository `just test` execution.
+It uses zero retries, two test
 threads and the unchanged original per-case nextest deadlines. The initial
 experiment bounds are 35 minutes for native work and 50 minutes per job; these
 are harness bounds, not product latency goals.
+
+The unpublished `9950662b2605d187ed3ecf6e55ea0bc2e95c4441` candidate was
+superseded after an independent check of Cargo's feature scope. The exact
+Cargo submodule shipped by Rust 1.96.0 is
+`30a34c6821b57de0aaec83a901aca39f88f6778c`. Its metadata implementation selects
+all workspace packages, so a metadata node may include features enabled by
+another workspace member. Such a node cannot establish the isolated compiled
+features of a `-p` test invocation. No native result from that unpublished
+candidate was accepted.
+
+The corrected observer retains that whole metadata graph and adds real hosted
+`cargo check --tests --profile test --message-format json`. It shares the exact
+package, manifest, locked graph and feature arguments with discovery and test
+execution; nextest explicitly receives `--cargo-profile test`, which the pinned
+0.9.103 implementation forwards to Cargo's `--profile`. Actual
+`compiler-artifact.features` must be present for every required library owner.
+Missing artifacts, non-library-only output, ambiguous package identities or
+inconsistent feature sets for one package fail closed. Only those actual
+compiler artifacts determine login-only isolation and SigV4a activation.
+The full discovery and runtime tests still follow; compilation alone cannot
+qualify the scenario. The exact official Cargo and nextest source is retained
+in `compiler-features-source.zip`.
 
 Every discovered binary/test name, ignored flag and selection result is
 retained. Final reconciliation joins the selected identities with the actual
