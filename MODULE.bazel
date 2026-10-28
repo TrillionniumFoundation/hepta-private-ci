@@ -336,6 +336,29 @@ crate.from_cargo(
         "x86_64-pc-windows-gnullvm",
     ],
 )
+
+# Dev-only golden JSON reference for the patched upstream library tests.
+# Keep production serde_json and AWS dependency identities in the main graph.
+crate.from_cargo(
+    name = "aws_json_reference_crates",
+    cargo_lock = "//codex-rs/third_party/aws-smithy-json-0.61.9:Cargo.lock",
+    cargo_toml = "//codex-rs/third_party/aws-smithy-json-0.61.9:Cargo.toml",
+    platform_triples = [
+        "aarch64-unknown-linux-gnu",
+        "aarch64-unknown-linux-musl",
+        "aarch64-apple-darwin",
+        # Keep both Windows ABIs in the generated Cargo metadata: the V8
+        # experiment still consumes release assets that only exist under the
+        # MSVC names while targeting the GNU toolchain.
+        "aarch64-pc-windows-msvc",
+        "aarch64-pc-windows-gnullvm",
+        "x86_64-unknown-linux-gnu",
+        "x86_64-unknown-linux-musl",
+        "x86_64-apple-darwin",
+        "x86_64-pc-windows-msvc",
+        "x86_64-pc-windows-gnullvm",
+    ],
+)
 crate.from_cargo(
     name = "argument_comment_lint_crates",
     cargo_lock = "//tools/argument-comment-lint:Cargo.lock",
@@ -645,7 +668,7 @@ http_file(
     ],
 )
 
-use_repo(crate, "crates")
+use_repo(crate, "aws_json_reference_crates", "crates")
 
 bazel_dep(name = "libcap", version = "2.27.bcr.1")
 

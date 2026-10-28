@@ -1,0 +1,66 @@
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "workspace_root_test")
+
+exports_files([
+    "Cargo.toml",
+    "Cargo.lock",
+])
+
+filegroup(
+    name = "package-files",
+    srcs = glob(
+        ["**"],
+        exclude = [
+            "BUILD.bazel",
+            "target/**",
+        ],
+    ),
+    visibility = ["//visibility:public"],
+)
+
+# This is a path-patched dependency, outside the host workspace DEP_DATA table.
+# Its production types keep the exact main Cargo.lock identity.
+rust_library(
+    name = "aws-smithy-json",
+    srcs = glob(["src/**/*.rs"]),
+    crate_name = "aws_smithy_json",
+    edition = "2021",
+    rustc_env = {"CARGO_PKG_VERSION": "0.61.9"},
+    visibility = ["//visibility:public"],
+    deps = ["@crates//:aws-smithy-types-1.4.7"],
+)
+
+# Keep every original upstream test and all three unchanged security regressions.
+# The separate dev graph preserves the upstream golden serde_json reference
+# without downgrading the application's serde_json or changing any assertions.
+rust_test(
+    name = "aws-smithy-json-unit-tests-bin",
+    crate = ":aws-smithy-json",
+    data = [":package-files"],
+    edition = "2021",
+    rustc_env = {"CARGO_PKG_VERSION": "0.61.9"},
+    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
+        "--remap-path-prefix=../codex-rs=",
+        "--remap-path-prefix=codex-rs=",
+    ],
+    # The public automatic launcher below owns execution, as for host crates.
+    tags = ["manual"],
+    deps = [
+        "@aws_json_reference_crates//:proptest-1.9.0",
+        "@aws_json_reference_crates//:serde_json-1.0.146",
+        "@crates//:aws-smithy-types-1.4.7",
+    ],
+)
+
+workspace_root_test(
+    name = "aws-smithy-json-unit-tests",
+    data = [":package-files"],
+    test_bin = ":aws-smithy-json-unit-tests-bin",
+    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
+)
+
+alias(
+    name = "aws-smithy-json-0.61.9",
+    actual = ":aws-smithy-json",
+    visibility = ["//visibility:public"],
+)
