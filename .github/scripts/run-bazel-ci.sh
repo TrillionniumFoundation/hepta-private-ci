@@ -416,9 +416,18 @@ if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
       echo "Missing verified Windows test volume environment: ${env_var}" >&2
       exit 1
     fi
-    post_config_bazel_args+=("--test_env=${env_var}")
+    windows_test_path="${!env_var}"
+    if command -v cygpath >/dev/null 2>&1; then
+      # Git Bash imports TEMP/TMP as POSIX paths. Our native-command wrapper
+      # deliberately disables automatic argv conversion, so restore the drive
+      # path explicitly before handing it to Windows Bazel or its test process.
+      windows_test_path="$(cygpath --mixed "${windows_test_path}")"
+    fi
+    post_config_bazel_args+=("--test_env=${env_var}=${windows_test_path}")
+    if [[ "${env_var}" == TEMP ]]; then
+      post_config_bazel_args+=("--test_tmpdir=${windows_test_path}")
+    fi
   done
-  post_config_bazel_args+=("--test_tmpdir=${TEMP}")
 fi
 
 bazel_console_log="$(mktemp)"

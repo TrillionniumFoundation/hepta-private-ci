@@ -40,6 +40,6 @@ if ($BuildDriveRoot -notmatch '^[A-Za-z]:\\$') {
 }
 $BuildVolume = Get-Volume -DriveLetter $BuildDriveRoot.Substring(0, 1) -ErrorAction Stop
 if ($BuildVolume.FileSystem -ne "ReFS" -or $BuildVolume.DriveType -ne "Fixed") {
-    throw "The configured Dev Drive must be local ReFS for the unsupported-volume regression."
+    throw "The configured Dev Drive must be local ReFS for the unsupported-volume regression; $BuildDriveRoot is $($BuildVolume.FileSystem)/$($BuildVolume.DriveType)."
 }
 "CODEX_TEST_REFS_VOLUME=$BuildDriveRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append

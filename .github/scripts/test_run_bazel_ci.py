@@ -61,6 +61,8 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.root = Path(directory.name)
         self.log = self.root / "arguments.jsonl"
         self.testlogs = self.root / "testlogs"
+        self.test_temp = self.root / "verified ntfs temp"
+        self.test_temp.mkdir()
         target_log = self.testlogs / "fake" / "target" / "test.log"
         target_log.parent.mkdir(parents=True)
         target_log.write_text("actual failing test diagnostic\n", encoding="utf-8")
@@ -103,8 +105,8 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             UniversalCRTSdkDir=r"C:\SDK\ucrt",
             VCToolsInstallDir=r"C:\VS\VC\Tools\MSVC\14.51.36231",
             WindowsSdkDir=r"C:\SDK",
-            TEMP=str(self.root / "verified ntfs temp"),
-            TMP=str(self.root / "verified ntfs temp"),
+            TEMP=str(self.test_temp),
+            TMP=str(self.test_temp),
             CODEX_TEST_REFS_VOLUME="D:\\",
         )
 
@@ -274,10 +276,22 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         args = calls[0]
         for name in ("TEMP", "TMP", "CODEX_TEST_REFS_VOLUME"):
-            self.assertIn(f"--test_env={name}", args)
+            values = [
+                arg.removeprefix(f"--test_env={name}=")
+                for arg in args
+                if arg.startswith(f"--test_env={name}=")
+            ]
+            self.assertEqual(len(values), 1)
+            self.assertEqual(Path(values[0]), Path(self.env[name]))
             self.assertNotIn(f"--action_env={name}", args)
             self.assertNotIn(f"--host_action_env={name}", args)
-        self.assertIn(f"--test_tmpdir={self.env['TEMP']}", args)
+        temporary_roots = [
+            arg.removeprefix("--test_tmpdir=")
+            for arg in args
+            if arg.startswith("--test_tmpdir=")
+        ]
+        self.assertEqual(len(temporary_roots), 1)
+        self.assertEqual(Path(temporary_roots[0]), self.test_temp)
 
     def test_linux_runner_does_not_receive_windows_volume_paths(self) -> None:
         self.env["RUNNER_OS"] = "Linux"
@@ -285,7 +299,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         args = calls[0]
         for name in ("TEMP", "TMP", "CODEX_TEST_REFS_VOLUME"):
-            self.assertNotIn(f"--test_env={name}", args)
+            self.assertFalse(any(arg.startswith(f"--test_env={name}=") for arg in args))
         self.assertFalse(any(arg.startswith("--test_tmpdir=") for arg in args))
 
     def test_windows_tests_reject_missing_verified_volume_environment(self) -> None:
