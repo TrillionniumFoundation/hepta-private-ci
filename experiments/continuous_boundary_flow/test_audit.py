@@ -291,6 +291,40 @@ class AuditBundleTests(unittest.TestCase):
             )
         )
 
+    def test_revision_two_rejects_episode_normalized_deadline(self):
+        manifest = self.fixture()
+        self.assertTrue(audit_run(self.root)["integrity_passed"])
+        frozen = json.loads((self.root / "protocol.json").read_text())
+        frozen["revision"] = 2
+        (self.root / "protocol.json").write_text(json.dumps(frozen))
+        manifest["protocol_sha256"] = self.sha("protocol.json")
+        for entry in manifest["records"]:
+            path = self.root / entry["path"]
+            rows = [
+                json.loads(line)
+                for line in gzip.decompress(path.read_bytes()).decode().splitlines()
+            ]
+            for row in rows:
+                for step in row["steps"]:
+                    step["raw_features"]["raw_q24"][1] = (
+                        row["spec"]["horizon"] - step["elapsed"]
+                    ) * (1 << 20)
+            payload = "".join(json.dumps(row) + "\n" for row in rows).encode()
+            path.write_bytes(gzip.compress(payload, mtime=0))
+            entry["sha256"] = self.sha(entry["path"])
+        self.save_manifest(manifest)
+        valid = audit_run(self.root)
+        self.assertEqual(valid["deadline_feature_steps_verified"], 48)
+
+        def reintroduce_fraction(rows):
+            # Initial remaining/horizon is one; remaining/16 is only 1/16 here.
+            rows[0]["steps"][0]["raw_features"]["raw_q24"][1] = 1 << 24
+            return rows
+
+        self.change_rows(manifest, reintroduce_fraction)
+        with self.assertRaisesRegex(AuditError, "Absolute remaining-window feature"):
+            audit_run(self.root)
+
     def test_independent_physics_and_frozen_head_checks(self):
         manifest = self.fixture()
         entry = manifest["records"][0]

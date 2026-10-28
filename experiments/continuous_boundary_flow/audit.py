@@ -585,6 +585,7 @@ def audit_run(run_dir):
         "Frozen protocol SHA-256 mismatch",
     )
     frozen = read_json(protocol)
+    protocol_revision = integer(frozen.get("revision", 1), "protocol revision")
     for field in (
         "arms",
         "seeds",
@@ -724,6 +725,7 @@ def audit_run(run_dir):
     )
     groups = {(a, s, p): {} for a in arms for s in seeds for p in splits}
     paired_inputs, paired_innovations, paths = {}, {}, set()
+    deadline_checks = 0
     for entry in manifest.get("records", []):
         require(entry.get("path") not in paths, "Repeated record artifact")
         paths.add(entry.get("path"))
@@ -758,6 +760,28 @@ def audit_run(run_dir):
                 )
                 paired_inputs[pair_key] = fingerprint
                 for step in record.get("steps", []):
+                    if protocol_revision >= 2 and key[0] not in REFERENCE_ARMS:
+                        raw = step.get("raw_features")
+                        require(
+                            isinstance(raw, dict)
+                            and isinstance(raw.get("raw_q24"), list)
+                            and len(raw["raw_q24"]) == 17,
+                            "Revision 2 deadline check requires all 17 public raw features",
+                        )
+                        horizon = integer(
+                            record.get("spec", {}).get("horizon"), "horizon"
+                        )
+                        elapsed = integer(step.get("elapsed"), "elapsed")
+                        expected_deadline = (horizon - elapsed) * (1 << 20)
+                        actual_deadline = raw["raw_q24"][1]
+                        require(
+                            horizon > elapsed
+                            and isinstance(actual_deadline, int)
+                            and not isinstance(actual_deadline, bool)
+                            and actual_deadline == expected_deadline,
+                            "Absolute remaining-window feature violates remaining/16 Q24 contract",
+                        )
+                        deadline_checks += 1
                     if "uniforms" in step:
                         innovation_key = (*pair_key, step.get("elapsed"))
                         require(
@@ -910,6 +934,8 @@ def audit_run(run_dir):
         "protocol_sha256": manifest["protocol_sha256"],
         "manifest_sha256": digest_file(root / "manifest.json"),
         "n_training_seeds": len(seeds),
+        "deadline_contract_revision": protocol_revision,
+        "deadline_feature_steps_verified": deadline_checks,
         "selection_seal_verified": selection_verified,
         "paired_innovation_windows_verified": len(paired_innovations),
         "native_profile_checkpoints_verified": len(profiles),
