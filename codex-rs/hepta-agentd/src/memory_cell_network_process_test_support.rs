@@ -36,6 +36,7 @@ use serde_json::Value;
 use serde_json::json;
 use tempfile::TempDir;
 use tokio::io::AsyncBufReadExt;
+use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
 use tokio::process::Child;
@@ -105,6 +106,7 @@ pub(super) struct ProcessNode {
     grant: Option<MemoryFederationCapabilityId>,
     pub handshake_received_bytes: u64,
     pub handshake_transmitted_bytes: u64,
+    exit_status: Option<String>,
 }
 
 impl ProcessNode {
@@ -182,6 +184,7 @@ impl ProcessNode {
             grant: None,
             handshake_received_bytes: received,
             handshake_transmitted_bytes: 0,
+            exit_status: None,
         };
         node.command("activate").await;
         let (frame, received) = read_frame(&mut node.output).await;
@@ -216,8 +219,10 @@ impl ProcessNode {
             .expect("child exit deadline")
             .expect("reap failed child");
         assert!(!status.success());
+        self.exit_status = Some(status.to_string());
         self.child.take();
         self.input.take();
+        self.record_exit_output().await;
     }
 
     async fn stop(&mut self) {
@@ -227,14 +232,21 @@ impl ProcessNode {
         self.command("stop").await;
         self.input.take();
         let child = self.child.as_mut().expect("child");
-        assert!(
-            tokio::time::timeout(DEADLINE, child.wait())
-                .await
-                .expect("shutdown deadline")
-                .expect("reap stopped child")
-                .success()
-        );
+        let status = tokio::time::timeout(DEADLINE, child.wait())
+            .await.expect("shutdown deadline").expect("reap stopped child");
+        assert!(status.success());
+        self.exit_status = Some(status.to_string());
         self.child.take();
+        self.record_exit_output().await;
+    }
+
+    async fn record_exit_output(&mut self) {
+        let mut trailer = Vec::new();
+        let mut output = (&mut self.output).take((LIMIT + 1) as u64);
+        tokio::time::timeout(DEADLINE, output.read_to_end(&mut trailer)).await
+            .expect("bounded child EOF deadline").expect("child exit output");
+        assert!(trailer.len() <= LIMIT, "child exit output bound");
+        self.handshake_received_bytes += trailer.len() as u64;
     }
 
     pub async fn binding(
@@ -397,11 +409,20 @@ impl ProcessFleet {
         self.nodes[index] = successor;
     }
 
-    pub async fn finish(mut self) {
+    pub async fn finish(self) {
+        self.finish_with_traffic().await;
+    }
+
+    pub async fn finish_with_traffic(mut self) -> Value {
         for node in &mut self.nodes {
             node.stop().await;
         }
         self.consumer.stop().await;
+        let nodes: Vec<_> = self.nodes.iter().chain(std::iter::once(&self.consumer)).map(|node| {
+            json!({"ready":node.ready,"exit_status":node.exit_status,"control":node.client.traffic_snapshot(),
+                "handshake_tx_bytes":node.handshake_transmitted_bytes,"handshake_rx_bytes":node.handshake_received_bytes})
+        }).collect();
+        json!({"nodes":nodes,"all_children_reaped":true})
     }
 }
 

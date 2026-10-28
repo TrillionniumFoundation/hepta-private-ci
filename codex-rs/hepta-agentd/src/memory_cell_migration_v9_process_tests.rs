@@ -172,19 +172,15 @@ async fn actual_memory_cell_v9_authorized_image_migration_recovery() {
     let target_layout = codex_hepta_paths::HeptaFleetRoot::parse(active_root.join("fleet")).expect("target fleet").layout().agent(&pin.owner_agent_id);
     let target_database = target_support::copy_tree(target_layout.cognitive_root(), &directory.join("activated-cognitive"));
     let taskflow_files = target_support::copy_tree(source_record.layout.automation_root(), &directory.join("taskflow-owner"));
-    let source_traffic: Vec<_> = fleet.nodes.iter().map(|node| json!({"pid":node.ready.pid,"control":node.client.traffic_snapshot(),
-        "handshake_tx_bytes":node.handshake_transmitted_bytes,"handshake_rx_bytes":node.handshake_received_bytes})).collect();
-    let consumer_traffic = json!({"pid":fleet.consumer.ready.pid,"control":fleet.consumer.client.traffic_snapshot(),
-        "handshake_tx_bytes":fleet.consumer.handshake_transmitted_bytes,"handshake_rx_bytes":fleet.consumer.handshake_received_bytes});
-    fleet.finish().await;
+    let source_fleet_traffic = fleet.finish_with_traffic().await;
     let artifact_inventory: Vec<_> = descriptors(&directory, "").into_iter().map(|(path, file)| {
         let metadata = file.metadata().expect("evidence metadata");
         let raw = std::fs::read(directory.join(&path)).expect("complete retained evidence");
         json!({"path":path,"bytes":raw.len(),"sha256":Sha256Digest::for_bytes(&raw),"mode":metadata.permissions().mode() & 0o777})
     }).collect();
     save_json(&receipt, &json!({"schema":"hepta.memory.migration.actual.v9","source":source_ready,"source_readout":before,"pin":pin,
-        "payload_sha256":second.digest(),"cases":cases,"stale_release":stale,"targets":targets,"source_traffic":source_traffic,
-        "consumer_traffic":consumer_traffic,"target_artifact_files":target_files,"target_cognitive_files":target_database,
+        "payload_sha256":second.digest(),"cases":cases,"stale_release":stale,"targets":targets,"source_fleet_traffic":source_fleet_traffic,
+        "target_artifact_files":target_files,"target_cognitive_files":target_database,
         "taskflow_files":taskflow_files,"artifact_inventory":artifact_inventory,"total_lifecycle_ns":started.elapsed().as_nanos().to_string(),
         "limits":["same-host loopback TCP, independent processes and storage roots; not physical cross-host transport",
             "fixture authority and artifact-selector keys; no production writer lease or cross-machine ownership handoff",
