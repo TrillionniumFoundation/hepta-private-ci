@@ -29,6 +29,12 @@ mod bundle;
 pub use bundle::LoadedMemoryCellBundleV1;
 pub use bundle::MemoryCellBundleCandidateV1;
 
+#[path = "memory_structure_runtime_v9.rs"]
+mod structure_v9;
+pub use structure_v9::MemoryStructurePublicationV9;
+pub use structure_v9::sleep_selected_memory_v9;
+pub use structure_v9::stage_memory_structure_v9;
+
 struct InstalledBundle {
     candidate: RevalidatingCandidate,
     bundle: Arc<LoadedMemoryCellBundleV1>,
