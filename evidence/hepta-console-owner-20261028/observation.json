@@ -1,0 +1,22 @@
+{
+  "schema": "hepta-console-backpressure-observation-v1",
+  "source": "/workspace/scratch/3d4ec372c488/hepta-ordinary-prerequisites/scripts/hepta_ci_exec.py",
+  "source_sha256": "e5e18bbfd9e2a855cb6911dcd40183770a13cd9414bf988f3a50cae9509652cc",
+  "command_deadline_seconds": 0.25,
+  "blocked_past_1_5_seconds": true,
+  "seconds_before_console_drain": 1.5010687239991967,
+  "elapsed_seconds": 1.5736421480032732,
+  "returncode": 0,
+  "retained_console_bytes": 131072,
+  "stderr": "",
+  "executor_record": {
+    "returncode": -9,
+    "timed_out": true,
+    "output_limit_exceeded": false,
+    "log_bytes": 131072,
+    "log_sha256": "15601535eca4a38b7e31ad6494861121cb9f84ccf55d4beb6a707d4f7a87813d",
+    "observed_passed_tests": 0,
+    "observed_failed_tests": 0
+  },
+  "scope": "Controlled owned Python fixture; proves a console-forwarding deadline gap, not the cause of the ongoing hosted job."
+}

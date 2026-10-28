@@ -12,6 +12,8 @@ on:
       - codex-rs/hepta-learning-artifacts/**
       - scripts/hepta_smollm_*.py
       - scripts/test_hepta_smollm_*.py
+      - scripts/hepta_ci_exec.py
+      - scripts/test_hepta_ci_exec*.py
   workflow_dispatch:
 
 permissions:
@@ -107,8 +109,11 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}/hepta
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
+      - name: Require command ownership under real console backpressure
+        run: python3 -B -m unittest discover -s scripts -p 'test_hepta_ci_exec*.py' -v
       - name: Build the first-party binaries required by the existing native tests
         id: required_cli
+        timeout-minutes: 65
         continue-on-error: true
         run: |
           set -euo pipefail
@@ -120,6 +125,7 @@ jobs:
           printf 'CARGO_BIN_EXE_codex-code-mode-host=%s/debug/codex-code-mode-host\n' "$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
       - name: Execute the complete five changed Rust packages
         id: scoped_rust
+        timeout-minutes: 65
         continue-on-error: true
         run: |
           set -euo pipefail

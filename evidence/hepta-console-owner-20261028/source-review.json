@@ -1,0 +1,57 @@
+{
+  "schema": "hepta-console-owner-source-review-v1",
+  "original_remote_head": "9e06290d2a5fc36dcc8f6d25a40a24fd9c200256",
+  "current_upstream_head": "746d7590990eec46d20400293feb80f499813bd9",
+  "current_upstream_tree": "ee2776d9c032ecb6e44e8f1a480af299dea7b3b9",
+  "upstream_changed_paths_preserved": 18,
+  "workflow_only_delta": [
+    "two executor/test path triggers",
+    "77 existing-and-new Python command-owner controls",
+    "65-minute outer guards for two existing 3600-second commands"
+  ],
+  "metadata_only_export_restriction_preserved_exactly": true,
+  "command_time_output_resource_and_model_acceptance_budgets_changed": false,
+  "original_test_files_unchanged": [
+    {
+      "path": "scripts/test_hepta_ci_exec.py",
+      "bytes": 16467,
+      "sha256": "209f64b1d52ce640ae09c768ff7d34700c3e9a76ba772f186649fbd1f2dbea94"
+    },
+    {
+      "path": "scripts/test_hepta_ci_exec_deadline.py",
+      "bytes": 7130,
+      "sha256": "932f6f906fd03a6dcf47d01cddc1c99ad7b0d7be3b5ff1a6ee54988691b6b5a2"
+    },
+    {
+      "path": "scripts/test_hepta_ci_exec_identity.py",
+      "bytes": 12331,
+      "sha256": "7e005266ac883bbce5c1165bd7fa107707489a9157eb4e181d92e111d7f4477c"
+    },
+    {
+      "path": "scripts/test_hepta_ci_exec_output.py",
+      "bytes": 10657,
+      "sha256": "b387cad491c8bdbd2bfe3c5433dd28a303b08f08c9ee8c2771f935f86c524646"
+    },
+    {
+      "path": "scripts/test_hepta_ci_exec_process.py",
+      "bytes": 10403,
+      "sha256": "01939ab84c86df1ed7829d21f94ffa260a432ff5f71b41317cc603c81a49be9f"
+    }
+  ],
+  "local_test_outcome": {
+    "passed": 77,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 28.277
+  },
+  "old_runner_new_regressions": {
+    "passed": 0,
+    "failed": 3,
+    "seconds": 6.328
+  },
+  "no_stdout_json_consumer_found": true,
+  "caller_evidence": "callsite-audit.txt",
+  "full_local_checkout_qualified": false,
+  "scoped_rust_and_neural_model_rerun_local": false,
+  "ongoing_hosted_stall_cause_proven": false
+}
