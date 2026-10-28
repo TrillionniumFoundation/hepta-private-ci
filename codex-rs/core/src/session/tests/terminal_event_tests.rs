@@ -169,13 +169,20 @@ async fn assert_terminal_publication_follows_cleanup(point: GatePoint) {
         GatePoint::ThreadIdle => 2,
         GatePoint::TurnAbort => 3,
     };
+    // An explicit abort marks the agent Interrupted while the terminal event
+    // remains fenced behind durable cleanup. A normal completion must retain
+    // the initial status until the same publication boundary.
+    let expected_status = match point {
+        GatePoint::ThreadIdle => initial_status,
+        GatePoint::TurnAbort => AgentStatus::Interrupted,
+    };
     pretty_assertions::assert_eq!(
         (
             session.has_pending_admission_fence(),
             store.calls().await.flush_thread,
             session.agent_status.borrow().clone(),
         ),
-        (true, expected_flushes, initial_status),
+        (true, expected_flushes, expected_status),
     );
     let persisted_before_release = persisted_terminals(&session).await;
     pretty_assertions::assert_eq!(persisted_before_release.len(), 1);
