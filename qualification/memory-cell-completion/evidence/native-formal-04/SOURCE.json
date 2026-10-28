@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.memory.completion.failed-ci-log-retention.v1",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "run_id": 40671529918,
+  "job_id": 122759228987,
+  "source_commit": "908492098cf49dd95bc906783a694ef3d0fcaf5b",
+  "source_tree": "df2630fb078e59ebe25685c7d63e2b13941ad87f",
+  "log_source": "GitHub workflow job logs connector; UTF-8 decoded response",
+  "job_status": "completed",
+  "job_conclusion": "failure",
+  "artifact_api_returned_empty": true,
+  "receipt_representation": "JSON parsed from a printed job-log line and pretty-serialized; not an original artifact receipt byte identity",
+  "original_artifact_files_verified": false,
+  "tests_rerun_here": false,
+  "log_parts": [
+    "job-log-000.txt",
+    "job-log-001.txt",
+    "job-log-002.txt"
+  ],
+  "observed_receipt_passed": false,
+  "missing_required_receipts": [
+    "continual-learning.json",
+    "structure-learning.json",
+    "continual-learning-score.json",
+    "structure-learning-score.json"
+  ],
+  "inventory_file_count": 458
+}
