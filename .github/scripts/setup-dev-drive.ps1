@@ -9,7 +9,20 @@ function Test-DevDrive {
     param([string]$Drive)
 
     & fsutil devdrv query $Drive *> $null
-    return $LASTEXITCODE -eq 0
+    if ($LASTEXITCODE -ne 0) {
+        return $false
+    }
+
+    # A Dev Drive marker alone is insufficient for the native ReFS refusal test.
+    # Enforce the same local-volume contract as configure-windows-test-temp.ps1
+    # before reusing D:, or provision a fresh verified ReFS VHD instead.
+    $DriveLetter = $Drive.Substring(0, 1)
+    $Volume = Get-Volume -DriveLetter $DriveLetter -ErrorAction Stop
+    if ($Volume.FileSystem -ne "ReFS" -or $Volume.DriveType -ne "Fixed") {
+        Write-Warning "$Drive advertises a Dev Drive but has $($Volume.FileSystem)/$($Volume.DriveType); refusing to reuse it."
+        return $false
+    }
+    return $true
 }
 
 function Invoke-BestEffort {
@@ -27,7 +40,7 @@ if ((Test-Path "D:\") -and (Test-DevDrive "D:")) {
     $Drive = "D:"
 } else {
     if (Test-Path "D:\") {
-        Write-Output "Existing D: volume is not a Dev Drive; provisioning a new Dev Drive VHD."
+        Write-Output "Existing D: volume is not a verified local ReFS Dev Drive; provisioning a new Dev Drive VHD."
     }
 
     try {
