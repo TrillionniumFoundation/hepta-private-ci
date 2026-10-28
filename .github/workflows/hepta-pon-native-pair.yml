@@ -388,6 +388,11 @@ jobs:
         if: matrix.runner == 'ubuntu-24.04'
         run: |
           set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-cell-build.json" -- cargo +1.95.0 build --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-data-availability --bin trnm-cell
+          export HEPTA_PON_CELL_BINARY="$(realpath ../chain/trillionnium/target/release/trnm-cell)"
+          export HEPTA_PON_CELL_SHA256="$(sha256sum "$HEPTA_PON_CELL_BINARY" | cut -d' ' -f1)"
+          printf 'HEPTA_PON_CELL_BINARY=%s\nHEPTA_PON_CELL_SHA256=%s\n' "$HEPTA_PON_CELL_BINARY" "$HEPTA_PON_CELL_SHA256" >> "$GITHUB_ENV"
+          printf '%s\n' "$HEPTA_PON_CELL_SHA256" > "$RUNNER_TEMP/pon-pair/cell-binary.sha256"
           # Reuse the existing isolated model environment; no GPU/runtime substitute.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/smollm-environment.json" --timeout-seconds 900 -- bash -euo pipefail -c '
             py="$RUNNER_TEMP/pon-model-env/bin/python"
@@ -396,6 +401,13 @@ jobs:
             "$py" -m pip check
           '
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/smollm-preparation.json" --timeout-seconds 1200 -- "$RUNNER_TEMP/pon-model-env/bin/python" scripts/hepta_ci_smollm_pair.py prepare --chain "$(realpath ../chain)" --materials "$RUNNER_TEMP/pon-smollm-materials" --output "$RUNNER_TEMP/pon-pair/smollm-native"
+      - name: Publish retrieved neural material through the original persistent artifact owner
+        if: ${{ !cancelled() && matrix.runner == 'ubuntu-24.04' && steps.smollm_prepare.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+          HEPTA_PN3_ARTIFACT_NATIVE_CONFIG: ${{ runner.temp }}/pon-pair/smollm-native/material-input.json
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/smollm-material.json" --timeout-seconds 1200 --minimum-tests 1 -- just test --locked --profile smollm-material -p codex-hepta-agentd --test neural_artifact_native -E 'test(=real_smollm_material_publishes_and_recovers_through_original_artifact_owner)' --run-ignored only --retries 0 --test-threads 1 --no-capture
       - name: Execute original SmolLM FinalUse read refusal recovery and terminal unload
         if: ${{ !cancelled() && matrix.runner == 'ubuntu-24.04' && steps.smollm_prepare.outcome == 'success' }}
         env:

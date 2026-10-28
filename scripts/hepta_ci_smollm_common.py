@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PROFILE = "smollm-pair"
 NATIVE = "smollm_neural_read::tests::native::real_smollm_parent_query_original_control_final_use_and_terminal_unload"
 COMPARISON = "real_gen2_gen3_forwards_score_only_after_original_holdout_consumption"
+MATERIAL = "real_smollm_material_publishes_and_recovers_through_original_artifact_owner"
 DENIED = (
     "product_artifact_installed",
     "ordinary_cognitive_context_qualified",
@@ -74,6 +75,27 @@ def sha(path):
 
 
 def command(kind):
+    if kind == "material":
+        return [
+            "just",
+            "test",
+            "--locked",
+            "--profile",
+            "smollm-material",
+            "-p",
+            "codex-hepta-agentd",
+            "--test",
+            "neural_artifact_native",
+            "-E",
+            f"test(={MATERIAL})",
+            "--run-ignored",
+            "only",
+            "--retries",
+            "0",
+            "--test-threads",
+            "1",
+            "--no-capture",
+        ]
     args = ["just", "test", "--locked", "--profile", PROFILE]
     if kind == "native":
         args += [

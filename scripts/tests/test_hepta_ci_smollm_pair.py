@@ -16,8 +16,10 @@ from unittest.mock import patch
 from scripts import hepta_ci_smollm_common as pair
 from scripts import hepta_ci_smollm_readback as reader
 from scripts import hepta_ci_smollm_resources as resources
+from scripts import hepta_ci_smollm_cell as cell
 
 WORKFLOW = pair.ROOT / ".github/workflows/hepta-pon-native-pair.yml"
+CELL_WORKFLOW = pair.ROOT / ".github/workflows/hepta-cell-smollm.yml"
 NEXTTEST = pair.ROOT / "codex-rs/.config/nextest.toml"
 START = "      - name: Prepare fixed public SmolLM material and three original CPU training generations\n"
 END = (
@@ -57,19 +59,21 @@ def check_wiring(workflow, config):
         "original readback required",
     )
     pair.require(
-        block.count("steps.smollm_prepare.outcome == 'success'") == 3,
+        block.count("steps.smollm_prepare.outcome == 'success'") == 4,
         "prepared input gating",
     )
     pair.require(
-        block.count("matrix.runner == 'ubuntu-24.04'") == 4, "declared x86 lane only"
+        block.count("matrix.runner == 'ubuntu-24.04'") == 5, "declared x86 lane only"
     )
     pair.require(
         "continue-on-error" not in block and "|| true" not in block,
         "no success fallback",
     )
     selected = [line.strip() for line in block.splitlines() if " -- just test " in line]
-    pair.require(len(selected) == 2, "two actual native dispatches required")
-    for line, kind in zip(selected, ("native", "comparison")):
+    pair.require(
+        len(selected) == 3, "material and both original native dispatches required"
+    )
+    for line, kind in zip(selected, ("material", "native", "comparison")):
         pair.require("--minimum-tests 1 --" in line, "nonempty actual test observation")
         pair.require(
             shlex.split(line.split(" -- ", 1)[1]) == pair.command(kind),
@@ -79,10 +83,65 @@ def check_wiring(workflow, config):
         "python3 -m unittest -v scripts.tests.test_hepta_ci_smollm_pair" in workflow,
         "reader must run in CI",
     )
+    material = tomllib.loads(config)["profile"]["smollm-material"]
+    pair.require(
+        material
+        == {
+            "retries": 0,
+            "test-threads": 1,
+            "slow-timeout": {"period": "60s", "terminate-after": 15},
+            "default-filter": "package(=codex-hepta-agentd) & binary(=neural_artifact_native) "
+            + f"& test(={pair.MATERIAL})",
+        },
+        "original material owner scope",
+    )
+    pair.require(
+        "-p trnm-data-availability --bin trnm-cell" in block
+        and 'export HEPTA_PON_CELL_SHA256="$(sha256sum "$HEPTA_PON_CELL_BINARY"'
+        in block,
+        "actual paired Cell executable and digest required",
+    )
     return block
 
 
 class WiringTests(unittest.TestCase):
+    def test_parallel_cell_job_keeps_the_original_owners_and_both_exact_sources(self):
+        original, isolated = WORKFLOW.read_text(), CELL_WORKFLOW.read_text()
+        check_wiring(isolated, NEXTTEST.read_text())
+        self.assertIn("runner: [ubuntu-24.04]\n", isolated)
+        self.assertIn("lane: [source-head, base-merge]\n", isolated)
+        self.assertIn("timeout-minutes: 60\n", isolated)
+        self.assertIn("cancel-in-progress: false\n", isolated)
+        self.assertNotIn("continue-on-error", isolated)
+
+        def env(text):
+            return text.split("    env:\n", 1)[1].split("    steps:\n", 1)[0]
+
+        self.assertEqual(env(original), env(isolated))
+
+        def steps(text):
+            return re.findall(
+                r"^      - [\s\S]*?(?=^      - |\Z)",
+                text.split("    steps:\n", 1)[1].split("  windows-ledger:\n", 1)[0],
+                flags=re.M,
+            )
+
+        original_steps = [step.rstrip() for step in steps(original)]
+        self.assertEqual(isolated.count("      - uses: actions/checkout@"), 2)
+        for step in steps(isolated):
+            title = step.splitlines()[0]
+            if (
+                "Preserve exact tested source" not in title
+                and "upload-artifact@" not in title
+            ):
+                self.assertIn(step.rstrip(), original_steps, title)
+            if "        run: |\n" in step:
+                shell = textwrap.dedent(step.split("        run: |\n", 1)[1])
+                result = subprocess.run(
+                    ["bash", "-n"], input=shell, text=True, capture_output=True
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_existing_workflow_and_shell_bodies_are_valid_without_execution(self):
         block = check_wiring(WORKFLOW.read_text(), NEXTTEST.read_text())
         for step in re.split(r"^      - name:", block, flags=re.M):
@@ -133,6 +192,51 @@ class WiringTests(unittest.TestCase):
 
 
 class RejectionTests(unittest.TestCase):
+    def test_cell_acquisition_cannot_use_warm_cache_omit_chunks_or_launder_budget(self):
+        release = dict(release="a" * 64, cells=11, payload_bytes=10000, chunks=12)
+        value = dict(
+            release,
+            cached_chunks=0,
+            downloaded_chunks=12,
+            connection_attempts=23,
+            received_response_bytes=11000,
+        )
+        cell.acquisition_counts(value, release, 46, 12000)
+        changes = [
+            {"cached_chunks": 1},
+            {"cached_chunks": False},
+            {"downloaded_chunks": 11},
+            {"connection_attempts": 0},
+            {"connection_attempts": True},
+            {"connection_attempts": 47},
+            {"received_response_bytes": 12001},
+            {"received_response_bytes": 0},
+            {"cells": 10},
+            {"release": "b" * 64},
+        ]
+        for change in changes:
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                cell.acquisition_counts(dict(value, **change), release, 46, 12000)
+
+    def test_cell_relocation_preserves_every_original_model_identity_field(self):
+        original = dict(
+            schema="original",
+            generation=3,
+            operation_id="training-3",
+            directory="/source",
+            contract="c",
+            adapter="a",
+            file_sha256="f",
+        )
+        target = Path("/consumer")
+        relocated = dict(original, directory=str(target))
+        cell.relocated_parent(original, relocated, target)
+        for field in original:
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                cell.relocated_parent(
+                    original, dict(relocated, **{field: "foreign"}), target
+                )
+
     def test_host_memory_cannot_hide_tighter_visible_enclosing_cgroup(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

@@ -11,6 +11,7 @@ import sys
 import urllib.request
 
 if __package__:
+    from .hepta_ci_smollm_cell import acquire
     from .hepta_ci_smollm_common import (
         DENIED,
         ROOT,
@@ -26,6 +27,7 @@ if __package__:
     )
     from .hepta_ci_smollm_resources import require_provisioning, resource_snapshot
 else:
+    from hepta_ci_smollm_cell import acquire
     from hepta_ci_smollm_common import (
         DENIED,
         ROOT,
@@ -175,12 +177,14 @@ def prepare(args):
             argv, check=True
         )  # one dispatch; original Chain supervisor owns the worker
         parent(output, generation, inherited)
-    baseline, _ = parent(output, 2, inherited)
-    candidate, _ = parent(output, 3, inherited)
+    original_baseline, _ = parent(output, 2, inherited)
+    original_candidate, _ = parent(output, 3, inherited)
+    acquired, consumer_materials = acquire(chain, output, materials, runtime, inherited)
+    baseline, candidate = acquired[2], acquired[3]
     shared = {
         "python": os.path.abspath(sys.executable),
         "chain": str(chain),
-        "materials": str(materials),
+        "materials": str(consumer_materials),
     }
     save(
         output / "native-input.json",
@@ -206,12 +210,34 @@ def prepare(args):
     )
     require(source_pair(chain) == before, "paired source changed during preparation")
     save(
+        output / "material-input.json",
+        dict(
+            schema="hepta-smollm-artifact-native-v1",
+            chain=str(chain),
+            parent=str(candidate),
+            parent_sha256=sha(candidate),
+            training_input=str(output / "training-input.json"),
+            training_input_sha256=sha(output / "training-input.json"),
+            training_receipt=str(output / "gen3/worker/actual-receipt.json"),
+            training_receipt_sha256=sha(output / "gen3/worker/actual-receipt.json"),
+            output=str(output / "material"),
+        ),
+    )
+    save(
         output / "prepared.json",
         {
             "source_pair": before,
             "run_context": run_context(),
             "parent_sha256": {"2": sha(baseline), "3": sha(candidate)},
-            "commands": {kind: command(kind) for kind in ("native", "comparison")},
+            "original_parent_sha256": {
+                "2": sha(original_baseline),
+                "3": sha(original_candidate),
+            },
+            "original_materials": str(materials),
+            "cell_acquisition_sha256": sha(output / "cell-acquired.json"),
+            "commands": {
+                kind: command(kind) for kind in ("native", "comparison", "material")
+            },
             **dict.fromkeys(DENIED, False),
         },
     )

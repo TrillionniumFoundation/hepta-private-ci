@@ -6,6 +6,7 @@ import re
 import subprocess
 
 if __package__:
+    from .hepta_ci_smollm_cell import verify_acquisition
     from .hepta_ci_smollm_common import (
         DENIED,
         command,
@@ -19,6 +20,7 @@ if __package__:
         source_pair,
     )
 else:
+    from hepta_ci_smollm_cell import verify_acquisition
     from hepta_ci_smollm_common import (
         DENIED,
         command,
@@ -150,16 +152,81 @@ def verify(args):
         runtime.verify_materials(Path(read(output / "native-input.json")["materials"]))
         for generation in (1, 2, 3):
             parent(output, generation, inherited)
-        baseline = output / "gen2/worker/parent-material.json"
-        candidate = output / "gen3/worker/parent-material.json"
+        require(
+            prepared["original_parent_sha256"]
+            == {
+                "2": sha(output / "gen2/worker/parent-material.json"),
+                "3": sha(output / "gen3/worker/parent-material.json"),
+            },
+            "original training parent changed",
+        )
+        acquired, consumer_materials = verify_acquisition(
+            chain,
+            output,
+            Path(prepared["original_materials"]),
+            runtime,
+            inherited,
+        )
+        baseline, candidate = acquired[2], acquired[3]
+        require(
+            prepared["cell_acquisition_sha256"] == sha(output / "cell-acquired.json"),
+            "Cell acquisition record changed",
+        )
+        native_input, comparison_input = (
+            read(output / "native-input.json"),
+            read(output / "comparison-input.json"),
+        )
+        require(
+            native_input["parent"]
+            == comparison_input["candidate_parent"]
+            == str(candidate)
+            and native_input["parent_sha256"]
+            == comparison_input["candidate_parent_sha256"]
+            == sha(candidate)
+            and comparison_input["baseline_parent"] == str(baseline)
+            and comparison_input["baseline_parent_sha256"] == sha(baseline)
+            and native_input["materials"]
+            == comparison_input["materials"]
+            == str(consumer_materials),
+            "native model commands did not consume the retrieved Cell material",
+        )
         require(
             prepared["parent_sha256"] == {"2": sha(baseline), "3": sha(candidate)},
             "prepared parent changed",
         )
         receipts = {
             kind: execution(output.parent / f"smollm-{kind}.json", kind, pair)
-            for kind in ("native", "comparison")
+            for kind in ("native", "comparison", "material")
         }
+        material = read(output / "material/material-publication-result.json")
+        require(
+            material["schema"] == "hepta-smollm-material-publication-result-v1"
+            and all(material[key] is False for key in DENIED)
+            and material["controlled_test_signer"] is True
+            and material["owner"] == "LearningArtifactOwnerService"
+            and material["current_reader"] == "ArtifactOwnerCurrentReaderV1"
+            and all(
+                material[key] is True
+                for key in (
+                    "publication_acknowledged",
+                    "named_owner_recovered_exact",
+                    "publication_retry_idempotent",
+                    "verified_current_material_read",
+                )
+            ),
+            "original material publication/recovery owner did not complete",
+        )
+        require(
+            material["source_parent_sha256"] == sha(candidate)
+            and material["payload_sha256"]
+            == read(candidate)["file_sha256"]
+            == sha(Path(material["payload"]))
+            and Path(material["payload"]).is_relative_to(output / "material")
+            and material["training_input_sha256"] == sha(output / "training-input.json")
+            and material["training_receipt_sha256"]
+            == sha(output / "gen3/worker/actual-receipt.json"),
+            "published material differs from actual retrieved training bytes",
+        )
         native = original_result(
             output / "native/native-owner-bridge-result.json",
             "hepta-smollm-neural-native-check-result-v1",
@@ -282,6 +349,12 @@ def verify(args):
             execution=receipts,
             original_runner_decision=comparison["original_runner_decision"],
             actual_forward_rows=32,
+            publisher_offline_cell_acquisition_sha256=sha(
+                output / "cell-acquired.json"
+            ),
+            original_material_publication_sha256=sha(
+                output / "material/material-publication-result.json"
+            ),
             original_native_result_sha256=sha(
                 output / "native/native-owner-bridge-result.json"
             ),
