@@ -84,13 +84,18 @@ class EvidenceReaderTests(unittest.TestCase):
         record = self.command_record()
         record["minimum_tests"] = 14
         record["observed_passed_tests"] = 14
-        selector = [
-            *(f"test({name})" for name in evidence.NAMESPACE_TESTS),
-            "test(pidfd_reaper::tests::)",
-        ]
+        selector = [f"test({name})" for name in evidence.NAMESPACE_TESTS]
+        selector.append("test(pidfd_reaper::tests::)")
         record["command"] = [
-            "just", "test", "--locked", "-p", "codex-linux-sandbox",
-            "--lib", "-E", " | ".join(selector), "--no-capture",
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-linux-sandbox",
+            "--lib",
+            "-E",
+            " | ".join(selector),
+            "--no-capture",
         ]
         namespace = [
             f"\x1b[32;1m PASS\x1b[0m [ 0.001s] codex-linux-sandbox "
