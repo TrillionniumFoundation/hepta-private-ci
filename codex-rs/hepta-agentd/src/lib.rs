@@ -38,7 +38,11 @@ mod memory_cell_control_tests;
 mod memory_cell_language_runtime_tests;
 #[cfg(test)]
 mod memory_cell_language_v8_tests;
+#[cfg(test)]
+mod memory_cell_language_v9_tests;
 mod memory_cell_learning;
+#[cfg(unix)]
+mod memory_cell_migration_v9;
 mod memory_cell_network;
 #[cfg(test)]
 mod memory_cell_population_tests;
@@ -217,6 +221,12 @@ pub use memory_cell_address_worker::MemoryCellAddressWorkerV1;
 pub use memory_cell_learning::MemoryCellLearningDecisionV1;
 pub use memory_cell_learning::MemoryCellLearningSinkV1;
 pub use memory_cell_learning::MemoryCellTrainingDecisionContextV1;
+#[cfg(unix)]
+pub use memory_cell_migration_v9::{
+    MemoryCellMigrationImageV9, MemoryCellMigrationManifestV9, MemoryCellMigrationPinV9,
+    MemoryCellMigrationProviderV9, MemoryCellMigrationReceiverV9, MemoryCellMigrationStoreV9,
+    MemoryCellMigrationTrafficV9,
+};
 pub use memory_cell_network::MAX_MEMORY_CELL_NETWORK_NODES;
 pub use memory_cell_network::MemoryCellDeploymentV1;
 pub use memory_cell_network::MemoryCellNetworkCostV1;
